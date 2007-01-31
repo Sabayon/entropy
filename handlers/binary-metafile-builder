@@ -1,0 +1,64 @@
+#!/usr/bin/python
+# Copyright Fabio Erculiani - Sabayon Linux 2007
+
+# DESCRIPTION:
+# this file get a .tbz2 file as input and creates the dependency binary metafile
+# that another application could handle using portage and binpackages extensions directly
+
+# Output file sample (extension *.etp)
+
+# PackageName: mplayer-1.0_rc1-r1{-etp[0-99]}
+# PackageCategory: media-video
+# PackageArch: amd64
+# PackageChost: x86_64-pc-linux-gnu
+# PackageHomePage: http://www.mplayer.hu
+# PackageUse: -alsa +alsa -3dnow etc...
+# PackageLicense: GPL-2
+# PackageSrcUri: http://www.sabayonlinux.org/binhost/%%PackageArch%%/packages/All/%%PackageName%%.tbz2
+# Dependencies: xysz-1.0-r2-etp1, asd-0.88-r1-etp2
+
+# Notes:
+# - we can use (from /var/db) "NEEDED" file to catch all the needed libraries to run the binary package
+# - we can use (from /var/db) "CONTENTS" to rapidly search the NEEDED files in the file above
+
+import os
+import sys
+import string
+
+# variables
+# should we import these into make.conf ?
+BinaryTree = "/var/lib/entropy/packages"
+
+# System functions
+
+def print_error(msg):
+    print "* erro *  : "+msg
+
+def print_info(msg):
+    print "* info *  : "+msg
+
+def print_help():
+    print "* IIIII * : Sabayon Linux binary-metafile-builder - written by Fabio Erculiani (C - 2007)"
+    print "* usage * : binary-metafile-builder <valid gentoo .tbz2 file>"
+
+def print_warning(msg):
+    print "* warn *  : "+msg
+
+options = sys.argv[1:]
+
+# parameters test
+if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(options).find("-h") != -1:
+    print_help()
+    if len(options) < 1:
+	print_error("not enough parameters")
+    sys.exit(1)
+
+if len(options) > 2:
+    print_help()
+    print_error("too many parameters")
+    sys.exit(1)
+
+# xpak files support
+import xpak
+# test initialize tbz2 class
+#tbz2 = xpak.tbz2("")
