@@ -14,7 +14,7 @@
 # PackageHomePage: http://www.mplayer.hu
 # PackageUse: -alsa +alsa -3dnow etc...
 # PackageLicense: GPL-2
-# PackageSrcUri: http://www.sabayonlinux.org/binhost/%%PackageArch%%/packages/All/%%PackageName%%.tbz2
+# PackageBinUri: http://www.sabayonlinux.org/binhost/%%PackageArch%%/packages/All/%%PackageName%%.tbz2
 # Dependencies: xysz-1.0-r2-etp1, asd-0.88-r1-etp2
 
 # Notes:
@@ -28,6 +28,18 @@ import string
 # variables
 # should we import these into make.conf ?
 BinaryTree = "/var/lib/entropy/packages"
+# dictionary info
+pData = {
+    'PackageNAME': "",
+    'PackageCATEGORY': "",
+    'PackageARCH': "",
+    'PackageCHOST': "",
+    'PackageHOMEPAGE': "",
+    'PackageUSE': "",
+    'PackageLICENSE': "",
+    'PackageBIN_URI': "",
+    'PackageDEPENDENCIES': "",
+}
 
 # System functions
 
@@ -43,6 +55,11 @@ def print_help():
 
 def print_warning(msg):
     print "* warn *  : "+msg
+
+# Create paths
+if not os.path.isdir(BinaryTree):
+    os.makedirs(BinaryTree,0755)
+    os.chown(BinaryTree,0,0)
 
 options = sys.argv[1:]
 
@@ -62,3 +79,5 @@ if len(options) > 2:
 import xpak
 # test initialize tbz2 class
 #tbz2 = xpak.tbz2("")
+
+# Starting to collect variables
