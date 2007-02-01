@@ -58,8 +58,13 @@ def print_warning(msg):
 
 # Create paths
 if not os.path.isdir(BinaryTree):
-    os.makedirs(BinaryTree,0755)
-    os.chown(BinaryTree,0,0)
+    import getpass
+    if getpass.getuser() == "root":
+        os.makedirs(BinaryTree,0755)
+        os.chown(BinaryTree,0,0)
+    else:
+        print_error("you need to run this as root at least once.")
+	sys.exit(2)
 
 options = sys.argv[1:]
 
@@ -74,6 +79,24 @@ if len(options) > 2:
     print_help()
     print_error("too many parameters")
     sys.exit(1)
+
+if not string.join(options).find(".tbz2"):
+    print_error("no .tbz2 file specified")
+    sys.exit(3)
+
+validFile = False
+for i in options:
+    if os.path.isfile(i) and i.endswith(".tbz2"):
+	validFile = True
+	tbz2File = i
+	break
+
+if (not validFile):
+    print_error("no valid .tbz2 file specified")
+    sys.exit(4)
+
+
+print ".tbz2 file found: "+tbz2File
 
 # xpak files support
 import xpak
