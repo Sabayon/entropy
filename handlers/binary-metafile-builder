@@ -31,6 +31,7 @@ BinaryTree = "/var/lib/entropy/packages"
 # dictionary info
 pData = {
     'PackageNAME': "",
+    'PackageDESCRIPTION': "",
     'PackageCATEGORY': "",
     'PackageARCH': "",
     'PackageCHOST': "",
@@ -39,6 +40,7 @@ pData = {
     'PackageLICENSE': "",
     'PackageBIN_URI': "",
     'PackageDEPENDENCIES': "",
+    'PackageCONFLICTS': "",
 }
 
 # System functions
