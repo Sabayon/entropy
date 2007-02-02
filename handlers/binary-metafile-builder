@@ -5,22 +5,6 @@
 # this file get a .tbz2 file as input and creates the dependency binary metafile
 # that another application could handle using portage and binpackages extensions directly
 
-# Output file sample (extension *.etp)
-
-# PackageName: mplayer-1.0_rc1-r1{-etp[0-99]}
-# PackageCategory: media-video
-# PackageArch: amd64
-# PackageChost: x86_64-pc-linux-gnu
-# PackageHomePage: http://www.mplayer.hu
-# PackageUse: -alsa +alsa -3dnow etc...
-# PackageLicense: GPL-2
-# PackageBinUri: http://www.sabayonlinux.org/binhost/%%PackageArch%%/packages/All/%%PackageName%%.tbz2
-# Dependencies: xysz-1.0-r2-etp1, asd-0.88-r1-etp2
-
-# Notes:
-# - we can use (from /var/db) "NEEDED" file to catch all the needed libraries to run the binary package
-# - we can use (from /var/db) "CONTENTS" to rapidly search the NEEDED files in the file above
-
 import os
 import sys
 import string

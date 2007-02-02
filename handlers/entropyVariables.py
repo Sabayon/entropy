@@ -10,12 +10,14 @@ pData = {
     'version': "",
     'description': "",
     'category': "",
-    'arch': "",
     'chost': "",
+    'cflags': "",
+    'cxxflags': "",
     'homepage': "",
     'useflags': "",
     'license': "",
     'download': "", # get this info from make.conf
+    'sources': "",
     'dependencies': "",
     'conflicts': "",
 }
@@ -44,3 +46,9 @@ if not pBinHost.endswith("/"):
 dbDESCRIPTION = "DESCRIPTION"
 dbHOMEPAGE = "HOMEPAGE"
 dbCHOST = "CHOST"
+dbCATEGORY = "CATEGORY"
+dbCFLAGS = "CFLAGS"
+dbCXXFLAGS = "CXXFLAGS"
+dbLICENSE = "LICENSE"
+dbSRC_URI = "SRC_URI"
+dbUSE = "USE"

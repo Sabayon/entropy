@@ -30,7 +30,7 @@ def extractPkgData(package):
     
     # Fill Package name and version
     pData['name'] = pkgname
-    pData['version'] = pkgver
+    pData['version'] = pkgver  # FIXME: add -etpNN
 
     import xpak
     tbz2 = xpak.tbz2(tbz2File)
@@ -51,6 +51,46 @@ def extractPkgData(package):
     f = open(tbz2TmpDir+"/"+dbCHOST,"r")
     pData['chost'] = f.readline().strip()
     f.close()
+
+    # Fill url
+    pData['download'] = pBinHost+tbz2File
+
+    # Fill category
+    f = open(tbz2TmpDir+"/"+dbCATEGORY,"r")
+    pData['category'] = f.readline().strip()
+    f.close()
+
+    # Fill CFLAGS
+    f = open(tbz2TmpDir+"/"+dbCFLAGS,"r")
+    pData['cflags'] = f.readline().strip()
+    f.close()
+
+    # Fill CXXFLAGS
+    f = open(tbz2TmpDir+"/"+dbCXXFLAGS,"r")
+    pData['cxxflags'] = f.readline().strip()
+    f.close()
+
+    # Fill license
+    f = open(tbz2TmpDir+"/"+dbLICENSE,"r")
+    pData['license'] = f.readline().strip()
+    f.close()
+
+    # Fill sources
+    f = open(tbz2TmpDir+"/"+dbSRC_URI,"r")
+    pData['sources'] = f.readline().strip()
+    f.close()
+
+    # Fill USE
+    f = open(tbz2TmpDir+"/"+dbUSE,"r")
+    pData['useflags'] = f.readline().strip()
+    f.close()
+
+    # Fill dependencies
+    # to fill dependencies we use *DEPEND files and then parse the content of:
+    # Notes (take the example of mplayer that needed a newer libcaca release):
+    # - we can use (from /var/db) "NEEDED" file to catch all the needed libraries to run the binary package
+    # - we can use (from /var/db) "CONTENTS" to rapidly search the NEEDED files in the file above
+
 
     # return all the collected info
     return pData
