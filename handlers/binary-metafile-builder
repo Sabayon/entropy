@@ -25,26 +25,7 @@ import os
 import sys
 import string
 import entropyTools
-
-# variables
-# should we import these into make.conf ?
-pTree = "/var/lib/entropy/packages"
-pTmpDir = pTree+"/tmp"
-# dictionary info
-pData = {
-    'name': "",
-    'version': "",
-    'description': "",
-    'category': "",
-    'arch': "",
-    'chost': "",
-    'homepage': "",
-    'useflags': "",
-    'license': "",
-    'uri': "",
-    'dependencies': "",
-    'conflicts': "",
-}
+from entropyVariables import *
 
 # System functions
 
@@ -114,10 +95,7 @@ if (not validFile):
 
 print_info(".tbz2 file found: "+tbz2File)
 
-# xpak files support
-import xpak
-
-# Extract .xpak file from .tbz2
-tbz2 = xpak.tbz2(tbz2File)
-print entropyTools.extractPkgData(tbz2File)
+# fill all the info
+pData = entropyTools.extractPkgData(tbz2File)
 #os.mkdir(pTmpDir+"/")
+print pData
