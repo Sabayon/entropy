@@ -24,23 +24,26 @@
 import os
 import sys
 import string
+import entropyTools
 
 # variables
 # should we import these into make.conf ?
-BinaryTree = "/var/lib/entropy/packages"
+pTree = "/var/lib/entropy/packages"
+pTmpDir = pTree+"/tmp"
 # dictionary info
 pData = {
-    'PackageNAME': "",
-    'PackageDESCRIPTION': "",
-    'PackageCATEGORY': "",
-    'PackageARCH': "",
-    'PackageCHOST': "",
-    'PackageHOMEPAGE': "",
-    'PackageUSE': "",
-    'PackageLICENSE': "",
-    'PackageBIN_URI': "",
-    'PackageDEPENDENCIES': "",
-    'PackageCONFLICTS': "",
+    'name': "",
+    'version': "",
+    'description': "",
+    'category': "",
+    'arch': "",
+    'chost': "",
+    'homepage': "",
+    'useflags': "",
+    'license': "",
+    'uri': "",
+    'dependencies': "",
+    'conflicts': "",
 }
 
 # System functions
@@ -59,14 +62,25 @@ def print_warning(msg):
     print "* warn *  : "+msg
 
 # Create paths
-if not os.path.isdir(BinaryTree):
+if not os.path.isdir(pTree):
     import getpass
     if getpass.getuser() == "root":
-        os.makedirs(BinaryTree,0755)
-        os.chown(BinaryTree,0,0)
+        os.makedirs(pTree,0755)
+        os.chown(pTree,0,0)
     else:
         print_error("you need to run this as root at least once.")
 	sys.exit(2)
+if not os.path.isdir(pTmpDir):
+    import getpass
+    if getpass.getuser() == "root":
+        os.makedirs(pTmpDir,0755)
+        os.chown(pTmpDir,0,0)
+    else:
+        print_error("you need to run this as root at least once.")
+	sys.exit(2)
+else:
+    # Clean pTmpDir
+    os.system("rm -rf "+pTmpDir+"/*")
 
 options = sys.argv[1:]
 
@@ -98,11 +112,12 @@ if (not validFile):
     sys.exit(4)
 
 
-print ".tbz2 file found: "+tbz2File
+print_info(".tbz2 file found: "+tbz2File)
 
 # xpak files support
 import xpak
-# test initialize tbz2 class
-#tbz2 = xpak.tbz2("")
 
-# Starting to collect variables
+# Extract .xpak file from .tbz2
+tbz2 = xpak.tbz2(tbz2File)
+print entropyTools.extractPkgData(tbz2File)
+#os.mkdir(pTmpDir+"/")
