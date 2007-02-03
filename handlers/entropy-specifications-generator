@@ -84,4 +84,5 @@ print_info(".tbz2 file found: "+tbz2File)
 # fill all the info
 pData = entropyTools.extractPkgData(tbz2File)
 #os.mkdir(pTmpDir+"/")
-print pData
+for i in pData:
+    print i+": "+pData[i]+"\n"

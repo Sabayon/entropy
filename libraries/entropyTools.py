@@ -5,6 +5,7 @@
 # generic tools for all the handlers applications
 
 from entropyConstants import *
+import commands
 
 # This function extracts all the info from a .tbz2 file and returns them
 def extractPkgData(package):
@@ -53,7 +54,7 @@ def extractPkgData(package):
     f.close()
 
     # Fill url
-    pData['download'] = pBinHost+tbz2File
+    pData['download'] = pBinHost+pData['name']+"-"+pData['version']+".tbz2"
 
     # Fill category
     f = open(tbz2TmpDir+"/"+dbCATEGORY,"r")
@@ -86,11 +87,95 @@ def extractPkgData(package):
     f.close()
 
     # Fill dependencies
-    # to fill dependencies we use *DEPEND files and then parse the content of:
+    # to fill dependencies we use *DEPEND files
+    f = open(tbz2TmpDir+"/"+dbDEPEND,"r")
+    roughDependencies = f.readline().strip()
+    f.close()
+    f = open(tbz2TmpDir+"/"+dbRDEPEND,"r")
+    roughDependencies += " "+f.readline().strip()
+    f.close()
+    f = open(tbz2TmpDir+"/"+dbPDEPEND,"r")
+    roughDependencies += " "+f.readline().strip()
+    f.close()
+    roughDependencies = roughDependencies.split()
+    
+    # variables filled
+    # pData['dependencies']
+
+    useMatch = False
+    openParenthesis = 0
+    openOr = False
+    useFlagQuestion = False
+    for atom in roughDependencies:
+
+	if atom.endswith("?"):
+	    # we need to see if that useflag is enabled
+	    useFlag = atom.split("?")[0]
+	    useFlagQuestion = True
+	    for i in pData['useflags'].split():
+	        if (i == useFlag):
+		    useMatch = True
+		    break
+
+        if atom.startswith("("):
+	    openParenthesis += 1
+
+        if atom.startswith(")"):
+	    if (openOr):
+		# remove last "_or_" from pData['dependencies']
+		openOr = False
+		if pData['dependencies'].endswith(dbOR):
+		    pData['dependencies'] = pData['dependencies'][:len(pData['dependencies'])-len(dbOR)]
+		    pData['dependencies'] += " "
+	    openParenthesis -= 1
+
+        if atom.startswith("||"):
+	    openOr = True
+	
+	if atom.find("/") != -1 and (not atom.startswith("!")):
+	    # it's a package name <pkgcat>/<pkgname>-???
+	    if ((useFlagQuestion) and (useMatch)):
+	        # check if there's an OR
+		pData['dependencies'] += atom
+		if (openOr):
+		    pData['dependencies'] += dbOR
+                else:
+		    pData['dependencies'] += " "
+
+
+    tmpDeps = list(set(pData['dependencies'].split()))
+    pData['dependencies'] = ''
+    for i in tmpDeps:
+	pData['dependencies'] += i+" "
+    if pData['dependencies'].endswith(" "):
+	pData['dependencies'] = pData['dependencies'][:len(pData['dependencies'])-1]
+
+    # Now we need to add environmental dependencies
     # Notes (take the example of mplayer that needed a newer libcaca release):
     # - we can use (from /var/db) "NEEDED" file to catch all the needed libraries to run the binary package
     # - we can use (from /var/db) "CONTENTS" to rapidly search the NEEDED files in the file above
-
-
     # return all the collected info
+
+    # start collecting needed libraries
+    f = open(tbz2TmpDir+"/"+dbNEEDED,"r")
+    roughNeeded = f.readlines()
+    f.close()
+    
+    newRoughNeeded = []
+    # filter the first word
+    for line in roughNeeded:
+        line = line.strip().split()
+	line = line[1:][0]
+	line = line.split(",")
+	for i in line:
+	    newRoughNeeded.append(i)
+    roughNeeded = list(set(newRoughNeeded))
+    del newRoughNeeded
+
+    print ""
+    for i in roughNeeded:
+	print i+": "
+	print commands.getoutput(pFindLibrary+i).split("\n")
+    print ""
+
     return pData

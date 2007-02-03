@@ -41,6 +41,12 @@ if (pBinHost == ""):
 if not pBinHost.endswith("/"):
     pBinHost += "/"
 
+import commands
+if (commands.getoutput("q -V").find("portage-utils") != -1):
+    pFindLibrary = "qfile -qC "
+else:
+    pFindLibrary = "equery belongs -en "
+
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things
 dbDESCRIPTION = "DESCRIPTION"
@@ -52,3 +58,8 @@ dbCXXFLAGS = "CXXFLAGS"
 dbLICENSE = "LICENSE"
 dbSRC_URI = "SRC_URI"
 dbUSE = "USE"
+dbDEPEND = "DEPEND"
+dbRDEPEND = "RDEPEND"
+dbPDEPEND = "PDEPEND"
+dbNEEDED = "NEEDED"
+dbOR = "|or|"
