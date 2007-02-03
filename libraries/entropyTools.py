@@ -4,7 +4,7 @@
 # DESCRIPTION:
 # generic tools for all the handlers applications
 
-from entropyVariables import *
+from entropyConstants import *
 
 # This function extracts all the info from a .tbz2 file and returns them
 def extractPkgData(package):

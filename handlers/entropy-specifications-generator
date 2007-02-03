@@ -11,7 +11,7 @@ import string
 
 sys.path.append('../libraries')
 import entropyTools
-from entropyVariables import *
+from entropyConstants import *
 
 # System functions
 
