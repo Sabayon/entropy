@@ -6,20 +6,20 @@
 
 # Specifications of the content of .etp file go here
 pData = {
-    'name': "",
-    'version': "",
-    'description': "",
-    'category': "",
-    'chost': "",
-    'cflags': "",
-    'cxxflags': "",
-    'homepage': "",
-    'useflags': "",
-    'license': "",
-    'download': "", # get this info from make.conf
-    'sources': "",
-    'dependencies': "",
-    'conflicts': "",
+    'name': "", # the Package Name
+    'version': "", # the Package version plus our -etpXX revision
+    'description': "", # the Package description
+    'category': "", # the gentoo category
+    'chost': "", # the CHOST used to compile it
+    'cflags': "", # CFLAGS used
+    'cxxflags': "", # CXXFLAGS used
+    'homepage': "", # home page of the package
+    'useflags': "", # USE flags used
+    'license': "", # License adpoted
+    'download': "", # link to download the binary package
+    'sources': "", # link to the sources
+    'dependencies': "", # dependencies
+    'conflicts': "", # blockers
 }
 
 # variables
