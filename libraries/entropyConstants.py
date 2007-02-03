@@ -45,7 +45,7 @@ import commands
 if (commands.getoutput("q -V").find("portage-utils") != -1):
     pFindLibrary = "qfile -qC "
 else:
-    pFindLibrary = "equery belongs -en "
+    pFindLibrary = "equery belongs -n "
 
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things
