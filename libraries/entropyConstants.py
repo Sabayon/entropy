@@ -19,7 +19,7 @@ pData = {
     'useflags': "", # USE flags used
     'license': "", # License adpoted
     'keywords': "", # supported ARCHs (by the SRC)
-    'supportedBinaryARCHs': "", # supported ARCHs (by the BIN)
+    'binkeywords': "", # supported ARCHs (by the BIN)
     'download': "", # link to download the binary package
     'sources': "", # link to the sources
     'mirrorlinks': "", # =mirror://openoffice|link1|link2|link3
@@ -32,26 +32,18 @@ pData = {
 
 ETP_API = "1"
 ETP_API_SUBLEVEL = ".0"
-
+ETP_DIR = "/var/lib/entropy"
 
 # variables
 # should we import these into make.conf ?
-pTree = "/var/lib/entropy/packages"
+pTree = ETP_DIR+"/packages"
 pTmpDir = pTree+"/tmp"
-# fetch PORTAGE_BINHOST
-f = open("/etc/make.conf","r")
-makeConf = f.readlines()
-pBinHost = ""
-for line in makeConf:
-    line = line.strip()
-    if line.startswith("PORTAGE_BINHOST"):
-	pBinHost = line.split('"')[1]
-	break
-if (pBinHost == ""):
-    # force PORTAGE_BINHOST to our defaults
-    pBinHost = "http://www.sabayonlinux.org/binhost/All/"
-if not pBinHost.endswith("/"):
-    pBinHost += "/"
+pBinDir = pTree+"/repository/%%ARCH%%"
+pDatabaseDir = ETP_DIR+"/database/"
+# FIXME: workout the PORTAGE_BINHOST management
+# use PORTAGE_BINHOST with multiple entries?
+pBinHost = "ftp://192.168.1.254/binhost/%%ARCH%%/"
+pDbHost = "ftp://192.168.1.254/database/%%ARCH%%/"
 
 import commands
 if (commands.getoutput("q -V").find("portage-utils") != -1):
@@ -62,7 +54,7 @@ else:
     pFindLibraryXT = "equery belongs -en "
 
 # the ARCHs that we support
-pArchs = ["x86", "amd64"]
+pArchs = ["x86", "amd64"] # maybe ppc someday
 
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things

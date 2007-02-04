@@ -134,6 +134,7 @@ def extractPkgData(package):
 
     # Fill sources
     # FIXME: resolve mirror:// in something useful
+    # FIXME: resolve amd64? url x86? url
     # portage.thirdpartymirrors['openoffice'] for example
     # !! keep mirror:// but write at the beginning something like
     try:
@@ -142,6 +143,22 @@ def extractPkgData(package):
         f.close()
     except IOError:
 	pass
+    
+    # manage pData['sources'] to create pData['mirrorlinks']
+    # =mirror://openoffice|link1|link2|link3
+    tmpMirrorList = pData['sources'].split()
+    for i in tmpMirrorList:
+        if i.startswith("mirror://"):
+	    # parse what mirror I need
+	    x = i.split("/")[2]
+	    mirrorlist = portage.thirdpartymirrors[x]
+	    out = "="+i+"|"
+	    for mirror in mirrorlist:
+	        out += mirror+"|"
+	    if out.endswith("|"):
+		out = out[:len(out)-1]
+	    pData['mirrorlinks'] += out+" "
+    pData['mirrorlinks'] = removeSpaceAtTheEnd(pData['mirrorlinks'])
 
     # Fill USE
     f = open(tbz2TmpDir+dbUSE,"r")
@@ -177,9 +194,9 @@ def extractPkgData(package):
     pkgArchs = pData['keywords']
     for i in pArchs:
         if pkgArchs.find(i) != -1 and (pkgArchs.find("-"+i) == -1): # in case we find something like -amd64...
-	    pData['supportedBinaryARCHs'] += i+" "
+	    pData['binkeywords'] += i+" "
 
-    pData['supportedBinaryARCHs'] = removeSpaceAtTheEnd(pData['supportedBinaryARCHs'])
+    pData['binkeywords'] = removeSpaceAtTheEnd(pData['binkeywords'])
 
     # Fill dependencies
     # to fill dependencies we use *DEPEND files
