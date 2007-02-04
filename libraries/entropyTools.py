@@ -83,14 +83,20 @@ def extractPkgData(package):
     
 
     # Fill description
-    f = open(tbz2TmpDir+dbDESCRIPTION,"r")
-    pData['description'] = f.readline().strip()
-    f.close()
+    try:
+        f = open(tbz2TmpDir+dbDESCRIPTION,"r")
+        pData['description'] = f.readline().strip()
+        f.close()
+    except IOError:
+        pData['description'] = ""
 
     # Fill homepage
-    f = open(tbz2TmpDir+dbHOMEPAGE,"r")
-    pData['homepage'] = f.readline().strip()
-    f.close()
+    try:
+        f = open(tbz2TmpDir+dbHOMEPAGE,"r")
+        pData['homepage'] = f.readline().strip()
+        f.close()
+    except IOError:
+        pData['homepage'] = ""
 
     # Fill chost
     f = open(tbz2TmpDir+dbCHOST,"r")
@@ -111,14 +117,20 @@ def extractPkgData(package):
     f.close()
 
     # Fill CXXFLAGS
-    f = open(tbz2TmpDir+dbCXXFLAGS,"r")
-    pData['cxxflags'] = f.readline().strip()
-    f.close()
+    try:
+        f = open(tbz2TmpDir+dbCXXFLAGS,"r")
+        pData['cxxflags'] = f.readline().strip()
+        f.close()
+    except IOError:
+        pData['cxxflags'] = ""
 
     # Fill license
-    f = open(tbz2TmpDir+dbLICENSE,"r")
-    pData['license'] = f.readline().strip()
-    f.close()
+    try:
+        f = open(tbz2TmpDir+dbLICENSE,"r")
+        pData['license'] = f.readline().strip()
+        f.close()
+    except IOError:
+        pData['license'] = ""
 
     # Fill sources
     # FIXME: resolve mirror:// in something useful
@@ -135,29 +147,32 @@ def extractPkgData(package):
     f = open(tbz2TmpDir+dbUSE,"r")
     tmpUSE = f.readline().strip()
     f.close()
-    f = open(tbz2TmpDir+dbIUSE,"r")
-    tmpIUSE = f.readline().strip().split()
-    f.close()
-    
-    # fill KEYWORDS
-    f = open(tbz2TmpDir+dbKEYWORDS,"r")
-    pData['keywords'] = f.readline().strip()
-    f.close()
-    
-    # fill ARCHs
-    pkgArchs = pData['keywords']
-    for i in pArchs:
-        if pkgArchs.find(i) != -1 and (pkgArchs.find("-"+i) == -1): # in case we find something like -amd64...
-	    pData['supportedBinaryARCHs'] += i+" "
-    
-    pData['supportedBinaryARCHs'] = removeSpaceAtTheEnd(pData['supportedBinaryARCHs'])
-    
+    try:
+        f = open(tbz2TmpDir+dbIUSE,"r")
+        tmpIUSE = f.readline().strip().split()
+        f.close()
+    except IOError:
+        tmpIUSE = ""
+
     for i in tmpIUSE:
 	if tmpUSE.find(i) != -1:
 	    pData['useflags'] += i+" "
 	else:
 	    pData['useflags'] += "-"+i+" "
     pData['useflags'] = removeSpaceAtTheEnd(pData['useflags'])
+
+    # fill KEYWORDS
+    f = open(tbz2TmpDir+dbKEYWORDS,"r")
+    pData['keywords'] = f.readline().strip()
+    f.close()
+
+    # fill ARCHs
+    pkgArchs = pData['keywords']
+    for i in pArchs:
+        if pkgArchs.find(i) != -1 and (pkgArchs.find("-"+i) == -1): # in case we find something like -amd64...
+	    pData['supportedBinaryARCHs'] += i+" "
+
+    pData['supportedBinaryARCHs'] = removeSpaceAtTheEnd(pData['supportedBinaryARCHs'])
 
     # Fill dependencies
     # to fill dependencies we use *DEPEND files
