@@ -73,7 +73,8 @@ pData = entropyTools.extractPkgData(tbz2File)
 
 # ugly, ugly way to print data without caring about type
 for i in pData:
-    entropyTools.print_generic(i+": "+pData[i]+"\n")
+    if (pData[i]):
+        entropyTools.print_generic(i+": "+pData[i]+"\n")
     
 # clean garbage
 os.system("rm -rf "+pTmpDir+"/"+pData['name']+"-"+pData['version'])

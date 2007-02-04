@@ -22,6 +22,7 @@ pData = {
     'supportedBinaryARCHs': "", # supported ARCHs (by the BIN)
     'download': "", # link to download the binary package
     'sources': "", # link to the sources
+    'mirrorlinks': "", # =mirror://openoffice|link1|link2|link3
     'dependencies': "", # dependencies
     'rundependencies': "", # runtime dependencies
     'rundependenciesXT': "", # runtime dependencies + version

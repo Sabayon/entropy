@@ -122,9 +122,14 @@ def extractPkgData(package):
 
     # Fill sources
     # FIXME: resolve mirror:// in something useful
-    f = open(tbz2TmpDir+dbSRC_URI,"r")
-    pData['sources'] = f.readline().strip()
-    f.close()
+    # portage.thirdpartymirrors['openoffice'] for example
+    # !! keep mirror:// but write at the beginning something like
+    try:
+        f = open(tbz2TmpDir+dbSRC_URI,"r")
+        pData['sources'] = f.readline().strip()
+        f.close()
+    except IOError:
+	pass
 
     # Fill USE
     f = open(tbz2TmpDir+dbUSE,"r")
@@ -142,10 +147,10 @@ def extractPkgData(package):
     # fill ARCHs
     pkgArchs = pData['keywords']
     for i in pArchs:
-        if pkgArchs.find(i) != -1:
-	    pData['archs'] += i+" "
+        if pkgArchs.find(i) != -1 and (pkgArchs.find("-"+i) == -1): # in case we find something like -amd64...
+	    pData['supportedBinaryARCHs'] += i+" "
     
-    pData['archs'] = removeSpaceAtTheEnd(pData['archs'])
+    pData['supportedBinaryARCHs'] = removeSpaceAtTheEnd(pData['supportedBinaryARCHs'])
     
     for i in tmpIUSE:
 	if tmpUSE.find(i) != -1:
@@ -249,9 +254,12 @@ def extractPkgData(package):
     # return all the collected info
 
     # start collecting needed libraries
-    f = open(tbz2TmpDir+"/"+dbNEEDED,"r")
-    includedBins = f.readlines()
-    f.close()
+    try:
+        f = open(tbz2TmpDir+"/"+dbNEEDED,"r")
+        includedBins = f.readlines()
+        f.close()
+    except IOError:
+	includedBins = ""
     
     neededLibraries = []
     # filter the first word
@@ -275,12 +283,13 @@ def extractPkgData(package):
     runtimeNeededPackages = []
     runtimeNeededPackagesXT = []
     for i in neededLibraries:
-	pkgs = commands.getoutput(pFindLibraryXT+i).split("\n")
-	if (pkgs[0] != ""):
-	    for y in pkgs:
-	        runtimeNeededPackagesXT.append(y)
-		y = dep_getkey(y)
-		runtimeNeededPackages.append(y)
+	if i.startswith("/"): # filter garbage
+	    pkgs = commands.getoutput(pFindLibraryXT+i).split("\n")
+	    if (pkgs[0] != ""):
+	        for y in pkgs:
+	            runtimeNeededPackagesXT.append(y)
+		    y = dep_getkey(y)
+		    runtimeNeededPackages.append(y)
 
     runtimeNeededPackages = list(set(runtimeNeededPackages))
     runtimeNeededPackagesXT = list(set(runtimeNeededPackagesXT))
