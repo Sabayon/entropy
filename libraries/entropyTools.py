@@ -28,6 +28,12 @@ def getInstalledAtom(atom):
     else:
 	return atom
 
+def removeSpaceAtTheEnd(string):
+    if string.endswith(" "):
+        return string[:len(string)-1]
+    else:
+	return string
+
 def print_error(msg):
     print "* erro *  : "+msg
 
@@ -129,15 +135,24 @@ def extractPkgData(package):
     f.close()
     
     # fill KEYWORDS
+    f = open(tbz2TmpDir+dbKEYWORDS,"r")
+    pData['keywords'] = f.readline().strip()
+    f.close()
     
+    # fill ARCHs
+    pkgArchs = pData['keywords']
+    for i in pArchs:
+        if pkgArchs.find(i) != -1:
+	    pData['archs'] += i+" "
+    
+    pData['archs'] = removeSpaceAtTheEnd(pData['archs'])
     
     for i in tmpIUSE:
 	if tmpUSE.find(i) != -1:
 	    pData['useflags'] += i+" "
 	else:
 	    pData['useflags'] += "-"+i+" "
-    if pData['useflags'].endswith(" "):
-        pData['useflags'] = pData['useflags'][:len(pData['useflags'])-1]
+    pData['useflags'] = removeSpaceAtTheEnd(pData['useflags'])
 
     # Fill dependencies
     # to fill dependencies we use *DEPEND files
@@ -216,16 +231,15 @@ def extractPkgData(package):
     tmpConflicts = list(set(pData['conflicts'].split()))
     pData['conflicts'] = ''
     for i in tmpConflicts:
+	i = i[1:] # remove "!"
 	pData['conflicts'] += i+" "
-    if pData['conflicts'].endswith(" "):
-	pData['conflicts'] = pData['conflicts'][:len(pData['conflicts'])-1]
+    pData['conflicts'] = removeSpaceAtTheEnd(pData['conflicts'])
 
     tmpDeps = list(set(pData['dependencies'].split()))
     pData['dependencies'] = ''
     for i in tmpDeps:
 	pData['dependencies'] += i+" "
-    if pData['dependencies'].endswith(" "):
-	pData['dependencies'] = pData['dependencies'][:len(pData['dependencies'])-1]
+    pData['dependencies'] = removeSpaceAtTheEnd(pData['dependencies'])
 
     # pData['rdependencies']
     # Now we need to add environmental dependencies
@@ -267,10 +281,6 @@ def extractPkgData(package):
 	        runtimeNeededPackagesXT.append(y)
 		y = dep_getkey(y)
 		runtimeNeededPackages.append(y)
-	#pkgsXT = commands.getoutput(pFindLibraryXT+i).split("\n")
-	#if (pkgs[0] != ""):
-	#    for y in pkgsXT:
-	#        runtimeNeededPackagesXT.append(y)
 
     runtimeNeededPackages = list(set(runtimeNeededPackages))
     runtimeNeededPackagesXT = list(set(runtimeNeededPackagesXT))
@@ -290,11 +300,9 @@ def extractPkgData(package):
 	        pData['rundependenciesXT'] += i+" "
 
     # format properly
-    if pData['rundependencies'].endswith(" "):
-	pData['rundependencies'] = pData['rundependencies'][:len(pData['rundependencies'])-1]
+    pData['rundependencies'] = removeSpaceAtTheEnd(pData['rundependencies'])
 
-    if pData['rundependenciesXT'].endswith(" "):
-	pData['rundependenciesXT'] = pData['rundependenciesXT'][:len(pData['rundependenciesXT'])-1]
+    pData['rundependenciesXT'] = removeSpaceAtTheEnd(pData['rundependenciesXT'])
 
     # write API info
     pData['etpapi'] = ETP_API+ETP_API_SUBLEVEL

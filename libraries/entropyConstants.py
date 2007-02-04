@@ -4,7 +4,9 @@
 # DESCRIPTION:
 # Variables container
 
-# Specifications of the content of .etp file go here
+# Specifications of the content of .etp file
+# THIS IS THE KEY PART OF ENTROPY BINARY PACKAGES MANAGEMENT
+# DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU'RE DOING !!
 pData = {
     'name': "", # the Package Name
     'version': "", # the Package version plus our -etpXX revision
@@ -16,7 +18,8 @@ pData = {
     'homepage': "", # home page of the package
     'useflags': "", # USE flags used
     'license': "", # License adpoted
-    'keywords': "", # supported ARCHs
+    'keywords': "", # supported ARCHs (by the SRC)
+    'supportedBinaryARCHs': "", # supported ARCHs (by the BIN)
     'download': "", # link to download the binary package
     'sources': "", # link to the sources
     'dependencies': "", # dependencies
@@ -56,6 +59,9 @@ if (commands.getoutput("q -V").find("portage-utils") != -1):
 else:
     pFindLibrary = "equery belongs -n "
     pFindLibraryXT = "equery belongs -en "
+
+# the ARCHs that we support
+pArchs = ["x86", "amd64"]
 
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things
