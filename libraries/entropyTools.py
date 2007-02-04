@@ -252,3 +252,8 @@ def extractPkgData(package):
 	pData['rundependenciesXT'] = pData['rundependenciesXT'][:len(pData['rundependenciesXT'])-1]
 
     return pData
+
+# This function will handle all the shit needed to write the *.etp file in the
+# right directory, under the right name and revision
+def writeEtpSpecFile(etpOutputFile):
+     return

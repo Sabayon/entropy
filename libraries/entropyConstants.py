@@ -24,8 +24,7 @@ pData = {
     'conflicts': "", # blockers
 }
 
-# Initialize chapters in dictionary :P
-#pData['conflicts'] = []
+ETP_API = "1.0"
 
 # variables
 # should we import these into make.conf ?
