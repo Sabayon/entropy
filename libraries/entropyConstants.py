@@ -16,12 +16,14 @@ pData = {
     'homepage': "", # home page of the package
     'useflags': "", # USE flags used
     'license': "", # License adpoted
+    'keywords': "", # supported ARCHs
     'download': "", # link to download the binary package
     'sources': "", # link to the sources
     'dependencies': "", # dependencies
     'rundependencies': "", # runtime dependencies
     'rundependenciesXT': "", # runtime dependencies + version
     'conflicts': "", # blockers
+    'etpapi': "", # blockers
 }
 
 ETP_API = "1.0"
@@ -68,3 +70,4 @@ dbRDEPEND = "RDEPEND"
 dbPDEPEND = "PDEPEND"
 dbNEEDED = "NEEDED"
 dbOR = "|or|"
+dbKEYWORDS = "KEYWORDS"

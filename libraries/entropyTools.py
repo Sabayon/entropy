@@ -103,6 +103,7 @@ def extractPkgData(package):
     f.close()
 
     # Fill sources
+    # FIXME: resolve mirror:// in something useful
     f = open(tbz2TmpDir+dbSRC_URI,"r")
     pData['sources'] = f.readline().strip()
     f.close()
@@ -150,9 +151,14 @@ def extractPkgData(package):
 	    useFlag = atom.split("?")[0]
 	    useFlagQuestion = True
 	    for i in pData['useflags'].split():
-	        if (i == useFlag):
-		    useMatch = True
-		    break
+		if i.startswith("!"):
+		    if (i != useFlag):
+			useMatch = True
+			break
+		else:
+		    if (i == useFlag):
+		        useMatch = True
+		        break
 
         if atom.startswith("("):
 	    openParenthesis += 1
@@ -165,13 +171,16 @@ def extractPkgData(package):
 		    pData['dependencies'] = pData['dependencies'][:len(pData['dependencies'])-len(dbOR)]
 		    pData['dependencies'] += " "
 	    openParenthesis -= 1
+	    if (openParenthesis == 0):
+		useFlagQuestion = False
+		useMatch = False
 
         if atom.startswith("||"):
 	    openOr = True
 	
-	if atom.find("/") != -1 and (not atom.startswith("!")):
+	if atom.find("/") != -1 and (not atom.startswith("!")) and (not atom.endswith("?")):
 	    # it's a package name <pkgcat>/<pkgname>-???
-	    if ((useFlagQuestion) and (useMatch)):
+	    if ((useFlagQuestion) and (useMatch)) or ((not useFlagQuestion) and (not useMatch)):
 	        # check if there's an OR
 		pData['dependencies'] += atom
 		if (openOr):
@@ -179,8 +188,14 @@ def extractPkgData(package):
                 else:
 		    pData['dependencies'] += " "
 
-        if atom.startswith("!"):
-	    pData['conflicts'] += atom+" "
+        if atom.startswith("!") and (not atom.endswith("?")):
+	    if ((useFlagQuestion) and (useMatch)) or ((not useFlagQuestion) and (not useMatch)):
+		pData['conflicts'] += atom
+		if (openOr):
+		    pData['conflicts'] += dbOR
+                else:
+		    pData['conflicts'] += " "
+		
 
     # format properly
     tmpConflicts = list(set(pData['conflicts'].split()))
@@ -251,9 +266,12 @@ def extractPkgData(package):
     if pData['rundependenciesXT'].endswith(" "):
 	pData['rundependenciesXT'] = pData['rundependenciesXT'][:len(pData['rundependenciesXT'])-1]
 
+    # write API info
+    pData['etpapi'] = ETP_API
+
     return pData
 
 # This function will handle all the shit needed to write the *.etp file in the
 # right directory, under the right name and revision
 def writeEtpSpecFile(etpOutputFile):
-     return
+    return

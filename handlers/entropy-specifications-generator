@@ -64,8 +64,9 @@ if (not validFile):
     sys.exit(4)
 
 
-entropyTools.print_info(".tbz2 file found: "+tbz2File)
+entropyTools.print_info("tbz2 file found: "+tbz2File)
 
+entropyTools.print_info("extracting data for: "+tbz2File+" please wait...")
 # fill all the info
 pData = entropyTools.extractPkgData(tbz2File)
 #os.mkdir(pTmpDir+"/")
