@@ -159,6 +159,13 @@ def extractPkgData(package):
 	    pData['useflags'] += i+" "
 	else:
 	    pData['useflags'] += "-"+i+" "
+
+    # cleanup
+    tmpUSE = pData['useflags'].split()
+    tmpUSE = list(set(tmpUSE))
+    pData['useflags'] = ''
+    for i in tmpUSE:
+        pData['useflags'] += i+" "
     pData['useflags'] = removeSpaceAtTheEnd(pData['useflags'])
 
     # fill KEYWORDS
