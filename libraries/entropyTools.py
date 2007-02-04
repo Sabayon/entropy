@@ -6,15 +6,27 @@
 
 import portage
 import portage_const
+from portage_dep import isvalidatom, isjustname, dep_getkey
 
 from entropyConstants import *
 import commands
 
-# resolve atoms automagically
+# resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1
 def getBestAtom(atom):
     rc = portage.portdb.xmatch("bestmatch-visible",str(atom))
     return rc
+
+def getArch():
+    return portage.settings["ARCH"]
+
+def getInstalledAtom(atom):
+    if (isjustname(atom) == 1):
+        # resolve name to atom
+	rc = portage.db['/']['vartree'].dep_match(str(atom))
+	return rc[len(rc)-1]
+    else:
+	return atom
 
 def print_error(msg):
     print "* erro *  : "+msg
@@ -115,6 +127,9 @@ def extractPkgData(package):
     f = open(tbz2TmpDir+dbIUSE,"r")
     tmpIUSE = f.readline().strip().split()
     f.close()
+    
+    # fill KEYWORDS
+    
     
     for i in tmpIUSE:
 	if tmpUSE.find(i) != -1:
@@ -244,13 +259,21 @@ def extractPkgData(package):
     neededLibraries = list(set(neededLibraries))
 
     runtimeNeededPackages = []
+    runtimeNeededPackagesXT = []
     for i in neededLibraries:
-	pkgs = commands.getoutput(pFindLibrary+i).split("\n")
+	pkgs = commands.getoutput(pFindLibraryXT+i).split("\n")
 	if (pkgs[0] != ""):
 	    for y in pkgs:
-	        runtimeNeededPackages.append(y)
+	        runtimeNeededPackagesXT.append(y)
+		y = dep_getkey(y)
+		runtimeNeededPackages.append(y)
+	#pkgsXT = commands.getoutput(pFindLibraryXT+i).split("\n")
+	#if (pkgs[0] != ""):
+	#    for y in pkgsXT:
+	#        runtimeNeededPackagesXT.append(y)
 
     runtimeNeededPackages = list(set(runtimeNeededPackages))
+    runtimeNeededPackagesXT = list(set(runtimeNeededPackagesXT))
     
     # now keep only the ones not available in pData['dependencies']
     for i in runtimeNeededPackages:
@@ -258,16 +281,23 @@ def extractPkgData(package):
 	    # filter itself
 	    if (i != pData['category']+"/"+pData['name']):
 	        pData['rundependencies'] += i+" "
-	        i = getBestAtom(i)
+
+    for i in runtimeNeededPackagesXT:
+	x = dep_getkey(i)
+        if pData['dependencies'].find(x) == -1:
+	    # filter itself
+	    if (x != pData['category']+"/"+pData['name']):
 	        pData['rundependenciesXT'] += i+" "
+
     # format properly
     if pData['rundependencies'].endswith(" "):
 	pData['rundependencies'] = pData['rundependencies'][:len(pData['rundependencies'])-1]
+
     if pData['rundependenciesXT'].endswith(" "):
 	pData['rundependenciesXT'] = pData['rundependenciesXT'][:len(pData['rundependenciesXT'])-1]
 
     # write API info
-    pData['etpapi'] = ETP_API
+    pData['etpapi'] = ETP_API+ETP_API_SUBLEVEL
 
     return pData
 

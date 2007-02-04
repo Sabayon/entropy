@@ -26,7 +26,9 @@ pData = {
     'etpapi': "", # blockers
 }
 
-ETP_API = "1.0"
+ETP_API = "1"
+ETP_API_SUBLEVEL = ".0"
+
 
 # variables
 # should we import these into make.conf ?
@@ -50,8 +52,10 @@ if not pBinHost.endswith("/"):
 import commands
 if (commands.getoutput("q -V").find("portage-utils") != -1):
     pFindLibrary = "qfile -qC "
+    pFindLibraryXT = "qfile -qeC "
 else:
     pFindLibrary = "equery belongs -n "
+    pFindLibraryXT = "equery belongs -en "
 
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things
