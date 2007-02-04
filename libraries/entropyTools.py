@@ -4,8 +4,33 @@
 # DESCRIPTION:
 # generic tools for all the handlers applications
 
+import portage
+import portage_const
+
 from entropyConstants import *
 import commands
+
+# resolve atoms automagically
+# sys-libs/application --> sys-libs/application-1.2.3-r1
+def getBestAtom(atom):
+    rc = portage.portdb.xmatch("bestmatch-visible",str(atom))
+    return rc
+
+def print_error(msg):
+    print "* erro *  : "+msg
+
+def print_info(msg):
+    print "* info *  : "+msg
+
+def print_help():
+    print "* IIIII * : Sabayon Linux binary-metafile-builder - written by Fabio Erculiani (C - 2007)"
+    print "* usage * : binary-metafile-builder <valid gentoo .tbz2 file>"
+
+def print_warning(msg):
+    print "* warn *  : "+msg
+
+def print_generic(msg): # here we'll wrap any nice formatting
+    print msg
 
 # This function extracts all the info from a .tbz2 file and returns them
 def extractPkgData(package):
@@ -84,8 +109,19 @@ def extractPkgData(package):
 
     # Fill USE
     f = open(tbz2TmpDir+dbUSE,"r")
-    pData['useflags'] = f.readline().strip()
+    tmpUSE = f.readline().strip()
     f.close()
+    f = open(tbz2TmpDir+dbIUSE,"r")
+    tmpIUSE = f.readline().strip().split()
+    f.close()
+    
+    for i in tmpIUSE:
+	if tmpUSE.find(i) != -1:
+	    pData['useflags'] += i+" "
+	else:
+	    pData['useflags'] += "-"+i+" "
+    if pData['useflags'].endswith(" "):
+        pData['useflags'] = pData['useflags'][:len(pData['useflags'])-1]
 
     # Fill dependencies
     # to fill dependencies we use *DEPEND files
@@ -143,6 +179,16 @@ def extractPkgData(package):
                 else:
 		    pData['dependencies'] += " "
 
+        if atom.startswith("!"):
+	    pData['conflicts'] += atom+" "
+
+    # format properly
+    tmpConflicts = list(set(pData['conflicts'].split()))
+    pData['conflicts'] = ''
+    for i in tmpConflicts:
+	pData['conflicts'] += i+" "
+    if pData['conflicts'].endswith(" "):
+	pData['conflicts'] = pData['conflicts'][:len(pData['conflicts'])-1]
 
     tmpDeps = list(set(pData['dependencies'].split()))
     pData['dependencies'] = ''
@@ -151,6 +197,7 @@ def extractPkgData(package):
     if pData['dependencies'].endswith(" "):
 	pData['dependencies'] = pData['dependencies'][:len(pData['dependencies'])-1]
 
+    # pData['rdependencies']
     # Now we need to add environmental dependencies
     # Notes (take the example of mplayer that needed a newer libcaca release):
     # - we can use (from /var/db) "NEEDED" file to catch all the needed libraries to run the binary package
@@ -186,20 +233,22 @@ def extractPkgData(package):
 	pkgs = commands.getoutput(pFindLibrary+i).split("\n")
 	if (pkgs[0] != ""):
 	    for y in pkgs:
-		#lastPart = y.split("-")[len(y.split("-"))-1]
-		#if lastPart.startswith("r"):
-		#    tmpY = y.split("-")
-		#    y = ""
-		#    for z in tmpY:
-		#	if z != tmpY[len(tmpY)-1]:
-		#	    y += z+"-"
-		#    if y.endswith("-"):
-		#        y = y[:len(y)-1]
-	        runtimeNeededPackages.append(y) # "~"+
+	        runtimeNeededPackages.append(y)
 
     runtimeNeededPackages = list(set(runtimeNeededPackages))
     
-    # FIXME: now we need to merge runtimeNeededPackages with pData['dependencies']
-    print runtimeNeededPackages
-    
+    # now keep only the ones not available in pData['dependencies']
+    for i in runtimeNeededPackages:
+        if pData['dependencies'].find(i) == -1:
+	    # filter itself
+	    if (i != pData['category']+"/"+pData['name']):
+	        pData['rundependencies'] += i+" "
+	        i = getBestAtom(i)
+	        pData['rundependenciesXT'] += i+" "
+    # format properly
+    if pData['rundependencies'].endswith(" "):
+	pData['rundependencies'] = pData['rundependencies'][:len(pData['rundependencies'])-1]
+    if pData['rundependenciesXT'].endswith(" "):
+	pData['rundependenciesXT'] = pData['rundependenciesXT'][:len(pData['rundependenciesXT'])-1]
+
     return pData

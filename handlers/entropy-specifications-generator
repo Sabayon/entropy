@@ -13,21 +13,6 @@ sys.path.append('../libraries')
 import entropyTools
 from entropyConstants import *
 
-# System functions
-
-def print_error(msg):
-    print "* erro *  : "+msg
-
-def print_info(msg):
-    print "* info *  : "+msg
-
-def print_help():
-    print "* IIIII * : Sabayon Linux binary-metafile-builder - written by Fabio Erculiani (C - 2007)"
-    print "* usage * : binary-metafile-builder <valid gentoo .tbz2 file>"
-
-def print_warning(msg):
-    print "* warn *  : "+msg
-
 # Create paths
 if not os.path.isdir(pTree):
     import getpass
@@ -35,7 +20,7 @@ if not os.path.isdir(pTree):
         os.makedirs(pTree,0755)
         os.chown(pTree,0,0)
     else:
-        print_error("you need to run this as root at least once.")
+        entropyTools.print_error("you need to run this as root at least once.")
 	sys.exit(2)
 if not os.path.isdir(pTmpDir):
     import getpass
@@ -43,7 +28,7 @@ if not os.path.isdir(pTmpDir):
         os.makedirs(pTmpDir,0755)
         os.chown(pTmpDir,0,0)
     else:
-        print_error("you need to run this as root at least once.")
+        entropyTools.print_error("you need to run this as root at least once.")
 	sys.exit(2)
 else:
     # Clean pTmpDir
@@ -53,18 +38,18 @@ options = sys.argv[1:]
 
 # parameters test
 if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(options).find("-h") != -1:
-    print_help()
+    entropyTools.print_help()
     if len(options) < 1:
-	print_error("not enough parameters")
+	entropyTools.print_error("not enough parameters")
     sys.exit(1)
 
 if len(options) > 2:
-    print_help()
-    print_error("too many parameters")
+    entropyTools.print_help()
+    entropyTools.print_error("too many parameters")
     sys.exit(1)
 
 if not string.join(options).find(".tbz2"):
-    print_error("no .tbz2 file specified")
+    entropyTools.print_error("no .tbz2 file specified")
     sys.exit(3)
 
 validFile = False
@@ -75,14 +60,19 @@ for i in options:
 	break
 
 if (not validFile):
-    print_error("no valid .tbz2 file specified")
+    entropyTools.print_error("no valid .tbz2 file specified")
     sys.exit(4)
 
 
-print_info(".tbz2 file found: "+tbz2File)
+entropyTools.print_info(".tbz2 file found: "+tbz2File)
 
 # fill all the info
 pData = entropyTools.extractPkgData(tbz2File)
 #os.mkdir(pTmpDir+"/")
+
+# ugly, ugly way to print data without caring about type
 for i in pData:
-    print i+": "+pData[i]+"\n"
+    entropyTools.print_generic(i+": "+pData[i]+"\n")
+    
+# clean garbage
+os.system("rm -rf "+pTmpDir+"/"+pData['name']+"-"+pData['version'])

@@ -19,8 +19,13 @@ pData = {
     'download': "", # link to download the binary package
     'sources': "", # link to the sources
     'dependencies': "", # dependencies
+    'rundependencies': "", # runtime dependencies
+    'rundependenciesXT': "", # runtime dependencies + version
     'conflicts': "", # blockers
 }
+
+# Initialize chapters in dictionary :P
+#pData['conflicts'] = []
 
 # variables
 # should we import these into make.conf ?
@@ -58,6 +63,7 @@ dbCXXFLAGS = "CXXFLAGS"
 dbLICENSE = "LICENSE"
 dbSRC_URI = "SRC_URI"
 dbUSE = "USE"
+dbIUSE = "IUSE"
 dbDEPEND = "DEPEND"
 dbRDEPEND = "RDEPEND"
 dbPDEPEND = "PDEPEND"
