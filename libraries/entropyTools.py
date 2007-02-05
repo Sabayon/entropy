@@ -10,15 +10,24 @@ from portage_dep import isvalidatom, isjustname, dep_getkey
 
 from entropyConstants import *
 import commands
+import re
 
 # resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1
 def getBestAtom(atom):
-    rc = portage.portdb.xmatch("bestmatch-visible",str(atom))
-    return rc
+    return portage.portdb.xmatch("bestmatch-visible",str(atom))
 
 def getArch():
     return portage.settings["ARCH"]
+
+def translateArch(string):
+    if string.find("%ARCH%") != -1:
+        # substitute %ARCH%
+	return re.subn("%ARCH%",getArch(), string)[0]
+    else:
+	return string
+
+
 
 def getInstalledAtom(atom):
     if (isjustname(atom) == 1):
@@ -40,10 +49,6 @@ def print_error(msg):
 def print_info(msg):
     print "* info *  : "+msg
 
-def print_help():
-    print "* IIIII * : Sabayon Linux binary-metafile-builder - written by Fabio Erculiani (C - 2007)"
-    print "* usage * : binary-metafile-builder <valid gentoo .tbz2 file>"
-
 def print_warning(msg):
     print "* warn *  : "+msg
 
@@ -54,7 +59,7 @@ def print_generic(msg): # here we'll wrap any nice formatting
 def extractPkgData(package):
 
     tbz2File = package
-
+    
     package = package.split(".tbz2")
     package = package[0].split("-")
     pkgname = ""
@@ -73,64 +78,64 @@ def extractPkgData(package):
     pkgname = pkgname.split("/")[len(pkgname.split("/"))-1]
     
     # Fill Package name and version
-    pData['name'] = pkgname
-    pData['version'] = pkgver  # FIXME: add -etpNN
+    etpData['name'] = pkgname
+    etpData['version'] = pkgver  # FIXME: add -etpNN
 
     import xpak
     tbz2 = xpak.tbz2(tbz2File)
-    tbz2TmpDir = pTmpDir+"/"+pData['name']+"-"+pData['version']+"/"
+    tbz2TmpDir = etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version']+"/"
     tbz2.decompose(tbz2TmpDir)
     
 
     # Fill description
     try:
         f = open(tbz2TmpDir+dbDESCRIPTION,"r")
-        pData['description'] = f.readline().strip()
+        etpData['description'] = f.readline().strip()
         f.close()
     except IOError:
-        pData['description'] = ""
+        etpData['description'] = ""
 
     # Fill homepage
     try:
         f = open(tbz2TmpDir+dbHOMEPAGE,"r")
-        pData['homepage'] = f.readline().strip()
+        etpData['homepage'] = f.readline().strip()
         f.close()
     except IOError:
-        pData['homepage'] = ""
+        etpData['homepage'] = ""
 
     # Fill chost
     f = open(tbz2TmpDir+dbCHOST,"r")
-    pData['chost'] = f.readline().strip()
+    etpData['chost'] = f.readline().strip()
     f.close()
 
     # Fill url
-    pData['download'] = pBinHost+pData['name']+"-"+pData['version']+".tbz2"
+    etpData['download'] = translateArch(pBinHost+etpData['name']+"-"+etpData['version']+".tbz2")
 
     # Fill category
     f = open(tbz2TmpDir+dbCATEGORY,"r")
-    pData['category'] = f.readline().strip()
+    etpData['category'] = f.readline().strip()
     f.close()
 
     # Fill CFLAGS
     f = open(tbz2TmpDir+dbCFLAGS,"r")
-    pData['cflags'] = f.readline().strip()
+    etpData['cflags'] = f.readline().strip()
     f.close()
 
     # Fill CXXFLAGS
     try:
         f = open(tbz2TmpDir+dbCXXFLAGS,"r")
-        pData['cxxflags'] = f.readline().strip()
+        etpData['cxxflags'] = f.readline().strip()
         f.close()
     except IOError:
-        pData['cxxflags'] = ""
+        etpData['cxxflags'] = ""
 
     # Fill license
     try:
         f = open(tbz2TmpDir+dbLICENSE,"r")
-        pData['license'] = f.readline().strip()
+        etpData['license'] = f.readline().strip()
         f.close()
     except IOError:
-        pData['license'] = ""
+        etpData['license'] = ""
 
     # Fill sources
     # FIXME: resolve mirror:// in something useful
@@ -139,26 +144,33 @@ def extractPkgData(package):
     # !! keep mirror:// but write at the beginning something like
     try:
         f = open(tbz2TmpDir+dbSRC_URI,"r")
-        pData['sources'] = f.readline().strip()
+	tmpSources = f.readline().strip().split()
         f.close()
+	for atom in tmpSources:
+	    if atom.endswith("?"):
+	        etpData['sources'] += "="+atom[:len(atom)-1]+"|"
+	    elif (not atom.startswith("(")) and (not atom.startswith(")")):
+		etpData['sources'] += atom+" "
+
     except IOError:
 	pass
     
-    # manage pData['sources'] to create pData['mirrorlinks']
+    # manage etpData['sources'] to create etpData['mirrorlinks']
     # =mirror://openoffice|link1|link2|link3
-    tmpMirrorList = pData['sources'].split()
+    tmpMirrorList = etpData['sources'].split()
     for i in tmpMirrorList:
         if i.startswith("mirror://"):
 	    # parse what mirror I need
 	    x = i.split("/")[2]
 	    mirrorlist = portage.thirdpartymirrors[x]
-	    out = "="+i+"|"
+	    mirrorURI = "mirror://"+x
+	    out = "="+mirrorURI+"|"
 	    for mirror in mirrorlist:
 	        out += mirror+"|"
 	    if out.endswith("|"):
 		out = out[:len(out)-1]
-	    pData['mirrorlinks'] += out+" "
-    pData['mirrorlinks'] = removeSpaceAtTheEnd(pData['mirrorlinks'])
+	    etpData['mirrorlinks'] += out+" "
+    etpData['mirrorlinks'] = removeSpaceAtTheEnd(etpData['mirrorlinks'])
 
     # Fill USE
     f = open(tbz2TmpDir+dbUSE,"r")
@@ -173,30 +185,30 @@ def extractPkgData(package):
 
     for i in tmpIUSE:
 	if tmpUSE.find(i) != -1:
-	    pData['useflags'] += i+" "
+	    etpData['useflags'] += i+" "
 	else:
-	    pData['useflags'] += "-"+i+" "
+	    etpData['useflags'] += "-"+i+" "
 
     # cleanup
-    tmpUSE = pData['useflags'].split()
+    tmpUSE = etpData['useflags'].split()
     tmpUSE = list(set(tmpUSE))
-    pData['useflags'] = ''
+    etpData['useflags'] = ''
     for i in tmpUSE:
-        pData['useflags'] += i+" "
-    pData['useflags'] = removeSpaceAtTheEnd(pData['useflags'])
+        etpData['useflags'] += i+" "
+    etpData['useflags'] = removeSpaceAtTheEnd(etpData['useflags'])
 
     # fill KEYWORDS
     f = open(tbz2TmpDir+dbKEYWORDS,"r")
-    pData['keywords'] = f.readline().strip()
+    etpData['keywords'] = f.readline().strip()
     f.close()
 
     # fill ARCHs
-    pkgArchs = pData['keywords']
-    for i in pArchs:
+    pkgArchs = etpData['keywords']
+    for i in ETP_ARCHS:
         if pkgArchs.find(i) != -1 and (pkgArchs.find("-"+i) == -1): # in case we find something like -amd64...
-	    pData['binkeywords'] += i+" "
+	    etpData['binkeywords'] += i+" "
 
-    pData['binkeywords'] = removeSpaceAtTheEnd(pData['binkeywords'])
+    etpData['binkeywords'] = removeSpaceAtTheEnd(etpData['binkeywords'])
 
     # Fill dependencies
     # to fill dependencies we use *DEPEND files
@@ -212,7 +224,7 @@ def extractPkgData(package):
     roughDependencies = roughDependencies.split()
     
     # variables filled
-    # pData['dependencies']
+    # etpData['dependencies']
 
     useMatch = False
     openParenthesis = 0
@@ -224,7 +236,7 @@ def extractPkgData(package):
 	    # we need to see if that useflag is enabled
 	    useFlag = atom.split("?")[0]
 	    useFlagQuestion = True
-	    for i in pData['useflags'].split():
+	    for i in etpData['useflags'].split():
 		if i.startswith("!"):
 		    if (i != useFlag):
 			useMatch = True
@@ -239,11 +251,11 @@ def extractPkgData(package):
 
         if atom.startswith(")"):
 	    if (openOr):
-		# remove last "_or_" from pData['dependencies']
+		# remove last "_or_" from etpData['dependencies']
 		openOr = False
-		if pData['dependencies'].endswith(dbOR):
-		    pData['dependencies'] = pData['dependencies'][:len(pData['dependencies'])-len(dbOR)]
-		    pData['dependencies'] += " "
+		if etpData['dependencies'].endswith(dbOR):
+		    etpData['dependencies'] = etpData['dependencies'][:len(etpData['dependencies'])-len(dbOR)]
+		    etpData['dependencies'] += " "
 	    openParenthesis -= 1
 	    if (openParenthesis == 0):
 		useFlagQuestion = False
@@ -256,36 +268,36 @@ def extractPkgData(package):
 	    # it's a package name <pkgcat>/<pkgname>-???
 	    if ((useFlagQuestion) and (useMatch)) or ((not useFlagQuestion) and (not useMatch)):
 	        # check if there's an OR
-		pData['dependencies'] += atom
+		etpData['dependencies'] += atom
 		if (openOr):
-		    pData['dependencies'] += dbOR
+		    etpData['dependencies'] += dbOR
                 else:
-		    pData['dependencies'] += " "
+		    etpData['dependencies'] += " "
 
         if atom.startswith("!") and (not atom.endswith("?")):
 	    if ((useFlagQuestion) and (useMatch)) or ((not useFlagQuestion) and (not useMatch)):
-		pData['conflicts'] += atom
+		etpData['conflicts'] += atom
 		if (openOr):
-		    pData['conflicts'] += dbOR
+		    etpData['conflicts'] += dbOR
                 else:
-		    pData['conflicts'] += " "
+		    etpData['conflicts'] += " "
 		
 
     # format properly
-    tmpConflicts = list(set(pData['conflicts'].split()))
-    pData['conflicts'] = ''
+    tmpConflicts = list(set(etpData['conflicts'].split()))
+    etpData['conflicts'] = ''
     for i in tmpConflicts:
 	i = i[1:] # remove "!"
-	pData['conflicts'] += i+" "
-    pData['conflicts'] = removeSpaceAtTheEnd(pData['conflicts'])
+	etpData['conflicts'] += i+" "
+    etpData['conflicts'] = removeSpaceAtTheEnd(etpData['conflicts'])
 
-    tmpDeps = list(set(pData['dependencies'].split()))
-    pData['dependencies'] = ''
+    tmpDeps = list(set(etpData['dependencies'].split()))
+    etpData['dependencies'] = ''
     for i in tmpDeps:
-	pData['dependencies'] += i+" "
-    pData['dependencies'] = removeSpaceAtTheEnd(pData['dependencies'])
+	etpData['dependencies'] += i+" "
+    etpData['dependencies'] = removeSpaceAtTheEnd(etpData['dependencies'])
 
-    # pData['rdependencies']
+    # etpData['rdependencies']
     # Now we need to add environmental dependencies
     # Notes (take the example of mplayer that needed a newer libcaca release):
     # - we can use (from /var/db) "NEEDED" file to catch all the needed libraries to run the binary package
@@ -333,29 +345,29 @@ def extractPkgData(package):
     runtimeNeededPackages = list(set(runtimeNeededPackages))
     runtimeNeededPackagesXT = list(set(runtimeNeededPackagesXT))
     
-    # now keep only the ones not available in pData['dependencies']
+    # now keep only the ones not available in etpData['dependencies']
     for i in runtimeNeededPackages:
-        if pData['dependencies'].find(i) == -1:
+        if etpData['dependencies'].find(i) == -1:
 	    # filter itself
-	    if (i != pData['category']+"/"+pData['name']):
-	        pData['rundependencies'] += i+" "
+	    if (i != etpData['category']+"/"+etpData['name']):
+	        etpData['rundependencies'] += i+" "
 
     for i in runtimeNeededPackagesXT:
 	x = dep_getkey(i)
-        if pData['dependencies'].find(x) == -1:
+        if etpData['dependencies'].find(x) == -1:
 	    # filter itself
-	    if (x != pData['category']+"/"+pData['name']):
-	        pData['rundependenciesXT'] += i+" "
+	    if (x != etpData['category']+"/"+etpData['name']):
+	        etpData['rundependenciesXT'] += i+" "
 
     # format properly
-    pData['rundependencies'] = removeSpaceAtTheEnd(pData['rundependencies'])
+    etpData['rundependencies'] = removeSpaceAtTheEnd(etpData['rundependencies'])
 
-    pData['rundependenciesXT'] = removeSpaceAtTheEnd(pData['rundependenciesXT'])
+    etpData['rundependenciesXT'] = removeSpaceAtTheEnd(etpData['rundependenciesXT'])
 
     # write API info
-    pData['etpapi'] = ETP_API+ETP_API_SUBLEVEL
+    etpData['etpapi'] = ETP_API+ETP_API_SUBLEVEL
 
-    return pData
+    return etpData
 
 # This function will handle all the shit needed to write the *.etp file in the
 # right directory, under the right name and revision

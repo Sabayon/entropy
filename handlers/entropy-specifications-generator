@@ -13,38 +13,30 @@ sys.path.append('../libraries')
 import entropyTools
 from entropyConstants import *
 
-# Create paths
-if not os.path.isdir(pTree):
-    import getpass
-    if getpass.getuser() == "root":
-        os.makedirs(pTree,0755)
-        os.chown(pTree,0,0)
-    else:
-        entropyTools.print_error("you need to run this as root at least once.")
-	sys.exit(2)
-if not os.path.isdir(pTmpDir):
-    import getpass
-    if getpass.getuser() == "root":
-        os.makedirs(pTmpDir,0755)
-        os.chown(pTmpDir,0,0)
-    else:
-        entropyTools.print_error("you need to run this as root at least once.")
-	sys.exit(2)
-else:
-    # Clean pTmpDir
-    os.system("rm -rf "+pTmpDir+"/*")
+# CONSTANTS
+APPNAME = "entropy-specifications-generator"
+APPVERSION = "1.0"
+def print_help():
+    print "* info  * : Sabayon Linux "+APPNAME+" (C - 2007)"
+    print "* usage * : "+APPNAME+" <valid .tbz2 file>"
+    print "* opts  * : --help\t\tthis output"
+    print "* opts  * : --version\t\tprint version"
 
 options = sys.argv[1:]
 
+if (string.join(options).find("--version") != -1) or (string.join(options).find(" -V") != -1):
+    entropyTools.print_generic(APPNAME+": "+APPVERSION)
+    sys.exit(0)
+
 # parameters test
 if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(options).find(" -h") != -1:
-    entropyTools.print_help()
+    print_help()
     if len(options) < 1:
 	entropyTools.print_error("not enough parameters")
     sys.exit(1)
 
 if len(options) > 2:
-    entropyTools.print_help()
+    print_help()
     entropyTools.print_error("too many parameters")
     sys.exit(1)
 
@@ -68,13 +60,15 @@ entropyTools.print_info("tbz2 file found: "+tbz2File)
 
 entropyTools.print_info("extracting data for: "+tbz2File+" please wait...")
 # fill all the info
-pData = entropyTools.extractPkgData(tbz2File)
-#os.mkdir(pTmpDir+"/")
+etpData = entropyTools.extractPkgData(tbz2File)
+#os.mkdir(etpConst['packagestmpdir']+"/")
 
 # ugly, ugly way to print data without caring about type
-for i in pData:
-    if (pData[i]):
-        entropyTools.print_generic(i+": "+pData[i]+"\n")
+for i in etpData:
+    if (etpData[i]):
+        entropyTools.print_generic(i+": "+etpData[i]+"\n")
     
 # clean garbage
-os.system("rm -rf "+pTmpDir+"/"+pData['name']+"-"+pData['version'])
+os.system("rm -rf "+etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version'])
+
+entropyTools.print_info("extracted: "+tbz2File+" to "+etpConst['packagesstoredir']+" IT'S A FAKE FOR NOW")
