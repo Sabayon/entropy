@@ -13,7 +13,7 @@
 # # enzym openoffice
 # ---> openoffice package will be build and put into the entropy store directory
 # there will be some options, like:
-# --install-bin: will install the packages on the system (maybe by default)
+# --merge-bin: will install the packages on the system (maybe by default)
 
 import os
 import sys
@@ -22,3 +22,7 @@ import string
 sys.path.append('../libraries')
 import entropyTools
 from entropyConstants import *
+
+# CONSTANTS
+APPNAME = "enzym"
+APPVERSION = "1.0"

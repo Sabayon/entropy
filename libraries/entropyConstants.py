@@ -42,6 +42,7 @@ ETP_DIR = "/var/lib/entropy"
 ETP_TMPDIR = "/tmp"
 ETP_REPODIR = "/repository"+ETP_ARCH_VAR
 ETP_DBDIR = "/database"+ETP_ARCH_VAR
+ETP_UPDIR = "/upload"+ETP_ARCH_VAR
 ETP_STOREDIR = "/store"+ETP_ARCH_VAR
 
 etpConst = {
@@ -49,6 +50,7 @@ etpConst = {
     'packagesbindir': ETP_DIR+ETP_REPODIR, # etpConst['packagesbindir'] --> repository where the packages will be stored
     'packagesdatabasedir': ETP_DIR+ETP_DBDIR, # etpConst['packagesdatabasedir'] --> repository where .etp files will be stored
     'packagesstoredir': ETP_DIR+ETP_DBDIR, # etpConst['packagesstoredir'] --> directory where .tbz2 files are stored waiting for being processed by entropy-specifications-generator
+    'packagessuploaddir': ETP_DIR+ETP_UPDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
 }
 
 import os
