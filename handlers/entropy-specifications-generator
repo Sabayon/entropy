@@ -59,14 +59,24 @@ if (not validFile):
 entropyTools.print_info("extracting data and calculating info for: "+tbz2File.split("/")[len(tbz2File.split("/"))-1]+" please wait...")
 # fill all the info
 etpData = entropyTools.extractPkgData(tbz2File)
-#os.mkdir(etpConst['packagestmpdir']+"/")
 
-# ugly, ugly way to print data without caring about type
+
+# look where I can store the file and return its path
+#etpOutfile = entropyTools.allocateFile(etpData)
+etpOutfile = "test.etp"
+
+etpOutput = []
+# append header
+etpOutput.append(ETP_HEADER_TEXT)
 for i in etpData:
     if (etpData[i]):
-        entropyTools.print_generic(i+": "+etpData[i]+"\n")
+        etpOutput.append(i+": "+etpData[i]+"\n")
+f = open(etpOutfile,"w")
+f.writelines(etpOutput)
+f.flush()
+f.close()
     
 # clean garbage
 os.system("rm -rf "+etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version'])
 
-entropyTools.print_info("extracted: "+tbz2File+" to "+etpConst['packagessuploaddir']+" IT'S A FAKE FOR NOW")
+entropyTools.print_info("extracted: "+tbz2File+" to "+etpConst['packagessuploaddir'])

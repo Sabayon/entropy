@@ -44,6 +44,7 @@ ETP_REPODIR = "/repository"+ETP_ARCH_VAR
 ETP_DBDIR = "/database"+ETP_ARCH_VAR
 ETP_UPDIR = "/upload"+ETP_ARCH_VAR
 ETP_STOREDIR = "/store"+ETP_ARCH_VAR
+ETP_HEADER_TEXT = "~entropy~API"+ETP_API+ETP_API_SUBLEVEL+"~(C)~Sabayon Linux~released under the GPLv2~\n"
 
 etpConst = {
     'packagestmpdir': ETP_DIR+ETP_TMPDIR, # etpConst['packagestmpdir'] --> temp directory
