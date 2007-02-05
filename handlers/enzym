@@ -1,0 +1,24 @@
+#!/usr/bin/python
+# Copyright Fabio Erculiani - Sabayon Linux 2007
+
+# DESCRIPTION:
+# prerequisites:
+# - a sabayon chroot
+# - maintenance time (you should see if there's something that needs to be done manually)
+# features:
+# - extended distcc support
+# - daily reports
+# this application manages the portage tree and builds .tbz2 files:
+# EXAMPLE (if you want to build a new version of openoffice with all its dependencies):
+# # enzym openoffice
+# ---> openoffice package will be build and put into the entropy store directory
+# there will be some options, like:
+# --install-bin: will install the packages on the system (maybe by default)
+
+import os
+import sys
+import string
+
+sys.path.append('../libraries')
+import entropyTools
+from entropyConstants import *

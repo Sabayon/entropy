@@ -2,7 +2,7 @@
 # Copyright Fabio Erculiani - Sabayon Linux 2007
 
 # DESCRIPTION:
-# this file get a .tbz2 file as input and creates the dependency binary metafile
+# this application gets a .tbz2 file as input and creates the dependency binary metafile
 # that another application could handle using portage and binpackages extensions directly
 
 import os
