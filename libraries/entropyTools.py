@@ -17,17 +17,24 @@ import re
 def getBestAtom(atom):
     return portage.portdb.xmatch("bestmatch-visible",str(atom))
 
-def getArch():
-    return portage.settings["ARCH"]
+def getArchFromChost(chost):
+	# when we'll add new archs, we'll have to add a testcase here
+	if chost.startswith("x86_64"):
+	    resultingArch = "amd64"
+	elif chost.split("-")[0].startswith("i") and chost.split("-")[0].endswith("86"):
+	    resultingArch = "x86"
+	else:
+	    resultingArch = "ERROR"
+	
+	return resultingArch
 
-def translateArch(string):
+def translateArch(string,chost):
     if string.find("%ARCH%") != -1:
         # substitute %ARCH%
-	return re.subn("%ARCH%",getArch(), string)[0]
+        resultingArch = getArchFromChost(chost)
+	return re.subn("%ARCH%",resultingArch, string)[0]
     else:
 	return string
-
-
 
 def getInstalledAtom(atom):
     if (isjustname(atom) == 1):
@@ -77,15 +84,19 @@ def extractPkgData(package):
 	    pkgname += package[i]+"-"
     pkgname = pkgname.split("/")[len(pkgname.split("/"))-1]
     
-    # Fill Package name and version
-    etpData['name'] = pkgname
-    etpData['version'] = pkgver  # FIXME: add -etpNN
-
     import xpak
     tbz2 = xpak.tbz2(tbz2File)
     tbz2TmpDir = etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version']+"/"
     tbz2.decompose(tbz2TmpDir)
     
+    # Fill Package name and version
+    etpData['name'] = pkgname
+    etpData['version'] = pkgver  # FIXME: add -etpNN
+
+    # Fill chost
+    f = open(tbz2TmpDir+dbCHOST,"r")
+    etpData['chost'] = f.readline().strip()
+    f.close()
 
     # Fill description
     try:
@@ -103,13 +114,8 @@ def extractPkgData(package):
     except IOError:
         etpData['homepage'] = ""
 
-    # Fill chost
-    f = open(tbz2TmpDir+dbCHOST,"r")
-    etpData['chost'] = f.readline().strip()
-    f.close()
-
     # Fill url
-    etpData['download'] = translateArch(pBinHost+etpData['name']+"-"+etpData['version']+".tbz2")
+    etpData['download'] = translateArch(pBinHost+etpData['name']+"-"+etpData['version']+".tbz2",etpData['chost'])
 
     # Fill category
     f = open(tbz2TmpDir+dbCATEGORY,"r")
@@ -138,10 +144,6 @@ def extractPkgData(package):
         etpData['license'] = ""
 
     # Fill sources
-    # FIXME: resolve mirror:// in something useful
-    # FIXME: resolve amd64? url x86? url
-    # portage.thirdpartymirrors['openoffice'] for example
-    # !! keep mirror:// but write at the beginning something like
     try:
         f = open(tbz2TmpDir+dbSRC_URI,"r")
 	tmpSources = f.readline().strip().split()
@@ -369,7 +371,22 @@ def extractPkgData(package):
 
     return etpData
 
-# This function will handle all the shit needed to write the *.etp file in the
-# right directory, under the right name and revision
-def writeEtpSpecFile(etpOutputFile):
-    return
+# This function generates the right path for putting the .etp file
+# and take count of already available ones bumping version only if needed
+def allocateFile(etpData):
+
+    # this will be the first thing to return
+    etpOutput = []
+    # append header
+    etpOutput.append(ETP_HEADER_TEXT)
+    for i in etpData:
+        if (etpData[i]):
+            etpOutput.append(i+": "+etpData[i]+"\n")
+
+    # locate directory structure
+    etpOutfileDir = etpConst['packagesdatabasedir']+"/"+etpData['category']+"/"+etpData['name']
+    etpOutfileDir = translateArch(etpOutfileDir,etpData['chost'])
+    print etpOutfileDir
+    etpOutfilePath = etpOutfileDir+"/"+etpData['name']+"-"+etpData['version']
+
+    return etpOutput, etpOutfilePath
