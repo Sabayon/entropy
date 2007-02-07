@@ -363,7 +363,6 @@ def extractPkgData(package):
 
     # format properly
     etpData['rundependencies'] = removeSpaceAtTheEnd(etpData['rundependencies'])
-
     etpData['rundependenciesXT'] = removeSpaceAtTheEnd(etpData['rundependenciesXT'])
 
     # write API info

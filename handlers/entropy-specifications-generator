@@ -64,14 +64,14 @@ etpData = entropyTools.extractPkgData(tbz2File)
 etpOutput, etpOutfilePath = entropyTools.allocateFile(etpData)
 
 if etpOutfilePath is not None:
-    print "writing..."+etpOutfilePath
+    entropyTools.print_info("writing: "+etpOutfilePath)
     f = open(etpOutfilePath,"w")
     f.writelines(etpOutput)
     f.flush()
     f.close()
 
 else:
-    print "not generating a new .etp file, it's not needed"
+    entropyTools.print_info("not generating a new .etp file, it's not needed")
 
 # clean garbage
 os.system("rm -rf "+etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version'])
