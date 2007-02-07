@@ -62,16 +62,16 @@ etpData = entropyTools.extractPkgData(tbz2File)
 
 # look where I can store the file and return its path
 etpOutput, etpOutfilePath = entropyTools.allocateFile(etpData)
-#etpOutfile = "test.etp"
 
-print etpOutfilePath
-#sys.exit(0)
+if etpOutfilePath is not None:
+    print "writing..."+etpOutfilePath
+    f = open(etpOutfilePath,"w")
+    f.writelines(etpOutput)
+    f.flush()
+    f.close()
 
-#entropyTools.print_info("writing "+etpOutfilePath+" ...")
-#f = open(etpOutfilePath,"w")
-#f.writelines(etpOutput)
-#f.flush()
-#f.close()
-    
+else:
+    print "not generating a new .etp file, it's not needed"
+
 # clean garbage
 os.system("rm -rf "+etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version'])

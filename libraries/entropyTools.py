@@ -29,10 +29,10 @@ def getArchFromChost(chost):
 	return resultingArch
 
 def translateArch(string,chost):
-    if string.find("%ARCH%") != -1:
+    if string.find(ETP_ARCH_CONST) != -1:
         # substitute %ARCH%
         resultingArch = getArchFromChost(chost)
-	return re.subn("%ARCH%",resultingArch, string)[0]
+	return re.subn(ETP_ARCH_CONST,resultingArch, string)[0]
     else:
 	return string
 
@@ -386,7 +386,50 @@ def allocateFile(etpData):
     # locate directory structure
     etpOutfileDir = etpConst['packagesdatabasedir']+"/"+etpData['category']+"/"+etpData['name']
     etpOutfileDir = translateArch(etpOutfileDir,etpData['chost'])
-    print etpOutfileDir
-    etpOutfilePath = etpOutfileDir+"/"+etpData['name']+"-"+etpData['version']+"-etp%ETPREV%.etp"
+    etpOutfileName = etpData['name']+"-"+etpData['version']+"-etp"+ETP_REVISION_CONST+".etp"
+    etpOutfilePath = etpOutfileDir+"/"+etpOutfileName
+
+    # we've the directory, then create it
+    if (not os.path.isdir(etpOutfileDir)):
+	try:
+	    os.makedirs(etpOutfileDir)
+	except OSError:
+	    pass
+    else: # directory already exists, check for already available files
+        alreadyAvailableFiles = []
+	for i in range(MAX_ETP_REVISION_COUNT+1):
+	    testfile = re.subn(ETP_REVISION_CONST,str(i), etpOutfilePath)[0]
+	    if (os.path.isfile(testfile)):
+	        alreadyAvailableFiles.append(testfile)
+	if (alreadyAvailableFiles == []):
+	    # it's a brand new dir
+	    print "it's a brand new file"
+	    etpOutfilePath = re.subn(ETP_REVISION_CONST,"1", etpOutfilePath)[0]
+        else:
+	    # grab the last one
+	    possibleOldFile = alreadyAvailableFiles[len(alreadyAvailableFiles)-1]
+	    # now compares both to see if they're equal or not
+	    try:
+	        import md5
+	        import string
+		a = open(possibleOldFile,"r")
+		cntA = a.readlines()
+		cntB = etpOutput
+		cntA = string.join(cntA)
+		cntB = string.join(cntB)
+		a.close()
+		md5A = md5.new()
+		md5B = md5.new()
+		md5A.update(cntA)
+		md5B.update(cntB)
+		if md5A.digest() == md5B.digest():
+		    etpOutfilePath = None
+		else:
+		    # add 1 to: packagename-1.2.3-r1-etpX.etp
+		    newFileCounter = int(possibleOldFile.split("-")[len(possibleOldFile.split("-"))-1].split(".etp")[0].split("etp")[1])
+		    newFileCounter += 1
+		    etpOutfilePath = re.subn(ETP_REVISION_CONST,str(newFileCounter), etpOutfilePath)[0]
+	    except OSError:
+		etpOutfilePath = possibleOldFile
 
     return etpOutput, etpOutfilePath

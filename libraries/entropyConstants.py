@@ -37,14 +37,16 @@ etpData = {
 ETP_ARCHS = ["x86", "amd64"] # maybe ppc someday
 ETP_API = "1"
 ETP_API_SUBLEVEL = ".0"
-ETP_ARCH_VAR = "/%ARCH%"
+ETP_ARCH_CONST = "%ARCH%"
+ETP_REVISION_CONST = "%ETPREV%"
 ETP_DIR = "/var/lib/entropy"
 ETP_TMPDIR = "/tmp"
-ETP_REPODIR = "/repository"+ETP_ARCH_VAR
-ETP_DBDIR = "/database"+ETP_ARCH_VAR
-ETP_UPDIR = "/upload"+ETP_ARCH_VAR
-ETP_STOREDIR = "/store"+ETP_ARCH_VAR
+ETP_REPODIR = "/repository"+"/"+ETP_ARCH_CONST
+ETP_DBDIR = "/database"+"/"+ETP_ARCH_CONST
+ETP_UPDIR = "/upload"+"/"+ETP_ARCH_CONST
+ETP_STOREDIR = "/store"+"/"+ETP_ARCH_CONST
 ETP_HEADER_TEXT = "# Entropy specifications file (released under the GPLv2)\n"
+MAX_ETP_REVISION_COUNT = 99999
 
 etpConst = {
     'packagestmpdir': ETP_DIR+ETP_TMPDIR, # etpConst['packagestmpdir'] --> temp directory
