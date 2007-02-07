@@ -395,6 +395,8 @@ def allocateFile(etpData):
 	    os.makedirs(etpOutfileDir)
 	except OSError:
 	    pass
+	# it's a brand new dir
+	etpOutfilePath = re.subn(ETP_REVISION_CONST,"1", etpOutfilePath)[0]
     else: # directory already exists, check for already available files
         alreadyAvailableFiles = []
 	for i in range(MAX_ETP_REVISION_COUNT+1):
@@ -402,8 +404,6 @@ def allocateFile(etpData):
 	    if (os.path.isfile(testfile)):
 	        alreadyAvailableFiles.append(testfile)
 	if (alreadyAvailableFiles == []):
-	    # it's a brand new dir
-	    print "it's a brand new file"
 	    etpOutfilePath = re.subn(ETP_REVISION_CONST,"1", etpOutfilePath)[0]
         else:
 	    # grab the last one
