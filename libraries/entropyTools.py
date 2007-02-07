@@ -117,6 +117,9 @@ def extractPkgData(package):
     # Fill url
     for i in etpSources['packagesuri']:
         etpData['download'] += translateArch(i+etpData['name']+"-"+etpData['version']+".tbz2",etpData['chost'])+" "
+    if (not etpData['download']):
+        print_error("no 'packages|<uri>' specified in "+etpConst['repositoriesconf'])
+	sys.exit(101)
     etpData['download'] = removeSpaceAtTheEnd(etpData['download'])
 
     # Fill category
