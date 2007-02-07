@@ -1,6 +1,6 @@
 Sabayon Linux Project Entropy - 2007                        README
 
-WHAT'S THAT:
+WHAT'S THAT: Entropy Project
 
 DEVELOPERS:
 - Fabio Erculiani (lxnay@sabayonlinux.org)
@@ -9,3 +9,6 @@ DEVELOPERS:
 DEPENDENCIES:
 - >=sys-apps/portage-2.1.2
 - >=app-portage/portage-utils-0.1.23 (not mandatory)
+
+INSTALLATION:
+- copy entropy.conf in /etc/

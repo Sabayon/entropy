@@ -1,0 +1,4 @@
+TODO list (for developers only):
+- timestamp management across database and packages servers
+- hash management (like Manifest in gentoo)
+- a lot more :-P

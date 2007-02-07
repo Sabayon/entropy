@@ -83,15 +83,15 @@ def extractPkgData(package):
 	else:
 	    pkgname += package[i]+"-"
     pkgname = pkgname.split("/")[len(pkgname.split("/"))-1]
-    
+
+    # Fill Package name and version
+    etpData['name'] = pkgname
+    etpData['version'] = pkgver
+
     import xpak
     tbz2 = xpak.tbz2(tbz2File)
     tbz2TmpDir = etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version']+"/"
     tbz2.decompose(tbz2TmpDir)
-    
-    # Fill Package name and version
-    etpData['name'] = pkgname
-    etpData['version'] = pkgver  # FIXME: add -etpNN
 
     # Fill chost
     f = open(tbz2TmpDir+dbCHOST,"r")
@@ -115,7 +115,9 @@ def extractPkgData(package):
         etpData['homepage'] = ""
 
     # Fill url
-    etpData['download'] = translateArch(pBinHost+etpData['name']+"-"+etpData['version']+".tbz2",etpData['chost'])
+    for i in etpSources['packagesuri']:
+        etpData['download'] += translateArch(i+etpData['name']+"-"+etpData['version']+".tbz2",etpData['chost'])+" "
+    etpData['download'] = removeSpaceAtTheEnd(etpData['download'])
 
     # Fill category
     f = open(tbz2TmpDir+dbCATEGORY,"r")
@@ -153,9 +155,8 @@ def extractPkgData(package):
 	        etpData['sources'] += "="+atom[:len(atom)-1]+"|"
 	    elif (not atom.startswith("(")) and (not atom.startswith(")")):
 		etpData['sources'] += atom+" "
-
     except IOError:
-	pass
+	etpData['sources'] = ""
     
     # manage etpData['sources'] to create etpData['mirrorlinks']
     # =mirror://openoffice|link1|link2|link3
@@ -366,7 +367,7 @@ def extractPkgData(package):
     etpData['rundependenciesXT'] = removeSpaceAtTheEnd(etpData['rundependenciesXT'])
 
     # write API info
-    etpData['etpapi'] = ETP_API+ETP_API_SUBLEVEL
+    etpData['etpapi'] = ETP_API
 
     return etpData
 

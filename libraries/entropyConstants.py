@@ -35,8 +35,10 @@ etpData = {
 # DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU'RE DOING !!
 # the ARCHs that we support
 ETP_ARCHS = ["x86", "amd64"] # maybe ppc someday
-ETP_API = "1"
-ETP_API_SUBLEVEL = ".0"
+ETP_API_MAJOR = "1"
+ETP_API_MINOR = "1"
+ETP_API_SUBLEVEL = "0"
+ETP_API = ETP_API_MAJOR+"."+ETP_API_MINOR+"."+ETP_API_SUBLEVEL
 ETP_ARCH_CONST = "%ARCH%"
 ETP_REVISION_CONST = "%ETPREV%"
 ETP_DIR = "/var/lib/entropy"
@@ -45,6 +47,7 @@ ETP_REPODIR = "/repository"+"/"+ETP_ARCH_CONST
 ETP_DBDIR = "/database"+"/"+ETP_ARCH_CONST
 ETP_UPDIR = "/upload"+"/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store"+"/"+ETP_ARCH_CONST
+ETP_CONF_DIR = "/etc/entropy"
 ETP_HEADER_TEXT = "# Entropy specifications file (released under the GPLv2)\n"
 MAX_ETP_REVISION_COUNT = 99999
 
@@ -54,6 +57,8 @@ etpConst = {
     'packagesdatabasedir': ETP_DIR+ETP_DBDIR, # etpConst['packagesdatabasedir'] --> repository where .etp files will be stored
     'packagesstoredir': ETP_DIR+ETP_DBDIR, # etpConst['packagesstoredir'] --> directory where .tbz2 files are stored waiting for being processed by entropy-specifications-generator
     'packagessuploaddir': ETP_DIR+ETP_UPDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
+    'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
+    'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
 }
 
 import os
@@ -81,12 +86,32 @@ if not os.path.isdir(ETP_DIR):
 			pass
     else:
         entropyTools.print_error("you need to run this as root at least once.")
-	sys.exit(100)
+        sys.exit(100)
 
-# FIXME: workout the PORTAGE_BINHOST management
-# use PORTAGE_BINHOST with multiple entries?
-pBinHost = "ftp://192.168.1.254/binhost/%ARCH%/"
-pDbHost = "ftp://192.168.1.254/database/%ARCH%/"
+etpSources = {
+    'packagesuri': "", # URIs where are stored binary packages
+    'databaseuri': "", # URIs where are stored entropy files
+}
+etpSources['packagesuri'] = []
+
+if os.path.isfile(etpConst['repositoriesconf']):
+    f = open(etpConst['repositoriesconf'],"r")
+    repositoriesconf = f.readlines()
+    f.close()
+    
+    for line in repositoriesconf:
+	line = line.strip()
+        # populate etpSources['packagesuri']
+	if line.startswith("packages|"):
+	    repouri = line.split("packages|")[len(line.split("packages|"))-1]
+	    if repouri.startswith("http://") or repouri.startswith("ftp://") or repouri.startswith("rsync://"):
+	        etpSources['packagesuri'].append(repouri)
+	# populate etpSources['databaseuri']
+	elif line.startswith("database|"):
+	    if (not etpSources['databaseuri']):
+	        repouri = line.split("database|")[len(line.split("database|"))-1]
+	        if repouri.startswith("http://") or repouri.startswith("ftp://") or repouri.startswith("rsync://"):
+	            etpSources['databaseuri'] = repouri
 
 import commands
 if (commands.getoutput("q -V").find("portage-utils") != -1):
