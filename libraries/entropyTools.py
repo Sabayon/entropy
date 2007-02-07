@@ -387,6 +387,6 @@ def allocateFile(etpData):
     etpOutfileDir = etpConst['packagesdatabasedir']+"/"+etpData['category']+"/"+etpData['name']
     etpOutfileDir = translateArch(etpOutfileDir,etpData['chost'])
     print etpOutfileDir
-    etpOutfilePath = etpOutfileDir+"/"+etpData['name']+"-"+etpData['version']
+    etpOutfilePath = etpOutfileDir+"/"+etpData['name']+"-"+etpData['version']+"-etp%ETPREV%.etp"
 
     return etpOutput, etpOutfilePath
