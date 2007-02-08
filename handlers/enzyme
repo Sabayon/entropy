@@ -10,7 +10,7 @@
 # - daily reports
 # this application manages the portage tree and builds .tbz2 files:
 # EXAMPLE (if you want to build a new version of openoffice with all its dependencies):
-# # enzym openoffice
+# # enzyme openoffice
 # ---> openoffice package will be build and put into the entropy store directory
 # there will be some options, like:
 # --merge-bin: will install the packages on the system (maybe by default)
@@ -24,5 +24,5 @@ import entropyTools
 from entropyConstants import *
 
 # CONSTANTS
-APPNAME = "enzym"
+APPNAME = "enzyme"
 APPVERSION = "1.0"
