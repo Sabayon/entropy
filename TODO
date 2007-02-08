@@ -7,3 +7,5 @@ TODO list (for developers only):
 
 ~cvill64 suggestion
 - allow "package|mirrors://binhost/%Arch% to be recognized instead of just one per line
+- begin start with ppc/ppc64 as that will start to make a comeback, which includes more hard drive space from mirrors
+	but ppc/ppc64 procs are starting to increase powerwise
