@@ -61,6 +61,7 @@ etpConst = {
     'packagessuploaddir': ETP_DIR+ETP_UPDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
     'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
     'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
+    'enzymconf': ETP_CONF_DIR+"/enzym.conf", # enzym.conf file
     'digestfile': "Manifest", # file that contains md5 hashes
     'extension': ".etp", # entropy files extension
 }
