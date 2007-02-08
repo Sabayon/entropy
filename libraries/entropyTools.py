@@ -128,9 +128,12 @@ def extractPkgData(package):
     f.close()
 
     # Fill CFLAGS
-    f = open(tbz2TmpDir+dbCFLAGS,"r")
-    etpData['cflags'] = f.readline().strip()
-    f.close()
+    try:
+        f = open(tbz2TmpDir+dbCFLAGS,"r")
+        etpData['cflags'] = f.readline().strip()
+        f.close()
+    except IOError:
+        etpData['cflags'] = ""
 
     # Fill CXXFLAGS
     try:
@@ -204,9 +207,12 @@ def extractPkgData(package):
     etpData['useflags'] = removeSpaceAtTheEnd(etpData['useflags'])
 
     # fill KEYWORDS
-    f = open(tbz2TmpDir+dbKEYWORDS,"r")
-    etpData['keywords'] = f.readline().strip()
-    f.close()
+    try:
+        f = open(tbz2TmpDir+dbKEYWORDS,"r")
+        etpData['keywords'] = f.readline().strip()
+        f.close()
+    except IOError:
+	etpData['keywords'] = ""
 
     # fill ARCHs
     pkgArchs = etpData['keywords']
