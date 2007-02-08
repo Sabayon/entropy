@@ -14,33 +14,42 @@ import entropyTools
 from entropyConstants import *
 
 # CONSTANTS
-APPNAME = "entropy-specifications-generator"
+APPNAME = "reagent"
 APPVERSION = "1.0"
 def print_help():
     print "* info  * : Sabayon Linux "+APPNAME+" (C - 2007)"
-    print "* usage * : "+APPNAME+" <valid .tbz2 file>"
+    print
+    print "* usage * : "+APPNAME+" <tool, not mandatory> <valid path or .tbz2 file>"
     print "* opts  * : --help\t\tthis output"
     print "* opts  * : --version\t\tprint version"
+    print
+    print "* info  * : tools available: "
+    print "* info  * : \tdigest\t to create digest of a specified directory"
+    print
 
 options = sys.argv[1:]
 
+# print version
 if (string.join(options).find("--version") != -1) or (string.join(options).find(" -V") != -1):
     entropyTools.print_generic(APPNAME+": "+APPVERSION)
     sys.exit(0)
 
-# parameters test
+# print help
 if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(options).find(" -h") != -1:
     print_help()
     if len(options) < 1:
 	entropyTools.print_error("not enough parameters")
     sys.exit(1)
 
-if len(options) > 2:
-    print_help()
-    entropyTools.print_error("too many parameters")
-    sys.exit(1)
-
-if not string.join(options).find(".tbz2"):
+# digest tool (creates a digest on the specified directory)
+if (options[0].find("digest") != -1):
+    entropyTools.createDigest(options[1])
+    sys.exit(0)
+# add other options here
+# ...
+# ...
+# tbz2 tool
+if (not options[0].endswith(".tbz2")):
     entropyTools.print_error("no .tbz2 file specified")
     sys.exit(3)
 
@@ -69,7 +78,8 @@ if etpOutfilePath is not None:
     f.writelines(etpOutput)
     f.flush()
     f.close()
-
+    # digesting directory
+    entropyTools.createDigest(etpOutfilePath)
 else:
     entropyTools.print_info("not generating a new .etp file, it's not needed")
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 cd ..
 for tbz2 in `find $1 -name "*.tbz2"`; do
-  python entropy-specifications-generator $tbz2
+  python reagent $tbz2
   if [ "$?" != "0" ]; then
     echo
     echo "test of "$tbz2" failed"

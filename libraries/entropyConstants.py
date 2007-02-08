@@ -21,6 +21,7 @@ etpData = {
     'keywords': "", # supported ARCHs (by the SRC)
     'binkeywords': "", # supported ARCHs (by the BIN)
     'download': "", # link to download the binary package
+    'digest': "", # md5 hash of the .tbz2 package
     'sources': "", # link to the sources
     'mirrorlinks': "", # =mirror://openoffice|link1|link2|link3
     'dependencies': "", # dependencies
@@ -36,8 +37,8 @@ etpData = {
 # the ARCHs that we support
 ETP_ARCHS = ["x86", "amd64"] # maybe ppc someday
 ETP_API_MAJOR = "1"
-ETP_API_MINOR = "1"
-ETP_API_SUBLEVEL = "0"
+ETP_API_MINOR = "2"
+ETP_API_SUBLEVEL = "1"
 ETP_API = ETP_API_MAJOR+"."+ETP_API_MINOR+"."+ETP_API_SUBLEVEL
 ETP_ARCH_CONST = "%ARCH%"
 ETP_REVISION_CONST = "%ETPREV%"
@@ -59,6 +60,8 @@ etpConst = {
     'packagessuploaddir': ETP_DIR+ETP_UPDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
     'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
     'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
+    'digestfile': "Manifest", # file that contains md5 hashes
+    'extension': ".etp", # entropy files extension
 }
 
 import os

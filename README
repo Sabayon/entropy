@@ -12,3 +12,28 @@ DEPENDENCIES:
 
 INSTALLATION:
 - copy entropy.conf in /etc/
+
+STRUCTURE:
+
+     |           ENTROPY           // master CLI interface to own them all
+     |             |||
+     |             |||
+     |            enzym            // creates .tbz2 packages (automatically on some specified packages)
+     |              |
+     |              |
+    \ /          reagent           // transform metadata info of .tbz2 packages in entropy specification files
+     '              |
+     |              |
+     |          activator          // does some QA tests on .etp and .tbz2 files upload data in a consistent way
+     |              |
+     |              |
+     |          ========== ^ server side
+     |          ==========   client side
+    \ /             |
+     '              |
+                    |
+                equilibrium       // CLI client with interface libraries
+                    |
+                    |
+                    |
+                GUI CLIENTs

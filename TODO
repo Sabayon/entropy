@@ -2,7 +2,7 @@ TODO list (for developers only):
 - timestamp management across database and packages servers
 - hash management (like Manifest in gentoo)
 - write rules for exit codes
-- store etpData['md5'] and use it to choose if there is the needing of a version bump of the .etp file
+- add digest funcionality and tool to reagent
 - a lot more :-P
 
 ~cvill64 suggestion

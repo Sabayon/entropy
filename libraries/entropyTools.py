@@ -50,6 +50,46 @@ def removeSpaceAtTheEnd(string):
     else:
 	return string
 
+def md5sum(filepath):
+    import md5
+    m = md5.new()
+    readfile = file(filepath)
+    block = readfile.read(1024)
+    while block:
+        m.update(block)
+	block = readfile.read(1024)
+    return m.hexdigest()
+
+def createDigest(path):
+    if path.endswith(etpConst['extension']):
+        # remove file name and keep the rest of the path
+	_path = path.split("/")[:len(path.split("/"))-1]
+	path = ""
+	for i in _path:
+            if (i):
+	        path += "/"+i
+    if (not os.path.isdir(path)):
+	print_error(path+" does not exist")
+        sys.exit(102)
+    digestContent = os.listdir(path)
+    # only .etp files
+    _digestContent = digestContent
+    digestContent = []
+    for i in _digestContent:
+	if i.endswith(etpConst['extension']):
+            digestContent.append(i)
+    if (not digestContent[0].endswith(etpConst['extension'])):
+	print_error(path+" does not contain "+etpConst['extension']+" files")
+        sys.exit(103)
+    print_info("digesting files in "+path)
+    digestOut = []
+    for i in digestContent:
+        digestOut.append("MD5 "+md5sum(path+"/"+i)+" "+i+"\n")
+    f = open(path+"/"+etpConst['digestfile'],"w")
+    f.writelines(digestOut)
+    f.flush()
+    f.close()
+
 def print_error(msg):
     print "* erro *  : "+msg
 
@@ -87,6 +127,9 @@ def extractPkgData(package):
     # Fill Package name and version
     etpData['name'] = pkgname
     etpData['version'] = pkgver
+
+    # .tbz2 md5
+    etpData['digest'] = md5sum(tbz2File)
 
     import xpak
     tbz2 = xpak.tbz2(tbz2File)
@@ -395,7 +438,7 @@ def allocateFile(etpData):
     # locate directory structure
     etpOutfileDir = etpConst['packagesdatabasedir']+"/"+etpData['category']+"/"+etpData['name']
     etpOutfileDir = translateArch(etpOutfileDir,etpData['chost'])
-    etpOutfileName = etpData['name']+"-"+etpData['version']+"-etp"+ETP_REVISION_CONST+".etp"
+    etpOutfileName = etpData['name']+"-"+etpData['version']+"-etp"+ETP_REVISION_CONST+etpConst['extension']
     etpOutfilePath = etpOutfileDir+"/"+etpOutfileName
 
     # we've the directory, then create it
@@ -435,7 +478,7 @@ def allocateFile(etpData):
 		    etpOutfilePath = None
 		else:
 		    # add 1 to: packagename-1.2.3-r1-etpX.etp
-		    newFileCounter = int(possibleOldFile.split("-")[len(possibleOldFile.split("-"))-1].split(".etp")[0].split("etp")[1])
+		    newFileCounter = int(possibleOldFile.split("-")[len(possibleOldFile.split("-"))-1].split(etpConst['extension'])[0].split(etpConst['extension'][1:])[1])
 		    newFileCounter += 1
 		    etpOutfilePath = re.subn(ETP_REVISION_CONST,str(newFileCounter), etpOutfilePath)[0]
 	    except OSError:
