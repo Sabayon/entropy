@@ -4,3 +4,6 @@ TODO list (for developers only):
 - write rules for exit codes
 - store etpData['md5'] and use it to choose if there is the needing of a version bump of the .etp file
 - a lot more :-P
+
+~cvill64 suggestion
+- allow "package|mirrors://binhost/%Arch% to be recognized instead of just one per line
