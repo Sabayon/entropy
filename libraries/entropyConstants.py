@@ -61,7 +61,7 @@ etpConst = {
     'packagessuploaddir': ETP_DIR+ETP_UPDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
     'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
     'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
-    'enzymconf': ETP_CONF_DIR+"/enzym.conf", # enzym.conf file
+    'enzymeconf': ETP_CONF_DIR+"/enzyme.conf", # enzym.conf file
     'digestfile': "Manifest", # file that contains md5 hashes
     'extension': ".etp", # entropy files extension
 }
@@ -107,12 +107,12 @@ if os.path.isfile(etpConst['repositoriesconf']):
     for line in repositoriesconf:
 	line = line.strip()
         # populate etpSources['packagesuri']
-	if line.startswith("packages|"):
+	if (line.find("packages|") != -1) and (not line.startswith("#")):
 	    repouri = line.split("packages|")[len(line.split("packages|"))-1]
 	    if repouri.startswith("http://") or repouri.startswith("ftp://") or repouri.startswith("rsync://"):
 	        etpSources['packagesuri'].append(repouri)
 	# populate etpSources['databaseuri']
-	elif line.startswith("database|"):
+	elif (line.find("database|") != -1) and (not line.startswith("#")):
 	    if (not etpSources['databaseuri']):
 	        repouri = line.split("database|")[len(line.split("database|"))-1]
 	        if repouri.startswith("http://") or repouri.startswith("ftp://") or repouri.startswith("rsync://"):
