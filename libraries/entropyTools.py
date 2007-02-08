@@ -130,6 +130,8 @@ def extractPkgData(package):
 
     # .tbz2 md5
     etpData['digest'] = md5sum(tbz2File)
+    # local path to the file
+    etpData['packagepath'] = tbz2File
 
     import xpak
     tbz2 = xpak.tbz2(tbz2File)

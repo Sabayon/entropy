@@ -20,6 +20,7 @@ etpData = {
     'license': "", # License adpoted
     'keywords': "", # supported ARCHs (by the SRC)
     'binkeywords': "", # supported ARCHs (by the BIN)
+    'packagepath': "", # path where the .tbz2 file is stored
     'download': "", # link to download the binary package
     'digest': "", # md5 hash of the .tbz2 package
     'sources': "", # link to the sources
@@ -38,7 +39,7 @@ etpData = {
 ETP_ARCHS = ["x86", "amd64"] # maybe ppc someday
 ETP_API_MAJOR = "1"
 ETP_API_MINOR = "2"
-ETP_API_SUBLEVEL = "1"
+ETP_API_SUBLEVEL = "2"
 ETP_API = ETP_API_MAJOR+"."+ETP_API_MINOR+"."+ETP_API_SUBLEVEL
 ETP_ARCH_CONST = "%ARCH%"
 ETP_REVISION_CONST = "%ETPREV%"
