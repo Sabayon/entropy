@@ -1,8 +1,24 @@
 #!/usr/bin/python
-# Copyright Fabio Erculiani - Sabayon Linux 2007
+'''
+    # DESCRIPTION:
+    # Variables container
 
-# DESCRIPTION:
-# Variables container
+    Copyright (C) 2007 Fabio Erculiani
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+'''
 
 # Specifications of the content of .etp file
 # THIS IS THE KEY PART OF ENTROPY BINARY PACKAGES MANAGEMENT
@@ -46,8 +62,8 @@ ETP_REVISION_CONST = "%ETPREV%"
 ETP_DIR = "/var/lib/entropy"
 ETP_TMPDIR = "/tmp"
 ETP_REPODIR = "/repository"+"/"+ETP_ARCH_CONST
+ETP_PORTDIR = "/portage"
 ETP_DBDIR = "/database"+"/"+ETP_ARCH_CONST
-ETP_UPDIR = "/upload"+"/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store"+"/"+ETP_ARCH_CONST
 ETP_CONF_DIR = "/etc/entropy"
 ETP_HEADER_TEXT = "# Entropy specifications file (released under the GPLv2)\n"
@@ -58,7 +74,8 @@ etpConst = {
     'packagesbindir': ETP_DIR+ETP_REPODIR, # etpConst['packagesbindir'] --> repository where the packages will be stored
     'packagesdatabasedir': ETP_DIR+ETP_DBDIR, # etpConst['packagesdatabasedir'] --> repository where .etp files will be stored
     'packagesstoredir': ETP_DIR+ETP_DBDIR, # etpConst['packagesstoredir'] --> directory where .tbz2 files are stored waiting for being processed by entropy-specifications-generator
-    'packagessuploaddir': ETP_DIR+ETP_UPDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
+    'packagessuploaddir': ETP_DIR+ETP_STOREDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
+    'portagetreedir': ETP_DIR+ETP_PORTDIR, # directory where is stored our local portage tree
     'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
     'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
     'enzymeconf': ETP_CONF_DIR+"/enzyme.conf", # enzym.conf file
@@ -144,3 +161,10 @@ dbPDEPEND = "PDEPEND"
 dbNEEDED = "NEEDED"
 dbOR = "|or|"
 dbKEYWORDS = "KEYWORDS"
+
+# Portage variables reference
+# vdbVARIABLE --> $VARIABLE
+vdbPORTDIR = "PORTDIR"
+
+# Portage commands
+cdbEMERGE = "emerge"

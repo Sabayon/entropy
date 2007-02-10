@@ -1,19 +1,24 @@
 #!/usr/bin/python
-# Copyright Fabio Erculiani - Sabayon Linux 2007
+'''
+    # DESCRIPTION:
+    # Portage tree manager and package builder following specified schemas
 
-# DESCRIPTION:
-# prerequisites:
-# - a sabayon chroot
-# - maintenance time (you should see if there's something that needs to be done manually)
-# features:
-# - extended distcc support
-# - daily reports
-# this application manages the portage tree and builds .tbz2 files:
-# EXAMPLE (if you want to build a new version of openoffice with all its dependencies):
-# # enzyme openoffice
-# ---> openoffice package will be build and put into the entropy store directory
-# there will be some options, like:
-# --merge-bin: will install the packages on the system (maybe by default)
+    Copyright (C) 2007 Fabio Erculiani
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+'''
 
 import os
 import sys
@@ -21,8 +26,59 @@ import string
 
 sys.path.append('../libraries')
 import entropyTools
+import enzymeTools
 from entropyConstants import *
 
 # CONSTANTS
 APPNAME = "enzyme"
 APPVERSION = "1.0"
+def print_help():
+    print "* info  * : Sabayon Linux "+APPNAME+" (C - 2007)"
+    print
+    print "* usage * : "+APPNAME+" <tool or atom>"
+    print "* opts  * : --help\t\tthis output"
+    print "* opts  * : --version\t\tprint version"
+    print
+    print "* info  * : tools available: "
+    print "* info  * : \tworld\t to build all the possible new packages"
+    print "* info  * : \tsync\t to just sync portage tree"
+    print "* info  * : \tdata-cleanup\t to clean all the old packages or stale files"
+    print "* info  * : \tdata-reset\t to remove all and start over"
+    print
+
+options = sys.argv[1:]
+
+# print version
+if (string.join(options).find("--version") != -1) or (string.join(options).find(" -V") != -1):
+    entropyTools.print_generic(APPNAME+": "+APPVERSION)
+    sys.exit(0)
+
+# print help
+if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(options).find(" -h") != -1:
+    print_help()
+    if len(options) < 1:
+	entropyTools.print_error("not enough parameters")
+    sys.exit(1)
+
+if (not entropyTools.isRoot()):
+    entropyTools.print_error("you must be root in order to run "+APPNAME)
+    sys.exit(1)
+
+# world tool
+if (options[0] == "world"):
+    #enzymeTools.world()
+    print "world management not yet integrated"
+    sys.exit(0)
+# sync tool
+elif (options[0] == "sync"):
+    enzymeTools.sync()
+    sys.exit(0)
+
+# add other options here
+# ...
+# ...
+# tbz2 tool
+
+else:
+    if (entropyTools.checkAtom()):
+	print "atom management not yet integrated"

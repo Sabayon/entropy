@@ -1,9 +1,25 @@
 #!/usr/bin/python
-# Copyright Fabio Erculiani - Sabayon Linux 2007
+'''
+    # DESCRIPTION:
+    # this application gets a .tbz2 file as input and creates the dependency binary metafile
+    # that another application could handle using portage and binpackages extensions directly
 
-# DESCRIPTION:
-# this application gets a .tbz2 file as input and creates the dependency binary metafile
-# that another application could handle using portage and binpackages extensions directly
+    Copyright (C) 2007 Fabio Erculiani
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+'''
 
 import os
 import sys
@@ -11,6 +27,7 @@ import string
 
 sys.path.append('../libraries')
 import entropyTools
+import reagentTools
 from entropyConstants import *
 
 # CONSTANTS
@@ -41,9 +58,12 @@ if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(
 	entropyTools.print_error("not enough parameters")
     sys.exit(1)
 
+if (not entropyTools.isRoot()):
+    print_error("you must be root in order to run "+APPNAME)
+
 # digest tool (creates a digest on the specified directory)
 if (options[0].find("digest") != -1):
-    entropyTools.createDigest(options[1])
+    reagentTools.createDigest(options[1])
     sys.exit(0)
 # add other options here
 # ...
@@ -67,10 +87,10 @@ if (not validFile):
 
 entropyTools.print_info("extracting data and calculating info for: "+tbz2File.split("/")[len(tbz2File.split("/"))-1]+" please wait...")
 # fill all the info
-etpData = entropyTools.extractPkgData(tbz2File)
+etpData = reagentTools.extractPkgData(tbz2File)
 
 # look where I can store the file and return its path
-etpOutput, etpOutfilePath = entropyTools.allocateFile(etpData)
+etpOutput, etpOutfilePath = reagentTools.allocateFile(etpData)
 
 if etpOutfilePath is not None:
     entropyTools.print_info("writing: "+etpOutfilePath)
@@ -79,7 +99,7 @@ if etpOutfilePath is not None:
     f.flush()
     f.close()
     # digesting directory
-    entropyTools.createDigest(etpOutfilePath)
+    reagentTools.createDigest(etpOutfilePath)
 else:
     entropyTools.print_info("not generating a new .etp file, it's not needed")
 
