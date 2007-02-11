@@ -27,6 +27,8 @@ import portage_const
 from entropyConstants import *
 from entropyTools import *
 
+import sys
+
 # Stolen from Porthole 0.5.0 - thanks for your help :-)
 
 def getSyncTime():
@@ -53,7 +55,7 @@ def getSyncTime():
 
 # fetch the latest updates from Gentoo rsync mirrors
 def sync(options):
-    syncMiscRedirect = "/dev/null"
+    syncMiscRedirect = "> /dev/null"
     for i in options:
         if i.startswith("--verbose") or i.startswith("-v"):
 	    syncMiscRedirect = None
@@ -62,4 +64,14 @@ def sync(options):
     if (rc != 0):
         print_error(red("an error occoured while syncing the Portage tree. Are you sure that your Internet connection works?"))
 	sys.exit(101)
-    
+
+
+def build(atoms):
+    validAtoms = []
+    for i in atoms:
+        print i+" is valid?: "+str(checkAtom(i))
+	if (checkAtom(i)): # FIXME: add the atom resolution --> kopete ==> kde-base/kopete
+	    validAtoms.append(i)
+    if validAtoms == []:
+        print_error(red(bold("no valid package names specified.")))
+	sys.exit(102)

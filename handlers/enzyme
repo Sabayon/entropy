@@ -35,12 +35,14 @@ APPVERSION = "1.0"
 def print_help():
     print "* info  * : Sabayon Linux "+APPNAME+" (C - 2007)"
     print
-    print "* usage * : "+APPNAME+" <tool or atom>"
+    print "* usage * : "+APPNAME+" <tool> <atom?>"
     print "* opts  * : --help\t\tthis output"
     print "* opts  * : --version\t\tprint version"
+    print "* opts  * : --verbose\t\tbe verbose"
     print
     print "* info  * : tools available: "
     print "* info  * : \tworld\t to build all the possible new packages"
+    print "* info  * : \tbuild\t to build all the packages specified in <atom?>"
     print "* info  * : \tsync\t to just sync portage tree"
     print "* info  * : \tdata-cleanup\t to clean all the old packages or stale files"
     print "* info  * : \tdata-reset\t to remove all and start over"
@@ -70,7 +72,7 @@ if (options[0] == "world"):
     print "world management not yet integrated"
     sys.exit(0)
 # sync tool
-elif (options[0] == "sync"):
+if (options[0] == "sync"):
     enzymeTools.sync(options)
     sys.exit(0)
 
@@ -79,6 +81,6 @@ elif (options[0] == "sync"):
 # ...
 # tbz2 tool
 
-else:
-    if (entropyTools.checkAtom()):
-	print "atom management not yet integrated"
+if (options[0] == "build"):
+    enzymeTools.build(options[1:])
+    sys.exit(0)
