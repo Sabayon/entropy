@@ -20,6 +20,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
+import os
+import commands
+
 # Specifications of the content of .etp file
 # THIS IS THE KEY PART OF ENTROPY BINARY PACKAGES MANAGEMENT
 # DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU'RE DOING !!
@@ -76,14 +79,15 @@ etpConst = {
     'packagesstoredir': ETP_DIR+ETP_DBDIR, # etpConst['packagesstoredir'] --> directory where .tbz2 files are stored waiting for being processed by entropy-specifications-generator
     'packagessuploaddir': ETP_DIR+ETP_STOREDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
     'portagetreedir': ETP_DIR+ETP_PORTDIR, # directory where is stored our local portage tree
+    'overlaysdir': ETP_DIR+ETP_PORTDIR+"/local/layman", # directory where overlays are stored
+    'overlaysconffile': ETP_CONF_DIR+"/layman.cfg", # layman configuration file
     'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
     'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
-    'enzymeconf': ETP_CONF_DIR+"/enzyme.conf", # enzym.conf file
+    'enzymeconf': ETP_CONF_DIR+"/enzyme.conf", # enzyme.conf file
     'digestfile': "Manifest", # file that contains md5 hashes
     'extension': ".etp", # entropy files extension
 }
 
-import os
 # Create paths
 if not os.path.isdir(ETP_DIR):
     import getpass
@@ -135,13 +139,74 @@ if os.path.isfile(etpConst['repositoriesconf']):
 	        if repouri.startswith("http://") or repouri.startswith("ftp://") or repouri.startswith("rsync://"):
 	            etpSources['databaseuri'] = repouri
 
-import commands
 if (commands.getoutput("q -V").find("portage-utils") != -1):
     pFindLibrary = "qfile -qC "
     pFindLibraryXT = "qfile -qeC "
 else:
     pFindLibrary = "equery belongs -n "
     pFindLibraryXT = "equery belongs -en "
+
+# configure layman.cfg properly
+if (not os.path.isfile(etpConst['overlaysconffile'])):
+    laymanConf = """
+[MAIN]
+
+#-----------------------------------------------------------
+# Path to the config directory
+
+config_dir: /etc/layman
+
+#-----------------------------------------------------------
+# Defines the directory where overlays should be installed
+
+storage   : """+etpConst['overlaysdir']+"""
+
+#-----------------------------------------------------------
+# Remote overlay lists will be stored here
+# layman will append _md5(url).xml to each filename
+
+cache     : %(storage)s/cache
+
+#-----------------------------------------------------------
+# The list of locally installed overlays
+
+local_list: %(storage)s/overlays.xml
+
+#-----------------------------------------------------------
+# Path to the make.conf file that should be modified by
+# layman
+
+make_conf : %(storage)s/make.conf
+
+#-----------------------------------------------------------
+# URLs of the remote lists of overlays (one per line) or
+# local overlay definitions
+#
+#overlays  : http://www.gentoo.org/proj/en/overlays/layman-global.txt
+#            http://dev.gentoo.org/~wrobel/layman/global-overlays.xml
+#            http://mydomain.org/my-layman-list.xml
+#            file:///usr/portage/local/layman/my-list.xml
+
+overlays  : http://www.gentoo.org/proj/en/overlays/layman-global.txt
+
+#-----------------------------------------------------------
+# Proxy support
+#
+#proxy  : http://www.my-proxy.org:3128
+
+#-----------------------------------------------------------
+# Strict checking of overlay definitions
+#
+# Set either to "yes" or "no". If "no" layman will issue
+# warnings if an overlay definition is missing either
+# description or contact information.
+#
+nocheck  : yes
+"""
+    f = open(etpConst['overlaysconffile'],"w")
+    f.writelines(laymanConf)
+    f.flush()
+    f.close()
 
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things
@@ -165,6 +230,7 @@ dbKEYWORDS = "KEYWORDS"
 # Portage variables reference
 # vdbVARIABLE --> $VARIABLE
 vdbPORTDIR = "PORTDIR"
+vdbPORTDIR_OVERLAY = "PORTDIR_OVERLAY"
 
 # Portage commands
 cdbEMERGE = "emerge"

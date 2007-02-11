@@ -9,9 +9,12 @@ DEVELOPERS:
 DEPENDENCIES:
 - >=sys-apps/portage-2.1.2
 - >=app-portage/portage-utils-0.1.23 (not mandatory)
+- >=app-portage/layman-1.0.8 (if you use overlays)
 
 INSTALLATION:
-- copy entropy.conf in /etc/
+- copy all the content of conf/ to /etc/entropy/
+- copy the rest of the tree where you want and execute handlers/ apps inside their dir
+- add sabayon overlay: python enzyme overlay add sabayon
 
 STRUCTURE:
 

@@ -28,6 +28,8 @@ from entropyConstants import *
 from entropyTools import *
 
 import sys
+import os
+import commands
 
 # Stolen from Porthole 0.5.0 - thanks for your help :-)
 
@@ -52,6 +54,16 @@ def getSyncTime():
     except:
         print_warning("getSyncTime(): empty Portage tree (first run?) or no timestamp to read")
 
+def listOverlays():
+    # NOTE: this function does not directly check if
+    #       layman is installed !!!!
+    lst = os.listdir(etpConst['overlaysdir'])
+    _lst = []
+    for i in lst:
+        if os.path.isdir(etpConst['overlaysdir']+"/"+i):
+	    _lst.append(i)
+    lst = _lst
+    return lst
 
 # fetch the latest updates from Gentoo rsync mirrors
 def sync(options):
@@ -66,12 +78,97 @@ def sync(options):
 	sys.exit(101)
 
 
-def build(atoms):
+def build(atoms): # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY variable
     validAtoms = []
     for i in atoms:
         print i+" is valid?: "+str(checkAtom(i))
-	if (checkAtom(i)): # FIXME: add the atom resolution --> kopete ==> kde-base/kopete
+	if (checkAtom(i)):
 	    validAtoms.append(i)
     if validAtoms == []:
         print_error(red(bold("no valid package names specified.")))
 	sys.exit(102)
+
+    # now that we've the list of the packages that we have to build
+
+def overlay(options):
+    # etpConst['overlaysconffile'] --> layman.cfg
+
+    # check if the portage tree is configured
+    if (not os.path.isfile(etpConst['portagetreedir']+"/metadata/timestamp")):
+        print_error(red(bold("Entropy Portage tree is not yet prepared. Use the 'sync' tool first.")))
+	return False
+
+    # check if layman is installed
+    layman = commands.getoutput("which layman")
+    if (not layman.startswith("/")):
+        print_error(red(bold("app-portage/layman is not installed. Please install.")))
+	return False
+
+    myopts = options[1:]
+
+    # be verbose?
+    verbosity = "> /dev/null"
+    for x in myopts:
+        if x.startswith("--verbose") or x.startswith("-v"):
+	    verbosity = None
+
+    # filter garbage
+    _myopts = []
+    for x in myopts:
+        # --verbose, -v
+	if (x != "--verbose" ) and (x != "-v" ):
+	    _myopts.append(x)
+    myopts = _myopts
+
+    if (myopts == []):
+        print_error(red(bold("not enough parameters.")))
+	return False
+
+    # starting Test Case
+    if (myopts[0] == "add"):
+        # add overlay
+	myownopts = list(set(myopts[1:]))
+	for i in myownopts:
+	    print_info(green("adding overlay: ")+bold(i))
+	    rc = spawnCommand(layman+" --config="+etpConst['overlaysconffile']+" -f -a "+i, redirect = verbosity)
+	    if (rc != 0):
+	        print_warning(red(bold("a problem occoured adding "+i+" overlay.")))
+    elif (myopts[0] == "remove"):
+        # remove overlay
+	myownopts = list(set(myopts[1:]))
+	for i in myownopts:
+	    print_info(green("removing overlay: ")+bold(i))
+	    rc = spawnCommand(layman+" --config="+etpConst['overlaysconffile']+" -d "+i, redirect = verbosity)
+	    if (rc != 0):
+	        print_warning(red(bold("a problem occoured removing "+i+" overlay.")))
+	return True
+    elif (myopts[0] == "sync"):
+        # sync an overlay
+	myownopts = list(set(myopts[1:]))
+	if (myownopts == []):
+	    # sync all
+	    print_info(green("syncing all the overlays")+bold(i))
+	    rc = spawnCommand(layman+" --config="+etpConst['overlaysconffile']+" -S ", redirect = verbosity)
+	    if (rc != 0):
+	        print_warning(red(bold("a problem occoured syncing all the overlays.")))
+	else:
+	    # sync each overlay
+	    for i in myownopts:
+	        rc = spawnCommand(layman+" --config="+etpConst['overlaysconffile']+" -s "+i, redirect = verbosity)
+	        if (rc != 0):
+	            print_warning(red(bold("a problem occoured syncing "+i+" overlay.")))
+	return True
+    elif (myopts[0] == "list"):
+        # add an overlay
+	listing = listOverlays()
+	if (listing == []):
+	    print_info(green("no overlays."))
+	else:
+	    for i in listing:
+	        print_info(green(i)+" overlay is added.")
+    else:
+        # error !
+	print_error(red(bold("wrong synthax.")))
+	return False
+    
+    return True

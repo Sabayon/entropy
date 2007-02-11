@@ -35,17 +35,22 @@ APPVERSION = "1.0"
 def print_help():
     print "* info  * : Sabayon Linux "+APPNAME+" (C - 2007)"
     print
-    print "* usage * : "+APPNAME+" <tool> <atom?>"
+    print "* usage * : "+APPNAME+" <tool> <atom(s)>"
     print "* opts  * : --help\t\tthis output"
     print "* opts  * : --version\t\tprint version"
     print "* opts  * : --verbose\t\tbe verbose"
     print
     print "* info  * : tools available: "
-    print "* info  * : \tworld\t to build all the possible new packages"
-    print "* info  * : \tbuild\t to build all the packages specified in <atom?>"
-    print "* info  * : \tsync\t to just sync portage tree"
-    print "* info  * : \tdata-cleanup\t to clean all the old packages or stale files"
-    print "* info  * : \tdata-reset\t to remove all and start over"
+    print "* info  * : \t"+entropyTools.green(entropyTools.bold("world"))+"\t\t to build all the possible new packages"
+    print "* info  * : \t"+entropyTools.green(entropyTools.bold("build"))+"\t\t to build all the packages specified in <atom(s)>"
+    print "* info  * : \t"+entropyTools.green(entropyTools.bold("overlay"))+"\t\t to manage overlays"
+    print "* opts  * : \t\t add\t to add overlays"
+    print "* opts  * : \t\t remove\t to remove overlays"
+    print "* opts  * : \t\t sync\t to sync overlays (after this you can specify which overlay)"
+    print "* opts  * : \t\t list\t to list overlays"
+    print "* info  * : \t"+entropyTools.green(entropyTools.bold("sync"))+"\t\t to just sync portage tree"
+    print "* info  * : \t"+entropyTools.green(entropyTools.bold("data-cleanup"))+"\t to clean all the old packages or stale files"
+    print "* info  * : \t"+entropyTools.green(entropyTools.bold("data-reset"))+"\t to remove all and start over"
     print
 
 options = sys.argv[1:]
@@ -64,7 +69,7 @@ if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(
 
 if (not entropyTools.isRoot()):
     entropyTools.print_error("you must be root in order to run "+APPNAME)
-    sys.exit(1)
+    sys.exit(2)
 
 # world tool
 if (options[0] == "world"):
@@ -75,12 +80,16 @@ if (options[0] == "world"):
 if (options[0] == "sync"):
     enzymeTools.sync(options)
     sys.exit(0)
-
-# add other options here
-# ...
-# ...
-# tbz2 tool
-
+# overlay tool
+if (options[0] == "overlay"):
+    rc = enzymeTools.overlay(options)
+    if (rc):
+        sys.exit(0)
+    else:
+         # an error occoured
+	 print_help()
+	 sys.exit(3)
+# build tool
 if (options[0] == "build"):
     enzymeTools.build(options[1:])
     sys.exit(0)

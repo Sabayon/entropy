@@ -73,9 +73,11 @@ def getInstalledAtom(atom):
 	return atom
 
 def checkAtom(atom):
-    if (isvalidatom(atom) == 1):
+    if (isvalidatom(atom) == 1) or ( isjustname(atom) == 1):
         return True
     return False
+
+
 
 def removeSpaceAtTheEnd(string):
     if string.endswith(" "):
