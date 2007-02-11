@@ -94,7 +94,9 @@ def md5sum(filepath):
     return m.hexdigest()
 
 # Tool to run commands
-def spawnCommand(command):
+def spawnCommand(command, redirect = None):
+    if redirect is not None:
+        command += " "+redirect
     rc = os.system(command)
     return rc
 

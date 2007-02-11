@@ -54,5 +54,5 @@ def getSyncTime():
 # fetch the latest updates from Gentoo rsync mirrors
 def sync():
     print_info(green("syncing the Portage tree at: "+etpConst['portagetreedir']))
-    spawnCommand(vdbPORTDIR+"="+etpConst['portagetreedir']+" "+cdbEMERGE+" --sync")
+    rc = spawnCommand(vdbPORTDIR+"="+etpConst['portagetreedir']+" "+cdbEMERGE+" --sync", redirect = "/dev/null")
     
