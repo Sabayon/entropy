@@ -71,7 +71,7 @@ if (options[0] == "world"):
     sys.exit(0)
 # sync tool
 elif (options[0] == "sync"):
-    enzymeTools.sync()
+    enzymeTools.sync(options)
     sys.exit(0)
 
 # add other options here

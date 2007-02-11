@@ -52,7 +52,14 @@ def getSyncTime():
 
 
 # fetch the latest updates from Gentoo rsync mirrors
-def sync():
+def sync(options):
+    syncMiscRedirect = "/dev/null"
+    for i in options:
+        if i.startswith("--verbose") or i.startswith("-v"):
+	    syncMiscRedirect = None
     print_info(green("syncing the Portage tree at: "+etpConst['portagetreedir']))
-    rc = spawnCommand(vdbPORTDIR+"="+etpConst['portagetreedir']+" "+cdbEMERGE+" --sync", redirect = "/dev/null")
+    rc = spawnCommand(vdbPORTDIR+"="+etpConst['portagetreedir']+" "+cdbEMERGE+" --sync ", redirect = syncMiscRedirect) # redirect = "/dev/null"
+    if (rc != 0):
+        print_error(red("an error occoured while syncing the Portage tree. Are you sure that your Internet connection works?"))
+	sys.exit(101)
     
