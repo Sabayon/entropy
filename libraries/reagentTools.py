@@ -28,6 +28,7 @@ from entropyConstants import *
 from entropyTools import *
 import commands
 import re
+import sys
 
 # Create the manifest file inside the directory provided by
 # 'path' and hash all the *.etpConst['extension'] files

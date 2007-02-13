@@ -94,7 +94,7 @@ if not os.path.isdir(ETP_DIR):
     if getpass.getuser() == "root":
 	import re
 	for x in etpConst:
-	    if (etpConst[x]):
+	    if (etpConst[x]) and (not etpConst[x].endswith(".conf")) and (not etpConst[x].endswith(".cfg")):
 		
 		if etpConst[x].find("%ARCH%") != -1:
 		    for i in ETP_ARCHS:
