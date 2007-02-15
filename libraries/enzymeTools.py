@@ -79,6 +79,22 @@ def sync(options):
 
 
 def build(atoms): # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY variable
+    
+    buildVerbose = False
+    buildForce = False
+    _atoms = []
+    for i in atoms:
+        if ( i == "--verbose" ) or ( i == "-v" ):
+	    buildVerbose = True
+	elif ( i == "--force-build" ):
+	    buildForce = True
+	else:
+	    _atoms.append(i)
+    atoms = _atoms
+    
+    print "verbose: "+str(buildVerbose)
+    print "force build: "+str(buildForce)
+    
     validAtoms = []
     for i in atoms:
         print i+" is valid?: "+str(checkAtom(i))
@@ -102,8 +118,9 @@ def build(atoms): # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY vari
 	    # package is available on the system
 	    # FIXME: add an option to force all the compilations
 	    print "I'd like to quickpkg "+atom+" but first I need to check if even this step has been already done"
-        else:
-            print "I have to compile "+atom+" by mysel..."
+            # NOTE: to see if a package needs to be built, first check its availability in the etpConst below, and if yes, tell the user to use --force-build
+	else:
+            print "I have to compile "+atom+" by myself..."
 
         # check, one by one, if the package have been already built
         # 1. check if the .tbz2 file is in:
@@ -142,7 +159,7 @@ def overlay(options):
     _myopts = []
     for x in myopts:
         # --verbose, -v
-	if (x != "--verbose" ) and (x != "-v" ):
+	if (x != "--verbose" ) and (x != "-v" ) and (x != "--force-build"):
 	    _myopts.append(x)
     myopts = _myopts
 
