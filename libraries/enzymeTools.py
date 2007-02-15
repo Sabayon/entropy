@@ -94,8 +94,17 @@ def build(atoms): # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY vari
         _validAtoms.append(getBestAtom(i))
     validAtoms = _validAtoms
     
+    toBeBuilt = []
     # check if the package is already installed, if yes, check also::
-    
+    for atom in validAtoms:
+        isAvailable = getInstalledAtom("="+atom)
+	if isAvailable is not None:
+	    # package is available on the system
+	    # FIXME: add an option to force all the compilations
+	    print "I'd like to quickpkg "+atom+" but first I need to check if even this step has been already done"
+        else:
+            print "I have to compile "+atom+" by mysel..."
+
         # check, one by one, if the package have been already built
         # 1. check if the .tbz2 file is in:
         #    etpConst['packagessuploaddir']

@@ -74,12 +74,12 @@ def translateArch(string,chost):
 	return string
 
 def getInstalledAtom(atom):
-    if (isjustname(atom) == 1):
-        # resolve name to atom
-	rc = portage.db['/']['vartree'].dep_match(str(atom))
-	return rc[len(rc)-1]
+    rc = portage.db['/']['vartree'].dep_match(str(atom))
+    if (rc != []):
+        return rc[len(rc)-1]
     else:
-	return atom
+        return None
+    
 
 def checkAtom(atom):
     if (isvalidatom(atom) == 1) or ( getBestAtom(atom) != ""):
