@@ -20,9 +20,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-
-import portage
-import portage_const
+# Never do "import portage" here, please use entropyTools binding
 
 from entropyConstants import *
 from entropyTools import *
@@ -30,6 +28,8 @@ from entropyTools import *
 import sys
 import os
 import commands
+
+
 
 # Stolen from Porthole 0.5.0 - thanks for your help :-)
 
@@ -88,7 +88,24 @@ def build(atoms): # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY vari
         print_error(red(bold("no valid package names specified.")))
 	sys.exit(102)
 
-    # now that we've the list of the packages that we have to build
+    # resolve atom name with the best package available
+    _validAtoms = []
+    for i in validAtoms:
+        _validAtoms.append(getBestAtom(i))
+    validAtoms = _validAtoms
+    
+    # check if the package is already installed, if yes, check also::
+    
+        # check, one by one, if the package have been already built
+        # 1. check if the .tbz2 file is in:
+        #    etpConst['packagessuploaddir']
+        #    etpConst['packagesstoredir']
+        #    etpConst['packagesbindir']
+        # save the path
+    
+        # then extract the info using xpak
+
+    # otherwise, add it to the build list
 
 def overlay(options):
     # etpConst['overlaysconffile'] --> layman.cfg
@@ -147,16 +164,21 @@ def overlay(options):
 	myownopts = list(set(myopts[1:]))
 	if (myownopts == []):
 	    # sync all
-	    print_info(green("syncing all the overlays")+bold(i))
+	    print_info(green("syncing all the overlays"))
 	    rc = spawnCommand(layman+" --config="+etpConst['overlaysconffile']+" -S ", redirect = verbosity)
 	    if (rc != 0):
 	        print_warning(red(bold("a problem occoured syncing all the overlays.")))
+	    else:
+		print_info(green("sync completed."))
 	else:
 	    # sync each overlay
 	    for i in myownopts:
+		print_info(green("syncing overlay: ")+bold(i))
 	        rc = spawnCommand(layman+" --config="+etpConst['overlaysconffile']+" -s "+i, redirect = verbosity)
 	        if (rc != 0):
 	            print_warning(red(bold("a problem occoured syncing "+i+" overlay.")))
+		else:
+		    print_info(green("synced overlay: ")+bold(i))
 	return True
     elif (myopts[0] == "list"):
         # add an overlay

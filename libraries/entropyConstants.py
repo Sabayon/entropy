@@ -67,6 +67,7 @@ ETP_TMPDIR = "/tmp"
 ETP_REPODIR = "/repository"+"/"+ETP_ARCH_CONST
 ETP_PORTDIR = "/portage"
 ETP_DBDIR = "/database"+"/"+ETP_ARCH_CONST
+ETP_UPLOADDIR = "/upload"+"/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store"+"/"+ETP_ARCH_CONST
 ETP_CONF_DIR = "/etc/entropy"
 ETP_HEADER_TEXT = "# Entropy specifications file (released under the GPLv2)\n"
@@ -75,9 +76,11 @@ MAX_ETP_REVISION_COUNT = 99999
 etpConst = {
     'packagestmpdir': ETP_DIR+ETP_TMPDIR, # etpConst['packagestmpdir'] --> temp directory
     'packagesbindir': ETP_DIR+ETP_REPODIR, # etpConst['packagesbindir'] --> repository where the packages will be stored
+    			# by the clients: to query if a package has been already downloaded
+			# by the servers or rsync mirrors: to store already uploaded packages to the main rsync server
     'packagesdatabasedir': ETP_DIR+ETP_DBDIR, # etpConst['packagesdatabasedir'] --> repository where .etp files will be stored
-    'packagesstoredir': ETP_DIR+ETP_DBDIR, # etpConst['packagesstoredir'] --> directory where .tbz2 files are stored waiting for being processed by entropy-specifications-generator
-    'packagessuploaddir': ETP_DIR+ETP_STOREDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
+    'packagesstoredir': ETP_DIR+ETP_STOREDIR, # etpConst['packagesstoredir'] --> directory where .tbz2 files are stored waiting for being processed by entropy-specifications-generator
+    'packagessuploaddir': ETP_DIR+ETP_UPLOADDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
     'portagetreedir': ETP_DIR+ETP_PORTDIR, # directory where is stored our local portage tree
     'overlaysdir': ETP_DIR+ETP_PORTDIR+"/local/layman", # directory where overlays are stored
     'overlaysconffile': ETP_CONF_DIR+"/layman.cfg", # layman configuration file

@@ -4,7 +4,6 @@ WHAT'S THAT: Project Entropy
 
 DEVELOPERS:
 - Fabio Erculiani (lxnay@sabayonlinux.org)
-- Christopher Villareal (cvill64@sabayonlinux.org)
 
 DEPENDENCIES:
 - >=sys-apps/portage-2.1.2

@@ -20,9 +20,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import portage
-import portage_const
-from portage_dep import dep_getkey
+# Never do "import portage" here, please use entropyTools binding
 
 from entropyConstants import *
 from entropyTools import *
@@ -176,7 +174,7 @@ def extractPkgData(package):
         if i.startswith("mirror://"):
 	    # parse what mirror I need
 	    x = i.split("/")[2]
-	    mirrorlist = portage.thirdpartymirrors[x]
+	    mirrorlist = getThirdPartyMirrors(x)
 	    mirrorURI = "mirror://"+x
 	    out = "="+mirrorURI+"|"
 	    for mirror in mirrorlist:

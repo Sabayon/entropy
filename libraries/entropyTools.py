@@ -20,15 +20,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
+def initializePortageTree():
+    portage.settings.unlock()
+    portage.settings['PORTDIR'] = etpConst['portagetreedir']
+    portage.settings.lock()
+    portage.portdb.__init__(etpConst['portagetreedir'])
+
 import portage
 import portage_const
-from portage_dep import isvalidatom, isjustname
+from portage_dep import isvalidatom, isjustname, dep_getkey
+from entropyConstants import *
+initializePortageTree()
 
 # colours support
 import output
 from output import bold, colorize, green, red, yellow
-
-from entropyConstants import *
 import re
 
 def isRoot():
@@ -39,6 +45,9 @@ def isRoot():
 
 def getPortageEnv(var):
     return portage.config(clone=portage.settings).environ()[var]
+
+def getThirdPartyMirrors(mirrorname):
+    return portage.thirdpartymirrors[mirrorname]
 
 # resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1
@@ -73,11 +82,9 @@ def getInstalledAtom(atom):
 	return atom
 
 def checkAtom(atom):
-    if (isvalidatom(atom) == 1) or ( isjustname(atom) == 1):
+    if (isvalidatom(atom) == 1) or ( getBestAtom(atom) != ""):
         return True
     return False
-
-
 
 def removeSpaceAtTheEnd(string):
     if string.endswith(" "):
