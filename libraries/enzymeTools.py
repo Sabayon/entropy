@@ -95,6 +95,11 @@ def build(atoms): # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY vari
     print "verbose: "+str(buildVerbose)
     print "force build: "+str(buildForce)
     
+    # translate dir variables
+    etpConst['packagessuploaddir'] = translateArch(etpConst['packagessuploaddir'],getPortageEnv('CHOST'))
+    etpConst['packagesstoredir'] = translateArch(etpConst['packagesstoredir'],getPortageEnv('CHOST'))
+    etpConst['packagesbindir'] = translateArch(etpConst['packagesbindir'],getPortageEnv('CHOST'))
+    
     validAtoms = []
     for i in atoms:
         print i+" is valid?: "+str(checkAtom(i))
@@ -110,28 +115,50 @@ def build(atoms): # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY vari
         _validAtoms.append(getBestAtom(i))
     validAtoms = _validAtoms
     
+    
+    buildCmd = None
     toBeBuilt = []
-    # check if the package is already installed, if yes, check also::
+    # check if the package is already installed
     for atom in validAtoms:
+        # let's dance !!
         isAvailable = getInstalledAtom("="+atom)
-	if isAvailable is not None:
+	print "testing atom: "+atom
+	if (isAvailable is not None) and (not buildForce):
 	    # package is available on the system
-	    # FIXME: add an option to force all the compilations
 	    print "I'd like to quickpkg "+atom+" but first I need to check if even this step has been already done"
-            # NOTE: to see if a package needs to be built, first check its availability in the etpConst below, and if yes, tell the user to use --force-build
+	    
+	    # check if the package have been already merged
+	    atomName = atom.split("/")[len(atom.split("/"))-1]
+	    tbz2Available = False
+	    
+	    uploadPath = etpConst['packagessuploaddir']+"/"+atomName+".tbz2"
+	    storePath = etpConst['packagesstoredir']+"/"+atomName+".tbz2"
+	    packagesPath = etpConst['packagesbindir']+"/"+atomName+".tbz2"
+
+	    print "testing in directory: "+packagesPath
+	    if os.path.isfile(packagesPath):
+	        tbz2Available = packagesPath
+	    print "testing in directory: "+storePath
+	    if os.path.isfile(storePath):
+	        tbz2Available = storePath
+	    print "testing in directory: "+uploadPath
+	    if os.path.isfile(uploadPath):
+	        tbz2Available = uploadPath
+	    print "found here: "+str(tbz2Available)
+	    
+	    if (tbz2Available == False):
+		print "I need to build: "+atom
+	        toBeBuilt.append(atom)
+	    else:
+	        print "I will use this already precompiled package: "+tbz2Available
 	else:
             print "I have to compile "+atom+" by myself..."
+            toBeBuilt.append(atom)
 
-        # check, one by one, if the package have been already built
-        # 1. check if the .tbz2 file is in:
-        #    etpConst['packagessuploaddir']
-        #    etpConst['packagesstoredir']
-        #    etpConst['packagesbindir']
-        # save the path
+    print "this is the list of the packages that needs to be built:"
+    print toBeBuilt
     
-        # then extract the info using xpak
-
-    # otherwise, add it to the build list
+    # now we have to solve the dependencies and create the packages that need to be build
 
 def overlay(options):
     # etpConst['overlaysconffile'] --> layman.cfg
