@@ -48,6 +48,7 @@ def print_help():
     print "* opts  * : \t\t"+entropyTools.red("--force-build")+"\t\t force the building of the package, nevertheless"
     print "* opts  * : \t\t"+entropyTools.red("--update")+"\t\t build all the updateable dependencies"
     print "* opts  * : \t\t"+entropyTools.red("--pretend")+"\t\t just show what should be done"
+    print "* opts  * : \t\t"+entropyTools.red("--ignore-conflicts")+"\t ignore conflicts between packages"
     print "* info  * : \t"+entropyTools.green(entropyTools.bold("overlay"))+"\t\t to manage overlays"
     print "* opts  * : \t\t "+entropyTools.red("add")+"\t\t\t to add overlays"
     print "* opts  * : \t\t "+entropyTools.red("remove")+"\t\t\t to remove overlays"

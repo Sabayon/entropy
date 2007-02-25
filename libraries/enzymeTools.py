@@ -87,6 +87,7 @@ def build(atoms):
     buildForce = False
     updateAll = False
     pretendAll = False
+    ignoreConflicts = False
     _atoms = []
     for i in atoms:
         if ( i == "--verbose" ) or ( i == "-v" ):
@@ -95,6 +96,8 @@ def build(atoms):
 	    buildForce = True
 	elif ( i == "--update" ):
 	    updateAll = True
+	elif ( i == "--ignore-conflicts" ):
+	    ignoreConflicts = True
 	elif ( i == "--pretend" ):
 	    pretendAll = True
 	else:
@@ -148,6 +151,7 @@ def build(atoms):
     
     # now we have to solve the dependencies and create the packages that need to be build
     PackagesDependencies = []
+    PackagesConflicting = []
     PackagesQuickpkg = []
     for atom in toBeBuilt:
 	print
@@ -192,13 +196,19 @@ def build(atoms):
 	    else:
 		PackagesQuickpkg.append(installedAtom)
 		print "\t\t"+dep+" versions match, no need to build"
+	print
 	if atomconflicts != []:
 	    print "\tfiltering "+atom+" conflicts..."
 	for conflict in atomconflicts:
-	    print "\tchecking for: "+conflict
+	    print "\tchecking for: "+red(conflict)
+	    if getInstalledAtom(conflict) is not None:
+		# damn, it's installed
+		print "\t\t Package "+yellow(conflict)+" conflicts"
+		PackagesConflicting.append(conflict)
 	#FIXME: DO THIS PART check if there are conflicts
 
     print
+
     print
     if toBeBuilt != []:
 	print green("   *")+" This is the list of the packages that needs to be built:"
@@ -207,10 +217,11 @@ def build(atoms):
     else:
 	print red("   *")+" No packages to build"
     print
+
     if PackagesDependencies != []:
 	print yellow("   *")+" These are their dependencies (pulled in):"
         for i in PackagesDependencies:
-	    print red("      *")+" "+i
+	    print red("      *")+bold(" [COMPI] ")+i
 	for i in PackagesQuickpkg:
 	    if i.startswith("quick|"):
 	        print green("      *")+bold(" [QUICK] ")+i.split("quick|")[len(i.split("quick|"))-1]
@@ -219,15 +230,64 @@ def build(atoms):
     else:
 	print green("   *")+" No extra dependencies required"
     print
+    
+    if PackagesConflicting != []:
+	print red("   *")+" These are the conflicting packages:"
+	for i in PackagesConflicting:
+	    print red("      *")+bold(" [CONFL] ")+i
+	if (not ignoreConflicts):
+	    print
+	    print
+	    print red(" ***")+" Sorry, I can't continue. To force this, add --ignore-conflicts at your own risk."
+	    sys.exit(1)
+	else:
+	    import time
+	    print
+	    print yellow(" ***")+" You are using --ignore-conflicts at your own risk."
+	    print
+	    time.sleep(5)
 
     if (pretendAll):
 	sys.exit(0)
+	
+    # when the compilation ends, enzyme runs reagent
+    packagesPaths = []
 
+    print
     if PackagesDependencies != []:
         print yellow("  *")+" Building dependencies..."
-
+	for dep in PackagesDependencies:
+	    # running emerge and detect:
+	    # - errors
+	    # - log files
+	    # - etc update?
+	    print green("  *")+" Compiling: "+red(dep)
+    print
     if toBeBuilt != []:
         print green("  *")+" Building packages..."
+	for dep in toBeBuilt:
+	    # running emerge and detect:
+	    # - errors
+	    # - log files
+	    # - etc update?
+	    print green("  *")+" Compiling: "+red(dep)
+    print
+    if PackagesQuickpkg != []:
+        print green("  *")+" Compressing already installed packages..."
+	for dep in PackagesQuickpkg:
+	    # running emerge and detect:
+	    # - errors
+	    # - log files
+	    # - etc update?
+	    if (not dep.startswith("avail|")):
+		dep = dep.split("quick|")[len(dep.split("quick|"))-1]
+	        print green("  *")+" Compressing: "+red(dep)
+
+    if packagesPaths != []:
+	print red("   *")+" These are the binary packages created:"
+	for pkg in packagesPaths:
+	    print green("      *")+red(pkg)
+
 
 def overlay(options):
     # etpConst['overlaysconffile'] --> layman.cfg
