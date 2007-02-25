@@ -79,7 +79,29 @@ def getInstalledAtom(atom):
         return rc[len(rc)-1]
     else:
         return None
+
+# NOTE: atom must be a COMPLETE atom, with version!
+def isTbz2PackageAvailable(atom, verbose = False):
+    # check if the package have been already merged
+    atomName = atom.split("/")[len(atom.split("/"))-1]
+    tbz2Available = False
     
+    uploadPath = etpConst['packagessuploaddir']+"/"+atomName+".tbz2"
+    storePath = etpConst['packagesstoredir']+"/"+atomName+".tbz2"
+    packagesPath = etpConst['packagesbindir']+"/"+atomName+".tbz2"
+    
+    if (verbose): print "testing in directory: "+packagesPath
+    if os.path.isfile(packagesPath):
+        tbz2Available = packagesPath
+    if (verbose): print "testing in directory: "+storePath
+    if os.path.isfile(storePath):
+        tbz2Available = storePath
+    if (verbose): print "testing in directory: "+uploadPath
+    if os.path.isfile(uploadPath):
+        tbz2Available = uploadPath
+    if (verbose): print "found here: "+str(tbz2Available)
+
+    return tbz2Available
 
 def checkAtom(atom):
     if (isvalidatom(atom) == 1) or ( getBestAtom(atom) != ""):

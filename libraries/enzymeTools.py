@@ -78,22 +78,31 @@ def sync(options):
 	sys.exit(101)
 
 
-def build(atoms): # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY variable
+def build(atoms): 
+
+# FIXME: remember to use listOverlay() as PORTDIR_OVERLAY variable
+# FIXME: move print() to our print function
     
     buildVerbose = False
     buildForce = False
+    updateAll = False
+    pretendAll = False
     _atoms = []
     for i in atoms:
         if ( i == "--verbose" ) or ( i == "-v" ):
 	    buildVerbose = True
 	elif ( i == "--force-build" ):
 	    buildForce = True
+	elif ( i == "--update" ):
+	    updateAll = True
+	elif ( i == "--pretend" ):
+	    pretendAll = True
 	else:
 	    _atoms.append(i)
     atoms = _atoms
     
-    print "verbose: "+str(buildVerbose)
-    print "force build: "+str(buildForce)
+    if (buildVerbose): print "verbose: "+str(buildVerbose)
+    if (buildVerbose): print "force build: "+str(buildForce)
     
     # translate dir variables
     etpConst['packagessuploaddir'] = translateArch(etpConst['packagessuploaddir'],getPortageEnv('CHOST'))
@@ -102,7 +111,7 @@ def build(atoms): # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY vari
     
     validAtoms = []
     for i in atoms:
-        print i+" is valid?: "+str(checkAtom(i))
+        if (buildVerbose): print i+" is valid?: "+str(checkAtom(i))
 	if (checkAtom(i)):
 	    validAtoms.append(i)
     if validAtoms == []:
@@ -115,68 +124,110 @@ def build(atoms): # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY vari
         _validAtoms.append(getBestAtom(i))
     validAtoms = _validAtoms
 
-
     buildCmd = None
     toBeBuilt = []
     # check if the package is already installed
     for atom in validAtoms:
         # let's dance !!
         isAvailable = getInstalledAtom("="+atom)
-	print "testing atom: "+atom
+	if (buildVerbose): print "testing atom: "+atom
 	if (isAvailable is not None) and (not buildForce):
 	    # package is available on the system
-	    print "I'd like to keep a current copy of binary package "+atom+" but first I need to check if even this step has been already done"
+	    if (buildVerbose): print "I'd like to keep a current copy of binary package "+atom+" but first I need to check if even this step has been already done"
 
-	    # check if the package have been already merged
-	    atomName = atom.split("/")[len(atom.split("/"))-1]
-	    tbz2Available = False
-
-	    uploadPath = etpConst['packagessuploaddir']+"/"+atomName+".tbz2"
-	    storePath = etpConst['packagesstoredir']+"/"+atomName+".tbz2"
-	    packagesPath = etpConst['packagesbindir']+"/"+atomName+".tbz2"
-
-	    print "testing in directory: "+packagesPath
-	    if os.path.isfile(packagesPath):
-	        tbz2Available = packagesPath
-	    print "testing in directory: "+storePath
-	    if os.path.isfile(storePath):
-	        tbz2Available = storePath
-	    print "testing in directory: "+uploadPath
-	    if os.path.isfile(uploadPath):
-	        tbz2Available = uploadPath
-	    print "found here: "+str(tbz2Available)
+	    tbz2Available = isTbz2PackageAvailable(atom, buildVerbose)
 
 	    if (tbz2Available == False):
-		print "I'll have to build: "+atom
+		if (buildVerbose): print "I'll have to build: "+atom
 	        toBeBuilt.append(atom)
 	    else:
-	        print "I will use this already precompiled package: "+tbz2Available
+	        if (buildVerbose): print "I will use this already precompiled package: "+tbz2Available
 	else:
-            print "I have to compile "+atom+" by myself..."
+            if (buildVerbose): print "I have to compile "+atom+" by myself..."
             toBeBuilt.append(atom)
-
-    print "this is the list of the packages that needs to be built:"
-    print toBeBuilt
     
     # now we have to solve the dependencies and create the packages that need to be build
     PackagesDependencies = []
+    PackagesQuickpkg = []
     for atom in toBeBuilt:
+	print
 	# check its unsatisfied dependencies
-	print "checking "+atom+" dependencies and conflicts..."
+	print "  Checking "+bold(atom)+" dependencies and conflicts..."
+	print
 	atomdeps, atomconflicts = synthetizeRoughDependencies(getPackageDependencyList(atom))
 	atomdeps = atomdeps.split()
 	atomconflicts = atomconflicts.split()
-	print atomdeps
-	print atomconflicts
-	print "filtering "+atom+" dependencies..."
+	print "\tfiltering "+atom+" dependencies..."
 	# check if the dependency is satisfied
+	
 	for dep in atomdeps:
-	    print "checking for: "+dep
+	    print "\tchecking for: "+red(dep)
+	    # filter |or|
+	    if dep.find(dbOR) != -1:
+	        deps = dep.split(dbOR)
+		for i in deps:
+		    if getInstalledAtom(i) is not None:
+		        dep = i
+			break
+	    wantedAtom = getBestAtom(dep)
+	    print "\t\tI want: "+yellow(wantedAtom)
+	    installedAtom = getInstalledAtom(dep)
+	    print "\t\tIs installed: "+green(str(installedAtom))
+	    if installedAtom is None:
+		# then append - because it's not installed !
+		print "\t\t"+dep+" is not installed, adding."
+		PackagesDependencies.append(wantedAtom)
+	    elif (wantedAtom != installedAtom):
+		if (updateAll):
+		    PackagesDependencies.append(wantedAtom)
+		    print "\t\t"+dep+" versions differs, adding (pulled in by --update)."
+		else:
+		    if (isTbz2PackageAvailable(installedAtom) == False):
+			# quickpkg'd
+		        PackagesQuickpkg.append("quick|"+installedAtom)
+		    else:
+			# already available
+		        PackagesQuickpkg.append("avail|"+installedAtom)			
+		    print "\t\t"+dep+" versions differs but not adding since the dependency is permissive."
+	    else:
+		PackagesQuickpkg.append(installedAtom)
+		print "\t\t"+dep+" versions match, no need to build"
 	if atomconflicts != []:
-	    print "filtering "+atom+" conflicts..."
+	    print "\tfiltering "+atom+" conflicts..."
 	for conflict in atomconflicts:
-	    print "checking for: "+conflict
-	# check if there are conflicts
+	    print "\tchecking for: "+conflict
+	#FIXME: DO THIS PART check if there are conflicts
+
+    print
+    print
+    if toBeBuilt != []:
+	print green("   *")+" This is the list of the packages that needs to be built:"
+        for i in toBeBuilt:
+	    print yellow("      *")+" "+i
+    else:
+	print red("   *")+" No packages to build"
+    print
+    if PackagesDependencies != []:
+	print yellow("   *")+" These are their dependencies (pulled in):"
+        for i in PackagesDependencies:
+	    print red("      *")+" "+i
+	for i in PackagesQuickpkg:
+	    if i.startswith("quick|"):
+	        print green("      *")+bold(" [QUICK] ")+i.split("quick|")[len(i.split("quick|"))-1]
+	    elif i.startswith("avail|"):
+	        print green("      *")+bold(" [AVAIL] ")+i.split("avail|")[len(i.split("avail|"))-1]
+    else:
+	print green("   *")+" No extra dependencies required"
+    print
+
+    if (pretendAll):
+	sys.exit(0)
+
+    if PackagesDependencies != []:
+        print yellow("  *")+" Building dependencies..."
+
+    if toBeBuilt != []:
+        print green("  *")+" Building packages..."
 
 def overlay(options):
     # etpConst['overlaysconffile'] --> layman.cfg
