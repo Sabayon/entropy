@@ -239,78 +239,8 @@ def extractPkgData(package):
     roughDependencies = roughDependencies.split()
     
     # variables filled
-    # etpData['dependencies']
-
-    useMatch = False
-    openParenthesis = 0
-    openOr = False
-    useFlagQuestion = False
-    for atom in roughDependencies:
-
-	if atom.endswith("?"):
-	    # we need to see if that useflag is enabled
-	    useFlag = atom.split("?")[0]
-	    useFlagQuestion = True
-	    for i in etpData['useflags'].split():
-		if i.startswith("!"):
-		    if (i != useFlag):
-			useMatch = True
-			break
-		else:
-		    if (i == useFlag):
-		        useMatch = True
-		        break
-
-        if atom.startswith("("):
-	    openParenthesis += 1
-
-        if atom.startswith(")"):
-	    if (openOr):
-		# remove last "_or_" from etpData['dependencies']
-		openOr = False
-		if etpData['dependencies'].endswith(dbOR):
-		    etpData['dependencies'] = etpData['dependencies'][:len(etpData['dependencies'])-len(dbOR)]
-		    etpData['dependencies'] += " "
-	    openParenthesis -= 1
-	    if (openParenthesis == 0):
-		useFlagQuestion = False
-		useMatch = False
-
-        if atom.startswith("||"):
-	    openOr = True
-	
-	if atom.find("/") != -1 and (not atom.startswith("!")) and (not atom.endswith("?")):
-	    # it's a package name <pkgcat>/<pkgname>-???
-	    if ((useFlagQuestion) and (useMatch)) or ((not useFlagQuestion) and (not useMatch)):
-	        # check if there's an OR
-		etpData['dependencies'] += atom
-		if (openOr):
-		    etpData['dependencies'] += dbOR
-                else:
-		    etpData['dependencies'] += " "
-
-        if atom.startswith("!") and (not atom.endswith("?")):
-	    if ((useFlagQuestion) and (useMatch)) or ((not useFlagQuestion) and (not useMatch)):
-		etpData['conflicts'] += atom
-		if (openOr):
-		    etpData['conflicts'] += dbOR
-                else:
-		    etpData['conflicts'] += " "
-		
-
-    # format properly
-    tmpConflicts = list(set(etpData['conflicts'].split()))
-    etpData['conflicts'] = ''
-    for i in tmpConflicts:
-	i = i[1:] # remove "!"
-	etpData['conflicts'] += i+" "
-    etpData['conflicts'] = removeSpaceAtTheEnd(etpData['conflicts'])
-
-    tmpDeps = list(set(etpData['dependencies'].split()))
-    etpData['dependencies'] = ''
-    for i in tmpDeps:
-	etpData['dependencies'] += i+" "
-    etpData['dependencies'] = removeSpaceAtTheEnd(etpData['dependencies'])
+    # etpData['dependencies'], etpData['conflicts']
+    etpData['dependencies'], etpData['conflicts'] = synthetizeRoughDependencies(roughDependencies,etpData['useflags'])
 
     # etpData['rdependencies']
     # Now we need to add environmental dependencies

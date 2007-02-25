@@ -114,8 +114,8 @@ def build(atoms): # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY vari
     for i in validAtoms:
         _validAtoms.append(getBestAtom(i))
     validAtoms = _validAtoms
-    
-    
+
+
     buildCmd = None
     toBeBuilt = []
     # check if the package is already installed
@@ -125,12 +125,12 @@ def build(atoms): # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY vari
 	print "testing atom: "+atom
 	if (isAvailable is not None) and (not buildForce):
 	    # package is available on the system
-	    print "I'd like to quickpkg "+atom+" but first I need to check if even this step has been already done"
-	    
+	    print "I'd like to keep a current copy of binary package "+atom+" but first I need to check if even this step has been already done"
+
 	    # check if the package have been already merged
 	    atomName = atom.split("/")[len(atom.split("/"))-1]
 	    tbz2Available = False
-	    
+
 	    uploadPath = etpConst['packagessuploaddir']+"/"+atomName+".tbz2"
 	    storePath = etpConst['packagesstoredir']+"/"+atomName+".tbz2"
 	    packagesPath = etpConst['packagesbindir']+"/"+atomName+".tbz2"
@@ -145,9 +145,9 @@ def build(atoms): # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY vari
 	    if os.path.isfile(uploadPath):
 	        tbz2Available = uploadPath
 	    print "found here: "+str(tbz2Available)
-	    
+
 	    if (tbz2Available == False):
-		print "I need to build: "+atom
+		print "I'll have to build: "+atom
 	        toBeBuilt.append(atom)
 	    else:
 	        print "I will use this already precompiled package: "+tbz2Available
@@ -159,6 +159,24 @@ def build(atoms): # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY vari
     print toBeBuilt
     
     # now we have to solve the dependencies and create the packages that need to be build
+    PackagesDependencies = []
+    for atom in toBeBuilt:
+	# check its unsatisfied dependencies
+	print "checking "+atom+" dependencies and conflicts..."
+	atomdeps, atomconflicts = synthetizeRoughDependencies(getPackageDependencyList(atom))
+	atomdeps = atomdeps.split()
+	atomconflicts = atomconflicts.split()
+	print atomdeps
+	print atomconflicts
+	print "filtering "+atom+" dependencies..."
+	# check if the dependency is satisfied
+	for dep in atomdeps:
+	    print "checking for: "+dep
+	if atomconflicts != []:
+	    print "filtering "+atom+" conflicts..."
+	for conflict in atomconflicts:
+	    print "checking for: "+conflict
+	# check if there are conflicts
 
 def overlay(options):
     # etpConst['overlaysconffile'] --> layman.cfg

@@ -109,6 +109,103 @@ def spawnCommand(command, redirect = None):
     rc = os.system(command)
     return rc
 
+def getPackageDependencyList(atom):
+    pkgSplittedDeps = []
+    tmp = portage.portdb.aux_get(atom, ["DEPEND"])[0].split()
+    for i in tmp:
+	pkgSplittedDeps.append(i)
+    tmp = portage.portdb.aux_get(atom, ["RDEPEND"])[0].split()
+    for i in tmp:
+	pkgSplittedDeps.append(i)
+    tmp = portage.portdb.aux_get(atom, ["PDEPEND"])[0].split()
+    for i in tmp:
+	pkgSplittedDeps.append(i)
+    return pkgSplittedDeps
+
+def getUSEFlags():
+    return getPortageEnv('USE')
+
+def synthetizeRoughDependencies(roughDependencies, useflags = None):
+    if useflags is None:
+        useflags = getUSEFlags()
+    # returns dependencies, conflicts
+
+    useMatch = False
+    openParenthesis = 0
+    openOr = False
+    useFlagQuestion = False
+    dependencies = ""
+    conflicts = ""
+    for atom in roughDependencies:
+
+	if atom.endswith("?"):
+	    # we need to see if that useflag is enabled
+	    useFlag = atom.split("?")[0]
+	    useFlagQuestion = True
+	    for i in useflags.split():
+		if i.startswith("!"):
+		    if (i != useFlag):
+			useMatch = True
+			break
+		else:
+		    if (i == useFlag):
+		        useMatch = True
+		        break
+
+        if atom.startswith("("):
+	    openParenthesis += 1
+
+        if atom.startswith(")"):
+	    if (openOr):
+		# remove last "_or_" from dependencies
+		openOr = False
+		if dependencies.endswith(dbOR):
+		    dependencies = dependencies[:len(dependencies)-len(dbOR)]
+		    dependencies += " "
+	    openParenthesis -= 1
+	    if (openParenthesis == 0):
+		useFlagQuestion = False
+		useMatch = False
+
+        if atom.startswith("||"):
+	    openOr = True
+	
+	if atom.find("/") != -1 and (not atom.startswith("!")) and (not atom.endswith("?")):
+	    # it's a package name <pkgcat>/<pkgname>-???
+	    if ((useFlagQuestion) and (useMatch)) or ((not useFlagQuestion) and (not useMatch)):
+	        # check if there's an OR
+		dependencies += atom
+		if (openOr):
+		    dependencies += dbOR
+                else:
+		    dependencies += " "
+
+        if atom.startswith("!") and (not atom.endswith("?")):
+	    if ((useFlagQuestion) and (useMatch)) or ((not useFlagQuestion) and (not useMatch)):
+		conflicts += atom
+		if (openOr):
+		    conflicts += dbOR
+                else:
+		    conflicts += " "
+		
+
+    # format properly
+    tmpConflicts = list(set(conflicts.split()))
+    conflicts = ''
+    for i in tmpConflicts:
+	i = i[1:] # remove "!"
+	conflicts += i+" "
+    conflicts = removeSpaceAtTheEnd(conflicts)
+
+    tmpDeps = list(set(dependencies.split()))
+    dependencies = ''
+    for i in tmpDeps:
+	dependencies += i+" "
+    dependencies = removeSpaceAtTheEnd(dependencies)
+
+    return dependencies, conflicts
+
+
 def print_error(msg):
     print "* erro *  : "+msg
 
