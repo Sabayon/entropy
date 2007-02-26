@@ -44,7 +44,11 @@ def isRoot():
     return False
 
 def getPortageEnv(var):
-    return portage.config(clone=portage.settings).environ()[var]
+    try:
+	rc = portage.config(clone=portage.settings).environ()[var]
+	return rc
+    except KeyError:
+	return None
 
 def getThirdPartyMirrors(mirrorname):
     return portage.thirdpartymirrors[mirrorname]
@@ -79,6 +83,12 @@ def getInstalledAtom(atom):
         return rc[len(rc)-1]
     else:
         return None
+
+def emerge(atom,options):
+    outfile = etpConst['packagestmpfile']
+    print outfile
+    #rc = spawnCommand(cdbRunEmerge+" "+options+" "+atom, )
+    #return rc, outfile
 
 # NOTE: atom must be a COMPLETE atom, with version!
 def isTbz2PackageAvailable(atom, verbose = False):

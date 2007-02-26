@@ -57,12 +57,7 @@ def getSyncTime():
 def listOverlays():
     # NOTE: this function does not directly check if
     #       layman is installed !!!!
-    lst = os.listdir(etpConst['overlaysdir'])
-    _lst = []
-    for i in lst:
-        if os.path.isdir(etpConst['overlaysdir']+"/"+i):
-	    _lst.append(i)
-    lst = _lst
+    lst = etpConst['overlays'].split()
     return lst
 
 # fetch the latest updates from Gentoo rsync mirrors
@@ -252,7 +247,7 @@ def build(atoms):
 	
     # when the compilation ends, enzyme runs reagent
     packagesPaths = []
-
+    
     print
     if PackagesDependencies != []:
         print yellow("  *")+" Building dependencies..."
@@ -261,6 +256,8 @@ def build(atoms):
 	    # - errors
 	    # - log files
 	    # - etc update?
+	    rc = emerge(dep,odbBuild)
+	    print str(rc)
 	    print green("  *")+" Compiling: "+red(dep)
     print
     if toBeBuilt != []:
@@ -288,6 +285,7 @@ def build(atoms):
 	for pkg in packagesPaths:
 	    print green("      *")+red(pkg)
 
+    return packagesPaths
 
 def overlay(options):
     # etpConst['overlaysconffile'] --> layman.cfg

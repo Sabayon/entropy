@@ -22,6 +22,8 @@
 
 import os
 import commands
+import string
+import random
 
 # Specifications of the content of .etp file
 # THIS IS THE KEY PART OF ENTROPY BINARY PACKAGES MANAGEMENT
@@ -64,6 +66,8 @@ ETP_ARCH_CONST = "%ARCH%"
 ETP_REVISION_CONST = "%ETPREV%"
 ETP_DIR = "/var/lib/entropy"
 ETP_TMPDIR = "/tmp"
+ETP_RANDOM = str(random.random())[2:7]
+ETP_TMPFILE = "/.random-"+ETP_RANDOM+".tmp"
 ETP_REPODIR = "/repository"+"/"+ETP_ARCH_CONST
 ETP_PORTDIR = "/portage"
 ETP_DBDIR = "/database"+"/"+ETP_ARCH_CONST
@@ -75,6 +79,7 @@ MAX_ETP_REVISION_COUNT = 99999
 
 etpConst = {
     'packagestmpdir': ETP_DIR+ETP_TMPDIR, # etpConst['packagestmpdir'] --> temp directory
+    'packagestmpfile': ETP_DIR+ETP_TMPDIR+ETP_TMPFILE, # etpConst['packagestmpfile'] --> general purpose tmp file
     'packagesbindir': ETP_DIR+ETP_REPODIR, # etpConst['packagesbindir'] --> repository where the packages will be stored
     			# by the clients: to query if a package has been already downloaded
 			# by the servers or rsync mirrors: to store already uploaded packages to the main rsync server
@@ -83,6 +88,7 @@ etpConst = {
     'packagessuploaddir': ETP_DIR+ETP_UPLOADDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
     'portagetreedir': ETP_DIR+ETP_PORTDIR, # directory where is stored our local portage tree
     'overlaysdir': ETP_DIR+ETP_PORTDIR+"/local/layman", # directory where overlays are stored
+    'overlays': "", # variable PORTDIR_OVERLAY
     'overlaysconffile': ETP_CONF_DIR+"/layman.cfg", # layman configuration file
     'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
     'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
@@ -97,7 +103,7 @@ if not os.path.isdir(ETP_DIR):
     if getpass.getuser() == "root":
 	import re
 	for x in etpConst:
-	    if (etpConst[x]) and (not etpConst[x].endswith(".conf")) and (not etpConst[x].endswith(".cfg")):
+	    if (etpConst[x]) and (not etpConst[x].endswith(".conf")) and (not etpConst[x].endswith(".cfg")) and (not etpConst[x].endswith(".tmp")):
 		
 		if etpConst[x].find("%ARCH%") != -1:
 		    for i in ETP_ARCHS:
@@ -211,6 +217,14 @@ nocheck  : yes
     f.flush()
     f.close()
 
+# fill etpConst['overlays']
+ovlst = os.listdir(etpConst['overlaysdir'])
+_ovlst = []
+for i in ovlst:
+    if os.path.isdir(etpConst['overlaysdir']+"/"+i):
+	_ovlst.append(etpConst['overlaysdir']+"/"+i)
+etpConst['overlays'] = string.join(_ovlst," ")
+
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things
 dbDESCRIPTION = "DESCRIPTION"
@@ -237,3 +251,7 @@ vdbPORTDIR_OVERLAY = "PORTDIR_OVERLAY"
 
 # Portage commands
 cdbEMERGE = "emerge"
+cdbRunEmerge = vdbPORTDIR+"='"+etpConst['portagetreedir']+"' "+vdbPORTDIR_OVERLAY+"='"+etpConst['overlays']+"' "+cdbEMERGE
+
+# Portage options
+odbBuild = "-b"

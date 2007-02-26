@@ -1,4 +1,4 @@
 TODO list (for developers only):
 - timestamp management across database and packages servers
-- a lot more :-P
+- a general option --info to print all the Entropy variables and constants
 
