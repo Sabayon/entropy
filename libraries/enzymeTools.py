@@ -78,29 +78,32 @@ def build(atoms):
 # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY variable
 # FIXME: move print() to our print function
     
-    buildVerbose = False
-    buildForce = False
-    updateAll = False
-    pretendAll = False
-    ignoreConflicts = False
+    enzymeRequestVerbose = False
+    enzymeRequestForce = False
+    enzymeRequestUpdate = False
+    enzymeRequestPretendAll = False
+    enzymeRequestIgnoreConflicts = False
+    enzymeRequestInteraction = True
     _atoms = []
     for i in atoms:
         if ( i == "--verbose" ) or ( i == "-v" ):
-	    buildVerbose = True
+	    enzymeRequestVerbose = True
 	elif ( i == "--force-build" ):
-	    buildForce = True
+	    enzymeRequestForce = True
 	elif ( i == "--update" ):
-	    updateAll = True
+	    enzymeRequestUpdate = True
 	elif ( i == "--ignore-conflicts" ):
-	    ignoreConflicts = True
+	    enzymeRequestIgnoreConflicts = True
 	elif ( i == "--pretend" ):
-	    pretendAll = True
+	    enzymeRequestPretendAll = True
+	elif ( i == "--no-interaction" ):
+	    enzymeRequestInteraction = False
 	else:
 	    _atoms.append(i)
     atoms = _atoms
     
-    if (buildVerbose): print "verbose: "+str(buildVerbose)
-    if (buildVerbose): print "force build: "+str(buildForce)
+    if (enzymeRequestVerbose): print "verbose: "+str(enzymeRequestVerbose)
+    if (enzymeRequestVerbose): print "force build: "+str(enzymeRequestForce)
     
     # translate dir variables
     etpConst['packagessuploaddir'] = translateArch(etpConst['packagessuploaddir'],getPortageEnv('CHOST'))
@@ -109,7 +112,7 @@ def build(atoms):
     
     validAtoms = []
     for i in atoms:
-        if (buildVerbose): print i+" is valid?: "+str(checkAtom(i))
+        if (enzymeRequestVerbose): print i+" is valid?: "+str(checkAtom(i))
 	if (checkAtom(i)):
 	    validAtoms.append(i)
     if validAtoms == []:
@@ -128,20 +131,20 @@ def build(atoms):
     for atom in validAtoms:
         # let's dance !!
         isAvailable = getInstalledAtom("="+atom)
-	if (buildVerbose): print "testing atom: "+atom
-	if (isAvailable is not None) and (not buildForce):
+	if (enzymeRequestVerbose): print "testing atom: "+atom
+	if (isAvailable is not None) and (not enzymeRequestForce):
 	    # package is available on the system
-	    if (buildVerbose): print "I'd like to keep a current copy of binary package "+atom+" but first I need to check if even this step has been already done"
+	    if (enzymeRequestVerbose): print "I'd like to keep a current copy of binary package "+atom+" but first I need to check if even this step has been already done"
 
-	    tbz2Available = isTbz2PackageAvailable(atom, buildVerbose)
+	    tbz2Available = isTbz2PackageAvailable(atom, enzymeRequestVerbose)
 
 	    if (tbz2Available == False):
-		if (buildVerbose): print "I'll have to build: "+atom
+		if (enzymeRequestVerbose): print "I'll have to build: "+atom
 	        toBeBuilt.append(atom)
 	    else:
-	        if (buildVerbose): print "I will use this already precompiled package: "+tbz2Available
+	        if (enzymeRequestVerbose): print "I will use this already precompiled package: "+tbz2Available
 	else:
-            if (buildVerbose): print "I have to compile "+atom+" by myself..."
+            if (enzymeRequestVerbose): print "I have to compile "+atom+" by myself..."
             toBeBuilt.append(atom)
     
     # now we have to solve the dependencies and create the packages that need to be build
@@ -177,7 +180,7 @@ def build(atoms):
 		print "\t\t"+dep+" is not installed, adding."
 		PackagesDependencies.append(wantedAtom)
 	    elif (wantedAtom != installedAtom):
-		if (updateAll):
+		if (enzymeRequestUpdate):
 		    PackagesDependencies.append(wantedAtom)
 		    print "\t\t"+dep+" versions differs, adding (pulled in by --update)."
 		else:
@@ -186,10 +189,11 @@ def build(atoms):
 		        PackagesQuickpkg.append("quick|"+installedAtom)
 		    else:
 			# already available
-		        PackagesQuickpkg.append("avail|"+installedAtom)			
+		        PackagesQuickpkg.append("avail|"+installedAtom)
 		    print "\t\t"+dep+" versions differs but not adding since the dependency is permissive."
 	    else:
-		PackagesQuickpkg.append(installedAtom)
+		if (isTbz2PackageAvailable(installedAtom) == False):
+		    PackagesQuickpkg.append("quick|"+installedAtom)
 		print "\t\t"+dep+" versions match, no need to build"
 	print
 	if atomconflicts != []:
@@ -222,6 +226,9 @@ def build(atoms):
 	        print green("      *")+bold(" [QUICK] ")+i.split("quick|")[len(i.split("quick|"))-1]
 	    elif i.startswith("avail|"):
 	        print green("      *")+bold(" [AVAIL] ")+i.split("avail|")[len(i.split("avail|"))-1]
+	    else:
+		# I should never get here
+	        print green("      *")+bold(" [MERGE] ")+i
     else:
 	print green("   *")+" No extra dependencies required"
     print
@@ -230,7 +237,7 @@ def build(atoms):
 	print red("   *")+" These are the conflicting packages:"
 	for i in PackagesConflicting:
 	    print red("      *")+bold(" [CONFL] ")+i
-	if (not ignoreConflicts):
+	if (not enzymeRequestIgnoreConflicts):
 	    print
 	    print
 	    print red(" ***")+" Sorry, I can't continue. To force this, add --ignore-conflicts at your own risk."
@@ -242,7 +249,7 @@ def build(atoms):
 	    print
 	    time.sleep(5)
 
-    if (pretendAll):
+    if (enzymeRequestPretendAll):
 	sys.exit(0)
 	
     # when the compilation ends, enzyme runs reagent
@@ -252,22 +259,49 @@ def build(atoms):
     if PackagesDependencies != []:
         print yellow("  *")+" Building dependencies..."
 	for dep in PackagesDependencies:
-	    # running emerge and detect:
-	    # - errors
-	    # - log files
-	    # - etc update?
-	    rc = emerge(dep,odbBuild)
-	    print str(rc)
-	    print green("  *")+" Compiling: "+red(dep)
-    print
+	    outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
+	    print green("  *")+" Compiling: "+red(dep)+" ... "
+	    print yellow("     *")+" redirecting output to: "+green(outfile)
+	    rc, outfile = emerge("="+dep,odbNodeps,outfile)
+	    if (not rc):
+		# compilation is fine
+		print green("     *")+" Compiled successfully"
+		PackagesQuickpkg.append("quick|"+dep)
+		os.remove(outfile)
+	    else:
+		print red("     *")+" Compile error"
+		print red("     *")+" Log file at: "+outfile
+		print
+		print
+		print red("  ***")+" Cannot continue"
+		sys.exit(250)
+	    # FIXME: move the .tbz2 to the proper directory
+	    
+	    # FIXME: complete this by adding to packagesPaths the path of the file
+    
     if toBeBuilt != []:
         print green("  *")+" Building packages..."
 	for dep in toBeBuilt:
-	    # running emerge and detect:
-	    # - errors
-	    # - log files
-	    # - etc update?
+	    outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
 	    print green("  *")+" Compiling: "+red(dep)
+	    print yellow("     *")+" redirecting output to: "+green(outfile)
+	    rc, outfile = emerge("="+dep,odbNodeps,outfile)
+	    if (not rc):
+		# compilation is fine
+		print green("     *")+" Compiled successfully"
+		PackagesQuickpkg.append("quick|"+dep)
+		os.remove(outfile)
+	    else:
+		print red("     *")+" Compile error"
+		print red("     *")+" Log file at: "+outfile
+		print
+		print
+		print red("  ***")+" Cannot continue"
+		sys.exit(250)
+
+    # FIXME: before running quickpkg or qpkg PLEASE run etc-update interactively
+    # FIXME: parse --no-interaction option
+
     print
     if PackagesQuickpkg != []:
         print green("  *")+" Compressing already installed packages..."
@@ -276,9 +310,9 @@ def build(atoms):
 	    # - errors
 	    # - log files
 	    # - etc update?
-	    if (not dep.startswith("avail|")):
-		dep = dep.split("quick|")[len(dep.split("quick|"))-1]
-	        print green("  *")+" Compressing: "+red(dep)
+	    dep = dep.split("|")[len(dep.split("|"))-1]
+	    print green("  *")+" Compressing: "+red(dep)
+	    # FIXME: complete and add path to packagesPaths
 
     if packagesPaths != []:
 	print red("   *")+" These are the binary packages created:"

@@ -23,6 +23,7 @@
 def initializePortageTree():
     portage.settings.unlock()
     portage.settings['PORTDIR'] = etpConst['portagetreedir']
+    portage.settings['PORTDIR_OVERLAY'] = etpConst['overlays']
     portage.settings.lock()
     portage.portdb.__init__(etpConst['portagetreedir'])
 
@@ -36,6 +37,7 @@ initializePortageTree()
 import output
 from output import bold, colorize, green, red, yellow
 import re
+import random
 
 def isRoot():
     import getpass
@@ -50,12 +52,16 @@ def getPortageEnv(var):
     except KeyError:
 	return None
 
+def getRandomNumber():
+    return int(str(random.random())[2:7])
+
 def getThirdPartyMirrors(mirrorname):
     return portage.thirdpartymirrors[mirrorname]
 
 # resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1
 def getBestAtom(atom):
+    initializePortageTree()
     return portage.portdb.xmatch("bestmatch-visible",str(atom))
 
 def getArchFromChost(chost):
@@ -84,11 +90,16 @@ def getInstalledAtom(atom):
     else:
         return None
 
-def emerge(atom,options):
-    outfile = etpConst['packagestmpfile']
-    print outfile
-    #rc = spawnCommand(cdbRunEmerge+" "+options+" "+atom, )
-    #return rc, outfile
+def emerge(atom,options,outfile = None):
+    if outfile is None:
+	outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
+    if os.path.isfile(outfile):
+	try:
+	    os.remove(outfile)
+	except:
+	    os.system("rm -rf "+outfile)
+    rc = spawnCommand(cdbRunEmerge+" "+options+" "+atom, " &> "+outfile)
+    return rc, outfile
 
 # NOTE: atom must be a COMPLETE atom, with version!
 def isTbz2PackageAvailable(atom, verbose = False):
