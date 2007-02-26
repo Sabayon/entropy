@@ -1,4 +1,5 @@
 TODO list (for developers only):
 - timestamp management across database and packages servers
 - a general option --info to print all the Entropy variables and constants
+- add a wrapper for qfile and qlist portage-utils tools because our internal repository is at /var/lib/entropy/portage
 

@@ -169,10 +169,11 @@ def build(atoms):
 	print
 	# check its unsatisfied dependencies
 	print "  Checking "+bold(atom)+" dependencies and conflicts..."
-	print
 	atomdeps, atomconflicts = synthetizeRoughDependencies(getPackageDependencyList(atom))
 	atomdeps = atomdeps.split()
 	atomconflicts = atomconflicts.split()
+	print "  Current installed release: "+bold(str(getInstalledAtom(dep_getkey(atom))))
+	print
 	print "\tfiltering "+atom+" dependencies..."
 	# check if the dependency is satisfied
 	
