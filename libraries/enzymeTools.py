@@ -80,6 +80,7 @@ def build(atoms):
     
     enzymeRequestVerbose = False
     enzymeRequestForce = False
+    #enzymeRequestForceRepackage = False
     enzymeRequestUpdate = False
     enzymeRequestPretendAll = False
     enzymeRequestIgnoreConflicts = False
@@ -90,6 +91,8 @@ def build(atoms):
 	    enzymeRequestVerbose = True
 	elif ( i == "--force-build" ):
 	    enzymeRequestForce = True
+	#elif ( i == "--force-repackage" ):
+	#    enzymeRequestForceRepackage = True
 	elif ( i == "--update" ):
 	    enzymeRequestUpdate = True
 	elif ( i == "--ignore-conflicts" ):
@@ -127,6 +130,10 @@ def build(atoms):
 
     buildCmd = None
     toBeBuilt = []
+    PackagesDependencies = []
+    PackagesConflicting = []
+    PackagesQuickpkg = []
+
     # check if the package is already installed
     for atom in validAtoms:
         # let's dance !!
@@ -144,13 +151,20 @@ def build(atoms):
 	    else:
 	        if (enzymeRequestVerbose): print "I will use this already precompiled package: "+tbz2Available
 	else:
-            if (enzymeRequestVerbose): print "I have to compile "+atom+" by myself..."
-            toBeBuilt.append(atom)
+            if (enzymeRequestVerbose): print "I have to compile or quickpkg "+atom+" by myself..."
+	    if (enzymeRequestForce) or (isAvailable is None):
+		toBeBuilt.append(atom)
+	    elif (not enzymeRequestForce) and (isAvailable is not None):
+		wantedAtom = getBestAtom(atom)
+		if (wantedAtom == isAvailable):
+		    PackagesQuickpkg.append("quick|"+atom)
+		else:
+		    toBeBuilt.append(atom)
+	    else:
+		toBeBuilt.append(atom)
+	    
     
     # now we have to solve the dependencies and create the packages that need to be build
-    PackagesDependencies = []
-    PackagesConflicting = []
-    PackagesQuickpkg = []
     for atom in toBeBuilt:
 	print
 	# check its unsatisfied dependencies
@@ -261,8 +275,11 @@ def build(atoms):
 	for dep in PackagesDependencies:
 	    outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
 	    print green("  *")+" Compiling: "+red(dep)+" ... "
-	    print yellow("     *")+" redirecting output to: "+green(outfile)
-	    rc, outfile = emerge("="+dep,odbNodeps,outfile)
+	    if (not enzymeRequestVerbose):
+		print yellow("     *")+" redirecting output to: "+green(outfile)
+		rc, outfile = emerge("="+dep,odbNodeps,outfile)
+	    else:
+		rc, outfile = emerge("="+dep,odbNodeps,None,None)
 	    if (not rc):
 		# compilation is fine
 		print green("     *")+" Compiled successfully"
@@ -270,7 +287,7 @@ def build(atoms):
 		os.remove(outfile)
 	    else:
 		print red("     *")+" Compile error"
-		print red("     *")+" Log file at: "+outfile
+		if (not enzymeRequestVerbose): print red("     *")+" Log file at: "+outfile
 		print
 		print
 		print red("  ***")+" Cannot continue"
@@ -284,8 +301,11 @@ def build(atoms):
 	for dep in toBeBuilt:
 	    outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
 	    print green("  *")+" Compiling: "+red(dep)
-	    print yellow("     *")+" redirecting output to: "+green(outfile)
-	    rc, outfile = emerge("="+dep,odbNodeps,outfile)
+	    if (not enzymeRequestVerbose):
+		print yellow("     *")+" redirecting output to: "+green(outfile)
+		rc, outfile = emerge("="+dep,odbNodeps,outfile)
+	    else:
+		rc, outfile = emerge("="+dep,odbNodeps,None,None)
 	    if (not rc):
 		# compilation is fine
 		print green("     *")+" Compiled successfully"
@@ -293,7 +313,7 @@ def build(atoms):
 		os.remove(outfile)
 	    else:
 		print red("     *")+" Compile error"
-		print red("     *")+" Log file at: "+outfile
+		if (not enzymeRequestVerbose): print red("     *")+" Log file at: "+outfile
 		print
 		print
 		print red("  ***")+" Cannot continue"
@@ -347,7 +367,7 @@ def overlay(options):
     _myopts = []
     for x in myopts:
         # --verbose, -v
-	if (x != "--verbose" ) and (x != "-v" ) and (x != "--force-build"):
+	if (x != "--verbose" ) and (x != "-v" ):
 	    _myopts.append(x)
     myopts = _myopts
 

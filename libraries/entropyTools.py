@@ -90,15 +90,18 @@ def getInstalledAtom(atom):
     else:
         return None
 
-def emerge(atom,options,outfile = None):
-    if outfile is None:
+def emerge(atom,options,outfile = None, redirect = "&>"):
+    if (outfile is None) and (redirect == "&>"):
 	outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
+    elif (redirect is None):
+	outfile = ""
+	redirect = ""
     if os.path.isfile(outfile):
 	try:
 	    os.remove(outfile)
 	except:
 	    os.system("rm -rf "+outfile)
-    rc = spawnCommand(cdbRunEmerge+" "+options+" "+atom, " &> "+outfile)
+    rc = spawnCommand(cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
     return rc, outfile
 
 # NOTE: atom must be a COMPLETE atom, with version!
