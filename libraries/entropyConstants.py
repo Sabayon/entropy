@@ -243,6 +243,7 @@ dbPDEPEND = "PDEPEND"
 dbNEEDED = "NEEDED"
 dbOR = "|or|"
 dbKEYWORDS = "KEYWORDS"
+dbCONTENTS = "CONTENTS"
 
 # Portage variables reference
 # vdbVARIABLE --> $VARIABLE

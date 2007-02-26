@@ -102,19 +102,51 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
 	try:
 	    os.remove(outfile)
 	except:
-	    os.system("rm -rf "+outfile)
+	    spawnCommand("rm -rf "+outfile)
     rc = spawnCommand(cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
     return rc, outfile
 
 # create a .tbz2 file in the specified path
 def quickpkg(atom,dirpath):
     # getting package info
-    pkgname = atom.split("/")[1]+".tbz2"
-    dirpath += "/"+pkgname
-    tmpdirpath = etpConst['packagestmpdir']+"/"+pkgname+"-tmpdir"
-    if os.path.isdir(tmpdirpath): os.system("rm -rf "+tmpdirpath)
-    print dirpath
-    print tmpdirpath
+    pkgname = atom.split("/")[1]
+    pkgcat = atom.split("/")[0]
+    pkgfile = pkgname+".tbz2"
+    dirpath += "/"+pkgname+".tbz2"
+    tmpdirpath = etpConst['packagestmpdir']+"/"+pkgname+".tbz2"+"-tmpdir"
+    if os.path.isdir(tmpdirpath): spawnCommand("rm -rf "+tmpdirpath)
+    os.makedirs(tmpdirpath)
+    dbdir = "/var/db/pkg/"+pkgcat+"/"+pkgname+"/"
+
+    # crate file list
+    f = open(dbdir+dbCONTENTS,"r")
+    pkgcontent = f.readlines()
+    f.close()
+    _pkgcontent = []
+    for line in pkgcontent:
+	line = line.strip().split()[1]
+	if not ((os.path.isdir(line)) and (os.path.islink(line))):
+	    _pkgcontent.append(line)
+    pkgcontent = _pkgcontent
+    f = open(tmpdirpath+"/"+dbCONTENTS,"w")
+    for i in pkgcontent:
+	f.write(i+"\n")
+    f.flush()
+    f.close()
+
+    # package them into a file
+    rc = spawnCommand("tar cjf "+dirpath+" -C / --files-from='"+tmpdirpath+"/"+dbCONTENTS+"' --no-recursion", redirect = "&>/dev/null")
+    
+    # appending xpak informations
+    import xpak
+    tbz2 = xpak.tbz2(dirpath)
+    tbz2.recompose(dbdir)
+    
+    if os.path.isfile(dirpath):
+	return dirpath
+    else:
+	return False
+
 
 # NOTE: atom must be a COMPLETE atom, with version!
 def isTbz2PackageAvailable(atom, verbose = False):

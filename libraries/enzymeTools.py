@@ -231,7 +231,8 @@ def build(atoms):
         for i in toBeBuilt:
 	    print yellow("      *")+" "+i
     else:
-	print red("   *")+" No packages to build"
+	print
+	print red("   *")+" No new packages to build, maybe that they're already built."
     print
 
     if PackagesDependencies != []:
@@ -246,9 +247,10 @@ def build(atoms):
 	    else:
 		# I should never get here
 	        print green("      *")+bold(" [MERGE] ")+i
+        print
     else:
-	print green("   *")+" No extra dependencies required"
-    print
+	print green("   *")+" No extra dependencies need to be built"
+
     
     if PackagesConflicting != []:
 	print red("   *")+" These are the conflicting packages:"
@@ -271,10 +273,10 @@ def build(atoms):
 	
     # when the compilation ends, enzyme runs reagent
     packagesPaths = []
-    
-    print
+
     if PackagesDependencies != []:
-        print yellow("  *")+" Building dependencies..."
+	print
+	print yellow("  *")+" Building dependencies..."
 	for dep in PackagesDependencies:
 	    outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
 	    print green("  *")+" Compiling: "+red(dep)+" ... "
@@ -300,6 +302,7 @@ def build(atoms):
 	    # FIXME: complete this by adding to packagesPaths the path of the file
     
     if toBeBuilt != []:
+	print
         print green("  *")+" Building packages..."
 	for dep in toBeBuilt:
 	    outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
@@ -322,7 +325,7 @@ def build(atoms):
 		print red("  ***")+" Cannot continue"
 		sys.exit(250)
 
-    # FIXME: before running quickpkg or qpkg PLEASE run etc-update interactively
+    # FIXME: before running quickpkg() or qpkg PLEASE run etc-update interactively
     # FIXME: parse --no-interaction option
 
     print
@@ -336,12 +339,19 @@ def build(atoms):
 	    dep = dep.split("|")[len(dep.split("|"))-1]
 	    print green("  *")+" Compressing: "+red(dep)
 	    rc = quickpkg(dep,etpConst['packagesstoredir'])
+	    if (rc is not None):
+		packagesPaths.append(rc)
+	    else:
+		print green("      *")+" quickpkg error for "+red(dep)
+		print green("  ***")+" Fatal error, cannot continue"
+		sys.exit(251)
 	    # FIXME: complete and add path to packagesPaths
 
     if packagesPaths != []:
+	print
 	print red("   *")+" These are the binary packages created:"
 	for pkg in packagesPaths:
-	    print green("      *")+red(pkg)
+	    print green("      * ")+red(pkg)
 
     return packagesPaths
 
