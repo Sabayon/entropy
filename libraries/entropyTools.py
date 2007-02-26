@@ -90,7 +90,9 @@ def getInstalledAtom(atom):
     else:
         return None
 
-def emerge(atom,options,outfile = None, redirect = "&>"):
+def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
+    if (simulate):
+	return 0,"" # simulation enabled
     if (outfile is None) and (redirect == "&>"):
 	outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
     elif (redirect is None):
@@ -104,13 +106,23 @@ def emerge(atom,options,outfile = None, redirect = "&>"):
     rc = spawnCommand(cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
     return rc, outfile
 
+# create a .tbz2 file in the specified path
+def quickpkg(atom,dirpath):
+    # getting package info
+    pkgname = atom.split("/")[1]+".tbz2"
+    dirpath += "/"+pkgname
+    tmpdirpath = etpConst['packagestmpdir']+"/"+pkgname+"-tmpdir"
+    if os.path.isdir(tmpdirpath): os.system("rm -rf "+tmpdirpath)
+    print dirpath
+    print tmpdirpath
+
 # NOTE: atom must be a COMPLETE atom, with version!
 def isTbz2PackageAvailable(atom, verbose = False):
     # check if the package have been already merged
     atomName = atom.split("/")[len(atom.split("/"))-1]
     tbz2Available = False
     
-    uploadPath = etpConst['packagessuploaddir']+"/"+atomName+".tbz2"
+    #uploadPath = etpConst['packagessuploaddir']+"/"+atomName+".tbz2"
     storePath = etpConst['packagesstoredir']+"/"+atomName+".tbz2"
     packagesPath = etpConst['packagesbindir']+"/"+atomName+".tbz2"
     
@@ -120,9 +132,9 @@ def isTbz2PackageAvailable(atom, verbose = False):
     if (verbose): print "testing in directory: "+storePath
     if os.path.isfile(storePath):
         tbz2Available = storePath
-    if (verbose): print "testing in directory: "+uploadPath
-    if os.path.isfile(uploadPath):
-        tbz2Available = uploadPath
+    #if (verbose): print "testing in directory: "+uploadPath
+    #if os.path.isfile(uploadPath):
+    #    tbz2Available = uploadPath
     if (verbose): print "found here: "+str(tbz2Available)
 
     return tbz2Available
