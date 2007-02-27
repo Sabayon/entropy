@@ -61,8 +61,11 @@ def getThirdPartyMirrors(mirrorname):
 # resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1
 def getBestAtom(atom):
-    initializePortageTree()
-    return portage.portdb.xmatch("bestmatch-visible",str(atom))
+    try:
+        rc = portage.portdb.xmatch("bestmatch-visible",str(atom))
+        return rc
+    except ValueError:
+	return "!!conflicts"
 
 def getArchFromChost(chost):
 	# when we'll add new archs, we'll have to add a testcase here
@@ -172,7 +175,10 @@ def isTbz2PackageAvailable(atom, verbose = False):
     return tbz2Available
 
 def checkAtom(atom):
-    if (isvalidatom(atom) == 1) or ( getBestAtom(atom) != ""):
+    bestAtom = getBestAtom(atom)
+    if bestAtom == "!!conflicts":
+	bestAtom = ""
+    if (isvalidatom(atom) == 1) or ( bestAtom != ""):
         return True
     return False
 

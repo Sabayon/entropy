@@ -121,6 +121,13 @@ def build(atoms):
         if (enzymeRequestVerbose): print i+" is valid?: "+str(checkAtom(i))
 	if (checkAtom(i)):
 	    validAtoms.append(i)
+	else:
+	    print
+	    print red("* >>> ")+yellow(i)+" is not a valid atom, it's masked or its name conflicts with something else."
+	    if getBestAtom(i) == "!!conflicts":
+		# it conflicts with something
+		print red("* ^^^ ")+"Ambiguous package name. Please add category."
+
     if validAtoms == []:
         print_error(red(bold("no valid package names specified.")))
 	sys.exit(102)
@@ -165,8 +172,8 @@ def build(atoms):
 		    toBeBuilt.append(atom)
 	    else:
 		toBeBuilt.append(atom)
-	    
-    
+
+
     # now we have to solve the dependencies and create the packages that need to be build
     for atom in toBeBuilt:
 	print
@@ -297,9 +304,6 @@ def build(atoms):
 		print
 		print red("  ***")+" Cannot continue"
 		sys.exit(250)
-	    # FIXME: move the .tbz2 to the proper directory
-	    
-	    # FIXME: complete this by adding to packagesPaths the path of the file
     
     if toBeBuilt != []:
 	print
@@ -325,7 +329,14 @@ def build(atoms):
 		print red("  ***")+" Cannot continue"
 		sys.exit(250)
 
-    # FIXME: before running quickpkg() or qpkg PLEASE run etc-update interactively
+    if (enzymeRequestInteraction):
+	# interaction needed
+	print green("  *")+" Running etc-update..."
+	spawnCommand("etc-update")
+    else:
+	print green("  *")+" Auto-running etc-update..."
+	spawnCommand("echo -5 | etc-update")
+
     # FIXME: parse --no-interaction option
 
     print
