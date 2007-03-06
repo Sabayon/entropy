@@ -236,10 +236,10 @@ def build(atoms):
 		PackagesConflicting.append(conflict)
 
 	# Now check if its dependency list is empty, in the case, just quickpkg it
-	if(enzymeRequestVerbose): print "\n\t"+red("*")+" Package dependencies of: "+atom+" are tainted? --> "+str(atomDepsTainted)
+	if (enzymeRequestVerbose): print "\n\t"+red("*")+" Package dependencies of: "+atom+" are tainted? --> "+str(atomDepsTainted)
 	# add to the packages that can be quickpkg'd
-	if (not atomDepsTainted) and (not enzymeRequestForceRebuild):
-	    toBeQuickpkg.append(atom)
+	if (not atomDepsTainted) and (not enzymeRequestForceRebuild) and ( atom == getInstalledAtom(dep_getkey(atom)) ):
+	    toBeQuickpkg.append(getInstalledAtom(dep_getkey(atom))) # append the currently installed release ONLY!
 
     if (enzymeRequestVerbose): print; print
 
@@ -253,6 +253,8 @@ def build(atoms):
 	if (not _tbbfound):
 	    _toBeBuilt.append(i)
     toBeBuilt = _toBeBuilt
+
+    # Now clean toBeQuickpkg
 
     if toBeBuilt != []:
 	print green("   *")+" This is the list of the packages that have been considered:"
