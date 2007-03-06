@@ -79,8 +79,8 @@ def build(atoms):
 # FIXME: move print() to our print function
 
     enzymeRequestVerbose = False
-    enzymeRequestForce = False
-    #enzymeRequestForceRepackage = False
+    enzymeRequestForceRepackage = False
+    enzymeRequestForceRebuild = False
     enzymeRequestUpdate = False
     enzymeRequestPretendAll = False
     enzymeRequestIgnoreConflicts = False
@@ -90,10 +90,10 @@ def build(atoms):
     for i in atoms:
         if ( i == "--verbose" ) or ( i == "-v" ):
 	    enzymeRequestVerbose = True
-	elif ( i == "--force-build" ):
-	    enzymeRequestForce = True
-	#elif ( i == "--force-repackage" ):
-	#    enzymeRequestForceRepackage = True
+	elif ( i == "--force-repackage" ):
+	    enzymeRequestForceRepackage = True
+	elif ( i == "--force-rebuild" ):
+	    enzymeRequestForceRebuild = True
 	elif ( i == "--update" ):
 	    enzymeRequestUpdate = True
 	elif ( i == "--ignore-conflicts" ):
@@ -109,7 +109,7 @@ def build(atoms):
     atoms = _atoms
     
     #if (enzymeRequestVerbose): print "verbose: "+str(enzymeRequestVerbose)
-    #if (enzymeRequestVerbose): print "force build: "+str(enzymeRequestForce)
+    #if (enzymeRequestVerbose): print "force build: "+str(enzymeRequestForceRepackage)
     
     # translate dir variables
     etpConst['packagessuploaddir'] = translateArch(etpConst['packagessuploaddir'],getPortageEnv('CHOST'))
@@ -150,25 +150,25 @@ def build(atoms):
         # let's dance !!
         isAvailable = getInstalledAtom("="+atom)
 	if (enzymeRequestVerbose): print "testing atom: "+atom
-	if (isAvailable is not None) and (not enzymeRequestForce):
+	if (isAvailable is not None) and (not enzymeRequestForceRepackage):
 	    # package is available on the system
 	    if (enzymeRequestVerbose): print "I'd like to keep a current copy of binary package "+atom+" but first I need to check if even this step has been already done"
 
 	    tbz2Available = isTbz2PackageAvailable(atom, enzymeRequestVerbose)
 
-	    if (tbz2Available == False):
+	    if (tbz2Available == False) or (enzymeRequestForceRebuild):
 		if (enzymeRequestVerbose): print "Do I really have to build "+bold(atom)+" ?"
 	        toBeBuilt.append(atom)
 	    else:
 	        if (enzymeRequestVerbose): print "I will use this already precompiled package: "+tbz2Available
 	else:
             if (enzymeRequestVerbose): print "I have to compile or quickpkg "+atom+" by myself..."
-	    if (enzymeRequestForce) or (isAvailable is None):
+	    if (enzymeRequestForceRepackage) or (isAvailable is None):
 		toBeBuilt.append(atom)
-	    elif (not enzymeRequestForce) and (isAvailable is not None):
+	    elif (not enzymeRequestForceRepackage) and (isAvailable is not None):
 		wantedAtom = getBestAtom(atom)
 		if (wantedAtom == isAvailable):
-		    toBeQuickpkg.append("quick|"+atom)
+		    toBeQuickpkg.append(atom)
 		else:
 		    toBeBuilt.append(atom)
 	    else:
@@ -238,7 +238,7 @@ def build(atoms):
 	# Now check if its dependency list is empty, in the case, just quickpkg it
 	if(enzymeRequestVerbose): print "\n\t"+red("*")+" Package dependencies of: "+atom+" are tainted? --> "+str(atomDepsTainted)
 	# add to the packages that can be quickpkg'd
-	if (not atomDepsTainted):
+	if (not atomDepsTainted) and (not enzymeRequestForceRebuild):
 	    toBeQuickpkg.append(atom)
 
     if (enzymeRequestVerbose): print; print
@@ -263,7 +263,7 @@ def build(atoms):
 	    print green("      *")+" [QUICK] "+i
     else:
 	print
-	print red("   *")+" No new packages to build, they're all already built."
+	print red("   *")+" No new packages to build, they're all already built or packaged."
     print
 
     if PackagesDependencies != []:
