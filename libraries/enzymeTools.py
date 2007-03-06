@@ -77,7 +77,7 @@ def build(atoms):
 
 # FIXME: remember to use listOverlay() as PORTDIR_OVERLAY variable
 # FIXME: move print() to our print function
-    
+
     enzymeRequestVerbose = False
     enzymeRequestForce = False
     #enzymeRequestForceRepackage = False
@@ -140,6 +140,7 @@ def build(atoms):
 
     buildCmd = None
     toBeBuilt = []
+    toBeQuickpkg = []
     PackagesDependencies = []
     PackagesConflicting = []
     PackagesQuickpkg = []
@@ -156,7 +157,7 @@ def build(atoms):
 	    tbz2Available = isTbz2PackageAvailable(atom, enzymeRequestVerbose)
 
 	    if (tbz2Available == False):
-		if (enzymeRequestVerbose): print "I'll have to build: "+atom
+		if (enzymeRequestVerbose): print "Do I really have to build "+bold(atom)+" ?"
 	        toBeBuilt.append(atom)
 	    else:
 	        if (enzymeRequestVerbose): print "I will use this already precompiled package: "+tbz2Available
@@ -167,7 +168,7 @@ def build(atoms):
 	    elif (not enzymeRequestForce) and (isAvailable is not None):
 		wantedAtom = getBestAtom(atom)
 		if (wantedAtom == isAvailable):
-		    PackagesQuickpkg.append("quick|"+atom)
+		    toBeQuickpkg.append("quick|"+atom)
 		else:
 		    toBeBuilt.append(atom)
 	    else:
@@ -176,6 +177,8 @@ def build(atoms):
 
     # now we have to solve the dependencies and create the packages that need to be build
     for atom in toBeBuilt:
+	# if this turns into true, we need to build the package because its dependencies do not match
+	atomDepsTainted = False
 	print
 	# check its unsatisfied dependencies
 	print "  Checking "+bold(atom)+" dependencies and conflicts..."
@@ -203,10 +206,12 @@ def build(atoms):
 	    if installedAtom is None:
 		# then append - because it's not installed !
 		if(enzymeRequestVerbose): print "\t\t"+dep+" is not installed, adding."
+		atomDepsTainted = True # taint !
 		PackagesDependencies.append(wantedAtom)
 	    elif (wantedAtom != installedAtom):
 		if (enzymeRequestUpdate):
 		    PackagesDependencies.append(wantedAtom)
+		    atomDepsTainted = True # taint !
 		    if(enzymeRequestVerbose): print "\t\t"+dep+" versions differs, adding (pulled in by --update)."
 		else:
 		    if (isTbz2PackageAvailable(installedAtom) == False):
@@ -229,23 +234,42 @@ def build(atoms):
 		# damn, it's installed
 		if(enzymeRequestVerbose): print "\t\t Package "+yellow(conflict)+" conflicts"
 		PackagesConflicting.append(conflict)
-	#FIXME: DO THIS PART check if there are conflicts
 
-    if(enzymeRequestVerbose): print; print
+	# Now check if its dependency list is empty, in the case, just quickpkg it
+	if(enzymeRequestVerbose): print "\n\t"+red("*")+" Package dependencies of: "+atom+" are tainted? --> "+str(atomDepsTainted)
+	# add to the packages that can be quickpkg'd
+	if (not atomDepsTainted):
+	    toBeQuickpkg.append(atom)
+
+    if (enzymeRequestVerbose): print; print
+
+    # Clean out toBeBuilt by removing entries that are in toBeQuickpkg
+    _toBeBuilt = []
+    for i in toBeBuilt:
+	_tbbfound = False
+	for x in toBeQuickpkg:
+	    if (i == x):
+	        _tbbfound = True
+	if (not _tbbfound):
+	    _toBeBuilt.append(i)
+    toBeBuilt = _toBeBuilt
 
     if toBeBuilt != []:
-	print green("   *")+" This is the list of the packages that needs to be built:"
-        for i in toBeBuilt:
-	    print yellow("      *")+" "+i
+	print green("   *")+" This is the list of the packages that have been considered:"
+
+	for i in toBeBuilt:
+	    print yellow("      *")+" [BUILD] "+i
+	for i in toBeQuickpkg:
+	    print green("      *")+" [QUICK] "+i
     else:
 	print
-	print red("   *")+" No new packages to build, maybe that they're already built."
+	print red("   *")+" No new packages to build, they're all already built."
     print
 
     if PackagesDependencies != []:
 	print yellow("   *")+" These are their dependencies (pulled in):"
         for i in PackagesDependencies:
-	    print red("      *")+bold(" [COMPI] ")+i
+	    print red("      *")+bold(" [BUILD] ")+i
 	for i in PackagesQuickpkg:
 	    if i.startswith("quick|"):
 	        print green("      *")+bold(" [QUICK] ")+i.split("quick|")[len(i.split("quick|"))-1]
@@ -306,7 +330,6 @@ def build(atoms):
 		sys.exit(250)
     
     if toBeBuilt != []:
-	print
         print green("  *")+" Building packages..."
 	for dep in toBeBuilt:
 	    outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
@@ -331,32 +354,37 @@ def build(atoms):
 
     if (enzymeRequestInteraction):
 	# interaction needed
-	print green("  *")+" Running etc-update..."
+	print green("   *")+" Running etc-update..."
 	spawnCommand("etc-update")
     else:
 	print green("  *")+" Auto-running etc-update..."
 	spawnCommand("echo -5 | etc-update")
 
-    # FIXME: parse --no-interaction option
-
     print
-    if PackagesQuickpkg != []:
+    if (PackagesQuickpkg != []) or (toBeQuickpkg != []):
         print green("  *")+" Compressing installed packages..."
-	for dep in PackagesQuickpkg:
-	    # running emerge and detect:
-	    # - errors
-	    # - log files
-	    # - etc update?
+
+	for dep in toBeQuickpkg:
 	    dep = dep.split("|")[len(dep.split("|"))-1]
 	    print green("  *")+" Compressing: "+red(dep)
 	    rc = quickpkg(dep,etpConst['packagesstoredir'])
 	    if (rc is not None):
 		packagesPaths.append(rc)
 	    else:
-		print green("      *")+" quickpkg error for "+red(dep)
-		print green("  ***")+" Fatal error, cannot continue"
+		print red("      *")+" quickpkg error for "+red(dep)
+		print red("  ***")+" Fatal error, cannot continue"
 		sys.exit(251)
-	    # FIXME: complete and add path to packagesPaths
+
+	for dep in PackagesQuickpkg:
+	    dep = dep.split("|")[len(dep.split("|"))-1]
+	    print green("  *")+" Compressing: "+red(dep)
+	    rc = quickpkg(dep,etpConst['packagesstoredir'])
+	    if (rc is not None):
+		packagesPaths.append(rc)
+	    else:
+		print red("      *")+" quickpkg error for "+red(dep)
+		print red("  ***")+" Fatal error, cannot continue"
+		sys.exit(251)
 
     if packagesPaths != []:
 	print
@@ -365,6 +393,34 @@ def build(atoms):
 	    print green("      * ")+red(pkg)
 
     return packagesPaths
+
+
+# World update tool
+def world(options):
+
+    myopts = options[1:]
+
+    print "building world :P"
+
+    enzymeRequestVerbose = False
+    enzymeRequestRebuild = False
+    for i in myopts:
+        if ( i == "--verbose" ) or ( i == "-v" ):
+	    enzymeRequestVerbose = True
+	elif ( i == "--rebuild-all" ):
+	    enzymeRequestRebuild = True
+	elif ( i == "--update" ):
+	    enzymeRequestUpdate = True
+	else:
+	    print red("  ***")+" Wrong parameters specified."
+	    sys.exit(201)
+
+    # translate dir variables
+    etpConst['packagessuploaddir'] = translateArch(etpConst['packagessuploaddir'],getPortageEnv('CHOST'))
+    etpConst['packagesstoredir'] = translateArch(etpConst['packagesstoredir'],getPortageEnv('CHOST'))
+    etpConst['packagesbindir'] = translateArch(etpConst['packagesbindir'],getPortageEnv('CHOST'))
+
+    print "ok... now?"
 
 def overlay(options):
     # etpConst['overlaysconffile'] --> layman.cfg
@@ -453,3 +509,4 @@ def overlay(options):
 	return False
     
     return True
+
