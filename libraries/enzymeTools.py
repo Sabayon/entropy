@@ -75,8 +75,8 @@ def sync(options):
 
 def build(atoms):
 
-# FIXME: remember to use listOverlay() as PORTDIR_OVERLAY variable
 # FIXME: move print() to our print function
+# FIXME: add runtime dependencies packages quickpkg
 
     enzymeRequestVerbose = False
     enzymeRequestForceRepackage = False
@@ -257,32 +257,32 @@ def build(atoms):
     # Now clean toBeQuickpkg
 
     if toBeBuilt != []:
-	print green("   *")+" This is the list of the packages that have been considered:"
+	print green("  *")+" This is the list of the packages that have been considered:"
 
 	for i in toBeBuilt:
-	    print yellow("      *")+" [BUILD] "+i
+	    print yellow("     *")+" [BUILD] "+i
 	for i in toBeQuickpkg:
-	    print green("      *")+" [QUICK] "+i
+	    print green("     *")+" [QUICK] "+i
     else:
 	print
-	print red("   *")+" No new packages to build, they're all already built or packaged."
+	print red("  *")+" No new packages to build, they're all already built or packaged."
     print
 
     if PackagesDependencies != []:
-	print yellow("   *")+" These are their dependencies (pulled in):"
+	print yellow("  *")+" These are their dependencies (pulled in):"
         for i in PackagesDependencies:
-	    print red("      *")+bold(" [BUILD] ")+i
+	    print red("     *")+bold(" [BUILD] ")+i
 	for i in PackagesQuickpkg:
 	    if i.startswith("quick|"):
-	        print green("      *")+bold(" [QUICK] ")+i.split("quick|")[len(i.split("quick|"))-1]
+	        print green("     *")+bold(" [QUICK] ")+i.split("quick|")[len(i.split("quick|"))-1]
 	    elif i.startswith("avail|"):
-	        print green("      *")+bold(" [AVAIL] ")+i.split("avail|")[len(i.split("avail|"))-1]
+	        print green("     *")+bold(" [AVAIL] ")+i.split("avail|")[len(i.split("avail|"))-1]
 	    else:
 		# I should never get here
-	        print green("      *")+bold(" [MERGE] ")+i
+	        print green("     *")+bold(" [MERGE] ")+i
         print
     else:
-	print green("   *")+" No extra dependencies need to be built"
+	print green("  *")+" No extra dependencies need to be built"
 
     
     if PackagesConflicting != []:
@@ -332,6 +332,7 @@ def build(atoms):
 		sys.exit(250)
     
     if toBeBuilt != []:
+	print
         print green("  *")+" Building packages..."
 	for dep in toBeBuilt:
 	    outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
