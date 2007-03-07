@@ -62,15 +62,76 @@ def listOverlays():
 
 # fetch the latest updates from Gentoo rsync mirrors
 def sync(options):
+    myopts = options[1:]
+    enzymeNoSyncBack = False
+    enzymeOnlySyncBack = False
+    enzymeNoOverlaySync = False
     syncMiscRedirect = "> /dev/null"
-    for i in options:
-        if i.startswith("--verbose") or i.startswith("-v"):
+
+    # check if rsync is installed
+    rsync = commands.getoutput("which rsync")
+    if (not rsync.startswith("/")):
+        print_error(red(bold("net-misc/rsync is not installed. Please install.")))
+	sys.exit(100)
+
+    for i in myopts:
+        if ( i == "--verbose" ) or ( i == "-v" ):
 	    syncMiscRedirect = None
-    print_info(green("syncing the Portage tree at: "+etpConst['portagetreedir']))
-    rc = spawnCommand(vdbPORTDIR+"="+etpConst['portagetreedir']+" "+cdbEMERGE+" --sync ", redirect = syncMiscRedirect) # redirect = "/dev/null"
-    if (rc != 0):
-        print_error(red("an error occoured while syncing the Portage tree. Are you sure that your Internet connection works?"))
-	sys.exit(101)
+	elif ( i == "--no-sync-back" ):
+	    enzymeNoSyncBack = True
+	elif ( i == "--only-sync-back" ):
+	    enzymeOnlySyncBack = True
+	elif ( i == "--no-overlay-sync" ):
+	    enzymeNoOverlaySync = True
+
+    if (not enzymeOnlySyncBack):
+	print_info(green("Syncing Entropy Portage Tree at: "+etpConst['portagetreedir']))
+	rc = spawnCommand(vdbPORTDIR+"="+etpConst['portagetreedir']+" "+cdbEMERGE+" --sync ", redirect = syncMiscRedirect) # redirect = "/dev/null"
+	if (rc != 0):
+	    print_error(red("an error occoured while syncing the Portage tree. Are you sure that your Internet connection works?"))
+	    sys.exit(101)
+	if (not enzymeNoOverlaySync):
+	    # syncing overlays
+	    rc = overlay(['overlay','sync'])
+	    if (not rc):
+	        print_warning(red("an error occoured while syncing the overlays. Please check if it's all fine."))
+	
+    else:
+	print_info(green("Not syncing Entropy Portage Tree at: "+etpConst['portagetreedir']))
+
+    if (not enzymeNoSyncBack):
+	print
+	print_info(green("Syncing back Entropy Portage Tree at: ")+bold(etpConst['portagetreedir'])+green(" to the official Portage Tree"))
+	# sync back to /usr/portage, but firstly, get user's PORTDIR
+	if os.path.isfile("/etc/make.conf"):
+	    f = open("/etc/make.conf","r")
+	    makeConf = f.readlines()
+	    f.close()
+	    officialPortageTreeDir = "/usr/portage"
+	    for line in makeConf:
+		if line.startswith("PORTDIR="):
+		    # found it !
+		    line = line.strip()
+		    officialPortageTreeDir = line.split('PORTDIR=')[1]
+		    # remove quotes
+		    if officialPortageTreeDir.startswith('"') and officialPortageTreeDir.endswith('"'):
+			officialPortageTreeDir = officialPortageTreeDir.split('"')[1]
+		    if officialPortageTreeDir.startswith("'") and officialPortageTreeDir.endswith("'"):
+			officialPortageTreeDir = officialPortageTreeDir.split("'")[1]
+	else:
+	    officialPortageTreeDir = "/usr/portage"
+	
+	# officialPortageTreeDir must not end with /
+	if officialPortageTreeDir.endswith("/"):
+	    officialPortageTreeDir = officialPortageTreeDir[:len(officialPortageTreeDir)-1]
+	
+	# sync back
+	rc = spawnCommand("rsync --recursive --links --safe-links --perms --times --force --whole-file --delete --delete-after --exclude=/distfiles --exclude=/packages "+etpConst['portagetreedir']+" "+officialPortageTreeDir, redirect = syncMiscRedirect)
+	if (rc != 0):
+	    print_error(red("an error occoured while syncing back the official Portage Tree."))
+	    sys.exit(101)
+    else:
+	print_info(yellow("Official Portage Tree sync-back disabled"))
 
 
 def build(atoms):
@@ -107,9 +168,6 @@ def build(atoms):
 	else:
 	    _atoms.append(i)
     atoms = _atoms
-    
-    #if (enzymeRequestVerbose): print "verbose: "+str(enzymeRequestVerbose)
-    #if (enzymeRequestVerbose): print "force build: "+str(enzymeRequestForceRepackage)
     
     # translate dir variables
     etpConst['packagessuploaddir'] = translateArch(etpConst['packagessuploaddir'],getPortageEnv('CHOST'))
