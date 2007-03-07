@@ -100,7 +100,6 @@ def sync(options):
 	print_info(green("Not syncing Entropy Portage Tree at: "+etpConst['portagetreedir']))
 
     if (not enzymeNoSyncBack):
-	print
 	print_info(green("Syncing back Entropy Portage Tree at: ")+bold(etpConst['portagetreedir'])+green(" to the official Portage Tree"))
 	# sync back to /usr/portage, but firstly, get user's PORTDIR
 	if os.path.isfile("/etc/make.conf"):
