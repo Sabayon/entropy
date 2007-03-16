@@ -54,6 +54,9 @@ def print_help():
     print "* opts  * : \t\t"+entropyTools.red("--ignore-conflicts")+"\t ignore conflicts between packages"
     print "* opts  * : \t\t"+entropyTools.red("--no-interaction")+"\t disable user interaction, automatic driving"
     print "* opts  * : \t\t"+entropyTools.red("--simulate-building")+"\t compilations are simulated only"
+    print "* info  * : \t"+entropyTools.green(entropyTools.bold("uninstall"))+"\t to uninstall one or a list of packages"
+    print "* opts  * : \t\t"+entropyTools.red("--pretend")+"\t\t just show what would be done"
+    print "* opts  * : \t\t"+entropyTools.red("--just-prune")+"\t\t with slotted packages, keep only the latest, remove the rest"
     print "* info  * : \t"+entropyTools.green(entropyTools.bold("overlay"))+"\t\t to manage overlays"
     print "* opts  * : \t\t "+entropyTools.red("add")+"\t\t\t to add overlays"
     print "* opts  * : \t\t "+entropyTools.red("remove")+"\t\t\t to remove overlays"
@@ -105,4 +108,8 @@ if (options[0] == "overlay"):
 # build tool
 if (options[0] == "build"):
     enzymeTools.build(options[1:])
+    sys.exit(0)
+# uninstall tool
+if (options[0] == "uninstall"):
+    enzymeTools.uninstall(options[1:])
     sys.exit(0)

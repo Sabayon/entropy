@@ -62,6 +62,7 @@ def getThirdPartyMirrors(mirrorname):
 # sys-libs/application --> sys-libs/application-1.2.3-r1
 def getBestAtom(atom):
     try:
+	#portage.portdb.melt()
         rc = portage.portdb.xmatch("bestmatch-visible",str(atom))
         return rc
     except ValueError:
@@ -92,6 +93,34 @@ def getInstalledAtom(atom):
         return rc[len(rc)-1]
     else:
         return None
+
+def getInstalledAtoms(atom):
+    rc = portage.db['/']['vartree'].dep_match(str(atom))
+    if (rc != []):
+        return rc
+    else:
+        return None
+
+# TO THIS FUNCTION:
+# must be provided a valid and complete atom
+# FIXME: needs some love !
+def extractPkgNameVer(atom):
+    package = atom.split("/")[len(atom.split("/"))-1]
+    package = package.split("-")
+    pkgname = ""
+    pkglen = len(package)
+    if package[pkglen-1].startswith("r"):
+        pkgver = package[pkglen-2]+"-"+package[pkglen-1]
+	pkglen -= 2
+    else:
+	pkgver = package[len(package)-1]
+	pkglen -= 1
+    for i in range(pkglen):
+	if i == pkglen-1:
+	    pkgname += package[i]
+	else:
+	    pkgname += package[i]+"-"
+    return pkgname,pkgver
 
 def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
     if (simulate):

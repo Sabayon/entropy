@@ -135,7 +135,6 @@ def sync(options):
 
 def build(atoms):
 
-# FIXME: move print() to our print function
 # FIXME: add runtime dependencies packages quickpkg
 
     enzymeRequestVerbose = False
@@ -175,15 +174,15 @@ def build(atoms):
     
     validAtoms = []
     for i in atoms:
-        if (enzymeRequestVerbose): print i+" is valid?: "+str(checkAtom(i))
+        if (enzymeRequestVerbose): print_info(i+" is valid?: "+str(checkAtom(i)))
 	if (checkAtom(i)):
 	    validAtoms.append(i)
 	else:
-	    print
-	    print red("* >>> ")+yellow(i)+" is not a valid atom, it's masked or its name conflicts with something else."
+	    #print
+	    print_warning(red("* >>> ")+yellow(i)+" is not a valid atom, it's masked or its name conflicts with something else.")
 	    if getBestAtom(i) == "!!conflicts":
 		# it conflicts with something
-		print red("* ^^^ ")+"Ambiguous package name. Please add category."
+		print_warning(red("* ^^^ ")+"Ambiguous package name. Please add category.")
 
     if validAtoms == []:
         print_error(red(bold("no valid package names specified.")))
@@ -206,20 +205,20 @@ def build(atoms):
     for atom in validAtoms:
         # let's dance !!
         isAvailable = getInstalledAtom("="+atom)
-	if (enzymeRequestVerbose): print "testing atom: "+atom
+	if (enzymeRequestVerbose): print_info("testing atom: "+atom)
 	if (isAvailable is not None) and (not enzymeRequestForceRepackage):
 	    # package is available on the system
-	    if (enzymeRequestVerbose): print "I'd like to keep a current copy of binary package "+atom+" but first I need to check if even this step has been already done"
+	    if (enzymeRequestVerbose): print_info("I'd like to keep a current copy of binary package "+atom+" but first I need to check if even this step has been already done")
 
 	    tbz2Available = isTbz2PackageAvailable(atom, enzymeRequestVerbose)
 
 	    if (tbz2Available == False) or (enzymeRequestForceRebuild):
-		if (enzymeRequestVerbose): print "Do I really have to build "+bold(atom)+" ?"
+		if (enzymeRequestVerbose): print_info("Do I really have to build "+bold(atom)+" ?")
 	        toBeBuilt.append(atom)
 	    else:
-	        if (enzymeRequestVerbose): print "I will use this already precompiled package: "+tbz2Available
+	        if (enzymeRequestVerbose): print_info("I will use this already precompiled package: "+tbz2Available)
 	else:
-            if (enzymeRequestVerbose): print "I have to compile or quickpkg "+atom+" by myself..."
+            if (enzymeRequestVerbose): print_info("I have to compile or quickpkg "+atom+" by myself...")
 	    if (enzymeRequestForceRepackage) or (isAvailable is None):
 		toBeBuilt.append(atom)
 	    elif (not enzymeRequestForceRepackage) and (isAvailable is not None):
@@ -236,19 +235,19 @@ def build(atoms):
     for atom in toBeBuilt:
 	# if this turns into true, we need to build the package because its dependencies do not match
 	atomDepsTainted = False
-	print
+	#print
 	# check its unsatisfied dependencies
-	print "  Checking "+bold(atom)+" dependencies and conflicts..."
+	print_info("  Checking "+bold(atom)+" dependencies and conflicts...")
 	atomdeps, atomconflicts = synthetizeRoughDependencies(getPackageDependencyList(atom))
 	atomdeps = atomdeps.split()
 	atomconflicts = atomconflicts.split()
-	print "  Current installed release: "+bold(str(getInstalledAtom(dep_getkey(atom))))
-	if(enzymeRequestVerbose): print
-	if(enzymeRequestVerbose): print "\tfiltering "+atom+" dependencies..."
+	print_info("  Current installed release: "+bold(str(getInstalledAtom(dep_getkey(atom)))))
+	#if(enzymeRequestVerbose): print
+	if(enzymeRequestVerbose): print_info("\tfiltering "+atom+" dependencies...")
 	# check if the dependency is satisfied
 	
 	for dep in atomdeps:
-	    if(enzymeRequestVerbose): print "\tchecking for: "+red(dep)
+	    if(enzymeRequestVerbose): print_info("\tchecking for: "+red(dep))
 	    # filter |or|
 	    if dep.find(dbOR) != -1:
 	        deps = dep.split(dbOR)
@@ -257,19 +256,19 @@ def build(atoms):
 		        dep = i
 			break
 	    wantedAtom = getBestAtom(dep)
-	    if(enzymeRequestVerbose): print "\t\tI want: "+yellow(wantedAtom)
+	    if(enzymeRequestVerbose): print_info("\t\tI want: "+yellow(wantedAtom))
 	    installedAtom = getInstalledAtom(dep)
-	    if(enzymeRequestVerbose): print "\t\tIs installed: "+green(str(installedAtom))
+	    if(enzymeRequestVerbose): print_info("\t\tIs installed: "+green(str(installedAtom)))
 	    if installedAtom is None:
 		# then append - because it's not installed !
-		if(enzymeRequestVerbose): print "\t\t"+dep+" is not installed, adding."
+		if(enzymeRequestVerbose): print_info("\t\t"+dep+" is not installed, adding.")
 		atomDepsTainted = True # taint !
 		PackagesDependencies.append(wantedAtom)
 	    elif (wantedAtom != installedAtom):
 		if (enzymeRequestUpdate):
 		    PackagesDependencies.append(wantedAtom)
 		    atomDepsTainted = True # taint !
-		    if(enzymeRequestVerbose): print "\t\t"+dep+" versions differs, adding (pulled in by --update)."
+		    if(enzymeRequestVerbose): print_info("\t\t"+dep+" versions differs, adding (pulled in by --update).")
 		else:
 		    if (isTbz2PackageAvailable(installedAtom) == False):
 			# quickpkg'd
@@ -277,28 +276,28 @@ def build(atoms):
 		    else:
 			# already available
 		        PackagesQuickpkg.append("avail|"+installedAtom)
-		    if(enzymeRequestVerbose): print "\t\t"+dep+" versions differs but not adding since the dependency is permissive."
+		    if(enzymeRequestVerbose): print_info("\t\t"+dep+" versions differs but not adding since the dependency is permissive.")
 	    else:
 		if (isTbz2PackageAvailable(installedAtom) == False):
 		    PackagesQuickpkg.append("quick|"+installedAtom)
-		if(enzymeRequestVerbose): print "\t\t"+dep+" versions match, no need to build"
-	print
+		if(enzymeRequestVerbose): print_info("\t\t"+dep+" versions match, no need to build")
+	#print
 	if atomconflicts != []:
-	    if(enzymeRequestVerbose): print "\tfiltering "+atom+" conflicts..."
+	    if(enzymeRequestVerbose): print_info("\tfiltering "+atom+" conflicts...")
 	for conflict in atomconflicts:
-	    if(enzymeRequestVerbose): print "\tchecking for: "+red(conflict)
+	    if(enzymeRequestVerbose): print_info("\tchecking for: "+red(conflict))
 	    if getInstalledAtom(conflict) is not None:
 		# damn, it's installed
-		if(enzymeRequestVerbose): print "\t\t Package "+yellow(conflict)+" conflicts"
+		if(enzymeRequestVerbose): print_info("\t\t Package "+yellow(conflict)+" conflicts")
 		PackagesConflicting.append(conflict)
 
 	# Now check if its dependency list is empty, in the case, just quickpkg it
-	if (enzymeRequestVerbose): print "\n\t"+red("*")+" Package dependencies of: "+atom+" are tainted? --> "+str(atomDepsTainted)
+	if (enzymeRequestVerbose): print_info("\n\t"+red("*")+" Package dependencies of: "+atom+" are tainted? --> "+str(atomDepsTainted))
 	# add to the packages that can be quickpkg'd
 	if (not atomDepsTainted) and (not enzymeRequestForceRebuild) and ( atom == getInstalledAtom(dep_getkey(atom)) ):
 	    toBeQuickpkg.append(getInstalledAtom(dep_getkey(atom))) # append the currently installed release ONLY!
 
-    if (enzymeRequestVerbose): print; print
+    #if (enzymeRequestVerbose): print; print
 
     # Clean out toBeBuilt by removing entries that are in toBeQuickpkg
     _toBeBuilt = []
@@ -314,48 +313,48 @@ def build(atoms):
     # Now clean toBeQuickpkg
 
     if toBeBuilt != []:
-	print green("  *")+" This is the list of the packages that have been considered:"
+	print_info(green("  *")+" This is the list of the packages that have been considered:")
 
 	for i in toBeBuilt:
-	    print yellow("     *")+" [BUILD] "+i
+	    print_info(yellow("     *")+" [BUILD] "+i)
 	for i in toBeQuickpkg:
-	    print green("     *")+" [QUICK] "+i
+	    print_info(green("     *")+" [QUICK] "+i)
     else:
-	print
-	print red("  *")+" No new packages to build, they're all already built or packaged."
-    print
+	#print
+	print_info(red("  *")+" No new packages to build, they're all already built or packaged.")
+    #print
 
     if PackagesDependencies != []:
-	print yellow("  *")+" These are their dependencies (pulled in):"
+	print_info(yellow("  *")+" These are their dependencies (pulled in):")
         for i in PackagesDependencies:
-	    print red("     *")+bold(" [BUILD] ")+i
+	    print_info(red("     *")+bold(" [BUILD] ")+i)
 	for i in PackagesQuickpkg:
 	    if i.startswith("quick|"):
-	        print green("     *")+bold(" [QUICK] ")+i.split("quick|")[len(i.split("quick|"))-1]
+	        print_info(green("     *")+bold(" [QUICK] ")+i.split("quick|")[len(i.split("quick|"))-1])
 	    elif i.startswith("avail|"):
-	        print green("     *")+bold(" [AVAIL] ")+i.split("avail|")[len(i.split("avail|"))-1]
+	        print_info(green("     *")+bold(" [AVAIL] ")+i.split("avail|")[len(i.split("avail|"))-1])
 	    else:
 		# I should never get here
-	        print green("     *")+bold(" [MERGE] ")+i
-        print
+	        print_info(green("     *")+bold(" [MERGE] ")+i)
+        #print
     else:
-	print green("  *")+" No extra dependencies need to be built"
+	print_info(green("  *")+" No extra dependencies need to be built")
 
     
     if PackagesConflicting != []:
-	print red("   *")+" These are the conflicting packages:"
+	print_info(red("   *")+" These are the conflicting packages:")
 	for i in PackagesConflicting:
-	    print red("      *")+bold(" [CONFL] ")+i
+	    print_warning(red("      *")+bold(" [CONFL] ")+i)
 	if (not enzymeRequestIgnoreConflicts):
-	    print
-	    print
-	    print red(" ***")+" Sorry, I can't continue. To force this, add --ignore-conflicts at your own risk."
+	    #print
+	    #print
+	    print_error(red(" ***")+" Sorry, I can't continue. To force this, add --ignore-conflicts at your own risk.")
 	    sys.exit(1)
 	else:
 	    import time
-	    print
-	    print yellow(" ***")+" You are using --ignore-conflicts at your own risk."
-	    print
+	    #print
+	    print_warning((" ***")+" You are using --ignore-conflicts at your own risk.")
+	    #print
 	    time.sleep(5)
 
     if (enzymeRequestPretendAll):
@@ -365,92 +364,92 @@ def build(atoms):
     packagesPaths = []
 
     if PackagesDependencies != []:
-	print
-	print yellow("  *")+" Building dependencies..."
+	#print
+	print_info(yellow("  *")+" Building dependencies...")
 	for dep in PackagesDependencies:
 	    outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
-	    print green("  *")+" Compiling: "+red(dep)+" ... "
+	    print_info(green("  *")+" Compiling: "+red(dep)+" ... ")
 	    if (not enzymeRequestVerbose):
-		print yellow("     *")+" redirecting output to: "+green(outfile)
+		print_info(yellow("     *")+" redirecting output to: "+green(outfile))
 		rc, outfile = emerge("="+dep, odbNodeps, outfile, "&>", enzymeRequestSimulation)
 	    else:
 		rc, outfile = emerge("="+dep,odbNodeps,None,None, enzymeRequestSimulation)
 	    if (not rc):
 		# compilation is fine
-		print green("     *")+" Compiled successfully"
+		print_info(green("     *")+" Compiled successfully")
 		PackagesQuickpkg.append("quick|"+dep)
 		if os.path.isfile(outfile): os.remove(outfile)
 	    else:
-		print red("     *")+" Compile error"
-		if (not enzymeRequestVerbose): print red("     *")+" Log file at: "+outfile
-		print
-		print
-		print red("  ***")+" Cannot continue"
+		print_error(red("     *")+" Compile error")
+		if (not enzymeRequestVerbose): print_info(red("     *")+" Log file at: "+outfile)
+		#print
+		#print
+		print_error(red("  ***")+" Cannot continue")
 		sys.exit(250)
     
     if toBeBuilt != []:
-	print
-        print green("  *")+" Building packages..."
+	#print
+        print_info(green("  *")+" Building packages...")
 	for dep in toBeBuilt:
 	    outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
-	    print green("  *")+" Compiling: "+red(dep)
+	    print_info(green("  *")+" Compiling: "+red(dep))
 	    if (not enzymeRequestVerbose):
-		print yellow("     *")+" redirecting output to: "+green(outfile)
+		print_info(yellow("     *")+" redirecting output to: "+green(outfile))
 		rc, outfile = emerge("="+dep, odbNodeps, outfile, "&>", enzymeRequestSimulation)
 	    else:
 		rc, outfile = emerge("="+dep,odbNodeps, None, None, enzymeRequestSimulation)
 	    if (not rc):
 		# compilation is fine
-		print green("     *")+" Compiled successfully"
+		print_info(green("     *")+" Compiled successfully")
 		PackagesQuickpkg.append("quick|"+dep)
 		if os.path.isfile(outfile): os.remove(outfile)
 	    else:
-		print red("     *")+" Compile error"
-		if (not enzymeRequestVerbose): print red("     *")+" Log file at: "+outfile
-		print
-		print
-		print red("  ***")+" Cannot continue"
+		print_error(red("     *")+" Compile error")
+		if (not enzymeRequestVerbose): print_info(red("     *")+" Log file at: "+outfile)
+		#print
+		#print
+		print_error(red("  ***")+" Cannot continue")
 		sys.exit(250)
 
     if (enzymeRequestInteraction):
 	# interaction needed
-	print green("   *")+" Running etc-update..."
+	print_info(green("   *")+" Running etc-update...")
 	spawnCommand("etc-update")
     else:
-	print green("  *")+" Auto-running etc-update..."
+	print_info(green("  *")+" Auto-running etc-update...")
 	spawnCommand("echo -5 | etc-update")
 
-    print
+    #print
     if (PackagesQuickpkg != []) or (toBeQuickpkg != []):
-        print green("  *")+" Compressing installed packages..."
+        print_info(green("  *")+" Compressing installed packages...")
 
 	for dep in toBeQuickpkg:
 	    dep = dep.split("|")[len(dep.split("|"))-1]
-	    print green("  *")+" Compressing: "+red(dep)
+	    print_info(green("  *")+" Compressing: "+red(dep))
 	    rc = quickpkg(dep,etpConst['packagesstoredir'])
 	    if (rc is not None):
 		packagesPaths.append(rc)
 	    else:
-		print red("      *")+" quickpkg error for "+red(dep)
-		print red("  ***")+" Fatal error, cannot continue"
+		print_error(red("      *")+" quickpkg error for "+red(dep))
+		print_error(red("  ***")+" Fatal error, cannot continue")
 		sys.exit(251)
 
 	for dep in PackagesQuickpkg:
 	    dep = dep.split("|")[len(dep.split("|"))-1]
-	    print green("  *")+" Compressing: "+red(dep)
+	    print_info(green("  *")+" Compressing: "+red(dep))
 	    rc = quickpkg(dep,etpConst['packagesstoredir'])
 	    if (rc is not None):
 		packagesPaths.append(rc)
 	    else:
-		print red("      *")+" quickpkg error for "+red(dep)
-		print red("  ***")+" Fatal error, cannot continue"
+		print_error(red("      *")+" quickpkg error for "+red(dep))
+		print_error(red("  ***")+" Fatal error, cannot continue")
 		sys.exit(251)
 
     if packagesPaths != []:
-	print
-	print red("   *")+" These are the binary packages created:"
+	#print
+	print_info(red("   *")+" These are the binary packages created:")
 	for pkg in packagesPaths:
-	    print green("      * ")+red(pkg)
+	    print_info(green("      * ")+red(pkg))
 
     return packagesPaths
 
@@ -570,3 +569,97 @@ def overlay(options):
     
     return True
 
+def uninstall(options):
+
+    # FIXME: add --prune option? (--just-prune)
+    
+    # Filter extra commands
+    enzymeRequestVerbose = False
+    enzymeRequestSimulation = False
+    enzymeRequestPrune = False
+    _atoms = []
+    for i in options:
+        if ( i == "--verbose" ) or ( i == "-v" ):
+	    enzymeRequestVerbose = True
+	elif ( i == "--pretend" ):
+	    enzymeRequestSimulation = True
+	elif ( i == "--just-prune" ):
+	    enzymeRequestPrune = True
+	else:
+	    _atoms.append(i)
+    atoms = _atoms
+    
+    if (enzymeRequestVerbose): print_info(i+" is Pretend?: "+str(enzymeRequestSimulation))
+    if (enzymeRequestVerbose): print_info(i+" is Prune?: "+str(enzymeRequestPrune))
+
+    validAtoms = []
+    for i in atoms:
+        if (enzymeRequestVerbose): print_info(i+" is valid?: "+str(checkAtom(i)))
+	if (checkAtom(i)) and (getInstalledAtom(dep_getkey(i)) != None):
+	    validAtoms.append(i)
+	else:
+	    #print
+	    print_warning(red("* >>> ")+yellow(i)+" is not a valid atom, it's masked or its name conflicts with something else.")
+	    if getBestAtom(i) == "!!conflicts":
+		# it conflicts with something
+		print_warning(red("* ^^^ ")+"Ambiguous package name. Please add category.")
+
+    # Filter duplicates
+    validAtoms = list(set(validAtoms))
+
+    if validAtoms == []:
+        print_error(red(bold("no valid package names specified.")))
+	sys.exit(102)
+
+    if (not enzymeRequestPrune):
+	portageCmd = cdbRunEmerge+" -C "
+	print_info(green("  *")+" This is the list of the packages that would be removed, if installed:")
+	for i in validAtoms:
+	    installedAtoms = getInstalledAtoms(i)
+	    installedVers = []
+	    for i in installedAtoms:
+		pkgname, pkgver = extractPkgNameVer(i)
+		installedVers.append(pkgver)
+	    if len(installedVers) > 1:
+		import string
+		x = string.join(installedVers)
+		print_info(yellow("     *")+" [REMOVE] "+bold(i)+" [ selected: "+red(x)+" ]")
+	    else:
+		print_info(yellow("     *")+" [REMOVE] "+bold(i))
+    else:
+	# FIXME: rewrite this using Portage Python bindings directly?
+	portageCmd = cdbRunEmerge+" -P "
+	# filter unpruneable packages
+	_validAtoms = []
+	for atom in validAtoms:
+	    rc = commands.getoutput(portageCmd+" --quiet --pretend "+atom)
+	    if (rc != ''):
+		_validAtoms.append(atom)
+	validAtoms = _validAtoms
+	if validAtoms != []:
+	    print_info(green("  *")+" This is the list of the packages that would be pruned, if possible:")
+	    for atom in validAtoms:
+		if isjustname(atom) == 1:
+		    # if the user provide only the name, then parse the list of the packages
+		    rc = commands.getoutput(portageCmd+" --quiet --pretend --color=n "+atom).split("\n")
+		    selected = None
+		    protected = None
+		    omitted = None
+		    for i in rc:
+			if i.find("selected:") != -1:
+			    selected = i.strip().split(":")[1]
+			if i.find("protected:") != -1:
+			    protected = i.strip().split(":")[1]
+			if i.find("omitted:") != -1:
+			    omitted = i.strip().split(":")[1]
+		print_info(yellow("     *")+" [PRUNE] "+bold(atom)+" [ selected:"+red(selected)+"; protected:"+green(protected)+"; omitted:"+yellow(omitted)+" ]")
+	else:
+	    print_info(green("  *")+" No packages to prune.")
+
+    # if --pretend, end here
+    if (enzymeRequestSimulation):
+	sys.exit(0)
+
+    
+    # now wrap emerge -C
+    

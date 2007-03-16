@@ -65,8 +65,8 @@ def extractPkgData(package):
 
     tbz2File = package
     
-    package = package.split(".tbz2")
-    package = package[0].split("-")
+    package = package.split(".tbz2")[0]
+    package = package.split("-")
     pkgname = ""
     pkglen = len(package)
     if package[pkglen-1].startswith("r"):
