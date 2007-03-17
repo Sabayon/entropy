@@ -620,7 +620,7 @@ def uninstall(options):
 	_validAtoms.append(atom)
     validAtoms = _validAtoms
 
-    uninstallText = yellow("   * ")+"Preparing to "
+    uninstallText = yellow("   * ")+"Doing "
 
     # Now check if a package has been specified more than once
     _validAtoms = []
@@ -693,7 +693,7 @@ def uninstall(options):
     for atom in validAtoms:
 	print_info(uninstallText+red(atom))
         # now run the command
-        rc = spawnCommand(portageCmd+validAtoms,enzymeUninstallRedirect)
+        rc = spawnCommand(portageCmd+atom,enzymeUninstallRedirect)
 	if (rc):
 	    print_warning(yellow("  *** ")+red("Something weird happened while running the action on ")+bold(atom))
 	    if (not enzymeRequestVerbose):
