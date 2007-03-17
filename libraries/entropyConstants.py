@@ -121,7 +121,7 @@ if not os.path.isdir(ETP_DIR):
 		    except OSError:
 			pass
     else:
-        entropyTools.print_error("you need to run this as root at least once.")
+        print "you need to run this as root at least once."
         sys.exit(100)
 
 etpSources = {
