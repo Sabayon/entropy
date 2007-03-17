@@ -198,6 +198,17 @@ def quickpkg(atom,dirpath):
     else:
 	return False
 
+def unpackTbz2(tbz2File,tmpdir = None):
+    import xpak
+    if tmpdir is None:
+	tmpdir = etpConst['packagestmpdir']+"/"+tbz2File.split("/")[len(tbz2File.split("/"))-1].split(".tbz2")[0]+"/"
+    if (not tmpdir.endswith("/")):
+	tmpdir += "/"
+    tbz2 = xpak.tbz2(tbz2File)
+    if os.path.isdir(tmpdir):
+	os.system("rm -rf "+tmpdir+"*")
+    tbz2.decompose(tmpdir)
+    return tmpdir
 
 # NOTE: atom must be a COMPLETE atom, with version!
 def isTbz2PackageAvailable(atom, verbose = False):
@@ -265,6 +276,51 @@ def getPackageDependencyList(atom):
     for i in tmp:
 	pkgSplittedDeps.append(i)
     return pkgSplittedDeps
+
+# parser of the gentoo db "NEEDED" file
+# this file is contained in the .tbz2->.xpak file
+def getPackageRuntimeDependencies(NEEDED):
+
+    if not os.path.isfile(NEEDED):
+	return [],[] # both empty
+
+    f = open(NEEDED,"r")
+    includedBins = f.readlines()
+    f.close()
+
+    neededLibraries = []
+    # filter the first word
+    for line in includedBins:
+        line = line.strip().split()
+	line = line[0]
+	depLibs = commands.getoutput("ldd "+line).split("\n")
+	for i in depLibs:
+	    i = i.strip()
+	    if i.find("=>") != -1:
+	        i = i.split("=>")[1]
+	    # format properly
+	    if i.startswith(" "):
+	        i = i[1:]
+	    if i.startswith("//"):
+	        i = i[1:]
+	    i = i.split()[0]
+	    neededLibraries.append(i)
+    neededLibraries = list(set(neededLibraries))
+
+    runtimeNeededPackages = []
+    runtimeNeededPackagesXT = []
+    for i in neededLibraries:
+	if i.startswith("/"): # filter garbage
+	    pkgs = commands.getoutput(pFindLibraryXT+i).split("\n")
+	    if (pkgs[0] != ""):
+	        for y in pkgs:
+	            runtimeNeededPackagesXT.append(y)
+		    y = dep_getkey(y)
+		    runtimeNeededPackages.append(y)
+
+    runtimeNeededPackages = list(set(runtimeNeededPackages))
+    runtimeNeededPackagesXT = list(set(runtimeNeededPackagesXT))
+    return runtimeNeededPackages, runtimeNeededPackagesXT
 
 def getUSEFlags():
     return getPortageEnv('USE')

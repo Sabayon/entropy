@@ -293,7 +293,7 @@ def build(atoms):
 		PackagesConflicting.append(conflict)
 
 	# Now check if its dependency list is empty, in the case, just quickpkg it
-	if (enzymeRequestVerbose): print_info("\n\t"+red("*")+" Package dependencies of: "+atom+" are tainted? --> "+str(atomDepsTainted))
+	if (enzymeRequestVerbose): print_info("\t"+red("*")+" Package dependencies of: "+atom+" are tainted? --> "+str(atomDepsTainted))
 	# add to the packages that can be quickpkg'd
 	if (not atomDepsTainted) and (not enzymeRequestForceRebuild) and ( atom == getInstalledAtom(dep_getkey(atom)) ):
 	    toBeQuickpkg.append(getInstalledAtom(dep_getkey(atom))) # append the currently installed release ONLY!
@@ -446,11 +446,51 @@ def build(atoms):
 		print_error(red("  ***")+" Fatal error, cannot continue")
 		sys.exit(251)
 
+    # Now we have packagesPaths that contains all the compressed packages
+    # We need to run the runtime dependencies detection on them and quickpkg
+    # the rest of the needed packages if they're not available in the store.
+    # FIXME: add --no-runtime-dependencies
+    runtimeDepsPackages = []
+    runtimeDepsQuickpkg = []
+    if packagesPaths != []:
+	print_info(yellow("  *")+" Calculating runtime dependencies...")
+        for file in packagesPaths:
+	    print_info(red("   *")+green(" Calculating runtime dependencies for ")+bold(file.split("/")[len(file.split("/"))-1]))
+            # unpack the .tbz2 file
+            tbz2TmpDir = unpackTbz2(file)
+            # parse, if exists, the NEEDED file
+            runtimeNeededPackages, runtimeNeededPackagesXT = getPackageRuntimeDependencies(tbz2TmpDir+dbNEEDED)
+	    for i in runtimeNeededPackagesXT:
+		if (enzymeRequestVerbose): print_info(green("     * ")+yellow("depends on: "+bold(i)))
+		runtimeDepsPackages.append(i)
+	    os.system("rm -rf "+tbz2TmpDir)
+
+    # filter dups
+    runtimeDepsPackages = list(set(runtimeDepsPackages))
+    # now it's time to check the packages that need to be compressed
+    for atom in runtimeDepsPackages:
+	if (not isTbz2PackageAvailable(atom)):
+	    if (enzymeRequestVerbose): print_info(yellow("   * ")+"I would like to quickpkg "+bold(atom))
+	    runtimeDepsQuickpkg.append(atom)
+
+    if runtimeDepsQuickpkg != []:
+	print_info(yellow("  *")+" Compressing runtime dependencies...")
+	for atom in runtimeDepsQuickpkg:
+	    # quickpkg!
+	    print_info(yellow("   *")+" Compressing "+red(atom))
+	    rc = quickpkg(atom,etpConst['packagesstoredir'])
+	    if (rc is not None):
+		packagesPaths.append(rc)
+	    else:
+		print_error(red("      *")+" quickpkg error for "+red(atom))
+		print_error(red("  ***")+" Fatal error, cannot continue")
+		sys.exit(251)
+
     if packagesPaths != []:
 	#print
-	print_info(red("   *")+" These are the binary packages created:")
+	print_info(red("  *")+" These are the binary packages created:")
 	for pkg in packagesPaths:
-	    print_info(green("      * ")+red(pkg))
+	    print_info(green("     * ")+red(pkg))
 
     return packagesPaths
 
@@ -572,8 +612,6 @@ def overlay(options):
 
 def uninstall(options):
 
-    # FIXME: add --prune option? (--just-prune)
-    
     # Filter extra commands
     enzymeRequestVerbose = False
     enzymeUninstallRedirect = "&>/dev/null"

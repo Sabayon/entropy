@@ -91,10 +91,9 @@ def extractPkgData(package):
     # local path to the file
     etpData['packagepath'] = tbz2File
 
-    import xpak
-    tbz2 = xpak.tbz2(tbz2File)
+    # unpack file
     tbz2TmpDir = etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version']+"/"
-    tbz2.decompose(tbz2TmpDir)
+    unpackTbz2(tbz2File,tbz2TmpDir)
 
     # Fill chost
     f = open(tbz2TmpDir+dbCHOST,"r")
@@ -250,46 +249,8 @@ def extractPkgData(package):
     # return all the collected info
 
     # start collecting needed libraries
-    try:
-        f = open(tbz2TmpDir+"/"+dbNEEDED,"r")
-        includedBins = f.readlines()
-        f.close()
-    except IOError:
-	includedBins = ""
-    
-    neededLibraries = []
-    # filter the first word
-    for line in includedBins:
-        line = line.strip().split()
-	line = line[0]
-	depLibs = commands.getoutput("ldd "+line).split("\n")
-	for i in depLibs:
-	    i = i.strip()
-	    if i.find("=>") != -1:
-	        i = i.split("=>")[1]
-	    # format properly
-	    if i.startswith(" "):
-	        i = i[1:]
-	    if i.startswith("//"):
-	        i = i[1:]
-	    i = i.split()[0]
-	    neededLibraries.append(i)
-    neededLibraries = list(set(neededLibraries))
+    runtimeNeededPackages, runtimeNeededPackagesXT = getPackageRuntimeDependencies(tbz2TmpDir+"/"+dbNEEDED)
 
-    runtimeNeededPackages = []
-    runtimeNeededPackagesXT = []
-    for i in neededLibraries:
-	if i.startswith("/"): # filter garbage
-	    pkgs = commands.getoutput(pFindLibraryXT+i).split("\n")
-	    if (pkgs[0] != ""):
-	        for y in pkgs:
-	            runtimeNeededPackagesXT.append(y)
-		    y = dep_getkey(y)
-		    runtimeNeededPackages.append(y)
-
-    runtimeNeededPackages = list(set(runtimeNeededPackages))
-    runtimeNeededPackagesXT = list(set(runtimeNeededPackagesXT))
-    
     # now keep only the ones not available in etpData['dependencies']
     for i in runtimeNeededPackages:
         if etpData['dependencies'].find(i) == -1:
