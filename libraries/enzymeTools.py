@@ -64,7 +64,7 @@ def listOverlays():
 # fetch the latest updates from Gentoo rsync mirrors
 def sync(options):
     myopts = options[1:]
-    enzymeNoSyncBack = False
+    enzymeNoSyncBack = True
     enzymeOnlySyncBack = False
     enzymeNoOverlaySync = False
     syncMiscRedirect = "> /dev/null"
@@ -78,8 +78,8 @@ def sync(options):
     for i in myopts:
         if ( i == "--verbose" ) or ( i == "-v" ):
 	    syncMiscRedirect = None
-	elif ( i == "--no-sync-back" ):
-	    enzymeNoSyncBack = True
+	elif ( i == "--sync-back" ):
+	    enzymeNoSyncBack = False
 	elif ( i == "--only-sync-back" ):
 	    enzymeOnlySyncBack = True
 	elif ( i == "--no-overlay-sync" ):
@@ -130,13 +130,12 @@ def sync(options):
 	if (rc != 0):
 	    print_error(red("an error occoured while syncing back the official Portage Tree."))
 	    sys.exit(101)
-    else:
-	print_info(yellow("Official Portage Tree sync-back disabled"))
 
 
 def build(atoms):
-
-# FIXME: add runtime dependencies packages quickpkg
+    # FIXME: add USE flags management:
+    # packages with new USE flags must be pulled in
+    # unless --ignore-new-use-flags is specified
 
     enzymeRequestVerbose = False
     enzymeRequestForceRepackage = False
@@ -172,6 +171,8 @@ def build(atoms):
     etpConst['packagessuploaddir'] = translateArch(etpConst['packagessuploaddir'],getPortageEnv('CHOST'))
     etpConst['packagesstoredir'] = translateArch(etpConst['packagesstoredir'],getPortageEnv('CHOST'))
     etpConst['packagesbindir'] = translateArch(etpConst['packagesbindir'],getPortageEnv('CHOST'))
+    
+    useFlags = getPortageEnv("USE")
     
     validAtoms = []
     for i in atoms:
@@ -523,6 +524,8 @@ def world(options):
     print "ok... now?"
 
 def overlay(options):
+    #FIXME: add sync-back to the official Portage Tree?
+    
     # etpConst['overlaysconffile'] --> layman.cfg
 
     # check if the portage tree is configured
@@ -607,7 +610,7 @@ def overlay(options):
         # error !
 	print_error(red(bold("wrong synthax.")))
 	return False
-    
+
     return True
 
 def uninstall(options):
@@ -738,3 +741,7 @@ def uninstall(options):
 		print_warning(yellow("  *** ")+red("Please use --verbose and retry to see what was wrong. Continuing..."))
 	else:
 	    print_info(green("   * ")+bold(atom)+" worked out successfully.")
+
+# Temporary files cleaner
+def cleanup(options):
+    print "hello, I'm too lazy to clean my temp files"

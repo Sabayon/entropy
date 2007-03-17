@@ -3,4 +3,6 @@ TODO list (for developers only):
 - add a wrapper for qfile and qlist portage-utils tools because our internal repository is at /var/lib/entropy/portage
 - fix: python enzyme build planner --> ambiguos ebuilds' name
 - complete the uninstall() funcion in enzymeTools and unmerge unsermake
+- there's a sneaky bug with the masked packages between the etp repo and the getBestAtom() function
+- enzyme, build(), add USE flags management (packages must be recompiled if a USE flag is changed)
 

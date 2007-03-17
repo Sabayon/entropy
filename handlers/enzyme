@@ -63,10 +63,10 @@ def print_help():
     print "* opts  * : \t\t "+entropyTools.red("sync")+"\t\t\t to sync overlays (after this you can specify which overlay)"
     print "* opts  * : \t\t "+entropyTools.red("list")+"\t\t\t to list overlays"
     print "* info  * : \t"+entropyTools.green(entropyTools.bold("sync"))+"\t\t to just sync portage tree"
-    print "* opts  * : \t\t "+entropyTools.red("--no-sync-back")+"\t\t disable sync between Entropy Portage Tree and the official one"
+    print "* opts  * : \t\t "+entropyTools.red("--sync-back")+"\t\t sync between Entropy Portage Tree and the official one"
     print "* opts  * : \t\t "+entropyTools.red("--only-sync-back")+"\t only sync between Entropy Portage Tree and the official one"
     print "* opts  * : \t\t "+entropyTools.red("--no-overlay-sync")+"\t disable automatic overlays sync"
-    print "* info  * : \t"+entropyTools.green(entropyTools.bold("data-cleanup"))+"\t to clean all the old packages or stale files"
+    print "* info  * : \t"+entropyTools.green(entropyTools.bold("cleanup"))+"\t to clean temporary files"
     print "* info  * : \t"+entropyTools.green(entropyTools.bold("data-reset"))+"\t to remove all and start over"
     print
 
@@ -112,4 +112,8 @@ if (options[0] == "build"):
 # uninstall tool
 if (options[0] == "uninstall"):
     enzymeTools.uninstall(options[1:])
+    sys.exit(0)
+# uninstall tool
+if (options[0] == "cleanup"):
+    enzymeTools.cleanup(options[1:])
     sys.exit(0)
