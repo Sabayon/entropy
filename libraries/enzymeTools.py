@@ -693,8 +693,10 @@ def uninstall(options):
     for atom in validAtoms:
 	print_info(uninstallText+red(atom))
         # now run the command
-        rc = spawnCommand(portageCmd+atom,enzymeUninstallRedirect)
+        rc = spawnCommand(portageCmd+"'"+atom+"'",enzymeUninstallRedirect)
 	if (rc):
 	    print_warning(yellow("  *** ")+red("Something weird happened while running the action on ")+bold(atom))
 	    if (not enzymeRequestVerbose):
 		print_warning(yellow("  *** ")+red("Please use --verbose and retry to see what was wrong. Continuing..."))
+	else:
+	    print_info(green("   * ")+bold(atom)+" worked out successfully.")
