@@ -28,6 +28,7 @@ from entropyTools import *
 import sys
 import os
 import commands
+import string
 
 
 
@@ -575,12 +576,14 @@ def uninstall(options):
     
     # Filter extra commands
     enzymeRequestVerbose = False
+    enzymeUninstallRedirect = "&>/dev/null"
     enzymeRequestSimulation = False
     enzymeRequestPrune = False
     _atoms = []
     for i in options:
         if ( i == "--verbose" ) or ( i == "-v" ):
 	    enzymeRequestVerbose = True
+	    enzymeUninstallRedirect = None
 	elif ( i == "--pretend" ):
 	    enzymeRequestSimulation = True
 	elif ( i == "--just-prune" ):
@@ -595,8 +598,11 @@ def uninstall(options):
     validAtoms = []
     for i in atoms:
         if (enzymeRequestVerbose): print_info(i+" is valid?: "+str(checkAtom(i)))
-	if (checkAtom(i)) and (getInstalledAtom(dep_getkey(i)) != None):
-	    validAtoms.append(i)
+	if (checkAtom(i)):
+	    if (getInstalledAtom(dep_getkey(i)) != None):
+	        validAtoms.append(i)
+	    else:
+		print_info(red("* >>> ")+yellow(i)+" is not installed.")
 	else:
 	    #print
 	    print_warning(red("* >>> ")+yellow(i)+" is not a valid atom, it's masked or its name conflicts with something else.")
@@ -606,12 +612,35 @@ def uninstall(options):
 
     # Filter duplicates
     validAtoms = list(set(validAtoms))
+    _validAtoms = []
+    for atom in validAtoms:
+	if (atom.find("/") == -1):
+	    # add pkgcat
+	    atom = getAtomCategory(atom)+"/"+atom
+	_validAtoms.append(atom)
+    validAtoms = _validAtoms
+
+    uninstallText = yellow("   * ")+"Preparing to "
+
+    # Now check if a package has been specified more than once
+    _validAtoms = []
+    for seedAtom in validAtoms:
+	_dupAtom = False
+	for subAtom in validAtoms:
+	    if ((seedAtom.find(subAtom) != -1) or (subAtom.find(seedAtom) != -1)) and (seedAtom != subAtom):
+		_dupAtom = True
+	if (not _dupAtom):
+	    _validAtoms.append(seedAtom)
+	else:
+	    print_warning(red("* >>> ")+"You have specified "+yellow(seedAtom)+" more than once. Removing from list.")
+    validAtoms = _validAtoms
 
     if validAtoms == []:
         print_error(red(bold("no valid package names specified.")))
 	sys.exit(102)
 
     if (not enzymeRequestPrune):
+	uninstallText += bold("unmerge ")
 	portageCmd = cdbRunEmerge+" -C "
 	print_info(green("  *")+" This is the list of the packages that would be removed, if installed:")
 	for i in validAtoms:
@@ -621,12 +650,13 @@ def uninstall(options):
 		pkgname, pkgver = extractPkgNameVer(i)
 		installedVers.append(pkgver)
 	    if len(installedVers) > 1:
-		import string
 		x = string.join(installedVers)
-		print_info(yellow("     *")+" [REMOVE] "+bold(i)+" [ selected: "+red(x)+" ]")
+		print_info(yellow("     *")+" [REMOVE] "+bold(dep_getkey(i))+" [ selected: "+red(x)+" ]")
 	    else:
-		print_info(yellow("     *")+" [REMOVE] "+bold(i))
+		installedVer = installedVers[0]
+		print_info(yellow("     *")+" [REMOVE] "+bold(dep_getkey(i))+" [ selected: "+red(installedVer)+" ]")
     else:
+	uninstallText += bold("prune ")
 	# FIXME: rewrite this using Portage Python bindings directly?
 	portageCmd = cdbRunEmerge+" -P "
 	# filter unpruneable packages
@@ -639,20 +669,20 @@ def uninstall(options):
 	if validAtoms != []:
 	    print_info(green("  *")+" This is the list of the packages that would be pruned, if possible:")
 	    for atom in validAtoms:
+		selected = atom
+		protected = None
+		omitted = None
 		if isjustname(atom) == 1:
 		    # if the user provide only the name, then parse the list of the packages
 		    rc = commands.getoutput(portageCmd+" --quiet --pretend --color=n "+atom).split("\n")
-		    selected = None
-		    protected = None
-		    omitted = None
 		    for i in rc:
 			if i.find("selected:") != -1:
-			    selected = i.strip().split(":")[1]
+			    selected = i.strip().split(":")[1][1:]
 			if i.find("protected:") != -1:
-			    protected = i.strip().split(":")[1]
+			    protected = i.strip().split(":")[1][1:]
 			if i.find("omitted:") != -1:
-			    omitted = i.strip().split(":")[1]
-		print_info(yellow("     *")+" [PRUNE] "+bold(atom)+" [ selected:"+red(selected)+"; protected:"+green(protected)+"; omitted:"+yellow(omitted)+" ]")
+			    omitted = i.strip().split(":")[1][1:]
+		print_info(yellow("     *")+" [PRUNE] "+bold(atom)+" [ selected: "+red(string.lower(str(selected)))+"; protected: "+green(string.lower(str(protected)))+"; omitted: "+yellow(string.lower(str(omitted)))+" ]")
 	else:
 	    print_info(green("  *")+" No packages to prune.")
 
@@ -660,6 +690,11 @@ def uninstall(options):
     if (enzymeRequestSimulation):
 	sys.exit(0)
 
-    
-    # now wrap emerge -C
-    
+    for atom in validAtoms:
+	print_info(uninstallText+red(atom))
+        # now run the command
+        rc = spawnCommand(portageCmd+validAtoms,enzymeUninstallRedirect)
+	if (rc):
+	    print_warning(yellow("  *** ")+red("Something weird happened while running the action on ")+bold(atom))
+	    if (not enzymeRequestVerbose):
+		print_warning(yellow("  *** ")+red("Please use --verbose and retry to see what was wrong. Continuing..."))

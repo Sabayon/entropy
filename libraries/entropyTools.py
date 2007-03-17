@@ -29,7 +29,7 @@ def initializePortageTree():
 
 import portage
 import portage_const
-from portage_dep import isvalidatom, isjustname, dep_getkey
+from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey
 from entropyConstants import *
 initializePortageTree()
 
@@ -62,11 +62,18 @@ def getThirdPartyMirrors(mirrorname):
 # sys-libs/application --> sys-libs/application-1.2.3-r1
 def getBestAtom(atom):
     try:
-	#portage.portdb.melt()
         rc = portage.portdb.xmatch("bestmatch-visible",str(atom))
         return rc
     except ValueError:
 	return "!!conflicts"
+
+# should be only used when a pkgcat/pkgname <-- is not specified (example: db, amarok, AND NOT media-sound/amarok)
+def getAtomCategory(atom):
+    try:
+        rc = portage.portdb.xmatch("match-all",str(atom))[0].split("/")[0]
+        return rc
+    except:
+	return None
 
 def getArchFromChost(chost):
 	# when we'll add new archs, we'll have to add a testcase here
@@ -100,6 +107,18 @@ def getInstalledAtoms(atom):
         return rc
     else:
         return None
+
+# YOU MUST PROVIDE A COMPLETE ATOM with a pkgcat !
+def unmerge(atom):
+    if isjustname(atom) or (not isvalidatom(atom)) or (atom.find("/") == -1):
+	return 1
+    else:
+	pkgcat = atom.split("/")[0]
+	pkgnamever = atom.split("/")[1]
+	portage.settings.unlock()
+	rc = portage.unmerge(pkgcat, pkgnamever, ETP_ROOT_DIR, portage.settings, 1)
+	portage.settings.lock()
+	return rc
 
 # TO THIS FUNCTION:
 # must be provided a valid and complete atom
