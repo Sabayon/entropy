@@ -380,6 +380,52 @@ def getPackageRuntimeDependencies(NEEDED):
 def getUSEFlags():
     return getPortageEnv('USE')
 
+# you must provide a complete atom
+def getPackageIUSE(atom):
+    return getPackageVar(atom,"IUSE")
+
+# you must provide a complete atom
+def getPackageUSEList(atom):
+    if (not atom.startswith("=")):
+	atom = "="+atom
+    myUseFlags = getPackageVar(atom[1:],"IUSE").split()
+    useFlags = getUSEFlags().split()
+    uselist = []
+    for myuse in myUseFlags:
+	useFind = False
+	for use in useFlags:
+	    if (myuse == use):
+		useFind = True
+		break
+	if (useFind):
+	    uselist.append(myuse)
+	else:
+	    uselist.append("-"+myuse)
+
+    # order
+    _uselist = []
+    for use in uselist:
+	if (not use.startswith("-")):
+	    _uselist.append(red(use))
+    for use in uselist:
+	if use.startswith("-"):
+	    _uselist.append(darkblue(use))
+    uselist = _uselist
+    
+    if len(uselist) > 0:
+	import string
+	return string.join(uselist," ")
+    else:
+	return ""
+
+def getPackageVar(atom,var):
+    if atom.startswith("="):
+	atom = atom[1:]
+    # can't check - return error
+    if (atom.find("/") == -1):
+	return 1
+    return portage.portdb.aux_get(atom,[var])[0]
+
 def synthetizeRoughDependencies(roughDependencies, useflags = None):
     if useflags is None:
         useflags = getUSEFlags()
@@ -465,7 +511,7 @@ def print_error(msg):
     print red(">>")+" "+msg
 
 def print_info(msg, back = False):
-    writechar("\r                                                        \r")
+    writechar("\r                                                                            \r")
     if (back):
 	writechar("\r"+green(">>")+" "+msg)
 	return

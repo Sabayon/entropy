@@ -140,6 +140,7 @@ def build(atoms):
     enzymeRequestForceRepackage = False
     enzymeRequestForceRebuild = False
     enzymeRequestDeep = False
+    enzymeRequestUse = False
     enzymeRequestPretendAll = False
     enzymeRequestIgnoreConflicts = False
     enzymeRequestInteraction = True
@@ -158,6 +159,8 @@ def build(atoms):
 	    enzymeRequestPretendAll = True
 	elif ( i == "--deep" ):
 	    enzymeRequestDeep = True
+	elif ( i == "--use" ):
+	    enzymeRequestUse = True
 	elif ( i == "--no-interaction" ):
 	    enzymeRequestInteraction = False
 	elif ( i == "--simulate-building" ):
@@ -294,21 +297,28 @@ def build(atoms):
         for i in PackagesDependencies:
 	    #print "'"+i+"'"
 	    pkgstatus = "[?]"
+	    pkguse = ""
 	    if (getInstalledAtom(dep_getkey(i)) == None):
 		pkgstatus = green("[N]")
+		if (enzymeRequestUse) and (getPackageUSEList(i) != ""): pkguse = bold(" [")+yellow("USE:")+" "+getPackageUSEList(i)+bold("]")
 	    elif (compareAtoms(i,getInstalledAtom(dep_getkey(i))) == 0):
 		pkgstatus = yellow("[R]")
+		if (enzymeRequestUse) and (getPackageUSEList(i) != ""): pkguse = bold(" [")+yellow("USE:")+" "+getPackageUSEList(i)+bold("]")
 	    elif (compareAtoms(i,getInstalledAtom(dep_getkey(i))) > 0):
 		pkgstatus = blue("[U]")
+		if (enzymeRequestUse) and (getPackageUSEList(i) != ""): pkguse = bold(" [")+yellow("USE:")+" "+getPackageUSEList(i)+bold("]")
 	    elif (compareAtoms(i,getInstalledAtom(dep_getkey(i))) < 0):
 		pkgstatus = darkblue("[D]")
-	    print_info(red("     *")+bold(" [")+red("BUILD")+bold("] ")+pkgstatus+" "+i)
+		if (enzymeRequestUse) and (getPackageUSEList(i) != ""): pkguse = bold(" [")+yellow("USE:")+" "+getPackageUSEList(i)+bold("]")
+	    print_info(red("     *")+bold(" [")+red("BUILD")+bold("] ")+pkgstatus+" "+i+pkguse)
 	
 	for i in PackagesQuickpkg:
+	    pkguse = ""
+	    if (enzymeRequestUse) and (getPackageUSEList(i) != ""): pkguse = bold(" [")+yellow("USE:")+" "+getPackageUSEList(i.split("|")[len(i.split("|"))-1])+bold("]")
 	    if i.startswith("quick|"):
-	        print_info(green("     *")+bold(" [")+green("QUICK")+bold("] ")+yellow("[R] ") +i.split("quick|")[len(i.split("quick|"))-1])
+	        print_info(green("     *")+bold(" [")+green("QUICK")+bold("] ")+yellow("[R] ") +i.split("quick|")[len(i.split("quick|"))-1]+pkguse)
 	    elif i.startswith("avail|"):
-	        print_info(yellow("     *")+bold(" [")+yellow("NOACT")+bold("] ")+yellow("[R] ")+i.split("avail|")[len(i.split("avail|"))-1])
+	        print_info(yellow("     *")+bold(" [")+yellow("NOACT")+bold("] ")+yellow("[R] ")+i.split("avail|")[len(i.split("avail|"))-1]+pkguse)
 	    else:
 		# I should never get here
 	        print_info(green("     *")+bold(" [?????] ")+i)
