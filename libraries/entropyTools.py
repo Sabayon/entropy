@@ -29,15 +29,17 @@ def initializePortageTree():
 
 import portage
 import portage_const
-from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey
+from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv
 from entropyConstants import *
 initializePortageTree()
 
 # colours support
 import output
-from output import bold, colorize, green, red, yellow
+from output import bold, colorize, green, red, yellow, blue, darkblue
 import re
+import sys
 import random
+import commands
 
 def isRoot():
     import getpass
@@ -67,6 +69,21 @@ def getBestAtom(atom):
     except ValueError:
 	return "!!conflicts"
 
+# I need a valid complete atom...
+def calculateFullAtomsDependencies(atoms):
+    # in order... thanks emerge :-)
+    deplist = []
+    blocklist = []
+    result = commands.getoutput("USE='"+getUSEFlags()+"' "+cdbRunEmerge+" --pretend --color=n --quiet "+atoms).split("\n")
+    for line in result:
+	if line.startswith("[ebuild"):
+	    line = line.split("] ")[1].split(" [")[0].strip()
+	    deplist.append(line)
+	if line.startswith("[blocks"):
+	    line = line.split("] ")[1].split()[0].strip()
+	    blocklist.append(line)
+    return deplist, blocklist
+
 # should be only used when a pkgcat/pkgname <-- is not specified (example: db, amarok, AND NOT media-sound/amarok)
 def getAtomCategory(atom):
     try:
@@ -74,6 +91,38 @@ def getAtomCategory(atom):
         return rc
     except:
 	return None
+
+# This function compare the version number of two atoms
+# This function needs a complete atom, pkgcat (not mandatory) - pkgname - pkgver
+# if atom1 < atom2 --> returns a NEGATIVE number
+# if atom1 > atom2 --> returns a POSITIVE number
+# if atom1 == atom2 --> returns 0
+def compareAtoms(atom1,atom2):
+    # filter pkgver
+    x, atom1 = extractPkgNameVer(atom1)
+    x, atom2 = extractPkgNameVer(atom2)
+    from portage_versions import vercmp
+    return vercmp(atom1,atom2)
+
+def countdown(secs=5,what="Counting..."):
+    import time
+    if secs:
+	print what
+        for i in range(secs):
+            sys.stdout.write(str(i)+" ")
+            sys.stdout.flush()
+	    time.sleep(1)
+
+def spinner(rotations, interval, message=''):
+	for x in xrange(rotations):
+		writechar(message + '|/-\\'[x%4] + '\r')
+		time.sleep(interval)
+	writechar(' ')
+	for i in xrange(len(message)): print ' ',
+	writechar('\r')
+
+def writechar(char):
+	sys.stdout.write(char); sys.stdout.flush()
 
 def getArchFromChost(chost):
 	# when we'll add new archs, we'll have to add a testcase here
@@ -407,13 +456,17 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 
 
 def print_error(msg):
-    print "* erro *  : "+msg
+    print red(">>")+" "+msg
 
-def print_info(msg):
-    print "* info *  : "+msg
+def print_info(msg, back = False):
+    writechar("\r                                                        \r")
+    if (back):
+	writechar("\r"+green(">>")+" "+msg)
+	return
+    print green(">>")+" "+msg
 
 def print_warning(msg):
-    print "* warn *  : "+msg
+    print yellow(">>")+" "+msg
 
 def print_generic(msg): # here we'll wrap any nice formatting
     print msg

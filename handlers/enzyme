@@ -40,7 +40,7 @@ def print_help():
     print "* usage * : "+APPNAME+" <tool> <atom(s)>"
     print "* opts  * : --help\t\tthis output"
     print "* opts  * : --version\t\tprint version"
-    print "* opts  * : --verbose\t\tbe verbose"
+    print "* opts  * : --verbose\t\tprint debugging info"
     print
     print "* info  * : tools available: "
     print "* info  * : \t"+entropyTools.green(entropyTools.bold("world"))+"\t\t to build all the possible new packages"
@@ -67,7 +67,6 @@ def print_help():
     print "* opts  * : \t\t "+entropyTools.red("--only-sync-back")+"\t only sync between Entropy Portage Tree and the official one"
     print "* opts  * : \t\t "+entropyTools.red("--no-overlay-sync")+"\t disable automatic overlays sync"
     print "* info  * : \t"+entropyTools.green(entropyTools.bold("cleanup"))+"\t to clean temporary files"
-    print "* info  * : \t"+entropyTools.green(entropyTools.bold("data-reset"))+"\t to remove all and start over"
     print
 
 options = sys.argv[1:]
