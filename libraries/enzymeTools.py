@@ -275,7 +275,7 @@ def build(atoms):
 		    if (isTbz2PackageAvailable(installedAtom) == False) or (enzymeRequestForceRepackage):
 		        PackagesQuickpkg.append("quick|"+installedAtom)
 		        if(enzymeRequestVerbose) and (enzymeRequestForceRepackage): print_info("\t\t"+dep+" versions match, repackaging")
-		        if(enzymeRequestVerbose) and ( not enzymeRequestForceRepackage): print_info("\t\t"+dep+" versions match, no need to build")
+		        if(enzymeRequestVerbose) and (not enzymeRequestForceRepackage): print_info("\t\t"+dep+" versions match, adding to the quickpkg list")
 		else:
 		    # adding to the build list
 		    if(enzymeRequestVerbose): print_info("\t\t"+dep+" versions not match, adding")
@@ -292,7 +292,7 @@ def build(atoms):
 	    _toBeBuilt.append(i)
     toBeBuilt = _toBeBuilt
 
-    if PackagesDependencies != []:
+    if (PackagesDependencies != []) or (PackagesQuickpkg != []):
 	print_info(yellow("  *")+" These are the actions that will be taken, in order:")
         for i in PackagesDependencies:
 	    #print "'"+i+"'"
@@ -323,7 +323,7 @@ def build(atoms):
 		# I should never get here
 	        print_info(green("     *")+bold(" [?????] ")+i)
     else:
-	print_info(green("  *")+" No extra dependencies need to be built")
+	print_info(green("  *")+" Nothing to do...")
 
 
     if (enzymeRequestPretendAll):
