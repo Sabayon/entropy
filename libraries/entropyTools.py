@@ -60,6 +60,7 @@ def getRandomNumber():
 def getThirdPartyMirrors(mirrorname):
     return portage.thirdpartymirrors[mirrorname]
 
+# FIXME: implement SLOTS support
 # resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1
 def getBestAtom(atom):
@@ -70,11 +71,15 @@ def getBestAtom(atom):
 	return "!!conflicts"
 
 # I need a valid complete atom...
-def calculateFullAtomsDependencies(atoms):
+def calculateFullAtomsDependencies(atoms, deep = False):
     # in order... thanks emerge :-)
+    deepOpt = ""
+    if (deep):
+	deepOpt = "-Du"
     deplist = []
     blocklist = []
-    result = commands.getoutput("USE='"+getUSEFlags()+"' "+cdbRunEmerge+" --pretend --color=n --quiet "+atoms).split("\n")
+    cmd = "USE='"+getUSEFlags()+"' "+cdbRunEmerge+" --pretend --color=n --quiet "+deepOpt+" "+atoms
+    result = commands.getoutput(cmd).split("\n")
     for line in result:
 	if line.startswith("[ebuild"):
 	    line = line.split("] ")[1].split(" [")[0].strip()
@@ -143,6 +148,7 @@ def translateArch(string,chost):
     else:
 	return string
 
+# FIXME: add slotted packages support
 def getInstalledAtom(atom):
     rc = portage.db['/']['vartree'].dep_match(str(atom))
     if (rc != []):

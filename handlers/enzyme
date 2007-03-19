@@ -49,7 +49,7 @@ def print_help():
     print "* info  * : \t"+entropyTools.green(entropyTools.bold("build"))+"\t\t to build all the packages specified in <atom(s)>"
     print "* opts  * : \t\t"+entropyTools.red("--force-rebuild")+"\t\t force the building of the package, nevertheless"
     print "* opts  * : \t\t"+entropyTools.red("--force-repackage")+"\t force the repackaging of all the possible package"
-    print "* opts  * : \t\t"+entropyTools.red("--update")+"\t\t build all the updateable dependencies"
+    print "* opts  * : \t\t"+entropyTools.red("--deep")+"\t\t analyze the dependencies deeply"
     print "* opts  * : \t\t"+entropyTools.red("--pretend")+"\t\t just show what should be done"
     print "* opts  * : \t\t"+entropyTools.red("--ignore-conflicts")+"\t ignore conflicts between packages"
     print "* opts  * : \t\t"+entropyTools.red("--no-interaction")+"\t disable user interaction, automatic driving"

@@ -139,6 +139,7 @@ def build(atoms):
     enzymeRequestVerbose = False
     enzymeRequestForceRepackage = False
     enzymeRequestForceRebuild = False
+    enzymeRequestDeep = False
     enzymeRequestPretendAll = False
     enzymeRequestIgnoreConflicts = False
     enzymeRequestInteraction = True
@@ -155,6 +156,8 @@ def build(atoms):
 	    enzymeRequestIgnoreConflicts = True
 	elif ( i == "--pretend" ):
 	    enzymeRequestPretendAll = True
+	elif ( i == "--deep" ):
+	    enzymeRequestDeep = True
 	elif ( i == "--no-interaction" ):
 	    enzymeRequestInteraction = False
 	elif ( i == "--simulate-building" ):
@@ -222,9 +225,12 @@ def build(atoms):
 	    toBeBuilt.append(atom)
 
     # Check if they conflicts each others
-    atoms = string.join(toBeBuilt," =")
+    if len(toBeBuilt) > 1:
+        atoms = string.join(toBeBuilt," =")
+    else:
+	atoms = "="+atoms[0]
     print_info(green("  Sanity check on packages..."))
-    atomdeps, atomconflicts = calculateFullAtomsDependencies(atoms)
+    atomdeps, atomconflicts = calculateFullAtomsDependencies(atoms,enzymeRequestDeep)
     for conflict in atomconflicts:
 	if getInstalledAtom(conflict) is not None:
 	    # damn, it's installed
@@ -243,7 +249,7 @@ def build(atoms):
 
     for atom in toBeBuilt:
 	print_info("  Analyzing package "+bold(atom)+" ...",back = True)
-	atomdeps, atomconflicts = calculateFullAtomsDependencies("="+atom)
+	atomdeps, atomconflicts = calculateFullAtomsDependencies("="+atom,enzymeRequestDeep)
 	if(enzymeRequestVerbose): print_info("  Analyzing package: "+bold(atom))
 	if(enzymeRequestVerbose): print_info("  Current installed release: "+bold(str(getInstalledAtom(dep_getkey(atom)))))
 	if(enzymeRequestVerbose): print_info("\tfiltering "+atom+" related packages...")
@@ -251,7 +257,7 @@ def build(atoms):
 	for dep in atomdeps:
 	    dep = "="+dep
 	    if(enzymeRequestVerbose): print_info("\tchecking for: "+red(dep[1:]))
-	    wantedAtom = getBestAtom(dep)
+	    wantedAtom = getBestAtom(dep_getkey(dep))
 	    if(enzymeRequestVerbose): print_info("\t\tI want: "+yellow(wantedAtom))
 	    installedAtom = getInstalledAtom(dep)
 	    if(enzymeRequestVerbose): print_info("\t\tIs installed: "+green(str(installedAtom)))
@@ -260,7 +266,7 @@ def build(atoms):
 		if(enzymeRequestVerbose) and (installedAtom is None): print_info("\t\t"+dep+" is not installed, adding")
 		if(enzymeRequestVerbose) and (enzymeRequestForceRebuild): print_info("\t\t"+dep+" - rebuild forced")
 		# do not taint if dep == atom
-		PackagesDependencies.append(wantedAtom)
+		PackagesDependencies.append(dep[1:])
 	    else:
 		if (wantedAtom == installedAtom):
 		    if (isTbz2PackageAvailable(installedAtom) == False) or (enzymeRequestForceRepackage):
@@ -270,7 +276,7 @@ def build(atoms):
 		else:
 		    # adding to the build list
 		    if(enzymeRequestVerbose): print_info("\t\t"+dep+" versions not match, adding")
-		    PackagesDependencies.append(wantedAtom)
+		    PackagesDependencies.append(dep[1:])
 
     # Clean out toBeBuilt by removing entries that are in PackagesQuickpkg
     _toBeBuilt = []
@@ -286,7 +292,7 @@ def build(atoms):
     if PackagesDependencies != []:
 	print_info(yellow("  *")+" These are the actions that will be taken, in order:")
         for i in PackagesDependencies:
-
+	    #print "'"+i+"'"
 	    pkgstatus = "[?]"
 	    if (getInstalledAtom(dep_getkey(i)) == None):
 		pkgstatus = green("[N]")
