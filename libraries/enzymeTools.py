@@ -441,15 +441,19 @@ def world(options):
 
     print "building world :P"
 
+    enzymeRequestDeep = False
     enzymeRequestVerbose = False
     enzymeRequestRebuild = False
+    enzymeRequestJustRepackageWorld = False
     for i in myopts:
         if ( i == "--verbose" ) or ( i == "-v" ):
 	    enzymeRequestVerbose = True
-	elif ( i == "--rebuild-all" ):
+	elif ( i == "--empty-tree" ):
 	    enzymeRequestRebuild = True
-	elif ( i == "--update" ):
-	    enzymeRequestUpdate = True
+	elif ( i == "--repackage-world" ):
+	    enzymeRequestJustRepackageWorld = True
+	elif ( i == "--deep" ):
+	    enzymeRequestDeep = True
 	else:
 	    print red("  ***")+" Wrong parameters specified."
 	    sys.exit(201)
