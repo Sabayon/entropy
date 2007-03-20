@@ -75,7 +75,7 @@ ETP_UPLOADDIR = "/upload"+"/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store"+"/"+ETP_ARCH_CONST
 ETP_CONF_DIR = "/etc/entropy"
 ETP_ROOT_DIR = "/"
-ETP_HEADER_TEXT = "# Entropy specifications file (released under the GPLv2)\n"
+ETP_HEADER_TEXT = "# Sabayon Linux (C - 2007)\n# Entropy Package Specifications (GPLv2)\n"
 MAX_ETP_REVISION_COUNT = 99999
 
 etpConst = {

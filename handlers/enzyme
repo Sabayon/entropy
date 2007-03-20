@@ -111,7 +111,7 @@ if (options[0] == "build"):
 if (options[0] == "uninstall"):
     enzymeTools.uninstall(options[1:])
     sys.exit(0)
-# uninstall tool
+# cleanup tool
 if (options[0] == "cleanup"):
-    enzymeTools.cleanup(options[1:])
+    entropyTools.cleanup(options[1:])
     sys.exit(0)

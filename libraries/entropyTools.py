@@ -253,6 +253,9 @@ def quickpkg(atom,dirpath):
     tbz2 = xpak.tbz2(dirpath)
     tbz2.recompose(dbdir)
     
+    # Remove tmp file
+    os.system("rm -rf "+tmpdirpath)
+    
     if os.path.isfile(dirpath):
 	return dirpath
     else:
@@ -276,7 +279,7 @@ def isTbz2PackageAvailable(atom, verbose = False):
     atomName = atom.split("/")[len(atom.split("/"))-1]
     tbz2Available = False
     
-    #uploadPath = etpConst['packagessuploaddir']+"/"+atomName+".tbz2"
+    uploadPath = etpConst['packagessuploaddir']+"/"+atomName+".tbz2"
     storePath = etpConst['packagesstoredir']+"/"+atomName+".tbz2"
     packagesPath = etpConst['packagesbindir']+"/"+atomName+".tbz2"
     
@@ -286,9 +289,9 @@ def isTbz2PackageAvailable(atom, verbose = False):
     if (verbose): print "testing in directory: "+storePath
     if os.path.isfile(storePath):
         tbz2Available = storePath
-    #if (verbose): print "testing in directory: "+uploadPath
-    #if os.path.isfile(uploadPath):
-    #    tbz2Available = uploadPath
+    if (verbose): print "testing in directory: "+uploadPath
+    if os.path.isfile(uploadPath):
+        tbz2Available = uploadPath
     if (verbose): print "found here: "+str(tbz2Available)
 
     return tbz2Available
@@ -511,6 +514,45 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 
     return dependencies, conflicts
 
+# get a list, returns a sorted list
+def alphaSorter(seq):
+    def stripter(s, goodchrs):
+        badchrs = set(s)
+        for c in goodchrs:
+            if c in badchrs:
+                badchrs.remove(c)
+        badchrs = ''.join(badchrs)
+        return s.strip(badchrs)
+    
+    def chr_index(value, sortorder):
+        result = []
+        for c in stripter(value, order):
+            cindex = sortorder.find(c)
+            if cindex == -1:
+                cindex = len(sortorder)+ord(c)
+            result.append(cindex)
+        return result
+    
+    order = ( '0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz' )
+    deco = [(chr_index(a, order), a) for a in seq]
+    deco.sort()
+    return list(x[1] for x in deco)
+
+# Temporary files cleaner
+def cleanup(options):
+
+    toCleanDirs = [ etpConst['packagestmpdir'] ]
+    counter = 0
+
+    for dir in toCleanDirs:
+        print_info(red(" * ")+"Cleaning "+yellow(dir)+" directory...", back = True)
+	dircontent = os.listdir(dir)
+	if dircontent != []:
+	    for data in dircontent:
+		os.system("rm -rf "+dir+"/"+data)
+		counter += 1
+
+    print_info(green(" * ")+"Cleaned: "+str(counter)+" files and directories")
 
 def print_error(msg):
     print red(">>")+" "+msg

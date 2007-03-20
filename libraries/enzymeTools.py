@@ -336,7 +336,7 @@ def build(atoms):
 	#print
 	print_info(yellow("  *")+" Building packages...")
 	for dep in PackagesDependencies:
-	    outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
+	    outfile = etpConst['packagestmpdir']+"/.emerge-"+dep.split("/")[len(dep.split("/"))-1]+"-"+str(getRandomNumber())
 	    print_info(green("  *")+" Compiling: "+red(dep)+" ... ")
 	    if (not enzymeRequestVerbose):
 		print_info(yellow("     *")+" redirecting output to: "+green(outfile))
@@ -679,19 +679,3 @@ def uninstall(options):
 		print_warning(yellow("  *** ")+red("Please use --verbose and retry to see what was wrong. Continuing..."))
 	else:
 	    print_info(green("   * ")+bold(atom)+" worked out successfully.")
-
-# Temporary files cleaner
-def cleanup(options):
-
-    toCleanDirs = [ etpConst['packagestmpdir'] ]
-    counter = 0
-
-    for dir in toCleanDirs:
-        print_info(red(" * ")+"Cleaning "+yellow(dir)+" directory...", back = True)
-	dircontent = os.listdir(dir)
-	if dircontent != []:
-	    for data in dircontent:
-		os.system("rm -rf "+dir+"/"+data)
-		counter += 1
-
-    print_info(green(" * ")+"Cleaned: "+str(counter)+" files and directories")

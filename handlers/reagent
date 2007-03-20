@@ -43,8 +43,9 @@ def print_help():
     entropyTools.print_info(" --version\t\tprint version")
     entropyTools.print_info(entropyTools.blue("Tools available: "))
     entropyTools.print_info(" \t"+entropyTools.green("generator")+entropyTools.yellow("\t to create .etp file from a specified .tbz2 file"))
-    entropyTools.print_info(" \t"+entropyTools.green("digest")+entropyTools.yellow("\t\t to create digest of a specified directory"))
+    entropyTools.print_info(" \t"+entropyTools.green("digest")+entropyTools.yellow("\t\t to digest a specified directory"))
     entropyTools.print_info(" \t"+entropyTools.green("enzyme")+entropyTools.yellow("\t\t to analyze enzyme store directory"))
+    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("cleanup"))+entropyTools.yellow("\t\t to clean temporary files"))
 
 options = sys.argv[1:]
 
@@ -74,4 +75,9 @@ elif (options[0] == "generator"):
 
 elif (options[0] == "enzyme"):
     reagentTools.enzyme()
+    sys.exit(0)
+
+# cleanup
+if (options[0] == "cleanup"):
+    entropyTools.cleanup(options[1:])
     sys.exit(0)

@@ -1,13 +1,12 @@
 TODO list (for developers only):
-- a general option --info to print all the Entropy variables and constants
 - add a wrapper for qfile and qlist portage-utils tools because our internal repository is at /var/lib/entropy/portage
 - add proper SLOTS, FETCH_RESTRICTION support to enzyme, getBestAtom and so on... (maybe directly using emerge output?)
-
+- try to workout the mtime issue of repackaged .tbz2
 
 Project Status:
 - entropy: not yet started, nothing to say then
 - enzyme: build() is more or less ok, world() needs to be implemented, overlay() and sync() along with cleanup() are fine
-- reagent: it needs to be enzyme-aware, for the rest, apart some possible changes to the spec files API, it's ok
+- reagent: first release up and working.
 - activator: not yet started, I need to prepare a ftp module that let us work without rsync and shit like that
 ============
 - client part: not yet defined apart from equilibrium name.

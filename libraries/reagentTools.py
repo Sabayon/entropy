@@ -94,24 +94,37 @@ def generator(package):
 
 # Enzyme tool called, we need to parse the Store directory and call generator()
 def enzyme():
-    
+
     # do some magic trans...
     etpConst['packagesstoredir'] = translateArchFromUname(etpConst['packagesstoredir'])
     etpConst['packagessuploaddir'] = translateArchFromUname(etpConst['packagessuploaddir'])
-    
-    for tbz2 in os.listdir(etpConst['packagesstoredir']):
+
+    tbz2files = os.listdir(etpConst['packagesstoredir'])
+    totalCounter = 0
+    # counting the number of files
+    for i in tbz2files:
+	totalCounter += 1
+
+    if (totalCounter == 0):
+	print_info(yellow(" * ")+red("Nothing to do, check later."))
+	# then exit gracefully
+	sys.exit(0)
+
+    counter = 0
+    for tbz2 in tbz2files:
+	counter += 1
+	tbz2name = tbz2.split("/")[len(tbz2.split("/"))-1]
+	print_info(" ("+str(counter)+"/"+str(totalCounter)+") Processing "+tbz2name)
 	tbz2path = etpConst['packagesstoredir']+"/"+tbz2
 	generator(tbz2path)
 	# FIXME: do not use os.system()
-	print "moving file to "+etpConst['packagessuploaddir']
 	os.system("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/ -f")
 
 # This function extracts all the info from a .tbz2 file and returns them
-# FIXME: add more outputs
 def extractPkgData(package):
 
+    print_info(yellow(" * ")+red("Getting package name/version..."),back = True)
     tbz2File = package
-    
     package = package.split(".tbz2")[0]
     package = package.split("-")
     pkgname = ""
@@ -133,21 +146,26 @@ def extractPkgData(package):
     etpData['name'] = pkgname
     etpData['version'] = pkgver
 
+    print_info(yellow(" * ")+red("Getting package md5..."),back = True)
     # .tbz2 md5
     etpData['digest'] = md5sum(tbz2File)
 
+    print_info(yellow(" * ")+red("Unpacking package data..."),back = True)
     # unpack file
     tbz2TmpDir = etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version']+"/"
     unpackTbz2(tbz2File,tbz2TmpDir)
 
+    print_info(yellow(" * ")+red("Getting package CHOST..."),back = True)
     # Fill chost
     f = open(tbz2TmpDir+dbCHOST,"r")
     etpData['chost'] = f.readline().strip()
     f.close()
 
+    print_info(yellow(" * ")+red("Getting package location path..."),back = True)
     # local path to the file
     etpData['packagepath'] = translateArch(etpConst['packagesbindir'],etpData['chost'])+"/"+pkgname+"-"+pkgver+".tbz2"
 
+    print_info(yellow(" * ")+red("Getting package description..."),back = True)
     # Fill description
     try:
         f = open(tbz2TmpDir+dbDESCRIPTION,"r")
@@ -156,6 +174,7 @@ def extractPkgData(package):
     except IOError:
         etpData['description'] = ""
 
+    print_info(yellow(" * ")+red("Getting package homepage..."),back = True)
     # Fill homepage
     try:
         f = open(tbz2TmpDir+dbHOMEPAGE,"r")
@@ -164,6 +183,7 @@ def extractPkgData(package):
     except IOError:
         etpData['homepage'] = ""
 
+    print_info(yellow(" * ")+red("Getting package download URL..."),back = True)
     # Fill url
     for i in etpSources['packagesuri']:
         etpData['download'] += translateArch(i+etpData['name']+"-"+etpData['version']+".tbz2",etpData['chost'])+" "
@@ -172,11 +192,13 @@ def extractPkgData(package):
 	sys.exit(101)
     etpData['download'] = removeSpaceAtTheEnd(etpData['download'])
 
+    print_info(yellow(" * ")+red("Getting package category..."),back = True)
     # Fill category
     f = open(tbz2TmpDir+dbCATEGORY,"r")
     etpData['category'] = f.readline().strip()
     f.close()
 
+    print_info(yellow(" * ")+red("Getting package CFLAGS..."),back = True)
     # Fill CFLAGS
     try:
         f = open(tbz2TmpDir+dbCFLAGS,"r")
@@ -185,6 +207,7 @@ def extractPkgData(package):
     except IOError:
         etpData['cflags'] = ""
 
+    print_info(yellow(" * ")+red("Getting package CXXFLAGS..."),back = True)
     # Fill CXXFLAGS
     try:
         f = open(tbz2TmpDir+dbCXXFLAGS,"r")
@@ -193,6 +216,7 @@ def extractPkgData(package):
     except IOError:
         etpData['cxxflags'] = ""
 
+    print_info(yellow(" * ")+red("Getting package License information..."),back = True)
     # Fill license
     try:
         f = open(tbz2TmpDir+dbLICENSE,"r")
@@ -201,6 +225,7 @@ def extractPkgData(package):
     except IOError:
         etpData['license'] = ""
 
+    print_info(yellow(" * ")+red("Getting package sources information..."),back = True)
     # Fill sources
     try:
         f = open(tbz2TmpDir+dbSRC_URI,"r")
@@ -213,7 +238,8 @@ def extractPkgData(package):
 		etpData['sources'] += atom+" "
     except IOError:
 	etpData['sources'] = ""
-    
+
+    print_info(yellow(" * ")+red("Getting package mirrors list..."),back = True)
     # manage etpData['sources'] to create etpData['mirrorlinks']
     # =mirror://openoffice|link1|link2|link3
     tmpMirrorList = etpData['sources'].split()
@@ -231,6 +257,7 @@ def extractPkgData(package):
 	    etpData['mirrorlinks'] += out+" "
     etpData['mirrorlinks'] = removeSpaceAtTheEnd(etpData['mirrorlinks'])
 
+    print_info(yellow(" * ")+red("Getting package USE flags..."),back = True)
     # Fill USE
     f = open(tbz2TmpDir+dbUSE,"r")
     tmpUSE = f.readline().strip()
@@ -256,6 +283,7 @@ def extractPkgData(package):
         etpData['useflags'] += i+" "
     etpData['useflags'] = removeSpaceAtTheEnd(etpData['useflags'])
 
+    print_info(yellow(" * ")+red("Getting sorce package supported ARCHs..."),back = True)
     # fill KEYWORDS
     try:
         f = open(tbz2TmpDir+dbKEYWORDS,"r")
@@ -264,6 +292,7 @@ def extractPkgData(package):
     except IOError:
 	etpData['keywords'] = ""
 
+    print_info(yellow(" * ")+red("Getting package supported ARCHs..."),back = True)
     # fill ARCHs
     pkgArchs = etpData['keywords']
     for i in ETP_ARCHS:
@@ -272,6 +301,8 @@ def extractPkgData(package):
 
     etpData['binkeywords'] = removeSpaceAtTheEnd(etpData['binkeywords'])
 
+    # FIXME: do we have to rewrite this and use Portage to query a better dependency list?
+    print_info(yellow(" * ")+red("Getting package dependencies..."),back = True)
     # Fill dependencies
     # to fill dependencies we use *DEPEND files
     f = open(tbz2TmpDir+dbDEPEND,"r")
@@ -296,6 +327,7 @@ def extractPkgData(package):
     # - we can use (from /var/db) "CONTENTS" to rapidly search the NEEDED files in the file above
     # return all the collected info
 
+    print_info(yellow(" * ")+red("Getting package runtime dependencies..."),back = True)
     # start collecting needed libraries
     runtimeNeededPackages, runtimeNeededPackagesXT = getPackageRuntimeDependencies(tbz2TmpDir+"/"+dbNEEDED)
 
@@ -317,9 +349,11 @@ def extractPkgData(package):
     etpData['rundependencies'] = removeSpaceAtTheEnd(etpData['rundependencies'])
     etpData['rundependenciesXT'] = removeSpaceAtTheEnd(etpData['rundependenciesXT'])
 
+    print_info(yellow(" * ")+red("Getting Reagent API version..."),back = True)
     # write API info
     etpData['etpapi'] = ETP_API
 
+    print_info(yellow(" * ")+red("Done"),back = True)
     return etpData
 
 # This function generates the right path for putting the .etp file
@@ -330,7 +364,15 @@ def allocateFile(etpData):
     etpOutput = []
     # append header
     etpOutput.append(ETP_HEADER_TEXT)
+    
+    # order keys
+    keys = []
     for i in etpData:
+	keys.append(i)
+    
+    sortedKeys = alphaSorter(keys)
+    
+    for i in sortedKeys:
         if (etpData[i]):
             etpOutput.append(i+": "+etpData[i]+"\n")
 
