@@ -118,6 +118,8 @@ def enzyme():
 	sys.exit(0)
 
     counter = 0
+    etpCreated = 0
+    etpNotCreated = 0
     for tbz2 in tbz2files:
 	counter += 1
 	tbz2name = tbz2.split("/")[len(tbz2.split("/"))-1]
@@ -125,9 +127,13 @@ def enzyme():
 	tbz2path = etpConst['packagesstoredir']+"/"+tbz2
 	rc = generator(tbz2path)
 	if (rc):
+	    etpCreated += 1
 	    os.system("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/ -f")
 	else:
+	    etpNotCreated += 1
 	    os.system("rm -rf "+tbz2path)
+
+    print_info(green(" * ")+red("Statistics: ")+blue("etp created: ")+bold(str(etpCreated))+yellow(" - ")+darkblue("etp discarded: ")+bold(str(etpNotCreated)))
 
 # This function extracts all the info from a .tbz2 file and returns them
 def extractPkgData(package):
@@ -193,13 +199,8 @@ def extractPkgData(package):
         etpData['homepage'] = ""
 
     print_info(yellow(" * ")+red("Getting package download URL..."),back = True)
-    # Fill url
-    for i in etpSources['packagesuri']:
-        etpData['download'] += translateArch(i+etpData['name']+"-"+etpData['version']+".tbz2",etpData['chost'])+" "
-    if (not etpData['download']):
-        print_error("no 'packages|<uri>' specified in "+etpConst['repositoriesconf'])
-	sys.exit(101)
-    etpData['download'] = removeSpaceAtTheEnd(etpData['download'])
+    # Fill download relative URI
+    etpData['download'] = translateArch(etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+".tbz2")
 
     print_info(yellow(" * ")+red("Getting package category..."),back = True)
     # Fill category

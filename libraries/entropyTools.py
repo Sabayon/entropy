@@ -514,6 +514,27 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 
     return dependencies, conflicts
 
+# Collect installed packages
+def getInstalledPackages():
+    import os
+    appDbDir = getPortageAppDbPath()
+    dbDirs = os.listdir(appDbDir)
+    installedAtoms = []
+    for pkgsdir in dbDirs:
+	pkgdir = os.listdir(appDbDir+pkgsdir)
+	for pdir in pkgdir:
+	    pkgcat = pkgsdir.split("/")[len(pkgsdir.split("/"))-1]
+	    pkgatom = pkgcat+"/"+pdir
+	    if pkgatom.find("-MERGING-") == -1:
+	        installedAtoms.append(pkgatom)
+    return installedAtoms, len(installedAtoms)
+
+def getPortageAppDbPath():
+    rc = getPortageEnv("ROOT")+portage_const.VDB_PATH
+    if (not rc.endswith("/")):
+	return rc+"/"
+    return rc
+
 # get a list, returns a sorted list
 def alphaSorter(seq):
     def stripter(s, goodchrs):
@@ -558,7 +579,7 @@ def print_error(msg):
     print red(">>")+" "+msg
 
 def print_info(msg, back = False):
-    writechar("\r                                                                            \r")
+    writechar("\r                                                                                                \r")
     if (back):
 	writechar("\r"+green(">>")+" "+msg)
 	return

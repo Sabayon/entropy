@@ -439,8 +439,6 @@ def world(options):
 
     myopts = options[1:]
 
-    print "building world :P"
-
     enzymeRequestDeep = False
     enzymeRequestVerbose = False
     enzymeRequestRebuild = False
@@ -450,7 +448,7 @@ def world(options):
 	    enzymeRequestVerbose = True
 	elif ( i == "--empty-tree" ):
 	    enzymeRequestRebuild = True
-	elif ( i == "--repackage-world" ):
+	elif ( i == "--repackage-installed" ):
 	    enzymeRequestJustRepackageWorld = True
 	elif ( i == "--deep" ):
 	    enzymeRequestDeep = True
@@ -463,6 +461,30 @@ def world(options):
     etpConst['packagesstoredir'] = translateArch(etpConst['packagesstoredir'],getPortageEnv('CHOST'))
     etpConst['packagesbindir'] = translateArch(etpConst['packagesbindir'],getPortageEnv('CHOST'))
 
+    if (enzymeRequestJustRepackageWorld):
+	# create the list of installed packages
+	print_info(green(" * ")+red("Scanning system database..."),back = True)
+	installedPackages, pkgsnumber = getInstalledPackages()
+	print_info(green(" * ")+red("System database: ")+bold(str(pkgsnumber))+red(" installed packages"))
+	if pkgsnumber > 0:
+	    print_info(green(" * ")+red("Starting to build binaries..."))
+	else:
+	    print_error(red(" * ")+red("No detected packages??? Are you serious?"))
+	    sys.exit(301)
+	
+	localcount = 0
+	for pkg in installedPackages:
+	    localcount += 1
+	    print_info("   "+red("(")+green(str(localcount))+yellow("/")+blue(str(pkgsnumber))+red(")")+red(" Compressing... ")+bold(pkg),back = True)
+	    # FIXME: Check if the package is already available in the Store dir before building it again?
+	    rc = quickpkg(pkg,etpConst['packagesstoredir'])
+	    if (rc is None):
+		print_warning(red(" * ")+yellow(" quickpkg problem for ")+red(pkg))
+		# FIXME: remove sys.exit then...
+		sys.exit(302)
+	writechar("\n")
+	print_info(green(" * ")+red("All packages have been generates successfully"))
+        return 0
     print "ok... now?"
 
 def overlay(options):

@@ -59,8 +59,8 @@ etpData = {
 # the ARCHs that we support
 ETP_ARCHS = ["x86", "amd64"] # maybe ppc someday
 ETP_API_MAJOR = "1"
-ETP_API_MINOR = "2"
-ETP_API_SUBLEVEL = "2"
+ETP_API_MINOR = "3"
+ETP_API_SUBLEVEL = "0"
 ETP_API = ETP_API_MAJOR+"."+ETP_API_MINOR+"."+ETP_API_SUBLEVEL
 ETP_ARCH_CONST = "%ARCH%"
 ETP_REVISION_CONST = "%ETPREV%"
@@ -97,6 +97,7 @@ etpConst = {
     'enzymeconf': ETP_CONF_DIR+"/enzyme.conf", # enzyme.conf file
     'digestfile': "Manifest", # file that contains md5 hashes
     'extension': ".etp", # entropy files extension
+    'binaryurirelativepath': "/packages/"+ETP_ARCH_CONST+"/", # Relative remote path where we'll have to append the packages|uri part.
 }
 
 # Create paths
@@ -246,6 +247,7 @@ dbNEEDED = "NEEDED"
 dbOR = "|or|"
 dbKEYWORDS = "KEYWORDS"
 dbCONTENTS = "CONTENTS"
+
 
 # Portage variables reference
 # vdbVARIABLE --> $VARIABLE
