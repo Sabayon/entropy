@@ -36,15 +36,15 @@ from entropyConstants import *
 APPNAME = "reagent"
 APPVERSION = "1.0"
 def print_help():
-    print "* info  * : Sabayon Linux "+APPNAME+" (C - 2007)"
-    print
-    print "* usage * : "+APPNAME+" <tool, not mandatory> <valid path or .tbz2 file>"
-    print "* opts  * : --help\t\tthis output"
-    print "* opts  * : --version\t\tprint version"
-    print
-    print "* info  * : tools available: "
-    print "* info  * : \tdigest\t to create digest of a specified directory"
-    print
+    entropyTools.print_info("Sabayon Linux "+APPNAME+" (C - 2007)")
+    entropyTools.print_info("Usage: "+APPNAME+" <tool> <valid path or .tbz2 file>")
+    entropyTools.print_info("General Options:")
+    entropyTools.print_info(" --help\t\tthis output")
+    entropyTools.print_info(" --version\t\tprint version")
+    entropyTools.print_info(entropyTools.blue("Tools available: "))
+    entropyTools.print_info(" \t"+entropyTools.green("generator")+entropyTools.yellow("\t to create .etp file from a specified .tbz2 file"))
+    entropyTools.print_info(" \t"+entropyTools.green("digest")+entropyTools.yellow("\t\t to create digest of a specified directory"))
+    entropyTools.print_info(" \t"+entropyTools.green("enzyme")+entropyTools.yellow("\t\t to analyze enzyme store directory"))
 
 options = sys.argv[1:]
 
@@ -64,46 +64,14 @@ if (not entropyTools.isRoot()):
     print_error("you must be root in order to run "+APPNAME)
 
 # digest tool (creates a digest on the specified directory)
-if (options[0].find("digest") != -1):
+if (options[0] == "digest"):
     reagentTools.createDigest(options[1])
     sys.exit(0)
-# add other options here
-# ...
-# ...
-# tbz2 tool
-if (not options[0].endswith(".tbz2")):
-    entropyTools.print_error("no .tbz2 file specified")
-    sys.exit(3)
 
-validFile = False
-for i in options:
-    if os.path.isfile(i) and i.endswith(".tbz2"):
-	validFile = True
-	tbz2File = i
-	break
+elif (options[0] == "generator"):
+    reagentTools.generator(options[1])
+    sys.exit(0)
 
-if (not validFile):
-    entropyTools.print_error("no valid .tbz2 file specified")
-    sys.exit(4)
-
-
-entropyTools.print_info("extracting data and calculating info for: "+tbz2File.split("/")[len(tbz2File.split("/"))-1]+" please wait...")
-# fill all the info
-etpData = reagentTools.extractPkgData(tbz2File)
-
-# look where I can store the file and return its path
-etpOutput, etpOutfilePath = reagentTools.allocateFile(etpData)
-
-if etpOutfilePath is not None:
-    entropyTools.print_info("writing: "+etpOutfilePath)
-    f = open(etpOutfilePath,"w")
-    f.writelines(etpOutput)
-    f.flush()
-    f.close()
-    # digesting directory
-    reagentTools.createDigest(etpOutfilePath)
-else:
-    entropyTools.print_info("not generating a new .etp file, it's not needed")
-
-# clean garbage
-os.system("rm -rf "+etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version'])
+elif (options[0] == "enzyme"):
+    reagentTools.enzyme()
+    sys.exit(0)

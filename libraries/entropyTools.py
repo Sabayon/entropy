@@ -140,6 +140,11 @@ def getArchFromChost(chost):
 	
 	return resultingArch
 
+def translateArchFromUname(string):
+    import commands
+    rc = commands.getoutput("uname -m").split("\n")[0]
+    return translateArch(string,rc)
+
 def translateArch(string,chost):
     if string.find(ETP_ARCH_CONST) != -1:
         # substitute %ARCH%

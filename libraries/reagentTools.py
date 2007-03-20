@@ -51,7 +51,7 @@ def createDigest(path):
     if (not digestContent[0].endswith(etpConst['extension'])):
 	print_error(path+" does not contain "+etpConst['extension']+" files")
         sys.exit(103)
-    print_info("digesting files in "+path)
+    print_info(green(" * ")+red("Digesting files in ")+path)
     digestOut = []
     for i in digestContent:
         digestOut.append("MD5 "+md5sum(path+"/"+i)+" "+i+"\n")
@@ -60,7 +60,54 @@ def createDigest(path):
     f.flush()
     f.close()
 
+def generator(package):
+    
+    # check if the package provided is valid
+    validFile = False
+    if os.path.isfile(package) and package.endswith(".tbz2"):
+	validFile = True
+    if (not validFile):
+	print_error("no valid .tbz2 file specified")
+        sys.exit(4)
+
+    packagename = package.split("/")[len(package.split("/"))-1]
+
+    print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
+    etpData = extractPkgData(package)
+
+    # look where I can store the file and return its path
+    etpOutput, etpOutfilePath = allocateFile(etpData)
+
+    if etpOutfilePath is not None:
+	print_info(green(" * ")+red("Writing Entropy Specifications file: ")+etpOutfilePath)
+	f = open(etpOutfilePath,"w")
+	f.writelines(etpOutput)
+	f.flush()
+	f.close()
+	# digesting directory
+	createDigest(etpOutfilePath)
+    else:
+	print_info(green(" * ")+red("Not generating a new Entropy Specifications file, not needed for ")+bold(packagename))
+
+    # clean garbage
+    os.system("rm -rf "+etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version'])
+
+# Enzyme tool called, we need to parse the Store directory and call generator()
+def enzyme():
+    
+    # do some magic trans...
+    etpConst['packagesstoredir'] = translateArchFromUname(etpConst['packagesstoredir'])
+    etpConst['packagessuploaddir'] = translateArchFromUname(etpConst['packagessuploaddir'])
+    
+    for tbz2 in os.listdir(etpConst['packagesstoredir']):
+	tbz2path = etpConst['packagesstoredir']+"/"+tbz2
+	generator(tbz2path)
+	# FIXME: do not use os.system()
+	print "moving file to "+etpConst['packagessuploaddir']
+	os.system("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/ -f")
+
 # This function extracts all the info from a .tbz2 file and returns them
+# FIXME: add more outputs
 def extractPkgData(package):
 
     tbz2File = package
@@ -88,8 +135,6 @@ def extractPkgData(package):
 
     # .tbz2 md5
     etpData['digest'] = md5sum(tbz2File)
-    # local path to the file
-    etpData['packagepath'] = tbz2File
 
     # unpack file
     tbz2TmpDir = etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version']+"/"
@@ -99,6 +144,9 @@ def extractPkgData(package):
     f = open(tbz2TmpDir+dbCHOST,"r")
     etpData['chost'] = f.readline().strip()
     f.close()
+
+    # local path to the file
+    etpData['packagepath'] = translateArch(etpConst['packagesbindir'],etpData['chost'])+"/"+pkgname+"-"+pkgver+".tbz2"
 
     # Fill description
     try:

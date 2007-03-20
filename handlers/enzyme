@@ -35,40 +35,38 @@ from entropyConstants import *
 APPNAME = "enzyme"
 APPVERSION = "1.0"
 def print_help():
-    print "* info  * : Sabayon Linux "+APPNAME+" (C - 2007)"
-    print
-    print "* usage * : "+APPNAME+" <tool> <atom(s)>"
-    print "* opts  * : --help\t\tthis output"
-    print "* opts  * : --version\t\tprint version"
-    print "* opts  * : --verbose\t\tprint debugging info"
-    print
-    print "* info  * : tools available: "
-    print "* info  * : \t"+entropyTools.green(entropyTools.bold("world"))+"\t\t to build all the possible new packages"
-    print "* opts  * : \t\t"+entropyTools.red("--rebuild-all")+"\t\t force the repackaging of all the packages"
-    print "* opts  * : \t\t"+entropyTools.red("--update")+"\t\t used with --rebuild-all it also updates all the packages"
-    print "* info  * : \t"+entropyTools.green(entropyTools.bold("build"))+"\t\t to build all the packages specified in <atom(s)>"
-    print "* opts  * : \t\t"+entropyTools.red("--force-rebuild")+"\t\t force the building of the package, nevertheless"
-    print "* opts  * : \t\t"+entropyTools.red("--force-repackage")+"\t force the repackaging of all the possible package"
-    print "* opts  * : \t\t"+entropyTools.red("--deep")+"\t\t analyze the dependencies deeply"
-    print "* opts  * : \t\t"+entropyTools.red("--use")+"\t\t show packages USE flags"
-    print "* opts  * : \t\t"+entropyTools.red("--pretend")+"\t\t just show what should be done"
-    print "* opts  * : \t\t"+entropyTools.red("--ignore-conflicts")+"\t ignore conflicts between packages"
-    print "* opts  * : \t\t"+entropyTools.red("--no-interaction")+"\t disable user interaction, automatic driving"
-    print "* opts  * : \t\t"+entropyTools.red("--simulate-building")+"\t compilations are simulated only"
-    print "* info  * : \t"+entropyTools.green(entropyTools.bold("uninstall"))+"\t to uninstall one or a list of packages"
-    print "* opts  * : \t\t"+entropyTools.red("--pretend")+"\t\t just show what would be done"
-    print "* opts  * : \t\t"+entropyTools.red("--just-prune")+"\t\t with slotted packages, keep only the latest, remove the rest"
-    print "* info  * : \t"+entropyTools.green(entropyTools.bold("overlay"))+"\t\t to manage overlays"
-    print "* opts  * : \t\t "+entropyTools.red("add")+"\t\t\t to add overlays"
-    print "* opts  * : \t\t "+entropyTools.red("remove")+"\t\t\t to remove overlays"
-    print "* opts  * : \t\t "+entropyTools.red("sync")+"\t\t\t to sync overlays (after this you can specify which overlay)"
-    print "* opts  * : \t\t "+entropyTools.red("list")+"\t\t\t to list overlays"
-    print "* info  * : \t"+entropyTools.green(entropyTools.bold("sync"))+"\t\t to just sync portage tree"
-    print "* opts  * : \t\t "+entropyTools.red("--sync-back")+"\t\t sync between Entropy Portage Tree and the official one"
-    print "* opts  * : \t\t "+entropyTools.red("--only-sync-back")+"\t only sync between Entropy Portage Tree and the official one"
-    print "* opts  * : \t\t "+entropyTools.red("--no-overlay-sync")+"\t disable automatic overlays sync"
-    print "* info  * : \t"+entropyTools.green(entropyTools.bold("cleanup"))+"\t to clean temporary files"
-    print
+    entropyTools.print_info("Sabayon Linux "+APPNAME+" (C - 2007)")
+    entropyTools.print_info("Usage: "+APPNAME+" <tool> <atom(s)>")
+    entropyTools.print_info("General Options:")
+    entropyTools.print_info("  --help\t\tthis output")
+    entropyTools.print_info("  --version\t\tprint version")
+    entropyTools.print_info("  --verbose\t\tprint debugging info")
+    entropyTools.print_info(entropyTools.blue("Tools available: "))
+    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("world"))+entropyTools.yellow("\t\t to build all the possible new packages"))
+    entropyTools.print_info(" \t\t"+entropyTools.red("--rebuild-all")+"\t\t force the repackaging of all the packages")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--update")+"\t\t used with --rebuild-all it also updates all the packages")
+    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("build"))+entropyTools.yellow("\t\t to build all the packages specified in <atom(s)>"))
+    entropyTools.print_info(" \t\t"+entropyTools.red("--force-rebuild")+"\t\t force the building of the package, nevertheless")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--force-repackage")+"\t force the repackaging of all the possible package")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--deep")+"\t\t\t analyze the dependencies deeply")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--use")+"\t\t\t show packages USE flags")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--pretend")+"\t\t just show what should be done")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--ignore-conflicts")+"\t ignore conflicts between packages")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--no-interaction")+"\t disable user interaction, automatic driving")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--simulate-building")+"\t compilations are simulated only")
+    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("uninstall"))+entropyTools.yellow("\t to uninstall one or a list of packages"))
+    entropyTools.print_info(" \t\t"+entropyTools.red("--pretend")+"\t\t just show what would be done")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--just-prune")+"\t\t with slotted packages, keep only the latest, remove the rest")
+    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("overlay"))+entropyTools.yellow("\t\t to manage overlays"))
+    entropyTools.print_info(" \t\t "+entropyTools.red("add")+"\t\t\t to add overlays")
+    entropyTools.print_info(" \t\t "+entropyTools.red("remove")+"\t\t\t to remove overlays")
+    entropyTools.print_info(" \t\t "+entropyTools.red("sync")+"\t\t\t to sync overlays (after this you can specify which overlay)")
+    entropyTools.print_info(" \t\t "+entropyTools.red("list")+"\t\t\t to list overlays")
+    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("sync"))+entropyTools.yellow("\t\t to just sync portage tree"))
+    entropyTools.print_info(" \t\t "+entropyTools.red("--sync-back")+"\t\t sync between Entropy Portage Tree and the official one")
+    entropyTools.print_info(" \t\t "+entropyTools.red("--only-sync-back")+"\t only sync between Entropy Portage Tree and the official one")
+    entropyTools.print_info(" \t\t "+entropyTools.red("--no-overlay-sync")+"\t disable automatic overlays sync")
+    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("cleanup"))+entropyTools.yellow("\t\t to clean temporary files"))
 
 options = sys.argv[1:]
 
