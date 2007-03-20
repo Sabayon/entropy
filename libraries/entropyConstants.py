@@ -75,7 +75,8 @@ ETP_UPLOADDIR = "/upload"+"/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store"+"/"+ETP_ARCH_CONST
 ETP_CONF_DIR = "/etc/entropy"
 ETP_ROOT_DIR = "/"
-ETP_HEADER_TEXT = "# Sabayon Linux (C - 2007)\n# Entropy Package Specifications (GPLv2)\n"
+# NEVER APPEND another \n to this file because it will break the md5 check of reagent
+ETP_HEADER_TEXT = "# Sabayon Linux (C - 2007) - Entropy Package Specifications (GPLv2)\n"
 MAX_ETP_REVISION_COUNT = 99999
 
 etpConst = {

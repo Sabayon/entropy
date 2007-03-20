@@ -60,6 +60,9 @@ def createDigest(path):
     f.flush()
     f.close()
 
+# Returns:
+# True = if it has generated a new .etp file
+# False = if not
 def generator(package):
     
     # check if the package provided is valid
@@ -78,6 +81,8 @@ def generator(package):
     # look where I can store the file and return its path
     etpOutput, etpOutfilePath = allocateFile(etpData)
 
+    rc = False
+
     if etpOutfilePath is not None:
 	print_info(green(" * ")+red("Writing Entropy Specifications file: ")+etpOutfilePath)
 	f = open(etpOutfilePath,"w")
@@ -86,11 +91,13 @@ def generator(package):
 	f.close()
 	# digesting directory
 	createDigest(etpOutfilePath)
+	rc = True
     else:
 	print_info(green(" * ")+red("Not generating a new Entropy Specifications file, not needed for ")+bold(packagename))
-
     # clean garbage
     os.system("rm -rf "+etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version'])
+    
+    return rc
 
 # Enzyme tool called, we need to parse the Store directory and call generator()
 def enzyme():
@@ -116,9 +123,11 @@ def enzyme():
 	tbz2name = tbz2.split("/")[len(tbz2.split("/"))-1]
 	print_info(" ("+str(counter)+"/"+str(totalCounter)+") Processing "+tbz2name)
 	tbz2path = etpConst['packagesstoredir']+"/"+tbz2
-	generator(tbz2path)
-	# FIXME: do not use os.system()
-	os.system("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/ -f")
+	rc = generator(tbz2path)
+	if (rc):
+	    os.system("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/ -f")
+	else:
+	    os.system("rm -rf "+tbz2path)
 
 # This function extracts all the info from a .tbz2 file and returns them
 def extractPkgData(package):
@@ -415,7 +424,8 @@ def allocateFile(etpData):
 		md5B = md5.new()
 		md5A.update(cntA)
 		md5B.update(cntB)
-		if md5A.digest() == md5B.digest():
+		
+		if (md5A.digest() == md5B.digest()):
 		    etpOutfilePath = None
 		else:
 		    # add 1 to: packagename-1.2.3-r1-etpX.etp
