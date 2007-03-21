@@ -356,6 +356,17 @@ def build(atoms):
 	    else:
 		print_error(red("     *")+" Compile error")
 		if (not enzymeRequestVerbose): print_info(red("     *")+" Log file at: "+outfile)
+		if os.path.isfile(outfile):
+		    f = open(outfile,"r")
+		    errorlog = f.readlines()
+		    f.close()
+		    errorlinesnumber = len(errorlog)
+		    if errorlinesnumber > 50:
+		        errorlinesfrom = errorlinesnumber - 50
+		    else:
+			errorlinesfrom = 0
+		    for number in range(errorlinesfrom,errorlinesnumber):
+			print_error("     "+errorlog[number].strip())
 		#print
 		#print
 		print_error(red("  ***")+" Cannot continue")
