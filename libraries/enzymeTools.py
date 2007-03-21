@@ -159,6 +159,7 @@ def build(atoms):
 	    enzymeRequestPretendAll = True
 	elif ( i == "--deep" ):
 	    enzymeRequestDeep = True
+	    enzymeRequestForceRebuild = True
 	elif ( i == "--use" ):
 	    enzymeRequestUse = True
 	elif ( i == "--no-interaction" ):
@@ -271,6 +272,8 @@ def build(atoms):
 		# do not taint if dep == atom
 		PackagesDependencies.append(dep[1:])
 	    else:
+		print "'"+wantedAtom+"'"
+		print "'"+installedAtom+"'"
 		if (wantedAtom == installedAtom):
 		    if (isTbz2PackageAvailable(installedAtom) == False) or (enzymeRequestForceRepackage):
 		        PackagesQuickpkg.append("quick|"+installedAtom)
@@ -338,11 +341,13 @@ def build(atoms):
 	for dep in PackagesDependencies:
 	    outfile = etpConst['packagestmpdir']+"/.emerge-"+dep.split("/")[len(dep.split("/"))-1]+"-"+str(getRandomNumber())
 	    print_info(green("  *")+" Compiling: "+red(dep)+" ... ")
+	    mountProc()
 	    if (not enzymeRequestVerbose):
 		print_info(yellow("     *")+" redirecting output to: "+green(outfile))
 		rc, outfile = emerge("="+dep, odbNodeps, outfile, "&>", enzymeRequestSimulation)
 	    else:
 		rc, outfile = emerge("="+dep,odbNodeps,None,None, enzymeRequestSimulation)
+	    umountProc()
 	    if (not rc):
 		# compilation is fine
 		print_info(green("     *")+" Compiled successfully")

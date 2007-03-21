@@ -575,6 +575,26 @@ def cleanup(options):
 
     print_info(green(" * ")+"Cleaned: "+str(counter)+" files and directories")
 
+def mountProc():
+    # check if it's already mounted
+    procfiles = os.listdir("/proc")
+    if len(procfiles) > 2:
+	return True
+    else:
+	os.system("mount -t proc proc /proc &> /dev/null")
+	return True
+
+def umountProc():
+    # check if it's already mounted
+    procfiles = os.listdir("/proc")
+    if len(procfiles) > 2:
+	os.system("umount /proc &> /dev/null")
+	os.system("umount /proc &> /dev/null")
+	os.system("umount /proc &> /dev/null")
+	return True
+    else:
+	return True
+
 def print_error(msg):
     print red(">>")+" "+msg
 
