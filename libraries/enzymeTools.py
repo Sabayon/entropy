@@ -260,7 +260,7 @@ def build(atoms):
 	for dep in atomdeps:
 	    dep = "="+dep
 	    if(enzymeRequestVerbose): print_info("\tchecking for: "+red(dep[1:]))
-	    wantedAtom = getBestAtom(dep_getkey(dep))
+	    wantedAtom = getBestAtom(dep)
 	    if(enzymeRequestVerbose): print_info("\t\tI want: "+yellow(wantedAtom))
 	    installedAtom = getInstalledAtom(dep)
 	    if(enzymeRequestVerbose): print_info("\t\tIs installed: "+green(str(installedAtom)))

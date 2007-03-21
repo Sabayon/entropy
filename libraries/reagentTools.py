@@ -200,7 +200,7 @@ def extractPkgData(package):
 
     print_info(yellow(" * ")+red("Getting package download URL..."),back = True)
     # Fill download relative URI
-    etpData['download'] = translateArch(etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+".tbz2")
+    etpData['download'] = translateArch(etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+".tbz2",etpData['chost'])
 
     print_info(yellow(" * ")+red("Getting package category..."),back = True)
     # Fill category
