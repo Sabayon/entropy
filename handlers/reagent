@@ -54,7 +54,7 @@ options = sys.argv[1:]
 _options = []
 for opt in options:
     if (opt == "--nocolor"):
-	nocolor()
+	entropyTools.nocolor()
     else:
 	_options.append(opt)
 options = _options
