@@ -35,7 +35,7 @@ initializePortageTree()
 
 # colours support
 import output
-from output import bold, colorize, green, red, yellow, blue, darkblue, nocolor
+from output import bold, colorize, green, darkred, red, yellow, blue, darkblue, nocolor
 import re
 import sys
 import random
@@ -78,16 +78,53 @@ def calculateFullAtomsDependencies(atoms, deep = False):
 	deepOpt = "-Du"
     deplist = []
     blocklist = []
-    cmd = "USE='"+getUSEFlags()+"' "+cdbRunEmerge+" --pretend --color=n --quiet "+deepOpt+" "+atoms
+    
+    try:
+	useflags = "USE='"+os.environ['USE']+"' "
+    except:
+	useflags = ""
+    cmd = useflags+cdbRunEmerge+" --pretend --color=n --quiet "+deepOpt+" "+atoms
     result = commands.getoutput(cmd).split("\n")
     for line in result:
 	if line.startswith("[ebuild"):
-	    line = line.split("] ")[1].split(" [")[0].strip()
+	    line = line.split("] ")[1].split(" [")[0].split()[0].strip()
 	    deplist.append(line)
 	if line.startswith("[blocks"):
 	    line = line.split("] ")[1].split()[0].strip()
 	    blocklist.append(line)
     return deplist, blocklist
+
+def calculateAtomUSEFlags(atom):
+    try:
+	useflags = "USE='"+os.environ['USE']+"' "
+    except:
+	useflags = ""
+    cmd = useflags+cdbRunEmerge+" --pretend --color=n --nodeps --quiet --verbose "+atom
+    result = commands.getoutput(cmd).split("\n")
+    useparm = ""
+    for line in result:
+	if line.startswith("[ebuild"):
+	    useparm = line.split('USE="')[len(line.split('USE="'))-1].split('"')[0].strip()
+    useparm = useparm.split()
+    _useparm = []
+    for use in useparm:
+	# -cups
+	if use.startswith("-") and (not use.endswith("*")):
+	    use = darkblue(use)
+	# -cups*
+	elif use.startswith("-") and (use.endswith("*")):
+	    use = yellow(use)
+	# use flag not available
+	elif use.startswith("("):
+	    use = blue(use)
+	# cups*
+	elif use.endswith("*"):
+	    use = green(use)
+	else:
+	    use = darkred(use)
+	_useparm.append(use)
+    useparm = string.join(_useparm," ")
+    return useparm
 
 # should be only used when a pkgcat/pkgname <-- is not specified (example: db, amarok, AND NOT media-sound/amarok)
 def getAtomCategory(atom):
@@ -161,6 +198,10 @@ def getInstalledAtom(atom):
     else:
         return None
 
+# INFO: there is get_slot too :)
+def getEbuildDbPath(atom):
+    return portage.db['/']['vartree'].getebuildpath(atom)
+
 def getInstalledAtoms(atom):
     rc = portage.db['/']['vartree'].dep_match(str(atom))
     if (rc != []):
@@ -182,8 +223,8 @@ def unmerge(atom):
 
 # TO THIS FUNCTION:
 # must be provided a valid and complete atom
-# FIXME: needs some love !
 def extractPkgNameVer(atom):
+    package = dep_getcpv(atom)
     package = atom.split("/")[len(atom.split("/"))-1]
     package = package.split("-")
     pkgname = ""
@@ -392,40 +433,6 @@ def getUSEFlags():
 def getPackageIUSE(atom):
     return getPackageVar(atom,"IUSE")
 
-# you must provide a complete atom
-def getPackageUSEList(atom):
-    if (not atom.startswith("=")):
-	atom = "="+atom
-    myUseFlags = getPackageVar(atom[1:],"IUSE").split()
-    useFlags = getUSEFlags().split()
-    uselist = []
-    for myuse in myUseFlags:
-	useFind = False
-	for use in useFlags:
-	    if (myuse == use):
-		useFind = True
-		break
-	if (useFind):
-	    uselist.append(myuse)
-	else:
-	    uselist.append("-"+myuse)
-
-    # order
-    _uselist = []
-    for use in uselist:
-	if (not use.startswith("-")):
-	    _uselist.append(red(use))
-    for use in uselist:
-	if use.startswith("-"):
-	    _uselist.append(darkblue(use))
-    uselist = _uselist
-    
-    if len(uselist) > 0:
-	import string
-	return string.join(uselist," ")
-    else:
-	return ""
-
 def getPackageVar(atom,var):
     if atom.startswith("="):
 	atom = atom[1:]
@@ -594,6 +601,21 @@ def umountProc():
 	return True
     else:
 	return True
+
+def askquestion(prompt):
+    responses, colours = ["Yes", "No"], [green, red]
+    print green(prompt),
+    try:
+	while True:
+	    response=raw_input("["+"/".join([colours[i](responses[i]) for i in range(len(responses))])+"] ")
+	    for key in responses:
+		# An empty response will match the first value in responses.
+		if response.upper()==key[:len(response)].upper():
+		    return key
+		    print "I cannot understand '%s'" % response,
+    except (EOFError, KeyboardInterrupt):
+	print "Interrupted."
+	sys.exit(1)
 
 def print_error(msg):
     print red(">>")+" "+msg

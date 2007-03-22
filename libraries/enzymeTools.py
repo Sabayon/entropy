@@ -142,6 +142,7 @@ def build(atoms):
     enzymeRequestDeep = False
     enzymeRequestUse = False
     enzymeRequestPretendAll = False
+    enzymeRequestAsk = False
     enzymeRequestIgnoreConflicts = False
     enzymeRequestInteraction = True
     enzymeRequestSimulation = False
@@ -157,6 +158,8 @@ def build(atoms):
 	    enzymeRequestIgnoreConflicts = True
 	elif ( i == "--pretend" ):
 	    enzymeRequestPretendAll = True
+	elif ( i == "--ask" ):
+	    enzymeRequestAsk = True
 	elif ( i == "--deep" ):
 	    enzymeRequestDeep = True
 	    enzymeRequestForceRebuild = True
@@ -230,9 +233,18 @@ def build(atoms):
 
     # Check if they conflicts each others
     if len(toBeBuilt) > 1:
-        atoms = string.join(toBeBuilt," =")
+	cleanatomlist = []
+	for atom in toBeBuilt:
+	    if (not atom.startswith(">")) and (not atom.startswith("<")):
+		cleanatomlist.append("="+atom)
+	    else:
+		cleanatomlist.append(atom)
+        atoms = string.join(cleanatomlist," ")
     else:
-	atoms = "="+atoms[0]
+	if atoms[0].startswith(">") or atoms[0].startswith("<"):
+	    atoms = atoms[0]
+	else:
+	    atoms = "="+atoms[0]
     print_info(green("  Sanity check on packages..."))
     atomdeps, atomconflicts = calculateFullAtomsDependencies(atoms,enzymeRequestDeep)
     for conflict in atomconflicts:
@@ -259,6 +271,7 @@ def build(atoms):
 	if(enzymeRequestVerbose): print_info("\tfiltering "+atom+" related packages...")
 	
 	for dep in atomdeps:
+	    dep = dep.split()[0]
 	    dep = "="+dep
 	    if(enzymeRequestVerbose): print_info("\tchecking for: "+red(dep[1:]))
 	    wantedAtom = getBestAtom(dep)
@@ -269,7 +282,6 @@ def build(atoms):
 		# then append - because it's not installed !
 		if(enzymeRequestVerbose) and (installedAtom is None): print_info("\t\t"+dep+" is not installed, adding")
 		if(enzymeRequestVerbose) and (enzymeRequestForceRebuild): print_info("\t\t"+dep+" - rebuild forced")
-		# do not taint if dep == atom
 		PackagesDependencies.append(dep[1:])
 	    else:
 		print "'"+wantedAtom+"'"
@@ -299,38 +311,39 @@ def build(atoms):
 	print_info(yellow("  *")+" These are the actions that will be taken, in order:")
         for i in PackagesDependencies:
 	    #print "'"+i+"'"
+	    useflags = ""
+	    if enzymeRequestUse: useflags = bold(" [")+yellow("USE: ")+calculateAtomUSEFlags("="+i)+bold("]")
 	    pkgstatus = "[?]"
-	    pkguse = ""
 	    if (getInstalledAtom(dep_getkey(i)) == None):
 		pkgstatus = green("[N]")
-		if (enzymeRequestUse) and (getPackageUSEList(i) != ""): pkguse = bold(" [")+yellow("USE:")+" "+getPackageUSEList(i)+bold("]")
 	    elif (compareAtoms(i,getInstalledAtom(dep_getkey(i))) == 0):
 		pkgstatus = yellow("[R]")
-		if (enzymeRequestUse) and (getPackageUSEList(i) != ""): pkguse = bold(" [")+yellow("USE:")+" "+getPackageUSEList(i)+bold("]")
 	    elif (compareAtoms(i,getInstalledAtom(dep_getkey(i))) > 0):
 		pkgstatus = blue("[U]")
-		if (enzymeRequestUse) and (getPackageUSEList(i) != ""): pkguse = bold(" [")+yellow("USE:")+" "+getPackageUSEList(i)+bold("]")
 	    elif (compareAtoms(i,getInstalledAtom(dep_getkey(i))) < 0):
 		pkgstatus = darkblue("[D]")
-		if (enzymeRequestUse) and (getPackageUSEList(i) != ""): pkguse = bold(" [")+yellow("USE:")+" "+getPackageUSEList(i)+bold("]")
-	    print_info(red("     *")+bold(" [")+red("BUILD")+bold("] ")+pkgstatus+" "+i+pkguse)
+	    print_info(red("     *")+bold(" [")+red("BUILD")+bold("] ")+pkgstatus+" "+i+useflags)
 	
 	for i in PackagesQuickpkg:
-	    pkguse = ""
-	    if (enzymeRequestUse) and (getPackageUSEList(i) != ""): pkguse = bold(" [")+yellow("USE:")+" "+getPackageUSEList(i.split("|")[len(i.split("|"))-1])+bold("]")
+	    useflags = ""
+	    if enzymeRequestUse: useflags = bold(" [")+yellow("USE: ")+calculateAtomUSEFlags("="+i)+bold("]")
 	    if i.startswith("quick|"):
-	        print_info(green("     *")+bold(" [")+green("QUICK")+bold("] ")+yellow("[R] ") +i.split("quick|")[len(i.split("quick|"))-1]+pkguse)
+	        print_info(green("     *")+bold(" [")+green("QUICK")+bold("] ")+yellow("[R] ") +i.split("quick|")[len(i.split("quick|"))-1])
 	    elif i.startswith("avail|"):
-	        print_info(yellow("     *")+bold(" [")+yellow("NOACT")+bold("] ")+yellow("[R] ")+i.split("avail|")[len(i.split("avail|"))-1]+pkguse)
+	        print_info(yellow("     *")+bold(" [")+yellow("NOACT")+bold("] ")+yellow("[R] ")+i.split("avail|")[len(i.split("avail|"))-1])
 	    else:
 		# I should never get here
-	        print_info(green("     *")+bold(" [?????] ")+i)
+	        print_info(green("     *")+bold(" [?????] ")+i+useflags)
     else:
 	print_info(green("  *")+" Nothing to do...")
 
 
     if (enzymeRequestPretendAll):
 	sys.exit(0)
+    elif (enzymeRequestAsk):
+	rc = askquestion("\n     Would you like to run the steps above ?")
+	if rc == "No":
+	    sys.exit(0)
 	
     # when the compilation ends, enzyme runs reagent
     packagesPaths = []
