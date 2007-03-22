@@ -41,6 +41,7 @@ def print_help():
     entropyTools.print_info("  --help\t\tthis output")
     entropyTools.print_info("  --version\t\tprint version")
     entropyTools.print_info("  --verbose\t\tprint debugging info")
+    entropyTools.print_info("  --nocolor\t\tdisable colorized output")
     entropyTools.print_info(entropyTools.blue("Tools available: "))
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("world"))+entropyTools.yellow("\t\t to build all the possible new packages"))
     entropyTools.print_info(" \t\t"+entropyTools.red("--empty-tree")+"\t\t rebuild all, including updates")
@@ -70,6 +71,15 @@ def print_help():
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("cleanup"))+entropyTools.yellow("\t\t to clean temporary files"))
 
 options = sys.argv[1:]
+
+# no color parsing
+_options = []
+for opt in options:
+    if (opt == "--nocolor"):
+	nocolor()
+    else:
+	_options.append(opt)
+options = _options
 
 # print version
 if (string.join(options).find("--version") != -1) or (string.join(options).find(" -V") != -1):

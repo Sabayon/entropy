@@ -334,6 +334,9 @@ def build(atoms):
 	
     # when the compilation ends, enzyme runs reagent
     packagesPaths = []
+    
+    # filter duplicates from PackagesDependencies
+    PackagesDependencies = list(set(PackagesDependencies))
 
     if PackagesDependencies != []:
 	#print

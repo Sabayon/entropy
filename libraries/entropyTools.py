@@ -35,7 +35,7 @@ initializePortageTree()
 
 # colours support
 import output
-from output import bold, colorize, green, red, yellow, blue, darkblue
+from output import bold, colorize, green, red, yellow, blue, darkblue, nocolor
 import re
 import sys
 import random

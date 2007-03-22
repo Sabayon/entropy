@@ -3,6 +3,11 @@ TODO list (for developers only):
 - add proper SLOTS, FETCH_RESTRICTION support to enzyme, getBestAtom and so on... (maybe directly using emerge output?)
 - do not append download URLs directly into the .etp files
 - activator should care about the removal of the old packages
+- build() on enzyme, check for duplicates and filter them out?
+- build() on enzyme, when calculating runtime dependencies, please check if there's a broken link too and report as warning
+- build() on enzyme, also trap einfo and ewarn ?
+- build() on enzyme, also integrate a sort of revdep-rebuild ?
+- build() on enzyme, implement --ask option
 
 Project Status:
 - entropy: not yet started, nothing to say then

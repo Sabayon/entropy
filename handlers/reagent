@@ -41,6 +41,7 @@ def print_help():
     entropyTools.print_info("General Options:")
     entropyTools.print_info(" --help\t\tthis output")
     entropyTools.print_info(" --version\t\tprint version")
+    entropyTools.print_info(" --nocolor\t\tdisable colorized output")
     entropyTools.print_info(entropyTools.blue("Tools available: "))
     entropyTools.print_info(" \t"+entropyTools.green("generator")+entropyTools.yellow("\t to create .etp file from a specified .tbz2 file"))
     entropyTools.print_info(" \t"+entropyTools.green("digest")+entropyTools.yellow("\t\t to digest a specified directory"))
@@ -48,6 +49,15 @@ def print_help():
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("cleanup"))+entropyTools.yellow("\t\t to clean temporary files"))
 
 options = sys.argv[1:]
+
+# no color parsing
+_options = []
+for opt in options:
+    if (opt == "--nocolor"):
+	nocolor()
+    else:
+	_options.append(opt)
+options = _options
 
 # print version
 if (string.join(options).find("--version") != -1) or (string.join(options).find(" -V") != -1):
