@@ -1,5 +1,4 @@
 TODO list (for developers only):
-- add a wrapper for qfile and qlist portage-utils tools because our internal repository is at /var/lib/entropy/portage
 - add proper SLOTS, FETCH_RESTRICTION support to enzyme, getBestAtom and so on... (maybe directly using emerge output?)
 - do not append download URLs directly into the .etp files
 - activator should care about the removal of the old packages

@@ -140,6 +140,7 @@ def build(atoms):
     enzymeRequestForceRepackage = False
     enzymeRequestForceRebuild = False
     enzymeRequestDeep = False
+    enzymeRequestNodeps = False
     enzymeRequestUse = False
     enzymeRequestPretendAll = False
     enzymeRequestAsk = False
@@ -158,6 +159,8 @@ def build(atoms):
 	    enzymeRequestIgnoreConflicts = True
 	elif ( i == "--pretend" ):
 	    enzymeRequestPretendAll = True
+	elif ( i == "--nodeps" ):
+	    enzymeRequestNodeps = True
 	elif ( i == "--ask" ):
 	    enzymeRequestAsk = True
 	elif ( i == "--deep" ):
@@ -177,8 +180,6 @@ def build(atoms):
     etpConst['packagessuploaddir'] = translateArch(etpConst['packagessuploaddir'],getPortageEnv('CHOST'))
     etpConst['packagesstoredir'] = translateArch(etpConst['packagesstoredir'],getPortageEnv('CHOST'))
     etpConst['packagesbindir'] = translateArch(etpConst['packagesbindir'],getPortageEnv('CHOST'))
-    
-    useFlags = getPortageEnv("USE")
     
     validAtoms = []
     for i in atoms:
@@ -207,110 +208,114 @@ def build(atoms):
     PackagesConflicting = []
     PackagesQuickpkg = []
 
-    # Check if a .tbz2 has already been done
-    # control if --force-rebuild or --force-repackage has been provided
-    # and filter the packages list accordingly to line 1
-    for atom in validAtoms:
-        # let's dance !!
-        isAvailable = getInstalledAtom("="+atom)
-	if (enzymeRequestVerbose): print_info("testing atom: "+atom)
-	if (isAvailable is not None) and (not enzymeRequestForceRepackage):
-	    # package is available on the system
-	    if (enzymeRequestVerbose): print_info("I'd like to keep a current copy of binary package "+atom+" but first I need to check if even this step has been already done")
+    if (not enzymeRequestNodeps):
+        # Check if a .tbz2 has already been done
+        # control if --force-rebuild or --force-repackage has been provided
+        # and filter the packages list accordingly to line 1
+        for atom in validAtoms:
+            # let's dance !!
+            isAvailable = getInstalledAtom("="+atom)
+	    if (enzymeRequestVerbose): print_info("testing atom: "+atom)
+	    if (isAvailable is not None) and (not enzymeRequestForceRepackage):
+	        # package is available on the system
+	        if (enzymeRequestVerbose): print_info("I'd like to keep a current copy of binary package "+atom+" but first I need to check if even this step has been already done")
 
-	    tbz2Available = isTbz2PackageAvailable(atom, enzymeRequestVerbose)
+	        tbz2Available = isTbz2PackageAvailable(atom, enzymeRequestVerbose)
 
-	    if (tbz2Available == False) or (enzymeRequestForceRebuild):
-		if (enzymeRequestVerbose): print_info("Adding "+bold(atom)+" to the build list")
+	        if (tbz2Available == False) or (enzymeRequestForceRebuild):
+		    if (enzymeRequestVerbose): print_info("Adding "+bold(atom)+" to the build list")
+	            toBeBuilt.append(atom)
+	        else:
+		    # no action needed, but showing for consistence
+		    PackagesQuickpkg.append("avail|"+atom)
+	            if (enzymeRequestVerbose): print_info("This "+bold(atom)+" has already been built here: "+tbz2Available)
+	    else:
+                if (enzymeRequestVerbose): print_info("I have to compile or quickpkg "+atom+" by myself...")
 	        toBeBuilt.append(atom)
-	    else:
-		# no action needed, but showing for consistence
-		PackagesQuickpkg.append("avail|"+atom)
-	        if (enzymeRequestVerbose): print_info("This "+bold(atom)+" has already been built here: "+tbz2Available)
-	else:
-            if (enzymeRequestVerbose): print_info("I have to compile or quickpkg "+atom+" by myself...")
-	    toBeBuilt.append(atom)
 
-    # Check if they conflicts each others
-    if len(toBeBuilt) > 1:
-	cleanatomlist = []
-	for atom in toBeBuilt:
-	    if (not atom.startswith(">")) and (not atom.startswith("<")):
-		cleanatomlist.append("="+atom)
+        # Check if they conflicts each others
+        if len(toBeBuilt) > 1:
+	    cleanatomlist = []
+	    for atom in toBeBuilt:
+	        if (not atom.startswith(">")) and (not atom.startswith("<")):
+		    cleanatomlist.append("="+atom)
+	        else:
+		    cleanatomlist.append(atom)
+            atoms = string.join(cleanatomlist," ")
+        else:
+	    if atoms[0].startswith(">") or atoms[0].startswith("<"):
+	        atoms = atoms[0]
 	    else:
-		cleanatomlist.append(atom)
-        atoms = string.join(cleanatomlist," ")
+	        atoms = "="+atoms[0]
+        print_info(green("  Sanity check on packages..."))
+        atomdeps, atomconflicts = calculateFullAtomsDependencies(atoms,enzymeRequestDeep)
+        for conflict in atomconflicts:
+	    if getInstalledAtom(conflict) is not None:
+	        # damn, it's installed
+	        PackagesConflicting.append(conflict)
+        if PackagesConflicting != []:
+	    print_info(red("   *")+" These are the conflicting packages:")
+	    for i in PackagesConflicting:
+	        print_warning(red("      *")+bold(" [CONFL] ")+i)
+	    if (not enzymeRequestIgnoreConflicts):
+	        print_error(red(" ***")+" Sorry, I can't continue. To force this, add --ignore-conflicts at your own risk.")
+	        sys.exit(1)
+	    else:
+	        import time
+	        print_warning((" ***")+" You are using --ignore-conflicts at your own risk.")
+	        time.sleep(5)
     else:
-	if atoms[0].startswith(">") or atoms[0].startswith("<"):
-	    atoms = atoms[0]
-	else:
-	    atoms = "="+atoms[0]
-    print_info(green("  Sanity check on packages..."))
-    atomdeps, atomconflicts = calculateFullAtomsDependencies(atoms,enzymeRequestDeep)
-    for conflict in atomconflicts:
-	if getInstalledAtom(conflict) is not None:
-	    # damn, it's installed
-	    PackagesConflicting.append(conflict)
-    if PackagesConflicting != []:
-	print_info(red("   *")+" These are the conflicting packages:")
-	for i in PackagesConflicting:
-	    print_warning(red("      *")+bold(" [CONFL] ")+i)
-	if (not enzymeRequestIgnoreConflicts):
-	    print_error(red(" ***")+" Sorry, I can't continue. To force this, add --ignore-conflicts at your own risk.")
-	    sys.exit(1)
-	else:
-	    import time
-	    print_warning((" ***")+" You are using --ignore-conflicts at your own risk.")
-	    time.sleep(5)
+	toBeBuilt = validAtoms
 
     for atom in toBeBuilt:
 	print_info("  Analyzing package "+bold(atom)+" ...",back = True)
-	atomdeps, atomconflicts = calculateFullAtomsDependencies("="+atom,enzymeRequestDeep)
+	if (not enzymeRequestNodeps): atomdeps, atomconflicts = calculateFullAtomsDependencies("="+atom,enzymeRequestDeep)
 	if(enzymeRequestVerbose): print_info("  Analyzing package: "+bold(atom))
 	if(enzymeRequestVerbose): print_info("  Current installed release: "+bold(str(getInstalledAtom(dep_getkey(atom)))))
 	if(enzymeRequestVerbose): print_info("\tfiltering "+atom+" related packages...")
 	
-	for dep in atomdeps:
-	    dep = dep.split()[0]
-	    dep = "="+dep
-	    if(enzymeRequestVerbose): print_info("\tchecking for: "+red(dep[1:]))
-	    wantedAtom = getBestAtom(dep)
-	    if(enzymeRequestVerbose): print_info("\t\tI want: "+yellow(wantedAtom))
-	    installedAtom = getInstalledAtom(dep)
-	    if(enzymeRequestVerbose): print_info("\t\tIs installed: "+green(str(installedAtom)))
-	    if ( installedAtom is None ) or (enzymeRequestForceRebuild):
-		# then append - because it's not installed !
-		if(enzymeRequestVerbose) and (installedAtom is None): print_info("\t\t"+dep+" is not installed, adding")
-		if(enzymeRequestVerbose) and (enzymeRequestForceRebuild): print_info("\t\t"+dep+" - rebuild forced")
-		PackagesDependencies.append(dep[1:])
-	    else:
-		print "'"+wantedAtom+"'"
-		print "'"+installedAtom+"'"
-		if (wantedAtom == installedAtom):
-		    if (isTbz2PackageAvailable(installedAtom) == False) or (enzymeRequestForceRepackage):
-		        PackagesQuickpkg.append("quick|"+installedAtom)
-		        if(enzymeRequestVerbose) and (enzymeRequestForceRepackage): print_info("\t\t"+dep+" versions match, repackaging")
-		        if(enzymeRequestVerbose) and (not enzymeRequestForceRepackage): print_info("\t\t"+dep+" versions match, adding to the quickpkg list")
-		else:
-		    # adding to the build list
-		    if(enzymeRequestVerbose): print_info("\t\t"+dep+" versions not match, adding")
+	if (not enzymeRequestNodeps):
+	    for dep in atomdeps:
+	        dep = dep.split()[0]
+	        dep = "="+dep
+	        if(enzymeRequestVerbose): print_info("\tchecking for: "+red(dep[1:]))
+	        wantedAtom = getBestAtom(dep)
+	        if(enzymeRequestVerbose): print_info("\t\tI want: "+yellow(wantedAtom))
+	        installedAtom = getInstalledAtom(dep)
+	        if(enzymeRequestVerbose): print_info("\t\tIs installed: "+green(str(installedAtom)))
+	        if ( installedAtom is None ) or (enzymeRequestForceRebuild):
+		    # then append - because it's not installed !
+		    if(enzymeRequestVerbose) and (installedAtom is None): print_info("\t\t"+dep+" is not installed, adding")
+		    if(enzymeRequestVerbose) and (enzymeRequestForceRebuild): print_info("\t\t"+dep+" - rebuild forced")
 		    PackagesDependencies.append(dep[1:])
+	        else:
+		    if (wantedAtom == installedAtom):
+		        if (isTbz2PackageAvailable(installedAtom) == False) or (enzymeRequestForceRepackage):
+		            PackagesQuickpkg.append("quick|"+installedAtom)
+		            if(enzymeRequestVerbose) and (enzymeRequestForceRepackage): print_info("\t\t"+dep+" versions match, repackaging")
+		            if(enzymeRequestVerbose) and (not enzymeRequestForceRepackage): print_info("\t\t"+dep+" versions match, adding to the quickpkg list")
+		    else:
+		        # adding to the build list
+		        if(enzymeRequestVerbose): print_info("\t\t"+dep+" versions not match, adding")
+		        PackagesDependencies.append(dep[1:])
 
-    # Clean out toBeBuilt by removing entries that are in PackagesQuickpkg
-    _toBeBuilt = []
-    for i in toBeBuilt:
-	_tbbfound = False
-	for x in PackagesQuickpkg:
-	    if (i == x):
-	        _tbbfound = True
-	if (not _tbbfound):
-	    _toBeBuilt.append(i)
-    toBeBuilt = _toBeBuilt
+            # Clean out toBeBuilt by removing entries that are in PackagesQuickpkg
+            _toBeBuilt = []
+            for i in toBeBuilt:
+	        _tbbfound = False
+	        for x in PackagesQuickpkg:
+	            if (i == x):
+	                _tbbfound = True
+	        if (not _tbbfound):
+	            _toBeBuilt.append(i)
+            toBeBuilt = _toBeBuilt
+
+	else:
+	    PackagesDependencies = toBeBuilt
 
     if (PackagesDependencies != []) or (PackagesQuickpkg != []):
 	print_info(yellow("  *")+" These are the actions that will be taken, in order:")
         for i in PackagesDependencies:
-	    #print "'"+i+"'"
 	    useflags = ""
 	    if enzymeRequestUse: useflags = bold(" [")+yellow("USE: ")+calculateAtomUSEFlags("="+i)+bold("]")
 	    pkgstatus = "[?]"
@@ -349,7 +354,8 @@ def build(atoms):
     packagesPaths = []
     
     # filter duplicates from PackagesDependencies
-    PackagesDependencies = list(set(PackagesDependencies))
+    # FIXME, it changes the dependency order, filtering for now
+    #PackagesDependencies = list(set(PackagesDependencies))
 
     if PackagesDependencies != []:
 	#print
@@ -467,19 +473,27 @@ def build(atoms):
 
 
 # World update tool
+# FIXME: integrate --ask --pretend
 def world(options):
 
     myopts = options[1:]
 
+    # FIXME: are --pretend and --ask useful here?
     enzymeRequestDeep = False
     enzymeRequestVerbose = False
     enzymeRequestRebuild = False
+    enzymeRequestAsk = False
+    enzymeRequestPretend = False
     enzymeRequestJustRepackageWorld = False
     for i in myopts:
         if ( i == "--verbose" ) or ( i == "-v" ):
 	    enzymeRequestVerbose = True
 	elif ( i == "--empty-tree" ):
 	    enzymeRequestRebuild = True
+	elif ( i == "--ask" ):
+	    enzymeRequestAsk = True
+	elif ( i == "--pretend" ):
+	    enzymeRequestPretend = True
 	elif ( i == "--repackage-installed" ):
 	    enzymeRequestJustRepackageWorld = True
 	elif ( i == "--deep" ):
@@ -517,7 +531,35 @@ def world(options):
 	writechar("\n")
 	print_info(green(" * ")+red("All packages have been generates successfully"))
         return 0
-    print "ok... now?"
+    # elif...
+    # classical world, trapping --deep if necessary
+    else:
+	emergeopts = " -u "
+	#print "DEBUG: running world()"
+	#if (enzymeRequestDeep): print "DEBUG: world(): --deep on"
+	#if (enzymeRequestRebuild): print "DEBUG: world(): --empty-tree on"
+	if (enzymeRequestDeep): emergeopts += " -D"
+	if (enzymeRequestRebuild) and (not enzymeRequestDeep): emergeopts += " -e"
+	#print emergeopts
+	print_info(green(" * ")+red("Scanning tree for ")+bold("updates")+red("..."))
+	deplist, blocklist = calculateFullAtomsDependencies("world",False,emergeopts)
+	#print "-----asdasd-----"
+	if blocklist != []:
+	    print blocklist
+	    print "error there is something that is blocking all this shit"
+	    sys.exit(303)
+	
+	# composing the request
+	atoms = []
+	for atom in deplist:
+	    atoms.append("="+atom)
+	atoms.append("--force-rebuild")
+	atoms.append("--nodeps")
+	if (enzymeRequestPretend):
+	    atoms.append("--pretend")
+	elif (enzymeRequestAsk):
+	    atoms.append("--ask")
+	build(atoms)
 
 def overlay(options):
     #FIXME: add sync-back to the official Portage Tree?
@@ -587,7 +629,7 @@ def overlay(options):
 	else:
 	    # sync each overlay
 	    for i in myownopts:
-		print_info(green("syncing overlay: ")+bold(i))
+		print_info(green("syncing overlay: ")+bold(i),back = True)
 	        rc = spawnCommand(layman+" --config="+etpConst['overlaysconffile']+" -s "+i, redirect = verbosity)
 	        if (rc != 0):
 	            print_warning(red(bold("a problem occoured syncing "+i+" overlay.")))

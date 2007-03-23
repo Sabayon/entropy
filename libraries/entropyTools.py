@@ -27,6 +27,10 @@ def initializePortageTree():
     portage.settings.lock()
     portage.portdb.__init__(etpConst['portagetreedir'])
 
+# Fix for wrong cache entries - DO NOT REMOVE
+import os
+from entropyConstants import *
+os.environ['PORTDIR'] = etpConst['portagetreedir']
 import portage
 import portage_const
 from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv
@@ -71,7 +75,7 @@ def getBestAtom(atom):
 	return "!!conflicts"
 
 # I need a valid complete atom...
-def calculateFullAtomsDependencies(atoms, deep = False):
+def calculateFullAtomsDependencies(atoms, deep = False, extraopts = ""):
     # in order... thanks emerge :-)
     deepOpt = ""
     if (deep):
@@ -83,7 +87,7 @@ def calculateFullAtomsDependencies(atoms, deep = False):
 	useflags = "USE='"+os.environ['USE']+"' "
     except:
 	useflags = ""
-    cmd = useflags+cdbRunEmerge+" --pretend --color=n --quiet "+deepOpt+" "+atoms
+    cmd = useflags+cdbRunEmerge+" --pretend --color=n --quiet "+deepOpt+" "+extraopts+" "+atoms
     result = commands.getoutput(cmd).split("\n")
     for line in result:
 	if line.startswith("[ebuild"):
@@ -92,7 +96,23 @@ def calculateFullAtomsDependencies(atoms, deep = False):
 	if line.startswith("[blocks"):
 	    line = line.split("] ")[1].split()[0].strip()
 	    blocklist.append(line)
-    return deplist, blocklist
+
+    # filter garbage
+    _deplist = []
+    for i in deplist:
+	if (i != "") and (i != " "):
+	    _deplist.append(i)
+    deplist = _deplist
+    _blocklist = []
+    for i in blocklist:
+	if (i != "") and (i != " "):
+	    _blocklist.append(i)
+    blocklist = _blocklist
+
+    if deplist != []:
+        return deplist, blocklist
+    else:
+	rc = os.system(cmd)
 
 def calculateAtomUSEFlags(atom):
     try:
