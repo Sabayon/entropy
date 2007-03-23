@@ -237,13 +237,13 @@ def build(atoms):
         if len(toBeBuilt) > 1:
 	    cleanatomlist = []
 	    for atom in toBeBuilt:
-	        if (not atom.startswith(">")) and (not atom.startswith("<")):
+	        if (not atom.startswith(">")) and (not atom.startswith("<")) and (not atoms.startswith("=")) and (not isjustname(atom)):
 		    cleanatomlist.append("="+atom)
 	        else:
 		    cleanatomlist.append(atom)
             atoms = string.join(cleanatomlist," ")
         else:
-	    if atoms[0].startswith(">") or atoms[0].startswith("<"):
+	    if atoms[0].startswith(">") or atoms[0].startswith("<") or atoms[0].startswith("=") or isjustname(atoms[0]):
 	        atoms = atoms[0]
 	    else:
 	        atoms = "="+atoms[0]
@@ -271,7 +271,7 @@ def build(atoms):
 	print_info("  Analyzing package "+bold(atom)+" ...",back = True)
 	if (not enzymeRequestNodeps): atomdeps, atomconflicts = calculateFullAtomsDependencies("="+atom,enzymeRequestDeep)
 	if(enzymeRequestVerbose): print_info("  Analyzing package: "+bold(atom))
-	if(enzymeRequestVerbose): print_info("  Current installed release: "+bold(str(getInstalledAtom(dep_getkey(atom)))))
+	if(enzymeRequestVerbose): print_info("  Current installed release: "+bold(str(getInstalledAtom("="+atom))))
 	if(enzymeRequestVerbose): print_info("\tfiltering "+atom+" related packages...")
 	
 	if (not enzymeRequestNodeps):
@@ -321,11 +321,11 @@ def build(atoms):
 	    pkgstatus = "[?]"
 	    if (getInstalledAtom(dep_getkey(i)) == None):
 		pkgstatus = green("[N]")
-	    elif (compareAtoms(i,getInstalledAtom(dep_getkey(i))) == 0):
+	    elif (compareAtoms(i,getInstalledAtom("="+i)) == 0):
 		pkgstatus = yellow("[R]")
-	    elif (compareAtoms(i,getInstalledAtom(dep_getkey(i))) > 0):
+	    elif (compareAtoms(i,getInstalledAtom("="+i)) > 0):
 		pkgstatus = blue("[U]")
-	    elif (compareAtoms(i,getInstalledAtom(dep_getkey(i))) < 0):
+	    elif (compareAtoms(i,getInstalledAtom("="+i)) < 0):
 		pkgstatus = darkblue("[D]")
 	    print_info(red("     *")+bold(" [")+red("BUILD")+bold("] ")+pkgstatus+" "+i+useflags)
 	
@@ -365,11 +365,13 @@ def build(atoms):
 	    print_info(green("  *")+" Compiling: "+red(dep)+" ... ")
 	    mountProc()
 	    if (not enzymeRequestVerbose):
+		# collect libraries info for the current installed package, if any
+		
 		print_info(yellow("     *")+" redirecting output to: "+green(outfile))
 		rc, outfile = emerge("="+dep, odbNodeps, outfile, "&>", enzymeRequestSimulation)
 	    else:
 		rc, outfile = emerge("="+dep,odbNodeps,None,None, enzymeRequestSimulation)
-	    umountProc()
+	    #umountProc()
 	    if (not rc):
 		# compilation is fine
 		print_info(green("     *")+" Compiled successfully")

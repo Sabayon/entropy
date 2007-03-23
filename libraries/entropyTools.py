@@ -31,6 +31,7 @@ def initializePortageTree():
 import os
 from entropyConstants import *
 os.environ['PORTDIR'] = etpConst['portagetreedir']
+os.environ['PORTDIR_OVERLAY'] = etpConst['overlays']
 import portage
 import portage_const
 from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv
@@ -64,7 +65,6 @@ def getRandomNumber():
 def getThirdPartyMirrors(mirrorname):
     return portage.thirdpartymirrors[mirrorname]
 
-# FIXME: implement SLOTS support
 # resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1
 def getBestAtom(atom):
@@ -210,13 +210,24 @@ def translateArch(string,chost):
     else:
 	return string
 
-# FIXME: add slotted packages support
 def getInstalledAtom(atom):
     rc = portage.db['/']['vartree'].dep_match(str(atom))
     if (rc != []):
-        return rc[len(rc)-1]
+	if (len(rc) == 1):
+	    return rc[0]
+	else:
+            return rc[len(rc)-1]
     else:
         return None
+
+def getPackageSlot(atom):
+    if atom.startswith("="):
+	atom = atom[1:]
+    rc = portage.db['/']['vartree'].getslot(atom)
+    if rc != "":
+	return rc
+    else:
+	return None
 
 # INFO: there is get_slot too :)
 def getEbuildDbPath(atom):
