@@ -345,7 +345,7 @@ def parseElogFile(atom):
 	reallog = f.readlines()
 	f.close()
 	for line in reallog:
-	    if line.startswith("INFO: postinst"):
+	    if line.startswith("INFO: postinst") or line.startswith("LOG: postinst"):
 		logline = True
 		continue
 		# disable all the others
