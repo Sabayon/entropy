@@ -474,7 +474,7 @@ def build(atoms):
     # remove avail| packages from the list
     _PackagesQuickpkg = []
     for i in PackagesQuickpkg:
-	if not dep.startswith("avail|"):
+	if not i.startswith("avail|"):
 	    _PackagesQuickpkg.append(i)
     PackagesQuickpkg = _PackagesQuickpkg
 
