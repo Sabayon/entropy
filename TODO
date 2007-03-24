@@ -1,7 +1,6 @@
 TODO list (for developers only):
 - add proper FETCH_RESTRICTION support to enzyme, getBestAtom and so on... (maybe directly using emerge output?)
 - activator should care about the removal of the old packages
-- build() on enzyme, when calculating runtime dependencies, please check if there's a broken link too and report as warning
 - build() on enzyme, also trap einfo and ewarn ?
 - build() and world(), on enzyme, add the support for whitelist+cron
 - build(), on enzyme, beautify sanity check when all the packages are not found
@@ -18,13 +17,3 @@ Project Status:
 
 Features plan:
 - distcc support to enzyme
-
-
->>   * These are the actions that will be taken, in order:
->>      * [BUILD] [D] sys-apps/dbus-0.62-r2
->>   * Building packages...
->>   * Compiling: sys-apps/dbus-0.62-r2 ...
-['libdbus-1.so.3.2.0']
->>      * redirecting output to: /var/lib/entropy/tmp/.emerge-dbus-0.62-r2-36787
-['libdbus-1.so.2.0.0', 'dbus_bindings.so', 'dbus_glib_bindings.so', 'libdbus-glib-1.so.2.0.0', 'libdbus-qt-1.so.1.0.0']
->>      * Compiled successfully

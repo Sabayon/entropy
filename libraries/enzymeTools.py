@@ -368,6 +368,8 @@ def build(atoms):
     # FIXME, it changes the dependency order, filtering for now
     #PackagesDependencies = list(set(PackagesDependencies))
 
+    compileError = False
+
     if PackagesDependencies != []:
 	#print
 	print_info(yellow("  *")+" Building packages...")
@@ -461,7 +463,8 @@ def build(atoms):
 		#print
 		#print
 		print_error(red("  ***")+" Cannot continue")
-		sys.exit(250)
+		compileError = True
+		break
 
     if (enzymeRequestInteraction):
 	# interaction needed
