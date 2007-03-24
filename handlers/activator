@@ -43,36 +43,11 @@ def print_help():
     entropyTools.print_info("  --verbose\t\tprint debugging info")
     entropyTools.print_info("  --nocolor\t\tdisable colorized output")
     entropyTools.print_info(entropyTools.blue("Tools available: "))
-    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("world"))+entropyTools.yellow("\t\t to build all the possible new packages"))
-    entropyTools.print_info(" \t\t"+entropyTools.red("--empty-tree")+"\t\t rebuild all, including updates")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--deep")+"\t\t\t analyzes world dependencies deeply")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--pretend")+"\t\t\t just show what should be done")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--ask")+"\t\t\t just ask before doing what should be done")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--repackage-installed")+"\t creates binaries of all the installed packages")
-    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("build"))+entropyTools.yellow("\t\t to build all the packages specified in <atom(s)>"))
-    entropyTools.print_info(" \t\t"+entropyTools.red("--force-rebuild")+"\t\t force the building of the package, nevertheless")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--force-repackage")+"\t force the repackaging of all the possible package")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--deep")+"\t\t\t analyze the dependencies deeply")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--nodeps")+"\t\t\t do not include dependencies and force compilation")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--use")+"\t\t\t show packages USE flags")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--pretend")+"\t\t just show what should be done")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--ask")+"\t\t\t just ask before doing what should be done")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--ignore-conflicts")+"\t ignore conflicts between packages")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--no-interaction")+"\t disable user interaction, automatic driving")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--simulate-building")+"\t compilations are simulated only")
-    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("uninstall"))+entropyTools.yellow("\t to uninstall one or a list of packages"))
-    entropyTools.print_info(" \t\t"+entropyTools.red("--pretend")+"\t\t just show what would be done")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--just-prune")+"\t\t with slotted packages, keep only the latest, remove the rest")
-    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("overlay"))+entropyTools.yellow("\t\t to manage overlays"))
-    entropyTools.print_info(" \t\t "+entropyTools.red("add")+"\t\t\t to add overlays")
-    entropyTools.print_info(" \t\t "+entropyTools.red("remove")+"\t\t\t to remove overlays")
-    entropyTools.print_info(" \t\t "+entropyTools.red("sync")+"\t\t\t to sync overlays (after this you can specify which overlay)")
-    entropyTools.print_info(" \t\t "+entropyTools.red("list")+"\t\t\t to list overlays")
-    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("sync"))+entropyTools.yellow("\t\t to just sync portage tree"))
-    entropyTools.print_info(" \t\t "+entropyTools.red("--sync-back")+"\t\t sync between Entropy Portage Tree and the official one")
-    entropyTools.print_info(" \t\t "+entropyTools.red("--only-sync-back")+"\t only sync between Entropy Portage Tree and the official one")
-    entropyTools.print_info(" \t\t "+entropyTools.red("--no-overlay-sync")+"\t disable automatic overlays sync")
-    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("cleanup"))+entropyTools.yellow("\t\t to clean temporary files"))
+    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("sync"))+entropyTools.yellow("\t\t to sync all the upload mirrors"))
+    entropyTools.print_info(" \t\t"+entropyTools.red("--download-packages")+"\t\t to download all the binary packages (will overwrite)")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--download-etp")+"\t\t to download all the Entropy tree (will overwrite)")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--download-etp")+"\t\t to download all the Entropy tree (will overwrite)")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--show-stats")+"\t\t shows the list of validated package/etp-file couples")
 
 options = sys.argv[1:]
 
@@ -101,32 +76,7 @@ if (not entropyTools.isRoot()):
     entropyTools.print_error("you must be root in order to run "+APPNAME)
     sys.exit(2)
 
-# world tool
-if (options[0] == "world"):
-    enzymeTools.world(options)
-    sys.exit(0)
-# sync tool
+# sync mirrors tool
 if (options[0] == "sync"):
-    enzymeTools.sync(options)
-    sys.exit(0)
-# overlay tool
-if (options[0] == "overlay"):
-    rc = enzymeTools.overlay(options)
-    if (rc):
-        sys.exit(0)
-    else:
-         # an error occoured
-	 print_help()
-	 sys.exit(3)
-# build tool
-if (options[0] == "build"):
-    enzymeTools.build(options[1:])
-    sys.exit(0)
-# uninstall tool
-if (options[0] == "uninstall"):
-    enzymeTools.uninstall(options[1:])
-    sys.exit(0)
-# cleanup tool
-if (options[0] == "cleanup"):
-    entropyTools.cleanup(options[1:])
+    activatorTools.sync(options)
     sys.exit(0)

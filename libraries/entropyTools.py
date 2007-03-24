@@ -113,6 +113,7 @@ def calculateFullAtomsDependencies(atoms, deep = False, extraopts = ""):
         return deplist, blocklist
     else:
 	rc = os.system(cmd)
+	sys.exit(1)
 
 def calculateAtomUSEFlags(atom):
     try:
@@ -307,8 +308,87 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
 	    os.remove(outfile)
 	except:
 	    spawnCommand("rm -rf "+outfile)
-    rc = spawnCommand(cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
+    
+    # elog configuration
+    elogopts = dbPORTAGE_ELOG_OPTS+" "
+    # clean elog shit
+    elogfile = atom.split("=")[len(atom.split("="))-1]
+    elogfile = elogfile.split(">")[len(atom.split(">"))-1]
+    elogfile = elogfile.split("<")[len(atom.split("<"))-1]
+    elogfile = elogfile.split("/")[len(atom.split("/"))-1]
+    elogfile = etpConst['logdir']+"/elog/*"+elogfile+"*"
+    os.system("rm -rf "+elogfile)
+    
+    rc = spawnCommand(elogopts+cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
     return rc, outfile
+
+def parseElogFile(atom):
+    if atom.startswith("="):
+	atom = atom[1:]
+    if atom.startswith(">"):
+	atom = atom[1:]
+    if atom.startswith("<"):
+	atom = atom[1:]
+    if (atom.find("/") != -1):
+	pkgcat = atom.split("/")[0]
+	pkgnamever = atom.split("/")[1]+"*.log"
+    else:
+	pkgcat = "*"
+	pkgnamever = atom+"*.log"
+    elogfile = pkgcat+":"+pkgnamever
+    reallogfile = commands.getoutput("find "+etpConst['logdir']+"/elog/ -name '"+elogfile+"'").split("\n")[0].strip()
+    if os.path.isfile(reallogfile):
+	# FIXME: improve this part
+	logline = False
+	logoutput = []
+	f = open(reallogfile,"r")
+	reallog = f.readlines()
+	f.close()
+	for line in reallog:
+	    if line.startswith("INFO: postinst"):
+		logline = True
+		continue
+		# disable all the others
+	    elif line.startswith("INFO:"):
+		logline = False
+		continue
+	    if (logline) and (line.strip() != ""):
+		# trap !
+		logoutput.append(line.strip())
+	return logoutput
+    else:
+	return []
+
+def compareLibraryLists(pkgBinaryFiles,newPkgBinaryFiles):
+    brokenBinariesList = []
+    # check if there has been a API breakage
+    if pkgBinaryFiles != newPkgBinaryFiles:
+	_pkgBinaryFiles = []
+	_newPkgBinaryFiles = []
+	# extract only similar packages
+	for pkg in pkgBinaryFiles:
+	    _pkg = pkg.split(".so")[0]
+	    for newpkg in newPkgBinaryFiles:
+		_newpkg = newpkg.split(".so")[0]
+		if (_newpkg == _pkg):
+		    _pkgBinaryFiles.append(pkg)
+		    _newPkgBinaryFiles.append(newpkg)
+	pkgBinaryFiles = _pkgBinaryFiles
+	newPkgBinaryFiles = _newPkgBinaryFiles
+	
+	# check for version bumps
+	for pkg in pkgBinaryFiles:
+	    _pkgver = pkg.split(".so")[len(pkg.split(".so"))-1]
+	    _pkg = pkg.split(".so")[0]
+	    for newpkg in newPkgBinaryFiles:
+		_newpkgver = newpkg.split(".so")[len(newpkg.split(".so"))-1]
+		_newpkg = newpkg.split(".so")[0]
+		if (_newpkg == _pkg):
+		    # check version
+		    if (_pkgver != _newpkgver):
+			brokenBinariesList.append([ pkg, newpkg ])
+    return brokenBinariesList
+
 
 # create a .tbz2 file in the specified path
 def quickpkg(atom,dirpath):

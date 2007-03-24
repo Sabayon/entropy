@@ -29,3 +29,6 @@ import sys
 import os
 import commands
 import string
+
+def sync(options):
+    print "hello!"

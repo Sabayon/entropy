@@ -75,6 +75,7 @@ ETP_UPLOADDIR = "/upload"+"/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store"+"/"+ETP_ARCH_CONST
 ETP_CONF_DIR = "/etc/entropy"
 ETP_ROOT_DIR = "/"
+ETP_LOG_DIR = ETP_DIR+"/"+"logs"
 # NEVER APPEND another \n to this file because it will break the md5 check of reagent
 ETP_HEADER_TEXT = "# Sabayon Linux (C - 2007) - Entropy Package Specifications (GPLv2)\n"
 MAX_ETP_REVISION_COUNT = 99999
@@ -98,6 +99,7 @@ etpConst = {
     'digestfile': "Manifest", # file that contains md5 hashes
     'extension': ".etp", # entropy files extension
     'binaryurirelativepath': "/packages/"+ETP_ARCH_CONST+"/", # Relative remote path where we'll have to append the packages|uri part.
+    'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
 }
 
 # Create paths
@@ -247,7 +249,7 @@ dbNEEDED = "NEEDED"
 dbOR = "|or|"
 dbKEYWORDS = "KEYWORDS"
 dbCONTENTS = "CONTENTS"
-
+dbPORTAGE_ELOG_OPTS = 'PORTAGE_ELOG_CLASSES="warn info log" PORTAGE_ELOG_SYSTEM="save" PORT_LOGDIR="'+etpConst['logdir']+'"'
 
 # Portage variables reference
 # vdbVARIABLE --> $VARIABLE

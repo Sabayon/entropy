@@ -1,9 +1,8 @@
 TODO list (for developers only):
-- add proper FETCH_RESTRICTION support to enzyme, getBestAtom and so on... (maybe directly using emerge output?)
+- add proper FETCH_RESTRICTION support to enzyme
 - activator should care about the removal of the old packages
-- build() on enzyme, also trap einfo and ewarn ?
 - build() and world(), on enzyme, add the support for whitelist+cron
-- build(), on enzyme, beautify sanity check when all the packages are not found
+- build(), on enzyme, add license blacklist (packages that cannot be shipped in a binary form)
 - Sabayon Linux USE flags: remove all server related use flags
 
 Project Status:

@@ -403,33 +403,7 @@ def build(atoms):
 		    # collect them!
 		    newPkgBinaryFiles = collectBinaryFilesForInstalledPackage(getInstalledAtom(pkgquestion))
 		
-		brokenBinariesList = []
-		# check if there has been a API breakage
-		if pkgBinaryFiles != newPkgBinaryFiles:
-		    _pkgBinaryFiles = []
-		    _newPkgBinaryFiles = []
-		    # extract only similar packages
-		    for pkg in pkgBinaryFiles:
-			_pkg = pkg.split(".so")[0]
-			for newpkg in newPkgBinaryFiles:
-			    _newpkg = newpkg.split(".so")[0]
-			    if (_newpkg == _pkg):
-				_pkgBinaryFiles.append(pkg)
-				_newPkgBinaryFiles.append(newpkg)
-		    pkgBinaryFiles = _pkgBinaryFiles
-		    newPkgBinaryFiles = _newPkgBinaryFiles
-		    
-		    # check for version bumps
-		    for pkg in pkgBinaryFiles:
-			_pkgver = pkg.split(".so")[len(pkg.split(".so"))-1]
-			_pkg = pkg.split(".so")[0]
-			for newpkg in newPkgBinaryFiles:
-			    _newpkgver = newpkg.split(".so")[len(newpkg.split(".so"))-1]
-			    _newpkg = newpkg.split(".so")[0]
-			    if (_newpkg == _pkg):
-				# check version
-				if (_pkgver != _newpkgver):
-				    brokenBinariesList.append([ pkg, newpkg ])
+		brokenBinariesList = compareLibraryLists(pkgBinaryFiles,newPkgBinaryFiles)
 		
 		if brokenBinariesList != []:
 		    # FIXME: make this warning fatal?
@@ -438,6 +412,12 @@ def build(atoms):
 			print_warning(yellow("      * ")+green("Previous library: ")+yellow(i[0])+bold(" -- became --> ")+red(i[1])+" (now installed)")
 		    import time
 		    time.sleep(30)
+		
+		# parse the elog file, if one
+		einfo = parseElogFile(dep)
+		for info in einfo:
+		    print_info(green("      * ")+red("[")+yellow("i")+red("] ")+green(info))
+	
 	    else:
 		rc, outfile = emerge("="+dep,odbNodeps,None,None, enzymeRequestSimulation)
 	    #umountProc()
