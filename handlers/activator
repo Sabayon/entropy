@@ -1,7 +1,7 @@
 #!/usr/bin/python
 '''
     # DESCRIPTION:
-    # Portage tree manager and package builder following specified schemas
+    # Entropy mirrors syncing manager
 
     Copyright (C) 2007 Fabio Erculiani
 
@@ -28,11 +28,11 @@ import string
 
 sys.path.append('../libraries')
 import entropyTools
-import enzymeTools
+import activatorTools
 from entropyConstants import *
 
 # CONSTANTS
-APPNAME = "enzyme"
+APPNAME = "activator"
 APPVERSION = "1.0"
 def print_help():
     entropyTools.print_info("Sabayon Linux "+APPNAME+" (C - 2007)")
@@ -46,15 +46,14 @@ def print_help():
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("world"))+entropyTools.yellow("\t\t to build all the possible new packages"))
     entropyTools.print_info(" \t\t"+entropyTools.red("--empty-tree")+"\t\t rebuild all, including updates")
     entropyTools.print_info(" \t\t"+entropyTools.red("--deep")+"\t\t\t analyzes world dependencies deeply")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--pretend")+"\t\t just show what should be done")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--pretend")+"\t\t\t just show what should be done")
     entropyTools.print_info(" \t\t"+entropyTools.red("--ask")+"\t\t\t just ask before doing what should be done")
     entropyTools.print_info(" \t\t"+entropyTools.red("--repackage-installed")+"\t creates binaries of all the installed packages")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--skipfirst")+"\t\t skip the first package in the packages list")
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("build"))+entropyTools.yellow("\t\t to build all the packages specified in <atom(s)>"))
     entropyTools.print_info(" \t\t"+entropyTools.red("--force-rebuild")+"\t\t force the building of the package, nevertheless")
     entropyTools.print_info(" \t\t"+entropyTools.red("--force-repackage")+"\t force the repackaging of all the possible package")
     entropyTools.print_info(" \t\t"+entropyTools.red("--deep")+"\t\t\t analyze the dependencies deeply")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--nodeps")+"\t\t do not include dependencies and force compilation")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--nodeps")+"\t\t\t do not include dependencies and force compilation")
     entropyTools.print_info(" \t\t"+entropyTools.red("--use")+"\t\t\t show packages USE flags")
     entropyTools.print_info(" \t\t"+entropyTools.red("--pretend")+"\t\t just show what should be done")
     entropyTools.print_info(" \t\t"+entropyTools.red("--ask")+"\t\t\t just ask before doing what should be done")

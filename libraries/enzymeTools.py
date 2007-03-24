@@ -208,7 +208,7 @@ def build(atoms):
     PackagesConflicting = []
     PackagesQuickpkg = []
 
-    if (not enzymeRequestNodeps):
+    if (not enzymeRequestNodeps) and (not enzymeRequestIgnoreConflicts):
         # Check if a .tbz2 has already been done
         # control if --force-rebuild or --force-repackage has been provided
         # and filter the packages list accordingly to line 1
@@ -237,7 +237,7 @@ def build(atoms):
         if len(toBeBuilt) > 1:
 	    cleanatomlist = []
 	    for atom in toBeBuilt:
-	        if (not atom.startswith(">")) and (not atom.startswith("<")) and (not atoms.startswith("=")) and (not isjustname(atom)):
+	        if (not atom.startswith(">")) and (not atom.startswith("<")) and (not atom.startswith("=")) and (not isjustname(atom)):
 		    cleanatomlist.append("="+atom)
 	        else:
 		    cleanatomlist.append(atom)
@@ -271,7 +271,11 @@ def build(atoms):
 	print_info("  Analyzing package "+bold(atom)+" ...",back = True)
 	if (not enzymeRequestNodeps): atomdeps, atomconflicts = calculateFullAtomsDependencies("="+atom,enzymeRequestDeep)
 	if(enzymeRequestVerbose): print_info("  Analyzing package: "+bold(atom))
-	if(enzymeRequestVerbose): print_info("  Current installed release: "+bold(str(getInstalledAtom("="+atom))))
+	if(enzymeRequestVerbose):
+	    if (getPackageSlot("="+atom) is None):
+		print_info("  Current installed release: "+bold(str(getInstalledAtom(dep_getkey(atom)))))
+	    else:
+		print_info("  Current installed release: "+bold(str(getInstalledAtom("="+atom))))
 	if(enzymeRequestVerbose): print_info("\tfiltering "+atom+" related packages...")
 	
 	if (not enzymeRequestNodeps):
@@ -281,7 +285,10 @@ def build(atoms):
 	        if(enzymeRequestVerbose): print_info("\tchecking for: "+red(dep[1:]))
 	        wantedAtom = getBestAtom(dep)
 	        if(enzymeRequestVerbose): print_info("\t\tI want: "+yellow(wantedAtom))
-	        installedAtom = getInstalledAtom(dep)
+		if (getPackageSlot(dep) is None):
+	            installedAtom = getInstalledAtom(dep_getkey(dep))
+		else:
+	            installedAtom = getInstalledAtom(dep)
 	        if(enzymeRequestVerbose): print_info("\t\tIs installed: "+green(str(installedAtom)))
 	        if ( installedAtom is None ) or (enzymeRequestForceRebuild):
 		    # then append - because it's not installed !
@@ -319,13 +326,17 @@ def build(atoms):
 	    useflags = ""
 	    if enzymeRequestUse: useflags = bold(" [")+yellow("USE: ")+calculateAtomUSEFlags("="+i)+bold("]")
 	    pkgstatus = "[?]"
-	    if (getInstalledAtom(dep_getkey(i)) == None):
+	    if (getPackageSlot("="+i) is None):
+		pkg = dep_getkey(i)
+	    else:
+		pkg = "="+i
+	    if (getInstalledAtom(pkg) == None):
 		pkgstatus = green("[N]")
-	    elif (compareAtoms(i,getInstalledAtom("="+i)) == 0):
+	    elif (compareAtoms(i,getInstalledAtom(pkg)) == 0):
 		pkgstatus = yellow("[R]")
-	    elif (compareAtoms(i,getInstalledAtom("="+i)) > 0):
+	    elif (compareAtoms(i,getInstalledAtom(pkg)) > 0):
 		pkgstatus = blue("[U]")
-	    elif (compareAtoms(i,getInstalledAtom("="+i)) < 0):
+	    elif (compareAtoms(i,getInstalledAtom(pkg)) < 0):
 		pkgstatus = darkblue("[D]")
 	    print_info(red("     *")+bold(" [")+red("BUILD")+bold("] ")+pkgstatus+" "+i+useflags)
 	
@@ -365,10 +376,66 @@ def build(atoms):
 	    print_info(green("  *")+" Compiling: "+red(dep)+" ... ")
 	    mountProc()
 	    if (not enzymeRequestVerbose):
+		
+		pkgBinaryFiles = []
 		# collect libraries info for the current installed package, if any
+		if (getPackageSlot("="+atom) is None):
+		    pkgquestion = dep_getkey(atom)
+		else:
+		    pkgquestion = "="+atom
+		if (getInstalledAtom(pkgquestion) is not None):
+		    # collect them!
+		    pkgBinaryFiles = collectBinaryFilesForInstalledPackage(getInstalledAtom(pkgquestion))
 		
 		print_info(yellow("     *")+" redirecting output to: "+green(outfile))
 		rc, outfile = emerge("="+dep, odbNodeps, outfile, "&>", enzymeRequestSimulation)
+
+		# after install, check for changes
+		newPkgBinaryFiles = []
+		# collect libraries info for the current installed package, if any
+		if (getPackageSlot("="+atom) is None):
+		    pkgquestion = dep_getkey(atom)
+		else:
+		    pkgquestion = "="+atom
+		if (getInstalledAtom(pkgquestion) is not None):
+		    # collect them!
+		    newPkgBinaryFiles = collectBinaryFilesForInstalledPackage(getInstalledAtom(pkgquestion))
+		
+		brokenBinariesList = []
+		# check if there has been a API breakage
+		if pkgBinaryFiles != newPkgBinaryFiles:
+		    _pkgBinaryFiles = []
+		    _newPkgBinaryFiles = []
+		    # extract only similar packages
+		    for pkg in pkgBinaryFiles:
+			_pkg = pkg.split(".so")[0]
+			for newpkg in newPkgBinaryFiles:
+			    _newpkg = newpkg.split(".so")[0]
+			    if (_newpkg == _pkg):
+				_pkgBinaryFiles.append(pkg)
+				_newPkgBinaryFiles.append(newpkg)
+		    pkgBinaryFiles = _pkgBinaryFiles
+		    newPkgBinaryFiles = _newPkgBinaryFiles
+		    
+		    # check for version bumps
+		    for pkg in pkgBinaryFiles:
+			_pkgver = pkg.split(".so")[len(pkg.split(".so"))-1]
+			_pkg = pkg.split(".so")[0]
+			for newpkg in newPkgBinaryFiles:
+			    _newpkgver = newpkg.split(".so")[len(newpkg.split(".so"))-1]
+			    _newpkg = newpkg.split(".so")[0]
+			    if (_newpkg == _pkg):
+				# check version
+				if (_pkgver != _newpkgver):
+				    brokenBinariesList.append([ pkg, newpkg ])
+		
+		if brokenBinariesList != []:
+		    # FIXME: make this warning fatal?
+		    print_warning(yellow("     * ")+red("ATTENTION: Package ")+bold(dep)+red(" caused an API breakage:"))
+		    for i in brokenBinariesList:
+			print_warning(yellow("      * ")+green("Previous library: ")+yellow(i[0])+bold(" -- became --> ")+red(i[1])+" (now installed)")
+		    import time
+		    time.sleep(30)
 	    else:
 		rc, outfile = emerge("="+dep,odbNodeps,None,None, enzymeRequestSimulation)
 	    #umountProc()
@@ -487,6 +554,7 @@ def world(options):
     enzymeRequestAsk = False
     enzymeRequestPretend = False
     enzymeRequestJustRepackageWorld = False
+    enzymeRequestSkipfirst = False
     for i in myopts:
         if ( i == "--verbose" ) or ( i == "-v" ):
 	    enzymeRequestVerbose = True
@@ -496,6 +564,8 @@ def world(options):
 	    enzymeRequestAsk = True
 	elif ( i == "--pretend" ):
 	    enzymeRequestPretend = True
+	elif ( i == "--skipfirst" ):
+	    enzymeRequestSkipfirst = True
 	elif ( i == "--repackage-installed" ):
 	    enzymeRequestJustRepackageWorld = True
 	elif ( i == "--deep" ):
@@ -537,19 +607,17 @@ def world(options):
     # classical world, trapping --deep if necessary
     else:
 	emergeopts = " -u "
-	#print "DEBUG: running world()"
-	#if (enzymeRequestDeep): print "DEBUG: world(): --deep on"
-	#if (enzymeRequestRebuild): print "DEBUG: world(): --empty-tree on"
 	if (enzymeRequestDeep): emergeopts += " -D"
 	if (enzymeRequestRebuild) and (not enzymeRequestDeep): emergeopts += " -e"
-	#print emergeopts
 	print_info(green(" * ")+red("Scanning tree for ")+bold("updates")+red("..."))
 	deplist, blocklist = calculateFullAtomsDependencies("world",False,emergeopts)
-	#print "-----asdasd-----"
 	if blocklist != []:
 	    print blocklist
 	    print "error there is something that is blocking all this shit"
 	    sys.exit(303)
+	
+	if (enzymeRequestSkipfirst):
+	    deplist = deplist[1:]
 	
 	# composing the request
 	atoms = []

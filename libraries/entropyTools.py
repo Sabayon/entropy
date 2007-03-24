@@ -210,6 +210,7 @@ def translateArch(string,chost):
     else:
 	return string
 
+# please always force =pkgcat/pkgname-ver if possible
 def getInstalledAtom(atom):
     rc = portage.db['/']['vartree'].dep_match(str(atom))
     if (rc != []):
@@ -229,7 +230,27 @@ def getPackageSlot(atom):
     else:
 	return None
 
-# INFO: there is get_slot too :)
+# you must provide a complete atom
+def collectBinaryFilesForInstalledPackage(atom):
+    if atom.startswith("="):
+	atom = atom[1:]
+    pkgcat = atom.split("/")[0]
+    pkgnamever = atom.split("/")[1]
+    dbentrypath = "/var/db/pkg/"+pkgcat+"/"+pkgnamever+"/CONTENTS"
+    binarylibs = []
+    if os.path.isfile(dbentrypath):
+	f = open(dbentrypath,"r")
+	contents = f.readlines()
+	f.close()
+	for i in contents:
+	    file = i.split()[1]
+	    if i.startswith("obj") and (file.find("lib") != -1) and (file.find(".so") != -1) and (not file.endswith(".la")):
+		# FIXME: rough way
+		binarylibs.append(i.split()[1].split("/")[len(i.split()[1].split("/"))-1])
+        return binarylibs
+    else:
+	return binarylibs
+
 def getEbuildDbPath(atom):
     return portage.db['/']['vartree'].getebuildpath(atom)
 
