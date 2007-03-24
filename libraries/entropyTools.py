@@ -701,7 +701,7 @@ def alphaSorter(seq):
 # Temporary files cleaner
 def cleanup(options):
 
-    toCleanDirs = [ etpConst['packagestmpdir'] ]
+    toCleanDirs = [ etpConst['packagestmpdir'], etpConst['logdir'] ]
     counter = 0
 
     for dir in toCleanDirs:
