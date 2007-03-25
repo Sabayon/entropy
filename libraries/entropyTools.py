@@ -124,7 +124,7 @@ def calculateAtomUSEFlags(atom):
     result = commands.getoutput(cmd).split("\n")
     useparm = ""
     for line in result:
-	if line.startswith("[ebuild"):
+	if line.startswith("[ebuild") and (line.find("USE=") != -1):
 	    useparm = line.split('USE="')[len(line.split('USE="'))-1].split('"')[0].strip()
     useparm = useparm.split()
     _useparm = []
@@ -349,7 +349,7 @@ def parseElogFile(atom):
 		logline = True
 		continue
 		# disable all the others
-	    elif line.startswith("INFO:"):
+	    elif line.startswith("INFO:") or line.startswith("LOG:"):
 		logline = False
 		continue
 	    if (logline) and (line.strip() != ""):
@@ -673,6 +673,124 @@ def getPortageAppDbPath():
     if (not rc.endswith("/")):
 	return rc+"/"
     return rc
+
+# ------ BEGIN: activator tools ------
+
+class activatorFTP:
+
+    # ftp://linuxsabayon:asdasd@silk.dreamhost.com/sabayon.org
+    # this must be run before calling the other functions
+    def __init__(self, ftpuri):
+	
+	from ftplib import FTP
+	
+	self.ftpuri = ftpuri
+	
+	self.ftphost = ftpuri.split("ftp://")[len(ftpuri.split("ftp://"))-1]
+	self.ftphost = self.ftphost.split("@")[len(self.ftphost.split("@"))-1]
+	self.ftphost = self.ftphost.split("/")[0]
+	self.ftphost = self.ftphost.split(":")[0]
+	
+	self.ftpuser = ftpuri.split("ftp://")[len(ftpuri.split("ftp://"))-1].split(":")[0]
+	if (self.ftpuser == ""):
+	    self.ftpuser = "anonymous@"
+	    self.ftppassword = "anonymous"
+	else:
+	    self.ftppassword = ftpuri.split("@")[:len(ftpuri.split("@"))-1]
+	    if len(self.ftppassword) > 1:
+		import string
+		self.ftppassword = string.join(self.ftppassword,"@")
+		self.ftppassword = self.ftppassword.split(":")[len(self.ftppassword.split(":"))-1]
+		if (self.ftppassword == ""):
+		    self.ftppassword = "anonymous"
+	    else:
+		self.ftppassword = self.ftppassword[0]
+		self.ftppassword = self.ftppassword.split(":")[len(self.ftppassword.split(":"))-1]
+		if (self.ftppassword == ""):
+		    self.ftppassword = "anonymous"
+	
+	self.ftpport = ftpuri.split(":")[len(ftpuri.split(":"))-1]
+	try:
+	    self.ftpport = int(self.ftpport)
+	except:
+	    self.ftpport = 21
+	
+	self.ftpdir = ftpuri.split("ftp://")[len(ftpuri.split("ftp://"))-1]
+	self.ftpdir = self.ftpdir.split("/")[len(self.ftpdir.split("/"))-1]
+	self.ftpdir = self.ftpdir.split(":")[0]
+	self.ftpdir = self.ftpdir+translateArchFromUname(etpConst['binaryurirelativepath'])
+	if self.ftpdir.endswith("/"):
+	    self.ftpdir = self.ftpdir[:len(self.ftpdir)-1]
+
+	print self.ftpdir
+
+	self.ftpconn = FTP(self.ftphost)
+	self.ftpconn.login(self.ftpuser,self.ftppassword)
+	# change to our dir
+	self.ftpconn.cwd(self.ftpdir)
+
+    def getFTPHost(self):
+	return self.ftphost
+
+    def getFTPPort(self):
+	return self.ftpport
+
+    def getFTPDir(self):
+	return self.ftpdir
+
+    def getCWD(self):
+	return self.ftpconn.pwd()
+
+    def setCWD(self,dir):
+	self.ftpconn.cwd(dir)
+
+    # list files and directory of a FTP
+    # @returns a list
+    def listFTPdir(self):
+	# directory is: self.ftpdir
+	try:
+	    rc = self.ftpconn.nlst()
+	    _rc = []
+	    for i in rc:
+		_rc.append(i.split("/")[len(i.split("/"))-1])
+	    rc = _rc
+	except:
+	    return []
+	return rc
+
+    def deleteFile(self,file):
+	try:
+	    rc = self.ftpconn.delete(self.ftpdir+"/"+file)
+	    if rc.startswith("250"):
+		return True
+	    else:
+		return False
+	except:
+	    return False
+
+    def uploadFile(self,file,ascii = False):
+	if (not ascii):
+	    f = open(file)
+	    file = file.split("/")[len(file.split("/"))-1]
+	    rc = self.ftpconn.storbinary("STOR "+file,f)
+	    return rc
+	else:
+	    f = open(file)
+	    file = file.split("/")[len(file.split("/"))-1]
+	    rc = self.ftpconn.storlines("STOR "+file,f)
+	    return rc
+
+    # also used to move files
+    def renameFile(self,fromfile,tofile)
+	self.ftpconn.rename(fromfile,tofile)
+
+    def closeFTPConnection(self):
+	self.ftpconn.quit()
+
+
+    # FIXME: add upload/delete/mv commands
+
+# ------ END: activator tools ------
 
 # get a list, returns a sorted list
 def alphaSorter(seq):

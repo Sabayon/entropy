@@ -237,13 +237,13 @@ def build(atoms):
         if len(toBeBuilt) > 1:
 	    cleanatomlist = []
 	    for atom in toBeBuilt:
-	        if (not atom.startswith(">")) and (not atom.startswith("<")) and (not atom.startswith("=")) and (not isjustname(atom)):
+	        if (not atom.startswith(">")) and (not atom.startswith("<")) and (not atom.startswith("~")) and (not atom.startswith("=")) and (not isjustname(atom)):
 		    cleanatomlist.append("="+atom)
 	        else:
 		    cleanatomlist.append(atom)
             atoms = string.join(cleanatomlist," ")
         else:
-	    if atoms[0].startswith(">") or atoms[0].startswith("<") or atoms[0].startswith("=") or isjustname(atoms[0]):
+	    if atoms[0].startswith(">") or atoms[0].startswith("<") or atoms[0].startswith("~") or atoms[0].startswith("=") or isjustname(atoms[0]):
 	        atoms = atoms[0]
 	    else:
 	        atoms = "="+atoms[0]
@@ -538,6 +538,7 @@ def world(options):
     enzymeRequestPretend = False
     enzymeRequestJustRepackageWorld = False
     enzymeRequestSkipfirst = False
+    enzymeRequestSkipN = False
     for i in myopts:
         if ( i == "--verbose" ) or ( i == "-v" ):
 	    enzymeRequestVerbose = True
@@ -549,6 +550,13 @@ def world(options):
 	    enzymeRequestPretend = True
 	elif ( i == "--skipfirst" ):
 	    enzymeRequestSkipfirst = True
+	elif ( i.startswith("--skip=") ):
+	    enzymeRequestSkipN = True
+	    skip_number = i.split("--skip=")[len(i.split("--skip="))-1]
+	    try:
+		skipN = int(skip_number)
+	    except:
+		skipN = 1
 	elif ( i == "--repackage-installed" ):
 	    enzymeRequestJustRepackageWorld = True
 	elif ( i == "--deep" ):
@@ -601,6 +609,8 @@ def world(options):
 	
 	if (enzymeRequestSkipfirst):
 	    deplist = deplist[1:]
+	elif (enzymeRequestSkipN):
+	    deplist = deplist[skipN:]
 	
 	# composing the request
 	atoms = []

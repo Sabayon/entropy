@@ -50,6 +50,7 @@ def print_help():
     entropyTools.print_info(" \t\t"+entropyTools.red("--ask")+"\t\t\t just ask before doing what should be done")
     entropyTools.print_info(" \t\t"+entropyTools.red("--repackage-installed")+"\t creates binaries of all the installed packages")
     entropyTools.print_info(" \t\t"+entropyTools.red("--skipfirst")+"\t\t skip the first package in the packages list")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--skip=n")+"\t\t skip N packages")
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("build"))+entropyTools.yellow("\t\t to build all the packages specified in <atom(s)>"))
     entropyTools.print_info(" \t\t"+entropyTools.red("--force-rebuild")+"\t\t force the building of the package, nevertheless")
     entropyTools.print_info(" \t\t"+entropyTools.red("--force-repackage")+"\t force the repackaging of all the possible package")

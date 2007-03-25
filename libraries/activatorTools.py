@@ -32,3 +32,17 @@ import string
 
 def sync(options):
     print "hello!"
+
+    for uri in etpConst['activatoruploaduris']:
+	ftp = activatorFTP(uri)
+	print "Listing the content of: "+ftp.getFTPHost()
+	print "at port: "+str(ftp.getFTPPort())
+	print "in dir: "+ftp.getFTPDir()
+	print ftp.listFTPdir()
+	#print "deleting file: XML-XSLT-0.48.tbz2"
+	#rc = ftp.deleteFile("XML-XSLT-0.48.tbz2")
+	#print rc
+	#print "uploading file..."
+	#rc = ftp.uploadFile("/var/lib/entropy/store/x86/alsa-lib-1.0.14_rc3.tbz2")
+	#print str(rc)
+	ftp.closeFTPConnection()

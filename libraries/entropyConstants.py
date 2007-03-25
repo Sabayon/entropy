@@ -96,6 +96,9 @@ etpConst = {
     'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
     'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
     'enzymeconf': ETP_CONF_DIR+"/enzyme.conf", # enzyme.conf file
+    'activatorconf': ETP_CONF_DIR+"/activator.conf", # activator.conf file
+    'activatoruploaduris': [],# list of URIs that activator can use to upload files (parsed from activator.conf)
+    'activatordownloaduris': [],# list of URIs that activator can use to fetch data
     'digestfile': "Manifest", # file that contains md5 hashes
     'extension': ".etp", # entropy files extension
     'binaryurirelativepath': "/packages/"+ETP_ARCH_CONST+"/", # Relative remote path where we'll have to append the packages|uri part.
@@ -229,6 +232,34 @@ for i in ovlst:
     if os.path.isdir(etpConst['overlaysdir']+"/"+i):
 	_ovlst.append(etpConst['overlaysdir']+"/"+i)
 etpConst['overlays'] = string.join(_ovlst," ")
+
+# activator section
+if (not os.path.isfile(etpConst['activatorconf'])):
+    print "ERROR: "+etpConst['activatorconf']+" does not exist"
+    sys.exit(50)
+else:
+    try:
+	if (os.stat(etpConst['activatorconf'])[0] != 33152):
+	    os.chmod(etpConst['activatorconf'],0600)
+    except:
+	print "ERROR: cannot chmod 0600 file: "+etpConst['activatorconf']
+	sys.exit(50)
+    # fill etpConst['activatoruploaduris'] and etpConst['activatordownloaduris']
+    f = open(etpConst['activatorconf'],"r")
+    actconffile = f.readlines()
+    f.close()
+    for line in actconffile:
+	line = line.strip()
+	if line.startswith("mirror-upload|") and (len(line.split("mirror-upload|")) == 2):
+	    uri = line.split("mirror-upload|")[1]
+	    if uri.endswith("/"):
+		uri = uri[:len(uri)-1]
+	    etpConst['activatoruploaduris'].append(uri)
+	if line.startswith("mirror-download|") and (len(line.split("mirror-download|")) == 2):
+	    uri = line.split("mirror-download|")[1]
+	    if uri.endswith("/"):
+		uri = uri[:len(uri)-1]
+	    etpConst['activatordownloaduris'].append(uri)
 
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things
