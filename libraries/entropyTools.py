@@ -781,7 +781,7 @@ class activatorFTP:
 	    return rc
 
     # also used to move files
-    def renameFile(self,fromfile,tofile)
+    def renameFile(self,fromfile,tofile):
 	self.ftpconn.rename(fromfile,tofile)
 
     def closeFTPConnection(self):
