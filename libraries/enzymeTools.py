@@ -132,9 +132,6 @@ def sync(options):
 
 
 def build(atoms):
-    # FIXME: add USE flags management:
-    # packages with new USE flags must be pulled in
-    # unless --ignore-new-use-flags is specified
 
     enzymeRequestVerbose = False
     enzymeRequestForceRepackage = False
@@ -842,3 +839,41 @@ def uninstall(options):
 		print_warning(yellow("  *** ")+red("Please use --verbose and retry to see what was wrong. Continuing..."))
 	else:
 	    print_info(green("   * ")+bold(atom)+" worked out successfully.")
+
+def search(atoms):
+
+    # filter any --starting package
+    _atoms = []
+    for atom in atoms:
+	if (not atom.startswith("--")):
+	    _atoms.append(atom)
+    keywords = _atoms
+
+    print
+    for keyword in keywords:
+	results = packageSearch(keyword)
+	for result in results:
+	    # get latest version available
+	    masked = ""
+	    latestVersion = getBestAtom(result)
+	    if (latestVersion == ""):
+		latestVersion = getBestMaskedAtom(result)
+		masked = " "+bold("[")+red("MASKED")+bold("]")
+	    # get installed version
+	    installedVer = getInstalledAtom(result)
+	    # get Homepage
+	    pkgHomepage = getPackageVar(latestVersion,'HOMEPAGE')
+	    # get Description
+	    pkgDescription = getPackageVar(latestVersion,'DESCRIPTION')
+	    # get License
+	    pkgLicense = getPackageVar(latestVersion,'LICENSE')
+	    
+	    # format the output string
+	    print_info(green("  *  ")+bold(result))
+	    print_info(red("\t    Latest version available: ")+blue(latestVersion)+masked)
+	    print_info(red("\t    Latest version installed: ")+green(str(installedVer)))
+	    print_info(red("\t    Download size: ")+yellow(getPackageDownloadSize(latestVersion)))
+	    print_info(red("\t    Homepage: ")+darkred(pkgHomepage))
+	    print_info(red("\t    Description: ")+pkgDescription)
+	    print_info(red("\t    License: ")+bold(pkgLicense))
+	    print

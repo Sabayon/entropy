@@ -70,6 +70,7 @@ ETP_RANDOM = str(random.random())[2:7]
 ETP_TMPFILE = "/.random-"+ETP_RANDOM+".tmp"
 ETP_REPODIR = "/repository"+"/"+ETP_ARCH_CONST
 ETP_PORTDIR = "/portage"
+ETP_DISTFILESDIR = "/distfiles"
 ETP_DBDIR = "/database"+"/"+ETP_ARCH_CONST
 ETP_UPLOADDIR = "/upload"+"/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store"+"/"+ETP_ARCH_CONST
@@ -90,6 +91,7 @@ etpConst = {
     'packagesstoredir': ETP_DIR+ETP_STOREDIR, # etpConst['packagesstoredir'] --> directory where .tbz2 files are stored waiting for being processed by reagent
     'packagessuploaddir': ETP_DIR+ETP_UPLOADDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
     'portagetreedir': ETP_DIR+ETP_PORTDIR, # directory where is stored our local portage tree
+    'distfilesdir': ETP_DIR+ETP_PORTDIR+ETP_DISTFILESDIR, # directory where our sources are downloaded
     'overlaysdir': ETP_DIR+ETP_PORTDIR+"/local/layman", # directory where overlays are stored
     'overlays': "", # variable PORTDIR_OVERLAY
     'overlaysconffile': ETP_CONF_DIR+"/layman.cfg", # layman configuration file

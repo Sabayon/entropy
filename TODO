@@ -3,6 +3,7 @@ TODO list (for developers only):
 - activator should care about the removal of the old packages
 - build() and world(), on enzyme, add the support for whitelist+cron
 - build(), on enzyme, add license blacklist (packages that cannot be shipped in a binary form)
+- enzyme, add search module?
 - Sabayon Linux USE flags: remove all server related use flags
 
 Project Status:
@@ -15,4 +16,5 @@ Project Status:
 
 
 Features plan:
-- distcc support to enzyme
+- enzyme: distcc support
+- activator: add stable/ repository and the cron-aware module that moves files from the unstable/default repo to the stable one.

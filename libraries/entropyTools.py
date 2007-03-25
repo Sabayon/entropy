@@ -23,6 +23,7 @@
 def initializePortageTree():
     portage.settings.unlock()
     portage.settings['PORTDIR'] = etpConst['portagetreedir']
+    portage.settings['DISTDIR'] = etpConst['distfilesdir']
     portage.settings['PORTDIR_OVERLAY'] = etpConst['overlays']
     portage.settings.lock()
     portage.portdb.__init__(etpConst['portagetreedir'])
@@ -32,6 +33,7 @@ import os
 from entropyConstants import *
 os.environ['PORTDIR'] = etpConst['portagetreedir']
 os.environ['PORTDIR_OVERLAY'] = etpConst['overlays']
+os.environ['DISTDIR'] = etpConst['distfilesdir']
 import portage
 import portage_const
 from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv
@@ -73,6 +75,13 @@ def getBestAtom(atom):
         return rc
     except ValueError:
 	return "!!conflicts"
+
+# same as above but includes masked ebuilds
+def getBestMaskedAtom(atom):
+    atoms = portage.portdb.xmatch("match-all",str(atom))
+    # find the best
+    from portage_versions import best
+    return best(atoms)
 
 # I need a valid complete atom...
 def calculateFullAtomsDependencies(atoms, deep = False, extraopts = ""):
@@ -254,6 +263,40 @@ def collectBinaryFilesForInstalledPackage(atom):
 
 def getEbuildDbPath(atom):
     return portage.db['/']['vartree'].getebuildpath(atom)
+
+def getEbuildTreePath(atom):
+    if atom.startswith("="):
+	atom = atom[1:]
+    rc = portage.portdb.findname(atom)
+    if rc != "":
+	return rc
+    else:
+	return None
+
+def getPackageDownloadSize(atom):
+    if atom.startswith("="):
+	atom = atom[1:]
+
+    ebuild = getEbuildTreePath(atom)
+    if (ebuild is not None):
+	import portage_manifest
+	dirname = os.path.dirname(ebuild)
+	manifest = portage_manifest.Manifest(dirname, portage.settings["DISTDIR"])
+	fetchlist = portage.portdb.getfetchlist(atom, portage.settings, all=True)[1]
+	summary = [0,0]
+	try:
+	    summary[0] = manifest.getDistfilesSize(fetchlist)
+	    counter = str(summary[0]/1024)
+	    filler=len(counter)
+	    while (filler > 3):
+		filler-=3
+		counter=counter[:filler]+","+counter[filler:]
+	    summary[0]=counter+" kB"
+	except KeyError, e:
+	    return "N/A"
+	return summary[0]
+    else:
+	return "N/A"
 
 def getInstalledAtoms(atom):
     rc = portage.db['/']['vartree'].dep_match(str(atom))
@@ -787,10 +830,46 @@ class activatorFTP:
     def closeFTPConnection(self):
 	self.ftpconn.quit()
 
-
-    # FIXME: add upload/delete/mv commands
-
 # ------ END: activator tools ------
+
+def packageSearch(keyword):
+
+    SearchDirs = []
+    # search in etpConst['portagetreedir']
+    # and in overlays after etpConst['overlays']
+    # fill the list
+    portageRootDir = etpConst['portagetreedir']
+    if not portageRootDir.endswith("/"):
+	portageRootDir = portageRootDir+"/"
+    ScanningDirectories = []
+    ScanningDirectories.append(portageRootDir)
+    for dir in etpConst['overlays'].split():
+	if (not dir.endswith("/")):
+	    dir = dir+"/"
+	if os.path.isdir(dir):
+	    ScanningDirectories.append(dir)
+
+    for directoryTree in ScanningDirectories:
+	treeList = os.listdir(directoryTree)
+	_treeList = []
+	# filter unwanted dirs
+	for dir in treeList:
+	    if (dir.find("-") != -1) and os.path.isdir(directoryTree+dir):
+		_treeList.append(directoryTree+dir)
+	treeList = _treeList
+
+	for dir in treeList:
+	    subdirs = os.listdir(dir)
+	    for sub in subdirs:
+		if (not sub.startswith(".")) and (sub.find(keyword) != -1):
+		    if os.path.isdir(dir+"/"+sub):
+			reldir = re.subn(directoryTree,"", dir+"/"+sub)[0]
+			SearchDirs.append(reldir)
+    
+    # filter dupies
+    SearchDirs = list(set(SearchDirs))
+
+    return SearchDirs
 
 # get a list, returns a sorted list
 def alphaSorter(seq):
