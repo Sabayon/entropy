@@ -31,18 +31,51 @@ import commands
 import string
 
 def sync(options):
-    print "hello!"
 
+    # translate %ARCH%
+    etpConst['packagessuploaddir'] = translateArchFromUname(etpConst['packagessuploaddir'])
+    etpConst['packagesdatabasedir'] = translateArchFromUname(etpConst['packagesdatabasedir'])
+    etpConst['packagesbindir'] = translateArchFromUname(etpConst['packagesbindir'])
+    etpConst['binaryurirelativepath'] = translateArchFromUname(etpConst['binaryurirelativepath'])
+    etpConst['etpurirelativepath'] = translateArchFromUname(etpConst['etpurirelativepath'])
+
+    print_info(green(" * ")+red("Collecting local binary packages..."),back = True)
+    localtbz2counter = 0
+    localTbz2Files = []
+    for file in os.listdir(etpConst['packagessuploaddir']):
+	if file.endswith(".tbz2"):
+	    localTbz2Files.append([ file , getFileTimeStamp(etpConst['packagessuploaddir']+"/"+file) ])
+	    localtbz2counter += 1
+    print_info(green(" * ")+red("Packages directory:\t")+bold(str(localtbz2counter))+red(" packages ready for the upload."))
+
+    # INFO: the Entropy repository will be, synced to the latest on the server, compressed, uploaded and kept there?
+    print_info(green(" * ")+red("Collecting local Entropy repository entries..."),back = True)
+    localtetpcounter = 0
+    localEtpFiles = []
+    for (dir, sub, files) in os.walk(etpConst['packagesdatabasedir']):
+	localEtpFiles.append(dir)
+	for file in files:
+	    localEtpFiles.append(dir+"/"+file)
+	    if file.endswith(etpConst['extension']):
+		localtetpcounter += 1
+    print_info(green(" * ")+red("Entropy directory:\t")+bold(str(localtetpcounter))+red(" specification files available."))
+
+    # packages relative uri: etpConst['binaryurirelativepath']
+    # entropy relative uri : etpConst['etpurirelativepath']
+    #print "deleting file: XML-XSLT-0.48.tbz2"
+    #rc = ftp.deleteFile("XML-XSLT-0.48.tbz2")
+    #print rc
+    #print "uploading file..."
+    #rc = ftp.uploadFile("/var/lib/entropy/store/x86/alsa-lib-1.0.14_rc3.tbz2")
+    #print str(rc)
+
+    # For each URI do the same thing
     for uri in etpConst['activatoruploaduris']:
 	ftp = activatorFTP(uri)
 	print "Listing the content of: "+ftp.getFTPHost()
 	print "at port: "+str(ftp.getFTPPort())
 	print "in dir: "+ftp.getFTPDir()
 	print ftp.listFTPdir()
-	#print "deleting file: XML-XSLT-0.48.tbz2"
-	#rc = ftp.deleteFile("XML-XSLT-0.48.tbz2")
-	#print rc
-	#print "uploading file..."
-	#rc = ftp.uploadFile("/var/lib/entropy/store/x86/alsa-lib-1.0.14_rc3.tbz2")
-	#print str(rc)
+	print ftp.spawnFTPCommand("mdtm index.htm")
 	ftp.closeFTPConnection()
+

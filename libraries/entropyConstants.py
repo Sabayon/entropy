@@ -103,7 +103,8 @@ etpConst = {
     'activatordownloaduris': [],# list of URIs that activator can use to fetch data
     'digestfile': "Manifest", # file that contains md5 hashes
     'extension': ".etp", # entropy files extension
-    'binaryurirelativepath': "/packages/"+ETP_ARCH_CONST+"/", # Relative remote path where we'll have to append the packages|uri part.
+    'binaryurirelativepath': "/packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
+    'etpurirelativepath': "/database/"+ETP_ARCH_CONST+"/", # Relative remote path for the .etp repository.
     'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
 }
 

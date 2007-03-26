@@ -761,11 +761,8 @@ class activatorFTP:
 	self.ftpdir = ftpuri.split("ftp://")[len(ftpuri.split("ftp://"))-1]
 	self.ftpdir = self.ftpdir.split("/")[len(self.ftpdir.split("/"))-1]
 	self.ftpdir = self.ftpdir.split(":")[0]
-	self.ftpdir = self.ftpdir+translateArchFromUname(etpConst['binaryurirelativepath'])
 	if self.ftpdir.endswith("/"):
 	    self.ftpdir = self.ftpdir[:len(self.ftpdir)-1]
-
-	print self.ftpdir
 
 	self.ftpconn = FTP(self.ftphost)
 	self.ftpconn.login(self.ftpuser,self.ftppassword)
@@ -786,6 +783,14 @@ class activatorFTP:
 
     def setCWD(self,dir):
 	self.ftpconn.cwd(dir)
+
+    def getFileMtime(self,path):
+	rc = self.ftpconn.sendcmd("mdtm "+path)
+	return rc.split()[len(rc.split())-1]
+
+    def spawnFTPCommand(self,cmd):
+	rc = self.ftpconn.sendcmd(cmd)
+	return rc
 
     # list files and directory of a FTP
     # @returns a list
@@ -822,6 +827,19 @@ class activatorFTP:
 	    file = file.split("/")[len(file.split("/"))-1]
 	    rc = self.ftpconn.storlines("STOR "+file,f)
 	    return rc
+
+    def downloadFile(self,filepath,downloaddir,ascii = False):
+	file = filepath.split("/")[len(filepath.split("/"))-1]
+	if (not ascii):
+	    f = open(downloaddir+"/"+file,"wb")
+	    self.ftpconn.retrbinary('RETR '+file,f.write)
+	    f.flush()
+	    f.close()
+	else:
+	    f = open(downloaddir+"/"+file,"w")
+	    self.ftpconn.retrlines('RETR '+file,f.write)
+	    f.flush()
+	    f.close()
 
     # also used to move files
     def renameFile(self,fromfile,tofile):
@@ -870,6 +888,23 @@ def packageSearch(keyword):
     SearchDirs = list(set(SearchDirs))
 
     return SearchDirs
+
+
+def getFileUnixMtime(path):
+    return os.path.getmtime(path)
+
+def getFileTimeStamp(path):
+    from datetime import datetime
+    # used in this way for convenience
+    unixtime = os.path.getmtime(path)
+    humantime = datetime.fromtimestamp(unixtime)
+    # format properly
+    humantime = str(humantime)
+    outputtime = ""
+    for chr in humantime:
+	if chr != "-" and chr != " " and chr != ":":
+	    outputtime += chr
+    return outputtime
 
 # get a list, returns a sorted list
 def alphaSorter(seq):
