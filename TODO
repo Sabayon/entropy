@@ -1,10 +1,10 @@
 TODO list (for developers only):
-- add proper FETCH_RESTRICTION support to enzyme
-- activator should care about the removal of the old packages
 - build() and world(), on enzyme, add the support for whitelist+cron
 - build(), on enzyme, add license blacklist (packages that cannot be shipped in a binary form)
-- should reagent keep in sync its database directory ?
-- FTP client: add download()
+- activator tasks:
+          - add/remove packages from the database
+          - cleanup policy to prune old binaries
+
 - Sabayon Linux USE flags: remove all server related use flags
 
 Project Status:

@@ -447,6 +447,12 @@ def build(atoms):
 	# interaction needed
 	print_info(green("   *")+" Running etc-update...")
 	spawnCommand("etc-update")
+	#while 1:
+	#    rc = askquestion("\n     Are you ready ?")
+	#    if (rc):
+	#	return 0
+	#    else:
+	#	return 1
     else:
 	print_info(green("  *")+" Auto-running etc-update...")
 	spawnCommand("echo -5 | etc-update")

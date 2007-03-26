@@ -729,10 +729,7 @@ class activatorFTP:
 	
 	self.ftpuri = ftpuri
 	
-	self.ftphost = ftpuri.split("ftp://")[len(ftpuri.split("ftp://"))-1]
-	self.ftphost = self.ftphost.split("@")[len(self.ftphost.split("@"))-1]
-	self.ftphost = self.ftphost.split("/")[0]
-	self.ftphost = self.ftphost.split(":")[0]
+	self.ftphost = extractFTPHostFromUri(self.ftpuri)
 	
 	self.ftpuser = ftpuri.split("ftp://")[len(ftpuri.split("ftp://"))-1].split(":")[0]
 	if (self.ftpuser == ""):
@@ -806,6 +803,23 @@ class activatorFTP:
 	    return []
 	return rc
 
+    # list if the file is available
+    # @returns True or False
+    def isFileAvailable(self,filename):
+	# directory is: self.ftpdir
+	try:
+	    rc = self.ftpconn.nlst()
+	    _rc = []
+	    for i in rc:
+		_rc.append(i.split("/")[len(i.split("/"))-1])
+	    rc = _rc
+	    for i in rc:
+		if i == filename:
+		    return True
+	    return False
+	except:
+	    return False
+
     def deleteFile(self,file):
 	try:
 	    rc = self.ftpconn.delete(self.ftpdir+"/"+file)
@@ -849,6 +863,187 @@ class activatorFTP:
 	self.ftpconn.quit()
 
 # ------ END: activator tools ------
+
+def extractFTPHostFromUri(uri):
+    ftphost = uri.split("ftp://")[len(uri.split("ftp://"))-1]
+    ftphost = ftphost.split("@")[len(ftphost.split("@"))-1]
+    ftphost = ftphost.split("/")[0]
+    ftphost = ftphost.split(":")[0]
+    return ftphost
+
+# This function check the Entropy online database status
+def getEtpRemoteDatabaseStatus():
+
+    # translate %ARCH%
+    etpConst['packagesdatabasedir'] = translateArchFromUname(etpConst['packagesdatabasedir'])
+    etpConst['etpurirelativepath'] = translateArchFromUname(etpConst['etpurirelativepath'])
+    
+    uriDbInfo = []
+    for uri in etpConst['activatoruploaduris']:
+	# info[] contains two list for each list item:
+	#  [ uri , (database.tar.bz2 mtime) ], if the database file does not exist, Unix mtime = 0 (01-01-1970 00:00:00)
+	ftp = activatorFTP(uri)
+	# move to our database/%ARCH% directory
+	#print "ftp: moving to "+etpConst['etpurirelativepath']
+	ftp.setCWD(etpConst['etpurirelativepath'])
+	# is the file available?
+	rc = ftp.isFileAvailable(etpConst['etpdatabasefile'])
+	#print "is "+etpConst['etpdatabasefile']+" available?: "+str(rc)
+	if (rc):
+	    # then get the file mtime
+	    mtime = ftp.getFileMtime(etpConst['etpdatabasefile'])
+	else:
+	    # then set mtime to 0 and quit
+	    mtime = convertUnixTimeToMtime(0)
+	info = [uri+"/"+etpConst['etpurirelativepath']+etpConst['etpdatabasefile'],mtime]
+	uriDbInfo.append(info)
+	ftp.closeFTPConnection()
+
+    return uriDbInfo
+
+def syncRemoteDatabases():
+
+    etpConst['etpurirelativepath'] = translateArchFromUname(etpConst['etpurirelativepath'])
+
+    print_info(green(" * ")+red("Checking the status of the remote Entropy Database Repository"))
+    remoteDbsStatus = getEtpRemoteDatabaseStatus()
+    print_info(green(" * ")+red("Remote Entropy Database Repository Status:"))
+    for dbstat in remoteDbsStatus:
+	print_info(green("\t Host:\t")+bold(extractFTPHostFromUri(dbstat[0])))
+	print_info(red("\t  * Database mtime: ")+blue(dbstat[1]))
+
+    # check if the local DB exists
+    etpDbLocalPath = etpConst['etpurirelativepath']
+    etpDbLocalFile = etpConst['packagesdatabasedir']+"__"+etpConst['etpdatabasefile']
+    if os.path.isfile(etpDbLocalFile):
+	# file exist, get mtime
+	etpDbLocalMtime = getFileTimeStamp(etpDbLocalFile)
+    else:
+	etpDbLocalMtime = convertUnixTimeToMtime(0)
+    
+    
+    generateAndUpload = False
+    downloadLatest = None
+    uploadLatest = False
+    uploadList = []
+    
+    # if the local DB does not exist, get the latest
+    if (etpDbLocalMtime == convertUnixTimeToMtime(0)):
+	# seek mirrors
+	latestRemoteDb = []
+	etpDbRemotePaths = []
+	for dbstat in remoteDbsStatus:
+	    if ( dbstat[1] != convertUnixTimeToMtime(0) ):
+		# collect
+		etpDbRemotePaths.append(dbstat)
+	if etpDbRemotePaths == []:
+	    print "generate and upload"
+	    # (to all!)
+	    generateAndUpload = True
+	else:
+	    print "get the latest ?"
+	    mtimes = []
+	    for dbstat in etpDbRemotePaths:
+		mtimes.append(dbstat[1])
+	    latestmtime = alphaSorter(mtimes)[len(mtimes)-1]
+	    for dbstat in etpDbRemotePaths:
+		if dbstat[1] == latestmtime:
+		    # found !
+		    downloadLatest.append(dbstat)
+		    break
+	    # Now check if we need to upload back the files to the other mirrors
+	    print "check the others, if they're also updated, quit"
+	    for dbstat in remoteDbsStatus:
+		if (downloadLatest[1] != dbstat[1]):
+		    uploadLatest = True
+		    uploadList.append(dbstat)
+    else:
+	# while if it exists
+	# seek mirrors
+	latestRemoteDb = []
+	etpDbRemotePaths = []
+	for dbstat in remoteDbsStatus:
+	    if ( dbstat[1] != convertUnixTimeToMtime(0) ):
+		# collect
+		etpDbRemotePaths.append(dbstat)
+	if etpDbRemotePaths == []:
+	    print "upload our version"
+	    uploadLatest = True
+	    # upload to all !
+	    uploadList = remoteDbsStatus
+	else:
+	    print "get the latest ?"
+	    mtimes = []
+	    for dbstat in etpDbRemotePaths:
+		mtimes.append(dbstat[1])
+	    latestmtime = alphaSorter(mtimes)[len(mtimes)-1]
+	    for dbstat in etpDbRemotePaths:
+		if dbstat[1] == latestmtime:
+		    # found !
+		    latestRemoteDb = dbstat
+		    break
+	    
+	    # now compare downloadLatest with our local file mtime
+	    if (etpDbLocalMtime < latestRemoteDb[1]):
+		# download !
+		downloadLatest.append(latestRemoteDb)
+	    elif (etpDbLocalMtime > latestRemoteDb[1]):
+		# upload to all !
+		uploadLatest = True
+		uploadList = remoteDbsStatus
+
+	    # If the uploadList is not filled, this means that the other mirror might need an update
+	    if (not uploadLatest):
+	        print "check the others, if they're also updated, quit"
+	        for dbstat in remoteDbsStatus:
+		    if (latestRemoteDb[1] != dbstat[1]):
+		        uploadLatest = True
+		        uploadList.append(dbstat)
+    
+    if (downloadLatest is None) and (not uploadLatest) and (not generateAndUpload):
+	print_info("Thanks God, nothing to do...")
+    
+    # now run the selected task!
+    if (downloadLatest is not None):
+	print "download the latest"
+    if (uploadLatest):
+	print "do the upload"
+    if (generateAndUpload):
+	print "generate and upload to all the mirrors"
+	print_info(green(" * ")+red("Compressing ETP Repository to ")+bold(etpDbLocalFile),back = True)
+	rc = compressTarBz2(etpDbLocalFile,etpConst['packagesdatabasedir'])
+	if (rc):
+	    print_error(red(" * Cannot compress "+etpDbLocalFile))
+	    print_error(red(" *** Cannot continue"))
+	    sys.exit(120)
+	print_info(green(" * ")+bold(etpDbLocalFile)+red(" has been succesfully created"))
+
+
+# tar.bz2 compress function...
+def compressTarBz2(storepath,pathtocompress,relative = True):
+    cmd = "tar cjf "+storepath+" "+pathtocompress+" "
+    if (relative):
+	cmd += "-C "+pathtocompress
+    rc = os.system(cmd+" &> /dev/null")
+    return rc
+
+# hide password from full ftp URI
+def hideFTPpassword(uri):
+    ftppassword = uri.split("@")[:len(uri.split("@"))-1]
+    if len(ftppassword) > 1:
+	import string
+	ftppassword = string.join(ftppassword,"@")
+	ftppassword = ftppassword.split(":")[len(ftppassword.split(":"))-1]
+	if (ftppassword == ""):
+	    return uri
+    else:
+	ftppassword = ftppassword[0]
+	ftppassword = ftppassword.split(":")[len(ftppassword.split(":"))-1]
+	if (ftppassword == ""):
+	    return uri
+
+    newuri = re.subn(ftppassword,"xxxxxxxx",uri)[0]
+    return newuri
 
 def packageSearch(keyword):
 
@@ -900,6 +1095,15 @@ def getFileTimeStamp(path):
     humantime = datetime.fromtimestamp(unixtime)
     # format properly
     humantime = str(humantime)
+    outputtime = ""
+    for chr in humantime:
+	if chr != "-" and chr != " " and chr != ":":
+	    outputtime += chr
+    return outputtime
+
+def convertUnixTimeToMtime(unixtime):
+    from datetime import datetime
+    humantime = str(datetime.fromtimestamp(unixtime))
     outputtime = ""
     for chr in humantime:
 	if chr != "-" and chr != " " and chr != ":":

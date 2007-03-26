@@ -138,6 +138,10 @@ def enzyme():
 # This function extracts all the info from a .tbz2 file and returns them
 def extractPkgData(package):
 
+    # Clean the variables
+    for i in etpData:
+	etpData[i] = ""
+
     print_info(yellow(" * ")+red("Getting package name/version..."),back = True)
     tbz2File = package
     package = package.split(".tbz2")[0]
@@ -308,7 +312,6 @@ def extractPkgData(package):
     for i in ETP_ARCHS:
         if pkgArchs.find(i) != -1 and (pkgArchs.find("-"+i) == -1): # in case we find something like -amd64...
 	    etpData['binkeywords'] += i+" "
-
     etpData['binkeywords'] = removeSpaceAtTheEnd(etpData['binkeywords'])
 
     # FIXME: do we have to rewrite this and use Portage to query a better dependency list?
@@ -354,7 +357,7 @@ def extractPkgData(package):
 	    # filter itself
 	    if (x != etpData['category']+"/"+etpData['name']):
 	        etpData['rundependenciesXT'] += i+" "
-
+    
     # format properly
     etpData['rundependencies'] = removeSpaceAtTheEnd(etpData['rundependencies'])
     etpData['rundependenciesXT'] = removeSpaceAtTheEnd(etpData['rundependenciesXT'])

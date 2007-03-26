@@ -39,6 +39,9 @@ def sync(options):
     etpConst['binaryurirelativepath'] = translateArchFromUname(etpConst['binaryurirelativepath'])
     etpConst['etpurirelativepath'] = translateArchFromUname(etpConst['etpurirelativepath'])
 
+    # sync the local repository with the remote ones
+    syncRemoteDatabases()
+
     print_info(green(" * ")+red("Collecting local binary packages..."),back = True)
     localtbz2counter = 0
     localTbz2Files = []
@@ -60,14 +63,8 @@ def sync(options):
 		localtetpcounter += 1
     print_info(green(" * ")+red("Entropy directory:\t")+bold(str(localtetpcounter))+red(" specification files available."))
 
-    # packages relative uri: etpConst['binaryurirelativepath']
-    # entropy relative uri : etpConst['etpurirelativepath']
-    #print "deleting file: XML-XSLT-0.48.tbz2"
-    #rc = ftp.deleteFile("XML-XSLT-0.48.tbz2")
-    #print rc
-    #print "uploading file..."
-    #rc = ftp.uploadFile("/var/lib/entropy/store/x86/alsa-lib-1.0.14_rc3.tbz2")
-    #print str(rc)
+
+    sys.exit(0)
 
     # For each URI do the same thing
     for uri in etpConst['activatoruploaduris']:
@@ -78,4 +75,6 @@ def sync(options):
 	print ftp.listFTPdir()
 	print ftp.spawnFTPCommand("mdtm index.htm")
 	ftp.closeFTPConnection()
+
+
 
