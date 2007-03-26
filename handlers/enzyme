@@ -36,7 +36,7 @@ APPNAME = "enzyme"
 APPVERSION = "1.0"
 def print_help():
     entropyTools.print_info("Sabayon Linux "+APPNAME+" (C - 2007)")
-    entropyTools.print_info("Usage: "+APPNAME+" <tool> <atom(s)>")
+    entropyTools.print_info("Usage: "+APPNAME+" <tool> <command/atom(s)>")
     entropyTools.print_info("General Options:")
     entropyTools.print_info("  --help\t\tthis output")
     entropyTools.print_info("  --version\t\tprint version")
@@ -75,6 +75,11 @@ def print_help():
     entropyTools.print_info(" \t\t "+entropyTools.red("--only-sync-back")+"\t only sync between Entropy Portage Tree and the official one")
     entropyTools.print_info(" \t\t "+entropyTools.red("--no-overlay-sync")+"\t disable automatic overlays sync")
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("search"))+entropyTools.yellow("\t\t to search a package inside the Entropy Portage repository"))
+    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("distcc"))+entropyTools.yellow("\t\t distcc manager"))
+    entropyTools.print_info(" \t\t "+entropyTools.red("--add-host")+"\t\t add a hostname/ip")
+    entropyTools.print_info(" \t\t "+entropyTools.red("--remove-host")+"\t\t remove a hostname/ip")
+    entropyTools.print_info(" \t\t "+entropyTools.red("--enable")+"\t\t enable the DistCC funcionality")
+    entropyTools.print_info(" \t\t "+entropyTools.red("--disable")+"\t\t disable the DistCC funcionality")
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("cleanup"))+entropyTools.yellow("\t\t to clean temporary files"))
 
 options = sys.argv[1:]
@@ -132,6 +137,10 @@ if (options[0] == "uninstall"):
 # search tool
 if (options[0] == "search"):
     enzymeTools.search(options[1:])
+    sys.exit(0)
+# distcc tool
+if (options[0] == "distcc"):
+    enzymeTools.distcc(options[1:])
     sys.exit(0)
 # cleanup tool
 if (options[0] == "cleanup"):

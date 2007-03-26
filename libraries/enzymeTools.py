@@ -883,3 +883,68 @@ def search(atoms):
 	    print_info(red("\t    Description: ")+pkgDescription)
 	    print_info(red("\t    License: ")+bold(pkgLicense))
 	    print
+
+def distcc(options):
+
+    # Filter
+    if options == []:
+	print_error(yellow(" * ")+red("Not enough parameters."))
+	sys.exit(200)
+    
+    # Firstly check if distcc is available
+    distccAvail = os.system("which distcc &> /dev/null")
+    if (distccAvail):
+	print_error(yellow("  *** ")+red("distcc is not installed. Cannot continue."))
+	sys.exit(201)
+
+    
+    # Enable distcc function
+    if (options[0] == "--enable"):
+        mountProc()
+        distccStatus = os.system(cdbStatusDistcc+" &> /dev/null")
+        if (distccStatus):
+	    print_info(yellow(" * ")+red("Starting distccd..."))
+	    rc = os.system(cdbStartDistcc+" &> /dev/null")
+	    if (rc):
+	        print_error(yellow("  *** ")+red(" A problem occured while starting distcc. Please check."))
+	        sys.exit(202)
+
+	# now configure distcc properly in enzyme.conf
+	setDistCC(True)
+	
+    # Disable distcc function
+    elif (options[0] == "--disable"):
+        mountProc()
+        distccStatus = os.system(cdbStatusDistcc+" &> /dev/null")
+        if (not distccStatus):
+	    print_info(yellow(" * ")+red("Stopping distccd..."))
+	    rc = os.system(cdbStopDistcc+" &> /dev/null")
+	    if (rc):
+	        print_error(yellow("  *** ")+red(" A problem occured while stopping distcc. Please check."))
+	        sys.exit(203)
+	# now configure distcc properly in enzyme.conf
+	setDistCC(False)
+
+    elif (options[0] == "--add-host"):
+	if (not getDistCCStatus()):
+	    print_warning(yellow(" * ")+red("Attention: distcc is not enabled."))
+	myhosts = options[1:]
+	if len(myhosts) == 0:
+	    print_error(yellow(" * ")+red("No hosts specified."))
+	    sys.exit(204)
+	print_info(green(" * ")+red("Adding specified hosts..."), back = True)
+	addDistCCHosts(myhosts)
+	myhosts = string.join(myhosts," ")
+	print_info(green(" * ")+red("Hosts: ")+blue(myhosts)+red(" added."))
+    elif (options[0] == "--remove-host"):
+	if (not getDistCCStatus()):
+	    print_warning(yellow(" * ")+red("Attention: distcc is not enabled."))
+	myhosts = options[1:]
+	if len(myhosts) == 0:
+	    print_error(yellow(" * ")+red("No hosts specified."))
+	    sys.exit(204)
+	print_info(green(" * ")+red("Removing specified hosts..."), back = True)
+	removeDistCCHosts(myhosts)
+	myhosts = string.join(myhosts," ")
+	print_info(green(" * ")+red("Hosts: ")+blue(myhosts)+red(" removed."))
+

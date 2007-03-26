@@ -77,4 +77,23 @@ def sync(options):
 	ftp.closeFTPConnection()
 
 
+def database(options):
+
+    # lock tool
+    if (options[0] == "lock"):
+	print_info(green(" * ")+green("Starting to lock mirrors' databases..."))
+	rc = lockDatabases(lock = True)
+	if (rc):
+	    print_info(green(" * ")+green("A problem occured on at least one mirror..."))
+	else:
+	    print_info(green(" * ")+green("Databases lock complete"))
+
+    # unlock tool
+    if (options[0] == "unlock"):
+	print_info(green(" * ")+green("Starting to unlock mirrors' databases..."))
+	rc = lockDatabases(lock = False)
+	if (rc):
+	    print_info(green(" * ")+green("A problem occured on at least one mirror..."))
+	else:
+	    print_info(green(" * ")+green("Databases unlock complete"))
 

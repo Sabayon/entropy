@@ -362,7 +362,13 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
     elogfile = etpConst['logdir']+"/elog/*"+elogfile+"*"
     os.system("rm -rf "+elogfile)
     
-    rc = spawnCommand(elogopts+cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
+    distccopts = ""
+    if (getDistCCStatus()):
+	# FIXME: add MAKEOPTS too
+	distccopts += 'FEATURES="distcc" '
+	distccjobs = str(len(getDistCCHosts())+3)
+	distccopts += 'MAKEOPTS="-j'+distccjobs+'" '
+    rc = spawnCommand(distccopts+elogopts+cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
     return rc, outfile
 
 def parseElogFile(atom):
@@ -822,7 +828,7 @@ class activatorFTP:
 
     def deleteFile(self,file):
 	try:
-	    rc = self.ftpconn.delete(self.ftpdir+"/"+file)
+	    rc = self.ftpconn.delete(file)
 	    if rc.startswith("250"):
 		return True
 	    else:
@@ -1045,6 +1051,52 @@ def hideFTPpassword(uri):
     newuri = re.subn(ftppassword,"xxxxxxxx",uri)[0]
     return newuri
 
+def lockDatabases(lock = True):
+    etpConst['etpurirelativepath'] = translateArchFromUname(etpConst['etpurirelativepath'])
+    outstat = False
+    for uri in etpConst['activatoruploaduris']:
+	if (lock):
+	    print_info(yellow(" * ")+red("Locking ")+bold(extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
+	else:
+	    print_info(yellow(" * ")+red("Unlocking ")+bold(extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
+	ftp = activatorFTP(uri)
+	# upload the lock file to database/%ARCH% directory
+	ftp.setCWD(etpConst['etpurirelativepath'])
+	# check if the lock is already there
+	if (lock):
+	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
+	        print_info(green(" * ")+red("Mirror database at ")+bold(extractFTPHostFromUri(uri))+red(" already locked."))
+	        ftp.closeFTPConnection()
+	        continue
+	else:
+	    if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
+	        print_info(green(" * ")+red("Mirror database at ")+bold(extractFTPHostFromUri(uri))+red(" already unlocked."))
+	        ftp.closeFTPConnection()
+	        continue
+	if (lock):
+	    f = open(etpConst['packagestmpdir']+"/"+etpConst['etpdatabaselockfile'],"w")
+	    f.write("database locked\n")
+	    f.flush()
+	    f.close()
+	    rc = ftp.uploadFile(etpConst['packagestmpdir']+"/"+etpConst['etpdatabaselockfile'],ascii= True)
+	    if (rc.startswith("226")):
+	        print_info(green(" * ")+red("Succesfully locked ")+bold(extractFTPHostFromUri(uri))+red(" mirror."))
+	    else:
+	        outstat = True
+	        print "\n"
+	        print_warning(red(" * ")+red("A problem occured while locking ")+bold(extractFTPHostFromUri(uri))+red(" mirror. Please have a look."))
+	else:
+	    rc = ftp.deleteFile(etpConst['etpdatabaselockfile'])
+	    if (rc):
+		print_info(green(" * ")+red("Succesfully unlocked ")+bold(extractFTPHostFromUri(uri))+red(" mirror."))
+	    else:
+	        outstat = True
+	        print "\n"
+	        print_warning(red(" * ")+red("A problem occured while unlocking ")+bold(extractFTPHostFromUri(uri))+red(" mirror. Please have a look."))
+	ftp.closeFTPConnection()
+
+    return outstat
+
 def packageSearch(keyword):
 
     SearchDirs = []
@@ -1081,9 +1133,134 @@ def packageSearch(keyword):
     
     # filter dupies
     SearchDirs = list(set(SearchDirs))
-
     return SearchDirs
 
+# Distcc check status function
+def setDistCC(status = True):
+    f = open(etpConst['enzymeconf'],"r")
+    enzymeconf = f.readlines()
+    f.close()
+    if (status):
+	distccSwitch = "enabled"
+    else:
+	distccSwitch = "disabled"
+    newenzymeconf = []
+    for line in enzymeconf:
+	if line.startswith("distcc-status|"):
+	    line = "distcc-status|"+distccSwitch+"\n"
+	newenzymeconf.append(line)
+    f = open(etpConst['enzymeconf'],"w")
+    f.writelines(newenzymeconf)
+    f.flush()
+    f.close()
+
+def getDistCCHosts():
+    f = open(etpConst['enzymeconf'],"r")
+    enzymeconf = f.readlines()
+    f.close()
+    hostslist = []
+    for line in enzymeconf:
+	if line.startswith("distcc-hosts|") and (len(line.split("|")) == 2):
+	    line = line.strip().split("|")[1].split()
+	    for host in line:
+		hostslist.append(host)
+	    return hostslist
+    return []
+
+# you must provide a list
+def addDistCCHosts(hosts):
+    
+    # FIXME: add host validation
+    hostslist = getDistCCHosts()
+    for host in hosts:
+	hostslist.append(host)
+
+    # filter dupies
+    hostslist = list(set(hostslist))
+   
+    # write back to file
+    f = open(etpConst['enzymeconf'],"r")
+    enzymeconf = f.readlines()
+    f.close()
+    newenzymeconf = []
+    distcchostslinefound = False
+    for line in enzymeconf:
+	if line.startswith("distcc-hosts|"):
+	    distcchostslinefound = True
+    if (distcchostslinefound):
+	for line in enzymeconf:
+	    if line.startswith("distcc-hosts|"):
+		hostsline = string.join(hostslist," ")
+		line = "distcc-hosts|"+hostsline+"\n"
+	    newenzymeconf.append(line)
+    else:
+	newenzymeconf = enzymeconf
+	hostsline = string.join(hostslist," ")
+	newenzymeconf.append("distcc-hosts|"+hostsline+"\n")
+
+    # write distcc config file too
+    f = open(etpConst['distccconf'],"w")
+    f.write(hostsline+"\n")
+    f.flush()
+    f.close()
+
+    f = open(etpConst['enzymeconf'],"w")
+    f.writelines(newenzymeconf)
+    f.flush()
+    f.close()
+
+# you must provide a list
+def removeDistCCHosts(hosts):
+    
+    # FIXME: add host validation
+    hostslist = getDistCCHosts()
+    cleanedhosts = []
+    for host in hostslist:
+	rmfound = False
+	for rmhost in hosts:
+	    if (rmhost == host):
+		# remove
+		rmfound = True
+	if (not rmfound):
+	    cleanedhosts.append(host)
+
+
+    # filter dupies
+    cleanedhosts = list(set(cleanedhosts))
+   
+    # write back to file
+    f = open(etpConst['enzymeconf'],"r")
+    enzymeconf = f.readlines()
+    f.close()
+    newenzymeconf = []
+    distcchostslinefound = False
+    for line in enzymeconf:
+	if line.startswith("distcc-hosts|"):
+	    distcchostslinefound = True
+    if (distcchostslinefound):
+	for line in enzymeconf:
+	    if line.startswith("distcc-hosts|"):
+		hostsline = string.join(cleanedhosts," ")
+		line = "distcc-hosts|"+hostsline+"\n"
+	    newenzymeconf.append(line)
+    else:
+	newenzymeconf = enzymeconf
+	hostsline = string.join(cleanedhosts," ")
+	newenzymeconf.append("distcc-hosts|"+hostsline+"\n")
+
+    # write distcc config file too
+    f = open(etpConst['distccconf'],"w")
+    f.write(hostsline+"\n")
+    f.flush()
+    f.close()
+
+    f = open(etpConst['enzymeconf'],"w")
+    f.writelines(newenzymeconf)
+    f.flush()
+    f.close()
+
+def getDistCCStatus():
+    return etpConst['distcc-status']
 
 def getFileUnixMtime(path):
     return os.path.getmtime(path)

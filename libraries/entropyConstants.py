@@ -107,7 +107,10 @@ etpConst = {
     'etpurirelativepath': "database/"+ETP_ARCH_CONST+"/", # Relative remote path for the .etp repository.
     'etpdatabasefile': "database.tar.bz2", # compressed file that contains the whole Entropy database directory tree
     'etpdatabasefilehash': "database.tar.bz2.md5", # its checksum
+    'etpdatabaselockfile': "database.lock", # the remote database lock file
     'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
+    'distcc-status': False, # used by Enzyme, if True distcc is enabled
+    'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file
 }
 
 # Create paths
@@ -266,6 +269,18 @@ else:
 		uri = uri[:len(uri)-1]
 	    etpConst['activatordownloaduris'].append(uri)
 
+# enzyme section
+if (not os.path.isfile(etpConst['enzymeconf'])):
+    print "ERROR: "+etpConst['enzymeconf']+" does not exist"
+    sys.exit(50)
+else:
+    f = open(etpConst['enzymeconf'],"r")
+    enzymeconf = f.readlines()
+    f.close()
+    for line in enzymeconf:
+	if line.startswith("distcc-status|") and (len(line.split("|")) == 2) and (line.strip().split("|")[1] == "enabled"):
+	    etpConst['distcc-status'] = True
+
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things
 dbDESCRIPTION = "DESCRIPTION"
@@ -292,9 +307,12 @@ dbPORTAGE_ELOG_OPTS = 'PORTAGE_ELOG_CLASSES="warn info log" PORTAGE_ELOG_SYSTEM=
 vdbPORTDIR = "PORTDIR"
 vdbPORTDIR_OVERLAY = "PORTDIR_OVERLAY"
 
-# Portage commands
+# Portage & misc commands
 cdbEMERGE = "emerge"
 cdbRunEmerge = vdbPORTDIR+"='"+etpConst['portagetreedir']+"' "+vdbPORTDIR_OVERLAY+"='"+etpConst['overlays']+"' "+cdbEMERGE
+cdbStartDistcc = "/etc/init.d/distccd start --nodeps"
+cdbStopDistcc = "/etc/init.d/distccd stop --nodeps"
+cdbStatusDistcc = "/etc/init.d/distccd status"
 
 # Portage options
 odbBuild = " -b "
