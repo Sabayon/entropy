@@ -880,6 +880,14 @@ class activatorFTP:
     # not supported by dreamhost.com
     def getFileSize(self,file):
 	return self.ftpconn.size(file)
+    
+    def getFileSizeCompat(self,file):
+	list = getRoughList()
+	for item in list:
+	    if item.find(file) != -1:
+		# extact the size
+		return item.split()[4]
+	return ""
 
     def bufferizer(self,buf):
 	self.FTPbuffer.append(buf)
@@ -1201,6 +1209,16 @@ def digestFile(filepath):
     for line in content:
 	digest.update(line)
     return digest.hexdigest()
+
+def bytesIntoHuman(bytes):
+    bytes = str(bytes)
+    kbytes = str(int(bytes)/1024)
+    if len(kbytes) > 3:
+	kbytes = str(int(kbytes)/1024)
+	kbytes += "MB"
+    else:
+	kbytes += "kB"
+    return kbytes
 
 # hide password from full ftp URI
 def hideFTPpassword(uri):

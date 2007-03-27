@@ -47,6 +47,8 @@ def print_help():
     entropyTools.print_info(" \t\t"+entropyTools.red("--download-etp")+"\t\t to download all the Entropy tree (will overwrite)")
     entropyTools.print_info(" \t\t"+entropyTools.red("--show-stats")+"\t\t shows the list of validated package/etp-file couples")
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("packages"))+entropyTools.yellow("\t to manage binary packages"))
+    entropyTools.print_info(" \t\t"+entropyTools.red("--ask")+"\t\t\t ask before making any changes")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--pretend")+"\t\t just show what would be done")
     entropyTools.print_info(" \t\t"+entropyTools.green("sync")+entropyTools.red("\t\t\t to sync the binary packages across primary mirrors"))
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("database"))+entropyTools.yellow("\t to manage database status and settings"))
     entropyTools.print_info(" \t\t"+entropyTools.green("lock")+entropyTools.red("\t\t\t to lock the database(s) status ["+entropyTools.yellow("DANGEROUS")+entropyTools.red("]")))

@@ -1,9 +1,13 @@
 TODO list (for developers only):
 - build() and world(), on enzyme, add the support for whitelist+cron
 - build(), on enzyme, add license blacklist (packages that cannot be shipped in a binary form)
+- system-wide: add free space check
+- activator: for the tidy module I need that reagent includes the SLOT variable.
 - activator tasks:
           - add/remove packages from the database
-          - cleanup policy to prune old binaries
+          - tidy tool: cleanup policy to prune old binaries
+          - sync tool removal
+          - database update and management between me and reagent
 
 - Sabayon Linux USE flags: remove all server related use flags
 
@@ -11,11 +15,11 @@ Project Status:
 - entropy: not yet started, nothing to say then
 - enzyme: first release up and working (more or less)
 - reagent: first release up and working.
-- activator: 50%
+- activator: 60%
 ============
 - client part: not yet defined apart from equilibrium name.
 
 
 Features plan:
-- enzyme: distcc support
+- enzyme: distcc support on cross platforms and on automake
 - activator: add stable/ repository and the cron-aware module that moves files from the unstable/default repo to the stable one.
