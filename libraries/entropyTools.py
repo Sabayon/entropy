@@ -1262,6 +1262,12 @@ def removeDistCCHosts(hosts):
 def getDistCCStatus():
     return etpConst['distcc-status']
 
+def isIPAvailable(ip):
+    rc = os.system("ping -c 1 "+ip+" &> /dev/null")
+    if (rc):
+	return False
+    return True
+
 def getFileUnixMtime(path):
     return os.path.getmtime(path)
 

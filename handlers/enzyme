@@ -80,6 +80,7 @@ def print_help():
     entropyTools.print_info(" \t\t "+entropyTools.red("--remove-host")+"\t\t remove a hostname/ip")
     entropyTools.print_info(" \t\t "+entropyTools.red("--enable")+"\t\t enable the DistCC funcionality")
     entropyTools.print_info(" \t\t "+entropyTools.red("--disable")+"\t\t disable the DistCC funcionality")
+    entropyTools.print_info(" \t\t "+entropyTools.red("--show-hosts")+"\t\t show the currently enabled hosts")
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("cleanup"))+entropyTools.yellow("\t\t to clean temporary files"))
 
 options = sys.argv[1:]

@@ -936,6 +936,7 @@ def distcc(options):
 	addDistCCHosts(myhosts)
 	myhosts = string.join(myhosts," ")
 	print_info(green(" * ")+red("Hosts: ")+blue(myhosts)+red(" added."))
+
     elif (options[0] == "--remove-host"):
 	if (not getDistCCStatus()):
 	    print_warning(yellow(" * ")+red("Attention: distcc is not enabled."))
@@ -948,3 +949,18 @@ def distcc(options):
 	myhosts = string.join(myhosts," ")
 	print_info(green(" * ")+red("Hosts: ")+blue(myhosts)+red(" removed."))
 
+    elif (options[0] == "--show-hosts"):
+	if (not getDistCCStatus()):
+	    print_warning(yellow(" * ")+red("Attention: distcc is not enabled."))
+	hosts = getDistCCHosts()
+	if len(hosts) == 0:
+	    print_warning(yellow(" * ")+red("Attention: no hosts selected."))
+	    sys.exit(205)
+	print_info(green(" * ")+red("Showing DistCC hosts table:"))
+	for host in hosts:
+	    availability = isIPAvailable(host)
+	    if (availability):
+		availability = green("running")
+	    else:
+		availability = green("not running")
+	    print_info(green(" * ")+yellow("\tHost:\t")+blue(host)+red(" :: ")+availability)
