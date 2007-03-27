@@ -910,7 +910,9 @@ def distcc(options):
 	        sys.exit(202)
 
 	# now configure distcc properly in enzyme.conf
+	print_info(green(" * ")+red("Enabling DistCC Entropy infrastructure..."), back = True)
 	setDistCC(True)
+	print_info(green(" * ")+red("DistCC Entropy infrastructure enabled."))
 	
     # Disable distcc function
     elif (options[0] == "--disable"):
@@ -923,7 +925,9 @@ def distcc(options):
 	        print_error(yellow("  *** ")+red(" A problem occured while stopping distcc. Please check."))
 	        sys.exit(203)
 	# now configure distcc properly in enzyme.conf
+	print_info(green(" * ")+red("Disabling DistCC Entropy infrastructure..."), back = True)
 	setDistCC(False)
+	print_info(green(" * ")+red("DistCC Entropy infrastructure disabled."))
 
     elif (options[0] == "--add-host"):
 	if (not getDistCCStatus()):

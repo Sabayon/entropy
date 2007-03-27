@@ -24,6 +24,7 @@ import os
 import commands
 import string
 import random
+import sys
 
 # Specifications of the content of .etp file
 # THIS IS THE KEY PART OF ENTROPY BINARY PACKAGES MANAGEMENT

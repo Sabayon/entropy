@@ -427,11 +427,11 @@ def compareLibraryLists(pkgBinaryFiles,newPkgBinaryFiles):
 	
 	# check for version bumps
 	for pkg in pkgBinaryFiles:
-	    _pkgver = pkg.split(".so")[len(pkg.split(".so"))-1]
-	    _pkg = pkg.split(".so")[0]
+	    _pkgver = pkg.split(".so.")[len(pkg.split(".so."))-1]
+	    _pkg = pkg.split(".so.")[0]
 	    for newpkg in newPkgBinaryFiles:
-		_newpkgver = newpkg.split(".so")[len(newpkg.split(".so"))-1]
-		_newpkg = newpkg.split(".so")[0]
+		_newpkgver = newpkg.split(".so.")[len(newpkg.split(".so."))-1]
+		_newpkg = newpkg.split(".so.")[0]
 		if (_newpkg == _pkg):
 		    # check version
 		    if (_pkgver != _newpkgver):
