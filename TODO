@@ -9,9 +9,9 @@ TODO list (for developers only):
 
 Project Status:
 - entropy: not yet started, nothing to say then
-- enzyme: build() is fine, world() is fine
+- enzyme: first release up and working (more or less)
 - reagent: first release up and working.
-- activator: not yet started, I need to prepare a ftp module that let us work without rsync and shit like that
+- activator: 50%
 ============
 - client part: not yet defined apart from equilibrium name.
 

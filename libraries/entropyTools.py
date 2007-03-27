@@ -38,6 +38,7 @@ import portage
 import portage_const
 from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv
 from entropyConstants import *
+
 initializePortageTree()
 
 # colours support
@@ -47,6 +48,37 @@ import re
 import sys
 import random
 import commands
+
+def getArchFromChost(chost):
+	# when we'll add new archs, we'll have to add a testcase here
+	if chost.startswith("x86_64"):
+	    resultingArch = "amd64"
+	elif chost.split("-")[0].startswith("i") and chost.split("-")[0].endswith("86"):
+	    resultingArch = "x86"
+	else:
+	    resultingArch = "ERROR"
+	
+	return resultingArch
+
+def translateArch(string,chost):
+    if string.find(ETP_ARCH_CONST) != -1:
+        # substitute %ARCH%
+        resultingArch = getArchFromChost(chost)
+	return re.subn(ETP_ARCH_CONST,resultingArch, string)[0]
+    else:
+	return string
+
+def translateArchFromUname(string):
+    rc = commands.getoutput("uname -m").split("\n")[0]
+    return translateArch(string,rc)
+
+# initialize %ARCH% in etpConst['x']
+for i in etpConst:
+    if (type(etpConst[i]) is list):
+	for x in range(len(etpConst[i])):
+	    etpConst[i][x] = translateArchFromUname(etpConst[i][x])
+    elif (type(etpConst[i]) is str):
+	etpConst[i] = translateArchFromUname(etpConst[i])
 
 def isRoot():
     import getpass
@@ -196,30 +228,6 @@ def spinner(rotations, interval, message=''):
 def writechar(char):
 	sys.stdout.write(char); sys.stdout.flush()
 
-def getArchFromChost(chost):
-	# when we'll add new archs, we'll have to add a testcase here
-	if chost.startswith("x86_64"):
-	    resultingArch = "amd64"
-	elif chost.split("-")[0].startswith("i") and chost.split("-")[0].endswith("86"):
-	    resultingArch = "x86"
-	else:
-	    resultingArch = "ERROR"
-	
-	return resultingArch
-
-def translateArchFromUname(string):
-    import commands
-    rc = commands.getoutput("uname -m").split("\n")[0]
-    return translateArch(string,rc)
-
-def translateArch(string,chost):
-    if string.find(ETP_ARCH_CONST) != -1:
-        # substitute %ARCH%
-        resultingArch = getArchFromChost(chost)
-	return re.subn(ETP_ARCH_CONST,resultingArch, string)[0]
-    else:
-	return string
-
 # please always force =pkgcat/pkgname-ver if possible
 def getInstalledAtom(atom):
     rc = portage.db['/']['vartree'].dep_match(str(atom))
@@ -368,6 +376,7 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
 	distccopts += 'FEATURES="distcc" '
 	distccjobs = str(len(getDistCCHosts())+3)
 	distccopts += 'MAKEOPTS="-j'+distccjobs+'" '
+	#distccopts += 'MAKEOPTS="-j4" '
     rc = spawnCommand(distccopts+elogopts+cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
     return rc, outfile
 
@@ -852,18 +861,33 @@ class activatorFTP:
 	file = filepath.split("/")[len(filepath.split("/"))-1]
 	if (not ascii):
 	    f = open(downloaddir+"/"+file,"wb")
-	    self.ftpconn.retrbinary('RETR '+file,f.write)
+	    rc = self.ftpconn.retrbinary('RETR '+file,f.write)
 	    f.flush()
 	    f.close()
+	    return rc
 	else:
 	    f = open(downloaddir+"/"+file,"w")
-	    self.ftpconn.retrlines('RETR '+file,f.write)
+	    rc = self.ftpconn.retrlines('RETR '+file,f.write)
 	    f.flush()
 	    f.close()
+	    return rc
 
     # also used to move files
+    # FIXME: beautify !
     def renameFile(self,fromfile,tofile):
 	self.ftpconn.rename(fromfile,tofile)
+
+    # not supported by dreamhost.com
+    def getFileSize(self,file):
+	return self.ftpconn.size(file)
+
+    def bufferizer(self,buf):
+	self.FTPbuffer.append(buf)
+
+    def getRoughList(self):
+	self.FTPbuffer = []
+	self.ftpconn.dir(self.bufferizer)
+	return self.FTPbuffer
 
     def closeFTPConnection(self):
 	self.ftpconn.quit()
@@ -880,28 +904,27 @@ def extractFTPHostFromUri(uri):
 # This function check the Entropy online database status
 def getEtpRemoteDatabaseStatus():
 
-    # translate %ARCH%
-    etpConst['packagesdatabasedir'] = translateArchFromUname(etpConst['packagesdatabasedir'])
-    etpConst['etpurirelativepath'] = translateArchFromUname(etpConst['etpurirelativepath'])
-    
     uriDbInfo = []
     for uri in etpConst['activatoruploaduris']:
-	# info[] contains two list for each list item:
-	#  [ uri , (database.tar.bz2 mtime) ], if the database file does not exist, Unix mtime = 0 (01-01-1970 00:00:00)
 	ftp = activatorFTP(uri)
-	# move to our database/%ARCH% directory
-	#print "ftp: moving to "+etpConst['etpurirelativepath']
 	ftp.setCWD(etpConst['etpurirelativepath'])
-	# is the file available?
-	rc = ftp.isFileAvailable(etpConst['etpdatabasefile'])
-	#print "is "+etpConst['etpdatabasefile']+" available?: "+str(rc)
+	rc = ftp.isFileAvailable(translateArchFromUname(ETP_ARCH_CONST)+etpConst['etpdatabasefile'])
 	if (rc):
-	    # then get the file mtime
-	    mtime = ftp.getFileMtime(etpConst['etpdatabasefile'])
+	    # then get the file revision, if exists
+	    rc = ftp.isFileAvailable(translateArchFromUname(ETP_ARCH_CONST)+etpConst['etpdatabasefile']+".revision")
+	    if (rc):
+		# get the revision number
+		ftp.downloadFile(translateArchFromUname(ETP_ARCH_CONST) + etpConst['etpdatabasefile'] + ".revision",etpConst['packagestmpdir'],True)
+		f = open( etpConst['packagestmpdir'] + "/" + translateArchFromUname(ETP_ARCH_CONST) + etpConst['etpdatabasefile'] + ".revision","r")
+		revision = int(f.readline().strip())
+		f.close()
+		os.system("rm -f "+etpConst['packagestmpdir']+translateArchFromUname(ETP_ARCH_CONST)+etpConst['etpdatabasefile']+".revision")
+	    else:
+		revision = 0
 	else:
 	    # then set mtime to 0 and quit
-	    mtime = convertUnixTimeToMtime(0)
-	info = [uri+"/"+etpConst['etpurirelativepath']+etpConst['etpdatabasefile'],mtime]
+	    revision = 0
+	info = [uri+"/"+etpConst['etpurirelativepath']+translateArchFromUname(ETP_ARCH_CONST)+etpConst['etpdatabasefile'],revision]
 	uriDbInfo.append(info)
 	ftp.closeFTPConnection()
 
@@ -909,56 +932,59 @@ def getEtpRemoteDatabaseStatus():
 
 def syncRemoteDatabases():
 
-    etpConst['etpurirelativepath'] = translateArchFromUname(etpConst['etpurirelativepath'])
-
     print_info(green(" * ")+red("Checking the status of the remote Entropy Database Repository"))
     remoteDbsStatus = getEtpRemoteDatabaseStatus()
     print_info(green(" * ")+red("Remote Entropy Database Repository Status:"))
     for dbstat in remoteDbsStatus:
 	print_info(green("\t Host:\t")+bold(extractFTPHostFromUri(dbstat[0])))
-	print_info(red("\t  * Database mtime: ")+blue(dbstat[1]))
+	print_info(red("\t  * Database revision: ")+blue(str(dbstat[1])))
 
     # check if the local DB exists
     etpDbLocalPath = etpConst['etpurirelativepath']
-    etpDbLocalFile = etpConst['packagesdatabasedir']+"__"+etpConst['etpdatabasefile']
-    if os.path.isfile(etpDbLocalFile):
-	# file exist, get mtime
-	etpDbLocalMtime = getFileTimeStamp(etpDbLocalFile)
+    etpDbLocalFile = etpConst['packagesdatabasedir']
+    if etpDbLocalFile.endswith("/"):
+	etpDbLocalFile = etpDbLocalFile[:len(etpDbLocalFile)-1]
+    etpDbLocalFile += etpConst['etpdatabasefile']
+    if os.path.isfile(etpDbLocalFile) and os.path.isfile(etpDbLocalFile+".revision"):
+	# file exist, get revision
+	f = open(etpDbLocalFile+".revision","r")
+	etpDbLocalRevision = int(f.readline().strip())
+	f.close()
     else:
-	etpDbLocalMtime = convertUnixTimeToMtime(0)
+	etpDbLocalRevision = 0
     
     
     generateAndUpload = False
-    downloadLatest = None
+    downloadLatest = []
     uploadLatest = False
     uploadList = []
     
     # if the local DB does not exist, get the latest
-    if (etpDbLocalMtime == convertUnixTimeToMtime(0)):
+    if (etpDbLocalRevision == 0):
 	# seek mirrors
 	latestRemoteDb = []
 	etpDbRemotePaths = []
 	for dbstat in remoteDbsStatus:
-	    if ( dbstat[1] != convertUnixTimeToMtime(0) ):
+	    if ( dbstat[1] != 0 ):
 		# collect
 		etpDbRemotePaths.append(dbstat)
 	if etpDbRemotePaths == []:
-	    print "generate and upload"
+	    #print "DEBUG: generate and upload"
 	    # (to all!)
 	    generateAndUpload = True
 	else:
-	    print "get the latest ?"
-	    mtimes = []
+	    #print "DEBUG: get the latest ?"
+	    revisions = []
 	    for dbstat in etpDbRemotePaths:
-		mtimes.append(dbstat[1])
-	    latestmtime = alphaSorter(mtimes)[len(mtimes)-1]
+		revisions.append(dbstat[1])
+	    latestrevision = alphaSorter(revisions)[len(revisions)-1]
 	    for dbstat in etpDbRemotePaths:
-		if dbstat[1] == latestmtime:
+		if dbstat[1] == latestrevision:
 		    # found !
 		    downloadLatest.append(dbstat)
 		    break
 	    # Now check if we need to upload back the files to the other mirrors
-	    print "check the others, if they're also updated, quit"
+	    #print "DEBUG: check the others, if they're also updated, quit"
 	    for dbstat in remoteDbsStatus:
 		if (downloadLatest[1] != dbstat[1]):
 		    uploadLatest = True
@@ -969,53 +995,72 @@ def syncRemoteDatabases():
 	latestRemoteDb = []
 	etpDbRemotePaths = []
 	for dbstat in remoteDbsStatus:
-	    if ( dbstat[1] != convertUnixTimeToMtime(0) ):
+	    if ( dbstat[1] != 0 ):
 		# collect
 		etpDbRemotePaths.append(dbstat)
 	if etpDbRemotePaths == []:
-	    print "upload our version"
+	    #print "DEBUG: upload our version"
 	    uploadLatest = True
 	    # upload to all !
 	    uploadList = remoteDbsStatus
 	else:
-	    print "get the latest ?"
-	    mtimes = []
+	    #print "DEBUG: get the latest?"
+	    revisions = []
 	    for dbstat in etpDbRemotePaths:
-		mtimes.append(dbstat[1])
-	    latestmtime = alphaSorter(mtimes)[len(mtimes)-1]
+		revisions.append(dbstat[1])
+	    latestrevision = int(alphaSorter(str(revisions))[len(str(revisions))-1])
 	    for dbstat in etpDbRemotePaths:
-		if dbstat[1] == latestmtime:
+		if dbstat[1] == latestrevision:
 		    # found !
 		    latestRemoteDb = dbstat
 		    break
 	    
 	    # now compare downloadLatest with our local file mtime
-	    if (etpDbLocalMtime < latestRemoteDb[1]):
+	    if (etpDbLocalRevision < latestRemoteDb[1]):
 		# download !
-		downloadLatest.append(latestRemoteDb)
-	    elif (etpDbLocalMtime > latestRemoteDb[1]):
+		#print "appending a download"
+		downloadLatest = latestRemoteDb
+	    elif (etpDbLocalRevision > latestRemoteDb[1]):
 		# upload to all !
+		#print str(etpDbLocalRevision)
+		#print str(latestRemoteDb[1])
+		#print "appending the upload to all"
 		uploadLatest = True
 		uploadList = remoteDbsStatus
 
 	    # If the uploadList is not filled, this means that the other mirror might need an update
 	    if (not uploadLatest):
-	        print "check the others, if they're also updated, quit"
 	        for dbstat in remoteDbsStatus:
 		    if (latestRemoteDb[1] != dbstat[1]):
 		        uploadLatest = True
 		        uploadList.append(dbstat)
     
-    if (downloadLatest is None) and (not uploadLatest) and (not generateAndUpload):
-	print_info("Thanks God, nothing to do...")
+    if (downloadLatest == []) and (not uploadLatest) and (not generateAndUpload):
+	print_info(green(" * ")+red("Online database does not need to be updated."))
     
     # now run the selected task!
-    if (downloadLatest is not None):
-	print "download the latest"
+    if (downloadLatest != []):
+	# match the proper URI
+	for uri in etpConst['activatoruploaduris']:
+	    if downloadLatest[0].startswith(uri):
+		downloadLatest[0] = uri
+	downloadDatabase(downloadLatest[0],etpDbLocalFile)
+	
     if (uploadLatest):
-	print "do the upload"
+	print_info(green(" * ")+red("Starting to update the needed mirrors ..."))
+	# FIXME: UploadList is wrong?!
+	_uploadList = []
+	for uri in etpConst['activatoruploaduris']:
+	    for list in uploadList:
+		if list[0].startswith(uri):
+		    list[0] = uri
+		    break
+	    _uploadList.append(list[0])
+	
+	uploadDatabase(_uploadList,etpDbLocalFile)
+	print_info(green(" * ")+red("All the mirrors have been updated."))
+	
     if (generateAndUpload):
-	print "generate and upload to all the mirrors"
 	print_info(green(" * ")+red("Compressing ETP Repository to ")+bold(etpDbLocalFile),back = True)
 	rc = compressTarBz2(etpDbLocalFile,etpConst['packagesdatabasedir'])
 	if (rc):
@@ -1023,15 +1068,139 @@ def syncRemoteDatabases():
 	    print_error(red(" *** Cannot continue"))
 	    sys.exit(120)
 	print_info(green(" * ")+bold(etpDbLocalFile)+red(" has been succesfully created"))
+	# create revision file
+	f = open(etpDbLocalFile+".revision","w")
+	f.write("1\n")
+	f.flush()
+	f.close()
+	# digesting
+	hexdigest = digestFile(etpDbLocalFile)
+	f = open(etpDbLocalFile+".md5","w")
+	filename = etpDbLocalFile.split("/")[len(etpDbLocalFile.split("/"))-1]
+	f.write(hexdigest+"  "+filename+"\n")
+	f.flush()
+	f.close()
+	print_info(green(" * ")+red("Starting to update all the mirrors ..."))
+	uploadDatabase(etpConst['activatoruploaduris'],etpDbLocalFile)
+	print_info(green(" * ")+red("All the mirrors have been updated, it seems."))
 
+
+def uploadDatabase(uris,dbfile):
+    for uri in uris:
+	lockDatabases(True,[uri])
+	downloadLockDatabases(True,[uri])
+	print_info(green(" * ")+red("Uploading database to ")+bold(extractFTPHostFromUri(uri))+red(" ..."))
+	print_info(green(" * ")+red("Connecting to ")+bold(extractFTPHostFromUri(uri))+red(" ..."), back = True)
+	ftp = activatorFTP(uri)
+	print_info(green(" * ")+red("Changing directory to ")+bold(etpConst['etpurirelativepath'])+red(" ..."), back = True)
+	ftp.setCWD(etpConst['etpurirelativepath'])
+	print_info(green(" * ")+red("Uploading file ")+bold(dbfile)+red(" ..."), back = True)
+	# uploading database file
+	rc = ftp.uploadFile(dbfile)
+	if (rc.startswith("226")):
+	    print_info(green(" * ")+red("Upload of ")+bold(dbfile)+red(" completed."))
+	else:
+	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+	print_info(green(" * ")+red("Uploading file ")+bold(dbfile+".revision")+red(" ..."), back = True)
+	# uploading revision file
+	rc = ftp.uploadFile(dbfile+".revision",True)
+	if (rc.startswith("226")):
+	    print_info(green(" * ")+red("Upload of ")+bold(dbfile+".revision")+red(" completed."))
+	else:
+	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+	# upload digest
+	print_info(green(" * ")+red("Uploading file ")+bold(dbfile+".md5")+red(" ..."), back = True)
+	rc = ftp.uploadFile(dbfile+".md5",True)
+	if (rc.startswith("226")):
+	    print_info(green(" * ")+red("Upload of ")+bold(dbfile+".md5")+red(" completed. Disconnecting."))
+	else:
+	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+	downloadLockDatabases(False,[uri])
+	lockDatabases(False,[uri])
+
+def downloadDatabase(uri,dbfile):
+    print_info(green(" * ")+red("Downloading database from ")+bold(extractFTPHostFromUri(uri))+red(" ..."))
+    print_info(green(" * ")+red("Connecting to ")+bold(extractFTPHostFromUri(uri))+red(" ..."), back = True)
+    ftp = activatorFTP(uri)
+    print_info(green(" * ")+red("Changing directory to ")+bold(etpConst['etpurirelativepath'])+red(" ..."), back = True)
+    ftp.setCWD(etpConst['etpurirelativepath'])
+    print_info(green(" * ")+red("Downloading file to ")+bold(dbfile)+red(" ..."), back = True)
+    # downloading database file
+    rc = ftp.downloadFile(dbfile.split("/")[len(dbfile.split("/"))-1],os.path.dirname(dbfile))
+    if (rc.startswith("226")):
+	print_info(green(" * ")+red("Download of ")+bold(dbfile)+red(" completed."))
+    else:
+	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+    print_info(green(" * ")+red("Downloading file to ")+bold(dbfile+".revision")+red(" ..."), back = True)
+    # downloading revision file
+    rc = ftp.downloadFile(dbfile.split("/")[len(dbfile.split("/"))-1]+".revision",os.path.dirname(dbfile),True)
+    if (rc.startswith("226")):
+	print_info(green(" * ")+red("Download of ")+bold(dbfile+".revision")+red(" completed."))
+    else:
+	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+    # downlading digest
+    print_info(green(" * ")+red("Downloading file to ")+bold(dbfile+".md5")+red(" ..."), back = True)
+    rc = ftp.downloadFile(dbfile.split("/")[len(dbfile.split("/"))-1]+".md5",os.path.dirname(dbfile),True)
+    if (rc.startswith("226")):
+	print_info(green(" * ")+red("Download of ")+bold(dbfile+".md5")+red(" completed. Disconnecting."))
+    else:
+	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+    # removing old tree
+    print_info(green(" * ")+red("Uncompressing downloaded database ..."),back = True)
+    os.system("rm -rf "+etpConst['packagesdatabasedir']+"/*")
+    rc = uncompressTarBz2(dbfile,"/")
+    if (rc):
+	print_error(red(" * Cannot uncompress "+dbfile))
+	print_error(red(" *** Cannot continue"))
+	sys.exit(120)
+    else:
+        print_info(green(" * ")+red("Downloaded database succesfully uncompressed."))
+
+
+# Reports in a list form the lock status of the mirrors
+# @ [ uri , True/False, True/False ] --> True = locked, False = unlocked
+# @ the second parameter is referred to upload locks, while the second to download ones
+def getMirrorsLock():
+    # parse etpConst['activatoruploaduris']
+    dbstatus = []
+    for uri in etpConst['activatoruploaduris']:
+	data = [ uri, False , False ]
+	ftp = activatorFTP(uri)
+	ftp.setCWD(etpConst['etpurirelativepath'])
+	if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
+	    # Upload is locked
+	    data[1] = True
+	if (ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
+	    # Upload is locked
+	    data[2] = True
+	ftp.closeFTPConnection()
+	dbstatus.append(data)
+    return dbstatus
 
 # tar.bz2 compress function...
-def compressTarBz2(storepath,pathtocompress,relative = True):
-    cmd = "tar cjf "+storepath+" "+pathtocompress+" "
-    if (relative):
-	cmd += "-C "+pathtocompress
+def compressTarBz2(storepath,pathtocompress):
+    cmd = "tar cjf "+storepath+" -C "+pathtocompress
     rc = os.system(cmd+" &> /dev/null")
     return rc
+
+# tar.bz2 uncompress function...
+def uncompressTarBz2(filepath, extractPath = None):
+    if extractPath is None:
+	extractPath = os.path.dirname(filepath)
+    cmd = "tar xjf "+filepath+" -C "+extractPath
+    rc = os.system(cmd+" &> /dev/null")
+    return rc
+
+# FIXME: improve support by reading a line at a time
+def digestFile(filepath):
+    import md5
+    df = open(filepath,"r")
+    content = df.readlines()
+    df.close()
+    digest = md5.new()
+    for line in content:
+	digest.update(line)
+    return digest.hexdigest()
 
 # hide password from full ftp URI
 def hideFTPpassword(uri):
@@ -1051,10 +1220,11 @@ def hideFTPpassword(uri):
     newuri = re.subn(ftppassword,"xxxxxxxx",uri)[0]
     return newuri
 
-def lockDatabases(lock = True):
-    etpConst['etpurirelativepath'] = translateArchFromUname(etpConst['etpurirelativepath'])
+def lockDatabases(lock = True, mirrorList = []):
     outstat = False
-    for uri in etpConst['activatoruploaduris']:
+    if (mirrorList == []):
+	mirrorList = etpConst['activatoruploaduris']
+    for uri in mirrorList:
 	if (lock):
 	    print_info(yellow(" * ")+red("Locking ")+bold(extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
 	else:
@@ -1094,7 +1264,52 @@ def lockDatabases(lock = True):
 	        print "\n"
 	        print_warning(red(" * ")+red("A problem occured while unlocking ")+bold(extractFTPHostFromUri(uri))+red(" mirror. Please have a look."))
 	ftp.closeFTPConnection()
+    return outstat
 
+def downloadLockDatabases(lock = True, mirrorList = []):
+    outstat = False
+    if (mirrorList == []):
+	mirrorList = etpConst['activatoruploaduris']
+    for uri in mirrorList:
+	if (lock):
+	    print_info(yellow(" * ")+red("Locking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
+	else:
+	    print_info(yellow(" * ")+red("Unlocking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
+	ftp = activatorFTP(uri)
+	# upload the lock file to database/%ARCH% directory
+	ftp.setCWD(etpConst['etpurirelativepath'])
+	# check if the lock is already there
+	if (lock):
+	    if (ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
+	        print_info(green(" * ")+red("Download mirror at ")+bold(extractFTPHostFromUri(uri))+red(" already locked."))
+	        ftp.closeFTPConnection()
+	        continue
+	else:
+	    if (not ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
+	        print_info(green(" * ")+red("Download mirror at ")+bold(extractFTPHostFromUri(uri))+red(" already unlocked."))
+	        ftp.closeFTPConnection()
+	        continue
+	if (lock):
+	    f = open(etpConst['packagestmpdir']+"/"+etpConst['etpdatabasedownloadlockfile'],"w")
+	    f.write("database locked\n")
+	    f.flush()
+	    f.close()
+	    rc = ftp.uploadFile(etpConst['packagestmpdir']+"/"+etpConst['etpdatabasedownloadlockfile'],ascii= True)
+	    if (rc.startswith("226")):
+	        print_info(green(" * ")+red("Succesfully locked ")+bold(extractFTPHostFromUri(uri))+red(" download mirror."))
+	    else:
+	        outstat = True
+	        print "\n"
+	        print_warning(red(" * ")+red("A problem occured while locking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror. Please have a look."))
+	else:
+	    rc = ftp.deleteFile(etpConst['etpdatabasedownloadlockfile'])
+	    if (rc):
+		print_info(green(" * ")+red("Succesfully unlocked ")+bold(extractFTPHostFromUri(uri))+red(" download mirror."))
+	    else:
+	        outstat = True
+	        print "\n"
+	        print_warning(red(" * ")+red("A problem occured while unlocking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror. Please have a look."))
+	ftp.closeFTPConnection()
     return outstat
 
 def packageSearch(keyword):

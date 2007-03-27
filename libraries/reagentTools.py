@@ -103,8 +103,8 @@ def generator(package):
 def enzyme():
 
     # do some magic trans...
-    etpConst['packagesstoredir'] = translateArchFromUname(etpConst['packagesstoredir'])
-    etpConst['packagessuploaddir'] = translateArchFromUname(etpConst['packagessuploaddir'])
+    #etpConst['packagesstoredir'] = translateArchFromUname(etpConst['packagesstoredir'])
+    #etpConst['packagessuploaddir'] = translateArchFromUname(etpConst['packagessuploaddir'])
 
     tbz2files = os.listdir(etpConst['packagesstoredir'])
     totalCounter = 0
@@ -182,7 +182,7 @@ def extractPkgData(package):
 
     print_info(yellow(" * ")+red("Getting package location path..."),back = True)
     # local path to the file
-    etpData['packagepath'] = translateArch(etpConst['packagesbindir'],etpData['chost'])+"/"+pkgname+"-"+pkgver+".tbz2"
+    etpData['packagepath'] = etpConst['packagesbindir']+"/"+pkgname+"-"+pkgver+".tbz2"
 
     print_info(yellow(" * ")+red("Getting package description..."),back = True)
     # Fill description
@@ -204,7 +204,7 @@ def extractPkgData(package):
 
     print_info(yellow(" * ")+red("Getting package download URL..."),back = True)
     # Fill download relative URI
-    etpData['download'] = translateArch(etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+".tbz2",etpData['chost'])
+    etpData['download'] = etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+".tbz2"
 
     print_info(yellow(" * ")+red("Getting package category..."),back = True)
     # Fill category
@@ -391,7 +391,7 @@ def allocateFile(etpData):
 
     # locate directory structure
     etpOutfileDir = etpConst['packagesdatabasedir']+"/"+etpData['category']+"/"+etpData['name']
-    etpOutfileDir = translateArch(etpOutfileDir,etpData['chost'])
+    #etpOutfileDir = translateArch(etpOutfileDir,etpData['chost'])
     etpOutfileName = etpData['name']+"-"+etpData['version']+"-etp"+ETP_REVISION_CONST+etpConst['extension']
     etpOutfilePath = etpOutfileDir+"/"+etpOutfileName
 

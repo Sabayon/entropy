@@ -37,7 +37,6 @@ APPNAME = "reagent"
 APPVERSION = "1.0"
 def print_help():
     entropyTools.print_info("Sabayon Linux "+APPNAME+" (C - 2007)")
-    entropyTools.print_info("Usage: "+APPNAME+" <tool> <valid path or .tbz2 file>")
     entropyTools.print_info("General Options:")
     entropyTools.print_info(" --help\t\tthis output")
     entropyTools.print_info(" --version\t\tprint version")

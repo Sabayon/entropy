@@ -32,12 +32,23 @@ import string
 
 def sync(options):
 
-    # translate %ARCH%
-    etpConst['packagessuploaddir'] = translateArchFromUname(etpConst['packagessuploaddir'])
-    etpConst['packagesdatabasedir'] = translateArchFromUname(etpConst['packagesdatabasedir'])
-    etpConst['packagesbindir'] = translateArchFromUname(etpConst['packagesbindir'])
-    etpConst['binaryurirelativepath'] = translateArchFromUname(etpConst['binaryurirelativepath'])
-    etpConst['etpurirelativepath'] = translateArchFromUname(etpConst['etpurirelativepath'])
+    # For each URI do the same thing
+    for uri in etpConst['activatoruploaduris']:
+	ftp = activatorFTP(uri)
+	print "Listing the content of: "+ftp.getFTPHost()
+	print "at port: "+str(ftp.getFTPPort())
+	print "in dir: "+ftp.getFTPDir()
+	#print ftp.getFileSize("index.htm")
+	list = ftp.getRoughList()
+	
+	for item in list:
+	    if item.find("index.htm") != -1:
+		# extact the size
+		print item
+	#print ftp.spawnFTPCommand("mdtm index.htm")
+	ftp.closeFTPConnection()
+
+    sys.exit(0)
 
     # sync the local repository with the remote ones
     syncRemoteDatabases()
@@ -64,18 +75,59 @@ def sync(options):
     print_info(green(" * ")+red("Entropy directory:\t")+bold(str(localtetpcounter))+red(" specification files available."))
 
 
-    sys.exit(0)
 
-    # For each URI do the same thing
-    for uri in etpConst['activatoruploaduris']:
-	ftp = activatorFTP(uri)
-	print "Listing the content of: "+ftp.getFTPHost()
-	print "at port: "+str(ftp.getFTPPort())
-	print "in dir: "+ftp.getFTPDir()
-	print ftp.listFTPdir()
-	print ftp.spawnFTPCommand("mdtm index.htm")
-	ftp.closeFTPConnection()
 
+def packages(options):
+
+    # FIXME: add support for --ask
+    # FIXME: complete this part
+    if (options[0] == "sync"):
+	print_info(green(" * ")+red("Starting ")+bold("binary")+yellow(" packages")+red(" syncronization across servers ..."))
+	for uri in etpConst['activatoruploaduris']:
+
+	    print_info(green(" * ")+yellow("Working on ")+bold(extractFTPHostFromUri(uri)+" mirror."))
+	    print_info(green(" * ")+yellow("Local Statistics"))
+	    print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagessuploaddir'])+red(" ..."), back = True)
+	    uploadCounter = 0
+	    toBeUploaded = [] # parse etpConst['packagessuploaddir']
+	    for tbz2 in os.listdir(etpConst['packagessuploaddir']):
+		if tbz2.endswith(".tbz2"):
+		    toBeUploaded.append(tbz2)
+		    uploadCounter += 1
+	    print_info(green(" * ")+red("Upload directory:\t\t")+bold(str(uploadCounter))+red(" files ready."))
+	    toBeDownloaded = [] # parse etpConst['packagesbindir']
+	    print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagesbindir'])+red(" ..."), back = True)
+	    packageCounter = 0
+	    for tbz2 in os.listdir(etpConst['packagesbindir']):
+		if tbz2.endswith(".tbz2"):
+		    toBeDownloaded.append(tbz2)
+		    packageCounter += 1
+	    print_info(green(" * ")+red("Packages directory:\t")+bold(str(packageCounter))+red(" files ready."))
+	    
+	    print_info(green(" * ")+yellow("Remote statistics"))
+	    ftp = activatorFTP(uri)
+	    ftp.setCWD(etpConst['binaryurirelativepath'])
+	    remotePackages = ftp.listFTPdir()
+	    remotePackagesInfo = ftp.getRoughList()
+	    ftp.closeFTPConnection()
+
+	    remoteCounter = 0
+	    for tbz2 in remotePackages:
+		if tbz2.endswith(".tbz2"):
+		    remoteCounter += 1
+	    print_info(green(" * ")+red("Remote packages:\t\t")+bold(str(remoteCounter))+red(" files stored."))
+	    
+	    print_info(green(" * ")+yellow("Calculating..."))
+	    # now it's time to compare what I have to upload
+	    for remotePackage in remotePackages:
+		pkgfound = True
+		for localPackage in toBeUploaded:
+		    if localPackage == remotePackage:
+			# it's already on the mirror, but... is its size correct??
+			remoteSize = ftp.getFileSize(remotePackage)
+	    
+	    
+	    
 
 def database(options):
 
@@ -89,7 +141,7 @@ def database(options):
 	    print_info(green(" * ")+green("Databases lock complete"))
 
     # unlock tool
-    if (options[0] == "unlock"):
+    elif (options[0] == "unlock"):
 	print_info(green(" * ")+green("Starting to unlock mirrors' databases..."))
 	rc = lockDatabases(lock = False)
 	if (rc):
@@ -97,3 +149,53 @@ def database(options):
 	else:
 	    print_info(green(" * ")+green("Databases unlock complete"))
 
+    # download lock tool
+    elif (options[0] == "download-lock"):
+	print_info(green(" * ")+green("Starting to lock download mirrors' databases..."))
+	rc = downloadLockDatabases(lock = True)
+	if (rc):
+	    print_info(green(" * ")+green("A problem occured on at least one mirror..."))
+	else:
+	    print_info(green(" * ")+green("Download mirrors lock complete"))
+
+    # download unlock tool
+    elif (options[0] == "download-unlock"):
+	print_info(green(" * ")+green("Starting to unlock download mirrors' databases..."))
+	rc = downloadLockDatabases(lock = False)
+	if (rc):
+	    print_info(green(" * ")+green("A problem occured on at least one mirror..."))
+	else:
+	    print_info(green(" * ")+green("Download mirrors unlock complete"))
+
+    # download unlock tool
+    elif (options[0] == "lock-status"):
+	print_info(yellow(" * ")+green("Mirrors status table:"))
+	dbstatus = getMirrorsLock()
+	for db in dbstatus:
+	    if (db[1]):
+	        db[1] = red("Locked")
+	    else:
+	        db[1] = green("Unlocked")
+	    if (db[2]):
+	        db[2] = red("Locked")
+	    else:
+	        db[2] = green("Unlocked")
+	    print_info(bold("\t"+extractFTPHostFromUri(db[0])+": ")+red("[")+yellow("DATABASE: ")+db[1]+red("] [")+yellow("DOWNLOAD: ")+db[2]+red("]"))
+
+    else:
+	print_error(green(" * ")+green("No valid tool specified."))
+	sys.exit(100)
+
+    '''
+    # add package tool
+    if (options[0] == "add-package"):
+	print_info(yellow(" * ")+green("Add package tool"))
+
+    # add package tool
+    if (options[0] == "remove-package"):
+	print_info(yellow(" * ")+green("Remove package tool"))
+
+    # tidy package tool
+    if (options[0] == "tidy-packages"):
+	print_info(yellow(" * ")+green("Tidy package tool"))
+    '''

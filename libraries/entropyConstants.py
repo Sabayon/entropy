@@ -69,7 +69,7 @@ ETP_DIR = "/var/lib/entropy"
 ETP_TMPDIR = "/tmp"
 ETP_RANDOM = str(random.random())[2:7]
 ETP_TMPFILE = "/.random-"+ETP_RANDOM+".tmp"
-ETP_REPODIR = "/repository"+"/"+ETP_ARCH_CONST
+ETP_REPODIR = "/packages"+"/"+ETP_ARCH_CONST
 ETP_PORTDIR = "/portage"
 ETP_DISTFILESDIR = "/distfiles"
 ETP_DBDIR = "/database"+"/"+ETP_ARCH_CONST
@@ -106,9 +106,10 @@ etpConst = {
     'extension': ".etp", # entropy files extension
     'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
     'etpurirelativepath': "database/"+ETP_ARCH_CONST+"/", # Relative remote path for the .etp repository.
-    'etpdatabasefile': "database.tar.bz2", # compressed file that contains the whole Entropy database directory tree
-    'etpdatabasefilehash': "database.tar.bz2.md5", # its checksum
+    'etpdatabasefile': "__database.tar.bz2", # compressed file that contains the whole Entropy database directory tree
+    					     # YOU MUST APPEND %ARCH% at the beginning
     'etpdatabaselockfile': "database.lock", # the remote database lock file
+    'etpdatabasedownloadlockfile': "download.lock", # the remote database download lock file
     'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
     'distcc-status': False, # used by Enzyme, if True distcc is enabled
     'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file

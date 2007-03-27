@@ -36,7 +36,6 @@ APPNAME = "activator"
 APPVERSION = "1.0"
 def print_help():
     entropyTools.print_info("Sabayon Linux "+APPNAME+" (C - 2007)")
-    entropyTools.print_info("Usage: "+APPNAME+" <tool> <atom(s)>")
     entropyTools.print_info("General Options:")
     entropyTools.print_info("  --help\t\tthis output")
     entropyTools.print_info("  --version\t\tprint version")
@@ -47,9 +46,14 @@ def print_help():
     entropyTools.print_info(" \t\t"+entropyTools.red("--download-packages")+"\t to download all the binary packages (will overwrite)")
     entropyTools.print_info(" \t\t"+entropyTools.red("--download-etp")+"\t\t to download all the Entropy tree (will overwrite)")
     entropyTools.print_info(" \t\t"+entropyTools.red("--show-stats")+"\t\t shows the list of validated package/etp-file couples")
-    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("database"))+entropyTools.yellow("\t to manage database status, packages and settings"))
-    entropyTools.print_info(" \t\t"+entropyTools.green("lock")+entropyTools.red("\t\t\t to lock the database(s) status"))
-    entropyTools.print_info(" \t\t"+entropyTools.green("unlock")+entropyTools.red("\t\t\t to unlock the database(s) status"))
+    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("packages"))+entropyTools.yellow("\t to manage binary packages"))
+    entropyTools.print_info(" \t\t"+entropyTools.green("sync")+entropyTools.red("\t\t\t to sync the binary packages across primary mirrors"))
+    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("database"))+entropyTools.yellow("\t to manage database status and settings"))
+    entropyTools.print_info(" \t\t"+entropyTools.green("lock")+entropyTools.red("\t\t\t to lock the database(s) status ["+entropyTools.yellow("DANGEROUS")+entropyTools.red("]")))
+    entropyTools.print_info(" \t\t"+entropyTools.green("unlock")+entropyTools.red("\t\t\t to unlock the database(s) status ["+entropyTools.yellow("DANGEROUS")+entropyTools.red("]")))
+    entropyTools.print_info(" \t\t"+entropyTools.green("download-lock")+entropyTools.red("\t\t to lock the download mirror status"))
+    entropyTools.print_info(" \t\t"+entropyTools.green("download-unlock")+entropyTools.red("\t\t to unlock the download mirror status"))
+    entropyTools.print_info(" \t\t"+entropyTools.green("lock-status")+entropyTools.red("\t\t to show the current locks status of the mirrors"))
 
 options = sys.argv[1:]
 
@@ -79,6 +83,7 @@ if (not entropyTools.isRoot()):
     sys.exit(2)
 
 # sync mirrors tool
+# will be removed
 if (options[0] == "sync"):
     activatorTools.sync(options[1:])
     sys.exit(0)
@@ -86,4 +91,9 @@ if (options[0] == "sync"):
 # database tool
 if (options[0] == "database"):
     activatorTools.database(options[1:])
+    sys.exit(0)
+
+# database tool
+if (options[0] == "packages"):
+    activatorTools.packages(options[1:])
     sys.exit(0)
