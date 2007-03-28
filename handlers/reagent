@@ -43,8 +43,10 @@ def print_help():
     entropyTools.print_info(" --nocolor\t\tdisable colorized output")
     entropyTools.print_info(entropyTools.blue("Tools available: "))
     entropyTools.print_info(" \t"+entropyTools.green("generator")+entropyTools.yellow("\t to create .etp file from a specified .tbz2 file"))
+    entropyTools.print_info(" \t\t"+entropyTools.red("--force-bump")+"\t\t force the revision bumping of the .etp files")
     entropyTools.print_info(" \t"+entropyTools.green("digest")+entropyTools.yellow("\t\t to digest a specified directory"))
     entropyTools.print_info(" \t"+entropyTools.green("enzyme")+entropyTools.yellow("\t\t to analyze enzyme store directory"))
+    entropyTools.print_info(" \t\t"+entropyTools.red("--force-bump")+"\t\t force the revision bumping of the .etp files")
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("cleanup"))+entropyTools.yellow("\t\t to clean temporary files"))
 
 options = sys.argv[1:]
@@ -75,15 +77,15 @@ if (not entropyTools.isRoot()):
 
 # digest tool (creates a digest on the specified directory)
 if (options[0] == "digest"):
-    reagentTools.createDigest(options[1])
+    reagentTools.createDigest(options[1:])
     sys.exit(0)
 
 elif (options[0] == "generator"):
-    reagentTools.generator(options[1])
+    reagentTools.generator(options[1:])
     sys.exit(0)
 
 elif (options[0] == "enzyme"):
-    reagentTools.enzyme()
+    reagentTools.enzyme(options[1:])
     sys.exit(0)
 
 # cleanup
