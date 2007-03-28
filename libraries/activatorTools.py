@@ -285,11 +285,8 @@ def packages(options):
 			localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+item[0])[6])
 			remoteSize = int(item[1])
 			if localSize == remoteSize:
-			    print_info(counterInfo+red(" Moving file ")+bold(item[0])+red(" to ")+bold(etpConst['packagesbindir'])+red(" ..."),back = True)
-			    os.system("mv "+etpConst['packagessuploaddir']+"/"+item[0]+" "+etpConst['packagesbindir']+"/")
+			    # skip that, we'll move at the end of the mirrors sync
 			    continue
-			
-		    
 		    print_info(counterInfo+red(" Downloading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."),back = True)
 		    ftp.downloadFile(item[0],etpConst['packagesbindir']+"/")
 		print_info(red(" * Download completed for ")+bold(extractFTPHostFromUri(uri)))
@@ -297,6 +294,9 @@ def packages(options):
 
 	    # Now I should do some tidy
 	    print "Now it should be time for some tidy...?"
+	
+	# now we can store the files in upload/%ARCH% in packages/%ARCH%
+	os.system("mv "+etpConst['packagessuploaddir']+"/* "+etpConst['packagesbindir']+"/")
 
 def database(options):
 

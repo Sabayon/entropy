@@ -46,6 +46,7 @@ etpData = {
     'download': "", # link to download the binary package
     'digest': "", # md5 hash of the .tbz2 package
     'sources': "", # link to the sources
+    'slot': "", # this is filled if the package is slotted
     'mirrorlinks': "", # =mirror://openoffice|link1|link2|link3
     'dependencies': "", # dependencies
     'rundependencies': "", # runtime dependencies
@@ -61,7 +62,7 @@ etpData = {
 ETP_ARCHS = ["x86", "amd64"] # maybe ppc someday
 ETP_API_MAJOR = "1"
 ETP_API_MINOR = "3"
-ETP_API_SUBLEVEL = "0"
+ETP_API_SUBLEVEL = "1"
 ETP_API = ETP_API_MAJOR+"."+ETP_API_MINOR+"."+ETP_API_SUBLEVEL
 ETP_ARCH_CONST = "%ARCH%"
 ETP_REVISION_CONST = "%ETPREV%"
@@ -295,6 +296,7 @@ dbLICENSE = "LICENSE"
 dbSRC_URI = "SRC_URI"
 dbUSE = "USE"
 dbIUSE = "IUSE"
+dbSLOT = "SLOT"
 dbDEPEND = "DEPEND"
 dbRDEPEND = "RDEPEND"
 dbPDEPEND = "PDEPEND"

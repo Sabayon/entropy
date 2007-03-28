@@ -102,10 +102,6 @@ def generator(package):
 # Enzyme tool called, we need to parse the Store directory and call generator()
 def enzyme():
 
-    # do some magic trans...
-    #etpConst['packagesstoredir'] = translateArchFromUname(etpConst['packagesstoredir'])
-    #etpConst['packagessuploaddir'] = translateArchFromUname(etpConst['packagessuploaddir'])
-
     tbz2files = os.listdir(etpConst['packagesstoredir'])
     totalCounter = 0
     # counting the number of files
@@ -201,6 +197,15 @@ def extractPkgData(package):
         f.close()
     except IOError:
         etpData['homepage'] = ""
+
+    print_info(yellow(" * ")+red("Getting package slot information..."),back = True)
+    # fill slot, if it is
+    try:
+        f = open(tbz2TmpDir+dbSLOT,"r")
+        etpData['slot'] = f.readline().strip()
+        f.close()
+    except IOError:
+        etpData['slot'] = ""
 
     print_info(yellow(" * ")+red("Getting package download URL..."),back = True)
     # Fill download relative URI
@@ -307,6 +312,7 @@ def extractPkgData(package):
 	etpData['keywords'] = ""
 
     print_info(yellow(" * ")+red("Getting package supported ARCHs..."),back = True)
+    
     # fill ARCHs
     pkgArchs = etpData['keywords']
     for i in ETP_ARCHS:

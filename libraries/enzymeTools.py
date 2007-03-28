@@ -173,11 +173,6 @@ def build(atoms):
 	    _atoms.append(i)
     atoms = _atoms
     
-    # translate dir variables
-    #etpConst['packagessuploaddir'] = translateArch(etpConst['packagessuploaddir'],getPortageEnv('CHOST'))
-    #etpConst['packagesstoredir'] = translateArch(etpConst['packagesstoredir'],getPortageEnv('CHOST'))
-    #etpConst['packagesbindir'] = translateArch(etpConst['packagesbindir'],getPortageEnv('CHOST'))
-    
     validAtoms = []
     for i in atoms:
         if (enzymeRequestVerbose): print_info(i+" is valid?: "+str(checkAtom(i)))
@@ -567,11 +562,6 @@ def world(options):
 	else:
 	    print red("  ***")+" Wrong parameters specified."
 	    sys.exit(201)
-
-    # translate dir variables
-    #etpConst['packagessuploaddir'] = translateArch(etpConst['packagessuploaddir'],getPortageEnv('CHOST'))
-    #etpConst['packagesstoredir'] = translateArch(etpConst['packagesstoredir'],getPortageEnv('CHOST'))
-    #etpConst['packagesbindir'] = translateArch(etpConst['packagesbindir'],getPortageEnv('CHOST'))
 
     if (enzymeRequestJustRepackageWorld):
 	# create the list of installed packages

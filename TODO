@@ -7,7 +7,6 @@ TODO list (for developers only):
           - add/remove packages from the database
           - tidy tool: cleanup policy to prune old binaries
           - database update and management between me and reagent
-          - create a .md5 for every in upload package
 - reagent tasks:
           - reagent should support a forced revision bumping
 
