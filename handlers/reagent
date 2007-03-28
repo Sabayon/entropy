@@ -30,6 +30,7 @@ import string
 sys.path.append('../libraries')
 import entropyTools
 import reagentTools
+import databaseTools
 from entropyConstants import *
 
 # CONSTANTS
@@ -47,6 +48,9 @@ def print_help():
     entropyTools.print_info(" \t"+entropyTools.green("digest")+entropyTools.yellow("\t\t to digest a specified directory"))
     entropyTools.print_info(" \t"+entropyTools.green("enzyme")+entropyTools.yellow("\t\t to analyze enzyme store directory"))
     entropyTools.print_info(" \t\t"+entropyTools.red("--force-bump")+"\t\t force the revision bumping of the .etp files")
+    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("database"))+entropyTools.yellow("\t Entropy database tool manager."))
+    entropyTools.print_info(" \t\t"+entropyTools.red("--initialize")+"\t\t (Re)Initialize the Entropy packages database")
+    entropyTools.print_info(" \t\t"+entropyTools.green("search")+"\t\t\t Search a package inside the Entropy packages database")
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("cleanup"))+entropyTools.yellow("\t\t to clean temporary files"))
 
 options = sys.argv[1:]
@@ -86,6 +90,11 @@ elif (options[0] == "generator"):
 
 elif (options[0] == "enzyme"):
     reagentTools.enzyme(options[1:])
+    sys.exit(0)
+
+# database tool
+elif (options[0] == "database"):
+    databaseTools.database(options[1:])
     sys.exit(0)
 
 # cleanup

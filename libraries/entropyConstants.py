@@ -55,15 +55,43 @@ etpData = {
     'etpapi': "", # blockers
 }
 
+# Entropy database SQL initialization Schema
+etpSQLInit = """
+CREATE TABLE etpData (
+    atom VARCHAR(75) PRIMARY KEY,
+    name VARCHAR(255),
+    version VARCHAR(25),
+    description VARCHAR(255),
+    category VARCHAR(25),
+    chost VARCHAR(100),
+    cflags VARCHAR(255),
+    cxxflags VARCHAR(255),
+    homepage VARCHAR(255),
+    useflags VARCHAR(350),
+    license VARCHAR(25),
+    keywords VARCHAR(50),
+    binkeywords VARCHAR(50),
+    packagepath VARCHAR(255),
+    download VARCHAR(100),
+    digest VARCHAR(32),
+    sources VARCHAR(500),
+    slot VARCHAR(10),
+    mirrorlinks VARCHAR(500),
+    dependencies VARCHAR(300),
+    rundependencies VARCHAR(450),
+    rundependenciesXT VARCHAR(450),
+    conflicts VARCHAR(300),
+    etpapi VARCHAR(3),
+    revision INTEGER(3)
+)
+"""
+
 # Entropy directories specifications
 # THIS IS THE KEY PART OF ENTROPY BINARY PACKAGES MANAGEMENT
 # DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU'RE DOING !!
 # the ARCHs that we support
 ETP_ARCHS = ["x86", "amd64"] # maybe ppc someday
-ETP_API_MAJOR = "1"
-ETP_API_MINOR = "3"
-ETP_API_SUBLEVEL = "1"
-ETP_API = ETP_API_MAJOR+"."+ETP_API_MINOR+"."+ETP_API_SUBLEVEL
+ETP_API = "1"
 ETP_ARCH_CONST = "%ARCH%"
 ETP_REVISION_CONST = "%ETPREV%"
 ETP_DIR = "/var/lib/entropy"
@@ -115,6 +143,7 @@ etpConst = {
     'distcc-status': False, # used by Enzyme, if True distcc is enabled
     'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file
     'etpdatabasefile': ETP_DIR+ETP_DBDIR+"/packages.db", # Entropy sqlite database file
+    'etpapi': ETP_API, # Entropy database API revision
 }
 
 # Create paths

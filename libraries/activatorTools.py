@@ -350,27 +350,6 @@ def database(options):
 	        db[2] = green("Unlocked")
 	    print_info(bold("\t"+extractFTPHostFromUri(db[0])+": ")+red("[")+yellow("DATABASE: ")+db[1]+red("] [")+yellow("DOWNLOAD: ")+db[2]+red("]"))
 
-    # search engine, yay!
-    elif (options[0] == "search"):
-	print_info(yellow(" * ")+green("Searching..."))
-	for atom in options[1:]:
-	    data = etpSearch(atom)
-	    print data
-
     else:
 	print_error(green(" * ")+green("No valid tool specified."))
 	sys.exit(100)
-
-    '''
-    # add package tool
-    if (options[0] == "add-package"):
-	print_info(yellow(" * ")+green("Add package tool"))
-
-    # add package tool
-    if (options[0] == "remove-package"):
-	print_info(yellow(" * ")+green("Remove package tool"))
-
-    # tidy package tool
-    if (options[0] == "tidy-packages"):
-	print_info(yellow(" * ")+green("Tidy package tool"))
-    '''

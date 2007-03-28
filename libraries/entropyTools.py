@@ -248,6 +248,10 @@ def getPackageSlot(atom):
     else:
 	return None
 
+def removePackageOperators(atom):
+    atom = dep_getcpv(atom)
+    return atom
+
 # you must provide a complete atom
 def collectBinaryFilesForInstalledPackage(atom):
     if atom.startswith("="):

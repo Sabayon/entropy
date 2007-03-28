@@ -24,6 +24,7 @@
 
 from entropyConstants import *
 from entropyTools import *
+import databaseTools
 import commands
 import re
 import sys
@@ -85,6 +86,17 @@ def generator(packages, enzymeRequestBump = False):
 
         print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
         etpData = extractPkgData(package)
+
+        # now try to import etpData inside the database
+        dbconn = databaseTools.etpDatabase()
+	#dbconn.searchPackages(etpData['name'])
+	#dbconn.retrievePackageInfo(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])
+	#dbconn.removePackage(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])
+	dbconn.searchPackages(etpData['name'])
+	
+	#dbconn.retrievePackageInfo(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])
+        #dbconn.addPackage(etpData)
+        dbconn.closeDB()
 
         # look where I can store the file and return its path
         etpOutput, etpOutfilePath = allocateFile(etpData,enzymeRequestBump)
