@@ -335,7 +335,7 @@ def database(options):
 	else:
 	    print_info(green(" * ")+green("Download mirrors unlock complete"))
 
-    # download unlock tool
+    # lock status tool
     elif (options[0] == "lock-status"):
 	print_info(yellow(" * ")+green("Mirrors status table:"))
 	dbstatus = getMirrorsLock()
@@ -349,6 +349,13 @@ def database(options):
 	    else:
 	        db[2] = green("Unlocked")
 	    print_info(bold("\t"+extractFTPHostFromUri(db[0])+": ")+red("[")+yellow("DATABASE: ")+db[1]+red("] [")+yellow("DOWNLOAD: ")+db[2]+red("]"))
+
+    # search engine, yay!
+    elif (options[0] == "search"):
+	print_info(yellow(" * ")+green("Searching..."))
+	for atom in options[1:]:
+	    data = etpSearch(atom)
+	    print data
 
     else:
 	print_error(green(" * ")+green("No valid tool specified."))

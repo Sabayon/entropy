@@ -1223,6 +1223,7 @@ def getMirrorsLock():
 	dbstatus.append(data)
     return dbstatus
 
+
 # tar.bz2 compress function...
 def compressTarBz2(storepath,pathtocompress):
     cmd = "tar cjf "+storepath+" -C "+pathtocompress

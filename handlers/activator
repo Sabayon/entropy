@@ -56,6 +56,7 @@ def print_help():
     entropyTools.print_info(" \t\t"+entropyTools.green("download-lock")+entropyTools.red("\t\t to lock the download mirror status"))
     entropyTools.print_info(" \t\t"+entropyTools.green("download-unlock")+entropyTools.red("\t\t to unlock the download mirror status"))
     entropyTools.print_info(" \t\t"+entropyTools.green("lock-status")+entropyTools.red("\t\t to show the current locks status of the mirrors"))
+    entropyTools.print_info(" \t\t"+entropyTools.green("search")+entropyTools.red("\t\t search packages inside the Entropy Database"))
 
 options = sys.argv[1:]
 

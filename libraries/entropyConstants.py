@@ -89,7 +89,7 @@ etpConst = {
     'packagesbindir': ETP_DIR+ETP_REPODIR, # etpConst['packagesbindir'] --> repository where the packages will be stored
     			# by the clients: to query if a package has been already downloaded
 			# by the servers or rsync mirrors: to store already uploaded packages to the main rsync server
-    'packagesdatabasedir': ETP_DIR+ETP_DBDIR, # etpConst['packagesdatabasedir'] --> repository where .etp files will be stored
+    'packagesdatabasedir': ETP_DIR+ETP_DBDIR, # FIXME: REMOVE THIS !
     'packagesstoredir': ETP_DIR+ETP_STOREDIR, # etpConst['packagesstoredir'] --> directory where .tbz2 files are stored waiting for being processed by reagent
     'packagessuploaddir': ETP_DIR+ETP_UPLOADDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
     'portagetreedir': ETP_DIR+ETP_PORTDIR, # directory where is stored our local portage tree
@@ -114,6 +114,7 @@ etpConst = {
     'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
     'distcc-status': False, # used by Enzyme, if True distcc is enabled
     'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file
+    'etpdatabasefile': ETP_DIR+ETP_DBDIR+"/packages.db", # Entropy sqlite database file
 }
 
 # Create paths
