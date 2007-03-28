@@ -780,6 +780,14 @@ class activatorFTP:
 	self.ftpconn.login(self.ftpuser,self.ftppassword)
 	# change to our dir
 	self.ftpconn.cwd(self.ftpdir)
+	self.currentdir = self.ftpdir
+
+
+    # this can be used in case of exceptions
+    def reconnectHost(self):
+	self.ftpconn = FTP(self.ftphost)
+	self.ftpconn.login(self.ftpuser,self.ftppassword)
+	self.ftpconn.cwd(self.currentdir)
 
     def getFTPHost(self):
 	return self.ftphost
@@ -795,6 +803,7 @@ class activatorFTP:
 
     def setCWD(self,dir):
 	self.ftpconn.cwd(dir)
+	self.currentdir = dir
 
     def getFileMtime(self,path):
 	rc = self.ftpconn.sendcmd("mdtm "+path)
@@ -846,31 +855,33 @@ class activatorFTP:
 	    return False
 
     def uploadFile(self,file,ascii = False):
-	if (not ascii):
+	for i in range(10): # ten tries
 	    f = open(file)
 	    file = file.split("/")[len(file.split("/"))-1]
-	    rc = self.ftpconn.storbinary("STOR "+file,f)
-	    return rc
-	else:
-	    f = open(file)
-	    file = file.split("/")[len(file.split("/"))-1]
-	    rc = self.ftpconn.storlines("STOR "+file,f)
-	    return rc
+	    try:
+		if (ascii):
+		    rc = self.ftpconn.storlines("STOR "+file,f)
+		else:
+		    rc = self.ftpconn.storbinary("STOR "+file,f)
+	        return rc
+	    except socket.error: # connection reset by peer
+		print_info(red("Upload issue, retrying..."))
+		self.reconnectHost() # reconnect
+		self.deleteFile(file)
+		f.close()
+		continue
 
     def downloadFile(self,filepath,downloaddir,ascii = False):
 	file = filepath.split("/")[len(filepath.split("/"))-1]
 	if (not ascii):
 	    f = open(downloaddir+"/"+file,"wb")
 	    rc = self.ftpconn.retrbinary('RETR '+file,f.write)
-	    f.flush()
-	    f.close()
-	    return rc
 	else:
 	    f = open(downloaddir+"/"+file,"w")
 	    rc = self.ftpconn.retrlines('RETR '+file,f.write)
-	    f.flush()
-	    f.close()
-	    return rc
+	f.flush()
+	f.close()
+	return rc
 
     # also used to move files
     # FIXME: beautify !
@@ -1605,7 +1616,7 @@ def print_error(msg):
     print red(">>")+" "+msg
 
 def print_info(msg, back = False):
-    writechar("\r                                                                                                \r")
+    writechar("\r                                                                                                           \r")
     if (back):
 	writechar("\r"+green(">>")+" "+msg)
 	return
