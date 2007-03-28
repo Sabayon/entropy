@@ -128,7 +128,6 @@ def packages(options):
 	    removalQueue = []
 	    
 	    # Fill uploadQueue and if something weird is found, add the packages to downloadQueue
-	    # --> UPLOAD
 	    for localPackage in toBeUploaded:
 		pkgfound = False
 		for remotePackage in remotePackages:

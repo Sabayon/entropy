@@ -60,47 +60,59 @@ def createDigest(path):
     f.flush()
     f.close()
 
-# Returns:
-# True = if it has generated a new .etp file
-# False = if not
-def generator(package):
+
+def generator(packages, enzymeRequestBump = False):
     
-    # check if the package provided is valid
-    validFile = False
-    if os.path.isfile(package) and package.endswith(".tbz2"):
-	validFile = True
-    if (not validFile):
-	print_error("no valid .tbz2 file specified")
-        sys.exit(4)
-
-    packagename = package.split("/")[len(package.split("/"))-1]
-
-    print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
-    etpData = extractPkgData(package)
-
-    # look where I can store the file and return its path
-    etpOutput, etpOutfilePath = allocateFile(etpData)
-
-    rc = False
-
-    if etpOutfilePath is not None:
-	print_info(green(" * ")+red("Writing Entropy Specifications file: ")+etpOutfilePath)
-	f = open(etpOutfilePath,"w")
-	f.writelines(etpOutput)
-	f.flush()
-	f.close()
-	# digesting directory
-	createDigest(etpOutfilePath)
-	rc = True
-    else:
-	print_info(green(" * ")+red("Not generating a new Entropy Specifications file, not needed for ")+bold(packagename))
-    # clean garbage
-    os.system("rm -rf "+etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version'])
+    _packages = []
+    # filter options
+    for opt in packages:
+	if (opt == "--force-bump"):
+	    enzymeRequestBump = True
+	else:
+	    _packages.append(opt)
+    packages = _packages
     
-    return rc
+    for package in packages:
+        # check if the package provided is valid
+        validFile = False
+        if os.path.isfile(package) and package.endswith(".tbz2"):
+	    validFile = True
+        if (not validFile):
+	    print_error("no valid .tbz2 file specified")
+            sys.exit(4)
+
+        packagename = package.split("/")[len(package.split("/"))-1]
+
+        print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
+        etpData = extractPkgData(package)
+
+        # look where I can store the file and return its path
+        etpOutput, etpOutfilePath = allocateFile(etpData,enzymeRequestBump)
+
+        rc = False
+
+        if etpOutfilePath is not None:
+	    print_info(green(" * ")+red("Writing Entropy Specifications file: ")+etpOutfilePath)
+	    f = open(etpOutfilePath,"w")
+	    f.writelines(etpOutput)
+	    f.flush()
+	    f.close()
+	    # digesting directory
+	    createDigest(etpOutfilePath)
+	    rc = True
+        else:
+	    print_info(green(" * ")+red("Not generating a new Entropy Specifications file, not needed for ")+bold(packagename))
+        # clean garbage
+        os.system("rm -rf "+etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version'])
 
 # Enzyme tool called, we need to parse the Store directory and call generator()
-def enzyme():
+def enzyme(options):
+
+    enzymeRequestBump = False
+    _atoms = []
+    for i in atoms:
+        if ( i == "--force-bump" ):
+	    enzymeRequestBump = True
 
     tbz2files = os.listdir(etpConst['packagesstoredir'])
     totalCounter = 0
@@ -121,7 +133,7 @@ def enzyme():
 	tbz2name = tbz2.split("/")[len(tbz2.split("/"))-1]
 	print_info(" ("+str(counter)+"/"+str(totalCounter)+") Processing "+tbz2name)
 	tbz2path = etpConst['packagesstoredir']+"/"+tbz2
-	rc = generator(tbz2path)
+	rc = generator([tbz2path], enzymeRequestBump)
 	if (rc):
 	    etpCreated += 1
 	    os.system("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/ -f")
@@ -377,7 +389,7 @@ def extractPkgData(package):
 
 # This function generates the right path for putting the .etp file
 # and take count of already available ones bumping version only if needed
-def allocateFile(etpData):
+def allocateFile(etpData, enzymeRequestBump = False):
 
     # this will be the first thing to return
     etpOutput = []
@@ -435,7 +447,7 @@ def allocateFile(etpData):
 		md5A.update(cntA)
 		md5B.update(cntB)
 		
-		if (md5A.digest() == md5B.digest()):
+		if (md5A.digest() == md5B.digest()) and (not enzymeRequestBump):
 		    etpOutfilePath = None
 		else:
 		    # add 1 to: packagename-1.2.3-r1-etpX.etp
