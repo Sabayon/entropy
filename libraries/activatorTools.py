@@ -260,8 +260,12 @@ def packages(options):
 	    if (detailedUploadQueue != []):
 	        ftp = activatorFTP(uri)
 	        ftp.setCWD(etpConst['binaryurirelativepath'])
+		uploadCounter = str(len(detailedUploadQueue))
+		currentCounter = 0
 		for item in detailedUploadQueue:
-		    print_info(red(" * Uploading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] to ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."),back = True)
+		    currentCounter += 1
+		    counterInfo = bold(" (")+blue(str(currentCounter))+"/"+red(uploadCounter)+bold(")")
+		    print_info(counterInfo+red(" Uploading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] to ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."),back = True)
 		    ftp.uploadFile(etpConst['packagessuploaddir']+"/"+item[0])
 		    # now move the file into etpConst['packagesbindir']
 		    os.system("mv "+etpConst['packagessuploaddir']+"/"+item[0]+" "+etpConst['packagesbindir']+"/")
@@ -272,16 +276,21 @@ def packages(options):
 	    if (detailedDownloadQueue != []):
 	        ftp = activatorFTP(uri)
 	        ftp.setCWD(etpConst['binaryurirelativepath'])
+		downloadCounter = str(len(detailedDownloadQueue))
+		currentCounter = 0
 		for item in detailedDownloadQueue:
+		    currentCounter += 1
+		    counterInfo = bold(" (")+blue(str(currentCounter))+"/"+red(downloadCounter)+bold(")")
 		    if os.path.isfile(etpConst['packagessuploaddir']+"/"+item[0]):
 			localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+item[0])[6])
 			remoteSize = int(item[1])
 			if localSize == remoteSize:
-			    print_info(red(" * Moving file ")+bold(item[0])+red(" to ")+bold(etpConst['packagesbindir'])+red(" ..."),back = True)
+			    print_info(counterInfo+red(" Moving file ")+bold(item[0])+red(" to ")+bold(etpConst['packagesbindir'])+red(" ..."),back = True)
 			    os.system("mv "+etpConst['packagessuploaddir']+"/"+item[0]+" "+etpConst['packagesbindir']+"/")
 			    continue
 			
-		    print_info(red(" * Downloading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."),back = True)
+		    
+		    print_info(counterInfo+red(" Downloading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."),back = True)
 		    ftp.downloadFile(item[0],etpConst['packagesbindir']+"/")
 		print_info(red(" * Download completed for ")+bold(extractFTPHostFromUri(uri)))
 		ftp.closeFTPConnection()

@@ -857,17 +857,20 @@ class activatorFTP:
     def uploadFile(self,file,ascii = False):
 	for i in range(10): # ten tries
 	    f = open(file)
-	    file = file.split("/")[len(file.split("/"))-1]
+	    filename = file.split("/")[len(file.split("/"))-1]
 	    try:
 		if (ascii):
-		    rc = self.ftpconn.storlines("STOR "+file,f)
+		    rc = self.ftpconn.storlines("STOR "+filename+".tmp",f)
 		else:
-		    rc = self.ftpconn.storbinary("STOR "+file,f)
+		    rc = self.ftpconn.storbinary("STOR "+filename+".tmp",f)
+		# now we can rename the file with its original name
+		self.renameFile(filename+".tmp",filename)
 	        return rc
 	    except socket.error: # connection reset by peer
 		print_info(red("Upload issue, retrying..."))
 		self.reconnectHost() # reconnect
-		self.deleteFile(file)
+		self.deleteFile(filename)
+		self.deleteFile(filename+".tmp")
 		f.close()
 		continue
 

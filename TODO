@@ -9,7 +9,6 @@ TODO list (for developers only):
           - sync tool removal
           - database update and management between me and reagent
           - create a .md5 for every in upload package
-          - add a counter to the upload command
 - reagent tasks:
           - reagent should support a forced revision bumping
 
