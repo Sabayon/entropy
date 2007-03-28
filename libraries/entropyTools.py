@@ -359,7 +359,19 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
 	    os.remove(outfile)
 	except:
 	    spawnCommand("rm -rf "+outfile)
-    
+
+    # Get specified USE flags
+    try:
+	useflags = " USE='"+os.environ['USE']+"' "
+    except:
+	useflags = " "
+
+    # Get specified MAKEOPTS
+    try:
+	makeopts = " MAKEOPTS='"+os.environ['MAKEOPTS']+"' "
+    except:
+	makeopts = " "
+
     # elog configuration
     elogopts = dbPORTAGE_ELOG_OPTS+" "
     # clean elog shit
@@ -377,7 +389,7 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
 	distccjobs = str(len(getDistCCHosts())+3)
 	distccopts += 'MAKEOPTS="-j'+distccjobs+'" '
 	#distccopts += 'MAKEOPTS="-j4" '
-    rc = spawnCommand(distccopts+elogopts+cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
+    rc = spawnCommand(distccopts+useflags+makeopts+elogopts+cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
     return rc, outfile
 
 def parseElogFile(atom):
