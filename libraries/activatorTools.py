@@ -98,7 +98,7 @@ def packages(options):
 	    print_info(green(" * ")+red("Packages directory:\t")+bold(str(packageCounter))+red(" files ready."))
 	    
 	    print_info(green(" * ")+yellow("Fetching remote statistics..."), back = True)
-	    ftp = activatorFTP(uri)
+	    ftp = databaseTools.handlerFTP(uri)
 	    ftp.setCWD(etpConst['binaryurirelativepath'])
 	    remotePackages = ftp.listFTPdir()
 	    remotePackagesInfo = ftp.getRoughList()
@@ -246,7 +246,7 @@ def packages(options):
 
 	    # upload queue
 	    if (detailedUploadQueue != []):
-	        ftp = activatorFTP(uri)
+	        ftp = databaseTools.handlerFTP(uri)
 	        ftp.setCWD(etpConst['binaryurirelativepath'])
 		uploadCounter = str(len(detailedUploadQueue))
 		currentCounter = 0
@@ -260,7 +260,7 @@ def packages(options):
 
 	    # download queue
 	    if (detailedDownloadQueue != []):
-	        ftp = activatorFTP(uri)
+	        ftp = databaseTools.handlerFTP(uri)
 	        ftp.setCWD(etpConst['binaryurirelativepath'])
 		downloadCounter = str(len(detailedDownloadQueue))
 		currentCounter = 0

@@ -176,6 +176,7 @@ if not os.path.isdir(ETP_DIR):
         print "you need to run this as root at least once."
         sys.exit(100)
 
+# FIXME: IS THIS REALLY USED BY ANYTHING ????
 etpSources = {
     'packagesuri': "", # URIs where are stored binary packages
     'databaseuri': "", # URIs where are stored entropy files

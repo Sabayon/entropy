@@ -26,7 +26,6 @@
 
 from entropyConstants import *
 from entropyTools import *
-import databaseTools
 import commands
 import re
 import sys
@@ -241,6 +240,7 @@ def extractPkgData(package):
 	        etpData['sources'] += "="+atom[:len(atom)-1]+"|"
 	    elif (not atom.startswith("(")) and (not atom.startswith(")")):
 		etpData['sources'] += atom+" "
+	etpData['sources'] = removeSpaceAtTheEnd(etpData['sources'])
     except IOError:
 	etpData['sources'] = ""
 
