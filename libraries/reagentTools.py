@@ -90,7 +90,7 @@ def enzyme(options):
 	tbz2name = tbz2.split("/")[len(tbz2.split("/"))-1]
 	print_info(" ("+str(counter)+"/"+str(totalCounter)+") Processing "+tbz2name)
 	tbz2path = etpConst['packagesstoredir']+"/"+tbz2
-	rc = generator([tbz2path], enzymeRequestBump)
+	rc = generator(tbz2path, enzymeRequestBump)
 	if (rc):
 	    etpCreated += 1
 	    os.system("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/ -f")
