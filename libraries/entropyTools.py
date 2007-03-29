@@ -49,6 +49,8 @@ import sys
 import random
 import commands
 
+# EXIT STATUSES: 100-199
+
 def getArchFromChost(chost):
 	# when we'll add new archs, we'll have to add a testcase here
 	if chost.startswith("x86_64"):
@@ -154,7 +156,7 @@ def calculateFullAtomsDependencies(atoms, deep = False, extraopts = ""):
         return deplist, blocklist
     else:
 	rc = os.system(cmd)
-	sys.exit(1)
+	sys.exit(100)
 
 def calculateAtomUSEFlags(atom):
     try:
@@ -1642,7 +1644,7 @@ def askquestion(prompt):
 		    print "I cannot understand '%s'" % response,
     except (EOFError, KeyboardInterrupt):
 	print "Interrupted."
-	sys.exit(1)
+	sys.exit(100)
 
 def print_error(msg):
     print red(">>")+" "+msg

@@ -31,7 +31,7 @@ import commands
 import string
 
 
-# Stolen from Porthole 0.5.0 - thanks for your help :-)
+# EXIT STATUSES: 200-299
 
 def getSyncTime():
     """gets and returns the timestamp info saved during
@@ -72,7 +72,7 @@ def sync(options):
     rsync = commands.getoutput("which rsync")
     if (not rsync.startswith("/")):
         print_error(red(bold("net-misc/rsync is not installed. Please install.")))
-	sys.exit(100)
+	sys.exit(200)
 
     for i in myopts:
         if ( i == "--verbose" ) or ( i == "-v" ):
@@ -89,7 +89,7 @@ def sync(options):
 	rc = spawnCommand(vdbPORTDIR+"="+etpConst['portagetreedir']+" "+cdbEMERGE+" --sync ", redirect = syncMiscRedirect) # redirect = "/dev/null"
 	if (rc != 0):
 	    print_error(red("an error occoured while syncing the Portage tree. Are you sure that your Internet connection works?"))
-	    sys.exit(101)
+	    sys.exit(201)
 	if (not enzymeNoOverlaySync):
 	    # syncing overlays
 	    rc = overlay(['overlay','sync'])
@@ -128,7 +128,7 @@ def sync(options):
 	rc = spawnCommand("rsync --recursive --links --safe-links --perms --times --force --whole-file --delete --delete-after --exclude=/distfiles --exclude=/packages "+etpConst['portagetreedir']+" "+officialPortageTreeDir, redirect = syncMiscRedirect)
 	if (rc != 0):
 	    print_error(red("an error occoured while syncing back the official Portage Tree."))
-	    sys.exit(101)
+	    sys.exit(201)
 
 
 def build(atoms):
@@ -186,7 +186,7 @@ def build(atoms):
 
     if validAtoms == []:
         print_error(red(bold("no valid package names specified.")))
-	sys.exit(102)
+	sys.exit(202)
 
     # resolve atom name with the best package available
     _validAtoms = []
@@ -251,7 +251,7 @@ def build(atoms):
 	        print_warning(red("      *")+bold(" [CONFL] ")+i)
 	    if (not enzymeRequestIgnoreConflicts):
 	        print_error(red(" ***")+" Sorry, I can't continue. To force this, add --ignore-conflicts at your own risk.")
-	        sys.exit(1)
+	        sys.exit(101)
 	    else:
 	        import time
 	        print_warning((" ***")+" You are using --ignore-conflicts at your own risk.")
@@ -572,7 +572,7 @@ def world(options):
 	    print_info(green(" * ")+red("Starting to build binaries..."))
 	else:
 	    print_error(red(" * ")+red("No detected packages??? Are you serious?"))
-	    sys.exit(301)
+	    sys.exit(231)
 	
 	localcount = 0
 	for pkg in installedPackages:
@@ -583,7 +583,7 @@ def world(options):
 	    if (rc is None):
 		print_warning(red(" * ")+yellow(" quickpkg problem for ")+red(pkg))
 		# FIXME: remove sys.exit then...
-		sys.exit(302)
+		sys.exit(232)
 	writechar("\n")
 	print_info(green(" * ")+red("All packages have been generates successfully"))
         return 0
@@ -598,7 +598,7 @@ def world(options):
 	if blocklist != []:
 	    print blocklist
 	    print "error there is something that is blocking all this shit"
-	    sys.exit(303)
+	    sys.exit(233)
 	
 	if (enzymeRequestSkipfirst):
 	    deplist = deplist[1:]
@@ -772,7 +772,7 @@ def uninstall(options):
 
     if validAtoms == []:
         print_error(red(bold("no valid package names specified.")))
-	sys.exit(102)
+	sys.exit(232)
 
     if (not enzymeRequestPrune):
 	uninstallText += bold("unmerge ")

@@ -21,6 +21,7 @@
 '''
 
 # Never do "import portage" here, please use entropyTools binding
+# EXIT STATUSES: 300-399
 
 from entropyConstants import *
 from entropyTools import *
@@ -33,15 +34,15 @@ import sys
 
 def database(options):
     if len(options) == 0:
-	print "not enough options"
-	sys.exit(1)
+	print_error(yellow(" * ")+red("Not enough parameters"))
+	sys.exit(301)
 
     if (options[0] == "--initialize"):
 	# initialize the database
 	print_info(green(" * ")+red("Initializing Entropy database..."), back = True)
         # database file: etpConst['etpdatabasefile']
         if os.path.isfile(etpConst['etpdatabasefile']):
-	    print_info(red(" * ")+bold("WARNING")+red(": database file already exists."))
+	    print_info(red(" * ")+bold("WARNING")+red(": database file already exists. Overwriting."))
 	    rc = askquestion("\n     Do you want to continue ?")
 	    if rc == "No":
 	        sys.exit(0)
@@ -54,8 +55,63 @@ def database(options):
 	print_info(green(" * ")+red("Entropy database initialized."))
 
     elif (options[0] == "search"):
+	mykeywords = options[1:]
+	if (len(mykeywords) == 0):
+	    print_error(yellow(" * ")+red("Not enough parameters"))
+	    sys.exit(302)
 	# search tool
-	print "search"
+	print_info(green(" * ")+red("Searching inside the Entropy database..."))
+	dbconn = etpDatabase()
+	for mykeyword in mykeywords:
+	    results = dbconn.searchPackages(mykeyword)
+	    for result in results:
+		print 
+		print_info(green(" * ")+bold(result[0]))   # package atom
+		print_info(red("\t Name: ")+blue(result[1]))
+		print_info(red("\t Installed version: ")+blue(result[2]))
+		if (result[3]):
+		    print_info(red("\t Description: ")+result[3])
+		print_info(red("\t CHOST: ")+blue(result[5]))
+		print_info(red("\t CFLAGS: ")+darkred(result[6]))
+		print_info(red("\t CXXFLAGS: ")+darkred(result[7]))
+		if (result[8]):
+		    print_info(red("\t Website: ")+result[8])
+		print_info(red("\t USE Flags: ")+blue(result[9]))
+		print_info(red("\t License: ")+bold(result[10]))
+		print_info(red("\t Source keywords: ")+darkblue(result[11]))
+		print_info(red("\t Binary keywords: ")+green(result[12]))
+		print_info(red("\t Package path: ")+result[13])
+		print_info(red("\t Download relative URL: ")+result[14])
+		print_info(red("\t Package Checksum: ")+green(result[15]))
+		if (result[16]):
+		    print_info(red("\t Sources"))
+		    sources = result[16].split()
+		    for source in sources:
+			print_info(darkred("\t    # Source package: ")+yellow(source))
+		if (result[17]):
+		    print_info(red("\t Slot: ")+yellow(result[17]))
+		#print_info(red("\t Blah: ")+result[18]) # I don't need to print mirrorlinks
+		if (result[19]):
+		    deps = result[19].split()
+		    print_info(red("\t Dependencies"))
+		    for dep in deps:
+			print_info(darkred("\t    # Depends on: ")+dep)
+		#print_info(red("\t Blah: ")+result[20]) --> it's a dup of [21]
+		if (result[21]):
+		    rundeps = result[21].split()
+		    print_info(red("\t Built with runtime dependencies"))
+		    for rundep in rundeps:
+			print_info(darkred("\t    # Dependency: ")+rundep)
+		if (result[22]):
+		    print_info(red("\t Conflicts with"))
+		    conflicts = result[22].split()
+		    for conflict in conflicts:
+			print_info(darkred("\t    # Conflict: ")+conflict)
+		print_info(red("\t Entry API: ")+green(result[23]))
+		print_info(red("\t Entry revision: ")+str(result[24]))
+		#print result
+	print
+	dbconn.closeDB()
 
 
 ############

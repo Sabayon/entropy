@@ -202,7 +202,7 @@ def extractPkgData(package):
 
     print_info(yellow(" * ")+red("Getting package location path..."),back = True)
     # local path to the file
-    etpData['packagepath'] = etpConst['packagesbindir']+"/"+pkgname+"-"+pkgver+".tbz2"
+    etpData['packagepath'] = etpConst['binaryurirelativepath']+"/"+pkgname+"-"+pkgver+".tbz2"
 
     print_info(yellow(" * ")+red("Getting package description..."),back = True)
     # Fill description

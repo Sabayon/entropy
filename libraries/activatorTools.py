@@ -21,6 +21,7 @@
 '''
 
 # Never do "import portage" here, please use entropyTools binding
+# EXIT STATUSES: 400-499
 
 from entropyConstants import *
 from entropyTools import *
@@ -352,4 +353,4 @@ def database(options):
 
     else:
 	print_error(green(" * ")+green("No valid tool specified."))
-	sys.exit(100)
+	sys.exit(400)
