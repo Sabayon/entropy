@@ -43,8 +43,6 @@ def print_help():
     entropyTools.print_info(" --version\t\tprint version")
     entropyTools.print_info(" --nocolor\t\tdisable colorized output")
     entropyTools.print_info(entropyTools.blue("Tools available: "))
-    entropyTools.print_info(" \t"+entropyTools.green("generator")+entropyTools.yellow("\t to add the package to the database, revision bump if needed"))
-    entropyTools.print_info(" \t\t"+entropyTools.red("--force-bump")+"\t\t to force the revision bumping of the package entry")
     entropyTools.print_info(" \t"+entropyTools.green("enzyme")+entropyTools.yellow("\t\t to analyze enzyme store directory"))
     entropyTools.print_info(" \t\t"+entropyTools.red("--force-bump")+"\t\t to force the revision bumping of the package entries")
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("database"))+entropyTools.yellow("\t Entropy database tool manager."))

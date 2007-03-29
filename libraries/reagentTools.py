@@ -22,6 +22,8 @@
 
 # Never do "import portage" here, please use entropyTools binding
 
+# EXIT STATUSES: 500-599
+
 from entropyConstants import *
 from entropyTools import *
 import databaseTools
@@ -29,42 +31,35 @@ import commands
 import re
 import sys
 
-def generator(packages, enzymeRequestBump = False):
-    
-    _packages = []
-    # filter options
-    for opt in packages:
-	if (opt == "--force-bump"):
-	    enzymeRequestBump = True
-	else:
-	    _packages.append(opt)
-    packages = _packages
-    
-    for package in packages:
-        # check if the package provided is valid
-        validFile = False
-        if os.path.isfile(package) and package.endswith(".tbz2"):
-	    validFile = True
-        if (not validFile):
-	    print_error("no valid .tbz2 file specified")
-            sys.exit(4)
+def generator(package, enzymeRequestBump = False):
 
-        packagename = package.split("/")[len(package.split("/"))-1]
+    # check if the package provided is valid
+    validFile = False
+    if os.path.isfile(package) and package.endswith(".tbz2"):
+	validFile = True
+    if (not validFile):
+	print_error("no valid .tbz2 file specified")
+        sys.exit(501)
 
-        print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
-        etpData = extractPkgData(package)
+    packagename = package.split("/")[len(package.split("/"))-1]
 
-        # now import etpData inside the database
-        dbconn = databaseTools.etpDatabase()
-	updated, revision = dbconn.handlePackage(etpData,enzymeRequestBump)
-        dbconn.closeDB()
-	
-	if (updated) and (revision != 0):
-	    print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry has been updated. Revision: ")+bold(str(revision)))
-	elif (updated) and (revision == 0):
-	    print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry newly created."))
-	else:
-	    print_info(green(" * ")+red("Package ")+bold(packagename)+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
+    print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
+    etpData = extractPkgData(package)
+
+    # now import etpData inside the database
+    dbconn = databaseTools.etpDatabase()
+    updated, revision = dbconn.handlePackage(etpData,enzymeRequestBump)
+    dbconn.closeDB()
+
+    if (updated) and (revision != 0):
+	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry has been updated. Revision: ")+bold(str(revision)))
+	return True
+    elif (updated) and (revision == 0):
+	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry newly created."))
+	return True
+    else:
+	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
+	return False
 
 
 # This tool is used by Entropy after enzyme, it simply parses the content of etpConst['packagesstoredir']
