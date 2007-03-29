@@ -71,8 +71,8 @@ def generator(packages, enzymeRequestBump = False):
 def enzyme(options):
 
     enzymeRequestBump = False
-    _atoms = []
-    for i in atoms:
+    #_atoms = []
+    for i in options:
         if ( i == "--force-bump" ):
 	    enzymeRequestBump = True
 
