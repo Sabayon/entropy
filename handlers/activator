@@ -86,16 +86,16 @@ if (not entropyTools.isRoot()):
 
 # sync mirrors tool
 # will be removed
-if (options[0] == "sync"):
+elif (options[0] == "sync"):
     activatorTools.sync(options[1:])
     sys.exit(0)
 
 # database tool
-if (options[0] == "database"):
+elif (options[0] == "database"):
     activatorTools.database(options[1:])
     sys.exit(0)
 
 # database tool
-if (options[0] == "packages"):
+elif (options[0] == "packages"):
     activatorTools.packages(options[1:])
     sys.exit(0)

@@ -993,7 +993,7 @@ def syncRemoteDatabases():
 
     # check if the local DB exists
     etpDbLocalPath = etpConst['etpurirelativepath']
-    etpDbLocalFile = etpConst['packagesdatabasedir']
+    etpDbLocalFile = etpConst['etpdatabasedir']
     if etpDbLocalFile.endswith("/"):
 	etpDbLocalFile = etpDbLocalFile[:len(etpDbLocalFile)-1]
     etpDbLocalFile += etpConst['etpdatabasefile']
@@ -1114,7 +1114,7 @@ def syncRemoteDatabases():
 	
     if (generateAndUpload):
 	print_info(green(" * ")+red("Compressing ETP Repository to ")+bold(etpDbLocalFile),back = True)
-	rc = compressTarBz2(etpDbLocalFile,etpConst['packagesdatabasedir'])
+	rc = compressTarBz2(etpDbLocalFile,etpConst['etpdatabasedir'])
 	if (rc):
 	    print_error(red(" * Cannot compress "+etpDbLocalFile))
 	    print_error(red(" *** Cannot continue"))
@@ -1199,7 +1199,7 @@ def downloadDatabase(uri,dbfile):
 	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
     # removing old tree
     print_info(green(" * ")+red("Uncompressing downloaded database ..."),back = True)
-    os.system("rm -rf "+etpConst['packagesdatabasedir']+"/*")
+    os.system("rm -rf "+etpConst['etpdatabasedir']+"/*")
     rc = uncompressTarBz2(dbfile,"/")
     if (rc):
 	print_error(red(" * Cannot uncompress "+dbfile))

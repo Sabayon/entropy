@@ -29,39 +29,6 @@ import commands
 import re
 import sys
 
-# Create the manifest file inside the directory provided by
-# 'path' and hash all the *.etpConst['extension'] files
-def createDigest(path):
-    if path.endswith(etpConst['extension']):
-        # remove file name and keep the rest of the path
-	_path = path.split("/")[:len(path.split("/"))-1]
-	path = ""
-	for i in _path:
-            if (i):
-	        path += "/"+i
-    if (not os.path.isdir(path)):
-	print_error(path+" does not exist")
-        sys.exit(102)
-    digestContent = os.listdir(path)
-    # only .etp files
-    _digestContent = digestContent
-    digestContent = []
-    for i in _digestContent:
-	if i.endswith(etpConst['extension']):
-            digestContent.append(i)
-    if (not digestContent[0].endswith(etpConst['extension'])):
-	print_error(path+" does not contain "+etpConst['extension']+" files")
-        sys.exit(103)
-    print_info(green(" * ")+red("Digesting files in ")+path)
-    digestOut = []
-    for i in digestContent:
-        digestOut.append("MD5 "+md5sum(path+"/"+i)+" "+i+"\n")
-    f = open(path+"/"+etpConst['digestfile'],"w")
-    f.writelines(digestOut)
-    f.flush()
-    f.close()
-
-
 def generator(packages, enzymeRequestBump = False):
     
     _packages = []
@@ -87,37 +54,20 @@ def generator(packages, enzymeRequestBump = False):
         print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
         etpData = extractPkgData(package)
 
-        # now try to import etpData inside the database
+        # now import etpData inside the database
         dbconn = databaseTools.etpDatabase()
-	#dbconn.searchPackages(etpData['name'])
-	#dbconn.retrievePackageInfo(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])
-	#dbconn.removePackage(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])
-	dbconn.searchPackages(etpData['name'])
-	
-	#dbconn.retrievePackageInfo(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])
-        #dbconn.addPackage(etpData)
+	updated, revision = dbconn.handlePackage(etpData,enzymeRequestBump)
         dbconn.closeDB()
+	
+	if (updated) and (revision != 0):
+	    print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry has been updated. Revision: ")+bold(str(revision)))
+	elif (updated) and (revision == 0):
+	    print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry newly created."))
+	else:
+	    print_info(green(" * ")+red("Package ")+bold(packagename)+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
 
-        # look where I can store the file and return its path
-        etpOutput, etpOutfilePath = allocateFile(etpData,enzymeRequestBump)
 
-        rc = False
-
-        if etpOutfilePath is not None:
-	    print_info(green(" * ")+red("Writing Entropy Specifications file: ")+etpOutfilePath)
-	    f = open(etpOutfilePath,"w")
-	    f.writelines(etpOutput)
-	    f.flush()
-	    f.close()
-	    # digesting directory
-	    createDigest(etpOutfilePath)
-	    rc = True
-        else:
-	    print_info(green(" * ")+red("Not generating a new Entropy Specifications file, not needed for ")+bold(packagename))
-        # clean garbage
-        os.system("rm -rf "+etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version'])
-
-# Enzyme tool called, we need to parse the Store directory and call generator()
+# This tool is used by Entropy after enzyme, it simply parses the content of etpConst['packagesstoredir']
 def enzyme(options):
 
     enzymeRequestBump = False
@@ -230,6 +180,23 @@ def extractPkgData(package):
         f.close()
     except IOError:
         etpData['slot'] = ""
+
+    print_info(yellow(" * ")+red("Getting package content..."),back = True)
+    # dbCONTENTS
+    try:
+        f = open(tbz2TmpDir+dbCONTENTS,"r")
+        content = f.readlines()
+        f.close()
+	outcontent = []
+	for line in content:
+	    line = line.strip().split()
+	    if line[0] == "obj":
+		outcontent.append(line[1])
+	import string
+	etpData['content'] = string.join(outcontent," ")
+	
+    except IOError:
+        etpData['content'] = ""
 
     print_info(yellow(" * ")+red("Getting package download URL..."),back = True)
     # Fill download relative URI
@@ -398,75 +365,3 @@ def extractPkgData(package):
 
     print_info(yellow(" * ")+red("Done"),back = True)
     return etpData
-
-# This function generates the right path for putting the .etp file
-# and take count of already available ones bumping version only if needed
-def allocateFile(etpData, enzymeRequestBump = False):
-
-    # this will be the first thing to return
-    etpOutput = []
-    # append header
-    etpOutput.append(ETP_HEADER_TEXT)
-    
-    # order keys
-    keys = []
-    for i in etpData:
-	keys.append(i)
-    
-    sortedKeys = alphaSorter(keys)
-    
-    for i in sortedKeys:
-        if (etpData[i]):
-            etpOutput.append(i+": "+etpData[i]+"\n")
-
-    # locate directory structure
-    etpOutfileDir = etpConst['packagesdatabasedir']+"/"+etpData['category']+"/"+etpData['name']
-    #etpOutfileDir = translateArch(etpOutfileDir,etpData['chost'])
-    etpOutfileName = etpData['name']+"-"+etpData['version']+"-etp"+ETP_REVISION_CONST+etpConst['extension']
-    etpOutfilePath = etpOutfileDir+"/"+etpOutfileName
-
-    # we've the directory, then create it
-    if (not os.path.isdir(etpOutfileDir)):
-	try:
-	    os.makedirs(etpOutfileDir)
-	except OSError:
-	    pass
-	# it's a brand new dir
-	etpOutfilePath = re.subn(ETP_REVISION_CONST,"1", etpOutfilePath)[0]
-    else: # directory already exists, check for already available files
-        alreadyAvailableFiles = []
-	for i in range(MAX_ETP_REVISION_COUNT+1):
-	    testfile = re.subn(ETP_REVISION_CONST,str(i), etpOutfilePath)[0]
-	    if (os.path.isfile(testfile)):
-	        alreadyAvailableFiles.append(testfile)
-	if (alreadyAvailableFiles == []):
-	    etpOutfilePath = re.subn(ETP_REVISION_CONST,"1", etpOutfilePath)[0]
-        else:
-	    # grab the last one
-	    possibleOldFile = alreadyAvailableFiles[len(alreadyAvailableFiles)-1]
-	    # now compares both to see if they're equal or not
-	    try:
-	        import md5
-	        import string
-		a = open(possibleOldFile,"r")
-		cntA = a.readlines()
-		cntB = etpOutput
-		cntA = string.join(cntA)
-		cntB = string.join(cntB)
-		a.close()
-		md5A = md5.new()
-		md5B = md5.new()
-		md5A.update(cntA)
-		md5B.update(cntB)
-		
-		if (md5A.digest() == md5B.digest()) and (not enzymeRequestBump):
-		    etpOutfilePath = None
-		else:
-		    # add 1 to: packagename-1.2.3-r1-etpX.etp
-		    newFileCounter = int(possibleOldFile.split("-")[len(possibleOldFile.split("-"))-1].split(etpConst['extension'])[0].split(etpConst['extension'][1:])[1])
-		    newFileCounter += 1
-		    etpOutfilePath = re.subn(ETP_REVISION_CONST,str(newFileCounter), etpOutfilePath)[0]
-	    except OSError:
-		etpOutfilePath = possibleOldFile
-
-    return etpOutput, etpOutfilePath

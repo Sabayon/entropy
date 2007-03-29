@@ -45,12 +45,12 @@ def print_help():
     entropyTools.print_info(entropyTools.blue("Tools available: "))
     entropyTools.print_info(" \t"+entropyTools.green("generator")+entropyTools.yellow("\t to add the package to the database, revision bump if needed"))
     entropyTools.print_info(" \t\t"+entropyTools.red("--force-bump")+"\t\t to force the revision bumping of the package entry")
-    entropyTools.print_info(" \t"+entropyTools.green("digest")+entropyTools.yellow("\t\t to digest a specified directory"))
     entropyTools.print_info(" \t"+entropyTools.green("enzyme")+entropyTools.yellow("\t\t to analyze enzyme store directory"))
     entropyTools.print_info(" \t\t"+entropyTools.red("--force-bump")+"\t\t to force the revision bumping of the package entries")
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("database"))+entropyTools.yellow("\t Entropy database tool manager."))
     entropyTools.print_info(" \t\t"+entropyTools.red("--initialize")+"\t\t (Re)Initialize the Entropy packages database [DO NOT USE THIS]")
     entropyTools.print_info(" \t\t"+entropyTools.green("search")+"\t\t\t Search a package inside the Entropy packages database")
+    entropyTools.print_info(" \t\t"+entropyTools.green("dump-package-info")+"\t Dump the stored information of package atom(s) to a file")
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("cleanup"))+entropyTools.yellow("\t\t to clean temporary files"))
 
 options = sys.argv[1:]
@@ -79,10 +79,6 @@ if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(
 if (not entropyTools.isRoot()):
     print_error("you must be root in order to run "+APPNAME)
 
-# digest tool (creates a digest on the specified directory)
-if (options[0] == "digest"):
-    reagentTools.createDigest(options[1:])
-    sys.exit(0)
 
 elif (options[0] == "generator"):
     reagentTools.generator(options[1:])

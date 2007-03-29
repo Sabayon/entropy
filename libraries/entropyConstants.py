@@ -26,7 +26,7 @@ import string
 import random
 import sys
 
-# Specifications of the content of .etp file
+# Specifications of the content of etpData
 # THIS IS THE KEY PART OF ENTROPY BINARY PACKAGES MANAGEMENT
 # DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU'RE DOING !!
 etpData = {
@@ -47,6 +47,7 @@ etpData = {
     'digest': "", # md5 hash of the .tbz2 package
     'sources': "", # link to the sources
     'slot': "", # this is filled if the package is slotted
+    'content': "", # content of the package (files)
     'mirrorlinks': "", # =mirror://openoffice|link1|link2|link3
     'dependencies': "", # dependencies
     'rundependencies': "", # runtime dependencies
@@ -55,19 +56,48 @@ etpData = {
     'etpapi': "", # blockers
 }
 
-# Entropy database SQL initialization Schema
+# Used for convenience... it's temporary, do not count on it and reset before using
+tmpEtpData = {
+    'name': "", # the Package Name
+    'version': "", # the Package version plus our -etpXX revision
+    'description': "", # the Package description
+    'category': "", # the gentoo category
+    'chost': "", # the CHOST used to compile it
+    'cflags': "", # CFLAGS used
+    'cxxflags': "", # CXXFLAGS used
+    'homepage': "", # home page of the package
+    'useflags': "", # USE flags used
+    'license': "", # License adpoted
+    'keywords': "", # supported ARCHs (by the SRC)
+    'binkeywords': "", # supported ARCHs (by the BIN)
+    'packagepath': "", # path where the .tbz2 file is stored
+    'download': "", # link to download the binary package
+    'digest': "", # md5 hash of the .tbz2 package
+    'sources': "", # link to the sources
+    'slot': "", # this is filled if the package is slotted
+    'content': "", # content of the package (files)
+    'mirrorlinks': "", # =mirror://openoffice|link1|link2|link3
+    'dependencies': "", # dependencies
+    'rundependencies': "", # runtime dependencies
+    'rundependenciesXT': "", # runtime dependencies + version
+    'conflicts': "", # blockers
+    'etpapi': "", # blockers
+}
+
+# Entropy database SQL initialization Schema and data structure
+# MUST BE KEPT IN SYNC with etpData above
 etpSQLInit = """
 CREATE TABLE etpData (
     atom VARCHAR(75) PRIMARY KEY,
-    name VARCHAR(255),
+    name VARCHAR(50),
     version VARCHAR(25),
-    description VARCHAR(255),
+    description VARCHAR(100),
     category VARCHAR(25),
     chost VARCHAR(100),
-    cflags VARCHAR(255),
-    cxxflags VARCHAR(255),
-    homepage VARCHAR(255),
-    useflags VARCHAR(350),
+    cflags VARCHAR(100),
+    cxxflags VARCHAR(100),
+    homepage VARCHAR(100),
+    useflags VARCHAR(150),
     license VARCHAR(25),
     keywords VARCHAR(50),
     binkeywords VARCHAR(50),
@@ -76,11 +106,12 @@ CREATE TABLE etpData (
     digest VARCHAR(32),
     sources VARCHAR(500),
     slot VARCHAR(10),
-    mirrorlinks VARCHAR(500),
-    dependencies VARCHAR(300),
-    rundependencies VARCHAR(450),
-    rundependenciesXT VARCHAR(450),
-    conflicts VARCHAR(300),
+    content VARCHAR(100),
+    mirrorlinks VARCHAR(200),
+    dependencies VARCHAR(100),
+    rundependencies VARCHAR(250),
+    rundependenciesXT VARCHAR(250),
+    conflicts VARCHAR(100),
     etpapi VARCHAR(3),
     revision INTEGER(3)
 )
@@ -101,7 +132,7 @@ ETP_TMPFILE = "/.random-"+ETP_RANDOM+".tmp"
 ETP_REPODIR = "/packages"+"/"+ETP_ARCH_CONST
 ETP_PORTDIR = "/portage"
 ETP_DISTFILESDIR = "/distfiles"
-ETP_DBDIR = "/database"+"/"+ETP_ARCH_CONST
+ETP_DBDIR = "/database/"+ETP_ARCH_CONST
 ETP_UPLOADDIR = "/upload"+"/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store"+"/"+ETP_ARCH_CONST
 ETP_CONF_DIR = "/etc/entropy"
@@ -117,7 +148,6 @@ etpConst = {
     'packagesbindir': ETP_DIR+ETP_REPODIR, # etpConst['packagesbindir'] --> repository where the packages will be stored
     			# by the clients: to query if a package has been already downloaded
 			# by the servers or rsync mirrors: to store already uploaded packages to the main rsync server
-    'packagesdatabasedir': ETP_DIR+ETP_DBDIR, # FIXME: REMOVE THIS !
     'packagesstoredir': ETP_DIR+ETP_STOREDIR, # etpConst['packagesstoredir'] --> directory where .tbz2 files are stored waiting for being processed by reagent
     'packagessuploaddir': ETP_DIR+ETP_UPLOADDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
     'portagetreedir': ETP_DIR+ETP_PORTDIR, # directory where is stored our local portage tree
@@ -131,19 +161,20 @@ etpConst = {
     'activatorconf': ETP_CONF_DIR+"/activator.conf", # activator.conf file
     'activatoruploaduris': [],# list of URIs that activator can use to upload files (parsed from activator.conf)
     'activatordownloaduris': [],# list of URIs that activator can use to fetch data
-    'digestfile': "Manifest", # file that contains md5 hashes
-    'extension': ".etp", # entropy files extension
     'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
     'etpurirelativepath': "database/"+ETP_ARCH_CONST+"/", # Relative remote path for the .etp repository.
-    'etpdatabasefile': "__database.tar.bz2", # compressed file that contains the whole Entropy database directory tree
-    					     # YOU MUST APPEND %ARCH% at the beginning
-    'etpdatabaselockfile': "database.lock", # the remote database lock file
-    'etpdatabasedownloadlockfile': "download.lock", # the remote database download lock file
+    							  # TO BE REMOVED? CHECK
+    'etpdatabaselockfile': "packages.db.lock", # the remote database lock file
+    'etpdatabasedownloadlockfile': "packages.db.download.lock", # the remote database download lock file
+    'etpdatabasetaintfile': "packages.db.tainted", # when this file exists, the database is not synced anymore with the online one
     'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
     'distcc-status': False, # used by Enzyme, if True distcc is enabled
     'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file
+    'etpdatabasedir': ETP_DIR+ETP_DBDIR, # FIXME: REMOVE THIS !
     'etpdatabasefile': ETP_DIR+ETP_DBDIR+"/packages.db", # Entropy sqlite database file
     'etpapi': ETP_API, # Entropy database API revision
+    'headertext': ETP_HEADER_TEXT, # header text that can be outputted to a file
+    'currentarch': ETP_ARCH_CONST, # contains the current running architecture
 }
 
 # Create paths

@@ -63,7 +63,7 @@ def sync(options):
     print_info(green(" * ")+red("Collecting local Entropy repository entries..."),back = True)
     localtetpcounter = 0
     localEtpFiles = []
-    for (dir, sub, files) in os.walk(etpConst['packagesdatabasedir']):
+    for (dir, sub, files) in os.walk(etpConst['etpdatabasedir']):
 	localEtpFiles.append(dir)
 	for file in files:
 	    localEtpFiles.append(dir+"/"+file)
