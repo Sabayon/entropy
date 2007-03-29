@@ -268,7 +268,6 @@ class etpDatabase:
 	key = removePackageOperators(key)
 	self.cursor.execute('DELETE FROM etpData WHERE atom = "'+key+'"')
 	self.commitChanges()
-	return result
 
     # WARNING: this function must be kept in sync with Entropy database schema
     # returns True if equal
