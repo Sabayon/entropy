@@ -334,7 +334,7 @@ class etpDatabase:
     # returns False if not
     def comparePackagesData(self,etpData,dbPkgInfo):
 	
-	myEtpData = tmpEtpData
+	myEtpData = etpData.copy()
 	
 	# reset before using the myEtpData dictionary
 	for i in myEtpData:

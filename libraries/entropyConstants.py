@@ -56,34 +56,6 @@ etpData = {
     'etpapi': "", # blockers
 }
 
-# Used for convenience... it's temporary, do not count on it and reset before using
-tmpEtpData = {
-    'name': "", # the Package Name
-    'version': "", # the Package version plus our -etpXX revision
-    'description': "", # the Package description
-    'category': "", # the gentoo category
-    'chost': "", # the CHOST used to compile it
-    'cflags': "", # CFLAGS used
-    'cxxflags': "", # CXXFLAGS used
-    'homepage': "", # home page of the package
-    'useflags': "", # USE flags used
-    'license': "", # License adpoted
-    'keywords': "", # supported ARCHs (by the SRC)
-    'binkeywords': "", # supported ARCHs (by the BIN)
-    'packagepath': "", # path where the .tbz2 file is stored
-    'download': "", # link to download the binary package
-    'digest': "", # md5 hash of the .tbz2 package
-    'sources': "", # link to the sources
-    'slot': "", # this is filled if the package is slotted
-    'content': "", # content of the package (files)
-    'mirrorlinks': "", # =mirror://openoffice|link1|link2|link3
-    'dependencies': "", # dependencies
-    'rundependencies': "", # runtime dependencies
-    'rundependenciesXT': "", # runtime dependencies + version
-    'conflicts': "", # blockers
-    'etpapi': "", # blockers
-}
-
 # Entropy database SQL initialization Schema and data structure
 # MUST BE KEPT IN SYNC with etpData above
 etpSQLInit = """
