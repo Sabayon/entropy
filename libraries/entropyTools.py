@@ -1377,7 +1377,7 @@ def downloadLockDatabases(lock = True, mirrorList = []):
 
 # parse a dumped .etp file and returns etpData
 def parseEtpDump(file):
-    myEtpData = tmpEtpData.copy()
+    myEtpData = etpData.copy()
     # reset
     for i in myEtpData:
 	myEtpData[i] = ""
