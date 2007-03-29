@@ -151,29 +151,64 @@ def database(options):
 		print_warning(yellow(" * ")+red("Package ")+bold(package)+red(" does not exist in Entropy database."))
 		dbconn.closeDB()
 	        continue
-
-	    for i in tmpEtpData:
-	        tmpEtpData[i] = ""
+	    
+	    myEtpData = tmpEtpData
+	    
+	    # reset
+	    for i in myEtpData:
+	        myEtpData[i] = ""
 	    
 	    for i in tmpEtpData:
-		tmpEtpData[i] = dbconn.retrievePackageVar(package,i)
+		myEtpData[i] = dbconn.retrievePackageVar(package,i)
 	    
 	    # sort and print
 	    etprevision = str(dbconn.retrievePackageVar(package,"revision"))
 	    filepath = etpConst['packagestmpdir'] + "/" + dbconn.retrievePackageVar(package,"name") + "-" + dbconn.retrievePackageVar(package,"version")+"-"+"etp"+etprevision+".etp"
 	    f = open(filepath,"w")
 	    sortList = []
-	    for i in tmpEtpData:
+	    for i in myEtpData:
 		sortList.append(i)
 	    sortList = alphaSorter(sortList)
 	    for i in sortList:
-		f.write(i+": "+tmpEtpData[i]+"\n")
+		f.write(i+": "+myEtpData[i]+"\n")
 	    f.flush()
 	    f.close()
 	    
 	    print_info(green("    * ")+red("Dump generated in ")+bold(filepath)+red(" ."))
 	    dbconn.closeDB()
 
+    elif (options[0] == "inject-package-info"):
+	if (len(options[1:]) == 0):
+	    print_error(yellow(" * ")+red("Not enough parameters"))
+	    sys.exit(303)
+	mypath = options[1:][0]
+	if (not os.path.isfile(mypath)):
+	    print_error(yellow(" * ")+red("File does not exist."))
+	    sys.exit(303)
+	
+	# revision is surely bumped
+	etpDataOut = parseEtpDump(mypath)
+	dbconn = etpDatabase()
+	updated, revision = dbconn.handlePackage(etpDataOut)
+	dbconn.closeDB()
+
+	if (updated) and (revision != 0):
+	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['name']+"-"+etpDataOut['version'])+red(" entry has been updated. Revision: ")+bold(str(revision)))
+	elif (updated) and (revision == 0):
+	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['name']+"-"+etpDataOut['version'])+red(" entry newly created."))
+	else:
+	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['name']+"-"+etpDataOut['version'])+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
+	
+	"""
+	sortList = []
+	for i in etpDataOut:
+	    sortList.append(i)
+	sortList = alphaSorter(sortList)
+	"""
+	# print out the changes before doing them?
+	
+	
+	
 
 ############
 # Functions
@@ -206,6 +241,11 @@ class etpDatabase:
     def untaintDatabase(self):
 	# untaint the database status
 	os.system("rm -f "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
+
+    def isDatabaseTainted(self):
+	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
+	    return True
+	return False
 
     def discardChanges(self):
 	self.connection.rollback()
@@ -293,16 +333,18 @@ class etpDatabase:
     # returns False if not
     def comparePackagesData(self,etpData,dbPkgInfo):
 	
-	# reset before using the tmpEtpData dictionary
-	for i in tmpEtpData:
-	    tmpEtpData[i] = ""
+	myEtpData = tmpEtpData
+	
+	# reset before using the myEtpData dictionary
+	for i in myEtpData:
+	    myEtpData[i] = ""
 
 	# fill content
-	for i in tmpEtpData:
-	    tmpEtpData[i] = self.retrievePackageVar(dbPkgInfo,i)
+	for i in myEtpData:
+	    myEtpData[i] = self.retrievePackageVar(dbPkgInfo,i)
 
 	for i in etpData:
-	    if etpData[i] != tmpEtpData[i]:
+	    if etpData[i] != myEtpData[i]:
 		return False
 	
 	return True

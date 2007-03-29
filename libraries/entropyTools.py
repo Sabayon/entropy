@@ -1375,6 +1375,24 @@ def downloadLockDatabases(lock = True, mirrorList = []):
 	ftp.closeFTPConnection()
     return outstat
 
+# parse a dumped .etp file and returns etpData
+def parseEtpDump(file):
+    myEtpData = tmpEtpData
+    # reset
+    for i in myEtpData:
+	myEtpData[i] = ""
+    f = open(file,"r")
+    myDump = f.readlines()
+    f.close()
+    for line in myDump:
+	line = line.strip()
+	var = line.split(":")[0]
+	myEtpData[var] = (line.split(var+": ")[1:][0]
+
+    return myEtpData
+	
+
+
 def packageSearch(keyword):
 
     SearchDirs = []
