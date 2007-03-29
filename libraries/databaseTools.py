@@ -201,9 +201,9 @@ class etpDatabase:
     # otherwise it fires up updatePackage
     def handlePackage(self,etpData,forceBump = False):
 	if (not self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])):
-	    self.addPackage(etpData)
+	    update, revision = self.addPackage(etpData)
 	else:
-	    self.updatePackage(etpData,forceBump)
+	   update, revision = self.updatePackage(etpData,forceBump)
 
     def addPackage(self,etpData, revision = 0):
 	self.cursor.execute(
