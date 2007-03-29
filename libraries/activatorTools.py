@@ -33,22 +33,10 @@ import string
 
 def sync(options):
 
-    # For each URI do the same thing
-    for uri in etpConst['activatoruploaduris']:
-	ftp = activatorFTP(uri)
-	print "Listing the content of: "+ftp.getFTPHost()
-	print "at port: "+str(ftp.getFTPPort())
-	print "in dir: "+ftp.getFTPDir()
-	#print ftp.getFileSize("index.htm")
-	list = ftp.getRoughList()
-	
-	#print ftp.spawnFTPCommand("mdtm index.htm")
-	ftp.closeFTPConnection()
-
-    sys.exit(0)
-
     # sync the local repository with the remote ones
     syncRemoteDatabases()
+
+    sys.exit(0)
 
     print_info(green(" * ")+red("Collecting local binary packages..."),back = True)
     localtbz2counter = 0
@@ -195,7 +183,7 @@ def packages(options):
 	    uploadQueue = list(set(uploadQueue))
 
 	    if (len(uploadQueue) == 0) and (len(downloadQueue) == 0) and (len(removalQueue) == 0):
-		print_info(green(" * ")+red("Nothing to syncronize for ")+bold(extractFTPHostFromUri(uri)+red(". Queues empty.")))
+		print_info(green(" * ")+red("Nothing to syncronize for ")+bold(extractFTPHostFromUri(uri)+red(". Queue empty.")))
 		continue
 
 
@@ -267,8 +255,6 @@ def packages(options):
 		    counterInfo = bold(" (")+blue(str(currentCounter))+"/"+red(uploadCounter)+bold(")")
 		    print_info(counterInfo+red(" Uploading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] to ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."),back = True)
 		    ftp.uploadFile(etpConst['packagessuploaddir']+"/"+item[0])
-		    # now move the file into etpConst['packagesbindir']
-		    os.system("mv "+etpConst['packagessuploaddir']+"/"+item[0]+" "+etpConst['packagesbindir']+"/")
 		print_info(red(" * Upload completed for ")+bold(extractFTPHostFromUri(uri)))
 		ftp.closeFTPConnection()
 
@@ -296,7 +282,7 @@ def packages(options):
 	    print "Now it should be time for some tidy...?"
 	
 	# now we can store the files in upload/%ARCH% in packages/%ARCH%
-	os.system("mv "+etpConst['packagessuploaddir']+"/* "+etpConst['packagesbindir']+"/")
+	os.system("mv -f "+etpConst['packagessuploaddir']+"/* "+etpConst['packagesbindir']+"/ &> /dev/null")
 
 def database(options):
 

@@ -136,6 +136,7 @@ etpConst = {
     'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
     'etpurirelativepath': "database/"+ETP_ARCH_CONST+"/", # Relative remote path for the .etp repository.
     							  # TO BE REMOVED? CHECK
+    'etpdatabaserevisionfile': "packages.db.revision", # the local/remote database revision file
     'etpdatabaselockfile': "packages.db.lock", # the remote database lock file
     'etpdatabasedownloadlockfile': "packages.db.download.lock", # the remote database download lock file
     'etpdatabasetaintfile': "packages.db.tainted", # when this file exists, the database is not synced anymore with the online one

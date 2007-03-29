@@ -97,7 +97,8 @@ def database(options):
 		print_info(red("\t CXXFLAGS: ")+darkred(result[7]))
 		if (result[8]):
 		    print_info(red("\t Website: ")+result[8])
-		print_info(red("\t USE Flags: ")+blue(result[9]))
+		if (result[9]):
+		    print_info(red("\t USE Flags: ")+blue(result[9]))
 		print_info(red("\t License: ")+bold(result[10]))
 		print_info(red("\t Source keywords: ")+darkblue(result[11]))
 		print_info(red("\t Binary keywords: ")+green(result[12]))
@@ -225,12 +226,15 @@ class etpDatabase:
 	self.cursor = self.connection.cursor()
 
     def closeDB(self):
+	if (self.isDatabaseTainted()):
+	    # bump revision
+	    self.revisionBump()
 	self.cursor.close()
 	self.connection.close()
 
     def commitChanges(self):
-	self.taintDatabase()
 	self.connection.commit()
+	self.taintDatabase()
 
     def taintDatabase(self):
 	# taint the database status
@@ -242,6 +246,19 @@ class etpDatabase:
     def untaintDatabase(self):
 	# untaint the database status
 	os.system("rm -f "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
+
+    def revisionBump(self):
+	if (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'])):
+	    revision = 0
+	else:
+	    f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'],"r")
+	    revision = int(f.readline().strip())
+	    revision += 1
+	    f.close()
+	f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'],"w")
+	f.write(str(revision)+"\n")
+	f.flush()
+	f.close()
 
     def isDatabaseTainted(self):
 	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
