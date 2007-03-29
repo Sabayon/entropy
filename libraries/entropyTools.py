@@ -1387,10 +1387,10 @@ def parseEtpDump(file):
     for line in myDump:
 	line = line.strip()
 	var = line.split(":")[0]
-	myEtpData[var] = (line.split(var+": ")[1:][0]
+	myEtpData[var] = line.split(var+": ")[1:][0]
 
     return myEtpData
-	
+
 
 
 def packageSearch(keyword):
