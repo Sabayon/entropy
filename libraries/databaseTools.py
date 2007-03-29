@@ -160,7 +160,7 @@ def database(options):
 	    
 	    for i in tmpEtpData:
 		myEtpData[i] = dbconn.retrievePackageVar(package,i)
-	    
+
 	    # sort and print
 	    etprevision = str(dbconn.retrievePackageVar(package,"revision"))
 	    filepath = etpConst['packagestmpdir'] + "/" + dbconn.retrievePackageVar(package,"name") + "-" + dbconn.retrievePackageVar(package,"version")+"-"+"etp"+etprevision+".etp"
@@ -170,7 +170,8 @@ def database(options):
 		sortList.append(i)
 	    sortList = alphaSorter(sortList)
 	    for i in sortList:
-		f.write(i+": "+myEtpData[i]+"\n")
+		if (myEtpData[i]):
+		    f.write(i+": "+myEtpData[i]+"\n")
 	    f.flush()
 	    f.close()
 	    
