@@ -248,7 +248,7 @@ class etpDatabase:
 	# if not, update, else drop
 	curRevision = self.retrievePackageVar(etpData['category']+"/"+etpData['name']+"-"+etpData['version'],"revision")
 	# FIXME: I don't know if this works
-	oldPkgInfo = self.retrievePackageInfo(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])
+	oldPkgInfo = etpData['category']+"/"+etpData['name']+"-"+etpData['version']
 	rc = self.comparePackagesData(etpData,oldPkgInfo)
 	if (not rc) or (forceBump):
 	    # update !
