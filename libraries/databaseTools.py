@@ -194,11 +194,11 @@ def database(options):
 	dbconn.closeDB()
 
 	if (updated) and (revision != 0):
-	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['name']+"-"+etpDataOut['version'])+red(" entry has been updated. Revision: ")+bold(str(revision)))
+	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['category']+"/"+etpDataOut['name']+"-"+etpDataOut['version'])+red(" entry has been updated. Revision: ")+bold(str(revision)))
 	elif (updated) and (revision == 0):
-	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['name']+"-"+etpDataOut['version'])+red(" entry newly created."))
+	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['category']+"/"+etpDataOut['name']+"-"+etpDataOut['version'])+red(" entry newly created."))
 	else:
-	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['name']+"-"+etpDataOut['version'])+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
+	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['category']+"/"+etpDataOut['name']+"-"+etpDataOut['version'])+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
 	
 	"""
 	sortList = []
