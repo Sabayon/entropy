@@ -151,8 +151,27 @@ def database(options):
 		print_warning(yellow(" * ")+red("Package ")+bold(package)+red(" does not exist in Entropy database."))
 		dbconn.closeDB()
 	        continue
-	    etpData = dbconn.retrievePackageInfo(package)
-	    print etpData
+
+	    for i in tmpEtpData:
+	        tmpEtpData[i] = ""
+	    
+	    for i in tmpEtpData:
+		tmpEtpData[i] = dbconn.retrievePackageVar(package,i)
+	    
+	    # sort and print
+	    etprevision = str(dbconn.retrievePackageVar(package,"revision"))
+	    filepath = etpConst['packagestmpdir'] + "/" + dbconn.retrievePackageVar(package,"name") + "-" + dbconn.retrievePackageVar(package,"version")+"-"+"etp"+etprevision+".etp"
+	    f = open(filepath,"w")
+	    sortList = []
+	    for i in tmpEtpData:
+		sortList.append(i)
+	    sortList = alphaSorter(sortList)
+	    for i in sortList:
+		f.write(i+": "+tmpEtpData[i]+"\n")
+	    f.flush()
+	    f.close()
+	    
+	    print_info(green("    * ")+red("Dump generated in ")+bold(filepath)+red(" ."))
 	    dbconn.closeDB()
 
 
@@ -281,33 +300,6 @@ class etpDatabase:
 	# fill content
 	for i in tmpEtpData:
 	    tmpEtpData[i] = self.retrievePackageVar(dbPkgInfo,i)
-
-	"""
-	oldEtpData['name'] = self.retrievePackageVar(dbPkgInfo,"name")
-	oldEtpData['version'] = self.retrievePackageVar(dbPkgInfo,"version")
-	oldEtpData['description'] = self.retrievePackageVar(dbPkgInfo,"description")
-	oldEtpData['category'] = self.retrievePackageVar(dbPkgInfo,"category")
-	oldEtpData['chost'] = self.retrievePackageVar(dbPkgInfo,"chost")
-	oldEtpData['cflags'] = self.retrievePackageVar(dbPkgInfo,"cflags")
-	oldEtpData['cxxflags'] = self.retrievePackageVar(dbPkgInfo,"cxxflags")
-	oldEtpData['homepage'] = self.retrievePackageVar(dbPkgInfo,"homepage")
-	oldEtpData['useflags'] = self.retrievePackageVar(dbPkgInfo,"useflags")
-	oldEtpData['license'] = self.retrievePackageVar(dbPkgInfo,"license")
-	oldEtpData['keywords'] = self.retrievePackageVar(dbPkgInfo,"keywords")
-	oldEtpData['binkeywords'] = self.retrievePackageVar(dbPkgInfo,"binkeywords")
-	oldEtpData['packagepath'] = self.retrievePackageVar(dbPkgInfo,"packagepath")
-	oldEtpData['download'] = self.retrievePackageVar(dbPkgInfo,"download")
-	oldEtpData['digest'] = self.retrievePackageVar(dbPkgInfo,"digest")
-	oldEtpData['sources'] = self.retrievePackageVar(dbPkgInfo,"sources")
-	oldEtpData['slot'] = self.retrievePackageVar(dbPkgInfo,"slot")
-	oldEtpData['content'] = self.retrievePackageVar(dbPkgInfo,"content")
-	oldEtpData['mirrorlinks'] = self.retrievePackageVar(dbPkgInfo,"mirrorlinks")
-	oldEtpData['dependencies'] = self.retrievePackageVar(dbPkgInfo,"dependencies")
-	oldEtpData['rundependencies'] = self.retrievePackageVar(dbPkgInfo,"rundependencies")
-	oldEtpData['rundependenciesXT'] = self.retrievePackageVar(dbPkgInfo,"rundependenciesXT")
-	oldEtpData['conflicts'] = self.retrievePackageVar(dbPkgInfo,"conflicts")
-	oldEtpData['etpapi'] = self.retrievePackageVar(dbPkgInfo,"etpapi")
-	"""
 
 	for i in etpData:
 	    if etpData[i] != tmpEtpData[i]:
