@@ -204,6 +204,7 @@ class etpDatabase:
 	    update, revision = self.addPackage(etpData)
 	else:
 	   update, revision = self.updatePackage(etpData,forceBump)
+	return update, revision
 
     def addPackage(self,etpData, revision = 0):
 	self.cursor.execute(
