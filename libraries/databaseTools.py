@@ -200,7 +200,7 @@ class etpDatabase:
     # if it does not exist, it fires up addPackage
     # otherwise it fires up updatePackage
     def handlePackage(self,etpData,forceBump = False):
-	if (not isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])):
+	if (not self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])):
 	    self.addPackage(etpData)
 	else:
 	    self.updatePackage(etpData,forceBump)
