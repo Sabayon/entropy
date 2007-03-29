@@ -98,7 +98,7 @@ def enzyme(options):
 	    etpNotCreated += 1
 	    os.system("rm -rf "+tbz2path)
 
-    print_info(green(" * ")+red("Statistics: ")+blue("etp created: ")+bold(str(etpCreated))+yellow(" - ")+darkblue("etp discarded: ")+bold(str(etpNotCreated)))
+    print_info(green(" * ")+red("Statistics: ")+blue("Entries created/updated: ")+bold(str(etpCreated))+yellow(" - ")+darkblue("Entries discarded: ")+bold(str(etpNotCreated)))
 
 # This function extracts all the info from a .tbz2 file and returns them
 def extractPkgData(package):
