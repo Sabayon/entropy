@@ -142,7 +142,6 @@ def syncRemoteDatabases():
     else:
 	etpDbLocalRevision = 0
     
-    
     downloadLatest = []
     uploadLatest = False
     uploadList = []
@@ -166,11 +165,14 @@ def syncRemoteDatabases():
 	    revisions = []
 	    for dbstat in etpDbRemotePaths:
 		revisions.append(dbstat[1])
-	    latestrevision = alphaSorter(revisions)[len(revisions)-1]
+	    if len(revisions) > 1:
+		latestrevision = alphaSorter(revisions)[len(revisions)-1]
+	    else:
+		latestrevision = revisions[0]
 	    for dbstat in etpDbRemotePaths:
 		if dbstat[1] == latestrevision:
 		    # found !
-		    downloadLatest.append(dbstat)
+		    downloadLatest = dbstat
 		    break
 	    # Now check if we need to upload back the files to the other mirrors
 	    #print "DEBUG: check the others, if they're also updated, quit"
@@ -237,7 +239,6 @@ def syncRemoteDatabases():
 	
     if (uploadLatest):
 	print_info(green(" * ")+red("Starting to update the needed mirrors ..."))
-	# FIXME: UploadList is wrong?!
 	_uploadList = []
 	for uri in etpConst['activatoruploaduris']:
 	    for list in uploadList:
