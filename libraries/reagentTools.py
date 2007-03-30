@@ -30,7 +30,7 @@ import commands
 import re
 import sys
 import string
-from portageTools import unpackTbz2, synthetizeRoughDependencies, getPackageRuntimeDependencies, dep_getkey
+from portageTools import unpackTbz2, synthetizeRoughDependencies, getPackageRuntimeDependencies, dep_getkey, getThirdPartyMirrors
 
 def generator(package, enzymeRequestBump = False):
 
