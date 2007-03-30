@@ -224,7 +224,7 @@ def syncRemoteDatabases():
 		        uploadLatest = True
 		        uploadList.append(dbstat)
     
-    if (downloadLatest == []) and (not uploadLatest) and (not generateAndUpload):
+    if (downloadLatest == []) and (not uploadLatest):
 	print_info(green(" * ")+red("Online database does not need to be updated."))
     
     # now run the selected task!
