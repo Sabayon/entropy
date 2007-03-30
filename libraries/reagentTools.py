@@ -301,7 +301,7 @@ def extractPkgData(package):
     
     # fill ARCHs
     pkgArchs = etpData['keywords']
-    for i in ETP_ARCHS:
+    for i in etpConst['supportedarchs']:
         if pkgArchs.find(i) != -1 and (pkgArchs.find("-"+i) == -1): # in case we find something like -amd64...
 	    etpData['binkeywords'] += i+" "
     etpData['binkeywords'] = removeSpaceAtTheEnd(etpData['binkeywords'])

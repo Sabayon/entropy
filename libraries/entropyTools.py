@@ -22,6 +22,7 @@
 
 # FIXME: this depends on portage, should be moved from here ASAP
 from output import *
+from entropyConstants import *
 
 import re
 import sys
@@ -100,7 +101,7 @@ def getEtpRemoteDatabaseStatus():
     for uri in etpConst['activatoruploaduris']:
 	ftp = databaseTools.handlerFTP(uri)
 	ftp.setCWD(etpConst['etpurirelativepath'])
-	rc = ftp.isFileAvailable(etpConst['etpdatabasefile'])
+	rc = ftp.isFileAvailable(etpConst['etpdatabasefilegzip'])
 	if (rc):
 	    # then get the file revision, if exists
 	    rc = ftp.isFileAvailable(etpConst['etpdatabaserevisionfile'])
@@ -114,9 +115,10 @@ def getEtpRemoteDatabaseStatus():
 	    else:
 		revision = 0
 	else:
+	    print "database file not avail"
 	    # then set mtime to 0 and quit
 	    revision = 0
-	info = [uri+"/"+etpConst['etpurirelativepath']+etpConst['etpdatabasefile'],revision]
+	info = [uri+"/"+etpConst['etpurirelativepath']+etpConst['etpdatabasefilegzip'],revision]
 	uriDbInfo.append(info)
 	ftp.closeFTPConnection()
 
