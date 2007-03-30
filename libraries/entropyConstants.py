@@ -105,6 +105,7 @@ ETP_REPODIR = "/packages"+"/"+ETP_ARCH_CONST
 ETP_PORTDIR = "/portage"
 ETP_DISTFILESDIR = "/distfiles"
 ETP_DBDIR = "/database/"+ETP_ARCH_CONST
+ETP_DBFILE = "packages.db"
 ETP_UPLOADDIR = "/upload"+"/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store"+"/"+ETP_ARCH_CONST
 ETP_CONF_DIR = "/etc/entropy"
@@ -136,15 +137,18 @@ etpConst = {
     'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
     'etpurirelativepath': "database/"+ETP_ARCH_CONST+"/", # Relative remote path for the .etp repository.
     							  # TO BE REMOVED? CHECK
-    'etpdatabaserevisionfile': "packages.db.revision", # the local/remote database revision file
-    'etpdatabaselockfile': "packages.db.lock", # the remote database lock file
-    'etpdatabasedownloadlockfile': "packages.db.download.lock", # the remote database download lock file
-    'etpdatabasetaintfile': "packages.db.tainted", # when this file exists, the database is not synced anymore with the online one
+    'etpdatabaserevisionfile': ETP_DBFILE+".revision", # the local/remote database revision file
+    'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum
+    'etpdatabaselockfile': ETP_DBFILE+".lock", # the remote database lock file
+    'etpdatabasedownloadlockfile': ETP_DBFILE+".download.lock", # the remote database download lock file
+    'etpdatabasetaintfile': ETP_DBFILE+".tainted", # when this file exists, the database is not synced anymore with the online one
+    'etpdatabasefile': ETP_DBFILE, # Entropy sqlite database file ETP_DIR+ETP_DBDIR+"/packages.db"
+    'etpdatabasefilegzip': ETP_DBFILE+".gz", # Entropy sqlite database file (gzipped)
     'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
     'distcc-status': False, # used by Enzyme, if True distcc is enabled
     'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file
     'etpdatabasedir': ETP_DIR+ETP_DBDIR, # FIXME: REMOVE THIS !
-    'etpdatabasefile': ETP_DIR+ETP_DBDIR+"/packages.db", # Entropy sqlite database file
+    'etpdatabasefilepath': ETP_DIR+ETP_DBDIR+"/"+ETP_DBFILE,
     'etpapi': ETP_API, # Entropy database API revision
     'headertext': ETP_HEADER_TEXT, # header text that can be outputted to a file
     'currentarch': ETP_ARCH_CONST, # contains the current running architecture
@@ -156,7 +160,7 @@ if not os.path.isdir(ETP_DIR):
     if getpass.getuser() == "root":
 	import re
 	for x in etpConst:
-	    if (etpConst[x]) and (not etpConst[x].endswith(".conf")) and (not etpConst[x].endswith(".cfg")) and (not etpConst[x].endswith(".tmp")):
+	    if (etpConst[x]) and (not etpConst[x].endswith(".conf")) and (not etpConst[x].endswith(".cfg")) and (not etpConst[x].endswith(".tmp")) and (etpConst[x].find(".db") == -1):
 		
 		if etpConst[x].find("%ARCH%") != -1:
 		    for i in ETP_ARCHS:

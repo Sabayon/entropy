@@ -30,6 +30,7 @@ from pysqlite2 import dbapi2 as sqlite
 #import re
 import os
 import sys
+import string
 
 # TIP OF THE DAY:
 # never nest closeDB() and re-init inside a loop !!!!!!!!!!!! NEVER !
@@ -42,13 +43,13 @@ def database(options):
     if (options[0] == "--initialize"):
 	# initialize the database
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Initializing Entropy database..."), back = True)
-        # database file: etpConst['etpdatabasefile']
-        if os.path.isfile(etpConst['etpdatabasefile']):
+        # database file: etpConst['etpdatabasefilepath']
+        if os.path.isfile(etpConst['etpdatabasefilepath']):
 	    entropyTools.print_info(entropyTools.red(" * ")+entropyTools.bold("WARNING")+entropyTools.red(": database file already exists. Overwriting."))
 	    rc = askquestion("\n     Do you want to continue ?")
 	    if rc == "No":
 	        sys.exit(0)
-	    os.system("rm -f "+etpConst['etpdatabasefile'])
+	    os.system("rm -f "+etpConst['etpdatabasefilepath'])
 
 	# fill the database
         dbconn = etpDatabase()
@@ -56,13 +57,13 @@ def database(options):
 	
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Reinitializing Entropy database using Portage database..."))
 	# now run quickpkg for all the packages and then extract data
-	installedAtoms, atomsnumber = getInstalledPackages()
+	installedAtoms, atomsnumber = entropyTools.getInstalledPackages()
 	currCounter = 0
 	import reagentTools
 	for atom in installedAtoms:
 	    currCounter += 1
 	    entropyTools.print_info(entropyTools.green("  (")+ entropyTools.blue(str(currCounter))+"/"+entropyTools.red(str(atomsnumber))+entropyTools.green(") ")+entropyTools.red("Analyzing ")+entropyTools.bold(atom)+entropyTools.red(" ..."))
-	    quickpkg(atom,etpConst['packagestmpdir'])
+	    entropyTools.quickpkg(atom,etpConst['packagestmpdir'])
 	    # file is etpConst['packagestmpdir']+"/atomscan/"+pkgnamever.tbz2
 	    etpData = reagentTools.extractPkgData(etpConst['packagestmpdir']+"/"+atom.split("/")[1]+".tbz2")
 	    # fill the db entry
@@ -79,7 +80,7 @@ def database(options):
 	if (len(mykeywords) == 0):
 	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("Not enough parameters"))
 	    sys.exit(302)
-	if (not os.path.isfile(etpConst['etpdatabasefile'])):
+	if (not os.path.isfile(etpConst['etpdatabasefilepath'])):
 	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("Entropy Datbase does not exist"))
 	    sys.exit(303)
 	# search tool
@@ -213,7 +214,39 @@ def database(options):
 	"""
 	# print out the changes before doing them?
 	
+    elif (options[0] == "restore-package-info"):
+	mypackages = options[1:]
+	if (len(mypackages) == 0):
+	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("Not enough parameters"))
+	    sys.exit(302)
 	
+	dbconn = etpDatabase()
+	
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Reinitializing Entropy database entries for the specified applications ..."))
+	# now run quickpkg for all the packages and then extract data
+	import reagentTools
+	for atom in mypackages:
+	    if (entropyTools.isjustname(atom)) or (atom.find("/") == -1):
+		entropyTools.print_info((entropyTools.red(" * Package ")+entropyTools.bold(atom)+entropyTools.red(" is not a complete atom, skipping ...")))
+		continue
+	    if (entropyTools.getInstalledAtom("="+atom) is None):
+		entropyTools.print_info((entropyTools.red(" * Package ")+entropyTools.bold(atom)+entropyTools.red(" is not installed, skipping ...")))
+		continue
+	    entropyTools.print_info((entropyTools.red("Restoring entry for ")+entropyTools.bold(atom)+entropyTools.red(" ...")))
+	    entropyTools.quickpkg(atom,etpConst['packagestmpdir'])
+	    # file is etpConst['packagestmpdir']+"/atomscan/"+pkgnamever.tbz2
+	    etpData = reagentTools.extractPkgData(etpConst['packagestmpdir']+"/"+atom.split("/")[1]+".tbz2")
+	    # fill the db entry
+	    dbconn.removePackage(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])
+	    dbconn.addPackage(etpData)
+	    entropyTools.print_info((entropyTools.green(" * ")+entropyTools.red(" Successfully restored database information for ")+entropyTools.bold(atom)+entropyTools.red(" .")))
+	    os.system("rm -rf "+etpConst['packagestmpdir']+"/"+atom.split("/")[1]+"*")
+	
+	dbconn.commitChanges()
+	dbconn.closeDB()
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Done."))
+
+
 	
 
 ############
@@ -267,7 +300,7 @@ class etpDatabase:
 	# The first time you run this, sync the database and then lock
 	# FIXME: do this
 	# initialization open the database connection
-	self.connection = sqlite.connect(etpConst['etpdatabasefile'])
+	self.connection = sqlite.connect(etpConst['etpdatabasefilepath'])
 	self.cursor = self.connection.cursor()
 
     def closeDB(self):
@@ -329,7 +362,6 @@ class etpDatabase:
 	if (not self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])):
 	    update, revision = self.addPackage(etpData)
 	else:
-	    print "update"
 	    update, revision = self.updatePackage(etpData,forceBump)
 	return update, revision
 
@@ -411,13 +443,8 @@ class etpDatabase:
 	for i in myEtpData:
 	    myEtpData[i] = self.retrievePackageVar(dbPkgInfo,i)
 
-	print etpData
-	print
-	print myEtpData
-
 	for i in etpData:
 	    if etpData[i] != myEtpData[i]:
-		print "differs"
 		return False
 	
 	return True
@@ -471,7 +498,7 @@ class handlerFTP:
 	
 	self.ftpuri = ftpuri
 	
-	self.ftphost = extractFTPHostFromUri(self.ftpuri)
+	self.ftphost = entropyTools.extractFTPHostFromUri(self.ftpuri)
 	
 	self.ftpuser = ftpuri.split("ftp://")[len(ftpuri.split("ftp://"))-1].split(":")[0]
 	if (self.ftpuser == ""):
