@@ -21,7 +21,7 @@
 '''
 
 # Never do "import portage" here, please use entropyTools binding
-
+from portageTools import *
 from entropyConstants import *
 from entropyTools import *
 

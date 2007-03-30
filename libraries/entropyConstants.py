@@ -95,7 +95,12 @@ CREATE TABLE etpData (
 # the ARCHs that we support
 ETP_ARCHS = ["x86", "amd64"] # maybe ppc someday
 ETP_API = "1"
-ETP_ARCH_CONST = "%ARCH%"
+# ETP_ARCH_CONST setup
+if os.uname()[4] == "x86_64":
+    ETP_ARCH_CONST = "amd64"
+else:
+    ETP_ARCH_CONST = "x86"
+
 ETP_REVISION_CONST = "%ETPREV%"
 ETP_DIR = "/var/lib/entropy"
 ETP_TMPDIR = "/tmp"
@@ -152,6 +157,7 @@ etpConst = {
     'etpapi': ETP_API, # Entropy database API revision
     'headertext': ETP_HEADER_TEXT, # header text that can be outputted to a file
     'currentarch': ETP_ARCH_CONST, # contains the current running architecture
+    'supportedarchs': ETP_ARCHS, # Entropy supported Archs
 }
 
 # Create paths
@@ -160,7 +166,10 @@ if not os.path.isdir(ETP_DIR):
     if getpass.getuser() == "root":
 	import re
 	for x in etpConst:
-	    if (etpConst[x]) and (not etpConst[x].endswith(".conf")) and (not etpConst[x].endswith(".cfg")) and (not etpConst[x].endswith(".tmp")) and (etpConst[x].find(".db") == -1):
+	    if (type(etpConst[x]) is str):
+		
+	        if (not etpConst[x]) or (etpConst[x].endswith(".conf")) or (etpConst[x].endswith(".cfg")) or (etpConst[x].endswith(".tmp")) or (etpConst[x].find(".db") != -1):
+		    continue
 		
 		if etpConst[x].find("%ARCH%") != -1:
 		    for i in ETP_ARCHS:

@@ -1,6 +1,7 @@
 TODO list (for developers only):
 - build() and world(), on enzyme, add the support for whitelist+cron
 - build(), on enzyme, add license blacklist (packages that cannot be shipped in a binary form)
+- build(), on enzyme, if a package is not going to be installed anymore from an overlay, it must be notified
 - system-wide: add free space check
 - activator: for the tidy module I need that reagent includes the SLOT variable.
 - activator tasks:
