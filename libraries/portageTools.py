@@ -360,7 +360,7 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
     if (entropyTools.getDistCCStatus()):
 	# FIXME: add MAKEOPTS too
 	distccopts += 'FEATURES="distcc" '
-	distccjobs = str(len(getDistCCHosts())+3)
+	distccjobs = str(len(entropyTools.getDistCCHosts())+3)
 	distccopts += 'MAKEOPTS="-j'+distccjobs+'" '
 	#distccopts += 'MAKEOPTS="-j4" '
     rc = entropyTools.spawnCommand(distccopts+cflags+ldflags+useflags+makeopts+elogopts+cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
