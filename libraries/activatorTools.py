@@ -350,15 +350,15 @@ def database(options):
 	# are online mirrors locked?
 	mirrorsLocked = False
 	for uri in etpConst['activatoruploaduris']:
-	    ftp = handlerFTP(uri)
+	    ftp = databaseTools.handlerFTP(uri)
 	    ftp.setCWD(etpConst['etpurirelativepath'])
 	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
 		mirrorsLocked = True
 		ftp.closeFTPConnection()
 		break
 	
-	print mirrorsLocked
-	print dbTaintFile
+	print str(mirrorsLocked)
+	print str(dbTaintFile)
 	
 	#syncRemoteDatabases()
 
