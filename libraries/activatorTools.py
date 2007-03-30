@@ -340,7 +340,7 @@ def database(options):
     # database sync tool
     elif (options[0] == "sync"):
 	
-	print_info(green(" * ")+red("Checking database status ..."))
+	print_info(green(" * ")+red("Checking database status ..."), back = True)
 	
 	dbTaintFile = False
 	# does the taint file exist?
@@ -352,17 +352,28 @@ def database(options):
 	for uri in etpConst['activatoruploaduris']:
 	    ftp = databaseTools.handlerFTP(uri)
 	    ftp.setCWD(etpConst['etpurirelativepath'])
-	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
+	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) or (ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
 		mirrorsLocked = True
 		ftp.closeFTPConnection()
 		break
 	
-	print str(mirrorsLocked)
-	print str(dbTaintFile)
-	
-	#syncRemoteDatabases()
-
+	if (mirrorsLocked):
+	    # if the mirrors are locked, we need to change if we have
+	    # the taint file in place. Because in this case, the one
+	    # that tainted the db, was me.
+	    if (dbTaintFile):
+		print_info(green(" * ")+red("Updating mirrors with new information ..."))
+		# it's safe to sync
+	        syncRemoteDatabases()
+		# remove the online lock file
+		lockDatabases(False)
+		# remove the taint file
+		os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
+	    else:
+		print
+		print_error(green(" * ")+red("At the moment, mirrors are locked, someone is working on their databases, try again later ..."))
+		sys.exit(422)
 
     else:
-	print_error(green(" * ")+green("No valid tool specified."))
+	print_error(red(" * ")+green("No valid tool specified."))
 	sys.exit(400)

@@ -322,7 +322,7 @@ class etpDatabase:
 	for uri in etpConst['activatoruploaduris']:
 	    ftp = handlerFTP(uri)
 	    ftp.setCWD(etpConst['etpurirelativepath'])
-	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
+	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])):
 		import time
 		entropyTools.print_info(entropyTools.red(" * ")+entropyTools.bold("WARNING")+entropyTools.red(": online database is already locked. Waiting up to 2 minutes..."), back = True)
 		unlocked = False

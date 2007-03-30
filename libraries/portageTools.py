@@ -51,10 +51,12 @@ initializePortageTree()
 # colours support
 from output import bold, colorize, green, darkred, red, yellow, blue, darkblue, nocolor
 # misc modules
+import string
 import re
 import sys
 import os
 import commands
+import entropyTools
 
 #def translateArchFromUname(string):
 #    rc = commands.getoutput("uname -m").split("\n")[0]
@@ -318,7 +320,7 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
 	try:
 	    os.remove(outfile)
 	except:
-	    spawnCommand("rm -rf "+outfile)
+	    entropyTools.spawnCommand("rm -rf "+outfile)
 
     # Get specified USE flags
     try:
@@ -355,13 +357,13 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
     os.system("rm -rf "+elogfile)
     
     distccopts = ""
-    if (getDistCCStatus()):
+    if (entropyTools.getDistCCStatus()):
 	# FIXME: add MAKEOPTS too
 	distccopts += 'FEATURES="distcc" '
 	distccjobs = str(len(getDistCCHosts())+3)
 	distccopts += 'MAKEOPTS="-j'+distccjobs+'" '
 	#distccopts += 'MAKEOPTS="-j4" '
-    rc = spawnCommand(distccopts+cflags+ldflags+useflags+makeopts+elogopts+cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
+    rc = entropyTools.spawnCommand(distccopts+cflags+ldflags+useflags+makeopts+elogopts+cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
     return rc, outfile
 
 def parseElogFile(atom):
@@ -440,7 +442,7 @@ def quickpkg(atom,dirpath):
     pkgfile = pkgname+".tbz2"
     dirpath += "/"+pkgname+".tbz2"
     tmpdirpath = etpConst['packagestmpdir']+"/"+pkgname+".tbz2"+"-tmpdir"
-    if os.path.isdir(tmpdirpath): spawnCommand("rm -rf "+tmpdirpath)
+    if os.path.isdir(tmpdirpath): entropyTools.spawnCommand("rm -rf "+tmpdirpath)
     os.makedirs(tmpdirpath)
     dbdir = "/var/db/pkg/"+pkgcat+"/"+pkgname+"/"
 
@@ -461,7 +463,7 @@ def quickpkg(atom,dirpath):
     f.close()
 
     # package them into a file
-    rc = spawnCommand("tar cjf "+dirpath+" -C / --files-from='"+tmpdirpath+"/"+dbCONTENTS+"' --no-recursion", redirect = "&>/dev/null")
+    rc = entropyTools.spawnCommand("tar cjf "+dirpath+" -C / --files-from='"+tmpdirpath+"/"+dbCONTENTS+"' --no-recursion", redirect = "&>/dev/null")
     
     # appending xpak informations
     import xpak
@@ -660,16 +662,18 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
     # format properly
     tmpConflicts = list(set(conflicts.split()))
     conflicts = ''
+    tmpData = []
     for i in tmpConflicts:
 	i = i[1:] # remove "!"
-	conflicts += i+" "
-    conflicts = removeSpaceAtTheEnd(conflicts)
+	tmpData.append(i)
+    conflicts = string.join(tmpData," ")
 
+    tmpData = []
     tmpDeps = list(set(dependencies.split()))
     dependencies = ''
     for i in tmpDeps:
-	dependencies += i+" "
-    dependencies = removeSpaceAtTheEnd(dependencies)
+	tmpData.append(i)
+    dependencies = string.join(tmpData," ")
 
     return dependencies, conflicts
 

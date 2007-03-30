@@ -29,6 +29,8 @@ from entropyTools import *
 import commands
 import re
 import sys
+import string
+from portageTools import unpackTbz2, synthetizeRoughDependencies, getPackageRuntimeDependencies, dep_getkey
 
 def generator(package, enzymeRequestBump = False):
 
@@ -46,7 +48,7 @@ def generator(package, enzymeRequestBump = False):
     etpData = extractPkgData(package)
 
     # now import etpData inside the database
-    dbconn = databaseTools.etpDatabase()
+    dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
     updated, revision = dbconn.handlePackage(etpData,enzymeRequestBump)
     dbconn.closeDB()
 
@@ -235,12 +237,14 @@ def extractPkgData(package):
         f = open(tbz2TmpDir+dbSRC_URI,"r")
 	tmpSources = f.readline().strip().split()
         f.close()
+	tmpData = []
 	for atom in tmpSources:
 	    if atom.endswith("?"):
 	        etpData['sources'] += "="+atom[:len(atom)-1]+"|"
 	    elif (not atom.startswith("(")) and (not atom.startswith(")")):
-		etpData['sources'] += atom+" "
-	etpData['sources'] = removeSpaceAtTheEnd(etpData['sources'])
+		tmpData.append(atom)
+	
+	etpData['sources'] = string.join(tmpData," ")
     except IOError:
 	etpData['sources'] = ""
 
@@ -248,6 +252,7 @@ def extractPkgData(package):
     # manage etpData['sources'] to create etpData['mirrorlinks']
     # =mirror://openoffice|link1|link2|link3
     tmpMirrorList = etpData['sources'].split()
+    tmpData = []
     for i in tmpMirrorList:
         if i.startswith("mirror://"):
 	    # parse what mirror I need
@@ -259,8 +264,8 @@ def extractPkgData(package):
 	        out += mirror+"|"
 	    if out.endswith("|"):
 		out = out[:len(out)-1]
-	    etpData['mirrorlinks'] += out+" "
-    etpData['mirrorlinks'] = removeSpaceAtTheEnd(etpData['mirrorlinks'])
+	    tmpData.append(out)
+    etpData['mirrorlinks'] = string.join(tmpData," ")
 
     print_info(yellow(" * ")+red("Getting package USE flags..."),back = True)
     # Fill USE
@@ -284,9 +289,10 @@ def extractPkgData(package):
     tmpUSE = etpData['useflags'].split()
     tmpUSE = list(set(tmpUSE))
     etpData['useflags'] = ''
+    tmpData = []
     for i in tmpUSE:
-        etpData['useflags'] += i+" "
-    etpData['useflags'] = removeSpaceAtTheEnd(etpData['useflags'])
+        tmpData.append(i)
+    etpData['useflags'] = string.join(tmpData," ")
 
     print_info(yellow(" * ")+red("Getting sorce package supported ARCHs..."),back = True)
     # fill KEYWORDS
@@ -301,10 +307,11 @@ def extractPkgData(package):
     
     # fill ARCHs
     pkgArchs = etpData['keywords']
+    tmpData = []
     for i in etpConst['supportedarchs']:
         if pkgArchs.find(i) != -1 and (pkgArchs.find("-"+i) == -1): # in case we find something like -amd64...
-	    etpData['binkeywords'] += i+" "
-    etpData['binkeywords'] = removeSpaceAtTheEnd(etpData['binkeywords'])
+	    tmpData.append(i)
+    etpData['binkeywords'] = string.join(tmpData," ")
 
     # FIXME: do we have to rewrite this and use Portage to query a better dependency list?
     print_info(yellow(" * ")+red("Getting package dependencies..."),back = True)
@@ -336,23 +343,24 @@ def extractPkgData(package):
     # start collecting needed libraries
     runtimeNeededPackages, runtimeNeededPackagesXT = getPackageRuntimeDependencies(tbz2TmpDir+"/"+dbNEEDED)
 
+    tmpData = []
     # now keep only the ones not available in etpData['dependencies']
     for i in runtimeNeededPackages:
         if etpData['dependencies'].find(i) == -1:
 	    # filter itself
 	    if (i != etpData['category']+"/"+etpData['name']):
-	        etpData['rundependencies'] += i+" "
+	        tmpData.append(i)
+    etpData['rundependencies'] = string.join(tmpData," ")
 
+    tmpData = []
     for i in runtimeNeededPackagesXT:
 	x = dep_getkey(i)
         if etpData['dependencies'].find(x) == -1:
 	    # filter itself
 	    if (x != etpData['category']+"/"+etpData['name']):
-	        etpData['rundependenciesXT'] += i+" "
+	        tmpData.append(i)
     
-    # format properly
-    etpData['rundependencies'] = removeSpaceAtTheEnd(etpData['rundependencies'])
-    etpData['rundependenciesXT'] = removeSpaceAtTheEnd(etpData['rundependenciesXT'])
+    etpData['rundependenciesXT'] = string.join(tmpData," ")
 
     print_info(yellow(" * ")+red("Getting Reagent API version..."),back = True)
     # write API info

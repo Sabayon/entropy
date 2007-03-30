@@ -283,6 +283,7 @@ def syncRemoteDatabases(noUpload = False):
 	print_info(green("\t Host:\t")+bold(extractFTPHostFromUri(dbstat[0])))
 	print_info(red("\t  * Database revision: ")+blue(str(dbstat[1])))
 
+
 def uploadDatabase(uris):
 
     # our fancy compressor :-)
