@@ -34,7 +34,7 @@ import string
 def sync(options):
 
     # sync the local repository with the remote ones
-    syncRemoteDatabases()
+    print "not yet implemented"
 
     sys.exit(0)
 
@@ -336,6 +336,32 @@ def database(options):
 	    else:
 	        db[2] = green("Unlocked")
 	    print_info(bold("\t"+extractFTPHostFromUri(db[0])+": ")+red("[")+yellow("DATABASE: ")+db[1]+red("] [")+yellow("DOWNLOAD: ")+db[2]+red("]"))
+
+    # database sync tool
+    elif (options[0] == "sync"):
+	
+	print_info(green(" * ")+red("Checking database status ..."))
+	
+	dbTaintFile = False
+	# does the taint file exist?
+	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
+	    dbTaintFile = True
+	
+	# are online mirrors locked?
+	mirrorsLocked = False
+	for uri in etpConst['activatoruploaduris']:
+	    ftp = handlerFTP(uri)
+	    ftp.setCWD(etpConst['etpurirelativepath'])
+	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
+		mirrorsLocked = True
+		ftp.closeFTPConnection()
+		break
+	
+	print mirrorsLocked
+	print dbTaintFile
+	
+	#syncRemoteDatabases()
+
 
     else:
 	print_error(green(" * ")+green("No valid tool specified."))

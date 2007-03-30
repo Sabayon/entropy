@@ -52,7 +52,7 @@ def database(options):
 	    os.system("rm -f "+etpConst['etpdatabasefilepath'])
 
 	# fill the database
-        dbconn = etpDatabase()
+        dbconn = etpDatabase(readOnly = False, noUpload = True)
 	dbconn.initializeDatabase()
 	
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Reinitializing Entropy database using Portage database..."))
@@ -74,7 +74,7 @@ def database(options):
 	dbconn.closeDB()
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Entropy database has been reinitialized using Portage database entries"))
 
-
+    # used by reagent
     elif (options[0] == "search"):
 	mykeywords = options[1:]
 	if (len(mykeywords) == 0):
@@ -85,7 +85,8 @@ def database(options):
 	    sys.exit(303)
 	# search tool
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Searching inside the Entropy database..."))
-	dbconn = etpDatabase()
+	# open read only
+	dbconn = etpDatabase(True)
 	for mykeyword in mykeywords:
 	    results = dbconn.searchPackages(mykeyword)
 	    for result in results:
@@ -137,18 +138,19 @@ def database(options):
 		#print result
 	print
 	dbconn.closeDB()
-
+    
+    # used by reagent
     elif (options[0] == "dump-package-info"):
 	mypackages = options[1:]
 	if (len(mypackages) == 0):
 	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("Not enough parameters"))
 	    sys.exit(302)
-	
-	dbconn = etpDatabase()
+	# open read only
+	dbconn = etpDatabase(True)
 	
 	for package in mypackages:
 	    entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Searching package ")+entropyTools.bold(package)+entropyTools.red(" ..."))
-	    if entropyTools.isjustname(package) or (package.find("/") == -1):
+	    if entropyTools.isjustpkgname(package) or (package.find("/") == -1):
 		entropyTools.print_warning(entropyTools.yellow(" * ")+entropyTools.red("Package ")+entropyTools.bold(package)+entropyTools.red(" is not a complete atom."))
 		continue
 	    # open db connection
@@ -184,6 +186,7 @@ def database(options):
 
 	dbconn.closeDB()
 
+    # used by reagent
     elif (options[0] == "inject-package-info"):
 	if (len(options[1:]) == 0):
 	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("Not enough parameters"))
@@ -195,7 +198,7 @@ def database(options):
 	
 	# revision is surely bumped
 	etpDataOut = entropyTools.parseEtpDump(mypath)
-	dbconn = etpDatabase()
+	dbconn = etpDatabase(readOnly = False, noUpload = True)
 	updated, revision = dbconn.handlePackage(etpDataOut)
 	dbconn.closeDB()
 
@@ -220,13 +223,13 @@ def database(options):
 	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("Not enough parameters"))
 	    sys.exit(302)
 	
-	dbconn = etpDatabase()
+	dbconn = etpDatabase(readOnly = False, noUpload = True)
 	
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Reinitializing Entropy database entries for the specified applications ..."))
 	# now run quickpkg for all the packages and then extract data
 	import reagentTools
 	for atom in mypackages:
-	    if (entropyTools.isjustname(atom)) or (atom.find("/") == -1):
+	    if (entropyTools.isjustpkgname(atom)) or (atom.find("/") == -1):
 		entropyTools.print_info((entropyTools.red(" * Package ")+entropyTools.bold(atom)+entropyTools.red(" is not a complete atom, skipping ...")))
 		continue
 	    if (entropyTools.getInstalledAtom("="+atom) is None):
@@ -261,8 +264,12 @@ class databaseStatus:
 	self.databaseBumped = False
 	self.databaseInfoCached = False
 	self.databaseLock = False
+	#self.database
 	self.databaseDownloadLocl = False
 	self.databaseAlreadyTainted = False
+	
+	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
+	    self.databaseAlreadyTainted = True
 
     def isDatabaseAlreadyBumped(self):
 	return self.databaseBumped
@@ -296,25 +303,97 @@ class databaseStatus:
 
 class etpDatabase:
 
-    def __init__(self):
-	# The first time you run this, sync the database and then lock
-	# FIXME: do this
-	# initialization open the database connection
+    def __init__(self, readOnly = False, noUpload = False):
+	
+	self.readOnly = readOnly
+	self.noUpload = noUpload
+	
+	if (self.readOnly):
+	    # if the database is opened readonly, we don't need to lock the online status
+	    # FIXME: add code for locking the table
+	    self.connection = sqlite.connect(etpConst['etpdatabasefilepath'])
+	    self.cursor = self.connection.cursor()
+	    # set the table read only
+	    return
+
+	# check if the database is locked REMOTELY
+	# FIXME: this does not work
+	entropyTools.print_info(entropyTools.red(" * ")+entropyTools.red(" Locking and Sync Entropy database ..."), back = True)
+	for uri in etpConst['activatoruploaduris']:
+	    ftp = handlerFTP(uri)
+	    ftp.setCWD(etpConst['etpurirelativepath'])
+	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
+		import time
+		entropyTools.print_info(entropyTools.red(" * ")+entropyTools.bold("WARNING")+entropyTools.red(": online database is already locked. Waiting up to 2 minutes..."), back = True)
+		unlocked = False
+		for x in range(120):
+		    time.sleep(1)
+		    if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
+			entropyTools.print_info(entropyTools.red(" * ")+entropyTools.bold("HOORAY")+entropyTools.red(": online database has been unlocked. Locking back and syncing..."))
+			unlocked = True
+			break
+		if (unlocked):
+		    break
+
+		# time over
+		entropyTools.print_info(entropyTools.red(" * ")+entropyTools.bold("ERROR")+entropyTools.red(": online database has not been unlocked. Giving up. Who the hell is working on it? Damn, it's so frustrating for me. I'm a piece of python code with a soul dude!"))
+		# FIXME show the lock status
+
+		entropyTools.print_info(entropyTools.yellow(" * ")+entropyTools.green("Mirrors status table:"))
+		dbstatus = entropyTools.getMirrorsLock()
+		for db in dbstatus:
+		    if (db[1]):
+	        	db[1] = entropyTools.red("Locked")
+	    	    else:
+	        	db[1] = entropyTools.green("Unlocked")
+	    	    if (db[2]):
+	        	db[2] = entropyTools.red("Locked")
+	            else:
+	        	db[2] = entropyTools.green("Unlocked")
+	    	    entropyTools.print_info(entropyTools.bold("\t"+entropyTools.extractFTPHostFromUri(db[0])+": ")+entropyTools.red("[")+entropyTools.yellow("DATABASE: ")+db[1]+entropyTools.red("] [")+entropyTools.yellow("DOWNLOAD: ")+db[2]+entropyTools.red("]"))
+	    
+	        ftp.closeFTPConnection()
+	        sys.exit(320)
+
+		
+	# if we arrive here, it is because all the mirrors are unlocked so... damn, LOCK!
+	entropyTools.lockDatabases(True)
+	
+	# ok done... now sync the new db, if needed
+	entropyTools.syncRemoteDatabases(self.noUpload)
+	
 	self.connection = sqlite.connect(etpConst['etpdatabasefilepath'])
 	self.cursor = self.connection.cursor()
 
     def closeDB(self):
+	
+	# if the class is opened readOnly, close and forget
+	if (self.readOnly):
+	    self.cursor.close()
+	    self.connection.close()
+	    return
+	
 	# FIXME verify all this shit, for now it works...
 	if (entropyTools.dbStatus.isDatabaseAlreadyTainted()) and (not entropyTools.dbStatus.isDatabaseAlreadyBumped()):
 	    # bump revision, setting DatabaseBump causes the session to just bump once
 	    entropyTools.dbStatus.setDatabaseBump(True)
 	    self.revisionBump()
+	
+	if (not entropyTools.dbStatus.isDatabaseAlreadyTainted()):
+	    # we can unlock it, no changes were made
+	    entropyTools.lockDatabases(False)
+	else:
+	    entropyTools.print_info(entropyTools.yellow(" * ")+entropyTools.green(" Mirrors have not been unlocked. Run activator."))
+	
 	self.cursor.close()
 	self.connection.close()
 
     def commitChanges(self):
-	self.connection.commit()
-	self.taintDatabase()
+	if (not self.readOnly):
+	    self.connection.commit()
+	    self.taintDatabase()
+	else:
+	    self.connection.rollback() # is it ok?
 
     def taintDatabase(self):
 	# taint the database status
@@ -442,7 +521,7 @@ class etpDatabase:
 	# fill content
 	for i in myEtpData:
 	    myEtpData[i] = self.retrievePackageVar(dbPkgInfo,i)
-
+	
 	for i in etpData:
 	    if etpData[i] != myEtpData[i]:
 		return False

@@ -80,6 +80,32 @@ def md5sum(filepath):
 	block = readfile.read(1024)
     return m.hexdigest()
 
+# Imported from Gentoo portage_dep.py
+# Copyright 2003-2004 Gentoo Foundation
+# done to avoid the import of portage_dep here
+ver_regexp = re.compile("^(cvs\\.)?(\\d+)((\\.\\d+)*)([a-z]?)((_(pre|p|beta|alpha|rc)\\d*)*)(-r(\\d+))?$")
+def isjustpkgname(mypkg):
+    myparts = mypkg.split('-')
+    for x in myparts:
+	if ververify(x):
+	    return 0
+    return 1
+
+def ververify(myver, silent=1):
+    if ver_regexp.match(myver):
+	return 1
+    else:
+	if not silent:
+	    print "!!! syntax error in version: %s" % myver
+	return 0
+
+def removePackageOperators(atom):
+    if atom.startswith(">") or atom.startswith("<"):
+	atom = atom[1:]
+    if atom.startswith("="):
+	atom = atom[1:]
+    return atom
+
 # Tool to run commands
 def spawnCommand(command, redirect = None):
     if redirect is not None:
@@ -124,7 +150,7 @@ def getEtpRemoteDatabaseStatus():
 
     return uriDbInfo
 
-def syncRemoteDatabases():
+def syncRemoteDatabases(noUpload = False):
 
     print_info(green(" * ")+red("Checking the status of the remote Entropy Database Repository"))
     remoteDbsStatus = getEtpRemoteDatabaseStatus()
@@ -198,15 +224,15 @@ def syncRemoteDatabases():
 	    #print "DEBUG: get the latest?"
 	    revisions = []
 	    for dbstat in etpDbRemotePaths:
-		revisions.append(dbstat[1])
-	    latestrevision = int(alphaSorter(str(revisions))[len(str(revisions))-1])
+		revisions.append(str(dbstat[1]))
+	    
+	    latestrevision = int(alphaSorter(revisions)[len(revisions)-1])
 	    for dbstat in etpDbRemotePaths:
 		if dbstat[1] == latestrevision:
 		    # found !
 		    latestRemoteDb = dbstat
 		    break
-	    
-	    # now compare downloadLatest with our local file mtime
+	    # now compare downloadLatest with our local db revision
 	    if (etpDbLocalRevision < latestRemoteDb[1]):
 		# download !
 		#print "appending a download"
@@ -228,7 +254,8 @@ def syncRemoteDatabases():
     
     if (downloadLatest == []) and (not uploadLatest):
 	print_info(green(" * ")+red("Online database does not need to be updated."))
-    
+        return
+
     # now run the selected task!
     if (downloadLatest != []):
 	# match the proper URI
@@ -237,7 +264,7 @@ def syncRemoteDatabases():
 		downloadLatest[0] = uri
 	downloadDatabase(downloadLatest[0])
 	
-    if (uploadLatest):
+    if (uploadLatest) and (not noUpload):
 	print_info(green(" * ")+red("Starting to update the needed mirrors ..."))
 	_uploadList = []
 	for uri in etpConst['activatoruploaduris']:
@@ -250,6 +277,11 @@ def syncRemoteDatabases():
 	uploadDatabase(_uploadList)
 	print_info(green(" * ")+red("All the mirrors have been updated."))
 
+    remoteDbsStatus = getEtpRemoteDatabaseStatus()
+    print_info(green(" * ")+red("Remote Entropy Database Repository Status:"))
+    for dbstat in remoteDbsStatus:
+	print_info(green("\t Host:\t")+bold(extractFTPHostFromUri(dbstat[0])))
+	print_info(red("\t  * Database revision: ")+blue(str(dbstat[1])))
 
 def uploadDatabase(uris):
 
@@ -359,6 +391,8 @@ def downloadDatabase(uri):
 	print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabasehashfile'])+red(" completed. Disconnecting."))
     else:
 	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+
+    os.system("rm -f " + etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip']+" &> /dev/null")
 
 
 # Reports in a list form the lock status of the mirrors
@@ -526,6 +560,16 @@ def downloadLockDatabases(lock = True, mirrorList = []):
 	        print_warning(red(" * ")+red("A problem occured while unlocking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror. Please have a look."))
 	ftp.closeFTPConnection()
     return outstat
+
+def getLocalDatabaseRevision():
+    if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile']):
+	f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'])
+	rev = f.readline().strip()
+	f.close()
+	rev = int(rev)
+	return rev
+    else:
+	return 0
 
 # parse a dumped .etp file and returns etpData
 def parseEtpDump(file):
