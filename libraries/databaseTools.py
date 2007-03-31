@@ -489,9 +489,6 @@ class etpDatabase:
 	return update, revision
 
     def addPackage(self,etpData, revision = 0):
-	print
-	print etpData['content']
-	print
 	self.cursor.execute(
 		'INSERT into etpData VALUES '
 		'(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
