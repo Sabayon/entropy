@@ -142,6 +142,10 @@ if (options[0] == "search"):
 if (options[0] == "distcc"):
     enzymeTools.distcc(options[1:])
     sys.exit(0)
+# orphans tool
+if (options[0] == "orphans"):
+    enzymeTools.orphans()
+    sys.exit(0)
 # cleanup tool
 if (options[0] == "cleanup"):
     entropyTools.cleanup(options[1:])

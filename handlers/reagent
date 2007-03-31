@@ -51,8 +51,12 @@ def print_help():
     entropyTools.print_info(" \t\t"+entropyTools.green("dump-package-info")+"\t Dump the stored information of package atom(s) to a file")
     entropyTools.print_info(" \t\t"+entropyTools.green("inject-package-info")+"\t Inject an Entropy dump inside the database (file path is mandatory)")
     entropyTools.print_info(" \t\t"+entropyTools.green("restore-package-info")+"\t Reinitialize a package entry looking at the current install")
+    entropyTools.print_info(" \t\t"+entropyTools.green(entropyTools.bold("remove"))+"\t\t\t Remove a package or a list of packages")
     entropyTools.print_info(" \t\t"+entropyTools.green("create-empty-database")+"\t Create an empty Entropy database file in the specified <path>")
     entropyTools.print_info(" \t\t"+entropyTools.green("stabilize")+"\t\t Mark as stable a package, a list of packages, world")
+    entropyTools.print_info(" \t\t"+entropyTools.green("unstabilize")+"\t\t Mark as unstable a package, a list of packages, world")
+    entropyTools.print_info(" \t\t"+entropyTools.green(entropyTools.bold("orphans"))+"\t\t\t Dump the list of files that don't belong on any installed package")
+    entropyTools.print_info(" \t\t"+entropyTools.green(entropyTools.bold("sanity-check"))+"\t\t Do a quick check on the database to assure data integrity.")
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("cleanup"))+entropyTools.yellow("\t\t to clean temporary files"))
 
 options = sys.argv[1:]

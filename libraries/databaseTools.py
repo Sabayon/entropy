@@ -274,7 +274,18 @@ def database(options):
 	connection.close()
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Entropy database file ")+entropyTools.bold(mypath[0])+entropyTools.red(" successfully initialized."))
 
-    elif (options[0] == "stabilize"):
+    elif (options[0] == "stabilize") or (options[0] == "unstabilize"):
+
+	if options[0] == "stabilize":
+	    stable = True
+	else:
+	    stable = False
+	
+	if (stable):
+	    entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Collecting packages that would be marked stable ..."), back = True)
+	else:
+	    entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Collecting packages that would be marked unstable ..."), back = True)
+	
 	myatoms = options[1:]
 	if len(myatoms) == 0:
 	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("Not enough parameters"))
@@ -283,17 +294,156 @@ def database(options):
 	if myatoms[0] == "world":
 	    # open db in read only
 	    dbconn = etpDatabase(readOnly = True)
-	    worldPackages = dbconn.listAllPackages()
+	    pkglist = dbconn.listAllPackages()
 	    # This is the list of all the packages available in Entropy
-	    print worldPackages
 	    dbconn.closeDB()
+	else:
+	    pkglist = []
+	    for atom in myatoms:
+		# validate atom
+		dbconn = etpDatabase(readOnly = True)
+		pkg = dbconn.searchPackages(atom)
+		try:
+		    for x in pkg:
+		        pkglist.append(x[0])
+		except:
+		    pass
 	
 	# filter dups
-	myatoms = list(set(myatoms))
+	pkglist = list(set(pkglist))
+	# check if atoms were found
+	if len(pkglist) == 0:
+	    print
+	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("No packages found."))
+	    sys.exit(303)
 	
-	print "DEBUG: Proposed atoms: "+str(myatoms)
-	
+	# show what would be done
+	if (stable):
+	    entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("These are the packages that would be marked stable:"))
+	else:
+	    entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("These are the packages that would be marked unstable:"))
 
+	for pkg in pkglist:
+	    entropyTools.print_info(entropyTools.red("\t (*) ")+entropyTools.bold(pkg))
+	
+	# ask to continue
+	rc = entropyTools.askquestion("     Would you like to continue ?")
+	if rc == "No":
+	    sys.exit(0)
+	
+	# now mark them as stable
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Marking selected packages ..."))
+
+	# open db
+	dbconn = etpDatabase(readOnly = False, noUpload = True)
+	for pkg in pkglist:
+	    entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Marking package: ")+entropyTools.bold(pkg)+entropyTools.red(" ..."), back = True)
+	    dbconn.stabilizePackage(pkg,stable)
+	dbconn.commitChanges()
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("All the selected packages have been marked as requested. Have fun."))
+	dbconn.closeDB()
+
+    elif (options[0] == "orphans"):
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Collecting files in database..."))
+	# FIXME: complete this!
+	dbconn = etpDatabase(readOnly = True)
+	pkglist = dbconn.listAllPackages()
+	
+	filesList = []
+	for pkg in pkglist:
+	    entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Collecting files in package: ")+entropyTools.bold(pkg)+entropyTools.red(" ..."), back = True)
+	    files = dbconn.retrievePackageVar(pkg,"content").split()
+	    for file in files:
+	        filesList.append(file)
+	
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Database data collected."))
+	dbconn.closeDB()
+	
+	# remove dups
+	filesList = list(set(filesList))
+	
+	# now list all the files in the computer
+	import commands
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Collecting files on the system ..."), back = True)
+	rootFilesList = commands.getoutput("find /").split("\n")
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("System data collected."))
+	
+	# remove dups
+	rootFilesList = list(set(rootFilesList))
+	
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Calculating ..."), back = True)
+	orphanList = []
+	# FIXME: now parse them!!!
+	for rootFile in rootFilesList:
+	    for file in filesList:
+		if (file == rootFile) and (not file.startswith("/dev")) and (not file.startswith("/home"))  and (not file.startswith("/var")):
+		    orphanList.append(file)
+		    break
+	
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Orphaned files:")+entropyTools.bold(len(orphanList)))
+	f = open(etpConst['packagestmpdir']+"/orphaned-files.txt","w")
+	for line in orphanList:
+	    f.write(line+"\n")
+	f.flush()
+	f.close()
+	entropyTools.print_info(entropyTools.green(" --> ")+entropyTools.red("Dump saved in: ")+entropyTools.bold(etpConst['packagestmpdir']+"/orphaned-files.txt"))
+	
+    elif (options[0] == "sanity-check"):
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Running sanity check on the database ... "), back = True)
+	dbconn = etpDatabase(readOnly = True)
+	dbconn.noopCycle()
+	dbconn.closeDB()
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Database sanity check passed."))
+
+    elif (options[0] == "remove"):
+
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Scanning packages that would be removed ..."), back = True)
+	
+	myatoms = options[1:]
+	if len(myatoms) == 0:
+	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("Not enough parameters"))
+	    sys.exit(303)
+
+	pkglist = []
+	for atom in myatoms:
+	    # validate atom
+	    dbconn = etpDatabase(readOnly = True)
+	    pkg = dbconn.searchPackages(atom)
+	    try:
+		for x in pkg:
+		    pkglist.append(x[0])
+	    except:
+		pass
+
+	# filter dups
+	pkglist = list(set(pkglist))
+	# check if atoms were found
+	if len(pkglist) == 0:
+	    print
+	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("No packages found."))
+	    sys.exit(303)
+	
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("These are the packages that would be removed from the database:"))
+
+	for pkg in pkglist:
+	    entropyTools.print_info(entropyTools.red("\t (*) ")+entropyTools.bold(pkg))
+	
+	# ask to continue
+	rc = entropyTools.askquestion("     Would you like to continue ?")
+	if rc == "No":
+	    sys.exit(0)
+	
+	# now mark them as stable
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Removing selected packages ..."))
+
+	# open db
+	dbconn = etpDatabase(readOnly = False, noUpload = True)
+	for pkg in pkglist:
+	    entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Removing package: ")+entropyTools.bold(pkg)+entropyTools.red(" ..."), back = True)
+	    dbconn.stabilizePackage(pkg,stable)
+	dbconn.commitChanges()
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("All the selected packages have been removed as requested. Have fun."))
+	dbconn.closeDB()
 
 ############
 # Functions and Classes
@@ -426,7 +576,7 @@ class etpDatabase:
 	    # we can unlock it, no changes were made
 	    entropyTools.lockDatabases(False)
 	else:
-	    entropyTools.print_info(entropyTools.yellow(" * ")+entropyTools.green(" Mirrors have not been unlocked. Run activator."))
+	    entropyTools.print_info(entropyTools.yellow(" * ")+entropyTools.green("Mirrors have not been unlocked. Run activator."))
 	
 	self.cursor.close()
 	self.connection.close()
@@ -629,6 +779,17 @@ class etpDatabase:
 	for row in self.cursor:
 	    result.append(row[0])
 	return result
+
+    # useful to quickly retrieve (and trash) all the data
+    # and look for problems.
+    def noopCycle(self):
+	self.cursor.execute('SELECT * FROM etpData')
+
+    def stabilizePackage(self,atom,stable = True):
+	if (stable):
+	    self.cursor.execute('UPDATE etpData SET branch = "stable" WHERE atom = "'+atom+'"')
+	else:
+	    self.cursor.execute('UPDATE etpData SET branch = "unstable" WHERE atom = "'+atom+'"')
 
 # ------ BEGIN: activator tools ------
 

@@ -2,11 +2,10 @@ TODO list (for developers only):
 - build() and world(), on enzyme, add the support for whitelist+cron
 - build(), on enzyme, add license blacklist (packages that cannot be shipped in a binary form)
 - entropy: add support for stable/unstable branch
-- reagent: complete the database stabilize function
 - reagent: add the option to delete a package in the database
 - activator tasks:
           - COMPLETE sync !
-          - add/remove packages from the database
+          - tidy tool: database entries and binary packages removal
           - tidy tool will be a joint work between reagent and activator libraries: cleanup policy to prune old binaries
 
 - Sabayon Linux USE flags: remove all server related use flags
