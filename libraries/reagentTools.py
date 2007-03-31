@@ -150,9 +150,9 @@ def extractPkgData(package):
     etpData['chost'] = f.readline().strip()
     f.close()
 
-    print_info(yellow(" * ")+red("Getting package location path..."),back = True)
+    print_info(yellow(" * ")+red("Setting package branch..."),back = True)
     # local path to the file
-    etpData['packagepath'] = etpConst['binaryurirelativepath']+"/"+pkgname+"-"+pkgver+".tbz2"
+    etpData['branch'] = "unstable"
 
     print_info(yellow(" * ")+red("Getting package description..."),back = True)
     # Fill description

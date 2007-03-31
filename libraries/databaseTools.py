@@ -85,12 +85,14 @@ def database(options):
 	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("Entropy Datbase does not exist"))
 	    sys.exit(303)
 	# search tool
-	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Searching inside the Entropy database..."))
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Searching ..."))
 	# open read only
 	dbconn = etpDatabase(True)
+	foundCounter = 0
 	for mykeyword in mykeywords:
 	    results = dbconn.searchPackages(mykeyword)
 	    for result in results:
+		foundCounter += 1
 		print 
 		entropyTools.print_info(entropyTools.green(" * ")+entropyTools.bold(result[0]))   # package atom
 		entropyTools.print_info(entropyTools.red("\t Name: ")+entropyTools.blue(result[1]))
@@ -107,7 +109,7 @@ def database(options):
 		entropyTools.print_info(entropyTools.red("\t License: ")+entropyTools.bold(result[10]))
 		entropyTools.print_info(entropyTools.red("\t Source keywords: ")+entropyTools.darkblue(result[11]))
 		entropyTools.print_info(entropyTools.red("\t Binary keywords: ")+entropyTools.green(result[12]))
-		entropyTools.print_info(entropyTools.red("\t Package path: ")+result[13])
+		entropyTools.print_info(entropyTools.red("\t Package branch: ")+result[13])
 		entropyTools.print_info(entropyTools.red("\t Download relative URL: ")+result[14])
 		entropyTools.print_info(entropyTools.red("\t Package Checksum: ")+entropyTools.green(result[15]))
 		if (result[16]):
@@ -138,8 +140,11 @@ def database(options):
 		entropyTools.print_info(entropyTools.red("\t Entry creation date: ")+str(result[25]))
 		entropyTools.print_info(entropyTools.red("\t Entry revision: ")+str(result[26]))
 		#print result
-	print
 	dbconn.closeDB()
+	if (foundCounter == 0):
+	    entropyTools.print_warning(entropyTools.red(" * ")+entropyTools.red("Nothing found."))
+	else:
+	    print
     
     # used by reagent
     elif (options[0] == "dump-package-info"):
@@ -479,7 +484,7 @@ class etpDatabase:
 			etpData['license'],
 			etpData['keywords'],
 			etpData['binkeywords'],
-			etpData['packagepath'],
+			etpData['branch'],
 			etpData['download'],
 			etpData['digest'],
 			etpData['sources'],

@@ -42,7 +42,7 @@ etpData = {
     'license': "", # License adpoted
     'keywords': "", # supported ARCHs (by the SRC)
     'binkeywords': "", # supported ARCHs (by the BIN)
-    'packagepath': "", # path where the .tbz2 file is stored
+    'branch': "", # package branch location
     'download': "", # link to download the binary package
     'digest': "", # md5 hash of the .tbz2 package
     'sources': "", # link to the sources
@@ -77,7 +77,7 @@ CREATE TABLE etpData (
     license VARCHAR(25),
     keywords VARCHAR(50),
     binkeywords VARCHAR(50),
-    packagepath VARCHAR(255),
+    branch VARCHAR(255),
     download VARCHAR(100),
     digest VARCHAR(32),
     sources VARCHAR(500),

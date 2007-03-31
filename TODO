@@ -1,7 +1,6 @@
 TODO list (for developers only):
 - build() and world(), on enzyme, add the support for whitelist+cron
 - build(), on enzyme, add license blacklist (packages that cannot be shipped in a binary form)
-- build(), on enzyme, quickpkg a package before running emerge(), in this case, if the API has been broken, we can easily query the user and fix it
 - activator: add support for stable/unstable branch
 - activator tasks:
           - add/remove packages from the database
@@ -21,5 +20,4 @@ Project Status:
 
 Features plan:
 - enzyme: distcc support on cross platforms and on automake
-- activator: add stable/ repository and the cron-aware module that moves files from the unstable/default repo to the stable one.
 - activator: add support for ssh (where supported) to we can md5sum the uploaded files?
