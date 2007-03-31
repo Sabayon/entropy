@@ -1,17 +1,12 @@
 TODO list (for developers only):
 - build() and world(), on enzyme, add the support for whitelist+cron
 - build(), on enzyme, add license blacklist (packages that cannot be shipped in a binary form)
-- build(), on enzyme, if a package is not going to be installed anymore from an overlay, it must be notified
 - build(), on enzyme, quickpkg a package before running emerge(), in this case, if the API has been broken, we can easily query the user and fix it
-- system-wide: add free space check
-- activator: for the tidy module I need that reagent includes the SLOT variable.
 - activator: add support for stable/unstable branch
 - activator tasks:
           - add/remove packages from the database
           - tidy tool: cleanup policy to prune old binaries
           - database update and management between me and reagent
-- reagent tasks:
-          - reagent should support a forced revision bumping
 
 - Sabayon Linux USE flags: remove all server related use flags
 

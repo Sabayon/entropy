@@ -30,7 +30,6 @@ import os
 import commands
 import string
 
-
 # EXIT STATUSES: 200-299
 
 def getSyncTime():
@@ -313,6 +312,8 @@ def build(atoms):
 	    PackagesDependencies = toBeBuilt
 
     if (PackagesDependencies != []) or (PackagesQuickpkg != []):
+	ebuildOverlays = []
+	overlaysCounter = 1
 	print_info(yellow("  *")+" These are the actions that will be taken, in order:")
         for i in PackagesDependencies:
 	    useflags = ""
@@ -330,7 +331,21 @@ def build(atoms):
 		pkgstatus = blue("[U]")
 	    elif (compareAtoms(i,getInstalledAtom(pkg)) < 0):
 		pkgstatus = darkblue("[D]")
-	    print_info(red("     *")+bold(" [")+red("BUILD")+bold("] ")+pkgstatus+" "+i+useflags)
+
+	    # from which place?
+	    overlayinfo = ""
+	    myEbuildPath = getEbuildTreePath(i)
+	    for overlay in etpConst['overlays'].split():
+	        if myEbuildPath.startswith(overlay):
+		    overlayinfo = blue("[overlay: ")+bold(str(overlaysCounter))+blue(" ]")
+	            # overlay found
+		    # find an associable number
+		    for x in ebuildOverlays:
+			if x.find(overlay) == -1:
+			    overlaysCounter += 1
+		    ebuildOverlays.append(str(overlaysCounter)+" "+overlay)
+
+	    print_info(red("     *")+bold(" [")+red("BUILD")+bold("] ")+pkgstatus+" "+i+useflags+" "+overlayinfo)
 	
 	for i in PackagesQuickpkg:
 	    useflags = ""
@@ -342,6 +357,14 @@ def build(atoms):
 	    else:
 		# I should never get here
 	        print_info(green("     *")+bold(" [?????] ")+i+useflags)
+	
+	ebuildOverlays = list(set(ebuildOverlays))
+	if (ebuildOverlays != []):
+	    print_info("")
+	    print_info("     Overlays legend:")
+	    for ov in ebuildOverlays:
+		print_info("     ["+bold(ov.split()[0])+"] "+blue(ov.split()[1]))
+	
     else:
 	print_info(green("  *")+" Nothing to do...")
 

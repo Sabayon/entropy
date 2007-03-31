@@ -80,6 +80,12 @@ def md5sum(filepath):
 	block = readfile.read(1024)
     return m.hexdigest()
 
+def md5string(string):
+    import md5
+    m = md5.new()
+    m.update(string)
+    return m.hexdigest()
+
 # Imported from Gentoo portage_dep.py
 # Copyright 2003-2004 Gentoo Foundation
 # done to avoid the import of portage_dep here
@@ -329,7 +335,7 @@ def uploadDatabase(uris):
 	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 
 	# generate digest
-	hexdigest = digestFile(etpConst['etpdatabasefilepath'])
+	hexdigest = md5sum(etpConst['etpdatabasefilepath'])
 	f = open(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'],"w")
 	f.write(hexdigest+"  "+etpConst['etpdatabasehashfile']+"\n")
 	f.flush()
@@ -430,17 +436,6 @@ def uncompressTarBz2(filepath, extractPath = None):
     cmd = "tar xjf "+filepath+" -C "+extractPath
     rc = os.system(cmd+" &> /dev/null")
     return rc
-
-# FIXME: improve support by reading a line at a time
-def digestFile(filepath):
-    import md5
-    df = open(filepath,"r")
-    content = df.readlines()
-    df.close()
-    digest = md5.new()
-    for line in content:
-	digest.update(line)
-    return digest.hexdigest()
 
 def bytesIntoHuman(bytes):
     bytes = str(bytes)
