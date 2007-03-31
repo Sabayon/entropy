@@ -50,7 +50,8 @@ def print_help():
     entropyTools.print_info(" \t\t"+entropyTools.green("search")+"\t\t\t Search a package inside the Entropy packages database")
     entropyTools.print_info(" \t\t"+entropyTools.green("dump-package-info")+"\t Dump the stored information of package atom(s) to a file")
     entropyTools.print_info(" \t\t"+entropyTools.green("inject-package-info")+"\t Inject an Entropy dump inside the database (file path is mandatory)")
-    entropyTools.print_info(" \t\t"+entropyTools.green("restore-package-info")+"\t Reinitialize a package entry looking at the current install.")
+    entropyTools.print_info(" \t\t"+entropyTools.green("restore-package-info")+"\t Reinitialize a package entry looking at the current install")
+    entropyTools.print_info(" \t\t"+entropyTools.green("create-empty-database")+"\t Create an empty Entropy database file in the specified <path>")
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("cleanup"))+entropyTools.yellow("\t\t to clean temporary files"))
 
 options = sys.argv[1:]

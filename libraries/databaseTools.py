@@ -56,14 +56,15 @@ def database(options):
 	dbconn.initializeDatabase()
 	
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Reinitializing Entropy database using Portage database..."))
+	from portageTools import getInstalledPackages, quickpkg
 	# now run quickpkg for all the packages and then extract data
-	installedAtoms, atomsnumber = entropyTools.getInstalledPackages()
+	installedAtoms, atomsnumber = getInstalledPackages()
 	currCounter = 0
 	import reagentTools
 	for atom in installedAtoms:
 	    currCounter += 1
 	    entropyTools.print_info(entropyTools.green("  (")+ entropyTools.blue(str(currCounter))+"/"+entropyTools.red(str(atomsnumber))+entropyTools.green(") ")+entropyTools.red("Analyzing ")+entropyTools.bold(atom)+entropyTools.red(" ..."))
-	    entropyTools.quickpkg(atom,etpConst['packagestmpdir'])
+	    quickpkg(atom,etpConst['packagestmpdir'])
 	    # file is etpConst['packagestmpdir']+"/atomscan/"+pkgnamever.tbz2
 	    etpData = reagentTools.extractPkgData(etpConst['packagestmpdir']+"/"+atom.split("/")[1]+".tbz2")
 	    # fill the db entry
@@ -250,8 +251,23 @@ def database(options):
 	dbconn.closeDB()
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Done."))
 
-
-	
+    elif (options[0] == "create-empty-database"):
+	mypath = options[1:]
+	if len(mypath) == 0:
+	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("Not enough parameters"))
+	    sys.exit(303)
+	if (os.path.dirname(mypath[0]) != '') and (not os.path.isdir(os.path.dirname(mypath[0]))):
+	    entropyTools.print_error(entropyTools.green(" * ")+entropyTools.red("Supplied directory does not exist."))
+	    sys.exit(304)
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Initializing an empty database file with Entropy structure ..."),back = True)
+	connection = sqlite.connect(mypath[0])
+	cursor = connection.cursor()
+	cursor.execute(etpSQLInitDestroyAll)
+	cursor.execute(etpSQLInit)
+	connection.commit()
+	cursor.close()
+	connection.close()
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Entropy database file ")+entropyTools.bold(mypath[0])+entropyTools.red(" successfully initialized."))
 
 ############
 # Functions and Classes
@@ -323,7 +339,7 @@ class etpDatabase:
 	for uri in etpConst['activatoruploaduris']:
 	    ftp = handlerFTP(uri)
 	    ftp.setCWD(etpConst['etpurirelativepath'])
-	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])):
+	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
 		import time
 		entropyTools.print_info(entropyTools.red(" * ")+entropyTools.bold("WARNING")+entropyTools.red(": online database is already locked. Waiting up to 2 minutes..."), back = True)
 		unlocked = False
@@ -432,6 +448,7 @@ class etpDatabase:
 
     # never use this unless you know what you're doing
     def initializeDatabase(self):
+	self.cursor.execute(etpSQLInitDestroyAll)
 	self.cursor.execute(etpSQLInit)
 	self.commitChanges()
 

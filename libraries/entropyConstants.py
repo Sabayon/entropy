@@ -59,6 +59,9 @@ etpData = {
 
 # Entropy database SQL initialization Schema and data structure
 # MUST BE KEPT IN SYNC with etpData above
+etpSQLInitDestroyAll = """
+DROP TABLE IF EXISTS etpData;
+"""
 etpSQLInit = """
 CREATE TABLE etpData (
     atom VARCHAR(75) PRIMARY KEY,
@@ -154,7 +157,7 @@ etpConst = {
     'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
     'distcc-status': False, # used by Enzyme, if True distcc is enabled
     'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file
-    'etpdatabasedir': ETP_DIR+ETP_DBDIR, # FIXME: REMOVE THIS !
+    'etpdatabasedir': ETP_DIR+ETP_DBDIR, # 
     'etpdatabasefilepath': ETP_DIR+ETP_DBDIR+"/"+ETP_DBFILE,
     'etpapi': ETP_API, # Entropy database API revision
     'headertext': ETP_HEADER_TEXT, # header text that can be outputted to a file

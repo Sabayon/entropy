@@ -677,6 +677,12 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 
     return dependencies, conflicts
 
+def getPortageAppDbPath():
+    rc = getPortageEnv("ROOT")+portage_const.VDB_PATH
+    if (not rc.endswith("/")):
+	return rc+"/"
+    return rc
+
 # Collect installed packages
 def getInstalledPackages():
     import os
@@ -691,13 +697,6 @@ def getInstalledPackages():
 	    if pkgatom.find("-MERGING-") == -1:
 	        installedAtoms.append(pkgatom)
     return installedAtoms, len(installedAtoms)
-
-def getPortageAppDbPath():
-    rc = getPortageEnv("ROOT")+portage_const.VDB_PATH
-    if (not rc.endswith("/")):
-	return rc+"/"
-    return rc
-
 
 def packageSearch(keyword):
 

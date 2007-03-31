@@ -375,7 +375,7 @@ def downloadDatabase(uri):
     dbfile.flush()
     dbfile.close()
     del dbcont
-    print_info(green(" * ")+red("Decompression of ")+bold(etpConst['etpdatabasefilegzip'])+red(" completed ..."))
+    print_info(green(" * ")+red("Decompression of ")+bold(etpConst['etpdatabasefilegzip'])+red(" completed."))
     
     # downloading revision file
     print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['etpdatabaserevisionfile'])+red(" ..."), back = True)
@@ -494,21 +494,25 @@ def lockDatabases(lock = True, mirrorList = []):
 	        ftp.closeFTPConnection()
 	        continue
 	if (lock):
-	    f = open(etpConst['packagestmpdir']+"/"+etpConst['etpdatabaselockfile'],"w")
+	    f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'],"w")
 	    f.write("database locked\n")
 	    f.flush()
 	    f.close()
-	    rc = ftp.uploadFile(etpConst['packagestmpdir']+"/"+etpConst['etpdatabaselockfile'],ascii= True)
+	    rc = ftp.uploadFile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'],ascii= True)
 	    if (rc.startswith("226")):
 	        print_info(green(" * ")+red("Succesfully locked ")+bold(extractFTPHostFromUri(uri))+red(" mirror."))
 	    else:
 	        outstat = True
 	        print "\n"
 	        print_warning(red(" * ")+red("A problem occured while locking ")+bold(extractFTPHostFromUri(uri))+red(" mirror. Please have a look."))
+	        if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
+		    os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
 	else:
 	    rc = ftp.deleteFile(etpConst['etpdatabaselockfile'])
 	    if (rc):
 		print_info(green(" * ")+red("Succesfully unlocked ")+bold(extractFTPHostFromUri(uri))+red(" mirror."))
+	        if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
+		    os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
 	    else:
 	        outstat = True
 	        print "\n"

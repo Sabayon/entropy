@@ -4,7 +4,6 @@ TODO list (for developers only):
 - build(), on enzyme, if a package is not going to be installed anymore from an overlay, it must be notified
 - build(), on enzyme, quickpkg a package before running emerge(), in this case, if the API has been broken, we can easily query the user and fix it
 - system-wide: add free space check
-- reagent: tool to create the empty Entropy DB
 - activator: for the tidy module I need that reagent includes the SLOT variable.
 - activator: add support for stable/unstable branch
 - activator tasks:

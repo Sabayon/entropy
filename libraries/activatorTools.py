@@ -342,10 +342,10 @@ def database(options):
 	
 	print_info(green(" * ")+red("Checking database status ..."), back = True)
 	
-	dbTaintFile = False
+	dbLockFile = False
 	# does the taint file exist?
-	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
-	    dbTaintFile = True
+	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
+	    dbLockFile = True
 	
 	# are online mirrors locked?
 	mirrorsLocked = False
@@ -361,14 +361,14 @@ def database(options):
 	    # if the mirrors are locked, we need to change if we have
 	    # the taint file in place. Because in this case, the one
 	    # that tainted the db, was me.
-	    if (dbTaintFile):
+	    if (dbLockFile):
 		print_info(green(" * ")+red("Updating mirrors with new information ..."))
 		# it's safe to sync
 	        syncRemoteDatabases()
 		# remove the online lock file
 		lockDatabases(False)
 		# remove the taint file
-		os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
+		os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
 	    else:
 		print
 		print_error(green(" * ")+red("At the moment, mirrors are locked, someone is working on their databases, try again later ..."))
