@@ -135,6 +135,10 @@ def extractPkgData(package):
     # .tbz2 md5
     etpData['digest'] = md5sum(tbz2File)
 
+    print_info(yellow(" * ")+red("Getting package mtime..."),back = True)
+    # .tbz2 md5
+    etpData['datecreation'] = str(getFileUnixMtime(tbz2File))
+
     print_info(yellow(" * ")+red("Unpacking package data..."),back = True)
     # unpack file
     tbz2TmpDir = etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version']+"/"

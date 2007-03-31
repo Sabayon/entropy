@@ -53,7 +53,8 @@ etpData = {
     'rundependencies': "", # runtime dependencies
     'rundependenciesXT': "", # runtime dependencies + version
     'conflicts': "", # blockers
-    'etpapi': "", # blockers
+    'etpapi': "", # Entropy API revision
+    'datecreation': "" # mtime of the .tbz2 file
 }
 
 # Entropy database SQL initialization Schema and data structure
@@ -85,6 +86,7 @@ CREATE TABLE etpData (
     rundependenciesXT VARCHAR(250),
     conflicts VARCHAR(100),
     etpapi VARCHAR(3),
+    datecreation VARCHAR(20),
     revision INTEGER(3)
 )
 """

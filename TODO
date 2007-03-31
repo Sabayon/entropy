@@ -6,6 +6,7 @@ TODO list (for developers only):
 - system-wide: add free space check
 - reagent: tool to create the empty Entropy DB
 - activator: for the tidy module I need that reagent includes the SLOT variable.
+- activator: add support for stable/unstable branch
 - activator tasks:
           - add/remove packages from the database
           - tidy tool: cleanup policy to prune old binaries
@@ -19,7 +20,7 @@ Project Status:
 - entropy: will handle all the three tools below
 - enzyme: first release up and working (more or less)
 - reagent: first release up and working.
-- activator: 60%
+- activator: 70%
 ============
 - client part: not yet defined apart from equilibrium name.
 

@@ -134,7 +134,8 @@ def database(options):
 		    for conflict in conflicts:
 			entropyTools.print_info(entropyTools.darkred("\t    # Conflict: ")+conflict)
 		entropyTools.print_info(entropyTools.red("\t Entry API: ")+entropyTools.green(result[24]))
-		entropyTools.print_info(entropyTools.red("\t Entry revision: ")+str(result[25]))
+		entropyTools.print_info(entropyTools.red("\t Entry creation date: ")+str(result[25]))
+		entropyTools.print_info(entropyTools.red("\t Entry revision: ")+str(result[26]))
 		#print result
 	print
 	dbconn.closeDB()
@@ -447,7 +448,7 @@ class etpDatabase:
     def addPackage(self,etpData, revision = 0):
 	self.cursor.execute(
 		'INSERT into etpData VALUES '
-		'(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+		'(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
 		, (	etpData['category']+"/"+etpData['name']+"-"+etpData['version'],
 			etpData['name'],
 			etpData['version'],
@@ -473,6 +474,7 @@ class etpDatabase:
 			etpData['rundependenciesXT'],
 			etpData['conflicts'],
 			etpData['etpapi'],
+			etpData['datecreation'],
 			revision
 			)
 	)
