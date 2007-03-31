@@ -274,6 +274,27 @@ def database(options):
 	connection.close()
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Entropy database file ")+entropyTools.bold(mypath[0])+entropyTools.red(" successfully initialized."))
 
+    elif (options[0] == "stabilize"):
+	myatoms = options[1:]
+	if len(myatoms) == 0:
+	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("Not enough parameters"))
+	    sys.exit(303)
+	# is world?
+	if myatoms[0] == "world":
+	    # open db in read only
+	    dbconn = etpDatabase(readOnly = True)
+	    worldPackages = dbconn.listAllPackages()
+	    # This is the list of all the packages available in Entropy
+	    print worldPackages
+	    dbconn.closeDB()
+	
+	# filter dups
+	myatoms = list(set(myatoms))
+	
+	print "DEBUG: Proposed atoms: "+str(myatoms)
+	
+
+
 ############
 # Functions and Classes
 #####################################################################################
@@ -468,6 +489,9 @@ class etpDatabase:
 	return update, revision
 
     def addPackage(self,etpData, revision = 0):
+	print
+	print etpData['content']
+	print
 	self.cursor.execute(
 		'INSERT into etpData VALUES '
 		'(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
@@ -588,6 +612,26 @@ class etpDatabase:
 	    result.append(row)
 	return result
 
+    def listAllPackages(self):
+	result = []
+	self.cursor.execute('SELECT * FROM etpData')
+	for row in self.cursor:
+	    result.append(row[0])
+	return result
+
+    def listStablePackages(self):
+	result = []
+	self.cursor.execute('SELECT * FROM etpData WHERE branch = "stable"')
+	for row in self.cursor:
+	    result.append(row[0])
+	return result
+
+    def listUnstablePackages(self):
+	result = []
+	self.cursor.execute('SELECT * FROM etpData WHERE branch = "unstable"')
+	for row in self.cursor:
+	    result.append(row[0])
+	return result
 
 # ------ BEGIN: activator tools ------
 

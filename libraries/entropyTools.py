@@ -147,7 +147,6 @@ def getEtpRemoteDatabaseStatus():
 	    else:
 		revision = 0
 	else:
-	    print "database file not avail"
 	    # then set mtime to 0 and quit
 	    revision = 0
 	info = [uri+"/"+etpConst['etpurirelativepath']+etpConst['etpdatabasefilegzip'],revision]
