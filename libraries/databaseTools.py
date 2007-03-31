@@ -46,7 +46,7 @@ def database(options):
         # database file: etpConst['etpdatabasefilepath']
         if os.path.isfile(etpConst['etpdatabasefilepath']):
 	    entropyTools.print_info(entropyTools.red(" * ")+entropyTools.bold("WARNING")+entropyTools.red(": database file already exists. Overwriting."))
-	    rc = askquestion("\n     Do you want to continue ?")
+	    rc = entropyTools.askquestion("\n     Do you want to continue ?")
 	    if rc == "No":
 	        sys.exit(0)
 	    os.system("rm -f "+etpConst['etpdatabasefilepath'])
