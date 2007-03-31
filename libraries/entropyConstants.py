@@ -30,31 +30,31 @@ import sys
 # THIS IS THE KEY PART OF ENTROPY BINARY PACKAGES MANAGEMENT
 # DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU'RE DOING !!
 etpData = {
-    'name': "", # the Package Name
-    'version': "", # the Package version plus our -etpXX revision
-    'description': "", # the Package description
-    'category': "", # the gentoo category
-    'chost': "", # the CHOST used to compile it
-    'cflags': "", # CFLAGS used
-    'cxxflags': "", # CXXFLAGS used
-    'homepage': "", # home page of the package
-    'useflags': "", # USE flags used
-    'license': "", # License adpoted
-    'keywords': "", # supported ARCHs (by the SRC)
-    'binkeywords': "", # supported ARCHs (by the BIN)
-    'branch': "", # package branch location
-    'download': "", # link to download the binary package
-    'digest': "", # md5 hash of the .tbz2 package
-    'sources': "", # link to the sources
-    'slot': "", # this is filled if the package is slotted
-    'content': "", # content of the package (files)
-    'mirrorlinks': "", # =mirror://openoffice|link1|link2|link3
-    'dependencies': "", # dependencies
-    'rundependencies': "", # runtime dependencies
-    'rundependenciesXT': "", # runtime dependencies + version
-    'conflicts': "", # blockers
-    'etpapi': "", # Entropy API revision
-    'datecreation': "" # mtime of the .tbz2 file
+    'name': u"", # the Package Name
+    'version': u"", # the Package version plus our -etpXX revision
+    'description': u"", # the Package description
+    'category': u"", # the gentoo category
+    'chost': u"", # the CHOST used to compile it
+    'cflags': u"", # CFLAGS used
+    'cxxflags': u"", # CXXFLAGS used
+    'homepage': u"", # home page of the package
+    'useflags': u"", # USE flags used
+    'license': u"", # License adpoted
+    'keywords': u"", # supported ARCHs (by the SRC)
+    'binkeywords': u"", # supported ARCHs (by the BIN)
+    'branch': u"", # package branch location
+    'download': u"", # link to download the binary package
+    'digest': u"", # md5 hash of the .tbz2 package
+    'sources': u"", # link to the sources
+    'slot': u"", # this is filled if the package is slotted
+    'content': u"", # content of the package (files)
+    'mirrorlinks': u"", # =mirror://openoffice|link1|link2|link3
+    'dependencies': u"", # dependencies
+    'rundependencies': u"", # runtime dependencies
+    'rundependenciesXT': u"", # runtime dependencies + version
+    'conflicts': u"", # blockers
+    'etpapi': u"", # Entropy API revision
+    'datecreation': u"" # mtime of the .tbz2 file
 }
 
 # Entropy database SQL initialization Schema and data structure

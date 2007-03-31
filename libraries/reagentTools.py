@@ -106,7 +106,7 @@ def extractPkgData(package):
 
     # Clean the variables
     for i in etpData:
-	etpData[i] = ""
+	etpData[i] = u""
 
     print_info(yellow(" * ")+red("Getting package name/version..."),back = True)
     tbz2File = package
@@ -191,9 +191,18 @@ def extractPkgData(package):
 	for line in content:
 	    line = line.strip().split()
 	    if line[0] == "obj":
-		outcontent.append(line[1])
+		outcontent.append(line[1].strip())
 	import string
-	etpData['content'] = string.join(outcontent," ")
+	# filter bad utf-8 chars
+	_outcontent = []
+	for i in outcontent:
+	    try:
+		i.encode("utf-8")
+		_outcontent.append(i)
+	    except:
+		pass
+	outcontent = _outcontent
+	etpData['content'] = string.join(outcontent," ").encode("utf-8")
 	
     except IOError:
         etpData['content'] = ""

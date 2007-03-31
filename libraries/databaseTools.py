@@ -518,7 +518,7 @@ class etpDatabase:
 			etpData['conflicts'],
 			etpData['etpapi'],
 			etpData['datecreation'],
-			revision
+			revision,
 			)
 	)
 	self.commitChanges()
