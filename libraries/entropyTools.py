@@ -164,18 +164,23 @@ def syncRemoteDatabases(noUpload = False):
 	print_info(green("\t Host:\t")+bold(extractFTPHostFromUri(dbstat[0])))
 	print_info(red("\t  * Database revision: ")+blue(str(dbstat[1])))
 
-    # check if the local DB exists
-    if os.path.isfile(etpConst['etpdatabasefilepath']) and os.path.isfile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile']):
+    # check if the local DB or the revision file exist
+    # in this way we can regenerate the db without messing the --initialize function with a new unwanted download
+    if os.path.isfile(etpConst['etpdatabasefilepath']) or os.path.isfile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile']):
 	# file exist, get revision
 	f = open(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'],"r")
 	etpDbLocalRevision = int(f.readline().strip())
 	f.close()
     else:
 	etpDbLocalRevision = 0
+
+    print_info(red("\t  * Database local revision currently at: ")+blue(str(etpDbLocalRevision)))
     
     downloadLatest = []
     uploadLatest = False
     uploadList = []
+    
+    #print str(etpDbLocalRevision)
     
     # if the local DB does not exist, get the latest
     if (etpDbLocalRevision == 0):
@@ -238,6 +243,9 @@ def syncRemoteDatabases(noUpload = False):
 		    latestRemoteDb = dbstat
 		    break
 	    # now compare downloadLatest with our local db revision
+	    #print "data revisions:"
+	    #print str(latestRemoteDb[1])
+	    #print str(etpDbLocalRevision)
 	    if (etpDbLocalRevision < latestRemoteDb[1]):
 		# download !
 		#print "appending a download"

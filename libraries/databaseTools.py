@@ -41,7 +41,8 @@ def database(options):
 	sys.exit(301)
 
     if (options[0] == "--initialize"):
-	# initialize the database
+	
+	# do some check, print some warnings
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Initializing Entropy database..."), back = True)
         # database file: etpConst['etpdatabasefilepath']
         if os.path.isfile(etpConst['etpdatabasefilepath']):
@@ -51,29 +52,33 @@ def database(options):
 	        sys.exit(0)
 	    os.system("rm -f "+etpConst['etpdatabasefilepath'])
 
-	# fill the database
+	# initialize the database
         dbconn = etpDatabase(readOnly = False, noUpload = True)
 	dbconn.initializeDatabase()
 	
+	# sync packages directory
+	import activatorTools
+	activatorTools.packages(["sync","--ask"])
+	
+	# now fill the database
+	pkglist = os.listdir(etpConst['packagesbindir'])
+
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Reinitializing Entropy database using Portage database..."))
-	from portageTools import getInstalledPackages, quickpkg
-	# now run quickpkg for all the packages and then extract data
-	installedAtoms, atomsnumber = getInstalledPackages()
 	currCounter = 0
+	atomsnumber = len(pkglist)
 	import reagentTools
-	for atom in installedAtoms:
+	for pkg in pkglist:
+	    
+	    entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Analyzing: ")+entropyTools.bold(pkg), back = True)
 	    currCounter += 1
-	    entropyTools.print_info(entropyTools.green("  (")+ entropyTools.blue(str(currCounter))+"/"+entropyTools.red(str(atomsnumber))+entropyTools.green(") ")+entropyTools.red("Analyzing ")+entropyTools.bold(atom)+entropyTools.red(" ..."))
-	    quickpkg(atom,etpConst['packagestmpdir'])
-	    # file is etpConst['packagestmpdir']+"/atomscan/"+pkgnamever.tbz2
-	    etpData = reagentTools.extractPkgData(etpConst['packagestmpdir']+"/"+atom.split("/")[1]+".tbz2")
+	    entropyTools.print_info(entropyTools.green("  (")+ entropyTools.blue(str(currCounter))+"/"+entropyTools.red(str(atomsnumber))+entropyTools.green(") ")+entropyTools.red("Analyzing ")+entropyTools.bold(pkg)+entropyTools.red(" ..."))
+	    etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+pkg)
 	    # fill the db entry
 	    dbconn.addPackage(etpData)
-	    os.system("rm -rf "+etpConst['packagestmpdir']+"/"+atom.split("/")[1]+"*")
+	    dbconn.commitChanges()
 	
-	dbconn.commitChanges()
 	dbconn.closeDB()
-	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Entropy database has been reinitialized using Portage database entries"))
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Entropy database has been reinitialized using binary packages available"))
 
     # used by reagent
     elif (options[0] == "search"):
@@ -138,7 +143,12 @@ def database(options):
 			entropyTools.print_info(entropyTools.darkred("\t    # Conflict: ")+conflict)
 		entropyTools.print_info(entropyTools.red("\t Entry API: ")+entropyTools.green(result[24]))
 		entropyTools.print_info(entropyTools.red("\t Entry creation date: ")+str(result[25]))
-		entropyTools.print_info(entropyTools.red("\t Entry revision: ")+str(result[26]))
+		if (result[26]):
+		    entropyTools.print_info(entropyTools.red("\t Needed libraries"))
+		    libs = result[26].split()
+		    for lib in libs:
+			entropyTools.print_info(entropyTools.darkred("\t    # Need library: ")+lib)
+		entropyTools.print_info(entropyTools.red("\t Entry revision: ")+str(result[27]))
 		#print result
 	dbconn.closeDB()
 	if (foundCounter == 0):
@@ -371,12 +381,41 @@ def database(options):
 	# remove dups
 	rootFilesList = list(set(rootFilesList))
 	
+	allowedDirs = [
+		"/bin",
+		"/etc",
+		"/lib",
+		"/lib32",
+		"/lib64",
+		"/emul",
+		"/opt",
+		"/sbin",
+		"/usr",
+	]
+	
+	# remove unwanted files
+	_filesList = []
+	for file in filesList:
+	    for allowedDir in allowedDirs:
+		if file.startswith(allowedDir):
+		    _filesList.append(file)
+	filesList = _filesList
+	del _filesList
+
+	_rootFilesList = []
+	for file in rootFilesList:
+	    for allowedDir in allowedDirs:
+		if file.startswith(allowedDir):
+		    _rootFilesList.append(file)
+	rootFilesList = _rootFilesList
+	del _rootFilesList
+	
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Calculating ..."), back = True)
 	orphanList = []
 	# FIXME: now parse them!!!
 	for rootFile in rootFilesList:
 	    for file in filesList:
-		if (file == rootFile) and (not file.startswith("/dev")) and (not file.startswith("/home"))  and (not file.startswith("/var")):
+		if (file == rootFile):
 		    orphanList.append(file)
 		    break
 	
@@ -387,7 +426,9 @@ def database(options):
 	f.flush()
 	f.close()
 	entropyTools.print_info(entropyTools.green(" --> ")+entropyTools.red("Dump saved in: ")+entropyTools.bold(etpConst['packagestmpdir']+"/orphaned-files.txt"))
-	
+
+
+
     elif (options[0] == "sanity-check"):
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Running sanity check on the database ... "), back = True)
 	dbconn = etpDatabase(readOnly = True)
@@ -638,10 +679,40 @@ class etpDatabase:
 	    update, revision = self.updatePackage(etpData,forceBump)
 	return update, revision
 
-    def addPackage(self,etpData, revision = 0):
+    # default add an unstable package
+    def addPackage(self,etpData, revision = 0, wantedBranch = "unstable"):
+	# check if the package is slotted
+	
+	# if a similar package exist, enter here
+	# FIXME: for future reference, add an option that forces a package to stay?
+	# NOTE: this never removes stable packages. will be done by the stabilize function!
+	searchsimilar = self.searchPackages(etpData['category']+"/"+etpData['name'])
+	if (searchsimilar != []):
+	    # there are other packages with the same category/name
+	    # do we have to remove anything?
+	    if (etpData['slot'] != ""):
+		# if it is slotted, we have to collect the same packages (cat/name) that has the same slot
+		removelist = []
+		for oldpkg in searchsimilar:
+		    # get the package slot
+		    slot = self.retrievePackageVar(oldpkg[0],"slot")
+		    branch = self.retrievePackageVar(oldpkg[0],"branch")
+		    if (etpData['slot'] == slot) and (wantedBranch == branch):
+			# remove!
+			removelist.append(oldpkg[0])
+		for pkg in removelist:
+		    self.removePackage(pkg)
+	    else:
+		# roughly remove the old ones
+		for oldpkg in searchsimilar:
+		    branch = self.retrievePackageVar(oldpkg[0],"branch")
+		    if (wantedBranch == branch):
+		        self.removePackage(oldpkg[0])
+	
+	# wantedBranch = etpData['branch']
 	self.cursor.execute(
 		'INSERT into etpData VALUES '
-		'(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+		'(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
 		, (	etpData['category']+"/"+etpData['name']+"-"+etpData['version'],
 			etpData['name'],
 			etpData['version'],
@@ -655,7 +726,7 @@ class etpDatabase:
 			etpData['license'],
 			etpData['keywords'],
 			etpData['binkeywords'],
-			etpData['branch'],
+			wantedBranch,
 			etpData['download'],
 			etpData['digest'],
 			etpData['sources'],
@@ -668,6 +739,7 @@ class etpDatabase:
 			etpData['conflicts'],
 			etpData['etpapi'],
 			etpData['datecreation'],
+			etpData['neededlibs'],
 			revision,
 			)
 	)
@@ -681,7 +753,7 @@ class etpDatabase:
 	# check if the data correspond
 	# if not, update, else drop
 	curRevision = self.retrievePackageVar(etpData['category']+"/"+etpData['name']+"-"+etpData['version'],"revision")
-	# FIXME: I don't know if this works
+	curBranch = self.retrievePackageVar(etpData['category']+"/"+etpData['name']+"-"+etpData['version'],"branch")
 	oldPkgInfo = etpData['category']+"/"+etpData['name']+"-"+etpData['version']
 	rc = self.comparePackagesData(etpData,oldPkgInfo)
 	if (not rc) or (forceBump):
@@ -690,7 +762,7 @@ class etpDatabase:
 	    # remove the table
 	    self.removePackage(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])
 	    # readd table
-	    self.addPackage(etpData,curRevision)
+	    self.addPackage(etpData,curRevision,curBranch)
 	    self.commitChanges()
 	    return True, curRevision
 	else:
@@ -773,6 +845,19 @@ class etpDatabase:
 	    result.append(row[0])
 	return result
 
+    def searchStablePackages(self,keyword):
+	results = []
+	self.cursor.execute('SELECT * FROM etpData WHERE atom LIKE "%'+keyword+'%"')
+	for row in self.cursor:
+	    results.append(row)
+	output = []
+	for result in results:
+	    result = result[0]
+	    self.cursor.execute('SELECT '+result+' FROM etpData WHERE branch = "stable"')
+	    for row in self.cursor:
+		output.append(row[0])
+	return output
+
     def listUnstablePackages(self):
 	result = []
 	self.cursor.execute('SELECT * FROM etpData WHERE branch = "unstable"')
@@ -787,9 +872,31 @@ class etpDatabase:
 
     def stabilizePackage(self,atom,stable = True):
 	if (stable):
+	    # ! Get rid of old entries with the same slot, pkgcat/name that
+	    # were already marked "stable"
+	    # get its pkgname
+	    pkgname = self.retrievePackageVar(atom,"name")
+	    # get its pkgcat
+	    category = self.retrievePackageVar(atom,"category")
+	    # search packages with similar pkgcat/name marked as stable
+	    slot = self.retrievePackageVar(atom,"slot")
+	    # we need to get rid of them
+	    results = self.searchStablePackages(category+"/"+pkgname)
+	    removelist = []
+	    for result in results:
+		# have a look if the slot matches
+		myslot = self.retrievePackageVar(result[0],"slot")
+		if (myslot == slot):
+		    removelist.append(result[0])
+	    for pkg in removelist:
+		self.removePackage(pkg)
+	    
 	    self.cursor.execute('UPDATE etpData SET branch = "stable" WHERE atom = "'+atom+'"')
 	else:
 	    self.cursor.execute('UPDATE etpData SET branch = "unstable" WHERE atom = "'+atom+'"')
+
+    def writePackageParameter(self,atom,field,what):
+	self.cursor.execute('UPDATE etpData SET '+field+' = "'+what+'" WHERE atom = "'+atom+'"')
 
 # ------ BEGIN: activator tools ------
 

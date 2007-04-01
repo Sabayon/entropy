@@ -368,7 +368,8 @@ def database(options):
 		# remove the online lock file
 		lockDatabases(False)
 		# remove the taint file
-		os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
+		
+		os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
 	    else:
 		print
 		print_error(green(" * ")+red("At the moment, mirrors are locked, someone is working on their databases, try again later ..."))

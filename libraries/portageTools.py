@@ -540,7 +540,7 @@ def getPackageDependencyList(atom):
 def getPackageRuntimeDependencies(NEEDED):
 
     if not os.path.isfile(NEEDED):
-	return [],[] # both empty
+	return [],[],[] # all empty
 
     f = open(NEEDED,"r")
     includedBins = f.readlines()
@@ -564,21 +564,27 @@ def getPackageRuntimeDependencies(NEEDED):
 	    i = i.split()[0]
 	    neededLibraries.append(i)
     neededLibraries = list(set(neededLibraries))
+    
+    # filter garbage
+    _neededLibraries = []
+    for i in neededLibraries:
+	if i.startswith("/"):
+	    _neededLibraries.append(i)
+    neededLibraries = _neededLibraries
 
     runtimeNeededPackages = []
     runtimeNeededPackagesXT = []
     for i in neededLibraries:
-	if i.startswith("/"): # filter garbage
-	    pkgs = commands.getoutput(pFindLibraryXT+i).split("\n")
-	    if (pkgs[0] != ""):
-	        for y in pkgs:
-	            runtimeNeededPackagesXT.append(y)
-		    y = dep_getkey(y)
-		    runtimeNeededPackages.append(y)
+	pkgs = commands.getoutput(pFindLibraryXT+i).split("\n")
+	if (pkgs[0] != ""):
+	    for y in pkgs:
+	        runtimeNeededPackagesXT.append(y)
+		y = dep_getkey(y)
+		runtimeNeededPackages.append(y)
 
     runtimeNeededPackages = list(set(runtimeNeededPackages))
     runtimeNeededPackagesXT = list(set(runtimeNeededPackagesXT))
-    return runtimeNeededPackages, runtimeNeededPackagesXT
+    return runtimeNeededPackages, runtimeNeededPackagesXT, neededLibraries
 
 def getUSEFlags():
     return getPortageEnv('USE')

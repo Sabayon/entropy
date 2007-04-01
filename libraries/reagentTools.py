@@ -353,8 +353,14 @@ def extractPkgData(package):
     # return all the collected info
 
     print_info(yellow(" * ")+red("Getting package runtime dependencies..."),back = True)
+	
     # start collecting needed libraries
-    runtimeNeededPackages, runtimeNeededPackagesXT = getPackageRuntimeDependencies(tbz2TmpDir+"/"+dbNEEDED)
+    runtimeNeededPackages, runtimeNeededPackagesXT, neededLibraries = getPackageRuntimeDependencies(tbz2TmpDir+"/"+dbNEEDED)
+    
+    if len(neededLibraries) > 0:
+	etpData['neededlibs'] = string.join(neededLibraries," ")
+    else:
+	etpData['neededlibs'] = ""
 
     tmpData = []
     # now keep only the ones not available in etpData['dependencies']

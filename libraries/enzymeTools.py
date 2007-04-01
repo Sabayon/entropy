@@ -509,7 +509,7 @@ def build(atoms):
             # unpack the .tbz2 file
             tbz2TmpDir = unpackTbz2(file)
             # parse, if exists, the NEEDED file
-            runtimeNeededPackages, runtimeNeededPackagesXT = getPackageRuntimeDependencies(tbz2TmpDir+dbNEEDED)
+            runtimeNeededPackages, runtimeNeededPackagesXT, neededLibraries = getPackageRuntimeDependencies(tbz2TmpDir+dbNEEDED)
 	    for i in runtimeNeededPackagesXT:
 		if (enzymeRequestVerbose): print_info(green("     * ")+yellow("depends on: "+bold(i)))
 		runtimeDepsPackages.append(i)
