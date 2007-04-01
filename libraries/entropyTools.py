@@ -31,6 +31,7 @@ import commands
 
 # Instantiate the databaseStatus:
 import databaseTools
+import mirrorTools
 dbStatus = databaseTools.databaseStatus()
 
 # EXIT STATUSES: 100-199
@@ -131,7 +132,7 @@ def getEtpRemoteDatabaseStatus():
 
     uriDbInfo = []
     for uri in etpConst['activatoruploaduris']:
-	ftp = databaseTools.handlerFTP(uri)
+	ftp = mirrorTools.handlerFTP(uri)
 	ftp.setCWD(etpConst['etpurirelativepath'])
 	rc = ftp.isFileAvailable(etpConst['etpdatabasefilegzip'])
 	if (rc):
@@ -307,7 +308,7 @@ def uploadDatabase(uris):
 	
 	print_info(green(" * ")+red("Uploading database to ")+bold(extractFTPHostFromUri(uri))+red(" ..."))
 	print_info(green(" * ")+red("Connecting to ")+bold(extractFTPHostFromUri(uri))+red(" ..."), back = True)
-	ftp = databaseTools.handlerFTP(uri)
+	ftp = mirrorTools.handlerFTP(uri)
 	print_info(green(" * ")+red("Changing directory to ")+bold(etpConst['etpurirelativepath'])+red(" ..."), back = True)
 	ftp.setCWD(etpConst['etpurirelativepath'])
 	
@@ -365,7 +366,7 @@ def downloadDatabase(uri):
     
     print_info(green(" * ")+red("Downloading database from ")+bold(extractFTPHostFromUri(uri))+red(" ..."))
     print_info(green(" * ")+red("Connecting to ")+bold(extractFTPHostFromUri(uri))+red(" ..."), back = True)
-    ftp = databaseTools.handlerFTP(uri)
+    ftp = mirrorTools.handlerFTP(uri)
     print_info(green(" * ")+red("Changing directory to ")+bold(etpConst['etpurirelativepath'])+red(" ..."), back = True)
     ftp.setCWD(etpConst['etpurirelativepath'])
     
@@ -417,7 +418,7 @@ def getMirrorsLock():
     dbstatus = []
     for uri in etpConst['activatoruploaduris']:
 	data = [ uri, False , False ]
-	ftp = databaseTools.handlerFTP(uri)
+	ftp = mirrorTools.handlerFTP(uri)
 	ftp.setCWD(etpConst['etpurirelativepath'])
 	if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
 	    # Upload is locked
@@ -481,7 +482,7 @@ def lockDatabases(lock = True, mirrorList = []):
 	    print_info(yellow(" * ")+red("Locking ")+bold(extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
 	else:
 	    print_info(yellow(" * ")+red("Unlocking ")+bold(extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
-	ftp = databaseTools.handlerFTP(uri)
+	ftp = mirrorTools.handlerFTP(uri)
 	# upload the lock file to database/%ARCH% directory
 	ftp.setCWD(etpConst['etpurirelativepath'])
 	# check if the lock is already there
@@ -531,7 +532,7 @@ def downloadLockDatabases(lock = True, mirrorList = []):
 	    print_info(yellow(" * ")+red("Locking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
 	else:
 	    print_info(yellow(" * ")+red("Unlocking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
-	ftp = databaseTools.handlerFTP(uri)
+	ftp = mirrorTools.handlerFTP(uri)
 	# upload the lock file to database/%ARCH% directory
 	ftp.setCWD(etpConst['etpurirelativepath'])
 	# check if the lock is already there

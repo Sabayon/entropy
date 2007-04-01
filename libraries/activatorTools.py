@@ -33,33 +33,76 @@ import string
 
 def sync(options):
 
-    # sync the local repository with the remote ones
-    print "not yet implemented"
+    print_info(green(" * ")+red("Starting to sync data across mirrors (packages/database) ..."))
+    
+    # firstly sync the packages
+    packages(["sync" , "--ask"])
+    # then sync the database
+    database(["sync"])
+    
+    print_info(green(" * ")+red("Starting to collect packages that would be removed from the repository ..."), back = True)
+    
+    # now it's time to do some tidy
+    # collect all the binaries in the database
+    import databaseTools
+    dbconn = databaseTools.etpDatabase(readOnly = True)
+    dbBinaries = []
+    pkglist = dbconn.listAllPackages()
+    for pkg in pkglist:
+	dl = dbconn.retrievePackageVar(pkg,"download")
+	dl = dl.split("/")[len(dl.split("/"))-1]
+	dbBinaries.append(dl)
+    # filter dups?
+    dbBinaries = list(set(dbBinaries))
+    dbconn.closeDB()
+    
+    repoBinaries = os.listdir(etpConst['packagesbindir'])
+    
+    removeList = []
+    # select packages
+    for repoBin in repoBinaries:
+	found = False
+	for dbBin in dbBinaries:
+	    if dbBin == repoBin:
+		found = True
+		break
+	if (not found):
+	    # then remove
+	    removeList.append(repoBin)
+    
+    if (removeList == []):
+	print_info(green(" * ")+red("No packages to remove from the mirrors."))
+	print_info(green(" * ")+red("Syncronization across mirrors completed."))
+	return
+    
+    print_info(green(" * ")+red("This is the list of the packages that would be removed from the mirrors: "))
+    for file in removeList:
+	print_info(green("\t* ")+yellow(file))
+	
+    # ask question
+    rc = askquestion("     Would you like to continue ?")
+    if rc == "No":
+	sys.exit(0)
 
-    sys.exit(0)
-
-    print_info(green(" * ")+red("Collecting local binary packages..."),back = True)
-    localtbz2counter = 0
-    localTbz2Files = []
-    for file in os.listdir(etpConst['packagessuploaddir']):
-	if file.endswith(".tbz2"):
-	    localTbz2Files.append([ file , getFileTimeStamp(etpConst['packagessuploaddir']+"/"+file) ])
-	    localtbz2counter += 1
-    print_info(green(" * ")+red("Packages directory:\t")+bold(str(localtbz2counter))+red(" packages ready for the upload."))
-
-    # INFO: the Entropy repository will be, synced to the latest on the server, compressed, uploaded and kept there?
-    print_info(green(" * ")+red("Collecting local Entropy repository entries..."),back = True)
-    localtetpcounter = 0
-    localEtpFiles = []
-    for (dir, sub, files) in os.walk(etpConst['etpdatabasedir']):
-	localEtpFiles.append(dir)
-	for file in files:
-	    localEtpFiles.append(dir+"/"+file)
-	    if file.endswith(etpConst['extension']):
-		localtetpcounter += 1
-    print_info(green(" * ")+red("Entropy directory:\t")+bold(str(localtetpcounter))+red(" specification files available."))
-
-
+    # remove them!
+    for uri in etpConst['activatoruploaduris']:
+	print_info(green(" * ")+red("Connecting to: ")+bold(extractFTPHostFromUri(uri)))
+	ftp = mirrorTools.handlerFTP(uri)
+	ftp.setCWD(etpConst['binaryurirelativepath'])
+	for file in removeList:
+	    print_info(green(" * ")+red("Removing file: ")+bold(file), back = True)
+	    # remove remotely
+	    rc = ftp.deleteFile(file)
+	    if (rc):
+		print_info(green(" * ")+red("Package file: ")+bold(file)+red(" removed successfully."))
+	    else:
+		print_warning(yellow(" * ")+red("ATTENTION: remote file ")+bold(file)+red(" cannot be removed."))
+	    # remove locally
+	    if os.path.isfile(etpConst['packagesbindir']+"/"+file):
+		os.remove(etpConst['packagesbindir']+"/"+file)
+	ftp.closeFTPConnection()
+	
+    print_info(green(" * ")+red("Syncronization across mirrors completed."))
 
 
 def packages(options):
@@ -98,7 +141,7 @@ def packages(options):
 	    print_info(green(" * ")+red("Packages directory:\t")+bold(str(packageCounter))+red(" files ready."))
 	    
 	    print_info(green(" * ")+yellow("Fetching remote statistics..."), back = True)
-	    ftp = databaseTools.handlerFTP(uri)
+	    ftp = mirrorTools.handlerFTP(uri)
 	    ftp.setCWD(etpConst['binaryurirelativepath'])
 	    remotePackages = ftp.listFTPdir()
 	    remotePackagesInfo = ftp.getRoughList()
@@ -246,7 +289,7 @@ def packages(options):
 
 	    # upload queue
 	    if (detailedUploadQueue != []):
-	        ftp = databaseTools.handlerFTP(uri)
+	        ftp = mirrorTools.handlerFTP(uri)
 	        ftp.setCWD(etpConst['binaryurirelativepath'])
 		uploadCounter = str(len(detailedUploadQueue))
 		currentCounter = 0
@@ -260,7 +303,7 @@ def packages(options):
 
 	    # download queue
 	    if (detailedDownloadQueue != []):
-	        ftp = databaseTools.handlerFTP(uri)
+	        ftp = mirrorTools.handlerFTP(uri)
 	        ftp.setCWD(etpConst['binaryurirelativepath'])
 		downloadCounter = str(len(detailedDownloadQueue))
 		currentCounter = 0
@@ -278,9 +321,6 @@ def packages(options):
 		print_info(red(" * Download completed for ")+bold(extractFTPHostFromUri(uri)))
 		ftp.closeFTPConnection()
 
-	    # Now I should do some tidy
-	    print "Now it should be time for some tidy...?"
-	
 	# now we can store the files in upload/%ARCH% in packages/%ARCH%
 	os.system("mv -f "+etpConst['packagessuploaddir']+"/* "+etpConst['packagesbindir']+"/ &> /dev/null")
 
@@ -350,7 +390,7 @@ def database(options):
 	# are online mirrors locked?
 	mirrorsLocked = False
 	for uri in etpConst['activatoruploaduris']:
-	    ftp = databaseTools.handlerFTP(uri)
+	    ftp = mirrorTools.handlerFTP(uri)
 	    ftp.setCWD(etpConst['etpurirelativepath'])
 	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) or (ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
 		mirrorsLocked = True
@@ -368,8 +408,8 @@ def database(options):
 		# remove the online lock file
 		lockDatabases(False)
 		# remove the taint file
-		
-		os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
+		if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
+		    os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
 	    else:
 		print
 		print_error(green(" * ")+red("At the moment, mirrors are locked, someone is working on their databases, try again later ..."))

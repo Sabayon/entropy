@@ -2,8 +2,9 @@ TODO list (for developers only):
 - build() and world(), on enzyme, add the support for whitelist+cron
 - build(), on enzyme, add license blacklist (packages that cannot be shipped in a binary form)
 - entropy: add support for stable/unstable branch
+- reagent: get orphans working and not taking forever
 - activator tasks:
-          - COMPLETE sync !
+          - test SYNC (that includes the tidy tool)
           - tidy tool: database entries and binary packages removal
           - tidy tool will be a joint work between reagent and activator libraries: cleanup policy to prune old binaries
 
@@ -13,7 +14,7 @@ Project Status:
 - entropy: will handle all the three tools below
 - enzyme: first release up and working (more or less)
 - reagent: first release up and working.
-- activator: 70%
+- activator: 90%
 ============
 - client part: not yet defined apart from equilibrium name.
 
