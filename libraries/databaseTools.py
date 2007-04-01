@@ -74,6 +74,8 @@ def database(options):
 	    currCounter += 1
 	    entropyTools.print_info(entropyTools.green("  (")+ entropyTools.blue(str(currCounter))+"/"+entropyTools.red(str(atomsnumber))+entropyTools.green(") ")+entropyTools.red("Analyzing ")+entropyTools.bold(pkg)+entropyTools.red(" ..."))
 	    etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+pkg)
+	    # remove shait
+	    os.system("rm -rf "+etpConst['packagestmpdir']+"/"+pkg)
 	    # fill the db entry
 	    dbconn.addPackage(etpData)
 	    dbconn.commitChanges()
@@ -240,32 +242,61 @@ def database(options):
 	if (len(mypackages) == 0):
 	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("Not enough parameters"))
 	    sys.exit(302)
-	
+
+	# sync packages directory
+	import activatorTools
+	activatorTools.packages(["sync","--ask"])
+
 	dbconn = etpDatabase(readOnly = False, noUpload = True)
 	
-	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Reinitializing Entropy database entries for the specified applications ..."))
-	# now run quickpkg for all the packages and then extract data
-	import reagentTools
-	for atom in mypackages:
-	    if (entropyTools.isjustpkgname(atom)) or (atom.find("/") == -1):
-		entropyTools.print_info((entropyTools.red(" * Package ")+entropyTools.bold(atom)+entropyTools.red(" is not a complete atom, skipping ...")))
-		continue
-	    if (entropyTools.getInstalledAtom("="+atom) is None):
-		entropyTools.print_info((entropyTools.red(" * Package ")+entropyTools.bold(atom)+entropyTools.red(" is not installed, skipping ...")))
-		continue
-	    entropyTools.print_info((entropyTools.red("Restoring entry for ")+entropyTools.bold(atom)+entropyTools.red(" ...")))
-	    entropyTools.quickpkg(atom,etpConst['packagestmpdir'])
-	    # file is etpConst['packagestmpdir']+"/atomscan/"+pkgnamever.tbz2
-	    etpData = reagentTools.extractPkgData(etpConst['packagestmpdir']+"/"+atom.split("/")[1]+".tbz2")
-	    # fill the db entry
-	    dbconn.removePackage(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])
-	    dbconn.addPackage(etpData)
-	    entropyTools.print_info((entropyTools.green(" * ")+entropyTools.red(" Successfully restored database information for ")+entropyTools.bold(atom)+entropyTools.red(" .")))
-	    os.system("rm -rf "+etpConst['packagestmpdir']+"/"+atom.split("/")[1]+"*")
+	# validate entries
+	_mypackages = []
+	for pkg in mypackages:
+	    if (dbconn.isPackageAvailable(pkg)):
+		_mypackages.append(pkg)
+	mypackages = _mypackages
 	
+	if len(mypackages) == 0:
+	    entropyTools.print_error(entropyTools.yellow(" * ")+entropyTools.red("No valid package found. You must specify category/atom-version."))
+	    sys.exit(303)
+	
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Reinitializing Entropy database using Packages in the repository ..."))
+	
+	# get the file list
+	pkglist = []
+	for pkg in mypackages:
+	    pkgfile = dbconn.retrievePackageVar(pkg,"download")
+	    pkgfile = pkgfile.split("/")[len(pkgfile.split("/"))-1]
+	    pkglist.append(pkgfile)
+	
+	# validate files
+	_pkglist = []
+	for file in pkglist:
+	    if (not os.path.isfile(etpConst['packagesbindir']+"/"+file)):
+	        entropyTools.print_info(entropyTools.yellow(" * ")+entropyTools.red("Attention: ")+entropyTools.bold(file)+entropyTools.red(" does not exist anymore."))
+	    else:
+		_pkglist.append(file)
+	pkglist = _pkglist
+	
+	currCounter = 0
+	atomsnumber = len(pkglist)
+	import reagentTools
+	for pkg in pkglist:
+	    
+	    entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Analyzing: ")+entropyTools.bold(pkg), back = True)
+	    currCounter += 1
+	    entropyTools.print_info(entropyTools.green("  (")+ entropyTools.blue(str(currCounter))+"/"+entropyTools.red(str(atomsnumber))+entropyTools.green(") ")+entropyTools.red("Analyzing ")+entropyTools.bold(pkg)+entropyTools.red(" ..."))
+	    etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+pkg)
+	    # remove shait
+	    os.system("rm -rf "+etpConst['packagestmpdir']+"/"+pkg)
+	    # fill the db entry
+	    dbconn.handlePackage(etpData)
+	    dbconn.commitChanges()
+
 	dbconn.commitChanges()
 	dbconn.closeDB()
-	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Done."))
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Successfully restored database information for the chosen packages."))
+
 
     elif (options[0] == "create-empty-database"):
 	mypath = options[1:]

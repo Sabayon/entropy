@@ -433,8 +433,12 @@ def getMirrorsLock():
 
 # tar.bz2 compress function...
 def compressTarBz2(storepath,pathtocompress):
-    cmd = "tar cjf "+storepath+" -C "+pathtocompress
-    rc = os.system(cmd+" &> /dev/null")
+    
+    cmd = "tar cjf "+storepath+" ."
+    rc = os.system(
+    		"cd "+pathtocompress+";"
+    		""+cmd+"&> /dev/null"
+		)
     return rc
 
 # tar.bz2 uncompress function...

@@ -190,7 +190,7 @@ def extractPkgData(package):
 	outcontent = []
 	for line in content:
 	    line = line.strip().split()
-	    if line[0] == "obj":
+	    if (line[0] == "obj") or (line[0] == "sym"):
 		outcontent.append(line[1].strip())
 	import string
 	# filter bad utf-8 chars
@@ -387,3 +387,170 @@ def extractPkgData(package):
 
     print_info(yellow(" * ")+red("Done"),back = True)
     return etpData
+
+
+def smartapps(options):
+    
+    if (len(options) == 0):
+        print_error(yellow(" * ")+red("No valid tool specified."))
+	sys.exit(501)
+    
+    if (options[0] == "create"):
+        myopts = options[1:]
+	
+	if (len(myopts) == 0):
+	    print_error(yellow(" * ")+red("No packages specified."))
+	    sys.exit(502)
+	
+	# open db
+	dbconn = databaseTools.etpDatabase(readOnly = True)
+	
+	# seek valid apps (in db)
+	validPackages = []
+	for opt in myopts:
+	    pkgsfound = dbconn.searchPackages(opt)
+	    for pkg in pkgsfound:
+		validPackages.append(pkg[0])
+
+	dbconn.closeDB()
+
+	if (len(validPackages) == 0):
+	    print_error(yellow(" * ")+red("No valid packages specified."))
+	    sys.exit(503)
+
+	# print the list
+	print_info(green(" * ")+red("This is the list of the packages that would be worked out:"))
+	for pkg in validPackages:
+	    print_info(green("\t[SMART] - ")+bold(pkg))
+
+	rc = askquestion(">>   Would you like to create the packages above ?")
+	if rc == "No":
+	    sys.exit(0)
+	
+	for pkg in validPackages:
+	    print_info(green(" * ")+red("Creating smartapp package from ")+bold(pkg))
+	    smartgenerator(pkg)
+
+	print_info(green(" * ")+red("Smartapps creation done, remember to test them before publishing."))
+
+    
+    
+    
+# tool that generates .tar.bz2 packages with all the binary dependencies included
+# @returns the package file path
+def smartgenerator(atom):
+    
+    dbconn = databaseTools.etpDatabase(readOnly = True)
+    
+    # check if the application package is available, otherwise, download
+    pkgfilepath = dbconn.retrievePackageVar(atom,"download")
+    pkgneededlibs = dbconn.retrievePackageVar(atom,"neededlibs")
+    pkgneededlibs = pkgneededlibs.split()
+    pkgcontent = dbconn.retrievePackageVar(atom,"content")
+    pkgfilename = pkgfilepath.split("/")[len(pkgfilepath.split("/"))-1]
+    pkgname = pkgfilename.split(".tbz2")[0]
+    
+    if (not os.path.isfile(etpConst['packagesbindir']+"/"+pkgfilename)):
+	# I have to download it
+	# FIXME: complete this
+	print "download needed: not yet implemented"
+
+    
+    #print "DEBUG: "+pkgneededlibs
+    
+    # create the working directory
+    pkgtmpdir = etpConst['packagestmpdir']+"/"+pkgname
+    #print "DEBUG: "+pkgtmpdir
+    if os.path.isdir(pkgtmpdir):
+	os.system("rm -rf "+pkgtmpdir)
+    os.makedirs(pkgtmpdir)
+    os.makedirs(pkgtmpdir+"/libs")
+    uncompressTarBz2(etpConst['packagesbindir']+"/"+pkgfilename,pkgtmpdir)
+
+    binaryExecs = []
+    pkgcontent = pkgcontent.split()
+    for file in pkgcontent:
+	# remove /
+	filepath = pkgtmpdir+file
+	import commands
+	if os.access(filepath,os.X_OK):
+	    # test if it's an exec
+	    out = commands.getoutput("file "+filepath).split("\n")[0]
+	    if out.find("LSB executable") != -1:
+		binaryExecs.append(file)
+	# check if file is executable
+
+    #print "DEBUG: "+str(binaryExecs)
+    
+    librariesBlacklist = []
+    # add glibc libraries to the blacklist
+    glibcPkg = dbconn.searchPackages("sys-libs/glibc")
+    if len(glibcPkg) > 0:
+        glibcContent = dbconn.retrievePackageVar(glibcPkg[0][0],"content")
+	for file in glibcContent.split():
+	    if (file.startswith("/lib/")) and (file.find(".so") != -1):
+		librariesBlacklist.append(file)
+    # add here more blacklisted files
+    
+    # now copy all the needed libraries inside the tmpdir
+    # FIXME: should we rely on the libraries in the packages instead of copying them from the system?
+    # FIXME: in this case, we have to d/l them if they're not in the packages directory
+    _pkgneededlibs = []
+    for lib in pkgneededlibs:
+	# extract dir, filter /lib because it causes troubles ?
+	# FIXME: I think that sould be better creating a blacklist instead
+	fileOk = True
+	for file in librariesBlacklist:
+	    if lib == file:
+		fileOk = False
+		break
+	if (fileOk):
+	    _pkgneededlibs.append(lib)
+	    libdir = os.path.dirname(lib)
+	    #print lib
+	    if not os.path.isdir(pkgtmpdir+"/libs/"+libdir):
+	        os.makedirs(pkgtmpdir+"/libs/"+libdir)
+	    os.system("cp -p "+lib+" "+pkgtmpdir+"/libs/"+libdir)
+    # ^^ libraries copied in place! now link! (with magic)
+    pkgneededlibs = _pkgneededlibs
+    # collect libraries in the directories
+    
+    
+    for bin in binaryExecs:
+	# libs dir in in pkgtmpdir+/libs
+	# we are in pkgtmpdir+os.path.dirname(bin)
+	# calculate recursion level
+	bindir = pkgtmpdir+os.path.dirname(bin)+"/"
+	libsdir = pkgtmpdir+"/libs/"
+	bindirlevel = len(bindir.split("/"))
+	libsdirlevel = len(libsdir.split("/"))
+	recursion = bindirlevel-libsdirlevel+1
+	#print str(recursion)
+	recursiontree = ""
+	for i in range(recursion):
+	    recursiontree += "../"
+	#print recursiontree
+	for lib in pkgneededlibs:
+	    os.system(
+    		"cd "+bindir+";"
+		"ln -sf "+recursiontree+"libs"+lib+" ."
+            )
+
+    # now create the bash script for each binaryExecs
+    for bin in binaryExecs:
+        bindirname = os.path.dirname(bin)
+        bashScript = []
+	bashScript.append("#!/bin/sh\n")
+	bashScript.append('PATH="$PWD:$PWD/libs" LD_LIBRARY_PATH="$PWD'+bindirname+'" .'+bin+' "$@"\n')
+	binname = bin.split("/")[len(bin.split("/"))-1]
+	f = open(pkgtmpdir+"/"+binname,"w")
+	f.writelines(bashScript)
+	f.flush()
+	f.close()
+	# chmod
+	os.chmod(pkgtmpdir+"/"+binname,0755)
+	
+    # now compress in .tar.bz2 and place in etpConst['smartappsdir']
+    #print etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tar.bz2"
+    #print pkgtmpdir+"/"
+    compressTarBz2(etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tar.bz2",pkgtmpdir+"/")

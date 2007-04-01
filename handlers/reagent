@@ -56,7 +56,9 @@ def print_help():
     entropyTools.print_info(" \t\t"+entropyTools.green("stabilize")+"\t\t Mark as stable a package, a list of packages, world")
     entropyTools.print_info(" \t\t"+entropyTools.green("unstabilize")+"\t\t Mark as unstable a package, a list of packages, world")
     entropyTools.print_info(" \t\t"+entropyTools.green(entropyTools.bold("orphans"))+"\t\t\t Dump the list of files that don't belong on any installed package")
-    entropyTools.print_info(" \t\t"+entropyTools.green(entropyTools.bold("sanity-check"))+"\t\t Do a quick check on the database to assure data integrity.")
+    entropyTools.print_info(" \t\t"+entropyTools.green(entropyTools.bold("sanity-check"))+"\t\t Do a quick check on the database to assure data integrity")
+    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("smartapps"))+entropyTools.yellow("\t Entropy application tool to create self-dependant applications [EXPERIMENTAL]"))
+    entropyTools.print_info(" \t\t"+entropyTools.green(entropyTools.bold("create"))+"\t\t\t Create a smartapp package using the package names provided")
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("cleanup"))+entropyTools.yellow("\t\t to clean temporary files"))
 
 options = sys.argv[1:]
@@ -97,6 +99,11 @@ elif (options[0] == "enzyme"):
 # database tool
 elif (options[0] == "database"):
     databaseTools.database(options[1:])
+    sys.exit(0)
+
+# smartapps tool
+elif (options[0] == "smartapps"):
+    reagentTools.smartapps(options[1:])
     sys.exit(0)
 
 # cleanup

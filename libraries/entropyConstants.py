@@ -113,13 +113,14 @@ ETP_DIR = "/var/lib/entropy"
 ETP_TMPDIR = "/tmp"
 ETP_RANDOM = str(random.random())[2:7]
 ETP_TMPFILE = "/.random-"+ETP_RANDOM+".tmp"
-ETP_REPODIR = "/packages"+"/"+ETP_ARCH_CONST
+ETP_REPODIR = "/packages/"+ETP_ARCH_CONST
 ETP_PORTDIR = "/portage"
 ETP_DISTFILESDIR = "/distfiles"
 ETP_DBDIR = "/database/"+ETP_ARCH_CONST
 ETP_DBFILE = "packages.db"
-ETP_UPLOADDIR = "/upload"+"/"+ETP_ARCH_CONST
-ETP_STOREDIR = "/store"+"/"+ETP_ARCH_CONST
+ETP_UPLOADDIR = "/upload/"+ETP_ARCH_CONST
+ETP_STOREDIR = "/store/"+ETP_ARCH_CONST
+ETP_SMARTAPPSDIR = "/smartapps/"+ETP_ARCH_CONST
 ETP_CONF_DIR = "/etc/entropy"
 ETP_ROOT_DIR = "/"
 ETP_LOG_DIR = ETP_DIR+"/"+"logs"
@@ -133,6 +134,7 @@ etpConst = {
     'packagesbindir': ETP_DIR+ETP_REPODIR, # etpConst['packagesbindir'] --> repository where the packages will be stored
     			# by the clients: to query if a package has been already downloaded
 			# by the servers or rsync mirrors: to store already uploaded packages to the main rsync server
+    'smartappsdir': ETP_DIR+ETP_SMARTAPPSDIR, # etpConst['smartappsdir'] location where smart apps files are places
     'packagesstoredir': ETP_DIR+ETP_STOREDIR, # etpConst['packagesstoredir'] --> directory where .tbz2 files are stored waiting for being processed by reagent
     'packagessuploaddir': ETP_DIR+ETP_UPLOADDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
     'portagetreedir': ETP_DIR+ETP_PORTDIR, # directory where is stored our local portage tree
