@@ -588,7 +588,7 @@ def smartgenerator(atom):
 	f.flush()
 	f.close()
 	# chmod
-	os.chmod(pkgtmpdir+"/"+binname,0755)
+	os.chmod(pkgtmpdir+"/sh/"+binname,0755)
 	
     # now list files in /sh and create .desktop files
     shfiles = os.listdir(pkgtmpdir+"/sh")
