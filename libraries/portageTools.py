@@ -187,7 +187,6 @@ def compareAtoms(atom1,atom2):
     from portage_versions import vercmp
     return vercmp(atom1,atom2)
 
-
 # please always force =pkgcat/pkgname-ver if possible
 def getInstalledAtom(atom):
     rc = portage.db['/']['vartree'].dep_match(str(atom))

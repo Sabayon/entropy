@@ -238,23 +238,25 @@ def build(atoms):
 	        atoms = atoms[0]
 	    else:
 	        atoms = "="+atoms[0]
-        print_info(green("  Sanity check on packages..."))
-        atomdeps, atomconflicts = calculateFullAtomsDependencies(atoms,enzymeRequestDeep)
-        for conflict in atomconflicts:
-	    if getInstalledAtom(conflict) is not None:
-	        # damn, it's installed
-	        PackagesConflicting.append(conflict)
-        if PackagesConflicting != []:
-	    print_info(red("   *")+" These are the conflicting packages:")
-	    for i in PackagesConflicting:
-	        print_warning(red("      *")+bold(" [CONFL] ")+i)
-	    if (not enzymeRequestIgnoreConflicts):
-	        print_error(red(" ***")+" Sorry, I can't continue. To force this, add --ignore-conflicts at your own risk.")
-	        sys.exit(101)
-	    else:
-	        import time
-	        print_warning((" ***")+" You are using --ignore-conflicts at your own risk.")
-	        time.sleep(5)
+        
+	if (not enzymeRequestForceRepackage):
+	    print_info(green("  Sanity check on packages..."))
+            atomdeps, atomconflicts = calculateFullAtomsDependencies(atoms,enzymeRequestDeep)
+            for conflict in atomconflicts:
+	        if getInstalledAtom(conflict) is not None:
+	            # damn, it's installed
+	            PackagesConflicting.append(conflict)
+            if PackagesConflicting != []:
+	        print_info(red("   *")+" These are the conflicting packages:")
+	        for i in PackagesConflicting:
+	            print_warning(red("      *")+bold(" [CONFL] ")+i)
+	        if (not enzymeRequestIgnoreConflicts):
+	            print_error(red(" ***")+" Sorry, I can't continue. To force this, add --ignore-conflicts at your own risk.")
+	            sys.exit(101)
+	        else:
+	            import time
+	            print_warning((" ***")+" You are using --ignore-conflicts at your own risk.")
+	            time.sleep(5)
     else:
 	toBeBuilt = validAtoms
 

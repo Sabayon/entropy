@@ -32,7 +32,7 @@ import sys
 import string
 from portageTools import unpackTbz2, synthetizeRoughDependencies, getPackageRuntimeDependencies, dep_getkey, getThirdPartyMirrors
 
-def generator(package, enzymeRequestBump = False):
+def generator(package, enzymeRequestBump = False, dbconnection = None):
 
     # check if the package provided is valid
     validFile = False
@@ -47,10 +47,16 @@ def generator(package, enzymeRequestBump = False):
     print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
     etpData = extractPkgData(package)
 
-    # now import etpData inside the database
-    dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
+    if dbconnection is None:
+	dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
+    else:
+	dbconn = dbconnection
+
     updated, revision = dbconn.handlePackage(etpData,enzymeRequestBump)
-    dbconn.closeDB()
+    
+    if dbconnection is None:
+	dbconn.commitChanges()
+	dbconn.closeDB()
 
     if (updated) and (revision != 0):
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry has been updated. Revision: ")+bold(str(revision)))
@@ -83,6 +89,9 @@ def enzyme(options):
 	# then exit gracefully
 	sys.exit(0)
 
+    # open db connection
+    dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
+
     counter = 0
     etpCreated = 0
     etpNotCreated = 0
@@ -91,13 +100,17 @@ def enzyme(options):
 	tbz2name = tbz2.split("/")[len(tbz2.split("/"))-1]
 	print_info(" ("+str(counter)+"/"+str(totalCounter)+") Processing "+tbz2name)
 	tbz2path = etpConst['packagesstoredir']+"/"+tbz2
-	rc = generator(tbz2path, enzymeRequestBump)
+	rc = generator(tbz2path, enzymeRequestBump, dbconn)
 	if (rc):
 	    etpCreated += 1
 	    os.system("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/ -f")
 	else:
 	    etpNotCreated += 1
 	    os.system("rm -rf "+tbz2path)
+	dbconn.commitChanges()
+
+    dbconn.commitChanges()
+    dbconn.closeDB()
 
     print_info(green(" * ")+red("Statistics: ")+blue("Entries created/updated: ")+bold(str(etpCreated))+yellow(" - ")+darkblue("Entries discarded: ")+bold(str(etpNotCreated)))
 
@@ -450,13 +463,44 @@ def smartgenerator(atom):
     pkgfilename = pkgfilepath.split("/")[len(pkgfilepath.split("/"))-1]
     pkgname = pkgfilename.split(".tbz2")[0]
     
+    # extra dependency check
+    extraDeps = []
+    
+    pkgdependencies = dbconn.retrievePackageVar(atom,"dependencies").split()
+    for dep in pkgdependencies:
+	# remove unwanted dependencies
+	if (dep.find("sys-devel") == -1) \
+		and (dep.find("dev-util") == -1) \
+		and (dep.find("dev-lang") == -1) \
+		and (dep.find("x11-libs") == -1) \
+		and (dep.find("x11-proto") == -1):
+	    extraDeps.append(dep_getkey(dep))
+
+    # expand dependencies
+    _extraDeps = []
+    for dep in extraDeps:
+	depnames = dbconn.searchPackages(dep)
+	for depname in depnames:
+	    _extraDeps.append(depname[0]) # get atom
+
+    extraDeps = _extraDeps
+    
+    extraPackages = []
+    # get their files
+    for dep in extraDeps:
+	depcontent = dbconn.retrievePackageVar(dep,"download")
+	extraPackages.append(depcontent.split("/")[len(depcontent.split("/"))-1])
+	
+    pkgneededlibs = list(set(pkgneededlibs))
+    extraPackages = list(set(extraPackages))
+    
+    # now check - do a for cycle
     if (not os.path.isfile(etpConst['packagesbindir']+"/"+pkgfilename)):
 	# I have to download it
 	# FIXME: complete this
+	# do it when we have all the atoms that should be downloaded
 	print "download needed: not yet implemented"
 
-    
-    #print "DEBUG: "+pkgneededlibs
     
     # create the working directory
     pkgtmpdir = etpConst['packagestmpdir']+"/"+pkgname
@@ -464,7 +508,6 @@ def smartgenerator(atom):
     if os.path.isdir(pkgtmpdir):
 	os.system("rm -rf "+pkgtmpdir)
     os.makedirs(pkgtmpdir)
-    os.makedirs(pkgtmpdir+"/libs")
     uncompressTarBz2(etpConst['packagesbindir']+"/"+pkgfilename,pkgtmpdir)
 
     binaryExecs = []
@@ -479,6 +522,11 @@ def smartgenerator(atom):
 	    if out.find("LSB executable") != -1:
 		binaryExecs.append(file)
 	# check if file is executable
+
+    # now uncompress all the rest
+    for dep in extraPackages:
+	uncompressTarBz2(etpConst['packagesbindir']+"/"+dep,pkgtmpdir)
+
 
     #print "DEBUG: "+str(binaryExecs)
     
@@ -508,40 +556,32 @@ def smartgenerator(atom):
 	    _pkgneededlibs.append(lib)
 	    libdir = os.path.dirname(lib)
 	    #print lib
-	    if not os.path.isdir(pkgtmpdir+"/libs/"+libdir):
-	        os.makedirs(pkgtmpdir+"/libs/"+libdir)
-	    os.system("cp -p "+lib+" "+pkgtmpdir+"/libs/"+libdir)
+	    if not os.path.isdir(pkgtmpdir+libdir):
+	        os.makedirs(pkgtmpdir+libdir)
+	    os.system("cp -p "+lib+" "+pkgtmpdir+libdir)
     # ^^ libraries copied in place! now link! (with magic)
     pkgneededlibs = _pkgneededlibs
     # collect libraries in the directories
     
-    
-    for bin in binaryExecs:
-	# libs dir in in pkgtmpdir+/libs
-	# we are in pkgtmpdir+os.path.dirname(bin)
-	# calculate recursion level
-	bindir = pkgtmpdir+os.path.dirname(bin)+"/"
-	libsdir = pkgtmpdir+"/libs/"
-	bindirlevel = len(bindir.split("/"))
-	libsdirlevel = len(libsdir.split("/"))
-	recursion = bindirlevel-libsdirlevel+1
-	#print str(recursion)
-	recursiontree = ""
-	for i in range(recursion):
-	    recursiontree += "../"
-	#print recursiontree
-	for lib in pkgneededlibs:
-	    os.system(
-    		"cd "+bindir+";"
-		"ln -sf "+recursiontree+"libs"+lib+" ."
-            )
-
+    # FIXME: create .desktop files?
     # now create the bash script for each binaryExecs
     for bin in binaryExecs:
         bindirname = os.path.dirname(bin)
+
+	# FIXME: add support for
+	# - Python
+	# - Perl
         bashScript = []
 	bashScript.append("#!/bin/sh\n")
-	bashScript.append('PATH="$PWD:$PWD/libs" LD_LIBRARY_PATH="$PWD'+bindirname+'" .'+bin+' "$@"\n')
+	bashScript.append(
+			'export PATH=$PWD:$PWD/sbin:$PWD/bin:$PWD/usr/bin:$PWD/usr/sbin:$PWD/usr/X11R6/bin:$PWD/libexec:$PWD/usr/local/bin:$PWD/usr/local/sbin:$PATH\n'
+			'export LD_LIBRARY_PATH=$PWD/lib:$PWD/usr/lib:$PWD/usr/qt/3/lib:$PWD/usr/kde/3.5/lib:$LD_LIBRARY_PATH\n'
+			'export KDEDIRS=$PWD/usr/kde/3.5:$PWD/usr:$KDEDIRS\n'
+			'export MANPATH=$PWD/share/man:$MANPATH\n'
+			'export GUILE_LOAD_PATH=$PWD/share/:$GUILE_LOAD_PATH\n'
+			'export SCHEME_LIBRARY_PATH=$PWD/share/slib:$SCHEME_LIBRARY_PATH\n'
+			'$PWD'+bin+' "$@"\n'
+	)
 	binname = bin.split("/")[len(bin.split("/"))-1]
 	f = open(pkgtmpdir+"/"+binname,"w")
 	f.writelines(bashScript)
@@ -554,3 +594,5 @@ def smartgenerator(atom):
     #print etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tar.bz2"
     #print pkgtmpdir+"/"
     compressTarBz2(etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tar.bz2",pkgtmpdir+"/")
+    
+    dbconn.closeDB()
