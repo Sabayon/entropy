@@ -536,7 +536,7 @@ def smartgenerator(atom):
     if len(glibcPkg) > 0:
         glibcContent = dbconn.retrievePackageVar(glibcPkg[0][0],"content")
 	for file in glibcContent.split():
-	    if (file.startswith("/lib/")) and (file.find(".so") != -1):
+	    if (file.startswith("/lib/")) and (file.startswith("/lib64/")) and (file.find(".so") != -1):
 		librariesBlacklist.append(file)
     # add here more blacklisted files
     
@@ -563,11 +563,11 @@ def smartgenerator(atom):
     pkgneededlibs = _pkgneededlibs
     # collect libraries in the directories
     
-    # FIXME: create .desktop files?
+    os.makedirs(pkgtmpdir+"/sh")
     # now create the bash script for each binaryExecs
     for bin in binaryExecs:
         bindirname = os.path.dirname(bin)
-
+	
 	# FIXME: add support for
 	# - Python
 	# - Perl
@@ -575,7 +575,7 @@ def smartgenerator(atom):
 	bashScript.append("#!/bin/sh\n")
 	bashScript.append(
 			'export PATH=$PWD:$PWD/sbin:$PWD/bin:$PWD/usr/bin:$PWD/usr/sbin:$PWD/usr/X11R6/bin:$PWD/libexec:$PWD/usr/local/bin:$PWD/usr/local/sbin:$PATH\n'
-			'export LD_LIBRARY_PATH=$PWD/lib:$PWD/usr/lib:$PWD/usr/qt/3/lib:$PWD/usr/kde/3.5/lib:$LD_LIBRARY_PATH\n'
+			'export LD_LIBRARY_PATH=$PWD/lib:$PWD/lib64:$PWD/usr/lib:$PWD/usr/lib64:$PWD/usr/qt/3/lib:$PWD/usr/qt/3/lib64:$PWD/usr/kde/3.5/lib:$PWD/usr/kde/3.5/lib64:$LD_LIBRARY_PATH\n'
 			'export KDEDIRS=$PWD/usr/kde/3.5:$PWD/usr:$KDEDIRS\n'
 			'export MANPATH=$PWD/share/man:$MANPATH\n'
 			'export GUILE_LOAD_PATH=$PWD/share/:$GUILE_LOAD_PATH\n'
@@ -583,12 +583,32 @@ def smartgenerator(atom):
 			'$PWD'+bin+' "$@"\n'
 	)
 	binname = bin.split("/")[len(bin.split("/"))-1]
-	f = open(pkgtmpdir+"/"+binname,"w")
+	f = open(pkgtmpdir+"/sh/"+binname,"w")
 	f.writelines(bashScript)
 	f.flush()
 	f.close()
 	# chmod
 	os.chmod(pkgtmpdir+"/"+binname,0755)
+	
+    # now list files in /sh and create .desktop files
+    shfiles = os.listdir(pkgtmpdir+"/sh")
+    for file in shfiles:
+	desktopFile = []
+	desktopFile.append(
+			'[Desktop Entry]\n'
+			'Encoding=UTF-8\n'
+			'Name='+file+'\n'
+			'Exec=$PWD/sh/'+file+'\n'
+			'Terminal=false'
+			'MultipleArgs=false'
+			'Type=Application'
+			'Icon='+file
+			'Categories=Application;'
+	)
+	f = open(pkgtmpdir+"/"+file+".desktop","w")
+	f.writelines(desktopFile)
+	f.flush()
+	f.close()
 	
     # now compress in .tar.bz2 and place in etpConst['smartappsdir']
     #print etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tar.bz2"
