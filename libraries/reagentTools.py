@@ -586,8 +586,7 @@ def smartgenerator(atom):
     os.chmod(pkgtmpdir+"/wrapper",0755)
 	
     # now list files in /sh and create .desktop files
-    shfiles = os.listdir(pkgtmpdir+"/sh")
-    for file in shfiles:
+    for file in binaryExecs:
 	desktopFile = []
 	desktopFile.append(
 			'[Desktop Entry]\n'
