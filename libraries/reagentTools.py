@@ -602,8 +602,8 @@ def smartgenerator(atom):
 			'Terminal=false'
 			'MultipleArgs=false'
 			'Type=Application'
-			'Icon='+file
-			'Categories=Application;'
+			'Icon='+file+'\n'
+			'Categories=Application;\n'
 	)
 	f = open(pkgtmpdir+"/"+file+".desktop","w")
 	f.writelines(desktopFile)
