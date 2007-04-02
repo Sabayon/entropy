@@ -599,9 +599,9 @@ def smartgenerator(atom):
 			'Encoding=UTF-8\n'
 			'Name='+file+'\n'
 			'Exec=$PWD/sh/'+file+'\n'
-			'Terminal=false'
-			'MultipleArgs=false'
-			'Type=Application'
+			'Terminal=false\n'
+			'MultipleArgs=false\n'
+			'Type=Application\n'
 			'Icon='+file+'\n'
 			'Categories=Application;\n'
 	)
