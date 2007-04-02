@@ -527,9 +527,6 @@ def smartgenerator(atom):
     for dep in extraPackages:
 	uncompressTarBz2(etpConst['packagesbindir']+"/"+dep,pkgtmpdir)
 
-
-    #print "DEBUG: "+str(binaryExecs)
-    
     librariesBlacklist = []
     # add glibc libraries to the blacklist
     glibcPkg = dbconn.searchPackages("sys-libs/glibc")
