@@ -563,32 +563,27 @@ def smartgenerator(atom):
     pkgneededlibs = _pkgneededlibs
     # collect libraries in the directories
     
-    os.makedirs(pkgtmpdir+"/sh")
     # now create the bash script for each binaryExecs
-    for bin in binaryExecs:
-        bindirname = os.path.dirname(bin)
-	
-	# FIXME: add support for
-	# - Python
-	# - Perl
-        bashScript = []
-	bashScript.append("#!/bin/sh\n")
-	bashScript.append(
+    # FIXME: add support for
+    # - Python
+    # - Perl
+    bashScript = []
+    bashScript.append("#!/bin/sh\n")
+    bashScript.append(
 			'export PATH=$PWD:$PWD/sbin:$PWD/bin:$PWD/usr/bin:$PWD/usr/sbin:$PWD/usr/X11R6/bin:$PWD/libexec:$PWD/usr/local/bin:$PWD/usr/local/sbin:$PATH\n'
 			'export LD_LIBRARY_PATH=$PWD/lib:$PWD/lib64:$PWD/usr/lib:$PWD/usr/lib64:$PWD/usr/qt/3/lib:$PWD/usr/qt/3/lib64:$PWD/usr/kde/3.5/lib:$PWD/usr/kde/3.5/lib64:$LD_LIBRARY_PATH\n'
 			'export KDEDIRS=$PWD/usr/kde/3.5:$PWD/usr:$KDEDIRS\n'
 			'export MANPATH=$PWD/share/man:$MANPATH\n'
 			'export GUILE_LOAD_PATH=$PWD/share/:$GUILE_LOAD_PATH\n'
 			'export SCHEME_LIBRARY_PATH=$PWD/share/slib:$SCHEME_LIBRARY_PATH\n'
-			'$PWD'+bin+' "$@"\n'
-	)
-	binname = bin.split("/")[len(bin.split("/"))-1]
-	f = open(pkgtmpdir+"/sh/"+binname,"w")
-	f.writelines(bashScript)
-	f.flush()
-	f.close()
-	# chmod
-	os.chmod(pkgtmpdir+"/sh/"+binname,0755)
+			'$1 "$@"\n'
+    )
+    f = open(pkgtmpdir+"/wrapper","w")
+    f.writelines(bashScript)
+    f.flush()
+    f.close()
+    # chmod
+    os.chmod(pkgtmpdir+"/wrapper",0755)
 	
     # now list files in /sh and create .desktop files
     shfiles = os.listdir(pkgtmpdir+"/sh")
@@ -598,7 +593,7 @@ def smartgenerator(atom):
 			'[Desktop Entry]\n'
 			'Encoding=UTF-8\n'
 			'Name='+file+'\n'
-			'Exec=$PWD/sh/'+file+'\n'
+			'Exec=./wrapper '+file+'\n'
 			'Terminal=false\n'
 			'MultipleArgs=false\n'
 			'Type=Application\n'
@@ -609,7 +604,7 @@ def smartgenerator(atom):
 	f.writelines(desktopFile)
 	f.flush()
 	f.close()
-	
+
     # now compress in .tar.bz2 and place in etpConst['smartappsdir']
     #print etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tar.bz2"
     #print pkgtmpdir+"/"
