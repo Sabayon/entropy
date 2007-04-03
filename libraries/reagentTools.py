@@ -591,9 +591,6 @@ def smartgenerator(atom):
     # collect libraries in the directories
     
     # now create the bash script for each binaryExecs
-    # FIXME: add support for
-    # - Python
-    # - Perl
     os.makedirs(pkgtmpdir+"/wrp")
     bashScript = []
     bashScript.append(
@@ -602,6 +599,22 @@ def smartgenerator(atom):
 			'export PATH=$PWD:$PWD/sbin:$PWD/bin:$PWD/usr/bin:$PWD/usr/sbin:$PWD/usr/X11R6/bin:$PWD/libexec:$PWD/usr/local/bin:$PWD/usr/local/sbin:$PATH\n'
 			'export LD_LIBRARY_PATH=$PWD/lib:$PWD/lib64:$PWD/usr/lib:$PWD/usr/lib64:$PWD/usr/qt/3/lib:$PWD/usr/qt/3/lib64:$PWD/usr/kde/3.5/lib:$PWD/usr/kde/3.5/lib64:$LD_LIBRARY_PATH\n'
 			'export KDEDIRS=$PWD/usr/kde/3.5:$PWD/usr:$KDEDIRS\n'
+			
+			'MYPYP=$(find $PWD/lib/python2.4/site-packages/ -type d -printf %p: 2> /dev/null)\n'
+			'MYPYP2=$(find $PWD/lib/python2.5/site-packages/ -type d -printf %p: 2> /dev/null)\n'
+			'export PYTHONPATH=$MYPYP:MYPYP2:$PYTHONPATH\n'
+			
+			'export PERL5LIB=$PWD/usr/lib/perl5:$PWD/share/perl5:$PWD/usr/lib/perl5/5.8.1'
+			':$PWD/usr/lib/perl5/5.8.2:'
+			':$PWD/usr/lib/perl5/5.8.3:'
+			':$PWD/usr/lib/perl5/5.8.4:'
+			':$PWD/usr/lib/perl5/5.8.5:'
+			':$PWD/usr/lib/perl5/5.8.6:'
+			':$PWD/usr/lib/perl5/5.8.7:'
+			':$PWD/usr/lib/perl5/5.8.8:'
+			':$PWD/usr/lib/perl5/5.8.9:'
+			':$PWD/usr/lib/perl5/5.8.10\n'
+			
 			'export MANPATH=$PWD/share/man:$MANPATH\n'
 			'export GUILE_LOAD_PATH=$PWD/share/:$GUILE_LOAD_PATH\n'
 			'export SCHEME_LIBRARY_PATH=$PWD/share/slib:$SCHEME_LIBRARY_PATH\n'
