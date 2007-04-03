@@ -594,7 +594,7 @@ def smartgenerator(atom):
     # FIXME: add support for
     # - Python
     # - Perl
-    os.makedirs(pkgtmpdir+"/wrp/wrapper")
+    os.makedirs(pkgtmpdir+"/wrp")
     bashScript = []
     bashScript.append(
     			'#!/bin/sh\n'
