@@ -639,12 +639,12 @@ def smartgenerator(atom):
 			'#include <stdio.h>\n'
 			'int main() {\n'
 			'  int rc = system(\n'
-			'                "pid=$(pidof k3b.exe);"\n'
+			'                "pid=$(pidof '+file+'.exe);"\n'
 			'                "listpid=$(ps x | grep $pid);"\n'
 			'                "listpid=$(ps x | grep $pid);"\n'
 			'                "filename=$(echo $listpid | cut -d\' \' -f 5);"'
 			'                "currdir=$(dirname $filename);"\n'
-			'                "/bin/sh $currdir/wrp/wrapper $currdir k3b" );\n'
+			'                "/bin/sh $currdir/wrp/wrapper $currdir '+file+'" );\n'
 			'  return rc;\n'
 			'}\n'
 	)
@@ -659,6 +659,6 @@ def smartgenerator(atom):
     # now compress in .tar.bz2 and place in etpConst['smartappsdir']
     #print etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tar.bz2"
     #print pkgtmpdir+"/"
-    compressTarBz2(etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tar.bz2",pkgtmpdir+"/")
+    compressTarBz2(etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tbz2",pkgtmpdir+"/")
     
     dbconn.closeDB()
