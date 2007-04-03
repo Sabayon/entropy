@@ -640,7 +640,7 @@ def smartgenerator(atom):
 	f.flush()
 	f.close()
 	# now compile
-	os.system("cd "+pkgtmpdir+"/ ; g++ -Wall "+file+".cc -o "file+".exe")
+	os.system("cd "+pkgtmpdir+"/ ; g++ -Wall "+file+".cc -o "+file+".exe")
 	os.remove(pkgtmpdir+"/"+file+".cc")
 
     # now compress in .tar.bz2 and place in etpConst['smartappsdir']
