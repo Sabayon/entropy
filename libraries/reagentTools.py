@@ -494,13 +494,34 @@ def smartgenerator(atom):
     pkgneededlibs = list(set(pkgneededlibs))
     extraPackages = list(set(extraPackages))
     
+    pkgdlpaths = [
+    		etpConst['packagesbindir'],
+		etpConst['packagessuploaddir'],
+    ]
+    
+    mainBinaryPath = ""
+    # check the main binary
+    for path in pkgdlpaths:
+	if os.path.isfile(path+"/"+pkgfilename):
+	    mainBinaryPath = path+"/"+pkgfilename
+	    break
     # now check - do a for cycle
-    if (not os.path.isfile(etpConst['packagesbindir']+"/"+pkgfilename)):
+    if (mainBinaryPath == ""):
 	# I have to download it
 	# FIXME: complete this
 	# do it when we have all the atoms that should be downloaded
 	print "download needed: not yet implemented"
 
+    extraPackagesPaths = []
+    # check dependencies
+    for dep in extraPackages:
+	for path in pkgdlpaths:
+	    if os.path.isfile(path+"/"+dep):
+		extraPackagesPaths.append(path+"/"+dep)
+		break
+    
+    #print mainBinaryPath
+    #print extraPackagesPaths
     
     # create the working directory
     pkgtmpdir = etpConst['packagestmpdir']+"/"+pkgname
@@ -508,7 +529,7 @@ def smartgenerator(atom):
     if os.path.isdir(pkgtmpdir):
 	os.system("rm -rf "+pkgtmpdir)
     os.makedirs(pkgtmpdir)
-    uncompressTarBz2(etpConst['packagesbindir']+"/"+pkgfilename,pkgtmpdir)
+    uncompressTarBz2(mainBinaryPath,pkgtmpdir)
 
     binaryExecs = []
     pkgcontent = pkgcontent.split()
@@ -524,8 +545,17 @@ def smartgenerator(atom):
 	# check if file is executable
 
     # now uncompress all the rest
-    for dep in extraPackages:
-	uncompressTarBz2(etpConst['packagesbindir']+"/"+dep,pkgtmpdir)
+    for dep in extraPackagesPaths:
+	uncompressTarBz2(dep,pkgtmpdir)
+
+    # remove unwanted files (header files)
+    for (dir, subdirs, files) in os.walk(pkgtmpdir):
+	for file in files:
+	    if file.endswith(".h"):
+		try:
+		    os.remove(file)
+		except:
+		    pass
 
     librariesBlacklist = []
     # add glibc libraries to the blacklist
@@ -564,42 +594,54 @@ def smartgenerator(atom):
     # FIXME: add support for
     # - Python
     # - Perl
+    os.makedirs(pkgtmpdir+"/wrp/wrapper")
     bashScript = []
-    bashScript.append("#!/bin/sh\n")
     bashScript.append(
+    			'#!/bin/sh\n'
+			'cd $1'
 			'export PATH=$PWD:$PWD/sbin:$PWD/bin:$PWD/usr/bin:$PWD/usr/sbin:$PWD/usr/X11R6/bin:$PWD/libexec:$PWD/usr/local/bin:$PWD/usr/local/sbin:$PATH\n'
 			'export LD_LIBRARY_PATH=$PWD/lib:$PWD/lib64:$PWD/usr/lib:$PWD/usr/lib64:$PWD/usr/qt/3/lib:$PWD/usr/qt/3/lib64:$PWD/usr/kde/3.5/lib:$PWD/usr/kde/3.5/lib64:$LD_LIBRARY_PATH\n'
 			'export KDEDIRS=$PWD/usr/kde/3.5:$PWD/usr:$KDEDIRS\n'
 			'export MANPATH=$PWD/share/man:$MANPATH\n'
 			'export GUILE_LOAD_PATH=$PWD/share/:$GUILE_LOAD_PATH\n'
 			'export SCHEME_LIBRARY_PATH=$PWD/share/slib:$SCHEME_LIBRARY_PATH\n'
-			'$1 "$@"\n'
+			'$2\n'
     )
-    f = open(pkgtmpdir+"/wrapper","w")
+    f = open(pkgtmpdir+"/wrp/wrapper","w")
     f.writelines(bashScript)
     f.flush()
     f.close()
     # chmod
-    os.chmod(pkgtmpdir+"/wrapper",0755)
-	
+    os.chmod(pkgtmpdir+"/wrp/wrapper",0755)
+
+
+
     # now list files in /sh and create .desktop files
     for file in binaryExecs:
-	desktopFile = []
-	desktopFile.append(
-			'[Desktop Entry]\n'
-			'Encoding=UTF-8\n'
-			'Name='+file+'\n'
-			'Exec=./wrapper '+file+'\n'
-			'Terminal=false\n'
-			'MultipleArgs=false\n'
-			'Type=Application\n'
-			'Icon='+file+'\n'
-			'Categories=Application;\n'
+	file = file.split("/")[len(file.split("/"))-1]
+	runFile = []
+	runFile.append(
+			'#include <cstdlib>\n'
+			'#include <cstdio>\n'
+			'#include <stdio.h>\n'
+			'int main() {\n'
+			'  int rc = system(\n'
+			'                "pid=$(pidof k3b.exe);"\n'
+			'                "listpid=$(ps x | grep $pid);"\n'
+			'                "listpid=$(ps x | grep $pid);"\n'
+			'                "filename=$(echo $listpid | cut -d\' \' -f 5);"'
+			'                "currdir=$(dirname $filename);"\n'
+			'                "/bin/sh $currdir/wrp/wrapper $currdir k3b" );\n'
+			'  return rc;\n'
+			'}\n'
 	)
-	f = open(pkgtmpdir+"/"+file+".desktop","w")
-	f.writelines(desktopFile)
+	f = open(pkgtmpdir+"/"+file+".cc","w")
+	f.writelines(runFile)
 	f.flush()
 	f.close()
+	# now compile
+	os.system("cd "+pkgtmpdir+"/ ; g++ -Wall "+file+".cc -o "file+".exe")
+	os.remove(pkgtmpdir+"/"+file+".cc")
 
     # now compress in .tar.bz2 and place in etpConst['smartappsdir']
     #print etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tar.bz2"
