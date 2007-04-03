@@ -598,7 +598,7 @@ def smartgenerator(atom):
     bashScript = []
     bashScript.append(
     			'#!/bin/sh\n'
-			'cd $1'
+			'cd $1\n'
 			'export PATH=$PWD:$PWD/sbin:$PWD/bin:$PWD/usr/bin:$PWD/usr/sbin:$PWD/usr/X11R6/bin:$PWD/libexec:$PWD/usr/local/bin:$PWD/usr/local/sbin:$PATH\n'
 			'export LD_LIBRARY_PATH=$PWD/lib:$PWD/lib64:$PWD/usr/lib:$PWD/usr/lib64:$PWD/usr/qt/3/lib:$PWD/usr/qt/3/lib64:$PWD/usr/kde/3.5/lib:$PWD/usr/kde/3.5/lib64:$LD_LIBRARY_PATH\n'
 			'export KDEDIRS=$PWD/usr/kde/3.5:$PWD/usr:$KDEDIRS\n'
