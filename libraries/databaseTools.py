@@ -513,7 +513,7 @@ def database(options):
 	dbconn = etpDatabase(readOnly = False, noUpload = True)
 	for pkg in pkglist:
 	    entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Removing package: ")+entropyTools.bold(pkg)+entropyTools.red(" ..."), back = True)
-	    dbconn.stabilizePackage(pkg,stable)
+	    dbconn.removePackage(pkg)
 	dbconn.commitChanges()
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("All the selected packages have been removed as requested. Have fun."))
 	dbconn.closeDB()
@@ -582,51 +582,54 @@ class etpDatabase:
 	    # set the table read only
 	    return
 
-	# check if the database is locked REMOTELY
-	# FIXME: this does not work
-	entropyTools.print_info(entropyTools.red(" * ")+entropyTools.red(" Locking and Sync Entropy database ..."), back = True)
-	for uri in etpConst['activatoruploaduris']:
-	    ftp = mirrorTools.handlerFTP(uri)
-	    ftp.setCWD(etpConst['etpurirelativepath'])
-	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
-		import time
-		entropyTools.print_info(entropyTools.red(" * ")+entropyTools.bold("WARNING")+entropyTools.red(": online database is already locked. Waiting up to 2 minutes..."), back = True)
-		unlocked = False
-		for x in range(120):
-		    time.sleep(1)
-		    if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
-			entropyTools.print_info(entropyTools.red(" * ")+entropyTools.bold("HOORAY")+entropyTools.red(": online database has been unlocked. Locking back and syncing..."))
-			unlocked = True
-			break
-		if (unlocked):
-		    break
+	# check if the database is locked locally
+	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
+	    entropyTools.print_info(entropyTools.red(" * ")+entropyTools.red(" Entropy database is already locked by you :-)"))
+	else:
+	    # check if the database is locked REMOTELY
+	    entropyTools.print_info(entropyTools.red(" * ")+entropyTools.red(" Locking and Sync Entropy database ..."), back = True)
+	    for uri in etpConst['activatoruploaduris']:
+	        ftp = mirrorTools.handlerFTP(uri)
+	        ftp.setCWD(etpConst['etpurirelativepath'])
+	        if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
+		    import time
+		    entropyTools.print_info(entropyTools.red(" * ")+entropyTools.bold("WARNING")+entropyTools.red(": online database is already locked. Waiting up to 2 minutes..."), back = True)
+		    unlocked = False
+		    for x in range(120):
+		        time.sleep(1)
+		        if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
+			    entropyTools.print_info(entropyTools.red(" * ")+entropyTools.bold("HOORAY")+entropyTools.red(": online database has been unlocked. Locking back and syncing..."))
+			    unlocked = True
+			    break
+		    if (unlocked):
+		        break
 
-		# time over
-		entropyTools.print_info(entropyTools.red(" * ")+entropyTools.bold("ERROR")+entropyTools.red(": online database has not been unlocked. Giving up. Who the hell is working on it? Damn, it's so frustrating for me. I'm a piece of python code with a soul dude!"))
-		# FIXME show the lock status
+		    # time over
+		    entropyTools.print_info(entropyTools.red(" * ")+entropyTools.bold("ERROR")+entropyTools.red(": online database has not been unlocked. Giving up. Who the hell is working on it? Damn, it's so frustrating for me. I'm a piece of python code with a soul dude!"))
+		    # FIXME show the lock status
 
-		entropyTools.print_info(entropyTools.yellow(" * ")+entropyTools.green("Mirrors status table:"))
-		dbstatus = entropyTools.getMirrorsLock()
-		for db in dbstatus:
-		    if (db[1]):
-	        	db[1] = entropyTools.red("Locked")
-	    	    else:
-	        	db[1] = entropyTools.green("Unlocked")
-	    	    if (db[2]):
-	        	db[2] = entropyTools.red("Locked")
-	            else:
-	        	db[2] = entropyTools.green("Unlocked")
-	    	    entropyTools.print_info(entropyTools.bold("\t"+entropyTools.extractFTPHostFromUri(db[0])+": ")+entropyTools.red("[")+entropyTools.yellow("DATABASE: ")+db[1]+entropyTools.red("] [")+entropyTools.yellow("DOWNLOAD: ")+db[2]+entropyTools.red("]"))
+		    entropyTools.print_info(entropyTools.yellow(" * ")+entropyTools.green("Mirrors status table:"))
+		    dbstatus = entropyTools.getMirrorsLock()
+		    for db in dbstatus:
+		        if (db[1]):
+	        	    db[1] = entropyTools.red("Locked")
+	    	        else:
+	        	    db[1] = entropyTools.green("Unlocked")
+	    	        if (db[2]):
+	        	    db[2] = entropyTools.red("Locked")
+	                else:
+	        	    db[2] = entropyTools.green("Unlocked")
+	    	        entropyTools.print_info(entropyTools.bold("\t"+entropyTools.extractFTPHostFromUri(db[0])+": ")+entropyTools.red("[")+entropyTools.yellow("DATABASE: ")+db[1]+entropyTools.red("] [")+entropyTools.yellow("DOWNLOAD: ")+db[2]+entropyTools.red("]"))
 	    
-	        ftp.closeFTPConnection()
-	        sys.exit(320)
+	            ftp.closeFTPConnection()
+	            sys.exit(320)
 
 		
-	# if we arrive here, it is because all the mirrors are unlocked so... damn, LOCK!
-	entropyTools.lockDatabases(True)
+	    # if we arrive here, it is because all the mirrors are unlocked so... damn, LOCK!
+	    entropyTools.lockDatabases(True)
 	
-	# ok done... now sync the new db, if needed
-	entropyTools.syncRemoteDatabases(self.noUpload)
+	    # ok done... now sync the new db, if needed
+	    entropyTools.syncRemoteDatabases(self.noUpload)
 	
 	self.connection = sqlite.connect(etpConst['etpdatabasefilepath'])
 	self.cursor = self.connection.cursor()
@@ -722,24 +725,16 @@ class etpDatabase:
 	if (searchsimilar != []):
 	    # there are other packages with the same category/name
 	    # do we have to remove anything?
-	    if (etpData['slot'] != ""):
-		# if it is slotted, we have to collect the same packages (cat/name) that has the same slot
-		removelist = []
-		for oldpkg in searchsimilar:
-		    # get the package slot
-		    slot = self.retrievePackageVar(oldpkg[0],"slot")
-		    branch = self.retrievePackageVar(oldpkg[0],"branch")
-		    if (etpData['slot'] == slot) and (wantedBranch == branch):
-			# remove!
-			removelist.append(oldpkg[0])
-		for pkg in removelist:
-		    self.removePackage(pkg)
-	    else:
-		# roughly remove the old ones
-		for oldpkg in searchsimilar:
-		    branch = self.retrievePackageVar(oldpkg[0],"branch")
-		    if (wantedBranch == branch):
-		        self.removePackage(oldpkg[0])
+	    removelist = []
+	    for oldpkg in searchsimilar:
+	        # get the package slot
+	        slot = self.retrievePackageVar(oldpkg[0],"slot")
+		branch = self.retrievePackageVar(oldpkg[0],"branch")
+		if (etpData['slot'] == slot) and (wantedBranch == branch):
+		    # remove!
+		    removelist.append(oldpkg[0])
+	    for pkg in removelist:
+		self.removePackage(pkg)
 	
 	# wantedBranch = etpData['branch']
 	self.cursor.execute(
@@ -798,7 +793,9 @@ class etpDatabase:
 	    self.commitChanges()
 	    return True, curRevision
 	else:
+	    self.commitChanges()
 	    return False,curRevision
+	
 
     # You must provide the full atom to this function
     def removePackage(self,key):
