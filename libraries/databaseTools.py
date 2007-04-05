@@ -33,6 +33,10 @@ import os
 import sys
 import string
 
+# load the log file
+import logTools
+log = logTools.LogFile(level=2,filename = etpConst['databaselogfile'])
+
 # TIP OF THE DAY:
 # never nest closeDB() and re-init inside a loop !!!!!!!!!!!! NEVER !
 
@@ -45,6 +49,7 @@ def database(options):
 	
 	# do some check, print some warnings
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Initializing Entropy database..."), back = True)
+	log.log(0,"[DB OP] Called database --initialize")
         # database file: etpConst['etpdatabasefilepath']
         if os.path.isfile(etpConst['etpdatabasefilepath']):
 	    entropyTools.print_info(entropyTools.red(" * ")+entropyTools.bold("WARNING")+entropyTools.red(": database file already exists. Overwriting."))
@@ -52,12 +57,15 @@ def database(options):
 	    if rc == "No":
 	        sys.exit(0)
 	    os.system("rm -f "+etpConst['etpdatabasefilepath'])
+	    log.log(0,"[DB OP] Removed old database file")
 
 	# initialize the database
+	log.log(0,"[DB OP] Connecting to the database")
         dbconn = etpDatabase(readOnly = False, noUpload = True)
 	dbconn.initializeDatabase()
 	
 	# sync packages directory
+	log.log(0,"Syncing binary packages")
 	import activatorTools
 	activatorTools.packages(["sync","--ask"])
 	
@@ -65,21 +73,28 @@ def database(options):
 	pkglist = os.listdir(etpConst['packagesbindir'])
 
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Reinitializing Entropy database using Packages in the repository ..."))
+	log.log(0,"[DB OP] Preparing to start reinitialization")
 	currCounter = 0
 	atomsnumber = len(pkglist)
 	import reagentTools
 	for pkg in pkglist:
-	    
+	    log.log(0,"[DB OP] Analyzing "+str(pkg))
 	    entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Analyzing: ")+entropyTools.bold(pkg), back = True)
 	    currCounter += 1
 	    entropyTools.print_info(entropyTools.green("  (")+ entropyTools.blue(str(currCounter))+"/"+entropyTools.red(str(atomsnumber))+entropyTools.green(") ")+entropyTools.red("Analyzing ")+entropyTools.bold(pkg)+entropyTools.red(" ..."))
 	    etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+pkg)
+	    log.log(3,"[DB OP] etpData status (should be properly filled now):")
+	    for i in etpData:
+		log.log(3,i+": "+etpData[i])
+		
 	    # remove shait
 	    os.system("rm -rf "+etpConst['packagestmpdir']+"/"+pkg)
 	    # fill the db entry
+	    log.log(0,"[DB OP] Launching etpDatabase.addPackage()")
 	    dbconn.addPackage(etpData)
 	    dbconn.commitChanges()
 	
+	log.close()
 	dbconn.closeDB()
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Entropy database has been reinitialized using binary packages available"))
 
@@ -145,7 +160,7 @@ def database(options):
 		    for conflict in conflicts:
 			entropyTools.print_info(entropyTools.darkred("\t    # Conflict: ")+conflict)
 		entropyTools.print_info(entropyTools.red("\t Entry API: ")+entropyTools.green(result[24]))
-		entropyTools.print_info(entropyTools.red("\t Entry creation date: ")+str(result[25]))
+		entropyTools.print_info(entropyTools.red("\t Entry creation date: ")+str(entropyTools.convertUnixTimeToHumanTime(int(result[25]))))
 		if (result[26]):
 		    entropyTools.print_info(entropyTools.red("\t Built with needed libraries"))
 		    libs = result[26].split()
@@ -707,7 +722,7 @@ class etpDatabase:
     # this function manages the submitted package
     # if it does not exist, it fires up addPackage
     # otherwise it fires up updatePackage
-    def handlePackage(self,etpData,forceBump = False):
+    def handlePackage(self, etpData, forceBump = False):
 	if (not self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])):
 	    update, revision = self.addPackage(etpData)
 	else:
@@ -715,23 +730,27 @@ class etpDatabase:
 	return update, revision
 
     # default add an unstable package
-    def addPackage(self,etpData, revision = 0, wantedBranch = "unstable"):
+    def addPackage(self, etpData, revision = 0, wantedBranch = "unstable"):
 	# check if the package is slotted
 	
+	log.log(2,"[DB] Adding package: "+etpData['category']+"/"+etpData['name']+"-"+etpData['version'])
+	log.log(2,"    which slot is: "+etpData['slot'])
 	# if a similar package exist, enter here
-	# FIXME: for future reference, add an option that forces a package to stay?
-	# NOTE: this never removes stable packages. will be done by the stabilize function!
-	searchsimilar = self.searchPackages(etpData['category']+"/"+etpData['name'])
+	searchsimilar = self.searchSimilarPackages(etpData['category']+"/"+etpData['name'])
 	if (searchsimilar != []):
+	    log.log(2,"    which searchsimilar is not empty")
 	    # there are other packages with the same category/name
 	    # do we have to remove anything?
 	    removelist = []
 	    for oldpkg in searchsimilar:
+		# if it's the same, skip
 	        # get the package slot
 	        slot = self.retrievePackageVar(oldpkg[0],"slot")
 		branch = self.retrievePackageVar(oldpkg[0],"branch")
+		log.log(2,"    there is: "+oldpkg[0]+" which slot is: "+slot+" and branch: "+branch)
 		if (etpData['slot'] == slot) and (wantedBranch == branch):
 		    # remove!
+		    log.log(2,"    unfortunately,"+etpData['category']+"/"+etpData['name']+"-"+etpData['version']+" is similar to "+oldpkg[0]+"because their slot is: "+etpData['slot']+" and branch: "+wantedBranch+". So REMOVING.")
 		    removelist.append(oldpkg[0])
 	    for pkg in removelist:
 		self.removePackage(pkg)
@@ -776,7 +795,7 @@ class etpDatabase:
     # Update already available atom in db
     # returns True,revision if the package has been updated
     # returns False,revision if not
-    def updatePackage(self,etpData,forceBump = False):
+    def updatePackage(self, etpData, forceBump = False):
 	# check if the data correspond
 	# if not, update, else drop
 	curRevision = self.retrievePackageVar(etpData['category']+"/"+etpData['name']+"-"+etpData['version'],"revision")
@@ -858,6 +877,18 @@ class etpDatabase:
 	self.cursor.execute('SELECT * FROM etpData WHERE atom LIKE "%'+keyword+'%"')
 	for row in self.cursor:
 	    result.append(row)
+	return result
+
+    # this function search packages with the same pkgcat/pkgname
+    # you must provide something like: media-sound/amarok
+    # optionally, you can add version too.
+    def searchSimilarPackages(self,atom):
+	category = atom.split("/")[0]
+	name = atom.split("/")[1]
+	result = []
+	self.cursor.execute('SELECT atom FROM etpData WHERE category = "'+category+'" AND name = "'+name+'"')
+	for row in self.cursor:
+	    result.append(row[0])
 	return result
 
     def listAllPackages(self):

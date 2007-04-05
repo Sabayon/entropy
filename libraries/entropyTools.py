@@ -867,6 +867,11 @@ def convertUnixTimeToMtime(unixtime):
 	    outputtime += chr
     return outputtime
 
+def convertUnixTimeToHumanTime(unixtime):
+    from datetime import datetime
+    humantime = str(datetime.fromtimestamp(unixtime))
+    return humantime
+
 # get a list, returns a sorted list
 def alphaSorter(seq):
     def stripter(s, goodchrs):

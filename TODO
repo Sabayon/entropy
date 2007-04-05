@@ -3,6 +3,7 @@ TODO list (for developers only):
 - build(), on enzyme, add license blacklist (packages that cannot be shipped in a binary form)
 - entropy: add support for stable/unstable branch (test it)
 - reagent: get orphans working and not taking forever
+- improve logTools and put it in an usable status
 - activator tasks:
           - test SYNC (that includes the tidy tool)
 

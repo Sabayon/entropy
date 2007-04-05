@@ -39,8 +39,7 @@ def generator(package, enzymeRequestBump = False, dbconnection = None):
     if os.path.isfile(package) and package.endswith(".tbz2"):
 	validFile = True
     if (not validFile):
-	print_error("no valid .tbz2 file specified")
-        sys.exit(501)
+	print_warning(package+" does not exist !")
 
     packagename = package.split("/")[len(package.split("/"))-1]
 
@@ -447,10 +446,9 @@ def smartapps(options):
 	print_info(green(" * ")+red("Smartapps creation done, remember to test them before publishing."))
 
     
-    
-    
 # tool that generates .tar.bz2 packages with all the binary dependencies included
 # @returns the package file path
+# NOTE: this section is highly portage dependent
 def smartgenerator(atom):
     
     dbconn = databaseTools.etpDatabase(readOnly = True)
@@ -481,9 +479,14 @@ def smartgenerator(atom):
     for dep in extraDeps:
 	depnames = dbconn.searchPackages(dep)
 	for depname in depnames:
-	    _extraDeps.append(depname[0]) # get atom
-
-    extraDeps = _extraDeps
+	    _extraDeps.append(depname[0])
+	    if depname[0].find("dev-libs/glib") != -1:
+		# add pango
+		pangopkgs = dbconn.searchSimilarPackages("x11-libs/pango")
+		for pangopkg in pangopkgs:
+		    extraDeps.append(pangopkg)
+    
+    extraDeps = list(set(_extraDeps))
     
     extraPackages = []
     # get their files
@@ -563,7 +566,7 @@ def smartgenerator(atom):
     if len(glibcPkg) > 0:
         glibcContent = dbconn.retrievePackageVar(glibcPkg[0][0],"content")
 	for file in glibcContent.split():
-	    if (file.startswith("/lib/")) and (file.startswith("/lib64/")) and (file.find(".so") != -1):
+	    if ((file.startswith("/lib/")) or (file.startswith("/lib64/"))) and (file.find(".so") != -1):
 		librariesBlacklist.append(file)
     # add here more blacklisted files
     
@@ -586,9 +589,15 @@ def smartgenerator(atom):
 	    if not os.path.isdir(pkgtmpdir+libdir):
 	        os.makedirs(pkgtmpdir+libdir)
 	    os.system("cp -p "+lib+" "+pkgtmpdir+libdir)
-    # ^^ libraries copied in place! now link! (with magic)
     pkgneededlibs = _pkgneededlibs
     # collect libraries in the directories
+    
+    # catch /usr/lib/gcc/
+    gcclibpath = ""
+    for i in pkgneededlibs:
+	if i.startswith("/usr/lib/gcc"):
+	    gcclibpath += ":"+i
+	    break
     
     # now create the bash script for each binaryExecs
     os.makedirs(pkgtmpdir+"/wrp")
@@ -596,13 +605,14 @@ def smartgenerator(atom):
     bashScript.append(
     			'#!/bin/sh\n'
 			'cd $1\n'
-			'export PATH=$PWD:$PWD/sbin:$PWD/bin:$PWD/usr/bin:$PWD/usr/sbin:$PWD/usr/X11R6/bin:$PWD/libexec:$PWD/usr/local/bin:$PWD/usr/local/sbin:$PATH\n'
-			'export LD_LIBRARY_PATH=$PWD/lib:$PWD/lib64:$PWD/usr/lib:$PWD/usr/lib64:$PWD/usr/qt/3/lib:$PWD/usr/qt/3/lib64:$PWD/usr/kde/3.5/lib:$PWD/usr/kde/3.5/lib64:$LD_LIBRARY_PATH\n'
-			'export KDEDIRS=$PWD/usr/kde/3.5:$PWD/usr:$KDEDIRS\n'
-			
+
 			'MYPYP=$(find $PWD/lib/python2.4/site-packages/ -type d -printf %p: 2> /dev/null)\n'
 			'MYPYP2=$(find $PWD/lib/python2.5/site-packages/ -type d -printf %p: 2> /dev/null)\n'
 			'export PYTHONPATH=$MYPYP:MYPYP2:$PYTHONPATH\n'
+
+			'export PATH=$PWD:$PWD/sbin:$PWD/bin:$PWD/usr/bin:$PWD/usr/sbin:$PWD/usr/X11R6/bin:$PWD/libexec:$PWD/usr/local/bin:$PWD/usr/local/sbin:$PATH\n'
+			'export LD_LIBRARY_PATH=$PWD/lib:$PWD/lib64'+gcclibpath+':$PWD/usr/lib:$PWD/usr/lib64:$PWD/usr/qt/3/lib:$PWD/usr/qt/3/lib64:$PWD/usr/kde/3.5/lib:$PWD/usr/kde/3.5/lib64:$LD_LIBRARY_PATH\n'
+			'export KDEDIRS=$PWD/usr/kde/3.5:$PWD/usr:$KDEDIRS\n'
 			
 			'export PERL5LIB=$PWD/usr/lib/perl5:$PWD/share/perl5:$PWD/usr/lib/perl5/5.8.1'
 			':$PWD/usr/lib/perl5/5.8.2:'
@@ -618,6 +628,16 @@ def smartgenerator(atom):
 			'export MANPATH=$PWD/share/man:$MANPATH\n'
 			'export GUILE_LOAD_PATH=$PWD/share/:$GUILE_LOAD_PATH\n'
 			'export SCHEME_LIBRARY_PATH=$PWD/share/slib:$SCHEME_LIBRARY_PATH\n'
+			
+			'# Setup pango\n'
+			'MYPANGODIR=$(find $PWD/usr/lib/pango -name modules)\n'
+			'if [ -n "$MYPANGODIR" ]; then\n'
+			'    export PANGO_RC_FILE=$PWD/etc/pango/pangorc\n'
+			'    echo "[Pango]" > $PANGO_RC_FILE\n'
+			'    echo "ModulesPath=${MYPANGODIR}" >> $PANGO_RC_FILE\n'
+			'    echo "ModuleFiles=${PWD}/etc/pango/pango.modules" >> $PANGO_RC_FILE\n'
+			'    pango-querymodules > ${PWD}/etc/pango/pango.modules\n'
+			'fi\n'
 			'$2\n'
     )
     f = open(pkgtmpdir+"/wrp/wrapper","w")
@@ -641,7 +661,6 @@ def smartgenerator(atom):
 			'  int rc = system(\n'
 			'                "pid=$(pidof '+file+'.exe);"\n'
 			'                "listpid=$(ps x | grep $pid);"\n'
-			'                "listpid=$(ps x | grep $pid);"\n'
 			'                "filename=$(echo $listpid | cut -d\' \' -f 5);"'
 			'                "currdir=$(dirname $filename);"\n'
 			'                "/bin/sh $currdir/wrp/wrapper $currdir '+file+'" );\n'
@@ -654,7 +673,7 @@ def smartgenerator(atom):
 	f.close()
 	# now compile
 	os.system("cd "+pkgtmpdir+"/ ; g++ -Wall "+file+".cc -o "+file+".exe")
-	os.remove(pkgtmpdir+"/"+file+".cc")
+	#os.remove(pkgtmpdir+"/"+file+".cc")
 
     # now compress in .tar.bz2 and place in etpConst['smartappsdir']
     #print etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tar.bz2"
