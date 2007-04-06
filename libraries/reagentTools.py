@@ -497,6 +497,10 @@ def smartgenerator(atom):
     pkgneededlibs = list(set(pkgneededlibs))
     extraPackages = list(set(extraPackages))
     
+    print_info(green(" * ")+red("This is the list of the dependencies that would be included:"))
+    for i in extraPackages:
+        print_info(green("    [] ")+red(i))
+	
     pkgdlpaths = [
     		etpConst['packagesbindir'],
 		etpConst['packagessuploaddir'],
@@ -596,7 +600,7 @@ def smartgenerator(atom):
     gcclibpath = ""
     for i in pkgneededlibs:
 	if i.startswith("/usr/lib/gcc"):
-	    gcclibpath += ":"+i
+	    gcclibpath += ":"+os.path.dirname(i)
 	    break
     
     # now create the bash script for each binaryExecs
@@ -611,7 +615,22 @@ def smartgenerator(atom):
 			'export PYTHONPATH=$MYPYP:MYPYP2:$PYTHONPATH\n'
 
 			'export PATH=$PWD:$PWD/sbin:$PWD/bin:$PWD/usr/bin:$PWD/usr/sbin:$PWD/usr/X11R6/bin:$PWD/libexec:$PWD/usr/local/bin:$PWD/usr/local/sbin:$PATH\n'
-			'export LD_LIBRARY_PATH=$PWD/lib:$PWD/lib64'+gcclibpath+':$PWD/usr/lib:$PWD/usr/lib64:$PWD/usr/qt/3/lib:$PWD/usr/qt/3/lib64:$PWD/usr/kde/3.5/lib:$PWD/usr/kde/3.5/lib64:$LD_LIBRARY_PATH\n'
+			
+			'export LD_LIBRARY_PATH='
+			'$PWD/lib:'
+			'$PWD/lib64'+gcclibpath+':'
+			'$PWD/usr/lib:'
+			'$PWD/usr/lib64:'
+			'$PWD/usr/lib/nss:'
+			'$PWD/usr/lib/nspr:'
+			'$PWD/usr/lib64/nss:'
+			'$PWD/usr/lib64/nspr:'
+			'$PWD/usr/qt/3/lib:'
+			'$PWD/usr/qt/3/lib64:'
+			'$PWD/usr/kde/3.5/lib:'
+			'$PWD/usr/kde/3.5/lib64:'
+			'$LD_LIBRARY_PATH\n'
+			
 			'export KDEDIRS=$PWD/usr/kde/3.5:$PWD/usr:$KDEDIRS\n'
 			
 			'export PERL5LIB=$PWD/usr/lib/perl5:$PWD/share/perl5:$PWD/usr/lib/perl5/5.8.1'
@@ -673,7 +692,7 @@ def smartgenerator(atom):
 	f.close()
 	# now compile
 	os.system("cd "+pkgtmpdir+"/ ; g++ -Wall "+file+".cc -o "+file+".exe")
-	#os.remove(pkgtmpdir+"/"+file+".cc")
+	os.remove(pkgtmpdir+"/"+file+".cc")
 
     # now compress in .tar.bz2 and place in etpConst['smartappsdir']
     #print etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tar.bz2"
