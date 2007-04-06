@@ -745,13 +745,13 @@ class etpDatabase:
 	    for oldpkg in searchsimilar:
 		# if it's the same, skip
 	        # get the package slot
-	        slot = self.retrievePackageVar(oldpkg[0],"slot")
-		branch = self.retrievePackageVar(oldpkg[0],"branch")
-		log.log(2,"    there is: "+oldpkg[0]+" which slot is: "+slot+" and branch: "+branch)
+	        slot = self.retrievePackageVar(oldpkg,"slot")
+		branch = self.retrievePackageVar(oldpkg,"branch")
+		log.log(2,"    there is: "+oldpkg+" which slot is: "+slot+" and branch: "+branch)
 		if (etpData['slot'] == slot) and (wantedBranch == branch):
 		    # remove!
-		    log.log(2,"    unfortunately,"+etpData['category']+"/"+etpData['name']+"-"+etpData['version']+" is similar to "+oldpkg[0]+"because their slot is: "+etpData['slot']+" and branch: "+wantedBranch+". So REMOVING.")
-		    removelist.append(oldpkg[0])
+		    log.log(2,"    unfortunately,"+etpData['category']+"/"+etpData['name']+"-"+etpData['version']+" is similar to "+oldpkg+"because their slot is: "+etpData['slot']+" and branch: "+wantedBranch+". So REMOVING.")
+		    removelist.append(oldpkg)
 	    for pkg in removelist:
 		self.removePackage(pkg)
 	
