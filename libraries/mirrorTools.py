@@ -147,6 +147,7 @@ class handlerFTP:
 	except:
 	    return False
 
+    # FIXME: add progress
     def uploadFile(self,file,ascii = False):
 	for i in range(10): # ten tries
 	    f = open(file)

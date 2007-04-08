@@ -117,209 +117,225 @@ def packages(options):
 	elif (opt == "--pretend"):
 	    activatorRequestPretend = True
 
+
+#    except:
+#	print_warning(yellow("  * ")+red("Cannot Syncronize binary packages !!! Pay attention to what you do."), back = True)
+#	import time
+#	time.sleep(5)
+
+
     if (options[0] == "sync"):
 	print_info(green(" * ")+red("Starting ")+bold("binary")+yellow(" packages")+red(" syncronization across servers ..."))
+	
+	syncSuccessful = False
+	
 	for uri in etpConst['activatoruploaduris']:
 
-	    print_info(green(" * ")+yellow("Working on ")+bold(extractFTPHostFromUri(uri)+red(" mirror.")))
-	    print_info(green(" * ")+yellow("Local Statistics"))
-	    print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagessuploaddir'])+red(" ..."), back = True)
-	    uploadCounter = 0
-	    toBeUploaded = [] # parse etpConst['packagessuploaddir']
-	    for tbz2 in os.listdir(etpConst['packagessuploaddir']):
-		if tbz2.endswith(".tbz2"):
-		    toBeUploaded.append(tbz2)
-		    uploadCounter += 1
-	    print_info(green(" * ")+red("Upload directory:\t\t")+bold(str(uploadCounter))+red(" files ready."))
-	    localPackagesRepository = [] # parse etpConst['packagesbindir']
-	    print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagesbindir'])+red(" ..."), back = True)
-	    packageCounter = 0
-	    for tbz2 in os.listdir(etpConst['packagesbindir']):
-		if tbz2.endswith(".tbz2"):
-		    localPackagesRepository.append(tbz2)
-		    packageCounter += 1
-	    print_info(green(" * ")+red("Packages directory:\t")+bold(str(packageCounter))+red(" files ready."))
-	    
-	    print_info(green(" * ")+yellow("Fetching remote statistics..."), back = True)
-	    ftp = mirrorTools.handlerFTP(uri)
-	    ftp.setCWD(etpConst['binaryurirelativepath'])
-	    remotePackages = ftp.listFTPdir()
-	    remotePackagesInfo = ftp.getRoughList()
-	    ftp.closeFTPConnection()
-
-	    print_info(green(" * ")+yellow("Remote statistics"))
-	    remoteCounter = 0
-	    for tbz2 in remotePackages:
-		if tbz2.endswith(".tbz2"):
-		    remoteCounter += 1
-	    print_info(green(" * ")+red("Remote packages:\t\t")+bold(str(remoteCounter))+red(" files stored."))
-	    
-	    print_info(green(" * ")+yellow("Calculating..."))
-	    uploadQueue = []
-	    downloadQueue = []
-	    removalQueue = []
-	    
-	    # Fill uploadQueue and if something weird is found, add the packages to downloadQueue
-	    for localPackage in toBeUploaded:
-		pkgfound = False
-		for remotePackage in remotePackages:
-		    if localPackage == remotePackage:
-			pkgfound = True
-			# it's already on the mirror, but... is its size correct??
-			localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+localPackage)[6])
-			remoteSize = 0
-			for file in remotePackagesInfo:
-			    if file.split()[8] == remotePackage:
-				remoteSize = int(file.split()[4])
-			if (localSize != remoteSize) and (localSize != 0):
-			    # size does not match, adding to the upload queue
-			    uploadQueue.append(localPackage)
-			break
+	    try:
 		
-		if (not pkgfound):
-		    # this means that the local package does not exist
-		    # so, we need to download it
-		    uploadQueue.append(localPackage)
+	        print_info(green(" * ")+yellow("Working on ")+bold(extractFTPHostFromUri(uri)+red(" mirror.")))
+	        print_info(green(" * ")+yellow("Local Statistics"))
+	        print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagessuploaddir'])+red(" ..."), back = True)
+	        uploadCounter = 0
+	        toBeUploaded = [] # parse etpConst['packagessuploaddir']
+	        for tbz2 in os.listdir(etpConst['packagessuploaddir']):
+		    if tbz2.endswith(".tbz2"):
+		        toBeUploaded.append(tbz2)
+		        uploadCounter += 1
+	        print_info(green(" * ")+red("Upload directory:\t\t")+bold(str(uploadCounter))+red(" files ready."))
+	        localPackagesRepository = [] # parse etpConst['packagesbindir']
+	        print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagesbindir'])+red(" ..."), back = True)
+	        packageCounter = 0
+	        for tbz2 in os.listdir(etpConst['packagesbindir']):
+		    if tbz2.endswith(".tbz2"):
+		        localPackagesRepository.append(tbz2)
+		        packageCounter += 1
+	        print_info(green(" * ")+red("Packages directory:\t")+bold(str(packageCounter))+red(" files ready."))
 	    
-	    # Fill downloadQueue and removalQueue
-	    for remotePackage in remotePackages:
-		pkgfound = False
-		for localPackage in localPackagesRepository:
-		    if localPackage == remotePackage:
-			pkgfound = True
-			# it's already on the mirror, but... is its size correct??
-			localSize = int(os.stat(etpConst['packagesbindir']+"/"+localPackage)[6])
-			remoteSize = 0
-			for file in remotePackagesInfo:
-			    if file.split()[8] == remotePackage:
-				remoteSize = int(file.split()[4])
-			if (localSize != remoteSize) and (localSize != 0):
-			    # size does not match, remove first
-			    removalQueue.append(localPackage)
-			    # then add to the download queue
-			    downloadQueue.append(remotePackage)
-			break
-		
-		if (not pkgfound):
-		    # this means that the local package does not exist
-		    # so, we need to download it
-		    downloadQueue.append(remotePackage)
+	        print_info(green(" * ")+yellow("Fetching remote statistics..."), back = True)
+	        ftp = mirrorTools.handlerFTP(uri)
+	        ftp.setCWD(etpConst['binaryurirelativepath'])
+	        remotePackages = ftp.listFTPdir()
+	        remotePackagesInfo = ftp.getRoughList()
+	        ftp.closeFTPConnection()
 
-	    # Fill removalQueue and downloadQueue
-	    # if the online package does not exist anymore, we have to remove it locally
-	    for localPackage in localPackagesRepository:
-		pkgfound = False
-		for remotePackage in remotePackages:
-		    if localPackage == remotePackage:
-			pkgfound = True
-			break
-		
-		if (not pkgfound):
-		    # this means that the local package does not exist
-		    # so, we need to download it
-		    removalQueue.append(localPackage)
-
-
-	    # filter duplicates
-	    removalQueue = list(set(removalQueue))
-	    downloadQueue = list(set(downloadQueue))
-	    uploadQueue = list(set(uploadQueue))
-
-	    if (len(uploadQueue) == 0) and (len(downloadQueue) == 0) and (len(removalQueue) == 0):
-		print_info(green(" * ")+red("Nothing to syncronize for ")+bold(extractFTPHostFromUri(uri)+red(". Queue empty.")))
-		continue
-
-
-	    totalRemovalSize = 0
-	    totalDownloadSize = 0
-	    totalUploadSize = 0
-
-	    print_info(green(" * ")+yellow("Queue tasks:"))
-	    detailedRemovalQueue = []
-	    detailedDownloadQueue = []
-	    detailedUploadQueue = []
-
-	    for item in removalQueue:
-		fileSize = os.stat(etpConst['packagesbindir']+"/"+item)[6]
-		totalRemovalSize += int(fileSize)
-		print_info(bold("\t[") + red("REMOVAL") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
-		detailedRemovalQueue.append([item,fileSize])
-	    import time
-	    time.sleep(10)
-
-	    for item in downloadQueue:
-		# if the package is already in the upload directory, do not add the size
-		if not os.path.isfile(etpConst['packagessuploaddir']+"/"+item):
-		    fileSize = "0"
-		    for remotePackage in remotePackagesInfo:
-		        if remotePackage.split()[8] == item:
-			    fileSize = remotePackage.split()[4]
+	        print_info(green(" * ")+yellow("Remote statistics"))
+	        remoteCounter = 0
+	        for tbz2 in remotePackages:
+		    if tbz2.endswith(".tbz2"):
+		        remoteCounter += 1
+	        print_info(green(" * ")+red("Remote packages:\t\t")+bold(str(remoteCounter))+red(" files stored."))
+	    
+	        print_info(green(" * ")+yellow("Calculating..."))
+	        uploadQueue = []
+	        downloadQueue = []
+	        removalQueue = []
+	    
+	        # Fill uploadQueue and if something weird is found, add the packages to downloadQueue
+	        for localPackage in toBeUploaded:
+		    pkgfound = False
+		    for remotePackage in remotePackages:
+		        if localPackage == remotePackage:
+			    pkgfound = True
+			    # it's already on the mirror, but... is its size correct??
+			    localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+localPackage)[6])
+			    remoteSize = 0
+			    for file in remotePackagesInfo:
+			        if file.split()[8] == remotePackage:
+				    remoteSize = int(file.split()[4])
+			    if (localSize != remoteSize) and (localSize != 0):
+			        # size does not match, adding to the upload queue
+			        uploadQueue.append(localPackage)
 			    break
-		    totalDownloadSize += int(fileSize)
-		    print_info(bold("\t[") + yellow("DOWNLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
-		    detailedDownloadQueue.append([item,fileSize])
-
-	    for item in uploadQueue:
-		fileSize = os.stat(etpConst['packagessuploaddir']+"/"+item)[6]
-		totalUploadSize += int(fileSize)
-		print_info(bold("\t[") + red("UPLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
-		detailedUploadQueue.append([item,fileSize])
-
-	    print_info(red(" * ")+blue("Packages that would be ")+red("removed:\t\t")+bold(str(len(removalQueue))))
-	    print_info(red(" * ")+blue("Packages that would be ")+yellow("downloaded:\t")+bold(str(len(downloadQueue))))
-	    print_info(red(" * ")+blue("Packages that would be ")+green("uploaded:\t\t")+bold(str(len(uploadQueue))))
-	    print_info(red(" * ")+blue("Total removal ")+red("size:\t\t\t")+bold(bytesIntoHuman(str(totalRemovalSize))))
-	    print_info(red(" * ")+blue("Total download ")+yellow("size:\t\t\t")+bold(bytesIntoHuman(str(totalDownloadSize))))
-	    print_info(red(" * ")+blue("Total upload ")+green("size:\t\t\t")+bold(bytesIntoHuman(str(totalUploadSize))))
+		
+		    if (not pkgfound):
+		        # this means that the local package does not exist
+		        # so, we need to download it
+		        uploadQueue.append(localPackage)
 	    
-	    if (activatorRequestAsk):
-		rc = askquestion("\n     Would you like to run the steps above ?")
-		if rc == "No":
-		    print "\n"
+	        # Fill downloadQueue and removalQueue
+	        for remotePackage in remotePackages:
+		    pkgfound = False
+		    for localPackage in localPackagesRepository:
+		        if localPackage == remotePackage:
+			    pkgfound = True
+			    # it's already on the mirror, but... is its size correct??
+			    localSize = int(os.stat(etpConst['packagesbindir']+"/"+localPackage)[6])
+			    remoteSize = 0
+			    for file in remotePackagesInfo:
+			        if file.split()[8] == remotePackage:
+				    remoteSize = int(file.split()[4])
+			    if (localSize != remoteSize) and (localSize != 0):
+			        # size does not match, remove first
+			        removalQueue.append(localPackage)
+			        # then add to the download queue
+			        downloadQueue.append(remotePackage)
+			    break
+		
+		    if (not pkgfound):
+		        # this means that the local package does not exist
+		        # so, we need to download it
+		        downloadQueue.append(remotePackage)
+
+	        # Fill removalQueue and downloadQueue
+	        # if the online package does not exist anymore, we have to remove it locally
+	        for localPackage in localPackagesRepository:
+		    pkgfound = False
+		    for remotePackage in remotePackages:
+		        if localPackage == remotePackage:
+			    pkgfound = True
+			    break
+		
+		    if (not pkgfound):
+		        # this means that the local package does not exist
+		        # so, we need to download it
+		        removalQueue.append(localPackage)
+
+
+	        # filter duplicates
+	        removalQueue = list(set(removalQueue))
+	        downloadQueue = list(set(downloadQueue))
+	        uploadQueue = list(set(uploadQueue))
+
+	        if (len(uploadQueue) == 0) and (len(downloadQueue) == 0) and (len(removalQueue) == 0):
+		    print_info(green(" * ")+red("Nothing to syncronize for ")+bold(extractFTPHostFromUri(uri)+red(". Queue empty.")))
 		    continue
-	    elif (activatorRequestPretend):
-		continue
 
-	    # removal queue
-	    if (detailedRemovalQueue != []):
-		for item in detailedRemovalQueue:
-		    print_info(red(" * Removing file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(etpConst['packagesbindir']) +red(" ..."),back = True)
-		    os.system("rm -f "+etpConst['packagesbindir']+"/"+item[0])
-		print_info(red(" * Removal completed for ")+bold(etpConst['packagesbindir']))
 
-	    # upload queue
-	    if (detailedUploadQueue != []):
-	        ftp = mirrorTools.handlerFTP(uri)
-	        ftp.setCWD(etpConst['binaryurirelativepath'])
-		uploadCounter = str(len(detailedUploadQueue))
-		currentCounter = 0
-		for item in detailedUploadQueue:
-		    currentCounter += 1
-		    counterInfo = bold(" (")+blue(str(currentCounter))+"/"+red(uploadCounter)+bold(")")
-		    print_info(counterInfo+red(" Uploading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] to ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."),back = True)
-		    ftp.uploadFile(etpConst['packagessuploaddir']+"/"+item[0])
-		print_info(red(" * Upload completed for ")+bold(extractFTPHostFromUri(uri)))
-		ftp.closeFTPConnection()
+	        totalRemovalSize = 0
+	        totalDownloadSize = 0
+	        totalUploadSize = 0
 
-	    # download queue
-	    if (detailedDownloadQueue != []):
-	        ftp = mirrorTools.handlerFTP(uri)
-	        ftp.setCWD(etpConst['binaryurirelativepath'])
-		downloadCounter = str(len(detailedDownloadQueue))
-		currentCounter = 0
-		for item in detailedDownloadQueue:
-		    currentCounter += 1
-		    counterInfo = bold(" (")+blue(str(currentCounter))+"/"+red(downloadCounter)+bold(")")
-		    if os.path.isfile(etpConst['packagessuploaddir']+"/"+item[0]):
-			localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+item[0])[6])
-			remoteSize = int(item[1])
-			if localSize == remoteSize:
-			    # skip that, we'll move at the end of the mirrors sync
-			    continue
-		    print_info(counterInfo+red(" Downloading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."),back = True)
-		    ftp.downloadFile(item[0],etpConst['packagesbindir']+"/")
-		print_info(red(" * Download completed for ")+bold(extractFTPHostFromUri(uri)))
-		ftp.closeFTPConnection()
+	        print_info(green(" * ")+yellow("Queue tasks:"))
+	        detailedRemovalQueue = []
+	        detailedDownloadQueue = []
+	        detailedUploadQueue = []
+
+	        for item in removalQueue:
+		    fileSize = os.stat(etpConst['packagesbindir']+"/"+item)[6]
+		    totalRemovalSize += int(fileSize)
+		    print_info(bold("\t[") + red("REMOVAL") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
+		    detailedRemovalQueue.append([item,fileSize])
+	        import time
+	        time.sleep(10)
+
+	        for item in downloadQueue:
+		    # if the package is already in the upload directory, do not add the size
+		    if not os.path.isfile(etpConst['packagessuploaddir']+"/"+item):
+		        fileSize = "0"
+		        for remotePackage in remotePackagesInfo:
+		            if remotePackage.split()[8] == item:
+			        fileSize = remotePackage.split()[4]
+			        break
+		        totalDownloadSize += int(fileSize)
+		        print_info(bold("\t[") + yellow("DOWNLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
+		        detailedDownloadQueue.append([item,fileSize])
+
+	        for item in uploadQueue:
+		    fileSize = os.stat(etpConst['packagessuploaddir']+"/"+item)[6]
+		    totalUploadSize += int(fileSize)
+		    print_info(bold("\t[") + red("UPLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
+		    detailedUploadQueue.append([item,fileSize])
+
+	        print_info(red(" * ")+blue("Packages that would be ")+red("removed:\t\t")+bold(str(len(removalQueue))))
+	        print_info(red(" * ")+blue("Packages that would be ")+yellow("downloaded:\t")+bold(str(len(downloadQueue))))
+	        print_info(red(" * ")+blue("Packages that would be ")+green("uploaded:\t\t")+bold(str(len(uploadQueue))))
+	        print_info(red(" * ")+blue("Total removal ")+red("size:\t\t\t")+bold(bytesIntoHuman(str(totalRemovalSize))))
+	        print_info(red(" * ")+blue("Total download ")+yellow("size:\t\t\t")+bold(bytesIntoHuman(str(totalDownloadSize))))
+	        print_info(red(" * ")+blue("Total upload ")+green("size:\t\t\t")+bold(bytesIntoHuman(str(totalUploadSize))))
+	    
+	        if (activatorRequestAsk):
+		    rc = askquestion("\n     Would you like to run the steps above ?")
+		    if rc == "No":
+		        print "\n"
+		        continue
+	        elif (activatorRequestPretend):
+		    continue
+
+	        # removal queue
+	        if (detailedRemovalQueue != []):
+		    for item in detailedRemovalQueue:
+		        print_info(red(" * Removing file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(etpConst['packagesbindir']) +red(" ..."),back = True)
+		        os.system("rm -f "+etpConst['packagesbindir']+"/"+item[0])
+		    print_info(red(" * Removal completed for ")+bold(etpConst['packagesbindir']))
+
+	        # upload queue
+	        if (detailedUploadQueue != []):
+	            ftp = mirrorTools.handlerFTP(uri)
+	            ftp.setCWD(etpConst['binaryurirelativepath'])
+		    uploadCounter = str(len(detailedUploadQueue))
+		    currentCounter = 0
+		    for item in detailedUploadQueue:
+		        currentCounter += 1
+		        counterInfo = bold(" (")+blue(str(currentCounter))+"/"+red(uploadCounter)+bold(")")
+		        print_info(counterInfo+red(" Uploading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] to ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."),back = True)
+		        ftp.uploadFile(etpConst['packagessuploaddir']+"/"+item[0])
+		    print_info(red(" * Upload completed for ")+bold(extractFTPHostFromUri(uri)))
+		    ftp.closeFTPConnection()
+
+	        # download queue
+	        if (detailedDownloadQueue != []):
+	            ftp = mirrorTools.handlerFTP(uri)
+	            ftp.setCWD(etpConst['binaryurirelativepath'])
+		    downloadCounter = str(len(detailedDownloadQueue))
+		    currentCounter = 0
+		    for item in detailedDownloadQueue:
+		        currentCounter += 1
+		        counterInfo = bold(" (")+blue(str(currentCounter))+"/"+red(downloadCounter)+bold(")")
+		        if os.path.isfile(etpConst['packagessuploaddir']+"/"+item[0]):
+			    localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+item[0])[6])
+			    remoteSize = int(item[1])
+			    if localSize == remoteSize:
+			        # skip that, we'll move at the end of the mirrors sync
+			        continue
+		        print_info(counterInfo+red(" Downloading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."),back = True)
+		        ftp.downloadFile(item[0],etpConst['packagesbindir']+"/")
+		    print_info(red(" * Download completed for ")+bold(extractFTPHostFromUri(uri)))
+		    ftp.closeFTPConnection()
+
+		# at least one sync ran successfully
+		syncSuccessful = True
+
 
 	# now we can store the files in upload/%ARCH% in packages/%ARCH%
 	os.system("mv -f "+etpConst['packagessuploaddir']+"/* "+etpConst['packagesbindir']+"/ &> /dev/null")
@@ -414,6 +430,15 @@ def database(options):
 		print
 		print_error(green(" * ")+red("At the moment, mirrors are locked, someone is working on their databases, try again later ..."))
 		sys.exit(422)
+	
+	else:
+	    if (dbLockFile):
+		print_info(green(" * ")+red("Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']))
+		sys.exit(423)
+	    else:
+		print_info(green(" * ")+red("Mirrors are not locked. Fetching data..."))
+	    
+	    syncRemoteDatabases()
 
     else:
 	print_error(red(" * ")+green("No valid tool specified."))

@@ -377,7 +377,15 @@ def build(atoms):
 	rc = askquestion("\n     Would you like to run the steps above ?")
 	if rc == "No":
 	    sys.exit(0)
-	
+
+    # sync binary packages repository
+    import activatorTools
+    if (enzymeRequestInteraction):
+        activatorTools.packages(["sync" , "--ask"])
+    else:
+        activatorTools.packages(["sync"])
+
+
     # when the compilation ends, enzyme runs reagent
     packagesPaths = []
     

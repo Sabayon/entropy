@@ -1,17 +1,18 @@
 TODO list (for developers only):
 - build() and world(), on enzyme, add the support for whitelist+cron
 - build(), on enzyme, add license blacklist (packages that cannot be shipped in a binary form)
-- reagent: get orphans working and not taking forever
-- entropy: add md5 checksum to every tbz2 package
 - improve logTools and put it in an usable status
-
+- even binary packages repo should have the upload lock?
+- reagent: add a tool that checks the checksum of the packages in the database
+- reagent: complete smartapps section
+- enzyme, build(), save packages built in a file instead of a variable (for power down issues)
 - Sabayon Linux USE flags: remove all server related use flags
 
 Project Status:
 - entropy: will handle all the three tools below
-- enzyme: first release up and working (more or less)
-- reagent: first release up and working.
-- activator: 95%
+- enzyme: complete. Needs bug fixes ?
+- reagent: complete. Needs bug fixes.
+- activator: complete. Needs bug fixes.
 ============
 - client part: not yet defined apart from equilibrium name.
 

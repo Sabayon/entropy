@@ -81,6 +81,12 @@ def md5sum(filepath):
 	block = readfile.read(1024)
     return m.hexdigest()
 
+def compareMd5(filepath,md5sum):
+    result = md5sum(filepath)
+    if md5sum == result:
+	return True
+    return False
+
 def md5string(string):
     import md5
     m = md5.new()
@@ -265,9 +271,8 @@ def getEtpRemoteDatabaseStatus():
 
     return uriDbInfo
 
-def syncRemoteDatabases(noUpload = False):
+def syncRemoteDatabases(noUpload = False, justStats = False):
 
-    print_info(green(" * ")+red("Checking the status of the remote Entropy Database Repository"))
     remoteDbsStatus = getEtpRemoteDatabaseStatus()
     print_info(green(" * ")+red("Remote Entropy Database Repository Status:"))
     for dbstat in remoteDbsStatus:
@@ -285,6 +290,9 @@ def syncRemoteDatabases(noUpload = False):
 	etpDbLocalRevision = 0
 
     print_info(red("\t  * Database local revision currently at: ")+blue(str(etpDbLocalRevision)))
+    
+    if (justStats):
+	return
     
     downloadLatest = []
     uploadLatest = False

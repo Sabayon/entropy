@@ -400,6 +400,7 @@ def database(options):
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("All the selected packages have been marked as requested. Have fun."))
 	dbconn.closeDB()
 
+    # FIXME: not working function... remove?
     elif (options[0] == "orphans"):
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Collecting files in database..."))
 	# FIXME: complete this!
@@ -531,6 +532,66 @@ def database(options):
 	    dbconn.removePackage(pkg)
 	dbconn.commitChanges()
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("All the selected packages have been removed as requested. Have fun."))
+	dbconn.closeDB()
+
+    # used by reagent
+    elif (options[0] == "statistics"):
+	entropyTools.print_info(entropyTools.green(" [LOCAL DB STATISTIC]\t\t")+entropyTools.red("Information"))
+	# fetch total packages
+	dbconn = etpDatabase(readOnly = True)
+	totalpkgs = len(dbconn.listAllPackages())
+	totalstablepkgs = len(dbconn.listStablePackages())
+	totalunstablepkgs = len(dbconn.listUnstablePackages())
+	entropyTools.print_info(entropyTools.green(" Total Installed Packages\t\t")+entropyTools.red(str(totalpkgs)))
+	entropyTools.print_info(entropyTools.green(" Total Stable Packages\t\t")+entropyTools.red(str(totalstablepkgs)))
+	entropyTools.print_info(entropyTools.green(" Total Unstable Packages\t\t")+entropyTools.red(str(totalunstablepkgs)))
+	entropyTools.syncRemoteDatabases(justStats = True)
+	dbconn.closeDB()
+
+    # used by reagent
+    elif (options[0] == "md5check"):
+
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Integrity verification of the selected packages:"))
+
+	mypackages = options[1:]
+	dbconn = etpDatabase(readOnly = True)
+	
+	if (len(mypackages) == 0):
+	    # check world
+	    # create packages list
+	    pkgs2check = dbconn.listAllPackages()
+	elif (mypackages[0] == "world"):
+	    # check world
+	    # create packages list
+	    pkgs2check = dbconn.listAllPackages()
+	else:
+	    # catch the names
+	    pkgs2check = []
+	    for pkg in mypackages:
+		results = dbconn.searchPackages(pkg)
+		for i in results:
+		    pkgs2check.append(i[0])
+
+	entropyTools.print_info(entropyTools.red("   This is the list of the packages that would be checked:"))
+	
+	toBeDownloaded = []
+	availList = []
+	for i in pkgs2check:
+	    pkgfile = dbconn.retrievePackageVar(i,"download")
+	    pkgfile = pkgfile.split("/")[len(pkgfile.split("/"))-1]
+	    if (os.path.isfile(etpConst['packagesbindir']+"/"+pkgfile)):
+		entropyTools.print_info(entropyTools.green("   - [PKG AVAILABLE] ")+entropyTools.red(i))
+		availList.append(pkgfile)
+	    elif (os.path.isfile(etpConst['packagessuploaddir']+"/"+pkgfile)):
+		entropyTools.print_info(entropyTools.green("   - [RUN ACTIVATOR] ")+entropyTools.darkred(i))
+	    else:
+		entropyTools.print_info(entropyTools.green("   - [MUST DOWNLOAD] ")+entropyTools.yellow(i))
+		toBeDownloaded.append(pkgfile)
+	
+	# FIXME add download support
+	# FIXME complete this
+	
+	
 	dbconn.closeDB()
 
 ############
@@ -856,10 +917,10 @@ class etpDatabase:
     def retrievePackageVar(self,pkgkey,pkgvar):
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
 	result = []
-	self.cursor.execute('SELECT '+pkgvar+' FROM etpData WHERE atom LIKE "'+pkgkey+'"')
+	self.cursor.execute('SELECT "'+pkgvar+'" FROM etpData WHERE atom = "'+pkgkey+'"')
 	for row in self.cursor:
-	    result.append(row)
-	return result[0][0]
+	    result.append(row[0])
+	return result[0]
 
     # You must provide the full atom to this function
     def isPackageAvailable(self,pkgkey):
@@ -905,22 +966,27 @@ class etpDatabase:
 	    result.append(row[0])
 	return result
 
-    def searchStablePackages(self,keyword):
-	results = []
-	self.cursor.execute('SELECT * FROM etpData WHERE atom LIKE "%'+keyword+'%"')
-	for row in self.cursor:
-	    results.append(row)
-	output = []
-	for result in results:
-	    result = result[0]
-	    self.cursor.execute('SELECT '+result+' FROM etpData WHERE branch = "stable"')
-	    for row in self.cursor:
-		output.append(row[0])
-	return output
-
     def listUnstablePackages(self):
 	result = []
 	self.cursor.execute('SELECT * FROM etpData WHERE branch = "unstable"')
+	for row in self.cursor:
+	    result.append(row[0])
+	return result
+
+    def searchStablePackages(self,atom):
+	category = atom.split("/")[0]
+	name = atom.split("/")[1]
+	result = []
+	self.cursor.execute('SELECT atom FROM etpData WHERE category = "'+category+'" AND name = "'+name+'" AND branch = "stable"')
+	for row in self.cursor:
+	    result.append(row[0])
+	return result
+
+    def searchUnstablePackages(self,atom):
+	category = atom.split("/")[0]
+	name = atom.split("/")[1]
+	result = []
+	self.cursor.execute('SELECT atom FROM etpData WHERE category = "'+category+'" AND name = "'+name+'" AND branch = "stable"')
 	for row in self.cursor:
 	    result.append(row[0])
 	return result
@@ -945,9 +1011,10 @@ class etpDatabase:
 	    removelist = []
 	    for result in results:
 		# have a look if the slot matches
-		myslot = self.retrievePackageVar(result[0],"slot")
+		#print result
+		myslot = self.retrievePackageVar(result,"slot")
 		if (myslot == slot):
-		    removelist.append(result[0])
+		    removelist.append(result)
 	    for pkg in removelist:
 		self.removePackage(pkg)
 	    
