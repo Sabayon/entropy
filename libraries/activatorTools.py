@@ -117,20 +117,18 @@ def packages(options):
 	elif (opt == "--pretend"):
 	    activatorRequestPretend = True
 
-
-#    except:
-#	print_warning(yellow("  * ")+red("Cannot Syncronize binary packages !!! Pay attention to what you do."), back = True)
-#	import time
-#	time.sleep(5)
-
-
     if (options[0] == "sync"):
 	print_info(green(" * ")+red("Starting ")+bold("binary")+yellow(" packages")+red(" syncronization across servers ..."))
 	
 	syncSuccessful = False
+	totalUris = len(etpConst['activatoruploaduris'])
+	currentUri = 0
+	totalSuccessfulUri = 0
 	
 	for uri in etpConst['activatoruploaduris']:
-
+	
+	    currentUri += 1
+	    
 	    try:
 		
 	        print_info(green(" * ")+yellow("Working on ")+bold(extractFTPHostFromUri(uri)+red(" mirror.")))
@@ -239,6 +237,7 @@ def packages(options):
 
 	        if (len(uploadQueue) == 0) and (len(downloadQueue) == 0) and (len(removalQueue) == 0):
 		    print_info(green(" * ")+red("Nothing to syncronize for ")+bold(extractFTPHostFromUri(uri)+red(". Queue empty.")))
+		    syncSuccessful = True
 		    continue
 
 
@@ -292,6 +291,12 @@ def packages(options):
 	        elif (activatorRequestPretend):
 		    continue
 
+		# queues management
+		successfulUploadCounter = "0"
+		successfulDownloadCounter = "0"
+		uploadCounter = "0"
+		downloadCounter = "0"
+
 	        # removal queue
 	        if (detailedRemovalQueue != []):
 		    for item in detailedRemovalQueue:
@@ -309,7 +314,9 @@ def packages(options):
 		        currentCounter += 1
 		        counterInfo = bold(" (")+blue(str(currentCounter))+"/"+red(uploadCounter)+bold(")")
 		        print_info(counterInfo+red(" Uploading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] to ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."),back = True)
-		        ftp.uploadFile(etpConst['packagessuploaddir']+"/"+item[0])
+			# FIXME: add rc check and increment currentCounter accordingly
+		        rc = ftp.uploadFile(etpConst['packagessuploaddir']+"/"+item[0])
+			print rc
 		    print_info(red(" * Upload completed for ")+bold(extractFTPHostFromUri(uri)))
 		    ftp.closeFTPConnection()
 
@@ -329,16 +336,40 @@ def packages(options):
 			        # skip that, we'll move at the end of the mirrors sync
 			        continue
 		        print_info(counterInfo+red(" Downloading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."),back = True)
-		        ftp.downloadFile(item[0],etpConst['packagesbindir']+"/")
+			# FIXME: add rc check and increment currentCounter accordingly
+		        rc = ftp.downloadFile(item[0],etpConst['packagesbindir']+"/")
 		    print_info(red(" * Download completed for ")+bold(extractFTPHostFromUri(uri)))
 		    ftp.closeFTPConnection()
 
-		# at least one sync ran successfully
-		syncSuccessful = True
+		# if successfulUploadCounter and successfulDownloadCounter are equal
+		# if (successfulUploadCounter == uploadCounter) and (successfulDownloadCounter == downloadCounter):
+		#     totalSuccessfulUri += 1
+		totalSuccessfulUri += 1
+	
+	    # trap exceptions, failed to upload/download someting?
+	    except:
+		# print warning cannot sync uri
+		print_warning(yellow(" * ")+red("ATTENTION: cannot properly syncronize ")+bold(extractFTPHostFromUri(uri))+red(". Continuing if possible..."))
+		
+		# decide what to do
+		if (totalSuccessfulUri > 0):
+		    # we're safe
+		    continue
+		else:
+		    if (currentUri < totalUris):
+			# we have another mirror to try
+			continue
+		    else:
+			# no mirrors were synced properly
+			# show error and return, do not move files from the upload dir
+			print_error(yellow(" * ")+red("ERROR: no mirrors have been properly syncronized. Check network status and retry. Cannot continue."))
+			return
+		
 
-
+	# if at least one server has been synced successfully, move files
+	if (totalSuccessfulUri > 0):
 	# now we can store the files in upload/%ARCH% in packages/%ARCH%
-	os.system("mv -f "+etpConst['packagessuploaddir']+"/* "+etpConst['packagesbindir']+"/ &> /dev/null")
+	    os.system("mv -f "+etpConst['packagessuploaddir']+"/* "+etpConst['packagesbindir']+"/ &> /dev/null")
 
 def database(options):
 
