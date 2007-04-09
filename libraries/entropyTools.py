@@ -81,9 +81,11 @@ def md5sum(filepath):
 	block = readfile.read(1024)
     return m.hexdigest()
 
-def compareMd5(filepath,md5sum):
+def compareMd5(filepath,checksum):
+    checksum = str(checksum)
     result = md5sum(filepath)
-    if md5sum == result:
+    result = str(result)
+    if checksum == result:
 	return True
     return False
 
@@ -443,7 +445,7 @@ def uploadDatabase(uris):
 	
 	# uploading database file
 	rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip'])
-	if (rc.startswith("226")):
+	if (rc == True):
 	    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasefilegzip'])+red(" completed."))
 	else:
 	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
@@ -454,7 +456,7 @@ def uploadDatabase(uris):
 	print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" ..."), back = True)
 	# uploading revision file
 	rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'],True)
-	if (rc.startswith("226")):
+	if (rc == True):
 	    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" completed."))
 	else:
 	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
@@ -469,7 +471,7 @@ def uploadDatabase(uris):
 	# upload digest
 	print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'])+red(" ..."), back = True)
 	rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'],True)
-	if (rc.startswith("226")):
+	if (rc == True):
 	    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'])+red(" completed. Disconnecting."))
 	else:
 	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
@@ -491,7 +493,7 @@ def downloadDatabase(uri):
     # downloading database file
     print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['etpdatabasefilegzip'])+red(" ..."), back = True)
     rc = ftp.downloadFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip'],os.path.dirname(etpConst['etpdatabasefilepath']))
-    if (rc.startswith("226")):
+    if (rc == True):
 	print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabasefilegzip'])+red(" completed."))
     else:
 	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
@@ -511,7 +513,7 @@ def downloadDatabase(uri):
     # downloading revision file
     print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['etpdatabaserevisionfile'])+red(" ..."), back = True)
     rc = ftp.downloadFile(etpConst['etpdatabaserevisionfile'],os.path.dirname(etpConst['etpdatabasefilepath']),True)
-    if (rc.startswith("226")):
+    if (rc == True):
 	print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabaserevisionfile'])+red(" completed."))
     else:
 	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
@@ -519,7 +521,7 @@ def downloadDatabase(uri):
     # downlading digest
     print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['etpdatabasehashfile'])+red(" ..."), back = True)
     rc = ftp.downloadFile(etpConst['etpdatabasehashfile'],os.path.dirname(etpConst['etpdatabasefilepath']),True)
-    if (rc.startswith("226")):
+    if (rc == True):
 	print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabasehashfile'])+red(" completed. Disconnecting."))
     else:
 	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
@@ -546,6 +548,43 @@ def getMirrorsLock():
 	ftp.closeFTPConnection()
 	dbstatus.append(data)
     return dbstatus
+
+
+def downloadPackageFromMirror(uri,pkgfile):
+    tries = 0
+    maxtries = 5
+    for i in range(maxtries):
+	pkgfilename = pkgfile.split("/")[len(pkgfile.split("/"))-1]
+        print_info(red("  * Connecting to ")+bold(extractFTPHostFromUri(uri)), back = True)
+        # connect
+        ftp = mirrorTools.handlerFTP(uri)
+        ftp.setCWD(etpConst['binaryurirelativepath'])
+        # get the files
+        print_info(red("  * Downloading ")+yellow(pkgfilename)+red(" from ")+bold(extractFTPHostFromUri(uri)))
+        rc = ftp.downloadFile(pkgfilename,etpConst['packagesbindir'])
+	if (rc is None):
+	    # file does not exist
+	    print_warning(red("  * File ")+yellow(pkgfilename)+red(" does not exist remotely on ")+bold(extractFTPHostFromUri(uri)))
+	    ftp.closeFTPConnection()
+	    return None
+        # check md5
+	dbconn = databaseTools.etpDatabase(readOnly = True)
+	storedmd5 = dbconn.retrievePackageVarFromBinaryPackage(pkgfilename,"digest")
+	dbconn.closeDB()
+	print_info(red("  * Checking MD5 of ")+yellow(pkgfilename)+red(": should be ")+bold(storedmd5), back = True)
+	md5check = compareMd5(etpConst['packagesbindir']+"/"+pkgfilename,storedmd5)
+	if (md5check):
+	    print_info(red("  * Package ")+yellow(pkgfilename)+red("downloaded successfully."))
+	    return True
+	else:
+	    if (tries == maxtries):
+		print_warning(red("  * Package ")+yellow(pkgfilename)+red(" checksum does not match. Please consider to download or repackage again. Giving up."))
+		return False
+	    else:
+		print_warning(red("  * Package ")+yellow(pkgfilename)+red(" checksum does not match. Trying to download it again..."))
+		tries += 1
+		if os.path.isfile(etpConst['packagesbindir']+"/"+pkgfilename):
+		    os.remove(etpConst['packagesbindir']+"/"+pkgfilename)
 
 
 # tar.bz2 compress function...
@@ -623,7 +662,7 @@ def lockDatabases(lock = True, mirrorList = []):
 	    f.flush()
 	    f.close()
 	    rc = ftp.uploadFile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'],ascii= True)
-	    if (rc.startswith("226")):
+	    if (rc == True):
 	        print_info(green(" * ")+red("Succesfully locked ")+bold(extractFTPHostFromUri(uri))+red(" mirror."))
 	    else:
 	        outstat = True
@@ -673,7 +712,7 @@ def downloadLockDatabases(lock = True, mirrorList = []):
 	    f.flush()
 	    f.close()
 	    rc = ftp.uploadFile(etpConst['packagestmpdir']+"/"+etpConst['etpdatabasedownloadlockfile'],ascii= True)
-	    if (rc.startswith("226")):
+	    if (rc == True):
 	        print_info(green(" * ")+red("Succesfully locked ")+bold(extractFTPHostFromUri(uri))+red(" download mirror."))
 	    else:
 	        outstat = True
@@ -955,8 +994,12 @@ def askquestion(prompt):
 	print "Interrupted."
 	sys.exit(100)
 
-def print_error(msg):
-    print red(">>")+" "+msg
+def print_error(msg, back = False):
+    writechar("\r                                                                                                           \r")
+    if (back):
+	writechar("\r"+red(">>")+" "+msg)
+	return
+    print green(">>")+" "+msg
 
 def print_info(msg, back = False):
     writechar("\r                                                                                                           \r")

@@ -26,6 +26,7 @@
 from entropyConstants import *
 import entropyTools
 import string
+import os
 
 class handlerFTP:
 
@@ -98,6 +99,9 @@ class handlerFTP:
 	self.ftpconn.cwd(dir)
 	self.currentdir = dir
 
+    def setPASV(self,bool):
+	self.ftpconn.set_pasv(bool)
+
     def getFileMtime(self,path):
 	rc = self.ftpconn.sendcmd("mdtm "+path)
 	return rc.split()[len(rc.split())-1]
@@ -147,19 +151,50 @@ class handlerFTP:
 	except:
 	    return False
 
-    # FIXME: add progress
+    # this function also supports callback, because storbinary doesn't
+    def advancedStorBinary(self, cmd, fp, callback=None, blocksize=8192):
+	''' Store a file in binary mode. Our version supports a callback function'''
+        self.ftpconn.voidcmd('TYPE I')
+        conn = self.ftpconn.transfercmd(cmd)
+        while 1:
+            buf = fp.readline()
+            if not buf: break
+            conn.sendall(buf)
+            if callback: callback(buf)
+        conn.close()
+        return self.ftpconn.voidresp()
+
     def uploadFile(self,file,ascii = False):
+	
+	def uploadFileAndUpdateProgress(buf):
+	    # get the buffer size
+	    self.mykByteCount += float(len(buf))/1024
+	    # create percentage
+	    myUploadPercentage = str(round((round(self.mykByteCount,1)/self.myFileSize)*100,1))+"%"
+	    # create text
+	    currentText = entropyTools.yellow("    <-> Upload status: ")+entropyTools.green(str(round(self.mykByteCount,1)))+"/"+entropyTools.red(str(self.myFileSize))+" kB "+entropyTools.yellow("[")+str(myUploadPercentage)+entropyTools.yellow("]")
+	    # print !
+	    entropyTools.print_info(currentText,back = True)
+	
 	for i in range(10): # ten tries
 	    f = open(file)
 	    filename = file.split("/")[len(file.split("/"))-1]
 	    try:
+		# get file size
+		self.myFileSize = round(float(os.stat(file)[6])/1024,1)
+		self.mykByteCount = 0
+		
 		if (ascii):
 		    rc = self.ftpconn.storlines("STOR "+filename+".tmp",f)
 		else:
-		    rc = self.ftpconn.storbinary("STOR "+filename+".tmp",f)
+		    rc = self.advancedStorBinary("STOR "+filename+".tmp", f, uploadFileAndUpdateProgress )
 		# now we can rename the file with its original name
 		self.renameFile(filename+".tmp",filename)
-	        return rc
+		f.close()
+	        if rc.find("226") != -1: # upload complete
+		    return True
+		else:
+		    return False
 	    except socket.error: # connection reset by peer
 		entropyTools.print_info(entropyTools.red("Upload issue, retrying..."))
 		self.reconnectHost() # reconnect
@@ -169,19 +204,45 @@ class handlerFTP:
 		continue
 
     def downloadFile(self,filepath,downloaddir,ascii = False):
+
+        def downloadFileStoreAndUpdateProgress(buf):
+	    # writing file buffer
+	    f.write(buf)
+	    # update progress
+	    self.mykByteCount += float(len(buf))/1024
+	    # create text
+	    currentText = entropyTools.yellow("    <-> Download status: ")+entropyTools.green(str(round(self.mykByteCount,1)))+"/"+entropyTools.red(str(self.myFileSize))+" kB"
+	    # print !
+	    entropyTools.print_info(currentText,back = True)
+
 	file = filepath.split("/")[len(filepath.split("/"))-1]
-	if (not ascii):
-	    f = open(downloaddir+"/"+file,"wb")
-	    rc = self.ftpconn.retrbinary('RETR '+file,f.write)
+	# look if the file exist
+	if self.isFileAvailable(file):
+	    self.mykByteCount = 0
+	    # get the file size
+	    self.myFileSize = self.getFileSizeCompat(file)
+	    if (self.myFileSize):
+	        self.myFileSize = round(float(int(self.myFileSize))/1024,1)
+		if (self.myFileSize == 0):
+		    self.myFileSize = 1
+	    else:
+		self.myFileSize = 0
+	    if (not ascii):
+	        f = open(downloaddir+"/"+file,"wb")
+	        rc = self.ftpconn.retrbinary('RETR '+file, downloadFileStoreAndUpdateProgress, 1024)
+	    else:
+	        f = open(downloaddir+"/"+file,"w")
+	        rc = self.ftpconn.retrlines('RETR '+file, f.write)
+	    f.flush()
+	    f.close()
+	    if rc.find("226") != -1: # upload complete
+		return True
+	    else:
+		return False
 	else:
-	    f = open(downloaddir+"/"+file,"w")
-	    rc = self.ftpconn.retrlines('RETR '+file,f.write)
-	f.flush()
-	f.close()
-	return rc
+	    return None
 
     # also used to move files
-    # FIXME: beautify !
     def renameFile(self,fromfile,tofile):
 	self.ftpconn.rename(fromfile,tofile)
 
@@ -190,7 +251,7 @@ class handlerFTP:
 	return self.ftpconn.size(file)
     
     def getFileSizeCompat(self,file):
-	list = getRoughList()
+	list = self.getRoughList()
 	for item in list:
 	    if item.find(file) != -1:
 		# extact the size

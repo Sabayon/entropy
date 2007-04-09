@@ -29,6 +29,7 @@ from entropyTools import *
 import commands
 import re
 import sys
+import os
 import string
 from portageTools import unpackTbz2, synthetizeRoughDependencies, getPackageRuntimeDependencies, dep_getkey, getThirdPartyMirrors
 
@@ -45,6 +46,10 @@ def generator(package, enzymeRequestBump = False, dbconnection = None):
 
     print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
     etpData = extractPkgData(package)
+    
+    # return back also the new possible package filename, so that we can make decisions on that
+    newFileName = etpData['download'].split("/")[len(etpData['download'].split("/"))-1]
+    
 
     if dbconnection is None:
 	dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
@@ -59,13 +64,13 @@ def generator(package, enzymeRequestBump = False, dbconnection = None):
 
     if (updated) and (revision != 0):
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry has been updated. Revision: ")+bold(str(revision)))
-	return True
+	return True, newFileName
     elif (updated) and (revision == 0):
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry newly created."))
-	return True
+	return True, newFileName
     else:
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
-	return False
+	return False, newFileName
 
 
 # This tool is used by Entropy after enzyme, it simply parses the content of etpConst['packagesstoredir']
@@ -99,10 +104,10 @@ def enzyme(options):
 	tbz2name = tbz2.split("/")[len(tbz2.split("/"))-1]
 	print_info(" ("+str(counter)+"/"+str(totalCounter)+") Processing "+tbz2name)
 	tbz2path = etpConst['packagesstoredir']+"/"+tbz2
-	rc = generator(tbz2path, enzymeRequestBump, dbconn)
+	rc, newFileName = generator(tbz2path, enzymeRequestBump, dbconn)
 	if (rc):
 	    etpCreated += 1
-	    os.system("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/ -f")
+	    os.system("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/"+newFileName+" -f")
 	else:
 	    etpNotCreated += 1
 	    os.system("rm -rf "+tbz2path)
@@ -219,9 +224,31 @@ def extractPkgData(package):
     except IOError:
         etpData['content'] = ""
 
+    # [][][] Kernel dependent packages hook [][][]
+    kernelDependentModule = False
+    for file in etpData['content'].split():
+	if file.find("/lib/modules/") != -1:
+	    kernelDependentModule = True
+	    # get the version of the modules
+	    kmodver = file.split("/lib/modules/")[1]
+	    kmodver = kmodver.split("/")[0]
+	    break
+
+    # add strict kernel dependency
+    # done below
+    
+    # change file name
+    
+    # modify etpData['download']
+    # done below
+
     print_info(yellow(" * ")+red("Getting package download URL..."),back = True)
     # Fill download relative URI
-    etpData['download'] = etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+".tbz2"
+    if (kernelDependentModule):
+	extrakernelinfo = "-linux-core-"+kmodver
+    else:
+	extrakernelinfo = ""
+    etpData['download'] = etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+extrakernelinfo+".tbz2"
 
     print_info(yellow(" * ")+red("Getting package category..."),back = True)
     # Fill category
@@ -356,6 +383,9 @@ def extractPkgData(package):
     # variables filled
     # etpData['dependencies'], etpData['conflicts']
     etpData['dependencies'], etpData['conflicts'] = synthetizeRoughDependencies(roughDependencies,etpData['useflags'])
+    if (kernelDependentModule):
+	# add kmodver to the dependency
+	etpData['dependencies'] += " sys-kernel/linux-core-"+kmodver
 
     # etpData['rdependencies']
     # Now we need to add environmental dependencies

@@ -531,7 +531,7 @@ def database(options):
 	    entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Removing package: ")+entropyTools.bold(pkg)+entropyTools.red(" ..."), back = True)
 	    dbconn.removePackage(pkg)
 	dbconn.commitChanges()
-	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("All the selected packages have been removed as requested. Have fun."))
+	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("All the selected packages have been removed as requested. To remove online binary packages, just run Activator."))
 	dbconn.closeDB()
 
     # used by reagent
@@ -549,12 +549,19 @@ def database(options):
 	dbconn.closeDB()
 
     # used by reagent
+    # FIXME: complete this with some automated magic
     elif (options[0] == "md5check"):
 
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Integrity verification of the selected packages:"))
 
 	mypackages = options[1:]
 	dbconn = etpDatabase(readOnly = True)
+	
+	# statistic vars
+	pkgMatch = 0
+	pkgNotMatch = 0
+	pkgDownloadedSuccessfully = 0
+	pkgDownloadedError = 0
 	
 	if (len(mypackages) == 0):
 	    # check world
@@ -580,19 +587,79 @@ def database(options):
 	    pkgfile = dbconn.retrievePackageVar(i,"download")
 	    pkgfile = pkgfile.split("/")[len(pkgfile.split("/"))-1]
 	    if (os.path.isfile(etpConst['packagesbindir']+"/"+pkgfile)):
-		entropyTools.print_info(entropyTools.green("   - [PKG AVAILABLE] ")+entropyTools.red(i))
+		entropyTools.print_info(entropyTools.green("   - [PKG AVAILABLE] ")+entropyTools.red(i)+" -> "+entropyTools.bold(pkgfile))
 		availList.append(pkgfile)
 	    elif (os.path.isfile(etpConst['packagessuploaddir']+"/"+pkgfile)):
-		entropyTools.print_info(entropyTools.green("   - [RUN ACTIVATOR] ")+entropyTools.darkred(i))
+		entropyTools.print_info(entropyTools.green("   - [RUN ACTIVATOR] ")+entropyTools.darkred(i)+" -> "+entropyTools.bold(pkgfile))
 	    else:
-		entropyTools.print_info(entropyTools.green("   - [MUST DOWNLOAD] ")+entropyTools.yellow(i))
+		entropyTools.print_info(entropyTools.green("   - [MUST DOWNLOAD] ")+entropyTools.yellow(i)+" -> "+entropyTools.bold(pkgfile))
 		toBeDownloaded.append(pkgfile)
 	
-	# FIXME add download support
-	# FIXME complete this
+	rc = entropyTools.askquestion("     Would you like to continue ?")
+	if rc == "No":
+	    sys.exit(0)
+
+	notDownloadedPackages = []
+	if (toBeDownloaded != []):
+	    entropyTools.print_info(entropyTools.red("   Starting to download missing files..."))
+	    for uri in etpConst['activatoruploaduris']:
+		
+		if (notDownloadedPackages != []):
+		    entropyTools.print_info(entropyTools.red("   Trying to search missing or broken files on another mirror ..."))
+		    toBeDownloaded = notDownloadedPackages
+		    notDownloadedPackages = []
+		
+		for pkg in toBeDownloaded:
+		    rc = entropyTools.downloadPackageFromMirror(uri,pkg)
+		    if (rc is None):
+			notDownloadedPackages.append(pkg)
+		    if (rc == False):
+			notDownloadedPackages.append(pkg)
+		    if (rc == True):
+			pkgDownloadedSuccessfully += 1
+			availList.append(pkg)
+		
+		if (notDownloadedPackages == []):
+		    entropyTools.print_info(entropyTools.red("   All the binary packages have been downloaded successfully."))
+		    break
 	
+	    if (notDownloadedPackages != []):
+		entropyTools.print_warning(entropyTools.red("   These are the packages that cannot be found online:"))
+		for i in notDownloadedPackages:
+		    pkgDownloadedError += 1
+		    entropyTools.print_warning(entropyTools.red("    * ")+entropyTools.yellow(i))
+		entropyTools.print_warning(entropyTools.red("   They won't be checked."))
 	
+	brokenPkgsList = []
+	for pkg in availList:
+	    entropyTools.print_info(entropyTools.red("   Checking MD5 of ")+entropyTools.yellow(pkg)+entropyTools.red(" ..."), back = True)
+	    storedmd5 = dbconn.retrievePackageVarFromBinaryPackage(pkg,"digest")
+	    result = entropyTools.compareMd5(etpConst['packagesbindir']+"/"+pkg,storedmd5)
+	    if (result):
+		# match !
+		pkgMatch += 1
+		entropyTools.print_info(entropyTools.red("   Package ")+entropyTools.yellow(pkg)+entropyTools.green(" is healthy. Checksum: ")+entropyTools.yellow(storedmd5))
+	    else:
+		pkgNotMatch += 1
+		entropyTools.print_error(entropyTools.red("   Package ")+entropyTools.yellow(pkg)+entropyTools.red(" is _NOT_ healthy !!!! Stored checksum: ")+entropyTools.yellow(storedmd5))
+		brokenPkgsList.append(pkg)
+
 	dbconn.closeDB()
+
+	if (brokenPkgsList != []):
+	    entropyTools.print_info(entropyTools.blue(" *  This is the list of the BROKEN packages: "))
+	    for bp in brokenPkgsList:
+		entropyTools.print_info(entropyTools.red("    * Package file: ")+entropyTools.bold(bp))
+
+	# print stats
+	entropyTools.print_info(entropyTools.blue(" *  Statistics: "))
+	entropyTools.print_info(entropyTools.yellow("     Number of checked packages:\t\t")+str(pkgMatch+pkgNotMatch))
+	entropyTools.print_info(entropyTools.green("     Number of healthy packages:\t\t")+str(pkgMatch))
+	entropyTools.print_info(entropyTools.red("     Number of broken packages:\t\t")+str(pkgNotMatch))
+	if (pkgDownloadedSuccessfully > 0) or (pkgDownloadedError > 0):
+	    entropyTools.print_info(entropyTools.green("     Number of downloaded packages:\t\t")+str(pkgDownloadedSuccessfully+pkgDownloadedError))
+	    entropyTools.print_info(entropyTools.green("     Number of happy downloads:\t\t")+str(pkgDownloadedSuccessfully))
+	    entropyTools.print_info(entropyTools.red("     Number of failed downloads:\t\t")+str(pkgDownloadedError))
 
 ############
 # Functions and Classes
@@ -920,7 +987,23 @@ class etpDatabase:
 	self.cursor.execute('SELECT "'+pkgvar+'" FROM etpData WHERE atom = "'+pkgkey+'"')
 	for row in self.cursor:
 	    result.append(row[0])
-	return result[0]
+	if len(result) > 0:
+	    return result[0]
+	else:
+	    return result
+
+    # this function returns the variable selected (using pkgvar) in relation to the
+    # package associated to a certain binary package file (.tbz2)
+    def retrievePackageVarFromBinaryPackage(self,binaryPkgName,pkgvar):
+	# search binary package
+	result = []
+	self.cursor.execute('SELECT "'+pkgvar+'" FROM etpData WHERE download LIKE "%'+binaryPkgName+'%"')
+	for row in self.cursor:
+	    result.append(row[0])
+	if len(result) > 0:
+	    return result[0]
+	else:
+	    return result
 
     # You must provide the full atom to this function
     def isPackageAvailable(self,pkgkey):

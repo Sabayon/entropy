@@ -143,6 +143,8 @@ def build(atoms):
     enzymeRequestIgnoreConflicts = False
     enzymeRequestInteraction = True
     enzymeRequestSimulation = False
+    enzymeRequestSkipfirst = False
+    enzymeRequestSkipN = False
     _atoms = []
     for i in atoms:
         if ( i == "--verbose" ) or ( i == "-v" ):
@@ -164,6 +166,15 @@ def build(atoms):
 	    enzymeRequestForceRebuild = True
 	elif ( i == "--use" ):
 	    enzymeRequestUse = True
+	elif ( i == "--skipfirst" ):
+	    enzymeRequestSkipfirst = True
+	elif ( i.startswith("--skip=") ):
+	    enzymeRequestSkipN = True
+	    skip_number = i.split("--skip=")[len(i.split("--skip="))-1]
+	    try:
+		skipN = int(skip_number)
+	    except:
+		skipN = 1
 	elif ( i == "--no-interaction" ):
 	    enzymeRequestInteraction = False
 	elif ( i == "--simulate-building" ):
@@ -314,6 +325,15 @@ def build(atoms):
 	    PackagesDependencies = toBeBuilt
 
     if (PackagesDependencies != []) or (PackagesQuickpkg != []):
+
+	# workout the skipfirst and skip=N request
+	_PackagesDependencies = PackagesDependencies
+	if (enzymeRequestSkipfirst):
+	    _PackagesDependencies = _PackagesDependencies[1:]
+	elif (enzymeRequestSkipN):
+	    _PackagesDependencies = _PackagesDependencies[skipN:]
+	PackagesDependencies = _PackagesDependencies
+
 	ebuildOverlays = []
 	overlaysCounter = 1
 	print_info(yellow("  *")+" These are the actions that will be taken, in order:")
@@ -323,16 +343,20 @@ def build(atoms):
 	    pkgstatus = "[?]"
 	    if (getPackageSlot("="+i) is None):
 		pkg = dep_getkey(i)
+		slotprintout = " "
 	    else:
 		pkg = "="+i
+		slotprintout = "S"
+	    
 	    if (getInstalledAtom(pkg) == None):
-		pkgstatus = green("[N]")
+		pkgstatus = green("[N"+slotprintout+"]")
 	    elif (compareAtoms(i,getInstalledAtom(pkg)) == 0):
-		pkgstatus = yellow("[R]")
+		pkgstatus = yellow("[R"+slotprintout+"]")
 	    elif (compareAtoms(i,getInstalledAtom(pkg)) > 0):
-		pkgstatus = blue("[U]")
+		# check if the package is slotted
+		pkgstatus = blue("[U"+slotprintout+"]")
 	    elif (compareAtoms(i,getInstalledAtom(pkg)) < 0):
-		pkgstatus = darkblue("[D]")
+		pkgstatus = darkblue("[D"+slotprintout+"]")
 
 	    # from which place?
 	    overlayinfo = ""
@@ -353,9 +377,9 @@ def build(atoms):
 	    useflags = ""
 	    if enzymeRequestUse: useflags = bold(" [")+yellow("USE: ")+calculateAtomUSEFlags("="+i)+bold("]")
 	    if i.startswith("quick|"):
-	        print_info(green("     *")+bold(" [")+green("QUICK")+bold("] ")+yellow("[R] ") +i.split("quick|")[len(i.split("quick|"))-1])
+	        print_info(green("     *")+bold(" [")+green("QUICK")+bold("] ")+yellow("[R ] ") +i.split("quick|")[len(i.split("quick|"))-1])
 	    elif i.startswith("avail|"):
-	        print_info(yellow("     *")+bold(" [")+yellow("NOACT")+bold("] ")+yellow("[R] ")+i.split("avail|")[len(i.split("avail|"))-1])
+	        print_info(yellow("     *")+bold(" [")+yellow("NOACT")+bold("] ")+yellow("[R ] ")+i.split("avail|")[len(i.split("avail|"))-1])
 	    else:
 		# I should never get here
 	        print_info(green("     *")+bold(" [?????] ")+i+useflags)
@@ -475,12 +499,6 @@ def build(atoms):
 	# interaction needed
 	print_info(green("   *")+" Running etc-update...")
 	spawnCommand("etc-update")
-	#while 1:
-	#    rc = askquestion("\n     Are you ready ?")
-	#    if (rc):
-	#	return 0
-	#    else:
-	#	return 1
     else:
 	print_info(green("  *")+" Auto-running etc-update...")
 	spawnCommand("echo -5 | etc-update")
@@ -629,6 +647,7 @@ def world(options):
 	print_info(green(" * ")+red("Scanning tree for ")+bold("updates")+red("..."))
 	deplist, blocklist = calculateFullAtomsDependencies("world",False,emergeopts)
 	if blocklist != []:
+	    # FIXME: this part needs some polishing
 	    print blocklist
 	    print "error there is something that is blocking all this shit"
 	    sys.exit(233)
@@ -858,6 +877,7 @@ def uninstall(options):
     if (enzymeRequestSimulation):
 	sys.exit(0)
 
+    successfullyRemovedAtoms = []
     for atom in validAtoms:
 	print_info(uninstallText+red(atom))
         # now run the command
@@ -868,6 +888,10 @@ def uninstall(options):
 		print_warning(yellow("  *** ")+red("Please use --verbose and retry to see what was wrong. Continuing..."))
 	else:
 	    print_info(green("   * ")+bold(atom)+" worked out successfully.")
+	    successfullyRemovedAtoms.append(atom)
+
+    print_info(green(" * ")+red("Please also consider to remove these packages from the Entropy database."))
+    
 
 def search(atoms):
 

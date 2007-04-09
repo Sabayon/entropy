@@ -3,10 +3,14 @@ TODO list (for developers only):
 - build(), on enzyme, add license blacklist (packages that cannot be shipped in a binary form)
 - improve logTools and put it in an usable status
 - even binary packages repo should have the upload lock?
-- reagent: add a tool that checks the checksum of the packages in the database
+- enzyme: add stronger support to broken packages check
 - reagent: complete smartapps section
-- enzyme, build(), save packages built in a file instead of a variable (for power down issues)
-- Sabayon Linux USE flags: remove all server related use flags
+- reagent: when enzymeing, check if the runtime dependencies are satisfied, this is part of the QA process
+- mirrorTools: add PASV option (supported/not supported)
+- enzyme, reagent: test kernel dependent packages
+- enzyme, add a module that integrates revdep-rebuild
+
+!! Remember that kernel dependent packages have: sys-kernel/linux-core-2.6.20-sabayon-r3 (for example)
 
 Project Status:
 - entropy: will handle all the three tools below
