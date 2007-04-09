@@ -48,7 +48,7 @@ def generator(package, enzymeRequestBump = False, dbconnection = None):
     etpData = extractPkgData(package)
     
     # return back also the new possible package filename, so that we can make decisions on that
-    newFileName = etpData['download'].split("/")[len(etpData['download'].split("/"))-1]
+    newFileName = os.path.basename(etpData['download'])
     
 
     if dbconnection is None:

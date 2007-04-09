@@ -997,7 +997,7 @@ class etpDatabase:
     def retrievePackageVarFromBinaryPackage(self,binaryPkgName,pkgvar):
 	# search binary package
 	result = []
-	self.cursor.execute('SELECT "'+pkgvar+'" FROM etpData WHERE download LIKE "%'+binaryPkgName+'%"')
+	self.cursor.execute('SELECT "'+pkgvar+'" FROM etpData WHERE download = "'+etpConst['binaryurirelativepath']+binaryPkgName+'"')
 	for row in self.cursor:
 	    result.append(row[0])
 	if len(result) > 0:
