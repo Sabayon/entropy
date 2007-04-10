@@ -820,8 +820,6 @@ def uninstall(options):
     if validAtoms == []:
         print_error(red(bold("no valid package names specified.")))
 	sys.exit(232)
-    else:
-	installedAtoms = validAtoms
 
     if (not enzymeRequestPrune):
 	uninstallText += bold("unmerge ")
@@ -829,6 +827,8 @@ def uninstall(options):
 	print_info(green("  *")+" This is the list of the packages that would be removed, if installed:")
 	for i in validAtoms:
 	    installedAtoms = getInstalledAtoms(i)
+	    if installedAtoms is None:
+		continue
 	    installedVers = []
 	    for i in installedAtoms:
 		pkgname, pkgver = extractPkgNameVer(i)
