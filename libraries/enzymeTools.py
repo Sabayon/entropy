@@ -783,12 +783,13 @@ def uninstall(options):
     if (enzymeRequestVerbose): print_info(i+" is Prune?: "+str(enzymeRequestPrune))
 
     validAtoms = []
+    
     _atoms = []
     for i in atoms:
         if (not isjustname(i)) and (not i.startswith("=")):
 	    i = "="+i
 	_atoms.append(i)
-    _atoms = atoms
+    atoms = _atoms
     
     for i in atoms:
         if (enzymeRequestVerbose): print_info(i+" is valid?: "+str(checkAtom(i)))
@@ -815,19 +816,6 @@ def uninstall(options):
     validAtoms = _validAtoms
 
     uninstallText = yellow("   * ")+"Doing "
-
-    # Now check if a package has been specified more than once
-    _validAtoms = []
-    for seedAtom in validAtoms:
-	_dupAtom = False
-	for subAtom in validAtoms:
-	    if ((seedAtom.find(subAtom) != -1) or (subAtom.find(seedAtom) != -1)) and (seedAtom != subAtom):
-		_dupAtom = True
-	if (not _dupAtom):
-	    _validAtoms.append(seedAtom)
-	else:
-	    print_warning(red("* >>> ")+"You have specified "+yellow(seedAtom)+" more than once. Removing from list.")
-    validAtoms = _validAtoms
 
     if validAtoms == []:
         print_error(red(bold("no valid package names specified.")))
