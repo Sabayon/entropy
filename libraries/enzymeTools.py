@@ -783,6 +783,13 @@ def uninstall(options):
     if (enzymeRequestVerbose): print_info(i+" is Prune?: "+str(enzymeRequestPrune))
 
     validAtoms = []
+    _atoms = []
+    for i in atoms:
+        if (not isjustname(i)) and (not i.startswith("=")):
+	    i = "="+i
+	_atoms.append(i)
+    _atoms = atoms
+    
     for i in atoms:
         if (enzymeRequestVerbose): print_info(i+" is valid?: "+str(checkAtom(i)))
 	if (checkAtom(i)):
