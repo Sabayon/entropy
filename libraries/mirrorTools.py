@@ -73,6 +73,7 @@ class handlerFTP:
 	self.ftpconn = FTP(self.ftphost)
 	self.ftpconn.login(self.ftpuser,self.ftppassword)
 	# change to our dir
+	#print self.ftpdir
 	self.ftpconn.cwd(self.ftpdir)
 	self.currentdir = self.ftpdir
 

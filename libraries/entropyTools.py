@@ -403,9 +403,8 @@ def syncRemoteDatabases(noUpload = False, justStats = False):
 	for uri in etpConst['activatoruploaduris']:
 	    for list in uploadList:
 		if list[0].startswith(uri):
-		    list[0] = uri
+		    _uploadList.append(uri)
 		    break
-	    _uploadList.append(list[0])
 	
 	uploadDatabase(_uploadList)
 	print_info(green(" * ")+red("All the mirrors have been updated."))
@@ -476,6 +475,9 @@ def uploadDatabase(uris):
 	else:
 	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 	
+	# close connection
+	ftp.closeFTPConnection()
+	# unlock database
 	downloadLockDatabases(False,[uri])
 
 
@@ -527,7 +529,8 @@ def downloadDatabase(uri):
 	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 
     os.system("rm -f " + etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip']+" &> /dev/null")
-
+    # close connection
+    ftp.closeFTPConnection()
 
 # Reports in a list form the lock status of the mirrors
 # @ [ uri , True/False, True/False ] --> True = locked, False = unlocked

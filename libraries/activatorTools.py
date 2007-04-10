@@ -31,16 +31,17 @@ import os
 import commands
 import string
 
-def sync(options):
+def sync(options, justTidy = False):
 
     print_info(green(" * ")+red("Starting to sync data across mirrors (packages/database) ..."))
     
-    # firstly sync the packages
-    rc = packages(["sync" , "--ask"])
-    # then sync the database, if the packages sync completed successfully
-    if (rc == False):
-	sys.exit(401)
-    database(["sync"])
+    if (not justTidy):
+        # firstly sync the packages
+        rc = packages(["sync" , "--ask"])
+        # then sync the database, if the packages sync completed successfully
+        if (rc == False):
+	    sys.exit(401)
+        database(["sync"])
     
     print_info(green(" * ")+red("Starting to collect packages that would be removed from the repository ..."), back = True)
     
@@ -171,6 +172,29 @@ def packages(options):
 	        downloadQueue = []
 	        removalQueue = []
 	    
+	        # if a package is in the packages directory but not online, we have to upload it
+		# we have localPackagesRepository and remotePackages
+	        for localPackage in localPackagesRepository:
+		    pkgfound = False
+		    for remotePackage in remotePackages:
+		        if localPackage == remotePackage:
+			    pkgfound = True
+			    # it's already on the mirror, but... is its size correct??
+			    localSize = int(os.stat(etpConst['packagesbindir']+"/"+localPackage)[6])
+			    remoteSize = 0
+			    for file in remotePackagesInfo:
+			        if file.split()[8] == remotePackage:
+				    remoteSize = int(file.split()[4])
+			    if (localSize != remoteSize) and (localSize != 0):
+			        # size does not match, adding to the upload queue
+			        uploadQueue.append(localPackage)
+			    break
+		
+		    if (not pkgfound):
+		        # this means that the local package does not exist
+		        # so, we need to download it
+		        uploadQueue.append(localPackage)
+		
 	        # Fill uploadQueue and if something weird is found, add the packages to downloadQueue
 	        for localPackage in toBeUploaded:
 		    pkgfound = False
@@ -252,7 +276,6 @@ def packages(options):
 		    syncSuccessful = True
 		    continue
 
-
 	        totalRemovalSize = 0
 	        totalDownloadSize = 0
 	        totalUploadSize = 0
@@ -289,7 +312,11 @@ def packages(options):
 			simpleCopyQueue.append(etpConst['packagessuploaddir']+"/"+item)
 
 	        for item in uploadQueue:
-		    fileSize = os.stat(etpConst['packagessuploaddir']+"/"+item)[6]
+		    # if it is in the upload dir
+		    if os.path.isfile(etpConst['packagessuploaddir']+"/"+item):
+		        fileSize = os.stat(etpConst['packagessuploaddir']+"/"+item)[6]
+		    else: # otherwise it is in the packages dir
+			fileSize = os.stat(etpConst['packagesbindir']+"/"+item)[6]
 		    totalUploadSize += int(fileSize)
 		    print_info(bold("\t[") + red("REMOTE UPLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
 		    detailedUploadQueue.append([item,fileSize])
@@ -338,7 +365,11 @@ def packages(options):
 		        currentCounter += 1
 		        counterInfo = bold(" (")+blue(str(currentCounter))+"/"+red(uploadCounter)+bold(")")
 		        print_info(counterInfo+red(" Uploading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] to ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."))
-		        rc = ftp.uploadFile(etpConst['packagessuploaddir']+"/"+item[0])
+			# is the package in the upload queue?
+			if os.path.isfile(etpConst['packagessuploaddir']+"/"+item[0]):
+			    rc = ftp.uploadFile(etpConst['packagessuploaddir']+"/"+item[0])
+			else: # or in the packages queue !
+			    rc = ftp.uploadFile(etpConst['packagesbindir']+"/"+item[0])
 			if (rc):
 			    successfulUploadCounter += 1
 		    print_info(red(" * Upload completed for ")+bold(extractFTPHostFromUri(uri)))
@@ -380,6 +411,7 @@ def packages(options):
 		# decide what to do
 		if (totalSuccessfulUri > 0) or (activatorRequestPretend):
 		    # we're safe
+		    print_info(green(" * ")+red("At least one mirror has been synced properly. I'm fine."))
 		    continue
 		else:
 		    if (currentUri < totalUris):

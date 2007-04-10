@@ -43,9 +43,7 @@ def print_help():
     entropyTools.print_info("  --nocolor\t\tdisable colorized output")
     entropyTools.print_info(entropyTools.blue("Tools available: "))
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("sync"))+entropyTools.yellow("\t\t to sync packages, database and also do some tidy"))
-    #entropyTools.print_info(" \t\t"+entropyTools.red("--download-packages")+"\t to download all the binary packages (will overwrite)")
-    #entropyTools.print_info(" \t\t"+entropyTools.red("--download-etp")+"\t\t to download all the Entropy tree (will overwrite)")
-    #entropyTools.print_info(" \t\t"+entropyTools.red("--show-stats")+"\t\t shows the list of validated package/etp-file couples")
+    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("tidy"))+entropyTools.yellow("\t\t to just remove binary packages that are not in the Entropy database anymore"))
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("packages"))+entropyTools.yellow("\t to manage binary packages"))
     entropyTools.print_info(" \t\t"+entropyTools.red("--ask")+"\t\t\t ask before making any changes")
     entropyTools.print_info(" \t\t"+entropyTools.red("--pretend")+"\t\t just show what would be done")
@@ -86,9 +84,12 @@ if (not entropyTools.isRoot()):
     sys.exit(2)
 
 # sync mirrors tool
-# will be removed
 elif (options[0] == "sync"):
     activatorTools.sync(options[1:])
+    sys.exit(0)
+# tidy tool
+elif (options[0] == "tidy"):
+    activatorTools.sync(options[1:], justTidy = True)
     sys.exit(0)
 
 # database tool
