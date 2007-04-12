@@ -47,6 +47,7 @@ def print_help():
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("packages"))+entropyTools.yellow("\t to manage binary packages"))
     entropyTools.print_info(" \t\t"+entropyTools.red("--ask")+"\t\t\t ask before making any changes")
     entropyTools.print_info(" \t\t"+entropyTools.red("--pretend")+"\t\t just show what would be done")
+    entropyTools.print_info(" \t\t"+entropyTools.red("--do-packages-check")+"\t\t after the syncronization, also check packages checksum")
     entropyTools.print_info(" \t\t"+entropyTools.green("sync")+entropyTools.red("\t\t\t to sync the binary packages across primary mirrors"))
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("database"))+entropyTools.yellow("\t to manage database status and settings [")+entropyTools.bold("database content won't be touched")+entropyTools.yellow("]"))
     entropyTools.print_info(" \t\t"+entropyTools.green("sync")+entropyTools.red("\t\t\t to sync the database across primary mirrors"))

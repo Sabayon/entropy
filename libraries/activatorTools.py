@@ -30,6 +30,7 @@ import sys
 import os
 import commands
 import string
+import time
 
 def sync(options, justTidy = False):
 
@@ -37,11 +38,21 @@ def sync(options, justTidy = False):
     
     if (not justTidy):
         # firstly sync the packages
-        rc = packages(["sync" , "--ask"])
+        rc = packages([ "sync" , "--ask" ])
         # then sync the database, if the packages sync completed successfully
         if (rc == False):
 	    sys.exit(401)
-        database(["sync"])
+	else:
+            # if packages are ok, we can sync the database
+	    database(["sync"])
+	    # now check packages checksum
+	    import databaseTools
+	    databaseTools.database(['md5check'])
+	    time.sleep(2)
+	    # ask question
+	    rc = askquestion("     Should I continue with the tidy procedure ?")
+	    if rc == "No":
+		sys.exit(0)
     
     print_info(green(" * ")+red("Starting to collect packages that would be removed from the repository ..."), back = True)
     
@@ -70,8 +81,9 @@ def sync(options, justTidy = False):
 		found = True
 		break
 	if (not found):
-	    # then remove
-	    removeList.append(repoBin)
+	    if (not repoBin.endswith(etpConst['packageshashfileext'])): # filter hash files
+	        # then remove
+	        removeList.append(repoBin)
     
     if (removeList == []):
 	print_info(green(" * ")+red("No packages to remove from the mirrors."))
@@ -114,11 +126,14 @@ def packages(options):
     myopts = options[1:]
     activatorRequestAsk = False
     activatorRequestPretend = False
+    activatorRequestPackagesCheck = False
     for opt in myopts:
 	if (opt == "--ask"):
 	    activatorRequestAsk = True
 	elif (opt == "--pretend"):
 	    activatorRequestPretend = True
+	elif (opt == "--do-packages-check"):
+	    activatorRequestPackagesCheck = True
 
     if (options[0] == "sync"):
 	print_info(green(" * ")+red("Starting ")+bold("binary")+yellow(" packages")+red(" syncronization across servers ..."))
@@ -132,6 +147,7 @@ def packages(options):
 	
 	    currentUri += 1
 	    
+	    # readd try
 	    try:
 		
 	        print_info(green(" * ")+yellow("Working on ")+bold(extractFTPHostFromUri(uri)+red(" mirror.")))
@@ -140,17 +156,19 @@ def packages(options):
 	        uploadCounter = 0
 	        toBeUploaded = [] # parse etpConst['packagessuploaddir']
 	        for tbz2 in os.listdir(etpConst['packagessuploaddir']):
-		    if tbz2.endswith(".tbz2"):
+		    if tbz2.endswith(".tbz2") or tbz2.endswith(etpConst['packageshashfileext']):
 		        toBeUploaded.append(tbz2)
-		        uploadCounter += 1
+			if tbz2.endswith(".tbz2"):
+		            uploadCounter += 1
 	        print_info(green(" * ")+red("Upload directory:\t\t")+bold(str(uploadCounter))+red(" files ready."))
 	        localPackagesRepository = [] # parse etpConst['packagesbindir']
 	        print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagesbindir'])+red(" ..."), back = True)
 	        packageCounter = 0
 	        for tbz2 in os.listdir(etpConst['packagesbindir']):
-		    if tbz2.endswith(".tbz2"):
+		    if tbz2.endswith(".tbz2") or tbz2.endswith(etpConst['packageshashfileext']):
 		        localPackagesRepository.append(tbz2)
-		        packageCounter += 1
+			if tbz2.endswith(".tbz2"):
+		            packageCounter += 1
 	        print_info(green(" * ")+red("Packages directory:\t")+bold(str(packageCounter))+red(" files ready."))
 	    
 	        print_info(green(" * ")+yellow("Fetching remote statistics..."), back = True)
@@ -306,8 +324,9 @@ def packages(options):
 		        print_info(bold("\t[") + yellow("REMOTE DOWNLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
 		        detailedDownloadQueue.append([item,fileSize])
 		    else:
-			fileSize = os.stat(etpConst['packagessuploaddir']+"/"+item)[6]
-			print_info(bold("\t[") + green("LOCAL COPY") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
+			if (not item.endswith(etpConst['packageshashfileext'])):
+			    fileSize = os.stat(etpConst['packagessuploaddir']+"/"+item)[6]
+			    print_info(bold("\t[") + green("LOCAL COPY") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
 			# file exists locally and remotely (where is fine == fully uploaded)
 			simpleCopyQueue.append(etpConst['packagessuploaddir']+"/"+item)
 
@@ -347,6 +366,7 @@ def packages(options):
 		    for item in detailedRemovalQueue:
 		        print_info(red(" * Removing file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(etpConst['packagesbindir'])+red(" ..."))
 		        os.system("rm -f "+etpConst['packagesbindir']+"/"+item[0])
+			os.system("rm -f "+etpConst['packagesbindir']+"/"+item[0]+etpConst['packageshashfileext'])
 		    print_info(red(" * Removal completed for ")+bold(etpConst['packagesbindir']))
 
 		# simple copy queue
@@ -354,6 +374,7 @@ def packages(options):
 		    for item in simpleCopyQueue:
 			print_info(red(" * Copying file from ") + bold(item) + red(" to ")+bold(etpConst['packagesbindir']))
 			os.system("cp -p "+item+" "+etpConst['packagesbindir']+"/ > /dev/null")
+			# md5 copy not needed, already in simpleCopyQueue
 
 	        # upload queue
 	        if (detailedUploadQueue != []):
@@ -367,10 +388,18 @@ def packages(options):
 		        print_info(counterInfo+red(" Uploading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] to ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."))
 			# is the package in the upload queue?
 			if os.path.isfile(etpConst['packagessuploaddir']+"/"+item[0]):
-			    rc = ftp.uploadFile(etpConst['packagessuploaddir']+"/"+item[0])
-			else: # or in the packages queue !
-			    rc = ftp.uploadFile(etpConst['packagesbindir']+"/"+item[0])
-			if (rc):
+			    uploadItem = etpConst['packagessuploaddir']+"/"+item[0]
+			else:
+			    uploadItem = etpConst['packagesbindir']+"/"+item[0]
+			rc = ftp.uploadFile(uploadItem)
+			if not os.path.isfile(uploadItem+etpConst['packageshashfileext']):
+			    hashfile = createHashFile(uploadItem)
+			else:
+			    hashfile = uploadItem+etpConst['packageshashfileext']
+			# upload md5 hash
+			rcmd5 = ftp.uploadFile(hashfile,ascii = True)
+			
+			if (rc) and (rcmd5):
 			    successfulUploadCounter += 1
 		    print_info(red(" * Upload completed for ")+bold(extractFTPHostFromUri(uri)))
 		    ftp.closeFTPConnection()
@@ -391,9 +420,16 @@ def packages(options):
 			        # skip that, we'll move at the end of the mirrors sync
 			        continue
 		        print_info(counterInfo+red(" Downloading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."))
-		        rc = ftp.downloadFile(item[0],etpConst['packagesbindir']+"/")
-			# FIXME: add if condition --> if (rc):
-			successfulDownloadCounter += 1
+			
+			# FIXME: test if the .md5 got downloaded
+			if item[0].endswith(etpConst['packageshashfileext']):
+			    rc = ftp.downloadFile(item[0],etpConst['packagesbindir']+"/", ascii = True)
+			else:
+		            rc = ftp.downloadFile(item[0],etpConst['packagesbindir']+"/")
+			
+			if (rc):
+			    successfulDownloadCounter += 1
+			
 		    print_info(red(" * Download completed for ")+bold(extractFTPHostFromUri(uri)))
 		    ftp.closeFTPConnection()
 
@@ -431,6 +467,12 @@ def packages(options):
 	    return True
 	else:
 	    sys.exit(470)
+
+    # Now we should start to check all the packages in the packages directory
+    if (activatorRequestPackagesCheck):
+	import databaseTools
+	databaseTools.database(['md5check'])
+	
 
 def database(options):
 

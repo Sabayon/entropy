@@ -158,6 +158,7 @@ etpConst = {
     'etpdatabasetaintfile': ETP_DBFILE+".tainted", # when this file exists, the database is not synced anymore with the online one
     'etpdatabasefile': ETP_DBFILE, # Entropy sqlite database file ETP_DIR+ETP_DBDIR+"/packages.db"
     'etpdatabasefilegzip': ETP_DBFILE+".gz", # Entropy sqlite database file (gzipped)
+    'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
     'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
     'databaselogfile': ETP_LOG_DIR+"/database.log", # database operations log file
     'distcc-status': False, # used by Enzyme, if True distcc is enabled

@@ -562,14 +562,17 @@ def database(options):
 	pkgNotMatch = 0
 	pkgDownloadedSuccessfully = 0
 	pkgDownloadedError = 0
+	worldSelected = False
 	
 	if (len(mypackages) == 0):
 	    # check world
 	    # create packages list
+	    worldSelected = True
 	    pkgs2check = dbconn.listAllPackages()
 	elif (mypackages[0] == "world"):
 	    # check world
 	    # create packages list
+	    worldSelected = True
 	    pkgs2check = dbconn.listAllPackages()
 	else:
 	    # catch the names
@@ -579,7 +582,14 @@ def database(options):
 		for i in results:
 		    pkgs2check.append(i[0])
 
-	entropyTools.print_info(entropyTools.red("   This is the list of the packages that would be checked:"))
+	# order alphabetically
+	if (pkgs2check != []):
+	    pkgs2check = entropyTools.alphaSorter(pkgs2check)
+
+	if (not worldSelected):
+	    entropyTools.print_info(entropyTools.red("   This is the list of the packages that would be checked:"))
+	else:
+	    entropyTools.print_info(entropyTools.red("   All the packages in the Entropy Packages repository will be checked."))
 	
 	toBeDownloaded = []
 	availList = []
@@ -587,12 +597,12 @@ def database(options):
 	    pkgfile = dbconn.retrievePackageVar(i,"download")
 	    pkgfile = pkgfile.split("/")[len(pkgfile.split("/"))-1]
 	    if (os.path.isfile(etpConst['packagesbindir']+"/"+pkgfile)):
-		entropyTools.print_info(entropyTools.green("   - [PKG AVAILABLE] ")+entropyTools.red(i)+" -> "+entropyTools.bold(pkgfile))
+		if (not worldSelected): entropyTools.print_info(entropyTools.green("   - [PKG AVAILABLE] ")+entropyTools.red(i)+" -> "+entropyTools.bold(pkgfile))
 		availList.append(pkgfile)
 	    elif (os.path.isfile(etpConst['packagessuploaddir']+"/"+pkgfile)):
-		entropyTools.print_info(entropyTools.green("   - [RUN ACTIVATOR] ")+entropyTools.darkred(i)+" -> "+entropyTools.bold(pkgfile))
+		if (not worldSelected): entropyTools.print_info(entropyTools.green("   - [RUN ACTIVATOR] ")+entropyTools.darkred(i)+" -> "+entropyTools.bold(pkgfile))
 	    else:
-		entropyTools.print_info(entropyTools.green("   - [MUST DOWNLOAD] ")+entropyTools.yellow(i)+" -> "+entropyTools.bold(pkgfile))
+		if (not worldSelected): entropyTools.print_info(entropyTools.green("   - [MUST DOWNLOAD] ")+entropyTools.yellow(i)+" -> "+entropyTools.bold(pkgfile))
 		toBeDownloaded.append(pkgfile)
 	
 	rc = entropyTools.askquestion("     Would you like to continue ?")
@@ -632,13 +642,13 @@ def database(options):
 	
 	brokenPkgsList = []
 	for pkg in availList:
-	    entropyTools.print_info(entropyTools.red("   Checking MD5 of ")+entropyTools.yellow(pkg)+entropyTools.red(" ..."), back = True)
+	    entropyTools.print_info(entropyTools.red("   Checking Checksum of ")+entropyTools.yellow(pkg)+entropyTools.red(" ..."), back = True)
 	    storedmd5 = dbconn.retrievePackageVarFromBinaryPackage(pkg,"digest")
 	    result = entropyTools.compareMd5(etpConst['packagesbindir']+"/"+pkg,storedmd5)
 	    if (result):
 		# match !
 		pkgMatch += 1
-		entropyTools.print_info(entropyTools.red("   Package ")+entropyTools.yellow(pkg)+entropyTools.green(" is healthy. Checksum: ")+entropyTools.yellow(storedmd5))
+		#entropyTools.print_info(entropyTools.red("   Package ")+entropyTools.yellow(pkg)+entropyTools.green(" is healthy. Checksum: ")+entropyTools.yellow(storedmd5), back = True)
 	    else:
 		pkgNotMatch += 1
 		entropyTools.print_error(entropyTools.red("   Package ")+entropyTools.yellow(pkg)+entropyTools.red(" is _NOT_ healthy !!!! Stored checksum: ")+entropyTools.yellow(storedmd5))
@@ -730,7 +740,7 @@ class etpDatabase:
 	    entropyTools.print_info(entropyTools.red(" * ")+entropyTools.red(" Entropy database is already locked by you :-)"))
 	else:
 	    # check if the database is locked REMOTELY
-	    entropyTools.print_info(entropyTools.red(" * ")+entropyTools.red(" Locking and Sync Entropy database ..."), back = True)
+	    entropyTools.print_info(entropyTools.red(" * ")+entropyTools.red(" Locking and Syncing Entropy database ..."), back = True)
 	    for uri in etpConst['activatoruploaduris']:
 	        ftp = mirrorTools.handlerFTP(uri)
 	        ftp.setCWD(etpConst['etpurirelativepath'])
@@ -781,6 +791,7 @@ class etpDatabase:
 	
 	# if the class is opened readOnly, close and forget
 	if (self.readOnly):
+	    #self.connection.rollback()
 	    self.cursor.close()
 	    self.connection.close()
 	    return
@@ -805,7 +816,7 @@ class etpDatabase:
 	    self.connection.commit()
 	    self.taintDatabase()
 	else:
-	    self.connection.rollback() # is it ok?
+	    self.discardChanges() # is it ok?
 
     def taintDatabase(self):
 	# taint the database status

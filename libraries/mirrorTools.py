@@ -185,6 +185,9 @@ class handlerFTP:
 		self.myFileSize = round(float(os.stat(file)[6])/1024,1)
 		self.mykByteCount = 0
 		
+		if self.isFileAvailable(filename+".tmp"):
+		    self.deleteFile(filename+".tmp")
+		
 		if (ascii):
 		    rc = self.ftpconn.storlines("STOR "+filename+".tmp",f)
 		else:
@@ -196,11 +199,13 @@ class handlerFTP:
 		    return True
 		else:
 		    return False
-	    except socket.error: # connection reset by peer
+	    except: # connection reset by peer
 		entropyTools.print_info(entropyTools.red("Upload issue, retrying..."))
 		self.reconnectHost() # reconnect
-		self.deleteFile(filename)
-		self.deleteFile(filename+".tmp")
+		if self.isFileAvailable(filename):
+		    self.deleteFile(filename)
+		if self.isFileAvailable(filename+".tmp"):
+		    self.deleteFile(filename+".tmp")
 		f.close()
 		continue
 

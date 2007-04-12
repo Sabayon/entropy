@@ -418,13 +418,16 @@ def build(atoms):
     #PackagesDependencies = list(set(PackagesDependencies))
 
     compileError = False
+    PackagesDependenciesCounter = 0
+    PackagesDependenciesLength = len(PackagesDependencies)
 
     if PackagesDependencies != []:
 	#print
 	print_info(yellow("  *")+" Building packages...")
 	for dep in PackagesDependencies:
 	    outfile = etpConst['packagestmpdir']+"/.emerge-"+dep.split("/")[len(dep.split("/"))-1]+"-"+str(getRandomNumber())
-	    print_info(green("  *")+" Compiling: "+red(dep)+" ... ")
+	    PackagesDependenciesCounter += 1
+	    print_info(green("  * ")+bold("(")+blue(str(PackagesDependenciesCounter))+green("/")+red(str(PackagesDependenciesLength))+bold(")")+" Compiling: "+red(dep)+" ... ")
 	    mountProc()
 	    if (not enzymeRequestVerbose):
 		

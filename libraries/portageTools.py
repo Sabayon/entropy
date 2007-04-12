@@ -425,6 +425,7 @@ def compareLibraryLists(pkgBinaryFiles,newPkgBinaryFiles):
 	
 	print "DEBUG:"
 	print pkgBinaryFiles
+	print newPkgBinaryFiles
 	
 	# check for version bumps
 	for pkg in pkgBinaryFiles:

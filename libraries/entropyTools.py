@@ -81,6 +81,19 @@ def md5sum(filepath):
 	block = readfile.read(1024)
     return m.hexdigest()
 
+# This function creates the .hash file related to the given package file
+# @returns the complete hash file path
+# FIXME: add more hashes, SHA1 for example
+def createHashFile(tbz2filepath):
+    md5hash = md5sum(tbz2filepath)
+    hashfile = tbz2filepath+etpConst['packageshashfileext']
+    f = open(hashfile,"w")
+    tbz2name = os.path.basename(tbz2filepath)
+    f.write(md5hash+"  "+tbz2name+"\n")
+    f.flush()
+    f.close()
+    return hashfile
+
 def compareMd5(filepath,checksum):
     checksum = str(checksum)
     result = md5sum(filepath)
@@ -1005,7 +1018,7 @@ def print_error(msg, back = False):
     print green(">>")+" "+msg
 
 def print_info(msg, back = False):
-    writechar("\r                                                                                                           \r")
+    writechar("\r                                                                                                                 \r")
     if (back):
 	writechar("\r"+green(">>")+" "+msg)
 	return

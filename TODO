@@ -7,6 +7,7 @@ TODO list (for developers only):
 - mirrorTools: add PASV option (supported/not supported)
 - enzyme, reagent: test kernel dependent packages
 - enzyme, add a module that integrates revdep-rebuild
+- add FXP support to activator ?
 - entropy, needed part, add multithreading support
 
 !! Remember that kernel dependent packages have: sys-kernel/linux-core-2.6.20-sabayon-r3 (for example)
