@@ -622,14 +622,13 @@ def uncompressTarBz2(filepath, extractPath = None):
     return rc
 
 def bytesIntoHuman(bytes):
-    bytes = str(bytes)
-    kbytes = str(round(float(bytes)/1024,1))
-    if len(kbytes) > 3:
-	kbytes = str(round(float(kbytes)/1024,1))
-	kbytes += "MB"
-    else:
-	kbytes += "kB"
-    return kbytes
+    size = str(round(float(bytes)/1024,1))
+    if len(bytes) > 3:
+	size += "kB"
+    elif len(bytes) > 5:
+	size = str(round(float(size)/1024,1))
+	size += "MB"
+    return size
 
 # hide password from full ftp URI
 def hideFTPpassword(uri):
