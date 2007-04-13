@@ -320,8 +320,9 @@ def packages(options):
 		            if remotePackage.split()[8] == item:
 			        fileSize = remotePackage.split()[4]
 			        break
-		        totalDownloadSize += int(fileSize)
-		        print_info(bold("\t[") + yellow("REMOTE DOWNLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
+			if not item.endswith(etpConst['packageshashfileext']): # do not show .md5 to upload
+		            totalDownloadSize += int(fileSize)
+		            print_info(bold("\t[") + yellow("REMOTE DOWNLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
 		        detailedDownloadQueue.append([item,fileSize])
 		    else:
 			if (not item.endswith(etpConst['packageshashfileext'])):
@@ -336,8 +337,9 @@ def packages(options):
 		        fileSize = os.stat(etpConst['packagessuploaddir']+"/"+item)[6]
 		    else: # otherwise it is in the packages dir
 			fileSize = os.stat(etpConst['packagesbindir']+"/"+item)[6]
-		    totalUploadSize += int(fileSize)
-		    print_info(bold("\t[") + red("REMOTE UPLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
+		    if not item.endswith(etpConst['packageshashfileext']): # do not show .md5 to upload
+		        totalUploadSize += int(fileSize)
+		        print_info(bold("\t[") + red("REMOTE UPLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
 		    detailedUploadQueue.append([item,fileSize])
 
 	        print_info(red(" * ")+blue("Packages that would be ")+red("removed:\t\t")+bold(str(len(removalQueue))))

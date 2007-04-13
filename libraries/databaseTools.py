@@ -642,7 +642,7 @@ def database(options):
 	
 	brokenPkgsList = []
 	for pkg in availList:
-	    entropyTools.print_info(entropyTools.red("   Checking Checksum of ")+entropyTools.yellow(pkg)+entropyTools.red(" ..."), back = True)
+	    entropyTools.print_info(entropyTools.red("   Checking hash of ")+entropyTools.yellow(pkg)+entropyTools.red(" ..."), back = True)
 	    storedmd5 = dbconn.retrievePackageVarFromBinaryPackage(pkg,"digest")
 	    result = entropyTools.compareMd5(etpConst['packagesbindir']+"/"+pkg,storedmd5)
 	    if (result):
@@ -863,36 +863,32 @@ class etpDatabase:
     # otherwise it fires up updatePackage
     def handlePackage(self, etpData, forceBump = False):
 	if (not self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])):
-	    update, revision = self.addPackage(etpData)
+	    update, revision, etpDataUpdated = self.addPackage(etpData)
 	else:
-	    update, revision = self.updatePackage(etpData,forceBump)
-	return update, revision
+	    update, revision, etpDataUpdated = self.updatePackage(etpData,forceBump)
+	return update, revision, etpDataUpdated
 
     # default add an unstable package
     def addPackage(self, etpData, revision = 0, wantedBranch = "unstable"):
 	# check if the package is slotted
-	
-	log.log(2,"[DB] Adding package: "+etpData['category']+"/"+etpData['name']+"-"+etpData['version'])
-	log.log(2,"    which slot is: "+etpData['slot'])
+
+	# Handle package name
+	etpData['download'] = etpData['download'].split(".tbz2")[0]
+	# add branch name
+	etpData['download'] += "-"+wantedBranch+".tbz2"
+
 	# if a similar package exist, enter here
-	searchsimilar = self.searchSimilarPackages(etpData['category']+"/"+etpData['name'])
-	if (searchsimilar != []):
-	    log.log(2,"    which searchsimilar is not empty")
-	    # there are other packages with the same category/name
-	    # do we have to remove anything?
-	    removelist = []
-	    for oldpkg in searchsimilar:
-		# if it's the same, skip
-	        # get the package slot
-	        slot = self.retrievePackageVar(oldpkg,"slot")
-		branch = self.retrievePackageVar(oldpkg,"branch")
-		log.log(2,"    there is: "+oldpkg+" which slot is: "+slot+" and branch: "+branch)
-		if (etpData['slot'] == slot) and (wantedBranch == branch):
-		    # remove!
-		    log.log(2,"    unfortunately,"+etpData['category']+"/"+etpData['name']+"-"+etpData['version']+" is similar to "+oldpkg+"because their slot is: "+etpData['slot']+" and branch: "+wantedBranch+". So REMOVING.")
-		    removelist.append(oldpkg)
-	    for pkg in removelist:
-		self.removePackage(pkg)
+	searchsimilar = self.searchSimilarPackages(etpData['category']+"/"+etpData['name'], branch = wantedBranch)
+	removelist = []
+	for oldpkg in searchsimilar:
+	    # get the package slot
+	    slot = self.retrievePackageVar(oldpkg, "slot", branch = wantedBranch)
+	    if (etpData['slot'] == slot):
+		# remove!
+		removelist.append(oldpkg)
+	
+	for pkg in removelist:
+	    self.removePackage(pkg)
 	
 	# wantedBranch = etpData['branch']
 	self.cursor.execute(
@@ -929,42 +925,75 @@ class etpDatabase:
 			)
 	)
 	self.commitChanges()
-	return True,revision
+	return True, revision, etpData
 
     # Update already available atom in db
     # returns True,revision if the package has been updated
     # returns False,revision if not
+    # FIXME: this must be fixed to work with branches, supporting multiple packages with the same key but different branch
     def updatePackage(self, etpData, forceBump = False):
-	# check if the data correspond
-	# if not, update, else drop
-	curRevision = self.retrievePackageVar(etpData['category']+"/"+etpData['name']+"-"+etpData['version'],"revision")
-	curBranch = self.retrievePackageVar(etpData['category']+"/"+etpData['name']+"-"+etpData['version'],"branch")
-	oldPkgInfo = etpData['category']+"/"+etpData['name']+"-"+etpData['version']
-	rc = self.comparePackagesData(etpData,oldPkgInfo)
-	if (not rc) or (forceBump):
-	    # update !
-	    curRevision += 1
-	    # remove the table
-	    self.removePackage(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])
-	    # readd table
-	    self.addPackage(etpData,curRevision,curBranch)
-	    self.commitChanges()
-	    return True, curRevision
+
+	# are there any stable packages?
+	searchsimilarStable = self.searchSimilarPackages(etpData['category']+"/"+etpData['name'], branch = "stable")
+	# filter the one with the same version
+	stableFound = False
+	for pkg in searchsimilarStable:
+	    # get version
+	    dbStoredVer = self.retrievePackageVar(pkg, "version", branch = "stable")
+	    if etpData['version'] == dbStoredVer:
+	        # found it !
+		stablePackage = pkg
+		stableFound = True
+		break
+	
+	if (stableFound):
+	    
+	    # in this case, we should compare etpData['neededlibs'] with the db entry to see if there has been a API breakage
+	    dbStoredNeededLibs = self.retrievePackageVar(etpData['category'] + "/" + etpData['name'] + "-" + etpData['version'], "neededlibs", "stable")
+	    if (etpData['neededlibs'] == dbStoredNeededLibs):
+		# it is safe to keep it as stable because of:
+		# - name/version match
+		# - same libraries requirements
+		# setup etpData['branch'] accordingly
+		etpData['branch'] = "stable"
+
+
+	# get selected package revision
+	if (self.isSpecificPackageAvailable(etpData['category'] + "/" + etpData['name'] + "-" + etpData['version'] , etpData['branch'])):
+	    curRevision = self.retrievePackageVar(etpData['category'] + "/" + etpData['name'] + "-" + etpData['version'], "revision", etpData['branch'])
 	else:
-	    self.commitChanges()
-	    return False,curRevision
+	    curRevision = 0
+
+	# do I really have to update the database entry? If the information are the same, drop all
+	oldPkgInfo = etpData['category']+"/"+etpData['name']+"-"+etpData['version']
+	rc = self.comparePackagesData(etpData, oldPkgInfo, dbPkgBranch = etpData['branch'])
+	if (rc) and (not forceBump):
+	    return False, curRevision, etpData # in this case etpData content does not matter
+
+	# OTHERWISE:
+	# remove the current selected package, if exists
+	if (self.isSpecificPackageAvailable(etpData['category'] + "/" + etpData['name'] + "-" + etpData['version'] , etpData['branch'])):
+	    self.removePackage(etpData['category']+"/"+etpData['name']+"-"+etpData['version'], branch = etpData['branch'])
+
+	# bump revision nevertheless
+	curRevision += 1
+
+	# add the new one
+	self.addPackage(etpData,curRevision,etpData['branch'])
 	
 
     # You must provide the full atom to this function
-    def removePackage(self,key):
+    # FIXME: this must be fixed to work with branches
+    def removePackage(self,key, branch = "unstable"):
 	key = entropyTools.removePackageOperators(key)
-	self.cursor.execute('DELETE FROM etpData WHERE atom = "'+key+'"')
+	self.cursor.execute('DELETE FROM etpData WHERE atom = "'+key+'" AND branch = "'+branch+'"')
 	self.commitChanges()
 
     # WARNING: this function must be kept in sync with Entropy database schema
     # returns True if equal
     # returns False if not
-    def comparePackagesData(self,etpData,dbPkgInfo):
+    # FIXME: this must be fixed to work with branches
+    def comparePackagesData(self,etpData,dbPkgInfo, dbPkgBranch = "unstable"):
 	
 	myEtpData = etpData.copy()
 	
@@ -974,7 +1003,7 @@ class etpDatabase:
 
 	# fill content
 	for i in myEtpData:
-	    myEtpData[i] = self.retrievePackageVar(dbPkgInfo,i)
+	    myEtpData[i] = self.retrievePackageVar(dbPkgInfo,i,dbPkgBranch)
 	
 	for i in etpData:
 	    if etpData[i] != myEtpData[i]:
@@ -983,19 +1012,19 @@ class etpDatabase:
 	return True
 
     # You must provide the full atom to this function
-    def retrievePackageInfo(self,pkgkey):
+    def retrievePackageInfo(self,pkgkey, branch = "unstable"):
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
 	result = []
-	self.cursor.execute('SELECT * FROM etpData WHERE atom LIKE "'+pkgkey+'"')
+	self.cursor.execute('SELECT * FROM etpData WHERE atom = "'+pkgkey+'" AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row)
 	return result
 
     # You must provide the full atom to this function
-    def retrievePackageVar(self,pkgkey,pkgvar):
+    def retrievePackageVar(self,pkgkey,pkgvar, branch = "unstable"):
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
 	result = []
-	self.cursor.execute('SELECT "'+pkgvar+'" FROM etpData WHERE atom = "'+pkgkey+'"')
+	self.cursor.execute('SELECT "'+pkgvar+'" FROM etpData WHERE atom = "'+pkgkey+'" AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row[0])
 	if len(result) > 0:
@@ -1017,10 +1046,23 @@ class etpDatabase:
 	    return result
 
     # You must provide the full atom to this function
+    # FIXME: add pkgcat/name split?
+    # FIXME: do SELECT atom instead of SELECT * ?
     def isPackageAvailable(self,pkgkey):
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
 	result = []
 	self.cursor.execute('SELECT * FROM etpData WHERE atom LIKE "'+pkgkey+'"')
+	for row in self.cursor:
+	    result.append(row)
+	if result == []:
+	    return False
+	return True
+
+    # This version is more specific and supports branches
+    def isSpecificPackageAvailable(self,pkgkey, branch):
+	pkgkey = entropyTools.removePackageOperators(pkgkey)
+	result = []
+	self.cursor.execute('SELECT atom FROM etpData WHERE atom LIKE "'+pkgkey+'" AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row)
 	if result == []:
@@ -1037,11 +1079,11 @@ class etpDatabase:
     # this function search packages with the same pkgcat/pkgname
     # you must provide something like: media-sound/amarok
     # optionally, you can add version too.
-    def searchSimilarPackages(self,atom):
+    def searchSimilarPackages(self,atom, branch = "unstable"):
 	category = atom.split("/")[0]
 	name = atom.split("/")[1]
 	result = []
-	self.cursor.execute('SELECT atom FROM etpData WHERE category = "'+category+'" AND name = "'+name+'"')
+	self.cursor.execute('SELECT atom FROM etpData WHERE category = "'+category+'" AND name = "'+name+'" AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row[0])
 	return result

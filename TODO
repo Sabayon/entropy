@@ -6,9 +6,27 @@ TODO list (for developers only):
 - reagent: complete smartapps section
 - mirrorTools: add PASV option (supported/not supported)
 - enzyme, reagent: test kernel dependent packages
+- enzyme, build(): add an option to force the continuation of the emerge queue even if a package fails
 - enzyme, add a module that integrates revdep-rebuild
-- add FXP support to activator ?
+- add FXP support to activator ? (yes but dreamhost does not support it :|)
 - entropy, needed part, add multithreading support
+- entropy, databaseTools, finalize support for branches. There can be two packages with the same cat/name-version in the database but with different branch.
+   CHANGES NEEDED:
+      - when using retrievePackageVar must be specified the Branch
+   AT THE END:
+      - recreate the database, reupload the new packages. resync mirrors.
+
+- If a package is already pulled in, do not add twice:
+dhcppc3 handlers # python enzyme overlay sync sabayon; python enzyme build networkmanager nm-applet knetworkmanager kpowersave --force-rebuild
+>> synced overlay: sabayon
+>>   Sanity check on packages...
+>>   * These are the actions that will be taken, in order:
+>>      * [BUILD] [U ] net-misc/networkmanager-0.6.5-r1 [overlay: 1 ]
+>>      * [BUILD] [U ] net-misc/networkmanager-0.6.5-r1 [overlay: 1 ]
+>>      * [BUILD] [N ] net-misc/nm-applet-0.6.5-r1 [overlay: 1 ]
+>>      * [BUILD] [U ] net-misc/knetworkmanager-0.1-r3 [overlay: 1 ]
+>>      * [BUILD] [RS] sys-power/kpowersave-0.7.2-r3 [overlay: 1 ]
+
 
 !! Remember that kernel dependent packages have: sys-kernel/linux-core-2.6.20-sabayon-r3 (for example)
 

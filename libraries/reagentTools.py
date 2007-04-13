@@ -42,21 +42,20 @@ def generator(package, enzymeRequestBump = False, dbconnection = None):
     if (not validFile):
 	print_warning(package+" does not exist !")
 
-    packagename = package.split("/")[len(package.split("/"))-1]
+    packagename = os.path.basename(package)
 
     print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
     etpData = extractPkgData(package)
     
-    # return back also the new possible package filename, so that we can make decisions on that
-    newFileName = os.path.basename(etpData['download'])
-    
-
     if dbconnection is None:
 	dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
     else:
 	dbconn = dbconnection
 
-    updated, revision = dbconn.handlePackage(etpData,enzymeRequestBump)
+    updated, revision, etpDataUpdated = dbconn.handlePackage(etpData,enzymeRequestBump)
+    
+    # return back also the new possible package filename, so that we can make decisions on that
+    newFileName = os.path.basename(etpDataUpdated['download'])
     
     if dbconnection is None:
 	dbconn.commitChanges()
@@ -108,8 +107,8 @@ def enzyme(options):
 	if (rc):
 	    etpCreated += 1
 	    # create .hash file
-	    hashFilePath = createHashFile(tbz2path)
 	    os.system("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/"+newFileName+" -f")
+	    hashFilePath = createHashFile(etpConst['packagessuploaddir']+"/"+newFileName)
 	    os.system("mv "+hashFilePath+" "+etpConst['packagessuploaddir']+"/ -f")
 	else:
 	    etpNotCreated += 1
@@ -239,8 +238,6 @@ def extractPkgData(package):
 
     # add strict kernel dependency
     # done below
-    
-    # change file name
     
     # modify etpData['download']
     # done below
