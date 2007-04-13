@@ -340,7 +340,7 @@ def packages(options):
 		    if not item.endswith(etpConst['packageshashfileext']): # do not show .md5 to upload
 		        totalUploadSize += int(fileSize)
 		        print_info(bold("\t[") + red("REMOTE UPLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
-		    detailedUploadQueue.append([item,fileSize])
+		        detailedUploadQueue.append([item,fileSize])
 
 	        print_info(red(" * ")+blue("Packages that would be ")+red("removed:\t\t")+bold(str(len(removalQueue))))
 	        print_info(red(" * ")+blue("Packages that would be ")+yellow("downloaded:\t")+bold(str(len(downloadQueue))))
