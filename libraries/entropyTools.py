@@ -623,9 +623,9 @@ def uncompressTarBz2(filepath, extractPath = None):
 
 def bytesIntoHuman(bytes):
     bytes = str(bytes)
-    kbytes = str(int(bytes)/1024)
+    kbytes = str(round(float(bytes)/1024,1))
     if len(kbytes) > 3:
-	kbytes = str(int(kbytes)/1024)
+	kbytes = str(round(float(kbytes)/1024,1))
 	kbytes += "MB"
     else:
 	kbytes += "kB"
