@@ -206,8 +206,8 @@ class handlerFTP:
 		    self.deleteFile(filename)
 		if self.isFileAvailable(filename+".tmp"):
 		    self.deleteFile(filename+".tmp")
-		f.close()
-		continue
+		#f.close()
+		pass
 
     def downloadFile(self,filepath,downloaddir,ascii = False):
 
