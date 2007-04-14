@@ -109,7 +109,6 @@ def enzyme(options):
 	    # create .hash file
 	    os.system("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/"+newFileName+" -f")
 	    hashFilePath = createHashFile(etpConst['packagessuploaddir']+"/"+newFileName)
-	    os.system("mv "+hashFilePath+" "+etpConst['packagessuploaddir']+"/ -f")
 	else:
 	    etpNotCreated += 1
 	    os.system("rm -rf "+tbz2path)
