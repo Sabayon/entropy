@@ -15,10 +15,7 @@ TODO list (for developers only):
 important things:
 
    CHANGES NEEDED:
-      - when using retrievePackageVar must be specified the Branch
       - !!! add proper code to the stabilize/unstabilize function (move files locally and on the ftp)
-   AT THE END:
-      - recreate the database, reupload the new packages. resync mirrors.
 
 
 - If a package is already pulled in, do not add twice:

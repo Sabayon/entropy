@@ -748,5 +748,3 @@ def packageSearch(keyword):
     # filter dupies
     SearchDirs = list(set(SearchDirs))
     return SearchDirs
-
-

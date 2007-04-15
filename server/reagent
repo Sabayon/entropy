@@ -1,8 +1,8 @@
 #!/usr/bin/python
 '''
     # DESCRIPTION:
-    # this application gets a .tbz2 file as input and creates the dependency binary metafile
-    # that another application could handle using portage and binpackages extensions directly
+    # this application gets a .tbz2 file as input and creates a database entry
+    # with all the information needed by the Entropy client
 
     Copyright (C) 2007 Fabio Erculiani
 

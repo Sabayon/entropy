@@ -364,7 +364,10 @@ def database(options):
 	if myatoms[0] == "world":
 	    # open db in read only
 	    dbconn = etpDatabase(readOnly = True)
-	    pkglist = dbconn.listAllPackages()
+	    if (stable):
+	        pkglist = dbconn.listUnstablePackages()
+	    else:
+		pkglist = dbconn.listStablePackages()
 	    # This is the list of all the packages available in Entropy
 	    dbconn.closeDB()
 	else:
@@ -372,12 +375,12 @@ def database(options):
 	    for atom in myatoms:
 		# validate atom
 		dbconn = etpDatabase(readOnly = True)
-		pkg = dbconn.searchPackages(atom)
-		try:
-		    for x in pkg:
-		        pkglist.append(x[0])
-		except:
-		    pass
+		if (stable):
+		    pkg = dbconn.searchPackagesInBranch(atom,"unstable")
+		else:
+		    pkg = dbconn.searchPackagesInBranch(atom,"stable")
+		for x in pkg:
+		    pkglist.append(x)
 	
 	# filter dups
 	pkglist = list(set(pkglist))
@@ -1020,7 +1023,14 @@ class etpDatabase:
 
     def searchPackages(self,keyword):
 	result = []
-	self.cursor.execute('SELECT * FROM etpData WHERE atom LIKE "%'+keyword+'%"')
+	self.cursor.execute('SELECT atom FROM etpData WHERE atom LIKE "%'+keyword+'%"')
+	for row in self.cursor:
+	    result.append(row[0])
+	return result
+
+    def searchPackagesInBranch(self,keyword,branch):
+	result = []
+	self.cursor.execute('SELECT atom FROM etpData WHERE atom LIKE "%'+keyword+'%" AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row[0])
 	return result
@@ -1066,14 +1076,14 @@ class etpDatabase:
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData WHERE branch = "stable"')
 	for row in self.cursor:
-	    result.append(row)
+	    result.append(row[0])
 	return result
 
     def listUnstablePackages(self):
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData WHERE branch = "unstable"')
 	for row in self.cursor:
-	    result.append(row)
+	    result.append(row[0])
 	return result
 
     def searchStablePackages(self,atom):

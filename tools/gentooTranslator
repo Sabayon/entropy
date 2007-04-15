@@ -52,7 +52,12 @@ for arch in archs:
     dircontent = _dircontent
 
     # clean the current content of the gentooPackagesDirs+"/"+arch
-    os.system("rm -rf "+gentooPackagesDirs+"/"+arch+"/*")
+    tbremoved = os.listdir(gentooPackagesDirs+"/"+arch)
+    for file in tbremoved:
+	try:
+	    os.remove(gentooPackagesDirs+"/"+arch+"/"+file)
+	except:
+	    pass
 
     # move packages files
     for file in dircontent:
