@@ -132,6 +132,8 @@ def removePackageOperators(atom):
 	atom = atom[1:]
     if atom.startswith("="):
 	atom = atom[1:]
+    if atom.startswith("~"):
+	atom = atom[1:]
     return atom
 
 # Version compare function taken from portage_versions.py

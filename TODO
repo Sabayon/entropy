@@ -10,11 +10,16 @@ TODO list (for developers only):
 - enzyme, add a module that integrates revdep-rebuild
 - add FXP support to activator ? (yes but dreamhost does not support it :|)
 - entropy, needed part, add multithreading support
+
 - entropy, databaseTools, finalize support for branches. There can be two packages with the same cat/name-version in the database but with different branch.
+important things:
+
    CHANGES NEEDED:
       - when using retrievePackageVar must be specified the Branch
+      - !!! add proper code to the stabilize/unstabilize function (move files locally and on the ftp)
    AT THE END:
       - recreate the database, reupload the new packages. resync mirrors.
+
 
 - If a package is already pulled in, do not add twice:
 dhcppc3 handlers # python enzyme overlay sync sabayon; python enzyme build networkmanager nm-applet knetworkmanager kpowersave --force-rebuild

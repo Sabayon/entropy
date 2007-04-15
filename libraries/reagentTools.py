@@ -482,18 +482,26 @@ def smartgenerator(atom):
     
     dbconn = databaseTools.etpDatabase(readOnly = True)
     
+    # handle branch management:
+    # if unstable package is found, that will be used
+    # otherwise we revert to the stable one
+    if (dbconn.isSpecificPackageAvailable(package, branch == "unstable")):
+	branch = "unstable"
+    else:
+	branch = "stable"
+    
     # check if the application package is available, otherwise, download
-    pkgfilepath = dbconn.retrievePackageVar(atom,"download")
-    pkgneededlibs = dbconn.retrievePackageVar(atom,"neededlibs")
+    pkgfilepath = dbconn.retrievePackageVar(atom,"download", branch)
+    pkgneededlibs = dbconn.retrievePackageVar(atom,"neededlibs", branch)
     pkgneededlibs = pkgneededlibs.split()
-    pkgcontent = dbconn.retrievePackageVar(atom,"content")
+    pkgcontent = dbconn.retrievePackageVar(atom,"content", branch)
     pkgfilename = pkgfilepath.split("/")[len(pkgfilepath.split("/"))-1]
     pkgname = pkgfilename.split(".tbz2")[0]
     
     # extra dependency check
     extraDeps = []
     
-    pkgdependencies = dbconn.retrievePackageVar(atom,"dependencies").split()
+    pkgdependencies = dbconn.retrievePackageVar(atom,"dependencies", branch).split()
     for dep in pkgdependencies:
 	# remove unwanted dependencies
 	if (dep.find("sys-devel") == -1) \
@@ -520,7 +528,7 @@ def smartgenerator(atom):
     extraPackages = []
     # get their files
     for dep in extraDeps:
-	depcontent = dbconn.retrievePackageVar(dep,"download")
+	depcontent = dbconn.retrievePackageVar(dep,"download", branch)
 	extraPackages.append(depcontent.split("/")[len(depcontent.split("/"))-1])
 	
     pkgneededlibs = list(set(pkgneededlibs))
@@ -597,7 +605,7 @@ def smartgenerator(atom):
     # add glibc libraries to the blacklist
     glibcPkg = dbconn.searchPackages("sys-libs/glibc")
     if len(glibcPkg) > 0:
-        glibcContent = dbconn.retrievePackageVar(glibcPkg[0][0],"content")
+        glibcContent = dbconn.retrievePackageVar(glibcPkg[0][0],"content", branch)
 	for file in glibcContent.split():
 	    if ((file.startswith("/lib/")) or (file.startswith("/lib64/"))) and (file.find(".so") != -1):
 		librariesBlacklist.append(file)

@@ -60,18 +60,12 @@ def sync(options, justTidy = False):
     # collect all the binaries in the database
     import databaseTools
     dbconn = databaseTools.etpDatabase(readOnly = True)
-    dbBinaries = []
-    pkglist = dbconn.listAllPackages()
-    for pkg in pkglist:
-	dl = dbconn.retrievePackageVar(pkg,"download")
-	dl = dl.split("/")[len(dl.split("/"))-1]
-	dbBinaries.append(dl)
-    # filter dups?
-    dbBinaries = list(set(dbBinaries))
+    dbBinaries = dbconn.listAllPackagesTbz2()
     dbconn.closeDB()
     
+    # list packages in the packages directory
     repoBinaries = os.listdir(etpConst['packagesbindir'])
-    
+
     removeList = []
     # select packages
     for repoBin in repoBinaries:
@@ -107,13 +101,15 @@ def sync(options, justTidy = False):
 	for file in removeList:
 	    print_info(green(" * ")+red("Removing file: ")+bold(file), back = True)
 	    # remove remotely
-	    rc = ftp.deleteFile(file)
-	    if (rc):
-		print_info(green(" * ")+red("Package file: ")+bold(file)+red(" removed successfully."))
-	    else:
-		print_warning(yellow(" * ")+red("ATTENTION: remote file ")+bold(file)+red(" cannot be removed."))
+	    if (ftp.isFileAvailable(file)):
+	        rc = ftp.deleteFile(file)
+	        if (rc):
+		    print_info(green(" * ")+red("Package file: ")+bold(file)+red(" removed successfully from ")+bold(extractFTPHostFromUri(uri)))
+	        else:
+		    print_warning(yellow(" * ")+red("ATTENTION: remote file ")+bold(file)+red(" cannot be removed."))
 	    # remove locally
 	    if os.path.isfile(etpConst['packagesbindir']+"/"+file):
+		print_info(green(" * ")+red("Package file: ")+bold(file)+red(" removed successfully from ")+bold(etpConst['packagesbindir']))
 		os.remove(etpConst['packagesbindir']+"/"+file)
 	ftp.closeFTPConnection()
 	
@@ -146,13 +142,11 @@ def packages(options):
 	for uri in etpConst['activatoruploaduris']:
 	
 	    currentUri += 1
-	    
-	    # readd try
 	    try:
-		
 	        print_info(green(" * ")+yellow("Working on ")+bold(extractFTPHostFromUri(uri)+red(" mirror.")))
 	        print_info(green(" * ")+yellow("Local Statistics"))
 	        print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagessuploaddir'])+red(" ..."), back = True)
+		
 	        uploadCounter = 0
 	        toBeUploaded = [] # parse etpConst['packagessuploaddir']
 	        for tbz2 in os.listdir(etpConst['packagessuploaddir']):
@@ -184,7 +178,7 @@ def packages(options):
 		    if tbz2.endswith(".tbz2"):
 		        remoteCounter += 1
 	        print_info(green(" * ")+red("Remote packages:\t\t")+bold(str(remoteCounter))+red(" files stored."))
-	    
+
 	        print_info(green(" * ")+yellow("Calculating..."))
 	        uploadQueue = []
 	        downloadQueue = []
@@ -260,6 +254,65 @@ def packages(options):
 		        # so, we need to download it
 			if not remotePackage.endswith(".tmp"): # ignore .tmp files
 			    downloadQueue.append(remotePackage)
+
+
+		# Collect packages that don't exist anymore in the database
+		# so we can filter them out from the download queue
+		# Why downloading something that will be removed??
+		# the same thing for the uploadQueue...
+		import databaseTools
+		dbconn = databaseTools.etpDatabase(readOnly = True)
+		dbFiles = dbconn.listAllPackagesTbz2()
+    		dbconn.closeDB()
+		
+		dlExcludeList = []
+		for dlFile in downloadQueue:
+		    if dlFile.endswith(".tbz2"):
+		        dlFound = False
+		        for dbFile in dbFiles:
+			    if dbFile == dlFile:
+			        dlFound = True
+			        break
+		        if (not dlFound):
+			    dlExcludeList.append(dlFile)
+
+		upExcludeList = []
+		for upFile in uploadQueue:
+		    if upFile.endswith(".tbz2"):
+		        upFound = False
+		        for dbFile in dbFiles:
+			    if dbFile == upFile:
+			        upFound = True
+			        break
+		        if (not upFound):
+			    upExcludeList.append(upFile)
+		
+		# now clean downloadQueue
+		if (dlExcludeList != []):
+		    _downloadQueue = []
+		    for dlFile in downloadQueue:
+			exclusionFound = False
+			for exclFile in dlExcludeList:
+			    if dlFile.startswith(exclFile):
+				exclusionFound = True
+				break
+			if (not exclusionFound):
+			    _downloadQueue.append(dlFile)
+		    downloadQueue = _downloadQueue
+
+		# now clean uploadQueue
+		if (upExcludeList != []):
+		    _uploadQueue = []
+		    for upFile in uploadQueue:
+			exclusionFound = False
+			for exclFile in upExcludeList:
+			    if upFile.startswith(exclFile):
+				exclusionFound = True
+				break
+			if (not exclusionFound):
+			    _uploadQueue.append(upFile)
+		    uploadQueue = _uploadQueue
+
 
 	        # filter duplicates
 	        removalQueue = list(set(removalQueue))
@@ -440,7 +493,7 @@ def packages(options):
 
 		if (successfulUploadCounter == uploadCounter) and (successfulDownloadCounter == downloadCounter):
 		    totalSuccessfulUri += 1
-	
+
 	    # trap exceptions, failed to upload/download someting?
 	    except:
 		# print warning cannot sync uri
@@ -460,7 +513,7 @@ def packages(options):
 			# show error and return, do not move files from the upload dir
 			print_error(yellow(" * ")+red("ERROR: no mirrors have been properly syncronized. Check network status and retry. Cannot continue."))
 			return False
-		
+
 
 	# if at least one server has been synced successfully, move files
 	if (totalSuccessfulUri > 0) and (not activatorRequestPretend):

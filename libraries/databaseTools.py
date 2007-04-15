@@ -196,28 +196,34 @@ def database(options):
 	    
 	    myEtpData = entropyTools.etpData.copy()
 	    
-	    # reset
-	    for i in myEtpData:
-	        myEtpData[i] = ""
+	    # dump both branches if exist
+	    branches = []
+	    if (dbconn.isSpecificPackageAvailable(package, branch = "stable")):
+		branches.append("stable")
+	    if (dbconn.isSpecificPackageAvailable(package, branch = "unstable")):
+		branches.append("unstable")
 	    
-	    for i in myEtpData:
-		myEtpData[i] = dbconn.retrievePackageVar(package,i)
-
-	    # sort and print
-	    etprevision = str(dbconn.retrievePackageVar(package,"revision"))
-	    filepath = etpConst['packagestmpdir'] + "/" + dbconn.retrievePackageVar(package,"name") + "-" + dbconn.retrievePackageVar(package,"version")+"-"+"etp"+etprevision+".etp"
-	    f = open(filepath,"w")
-	    sortList = []
-	    for i in myEtpData:
-		sortList.append(i)
-	    sortList = entropyTools.alphaSorter(sortList)
-	    for i in sortList:
-		if (myEtpData[i]):
-		    f.write(i+": "+myEtpData[i]+"\n")
-	    f.flush()
-	    f.close()
-	    
-	    entropyTools.print_info(entropyTools.green("    * ")+entropyTools.red("Dump generated in ")+entropyTools.bold(filepath)+entropyTools.red(" ."))
+	    for branch in branches:
+	        # reset
+	        for i in myEtpData:
+	            myEtpData[i] = ""
+	        for i in myEtpData:
+		    myEtpData[i] = dbconn.retrievePackageVar(package,i, branch)
+		
+		# sort and print
+	        etprevision = str(dbconn.retrievePackageVar(package,"revision", branch))
+	        filepath = etpConst['packagestmpdir'] + "/" + dbconn.retrievePackageVar(package,"name",branch) + "-" + dbconn.retrievePackageVar(package,"version",branch)+"-"+"etp"+etprevision+"-"+branch+".etp"
+	        f = open(filepath,"w")
+	        sortList = []
+	        for i in myEtpData:
+		    sortList.append(i)
+	        sortList = entropyTools.alphaSorter(sortList)
+	        for i in sortList:
+		    if (myEtpData[i]):
+		        f.write(i+": "+myEtpData[i]+"\n")
+	        f.flush()
+	        f.close()
+	        entropyTools.print_info(entropyTools.green("    * ")+entropyTools.red("Dump generated in ")+entropyTools.bold(filepath)+entropyTools.red(" ."))
 
 	dbconn.closeDB()
 
@@ -280,9 +286,16 @@ def database(options):
 	# get the file list
 	pkglist = []
 	for pkg in mypackages:
-	    pkgfile = dbconn.retrievePackageVar(pkg,"download")
-	    pkgfile = pkgfile.split("/")[len(pkgfile.split("/"))-1]
-	    pkglist.append(pkgfile)
+	    # dump both branches if exist
+	    branches = []
+	    if (dbconn.isSpecificPackageAvailable(pkg, branch = "stable")):
+		branches.append("stable")
+	    if (dbconn.isSpecificPackageAvailable(pkg, branch = "unstable")):
+		branches.append("unstable")
+	    for branch in branches:
+		pkgfile = dbconn.retrievePackageVar(pkg,"download",branch)
+	        pkgfile = pkgfile.split("/")[len(pkgfile.split("/"))-1]
+	        pkglist.append(pkgfile)
 	
 	# validate files
 	_pkglist = []
@@ -391,6 +404,11 @@ def database(options):
 	# now mark them as stable
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Marking selected packages ..."))
 
+	# FIXME: add the code to:
+	# - move the file name locally to stable -> unstable (or vice versa)
+	# - move the file name remotely to stable -> unstalbe (or vice versa)
+	# - update the md5 file?
+
 	# open db
 	dbconn = etpDatabase(readOnly = False, noUpload = True)
 	for pkg in pkglist:
@@ -399,83 +417,6 @@ def database(options):
 	dbconn.commitChanges()
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("All the selected packages have been marked as requested. Have fun."))
 	dbconn.closeDB()
-
-    # FIXME: not working function... remove?
-    elif (options[0] == "orphans"):
-	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Collecting files in database..."))
-	# FIXME: complete this!
-	dbconn = etpDatabase(readOnly = True)
-	pkglist = dbconn.listAllPackages()
-	
-	filesList = []
-	for pkg in pkglist:
-	    entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Collecting files in package: ")+entropyTools.bold(pkg)+entropyTools.red(" ..."), back = True)
-	    files = dbconn.retrievePackageVar(pkg,"content").split()
-	    for file in files:
-	        filesList.append(file)
-	
-	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Database data collected."))
-	dbconn.closeDB()
-	
-	# remove dups
-	filesList = list(set(filesList))
-	
-	# now list all the files in the computer
-	import commands
-	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Collecting files on the system ..."), back = True)
-	rootFilesList = commands.getoutput("find /").split("\n")
-	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("System data collected."))
-	
-	# remove dups
-	rootFilesList = list(set(rootFilesList))
-	
-	allowedDirs = [
-		"/bin",
-		"/etc",
-		"/lib",
-		"/lib32",
-		"/lib64",
-		"/emul",
-		"/opt",
-		"/sbin",
-		"/usr",
-	]
-	
-	# remove unwanted files
-	_filesList = []
-	for file in filesList:
-	    for allowedDir in allowedDirs:
-		if file.startswith(allowedDir):
-		    _filesList.append(file)
-	filesList = _filesList
-	del _filesList
-
-	_rootFilesList = []
-	for file in rootFilesList:
-	    for allowedDir in allowedDirs:
-		if file.startswith(allowedDir):
-		    _rootFilesList.append(file)
-	rootFilesList = _rootFilesList
-	del _rootFilesList
-	
-	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Calculating ..."), back = True)
-	orphanList = []
-	# FIXME: now parse them!!!
-	for rootFile in rootFilesList:
-	    for file in filesList:
-		if (file == rootFile):
-		    orphanList.append(file)
-		    break
-	
-	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Orphaned files:")+entropyTools.bold(len(orphanList)))
-	f = open(etpConst['packagestmpdir']+"/orphaned-files.txt","w")
-	for line in orphanList:
-	    f.write(line+"\n")
-	f.flush()
-	f.close()
-	entropyTools.print_info(entropyTools.green(" --> ")+entropyTools.red("Dump saved in: ")+entropyTools.bold(etpConst['packagestmpdir']+"/orphaned-files.txt"))
-
-
 
     elif (options[0] == "sanity-check"):
 	entropyTools.print_info(entropyTools.green(" * ")+entropyTools.red("Running sanity check on the database ... "), back = True)
@@ -594,16 +535,24 @@ def database(options):
 	toBeDownloaded = []
 	availList = []
 	for i in pkgs2check:
-	    pkgfile = dbconn.retrievePackageVar(i,"download")
-	    pkgfile = pkgfile.split("/")[len(pkgfile.split("/"))-1]
-	    if (os.path.isfile(etpConst['packagesbindir']+"/"+pkgfile)):
-		if (not worldSelected): entropyTools.print_info(entropyTools.green("   - [PKG AVAILABLE] ")+entropyTools.red(i)+" -> "+entropyTools.bold(pkgfile))
-		availList.append(pkgfile)
-	    elif (os.path.isfile(etpConst['packagessuploaddir']+"/"+pkgfile)):
-		if (not worldSelected): entropyTools.print_info(entropyTools.green("   - [RUN ACTIVATOR] ")+entropyTools.darkred(i)+" -> "+entropyTools.bold(pkgfile))
-	    else:
-		if (not worldSelected): entropyTools.print_info(entropyTools.green("   - [MUST DOWNLOAD] ")+entropyTools.yellow(i)+" -> "+entropyTools.bold(pkgfile))
-		toBeDownloaded.append(pkgfile)
+	
+	    branches = []
+	    if (dbconn.isSpecificPackageAvailable(i, branch = "stable")):
+		branches.append("stable")
+	    if (dbconn.isSpecificPackageAvailable(i, branch = "unstable")):
+		branches.append("unstable")
+	
+	    for branch in branches:
+		pkgfile = dbconn.retrievePackageVar(i,"download",branch)
+	        pkgfile = pkgfile.split("/")[len(pkgfile.split("/"))-1]
+	        if (os.path.isfile(etpConst['packagesbindir']+"/"+pkgfile)):
+		    if (not worldSelected): entropyTools.print_info(entropyTools.green("   - [PKG AVAILABLE] ")+entropyTools.red(i)+" -> "+entropyTools.bold(pkgfile))
+		    availList.append(pkgfile)
+	        elif (os.path.isfile(etpConst['packagessuploaddir']+"/"+pkgfile)):
+		    if (not worldSelected): entropyTools.print_info(entropyTools.green("   - [RUN ACTIVATOR] ")+entropyTools.darkred(i)+" -> "+entropyTools.bold(pkgfile))
+	        else:
+		    if (not worldSelected): entropyTools.print_info(entropyTools.green("   - [MUST DOWNLOAD] ")+entropyTools.yellow(i)+" -> "+entropyTools.bold(pkgfile))
+		    toBeDownloaded.append(pkgfile)
 	
 	rc = entropyTools.askquestion("     Would you like to continue ?")
 	if rc == "No":
@@ -1030,7 +979,7 @@ class etpDatabase:
 	if len(result) > 0:
 	    return result[0]
 	else:
-	    return result
+	    return ""
 
     # this function returns the variable selected (using pkgvar) in relation to the
     # package associated to a certain binary package file (.tbz2)
@@ -1043,7 +992,7 @@ class etpDatabase:
 	if len(result) > 0:
 	    return result[0]
 	else:
-	    return result
+	    return ""
 
     # You must provide the full atom to this function
     # FIXME: add pkgcat/name split?
@@ -1064,7 +1013,7 @@ class etpDatabase:
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData WHERE atom LIKE "'+pkgkey+'" AND branch = "'+branch+'"')
 	for row in self.cursor:
-	    result.append(row)
+	    result.append(row[0])
 	if result == []:
 	    return False
 	return True
@@ -1073,7 +1022,7 @@ class etpDatabase:
 	result = []
 	self.cursor.execute('SELECT * FROM etpData WHERE atom LIKE "%'+keyword+'%"')
 	for row in self.cursor:
-	    result.append(row)
+	    result.append(row[0])
 	return result
 
     # this function search packages with the same pkgcat/pkgname
@@ -1088,25 +1037,43 @@ class etpDatabase:
 	    result.append(row[0])
 	return result
 
+    # NOTE: unstable and stable packages are pulled in
+    # so, there might be duplicates! that's normal
     def listAllPackages(self):
 	result = []
-	self.cursor.execute('SELECT * FROM etpData')
+	self.cursor.execute('SELECT atom FROM etpData')
 	for row in self.cursor:
 	    result.append(row[0])
+	return result
+
+    def listAllPackagesTbz2(self):
+        result = []
+        pkglist = self.listAllPackages()
+        for pkg in pkglist:
+	    dlUnstable = self.retrievePackageVar(pkg, "download")
+	    dlStable = self.retrievePackageVar(pkg, "download", branch = "stable")
+	    if (dlUnstable != ""):
+		
+		result.append(os.path.basename(dlUnstable))
+	    if (dlStable != ""):
+		result.append(os.path.basename(dlStable))
+        # filter dups?
+	if (result):
+            result = list(set(result))
 	return result
 
     def listStablePackages(self):
 	result = []
-	self.cursor.execute('SELECT * FROM etpData WHERE branch = "stable"')
+	self.cursor.execute('SELECT atom FROM etpData WHERE branch = "stable"')
 	for row in self.cursor:
-	    result.append(row[0])
+	    result.append(row)
 	return result
 
     def listUnstablePackages(self):
 	result = []
-	self.cursor.execute('SELECT * FROM etpData WHERE branch = "unstable"')
+	self.cursor.execute('SELECT atom FROM etpData WHERE branch = "unstable"')
 	for row in self.cursor:
-	    result.append(row[0])
+	    result.append(row)
 	return result
 
     def searchStablePackages(self,atom):
@@ -1134,27 +1101,28 @@ class etpDatabase:
 
     def stabilizePackage(self,atom,stable = True):
 	if (stable):
-	    # ! Get rid of old entries with the same slot, pkgcat/name that
-	    # were already marked "stable"
-	    # get its pkgname
-	    pkgname = self.retrievePackageVar(atom,"name")
-	    # get its pkgcat
-	    category = self.retrievePackageVar(atom,"category")
-	    # search packages with similar pkgcat/name marked as stable
-	    slot = self.retrievePackageVar(atom,"slot")
-	    # we need to get rid of them
-	    results = self.searchStablePackages(category+"/"+pkgname)
-	    removelist = []
-	    for result in results:
-		# have a look if the slot matches
-		#print result
-		myslot = self.retrievePackageVar(result,"slot")
-		if (myslot == slot):
-		    removelist.append(result)
-	    for pkg in removelist:
-		self.removePackage(pkg)
-	    
-	    self.cursor.execute('UPDATE etpData SET branch = "stable" WHERE atom = "'+atom+'"')
+
+	    if (self.isSpecificPackageAvailable(atom, "unstable")):
+	        # ! Get rid of old entries with the same slot, pkgcat/name that
+	        # were already marked "stable"
+	        # get its pkgname
+		pkgname = self.retrievePackageVar(atom,"name", branch = "unstable")
+	        # get its pkgcat
+	        category = self.retrievePackageVar(atom,"category", branch = "unstable")
+	        # search packages with similar pkgcat/name marked as stable
+	        slot = self.retrievePackageVar(atom,"slot", branch = "unstable")
+	        # we need to get rid of them
+	        results = self.searchStablePackages(category+"/"+pkgname)
+	        removelist = []
+	        for result in results:
+		    # have a look if the slot matches
+		    #print result
+		    myslot = self.retrievePackageVar(result,"slot", branch = "stable")
+		    if (myslot == slot):
+		        removelist.append(result)
+	        for pkg in removelist:
+		    self.removePackage(pkg)
+	        self.cursor.execute('UPDATE etpData SET branch = "stable" WHERE atom = "'+atom+'"')
 	else:
 	    self.cursor.execute('UPDATE etpData SET branch = "unstable" WHERE atom = "'+atom+'"')
 
