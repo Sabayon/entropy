@@ -5,7 +5,7 @@
 
     Copyright (C) 2007 Fabio Erculiani
 
-    This program is free software; you can entropyTools.redistribute it and/or modify
+    This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
@@ -24,6 +24,7 @@
 # EXIT STATUSES: 700-799
 
 from entropyConstants import *
+from outputTools import *
 import entropyTools
 import string
 import os
@@ -173,9 +174,9 @@ class handlerFTP:
 	    # create percentage
 	    myUploadPercentage = str(round((round(self.mykByteCount,1)/self.myFileSize)*100,1))+"%"
 	    # create text
-	    currentText = entropyTools.yellow("    <-> Upload status: ")+entropyTools.green(str(round(self.mykByteCount,1)))+"/"+entropyTools.red(str(self.myFileSize))+" kB "+entropyTools.yellow("[")+str(myUploadPercentage)+entropyTools.yellow("]")
+	    currentText = yellow("    <-> Upload status: ")+green(str(round(self.mykByteCount,1)))+"/"+red(str(self.myFileSize))+" kB "+yellow("[")+str(myUploadPercentage)+yellow("]")
 	    # print !
-	    entropyTools.print_info(currentText,back = True)
+	    print_info(currentText,back = True)
 	
 	for i in range(10): # ten tries
 	    f = open(file)
@@ -200,7 +201,7 @@ class handlerFTP:
 		else:
 		    return False
 	    except: # connection reset by peer
-		entropyTools.print_info(entropyTools.red("Upload issue, retrying..."))
+		print_info(red("Upload issue, retrying..."))
 		self.reconnectHost() # reconnect
 		if self.isFileAvailable(filename):
 		    self.deleteFile(filename)
@@ -217,9 +218,9 @@ class handlerFTP:
 	    # update progress
 	    self.mykByteCount += float(len(buf))/1024
 	    # create text
-	    currentText = entropyTools.yellow("    <-> Download status: ")+entropyTools.green(str(round(self.mykByteCount,1)))+"/"+entropyTools.red(str(self.myFileSize))+" kB"
+	    currentText = yellow("    <-> Download status: ")+green(str(round(self.mykByteCount,1)))+"/"+red(str(self.myFileSize))+" kB"
 	    # print !
-	    entropyTools.print_info(currentText,back = True)
+	    print_info(currentText,back = True)
 
 	file = filepath.split("/")[len(filepath.split("/"))-1]
 	# look if the file exist

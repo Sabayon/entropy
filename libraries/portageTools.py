@@ -49,7 +49,7 @@ from entropyConstants import *
 initializePortageTree()
 
 # colours support
-from output import bold, colorize, green, darkred, red, yellow, blue, darkblue, nocolor
+from outputTools import *
 # misc modules
 import string
 import re

@@ -21,7 +21,7 @@
 '''
 
 # FIXME: this depends on portage, should be moved from here ASAP
-from output import *
+from outputTools import *
 from entropyConstants import *
 
 import re
@@ -61,9 +61,6 @@ def spinner(rotations, interval, message=''):
 	writechar(' ')
 	for i in xrange(len(message)): print ' ',
 	writechar('\r')
-
-def writechar(char):
-	sys.stdout.write(char); sys.stdout.flush()
 
 def removeSpaceAtTheEnd(string):
     if string.endswith(" "):
@@ -1012,23 +1009,3 @@ def askquestion(prompt):
     except (EOFError, KeyboardInterrupt):
 	print "Interrupted."
 	sys.exit(100)
-
-def print_error(msg, back = False):
-    writechar("\r                                                                                                           \r")
-    if (back):
-	writechar("\r"+red(">>")+" "+msg)
-	return
-    print green(">>")+" "+msg
-
-def print_info(msg, back = False):
-    writechar("\r                                                                                                                 \r")
-    if (back):
-	writechar("\r"+green(">>")+" "+msg)
-	return
-    print green(">>")+" "+msg
-
-def print_warning(msg):
-    print yellow(">>")+" "+msg
-
-def print_generic(msg): # here we'll wrap any nice formatting
-    print msg
