@@ -39,6 +39,8 @@ for arch in archs:
 # sync directories
 for arch in archs:
     
+    print "Architecture: "+arch
+    
     # get the dir content
     dircontent = os.listdir(etpPackagesDir+"/"+arch)
     
@@ -50,18 +52,18 @@ for arch in archs:
     dircontent = _dircontent
 
     # clean the current content of the gentooPackagesDirs+"/"+arch
-    os.system("rm -rf "+gentooPackagesDirs+"/"+arch+"/*.tbz2")
+    os.system("rm -rf "+gentooPackagesDirs+"/"+arch+"/*")
 
     # move packages files
     for file in dircontent:
 	if (not file.endswith("-unstable.tbz2")) and (not file.endswith("-stable.tbz2")):
-	    print "<> Copying file"+file
-	    os.system("cp "+etpPackagesDir+"/"+arch+"/"+file+" "+gentooPackagesDirs+"/"+arch+"/")
+	    print "<> Copying file "+file
+	    os.system("ln -sf "+etpPackagesDir+"/"+arch+"/"+file+" "+gentooPackagesDirs+"/"+arch+"/")
 	elif file.endswith("-unstable.tbz2"):
 	    # look if there's the same package tagged as stable
 	    newfilename = file.split("-unstable.tbz2")[0]+".tbz2"
-	    print "<> Copying file"+file
-	    os.system("cp "+etpPackagesDir+"/"+arch+"/"+file+" "+gentooPackagesDirs+"/"+arch+"/"+newfilename)
+	    print "<> Copying file "+file
+	    os.system("ln -sf "+etpPackagesDir+"/"+arch+"/"+file+" "+gentooPackagesDirs+"/"+arch+"/"+newfilename)
 	elif file.endswith("-stable.tbz2"):
 	    unstablefilename = file.split("-stable.tbz2")[0]+"-unstable.tbz2"
 	    if os.path.isfile(etpPackagesDir+"/"+arch+"/"+unstablefilename):
@@ -69,6 +71,6 @@ for arch in archs:
 		continue
 	    # look if there's the same package tagged as stable
 	    newfilename = file.split("-stable.tbz2")[0]+".tbz2"
-	    print "<> Copying file"+file
-	    os.system("cp "+etpPackagesDir+"/"+arch+"/"+file+" "+gentooPackagesDirs+"/"+arch+"/"+newfilename)
+	    print "<> Copying file "+file
+	    os.system("ln -sf "+etpPackagesDir+"/"+arch+"/"+file+" "+gentooPackagesDirs+"/"+arch+"/"+newfilename)
 	    
