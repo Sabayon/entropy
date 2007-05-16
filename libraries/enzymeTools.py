@@ -334,6 +334,11 @@ def build(atoms):
 	    _PackagesDependencies = _PackagesDependencies[skipN:]
 	PackagesDependencies = _PackagesDependencies
 
+	# Filter duplicates without messing the order
+	#print PackagesDependencies
+	PackagesDependencies = filterDuplicatedEntries(PackagesDependencies)
+	#print PackagesDependencies
+	
 	ebuildOverlays = []
 	overlaysCounter = 1
 	print_info(yellow("  *")+" These are the actions that will be taken, in order:")

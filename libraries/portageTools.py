@@ -507,16 +507,16 @@ def isTbz2PackageAvailable(atom, verbose = False):
     storePath = etpConst['packagesstoredir']+"/"+atomName+".tbz2"
     packagesPath = etpConst['packagesbindir']+"/"+atomName+".tbz2"
     
-    if (verbose): print "testing in directory: "+packagesPath
+    if (verbose): print_info("testing in directory: "+packagesPath)
     if os.path.isfile(packagesPath):
         tbz2Available = packagesPath
-    if (verbose): print "testing in directory: "+storePath
+    if (verbose): print_info("testing in directory: "+storePath)
     if os.path.isfile(storePath):
         tbz2Available = storePath
-    if (verbose): print "testing in directory: "+uploadPath
+    if (verbose): print_info("testing in directory: "+uploadPath)
     if os.path.isfile(uploadPath):
         tbz2Available = uploadPath
-    if (verbose): print "found here: "+str(tbz2Available)
+    if (verbose): print_info("found here: "+str(tbz2Available))
 
     return tbz2Available
 
