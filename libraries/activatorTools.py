@@ -33,6 +33,10 @@ import commands
 import string
 import time
 
+# Logging initialization
+import logTools
+activatorLog = logTools.LogFile(level=etpConst['activatorloglevel'],filename = etpConst['activatorlogfile'])
+
 def sync(options, justTidy = False):
 
     print_info(green(" * ")+red("Starting to sync data across mirrors (packages/database) ..."))

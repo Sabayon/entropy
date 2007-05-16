@@ -34,9 +34,10 @@ import os
 import sys
 import string
 
-# load the log file
+# Logging initialization
 import logTools
-log = logTools.LogFile(level=2,filename = etpConst['databaselogfile'])
+dbLog = logTools.LogFile(level=etpConst['databaseloglevel'],filename = etpConst['databaselogfile'])
+
 
 # TIP OF THE DAY:
 # never nest closeDB() and re-init inside a loop !!!!!!!!!!!! NEVER !
@@ -50,7 +51,7 @@ def database(options):
 	
 	# do some check, print some warnings
 	print_info(green(" * ")+red("Initializing Entropy database..."), back = True)
-	log.log(0,"[DB OP] Called database --initialize")
+	dbLog.log(0,"[DB OP] Called database --initialize")
         # database file: etpConst['etpdatabasefilepath']
         if os.path.isfile(etpConst['etpdatabasefilepath']):
 	    print_info(red(" * ")+bold("WARNING")+red(": database file already exists. Overwriting."))
@@ -58,15 +59,15 @@ def database(options):
 	    if rc == "No":
 	        sys.exit(0)
 	    os.system("rm -f "+etpConst['etpdatabasefilepath'])
-	    log.log(0,"[DB OP] Removed old database file")
+	    dbLog.log(0,"[DB OP] Removed old database file")
 
 	# initialize the database
-	log.log(0,"[DB OP] Connecting to the database")
+	dbLog.log(0,"[DB OP] Connecting to the database")
         dbconn = etpDatabase(readOnly = False, noUpload = True)
 	dbconn.initializeDatabase()
 	
 	# sync packages directory
-	log.log(0,"Syncing binary packages")
+	dbLog.log(0,"Syncing binary packages")
 	import activatorTools
 	activatorTools.packages(["sync","--ask"])
 	
@@ -74,24 +75,24 @@ def database(options):
 	pkglist = os.listdir(etpConst['packagesbindir'])
 
 	print_info(green(" * ")+red("Reinitializing Entropy database using Packages in the repository ..."))
-	log.log(0,"[DB OP] Preparing to start reinitialization")
+	dbLog.log(0,"[DB OP] Preparing to start reinitialization")
 	currCounter = 0
 	atomsnumber = len(pkglist)
 	import reagentTools
 	for pkg in pkglist:
-	    log.log(0,"[DB OP] Analyzing "+str(pkg))
+	    dbLog.log(0,"[DB OP] Analyzing "+str(pkg))
 	    print_info(green(" * ")+red("Analyzing: ")+bold(pkg), back = True)
 	    currCounter += 1
 	    print_info(green("  (")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."))
 	    etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+pkg)
-	    log.log(3,"[DB OP] etpData status (should be properly filled now):")
+	    dbLog.log(3,"[DB OP] etpData status (should be properly filled now):")
 	    for i in etpData:
-		log.log(3,i+": "+etpData[i])
+		dbLog.log(3,i+": "+etpData[i])
 		
 	    # remove shait
 	    os.system("rm -rf "+etpConst['packagestmpdir']+"/"+pkg)
 	    # fill the db entry
-	    log.log(0,"[DB OP] Launching etpDatabase.addPackage()")
+	    dbLog.log(0,"[DB OP] Launching etpDatabase.addPackage()")
 	    dbconn.addPackage(etpData)
 	    dbconn.commitChanges()
 	
@@ -115,7 +116,22 @@ def database(options):
 	foundCounter = 0
 	for mykeyword in mykeywords:
 	    results = dbconn.searchPackages(mykeyword)
+	    
+	    # regenerate info list
+	    _results = []
 	    for result in results:
+		rslt = []
+		rslt = dbconn.retrievePackageInfo(result,"stable")
+		if rslt != []:
+		    _results.append(rslt[0])
+		rslt = []
+		rslt = dbconn.retrievePackageInfo(result,"unstable")
+		if rslt != []:
+		    _results.append(rslt[0])
+	    results = _results
+	    
+	    for result in results:
+		
 		foundCounter += 1
 		print 
 		print_info(green(" * ")+bold(result[0]))   # package atom
@@ -408,16 +424,36 @@ def database(options):
 	# now mark them as stable
 	print_info(green(" * ")+red("Marking selected packages ..."))
 
-	# FIXME: add the code to:
-	# - move the file name locally to stable -> unstable (or vice versa)
-	# - move the file name remotely to stable -> unstalbe (or vice versa)
-	# - update the md5 file?
-
 	# open db
 	dbconn = etpDatabase(readOnly = False, noUpload = True)
+	import re
 	for pkg in pkglist:
 	    print_info(green(" * ")+red("Marking package: ")+bold(pkg)+red(" ..."), back = True)
-	    dbconn.stabilizePackage(pkg,stable)
+	    rc, action = dbconn.stabilizePackage(pkg,stable)
+	    # @rc: True if updated, False if not
+	    # @action: action taken: "stable" for stabilized package, "unstable" for unstabilized package
+	    if (rc):
+		
+		# change download database parameter name
+		download = dbconn.retrievePackageVar(pkg, "download", branch = action)
+		# change action with the opposite:
+		if action == "stable":
+		    # move to unstable
+		    oppositeAction = "unstable"
+		else:
+		    oppositeAction = "stable"
+		
+		download = re.subn("-"+oppositeAction,"-"+action, download)
+		if download[1]: # if the name has been converted
+		    # change download parameter in the database entry
+		    dbconn.writePackageParameter(pkg, "download", download[0], action)
+		
+		# FIXME: now change file path, locally and remotely. First, locally
+		# FIXME: add the code to:
+		# - move the file name locally to stable -> unstable (or vice versa)
+		# - move the file name remotely to stable -> unstalbe (or vice versa)
+		# - update the md5 file?
+
 	dbconn.commitChanges()
 	print_info(green(" * ")+red("All the selected packages have been marked as requested. Have fun."))
 	dbconn.closeDB()
@@ -980,7 +1016,7 @@ class etpDatabase:
 	self.cursor.execute('SELECT "'+pkgvar+'" FROM etpData WHERE atom = "'+pkgkey+'" AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row[0])
-	if len(result) > 0:
+	if (result):
 	    return result[0]
 	else:
 	    return ""
@@ -1111,31 +1147,39 @@ class etpDatabase:
 	self.cursor.execute('SELECT * FROM etpData')
 
     def stabilizePackage(self,atom,stable = True):
+	
+	action = "unstable"
+	removeaction = "stable"
 	if (stable):
+	    action = "stable"
+	    removeaction = "unstable"
+	
+	if (self.isSpecificPackageAvailable(atom, removeaction)):
+	    # ! Get rid of old entries with the same slot, pkgcat/name that
+	    # were already marked "stable"
+	    # get its pkgname
+	    pkgname = self.retrievePackageVar(atom,"name", branch = removeaction)
+	    # get its pkgcat
+	    category = self.retrievePackageVar(atom,"category", branch = removeaction)
+	    # search packages with similar pkgcat/name marked as stable
+	    slot = self.retrievePackageVar(atom,"slot", branch = removeaction)
+	    # we need to get rid of them
+	    results = self.searchStablePackages(category+"/"+pkgname)
+	    removelist = []
+	    for result in results:
+		# have a look if the slot matches
+		#print result
+		myslot = self.retrievePackageVar(result,"slot", branch = action)
+		if (myslot == slot):
+		    removelist.append(result)
+	    for pkg in removelist:
+		self.removePackage(pkg, branch = action)
+	    self.cursor.execute('UPDATE etpData SET branch = "'+action+'" WHERE atom = "'+atom+'" AND branch = "'+removeaction+'"')
+	    self.commitChanges()
+	    return True,action
+	return False,action
 
-	    if (self.isSpecificPackageAvailable(atom, "unstable")):
-	        # ! Get rid of old entries with the same slot, pkgcat/name that
-	        # were already marked "stable"
-	        # get its pkgname
-		pkgname = self.retrievePackageVar(atom,"name", branch = "unstable")
-	        # get its pkgcat
-	        category = self.retrievePackageVar(atom,"category", branch = "unstable")
-	        # search packages with similar pkgcat/name marked as stable
-	        slot = self.retrievePackageVar(atom,"slot", branch = "unstable")
-	        # we need to get rid of them
-	        results = self.searchStablePackages(category+"/"+pkgname)
-	        removelist = []
-	        for result in results:
-		    # have a look if the slot matches
-		    #print result
-		    myslot = self.retrievePackageVar(result,"slot", branch = "stable")
-		    if (myslot == slot):
-		        removelist.append(result)
-	        for pkg in removelist:
-		    self.removePackage(pkg)
-	        self.cursor.execute('UPDATE etpData SET branch = "stable" WHERE atom = "'+atom+'"')
-	else:
-	    self.cursor.execute('UPDATE etpData SET branch = "unstable" WHERE atom = "'+atom+'"')
+    def writePackageParameter(self,atom,field,what,branch):
+	self.cursor.execute('UPDATE etpData SET '+field+' = "'+what+'" WHERE atom = "'+atom+'" AND branch = "'+branch+'"')
+	self.commitChanges()
 
-    def writePackageParameter(self,atom,field,what):
-	self.cursor.execute('UPDATE etpData SET '+field+' = "'+what+'" WHERE atom = "'+atom+'"')

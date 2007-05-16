@@ -33,6 +33,10 @@ import os
 import string
 from portageTools import unpackTbz2, synthetizeRoughDependencies, getPackageRuntimeDependencies, dep_getkey, getThirdPartyMirrors
 
+# Logging initialization
+import logTools
+reagentLog = logTools.LogFile(level=etpConst['reagentloglevel'],filename = etpConst['reagentlogfile'])
+
 def generator(package, enzymeRequestBump = False, dbconnection = None):
 
     # check if the package provided is valid

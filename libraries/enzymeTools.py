@@ -30,6 +30,10 @@ import os
 import commands
 import string
 
+# Logging initialization
+import logTools
+enzymeLog = logTools.LogFile(level=etpConst['enzymeloglevel'],filename = etpConst['enzymelogfile'])
+
 # EXIT STATUSES: 200-299
 
 def getSyncTime():

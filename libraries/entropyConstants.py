@@ -146,6 +146,8 @@ etpConst = {
     'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
     'enzymeconf': ETP_CONF_DIR+"/enzyme.conf", # enzyme.conf file
     'activatorconf': ETP_CONF_DIR+"/activator.conf", # activator.conf file
+    'reagentconf': ETP_CONF_DIR+"/reagent.conf", # reagent.conf file
+    'databaseconf': ETP_CONF_DIR+"/database.conf", # database.conf file
     'activatoruploaduris': [],# list of URIs that activator can use to upload files (parsed from activator.conf)
     'activatordownloaduris': [],# list of URIs that activator can use to fetch data
     'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
@@ -159,8 +161,17 @@ etpConst = {
     'etpdatabasefile': ETP_DBFILE, # Entropy sqlite database file ETP_DIR+ETP_DBDIR+"/packages.db"
     'etpdatabasefilegzip': ETP_DBFILE+".gz", # Entropy sqlite database file (gzipped)
     'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
+    
+    'databaseloglevel': 1, # Database log level (default: 1 - see enzyme.conf for more info)
+    'enzymeloglevel': 1 , # Enzyme log level (default: 1 - see enzyme.conf for more info)
+    'reagentloglevel': 1 , # Reagent log level (default: 1 - see reagent.conf for more info)
+    'activatorloglevel': 1, # # Activator log level (default: 1 - see activator.conf for more info)
     'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
     'databaselogfile': ETP_LOG_DIR+"/database.log", # database operations log file
+    'enzymelogfile': ETP_LOG_DIR+"/enzyme.log", # Enzyme operations log file
+    'reagentlogfile': ETP_LOG_DIR+"/reagent.log", # Reagent operations log file
+    'activatorlogfile': ETP_LOG_DIR+"/activator.log", # Activator operations log file
+    
     'distcc-status': False, # used by Enzyme, if True distcc is enabled
     'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file
     'etpdatabasedir': ETP_DIR+ETP_DBDIR, # 
@@ -169,7 +180,7 @@ etpConst = {
     'headertext': ETP_HEADER_TEXT, # header text that can be outputted to a file
     'currentarch': ETP_ARCH_CONST, # contains the current running architecture
     'supportedarchs': ETP_ARCHS, # Entropy supported Archs
-}
+ }
 
 # Create paths
 if not os.path.isdir(ETP_DIR):
@@ -330,6 +341,19 @@ else:
 	    if uri.endswith("/"):
 		uri = uri[:len(uri)-1]
 	    etpConst['activatordownloaduris'].append(uri)
+	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
+	    loglevel = line.split("loglevel|")[1]
+	    try:
+		loglevel = int(loglevel)
+	    except:
+		print "ERROR: invalid loglevel in: "+etpConst['activatorconf']
+		sys.exit(51)
+	    if (loglevel > -1) and (loglevel < 3):
+	        etpConst['activatorloglevel'] = loglevel
+	    else:
+		print "WARNING: invalid loglevel in: "+etpConst['activatorconf']
+		import time
+		time.sleep(5)
 
 # enzyme section
 if (not os.path.isfile(etpConst['enzymeconf'])):
@@ -342,6 +366,66 @@ else:
     for line in enzymeconf:
 	if line.startswith("distcc-status|") and (len(line.split("|")) == 2) and (line.strip().split("|")[1] == "enabled"):
 	    etpConst['distcc-status'] = True
+	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
+	    loglevel = line.split("loglevel|")[1]
+	    try:
+		loglevel = int(loglevel)
+	    except:
+		print "ERROR: invalid loglevel in: "+etpConst['enzymeconf']
+		sys.exit(51)
+	    if (loglevel > -1) and (loglevel < 3):
+	        etpConst['enzymeloglevel'] = loglevel
+	    else:
+		print "WARNING: invalid loglevel in: "+etpConst['enzymeconf']
+		import time
+		time.sleep(5)
+		
+
+# reagent section
+if (not os.path.isfile(etpConst['reagentconf'])):
+    print "ERROR: "+etpConst['reagentconf']+" does not exist"
+    sys.exit(50)
+else:
+    f = open(etpConst['reagentconf'],"r")
+    reagentconf = f.readlines()
+    f.close()
+    for line in reagentconf:
+	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
+	    loglevel = line.split("loglevel|")[1]
+	    try:
+		loglevel = int(loglevel)
+	    except:
+		print "ERROR: invalid loglevel in: "+etpConst['reagentconf']
+		sys.exit(51)
+	    if (loglevel > -1) and (loglevel < 3):
+	        etpConst['reagentloglevel'] = loglevel
+	    else:
+		print "WARNING: invalid loglevel in: "+etpConst['reagentconf']
+		import time
+		time.sleep(5)
+
+# database section
+if (not os.path.isfile(etpConst['databaseconf'])):
+    print "ERROR: "+etpConst['databaseconf']+" does not exist"
+    sys.exit(50)
+else:
+    f = open(etpConst['databaseconf'],"r")
+    databaseconf = f.readlines()
+    f.close()
+    for line in databaseconf:
+	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
+	    loglevel = line.split("loglevel|")[1]
+	    try:
+		loglevel = int(loglevel)
+	    except:
+		print "ERROR: invalid loglevel in: "+etpConst['databaseconf']
+		sys.exit(51)
+	    if (loglevel > -1) and (loglevel < 3):
+	        etpConst['databaseloglevel'] = loglevel
+	    else:
+		print "WARNING: invalid loglevel in: "+etpConst['databaseconf']
+		import time
+		time.sleep(5)
 
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things

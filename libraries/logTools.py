@@ -43,7 +43,7 @@ class LogFile:
     def open (self, file = None):
 	if type(file) == type("hello"):
             try:
-                self.logFile = open(file, "w")
+                self.logFile = open(file, "aw")
             except:
                 self.logFile = sys.stderr
 	elif file:
@@ -79,6 +79,5 @@ class LogFile:
     def lch(self, level, file, message):
         if self.level >= level:
             self.handler("-+ %s \t%s" % (file, message))
-
 
 log = LogFile()

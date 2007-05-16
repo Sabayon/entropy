@@ -1,6 +1,5 @@
 TODO list (for developers only):
-- build(), on enzyme, add license blacklist (packages that cannot be shipped in a binary form)
-- improve logTools and put it in an usable status
+- implement logTools inside handlers
 - enzyme: add stronger support to broken packages check
 - reagent: complete smartapps section
 - enzyme, reagent: test kernel dependent packages
