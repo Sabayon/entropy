@@ -34,6 +34,10 @@ import databaseTools
 import mirrorTools
 dbStatus = databaseTools.databaseStatus()
 
+# Logging initialization
+import logTools
+entropyLog = logTools.LogFile(level=etpConst['entropyloglevel'],filename = etpConst['entropylogfile'], header = "[Entropy]")
+
 # EXIT STATUSES: 100-199
 
 def isRoot():

@@ -36,7 +36,7 @@ import string
 
 # Logging initialization
 import logTools
-dbLog = logTools.LogFile(level=etpConst['databaseloglevel'],filename = etpConst['databaselogfile'])
+dbLog = logTools.LogFile(level = etpConst['databaseloglevel'],filename = etpConst['databaselogfile'], header = "[DBase]")
 
 
 # TIP OF THE DAY:
@@ -51,7 +51,6 @@ def database(options):
 	
 	# do some check, print some warnings
 	print_info(green(" * ")+red("Initializing Entropy database..."), back = True)
-	dbLog.log(0,"[DB OP] Called database --initialize")
         # database file: etpConst['etpdatabasefilepath']
         if os.path.isfile(etpConst['etpdatabasefilepath']):
 	    print_info(red(" * ")+bold("WARNING")+red(": database file already exists. Overwriting."))
@@ -59,15 +58,12 @@ def database(options):
 	    if rc == "No":
 	        sys.exit(0)
 	    os.system("rm -f "+etpConst['etpdatabasefilepath'])
-	    dbLog.log(0,"[DB OP] Removed old database file")
 
 	# initialize the database
-	dbLog.log(0,"[DB OP] Connecting to the database")
         dbconn = etpDatabase(readOnly = False, noUpload = True)
 	dbconn.initializeDatabase()
 	
 	# sync packages directory
-	dbLog.log(0,"Syncing binary packages")
 	import activatorTools
 	activatorTools.packages(["sync","--ask"])
 	
@@ -75,24 +71,18 @@ def database(options):
 	pkglist = os.listdir(etpConst['packagesbindir'])
 
 	print_info(green(" * ")+red("Reinitializing Entropy database using Packages in the repository ..."))
-	dbLog.log(0,"[DB OP] Preparing to start reinitialization")
 	currCounter = 0
 	atomsnumber = len(pkglist)
 	import reagentTools
 	for pkg in pkglist:
-	    dbLog.log(0,"[DB OP] Analyzing "+str(pkg))
 	    print_info(green(" * ")+red("Analyzing: ")+bold(pkg), back = True)
 	    currCounter += 1
 	    print_info(green("  (")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."))
 	    etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+pkg)
-	    dbLog.log(3,"[DB OP] etpData status (should be properly filled now):")
-	    for i in etpData:
-		dbLog.log(3,i+": "+etpData[i])
 		
 	    # remove shait
 	    os.system("rm -rf "+etpConst['packagestmpdir']+"/"+pkg)
 	    # fill the db entry
-	    dbLog.log(0,"[DB OP] Launching etpDatabase.addPackage()")
 	    dbconn.addPackage(etpData)
 	    dbconn.commitChanges()
 	
@@ -669,6 +659,9 @@ def database(options):
 class databaseStatus:
 
     def __init__(self):
+	
+	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus.__init__ called.")
+	
 	self.databaseBumped = False
 	self.databaseInfoCached = False
 	self.databaseLock = False
@@ -677,52 +670,67 @@ class databaseStatus:
 	self.databaseAlreadyTainted = False
 	
 	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
+	    dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: database tainted.")
 	    self.databaseAlreadyTainted = True
 
     def isDatabaseAlreadyBumped(self):
+	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: already bumped? "+str(self.databaseBumped))
 	return self.databaseBumped
 
     def isDatabaseAlreadyTainted(self):
+	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: tainted? "+str(self.databaseAlreadyTainted))
 	return self.databaseAlreadyTainted
 
     def setDatabaseTaint(self,bool):
+	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: setting database taint to: "+str(bool))
 	self.databaseAlreadyTainted = bool
 
     def setDatabaseBump(self,bool):
+	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: setting database bump to: "+str(bool))
 	self.databaseBumped = bool
 
     def setDatabaseLock(self):
+	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: Locking database (upload)")
 	self.databaseLock = True
 
     def unsetDatabaseLock(self):
+	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: Unlocking database (upload)")
 	self.databaseLock = False
 
     def getDatabaseLock(self):
+	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: getting database lock info (upload), status: "+str(self.databaseLock))
 	return self.databaseLock
 
     def setDatabaseDownloadLock(self):
+	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: Locking database (download)")
 	self.databaseDownloadLock = True
 
     def unsetDatabaseDownloadLock(self):
+	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: Unlocking database (download)")
 	self.databaseDownloadLock = False
 
     def getDatabaseDownloadLock(self):
+	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: getting database lock info (download), status: "+str(self.databaseDownloadLock))
 	return self.databaseDownloadLock
 
 class etpDatabase:
 
     def __init__(self, readOnly = False, noUpload = False):
 	
+	dbLog.log(ETP_LOG_VERBOSE,"etpDatabase.__init__ called.")
+	
 	self.readOnly = readOnly
 	self.noUpload = noUpload
 	
 	if (self.readOnly):
+	    dbLog.log(ETP_LOG_VERBOSE,"etpDatabase: database opened readonly")
 	    # if the database is opened readonly, we don't need to lock the online status
-	    # FIXME: add code for locking the table
 	    self.connection = sqlite.connect(etpConst['etpdatabasefilepath'])
 	    self.cursor = self.connection.cursor()
 	    # set the table read only
 	    return
+	
+	dbLog.log(ETP_LOG_VERBOSE,"etpDatabase: database opened in read/write mode")
 
 	# check if the database is locked locally
 	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
@@ -780,10 +788,13 @@ class etpDatabase:
 	
 	# if the class is opened readOnly, close and forget
 	if (self.readOnly):
+	    dbLog.log(ETP_LOG_VERBOSE,"closeDB: closing database opened in readonly.")
 	    #self.connection.rollback()
 	    self.cursor.close()
 	    self.connection.close()
 	    return
+	
+	dbLog.log(ETP_LOG_VERBOSE,"closeDB: closing database opened in read/write.")
 	
 	# FIXME verify all this shit, for now it works...
 	if (entropyTools.dbStatus.isDatabaseAlreadyTainted()) and (not entropyTools.dbStatus.isDatabaseAlreadyBumped()):
@@ -802,12 +813,15 @@ class etpDatabase:
 
     def commitChanges(self):
 	if (not self.readOnly):
+	    dbLog.log(ETP_LOG_VERBOSE,"commitChanges: writing changes to database.")
 	    self.connection.commit()
 	    self.taintDatabase()
 	else:
+	    dbLog.log(ETP_LOG_VERBOSE,"commitChanges: discarding changes to database (opened readonly).")
 	    self.discardChanges() # is it ok?
 
     def taintDatabase(self):
+	dbLog.log(ETP_LOG_VERBOSE,"taintDatabase: called.")
 	# taint the database status
 	f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'],"w")
 	f.write(etpConst['currentarch']+" database tainted\n")

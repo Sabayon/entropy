@@ -124,6 +124,8 @@ ETP_SMARTAPPSDIR = "/smartapps/"+ETP_ARCH_CONST
 ETP_CONF_DIR = "/etc/entropy"
 ETP_ROOT_DIR = "/"
 ETP_LOG_DIR = ETP_DIR+"/"+"logs"
+ETP_LOG_NORMAL = 1
+ETP_LOG_VERBOSE = 2
 # NEVER APPEND another \n to this file because it will break the md5 check of reagent
 ETP_HEADER_TEXT = "# Sabayon Linux (C - 2007) - Entropy Package Specifications (GPLv2)\n"
 MAX_ETP_REVISION_COUNT = 99999
@@ -143,13 +145,14 @@ etpConst = {
     'overlays': "", # variable PORTDIR_OVERLAY
     'overlaysconffile': ETP_CONF_DIR+"/layman.cfg", # layman configuration file
     'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
+    'entropyconf': ETP_CONF_DIR+"/entropy.conf", # entropy.conf file
     'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
     'enzymeconf': ETP_CONF_DIR+"/enzyme.conf", # enzyme.conf file
     'activatorconf': ETP_CONF_DIR+"/activator.conf", # activator.conf file
     'reagentconf': ETP_CONF_DIR+"/reagent.conf", # reagent.conf file
     'databaseconf': ETP_CONF_DIR+"/database.conf", # database.conf file
-    'activatoruploaduris': [],# list of URIs that activator can use to upload files (parsed from activator.conf)
-    'activatordownloaduris': [],# list of URIs that activator can use to fetch data
+    'activatoruploaduris': [], # list of URIs that activator can use to upload files (parsed from activator.conf)
+    'activatordownloaduris': [], # list of URIs that activator can use to fetch data
     'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
     'etpurirelativepath': "database/"+ETP_ARCH_CONST+"/", # Relative remote path for the .etp repository.
     							  # TO BE REMOVED? CHECK
@@ -166,6 +169,7 @@ etpConst = {
     'enzymeloglevel': 1 , # Enzyme log level (default: 1 - see enzyme.conf for more info)
     'reagentloglevel': 1 , # Reagent log level (default: 1 - see reagent.conf for more info)
     'activatorloglevel': 1, # # Activator log level (default: 1 - see activator.conf for more info)
+    'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
     'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
     'databaselogfile': ETP_LOG_DIR+"/database.log", # database operations log file
     'enzymelogfile': ETP_LOG_DIR+"/enzyme.log", # Enzyme operations log file

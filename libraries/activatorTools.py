@@ -35,7 +35,7 @@ import time
 
 # Logging initialization
 import logTools
-activatorLog = logTools.LogFile(level=etpConst['activatorloglevel'],filename = etpConst['activatorlogfile'])
+activatorLog = logTools.LogFile(level=etpConst['activatorloglevel'],filename = etpConst['activatorlogfile'], header = "[Activator]")
 
 def sync(options, justTidy = False):
 

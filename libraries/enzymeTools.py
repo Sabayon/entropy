@@ -32,7 +32,7 @@ import string
 
 # Logging initialization
 import logTools
-enzymeLog = logTools.LogFile(level=etpConst['enzymeloglevel'],filename = etpConst['enzymelogfile'])
+enzymeLog = logTools.LogFile(level=etpConst['enzymeloglevel'],filename = etpConst['enzymelogfile'], header = "[Enzyme]")
 
 # EXIT STATUSES: 200-299
 

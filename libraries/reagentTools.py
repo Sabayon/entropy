@@ -35,7 +35,7 @@ from portageTools import unpackTbz2, synthetizeRoughDependencies, getPackageRunt
 
 # Logging initialization
 import logTools
-reagentLog = logTools.LogFile(level=etpConst['reagentloglevel'],filename = etpConst['reagentlogfile'])
+reagentLog = logTools.LogFile(level=etpConst['reagentloglevel'],filename = etpConst['reagentlogfile'], header = "[Reagent]")
 
 def generator(package, enzymeRequestBump = False, dbconnection = None):
 

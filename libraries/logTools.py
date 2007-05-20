@@ -26,11 +26,13 @@
 '''
 
 import sys
+import time
 
 class LogFile:
-    def __init__ (self, level = 0, filename = None):
+    def __init__ (self, level = 0, filename = None, header = "[LOG]"):
 	self.handler = self.default_handler
         self.level = level
+	self.header = header
         self.logFile = None
         self.open(filename)
 
@@ -66,7 +68,10 @@ class LogFile:
 
     def log(self, level, message):
         if self.level >= level:
-            self.handler(message)
+            self.handler(self.getTimeDateHeader()+self.header+' '+message)
+
+    def getTimeDateHeader(self):
+	return time.strftime('[%X %x %Z] ')
 
     def ladd(self, level, file, message):
         if self.level >= level:

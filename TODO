@@ -1,5 +1,11 @@
 TODO list (for developers only):
 - implement logTools inside handlers
+  - databaseTools
+  - entropyTools
+  - activatorTools
+  - reagentTools
+  - mirrorTools
+  - portageTools
 - enzyme: add stronger support to broken packages check
 - reagent: complete smartapps section
 - enzyme, reagent: test kernel dependent packages
