@@ -175,6 +175,7 @@ etpConst = {
     'enzymelogfile': ETP_LOG_DIR+"/enzyme.log", # Enzyme operations log file
     'reagentlogfile': ETP_LOG_DIR+"/reagent.log", # Reagent operations log file
     'activatorlogfile': ETP_LOG_DIR+"/activator.log", # Activator operations log file
+    'entropylogfile': ETP_LOG_DIR+"/entropy.log", # Activator operations log file
     
     'distcc-status': False, # used by Enzyme, if True distcc is enabled
     'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file
