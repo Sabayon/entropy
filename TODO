@@ -6,7 +6,6 @@ TODO list (for developers only):
   - reagentTools
   - mirrorTools
   - portageTools
-- enzyme: add stronger support to broken packages check
 - reagent: complete smartapps section
 - enzyme, reagent: test kernel dependent packages
 - enzyme, build(): add an option to force the continuation of the emerge queue even if a package fails
@@ -14,11 +13,8 @@ TODO list (for developers only):
 - add FXP support to activator ? (yes but dreamhost does not support it :|)
 - entropy, needed part, add multithreading support
 - manage Gentoo profiles updates
+- test stabilization code
 
-important things (about branches support):
-   CHANGES NEEDED:
-      - this below must be done:
-      - !!! add proper code to the stabilize/unstabilize function (move files locally and on the ftp)
 
 !! Remember that kernel dependent packages have: sys-kernel/linux-core-2.6.20-sabayon-r3 (for example)
 

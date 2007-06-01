@@ -185,6 +185,8 @@ etpConst = {
     'headertext': ETP_HEADER_TEXT, # header text that can be outputted to a file
     'currentarch': ETP_ARCH_CONST, # contains the current running architecture
     'supportedarchs': ETP_ARCHS, # Entropy supported Archs
+    'preinstallscript': "preinstall.sh", # used by the client to run some pre-install actions
+    'postinstallscript': "postinstall.sh", # used by the client to run some post-install actions
  }
 
 # Create paths

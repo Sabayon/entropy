@@ -424,6 +424,8 @@ def database(options):
 	    # @action: action taken: "stable" for stabilized package, "unstable" for unstabilized package
 	    if (rc):
 		
+		print_info(green(" * ")+red("Package: ")+bold(pkg)+red(" needs to be marked ")+bold(action), back = True)
+		
 		# change download database parameter name
 		download = dbconn.retrievePackageVar(pkg, "download", branch = action)
 		# change action with the opposite:
@@ -433,16 +435,58 @@ def database(options):
 		else:
 		    oppositeAction = "stable"
 		
+		oldpkgfilename = os.path.basename(download)
 		download = re.subn("-"+oppositeAction,"-"+action, download)
+		
 		if download[1]: # if the name has been converted
+		
+		    newpkgfilename = os.path.basename(download[0])
+		
 		    # change download parameter in the database entry
 		    dbconn.writePackageParameter(pkg, "download", download[0], action)
 		
-		# FIXME: now change file path, locally and remotely. First, locally
-		# FIXME: add the code to:
-		# - move the file name locally to stable -> unstable (or vice versa)
-		# - move the file name remotely to stable -> unstalbe (or vice versa)
-		# - update the md5 file?
+		    print_info(green("   * ")+yellow("Updating local package name"))
+		
+		    # change filename locally
+		    if os.path.isfile(etpConst['packagesbindir']+"/"+oldpkgfilename):
+		        os.rename(etpConst['packagesbindir']+"/"+oldpkgfilename,etpConst['packagesbindir']+"/"+newpkgfilename)
+		
+		    print_info(green("   * ")+yellow("Updating local package checksum"))
+		
+		    # update md5
+		    if os.path.isfile(etpConst['packagesbindir']+"/"+oldpkgfilename+etpConst['packageshashfileext']):
+			
+		        f = open(etpConst['packagesbindir']+"/"+oldpkgfilename+etpConst['packageshashfileext'])
+		        oldMd5 = f.readline().strip()
+		        f.close()
+		        newMd5 = re.subn(oldpkgfilename, newpkgfilename, oldMd5)
+		        if newMd5[1]:
+			    f = open(etpConst['packagesbindir']+"/"+newpkgfilename+etpConst['packageshashfileext'],"w")
+			    f.write(newMd5[0]+"\n")
+			    f.flush()
+			    f.close()
+		        # remove old
+		        os.remove(etpConst['packagesbindir']+"/"+oldpkgfilename+etpConst['packageshashfileext'])
+			
+		    else: # old md5 does not exist
+			
+			entropyTools.createHashFile(etpConst['packagesbindir']+"/"+newpkgfilename)
+			
+		
+		    print_info(green("   * ")+yellow("Updating remote package information"))
+		
+		    # change filename remotely
+		    ftp = mirrorTools.handlerFTP(uri)
+		    ftp.setCWD(etpConst['binaryurirelativepath'])
+		    if (ftp.isFileAvailable(etpConst['packagesbindir']+"/"+oldpkgfilename)):
+			# rename tbz2
+			ftp.renameFile(oldpkgfilename,newpkgfilename)
+			# remove old .md5
+			ftp.deleteFile(oldpkgfilename+etpConst['packageshashfileext'])
+			# upload new .md5 if found
+			if os.path.isfile(etpConst['packagesbindir']+"/"+newpkgfilename+etpConst['packageshashfileext']):
+			    ftp.uploadFile(etpConst['packagesbindir']+"/"+newpkgfilename+etpConst['packageshashfileext'],ascii = True)
+		
 
 	dbconn.commitChanges()
 	print_info(green(" * ")+red("All the selected packages have been marked as requested. Have fun."))
@@ -734,32 +778,39 @@ class etpDatabase:
 
 	# check if the database is locked locally
 	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
+	    dbLog.log(ETP_LOG_NORMAL,"etpDatabase: database already locked")
 	    print_info(red(" * ")+red(" Entropy database is already locked by you :-)"))
 	else:
 	    # check if the database is locked REMOTELY
+	    dbLog.log(ETP_LOG_NORMAL,"etpDatabase: starting to lock and sync database")
 	    print_info(red(" * ")+red(" Locking and Syncing Entropy database ..."), back = True)
 	    for uri in etpConst['activatoruploaduris']:
+		dbLog.log(ETP_LOG_VERBOSE,"etpDatabase: connecting to "+uri)
 	        ftp = mirrorTools.handlerFTP(uri)
 	        ftp.setCWD(etpConst['etpurirelativepath'])
 	        if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
 		    import time
 		    print_info(red(" * ")+bold("WARNING")+red(": online database is already locked. Waiting up to 2 minutes..."), back = True)
+		    dbLog.log(ETP_LOG_NORMAL,"etpDatabase: online database already locked. Waiting 2 minutes")
 		    unlocked = False
 		    for x in range(120):
 		        time.sleep(1)
 		        if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
+			    dbLog.log(ETP_LOG_NORMAL,"etpDatabase: online database has been unlocked !")
 			    print_info(red(" * ")+bold("HOORAY")+red(": online database has been unlocked. Locking back and syncing..."))
 			    unlocked = True
 			    break
 		    if (unlocked):
 		        break
 
+		    dbLog.log(ETP_LOG_NORMAL,"etpDatabase: online database has not been unlocked in time. Giving up.")
 		    # time over
 		    print_info(red(" * ")+bold("ERROR")+red(": online database has not been unlocked. Giving up. Who the hell is working on it? Damn, it's so frustrating for me. I'm a piece of python code with a soul dude!"))
 		    # FIXME show the lock status
 
 		    print_info(yellow(" * ")+green("Mirrors status table:"))
 		    dbstatus = entropyTools.getMirrorsLock()
+		    dbLog.log(ETP_LOG_VERBOSE,"etpDatabase: showing mirrors status table:")
 		    for db in dbstatus:
 		        if (db[1]):
 	        	    db[1] = red("Locked")
@@ -769,6 +820,7 @@ class etpDatabase:
 	        	    db[2] = red("Locked")
 	                else:
 	        	    db[2] = green("Unlocked")
+			dbLog.log(ETP_LOG_VERBOSE,"   "+entropyTools.extractFTPHostFromUri(db[0])+": DATABASE: "+db[1]+" | DOWNLOAD: "+db[2])
 	    	        print_info(bold("\t"+entropyTools.extractFTPHostFromUri(db[0])+": ")+red("[")+yellow("DATABASE: ")+db[1]+red("] [")+yellow("DOWNLOAD: ")+db[2]+red("]"))
 	    
 	            ftp.closeFTPConnection()
@@ -1190,6 +1242,7 @@ class etpDatabase:
 		self.removePackage(pkg, branch = action)
 	    self.cursor.execute('UPDATE etpData SET branch = "'+action+'" WHERE atom = "'+atom+'" AND branch = "'+removeaction+'"')
 	    self.commitChanges()
+	    
 	    return True,action
 	return False,action
 
