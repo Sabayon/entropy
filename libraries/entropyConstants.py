@@ -151,6 +151,7 @@ etpConst = {
     'activatorconf': ETP_CONF_DIR+"/activator.conf", # activator.conf file
     'reagentconf': ETP_CONF_DIR+"/reagent.conf", # reagent.conf file
     'databaseconf': ETP_CONF_DIR+"/database.conf", # database.conf file
+    'spmbackendconf': ETP_CONF_DIR+"/spmbackend.conf", # Source Package Manager backend configuration (Portage now)
     'activatoruploaduris': [], # list of URIs that activator can use to upload files (parsed from activator.conf)
     'activatordownloaduris': [], # list of URIs that activator can use to fetch data
     'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
@@ -170,6 +171,7 @@ etpConst = {
     'reagentloglevel': 1 , # Reagent log level (default: 1 - see reagent.conf for more info)
     'activatorloglevel': 1, # # Activator log level (default: 1 - see activator.conf for more info)
     'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
+    'spmbackendloglevel': 1, # # Source Package Manager backend log level (default: 1 - see entropy.conf for more info)
     'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
     'databaselogfile': ETP_LOG_DIR+"/database.log", # database operations log file
     'enzymelogfile': ETP_LOG_DIR+"/enzyme.log", # Enzyme operations log file
@@ -431,6 +433,29 @@ else:
 	        etpConst['databaseloglevel'] = loglevel
 	    else:
 		print "WARNING: invalid loglevel in: "+etpConst['databaseconf']
+		import time
+		time.sleep(5)
+		
+# spmbackend section
+if (not os.path.isfile(etpConst['spmbackendconf'])):
+    print "ERROR: "+etpConst['spmbackendconf']+" does not exist"
+    sys.exit(50)
+else:
+    f = open(etpConst['spmbackendconf'],"r")
+    spmconf = f.readlines()
+    f.close()
+    for line in spmconf:
+	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
+	    loglevel = line.split("loglevel|")[1]
+	    try:
+		loglevel = int(loglevel)
+	    except:
+		print "ERROR: invalid loglevel in: "+etpConst['spmbackendconf']
+		sys.exit(51)
+	    if (loglevel > -1) and (loglevel < 3):
+	        etpConst['spmbackendloglevel'] = loglevel
+	    else:
+		print "WARNING: invalid loglevel in: "+etpConst['spmbackendconf']
 		import time
 		time.sleep(5)
 

@@ -37,6 +37,7 @@ dbStatus = databaseTools.databaseStatus()
 # Logging initialization
 import logTools
 entropyLog = logTools.LogFile(level=etpConst['entropyloglevel'],filename = etpConst['entropylogfile'], header = "[Entropy]")
+# example: entropyLog.log(ETP_LOG_VERBOSE,"testFuncton: called.")
 
 # EXIT STATUSES: 100-199
 
@@ -86,6 +87,7 @@ def md5sum(filepath):
 # @returns the complete hash file path
 # FIXME: add more hashes, SHA1 for example
 def createHashFile(tbz2filepath):
+    entropyLog.log(ETP_LOG_VERBOSE,"createHashFile: for "+tbz2filepath)
     md5hash = md5sum(tbz2filepath)
     hashfile = tbz2filepath+etpConst['packageshashfileext']
     f = open(hashfile,"w")
@@ -96,11 +98,14 @@ def createHashFile(tbz2filepath):
     return hashfile
 
 def compareMd5(filepath,checksum):
+    entropyLog.log(ETP_LOG_VERBOSE,"compareMd5: called. ")
     checksum = str(checksum)
     result = md5sum(filepath)
     result = str(result)
     if checksum == result:
+        entropyLog.log(ETP_LOG_VERBOSE,"compareMd5: match. ")
 	return True
+    entropyLog.log(ETP_LOG_VERBOSE,"compareMd5: no match. ")
     return False
 
 def md5string(string):
@@ -273,6 +278,7 @@ def filterDuplicatedEntries(nameslist):
 
 # Tool to run commands
 def spawnCommand(command, redirect = None):
+    entropyLog.log(ETP_LOG_VERBOSE,"spawnCommand: called for: "+command)
     if redirect is not None:
         command += " "+redirect
     rc = os.system(command)
@@ -287,6 +293,8 @@ def extractFTPHostFromUri(uri):
 
 # This function check the Entropy online database status
 def getEtpRemoteDatabaseStatus():
+
+    entropyLog.log(ETP_LOG_VERBOSE,"getEtpRemoteDatabaseStatus: called.")
 
     uriDbInfo = []
     for uri in etpConst['activatoruploaduris']:
@@ -312,9 +320,13 @@ def getEtpRemoteDatabaseStatus():
 	uriDbInfo.append(info)
 	ftp.closeFTPConnection()
 
+    entropyLog.log(ETP_LOG_VERBOSE,"getEtpRemoteDatabaseStatus: dump -> "+str(uriDbInfo))
+
     return uriDbInfo
 
 def syncRemoteDatabases(noUpload = False, justStats = False):
+
+    entropyLog.log(ETP_LOG_VERBOSE,"syncRemoteDatabases: called.")
 
     remoteDbsStatus = getEtpRemoteDatabaseStatus()
     print_info(green(" * ")+red("Remote Entropy Database Repository Status:"))
@@ -427,11 +439,13 @@ def syncRemoteDatabases(noUpload = False, justStats = False):
 		        uploadList.append(dbstat)
     
     if (downloadLatest == []) and (not uploadLatest):
+	entropyLog.log(ETP_LOG_NORMAL,"syncRemoteDatabases: online database does not need to be updated.")
 	print_info(green(" * ")+red("Online database does not need to be updated."))
         return
 
     # now run the selected task!
     if (downloadLatest != []):
+	entropyLog.log(ETP_LOG_VERBOSE,"syncRemoteDatabases: download latest database needed.")
 	# match the proper URI
 	for uri in etpConst['activatoruploaduris']:
 	    if downloadLatest[0].startswith(uri):
@@ -439,6 +453,7 @@ def syncRemoteDatabases(noUpload = False, justStats = False):
 	downloadDatabase(downloadLatest[0])
 	
     if (uploadLatest) and (not noUpload):
+	entropyLog.log(ETP_LOG_VERBOSE,"syncRemoteDatabases: some mirrors don't have the latest database.")
 	print_info(green(" * ")+red("Starting to update the needed mirrors ..."))
 	_uploadList = []
 	for uri in etpConst['activatoruploaduris']:
@@ -459,11 +474,15 @@ def syncRemoteDatabases(noUpload = False, justStats = False):
 
 def uploadDatabase(uris):
 
+    entropyLog.log(ETP_LOG_VERBOSE,"uploadDatabase: called.")
+
     # our fancy compressor :-)
     import gzip
     
     for uri in uris:
 	downloadLockDatabases(True,[uri])
+	
+	entropyLog.log(ETP_LOG_VERBOSE,"uploadDatabase: uploading data to: "+extractFTPHostFromUri(uri))
 	
 	print_info(green(" * ")+red("Uploading database to ")+bold(extractFTPHostFromUri(uri))+red(" ..."))
 	print_info(green(" * ")+red("Connecting to ")+bold(extractFTPHostFromUri(uri))+red(" ..."), back = True)
@@ -512,8 +531,10 @@ def uploadDatabase(uris):
 	print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'])+red(" ..."), back = True)
 	rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'],True)
 	if (rc == True):
+	    entropyLog.log(ETP_LOG_VERBOSE,"uploadDatabase: uploading to: "+extractFTPHostFromUri(uri)+" successfull.")
 	    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'])+red(" completed. Disconnecting."))
 	else:
+	    entropyLog.log(ETP_LOG_VERBOSE,"uploadDatabase: uploading to: "+extractFTPHostFromUri(uri)+" UNSUCCESSFUL! ERROR!.")
 	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 	
 	# close connection
@@ -524,7 +545,11 @@ def uploadDatabase(uris):
 
 def downloadDatabase(uri):
     
+    entropyLog.log(ETP_LOG_VERBOSE,"downloadDatabase: called.")
+    
     import gzip
+    
+    entropyLog.log(ETP_LOG_VERBOSE,"downloadDatabase: downloading from -> "+extractFTPHostFromUri(uri))
     
     print_info(green(" * ")+red("Downloading database from ")+bold(extractFTPHostFromUri(uri))+red(" ..."))
     print_info(green(" * ")+red("Connecting to ")+bold(extractFTPHostFromUri(uri))+red(" ..."), back = True)
@@ -554,6 +579,7 @@ def downloadDatabase(uri):
     print_info(green(" * ")+red("Decompression of ")+bold(etpConst['etpdatabasefilegzip'])+red(" completed."))
     
     # downloading revision file
+    entropyLog.log(ETP_LOG_VERBOSE,"downloadDatabase: downloading revision file for "+extractFTPHostFromUri(uri))
     print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['etpdatabaserevisionfile'])+red(" ..."), back = True)
     rc = ftp.downloadFile(etpConst['etpdatabaserevisionfile'],os.path.dirname(etpConst['etpdatabasefilepath']),True)
     if (rc == True):
@@ -561,6 +587,7 @@ def downloadDatabase(uri):
     else:
 	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
     
+    entropyLog.log(ETP_LOG_VERBOSE,"downloadDatabase: downloading digest file for "+extractFTPHostFromUri(uri))
     # downlading digest
     print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['etpdatabasehashfile'])+red(" ..."), back = True)
     rc = ftp.downloadFile(etpConst['etpdatabasehashfile'],os.path.dirname(etpConst['etpdatabasefilepath']),True)
@@ -569,6 +596,7 @@ def downloadDatabase(uri):
     else:
 	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 
+    entropyLog.log(ETP_LOG_VERBOSE,"downloadDatabase: do some tidy.")
     os.system("rm -f " + etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip']+" &> /dev/null")
     # close connection
     ftp.closeFTPConnection()
@@ -577,6 +605,9 @@ def downloadDatabase(uri):
 # @ [ uri , True/False, True/False ] --> True = locked, False = unlocked
 # @ the second parameter is referred to upload locks, while the second to download ones
 def getMirrorsLock():
+
+    entropyLog.log(ETP_LOG_VERBOSE,"getMirrorsLock: called.")
+
     # parse etpConst['activatoruploaduris']
     dbstatus = []
     for uri in etpConst['activatoruploaduris']:
@@ -595,9 +626,15 @@ def getMirrorsLock():
 
 
 def downloadPackageFromMirror(uri,pkgfile):
+
+    entropyLog.log(ETP_LOG_VERBOSE,"downloadPackageFromMirror: called for "+extractFTPHostFromUri(uri)+" and file -> "+pkgfile)
+
     tries = 0
     maxtries = 5
     for i in range(maxtries):
+	
+	entropyLog.log(ETP_LOG_VERBOSE,"downloadPackageFromMirror: ("+tries+"/"+maxtries+") downloading -> "+pkgfile)
+	
 	pkgfilename = pkgfile.split("/")[len(pkgfile.split("/"))-1]
         print_info(red("  * Connecting to ")+bold(extractFTPHostFromUri(uri)), back = True)
         # connect
@@ -607,10 +644,12 @@ def downloadPackageFromMirror(uri,pkgfile):
         print_info(red("  * Downloading ")+yellow(pkgfilename)+red(" from ")+bold(extractFTPHostFromUri(uri)))
         rc = ftp.downloadFile(pkgfilename,etpConst['packagesbindir'])
 	if (rc is None):
+	    entropyLog.log(ETP_LOG_VERBOSE,"downloadPackageFromMirror: ("+tries+"/"+maxtries+") --- ERROR --- FILE NOT FOUND -> "+pkgfile)
 	    # file does not exist
 	    print_warning(red("  * File ")+yellow(pkgfilename)+red(" does not exist remotely on ")+bold(extractFTPHostFromUri(uri)))
 	    ftp.closeFTPConnection()
 	    return None
+	entropyLog.log(ETP_LOG_VERBOSE,"downloadPackageFromMirror: ("+tries+"/"+maxtries+") checking md5 for -> "+pkgfile)
         # check md5
 	dbconn = databaseTools.etpDatabase(readOnly = True)
 	storedmd5 = dbconn.retrievePackageVarFromBinaryPackage(pkgfilename,"digest")
@@ -622,9 +661,11 @@ def downloadPackageFromMirror(uri,pkgfile):
 	    return True
 	else:
 	    if (tries == maxtries):
+		entropyLog.log(ETP_LOG_VERBOSE,"downloadPackageFromMirror: Max tries limit reached. Checksum does not match. Please consider to download or repackage again. Giving up.")
 		print_warning(red("  * Package ")+yellow(pkgfilename)+red(" checksum does not match. Please consider to download or repackage again. Giving up."))
 		return False
 	    else:
+		entropyLog.log(ETP_LOG_VERBOSE,"downloadPackageFromMirror: Checksum does not match. Trying to download it again...")
 		print_warning(red("  * Package ")+yellow(pkgfilename)+red(" checksum does not match. Trying to download it again..."))
 		tries += 1
 		if os.path.isfile(etpConst['packagesbindir']+"/"+pkgfilename):
@@ -643,6 +684,7 @@ def compressTarBz2(storepath,pathtocompress):
 
 # tar.bz2 uncompress function...
 def uncompressTarBz2(filepath, extractPath = None):
+    entropyLog.log(ETP_LOG_VERBOSE,"uncompressTarBz2: called. ")
     if extractPath is None:
 	extractPath = os.path.dirname(filepath)
     cmd = "tar xjf "+filepath+" -C "+extractPath
@@ -662,6 +704,7 @@ def bytesIntoHuman(bytes):
 
 # hide password from full ftp URI
 def hideFTPpassword(uri):
+    entropyLog.log(ETP_LOG_VERBOSE,"hideFTPpassword: called. ")
     ftppassword = uri.split("@")[:len(uri.split("@"))-1]
     if len(ftppassword) > 1:
 	import string
@@ -679,10 +722,16 @@ def hideFTPpassword(uri):
     return newuri
 
 def lockDatabases(lock = True, mirrorList = []):
+
+    entropyLog.log(ETP_LOG_VERBOSE,"lockDatabases: called. ")
+
     outstat = False
     if (mirrorList == []):
 	mirrorList = etpConst['activatoruploaduris']
     for uri in mirrorList:
+	
+	entropyLog.log(ETP_LOG_VERBOSE,"lockDatabases: locking? "+str(lock)+" for: "+extractFTPHostFromUri(uri))
+	
 	if (lock):
 	    print_info(yellow(" * ")+red("Locking ")+bold(extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
 	else:
@@ -693,11 +742,13 @@ def lockDatabases(lock = True, mirrorList = []):
 	# check if the lock is already there
 	if (lock):
 	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
+		entropyLog.log(ETP_LOG_VERBOSE,"lockDatabases: mirror "+extractFTPHostFromUri(uri)+" already locked.")
 	        print_info(green(" * ")+red("Mirror database at ")+bold(extractFTPHostFromUri(uri))+red(" already locked."))
 	        ftp.closeFTPConnection()
 	        continue
 	else:
 	    if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
+		entropyLog.log(ETP_LOG_VERBOSE,"lockDatabases: mirror "+extractFTPHostFromUri(uri)+" already unlocked.")
 	        print_info(green(" * ")+red("Mirror database at ")+bold(extractFTPHostFromUri(uri))+red(" already unlocked."))
 	        ftp.closeFTPConnection()
 	        continue
@@ -708,20 +759,24 @@ def lockDatabases(lock = True, mirrorList = []):
 	    f.close()
 	    rc = ftp.uploadFile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'],ascii= True)
 	    if (rc == True):
+		entropyLog.log(ETP_LOG_VERBOSE,"lockDatabases: mirror "+extractFTPHostFromUri(uri)+" successfully locked.")
 	        print_info(green(" * ")+red("Succesfully locked ")+bold(extractFTPHostFromUri(uri))+red(" mirror."))
 	    else:
 	        outstat = True
 	        print "\n"
+		entropyLog.log(ETP_LOG_VERBOSE,"lockDatabases: mirror "+extractFTPHostFromUri(uri)+" had an unknown issue while locking.")
 	        print_warning(red(" * ")+red("A problem occured while locking ")+bold(extractFTPHostFromUri(uri))+red(" mirror. Please have a look."))
 	        if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
 		    os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
 	else:
 	    rc = ftp.deleteFile(etpConst['etpdatabaselockfile'])
 	    if (rc):
+		entropyLog.log(ETP_LOG_VERBOSE,"lockDatabases: mirror "+extractFTPHostFromUri(uri)+" successfully unlocked.")
 		print_info(green(" * ")+red("Succesfully unlocked ")+bold(extractFTPHostFromUri(uri))+red(" mirror."))
 	        if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
 		    os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
 	    else:
+		entropyLog.log(ETP_LOG_VERBOSE,"lockDatabases: mirror "+extractFTPHostFromUri(uri)+" had an unknown issue while unlocking.")
 	        outstat = True
 	        print "\n"
 	        print_warning(red(" * ")+red("A problem occured while unlocking ")+bold(extractFTPHostFromUri(uri))+red(" mirror. Please have a look."))
@@ -729,13 +784,18 @@ def lockDatabases(lock = True, mirrorList = []):
     return outstat
 
 def downloadLockDatabases(lock = True, mirrorList = []):
+
+    entropyLog.log(ETP_LOG_VERBOSE,"downloadLockDatabases: called. ")
+
     outstat = False
     if (mirrorList == []):
 	mirrorList = etpConst['activatoruploaduris']
     for uri in mirrorList:
 	if (lock):
+	    entropyLog.log(ETP_LOG_VERBOSE,"downloadLockDatabases: download locking -> "+extractFTPHostFromUri(uri))
 	    print_info(yellow(" * ")+red("Locking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
 	else:
+	    entropyLog.log(ETP_LOG_VERBOSE,"downloadLockDatabases: download unlocking -> "+extractFTPHostFromUri(uri))
 	    print_info(yellow(" * ")+red("Unlocking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
 	ftp = mirrorTools.handlerFTP(uri)
 	# upload the lock file to database/%ARCH% directory
@@ -748,6 +808,7 @@ def downloadLockDatabases(lock = True, mirrorList = []):
 	        continue
 	else:
 	    if (not ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
+		entropyLog.log(ETP_LOG_VERBOSE,"downloadLockDatabases: already unlocked -> "+extractFTPHostFromUri(uri))
 	        print_info(green(" * ")+red("Download mirror at ")+bold(extractFTPHostFromUri(uri))+red(" already unlocked."))
 	        ftp.closeFTPConnection()
 	        continue
@@ -758,16 +819,20 @@ def downloadLockDatabases(lock = True, mirrorList = []):
 	    f.close()
 	    rc = ftp.uploadFile(etpConst['packagestmpdir']+"/"+etpConst['etpdatabasedownloadlockfile'],ascii= True)
 	    if (rc == True):
+		entropyLog.log(ETP_LOG_VERBOSE,"downloadLockDatabases: successfully locked -> "+extractFTPHostFromUri(uri))
 	        print_info(green(" * ")+red("Succesfully locked ")+bold(extractFTPHostFromUri(uri))+red(" download mirror."))
 	    else:
+		entropyLog.log(ETP_LOG_VERBOSE,"downloadLockDatabases: a problem occured while trying to download lock -> "+extractFTPHostFromUri(uri))
 	        outstat = True
 	        print "\n"
 	        print_warning(red(" * ")+red("A problem occured while locking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror. Please have a look."))
 	else:
 	    rc = ftp.deleteFile(etpConst['etpdatabasedownloadlockfile'])
 	    if (rc):
+		entropyLog.log(ETP_LOG_VERBOSE,"downloadLockDatabases: successfully unlocked -> "+extractFTPHostFromUri(uri))
 		print_info(green(" * ")+red("Succesfully unlocked ")+bold(extractFTPHostFromUri(uri))+red(" download mirror."))
 	    else:
+		entropyLog.log(ETP_LOG_VERBOSE,"downloadLockDatabases: a problem occured while trying to download unlock -> "+extractFTPHostFromUri(uri))
 	        outstat = True
 	        print "\n"
 	        print_warning(red(" * ")+red("A problem occured while unlocking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror. Please have a look."))
@@ -775,6 +840,7 @@ def downloadLockDatabases(lock = True, mirrorList = []):
     return outstat
 
 def getLocalDatabaseRevision():
+    entropyLog.log(ETP_LOG_VERBOSE,"getLocalDatabaseRevision: called. ")
     if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile']):
 	f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'])
 	rev = f.readline().strip()
@@ -786,6 +852,9 @@ def getLocalDatabaseRevision():
 
 # parse a dumped .etp file and returns etpData
 def parseEtpDump(file):
+
+    entropyLog.log(ETP_LOG_VERBOSE,"parseEtpDump: called. ")
+
     myEtpData = etpData.copy()
     # reset
     for i in myEtpData:
@@ -803,6 +872,8 @@ def parseEtpDump(file):
 
 # Distcc check status function
 def setDistCC(status = True):
+    entropyLog.log(ETP_LOG_VERBOSE,"setDistCC: called. ")
+    
     f = open(etpConst['enzymeconf'],"r")
     enzymeconf = f.readlines()
     f.close()
@@ -821,6 +892,9 @@ def setDistCC(status = True):
     f.close()
 
 def getDistCCHosts():
+
+    entropyLog.log(ETP_LOG_VERBOSE,"getDistCCHosts: called. ")
+
     f = open(etpConst['enzymeconf'],"r")
     enzymeconf = f.readlines()
     f.close()
@@ -830,20 +904,36 @@ def getDistCCHosts():
 	    line = line.strip().split("|")[1].split()
 	    for host in line:
 		hostslist.append(host)
+	    entropyLog.log(ETP_LOG_VERBOSE,"getDistCCHosts: hosts list dump -> "+str(hostslist))
 	    return hostslist
+    entropyLog.log(ETP_LOG_VERBOSE,"getDistCCHosts: hosts list EMPTY.")
     return []
+
+# @returns True if validIP (type: string) is a valid IP
+# @param validIP: IP string
+def isValidIP(validIP):
+    entropyLog.log(ETP_LOG_VERBOSE,"getDistCCHosts: called. ")
+    validIPExpr = re.compile('(([0-9]|[01]?[0-9]{2}|2([0-4][0-9]|5[0-5]))\.){3}([0-9]|[01]?[0-9]{2}|2([0-4][0-9]|5[0-5]))$')
+    result = validIPExpr.match(validIP)
+
+    if (result != None):
+	return True
+    return False
 
 # you must provide a list
 def addDistCCHosts(hosts):
     
-    # FIXME: add host validation
+    entropyLog.log(ETP_LOG_VERBOSE,"addDistCCHosts: called.")
+    
     hostslist = getDistCCHosts()
     for host in hosts:
 	hostslist.append(host)
 
     # filter dupies
     hostslist = list(set(hostslist))
-   
+
+    entropyLog.log(ETP_LOG_VERBOSE,"addDistCCHosts: hostslist dump -> "+str(hostslist))
+
     # write back to file
     f = open(etpConst['enzymeconf'],"r")
     enzymeconf = f.readlines()
@@ -877,8 +967,9 @@ def addDistCCHosts(hosts):
 
 # you must provide a list
 def removeDistCCHosts(hosts):
-    
-    # FIXME: add host validation
+
+    entropyLog.log(ETP_LOG_VERBOSE,"removeDistCCHosts: called. ")
+
     hostslist = getDistCCHosts()
     cleanedhosts = []
     for host in hostslist:
@@ -893,6 +984,8 @@ def removeDistCCHosts(hosts):
 
     # filter dupies
     cleanedhosts = list(set(cleanedhosts))
+    
+    entropyLog.log(ETP_LOG_VERBOSE,"removeDistCCHosts: cleanedhosts dump: "+cleanedhosts)
    
     # write back to file
     f = open(etpConst['enzymeconf'],"r")
@@ -929,6 +1022,9 @@ def getDistCCStatus():
     return etpConst['distcc-status']
 
 def isIPAvailable(ip):
+
+    entropyLog.log(ETP_LOG_VERBOSE,"isIPAvailable: called. ")
+
     rc = os.system("ping -c 1 "+ip+" &> /dev/null")
     if (rc):
 	return False
@@ -990,6 +1086,8 @@ def alphaSorter(seq):
 
 # Temporary files cleaner
 def cleanup(options):
+
+    entropyLog.log(ETP_LOG_VERBOSE,"cleanup: with options: "+str(options))
 
     toCleanDirs = [ etpConst['packagestmpdir'], etpConst['logdir'] ]
     counter = 0

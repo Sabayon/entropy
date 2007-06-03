@@ -882,11 +882,13 @@ class etpDatabase:
 	entropyTools.dbStatus.setDatabaseTaint(True)
 
     def untaintDatabase(self):
+	dbLog.log(ETP_LOG_VERBOSE,"untaintDatabase: called.")
 	entropyTools.dbStatus.setDatabaseTaint(False)
 	# untaint the database status
 	os.system("rm -f "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
 
     def revisionBump(self):
+	dbLog.log(ETP_LOG_VERBOSE,"revisionBump: called.")
 	if (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'])):
 	    revision = 0
 	else:
@@ -900,15 +902,18 @@ class etpDatabase:
 	f.close()
 
     def isDatabaseTainted(self):
+	dbLog.log(ETP_LOG_VERBOSE,"isDatabaseTainted: called.")
 	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
 	    return True
 	return False
 
     def discardChanges(self):
+	dbLog.log(ETP_LOG_VERBOSE,"discardChanges: called.")
 	self.connection.rollback()
 
     # never use this unless you know what you're doing
     def initializeDatabase(self):
+	dbLog.log(ETP_LOG_VERBOSE,"initializeDatabase: called.")
 	self.cursor.execute(etpSQLInitDestroyAll)
 	self.cursor.execute(etpSQLInit)
 	self.commitChanges()
@@ -917,6 +922,7 @@ class etpDatabase:
     # if it does not exist, it fires up addPackage
     # otherwise it fires up updatePackage
     def handlePackage(self, etpData, forceBump = False):
+	dbLog.log(ETP_LOG_VERBOSE,"handlePackage: called.")
 	if (not self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])):
 	    update, revision, etpDataUpdated = self.addPackage(etpData)
 	else:
@@ -925,15 +931,17 @@ class etpDatabase:
 
     # default add an unstable package
     def addPackage(self, etpData, revision = 0, wantedBranch = "unstable"):
-	# check if the package is slotted
 
+	dbLog.log(ETP_LOG_VERBOSE,"addPackage: called.")
+	
 	# Handle package name
 	etpData['download'] = etpData['download'].split(".tbz2")[0]
 	# add branch name
 	etpData['download'] += "-"+wantedBranch+".tbz2"
 
-	# if a similar package exist, enter here
+	# if a similar package, in the same branch exists, mark for removal
 	searchsimilar = self.searchSimilarPackages(etpData['category']+"/"+etpData['name'], branch = wantedBranch)
+	dbLog.log(ETP_LOG_NORMAL,"addPackage: here is the list of similar packages (that will be removed) found for "+etpData['category']+"/"+etpData['name']+": "+str(searchsimilar))
 	removelist = []
 	for oldpkg in searchsimilar:
 	    # get the package slot
@@ -945,6 +953,9 @@ class etpDatabase:
 	for pkg in removelist:
 	    self.removePackage(pkg)
 	
+	dbLog.log(ETP_LOG_VERBOSE,"addPackage: inserting: ")
+	for ln in etpData:
+	    dbLog.log(ETP_LOG_VERBOSE,"\t "+ln+": "+str(etpData[ln]))
 	# wantedBranch = etpData['branch']
 	self.cursor.execute(
 		'INSERT into etpData VALUES '
@@ -985,11 +996,13 @@ class etpDatabase:
     # Update already available atom in db
     # returns True,revision if the package has been updated
     # returns False,revision if not
-    # FIXME: this must be fixed to work with branches, supporting multiple packages with the same key but different branch
     def updatePackage(self, etpData, forceBump = False):
+
+	dbLog.log(ETP_LOG_VERBOSE,"updatePackage: called.")
 
 	# are there any stable packages?
 	searchsimilarStable = self.searchSimilarPackages(etpData['category']+"/"+etpData['name'], branch = "stable")
+	dbLog.log(ETP_LOG_NORMAL,"updatePackage: here is the list of similar stable packages found for "+etpData['category']+"/"+etpData['name']+": "+str(searchsimilarStable))
 	# filter the one with the same version
 	stableFound = False
 	for pkg in searchsimilarStable:
@@ -1003,6 +1016,8 @@ class etpDatabase:
 	
 	if (stableFound):
 	    
+	    dbLog.log(ETP_LOG_NORMAL,"updatePackage: found an old stable package, if etpData['neededlibs'] is equal, mark the branch of this updated package, stable too")
+	    
 	    # in this case, we should compare etpData['neededlibs'] with the db entry to see if there has been a API breakage
 	    dbStoredNeededLibs = self.retrievePackageVar(etpData['category'] + "/" + etpData['name'] + "-" + etpData['version'], "neededlibs", "stable")
 	    if (etpData['neededlibs'] == dbStoredNeededLibs):
@@ -1011,6 +1026,7 @@ class etpDatabase:
 		# - same libraries requirements
 		# setup etpData['branch'] accordingly
 		etpData['branch'] = "stable"
+		dbLog.log(ETP_LOG_NORMAL,"updatePackage: yes, their etpData['neededlibs'] match, marking the new package stable.")
 
 
 	# get selected package revision
@@ -1033,13 +1049,17 @@ class etpDatabase:
 	# bump revision nevertheless
 	curRevision += 1
 
+	dbLog.log(ETP_LOG_NORMAL,"updatePackage: current revision set to "+str(curRevision))
+
 	# add the new one
+	dbLog.log(ETP_LOG_NORMAL,"updatePackage: complete. Now spawning addPackage.")
 	self.addPackage(etpData,curRevision,etpData['branch'])
 	
 
     # You must provide the full atom to this function
     # FIXME: this must be fixed to work with branches
     def removePackage(self,key, branch = "unstable"):
+	dbLog.log(ETP_LOG_NORMAL,"removePackage: trying to remove (if exists) -> "+str(key)+" | branch: "+branch)
 	key = entropyTools.removePackageOperators(key)
 	self.cursor.execute('DELETE FROM etpData WHERE atom = "'+key+'" AND branch = "'+branch+'"')
 	self.commitChanges()
@@ -1060,15 +1080,20 @@ class etpDatabase:
 	for i in myEtpData:
 	    myEtpData[i] = self.retrievePackageVar(dbPkgInfo,i,dbPkgBranch)
 	
+	dbLog.log(ETP_LOG_VERBOSE,"comparePackagesData: called for "+str(etpData['name'])+" and "+str(myEtpData['name'])+" | branch: "+dbPkgBranch)
+	
 	for i in etpData:
 	    if etpData[i] != myEtpData[i]:
+		dbLog.log(ETP_LOG_VERBOSE,"comparePackagesData: they don't match")
 		return False
 	
+	dbLog.log(ETP_LOG_VERBOSE,"comparePackagesData: they match")
 	return True
 
     # You must provide the full atom to this function
     def retrievePackageInfo(self,pkgkey, branch = "unstable"):
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
+	dbLog.log(ETP_LOG_VERBOSE,"retrievePackageInfo: retrieving package info for "+pkgkey+" | branch: "+branch)
 	result = []
 	self.cursor.execute('SELECT * FROM etpData WHERE atom = "'+pkgkey+'" AND branch = "'+branch+'"')
 	for row in self.cursor:
@@ -1078,6 +1103,7 @@ class etpDatabase:
     # You must provide the full atom to this function
     def retrievePackageVar(self,pkgkey,pkgvar, branch = "unstable"):
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
+	dbLog.log(ETP_LOG_VERBOSE,"retrievePackageVar: retrieving package variable "+pkgvar+" for "+pkgkey+" | branch: "+branch)
 	result = []
 	self.cursor.execute('SELECT "'+pkgvar+'" FROM etpData WHERE atom = "'+pkgkey+'" AND branch = "'+branch+'"')
 	for row in self.cursor:
@@ -1091,6 +1117,7 @@ class etpDatabase:
     # package associated to a certain binary package file (.tbz2)
     def retrievePackageVarFromBinaryPackage(self,binaryPkgName,pkgvar):
 	# search binary package
+	dbLog.log(ETP_LOG_VERBOSE,"retrievePackageVarFromBinaryPackage: retrieving package variable "+pkgvar+" for "+binaryPkgName)
 	result = []
 	self.cursor.execute('SELECT "'+pkgvar+'" FROM etpData WHERE download = "'+etpConst['binaryurirelativepath']+binaryPkgName+'"')
 	for row in self.cursor:
@@ -1101,30 +1128,36 @@ class etpDatabase:
 	    return ""
 
     # You must provide the full atom to this function
-    # FIXME: add pkgcat/name split?
-    # FIXME: do SELECT atom instead of SELECT * ?
+    # WARNING: this function does not support branches !!!
     def isPackageAvailable(self,pkgkey):
+	dbLog.log(ETP_LOG_VERBOSE,"isPackageAvailable: called.")
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
 	result = []
-	self.cursor.execute('SELECT * FROM etpData WHERE atom LIKE "'+pkgkey+'"')
+	self.cursor.execute('SELECT * FROM etpData WHERE atom = "'+pkgkey+'"')
 	for row in self.cursor:
 	    result.append(row)
 	if result == []:
+	    dbLog.log(ETP_LOG_NORMAL,"isPackageAvailable: "+pkgkey+" not available.")
 	    return False
+	dbLog.log(ETP_LOG_VERBOSE,"isPackageAvailable: "+pkgkey+" available.")
 	return True
 
     # This version is more specific and supports branches
     def isSpecificPackageAvailable(self,pkgkey, branch):
+	dbLog.log(ETP_LOG_VERBOSE,"isSpecificPackageAvailable: called.")
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData WHERE atom LIKE "'+pkgkey+'" AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row[0])
 	if result == []:
+	    dbLog.log(ETP_LOG_NORMAL,"isSpecificPackageAvailable: "+pkgkey+" | branch: "+branch+" -> not found.")
 	    return False
+	dbLog.log(ETP_LOG_VERBOSE,"isSpecificPackageAvailable: "+pkgkey+" | branch: "+branch+" -> found !")
 	return True
 
     def searchPackages(self,keyword):
+	dbLog.log(ETP_LOG_VERBOSE,"searchPackages: called for "+keyword)
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData WHERE atom LIKE "%'+keyword+'%"')
 	for row in self.cursor:
@@ -1132,6 +1165,7 @@ class etpDatabase:
 	return result
 
     def searchPackagesInBranch(self,keyword,branch):
+	dbLog.log(ETP_LOG_VERBOSE,"searchPackagesInBranch: called.")
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData WHERE atom LIKE "%'+keyword+'%" AND branch = "'+branch+'"')
 	for row in self.cursor:
@@ -1142,6 +1176,7 @@ class etpDatabase:
     # you must provide something like: media-sound/amarok
     # optionally, you can add version too.
     def searchSimilarPackages(self,atom, branch = "unstable"):
+	dbLog.log(ETP_LOG_VERBOSE,"searchSimilarPackages: called for "+atom+" | branch: "+branch)
 	category = atom.split("/")[0]
 	name = atom.split("/")[1]
 	result = []
@@ -1153,6 +1188,7 @@ class etpDatabase:
     # NOTE: unstable and stable packages are pulled in
     # so, there might be duplicates! that's normal
     def listAllPackages(self):
+	dbLog.log(ETP_LOG_VERBOSE,"listAllPackages: called. ")
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData')
 	for row in self.cursor:
@@ -1160,6 +1196,7 @@ class etpDatabase:
 	return result
 
     def listAllPackagesTbz2(self):
+	dbLog.log(ETP_LOG_VERBOSE,"listAllPackagesTbz2: called. ")
         result = []
         pkglist = self.listAllPackages()
         for pkg in pkglist:
@@ -1176,6 +1213,7 @@ class etpDatabase:
 	return result
 
     def listStablePackages(self):
+	dbLog.log(ETP_LOG_VERBOSE,"listStablePackages: called. ")
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData WHERE branch = "stable"')
 	for row in self.cursor:
@@ -1183,6 +1221,7 @@ class etpDatabase:
 	return result
 
     def listUnstablePackages(self):
+	dbLog.log(ETP_LOG_VERBOSE,"listUnstablePackages: called. ")
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData WHERE branch = "unstable"')
 	for row in self.cursor:
@@ -1190,6 +1229,7 @@ class etpDatabase:
 	return result
 
     def searchStablePackages(self,atom):
+	dbLog.log(ETP_LOG_VERBOSE,"searchStablePackages: called for "+atom)
 	category = atom.split("/")[0]
 	name = atom.split("/")[1]
 	result = []
@@ -1199,6 +1239,7 @@ class etpDatabase:
 	return result
 
     def searchUnstablePackages(self,atom):
+	dbLog.log(ETP_LOG_VERBOSE,"searchUnstablePackages: called for "+atom)
 	category = atom.split("/")[0]
 	name = atom.split("/")[1]
 	result = []
@@ -1210,17 +1251,23 @@ class etpDatabase:
     # useful to quickly retrieve (and trash) all the data
     # and look for problems.
     def noopCycle(self):
+	dbLog.log(ETP_LOG_VERBOSE,"noopCycle: called. ")
 	self.cursor.execute('SELECT * FROM etpData')
 
     def stabilizePackage(self,atom,stable = True):
-	
+
+	dbLog.log(ETP_LOG_VERBOSE,"stabilizePackage: called for "+atom+" | branch stable? -> "+str(stable))
+
 	action = "unstable"
 	removeaction = "stable"
 	if (stable):
 	    action = "stable"
 	    removeaction = "unstable"
 	
+	dbLog.log(ETP_LOG_VERBOSE,"stabilizePackage: add action: "+action+" | remove action: "+removeaction)
+	
 	if (self.isSpecificPackageAvailable(atom, removeaction)):
+	    dbLog.log(ETP_LOG_VERBOSE,"stabilizePackage: there's something old that needs to be removed.")
 	    # ! Get rid of old entries with the same slot, pkgcat/name that
 	    # were already marked "stable"
 	    # get its pkgname
@@ -1238,8 +1285,10 @@ class etpDatabase:
 		myslot = self.retrievePackageVar(result,"slot", branch = action)
 		if (myslot == slot):
 		    removelist.append(result)
+	    dbLog.log(ETP_LOG_VERBOSE,"stabilizePackage: removelist: "+str(removelist))
 	    for pkg in removelist:
 		self.removePackage(pkg, branch = action)
+	    dbLog.log(ETP_LOG_VERBOSE,"stabilizePackage: updating "+atom+" setting branch: "+action)
 	    self.cursor.execute('UPDATE etpData SET branch = "'+action+'" WHERE atom = "'+atom+'" AND branch = "'+removeaction+'"')
 	    self.commitChanges()
 	    
@@ -1247,6 +1296,7 @@ class etpDatabase:
 	return False,action
 
     def writePackageParameter(self,atom,field,what,branch):
+	dbLog.log(ETP_LOG_VERBOSE,"writePackageParameter: writing '"+what+"' into field '"+field+"' for '"+atom+"' | branch: "+branch)
 	self.cursor.execute('UPDATE etpData SET '+field+' = "'+what+'" WHERE atom = "'+atom+'" AND branch = "'+branch+'"')
 	self.commitChanges()
 
