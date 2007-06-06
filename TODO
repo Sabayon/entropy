@@ -1,9 +1,6 @@
 TODO list (for developers only):
 - implement logTools inside handlers
-  - activatorTools
-  - reagentTools
-  - mirrorTools
-  - add option to cleanup logs
+  - enzymeTools
 - reagent: complete smartapps section
 - enzyme, reagent: test kernel dependent packages
 - enzyme, build(): add an option to force the continuation of the emerge queue even if a package fails

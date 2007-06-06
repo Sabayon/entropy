@@ -66,9 +66,9 @@ class LogFile:
     def set_loglevel(self, level):
         self.level = level
 
-    def log(self, level, message):
+    def log(self, messagetype, level, message):
         if self.level >= level:
-            self.handler(self.getTimeDateHeader()+self.header+' '+message)
+            self.handler(self.getTimeDateHeader()+messagetype+' '+self.header+' '+message)
 
     def getTimeDateHeader(self):
 	return time.strftime('[%X %x %Z] ')

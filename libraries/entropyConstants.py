@@ -126,6 +126,9 @@ ETP_ROOT_DIR = "/"
 ETP_LOG_DIR = ETP_DIR+"/"+"logs"
 ETP_LOG_NORMAL = 1
 ETP_LOG_VERBOSE = 2
+ETP_LOG_INFO = "[ INFO ]"
+ETP_LOG_WARNING = "[ WARNING ]"
+ETP_LOG_ERROR = "[ ERROR ]"
 # NEVER APPEND another \n to this file because it will break the md5 check of reagent
 ETP_HEADER_TEXT = "# Sabayon Linux (C - 2007) - Entropy Package Specifications (GPLv2)\n"
 MAX_ETP_REVISION_COUNT = 99999
@@ -152,6 +155,7 @@ etpConst = {
     'reagentconf': ETP_CONF_DIR+"/reagent.conf", # reagent.conf file
     'databaseconf': ETP_CONF_DIR+"/database.conf", # database.conf file
     'spmbackendconf': ETP_CONF_DIR+"/spmbackend.conf", # Source Package Manager backend configuration (Portage now)
+    'mirrorsconf': ETP_CONF_DIR+"/mirrors.conf", # mirrors.conf file
     'activatoruploaduris': [], # list of URIs that activator can use to upload files (parsed from activator.conf)
     'activatordownloaduris': [], # list of URIs that activator can use to fetch data
     'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
@@ -166,18 +170,23 @@ etpConst = {
     'etpdatabasefilegzip': ETP_DBFILE+".gz", # Entropy sqlite database file (gzipped)
     'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
     
-    'databaseloglevel': 1, # Database log level (default: 1 - see enzyme.conf for more info)
+    'databaseloglevel': 1, # Database log level (default: 1 - see database.conf for more info)
+    'mirrorsloglevel': 1, # Mirrors log level (default: 1 - see mirrors.conf for more info)
     'enzymeloglevel': 1 , # Enzyme log level (default: 1 - see enzyme.conf for more info)
     'reagentloglevel': 1 , # Reagent log level (default: 1 - see reagent.conf for more info)
     'activatorloglevel': 1, # # Activator log level (default: 1 - see activator.conf for more info)
     'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
+    
     'spmbackendloglevel': 1, # # Source Package Manager backend log level (default: 1 - see entropy.conf for more info)
     'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
-    'databaselogfile': ETP_LOG_DIR+"/database.log", # database operations log file
+    'mirrorslogfile': ETP_LOG_DIR+"/mirrors.log", # Mirrors operations log file
+    'spmbackendlogfile': ETP_LOG_DIR+"/spmbackend.log", # Source Package Manager backend configuration log file
+    'databaselogfile': ETP_LOG_DIR+"/database.log", # Database operations log file
     'enzymelogfile': ETP_LOG_DIR+"/enzyme.log", # Enzyme operations log file
     'reagentlogfile': ETP_LOG_DIR+"/reagent.log", # Reagent operations log file
     'activatorlogfile': ETP_LOG_DIR+"/activator.log", # Activator operations log file
     'entropylogfile': ETP_LOG_DIR+"/entropy.log", # Activator operations log file
+    
     
     'distcc-status': False, # used by Enzyme, if True distcc is enabled
     'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file

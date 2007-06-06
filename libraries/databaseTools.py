@@ -704,7 +704,7 @@ class databaseStatus:
 
     def __init__(self):
 	
-	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus.__init__ called.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"DatabaseStatus.__init__ called.")
 	
 	self.databaseBumped = False
 	self.databaseInfoCached = False
@@ -714,103 +714,103 @@ class databaseStatus:
 	self.databaseAlreadyTainted = False
 	
 	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
-	    dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: database tainted.")
+	    dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"DatabaseStatus: database tainted.")
 	    self.databaseAlreadyTainted = True
 
     def isDatabaseAlreadyBumped(self):
-	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: already bumped? "+str(self.databaseBumped))
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"DatabaseStatus: already bumped? "+str(self.databaseBumped))
 	return self.databaseBumped
 
     def isDatabaseAlreadyTainted(self):
-	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: tainted? "+str(self.databaseAlreadyTainted))
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"DatabaseStatus: tainted? "+str(self.databaseAlreadyTainted))
 	return self.databaseAlreadyTainted
 
     def setDatabaseTaint(self,bool):
-	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: setting database taint to: "+str(bool))
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"DatabaseStatus: setting database taint to: "+str(bool))
 	self.databaseAlreadyTainted = bool
 
     def setDatabaseBump(self,bool):
-	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: setting database bump to: "+str(bool))
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"DatabaseStatus: setting database bump to: "+str(bool))
 	self.databaseBumped = bool
 
     def setDatabaseLock(self):
-	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: Locking database (upload)")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"DatabaseStatus: Locking database (upload)")
 	self.databaseLock = True
 
     def unsetDatabaseLock(self):
-	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: Unlocking database (upload)")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"DatabaseStatus: Unlocking database (upload)")
 	self.databaseLock = False
 
     def getDatabaseLock(self):
-	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: getting database lock info (upload), status: "+str(self.databaseLock))
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"DatabaseStatus: getting database lock info (upload), status: "+str(self.databaseLock))
 	return self.databaseLock
 
     def setDatabaseDownloadLock(self):
-	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: Locking database (download)")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"DatabaseStatus: Locking database (download)")
 	self.databaseDownloadLock = True
 
     def unsetDatabaseDownloadLock(self):
-	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: Unlocking database (download)")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"DatabaseStatus: Unlocking database (download)")
 	self.databaseDownloadLock = False
 
     def getDatabaseDownloadLock(self):
-	dbLog.log(ETP_LOG_VERBOSE,"DatabaseStatus: getting database lock info (download), status: "+str(self.databaseDownloadLock))
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"DatabaseStatus: getting database lock info (download), status: "+str(self.databaseDownloadLock))
 	return self.databaseDownloadLock
 
 class etpDatabase:
 
     def __init__(self, readOnly = False, noUpload = False):
 	
-	dbLog.log(ETP_LOG_VERBOSE,"etpDatabase.__init__ called.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"etpDatabase.__init__ called.")
 	
 	self.readOnly = readOnly
 	self.noUpload = noUpload
 	
 	if (self.readOnly):
-	    dbLog.log(ETP_LOG_VERBOSE,"etpDatabase: database opened readonly")
+	    dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"etpDatabase: database opened readonly")
 	    # if the database is opened readonly, we don't need to lock the online status
 	    self.connection = sqlite.connect(etpConst['etpdatabasefilepath'])
 	    self.cursor = self.connection.cursor()
 	    # set the table read only
 	    return
 	
-	dbLog.log(ETP_LOG_VERBOSE,"etpDatabase: database opened in read/write mode")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"etpDatabase: database opened in read/write mode")
 
 	# check if the database is locked locally
 	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
-	    dbLog.log(ETP_LOG_NORMAL,"etpDatabase: database already locked")
+	    dbLog.log(ETP_LOG_WARNING,ETP_LOG_NORMAL,"etpDatabase: database already locked")
 	    print_info(red(" * ")+red(" Entropy database is already locked by you :-)"))
 	else:
 	    # check if the database is locked REMOTELY
-	    dbLog.log(ETP_LOG_NORMAL,"etpDatabase: starting to lock and sync database")
+	    dbLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"etpDatabase: starting to lock and sync database")
 	    print_info(red(" * ")+red(" Locking and Syncing Entropy database ..."), back = True)
 	    for uri in etpConst['activatoruploaduris']:
-		dbLog.log(ETP_LOG_VERBOSE,"etpDatabase: connecting to "+uri)
+		dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"etpDatabase: connecting to "+uri)
 	        ftp = mirrorTools.handlerFTP(uri)
 	        ftp.setCWD(etpConst['etpurirelativepath'])
 	        if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
 		    import time
 		    print_info(red(" * ")+bold("WARNING")+red(": online database is already locked. Waiting up to 2 minutes..."), back = True)
-		    dbLog.log(ETP_LOG_NORMAL,"etpDatabase: online database already locked. Waiting 2 minutes")
+		    dbLog.log(ETP_LOG_WARNING,ETP_LOG_NORMAL,"etpDatabase: online database already locked. Waiting 2 minutes")
 		    unlocked = False
 		    for x in range(120):
 		        time.sleep(1)
 		        if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
-			    dbLog.log(ETP_LOG_NORMAL,"etpDatabase: online database has been unlocked !")
+			    dbLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"etpDatabase: online database has been unlocked !")
 			    print_info(red(" * ")+bold("HOORAY")+red(": online database has been unlocked. Locking back and syncing..."))
 			    unlocked = True
 			    break
 		    if (unlocked):
 		        break
 
-		    dbLog.log(ETP_LOG_NORMAL,"etpDatabase: online database has not been unlocked in time. Giving up.")
+		    dbLog.log(ETP_LOG_ERROR,ETP_LOG_NORMAL,"etpDatabase: online database has not been unlocked in time. Giving up.")
 		    # time over
 		    print_info(red(" * ")+bold("ERROR")+red(": online database has not been unlocked. Giving up. Who the hell is working on it? Damn, it's so frustrating for me. I'm a piece of python code with a soul dude!"))
 		    # FIXME show the lock status
 
 		    print_info(yellow(" * ")+green("Mirrors status table:"))
 		    dbstatus = entropyTools.getMirrorsLock()
-		    dbLog.log(ETP_LOG_VERBOSE,"etpDatabase: showing mirrors status table:")
+		    dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"etpDatabase: showing mirrors status table:")
 		    for db in dbstatus:
 		        if (db[1]):
 	        	    db[1] = red("Locked")
@@ -820,7 +820,7 @@ class etpDatabase:
 	        	    db[2] = red("Locked")
 	                else:
 	        	    db[2] = green("Unlocked")
-			dbLog.log(ETP_LOG_VERBOSE,"   "+entropyTools.extractFTPHostFromUri(db[0])+": DATABASE: "+db[1]+" | DOWNLOAD: "+db[2])
+			dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"   "+entropyTools.extractFTPHostFromUri(db[0])+": DATABASE: "+db[1]+" | DOWNLOAD: "+db[2])
 	    	        print_info(bold("\t"+entropyTools.extractFTPHostFromUri(db[0])+": ")+red("[")+yellow("DATABASE: ")+db[1]+red("] [")+yellow("DOWNLOAD: ")+db[2]+red("]"))
 	    
 	            ftp.closeFTPConnection()
@@ -840,13 +840,13 @@ class etpDatabase:
 	
 	# if the class is opened readOnly, close and forget
 	if (self.readOnly):
-	    dbLog.log(ETP_LOG_VERBOSE,"closeDB: closing database opened in readonly.")
+	    dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"closeDB: closing database opened in readonly.")
 	    #self.connection.rollback()
 	    self.cursor.close()
 	    self.connection.close()
 	    return
 	
-	dbLog.log(ETP_LOG_VERBOSE,"closeDB: closing database opened in read/write.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"closeDB: closing database opened in read/write.")
 	
 	# FIXME verify all this shit, for now it works...
 	if (entropyTools.dbStatus.isDatabaseAlreadyTainted()) and (not entropyTools.dbStatus.isDatabaseAlreadyBumped()):
@@ -865,15 +865,15 @@ class etpDatabase:
 
     def commitChanges(self):
 	if (not self.readOnly):
-	    dbLog.log(ETP_LOG_VERBOSE,"commitChanges: writing changes to database.")
+	    dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"commitChanges: writing changes to database.")
 	    self.connection.commit()
 	    self.taintDatabase()
 	else:
-	    dbLog.log(ETP_LOG_VERBOSE,"commitChanges: discarding changes to database (opened readonly).")
+	    dbLog.log(ETP_LOG_WARNING,ETP_LOG_VERBOSE,"commitChanges: discarding changes to database (opened readonly).")
 	    self.discardChanges() # is it ok?
 
     def taintDatabase(self):
-	dbLog.log(ETP_LOG_VERBOSE,"taintDatabase: called.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"taintDatabase: called.")
 	# taint the database status
 	f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'],"w")
 	f.write(etpConst['currentarch']+" database tainted\n")
@@ -882,13 +882,13 @@ class etpDatabase:
 	entropyTools.dbStatus.setDatabaseTaint(True)
 
     def untaintDatabase(self):
-	dbLog.log(ETP_LOG_VERBOSE,"untaintDatabase: called.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"untaintDatabase: called.")
 	entropyTools.dbStatus.setDatabaseTaint(False)
 	# untaint the database status
 	os.system("rm -f "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
 
     def revisionBump(self):
-	dbLog.log(ETP_LOG_VERBOSE,"revisionBump: called.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"revisionBump: called.")
 	if (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'])):
 	    revision = 0
 	else:
@@ -902,18 +902,18 @@ class etpDatabase:
 	f.close()
 
     def isDatabaseTainted(self):
-	dbLog.log(ETP_LOG_VERBOSE,"isDatabaseTainted: called.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"isDatabaseTainted: called.")
 	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
 	    return True
 	return False
 
     def discardChanges(self):
-	dbLog.log(ETP_LOG_VERBOSE,"discardChanges: called.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"discardChanges: called.")
 	self.connection.rollback()
 
     # never use this unless you know what you're doing
     def initializeDatabase(self):
-	dbLog.log(ETP_LOG_VERBOSE,"initializeDatabase: called.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"initializeDatabase: called.")
 	self.cursor.execute(etpSQLInitDestroyAll)
 	self.cursor.execute(etpSQLInit)
 	self.commitChanges()
@@ -922,7 +922,7 @@ class etpDatabase:
     # if it does not exist, it fires up addPackage
     # otherwise it fires up updatePackage
     def handlePackage(self, etpData, forceBump = False):
-	dbLog.log(ETP_LOG_VERBOSE,"handlePackage: called.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlePackage: called.")
 	if (not self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])):
 	    update, revision, etpDataUpdated = self.addPackage(etpData)
 	else:
@@ -932,7 +932,7 @@ class etpDatabase:
     # default add an unstable package
     def addPackage(self, etpData, revision = 0, wantedBranch = "unstable"):
 
-	dbLog.log(ETP_LOG_VERBOSE,"addPackage: called.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"addPackage: called.")
 	
 	# Handle package name
 	etpData['download'] = etpData['download'].split(".tbz2")[0]
@@ -941,7 +941,7 @@ class etpDatabase:
 
 	# if a similar package, in the same branch exists, mark for removal
 	searchsimilar = self.searchSimilarPackages(etpData['category']+"/"+etpData['name'], branch = wantedBranch)
-	dbLog.log(ETP_LOG_NORMAL,"addPackage: here is the list of similar packages (that will be removed) found for "+etpData['category']+"/"+etpData['name']+": "+str(searchsimilar))
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"addPackage: here is the list of similar packages (that will be removed) found for "+etpData['category']+"/"+etpData['name']+": "+str(searchsimilar))
 	removelist = []
 	for oldpkg in searchsimilar:
 	    # get the package slot
@@ -953,9 +953,9 @@ class etpDatabase:
 	for pkg in removelist:
 	    self.removePackage(pkg)
 	
-	dbLog.log(ETP_LOG_VERBOSE,"addPackage: inserting: ")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"addPackage: inserting: ")
 	for ln in etpData:
-	    dbLog.log(ETP_LOG_VERBOSE,"\t "+ln+": "+str(etpData[ln]))
+	    dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"\t "+ln+": "+str(etpData[ln]))
 	# wantedBranch = etpData['branch']
 	self.cursor.execute(
 		'INSERT into etpData VALUES '
@@ -998,11 +998,11 @@ class etpDatabase:
     # returns False,revision if not
     def updatePackage(self, etpData, forceBump = False):
 
-	dbLog.log(ETP_LOG_VERBOSE,"updatePackage: called.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"updatePackage: called.")
 
 	# are there any stable packages?
 	searchsimilarStable = self.searchSimilarPackages(etpData['category']+"/"+etpData['name'], branch = "stable")
-	dbLog.log(ETP_LOG_NORMAL,"updatePackage: here is the list of similar stable packages found for "+etpData['category']+"/"+etpData['name']+": "+str(searchsimilarStable))
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"updatePackage: here is the list of similar stable packages found for "+etpData['category']+"/"+etpData['name']+": "+str(searchsimilarStable))
 	# filter the one with the same version
 	stableFound = False
 	for pkg in searchsimilarStable:
@@ -1016,7 +1016,7 @@ class etpDatabase:
 	
 	if (stableFound):
 	    
-	    dbLog.log(ETP_LOG_NORMAL,"updatePackage: found an old stable package, if etpData['neededlibs'] is equal, mark the branch of this updated package, stable too")
+	    dbLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"updatePackage: found an old stable package, if etpData['neededlibs'] is equal, mark the branch of this updated package, stable too")
 	    
 	    # in this case, we should compare etpData['neededlibs'] with the db entry to see if there has been a API breakage
 	    dbStoredNeededLibs = self.retrievePackageVar(etpData['category'] + "/" + etpData['name'] + "-" + etpData['version'], "neededlibs", "stable")
@@ -1026,7 +1026,7 @@ class etpDatabase:
 		# - same libraries requirements
 		# setup etpData['branch'] accordingly
 		etpData['branch'] = "stable"
-		dbLog.log(ETP_LOG_NORMAL,"updatePackage: yes, their etpData['neededlibs'] match, marking the new package stable.")
+		dbLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"updatePackage: yes, their etpData['neededlibs'] match, marking the new package stable.")
 
 
 	# get selected package revision
@@ -1049,17 +1049,17 @@ class etpDatabase:
 	# bump revision nevertheless
 	curRevision += 1
 
-	dbLog.log(ETP_LOG_NORMAL,"updatePackage: current revision set to "+str(curRevision))
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"updatePackage: current revision set to "+str(curRevision))
 
 	# add the new one
-	dbLog.log(ETP_LOG_NORMAL,"updatePackage: complete. Now spawning addPackage.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"updatePackage: complete. Now spawning addPackage.")
 	self.addPackage(etpData,curRevision,etpData['branch'])
 	
 
     # You must provide the full atom to this function
     # FIXME: this must be fixed to work with branches
     def removePackage(self,key, branch = "unstable"):
-	dbLog.log(ETP_LOG_NORMAL,"removePackage: trying to remove (if exists) -> "+str(key)+" | branch: "+branch)
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"removePackage: trying to remove (if exists) -> "+str(key)+" | branch: "+branch)
 	key = entropyTools.removePackageOperators(key)
 	self.cursor.execute('DELETE FROM etpData WHERE atom = "'+key+'" AND branch = "'+branch+'"')
 	self.commitChanges()
@@ -1080,20 +1080,20 @@ class etpDatabase:
 	for i in myEtpData:
 	    myEtpData[i] = self.retrievePackageVar(dbPkgInfo,i,dbPkgBranch)
 	
-	dbLog.log(ETP_LOG_VERBOSE,"comparePackagesData: called for "+str(etpData['name'])+" and "+str(myEtpData['name'])+" | branch: "+dbPkgBranch)
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"comparePackagesData: called for "+str(etpData['name'])+" and "+str(myEtpData['name'])+" | branch: "+dbPkgBranch)
 	
 	for i in etpData:
 	    if etpData[i] != myEtpData[i]:
-		dbLog.log(ETP_LOG_VERBOSE,"comparePackagesData: they don't match")
+		dbLog.log(ETP_LOG_WARNING,ETP_LOG_VERBOSE,"comparePackagesData: they don't match")
 		return False
 	
-	dbLog.log(ETP_LOG_VERBOSE,"comparePackagesData: they match")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"comparePackagesData: they match")
 	return True
 
     # You must provide the full atom to this function
     def retrievePackageInfo(self,pkgkey, branch = "unstable"):
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
-	dbLog.log(ETP_LOG_VERBOSE,"retrievePackageInfo: retrieving package info for "+pkgkey+" | branch: "+branch)
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"retrievePackageInfo: retrieving package info for "+pkgkey+" | branch: "+branch)
 	result = []
 	self.cursor.execute('SELECT * FROM etpData WHERE atom = "'+pkgkey+'" AND branch = "'+branch+'"')
 	for row in self.cursor:
@@ -1103,7 +1103,7 @@ class etpDatabase:
     # You must provide the full atom to this function
     def retrievePackageVar(self,pkgkey,pkgvar, branch = "unstable"):
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
-	dbLog.log(ETP_LOG_VERBOSE,"retrievePackageVar: retrieving package variable "+pkgvar+" for "+pkgkey+" | branch: "+branch)
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"retrievePackageVar: retrieving package variable "+pkgvar+" for "+pkgkey+" | branch: "+branch)
 	result = []
 	self.cursor.execute('SELECT "'+pkgvar+'" FROM etpData WHERE atom = "'+pkgkey+'" AND branch = "'+branch+'"')
 	for row in self.cursor:
@@ -1117,7 +1117,7 @@ class etpDatabase:
     # package associated to a certain binary package file (.tbz2)
     def retrievePackageVarFromBinaryPackage(self,binaryPkgName,pkgvar):
 	# search binary package
-	dbLog.log(ETP_LOG_VERBOSE,"retrievePackageVarFromBinaryPackage: retrieving package variable "+pkgvar+" for "+binaryPkgName)
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"retrievePackageVarFromBinaryPackage: retrieving package variable "+pkgvar+" for "+binaryPkgName)
 	result = []
 	self.cursor.execute('SELECT "'+pkgvar+'" FROM etpData WHERE download = "'+etpConst['binaryurirelativepath']+binaryPkgName+'"')
 	for row in self.cursor:
@@ -1130,34 +1130,34 @@ class etpDatabase:
     # You must provide the full atom to this function
     # WARNING: this function does not support branches !!!
     def isPackageAvailable(self,pkgkey):
-	dbLog.log(ETP_LOG_VERBOSE,"isPackageAvailable: called.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"isPackageAvailable: called.")
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
 	result = []
 	self.cursor.execute('SELECT * FROM etpData WHERE atom = "'+pkgkey+'"')
 	for row in self.cursor:
 	    result.append(row)
 	if result == []:
-	    dbLog.log(ETP_LOG_NORMAL,"isPackageAvailable: "+pkgkey+" not available.")
+	    dbLog.log(ETP_LOG_WARNING,ETP_LOG_NORMAL,"isPackageAvailable: "+pkgkey+" not available.")
 	    return False
-	dbLog.log(ETP_LOG_VERBOSE,"isPackageAvailable: "+pkgkey+" available.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"isPackageAvailable: "+pkgkey+" available.")
 	return True
 
     # This version is more specific and supports branches
     def isSpecificPackageAvailable(self,pkgkey, branch):
-	dbLog.log(ETP_LOG_VERBOSE,"isSpecificPackageAvailable: called.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"isSpecificPackageAvailable: called.")
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData WHERE atom LIKE "'+pkgkey+'" AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row[0])
 	if result == []:
-	    dbLog.log(ETP_LOG_NORMAL,"isSpecificPackageAvailable: "+pkgkey+" | branch: "+branch+" -> not found.")
+	    dbLog.log(ETP_LOG_WARNING,ETP_LOG_NORMAL,"isSpecificPackageAvailable: "+pkgkey+" | branch: "+branch+" -> not found.")
 	    return False
-	dbLog.log(ETP_LOG_VERBOSE,"isSpecificPackageAvailable: "+pkgkey+" | branch: "+branch+" -> found !")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"isSpecificPackageAvailable: "+pkgkey+" | branch: "+branch+" -> found !")
 	return True
 
     def searchPackages(self,keyword):
-	dbLog.log(ETP_LOG_VERBOSE,"searchPackages: called for "+keyword)
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"searchPackages: called for "+keyword)
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData WHERE atom LIKE "%'+keyword+'%"')
 	for row in self.cursor:
@@ -1165,7 +1165,7 @@ class etpDatabase:
 	return result
 
     def searchPackagesInBranch(self,keyword,branch):
-	dbLog.log(ETP_LOG_VERBOSE,"searchPackagesInBranch: called.")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"searchPackagesInBranch: called.")
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData WHERE atom LIKE "%'+keyword+'%" AND branch = "'+branch+'"')
 	for row in self.cursor:
@@ -1176,7 +1176,7 @@ class etpDatabase:
     # you must provide something like: media-sound/amarok
     # optionally, you can add version too.
     def searchSimilarPackages(self,atom, branch = "unstable"):
-	dbLog.log(ETP_LOG_VERBOSE,"searchSimilarPackages: called for "+atom+" | branch: "+branch)
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"searchSimilarPackages: called for "+atom+" | branch: "+branch)
 	category = atom.split("/")[0]
 	name = atom.split("/")[1]
 	result = []
@@ -1188,7 +1188,7 @@ class etpDatabase:
     # NOTE: unstable and stable packages are pulled in
     # so, there might be duplicates! that's normal
     def listAllPackages(self):
-	dbLog.log(ETP_LOG_VERBOSE,"listAllPackages: called. ")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"listAllPackages: called. ")
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData')
 	for row in self.cursor:
@@ -1196,7 +1196,7 @@ class etpDatabase:
 	return result
 
     def listAllPackagesTbz2(self):
-	dbLog.log(ETP_LOG_VERBOSE,"listAllPackagesTbz2: called. ")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"listAllPackagesTbz2: called. ")
         result = []
         pkglist = self.listAllPackages()
         for pkg in pkglist:
@@ -1213,7 +1213,7 @@ class etpDatabase:
 	return result
 
     def listStablePackages(self):
-	dbLog.log(ETP_LOG_VERBOSE,"listStablePackages: called. ")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"listStablePackages: called. ")
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData WHERE branch = "stable"')
 	for row in self.cursor:
@@ -1221,7 +1221,7 @@ class etpDatabase:
 	return result
 
     def listUnstablePackages(self):
-	dbLog.log(ETP_LOG_VERBOSE,"listUnstablePackages: called. ")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"listUnstablePackages: called. ")
 	result = []
 	self.cursor.execute('SELECT atom FROM etpData WHERE branch = "unstable"')
 	for row in self.cursor:
@@ -1229,7 +1229,7 @@ class etpDatabase:
 	return result
 
     def searchStablePackages(self,atom):
-	dbLog.log(ETP_LOG_VERBOSE,"searchStablePackages: called for "+atom)
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"searchStablePackages: called for "+atom)
 	category = atom.split("/")[0]
 	name = atom.split("/")[1]
 	result = []
@@ -1239,7 +1239,7 @@ class etpDatabase:
 	return result
 
     def searchUnstablePackages(self,atom):
-	dbLog.log(ETP_LOG_VERBOSE,"searchUnstablePackages: called for "+atom)
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"searchUnstablePackages: called for "+atom)
 	category = atom.split("/")[0]
 	name = atom.split("/")[1]
 	result = []
@@ -1251,12 +1251,12 @@ class etpDatabase:
     # useful to quickly retrieve (and trash) all the data
     # and look for problems.
     def noopCycle(self):
-	dbLog.log(ETP_LOG_VERBOSE,"noopCycle: called. ")
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"noopCycle: called. ")
 	self.cursor.execute('SELECT * FROM etpData')
 
     def stabilizePackage(self,atom,stable = True):
 
-	dbLog.log(ETP_LOG_VERBOSE,"stabilizePackage: called for "+atom+" | branch stable? -> "+str(stable))
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"stabilizePackage: called for "+atom+" | branch stable? -> "+str(stable))
 
 	action = "unstable"
 	removeaction = "stable"
@@ -1264,10 +1264,10 @@ class etpDatabase:
 	    action = "stable"
 	    removeaction = "unstable"
 	
-	dbLog.log(ETP_LOG_VERBOSE,"stabilizePackage: add action: "+action+" | remove action: "+removeaction)
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"stabilizePackage: add action: "+action+" | remove action: "+removeaction)
 	
 	if (self.isSpecificPackageAvailable(atom, removeaction)):
-	    dbLog.log(ETP_LOG_VERBOSE,"stabilizePackage: there's something old that needs to be removed.")
+	    dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"stabilizePackage: there's something old that needs to be removed.")
 	    # ! Get rid of old entries with the same slot, pkgcat/name that
 	    # were already marked "stable"
 	    # get its pkgname
@@ -1285,10 +1285,10 @@ class etpDatabase:
 		myslot = self.retrievePackageVar(result,"slot", branch = action)
 		if (myslot == slot):
 		    removelist.append(result)
-	    dbLog.log(ETP_LOG_VERBOSE,"stabilizePackage: removelist: "+str(removelist))
+	    dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"stabilizePackage: removelist: "+str(removelist))
 	    for pkg in removelist:
 		self.removePackage(pkg, branch = action)
-	    dbLog.log(ETP_LOG_VERBOSE,"stabilizePackage: updating "+atom+" setting branch: "+action)
+	    dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"stabilizePackage: updating "+atom+" setting branch: "+action)
 	    self.cursor.execute('UPDATE etpData SET branch = "'+action+'" WHERE atom = "'+atom+'" AND branch = "'+removeaction+'"')
 	    self.commitChanges()
 	    
@@ -1296,7 +1296,7 @@ class etpDatabase:
 	return False,action
 
     def writePackageParameter(self,atom,field,what,branch):
-	dbLog.log(ETP_LOG_VERBOSE,"writePackageParameter: writing '"+what+"' into field '"+field+"' for '"+atom+"' | branch: "+branch)
+	dbLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"writePackageParameter: writing '"+what+"' into field '"+field+"' for '"+atom+"' | branch: "+branch)
 	self.cursor.execute('UPDATE etpData SET '+field+' = "'+what+'" WHERE atom = "'+atom+'" AND branch = "'+branch+'"')
 	self.commitChanges()
 
