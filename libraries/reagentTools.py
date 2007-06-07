@@ -120,11 +120,11 @@ def enzyme(options):
 	if (rc):
 	    etpCreated += 1
 	    # create .hash file
-	    os.system("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/"+newFileName+" -f")
+	    entropyTools.spawnCommand("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/"+newFileName+" -f")
 	    hashFilePath = createHashFile(etpConst['packagessuploaddir']+"/"+newFileName)
 	else:
 	    etpNotCreated += 1
-	    os.system("rm -rf "+tbz2path)
+	    entropyTools.spawnCommand("rm -rf "+tbz2path)
 	dbconn.commitChanges()
 
     dbconn.commitChanges()
@@ -590,7 +590,7 @@ def smartgenerator(atom):
     pkgtmpdir = etpConst['packagestmpdir']+"/"+pkgname
     #print "DEBUG: "+pkgtmpdir
     if os.path.isdir(pkgtmpdir):
-	os.system("rm -rf "+pkgtmpdir)
+	entropyTools.spawnCommand("rm -rf "+pkgtmpdir)
     os.makedirs(pkgtmpdir)
     uncompressTarBz2(mainBinaryPath,pkgtmpdir)
 
@@ -648,7 +648,7 @@ def smartgenerator(atom):
 	    #print lib
 	    if not os.path.isdir(pkgtmpdir+libdir):
 	        os.makedirs(pkgtmpdir+libdir)
-	    os.system("cp -p "+lib+" "+pkgtmpdir+libdir)
+	    entropyTools.spawnCommand("cp -p "+lib+" "+pkgtmpdir+libdir)
     pkgneededlibs = _pkgneededlibs
     # collect libraries in the directories
     
@@ -747,7 +747,7 @@ def smartgenerator(atom):
 	f.flush()
 	f.close()
 	# now compile
-	os.system("cd "+pkgtmpdir+"/ ; g++ -Wall "+file+".cc -o "+file+".exe")
+	entropyTools.spawnCommand("cd "+pkgtmpdir+"/ ; g++ -Wall "+file+".cc -o "+file+".exe")
 	os.remove(pkgtmpdir+"/"+file+".cc")
 
     # now compress in .tar.bz2 and place in etpConst['smartappsdir']

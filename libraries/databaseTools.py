@@ -57,7 +57,7 @@ def database(options):
 	    rc = entropyTools.askquestion("\n     Do you want to continue ?")
 	    if rc == "No":
 	        sys.exit(0)
-	    os.system("rm -f "+etpConst['etpdatabasefilepath'])
+	    entropyTools.spawnCommand("rm -f "+etpConst['etpdatabasefilepath'])
 
 	# initialize the database
         dbconn = etpDatabase(readOnly = False, noUpload = True)
@@ -81,7 +81,7 @@ def database(options):
 	    etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+pkg)
 		
 	    # remove shait
-	    os.system("rm -rf "+etpConst['packagestmpdir']+"/"+pkg)
+	    entropyTools.spawnCommand("rm -rf "+etpConst['packagestmpdir']+"/"+pkg)
 	    # fill the db entry
 	    dbconn.addPackage(etpData)
 	    dbconn.commitChanges()
@@ -323,7 +323,7 @@ def database(options):
 	    print_info(green("  (")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."))
 	    etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+pkg)
 	    # remove shait
-	    os.system("rm -rf "+etpConst['packagestmpdir']+"/"+pkg)
+	    entropyTools.spawnCommand("rm -rf "+etpConst['packagestmpdir']+"/"+pkg)
 	    # fill the db entry
 	    dbconn.handlePackage(etpData)
 	    dbconn.commitChanges()
@@ -885,7 +885,7 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called.")
 	entropyTools.dbStatus.setDatabaseTaint(False)
 	# untaint the database status
-	os.system("rm -f "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
+	entropyTools.spawnCommand("rm -f "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
 
     def revisionBump(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"revisionBump: called.")

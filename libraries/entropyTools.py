@@ -310,7 +310,7 @@ def getEtpRemoteDatabaseStatus():
 		f = open( etpConst['packagestmpdir'] + "/" + etpConst['etpdatabaserevisionfile'],"r")
 		revision = int(f.readline().strip())
 		f.close()
-		os.system("rm -f "+etpConst['packagestmpdir']+etpConst['etpdatabaserevisionfile'])
+		spawnCommand("rm -f "+etpConst['packagestmpdir']+etpConst['etpdatabaserevisionfile'])
 	    else:
 		revision = 0
 	else:
@@ -598,7 +598,7 @@ def downloadDatabase(uri):
 	print_warning(yellow(" * ")+red("Cannot properly download from ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: do some tidy.")
-    os.system("rm -f " + etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip']+" &> /dev/null")
+    spawnCommand("rm -f " + etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip'], "&> /dev/null")
     # close connection
     ftp.closeFTPConnection()
 
@@ -677,9 +677,9 @@ def downloadPackageFromMirror(uri,pkgfile):
 def compressTarBz2(storepath,pathtocompress):
     
     cmd = "tar cjf "+storepath+" ."
-    rc = os.system(
+    rc = spawnCommand(
     		"cd "+pathtocompress+";"
-    		""+cmd+"&> /dev/null"
+    		""+cmd, "&> /dev/null"
 		)
     return rc
 
@@ -689,7 +689,7 @@ def uncompressTarBz2(filepath, extractPath = None):
     if extractPath is None:
 	extractPath = os.path.dirname(filepath)
     cmd = "tar xjf "+filepath+" -C "+extractPath
-    rc = os.system(cmd+" &> /dev/null")
+    rc = spawnCommand(cmd, "&> /dev/null")
     return rc
 
 def bytesIntoHuman(bytes):
@@ -1026,7 +1026,7 @@ def isIPAvailable(ip):
 
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isIPAvailable: called. ")
 
-    rc = os.system("ping -c 1 "+ip+" &> /dev/null")
+    rc = spawnCommand("ping -c 1 "+ip, "&> /dev/null")
     if (rc):
 	return False
     return True
@@ -1098,7 +1098,7 @@ def cleanup(options):
 	dircontent = os.listdir(dir)
 	if dircontent != []:
 	    for data in dircontent:
-		os.system("rm -rf "+dir+"/"+data)
+		spawnCommand("rm -rf "+dir+"/"+data)
 		counter += 1
 
     print_info(green(" * ")+"Cleaned: "+str(counter)+" files and directories")
@@ -1109,16 +1109,16 @@ def mountProc():
     if len(procfiles) > 2:
 	return True
     else:
-	os.system("mount -t proc proc /proc &> /dev/null")
+	spawnCommand("mount -t proc proc /proc", "&> /dev/null")
 	return True
 
 def umountProc():
     # check if it's already mounted
     procfiles = os.listdir("/proc")
     if len(procfiles) > 2:
-	os.system("umount /proc &> /dev/null")
-	os.system("umount /proc &> /dev/null")
-	os.system("umount /proc &> /dev/null")
+	spawnCommand("umount /proc", " &> /dev/null")
+	spawnCommand("umount /proc", " &> /dev/null")
+	spawnCommand("umount /proc", " &> /dev/null")
 	return True
     else:
 	return True

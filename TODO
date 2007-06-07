@@ -1,7 +1,6 @@
-TODO list (for developers only):
+TODO list:
 - reagent: complete smartapps section
 - handle errors with the exception framework
-- move all os.system to spawnCommand()
 - enzyme, reagent: test kernel dependent packages
 - enzyme, build(): add an option to force the continuation of the emerge queue even if a package fails
 - enzyme, add a module that integrates revdep-rebuild

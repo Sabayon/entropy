@@ -575,7 +575,7 @@ def build(atoms):
 	    for i in runtimeNeededPackagesXT:
 		if (enzymeRequestVerbose): print_info(green("     * ")+yellow("depends on: "+bold(i)))
 		runtimeDepsPackages.append(i)
-	    os.system("rm -rf "+tbz2TmpDir)
+	    spawnCommand("rm -rf "+tbz2TmpDir)
 
     # filter dups
     runtimeDepsPackages = list(set(runtimeDepsPackages))
@@ -988,7 +988,7 @@ def distcc(options):
 	sys.exit(200)
     
     # Firstly check if distcc is available
-    distccAvail = os.system("which distcc &> /dev/null")
+    distccAvail = spawnCommand("which distcc", "&> /dev/null")
     if (distccAvail):
 	enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"distcc: distcc is not installed. Cannot continue.")
 	print_error(yellow("  *** ")+red("distcc is not installed. Cannot continue."))
@@ -998,10 +998,10 @@ def distcc(options):
     # Enable distcc function
     if (options[0] == "--enable"):
         mountProc()
-        distccStatus = os.system(cdbStatusDistcc+" &> /dev/null")
+        distccStatus = spawnCommand(cdbStatusDistcc, "&> /dev/null")
         if (distccStatus):
 	    print_info(yellow(" * ")+red("Starting distccd..."))
-	    rc = os.system(cdbStartDistcc+" &> /dev/null")
+	    rc = spawnCommand(cdbStartDistcc, "&> /dev/null")
 	    if (rc):
 		enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"distcc: A problem occured while starting distcc. Please check.")
 	        print_error(yellow("  *** ")+red(" A problem occured while starting distcc. Please check."))
@@ -1015,10 +1015,10 @@ def distcc(options):
     # Disable distcc function
     elif (options[0] == "--disable"):
         mountProc()
-        distccStatus = os.system(cdbStatusDistcc+" &> /dev/null")
+        distccStatus = spawnCommand(cdbStatusDistcc, "&> /dev/null")
         if (not distccStatus):
 	    print_info(yellow(" * ")+red("Stopping distccd..."))
-	    rc = os.system(cdbStopDistcc+" &> /dev/null")
+	    rc = spawnCommand(cdbStopDistcc, "&> /dev/null")
 	    if (rc):
 		enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"distcc: A problem occured while stopping distcc. Please check.")
 	        print_error(yellow("  *** ")+red(" A problem occured while stopping distcc. Please check."))

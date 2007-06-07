@@ -145,7 +145,7 @@ def calculateFullAtomsDependencies(atoms, deep = False, extraopts = ""):
         return deplist, blocklist
     else:
 	portageLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"calculateFullAtomsDependencies: deplist empty. Giving up.")
-	rc = os.system(cmd)
+	rc = entropyTools.spawnCommand(cmd)
 	sys.exit(100)
 
 
@@ -391,7 +391,7 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
     elogfile = elogfile.split("<")[len(atom.split("<"))-1]
     elogfile = elogfile.split("/")[len(atom.split("/"))-1]
     elogfile = etpConst['logdir']+"/elog/*"+elogfile+"*"
-    os.system("rm -rf "+elogfile)
+    entropyTools.spawnCommand("rm -rf "+elogfile)
     
     distccopts = ""
     if (entropyTools.getDistCCStatus()):
@@ -525,7 +525,7 @@ def quickpkg(atom,dirpath):
     tbz2.recompose(dbdir)
     
     # Remove tmp file
-    os.system("rm -rf "+tmpdirpath)
+    entropyTools.spawnCommand("rm -rf "+tmpdirpath)
     
     if os.path.isfile(dirpath):
 	return dirpath
@@ -543,7 +543,7 @@ def unpackTbz2(tbz2File,tmpdir = None):
 	tmpdir += "/"
     tbz2 = xpak.tbz2(tbz2File)
     if os.path.isdir(tmpdir):
-	os.system("rm -rf "+tmpdir+"*")
+	entropyTools.spawnCommand("rm -rf "+tmpdir+"*")
     tbz2.decompose(tmpdir)
     return tmpdir
 

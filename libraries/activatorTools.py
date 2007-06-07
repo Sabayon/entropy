@@ -458,15 +458,15 @@ def packages(options):
 	        if (detailedRemovalQueue != []):
 		    for item in detailedRemovalQueue:
 		        print_info(red(" * Removing file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(etpConst['packagesbindir'])+red(" ..."))
-		        os.system("rm -f "+etpConst['packagesbindir']+"/"+item[0])
-			os.system("rm -f "+etpConst['packagesbindir']+"/"+item[0]+etpConst['packageshashfileext'])
+		        spawnCommand("rm -f "+etpConst['packagesbindir']+"/"+item[0])
+			spawnCommand("rm -f "+etpConst['packagesbindir']+"/"+item[0]+etpConst['packageshashfileext'])
 		    print_info(red(" * Removal completed for ")+bold(etpConst['packagesbindir']))
 
 		# simple copy queue
 		if (simpleCopyQueue != []):
 		    for item in simpleCopyQueue:
 			print_info(red(" * Copying file from ") + bold(item) + red(" to ")+bold(etpConst['packagesbindir']))
-			os.system("cp -p "+item+" "+etpConst['packagesbindir']+"/ > /dev/null")
+			spawnCommand("cp -p "+item+" "+etpConst['packagesbindir']+"/", "> /dev/null")
 			# md5 copy not needed, already in simpleCopyQueue
 
 	        # upload queue
@@ -562,7 +562,7 @@ def packages(options):
 	if (totalSuccessfulUri > 0) and (not activatorRequestPretend):
 	    # now we can store the files in upload/%ARCH% in packages/%ARCH%
 	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"packages: all done. Now it's time to move packages to "+etpConst['packagesbindir'])
-	    os.system("mv -f "+etpConst['packagessuploaddir']+"/* "+etpConst['packagesbindir']+"/ &> /dev/null")
+	    spawnCommand("mv -f "+etpConst['packagessuploaddir']+"/* "+etpConst['packagesbindir']+"/", "&> /dev/null")
 	    return True
 	else:
 	    sys.exit(470)
