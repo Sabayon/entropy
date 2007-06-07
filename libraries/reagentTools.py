@@ -37,11 +37,11 @@ from portageTools import unpackTbz2, synthetizeRoughDependencies, getPackageRunt
 import logTools
 reagentLog = logTools.LogFile(level=etpConst['reagentloglevel'],filename = etpConst['reagentlogfile'], header = "[Reagent]")
 
-# reagentLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"testFunction: example. ")
+# reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFunction: example. ")
 
 def generator(package, enzymeRequestBump = False, dbconnection = None):
 
-    reagentLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"generator: called -> Package: "+str(package)+" | enzymeRequestBump: "+str(enzymeRequestBump)+" | dbconnection: "+str(dbconnection))
+    reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: called -> Package: "+str(package)+" | enzymeRequestBump: "+str(enzymeRequestBump)+" | dbconnection: "+str(dbconnection))
 
     # check if the package provided is valid
     validFile = False
@@ -70,15 +70,15 @@ def generator(package, enzymeRequestBump = False, dbconnection = None):
 	dbconn.closeDB()
 
     if (updated) and (revision != 0):
-	reagentLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"generator: entry for "+str(packagename)+" has been updated to revision: "+str(revision))
+	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" has been updated to revision: "+str(revision))
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry has been updated. Revision: ")+bold(str(revision)))
 	return True, newFileName
     elif (updated) and (revision == 0):
-	reagentLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"generator: entry for "+str(packagename)+" newly created.")
+	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" newly created.")
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry newly created."))
 	return True, newFileName
     else:
-	reagentLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"generator: entry for "+str(packagename)+" kept intact, no updates needed.")
+	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" kept intact, no updates needed.")
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
 	return False, newFileName
 
@@ -86,7 +86,7 @@ def generator(package, enzymeRequestBump = False, dbconnection = None):
 # This tool is used by Entropy after enzyme, it simply parses the content of etpConst['packagesstoredir']
 def enzyme(options):
 
-    reagentLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"enzyme: called -> options: "+str(options))
+    reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"enzyme: called -> options: "+str(options))
 
     enzymeRequestBump = False
     #_atoms = []
@@ -135,7 +135,7 @@ def enzyme(options):
 # This function extracts all the info from a .tbz2 file and returns them
 def extractPkgData(package):
 
-    reagentLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"extractPkgData: called -> package: "+str(package))
+    reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractPkgData: called -> package: "+str(package))
 
     # Clean the variables
     for i in etpData:
@@ -447,7 +447,7 @@ def extractPkgData(package):
 
 def smartapps(options):
     
-    reagentLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"smartapps: called -> options: "+str(options))
+    reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"smartapps: called -> options: "+str(options))
     
     if (len(options) == 0):
         print_error(yellow(" * ")+red("No valid tool specified."))
@@ -497,7 +497,7 @@ def smartapps(options):
 # NOTE: this section is highly portage dependent
 def smartgenerator(atom):
     
-    reagentLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"smartgenerator: called -> package: "+str(atom))
+    reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"smartgenerator: called -> package: "+str(atom))
     
     dbconn = databaseTools.etpDatabase(readOnly = True)
     

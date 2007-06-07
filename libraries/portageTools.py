@@ -61,7 +61,7 @@ import entropyTools
 # Logging initialization
 import logTools
 portageLog = logTools.LogFile(level=etpConst['spmbackendloglevel'],filename = etpConst['spmbackendlogfile'], header = "[Portage]")
-# portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"testFunction: example. ")
+# portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFunction: example. ")
 
 ############
 # Functions and Classes
@@ -71,41 +71,41 @@ def getThirdPartyMirrors(mirrorname):
     return portage.thirdpartymirrors[mirrorname]
 
 def getPortageEnv(var):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getPortageEnv: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPortageEnv: called. ")
     try:
 	rc = portage.config(clone=portage.settings).environ()[var]
-	portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getPortageEnv: variable available -> "+str(var))
+	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPortageEnv: variable available -> "+str(var))
 	return rc
     except KeyError:
-	portageLog.log(ETP_LOG_WARNING,ETP_LOG_VERBOSE,"getPortageEnv: variable not available -> "+str(var))
+	portageLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"getPortageEnv: variable not available -> "+str(var))
 	return None
 
 # resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1
 def getBestAtom(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getBestAtom: called -> "+str(atom))
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getBestAtom: called -> "+str(atom))
     try:
         rc = portage.portdb.xmatch("bestmatch-visible",str(atom))
-	portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getBestAtom: result -> "+str(rc))
+	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getBestAtom: result -> "+str(rc))
         return rc
     except ValueError:
-	portageLog.log(ETP_LOG_WARNING,ETP_LOG_VERBOSE,"getBestAtom: conflict found. ")
+	portageLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"getBestAtom: conflict found. ")
 	return "!!conflicts"
 
 # same as above but includes masked ebuilds
 def getBestMaskedAtom(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getBestAtom: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getBestAtom: called. ")
     atoms = portage.portdb.xmatch("match-all",str(atom))
     # find the best
     from portage_versions import best
     rc = best(atoms)
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getBestAtom: result -> "+str(rc))
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getBestAtom: result -> "+str(rc))
     return rc
 
 # I need a valid complete atom...
 def calculateFullAtomsDependencies(atoms, deep = False, extraopts = ""):
 
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"calculateFullAtomsDependencies: called -> "+str(atoms)+" | extra options: "+extraopts)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"calculateFullAtomsDependencies: called -> "+str(atoms)+" | extra options: "+extraopts)
 
     # in order... thanks emerge :-)
     deepOpt = ""
@@ -141,17 +141,17 @@ def calculateFullAtomsDependencies(atoms, deep = False, extraopts = ""):
     blocklist = _blocklist
 
     if deplist != []:
-	portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"calculateFullAtomsDependencies: deplist -> "+len(deplist)+" | blocklist -> "+len(blocklist))
+	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"calculateFullAtomsDependencies: deplist -> "+len(deplist)+" | blocklist -> "+len(blocklist))
         return deplist, blocklist
     else:
-	portageLog.log(ETP_LOG_ERROR,ETP_LOG_VERBOSE,"calculateFullAtomsDependencies: deplist empty. Giving up.")
+	portageLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"calculateFullAtomsDependencies: deplist empty. Giving up.")
 	rc = os.system(cmd)
 	sys.exit(100)
 
 
 def calculateAtomUSEFlags(atom):
 
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"calculateAtomUSEFlags: called -> "+str(atom))
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"calculateAtomUSEFlags: called -> "+str(atom))
 
     try:
 	useflags = "USE='"+os.environ['USE']+"' "
@@ -166,7 +166,7 @@ def calculateAtomUSEFlags(atom):
     useparm = useparm.split()
     _useparm = []
     
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"calculateAtomUSEFlags: USE flags -> "+str(useparm))
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"calculateAtomUSEFlags: USE flags -> "+str(useparm))
     
     for use in useparm:
 	# -cups
@@ -190,12 +190,12 @@ def calculateAtomUSEFlags(atom):
 
 # should be only used when a pkgcat/pkgname <-- is not specified (example: db, amarok, AND NOT media-sound/amarok)
 def getAtomCategory(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getAtomCategory: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getAtomCategory: called. ")
     try:
         rc = portage.portdb.xmatch("match-all",str(atom))[0].split("/")[0]
         return rc
     except:
-	portageLog.log(ETP_LOG_ERROR,ETP_LOG_VERBOSE,"getAtomCategory: error, can't extract category !")
+	portageLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"getAtomCategory: error, can't extract category !")
 	return None
 
 # This function compare the version number of two atoms
@@ -204,7 +204,7 @@ def getAtomCategory(atom):
 # if atom1 > atom2 --> returns a POSITIVE number
 # if atom1 == atom2 --> returns 0
 def compareAtoms(atom1,atom2):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"compareAtoms: called -> "+atom1+" && "+atom2)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"compareAtoms: called -> "+atom1+" && "+atom2)
     # filter pkgver
     x, atom1 = extractPkgNameVer(atom1)
     x, atom2 = extractPkgNameVer(atom2)
@@ -213,7 +213,7 @@ def compareAtoms(atom1,atom2):
 
 # please always force =pkgcat/pkgname-ver if possible
 def getInstalledAtom(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getInstalledAtom: called -> "+str(atom))
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtom: called -> "+str(atom))
     rc = portage.db['/']['vartree'].dep_match(str(atom))
     if (rc != []):
 	if (len(rc) == 1):
@@ -224,20 +224,20 @@ def getInstalledAtom(atom):
         return None
 
 def getPackageSlot(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getPackageSlot: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: called. ")
     if atom.startswith("="):
 	atom = atom[1:]
     rc = portage.db['/']['vartree'].getslot(atom)
     if rc != "":
-	portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getPackageSlot: slot found -> "+str(atom)+" -> "+str(rc))
+	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: slot found -> "+str(atom)+" -> "+str(rc))
 	return rc
     else:
-	portageLog.log(ETP_LOG_WARNING,ETP_LOG_VERBOSE,"getPackageSlot: slot not found -> "+str(atom))
+	portageLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: slot not found -> "+str(atom))
 	return None
 
 # you must provide a complete atom
 def collectBinaryFilesForInstalledPackage(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"collectBinaryFilesForInstalledPackage: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"collectBinaryFilesForInstalledPackage: called. ")
     if atom.startswith("="):
 	atom = atom[1:]
     pkgcat = atom.split("/")[0]
@@ -258,11 +258,11 @@ def collectBinaryFilesForInstalledPackage(atom):
 	return binarylibs
 
 def getEbuildDbPath(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getEbuildDbPath: called -> "+atom)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getEbuildDbPath: called -> "+atom)
     return portage.db['/']['vartree'].getebuildpath(atom)
 
 def getEbuildTreePath(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getEbuildTreePath: called -> "+atom)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getEbuildTreePath: called -> "+atom)
     if atom.startswith("="):
 	atom = atom[1:]
     rc = portage.portdb.findname(atom)
@@ -272,7 +272,7 @@ def getEbuildTreePath(atom):
 	return None
 
 def getPackageDownloadSize(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getPackageDownloadSize: called -> "+atom)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageDownloadSize: called -> "+atom)
     if atom.startswith("="):
 	atom = atom[1:]
 
@@ -298,7 +298,7 @@ def getPackageDownloadSize(atom):
 	return "N/A"
 
 def getInstalledAtoms(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getInstalledAtoms: called -> "+atom)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtoms: called -> "+atom)
     rc = portage.db['/']['vartree'].dep_match(str(atom))
     if (rc != []):
         return rc
@@ -309,7 +309,7 @@ def getInstalledAtoms(atom):
 
 # YOU MUST PROVIDE A COMPLETE ATOM with a pkgcat !
 def unmerge(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"umerge: called -> "+atom)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"umerge: called -> "+atom)
     if isjustname(atom) or (not isvalidatom(atom)) or (atom.find("/") == -1):
 	return 1
     else:
@@ -323,7 +323,7 @@ def unmerge(atom):
 # TO THIS FUNCTION:
 # must be provided a valid and complete atom
 def extractPkgNameVer(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"extractPkgNameVer: called -> "+atom)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractPkgNameVer: called -> "+atom)
     package = dep_getcpv(atom)
     package = atom.split("/")[len(atom.split("/"))-1]
     package = package.split("-")
@@ -343,7 +343,7 @@ def extractPkgNameVer(atom):
     return pkgname,pkgver
 
 def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"emerge: called -> "+atom+" | options: "+str(options)+" | redirect: "+str(redirect)+" | outfile: "+str(outfile)+" | simulate: "+str(simulate))
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"emerge: called -> "+atom+" | options: "+str(options)+" | redirect: "+str(redirect)+" | outfile: "+str(outfile)+" | simulate: "+str(simulate))
     if (simulate):
 	return 0,"" # simulation enabled
     if (outfile is None) and (redirect == "&>"):
@@ -381,7 +381,7 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
     except:
 	ldflags = " "
 
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"emerge: USE: "+useflags+" | CFLAGS: "+cflags+" | MAKEOPTS: "+makeopts+" | LDFLAGS: "+ldflags)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"emerge: USE: "+useflags+" | CFLAGS: "+cflags+" | MAKEOPTS: "+makeopts+" | LDFLAGS: "+ldflags)
     
     # elog configuration
     elogopts = dbPORTAGE_ELOG_OPTS+" "
@@ -405,7 +405,7 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
 
 def parseElogFile(atom):
 
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"parseElogFile: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"parseElogFile: called. ")
 
     if atom.startswith("="):
 	atom = atom[1:]
@@ -445,7 +445,7 @@ def parseElogFile(atom):
 
 def compareLibraryLists(pkgBinaryFiles,newPkgBinaryFiles):
     
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"compareLibraryLists: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"compareLibraryLists: called. ")
     
     brokenBinariesList = []
     # check if there has been a API breakage
@@ -488,7 +488,7 @@ def compareLibraryLists(pkgBinaryFiles,newPkgBinaryFiles):
 # create a .tbz2 file in the specified path
 def quickpkg(atom,dirpath):
 
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"quickpkg: called -> "+atom+" | dirpath: "+dirpath)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+atom+" | dirpath: "+dirpath)
 
     # getting package info
     pkgname = atom.split("/")[1]
@@ -534,7 +534,7 @@ def quickpkg(atom,dirpath):
 
 def unpackTbz2(tbz2File,tmpdir = None):
     
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"unpackTbz2: called -> "+tbz2File)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"unpackTbz2: called -> "+tbz2File)
     
     import xpak
     if tmpdir is None:
@@ -550,7 +550,7 @@ def unpackTbz2(tbz2File,tmpdir = None):
 # NOTE: atom must be a COMPLETE atom, with version!
 def isTbz2PackageAvailable(atom, verbose = False):
 
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"isTbz2PackageAvailable: called -> "+atom)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isTbz2PackageAvailable: called -> "+atom)
 
     # check if the package have been already merged
     atomName = atom.split("/")[len(atom.split("/"))-1]
@@ -571,12 +571,12 @@ def isTbz2PackageAvailable(atom, verbose = False):
         tbz2Available = uploadPath
     if (verbose): print_info("found here: "+str(tbz2Available))
 
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"isTbz2PackageAvailable: result -> "+str(tbz2Available))
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isTbz2PackageAvailable: result -> "+str(tbz2Available))
 
     return tbz2Available
 
 def checkAtom(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"checkAtom: called -> "+str(atom))
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"checkAtom: called -> "+str(atom))
     bestAtom = getBestAtom(atom)
     if bestAtom == "!!conflicts":
 	bestAtom = ""
@@ -586,7 +586,7 @@ def checkAtom(atom):
 
 
 def getPackageDependencyList(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getPackageDependencyList: called -> "+str(atom))
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageDependencyList: called -> "+str(atom))
     pkgSplittedDeps = []
     tmp = portage.portdb.aux_get(atom, ["DEPEND"])[0].split()
     for i in tmp:
@@ -603,7 +603,7 @@ def getPackageDependencyList(atom):
 # this file is contained in the .tbz2->.xpak file
 def getPackageRuntimeDependencies(NEEDED):
 
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getPackageRuntimeDependencies: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageRuntimeDependencies: called. ")
 
     if not os.path.isfile(NEEDED):
 	return [],[],[] # all empty
@@ -653,16 +653,16 @@ def getPackageRuntimeDependencies(NEEDED):
     return runtimeNeededPackages, runtimeNeededPackagesXT, neededLibraries
 
 def getUSEFlags():
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getUSEFlags: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getUSEFlags: called. ")
     return getPortageEnv('USE')
 
 # you must provide a complete atom
 def getPackageIUSE(atom):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getPackageIUSE: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageIUSE: called. ")
     return getPackageVar(atom,"IUSE")
 
 def getPackageVar(atom,var):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getPackageVar: called -> "+atom+" | var: "+var)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageVar: called -> "+atom+" | var: "+var)
     if atom.startswith("="):
 	atom = atom[1:]
     # can't check - return error
@@ -671,7 +671,7 @@ def getPackageVar(atom,var):
     return portage.portdb.aux_get(atom,[var])[0]
 
 def synthetizeRoughDependencies(roughDependencies, useflags = None):
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"synthetizeRoughDependencies: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"synthetizeRoughDependencies: called. ")
     if useflags is None:
         useflags = getUSEFlags()
     # returns dependencies, conflicts
@@ -761,7 +761,7 @@ def getPortageAppDbPath():
 
 # Collect installed packages
 def getInstalledPackages():
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"getInstalledPackages: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackages: called. ")
     import os
     appDbDir = getPortageAppDbPath()
     dbDirs = os.listdir(appDbDir)
@@ -777,7 +777,7 @@ def getInstalledPackages():
 
 def packageSearch(keyword):
 
-    portageLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"packageSearch: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packageSearch: called. ")
 
     SearchDirs = []
     # search in etpConst['portagetreedir']

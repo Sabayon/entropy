@@ -124,11 +124,13 @@ ETP_SMARTAPPSDIR = "/smartapps/"+ETP_ARCH_CONST
 ETP_CONF_DIR = "/etc/entropy"
 ETP_ROOT_DIR = "/"
 ETP_LOG_DIR = ETP_DIR+"/"+"logs"
-ETP_LOG_NORMAL = 1
-ETP_LOG_VERBOSE = 2
-ETP_LOG_INFO = "[ INFO ]"
-ETP_LOG_WARNING = "[ WARNING ]"
-ETP_LOG_ERROR = "[ ERROR ]"
+ETP_SYSLOG_DIR = "/var/log/entropy/"
+ETP_LOGLEVEL_NORMAL = 1
+ETP_LOGLEVEL_VERBOSE = 2
+ETP_LOGPRI_INFO = "[ INFO ]"
+ETP_LOGPRI_WARNING = "[ WARNING ]"
+ETP_LOGPRI_ERROR = "[ ERROR ]"
+
 # NEVER APPEND another \n to this file because it will break the md5 check of reagent
 ETP_HEADER_TEXT = "# Sabayon Linux (C - 2007) - Entropy Package Specifications (GPLv2)\n"
 MAX_ETP_REVISION_COUNT = 99999
@@ -176,16 +178,17 @@ etpConst = {
     'reagentloglevel': 1 , # Reagent log level (default: 1 - see reagent.conf for more info)
     'activatorloglevel': 1, # # Activator log level (default: 1 - see activator.conf for more info)
     'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
-    
     'spmbackendloglevel': 1, # # Source Package Manager backend log level (default: 1 - see entropy.conf for more info)
     'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
-    'mirrorslogfile': ETP_LOG_DIR+"/mirrors.log", # Mirrors operations log file
-    'spmbackendlogfile': ETP_LOG_DIR+"/spmbackend.log", # Source Package Manager backend configuration log file
-    'databaselogfile': ETP_LOG_DIR+"/database.log", # Database operations log file
-    'enzymelogfile': ETP_LOG_DIR+"/enzyme.log", # Enzyme operations log file
-    'reagentlogfile': ETP_LOG_DIR+"/reagent.log", # Reagent operations log file
-    'activatorlogfile': ETP_LOG_DIR+"/activator.log", # Activator operations log file
-    'entropylogfile': ETP_LOG_DIR+"/entropy.log", # Activator operations log file
+    
+    'syslogdir': ETP_SYSLOG_DIR, # Entropy system tools log directory
+    'mirrorslogfile': ETP_SYSLOG_DIR+"/mirrors.log", # Mirrors operations log file
+    'spmbackendlogfile': ETP_SYSLOG_DIR+"/spmbackend.log", # Source Package Manager backend configuration log file
+    'databaselogfile': ETP_SYSLOG_DIR+"/database.log", # Database operations log file
+    'enzymelogfile': ETP_SYSLOG_DIR+"/enzyme.log", # Enzyme operations log file
+    'reagentlogfile': ETP_SYSLOG_DIR+"/reagent.log", # Reagent operations log file
+    'activatorlogfile': ETP_SYSLOG_DIR+"/activator.log", # Activator operations log file
+    'entropylogfile': ETP_SYSLOG_DIR+"/entropy.log", # Activator operations log file
     
     
     'distcc-status': False, # used by Enzyme, if True distcc is enabled

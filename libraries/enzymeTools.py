@@ -33,12 +33,16 @@ import string
 # Logging initialization
 import logTools
 enzymeLog = logTools.LogFile(level=etpConst['enzymeloglevel'],filename = etpConst['enzymelogfile'], header = "[Enzyme]")
+# example: enzymeLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFuncton: called.")
 
 # EXIT STATUSES: 200-299
 
 def getSyncTime():
     """gets and returns the timestamp info saved during
        the last portage tree sync"""
+
+    enzymeLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getSyncTime: called.")
+
     lastSync = None
     try:
         f = open(etpConst['portagetreedir'] + "/metadata/timestamp")
@@ -57,14 +61,20 @@ def getSyncTime():
     except:
         print_warning("getSyncTime(): empty Portage tree (first run?) or no timestamp to read")
 
+# NOTE: this function does not directly check if
+#       layman is installed !!!!
 def listOverlays():
-    # NOTE: this function does not directly check if
-    #       layman is installed !!!!
+
+    enzymeLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listOverlays: called.")
+
     lst = etpConst['overlays'].split()
     return lst
 
 # fetch the latest updates from Gentoo rsync mirrors
 def sync(options):
+
+    enzymeLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: called with options -> "+str(options))
+
     myopts = options[1:]
     enzymeNoSyncBack = True
     enzymeOnlySyncBack = False
@@ -74,6 +84,7 @@ def sync(options):
     # check if rsync is installed
     rsync = commands.getoutput("which rsync")
     if (not rsync.startswith("/")):
+	enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"sync: rsync not found.")
         print_error(red(bold("net-misc/rsync is not installed. Please install.")))
 	sys.exit(200)
 
@@ -91,18 +102,21 @@ def sync(options):
 	print_info(green("Syncing Entropy Portage Tree at: "+etpConst['portagetreedir']))
 	rc = spawnCommand(vdbPORTDIR+"="+etpConst['portagetreedir']+" "+cdbEMERGE+" --sync ", redirect = syncMiscRedirect) # redirect = "/dev/null"
 	if (rc != 0):
+	    enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"sync: an error occoured while syncing the Portage tree. Are you sure that your Internet connection works?")
 	    print_error(red("an error occoured while syncing the Portage tree. Are you sure that your Internet connection works?"))
 	    sys.exit(201)
 	if (not enzymeNoOverlaySync):
 	    # syncing overlays
 	    rc = overlay(['overlay','sync'])
 	    if (not rc):
+		enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"sync: an error occoured while syncing the overlays. Please check if it's all fine.")
 	        print_warning(red("an error occoured while syncing the overlays. Please check if it's all fine."))
 	
     else:
 	print_info(green("Not syncing Entropy Portage Tree at: "+etpConst['portagetreedir']))
 
     if (not enzymeNoSyncBack):
+	enzymeLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: Syncing back Entropy Portage Tree at: "+etpConst['portagetreedir']+" to the official Portage Tree.")
 	print_info(green("Syncing back Entropy Portage Tree at: ")+bold(etpConst['portagetreedir'])+green(" to the official Portage Tree"))
 	# sync back to /usr/portage, but firstly, get user's PORTDIR
 	if os.path.isfile("/etc/make.conf"):
@@ -128,13 +142,18 @@ def sync(options):
 	    officialPortageTreeDir = officialPortageTreeDir[:len(officialPortageTreeDir)-1]
 	
 	# sync back
+	# FIXME: anything better?
+	enzymeLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: spawning rsync...")
 	rc = spawnCommand("rsync --recursive --links --safe-links --perms --times --force --whole-file --delete --delete-after --exclude=/distfiles --exclude=/packages "+etpConst['portagetreedir']+" "+officialPortageTreeDir, redirect = syncMiscRedirect)
 	if (rc != 0):
+	    enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"sync: an error occoured while syncing back the official Portage Tree.")
 	    print_error(red("an error occoured while syncing back the official Portage Tree."))
 	    sys.exit(201)
 
 
 def build(atoms):
+
+    enzymeLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"build: called with parameters -> "+str(atoms))
 
     enzymeRequestVerbose = False
     enzymeRequestForceRepackage = False
@@ -193,9 +212,11 @@ def build(atoms):
 	if (checkAtom(i)):
 	    validAtoms.append(i)
 	else:
+	    enzymeLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"build: "+str(i)+" -> is not a valid atom, it's masked or its name conflicts with something else.")
 	    print_warning(red("* >>> ")+yellow(i)+" is not a valid atom, it's masked or its name conflicts with something else.")
 	    if getBestAtom(i) == "!!conflicts":
 		# it conflicts with something
+		enzymeLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"build: "+str(i)+" -> Ambiguous package name. Please add category.")
 		print_warning(red("* ^^^ ")+"Ambiguous package name. Please add category.")
 
     if validAtoms == []:
@@ -532,6 +553,7 @@ def build(atoms):
 	    if (rc is not None):
 		packagesPaths.append(rc)
 	    else:
+		enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"build: (PackagesQuickpkg) "+str(dep)+" -> quickpkg error. Cannot continue.")
 		print_error(red("      *")+" quickpkg error for "+red(dep))
 		print_error(red("  ***")+" Fatal error, cannot continue")
 		sys.exit(251)
@@ -572,6 +594,7 @@ def build(atoms):
 	    if (rc is not None):
 		packagesPaths.append(rc)
 	    else:
+		enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"build: (runtimeDepsQuickpkg) "+str(dep)+" -> quickpkg error. Cannot continue.")
 		print_error(red("      *")+" quickpkg error for "+red(atom))
 		print_error(red("  ***")+" Fatal error, cannot continue")
 		sys.exit(251)
@@ -590,6 +613,8 @@ def build(atoms):
 def world(options):
 
     myopts = options[1:]
+
+    enzymeLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"world: called with options -> "+str(options))
 
     # FIXME: are --pretend and --ask useful here?
     enzymeRequestDeep = False
@@ -624,6 +649,7 @@ def world(options):
 	    enzymeRequestDeep = True
 	else:
 	    print red("  ***")+" Wrong parameters specified."
+	    enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"world: Wrong parameters specified.")
 	    sys.exit(201)
 
     if (enzymeRequestJustRepackageWorld):
@@ -635,17 +661,17 @@ def world(options):
 	    print_info(green(" * ")+red("Starting to build binaries..."))
 	else:
 	    print_error(red(" * ")+red("No detected packages??? Are you serious?"))
+	    enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"world: No detected packages??? Are you serious? Are you sure that you are running a Gentoo based distribution?")
 	    sys.exit(231)
 	
 	localcount = 0
 	for pkg in installedPackages:
 	    localcount += 1
 	    print_info("   "+red("(")+green(str(localcount))+yellow("/")+blue(str(pkgsnumber))+red(")")+red(" Compressing... ")+bold(pkg),back = True)
-	    # FIXME: Check if the package is already available in the Store dir before building it again?
 	    rc = quickpkg(pkg,etpConst['packagesstoredir'])
 	    if (rc is None):
 		print_warning(red(" * ")+yellow(" quickpkg problem for ")+red(pkg))
-		# FIXME: remove sys.exit then...
+		enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"world: (installedPackages) quickpkg problem for"+str(pkg))
 		sys.exit(232)
 	writechar("\n")
 	print_info(green(" * ")+red("All packages have been generates successfully"))
@@ -661,7 +687,8 @@ def world(options):
 	if blocklist != []:
 	    # FIXME: this part needs some polishing
 	    print blocklist
-	    print "error there is something that is blocking all this shit"
+	    enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"world: error there is something that is blocking all this shit "+str(blocklist))
+	    print_error(red(" * ")+" Error there is something that is blocking all this shit")
 	    sys.exit(233)
 	
 	if (enzymeRequestSkipfirst):
@@ -682,19 +709,20 @@ def world(options):
 	build(atoms)
 
 def overlay(options):
-    #FIXME: add sync-back to the official Portage Tree?
-    
-    # etpConst['overlaysconffile'] --> layman.cfg
+
+    enzymeLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"overlay: called with options -> "+str(options))
 
     # check if the portage tree is configured
     if (not os.path.isfile(etpConst['portagetreedir']+"/metadata/timestamp")):
+	enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"overlay: Entropy Portage tree is not yet prepared. Use the 'sync' tool first.")
         print_error(red(bold("Entropy Portage tree is not yet prepared. Use the 'sync' tool first.")))
 	return False
 
     # check if layman is installed
     layman = commands.getoutput("which layman")
     if (not layman.startswith("/")):
-        print_error(red(bold("app-portage/layman is not installed. Please install.")))
+	enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"overlay: app-portage/layman is not installed. Please install.")
+        print_error(red(" * app-portage/layman is not installed. Please install."))
 	return False
 
     myopts = options[1:]
@@ -725,6 +753,7 @@ def overlay(options):
 	    print_info(green("adding overlay: ")+bold(i))
 	    rc = spawnCommand(layman+" --config="+etpConst['overlaysconffile']+" -f -a "+i, redirect = verbosity)
 	    if (rc != 0):
+		enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"overlay: a problem occoured adding "+i+" overlay.")
 	        print_warning(red(bold("a problem occoured adding "+i+" overlay.")))
     elif (myopts[0] == "remove"):
         # remove overlay
@@ -733,6 +762,7 @@ def overlay(options):
 	    print_info(green("removing overlay: ")+bold(i))
 	    rc = spawnCommand(layman+" --config="+etpConst['overlaysconffile']+" -d "+i, redirect = verbosity)
 	    if (rc != 0):
+		enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"overlay: a problem occoured removing "+i+" overlay.")
 	        print_warning(red(bold("a problem occoured removing "+i+" overlay.")))
 	return True
     elif (myopts[0] == "sync"):
@@ -743,6 +773,7 @@ def overlay(options):
 	    print_info(green("syncing all the overlays"))
 	    rc = spawnCommand(layman+" --config="+etpConst['overlaysconffile']+" -S ", redirect = verbosity)
 	    if (rc != 0):
+		enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"overlay: a problem occoured syncing all the overlays.")
 	        print_warning(red(bold("a problem occoured syncing all the overlays.")))
 	    else:
 		print_info(green("sync completed."))
@@ -752,6 +783,7 @@ def overlay(options):
 		print_info(green("syncing overlay: ")+bold(i),back = True)
 	        rc = spawnCommand(layman+" --config="+etpConst['overlaysconffile']+" -s "+i, redirect = verbosity)
 	        if (rc != 0):
+		    enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"overlay: a problem occoured syncing "+i+" overlay.")
 	            print_warning(red(bold("a problem occoured syncing "+i+" overlay.")))
 		else:
 		    print_info(green("synced overlay: ")+bold(i))
@@ -765,13 +797,15 @@ def overlay(options):
 	    for i in listing:
 	        print_info(green(i)+" overlay is added.")
     else:
-        # error !
+	enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"overlay: wrong synthax.")
 	print_error(red(bold("wrong synthax.")))
 	return False
 
     return True
 
 def uninstall(options):
+
+    enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"uninstall: called with options -> "+str(options))
 
     # Filter extra commands
     enzymeRequestVerbose = False
@@ -830,6 +864,7 @@ def uninstall(options):
     uninstallText = yellow("   * ")+"Doing "
 
     if validAtoms == []:
+	enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"uninstall: no valid package names specified.")
         print_error(red(bold("no valid package names specified.")))
 	sys.exit(232)
 
@@ -892,6 +927,7 @@ def uninstall(options):
         # now run the command
         rc = spawnCommand(portageCmd+"'"+atom+"'",enzymeUninstallRedirect)
 	if (rc):
+	    enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"uninstall: Something weird happened while running the action on "+str(atom))
 	    print_warning(yellow("  *** ")+red("Something weird happened while running the action on ")+bold(atom))
 	    if (not enzymeRequestVerbose):
 		print_warning(yellow("  *** ")+red("Please use --verbose and retry to see what was wrong. Continuing..."))
@@ -903,6 +939,8 @@ def uninstall(options):
     
 
 def search(atoms):
+
+    enzymeLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"search: called with -> "+str(atoms))
 
     # filter any --starting package
     _atoms = []
@@ -942,6 +980,8 @@ def search(atoms):
 
 def distcc(options):
 
+    enzymeLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"distcc: called with options -> "+str(options))
+
     # Filter
     if options == []:
 	print_error(yellow(" * ")+red("Not enough parameters."))
@@ -950,6 +990,7 @@ def distcc(options):
     # Firstly check if distcc is available
     distccAvail = os.system("which distcc &> /dev/null")
     if (distccAvail):
+	enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"distcc: distcc is not installed. Cannot continue.")
 	print_error(yellow("  *** ")+red("distcc is not installed. Cannot continue."))
 	sys.exit(201)
 
@@ -962,6 +1003,7 @@ def distcc(options):
 	    print_info(yellow(" * ")+red("Starting distccd..."))
 	    rc = os.system(cdbStartDistcc+" &> /dev/null")
 	    if (rc):
+		enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"distcc: A problem occured while starting distcc. Please check.")
 	        print_error(yellow("  *** ")+red(" A problem occured while starting distcc. Please check."))
 	        sys.exit(202)
 
@@ -978,6 +1020,7 @@ def distcc(options):
 	    print_info(yellow(" * ")+red("Stopping distccd..."))
 	    rc = os.system(cdbStopDistcc+" &> /dev/null")
 	    if (rc):
+		enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"distcc: A problem occured while stopping distcc. Please check.")
 	        print_error(yellow("  *** ")+red(" A problem occured while stopping distcc. Please check."))
 	        sys.exit(203)
 	# now configure distcc properly in enzyme.conf
@@ -990,6 +1033,7 @@ def distcc(options):
 	    print_warning(yellow(" * ")+red("Attention: distcc is not enabled."))
 	myhosts = options[1:]
 	if len(myhosts) == 0:
+	    enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"distcc: (--add-host) No hosts specified.")
 	    print_error(yellow(" * ")+red("No hosts specified."))
 	    sys.exit(204)
 	print_info(green(" * ")+red("Adding specified hosts..."), back = True)
@@ -999,9 +1043,11 @@ def distcc(options):
 
     elif (options[0] == "--remove-host"):
 	if (not getDistCCStatus()):
+	    enzymeLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"distcc: Attention: distcc is not enabled.")
 	    print_warning(yellow(" * ")+red("Attention: distcc is not enabled."))
 	myhosts = options[1:]
 	if len(myhosts) == 0:
+	    enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"distcc: (--remove-host) No hosts specified.")
 	    print_error(yellow(" * ")+red("No hosts specified."))
 	    sys.exit(204)
 	print_info(green(" * ")+red("Removing specified hosts..."), back = True)
@@ -1014,7 +1060,8 @@ def distcc(options):
 	    print_warning(yellow(" * ")+red("Attention: distcc is not enabled."))
 	hosts = getDistCCHosts()
 	if len(hosts) == 0:
-	    print_warning(yellow(" * ")+red("Attention: no hosts selected."))
+	    enzymeLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"distcc: (--show-hosts) Error: no hosts selected.")
+	    print_error(yellow(" * ")+red("Error: no hosts selected."))
 	    sys.exit(205)
 	print_info(green(" * ")+red("Showing DistCC hosts table:"))
 	for host in hosts:

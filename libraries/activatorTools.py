@@ -36,11 +36,11 @@ import time
 # Logging initialization
 import logTools
 activatorLog = logTools.LogFile(level=etpConst['activatorloglevel'],filename = etpConst['activatorlogfile'], header = "[Activator]")
-# example: activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"testFuncton: called.")
+# example: activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFuncton: called.")
 
 def sync(options, justTidy = False):
 
-    activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"sync: called with justTidy -> "+str(justTidy))
+    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: called with justTidy -> "+str(justTidy))
 
     print_info(green(" * ")+red("Starting to sync data across mirrors (packages/database) ..."))
     
@@ -88,7 +88,7 @@ def sync(options, justTidy = False):
 	        removeList.append(repoBin)
     
     if (removeList == []):
-	activatorLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"sync: no packages to remove from the lirrors.")
+	activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: no packages to remove from the lirrors.")
 	print_info(green(" * ")+red("No packages to remove from the mirrors."))
 	print_info(green(" * ")+red("Syncronization across mirrors completed."))
 	return
@@ -103,14 +103,14 @@ def sync(options, justTidy = False):
 	sys.exit(0)
 
     # remove them!
-    activatorLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"sync: starting to remove packages from mirrors.")
+    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: starting to remove packages from mirrors.")
     for uri in etpConst['activatoruploaduris']:
-	activatorLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"sync: connecting to mirror "+extractFTPHostFromUri(uri))
+	activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: connecting to mirror "+extractFTPHostFromUri(uri))
 	print_info(green(" * ")+red("Connecting to: ")+bold(extractFTPHostFromUri(uri)))
 	ftp = mirrorTools.handlerFTP(uri)
 	ftp.setCWD(etpConst['binaryurirelativepath'])
 	for file in removeList:
-	    activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"sync: removing (remote) file "+file)
+	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (remote) file "+file)
 	    print_info(green(" * ")+red("Removing file: ")+bold(file), back = True)
 	    # remove remotely
 	    if (ftp.isFileAvailable(file)):
@@ -121,7 +121,7 @@ def sync(options, justTidy = False):
 		    print_warning(yellow(" * ")+red("ATTENTION: remote file ")+bold(file)+red(" cannot be removed."))
 	    # remove locally
 	    if os.path.isfile(etpConst['packagesbindir']+"/"+file):
-		activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"sync: removing (local) file "+file)
+		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+file)
 		print_info(green(" * ")+red("Package file: ")+bold(file)+red(" removed successfully from ")+bold(etpConst['packagesbindir']))
 		os.remove(etpConst['packagesbindir']+"/"+file)
 	ftp.closeFTPConnection()
@@ -131,7 +131,7 @@ def sync(options, justTidy = False):
 
 def packages(options):
 
-    activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"packages: called with options -> "+str(options))
+    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: called with options -> "+str(options))
 
     # Options available for all the packages submodules
     myopts = options[1:]
@@ -154,7 +154,7 @@ def packages(options):
 	currentUri = 0
 	totalSuccessfulUri = 0
 	
-	activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"packages: called sync.")
+	activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: called sync.")
 	
 	for uri in etpConst['activatoruploaduris']:
 	
@@ -172,7 +172,7 @@ def packages(options):
 			if tbz2.endswith(".tbz2"):
 		            uploadCounter += 1
 		
-		activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"packages: upload directory stats -> files: "+str(uploadCounter)+" | upload packages list: "+str(toBeUploaded))
+		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: upload directory stats -> files: "+str(uploadCounter)+" | upload packages list: "+str(toBeUploaded))
 		
 	        print_info(green(" * ")+red("Upload directory:\t\t")+bold(str(uploadCounter))+red(" files ready."))
 	        localPackagesRepository = [] # parse etpConst['packagesbindir']
@@ -184,7 +184,7 @@ def packages(options):
 			if tbz2.endswith(".tbz2"):
 		            packageCounter += 1
 		
-		activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"packages: packages directory stats -> files: "+str(packageCounter)+" | download packages list (including md5): "+str(localPackagesRepository))
+		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: packages directory stats -> files: "+str(packageCounter)+" | download packages list (including md5): "+str(localPackagesRepository))
 		
 	        print_info(green(" * ")+red("Packages directory:\t")+bold(str(packageCounter))+red(" files ready."))
 	    
@@ -201,7 +201,7 @@ def packages(options):
 		    if tbz2.endswith(".tbz2"):
 		        remoteCounter += 1
 		
-		activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"packages: remote packages stats -> files: "+str(remoteCounter))
+		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: remote packages stats -> files: "+str(remoteCounter))
 		
 	        print_info(green(" * ")+red("Remote packages:\t\t")+bold(str(remoteCounter))+red(" files stored."))
 
@@ -210,7 +210,7 @@ def packages(options):
 	        downloadQueue = []
 	        removalQueue = []
 		
-		activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"packages: starting packages calculation...")
+		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: starting packages calculation...")
 		
 	        # if a package is in the packages directory but not online, we have to upload it
 		# we have localPackagesRepository and remotePackages
@@ -369,9 +369,9 @@ def packages(options):
 			_downloadQueue.append(p)
 		downloadQueue = _downloadQueue
 
-		activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"packages: removal queue -> "+str(removalQueue))
-		activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"packages: download queue -> "+str(downloadQueue))
-		activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"packages: upload queue -> "+str(uploadQueue))
+		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: removal queue -> "+str(removalQueue))
+		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: download queue -> "+str(downloadQueue))
+		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: upload queue -> "+str(uploadQueue))
 
 	        if (len(uploadQueue) == 0) and (len(downloadQueue) == 0) and (len(removalQueue) == 0):
 		    print_info(green(" * ")+red("Nothing to syncronize for ")+bold(extractFTPHostFromUri(uri)+red(". Queue empty.")))
@@ -448,10 +448,10 @@ def packages(options):
 		uploadCounter = "0"
 		downloadCounter = "0"
 
-		activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"packages: detailed removal queue -> "+str(detailedRemovalQueue))
-		activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"packages: detailed simple copy queue -> "+str(simpleCopyQueue))
-		activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"packages: detailed download queue -> "+str(detailedDownloadQueue))
-		activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"packages: detailed upload queue -> "+str(detailedUploadQueue))
+		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: detailed removal queue -> "+str(detailedRemovalQueue))
+		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: detailed simple copy queue -> "+str(simpleCopyQueue))
+		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: detailed download queue -> "+str(detailedDownloadQueue))
+		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: detailed upload queue -> "+str(detailedUploadQueue))
 		
 
 	        # removal queue
@@ -535,7 +535,7 @@ def packages(options):
 	    # trap exceptions, failed to upload/download someting?
 	    except:
 		
-		activatorLog.log(ETP_LOG_WARNING,ETP_LOG_NORMAL,"packages: cannot properly syncronize "+extractFTPHostFromUri(uri)+". Trying to continue if possible.")
+		activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: cannot properly syncronize "+extractFTPHostFromUri(uri)+". Trying to continue if possible.")
 		
 		# print warning cannot sync uri
 		print_warning(yellow(" * ")+red("ATTENTION: cannot properly syncronize ")+bold(extractFTPHostFromUri(uri))+red(". Continuing if possible..."))
@@ -543,7 +543,7 @@ def packages(options):
 		# decide what to do
 		if (totalSuccessfulUri > 0) or (activatorRequestPretend):
 		    # we're safe
-		    activatorLog.log(ETP_LOG_WARNING,ETP_LOG_NORMAL,"packages: at least one mirror has been synced properly. I'm fine.")
+		    activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: at least one mirror has been synced properly. I'm fine.")
 		    print_info(green(" * ")+red("At least one mirror has been synced properly. I'm fine."))
 		    continue
 		else:
@@ -553,7 +553,7 @@ def packages(options):
 		    else:
 			# no mirrors were synced properly
 			# show error and return, do not move files from the upload dir
-			activatorLog.log(ETP_LOG_ERROR,ETP_LOG_NORMAL,"packages: no mirrors have been properly syncronized. Check network status and retry. Cannot continue.")
+			activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: no mirrors have been properly syncronized. Check network status and retry. Cannot continue.")
 			print_error(yellow(" * ")+red("ERROR: no mirrors have been properly syncronized. Check network status and retry. Cannot continue."))
 			return False
 
@@ -561,7 +561,7 @@ def packages(options):
 	# if at least one server has been synced successfully, move files
 	if (totalSuccessfulUri > 0) and (not activatorRequestPretend):
 	    # now we can store the files in upload/%ARCH% in packages/%ARCH%
-	    activatorLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"packages: all done. Now it's time to move packages to "+etpConst['packagesbindir'])
+	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"packages: all done. Now it's time to move packages to "+etpConst['packagesbindir'])
 	    os.system("mv -f "+etpConst['packagessuploaddir']+"/* "+etpConst['packagesbindir']+"/ &> /dev/null")
 	    return True
 	else:
@@ -575,17 +575,17 @@ def packages(options):
 
 def database(options):
 
-    activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"database: called with -> "+str(options))
+    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: called with -> "+str(options))
 
     # lock tool
     if (options[0] == "lock"):
 	print_info(green(" * ")+green("Starting to lock mirrors' databases..."))
 	rc = lockDatabases(lock = True)
 	if (rc):
-	    activatorLog.log(ETP_LOG_ERROR,ETP_LOG_NORMAL,"database: (lock) A problem occured on at least one mirror !")
+	    activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (lock) A problem occured on at least one mirror !")
 	    print_info(green(" * ")+red("A problem occured on at least one mirror !"))
 	else:
-	    activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"database: Databases lock complete.")
+	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Databases lock complete.")
 	    print_info(green(" * ")+green("Databases lock complete"))
 
     # unlock tool
@@ -593,10 +593,10 @@ def database(options):
 	print_info(green(" * ")+green("Starting to unlock mirrors' databases..."))
 	rc = lockDatabases(lock = False)
 	if (rc):
-	    activatorLog.log(ETP_LOG_ERROR,ETP_LOG_NORMAL,"database: (unlock) A problem occured on at least one mirror !")
+	    activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (unlock) A problem occured on at least one mirror !")
 	    print_info(green(" * ")+green("A problem occured on at least one mirror !"))
 	else:
-	    activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"database: Databases lock complete.")
+	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Databases lock complete.")
 	    print_info(green(" * ")+green("Databases unlock complete"))
 
     # download lock tool
@@ -604,10 +604,10 @@ def database(options):
 	print_info(green(" * ")+green("Starting to lock download mirrors' databases..."))
 	rc = downloadLockDatabases(lock = True)
 	if (rc):
-	    activatorLog.log(ETP_LOG_ERROR,ETP_LOG_NORMAL,"database: (download-lock) A problem occured on at least one mirror !")
+	    activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (download-lock) A problem occured on at least one mirror !")
 	    print_info(green(" * ")+green("A problem occured on at least one mirror !"))
 	else:
-	    activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"database: Download mirrors lock complete.")
+	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Download mirrors lock complete.")
 	    print_info(green(" * ")+green("Download mirrors lock complete"))
 
     # download unlock tool
@@ -615,10 +615,10 @@ def database(options):
 	print_info(green(" * ")+green("Starting to unlock download mirrors' databases..."))
 	rc = downloadLockDatabases(lock = False)
 	if (rc):
-	    activatorLog.log(ETP_LOG_ERROR,ETP_LOG_NORMAL,"database: (download-unlock) A problem occured on at least one mirror !")
+	    activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (download-unlock) A problem occured on at least one mirror !")
 	    print_info(green(" * ")+green("A problem occured on at least one mirror..."))
 	else:
-	    activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"database: Download mirrors unlock complete.")
+	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Download mirrors unlock complete.")
 	    print_info(green(" * ")+green("Download mirrors unlock complete"))
 
     # lock status tool
@@ -639,7 +639,7 @@ def database(options):
     # database sync tool
     elif (options[0] == "sync"):
 
-	activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"database: database sync called.")
+	activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: database sync called.")
 
 	print_info(green(" * ")+red("Checking database status ..."), back = True)
 	
@@ -673,17 +673,17 @@ def database(options):
 		    os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
 	    else:
 		print
-		activatorLog.log(ETP_LOG_ERROR,ETP_LOG_NORMAL,"database (sync inside activatorTools): At the moment, mirrors are locked, someone is working on their databases, try again later...")
+		activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database (sync inside activatorTools): At the moment, mirrors are locked, someone is working on their databases, try again later...")
 		print_error(green(" * ")+red("At the moment, mirrors are locked, someone is working on their databases, try again later..."))
 		sys.exit(422)
 	
 	else:
 	    if (dbLockFile):
-		activatorLog.log(ETP_LOG_ERROR,ETP_LOG_NORMAL,"database (sync inside activatorTools): Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
+		activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database (sync inside activatorTools): Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
 		print_info(green(" * ")+red("Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']))
 		sys.exit(423)
 	    else:
-		activatorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"database (sync inside activatorTools): Mirrors are not locked. Fetching data...")
+		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database (sync inside activatorTools): Mirrors are not locked. Fetching data...")
 		print_info(green(" * ")+red("Mirrors are not locked. Fetching data..."))
 	    
 	    syncRemoteDatabases()

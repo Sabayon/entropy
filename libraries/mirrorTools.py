@@ -32,7 +32,7 @@ import os
 # Logging initialization
 import logTools
 mirrorLog = logTools.LogFile(level=etpConst['mirrorsloglevel'],filename = etpConst['mirrorslogfile'], header = "[Mirrors]")
-# example: mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"testFuncton: called.")
+# example: mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFuncton: called.")
 
 
 class handlerFTP:
@@ -41,7 +41,7 @@ class handlerFTP:
     # this must be run before calling the other functions
     def __init__(self, ftpuri):
 
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.__init__: called.")
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.__init__: called.")
 
 	from ftplib import FTP
 	
@@ -89,52 +89,52 @@ class handlerFTP:
 
     # this can be used in case of exceptions
     def reconnectHost(self):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.reconnectHost: called.")
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.reconnectHost: called.")
 	self.ftpconn = FTP(self.ftphost)
 	self.ftpconn.login(self.ftpuser,self.ftppassword)
 	self.ftpconn.cwd(self.currentdir)
 
     def getFTPHost(self):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.getFTPHost: called -> "+self.ftphost)
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getFTPHost: called -> "+self.ftphost)
 	return self.ftphost
 
     def getFTPPort(self):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.getFTPPort: called -> "+self.ftpport)
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getFTPPort: called -> "+self.ftpport)
 	return self.ftpport
 
     def getFTPDir(self):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.getFTPPort: called -> "+self.ftpdir)
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getFTPPort: called -> "+self.ftpdir)
 	return self.ftpdir
 
     def getCWD(self):
 	pwd = self.ftpconn.pwd()
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.getCWD: called -> "+pwd)
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getCWD: called -> "+pwd)
 	return pwd
 
     def setCWD(self,dir):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.setCWD: called -> "+dir)
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.setCWD: called -> "+dir)
 	self.ftpconn.cwd(dir)
 	self.currentdir = dir
 
     def setPASV(self,bool):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.setPASV: called -> "+str(bool))
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.setPASV: called -> "+str(bool))
 	self.ftpconn.set_pasv(bool)
 
     def getFileMtime(self,path):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.getFileMtime: called for -> "+path)
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getFileMtime: called for -> "+path)
 	rc = self.ftpconn.sendcmd("mdtm "+path)
 	return rc.split()[len(rc.split())-1]
 
     def spawnFTPCommand(self,cmd):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.spawnFTPCommand: called, command -> "+cmd)
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.spawnFTPCommand: called, command -> "+cmd)
 	rc = self.ftpconn.sendcmd(cmd)
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.spawnFTPCommand: called, rc -> "+str(rc))
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.spawnFTPCommand: called, rc -> "+str(rc))
 	return rc
 
     # list files and directory of a FTP
     # @returns a list
     def listFTPdir(self):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.listFTPdir: called.")
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.listFTPdir: called.")
 	# directory is: self.ftpdir
 	try:
 	    rc = self.ftpconn.nlst()
@@ -149,7 +149,7 @@ class handlerFTP:
     # list if the file is available
     # @returns True or False
     def isFileAvailable(self,filename):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.isFileAvailable: called for -> "+filename)
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.isFileAvailable: called for -> "+filename)
 	# directory is: self.ftpdir
 	try:
 	    rc = self.ftpconn.nlst()
@@ -159,31 +159,31 @@ class handlerFTP:
 	    rc = _rc
 	    for i in rc:
 		if i == filename:
-		    mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.isFileAvailable: result -> True")
+		    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.isFileAvailable: result -> True")
 		    return True
-	    mirrorLog.log(ETP_LOG_INFO,ETP_LOG_WARNING,"handlerFTP.isFileAvailable: result -> False (no exception)")
+	    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGPRI_WARNING,"handlerFTP.isFileAvailable: result -> False (no exception)")
 	    return False
 	except:
-	    mirrorLog.log(ETP_LOG_INFO,ETP_LOG_ERROR,"handlerFTP.isFileAvailable: result -> False (exception occured!!!)")
+	    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGPRI_ERROR,"handlerFTP.isFileAvailable: result -> False (exception occured!!!)")
 	    return False
 
     def deleteFile(self,file):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.deleteFile: called for -> "+str(file))
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.deleteFile: called for -> "+str(file))
 	try:
 	    rc = self.ftpconn.delete(file)
 	    if rc.startswith("250"):
-		mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.deleteFile: result -> True")
+		mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.deleteFile: result -> True")
 		return True
 	    else:
-		mirrorLog.log(ETP_LOG_WARNING,ETP_LOG_VERBOSE,"handlerFTP.deleteFile: result -> False (no exception)")
+		mirrorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"handlerFTP.deleteFile: result -> False (no exception)")
 		return False
 	except:
-	    mirrorLog.log(ETP_LOG_ERROR,ETP_LOG_VERBOSE,"handlerFTP.deleteFile: result -> False (exception occured!!!)")
+	    mirrorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"handlerFTP.deleteFile: result -> False (exception occured!!!)")
 	    return False
 
     # this function also supports callback, because storbinary doesn't
     def advancedStorBinary(self, cmd, fp, callback=None, blocksize=8192):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.advancedStorBinary: called with -> "+str(cmd))
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.advancedStorBinary: called with -> "+str(cmd))
 	''' Store a file in binary mode. Our version supports a callback function'''
         self.ftpconn.voidcmd('TYPE I')
         conn = self.ftpconn.transfercmd(cmd)
@@ -207,11 +207,11 @@ class handlerFTP:
 	    # print !
 	    print_info(currentText,back = True)
 	
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"handlerFTP.uploadFile: called for -> "+str(file)+" mode, ascii?: "+str(ascii))
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"handlerFTP.uploadFile: called for -> "+str(file)+" mode, ascii?: "+str(ascii))
 	
 	for i in range(10): # ten tries
 	
-	    mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.uploadFile: try #"+str(i))
+	    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.uploadFile: try #"+str(i))
 	
 	    f = open(file)
 	    filename = file.split("/")[len(file.split("/"))-1]
@@ -231,13 +231,13 @@ class handlerFTP:
 		self.renameFile(filename+".tmp",filename)
 		f.close()
 	        if rc.find("226") != -1: # upload complete
-		    mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.uploadFile: upload complete.")
+		    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.uploadFile: upload complete.")
 		    return True
 		else:
-		    mirrorLog.log(ETP_LOG_ERROR,ETP_LOG_NORMAL,"handlerFTP.uploadFile: upload failed !!.")
+		    mirrorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"handlerFTP.uploadFile: upload failed !!.")
 		    return False
 	    except: # connection reset by peer
-		mirrorLog.log(ETP_LOG_WARNING,ETP_LOG_NORMAL,"handlerFTP.uploadFile: upload issues, retrying...")
+		mirrorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"handlerFTP.uploadFile: upload issues, retrying...")
 		print_info(red("Upload issue, retrying..."))
 		self.reconnectHost() # reconnect
 		if self.isFileAvailable(filename):
@@ -259,7 +259,7 @@ class handlerFTP:
 	    # print !
 	    print_info(currentText,back = True)
 
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_NORMAL,"handlerFTP.downloadFile: called for -> "+str(filepath)+" | download directory: "+str(downloaddir)+" | ascii? "+str(ascii))
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"handlerFTP.downloadFile: called for -> "+str(filepath)+" | download directory: "+str(downloaddir)+" | ascii? "+str(ascii))
 
 	file = filepath.split("/")[len(filepath.split("/"))-1]
 	# look if the file exist
@@ -282,28 +282,28 @@ class handlerFTP:
 	    f.flush()
 	    f.close()
 	    if rc.find("226") != -1: # upload complete
-		mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.downloadFile: download success.")
+		mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.downloadFile: download success.")
 		return True
 	    else:
-		mirrorLog.log(ETP_LOG_ERROR,ETP_LOG_NORMAL,"handlerFTP.downloadFile: download issues !!.")
+		mirrorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"handlerFTP.downloadFile: download issues !!.")
 		return False
 	else:
-	    mirrorLog.log(ETP_LOG_ERROR,ETP_LOG_NORMAL,"handlerFTP.downloadFile: file '"+file+"' not available !!.")
+	    mirrorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"handlerFTP.downloadFile: file '"+file+"' not available !!.")
 	    return None
 
     # also used to move files
     def renameFile(self,fromfile,tofile):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.renameFile: rename file from '"+fromfile+"' to '"+tofile+"'.")
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.renameFile: rename file from '"+fromfile+"' to '"+tofile+"'.")
 	rc = self.ftpconn.rename(fromfile,tofile)
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.renameFile: return output: '"+rc+"'")
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.renameFile: return output: '"+rc+"'")
 
     # not supported by dreamhost.com
     def getFileSize(self,file):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.getFileSize: called for -> "+file)
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getFileSize: called for -> "+file)
 	return self.ftpconn.size(file)
     
     def getFileSizeCompat(self,file):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.getFileSizeCompat: called for -> "+file)
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getFileSizeCompat: called for -> "+file)
 	list = self.getRoughList()
 	for item in list:
 	    if item.find(file) != -1:
@@ -315,11 +315,11 @@ class handlerFTP:
 	self.FTPbuffer.append(buf)
 
     def getRoughList(self):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.getRoughList: called.")
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getRoughList: called.")
 	self.FTPbuffer = []
 	self.ftpconn.dir(self.bufferizer)
 	return self.FTPbuffer
 
     def closeFTPConnection(self):
-	mirrorLog.log(ETP_LOG_INFO,ETP_LOG_VERBOSE,"handlerFTP.closeFTPConnection: called.")
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.closeFTPConnection: called.")
 	self.ftpconn.quit()
