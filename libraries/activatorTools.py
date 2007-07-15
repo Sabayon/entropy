@@ -533,6 +533,7 @@ def packages(options):
 		    totalSuccessfulUri += 1
 
 	    # trap exceptions, failed to upload/download someting?
+	    
 	    except:
 		
 		activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: cannot properly syncronize "+extractFTPHostFromUri(uri)+". Trying to continue if possible.")

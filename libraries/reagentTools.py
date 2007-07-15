@@ -55,6 +55,7 @@ def generator(package, enzymeRequestBump = False, dbconnection = None):
     print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
     etpData = extractPkgData(package)
     
+    
     if dbconnection is None:
 	dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
     else:

@@ -207,7 +207,7 @@ class handlerFTP:
 	    # print !
 	    print_info(currentText,back = True)
 	
-	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"handlerFTP.uploadFile: called for -> "+str(file)+" mode, ascii?: "+str(ascii))
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"handlerFTP.uploadFile: called for -> "+str(file)+" to "+str(self.getCWD())+", mode, ascii?: "+str(ascii))
 	
 	for i in range(10): # ten tries
 	

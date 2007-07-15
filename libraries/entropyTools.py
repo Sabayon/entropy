@@ -254,10 +254,10 @@ def isnumber(x):
 # nameslist: a list that contains duplicated names
 # @returns filtered list
 def filterDuplicatedEntries(nameslist):
+    _nameslist = []
     for i in range(len(nameslist)):
         name = nameslist[i]
         hitCounter = 0
-        _nameslist = []
         for subname in nameslist:
             if subname == name:
                 if (not hitCounter):
