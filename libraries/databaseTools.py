@@ -86,7 +86,6 @@ def database(options):
 	    dbconn.addPackage(etpData)
 	    dbconn.commitChanges()
 	
-	log.close()
 	dbconn.closeDB()
 	print_info(green(" * ")+red("Entropy database has been reinitialized using binary packages available"))
 
