@@ -211,7 +211,7 @@ if not os.path.isdir(ETP_DIR):
 	for x in etpConst:
 	    if (type(etpConst[x]) is str):
 		
-	        if (not etpConst[x]) or (etpConst[x].endswith(".conf")) or (etpConst[x].endswith(".cfg")) or (etpConst[x].endswith(".tmp")) or (etpConst[x].find(".db") != -1):
+	        if (not etpConst[x]) or (etpConst[x].endswith(".conf")) or (not etpConst[x].startswith("/")) or (etpConst[x].endswith(".cfg")) or (etpConst[x].endswith(".tmp")) or (etpConst[x].find(".db") != -1):
 		    continue
 		
 		if etpConst[x].find("%ARCH%") != -1:
