@@ -254,27 +254,20 @@ def isnumber(x):
 # nameslist: a list that contains duplicated names
 # @returns filtered list
 def filterDuplicatedEntries(nameslist):
-    _nameslist = []
-    for i in range(len(nameslist)):
-        name = nameslist[i]
-        hitCounter = 0
-        for subname in nameslist:
-            if subname == name:
-                if (not hitCounter):
-                    _nameslist.append(subname)
-                # otherwise add an empty entry, this to avoid list length issues
-                else:
-                    _nameslist.append("")
-                hitCounter += 1
-            else:
-                _nameslist.append(subname)
-    nameslist = _nameslist
-    
-    _nameslist = []
-    for i in nameslist:
-        if (i):
-            _nameslist.append(i)
-    return _nameslist
+    _nameslist = nameslist
+    for name in _nameslist:
+	try:
+	    first = nameslist.index(name)
+	    nameslist[first] = "x"+nameslist[first]
+	    try:
+		while 1:
+		    nameslist.remove(name)
+	    except:
+		pass
+	    nameslist[first] = nameslist[first][1:]
+	except:
+	    pass
+    return nameslist
 
 # Tool to run commands
 def spawnCommand(command, redirect = None):

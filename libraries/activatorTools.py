@@ -256,7 +256,7 @@ def packages(options):
 		        # this means that the local package does not exist
 		        # so, we need to download it
 		        uploadQueue.append(localPackage)
-	    
+
 	        # Fill downloadQueue and removalQueue
 	        for remotePackage in remotePackages:
 		    pkgfound = False
@@ -282,7 +282,6 @@ def packages(options):
 		        # so, we need to download it
 			if not remotePackage.endswith(".tmp"): # ignore .tmp files
 			    downloadQueue.append(remotePackage)
-
 
 		# Collect packages that don't exist anymore in the database
 		# so we can filter them out from the download queue
@@ -341,19 +340,13 @@ def packages(options):
 			    _uploadQueue.append(upFile)
 		    uploadQueue = _uploadQueue
 
-
-	        # filter duplicates
+	        # filter duplicates - filterDuplicatedEntries
+		
 	        removalQueue = filterDuplicatedEntries(removalQueue)
 	        downloadQueue = filterDuplicatedEntries(downloadQueue)
 	        uploadQueue = filterDuplicatedEntries(uploadQueue)
+
 		
-		# order alphabetically
-		if (removalQueue != []):
-		    removalQueue = alphaSorter(removalQueue)
-		if (downloadQueue != []):
-		    downloadQueue = alphaSorter(downloadQueue)
-		if (uploadQueue != []):
-		    uploadQueue = alphaSorter(uploadQueue)
 
 		# now filter things
 		# packages in uploadQueue should be removed, if found, from downloadQueue
