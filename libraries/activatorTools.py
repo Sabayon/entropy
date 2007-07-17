@@ -420,9 +420,23 @@ def packages(options):
 		        print_info(bold("\t[") + red("REMOTE UPLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
 		        detailedUploadQueue.append([item,fileSize])
 
-	        print_info(red(" * ")+blue("Packages that would be ")+red("removed:\t\t")+bold(str(len(removalQueue))))
-	        print_info(red(" * ")+blue("Packages that would be ")+yellow("downloaded:\t")+bold(str(len(downloadQueue))))
-	        print_info(red(" * ")+blue("Packages that would be ")+green("uploaded:\t\t")+bold(str(len(uploadQueue))))
+		# queue length info
+		removalQueueLength = 0
+		for i in removalQueue:
+		    if not i.endswith(etpConst['packageshashfileext']):
+			removalQueueLength += 1
+		downloadQueueLength = 0
+		for i in downloadQueue:
+		    if not i.endswith(etpConst['packageshashfileext']):
+			downloadQueueLength += 1
+		uploadQueueLength = 0
+		for i in uploadQueue:
+		    if not i.endswith(etpConst['packageshashfileext']):
+			uploadQueueLength += 1
+		
+	        print_info(red(" * ")+blue("Packages that would be ")+red("removed:\t\t")+bold(str(removalQueueLength)))
+	        print_info(red(" * ")+blue("Packages that would be ")+yellow("downloaded:\t")+bold(str(downloadQueueLength)))
+	        print_info(red(" * ")+blue("Packages that would be ")+green("uploaded:\t\t")+bold(str(uploadQueueLength)))
 	        print_info(red(" * ")+blue("Total removal ")+red("size:\t\t\t")+bold(bytesIntoHuman(str(totalRemovalSize))))
 	        print_info(red(" * ")+blue("Total download ")+yellow("size:\t\t\t")+bold(bytesIntoHuman(str(totalDownloadSize))))
 	        print_info(red(" * ")+blue("Total upload ")+green("size:\t\t\t")+bold(bytesIntoHuman(str(totalUploadSize))))
@@ -526,8 +540,10 @@ def packages(options):
 		    totalSuccessfulUri += 1
 
 	    # trap exceptions, failed to upload/download someting?
-	    
-	    except:
+	    except Exception, e:
+		
+		print_error(yellow(" * ")+red("packages: Exception caught: ")+str(e)+red(" . Continuing if possible..."))
+		activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: Exception caught: "+str(e)+" . Trying to continue if possible.")
 		
 		activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: cannot properly syncronize "+extractFTPHostFromUri(uri)+". Trying to continue if possible.")
 		

@@ -448,6 +448,29 @@ else:
 		import time
 		time.sleep(5)
 		
+# mirrors section
+if (not os.path.isfile(etpConst['mirrorsconf'])):
+    print "ERROR: "+etpConst['mirrorsconf']+" does not exist"
+    sys.exit(50)
+else:
+    f = open(etpConst['mirrorsconf'],"r")
+    databaseconf = f.readlines()
+    f.close()
+    for line in databaseconf:
+	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
+	    loglevel = line.split("loglevel|")[1]
+	    try:
+		loglevel = int(loglevel)
+	    except:
+		print "ERROR: invalid loglevel in: "+etpConst['mirrorsconf']
+		sys.exit(51)
+	    if (loglevel > -1) and (loglevel < 3):
+	        etpConst['mirrorsloglevel'] = loglevel
+	    else:
+		print "WARNING: invalid loglevel in: "+etpConst['mirrorsconf']
+		import time
+		time.sleep(5)
+		
 # spmbackend section
 if (not os.path.isfile(etpConst['spmbackendconf'])):
     print "ERROR: "+etpConst['spmbackendconf']+" does not exist"

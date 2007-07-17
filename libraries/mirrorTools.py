@@ -28,6 +28,8 @@ from outputTools import *
 import entropyTools
 import string
 import os
+import ftplib
+import time
 
 # Logging initialization
 import logTools
@@ -43,8 +45,6 @@ class handlerFTP:
 
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.__init__: called.")
 
-	from ftplib import FTP
-	
 	self.ftpuri = ftpuri
 	
 	self.ftphost = entropyTools.extractFTPHostFromUri(self.ftpuri)
@@ -79,20 +79,43 @@ class handlerFTP:
 	if self.ftpdir.endswith("/"):
 	    self.ftpdir = self.ftpdir[:len(self.ftpdir)-1]
 
-	self.ftpconn = FTP(self.ftphost)
+	self.ftpconn = ftplib.FTP(self.ftphost)
 	self.ftpconn.login(self.ftpuser,self.ftppassword)
 	# change to our dir
 	#print self.ftpdir
 	self.ftpconn.cwd(self.ftpdir)
 	self.currentdir = self.ftpdir
 
+    def my_storbinary(self, cmd, fp, callback=None):   # patched for callback
+        '''Store a file in line mode.'''
+        self.ftpconn.voidcmd('TYPE I')
+	CRLF = ftplib.CRLF
+        conn = self.ftpconn.transfercmd(cmd)
+        while 1:
+            buf = fp.readline()
+            if not buf: break
+            if buf[-2:] != CRLF:
+                if buf[-1] in CRLF: buf = buf[:-1]
+                buf = buf + CRLF
+            conn.sendall(buf)
+            if callback: callback(buf)                 # patched for callback
+        conn.close()
+        return self.ftpconn.voidresp()
+	#FTP.storbinary = my_storbinary  # use the patched version
 
     # this can be used in case of exceptions
     def reconnectHost(self):
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.reconnectHost: called.")
-	self.ftpconn = FTP(self.ftphost)
+	#try:
+	#    self.closeFTPConnection()
+	#except:
+	#    pass
+	self.ftpconn = ftplib.FTP(self.ftphost)
 	self.ftpconn.login(self.ftpuser,self.ftppassword)
-	self.ftpconn.cwd(self.currentdir)
+	# save curr dir
+	#cur = self.currentdir
+	#self.setCWD(self.ftpdir)
+	self.setCWD(self.currentdir)
 
     def getFTPHost(self):
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getFTPHost: called -> "+self.ftphost)
@@ -114,7 +137,7 @@ class handlerFTP:
     def setCWD(self,dir):
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.setCWD: called -> "+dir)
 	self.ftpconn.cwd(dir)
-	self.currentdir = dir
+	self.currentdir = self.getCWD()
 
     def setPASV(self,bool):
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.setPASV: called -> "+str(bool))
@@ -192,8 +215,12 @@ class handlerFTP:
             if not buf: break
             conn.sendall(buf)
             if callback: callback(buf)
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.advancedStorBinary: before conn.close()")
         conn.close()
-        return self.ftpconn.voidresp()
+	time.sleep(3)
+	rc = self.ftpconn.voidresp()
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.advancedStorBinary: after conn.close()")
+	return rc
 
     def uploadFile(self,file,ascii = False):
 	
@@ -201,52 +228,64 @@ class handlerFTP:
 	    # get the buffer size
 	    self.mykByteCount += float(len(buf))/1024
 	    # create percentage
-	    myUploadPercentage = str(round((round(self.mykByteCount,1)/self.myFileSize)*100,1))+"%"
-	    # create text
-	    currentText = yellow("    <-> Upload status: ")+green(str(round(self.mykByteCount,1)))+"/"+red(str(self.myFileSize))+" kB "+yellow("[")+str(myUploadPercentage)+yellow("]")
-	    # print !
-	    print_info(currentText,back = True)
+	    myUploadPercentage = round((round(self.mykByteCount,1)/self.myFileSize)*100,1)
+	    myUploadSize = round(self.mykByteCount,1)
+	    if (myUploadPercentage < 100.1) and (myUploadSize <= self.myFileSize):
+	        myUploadPercentage = str(myUploadPercentage)+"%"
+		
+	        # create text
+	        currentText = yellow("    <-> Upload status: ")+green(str(myUploadSize))+"/"+red(str(self.myFileSize))+" kB "+yellow("[")+str(myUploadPercentage)+yellow("]")
+	        # print !
+	        print_info(currentText,back = True)
 	
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"handlerFTP.uploadFile: called for -> "+str(file)+" to "+str(self.getCWD())+", mode, ascii?: "+str(ascii))
 	
 	for i in range(10): # ten tries
 	
-	    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.uploadFile: try #"+str(i))
+	    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.uploadFile: try #"+str(i+1))
 	
-	    f = open(file)
-	    filename = file.split("/")[len(file.split("/"))-1]
 	    try:
-		# get file size
-		self.myFileSize = round(float(os.stat(file)[6])/1024,1)
-		self.mykByteCount = 0
+	    
+	        f = open(file,"r")
+	        filename = file.split("/")[len(file.split("/"))-1]
 		
-		if self.isFileAvailable(filename+".tmp"):
-		    self.deleteFile(filename+".tmp")
+	        # get file size
+	        self.myFileSize = round(float(os.stat(file)[6])/1024,1)
+	        self.mykByteCount = 0
 		
-		if (ascii):
+	        if self.isFileAvailable(filename+".tmp"):
+	            self.deleteFile(filename+".tmp")
+		
+	        if (ascii):
 		    rc = self.ftpconn.storlines("STOR "+filename+".tmp",f)
-		else:
-		    rc = self.advancedStorBinary("STOR "+filename+".tmp", f, uploadFileAndUpdateProgress )
-		# now we can rename the file with its original name
-		self.renameFile(filename+".tmp",filename)
-		f.close()
+	        else:
+		    rc = self.my_storbinary("STOR "+filename+".tmp", f, callback = uploadFileAndUpdateProgress )
+		
+	        # now we can rename the file with its original name
+	        self.renameFile(filename+".tmp",filename)
+	        mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.uploadFile: after self.renameFile()")
+	    
+	        f.close()
+	    
 	        if rc.find("226") != -1: # upload complete
 		    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.uploadFile: upload complete.")
 		    return True
-		else:
+	        else:
 		    mirrorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"handlerFTP.uploadFile: upload failed !!.")
 		    return False
-	    except: # connection reset by peer
-		mirrorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"handlerFTP.uploadFile: upload issues, retrying...")
-		print_info(red("Upload issue, retrying..."))
+	    
+	    except Exception, e: # connection reset by peer
+		mirrorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"handlerFTP.uploadFile: Caught Exception: "+str(e)+" upload issues, retrying...")
+		print_info(red("Upload issue, retrying... #"+str(i+1)))
 		self.reconnectHost() # reconnect
+		mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.uploadFile: after reconnectHost()")
 		if self.isFileAvailable(filename):
 		    self.deleteFile(filename)
 		if self.isFileAvailable(filename+".tmp"):
 		    self.deleteFile(filename+".tmp")
-		#f.close()
+		mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.uploadFile: after file deletion")
 		pass
-
+		
     def downloadFile(self,filepath,downloaddir,ascii = False):
 
         def downloadFileStoreAndUpdateProgress(buf):
@@ -295,7 +334,7 @@ class handlerFTP:
     def renameFile(self,fromfile,tofile):
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.renameFile: rename file from '"+fromfile+"' to '"+tofile+"'.")
 	rc = self.ftpconn.rename(fromfile,tofile)
-	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.renameFile: return output: '"+rc+"'")
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.renameFile: return output: '"+str(rc)+"'")
 
     # not supported by dreamhost.com
     def getFileSize(self,file):
