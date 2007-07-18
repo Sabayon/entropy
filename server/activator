@@ -59,11 +59,13 @@ def print_help():
 
 options = sys.argv[1:]
 
-# no color parsing
+# preliminary options parsing
 _options = []
 for opt in options:
     if (opt == "--nocolor"):
 	entropyTools.nocolor()
+    elif (opt == "--debug"):
+	entropyTools.enableDebug()
     else:
 	_options.append(opt)
 options = _options

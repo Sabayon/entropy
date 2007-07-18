@@ -41,6 +41,16 @@ entropyLog = logTools.LogFile(level=etpConst['entropyloglevel'],filename = etpCo
 
 # EXIT STATUSES: 100-199
 
+global __etp_debug
+__etp_debug = False
+def enableDebug():
+    __etp_debug = True
+    import pdb
+    pdb.set_trace()
+
+def getDebug():
+    return __etp_debug
+
 def isRoot():
     import getpass
     if (getpass.getuser() == "root"):

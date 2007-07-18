@@ -26,6 +26,7 @@ import string
 import random
 import sys
 
+
 # Specifications of the content of etpData
 # THIS IS THE KEY PART OF ENTROPY BINARY PACKAGES MANAGEMENT
 # DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU'RE DOING !!
@@ -158,6 +159,7 @@ etpConst = {
     'databaseconf': ETP_CONF_DIR+"/database.conf", # database.conf file
     'spmbackendconf': ETP_CONF_DIR+"/spmbackend.conf", # Source Package Manager backend configuration (Portage now)
     'mirrorsconf': ETP_CONF_DIR+"/mirrors.conf", # mirrors.conf file
+    'remoteconf': ETP_CONF_DIR+"/remote.conf", # remote.conf file
     'activatoruploaduris': [], # list of URIs that activator can use to upload files (parsed from activator.conf)
     'activatordownloaduris': [], # list of URIs that activator can use to fetch data
     'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
@@ -174,6 +176,7 @@ etpConst = {
     
     'databaseloglevel': 1, # Database log level (default: 1 - see database.conf for more info)
     'mirrorsloglevel': 1, # Mirrors log level (default: 1 - see mirrors.conf for more info)
+    'remoteloglevel': 1, # Remote handlers (/handlers) log level (default: 1 - see remote.conf for more info)
     'enzymeloglevel': 1 , # Enzyme log level (default: 1 - see enzyme.conf for more info)
     'reagentloglevel': 1 , # Reagent log level (default: 1 - see reagent.conf for more info)
     'activatorloglevel': 1, # # Activator log level (default: 1 - see activator.conf for more info)
@@ -183,6 +186,7 @@ etpConst = {
     
     'syslogdir': ETP_SYSLOG_DIR, # Entropy system tools log directory
     'mirrorslogfile': ETP_SYSLOG_DIR+"/mirrors.log", # Mirrors operations log file
+    'remotelogfile': ETP_SYSLOG_DIR+"/remote.log", # Mirrors operations log file
     'spmbackendlogfile': ETP_SYSLOG_DIR+"/spmbackend.log", # Source Package Manager backend configuration log file
     'databaselogfile': ETP_SYSLOG_DIR+"/database.log", # Database operations log file
     'enzymelogfile': ETP_SYSLOG_DIR+"/enzyme.log", # Enzyme operations log file
@@ -202,6 +206,11 @@ etpConst = {
     'preinstallscript': "preinstall.sh", # used by the client to run some pre-install actions
     'postinstallscript': "postinstall.sh", # used by the client to run some post-install actions
  }
+
+# Handlers used by entropy to run and retrieve data remotely, using php helpers
+etpHandlers = {
+    'md5sum': "md5sum.php?arch="+ETP_ARCH_CONST+"&package=", # md5sum handler
+}
 
 # Create paths
 if not os.path.isdir(ETP_DIR):
@@ -470,7 +479,39 @@ else:
 		print "WARNING: invalid loglevel in: "+etpConst['mirrorsconf']
 		import time
 		time.sleep(5)
-		
+	
+# remote section
+etpRemoteSupport = {}
+if (not os.path.isfile(etpConst['remoteconf'])):
+    print "ERROR: "+etpConst['remoteconf']+" does not exist"
+    sys.exit(50)
+else:
+    f = open(etpConst['remoteconf'],"r")
+    databaseconf = f.readlines()
+    f.close()
+    for line in databaseconf:
+	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
+	    loglevel = line.split("loglevel|")[1]
+	    try:
+		loglevel = int(loglevel)
+	    except:
+		print "ERROR: invalid loglevel in: "+etpConst['remoteconf']
+		sys.exit(51)
+	    if (loglevel > -1) and (loglevel < 3):
+	        etpConst['remoteloglevel'] = loglevel
+	    else:
+		print "WARNING: invalid loglevel in: "+etpConst['remoteconf']
+		import time
+		time.sleep(5)
+
+	if line.startswith("httphandler|") and (len(line.split("|")) > 2):
+	    servername = line.split("httphandler|")[1]
+	    url = line.split("httphandler|")[2]
+	    if not url.endswith("/"):
+		url = url+"/"
+	    etpRemoteSupport[servername] = url
+
+
 # spmbackend section
 if (not os.path.isfile(etpConst['spmbackendconf'])):
     print "ERROR: "+etpConst['spmbackendconf']+" does not exist"

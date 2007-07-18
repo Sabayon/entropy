@@ -28,7 +28,6 @@ from outputTools import *
 import entropyTools
 import string
 import os
-import ftplib
 import time
 
 # Logging initialization
@@ -41,7 +40,20 @@ class handlerFTP:
 
     # ftp://linuxsabayon:asdasd@silk.dreamhost.com/sabayon.org
     # this must be run before calling the other functions
-    def __init__(self, ftpuri):
+    def __init__(self, ftpuri, debug = None):
+
+	# ftp debugging
+	if entropyTools.getDebug():
+	    debug = True
+	else:
+	    debug = False
+	# FIXME: remove this
+	#debug = True
+
+        # import FTP modules
+        import timeoutsocket
+        import ftplib
+        timeoutsocket.setDefaultSocketTimeout(60)
 
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.__init__: called.")
 
@@ -80,36 +92,24 @@ class handlerFTP:
 	    self.ftpdir = self.ftpdir[:len(self.ftpdir)-1]
 
 	self.ftpconn = ftplib.FTP(self.ftphost)
+	# enable debug?
+	if debug:
+	    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.__init__: DEBUG enabled.")
+	    self.ftpconn.set_debuglevel(2)
+	
 	self.ftpconn.login(self.ftpuser,self.ftppassword)
 	# change to our dir
 	#print self.ftpdir
 	self.ftpconn.cwd(self.ftpdir)
 	self.currentdir = self.ftpdir
 
-    def my_storbinary(self, cmd, fp, callback=None):   # patched for callback
-        '''Store a file in line mode.'''
-        self.ftpconn.voidcmd('TYPE I')
-	CRLF = ftplib.CRLF
-        conn = self.ftpconn.transfercmd(cmd)
-        while 1:
-            buf = fp.readline()
-            if not buf: break
-            if buf[-2:] != CRLF:
-                if buf[-1] in CRLF: buf = buf[:-1]
-                buf = buf + CRLF
-            conn.sendall(buf)
-            if callback: callback(buf)                 # patched for callback
-        conn.close()
-        return self.ftpconn.voidresp()
-	#FTP.storbinary = my_storbinary  # use the patched version
-
     # this can be used in case of exceptions
     def reconnectHost(self):
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.reconnectHost: called.")
-	#try:
-	#    self.closeFTPConnection()
-	#except:
-	#    pass
+        # import FTP modules
+        import timeoutsocket
+        import ftplib
+        timeoutsocket.setDefaultSocketTimeout(60)
 	self.ftpconn = ftplib.FTP(self.ftphost)
 	self.ftpconn.login(self.ftpuser,self.ftppassword)
 	# save curr dir
@@ -117,16 +117,16 @@ class handlerFTP:
 	#self.setCWD(self.ftpdir)
 	self.setCWD(self.currentdir)
 
-    def getFTPHost(self):
-	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getFTPHost: called -> "+self.ftphost)
+    def getHost(self):
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getHost: called -> "+self.ftphost)
 	return self.ftphost
 
-    def getFTPPort(self):
-	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getFTPPort: called -> "+self.ftpport)
+    def getPort(self):
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getPort: called -> "+self.ftpport)
 	return self.ftpport
 
-    def getFTPDir(self):
-	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getFTPPort: called -> "+self.ftpdir)
+    def getDir(self):
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getDir: called -> "+self.ftpdir)
 	return self.ftpdir
 
     def getCWD(self):
@@ -148,16 +148,16 @@ class handlerFTP:
 	rc = self.ftpconn.sendcmd("mdtm "+path)
 	return rc.split()[len(rc.split())-1]
 
-    def spawnFTPCommand(self,cmd):
-	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.spawnFTPCommand: called, command -> "+cmd)
+    def spawnCommand(self,cmd):
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.spawnCommand: called, command -> "+cmd)
 	rc = self.ftpconn.sendcmd(cmd)
-	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.spawnFTPCommand: called, rc -> "+str(rc))
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.spawnCommand: called, rc -> "+str(rc))
 	return rc
 
     # list files and directory of a FTP
     # @returns a list
-    def listFTPdir(self):
-	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.listFTPdir: called.")
+    def listDir(self):
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.listDir: called.")
 	# directory is: self.ftpdir
 	try:
 	    rc = self.ftpconn.nlst()
@@ -217,10 +217,16 @@ class handlerFTP:
             if callback: callback(buf)
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.advancedStorBinary: before conn.close()")
         conn.close()
-	time.sleep(3)
-	rc = self.ftpconn.voidresp()
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.advancedStorBinary: after conn.close()")
-	return rc
+	
+	# that's another workaround
+	#return "226"
+	try:
+	    rc = self.ftpconn.voidresp()
+	except Timeout:
+	    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"handlerFTP.advancedStorBinary: timeout receiving voidresp(), reconnecting...")
+	    self.reconnectHost()
+	    return "226"
 
     def uploadFile(self,file,ascii = False):
 	
@@ -243,11 +249,11 @@ class handlerFTP:
 	for i in range(10): # ten tries
 	
 	    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.uploadFile: try #"+str(i+1))
-	
+	    filename = file.split("/")[len(file.split("/"))-1]
+
 	    try:
 	    
 	        f = open(file,"r")
-	        filename = file.split("/")[len(file.split("/"))-1]
 		
 	        # get file size
 	        self.myFileSize = round(float(os.stat(file)[6])/1024,1)
@@ -259,7 +265,7 @@ class handlerFTP:
 	        if (ascii):
 		    rc = self.ftpconn.storlines("STOR "+filename+".tmp",f)
 	        else:
-		    rc = self.my_storbinary("STOR "+filename+".tmp", f, callback = uploadFileAndUpdateProgress )
+		    rc = self.advancedStorBinary("STOR "+filename+".tmp", f, callback = uploadFileAndUpdateProgress )
 		
 	        # now we can rename the file with its original name
 	        self.renameFile(filename+".tmp",filename)
@@ -275,8 +281,11 @@ class handlerFTP:
 		    return False
 	    
 	    except Exception, e: # connection reset by peer
-		mirrorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"handlerFTP.uploadFile: Caught Exception: "+str(e)+" upload issues, retrying...")
-		print_info(red("Upload issue, retrying... #"+str(i+1)))
+		mirrorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"handlerFTP.uploadFile: Caught Exception: "+str(e)+", upload issues, retrying...")
+		import traceback
+		traceback.print_stack()
+		print_warning("")
+		print_warning(red("  Upload issue: ")+bold(str(e))+red(", retrying... #"+str(i+1)))
 		self.reconnectHost() # reconnect
 		mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.uploadFile: after reconnectHost()")
 		if self.isFileAvailable(filename):

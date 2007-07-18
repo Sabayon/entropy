@@ -33,10 +33,13 @@ import commands
 import string
 import time
 
+
 # Logging initialization
 import logTools
 activatorLog = logTools.LogFile(level=etpConst['activatorloglevel'],filename = etpConst['activatorlogfile'], header = "[Activator]")
 # example: activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFuncton: called.")
+
+import remoteTools
 
 def sync(options, justTidy = False):
 
@@ -191,7 +194,7 @@ def packages(options):
 	        print_info(green(" * ")+yellow("Fetching remote statistics..."), back = True)
 	        ftp = mirrorTools.handlerFTP(uri)
 	        ftp.setCWD(etpConst['binaryurirelativepath'])
-	        remotePackages = ftp.listFTPdir()
+	        remotePackages = ftp.listDir()
 	        remotePackagesInfo = ftp.getRoughList()
 	        ftp.closeFTPConnection()
 
@@ -491,14 +494,67 @@ def packages(options):
 			    uploadItem = etpConst['packagessuploaddir']+"/"+item[0]
 			else:
 			    uploadItem = etpConst['packagesbindir']+"/"+item[0]
-			rc = ftp.uploadFile(uploadItem)
+			
+			ckOk = False
+			while not ckOk:
+			    rc = ftp.uploadFile(uploadItem)
+			    # verify upload using remoteTools
+			    print_info(counterInfo+red("   -> Verifying ")+green(item[0])+bold(" checksum")+red(" (if supported)"), back = True)
+			    ck = remoteTools.getRemotePackageChecksum(extractFTPHostFromUri(uri),item[0])
+			    if (ck == None):
+				print_warning(counterInfo+red("   -> Digest verification of ")+green(item[0])+bold(" not supported"))
+				ckOk = True
+			    else:
+				if (ck == False):
+				    # file does not exist???
+				    print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not exist remotely. Reuploading..."))
+				else:
+				    if len(ck) == 32:
+					# valid checksum, checking
+					ckres = compareMd5(uploadItem,ck)
+					if (ckres):
+					    print_info(counterInfo+red("   -> Package ")+bold(item[0])+red(" has been uploaded correctly."))
+					    ckOk = True
+					else:
+					    print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" has NOT been uploaded correctly. Reuploading..."))
+				    else:
+					# hum, what the hell is this checksum!?!?!?!
+					print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum. Reuploading..."))
+			
 			if not os.path.isfile(uploadItem+etpConst['packageshashfileext']):
 			    hashfile = createHashFile(uploadItem)
 			else:
 			    hashfile = uploadItem+etpConst['packageshashfileext']
+
 			# upload md5 hash
-			rcmd5 = ftp.uploadFile(hashfile,ascii = True)
-			
+			print_info(counterInfo+red(" Uploading checksum of ")+bold(item[0]) + red(" to ") + bold(extractFTPHostFromUri(uri)) +red(" ..."))
+			ckOk = False
+			while not ckOk:
+			    rcmd5 = ftp.uploadFile(hashfile,ascii = True)
+			    # verify upload using remoteTools
+			    print_info(counterInfo+red("   -> Verifying ")+green(item[0]+etpConst['packageshashfileext'])+bold(" checksum")+red(" (if supported)"), back = True)
+			    ck = remoteTools.getRemotePackageChecksum(extractFTPHostFromUri(uri),item[0])
+			    if (ck == None):
+				print_warning(counterInfo+red("   -> Digest verification of ")+green(item[0]+etpConst['packageshashfileext'])+bold(" not supported"))
+				ckOk = True
+			    else:
+				if (ck == False):
+				    # file does not exist???
+				    print_warning(counterInfo+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" does not exist remotely. Reuploading..."))
+				else:
+				    if len(ck) == 32:
+					# valid checksum, checking
+					ckres = compareMd5(hashfile,ck)
+					if (ckres):
+					    print_info(counterInfo+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" has been uploaded correctly."))
+					    ckOk = True
+					else:
+					    print_warning(counterInfo+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" has NOT been uploaded correctly. Reuploading..."))
+				    else:
+					# hum, what the hell is this checksum!?!?!?!
+					print_warning(counterInfo+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" does not have a proper checksum. Reuploading..."))
+
+			# now check
 			if (rc) and (rcmd5):
 			    successfulUploadCounter += 1
 		    print_info(red(" * Upload completed for ")+bold(extractFTPHostFromUri(uri)))
@@ -521,11 +577,37 @@ def packages(options):
 			        continue
 		        print_info(counterInfo+red(" Downloading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."))
 			
-			# FIXME: test if the .md5 got downloaded
-			if item[0].endswith(etpConst['packageshashfileext']):
-			    rc = ftp.downloadFile(item[0],etpConst['packagesbindir']+"/", ascii = True)
-			else:
-		            rc = ftp.downloadFile(item[0],etpConst['packagesbindir']+"/")
+			ckOk = False
+			while not ckOk:
+
+			    if item[0].endswith(etpConst['packageshashfileext']):
+				rc = ftp.downloadFile(item[0],etpConst['packagesbindir']+"/", ascii = True)
+			    else:
+				rc = ftp.downloadFile(item[0],etpConst['packagesbindir']+"/")
+
+			    # verify upload using remoteTools
+			    print_info(counterInfo+red("   -> Verifying ")+green(item[0])+bold(" checksum")+red(" (if supported)"), back = True)
+			    ck = remoteTools.getRemotePackageChecksum(extractFTPHostFromUri(uri),item[0])
+			    if (ck == None):
+				print_warning(counterInfo+red("   -> Digest verification of ")+green(item[0])+bold(" not supported"))
+				ckOk = True
+			    else:
+				if (ck == False):
+				    # file does not exist???
+				    print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not exist remotely. Reuploading..."))
+				else:
+				    if len(ck) == 32:
+					# valid checksum, checking
+					filepath = etpConst['packagesbindir']+"/"+item[0]
+					ckres = compareMd5(filepath,ck)
+					if (ckres):
+					    print_info(counterInfo+red("   -> Package ")+bold(item[0])+red(" has been uploaded correctly."))
+					    ckOk = True
+					else:
+					    print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" has NOT been uploaded correctly. Reuploading..."))
+				    else:
+					# hum, what the hell is this checksum!?!?!?!
+					print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum. Reuploading..."))
 			
 			if (rc):
 			    successfulDownloadCounter += 1
@@ -542,9 +624,11 @@ def packages(options):
 	    # trap exceptions, failed to upload/download someting?
 	    except Exception, e:
 		
-		print_error(yellow(" * ")+red("packages: Exception caught: ")+str(e)+red(" . Continuing if possible..."))
-		activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: Exception caught: "+str(e)+" . Trying to continue if possible.")
+		print_error(yellow(" * ")+red("packages: Exception caught: ")+str(e)+red(" . Showing traceback:"))
+		import traceback
+		traceback.print_stack()
 		
+		activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: Exception caught: "+str(e)+" . Trying to continue if possible.")
 		activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: cannot properly syncronize "+extractFTPHostFromUri(uri)+". Trying to continue if possible.")
 		
 		# print warning cannot sync uri
