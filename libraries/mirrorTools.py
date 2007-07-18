@@ -223,7 +223,7 @@ class handlerFTP:
 	#return "226"
 	try:
 	    rc = self.ftpconn.voidresp()
-	except Timeout:
+	except:
 	    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"handlerFTP.advancedStorBinary: timeout receiving voidresp(), reconnecting...")
 	    self.reconnectHost()
 	    return "226"
