@@ -229,6 +229,7 @@ def print_info(msg, back = False):
     print green(">>")+" "+msg
 
 def print_warning(msg):
+    writechar("\r                                                                                                                 \r")
     print yellow(">>")+" "+msg
 
 def print_generic(msg): # here we'll wrap any nice formatting

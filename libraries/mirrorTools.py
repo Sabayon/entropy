@@ -227,6 +227,7 @@ class handlerFTP:
 	    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"handlerFTP.advancedStorBinary: timeout receiving voidresp(), reconnecting...")
 	    self.reconnectHost()
 	    return "226"
+	return rc
 
     def uploadFile(self,file,ascii = False):
 	
@@ -368,6 +369,6 @@ class handlerFTP:
 	self.ftpconn.dir(self.bufferizer)
 	return self.FTPbuffer
 
-    def closeFTPConnection(self):
-	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.closeFTPConnection: called.")
+    def closeConnection(self):
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.closeConnection: called.")
 	self.ftpconn.quit()

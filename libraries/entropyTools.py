@@ -321,7 +321,7 @@ def getEtpRemoteDatabaseStatus():
 	    revision = 0
 	info = [uri+"/"+etpConst['etpurirelativepath']+etpConst['etpdatabasefilegzip'],revision]
 	uriDbInfo.append(info)
-	ftp.closeFTPConnection()
+	ftp.closeConnection()
 
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getEtpRemoteDatabaseStatus: dump -> "+str(uriDbInfo))
 
@@ -541,7 +541,7 @@ def uploadDatabase(uris):
 	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 	
 	# close connection
-	ftp.closeFTPConnection()
+	ftp.closeConnection()
 	# unlock database
 	downloadLockDatabases(False,[uri])
 
@@ -603,7 +603,7 @@ def downloadDatabase(uri):
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: do some tidy.")
     spawnCommand("rm -f " + etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip'], "&> /dev/null")
     # close connection
-    ftp.closeFTPConnection()
+    ftp.closeConnection()
 
 # Reports in a list form the lock status of the mirrors
 # @ [ uri , True/False, True/False ] --> True = locked, False = unlocked
@@ -624,7 +624,7 @@ def getMirrorsLock():
 	if (ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
 	    # Upload is locked
 	    data[2] = True
-	ftp.closeFTPConnection()
+	ftp.closeConnection()
 	dbstatus.append(data)
     return dbstatus
 
@@ -651,7 +651,7 @@ def downloadPackageFromMirror(uri,pkgfile):
 	    entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+tries+"/"+maxtries+") Error. File not found. -> "+pkgfile)
 	    # file does not exist
 	    print_warning(red("  * File ")+yellow(pkgfilename)+red(" does not exist remotely on ")+bold(extractFTPHostFromUri(uri)))
-	    ftp.closeFTPConnection()
+	    ftp.closeConnection()
 	    return None
 	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+tries+"/"+maxtries+") checking md5 for -> "+pkgfile)
         # check md5
@@ -748,13 +748,13 @@ def lockDatabases(lock = True, mirrorList = []):
 	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
 		entropyLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"lockDatabases: mirror "+extractFTPHostFromUri(uri)+" already locked.")
 	        print_info(green(" * ")+red("Mirror database at ")+bold(extractFTPHostFromUri(uri))+red(" already locked."))
-	        ftp.closeFTPConnection()
+	        ftp.closeConnection()
 	        continue
 	else:
 	    if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
 		entropyLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"lockDatabases: mirror "+extractFTPHostFromUri(uri)+" already unlocked.")
 	        print_info(green(" * ")+red("Mirror database at ")+bold(extractFTPHostFromUri(uri))+red(" already unlocked."))
-	        ftp.closeFTPConnection()
+	        ftp.closeConnection()
 	        continue
 	if (lock):
 	    f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'],"w")
@@ -784,7 +784,7 @@ def lockDatabases(lock = True, mirrorList = []):
 	        outstat = True
 	        print "\n"
 	        print_warning(red(" * ")+red("A problem occured while unlocking ")+bold(extractFTPHostFromUri(uri))+red(" mirror. Please have a look."))
-	ftp.closeFTPConnection()
+	ftp.closeConnection()
     return outstat
 
 def downloadLockDatabases(lock = True, mirrorList = []):
@@ -808,13 +808,13 @@ def downloadLockDatabases(lock = True, mirrorList = []):
 	if (lock):
 	    if (ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
 	        print_info(green(" * ")+red("Download mirror at ")+bold(extractFTPHostFromUri(uri))+red(" already locked."))
-	        ftp.closeFTPConnection()
+	        ftp.closeConnection()
 	        continue
 	else:
 	    if (not ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
 		entropyLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"downloadLockDatabases: already unlocked -> "+extractFTPHostFromUri(uri))
 	        print_info(green(" * ")+red("Download mirror at ")+bold(extractFTPHostFromUri(uri))+red(" already unlocked."))
-	        ftp.closeFTPConnection()
+	        ftp.closeConnection()
 	        continue
 	if (lock):
 	    f = open(etpConst['packagestmpdir']+"/"+etpConst['etpdatabasedownloadlockfile'],"w")
@@ -840,7 +840,7 @@ def downloadLockDatabases(lock = True, mirrorList = []):
 	        outstat = True
 	        print "\n"
 	        print_warning(red(" * ")+red("A problem occured while unlocking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror. Please have a look."))
-	ftp.closeFTPConnection()
+	ftp.closeConnection()
     return outstat
 
 def getLocalDatabaseRevision():

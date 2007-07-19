@@ -505,8 +505,8 @@ else:
 		time.sleep(5)
 
 	if line.startswith("httphandler|") and (len(line.split("|")) > 2):
-	    servername = line.split("httphandler|")[1]
-	    url = line.split("httphandler|")[2]
+	    servername = line.split("|")[1].strip()
+	    url = line.split("|")[2].strip()
 	    if not url.endswith("/"):
 		url = url+"/"
 	    etpRemoteSupport[servername] = url

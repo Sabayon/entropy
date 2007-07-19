@@ -127,7 +127,7 @@ def sync(options, justTidy = False):
 		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+file)
 		print_info(green(" * ")+red("Package file: ")+bold(file)+red(" removed successfully from ")+bold(etpConst['packagesbindir']))
 		os.remove(etpConst['packagesbindir']+"/"+file)
-	ftp.closeFTPConnection()
+	ftp.closeConnection()
 	
     print_info(green(" * ")+red("Syncronization across mirrors completed."))
 
@@ -196,7 +196,7 @@ def packages(options):
 	        ftp.setCWD(etpConst['binaryurirelativepath'])
 	        remotePackages = ftp.listDir()
 	        remotePackagesInfo = ftp.getRoughList()
-	        ftp.closeFTPConnection()
+	        ftp.closeConnection()
 
 	        print_info(green(" * ")+yellow("Remote statistics"))
 	        remoteCounter = 0
@@ -533,7 +533,7 @@ def packages(options):
 			    rcmd5 = ftp.uploadFile(hashfile,ascii = True)
 			    # verify upload using remoteTools
 			    print_info(counterInfo+red("   -> Verifying ")+green(item[0]+etpConst['packageshashfileext'])+bold(" checksum")+red(" (if supported)"), back = True)
-			    ck = remoteTools.getRemotePackageChecksum(extractFTPHostFromUri(uri),item[0])
+			    ck = remoteTools.getRemotePackageChecksum(extractFTPHostFromUri(uri),item[0]+etpConst['packageshashfileext'])
 			    if (ck == None):
 				print_warning(counterInfo+red("   -> Digest verification of ")+green(item[0]+etpConst['packageshashfileext'])+bold(" not supported"))
 				ckOk = True
@@ -558,7 +558,7 @@ def packages(options):
 			if (rc) and (rcmd5):
 			    successfulUploadCounter += 1
 		    print_info(red(" * Upload completed for ")+bold(extractFTPHostFromUri(uri)))
-		    ftp.closeFTPConnection()
+		    ftp.closeConnection()
 
 	        # download queue
 	        if (detailedDownloadQueue != []):
@@ -613,7 +613,7 @@ def packages(options):
 			    successfulDownloadCounter += 1
 			
 		    print_info(red(" * Download completed for ")+bold(extractFTPHostFromUri(uri)))
-		    ftp.closeFTPConnection()
+		    ftp.closeConnection()
 
 		uploadCounter = int(uploadCounter)
 		downloadCounter = int(downloadCounter)
@@ -749,7 +749,7 @@ def database(options):
 	    ftp.setCWD(etpConst['etpurirelativepath'])
 	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) or (ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
 		mirrorsLocked = True
-		ftp.closeFTPConnection()
+		ftp.closeConnection()
 		break
 	
 	if (mirrorsLocked):
