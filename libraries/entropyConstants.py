@@ -119,7 +119,7 @@ ETP_PORTDIR = "/portage"
 ETP_DISTFILESDIR = "/distfiles"
 ETP_DBDIR = "/database/"+ETP_ARCH_CONST
 ETP_DBFILE = "packages.db"
-ETP_DBCLIENTFILE = "client.db"
+ETP_CLIENT_REPO_DIR = "/client"
 ETP_UPLOADDIR = "/upload/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store/"+ETP_ARCH_CONST
 ETP_SMARTAPPSDIR = "/smartapps/"+ETP_ARCH_CONST
@@ -173,7 +173,6 @@ etpConst = {
     'etpdatabasetaintfile': ETP_DBFILE+".tainted", # when this file exists, the database is not synced anymore with the online one
     'etpdatabasefile': ETP_DBFILE, # Entropy sqlite database file ETP_DIR+ETP_DBDIR+"/packages.db"
     'etpdatabasefilegzip': ETP_DBFILE+".gz", # Entropy sqlite database file (gzipped)
-    'etpdatabaseclientfile': ETP_DBCLIENTFILE, # Entropy sqlite client database file
     'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
     
     'databaseloglevel': 1, # Database log level (default: 1 - see database.conf for more info)
@@ -199,9 +198,10 @@ etpConst = {
     
     'distcc-status': False, # used by Enzyme, if True distcc is enabled
     'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file
-    'etpdatabasedir': ETP_DIR+ETP_DBDIR, # 
+    'etpdatabasedir': ETP_DIR+ETP_DBDIR,
     'etpdatabasefilepath': ETP_DIR+ETP_DBDIR+"/"+ETP_DBFILE,
-    'etpdatabaseclientfilepath': ETP_DIR+ETP_DBDIR+"/"+ETP_DBCLIENTFILE,
+    'etpdatabaseclientdir': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR,
+    
     'etpapi': ETP_API, # Entropy database API revision
     'headertext': ETP_HEADER_TEXT, # header text that can be outputted to a file
     'currentarch': ETP_ARCH_CONST, # contains the current running architecture
@@ -214,6 +214,7 @@ etpConst = {
 etpHandlers = {
     'md5sum': "md5sum.php?arch="+ETP_ARCH_CONST+"&package=", # md5sum handler
 }
+
 
 # Create paths
 if not os.path.isdir(ETP_DIR):
@@ -244,12 +245,9 @@ if not os.path.isdir(ETP_DIR):
         print "you need to run this as root at least once."
         sys.exit(100)
 
-# FIXME: IS THIS REALLY USED BY ANYTHING ????
-etpSources = {
-    'packagesuri': "", # URIs where are stored binary packages
-    'databaseuri': "", # URIs where are stored entropy files
-}
-etpSources['packagesuri'] = []
+# Client packages/database repositories
+# used by equo
+etpRepositories = {}
 
 if os.path.isfile(etpConst['repositoriesconf']):
     f = open(etpConst['repositoriesconf'],"r")
@@ -258,17 +256,18 @@ if os.path.isfile(etpConst['repositoriesconf']):
     
     for line in repositoriesconf:
 	line = line.strip()
-        # populate etpSources['packagesuri']
-	if (line.find("packages|") != -1) and (not line.startswith("#")):
-	    repouri = line.split("packages|")[len(line.split("packages|"))-1]
-	    if repouri.startswith("http://") or repouri.startswith("ftp://") or repouri.startswith("rsync://"):
-	        etpSources['packagesuri'].append(repouri)
-	# populate etpSources['databaseuri']
-	elif (line.find("database|") != -1) and (not line.startswith("#")):
-	    if (not etpSources['databaseuri']):
-	        repouri = line.split("database|")[len(line.split("database|"))-1]
-	        if repouri.startswith("http://") or repouri.startswith("ftp://") or repouri.startswith("rsync://"):
-	            etpSources['databaseuri'] = repouri
+        # populate etpRepositories
+	if (line.find("repository|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 5):
+	    reponame = line.split("|")[1]
+	    repodesc = line.split("|")[2]
+	    repopackages = line.split("|")[3]
+	    repodatabase = line.split("|")[4]
+	    if (repopackages.startswith("http://") or repopackages.startswith("ftp://")) and (repodatabase.startswith("http://") or repodatabase.startswith("ftp://")):
+		etpRepositories[reponame] = {}
+		etpRepositories[reponame]['description'] = repodesc
+		etpRepositories[reponame]['packages'] = repopackages+"/"+etpConst['currentarch']
+		etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['currentarch']
+		etpRepositories[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['currentarch']
 
 if (commands.getoutput("q -V").find("portage-utils") != -1):
     pFindLibrary = "qfile -qC "

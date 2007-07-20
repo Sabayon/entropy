@@ -30,32 +30,33 @@ sys.path.append('../libraries')
 import entropyTools
 import activatorTools
 from entropyConstants import *
+from outputTools import *
 
 # CONSTANTS
 APPNAME = "activator"
 APPVERSION = "1.0"
 def print_help():
-    entropyTools.print_info("Sabayon Linux "+APPNAME+" (C - 2007)")
-    entropyTools.print_info("General Options:")
-    entropyTools.print_info("  --help\t\tthis output")
-    entropyTools.print_info("  --version\t\tprint version")
-    entropyTools.print_info("  --verbose\t\tbe more verbose")
-    entropyTools.print_info("  --nocolor\t\tdisable colorized output")
-    entropyTools.print_info(entropyTools.blue("Tools available: "))
-    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("sync"))+entropyTools.yellow("\t\t to sync packages, database and also do some tidy"))
-    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("tidy"))+entropyTools.yellow("\t\t to just remove binary packages that are not in the Entropy database anymore"))
-    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("packages"))+entropyTools.yellow("\t to manage binary packages"))
-    entropyTools.print_info(" \t\t"+entropyTools.red("--ask")+"\t\t\t ask before making any changes")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--pretend")+"\t\t just show what would be done")
-    entropyTools.print_info(" \t\t"+entropyTools.red("--do-packages-check")+"\t after the syncronization, also check packages checksum")
-    entropyTools.print_info(" \t\t"+entropyTools.green("sync")+entropyTools.red("\t\t\t to sync the binary packages across primary mirrors"))
-    entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("database"))+entropyTools.yellow("\t to manage database status and settings [")+entropyTools.bold("database content won't be touched")+entropyTools.yellow("]"))
-    entropyTools.print_info(" \t\t"+entropyTools.green("sync")+entropyTools.red("\t\t\t to sync the database across primary mirrors"))
-    entropyTools.print_info(" \t\t"+entropyTools.green("lock")+entropyTools.red("\t\t\t to lock the database(s) status ["+entropyTools.yellow("DANGEROUS")+entropyTools.red("]")))
-    entropyTools.print_info(" \t\t"+entropyTools.green("unlock")+entropyTools.red("\t\t\t to unlock the database(s) status ["+entropyTools.yellow("DANGEROUS")+entropyTools.red("]")))
-    entropyTools.print_info(" \t\t"+entropyTools.green("download-lock")+entropyTools.red("\t\t to lock the download mirror status"))
-    entropyTools.print_info(" \t\t"+entropyTools.green("download-unlock")+entropyTools.red("\t\t to unlock the download mirror status"))
-    entropyTools.print_info(" \t\t"+entropyTools.green("lock-status")+entropyTools.red("\t\t to show the current locks status of the mirrors"))
+    print_info("Sabayon Linux "+APPNAME+" (C - 2007)")
+    print_info("General Options:")
+    print_info("  --help\t\tthis output")
+    print_info("  --version\t\tprint version")
+    print_info("  --verbose\t\tbe more verbose")
+    print_info("  --nocolor\t\tdisable colorized output")
+    print_info(blue("Tools available: "))
+    print_info(" \t"+green(bold("sync"))+yellow("\t\t to sync packages, database and also do some tidy"))
+    print_info(" \t"+green(bold("tidy"))+yellow("\t\t to just remove binary packages that are not in the Entropy database anymore"))
+    print_info(" \t"+green(bold("packages"))+yellow("\t to manage binary packages"))
+    print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
+    print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
+    print_info(" \t\t"+red("--do-packages-check")+"\t after the syncronization, also check packages checksum")
+    print_info(" \t\t"+green("sync")+red("\t\t\t to sync the binary packages across primary mirrors"))
+    print_info(" \t"+green(bold("database"))+yellow("\t to manage database status and settings [")+bold("database content won't be touched")+yellow("]"))
+    print_info(" \t\t"+green("sync")+red("\t\t\t to sync the database across primary mirrors"))
+    print_info(" \t\t"+green("lock")+red("\t\t\t to lock the database(s) status ["+yellow("DANGEROUS")+red("]")))
+    print_info(" \t\t"+green("unlock")+red("\t\t\t to unlock the database(s) status ["+yellow("DANGEROUS")+red("]")))
+    print_info(" \t\t"+green("download-lock")+red("\t\t to lock the download mirror status"))
+    print_info(" \t\t"+green("download-unlock")+red("\t\t to unlock the download mirror status"))
+    print_info(" \t\t"+green("lock-status")+red("\t\t to show the current locks status of the mirrors"))
 
 options = sys.argv[1:]
 

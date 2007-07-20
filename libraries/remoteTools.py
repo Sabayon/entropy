@@ -33,7 +33,7 @@ remoteLog = logTools.LogFile(level=etpConst['remoteloglevel'],filename = etpCons
 # example: mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFuncton: called.")
 
 import timeoutsocket
-import urllib
+import urllib2
 timeoutsocket.setDefaultSocketTimeout(60)
 
 # Get checksum of a package by running md5sum remotely (using php helpers)
@@ -54,7 +54,56 @@ def getRemotePackageChecksum(serverName,filename):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getRemotePackageChecksum: requested url -> "+request)
     
     # now pray the server
-    file = urllib.urlopen(request)
+    file = urllib2.urlopen(request)
     result = file.readline().strip()
     return result
+
+
+###################################################
+# HTTP/FTP equo/download functions
+###################################################
+
+def downloadData(url,pathToSave, bufferSize = 8192, checksum = True):
+    remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadFile: called.")
     
+    try:
+        remotefile = urllib2.urlopen(url)
+    except Exception, e:
+	remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"downloadFile: Exception caught for: "+str(url)+" -> "+str(e))
+	return "-3"
+    try:
+	maxsize = remotefile.headers.get("content-length")
+    except:
+	maxsize = 0
+	pass
+    localfile = open(pathToSave,"w")
+    rsx = "x"
+    while rsx != '':
+	rsx = remotefile.read(bufferSize)
+	__downloadFileCommitData(localfile,rsx,maxsize = maxsize)
+    localfile.flush()
+    localfile.close()
+    #print_info("",back = True)
+    if checksum:
+	# return digest
+	return entropyTools.md5sum(pathToSave)
+    else:
+	# return -2
+	return "-2"
+
+###################################################
+# HTTP/FTP equo INTERNAL FUNCTIONS
+###################################################
+def __downloadFileCommitData(f, buf, output = True, maxsize = 0):
+    # writing file buffer
+    f.write(buf)
+    # update progress
+    if output:
+        kbytecount = float(f.tell())/1024
+	maxsize = int(maxsize)
+	if maxsize > 0:
+	    maxsize = float(int(maxsize))/1024
+        # create text
+        currentText = yellow("        <-> Downloading: ")+green(str(round(kbytecount,1)))+"/"+red(str(round(maxsize,1)))+" kB"
+        # print !
+        print_info(currentText,back = True)

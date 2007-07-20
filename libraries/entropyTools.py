@@ -92,6 +92,19 @@ def md5sum(filepath):
         m.update(block)
 	block = readfile.read(1024)
     return m.hexdigest()
+    
+def unpackGzip(gzipfilepath):
+    import gzip
+    filepath = gzipfilepath[:len(gzipfilepath)-3] # remove .gz
+    file = open(filepath,"wb")
+    filegz = gzip.GzipFile(gzipfilepath,"rb")
+    filecont = filegz.readlines()
+    filegz.close()
+    file.writelines(filecont)
+    file.flush()
+    file.close()
+    del filecont
+    return filepath
 
 # This function creates the .hash file related to the given package file
 # @returns the complete hash file path
@@ -550,8 +563,6 @@ def downloadDatabase(uri):
     
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: called.")
     
-    import gzip
-    
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: downloading from -> "+extractFTPHostFromUri(uri))
     
     print_info(green(" * ")+red("Downloading database from ")+bold(extractFTPHostFromUri(uri))+red(" ..."))
@@ -571,14 +582,9 @@ def downloadDatabase(uri):
 
     # On the fly decompression
     print_info(green(" * ")+red("Decompressing ")+bold(etpConst['etpdatabasefilegzip'])+red(" ..."), back = True)
-    dbfile = open(etpConst['etpdatabasefilepath'],"wb")
-    dbfilegz = gzip.GzipFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip'],"rb")
-    dbcont = dbfilegz.readlines()
-    dbfilegz.close()
-    dbfile.writelines(dbcont)
-    dbfile.flush()
-    dbfile.close()
-    del dbcont
+    
+    unpackGzip(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip'])
+    
     print_info(green(" * ")+red("Decompression of ")+bold(etpConst['etpdatabasefilegzip'])+red(" completed."))
     
     # downloading revision file
