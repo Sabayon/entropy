@@ -693,6 +693,661 @@ def database(options):
 	    print_info(green("     Number of happy downloads:\t\t")+str(pkgDownloadedSuccessfully))
 	    print_info(red("     Number of failed downloads:\t\t")+str(pkgDownloadedError))
 
+
+### Client database control
+#   used in equilibrium
+def clientdb(options):
+    if len(options) == 0:
+	print_error(yellow(" * ")+red("Not enough parameters"))
+	sys.exit(301)
+
+    if (options[0] == "--initialize"):
+	
+	# do some check, print some warnings
+	print_info(green(" * ")+red("Initializing Entropy database..."), back = True)
+        # database file: etpConst['etpdatabasefilepath']
+        if os.path.isfile(etpConst['etpdatabasefilepath']):
+	    print_info(red(" * ")+bold("WARNING")+red(": database file already exists. Overwriting."))
+	    rc = entropyTools.askquestion("\n     Do you want to continue ?")
+	    if rc == "No":
+	        sys.exit(0)
+	    entropyTools.spawnCommand("rm -f "+etpConst['etpdatabasefilepath'])
+
+	# initialize the database
+        dbconn = etpDatabase(readOnly = False, noUpload = True)
+	dbconn.initializeDatabase()
+	
+	# sync packages directory
+	import activatorTools
+	activatorTools.packages(["sync","--ask"])
+	
+	# now fill the database
+	pkglist = os.listdir(etpConst['packagesbindir'])
+
+	print_info(green(" * ")+red("Reinitializing Entropy database using Packages in the repository ..."))
+	currCounter = 0
+	atomsnumber = len(pkglist)
+	import reagentTools
+	for pkg in pkglist:
+	    print_info(green(" * ")+red("Analyzing: ")+bold(pkg), back = True)
+	    currCounter += 1
+	    print_info(green("  (")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."))
+	    etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+pkg)
+		
+	    # remove shait
+	    entropyTools.spawnCommand("rm -rf "+etpConst['packagestmpdir']+"/"+pkg)
+	    # fill the db entry
+	    dbconn.addPackage(etpData)
+	    dbconn.commitChanges()
+	
+	dbconn.closeDB()
+	print_info(green(" * ")+red("Entropy database has been reinitialized using binary packages available"))
+
+    # used by reagent
+    elif (options[0] == "search"):
+	mykeywords = options[1:]
+	if (len(mykeywords) == 0):
+	    print_error(yellow(" * ")+red("Not enough parameters"))
+	    sys.exit(302)
+	if (not os.path.isfile(etpConst['etpdatabasefilepath'])):
+	    print_error(yellow(" * ")+red("Entropy Datbase does not exist"))
+	    sys.exit(303)
+	# search tool
+	print_info(green(" * ")+red("Searching ..."))
+	# open read only
+	dbconn = etpDatabase(True)
+	foundCounter = 0
+	for mykeyword in mykeywords:
+	    results = dbconn.searchPackages(mykeyword)
+	    
+	    # regenerate info list
+	    _results = []
+	    for result in results:
+		rslt = []
+		rslt = dbconn.retrievePackageInfo(result,"stable")
+		if rslt != []:
+		    _results.append(rslt[0])
+		rslt = []
+		rslt = dbconn.retrievePackageInfo(result,"unstable")
+		if rslt != []:
+		    _results.append(rslt[0])
+	    results = _results
+	    
+	    for result in results:
+		
+		foundCounter += 1
+		print 
+		print_info(green(" * ")+bold(result[0]))   # package atom
+		print_info(red("\t Name: ")+blue(result[1]))
+		print_info(red("\t Installed version: ")+blue(result[2]))
+		if (result[3]):
+		    print_info(red("\t Description: ")+result[3])
+		print_info(red("\t CHOST: ")+blue(result[5]))
+		print_info(red("\t CFLAGS: ")+darkred(result[6]))
+		print_info(red("\t CXXFLAGS: ")+darkred(result[7]))
+		if (result[8]):
+		    print_info(red("\t Website: ")+result[8])
+		if (result[9]):
+		    print_info(red("\t USE Flags: ")+blue(result[9]))
+		print_info(red("\t License: ")+bold(result[10]))
+		print_info(red("\t Source keywords: ")+darkblue(result[11]))
+		print_info(red("\t Binary keywords: ")+green(result[12]))
+		print_info(red("\t Package branch: ")+result[13])
+		print_info(red("\t Download relative URL: ")+result[14])
+		print_info(red("\t Package Checksum: ")+green(result[15]))
+		if (result[16]):
+		    print_info(red("\t Sources"))
+		    sources = result[16].split()
+		    for source in sources:
+			print_info(darkred("\t    # Source package: ")+yellow(source))
+		if (result[17]):
+		    print_info(red("\t Slot: ")+yellow(result[17]))
+		#print_info(red("\t Blah: ")+result[18]) # I don't need to print mirrorlinks
+		if (result[20]):
+		    deps = result[20].split()
+		    print_info(red("\t Dependencies"))
+		    for dep in deps:
+			print_info(darkred("\t    # Depends on: ")+dep)
+		#print_info(red("\t Blah: ")+result[20]) --> it's a dup of [21]
+		if (result[22]):
+		    rundeps = result[22].split()
+		    print_info(red("\t Built with runtime dependencies"))
+		    for rundep in rundeps:
+			print_info(darkred("\t    # Dependency: ")+rundep)
+		if (result[23]):
+		    print_info(red("\t Conflicts with"))
+		    conflicts = result[23].split()
+		    for conflict in conflicts:
+			print_info(darkred("\t    # Conflict: ")+conflict)
+		print_info(red("\t Entry API: ")+green(result[24]))
+		print_info(red("\t Entry creation date: ")+str(entropyTools.convertUnixTimeToHumanTime(int(result[25]))))
+		if (result[26]):
+		    print_info(red("\t Built with needed libraries"))
+		    libs = result[26].split()
+		    for lib in libs:
+			print_info(darkred("\t    # Needed library: ")+lib)
+		print_info(red("\t Entry revision: ")+str(result[27]))
+		#print result
+	dbconn.closeDB()
+	if (foundCounter == 0):
+	    print_warning(red(" * ")+red("Nothing found."))
+	else:
+	    print
+    
+    # used by reagent
+    elif (options[0] == "dump-package-info"):
+	mypackages = options[1:]
+	if (len(mypackages) == 0):
+	    print_error(yellow(" * ")+red("Not enough parameters"))
+	    sys.exit(302)
+	# open read only
+	dbconn = etpDatabase(True)
+	
+	for package in mypackages:
+	    print_info(green(" * ")+red("Searching package ")+bold(package)+red(" ..."))
+	    if entropyTools.isjustpkgname(package) or (package.find("/") == -1):
+		print_warning(yellow(" * ")+red("Package ")+bold(package)+red(" is not a complete atom."))
+		continue
+	    # open db connection
+	    if (not dbconn.isPackageAvailable(package)):
+		# package does not exist in the Entropy database
+		print_warning(yellow(" * ")+red("Package ")+bold(package)+red(" does not exist in Entropy database."))
+	        continue
+	    
+	    myEtpData = entropyTools.etpData.copy()
+	    
+	    # dump both branches if exist
+	    branches = []
+	    if (dbconn.isSpecificPackageAvailable(package, branch = "stable")):
+		branches.append("stable")
+	    if (dbconn.isSpecificPackageAvailable(package, branch = "unstable")):
+		branches.append("unstable")
+	    
+	    for branch in branches:
+	        # reset
+	        for i in myEtpData:
+	            myEtpData[i] = ""
+	        for i in myEtpData:
+		    myEtpData[i] = dbconn.retrievePackageVar(package,i, branch)
+		
+		# sort and print
+	        etprevision = str(dbconn.retrievePackageVar(package,"revision", branch))
+	        filepath = etpConst['packagestmpdir'] + "/" + dbconn.retrievePackageVar(package,"name",branch) + "-" + dbconn.retrievePackageVar(package,"version",branch)+"-"+"etp"+etprevision+"-"+branch+".etp"
+	        f = open(filepath,"w")
+	        sortList = []
+	        for i in myEtpData:
+		    sortList.append(i)
+	        sortList = entropyTools.alphaSorter(sortList)
+	        for i in sortList:
+		    if (myEtpData[i]):
+		        f.write(i+": "+myEtpData[i]+"\n")
+	        f.flush()
+	        f.close()
+	        print_info(green("    * ")+red("Dump generated in ")+bold(filepath)+red(" ."))
+
+	dbconn.closeDB()
+
+    # used by reagent
+    elif (options[0] == "inject-package-info"):
+	if (len(options[1:]) == 0):
+	    print_error(yellow(" * ")+red("Not enough parameters"))
+	    sys.exit(303)
+	mypath = options[1:][0]
+	if (not os.path.isfile(mypath)):
+	    print_error(yellow(" * ")+red("File does not exist."))
+	    sys.exit(303)
+	
+	# revision is surely bumped
+	etpDataOut = entropyTools.parseEtpDump(mypath)
+	dbconn = etpDatabase(readOnly = False, noUpload = True)
+	updated, revision = dbconn.handlePackage(etpDataOut)
+	dbconn.closeDB()
+
+	if (updated) and (revision != 0):
+	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['category']+"/"+etpDataOut['name']+"-"+etpDataOut['version'])+red(" entry has been updated. Revision: ")+bold(str(revision)))
+	elif (updated) and (revision == 0):
+	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['category']+"/"+etpDataOut['name']+"-"+etpDataOut['version'])+red(" entry newly created."))
+	else:
+	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['category']+"/"+etpDataOut['name']+"-"+etpDataOut['version'])+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
+	
+	"""
+	sortList = []
+	for i in etpDataOut:
+	    sortList.append(i)
+	sortList = entropyTools.alphaSorter(sortList)
+	"""
+	# print out the changes before doing them?
+	
+    elif (options[0] == "restore-package-info"):
+	mypackages = options[1:]
+	if (len(mypackages) == 0):
+	    print_error(yellow(" * ")+red("Not enough parameters"))
+	    sys.exit(302)
+
+	# sync packages directory
+	import activatorTools
+	activatorTools.packages(["sync","--ask"])
+
+	dbconn = etpDatabase(readOnly = False, noUpload = True)
+	
+	# validate entries
+	_mypackages = []
+	for pkg in mypackages:
+	    if (dbconn.isPackageAvailable(pkg)):
+		_mypackages.append(pkg)
+	mypackages = _mypackages
+	
+	if len(mypackages) == 0:
+	    print_error(yellow(" * ")+red("No valid package found. You must specify category/atom-version."))
+	    sys.exit(303)
+	
+	print_info(green(" * ")+red("Reinitializing Entropy database using Packages in the repository ..."))
+	
+	# get the file list
+	pkglist = []
+	for pkg in mypackages:
+	    # dump both branches if exist
+	    branches = []
+	    if (dbconn.isSpecificPackageAvailable(pkg, branch = "stable")):
+		branches.append("stable")
+	    if (dbconn.isSpecificPackageAvailable(pkg, branch = "unstable")):
+		branches.append("unstable")
+	    for branch in branches:
+		pkgfile = dbconn.retrievePackageVar(pkg,"download",branch)
+	        pkgfile = pkgfile.split("/")[len(pkgfile.split("/"))-1]
+	        pkglist.append(pkgfile)
+	
+	# validate files
+	_pkglist = []
+	for file in pkglist:
+	    if (not os.path.isfile(etpConst['packagesbindir']+"/"+file)):
+	        print_info(yellow(" * ")+red("Attention: ")+bold(file)+red(" does not exist anymore."))
+	    else:
+		_pkglist.append(file)
+	pkglist = _pkglist
+	
+	currCounter = 0
+	atomsnumber = len(pkglist)
+	import reagentTools
+	for pkg in pkglist:
+	    
+	    print_info(green(" * ")+red("Analyzing: ")+bold(pkg), back = True)
+	    currCounter += 1
+	    print_info(green("  (")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."))
+	    etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+pkg)
+	    # remove shait
+	    entropyTools.spawnCommand("rm -rf "+etpConst['packagestmpdir']+"/"+pkg)
+	    # fill the db entry
+	    dbconn.handlePackage(etpData)
+	    dbconn.commitChanges()
+
+	dbconn.commitChanges()
+	dbconn.closeDB()
+	print_info(green(" * ")+red("Successfully restored database information for the chosen packages."))
+
+
+    elif (options[0] == "create-empty-database"):
+	mypath = options[1:]
+	if len(mypath) == 0:
+	    print_error(yellow(" * ")+red("Not enough parameters"))
+	    sys.exit(303)
+	if (os.path.dirname(mypath[0]) != '') and (not os.path.isdir(os.path.dirname(mypath[0]))):
+	    print_error(green(" * ")+red("Supplied directory does not exist."))
+	    sys.exit(304)
+	print_info(green(" * ")+red("Initializing an empty database file with Entropy structure ..."),back = True)
+	connection = sqlite.connect(mypath[0])
+	cursor = connection.cursor()
+	cursor.execute(etpSQLInitDestroyAll)
+	cursor.execute(etpSQLInit)
+	connection.commit()
+	cursor.close()
+	connection.close()
+	print_info(green(" * ")+red("Entropy database file ")+bold(mypath[0])+red(" successfully initialized."))
+
+    elif (options[0] == "stabilize") or (options[0] == "unstabilize"):
+
+	if options[0] == "stabilize":
+	    stable = True
+	else:
+	    stable = False
+	
+	if (stable):
+	    print_info(green(" * ")+red("Collecting packages that would be marked stable ..."), back = True)
+	else:
+	    print_info(green(" * ")+red("Collecting packages that would be marked unstable ..."), back = True)
+	
+	myatoms = options[1:]
+	if len(myatoms) == 0:
+	    print_error(yellow(" * ")+red("Not enough parameters"))
+	    sys.exit(303)
+	# is world?
+	if myatoms[0] == "world":
+	    # open db in read only
+	    dbconn = etpDatabase(readOnly = True)
+	    if (stable):
+	        pkglist = dbconn.listUnstablePackages()
+	    else:
+		pkglist = dbconn.listStablePackages()
+	    # This is the list of all the packages available in Entropy
+	    dbconn.closeDB()
+	else:
+	    pkglist = []
+	    for atom in myatoms:
+		# validate atom
+		dbconn = etpDatabase(readOnly = True)
+		if (stable):
+		    pkg = dbconn.searchPackagesInBranch(atom,"unstable")
+		else:
+		    pkg = dbconn.searchPackagesInBranch(atom,"stable")
+		for x in pkg:
+		    pkglist.append(x)
+	
+	# filter dups
+	pkglist = list(set(pkglist))
+	# check if atoms were found
+	if len(pkglist) == 0:
+	    print
+	    print_error(yellow(" * ")+red("No packages found."))
+	    sys.exit(303)
+	
+	# show what would be done
+	if (stable):
+	    print_info(green(" * ")+red("These are the packages that would be marked stable:"))
+	else:
+	    print_info(green(" * ")+red("These are the packages that would be marked unstable:"))
+
+	for pkg in pkglist:
+	    print_info(red("\t (*) ")+bold(pkg))
+	
+	# ask to continue
+	rc = entropyTools.askquestion("     Would you like to continue ?")
+	if rc == "No":
+	    sys.exit(0)
+	
+	# now mark them as stable
+	print_info(green(" * ")+red("Marking selected packages ..."))
+
+	# open db
+	dbconn = etpDatabase(readOnly = False, noUpload = True)
+	import re
+	for pkg in pkglist:
+	    print_info(green(" * ")+red("Marking package: ")+bold(pkg)+red(" ..."), back = True)
+	    rc, action = dbconn.stabilizePackage(pkg,stable)
+	    # @rc: True if updated, False if not
+	    # @action: action taken: "stable" for stabilized package, "unstable" for unstabilized package
+	    if (rc):
+		
+		print_info(green(" * ")+red("Package: ")+bold(pkg)+red(" needs to be marked ")+bold(action), back = True)
+		
+		# change download database parameter name
+		download = dbconn.retrievePackageVar(pkg, "download", branch = action)
+		# change action with the opposite:
+		if action == "stable":
+		    # move to unstable
+		    oppositeAction = "unstable"
+		else:
+		    oppositeAction = "stable"
+		
+		oldpkgfilename = os.path.basename(download)
+		download = re.subn("-"+oppositeAction,"-"+action, download)
+		
+		if download[1]: # if the name has been converted
+		
+		    newpkgfilename = os.path.basename(download[0])
+		
+		    # change download parameter in the database entry
+		    dbconn.writePackageParameter(pkg, "download", download[0], action)
+		
+		    print_info(green("   * ")+yellow("Updating local package name"))
+		
+		    # change filename locally
+		    if os.path.isfile(etpConst['packagesbindir']+"/"+oldpkgfilename):
+		        os.rename(etpConst['packagesbindir']+"/"+oldpkgfilename,etpConst['packagesbindir']+"/"+newpkgfilename)
+		
+		    print_info(green("   * ")+yellow("Updating local package checksum"))
+		
+		    # update md5
+		    if os.path.isfile(etpConst['packagesbindir']+"/"+oldpkgfilename+etpConst['packageshashfileext']):
+			
+		        f = open(etpConst['packagesbindir']+"/"+oldpkgfilename+etpConst['packageshashfileext'])
+		        oldMd5 = f.readline().strip()
+		        f.close()
+		        newMd5 = re.subn(oldpkgfilename, newpkgfilename, oldMd5)
+		        if newMd5[1]:
+			    f = open(etpConst['packagesbindir']+"/"+newpkgfilename+etpConst['packageshashfileext'],"w")
+			    f.write(newMd5[0]+"\n")
+			    f.flush()
+			    f.close()
+		        # remove old
+		        os.remove(etpConst['packagesbindir']+"/"+oldpkgfilename+etpConst['packageshashfileext'])
+			
+		    else: # old md5 does not exist
+			
+			entropyTools.createHashFile(etpConst['packagesbindir']+"/"+newpkgfilename)
+			
+		
+		    print_info(green("   * ")+yellow("Updating remote package information"))
+		
+		    # change filename remotely
+		    ftp = mirrorTools.handlerFTP(uri)
+		    ftp.setCWD(etpConst['binaryurirelativepath'])
+		    if (ftp.isFileAvailable(etpConst['packagesbindir']+"/"+oldpkgfilename)):
+			# rename tbz2
+			ftp.renameFile(oldpkgfilename,newpkgfilename)
+			# remove old .md5
+			ftp.deleteFile(oldpkgfilename+etpConst['packageshashfileext'])
+			# upload new .md5 if found
+			if os.path.isfile(etpConst['packagesbindir']+"/"+newpkgfilename+etpConst['packageshashfileext']):
+			    ftp.uploadFile(etpConst['packagesbindir']+"/"+newpkgfilename+etpConst['packageshashfileext'],ascii = True)
+		
+
+	dbconn.commitChanges()
+	print_info(green(" * ")+red("All the selected packages have been marked as requested. Have fun."))
+	dbconn.closeDB()
+
+    elif (options[0] == "sanity-check"):
+	print_info(green(" * ")+red("Running sanity check on the database ... "), back = True)
+	dbconn = etpDatabase(readOnly = True)
+	dbconn.noopCycle()
+	dbconn.closeDB()
+	print_info(green(" * ")+red("Database sanity check passed."))
+
+    elif (options[0] == "remove"):
+
+	print_info(green(" * ")+red("Scanning packages that would be removed ..."), back = True)
+	
+	myatoms = options[1:]
+	if len(myatoms) == 0:
+	    print_error(yellow(" * ")+red("Not enough parameters"))
+	    sys.exit(303)
+
+	pkglist = []
+	for atom in myatoms:
+	    # validate atom
+	    dbconn = etpDatabase(readOnly = True)
+	    pkg = dbconn.searchPackages(atom)
+	    try:
+		for x in pkg:
+		    pkglist.append(x[0])
+	    except:
+		pass
+
+	# filter dups
+	pkglist = list(set(pkglist))
+	# check if atoms were found
+	if len(pkglist) == 0:
+	    print
+	    print_error(yellow(" * ")+red("No packages found."))
+	    sys.exit(303)
+	
+	print_info(green(" * ")+red("These are the packages that would be removed from the database:"))
+
+	for pkg in pkglist:
+	    print_info(red("\t (*) ")+bold(pkg))
+	
+	# ask to continue
+	rc = entropyTools.askquestion("     Would you like to continue ?")
+	if rc == "No":
+	    sys.exit(0)
+	
+	# now mark them as stable
+	print_info(green(" * ")+red("Removing selected packages ..."))
+
+	# open db
+	dbconn = etpDatabase(readOnly = False, noUpload = True)
+	for pkg in pkglist:
+	    print_info(green(" * ")+red("Removing package: ")+bold(pkg)+red(" ..."), back = True)
+	    dbconn.removePackage(pkg)
+	dbconn.commitChanges()
+	print_info(green(" * ")+red("All the selected packages have been removed as requested. To remove online binary packages, just run Activator."))
+	dbconn.closeDB()
+
+    # used by reagent
+    elif (options[0] == "statistics"):
+	print_info(green(" [LOCAL DB STATISTIC]\t\t")+red("Information"))
+	# fetch total packages
+	dbconn = etpDatabase(readOnly = True)
+	totalpkgs = len(dbconn.listAllPackages())
+	totalstablepkgs = len(dbconn.listStablePackages())
+	totalunstablepkgs = len(dbconn.listUnstablePackages())
+	print_info(green(" Total Installed Packages\t\t")+red(str(totalpkgs)))
+	print_info(green(" Total Stable Packages\t\t")+red(str(totalstablepkgs)))
+	print_info(green(" Total Unstable Packages\t\t")+red(str(totalunstablepkgs)))
+	entropyTools.syncRemoteDatabases(justStats = True)
+	dbconn.closeDB()
+
+    # used by reagent
+    # FIXME: complete this with some automated magic
+    elif (options[0] == "md5check"):
+
+	print_info(green(" * ")+red("Integrity verification of the selected packages:"))
+
+	mypackages = options[1:]
+	dbconn = etpDatabase(readOnly = True)
+	
+	# statistic vars
+	pkgMatch = 0
+	pkgNotMatch = 0
+	pkgDownloadedSuccessfully = 0
+	pkgDownloadedError = 0
+	worldSelected = False
+	
+	if (len(mypackages) == 0):
+	    # check world
+	    # create packages list
+	    worldSelected = True
+	    pkgs2check = dbconn.listAllPackages()
+	elif (mypackages[0] == "world"):
+	    # check world
+	    # create packages list
+	    worldSelected = True
+	    pkgs2check = dbconn.listAllPackages()
+	else:
+	    # catch the names
+	    pkgs2check = []
+	    for pkg in mypackages:
+		results = dbconn.searchPackages(pkg)
+		for i in results:
+		    pkgs2check.append(i[0])
+
+	# order alphabetically
+	if (pkgs2check != []):
+	    pkgs2check = entropyTools.alphaSorter(pkgs2check)
+
+	if (not worldSelected):
+	    print_info(red("   This is the list of the packages that would be checked:"))
+	else:
+	    print_info(red("   All the packages in the Entropy Packages repository will be checked."))
+	
+	toBeDownloaded = []
+	availList = []
+	for i in pkgs2check:
+	
+	    branches = []
+	    if (dbconn.isSpecificPackageAvailable(i, branch = "stable")):
+		branches.append("stable")
+	    if (dbconn.isSpecificPackageAvailable(i, branch = "unstable")):
+		branches.append("unstable")
+	
+	    for branch in branches:
+		pkgfile = dbconn.retrievePackageVar(i,"download",branch)
+	        pkgfile = pkgfile.split("/")[len(pkgfile.split("/"))-1]
+	        if (os.path.isfile(etpConst['packagesbindir']+"/"+pkgfile)):
+		    if (not worldSelected): print_info(green("   - [PKG AVAILABLE] ")+red(i)+" -> "+bold(pkgfile))
+		    availList.append(pkgfile)
+	        elif (os.path.isfile(etpConst['packagessuploaddir']+"/"+pkgfile)):
+		    if (not worldSelected): print_info(green("   - [RUN ACTIVATOR] ")+darkred(i)+" -> "+bold(pkgfile))
+	        else:
+		    if (not worldSelected): print_info(green("   - [MUST DOWNLOAD] ")+yellow(i)+" -> "+bold(pkgfile))
+		    toBeDownloaded.append(pkgfile)
+	
+	rc = entropyTools.askquestion("     Would you like to continue ?")
+	if rc == "No":
+	    sys.exit(0)
+
+	notDownloadedPackages = []
+	if (toBeDownloaded != []):
+	    print_info(red("   Starting to download missing files..."))
+	    for uri in etpConst['activatoruploaduris']:
+		
+		if (notDownloadedPackages != []):
+		    print_info(red("   Trying to search missing or broken files on another mirror ..."))
+		    toBeDownloaded = notDownloadedPackages
+		    notDownloadedPackages = []
+		
+		for pkg in toBeDownloaded:
+		    rc = entropyTools.downloadPackageFromMirror(uri,pkg)
+		    if (rc is None):
+			notDownloadedPackages.append(pkg)
+		    if (rc == False):
+			notDownloadedPackages.append(pkg)
+		    if (rc == True):
+			pkgDownloadedSuccessfully += 1
+			availList.append(pkg)
+		
+		if (notDownloadedPackages == []):
+		    print_info(red("   All the binary packages have been downloaded successfully."))
+		    break
+	
+	    if (notDownloadedPackages != []):
+		print_warning(red("   These are the packages that cannot be found online:"))
+		for i in notDownloadedPackages:
+		    pkgDownloadedError += 1
+		    print_warning(red("    * ")+yellow(i))
+		print_warning(red("   They won't be checked."))
+	
+	brokenPkgsList = []
+	for pkg in availList:
+	    print_info(red("   Checking hash of ")+yellow(pkg)+red(" ..."), back = True)
+	    storedmd5 = dbconn.retrievePackageVarFromBinaryPackage(pkg,"digest")
+	    result = entropyTools.compareMd5(etpConst['packagesbindir']+"/"+pkg,storedmd5)
+	    if (result):
+		# match !
+		pkgMatch += 1
+		#print_info(red("   Package ")+yellow(pkg)+green(" is healthy. Checksum: ")+yellow(storedmd5), back = True)
+	    else:
+		pkgNotMatch += 1
+		print_error(red("   Package ")+yellow(pkg)+red(" is _NOT_ healthy !!!! Stored checksum: ")+yellow(storedmd5))
+		brokenPkgsList.append(pkg)
+
+	dbconn.closeDB()
+
+	if (brokenPkgsList != []):
+	    print_info(blue(" *  This is the list of the BROKEN packages: "))
+	    for bp in brokenPkgsList:
+		print_info(red("    * Package file: ")+bold(bp))
+
+	# print stats
+	print_info(blue(" *  Statistics: "))
+	print_info(yellow("     Number of checked packages:\t\t")+str(pkgMatch+pkgNotMatch))
+	print_info(green("     Number of healthy packages:\t\t")+str(pkgMatch))
+	print_info(red("     Number of broken packages:\t\t")+str(pkgNotMatch))
+	if (pkgDownloadedSuccessfully > 0) or (pkgDownloadedError > 0):
+	    print_info(green("     Number of downloaded packages:\t\t")+str(pkgDownloadedSuccessfully+pkgDownloadedError))
+	    print_info(green("     Number of happy downloads:\t\t")+str(pkgDownloadedSuccessfully))
+	    print_info(red("     Number of failed downloads:\t\t")+str(pkgDownloadedError))
+
+
 ############
 # Functions and Classes
 #####################################################################################

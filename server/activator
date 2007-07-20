@@ -39,7 +39,7 @@ def print_help():
     entropyTools.print_info("General Options:")
     entropyTools.print_info("  --help\t\tthis output")
     entropyTools.print_info("  --version\t\tprint version")
-    entropyTools.print_info("  --verbose\t\tprint debugging info")
+    entropyTools.print_info("  --verbose\t\tbe more verbose")
     entropyTools.print_info("  --nocolor\t\tdisable colorized output")
     entropyTools.print_info(entropyTools.blue("Tools available: "))
     entropyTools.print_info(" \t"+entropyTools.green(entropyTools.bold("sync"))+entropyTools.yellow("\t\t to sync packages, database and also do some tidy"))

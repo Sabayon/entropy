@@ -119,6 +119,7 @@ ETP_PORTDIR = "/portage"
 ETP_DISTFILESDIR = "/distfiles"
 ETP_DBDIR = "/database/"+ETP_ARCH_CONST
 ETP_DBFILE = "packages.db"
+ETP_DBCLIENTFILE = "client.db"
 ETP_UPLOADDIR = "/upload/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store/"+ETP_ARCH_CONST
 ETP_SMARTAPPSDIR = "/smartapps/"+ETP_ARCH_CONST
@@ -172,6 +173,7 @@ etpConst = {
     'etpdatabasetaintfile': ETP_DBFILE+".tainted", # when this file exists, the database is not synced anymore with the online one
     'etpdatabasefile': ETP_DBFILE, # Entropy sqlite database file ETP_DIR+ETP_DBDIR+"/packages.db"
     'etpdatabasefilegzip': ETP_DBFILE+".gz", # Entropy sqlite database file (gzipped)
+    'etpdatabaseclientfile': ETP_DBCLIENTFILE, # Entropy sqlite client database file
     'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
     
     'databaseloglevel': 1, # Database log level (default: 1 - see database.conf for more info)
@@ -199,6 +201,7 @@ etpConst = {
     'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file
     'etpdatabasedir': ETP_DIR+ETP_DBDIR, # 
     'etpdatabasefilepath': ETP_DIR+ETP_DBDIR+"/"+ETP_DBFILE,
+    'etpdatabaseclientfilepath': ETP_DIR+ETP_DBDIR+"/"+ETP_DBCLIENTFILE,
     'etpapi': ETP_API, # Entropy database API revision
     'headertext': ETP_HEADER_TEXT, # header text that can be outputted to a file
     'currentarch': ETP_ARCH_CONST, # contains the current running architecture

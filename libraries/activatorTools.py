@@ -516,10 +516,10 @@ def packages(options):
 					    print_info(counterInfo+red("   -> Package ")+bold(item[0])+red(" has been uploaded correctly."))
 					    ckOk = True
 					else:
-					    print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" has NOT been uploaded correctly. Reuploading..."))
+					    print_warning(counterInfo+red("   -> Package ")+bold(item[0])+yellow(" has NOT been uploaded correctly. Reuploading..."))
 				    else:
 					# hum, what the hell is this checksum!?!?!?!
-					print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum. Reuploading..."))
+					print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum: "+str(ck)+". Reuploading..."))
 			
 			if not os.path.isfile(uploadItem+etpConst['packageshashfileext']):
 			    hashfile = createHashFile(uploadItem)
@@ -527,7 +527,7 @@ def packages(options):
 			    hashfile = uploadItem+etpConst['packageshashfileext']
 
 			# upload md5 hash
-			print_info(counterInfo+red(" Uploading checksum of ")+bold(item[0]) + red(" to ") + bold(extractFTPHostFromUri(uri)) +red(" ..."))
+			print_info(counterInfo+red("   -> Uploading checksum of ")+bold(item[0]) + red(" to ") + bold(extractFTPHostFromUri(uri)) +red(" ..."))
 			ckOk = False
 			while not ckOk:
 			    rcmd5 = ftp.uploadFile(hashfile,ascii = True)
@@ -549,10 +549,10 @@ def packages(options):
 					    print_info(counterInfo+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" has been uploaded correctly."))
 					    ckOk = True
 					else:
-					    print_warning(counterInfo+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" has NOT been uploaded correctly. Reuploading..."))
+					    print_warning(counterInfo+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+yellow(" has NOT been uploaded correctly. Reuploading..."))
 				    else:
 					# hum, what the hell is this checksum!?!?!?!
-					print_warning(counterInfo+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" does not have a proper checksum. Reuploading..."))
+					print_warning(counterInfo+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" does not have a proper checksum: "+str(ck)+" Reuploading..."))
 
 			# now check
 			if (rc) and (rcmd5):
@@ -604,10 +604,10 @@ def packages(options):
 					    print_info(counterInfo+red("   -> Package ")+bold(item[0])+red(" has been uploaded correctly."))
 					    ckOk = True
 					else:
-					    print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" has NOT been uploaded correctly. Reuploading..."))
+					    print_warning(counterInfo+red("   -> Package ")+bold(item[0])+yellow(" has NOT been uploaded correctly. Reuploading..."))
 				    else:
 					# hum, what the hell is this checksum!?!?!?!
-					print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum. Reuploading..."))
+					print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum: "+str(ck)+" Reuploading..."))
 			
 			if (rc):
 			    successfulDownloadCounter += 1

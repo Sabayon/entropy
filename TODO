@@ -1,27 +1,21 @@
 TODO list:
 - reagent: complete smartapps section
-- handle errors with the exception framework
 - enzyme, reagent: test kernel dependent packages
 - enzyme, build(): add an option to force the continuation of the emerge queue even if a package fails
 - enzyme, add a module that integrates revdep-rebuild
 - add FXP support to activator ? (yes but dreamhost does not support it :|)
-- entropy, needed part, add multithreading support
 - manage Gentoo profiles updates
 - test stabilization code
 
-
-!! Remember that kernel dependent packages have: sys-kernel/linux-core-2.6.20-sabayon-r3 (for example)
-
 Project Status:
 - entropy: will handle all the three tools below
-- enzyme: complete. Needs bug fixes ?
+- enzyme: complete. Needs bug fixes.
 - reagent: complete. Needs bug fixes.
 - activator: complete. Needs bug fixes.
 ============
-- client part: not yet defined apart from equilibrium name.
+- client part: started.
 
 
 Features plan:
-- enzyme: distcc support on cross platforms and on automake
 - activator: add support for ssh (where supported) to we can md5sum the uploaded files?
 - build() and world(), on enzyme, add the support for whitelist+cron

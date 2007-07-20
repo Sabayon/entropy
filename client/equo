@@ -22,7 +22,7 @@
 
 import sys
 import string
-import equilibriumTools
+import equoTools
 import entropyTools
 
 # CONSTANTS
