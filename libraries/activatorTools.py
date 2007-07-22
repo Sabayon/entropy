@@ -654,9 +654,12 @@ def packages(options):
 
 	# if at least one server has been synced successfully, move files
 	if (totalSuccessfulUri > 0) and (not activatorRequestPretend):
-	    # now we can store the files in upload/%ARCH% in packages/%ARCH%
+	    import shutil
 	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"packages: all done. Now it's time to move packages to "+etpConst['packagesbindir'])
-	    spawnCommand("mv -f "+etpConst['packagessuploaddir']+"/* "+etpConst['packagesbindir']+"/", "&> /dev/null")
+	    for file in os.listdir(etpConst['packagessuploaddir']):
+		source = etpConst['packagessuploaddir']+"/"+file
+		dest = etpConst['packagesbindir']+"/"+file
+		shutil.move(source,dest)
 	    return True
 	else:
 	    sys.exit(470)

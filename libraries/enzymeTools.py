@@ -581,7 +581,7 @@ def build(atoms):
     runtimeDepsPackages = list(set(runtimeDepsPackages))
     # now it's time to check the packages that need to be compressed
     for atom in runtimeDepsPackages:
-	if (not isTbz2PackageAvailable(atom)):
+	if (not isTbz2PackageAvailable(atom, stable = True, unstable = True)):
 	    if (enzymeRequestVerbose): print_info(yellow("   * ")+"I would like to quickpkg "+bold(atom))
 	    runtimeDepsQuickpkg.append(atom)
 

@@ -156,6 +156,178 @@ def ververify(myver, silent=1):
 	    print "!!! syntax error in version: %s" % myver
 	return 0
 
+def isjustname(mypkg):
+    """
+    Checks to see if the depstring is only the package name (no version parts)
+
+    Example usage:
+	>>> isjustname('media-libs/test-3.0')
+	0
+	>>> isjustname('test')
+	1
+	>>> isjustname('media-libs/test')
+	1
+
+    @param mypkg: The package atom to check
+    @param mypkg: String
+    @rtype: Integer
+    @return: One of the following:
+	1) 0 if the package string is not just the package name
+	2) 1 if it is
+    """
+    myparts = mypkg.split('-')
+    for x in myparts:
+	if ververify(x):
+	    return 0
+    return 1
+
+def isspecific(mypkg):
+    """
+    Checks to see if a package is in category/package-version or package-version format,
+    possibly returning a cached result.
+
+    Example usage:
+	>>> isspecific('media-libs/test')
+	0
+	>>> isspecific('media-libs/test-3.0')
+	1
+
+    @param mypkg: The package depstring to check against
+    @type mypkg: String
+    @rtype: Integer
+    @return: One of the following:
+	1) 0 if the package string is not specific
+	2) 1 if it is
+    """
+    mysplit = mypkg.split("/")
+    if not isjustname(mysplit[-1]):
+	return 1
+    return 0
+
+def catpkgsplit(mydata,silent=1):
+    """
+    Takes a Category/Package-Version-Rev and returns a list of each.
+
+    @param mydata: Data to split
+    @type mydata: string 
+    @param silent: suppress error messages
+    @type silent: Boolean (integer)
+    @rype: list
+    @return:
+	1.  If each exists, it returns [cat, pkgname, version, rev]
+	2.  If cat is not specificed in mydata, cat will be "null"
+	3.  if rev does not exist it will be '-r0'
+	4.  If cat is invalid (specified but has incorrect syntax)
+ 		an InvalidData Exception will be thrown
+    """
+	
+    # Categories may contain a-zA-z0-9+_- but cannot start with -
+    mysplit=mydata.split("/")
+    p_split=None
+    if len(mysplit)==1:
+	retval=["null"]
+	p_split=pkgsplit(mydata,silent=silent)
+    elif len(mysplit)==2:
+	retval=[mysplit[0]]
+	p_split=pkgsplit(mysplit[1],silent=silent)
+    if not p_split:
+	return None
+    retval.extend(p_split)
+    return retval
+
+def pkgsplit(mypkg,silent=1):
+    myparts=mypkg.split("-")
+
+    if len(myparts)<2:
+	if not silent:
+	    print "!!! Name error in",mypkg+": missing a version or name part."
+	    return None
+    for x in myparts:
+	if len(x)==0:
+	    if not silent:
+		print "!!! Name error in",mypkg+": empty \"-\" part."
+		return None
+	
+    #verify rev
+    revok=0
+    myrev=myparts[-1]
+    if len(myrev) and myrev[0]=="r":
+	try:
+	    int(myrev[1:])
+	    revok=1
+	except ValueError: # from int()
+	    pass
+    if revok:
+	verPos = -2
+	revision = myparts[-1]
+    else:
+	verPos = -1
+	revision = "r0"
+
+    if ververify(myparts[verPos]):
+	if len(myparts)== (-1*verPos):
+	    return None
+	else:
+	    for x in myparts[:verPos]:
+		if ververify(x):
+		    return None
+		    #names can't have versiony looking parts
+	    myval=["-".join(myparts[:verPos]),myparts[verPos],revision]
+	    return myval
+    else:
+	return None
+
+def dep_getkey(mydep):
+    """
+    Return the category/package-name of a depstring.
+
+    Example usage:
+	>>> dep_getkey('media-libs/test-3.0')
+	'media-libs/test'
+
+    @param mydep: The depstring to retrieve the category/package-name of
+    @type mydep: String
+    @rtype: String
+    @return: The package category/package-version
+    """
+    mydep = dep_getcpv(mydep)
+    if mydep and isspecific(mydep):
+	mysplit = catpkgsplit(mydep)
+	if not mysplit:
+	    return mydep
+	return mysplit[0] + "/" + mysplit[1]
+    else:
+	return mydep
+
+def dep_getcpv(mydep):
+    """
+    Return the category-package-version with any operators/slot specifications stripped off
+
+    Example usage:
+	>>> dep_getcpv('>=media-libs/test-3.0')
+	'media-libs/test-3.0'
+
+    @param mydep: The depstring
+    @type mydep: String
+    @rtype: String
+    @return: The depstring with the operator removed
+    """
+    mydep_orig = mydep
+    if mydep and mydep[0] == "*":
+	mydep = mydep[1:]
+    if mydep and mydep[-1] == "*":
+	mydep = mydep[:-1]
+    if mydep and mydep[0] == "!":
+	mydep = mydep[1:]
+    if mydep[:2] in [">=", "<="]:
+	mydep = mydep[2:]
+    elif mydep[:1] in "=<>~":
+	mydep = mydep[1:]
+    colon = mydep.rfind(":")
+    if colon != -1:
+	mydep = mydep[:colon]
+    return mydep
+
 def removePackageOperators(atom):
     if atom.startswith(">") or atom.startswith("<"):
 	atom = atom[1:]
@@ -277,6 +449,8 @@ def isnumber(x):
 # nameslist: a list that contains duplicated names
 # @returns filtered list
 def filterDuplicatedEntries(nameslist):
+    if nameslist == []:
+	return nameslist
     _nameslist = nameslist
     for name in _nameslist:
 	try:
@@ -335,8 +509,6 @@ def getEtpRemoteDatabaseStatus():
 	info = [uri+"/"+etpConst['etpurirelativepath']+etpConst['etpdatabasefilegzip'],revision]
 	uriDbInfo.append(info)
 	ftp.closeConnection()
-
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getEtpRemoteDatabaseStatus: dump -> "+str(uriDbInfo))
 
     return uriDbInfo
 
@@ -637,13 +809,13 @@ def getMirrorsLock():
 
 def downloadPackageFromMirror(uri,pkgfile):
 
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: called for "+extractFTPHostFromUri(uri)+" and file -> "+pkgfile)
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: called for "+extractFTPHostFromUri(uri)+" and file -> "+str(pkgfile))
 
     tries = 0
     maxtries = 5
     for i in range(maxtries):
 	
-	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+tries+"/"+maxtries+") downloading -> "+pkgfile)
+	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+str(tries)+"/"+str(maxtries)+") downloading -> "+pkgfile)
 	
 	pkgfilename = pkgfile.split("/")[len(pkgfile.split("/"))-1]
         print_info(red("  * Connecting to ")+bold(extractFTPHostFromUri(uri)), back = True)
@@ -654,12 +826,12 @@ def downloadPackageFromMirror(uri,pkgfile):
         print_info(red("  * Downloading ")+yellow(pkgfilename)+red(" from ")+bold(extractFTPHostFromUri(uri)))
         rc = ftp.downloadFile(pkgfilename,etpConst['packagesbindir'])
 	if (rc is None):
-	    entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+tries+"/"+maxtries+") Error. File not found. -> "+pkgfile)
+	    entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+str(tries)+"/"+str(maxtries)+") Error. File not found. -> "+pkgfile)
 	    # file does not exist
 	    print_warning(red("  * File ")+yellow(pkgfilename)+red(" does not exist remotely on ")+bold(extractFTPHostFromUri(uri)))
 	    ftp.closeConnection()
 	    return None
-	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+tries+"/"+maxtries+") checking md5 for -> "+pkgfile)
+	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+str(tries)+"/"+str(maxtries)+") checking md5 for -> "+pkgfile)
         # check md5
 	dbconn = databaseTools.etpDatabase(readOnly = True)
 	storedmd5 = dbconn.retrievePackageVarFromBinaryPackage(pkgfilename,"digest")

@@ -56,45 +56,118 @@ etpData = {
     'conflicts': u"", # blockers
     'etpapi': u"", # Entropy API revision
     'datecreation': u"", # mtime of the .tbz2 file
-    'neededlibs': u"" # libraries needed bye the applications in the package
+    'neededlibs': u"", # libraries needed bye the applications in the package
+    'size': u"" # the package size
 }
 
 # Entropy database SQL initialization Schema and data structure
-# MUST BE KEPT IN SYNC with etpData above
 etpSQLInitDestroyAll = """
-DROP TABLE IF EXISTS etpData;
+DROP TABLE IF EXISTS baseinfo;
+DROP TABLE IF EXISTS extrainfo;
+DROP TABLE IF EXISTS content;
+DROP TABLE IF EXISTS dependencies;
+DROP TABLE IF EXISTS rundependencies;
+DROP TABLE IF EXISTS conflicts;
+DROP TABLE IF EXISTS neededlibs;
+DROP TABLE IF EXISTS mirrorlinks;
+DROP TABLE IF EXISTS sources;
+DROP TABLE IF EXISTS useflags;
+DROP TABLE IF EXISTS keywords;
+DROP TABLE IF EXISTS binkeywords;
 """
+
 etpSQLInit = """
-CREATE TABLE etpData (
-    atom VARCHAR(75) PRIMARY KEY,
-    name VARCHAR(50),
-    version VARCHAR(25),
-    description VARCHAR(100),
-    category VARCHAR(25),
-    chost VARCHAR(100),
-    cflags VARCHAR(100),
-    cxxflags VARCHAR(100),
-    homepage VARCHAR(100),
-    useflags VARCHAR(150),
-    license VARCHAR(25),
-    keywords VARCHAR(50),
-    binkeywords VARCHAR(50),
-    branch VARCHAR(255),
-    download VARCHAR(100),
-    digest VARCHAR(32),
-    sources VARCHAR(500),
-    slot VARCHAR(10),
-    content VARCHAR(100),
-    mirrorlinks VARCHAR(200),
-    dependencies VARCHAR(100),
-    rundependencies VARCHAR(250),
-    rundependenciesXT VARCHAR(250),
-    conflicts VARCHAR(100),
-    etpapi VARCHAR(3),
-    datecreation VARCHAR(20),
-    neededlibs VARCHAR(100),
-    revision INTEGER(3)
-)
+
+CREATE TABLE baseinfo (
+    idpackage INTEGER PRIMARY KEY,
+    atom VARCHAR,
+    idcategory INTEGER,
+    name VARCHAR,
+    version VARCHAR,
+    revision INTEGER,
+    branch VARCHAR,
+    slot VARCHAR,
+    idlicense INTEGER,
+    etpapi INTEGER
+);
+
+CREATE TABLE extrainfo (
+    idpackage INTEGER PRIMARY KEY,
+    description VARCHAR,
+    homepage VARCHAR,
+    download VARCHAR,
+    size VARCHAR,
+    idflags INTEGER,
+    digest VARCHAR
+);
+
+CREATE TABLE content (
+    idpackage INTEGER,
+    file VARCHAR
+);
+
+CREATE TABLE dependencies (
+    idpackage INTEGER,
+    dependency VARCHAR
+);
+
+CREATE TABLE rundependencies (
+    idpackage INTEGER,
+    dependency VARCHAR
+);
+
+CREATE TABLE conflicts (
+    idpackage INTEGER,
+    conflict VARCHAR
+);
+
+CREATE TABLE neededlibs (
+    idpackage INTEGER,
+    library VARCHAR
+);
+
+CREATE TABLE mirrorlinks (
+    mirrorname VARCHAR PRIMARY KEY,
+    mirrorlink VARCHAR
+);
+
+CREATE TABLE sources (
+    idpackage INTEGER,
+    mirrorlink VARCHAR
+);
+
+CREATE TABLE useflags (
+    idpackage INTEGER,
+    flag VARCHAR
+);
+
+CREATE TABLE keywords (
+    idpackage INTEGER,
+    keyword VARCHAR
+);
+
+CREATE TABLE binkeywords (
+    idpackage INTEGER,
+    binkeyword VARCHAR
+);
+
+CREATE TABLE categories (
+    idcategory INTEGER PRIMARY KEY,
+    category VARCHAR
+);
+
+CREATE TABLE licenses (
+    idlicense INTEGER PRIMARY KEY,
+    category VARCHAR
+);
+
+CREATE TABLE flags (
+    idflags INTEGER PRIMARY KEY,
+    chost VARCHAR,
+    cflags VARCHAR,
+    cxxflags VARCHAR
+);
+
 """
 
 # Entropy directories specifications
@@ -208,6 +281,8 @@ etpConst = {
     'supportedarchs': ETP_ARCHS, # Entropy supported Archs
     'preinstallscript': "preinstall.sh", # used by the client to run some pre-install actions
     'postinstallscript': "postinstall.sh", # used by the client to run some post-install actions
+    
+    'branches': ["unstable","stable"], # available branches
  }
 
 # Handlers used by entropy to run and retrieve data remotely, using php helpers
@@ -435,6 +510,30 @@ else:
 		print "WARNING: invalid loglevel in: "+etpConst['reagentconf']
 		import time
 		time.sleep(5)
+
+# entropy section
+if (not os.path.isfile(etpConst['entropyconf'])):
+    print "ERROR: "+etpConst['entropyconf']+" does not exist"
+    sys.exit(50)
+else:
+    f = open(etpConst['entropyconf'],"r")
+    entropyconf = f.readlines()
+    f.close()
+    for line in entropyconf:
+	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
+	    loglevel = line.split("loglevel|")[1]
+	    try:
+		loglevel = int(loglevel)
+	    except:
+		print "ERROR: invalid loglevel in: "+etpConst['entropyconf']
+		sys.exit(51)
+	    if (loglevel > -1) and (loglevel < 3):
+	        etpConst['entropyloglevel'] = loglevel
+	    else:
+		print "WARNING: invalid loglevel in: "+etpConst['entropyconf']
+		import time
+		time.sleep(5)
+
 
 # database section
 if (not os.path.isfile(etpConst['databaseconf'])):

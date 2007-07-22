@@ -38,6 +38,7 @@ from outputTools import *
 APPNAME = "reagent"
 APPVERSION = "1.0"
 def print_help():
+
     print_info("Sabayon Linux "+APPNAME+" (C - 2007)")
     print_info("General Options:")
     print_info(" --help\t\tthis output")

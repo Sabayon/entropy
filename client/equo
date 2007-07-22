@@ -41,10 +41,10 @@ def print_help():
     print_info(" \t\t"+green("sync")+red("\t\t\t sync repositories"))
     print_info(" \t\t"+green("show")+red("\t\t\t show enabled repositories"))
     print_info(" \t\t"+green("status")+red("\t\t\t show respositories status"))
-    print_info(" \t"+green(bold("packages"))+yellow("\t to handle packages"))
+    print_info(" \t"+green(bold("package"))+yellow("\t\t to handle packages"))
+    print_info(" \t\t"+green("search")+red("\t\t\t to search a package inside the database"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
-    print_info(" \t\t"+green("void")+red("\t\t\t void void void void void void void"))
     
     print_info(" \t"+green(bold("database"))+yellow("\t to handle installed packages database"))
     print_info(" \t\t"+green("void")+red("\t\t\t void void void void void void void"))
@@ -77,4 +77,8 @@ if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(
 # sync mirrors tool
 elif (options[0] == "repo"):
     rc = equoTools.repositories(options[1:])
+    sys.exit(rc)
+
+elif (options[0] == "package"):
+    rc = equoTools.package(options[1:])
     sys.exit(rc)

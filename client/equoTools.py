@@ -31,6 +31,12 @@ from outputTools import *
 from remoteTools import downloadData
 from entropyTools import unpackGzip,compareMd5
 
+
+########################################################
+####
+##   Repositories Tools
+#
+
 def repositories(options):
     
     # Options available for all the packages submodules
@@ -38,6 +44,7 @@ def repositories(options):
     equoRequestAsk = False
     equoRequestPretend = False
     equoRequestPackagesCheck = False
+    rc = 0
     for opt in myopts:
 	if (opt == "--ask"):
 	    equoRequestAsk = True
@@ -45,7 +52,7 @@ def repositories(options):
 	    equoRequestPretend = True
 
     if (options[0] == "sync"):
-	syncRepositories()
+	rc = syncRepositories()
 
     if (options[0] == "status"):
 	for repo in etpRepositories:
@@ -53,6 +60,7 @@ def repositories(options):
 
     if (options[0] == "show"):
 	showRepositories()
+    return rc
 
 # this function shows a list of enabled repositories
 def showRepositories():
@@ -112,7 +120,7 @@ def getRepositoryDbFileHash(reponame):
 	mhash = "-1"
     return mhash
 
-def syncRepositories():
+def syncRepositories(reponames = []):
     # check etpRepositories
     if len(etpRepositories) == 0:
 	print_error(yellow(" * ")+red("No repositories specified in ")+etpConst['repositoriesconf'])
@@ -120,7 +128,12 @@ def syncRepositories():
     print_info(yellow(" @@ ")+green("Repositories syncronization..."))
     repoNumber = 0
     syncErrors = False
-    for repo in etpRepositories:
+    
+    if (reponames == []):
+	for x in etpRepositories:
+	    reponames.append(x)
+    
+    for repo in reponames:
 	
 	repoNumber += 1
 	
@@ -185,3 +198,98 @@ def syncRepositories():
     return 0
 
 
+########################################################
+####
+##   Database Tools
+#
+
+def package(options):
+
+    if len(options) < 2:
+	return 0
+
+    # Options available for all the packages submodules
+    myopts = options[1:]
+    equoRequestAsk = False
+    equoRequestPretend = False
+    equoRequestPackagesCheck = False
+    rc = 0
+    _myopts = []
+    for opt in myopts:
+	if (opt == "--ask"):
+	    equoRequestAsk = True
+	elif (opt == "--pretend"):
+	    equoRequestPretend = True
+	else:
+	    _myopts.append(opt)
+    myopts = _myopts
+
+    if (options[0] == "search"):
+	if len(myopts) > 0:
+	    rc = searchPackage(myopts)
+    return rc
+
+
+def searchPackage(packages):
+    from databaseTools import etpDatabase
+    
+    foundPackages = {}
+    
+    print_info(yellow(" @@ ")+green("Searching..."))
+    # search inside each available database
+    repoNumber = 0
+    searchError = False
+    for repo in etpRepositories:
+	foundPackages[repo] = {}
+	repoNumber += 1
+	print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
+	
+	# open database
+	dbfile = etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile']
+	if not os.path.isfile(dbfile):
+	    # sync
+	    syncRepositories([repo])
+	if not os.path.isfile(dbfile):
+	    # so quit
+	    print_error(red("Database file for '"+bold(etpRepositories[repo]['description'])+red("' does not exist. Cannot search.")))
+	    searchError = True
+	    continue
+	    
+	dbconn = etpDatabase(readOnly = True, dbFile = dbfile)
+	branches = ['stable','unstable']
+	for package in packages:
+	    for branch in branches:
+		result = dbconn.searchPackagesInBranch(package,branch)
+		if result != []:
+	            foundPackages[repo][package] = {}
+		    foundPackages[repo][package][branch] = result
+	            # print info
+	            print_info(blue("     Keyword: ")+bold("\t"+package))
+	            print_info(blue("     Found:   ")+bold("\t"+str(len(foundPackages[repo][package][branch])))+red(" entries"))
+	            for keyword in foundPackages[repo][package][branch]:
+		        print_info(red("     @@ Package: ")+bold(keyword)+"\t\t"+blue("branch: ")+bold(branch))
+		        # now fetch essential info
+		        pkgname = dbconn.retrievePackageVar(keyword,"name",branch)
+			pkgcat = dbconn.retrievePackageVar(keyword,"category",branch)
+			pkgver = dbconn.retrievePackageVar(keyword,"version",branch)
+			pkgdesc = dbconn.retrievePackageVar(keyword,"description",branch)
+			pkghome = dbconn.retrievePackageVar(keyword,"homepage",branch)
+			pkglic = dbconn.retrievePackageVar(keyword,"license",branch)
+			
+			print_info(green("       Available version:\t")+blue(pkgver))
+			print_info(green("       Installed version:\t")+blue("N/A"))
+			print_info(green("       Size:\t\t\t")+blue("N/A"))
+			print_info(green("       Homepage:\t\t")+red(pkghome))
+			print_info(green("       Description:\t\t")+pkgdesc)
+			print_info(green("       License:\t\t")+red(pkglic))
+			
+	
+	dbconn.closeDB()
+
+    #print foundPackages
+    # choose the defaulted version
+
+    if searchError:
+	print_warning(yellow(" @@ ")+red("Something bad happened. Please have a look."))
+	return 129
+    return 0

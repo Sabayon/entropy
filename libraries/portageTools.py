@@ -44,7 +44,7 @@ os.environ['PORTDIR_OVERLAY'] = etpConst['overlays']
 os.environ['DISTDIR'] = etpConst['distfilesdir']
 import portage
 import portage_const
-from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv
+from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv #FIXME: Use the ones from entropyTools
 from entropyConstants import *
 initializePortageTree()
 
@@ -141,7 +141,7 @@ def calculateFullAtomsDependencies(atoms, deep = False, extraopts = ""):
     blocklist = _blocklist
 
     if deplist != []:
-	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"calculateFullAtomsDependencies: deplist -> "+len(deplist)+" | blocklist -> "+len(blocklist))
+	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"calculateFullAtomsDependencies: deplist -> "+str(len(deplist))+" | blocklist -> "+str(len(blocklist)))
         return deplist, blocklist
     else:
 	portageLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"calculateFullAtomsDependencies: deplist empty. Giving up.")
@@ -548,7 +548,7 @@ def unpackTbz2(tbz2File,tmpdir = None):
     return tmpdir
 
 # NOTE: atom must be a COMPLETE atom, with version!
-def isTbz2PackageAvailable(atom, verbose = False):
+def isTbz2PackageAvailable(atom, verbose = False, stable = False, unstable = True):
 
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isTbz2PackageAvailable: called -> "+atom)
 
@@ -556,23 +556,24 @@ def isTbz2PackageAvailable(atom, verbose = False):
     atomName = atom.split("/")[len(atom.split("/"))-1]
     tbz2Available = False
     
-    uploadPath = etpConst['packagessuploaddir']+"/"+atomName+".tbz2"
-    storePath = etpConst['packagesstoredir']+"/"+atomName+".tbz2"
-    packagesPath = etpConst['packagesbindir']+"/"+atomName+".tbz2"
-    
-    if (verbose): print_info("testing in directory: "+packagesPath)
-    if os.path.isfile(packagesPath):
-        tbz2Available = packagesPath
-    if (verbose): print_info("testing in directory: "+storePath)
-    if os.path.isfile(storePath):
-        tbz2Available = storePath
-    if (verbose): print_info("testing in directory: "+uploadPath)
-    if os.path.isfile(uploadPath):
-        tbz2Available = uploadPath
-    if (verbose): print_info("found here: "+str(tbz2Available))
+    paths = []
+    if (unstable):
+	paths.append(etpConst['packagessuploaddir']+"/"+atomName+"-unstable.tbz2")
+	paths.append(etpConst['packagesstoredir']+"/"+atomName+"-unstable.tbz2")
+	paths.append(etpConst['packagesbindir']+"/"+atomName+"-unstable.tbz2")
+    if (stable):
+	paths.append(etpConst['packagessuploaddir']+"/"+atomName+"-stable.tbz2")
+	paths.append(etpConst['packagesstoredir']+"/"+atomName+"-stable.tbz2")
+	paths.append(etpConst['packagesbindir']+"/"+atomName+"-stable.tbz2")
+
+    for path in paths:
+	if (verbose): print_info("testing in directory: "+path)
+	if os.path.isfile(path):
+	    tbz2Available = path
+	    if (verbose): print_info("found here: "+str(path))
+	    break
 
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isTbz2PackageAvailable: result -> "+str(tbz2Available))
-
     return tbz2Available
 
 def checkAtom(atom):
