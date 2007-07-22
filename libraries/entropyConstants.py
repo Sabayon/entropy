@@ -74,6 +74,9 @@ DROP TABLE IF EXISTS sources;
 DROP TABLE IF EXISTS useflags;
 DROP TABLE IF EXISTS keywords;
 DROP TABLE IF EXISTS binkeywords;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS licenses;
+DROP TABLE IF EXISTS flags;
 """
 
 etpSQLInit = """
@@ -92,7 +95,7 @@ CREATE TABLE baseinfo (
 );
 
 CREATE TABLE extrainfo (
-    idpackage INTEGER PRIMARY KEY,
+    idpackage INTEGER,
     description VARCHAR,
     homepage VARCHAR,
     download VARCHAR,
@@ -112,6 +115,11 @@ CREATE TABLE dependencies (
 );
 
 CREATE TABLE rundependencies (
+    idpackage INTEGER,
+    dependency VARCHAR
+);
+
+CREATE TABLE rundependenciesxt (
     idpackage INTEGER,
     dependency VARCHAR
 );

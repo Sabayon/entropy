@@ -54,9 +54,12 @@ def getRemotePackageChecksum(serverName,filename):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getRemotePackageChecksum: requested url -> "+request)
     
     # now pray the server
-    file = urllib2.urlopen(request)
-    result = file.readline().strip()
-    return result
+    try:
+        file = urllib2.urlopen(request)
+        result = file.readline().strip()
+        return result
+    except: # no HTTP support?
+	return None
 
 
 ###################################################
