@@ -67,6 +67,7 @@ DROP TABLE IF EXISTS extrainfo;
 DROP TABLE IF EXISTS content;
 DROP TABLE IF EXISTS dependencies;
 DROP TABLE IF EXISTS rundependencies;
+DROP TABLE IF EXISTS rundependenciesxt;
 DROP TABLE IF EXISTS conflicts;
 DROP TABLE IF EXISTS neededlibs;
 DROP TABLE IF EXISTS mirrorlinks;
@@ -135,13 +136,13 @@ CREATE TABLE neededlibs (
 );
 
 CREATE TABLE mirrorlinks (
-    mirrorname VARCHAR PRIMARY KEY,
+    mirrorname VARCHAR,
     mirrorlink VARCHAR
 );
 
 CREATE TABLE sources (
     idpackage INTEGER,
-    mirrorlink VARCHAR
+    source VARCHAR
 );
 
 CREATE TABLE useflags (
@@ -166,7 +167,7 @@ CREATE TABLE categories (
 
 CREATE TABLE licenses (
     idlicense INTEGER PRIMARY KEY,
-    category VARCHAR
+    license VARCHAR
 );
 
 CREATE TABLE flags (

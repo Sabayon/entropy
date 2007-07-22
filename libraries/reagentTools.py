@@ -400,8 +400,7 @@ def extractPkgData(package):
 	    # parse what mirror I need
 	    mirrorURI = i.split("/")[2]
 	    mirrorlist = getThirdPartyMirrors(x)
-	    out = [mirrorURI,mirrorlist]
-            etpData['mirrorlinks'].append(out)
+            etpData['mirrorlinks'].append([mirrorURI,mirrorlist]) # mirrorURI = openoffice and mirrorlist = [link1, link2, link3]
 
     print_info(yellow(" * ")+red("Getting source package supported ARCHs..."),back = True)
     # fill KEYWORDS

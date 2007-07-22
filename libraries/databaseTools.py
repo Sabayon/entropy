@@ -950,10 +950,11 @@ class etpDatabase:
 	removelist = []
 	for oldpkg in searchsimilar:
 	    # get the package slot
-	    slot = self.retrievePackageVar(oldpkg, "slot", branch = wantedBranch)
+	    idpackage = oldpkg[1]
+	    slot = self.retrieveSlot(idpackage)
 	    if (etpData['slot'] == slot):
 		# remove!
-		removelist.append(oldpkg)
+		removelist.append(idpackage)
 	
 	for pkg in removelist:
 	    self.removePackage(pkg)
@@ -961,40 +962,168 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: inserting: ")
 	for ln in etpData:
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"\t "+ln+": "+str(etpData[ln]))
-	# wantedBranch = etpData['branch']
+
+	# create new category if it doesn't exist
+	catid = self.isCategoryAvailable(etpData['category'])
+	if (catid == -1):
+	    # create category
+	    catid = self.addCategory(etpData['category'])
+
+	# create new license if it doesn't exist
+	licid = self.isLicenseAvailable(etpData['license'])
+	if (licid == -1):
+	    # create category
+	    licid = self.addLicense(etpData['license'])
+
+
+	# baseinfo
 	self.cursor.execute(
-		'INSERT into etpData VALUES '
-		'(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+		'INSERT into baseinfo VALUES '
+		'(NULL,?,?,?,?,?,?,?,?,?)'
 		, (	etpData['category']+"/"+etpData['name']+"-"+etpData['version'],
+			catid,
 			etpData['name'],
 			etpData['version'],
-			etpData['description'],
-			etpData['category'],
-			etpData['chost'],
-			etpData['cflags'],
-			etpData['cxxflags'],
-			etpData['homepage'],
-			etpData['useflags'],
-			etpData['license'],
-			etpData['keywords'],
-			etpData['binkeywords'],
-			wantedBranch,
-			etpData['download'],
-			etpData['digest'],
-			etpData['sources'],
-			etpData['slot'],
-			etpData['content'],
-			etpData['mirrorlinks'],
-			etpData['dependencies'],
-			etpData['rundependencies'],
-			etpData['rundependenciesXT'],
-			etpData['conflicts'],
-			etpData['etpapi'],
-			etpData['datecreation'],
-			etpData['neededlibs'],
 			revision,
+			wantedBranch,
+			etpData['slot'],
+			licid,
+			etpData['etpapi'],
 			)
 	)
+	
+	# I don't use lastrowid because the db must be multiuser aware
+	idpackage = self.getIDPackage(etpData['category']+"/"+etpData['name']+"-"+etpData['version'],wantedBranch)
+
+	# create new idflag if it doesn't exist
+	idflags = self.areCompileFlagsAvailable(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
+	if (idflags == -1):
+	    # create category
+	    idflags = self.addCompileFlags(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
+
+	# extrainfo
+	self.cursor.execute(
+		'INSERT into extrainfo VALUES '
+		'(?,?,?,?,?,?,?)'
+		, (	idpackage,
+			etpData['description'],
+			etpData['homepage'],
+			etpData['download'],
+			etpData['size'],
+			idflags,
+			etpData['digest'],
+			)
+	)
+
+	# content, a list
+	for file in etpData['content']:
+	    self.cursor.execute(
+		'INSERT into content VALUES '
+		'(?,?)'
+		, (	idpackage,
+			file,
+			)
+	    )
+	
+	# dependencies, a list
+	for dep in etpData['dependencies']:
+	    self.cursor.execute(
+		'INSERT into dependencies VALUES '
+		'(?,?)'
+		, (	idpackage,
+			dep,
+			)
+	    )
+
+	# rundependencies, a list
+	for rdep in etpData['rundependencies']:
+	    self.cursor.execute(
+		'INSERT into rundependencies VALUES '
+		'(?,?)'
+		, (	idpackage,
+			rdep,
+			)
+	    )
+
+	# rundependenciesxt, a list
+	for rdepxt in etpData['rundependenciesxt']:
+	    self.cursor.execute(
+		'INSERT into rundependenciesxt VALUES '
+		'(?,?)'
+		, (	idpackage,
+			rdepxt,
+			)
+	    )
+
+	# conflicts, a list
+	for conflict in etpData['conflicts']:
+	    self.cursor.execute(
+		'INSERT into conflicts VALUES '
+		'(?,?)'
+		, (	idpackage,
+			conflict,
+			)
+	    )
+
+	# neededlibs, a list
+	for lib in etpData['neededlibs']:
+	    self.cursor.execute(
+		'INSERT into neededlibs VALUES '
+		'(?,?)'
+		, (	idpackage,
+			lib,
+			)
+	    )
+
+	# mirrorlinks, always update the table
+	for mirrordata in etpData['mirrorlinks']:
+	    mirrorname = mirrordata[0]
+	    mirrorlist = mirrordata[1]
+	    # remove old
+	    self.removeMirrorEntries(mirrorname)
+	    # add new
+	    self.addMirrors(mirrorname,mirrorlist)
+
+	# sources, a list
+	for source in etpData['sources']:
+	    self.cursor.execute(
+		'INSERT into sources VALUES '
+		'(?,?)'
+		, (	idpackage,
+			source,
+			)
+	    )
+
+	# useflags, a list
+	for flag in etpData['useflags']:
+	    self.cursor.execute(
+		'INSERT into useflags VALUES '
+		'(?,?)'
+		, (	idpackage,
+			flag,
+			)
+	    )
+
+	# keywords, a list
+	for keyword in etpData['keywords']:
+	    self.cursor.execute(
+		'INSERT into keywords VALUES '
+		'(?,?)'
+		, (	idpackage,
+			keyword,
+			)
+	    )
+
+	# binkeywords, a list
+	for binkeyword in etpData['binkeywords']:
+	    self.cursor.execute(
+		'INSERT into binkeywords VALUES '
+		'(?,?)'
+		, (	idpackage,
+			binkeyword,
+			)
+	    )
+
 	self.commitChanges()
 	return True, revision, etpData
 
@@ -1094,6 +1223,60 @@ class etpDatabase:
 	self.cursor.execute('DELETE FROM binkeywords WHERE idpackage = '+idpackage)
 	self.commitChanges()
 
+    def removeMirrorEntries(self,mirrorname):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removeMirrors: removing entries for mirror -> "+str(mirrorname))
+	self.cursor.execute('DELETE FROM mirrorlinks WHERE mirrorname = "'+mirrorname+'"')
+	self.commitChanges()
+
+    def addMirrors(self,mirrorname,mirrorlist):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addMirrors: adding Mirror list for "+str(mirrorname)+" -> "+str(mirrorlist))
+	for x in mirrorlist:
+	    self.cursor.execute(
+		'INSERT into mirrorlinks VALUES '
+		'(?,?)', (mirrorname,x,)
+	    )
+	self.commitChanges()
+
+    def addCategory(self,category):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addCategory: adding Package Category -> "+str(category))
+	self.cursor.execute(
+		'INSERT into categories VALUES '
+		'(NULL,?)', (category,)
+	)
+	# get info about inserted value and return
+	cat = self.isCategoryAvailable(category)
+	if cat != -1:
+	    self.commitChanges()
+	    return cat
+	raise Exception, "I tried to insert a category but then, fetching it returned -1. There's something broken."
+	
+    def addLicense(self,license):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addLicense: adding License -> "+str(license))
+	self.cursor.execute(
+		'INSERT into licenses VALUES '
+		'(NULL,?)', (license,)
+	)
+	# get info about inserted value and return
+	lic = self.isLicenseAvailable(license)
+	if lic != -1:
+	    self.commitChanges()
+	    return lic
+	raise Exception, "I tried to insert a license but then, fetching it returned -1. There's something broken."
+
+    #addCompileFlags(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
+    def addCompileFlags(self,chost,cflags,cxxflags):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addCompileFlags: adding Flags -> "+chost+"|"+cflags+"|"+cxxflags)
+	self.cursor.execute(
+		'INSERT into flags VALUES '
+		'(NULL,?,?,?)', (chost,cflags,cxxflags,)
+	)
+	# get info about inserted value and return
+	idflag = self.areCompileFlagsAvailable(chost,cflags,cxxflags)
+	if idflag != -1:
+	    self.commitChanges()
+	    return idflag
+	raise Exception, "I tried to insert a flag tuple but then, fetching it returned -1. There's something broken."
+
     # WARNING: this function must be kept in sync with Entropy database schema
     # returns True if equal
     # returns False if not
@@ -1137,7 +1320,7 @@ class etpDatabase:
 	    break
 	return idpackage
 
-   def retrieveAtom(self, idpackage):
+    def retrieveAtom(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveAtom: retrieving Atom for package ID for "+str(idpackage))
 	self.cursor.execute('SELECT "atom" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	atom = ''
@@ -1146,7 +1329,7 @@ class etpDatabase:
 	    break
 	return atom
 
-   def retrieveBranch(self, idpackage):
+    def retrieveBranch(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBranch: retrieving Branch for package ID for "+str(idpackage))
 	self.cursor.execute('SELECT "branch" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	atom = ''
@@ -1236,7 +1419,7 @@ class etpDatabase:
 	    cat = row[0]
 	    break
 	# now get the category name
-	self.cursor.execute('SELECT "category" FROM categories WHERE idcategory = "'+str(cat)+'"')
+	self.cursor.execute('SELECT "category" FROM categories WHERE idcategory = '+str(cat))
 	cat = ''
 	for row in self.cursor:
 	    cat = row[0]
@@ -1300,6 +1483,42 @@ class etpDatabase:
 	    return False
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSpecificPackageAvailable: "+pkgkey+" | branch: "+branch+" -> found !")
 	return True
+
+    def isCategoryAvailable(self,category):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCategoryAvailable: called.")
+	result = -1
+	self.cursor.execute('SELECT idcategory FROM categories WHERE category = "'+category+'"')
+	for row in self.cursor:
+	    result = row[0]
+	if result == -1:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isCategoryAvailable: "+category+" not available.")
+	    return result
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCategoryAvailable: "+category+" available.")
+	return result
+
+    def isLicenseAvailable(self,license):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLicenseAvailable: called.")
+	result = -1
+	self.cursor.execute('SELECT idlicense FROM licenses WHERE license = "'+license+'"')
+	for row in self.cursor:
+	    result = row[0]
+	if result == -1:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isLicenseAvailable: "+license+" not available.")
+	    return result
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLicenseAvailable: "+license+" available.")
+	return result
+
+    def areCompileFlagsAvailable(self,chost,cflags,cxxflags):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"areCompileFlagsAvailable: called.")
+	result = -1
+	self.cursor.execute('SELECT idflags FROM flags WHERE chost = "'+chost+'" AND cflags = "'+cflags+'" AND cxxflags = "'+cxxflags+'"')
+	for row in self.cursor:
+	    result = row[0]
+	if result == -1:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"areCompileFlagsAvailable: flags tuple "+chost+"|"+cflags+"|"+cxxflags+" not available.")
+	    return result
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"areCompileFlagsAvailable: flags tuple "+chost+"|"+cflags+"|"+cxxflags+" available.")
+	return result
 
     def searchPackages(self, keyword):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackages: called for "+keyword)
