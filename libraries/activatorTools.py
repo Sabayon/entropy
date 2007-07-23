@@ -628,6 +628,10 @@ def packages(options):
 		import traceback
 		traceback.print_stack()
 		
+		# trap CTRL+C
+		if (str(e) == "100"):
+		    sys.exit(471)
+		
 		activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: Exception caught: "+str(e)+" . Trying to continue if possible.")
 		activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: cannot properly syncronize "+extractFTPHostFromUri(uri)+". Trying to continue if possible.")
 		

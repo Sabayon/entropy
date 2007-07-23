@@ -51,8 +51,6 @@ def print_help():
     print_info(" \t\t"+red("--initialize")+"\t\t (Re)Initialize the Entropy packages database [DO NOT USE THIS]")
     print_info(" \t\t"+red("statistics")+"\t\t Show Entropy database statistics.")
     print_info(" \t\t"+green("search")+"\t\t\t Search a package inside the Entropy packages database")
-    print_info(" \t\t"+green("dump-package-info")+"\t Dump the stored information of package atom(s) to a file")
-    print_info(" \t\t"+green("inject-package-info")+"\t Inject an Entropy dump inside the database (file path is mandatory)")
     print_info(" \t\t"+green("restore-package-info")+"\t Reinitialize a package entry looking at the current install")
     print_info(" \t\t"+green(bold("remove"))+"\t\t\t Remove a package or a list of packages")
     print_info(" \t\t"+green("create-empty-database")+"\t Create an empty Entropy database file in the specified <path>")

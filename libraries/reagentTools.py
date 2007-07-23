@@ -145,6 +145,8 @@ def extractPkgData(package):
     print_info(yellow(" * ")+red("Getting package name/version..."),back = True)
     tbz2File = package
     package = package.split(".tbz2")[0]
+    package = package.split("-unstable")[0]
+    package = package.split("-stable")[0]
     package = package.split("-")
     pkgname = ""
     pkglen = len(package)
@@ -258,6 +260,20 @@ def extractPkgData(package):
 	    # get the version of the modules
 	    kmodver = file.split("/lib/modules/")[1]
 	    kmodver = kmodver.split("/")[0]
+	    # remove -sabayon-
+	    rev = ''
+	    lp = kmodver.split("-")[len(kmodver.split("-"))-1]
+	    if lp.startswith("r"):
+		try:
+		    int(lp[len(lp)-1])
+		    # it's a number
+		    rev = lp
+		except:
+		    # not a -revision
+		    pass
+	    kmodver = kmodver.split("-")[0]
+	    if (rev):
+		kmodver += "-"+rev
 	    break
 
     # add strict kernel dependency
@@ -270,6 +286,7 @@ def extractPkgData(package):
     # Fill download relative URI
     if (kernelDependentModule):
 	extrakernelinfo = "-linux-core-"+kmodver
+	etpData['version'] += "-linux-core-"+kmodver
     else:
 	extrakernelinfo = ""
     etpData['download'] = etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+extrakernelinfo+".tbz2"
@@ -312,7 +329,9 @@ def extractPkgData(package):
 	    if x:
 		if (not x.startswith("|")) and (not x.startswith("(")) and (not x.startswith(")")):
 		    etpData['license'].append(x)
+	etpData['license'] = string.join(etpData['license']," ")
     except IOError:
+	etpData['license'] = ""
         pass
 
     print_info(yellow(" * ")+red("Getting package USE flags..."),back = True)
@@ -399,7 +418,7 @@ def extractPkgData(package):
         if i.startswith("mirror://"):
 	    # parse what mirror I need
 	    mirrorURI = i.split("/")[2]
-	    mirrorlist = getThirdPartyMirrors(x)
+	    mirrorlist = getThirdPartyMirrors(mirrorURI)
             etpData['mirrorlinks'].append([mirrorURI,mirrorlist]) # mirrorURI = openoffice and mirrorlist = [link1, link2, link3]
 
     print_info(yellow(" * ")+red("Getting source package supported ARCHs..."),back = True)
@@ -418,10 +437,16 @@ def extractPkgData(package):
     print_info(yellow(" * ")+red("Getting package supported ARCHs..."),back = True)
     
     # fill ARCHs
+    kwords = etpData['keywords']
+    _kwords = []
+    for i in kwords:
+	if i.startswith("~"):
+	    i = i[1:]
+	_kwords.append(i)
     etpData['binkeywords'] = []
     for i in etpConst['supportedarchs']:
 	try:
-	    x = etpData['keywords'].index(i)
+	    x = _kwords.index(i)
 	    etpData['binkeywords'].append(i)
 	except:
 	    pass
@@ -444,10 +469,10 @@ def extractPkgData(package):
     # etpData['dependencies'], etpData['conflicts']
     deps,conflicts = synthetizeRoughDependencies(roughDependencies,string.join(etpData['useflags']," "))
     etpData['dependencies'] = []
-    for i in deps:
+    for i in deps.split():
 	etpData['dependencies'].append(i)
     etpData['conflicts'] = []
-    for i in conflicts:
+    for i in conflicts.split():
 	etpData['conflicts'].append(i)
     
     if (kernelDependentModule):

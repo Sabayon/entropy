@@ -256,32 +256,34 @@ def searchPackage(packages):
 	    continue
 	    
 	dbconn = etpDatabase(readOnly = True, dbFile = dbfile)
-	branches = ['stable','unstable']
 	for package in packages:
-	    for branch in branches:
-		result = dbconn.searchPackagesInBranch(package,branch)
-		if result != []:
-	            foundPackages[repo][package] = {}
-		    foundPackages[repo][package][branch] = result
-	            # print info
-	            print_info(blue("     Keyword: ")+bold("\t"+package))
-	            print_info(blue("     Found:   ")+bold("\t"+str(len(foundPackages[repo][package][branch])))+red(" entries"))
-	            for keyword in foundPackages[repo][package][branch]:
-		        print_info(red("     @@ Package: ")+bold(keyword)+"\t\t"+blue("branch: ")+bold(branch))
-		        # now fetch essential info
-		        pkgname = dbconn.retrievePackageVar(keyword,"name",branch)
-			pkgcat = dbconn.retrievePackageVar(keyword,"category",branch)
-			pkgver = dbconn.retrievePackageVar(keyword,"version",branch)
-			pkgdesc = dbconn.retrievePackageVar(keyword,"description",branch)
-			pkghome = dbconn.retrievePackageVar(keyword,"homepage",branch)
-			pkglic = dbconn.retrievePackageVar(keyword,"license",branch)
-			
-			print_info(green("       Available version:\t")+blue(pkgver))
-			print_info(green("       Installed version:\t")+blue("N/A"))
-			print_info(green("       Size:\t\t\t")+blue("N/A"))
-			print_info(green("       Homepage:\t\t")+red(pkghome))
-			print_info(green("       Description:\t\t")+pkgdesc)
-			print_info(green("       License:\t\t")+red(pkglic))
+	    result = dbconn.searchPackages(package)
+	    
+	    if (result):
+		foundPackages[repo][package] = result
+	        # print info
+	        print_info(blue("     Keyword: ")+bold("\t"+package))
+	        print_info(blue("     Found:   ")+bold("\t"+str(len(foundPackages[repo][package])))+red(" entries"))
+	        for id in foundPackages[repo][package]:
+		    branch = dbconn.retrieveBranch(id)
+		    # now fetch essential info
+		    pkgatom = dbconn.retrieveAtom(id)
+		    pkgname = dbconn.retrieveName(id)
+		    pkgcat = dbconn.retrieveCategory(id)
+		    pkgver = dbconn.retrieveVersion(id)
+		    pkgdesc = dbconn.retrieveDescription(id)
+		    pkghome = dbconn.retrieveDownloadURL(id)
+		    pkglic = dbconn.retrieveLicense(id)
+		    pkgsize = dbconn.retrieveSize(id)
+		    pkgsize = round(float(len(int(pkgsize)))/1024,1)
+		    print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(branch))
+		    
+		    print_info(green("       Available version:\t")+blue(pkgver))
+		    print_info(green("       Installed version:\t")+blue("N/A"))
+		    print_info(green("       Size:\t\t\t")+blue(str(pkgsize)))
+		    print_info(green("       Homepage:\t\t")+red(pkghome))
+		    print_info(green("       Description:\t\t")+pkgdesc)
+		    print_info(green("       License:\t\t")+red(pkglic))
 			
 	
 	dbconn.closeDB()

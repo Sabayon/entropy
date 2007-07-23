@@ -62,6 +62,7 @@ etpData = {
 
 # Entropy database SQL initialization Schema and data structure
 etpSQLInitDestroyAll = """
+DROP TABLE IF EXISTS etpData;
 DROP TABLE IF EXISTS baseinfo;
 DROP TABLE IF EXISTS extrainfo;
 DROP TABLE IF EXISTS content;
@@ -102,7 +103,8 @@ CREATE TABLE extrainfo (
     download VARCHAR,
     size VARCHAR,
     idflags INTEGER,
-    digest VARCHAR
+    digest VARCHAR,
+    datecreation VARCHAR
 );
 
 CREATE TABLE content (

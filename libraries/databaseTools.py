@@ -69,6 +69,12 @@ def database(options):
 	
 	# now fill the database
 	pkglist = os.listdir(etpConst['packagesbindir'])
+	# filter .md5
+	_pkglist = []
+	for i in pkglist:
+	    if not i.endswith(etpConst['packageshashfileext']):
+		_pkglist.append(i)
+	pkglist = _pkglist
 
 	print_info(green(" * ")+red("Reinitializing Entropy database using Packages in the repository ..."))
 	currCounter = 0
@@ -106,164 +112,104 @@ def database(options):
 	for mykeyword in mykeywords:
 	    results = dbconn.searchPackages(mykeyword)
 	    
-	    # regenerate info list
-	    _results = []
 	    for result in results:
-		rslt = []
-		rslt = dbconn.retrievePackageInfo(result,"stable")
-		if rslt != []:
-		    _results.append(rslt[0])
-		rslt = []
-		rslt = dbconn.retrievePackageInfo(result,"unstable")
-		if rslt != []:
-		    _results.append(rslt[0])
-	    results = _results
-	    
-	    for result in results:
-		
 		foundCounter += 1
 		print 
 		print_info(green(" * ")+bold(result[0]))   # package atom
-		print_info(red("\t Name: ")+blue(result[1]))
-		print_info(red("\t Installed version: ")+blue(result[2]))
-		if (result[3]):
-		    print_info(red("\t Description: ")+result[3])
-		print_info(red("\t CHOST: ")+blue(result[5]))
-		print_info(red("\t CFLAGS: ")+darkred(result[6]))
-		print_info(red("\t CXXFLAGS: ")+darkred(result[7]))
-		if (result[8]):
-		    print_info(red("\t Website: ")+result[8])
-		if (result[9]):
-		    print_info(red("\t USE Flags: ")+blue(result[9]))
-		print_info(red("\t License: ")+bold(result[10]))
-		print_info(red("\t Source keywords: ")+darkblue(result[11]))
-		print_info(red("\t Binary keywords: ")+green(result[12]))
-		print_info(red("\t Package branch: ")+result[13])
-		print_info(red("\t Download relative URL: ")+result[14])
-		print_info(red("\t Package Checksum: ")+green(result[15]))
-		if (result[16]):
+		
+		print_info(red("\t Name: ")+blue(dbconn.retrieveName(result[1])))
+		print_info(red("\t Installed version: ")+blue(dbconn.retrieveVersion(result[1])))
+		
+		description = dbconn.retrieveDescription(result[1])
+		if (description):
+		    print_info(red("\t Description: ")+description)
+		
+		flags = dbconn.retrieveCompileFlags(result[1])
+		print_info(red("\t CHOST: ")+blue(flags[0]))
+		print_info(red("\t CFLAGS: ")+darkred(flags[1]))
+		print_info(red("\t CXXFLAGS: ")+darkred(flags[2]))
+		
+		website = dbconn.retrieveHomepage(result[1])
+		if (website):
+		    print_info(red("\t Website: ")+website)
+		
+		flags = string.join(dbconn.retrieveUseflags(result[1])," ")
+		if (flags):
+		    print_info(red("\t USE Flags: ")+blue(flags))
+		
+		print_info(red("\t License: ")+bold(dbconn.retrieveLicense(result[1])))
+		keywords = string.join(dbconn.retrieveKeywords(result[1])," ")
+		binkeywords = string.join(dbconn.retrieveBinKeywords(result[1])," ")
+		print_info(red("\t Source keywords: ")+darkblue(keywords))
+		print_info(red("\t Binary keywords: ")+green(binkeywords))
+		print_info(red("\t Package branch: ")+dbconn.retrieveBranch(result[1]))
+		print_info(red("\t Download relative URL: ")+dbconn.retrieveDownloadURL(result[1]))
+		print_info(red("\t Package Checksum: ")+green(dbconn.retrieveDigest(result[1])))
+		
+		sources = dbconn.retrieveSources(result[1])
+		if (sources):
 		    print_info(red("\t Sources"))
-		    sources = result[16].split()
 		    for source in sources:
 			print_info(darkred("\t    # Source package: ")+yellow(source))
-		if (result[17]):
-		    print_info(red("\t Slot: ")+yellow(result[17]))
-		#print_info(red("\t Blah: ")+result[19]) # I don't need to print mirrorlinks
-		if (result[20]):
-		    deps = result[20].split()
+		
+		slot = dbconn.retrieveSlot(result[1])
+		if (slot):
+		    print_info(red("\t Slot: ")+yellow(slot))
+		else:
+		    print_info(red("\t Slot: ")+yellow("Not set"))
+		
+		'''
+		mirrornames = []
+		for x in sources:
+		    if x.startswith("mirror://"):
+		        mirrorname = x.split("/")[2]
+		        mirrornames.append(mirrorname)
+		for mirror in mirrornames:
+		    mirrorlinks = dbconn.retrieveMirrorInfo(mirror)
+		    print_info(red("\t mirror://"+mirror+" = ")+str(string.join(mirrorlinks," "))) # I don't need to print mirrorlinks
+		'''
+		
+		dependencies = dbconn.retrieveDependencies(result[1])
+		if (dependencies):
 		    print_info(red("\t Dependencies"))
-		    for dep in deps:
+		    for dep in dependencies:
 			print_info(darkred("\t    # Depends on: ")+dep)
 		#print_info(red("\t Blah: ")+result[20]) --> it's a dup of [21]
-		if (result[22]):
-		    rundeps = result[22].split()
+		
+		rundependencies = dbconn.retrieveRunDependencies(result[1])
+		if (rundependencies):
 		    print_info(red("\t Built with runtime dependencies"))
-		    for rundep in rundeps:
+		    for rundep in rundependencies:
 			print_info(darkred("\t    # Dependency: ")+rundep)
-		if (result[23]):
+		
+		conflicts = dbconn.retrieveConflicts(result[1])
+		if (conflicts):
 		    print_info(red("\t Conflicts with"))
-		    conflicts = result[23].split()
 		    for conflict in conflicts:
 			print_info(darkred("\t    # Conflict: ")+conflict)
-		print_info(red("\t Entry API: ")+green(result[24]))
-		print_info(red("\t Entry creation date: ")+str(entropyTools.convertUnixTimeToHumanTime(int(result[25]))))
-		if (result[26]):
+		
+		api = dbconn.retrieveApi(result[1])
+		print_info(red("\t Entry API: ")+green(str(api)))
+		
+		date = dbconn.retrieveDateCreation(result[1])
+		print_info(red("\t Package Creation date: ")+str(entropyTools.convertUnixTimeToHumanTime(int(date))))
+		
+		neededlibs = dbconn.retrieveNeededlibs(result[1])
+		if (neededlibs):
 		    print_info(red("\t Built with needed libraries"))
-		    libs = result[26].split()
-		    for lib in libs:
+		    for lib in neededlibs:
 			print_info(darkred("\t    # Needed library: ")+lib)
-		print_info(red("\t Entry revision: ")+str(result[27]))
+		
+		revision = dbconn.retrieveRevision(result[1])
+		print_info(red("\t Entry revision: ")+str(revision))
 		#print result
+		
 	dbconn.closeDB()
 	if (foundCounter == 0):
 	    print_warning(red(" * ")+red("Nothing found."))
 	else:
 	    print
     
-    # used by reagent
-    elif (options[0] == "dump-package-info"):
-	mypackages = options[1:]
-	if (len(mypackages) == 0):
-	    print_error(yellow(" * ")+red("Not enough parameters"))
-	    sys.exit(302)
-	# open read only
-	dbconn = etpDatabase(True)
-	
-	for package in mypackages:
-	    print_info(green(" * ")+red("Searching package ")+bold(package)+red(" ..."))
-	    if entropyTools.isjustpkgname(package) or (package.find("/") == -1):
-		print_warning(yellow(" * ")+red("Package ")+bold(package)+red(" is not a complete atom."))
-		continue
-	    # open db connection
-	    if (not dbconn.isPackageAvailable(package)):
-		# package does not exist in the Entropy database
-		print_warning(yellow(" * ")+red("Package ")+bold(package)+red(" does not exist in Entropy database."))
-	        continue
-	    
-	    myEtpData = entropyTools.etpData.copy()
-	    
-	    # dump both branches if exist
-	    branches = []
-	    if (dbconn.isSpecificPackageAvailable(package, branch = "stable")):
-		branches.append("stable")
-	    if (dbconn.isSpecificPackageAvailable(package, branch = "unstable")):
-		branches.append("unstable")
-	    
-	    for branch in branches:
-	        # reset
-	        for i in myEtpData:
-	            myEtpData[i] = ""
-	        for i in myEtpData:
-		    myEtpData[i] = dbconn.retrievePackageVar(package,i, branch)
-		
-		# sort and print
-	        etprevision = str(dbconn.retrievePackageVar(package,"revision", branch))
-	        filepath = etpConst['packagestmpdir'] + "/" + dbconn.retrievePackageVar(package,"name",branch) + "-" + dbconn.retrievePackageVar(package,"version",branch)+"-"+"etp"+etprevision+"-"+branch+".etp"
-	        f = open(filepath,"w")
-	        sortList = []
-	        for i in myEtpData:
-		    sortList.append(i)
-	        sortList = entropyTools.alphaSorter(sortList)
-	        for i in sortList:
-		    if (myEtpData[i]):
-		        f.write(i+": "+myEtpData[i]+"\n")
-	        f.flush()
-	        f.close()
-	        print_info(green("    * ")+red("Dump generated in ")+bold(filepath)+red(" ."))
-
-	dbconn.closeDB()
-
-    # used by reagent
-    elif (options[0] == "inject-package-info"):
-	if (len(options[1:]) == 0):
-	    print_error(yellow(" * ")+red("Not enough parameters"))
-	    sys.exit(303)
-	mypath = options[1:][0]
-	if (not os.path.isfile(mypath)):
-	    print_error(yellow(" * ")+red("File does not exist."))
-	    sys.exit(303)
-	
-	# revision is surely bumped
-	etpDataOut = entropyTools.parseEtpDump(mypath)
-	dbconn = etpDatabase(readOnly = False, noUpload = True)
-	updated, revision = dbconn.handlePackage(etpDataOut)
-	dbconn.closeDB()
-
-	if (updated) and (revision != 0):
-	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['category']+"/"+etpDataOut['name']+"-"+etpDataOut['version'])+red(" entry has been updated. Revision: ")+bold(str(revision)))
-	elif (updated) and (revision == 0):
-	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['category']+"/"+etpDataOut['name']+"-"+etpDataOut['version'])+red(" entry newly created."))
-	else:
-	    print_info(green(" * ")+red("Package ")+bold(etpDataOut['category']+"/"+etpDataOut['name']+"-"+etpDataOut['version'])+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
-	
-	"""
-	sortList = []
-	for i in etpDataOut:
-	    sortList.append(i)
-	sortList = entropyTools.alphaSorter(sortList)
-	"""
-	# print out the changes before doing them?
-	
     elif (options[0] == "restore-package-info"):
 	mypackages = options[1:]
 	if (len(mypackages) == 0):
@@ -291,18 +237,19 @@ def database(options):
 	
 	# get the file list
 	pkglist = []
+	branches = []
 	for pkg in mypackages:
 	    # dump both branches if exist
-	    branches = []
 	    if (dbconn.isSpecificPackageAvailable(pkg, branch = "stable")):
 		branches.append("stable")
 	    if (dbconn.isSpecificPackageAvailable(pkg, branch = "unstable")):
 		branches.append("unstable")
 	    for branch in branches:
-		pkgfile = dbconn.retrievePackageVar(pkg,"download",branch)
-	        pkgfile = pkgfile.split("/")[len(pkgfile.split("/"))-1]
+		idpackage = dbconn.getIDPackage(pkg,branch)
+		pkgfile = dbconn.retrieveDownloadURL(idpackage)
+	        pkgfile = os.path.basename(pkgfile)
 	        pkglist.append(pkgfile)
-	
+
 	# validate files
 	_pkglist = []
 	for file in pkglist:
@@ -311,12 +258,11 @@ def database(options):
 	    else:
 		_pkglist.append(file)
 	pkglist = _pkglist
-	
+
 	currCounter = 0
 	atomsnumber = len(pkglist)
 	import reagentTools
 	for pkg in pkglist:
-	    
 	    print_info(green(" * ")+red("Analyzing: ")+bold(pkg), back = True)
 	    currCounter += 1
 	    print_info(green("  (")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."))
@@ -599,11 +545,17 @@ def database(options):
 	    for pkg in mypackages:
 		results = dbconn.searchPackages(pkg)
 		for i in results:
-		    pkgs2check.append(i[0])
+		    pkgs2check.append(i)
 
-	# order alphabetically
-	if (pkgs2check != []):
-	    pkgs2check = entropyTools.alphaSorter(pkgs2check)
+	# filter idpackage only
+	_pkgs2check = []
+	for x in pkgs2check:
+	    _pkgs2check.append(x[1])
+	pkgs2check = _pkgs2check
+
+	# filter dups
+	if (pkgs2check):
+	    pkgs2check = entropyTools.filterDuplicatedEntries(pkgs2check)
 
 	if (not worldSelected):
 	    print_info(red("   This is the list of the packages that would be checked:"))
@@ -612,25 +564,18 @@ def database(options):
 	
 	toBeDownloaded = []
 	availList = []
-	for i in pkgs2check:
-	
-	    branches = []
-	    if (dbconn.isSpecificPackageAvailable(i, branch = "stable")):
-		branches.append("stable")
-	    if (dbconn.isSpecificPackageAvailable(i, branch = "unstable")):
-		branches.append("unstable")
-	
-	    for branch in branches:
-		pkgfile = dbconn.retrievePackageVar(i,"download",branch)
-	        pkgfile = pkgfile.split("/")[len(pkgfile.split("/"))-1]
-	        if (os.path.isfile(etpConst['packagesbindir']+"/"+pkgfile)):
-		    if (not worldSelected): print_info(green("   - [PKG AVAILABLE] ")+red(i)+" -> "+bold(pkgfile))
-		    availList.append(pkgfile)
-	        elif (os.path.isfile(etpConst['packagessuploaddir']+"/"+pkgfile)):
-		    if (not worldSelected): print_info(green("   - [RUN ACTIVATOR] ")+darkred(i)+" -> "+bold(pkgfile))
-	        else:
-		    if (not worldSelected): print_info(green("   - [MUST DOWNLOAD] ")+yellow(i)+" -> "+bold(pkgfile))
-		    toBeDownloaded.append(pkgfile)
+	for id in pkgs2check:
+	    pkgfile = dbconn.retrieveDownloadURL(id)
+	    pkgfile = os.path.basename(pkgfile)
+	    pkgatom = dbconn.retrieveAtom(id)
+	    if (os.path.isfile(etpConst['packagesbindir']+"/"+pkgfile)):
+		if (not worldSelected): print_info(green("   - [PKG AVAILABLE] ")+red(pkgatom)+" -> "+bold(pkgfile))
+		availList.append(pkgfile)
+	    elif (os.path.isfile(etpConst['packagessuploaddir']+"/"+pkgfile)):
+		if (not worldSelected): print_info(green("   - [RUN ACTIVATOR] ")+darkred(pkgatom)+" -> "+bold(pkgfile))
+	    else:
+		if (not worldSelected): print_info(green("   - [MUST DOWNLOAD] ")+yellow(pkgatom)+" -> "+bold(pkgfile))
+		toBeDownloaded.append(pkgfile)
 	
 	rc = entropyTools.askquestion("     Would you like to continue ?")
 	if rc == "No":
@@ -919,8 +864,13 @@ class etpDatabase:
     # never use this unless you know what you're doing
     def initializeDatabase(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"initializeDatabase: called.")
-	self.cursor.execute(etpSQLInitDestroyAll)
-	self.cursor.execute(etpSQLInit)
+	for sql in etpSQLInitDestroyAll.split(";"):
+	    if sql:
+	        self.cursor.execute(sql+";")
+	del sql
+	for sql in etpSQLInit.split(";"):
+	    if sql:
+		self.cursor.execute(sql+";")
 	self.commitChanges()
 
     # this function manages the submitted package
@@ -1004,7 +954,7 @@ class etpDatabase:
 	# extrainfo
 	self.cursor.execute(
 		'INSERT into extrainfo VALUES '
-		'(?,?,?,?,?,?,?)'
+		'(?,?,?,?,?,?,?,?)'
 		, (	idpackage,
 			etpData['description'],
 			etpData['homepage'],
@@ -1012,6 +962,7 @@ class etpDatabase:
 			etpData['size'],
 			idflags,
 			etpData['digest'],
+			etpData['datecreation'],
 			)
 	)
 
@@ -1046,7 +997,7 @@ class etpDatabase:
 	    )
 
 	# rundependenciesxt, a list
-	for rdepxt in etpData['rundependenciesxt']:
+	for rdepxt in etpData['rundependenciesXT']:
 	    self.cursor.execute(
 		'INSERT into rundependenciesxt VALUES '
 		'(?,?)'
@@ -1141,10 +1092,10 @@ class etpDatabase:
 	stableFound = False
 	for pkg in searchsimilarStable:
 	    # get version
-	    dbStoredVer = self.retrievePackageVar(pkg, "version", branch = "stable")
+	    idpackage = pkg[1]
+	    dbStoredVer = self.retrieveVersion(idpackage)
 	    if etpData['version'] == dbStoredVer:
 	        # found it !
-		stablePackage = pkg
 		stableFound = True
 		break
 	
@@ -1153,7 +1104,8 @@ class etpDatabase:
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: found an old stable package, if etpData['neededlibs'] is equal, mark the branch of this updated package, stable too")
 	    
 	    # in this case, we should compare etpData['neededlibs'] with the db entry to see if there has been a API breakage
-	    dbStoredNeededLibs = self.retrievePackageVar(etpData['category'] + "/" + etpData['name'] + "-" + etpData['version'], "neededlibs", "stable")
+	    idpackage = self.getIDPackage(etpData['category'] + "/" + etpData['name'] + "-" + etpData['version'],"stable")
+	    dbStoredNeededLibs = self.retrieveNeededlibs(idpackage)
 	    if (etpData['neededlibs'] == dbStoredNeededLibs):
 		# it is safe to keep it as stable because of:
 		# - name/version match
@@ -1164,21 +1116,24 @@ class etpDatabase:
 
 
 	# get selected package revision
-	if (self.isSpecificPackageAvailable(etpData['category'] + "/" + etpData['name'] + "-" + etpData['version'] , etpData['branch'])):
-	    curRevision = self.retrievePackageVar(etpData['category'] + "/" + etpData['name'] + "-" + etpData['version'], "revision", etpData['branch'])
+	pkgatom = etpData['category'] + "/" + etpData['name'] + "-" + etpData['version']
+	idpackage = self.getIDPackage(pkgatom,etpData['branch'])
+	
+	if (idpackage != -1):
+	    curRevision = self.retrieveRevision(idpackage)
 	else:
 	    curRevision = 0
 
 	# do I really have to update the database entry? If the information are the same, drop all
-	oldPkgInfo = etpData['category']+"/"+etpData['name']+"-"+etpData['version']
-	rc = self.comparePackagesData(etpData, oldPkgInfo, dbPkgBranch = etpData['branch'])
+	oldPkgAtom = etpData['category']+"/"+etpData['name']+"-"+etpData['version']
+	rc = self.comparePackagesData(etpData, oldPkgAtom, branchToQuery = etpData['branch'])
 	if (rc) and (not forceBump):
 	    return False, curRevision, etpData # in this case etpData content does not matter
 
 	# OTHERWISE:
 	# remove the current selected package, if exists
-	if (self.isSpecificPackageAvailable(etpData['category'] + "/" + etpData['name'] + "-" + etpData['version'] , etpData['branch'])):
-	    self.removePackage(etpData['category']+"/"+etpData['name']+"-"+etpData['version'], branch = etpData['branch'])
+	if (idpackage != -1):
+	    self.removePackage(idpackage)
 
 	# bump revision nevertheless
 	curRevision += 1
@@ -1196,7 +1151,8 @@ class etpDatabase:
     def removePackage(self,idpackage):
 	key = self.retrieveAtom(idpackage)
 	branch = self.retrieveBranch(idpackage)
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"removePackage: trying to remove (if exists) -> "+str(idpackage)+":"+str(key)+" | branch: "+branch)
+	idpackage = str(idpackage)
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"removePackage: trying to remove (if exists) -> "+idpackage+":"+str(key)+" | branch: "+branch)
 	# baseinfo
 	self.cursor.execute('DELETE FROM baseinfo WHERE idpackage = '+idpackage)
 	# extrainfo
@@ -1281,19 +1237,14 @@ class etpDatabase:
     # returns True if equal
     # returns False if not
     # FIXME: this must be fixed to work with branches
-    def comparePackagesData(self,etpData,dbPkgInfo, dbPkgBranch = "unstable"):
+    def comparePackagesData(self, etpData, pkgAtomToQuery, branchToQuery = "unstable"):
 	
-	myEtpData = etpData.copy()
+	# fill content - get idpackage
+	idpackage = self.getIDPackage(pkgAtomToQuery,branchToQuery)
+	# get data
+	myEtpData = self.getPackageData(idpackage)
 	
-	# reset before using the myEtpData dictionary
-	for i in myEtpData:
-	    myEtpData[i] = ""
-
-	# fill content
-	for i in myEtpData:
-	    myEtpData[i] = self.retrievePackageVar(dbPkgInfo,i,dbPkgBranch)
-	
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"comparePackagesData: called for "+str(etpData['name'])+" and "+str(myEtpData['name'])+" | branch: "+dbPkgBranch)
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"comparePackagesData: called for "+str(etpData['name'])+" and "+str(myEtpData['name'])+" | branch: "+branchToQuery)
 	
 	for i in etpData:
 	    if etpData[i] != myEtpData[i]:
@@ -1306,10 +1257,20 @@ class etpDatabase:
     def getIDPackage(self, atom, branch = "unstable"):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackage: retrieving package ID for "+atom+" | branch: "+branch)
 	self.cursor.execute('SELECT "IDPACKAGE" FROM baseinfo WHERE atom = "'+atom+'" AND branch = "'+branch+'"')
+	idpackage = -1
 	for row in self.cursor:
 	    idpackage = int(row[0])
 	    break
 	return idpackage
+
+    def getIDCategory(self, category):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDCategory: retrieving category ID for "+str(category))
+	self.cursor.execute('SELECT "idcategory" FROM categories WHERE category = "'+str(category)+'"')
+	idcat = -1
+	for row in self.cursor:
+	    idcat = int(row[0])
+	    break
+	return idcat
 
     def getIDPackageFromBinaryPackage(self,packageName):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackageFromBinaryPackage: retrieving package ID for "+atom+" | branch: "+branch)
@@ -1320,8 +1281,58 @@ class etpDatabase:
 	    break
 	return idpackage
 
+    def getPackageData(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageData: retrieving etpData for package ID for "+str(idpackage))
+	data = {}
+	
+	data['name'] = self.retrieveName(idpackage)
+	data['version'] = self.retrieveVersion(idpackage)
+	data['description'] = self.retrieveDescription(idpackage)
+	data['category'] = self.retrieveCategory(idpackage)
+	
+	flags = self.retrieveCompileFlags(idpackage)
+	data['chost'] = flags[0]
+	data['cflags'] = flags[1]
+	data['cxxflags'] = flags[2]
+	
+	data['homepage'] = self.retrieveHomepage(idpackage)
+	data['useflags'] = self.retrieveUseflags(idpackage)
+	data['license'] = self.retrieveLicense(idpackage)
+	
+	data['keywords'] = self.retrieveKeywords(idpackage)
+	data['binkeywords'] = self.retrieveBinKeywords(idpackage)
+	
+	data['branch'] = self.retrieveBranch(idpackage)
+	data['download'] = self.retrieveDownloadURL(idpackage)
+	data['digest'] = self.retrieveDigest(idpackage)
+	data['sources'] = self.retrieveSources(idpackage)
+	
+	mirrornames = []
+	for x in data['sources']:
+	    if x.startswith("mirror://"):
+		mirrorname = x.split("/")[2]
+		mirrornames.append(mirrorname)
+	data['mirrorlinks'] = []
+	for mirror in mirrornames:
+	    mirrorlinks = self.retrieveMirrorInfo(mirror)
+	    data['mirrorlinks'].append([mirror,mirrorlinks])
+	
+	data['slot'] = self.retrieveSlot(idpackage)
+	data['content'] = self.retrieveContent(idpackage)
+	
+	data['dependencies'] = self.retrieveDependencies(idpackage)
+	data['rundependencies'] = self.retrieveRunDependencies(idpackage)
+	data['rundependenciesXT'] = self.retrieveRunDependenciesXt(idpackage)
+	data['conflicts'] = self.retrieveConflicts(idpackage)
+	
+	data['etpapi'] = self.retrieveApi(idpackage)
+	data['datecreation'] = self.retrieveDateCreation(idpackage)
+	data['neededlibs'] = self.retrieveNeededlibs(idpackage)
+	data['size'] = self.retrieveSize(idpackage)
+	return data
+
     def retrieveAtom(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveAtom: retrieving Atom for package ID for "+str(idpackage))
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveAtom: retrieving Atom for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "atom" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	atom = ''
 	for row in self.cursor:
@@ -1330,7 +1341,7 @@ class etpDatabase:
 	return atom
 
     def retrieveBranch(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBranch: retrieving Branch for package ID for "+str(idpackage))
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBranch: retrieving Branch for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "branch" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	atom = ''
 	for row in self.cursor:
@@ -1339,7 +1350,7 @@ class etpDatabase:
 	return atom
 
     def retrieveDownloadURL(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDownloadURL: retrieving download URL for package ID for "+str(idpackage))
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDownloadURL: retrieving download URL for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "download" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	download = ''
 	for row in self.cursor:
@@ -1348,7 +1359,7 @@ class etpDatabase:
 	return download
 
     def retrieveDescription(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDescription: retrieving description for package ID for "+str(idpackage))
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDescription: retrieving description for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "description" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	description = ''
 	for row in self.cursor:
@@ -1357,7 +1368,7 @@ class etpDatabase:
 	return description
 
     def retrieveHomepage(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveHomepage: retrieving Homepage for package ID for "+str(idpackage))
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveHomepage: retrieving Homepage for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "homepage" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	home = ''
 	for row in self.cursor:
@@ -1367,16 +1378,16 @@ class etpDatabase:
 
     # in bytes
     def retrieveSize(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSize: retrieving Size for package ID for "+str(idpackage))
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSize: retrieving Size for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "size" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
-	size = ''
+	size = 'N/A'
 	for row in self.cursor:
 	    size = row[0]
 	    break
 	return size
 
     def retrieveDigest(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDigest: retrieving Digest for package ID for "+str(idpackage))
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDigest: retrieving Digest for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "digest" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	digest = ''
 	for row in self.cursor:
@@ -1385,7 +1396,7 @@ class etpDatabase:
 	return digest
 
     def retrieveName(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveName: retrieving Name for package ID for "+str(idpackage))
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveName: retrieving Name for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "name" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	name = ''
 	for row in self.cursor:
@@ -1394,7 +1405,7 @@ class etpDatabase:
 	return name
 
     def retrieveVersion(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveVersion: retrieving Version for package ID for "+str(idpackage))
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveVersion: retrieving Version for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "version" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	ver = ''
 	for row in self.cursor:
@@ -1402,14 +1413,129 @@ class etpDatabase:
 	    break
 	return ver
 
+    def retrieveRevision(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveRevision: retrieving Revision for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "revision" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
+	rev = ''
+	for row in self.cursor:
+	    rev = row[0]
+	    break
+	return rev
+
+    def retrieveDateCreation(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDateCreation: retrieving Creation Date for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "datecreation" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
+	date = 'N/A'
+	for row in self.cursor:
+	    date = row[0]
+	    break
+	return date
+
+    def retrieveApi(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"v: retrieving Database API for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "etpapi" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
+	api = -1
+	for row in self.cursor:
+	    api = row[0]
+	    break
+	return api
+    
+    def retrieveUseflags(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveUseflags: retrieving USE flags for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "flag" FROM useflags WHERE idpackage = "'+str(idpackage)+'"')
+	flags = []
+	for row in self.cursor:
+	    flags.append(row[0])
+	return flags
+
+    def retrieveConflicts(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveConflicts: retrieving Conflicts for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "conflict" FROM conflicts WHERE idpackage = "'+str(idpackage)+'"')
+	confl = []
+	for row in self.cursor:
+	    confl.append(row[0])
+	return confl
+
+    def retrieveDependencies(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDependencies: retrieving Dependencies for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "dependency" FROM dependencies WHERE idpackage = "'+str(idpackage)+'"')
+	deps = []
+	for row in self.cursor:
+	    deps.append(row[0])
+	return deps
+
+    def retrieveRunDependencies(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveRunDependencies: retrieving Runtime Dependencies for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "dependency" FROM rundependencies WHERE idpackage = "'+str(idpackage)+'"')
+	deps = []
+	for row in self.cursor:
+	    deps.append(row[0])
+	return deps
+
+    def retrieveRunDependenciesXt(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveRunDependenciesXt: retrieving Runtime Dependencies (+version) for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "dependency" FROM rundependenciesxt WHERE idpackage = "'+str(idpackage)+'"')
+	deps = []
+	for row in self.cursor:
+	    deps.append(row[0])
+	return deps
+
+    def retrieveKeywords(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveKeywords: retrieving Keywords for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "keyword" FROM keywords WHERE idpackage = "'+str(idpackage)+'"')
+	kw = []
+	for row in self.cursor:
+	    kw.append(row[0])
+	return kw
+
+    def retrieveBinKeywords(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBinKeywords: retrieving Binary Keywords for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "binkeyword" FROM binkeywords WHERE idpackage = "'+str(idpackage)+'"')
+	kw = []
+	for row in self.cursor:
+	    kw.append(row[0])
+	return kw
+
+    def retrieveSources(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSources: retrieving Sources for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "source" FROM sources WHERE idpackage = "'+str(idpackage)+'"')
+	sw = []
+	for row in self.cursor:
+	    sw.append(row[0])
+	return sw
+
+    def retrieveContent(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveContent: retrieving Content for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "file" FROM content WHERE idpackage = "'+str(idpackage)+'"')
+	fl = []
+	for row in self.cursor:
+	    fl.append(row[0])
+	return fl
+
     def retrieveSlot(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSlot: retrieving Slot for package ID for "+str(idpackage))
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSlot: retrieving Slot for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "slot" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	ver = ''
 	for row in self.cursor:
 	    ver = row[0]
 	    break
 	return ver
+    
+    def retrieveNeededlibs(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveNeededlibs: retrieving Needed Libraries for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "library" FROM neededlibs WHERE idpackage = "'+str(idpackage)+'"')
+	libs = []
+	for row in self.cursor:
+	    libs.append(row[0])
+	return libs
+
+    def retrieveMirrorInfo(self, mirrorname):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveMirrorInfo: retrieving Mirror info for mirror name "+str(mirrorname))
+	self.cursor.execute('SELECT "mirrorlink" FROM mirrorlinks WHERE mirrorname = "'+str(mirrorname)+'"')
+	mirrorlist = []
+	for row in self.cursor:
+	    mirrorlist.append(row[0])
+	return mirrorlist
 
     def retrieveCategory(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveCategory: retrieving Category for package ID for "+str(idpackage))
@@ -1420,28 +1546,41 @@ class etpDatabase:
 	    break
 	# now get the category name
 	self.cursor.execute('SELECT "category" FROM categories WHERE idcategory = '+str(cat))
-	cat = ''
+	cat = -1
 	for row in self.cursor:
 	    cat = row[0]
 	    break
 	return cat
 
-    '''
-    # this function returns the variable selected (using pkgvar) in relation to the
-    # package associated to a certain binary package file (.tbz2)
-    def retrievePackageVarFromBinaryPackage(self,binaryPkgName,pkgvar):
-	# search binary package
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrievePackageVarFromBinaryPackage: retrieving package variable "+pkgvar+" for "+binaryPkgName)
-	result = []
-	table = self.tableSelector(pkgvar)
-	self.cursor.execute('SELECT "'+pkgvar+'" FROM '+table+' WHERE download = "'+etpConst['binaryurirelativepath']+binaryPkgName+'"')
+    def retrieveLicense(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveLicense: retrieving License for package ID for "+str(idpackage))
+	self.cursor.execute('SELECT "idlicense" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
+	lic = -1
 	for row in self.cursor:
-	    result.append(row[0])
-	if len(result) > 0:
-	    return result[0]
-	else:
-	    return ""
-    '''
+	    lic = row[0]
+	    break
+	# now get the license name
+	self.cursor.execute('SELECT "license" FROM licenses WHERE idlicense = '+str(lic))
+	licname = ''
+	for row in self.cursor:
+	    licname = row[0]
+	    break
+	return licname
+
+    def retrieveCompileFlags(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveCompileFlags: retrieving CHOST,CFLAGS,CXXFLAGS for package ID for "+str(idpackage))
+	self.cursor.execute('SELECT "idflags" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
+	idflag = -1
+	for row in self.cursor:
+	    idflag = row[0]
+	    break
+	# now get the flags
+	self.cursor.execute('SELECT chost,cflags,cxxflags FROM flags WHERE idflags = '+str(idflag))
+	flags = ["N/A","N/A","N/A"]
+	for row in self.cursor:
+	    flags = row
+	    break
+	return flags
 
     # You must provide the full atom to this function
     # WARNING: this function does not support branches !!!
@@ -1543,8 +1682,10 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchSimilarPackages: called for "+atom+" | branch: "+branch)
 	category = atom.split("/")[0]
 	name = atom.split("/")[1]
+	# get category id
+	idcategory = self.getIDCategory(category)
 	result = []
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE category = "'+category+'" AND name = "'+name+'" AND branch = "'+branch+'"')
+	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE idcategory = "'+str(idcategory)+'" AND name = "'+name+'" AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row)
 	return result
@@ -1554,6 +1695,7 @@ class etpDatabase:
     def listAllPackages(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllPackages: called.")
 	self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo')
+	result = []
 	for row in self.cursor:
 	    result.append(row)
 	return result
