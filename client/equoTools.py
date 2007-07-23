@@ -276,15 +276,14 @@ def searchPackage(packages):
 		    pkglic = dbconn.retrieveLicense(id)
 		    pkgsize = dbconn.retrieveSize(id)
 		    pkgsize = round(float(len(int(pkgsize)))/1024,1)
-		    print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(branch))
 		    
+		    print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(branch))
 		    print_info(green("       Available version:\t")+blue(pkgver))
 		    print_info(green("       Installed version:\t")+blue("N/A"))
 		    print_info(green("       Size:\t\t\t")+blue(str(pkgsize)))
 		    print_info(green("       Homepage:\t\t")+red(pkghome))
 		    print_info(green("       Description:\t\t")+pkgdesc)
 		    print_info(green("       License:\t\t")+red(pkglic))
-			
 	
 	dbconn.closeDB()
 

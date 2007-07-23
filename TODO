@@ -1,6 +1,4 @@
 TODO list:
-- database: complete rework of the tables
-- database: searchPackages must return id + atom + branch
 - reagent: complete smartapps section
 - enzyme, reagent: test kernel dependent packages
 - enzyme, build(): add an option to force the continuation of the emerge queue even if a package fails
