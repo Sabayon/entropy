@@ -115,8 +115,9 @@ def database(options):
 	    for result in results:
 		foundCounter += 1
 		print 
-		print_info(green(" * ")+bold(result[0]))   # package atom
+		print_info(green(" * ")+bold(dbconn.retrieveCategory(result[1])+"/"+dbconn.retrieveName(result[1])))   # package atom
 		
+		print_info(red("\t Atom: ")+blue(result[0]))
 		print_info(red("\t Name: ")+blue(dbconn.retrieveName(result[1])))
 		print_info(red("\t Installed version: ")+blue(dbconn.retrieveVersion(result[1])))
 		
@@ -453,35 +454,50 @@ def database(options):
 
 	print_info(green(" * ")+red("Scanning packages that would be removed ..."), back = True)
 	
-	myatoms = options[1:]
-	if len(myatoms) == 0:
+	myopts = options[1:]
+	_myopts = []
+	branch = ''
+	for opt in myopts:
+	    if (opt.startswith("--branch=")) and (len(opt.split("=")) == 2):
+		branch = opt.split("=")[1]
+	    else:
+		_myopts.append(opt)
+	myopts = _myopts
+	
+	if len(myopts) == 0:
 	    print_error(yellow(" * ")+red("Not enough parameters"))
 	    sys.exit(303)
 
 	pkglist = []
-	for atom in myatoms:
-	    # validate atom
-	    dbconn = etpDatabase(readOnly = True)
-	    pkg = dbconn.searchPackages(atom)
-	    try:
-		for x in pkg:
-		    pkglist.append(x[0])
-	    except:
-		pass
+	dbconn = etpDatabase(readOnly = True)
+	
+	for atom in myopts:
+	    if (branch):
+		pkg = dbconn.searchPackagesInBranch(atom,branch)
+	    else:
+	        pkg = dbconn.searchPackages(atom)
+	    for x in pkg:
+		pkglist.append(x)
 
 	# filter dups
 	pkglist = list(set(pkglist))
 	# check if atoms were found
 	if len(pkglist) == 0:
 	    print
+	    dbconn.closeDB()
 	    print_error(yellow(" * ")+red("No packages found."))
 	    sys.exit(303)
 	
 	print_info(green(" * ")+red("These are the packages that would be removed from the database:"))
 
 	for pkg in pkglist:
-	    print_info(red("\t (*) ")+bold(pkg))
-	
+	    pkgatom = pkg[0]
+	    pkgid = pkg[1]
+	    branch = dbconn.retrieveBranch(pkgid)
+	    print_info(red("\t (*) ")+bold(pkgatom)+blue("\tBRANCH: ")+bold(branch))
+
+	dbconn.closeDB()
+
 	# ask to continue
 	rc = entropyTools.askquestion("     Would you like to continue ?")
 	if rc == "No":
@@ -493,8 +509,8 @@ def database(options):
 	# open db
 	dbconn = etpDatabase(readOnly = False, noUpload = True)
 	for pkg in pkglist:
-	    print_info(green(" * ")+red("Removing package: ")+bold(pkg)+red(" ..."), back = True)
-	    dbconn.removePackage(pkg)
+	    print_info(green(" * ")+red("Removing package: ")+bold(pkg[0])+red(" ..."), back = True)
+	    dbconn.removePackage(pkg[1])
 	dbconn.commitChanges()
 	print_info(green(" * ")+red("All the selected packages have been removed as requested. To remove online binary packages, just run Activator."))
 	dbconn.closeDB()
@@ -570,12 +586,12 @@ def database(options):
 	    pkgatom = dbconn.retrieveAtom(id)
 	    if (os.path.isfile(etpConst['packagesbindir']+"/"+pkgfile)):
 		if (not worldSelected): print_info(green("   - [PKG AVAILABLE] ")+red(pkgatom)+" -> "+bold(pkgfile))
-		availList.append(pkgfile)
+		availList.append(id)
 	    elif (os.path.isfile(etpConst['packagessuploaddir']+"/"+pkgfile)):
 		if (not worldSelected): print_info(green("   - [RUN ACTIVATOR] ")+darkred(pkgatom)+" -> "+bold(pkgfile))
 	    else:
 		if (not worldSelected): print_info(green("   - [MUST DOWNLOAD] ")+yellow(pkgatom)+" -> "+bold(pkgfile))
-		toBeDownloaded.append(pkgfile)
+		toBeDownloaded.append([id,pkgfile])
 	
 	rc = entropyTools.askquestion("     Would you like to continue ?")
 	if rc == "No":
@@ -592,14 +608,14 @@ def database(options):
 		    notDownloadedPackages = []
 		
 		for pkg in toBeDownloaded:
-		    rc = entropyTools.downloadPackageFromMirror(uri,pkg)
+		    rc = entropyTools.downloadPackageFromMirror(uri,pkg[1])
 		    if (rc is None):
-			notDownloadedPackages.append(pkg)
+			notDownloadedPackages.append(pkg[1])
 		    if (rc == False):
-			notDownloadedPackages.append(pkg)
+			notDownloadedPackages.append(pkg[1])
 		    if (rc == True):
 			pkgDownloadedSuccessfully += 1
-			availList.append(pkg)
+			availList.append(pkg[0])
 		
 		if (notDownloadedPackages == []):
 		    print_info(red("   All the binary packages have been downloaded successfully."))
@@ -614,17 +630,19 @@ def database(options):
 	
 	brokenPkgsList = []
 	for pkg in availList:
-	    print_info(red("   Checking hash of ")+yellow(pkg)+red(" ..."), back = True)
-	    storedmd5 = dbconn.retrievePackageVarFromBinaryPackage(pkg,"digest")
-	    result = entropyTools.compareMd5(etpConst['packagesbindir']+"/"+pkg,storedmd5)
+	    pkgfile = dbconn.retrieveDownloadURL(pkg)
+	    pkgfile = os.path.basename(pkgfile)
+	    print_info(red("   Checking hash of ")+yellow(pkgfile)+red(" ..."), back = True)
+	    storedmd5 = dbconn.retrieveDigest(pkg)
+	    result = entropyTools.compareMd5(etpConst['packagesbindir']+"/"+pkgfile,storedmd5)
 	    if (result):
 		# match !
 		pkgMatch += 1
 		#print_info(red("   Package ")+yellow(pkg)+green(" is healthy. Checksum: ")+yellow(storedmd5), back = True)
 	    else:
 		pkgNotMatch += 1
-		print_error(red("   Package ")+yellow(pkg)+red(" is _NOT_ healthy !!!! Stored checksum: ")+yellow(storedmd5))
-		brokenPkgsList.append(pkg)
+		print_error(red("   Package ")+yellow(pkgfile)+red(" is _NOT_ healthy !!!! Stored checksum: ")+yellow(storedmd5))
+		brokenPkgsList.append(pkgfile)
 
 	dbconn.closeDB()
 

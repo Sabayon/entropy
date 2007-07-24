@@ -260,20 +260,6 @@ def extractPkgData(package):
 	    # get the version of the modules
 	    kmodver = file.split("/lib/modules/")[1]
 	    kmodver = kmodver.split("/")[0]
-	    # remove -sabayon-
-	    rev = ''
-	    lp = kmodver.split("-")[len(kmodver.split("-"))-1]
-	    if lp.startswith("r"):
-		try:
-		    int(lp[len(lp)-1])
-		    # it's a number
-		    rev = lp
-		except:
-		    # not a -revision
-		    pass
-	    kmodver = kmodver.split("-")[0]
-	    if (rev):
-		kmodver += "-"+rev
 	    break
 
     # add strict kernel dependency
@@ -285,11 +271,10 @@ def extractPkgData(package):
     print_info(yellow(" * ")+red("Getting package download URL..."),back = True)
     # Fill download relative URI
     if (kernelDependentModule):
-	extrakernelinfo = "-linux-core-"+kmodver
 	etpData['version'] += "-linux-core-"+kmodver
     else:
 	extrakernelinfo = ""
-    etpData['download'] = etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+extrakernelinfo+".tbz2"
+    etpData['download'] = etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+".tbz2"
 
     print_info(yellow(" * ")+red("Getting package category..."),back = True)
     # Fill category
@@ -476,8 +461,17 @@ def extractPkgData(package):
 	etpData['conflicts'].append(i)
     
     if (kernelDependentModule):
-	# add kmodver to the dependency
-	etpData['dependencies'].append("sys-kernel/linux-core-"+kmodver)
+	# 2.6.22-sabayon-r2
+	rev = ''
+	lp = kmodver.split("-")[len(kmodver.split("-"))-1]
+	if lp.startswith("r"):
+	    kname = kmodver.split("-")[len(kmodver.split("-"))-2]
+	    kmodver = kmodver.split("-")[0]+"-"+kmodver.split("-")[len(kmodver.split("-"))-1]
+	else:
+	    kname = kmodver.split("-")[len(kmodver.split("-"))-1]
+	    kmodver = kmodver.split("-")[0]
+	# add kname to the dependency
+	etpData['dependencies'].append("sys-kernel/linux-"+kname+"-"+kmodver)
 
     # etpData['rdependencies']
     # Now we need to add environmental dependencies

@@ -3,19 +3,16 @@ TODO list:
 - enzyme, reagent: test kernel dependent packages
 - enzyme, build(): add an option to force the continuation of the emerge queue even if a package fails
 - enzyme, add a module that integrates revdep-rebuild
-- add FXP support to activator ? (yes but dreamhost does not support it :|)
-- manage Gentoo profiles updates
 - test stabilization code
 
 Project Status:
 - entropy: will handle all the three tools below
-- enzyme: complete. Needs bug fixes.
-- reagent: complete. Needs bug fixes.
-- activator: complete. Needs bug fixes.
+- enzyme: complete. Bug fixing mode.
+- reagent: complete. Bug fixing mode.
+- activator: complete. Bug fixing mode.
 ============
 - client part: started.
 
 
 Features plan:
-- activator: add support for ssh (where supported) to we can md5sum the uploaded files?
 - build() and world(), on enzyme, add the support for whitelist+cron

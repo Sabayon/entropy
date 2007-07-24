@@ -53,6 +53,7 @@ def print_help():
     print_info(" \t\t"+green("search")+"\t\t\t Search a package inside the Entropy packages database")
     print_info(" \t\t"+green("restore-package-info")+"\t Reinitialize a package entry looking at the current install")
     print_info(" \t\t"+green(bold("remove"))+"\t\t\t Remove a package or a list of packages")
+    print_info(" \t\t\t"+red("--branch=[stable,unstable]")+"\t\t Choose which branch of the package to remove")
     print_info(" \t\t"+green("create-empty-database")+"\t Create an empty Entropy database file in the specified <path>")
     print_info(" \t\t"+green("stabilize")+"\t\t Mark as stable a package, a list of packages, world")
     print_info(" \t\t"+green("unstabilize")+"\t\t Mark as unstable a package, a list of packages, world")
