@@ -264,7 +264,9 @@ def searchPackage(packages):
 	        # print info
 	        print_info(blue("     Keyword: ")+bold("\t"+package))
 	        print_info(blue("     Found:   ")+bold("\t"+str(len(foundPackages[repo][package])))+red(" entries"))
-	        for id in foundPackages[repo][package]:
+	        for pkg in foundPackages[repo][package]:
+		    id = pkg[1]
+		    atom = pkg[0]
 		    branch = dbconn.retrieveBranch(id)
 		    # now fetch essential info
 		    pkgatom = dbconn.retrieveAtom(id)
