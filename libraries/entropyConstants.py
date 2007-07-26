@@ -295,7 +295,8 @@ etpConst = {
     'preinstallscript': "preinstall.sh", # used by the client to run some pre-install actions
     'postinstallscript': "postinstall.sh", # used by the client to run some post-install actions
     
-    'branches': ["unstable","stable"], # available branches
+    'branches': ["stable","unstable"], # available branches, do not scramble!
+    'branch': "unstable", # choosen branch
  }
 
 # Handlers used by entropy to run and retrieve data remotely, using php helpers
@@ -356,6 +357,9 @@ if os.path.isfile(etpConst['repositoriesconf']):
 		etpRepositories[reponame]['packages'] = repopackages+"/"+etpConst['currentarch']
 		etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['currentarch']
 		etpRepositories[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['currentarch']
+	elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+	    branch = line.split("|")[1]
+	    etpConst['branch'] = branch
 
 if (commands.getoutput("q -V").find("portage-utils") != -1):
     pFindLibrary = "qfile -qC "

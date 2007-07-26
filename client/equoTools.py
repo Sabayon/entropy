@@ -268,6 +268,15 @@ def searchPackage(packages):
 		    id = pkg[1]
 		    atom = pkg[0]
 		    branch = dbconn.retrieveBranch(id)
+		    # does the package exist in the selected branch?
+		    if etpConst['branch'] != branch:
+			# get branch name position in branches
+			myBranchIndex = etpConst['branches'].index(etpConst['branch'])
+			foundBranchIndex = etpConst['branches'].index(branch)
+			if foundBranchIndex > myBranchIndex:
+			    # package found in branch more unstable than the selected one, for us, it does not exist
+			    continue
+			
 		    # now fetch essential info
 		    pkgatom = dbconn.retrieveAtom(id)
 		    pkgname = dbconn.retrieveName(id)
