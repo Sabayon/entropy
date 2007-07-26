@@ -29,7 +29,7 @@ sys.path.append('../libraries')
 from entropyConstants import *
 from outputTools import *
 from remoteTools import downloadData
-from entropyTools import unpackGzip,compareMd5
+from entropyTools import unpackGzip,compareMd5,bytesIntoHuman,convertUnixTimeToHumanTime
 
 
 ########################################################
@@ -235,7 +235,7 @@ def searchPackage(packages):
     
     foundPackages = {}
     
-    print_info(yellow(" @@ ")+green("Searching..."))
+    print_info(yellow(" @@ ")+darkgreen("Searching..."))
     # search inside each available database
     repoNumber = 0
     searchError = False
@@ -283,18 +283,34 @@ def searchPackage(packages):
 		    pkgcat = dbconn.retrieveCategory(id)
 		    pkgver = dbconn.retrieveVersion(id)
 		    pkgdesc = dbconn.retrieveDescription(id)
-		    pkghome = dbconn.retrieveDownloadURL(id)
+		    pkghome = dbconn.retrieveHomepage(id)
 		    pkglic = dbconn.retrieveLicense(id)
 		    pkgsize = dbconn.retrieveSize(id)
-		    pkgsize = round(float(pkgsize)/1024,1)
+		    pkgbin = dbconn.retrieveDownloadURL(id)
+		    pkgflags = dbconn.retrieveCompileFlags(id)
+		    pkgkeywords = dbconn.retrieveBinKeywords(id)
+		    pkgtag = dbconn.retrieveVersionTag(id)
+		    pkgdigest = dbconn.retrieveDigest(id)
+		    pkgcreatedate = convertUnixTimeToHumanTime(int(dbconn.retrieveDateCreation(id)))
+		    if (not pkgtag):
+			pkgtag = "Not tagged"
+		    pkgsize = bytesIntoHuman(pkgsize)
 		    
 		    print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(branch))
-		    print_info(green("       Available version:\t")+blue(pkgver))
-		    print_info(green("       Installed version:\t")+blue("N/A"))
-		    print_info(green("       Size:\t\t\t")+blue(str(pkgsize)))
-		    print_info(green("       Homepage:\t\t")+red(pkghome))
-		    print_info(green("       Description:\t\t")+pkgdesc)
-		    print_info(green("       License:\t\t")+red(pkglic))
+		    print_info(darkgreen("       Category:\t\t")+darkblue(pkgcat))
+		    print_info(darkgreen("       Name:\t\t\t")+darkblue(pkgname))
+		    print_info(darkgreen("       Tag:\t\t\t")+blue(pkgtag))
+		    print_info(darkgreen("       Available version:\t")+blue(pkgver))
+		    print_info(darkgreen("       Installed version:\t")+blue("N/A"))
+		    print_info(darkgreen("       Size:\t\t\t")+blue(str(pkgsize)))
+		    print_info(darkgreen("       Download:\t\t")+brown(str(pkgbin)))
+		    print_info(darkgreen("       Checksum:\t\t")+brown(str(pkgdigest)))
+		    print_info(darkgreen("       Homepage:\t\t")+red(pkghome))
+		    print_info(darkgreen("       Description:\t\t")+pkgdesc)
+		    print_info(darkgreen("       Compiled with:\t")+blue(pkgflags[1]))
+		    print_info(darkgreen("       Architectures:\t")+blue(string.join(pkgkeywords," ")))
+		    print_info(darkgreen("       Created:\t\t")+pkgcreatedate)
+		    print_info(darkgreen("       License:\t\t")+red(pkglic))
 	
 	dbconn.closeDB()
 
