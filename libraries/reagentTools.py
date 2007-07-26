@@ -147,6 +147,9 @@ def extractPkgData(package):
     package = package.split(".tbz2")[0]
     package = package.split("-unstable")[0]
     package = package.split("-stable")[0]
+    # strip revision tag
+    package = package.split("-tag")[0]
+    package = package.split("-linux-core")[0]
     package = package.split("-")
     pkgname = ""
     pkglen = len(package)
@@ -272,7 +275,7 @@ def extractPkgData(package):
     # Fill download relative URI
     if (kernelDependentModule):
 	etpData['versiontag'] = kmodver
-	versiontag = "-"+etpData['versiontag']
+	versiontag = "-tag-"+etpData['versiontag']
     else:
 	versiontag = ""
     etpData['download'] = etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+versiontag+".tbz2"

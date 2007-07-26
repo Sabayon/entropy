@@ -119,7 +119,10 @@ def database(options):
 		
 		print_info(red("\t Atom: ")+blue(result[0]))
 		print_info(red("\t Name: ")+blue(dbconn.retrieveName(result[1])))
-		print_info(red("\t Installed version: ")+blue(dbconn.retrieveVersion(result[1])))
+		print_info(red("\t Version: ")+blue(dbconn.retrieveVersion(result[1])))
+		tag = dbconn.retrieveVersionTag(result[1])
+		if (tag):
+		    print_info(red("\t Tag: ")+blue(tag))
 		
 		description = dbconn.retrieveDescription(result[1])
 		if (description):
