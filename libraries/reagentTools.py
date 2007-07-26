@@ -178,7 +178,7 @@ def extractPkgData(package):
     print_info(yellow(" * ")+red("Getting package size..."),back = True)
     # .tbz2 byte size
     etpData['size'] = str(os.stat(tbz2File)[6])
-
+    
     print_info(yellow(" * ")+red("Unpacking package data..."),back = True)
     # unpack file
     tbz2TmpDir = etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version']+"/"
@@ -271,10 +271,11 @@ def extractPkgData(package):
     print_info(yellow(" * ")+red("Getting package download URL..."),back = True)
     # Fill download relative URI
     if (kernelDependentModule):
-	etpData['version'] += "-linux-core-"+kmodver
+	etpData['versiontag'] = kmodver
+	versiontag = "-"+etpData['versiontag']
     else:
-	extrakernelinfo = ""
-    etpData['download'] = etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+".tbz2"
+	versiontag = ""
+    etpData['download'] = etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+versiontag+".tbz2"
 
     print_info(yellow(" * ")+red("Getting package category..."),back = True)
     # Fill category

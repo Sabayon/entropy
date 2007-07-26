@@ -27,7 +27,7 @@ import entropyTools
 from outputTools import *
 
 # CONSTANTS
-APPNAME = "equilibrium"
+APPNAME = "equo"
 APPVERSION = "1.0"
 def print_help():
     print_info("Sabayon Linux "+APPNAME+" (C - 2007)")

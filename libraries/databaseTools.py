@@ -895,8 +895,14 @@ class etpDatabase:
     # if it does not exist, it fires up addPackage
     # otherwise it fires up updatePackage
     def handlePackage(self, etpData, forceBump = False):
+
+        # prepare versiontag
+	versiontag = ""
+	if (etpData['versiontag']):
+	    versiontag = "-"+etpData['versiontag']
+
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: called.")
-	if (not self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version'])):
+	if (not self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag)):
 	    update, revision, etpDataUpdated = self.addPackage(etpData)
 	else:
 	    update, revision, etpDataUpdated = self.updatePackage(etpData,forceBump)
@@ -943,15 +949,20 @@ class etpDatabase:
 	    # create category
 	    licid = self.addLicense(etpData['license'])
 
+	# look for configured versiontag
+	versiontag = ""
+	if (etpData['versiontag']):
+	    versiontag = "-"+etpData['versiontag']
 
 	# baseinfo
 	self.cursor.execute(
 		'INSERT into baseinfo VALUES '
-		'(NULL,?,?,?,?,?,?,?,?,?)'
-		, (	etpData['category']+"/"+etpData['name']+"-"+etpData['version'],
+		'(NULL,?,?,?,?,?,?,?,?,?,?)'
+		, (	etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag,
 			catid,
 			etpData['name'],
 			etpData['version'],
+			etpData['versiontag'],
 			revision,
 			wantedBranch,
 			etpData['slot'],
@@ -961,7 +972,7 @@ class etpDatabase:
 	)
 	
 	# I don't use lastrowid because the db must be multiuser aware
-	idpackage = self.getIDPackage(etpData['category']+"/"+etpData['name']+"-"+etpData['version'],wantedBranch)
+	idpackage = self.getIDPackage(etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag,wantedBranch)
 
 	# create new idflag if it doesn't exist
 	idflags = self.areCompileFlagsAvailable(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
@@ -1103,6 +1114,11 @@ class etpDatabase:
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"updatePackage: called.")
 
+        # prepare versiontag
+	versiontag = ""
+	if (etpData['versiontag']):
+	    versiontag = "-"+etpData['versiontag']
+
 	# are there any stable packages?
 	searchsimilarStable = self.searchSimilarPackages(etpData['category']+"/"+etpData['name'], branch = "stable")
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: here is the list of similar stable packages found for "+etpData['category']+"/"+etpData['name']+": "+str(searchsimilarStable))
@@ -1112,7 +1128,8 @@ class etpDatabase:
 	    # get version
 	    idpackage = pkg[1]
 	    dbStoredVer = self.retrieveVersion(idpackage)
-	    if etpData['version'] == dbStoredVer:
+	    dbStoredVerTag = self.retrieveVersionTag(idpackage)
+	    if (etpData['version'] == dbStoredVer) and (etpData['versiontag'] == dbStoredVerTag):
 	        # found it !
 		stableFound = True
 		break
@@ -1122,7 +1139,7 @@ class etpDatabase:
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: found an old stable package, if etpData['neededlibs'] is equal, mark the branch of this updated package, stable too")
 	    
 	    # in this case, we should compare etpData['neededlibs'] with the db entry to see if there has been a API breakage
-	    idpackage = self.getIDPackage(etpData['category'] + "/" + etpData['name'] + "-" + etpData['version'],"stable")
+	    idpackage = self.getIDPackage(etpData['category'] + "/" + etpData['name'] + "-" + etpData['version']+versiontag,"stable")
 	    dbStoredNeededLibs = self.retrieveNeededlibs(idpackage)
 	    if (etpData['neededlibs'] == dbStoredNeededLibs):
 		# it is safe to keep it as stable because of:
@@ -1134,7 +1151,7 @@ class etpDatabase:
 
 
 	# get selected package revision
-	pkgatom = etpData['category'] + "/" + etpData['name'] + "-" + etpData['version']
+	pkgatom = etpData['category'] + "/" + etpData['name'] + "-" + etpData['version']+versiontag
 	idpackage = self.getIDPackage(pkgatom,etpData['branch'])
 	
 	if (idpackage != -1):
@@ -1143,7 +1160,7 @@ class etpDatabase:
 	    curRevision = 0
 
 	# do I really have to update the database entry? If the information are the same, drop all
-	oldPkgAtom = etpData['category']+"/"+etpData['name']+"-"+etpData['version']
+	oldPkgAtom = etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag
 	rc = self.comparePackagesData(etpData, oldPkgAtom, branchToQuery = etpData['branch'])
 	if (rc) and (not forceBump):
 	    return False, curRevision, etpData # in this case etpData content does not matter
@@ -1305,6 +1322,7 @@ class etpDatabase:
 	
 	data['name'] = self.retrieveName(idpackage)
 	data['version'] = self.retrieveVersion(idpackage)
+	data['versiontag'] = self.retrieveVersionTag(idpackage)
 	data['description'] = self.retrieveDescription(idpackage)
 	data['category'] = self.retrieveCategory(idpackage)
 	
@@ -1533,6 +1551,15 @@ class etpDatabase:
     def retrieveSlot(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSlot: retrieving Slot for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "slot" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
+	ver = ''
+	for row in self.cursor:
+	    ver = row[0]
+	    break
+	return ver
+    
+    def retrieveVersionTag(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveVersionTag: retrieving Version TAG for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "versiontag" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	ver = ''
 	for row in self.cursor:
 	    ver = row[0]

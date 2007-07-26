@@ -57,7 +57,8 @@ etpData = {
     'etpapi': u"", # Entropy API revision
     'datecreation': u"", # mtime of the .tbz2 file
     'neededlibs': u"", # libraries needed bye the applications in the package
-    'size': u"" # the package size
+    'size': u"", # the package size
+    'versiontag': u"" # particular version tag
 }
 
 # Entropy database SQL initialization Schema and data structure
@@ -89,6 +90,7 @@ CREATE TABLE baseinfo (
     idcategory INTEGER,
     name VARCHAR,
     version VARCHAR,
+    versiontag VARCHAR,
     revision INTEGER,
     branch VARCHAR,
     slot VARCHAR,
