@@ -205,6 +205,7 @@ ETP_PORTDIR = "/portage"
 ETP_DISTFILESDIR = "/distfiles"
 ETP_DBDIR = "/database/"+ETP_ARCH_CONST
 ETP_DBFILE = "packages.db"
+ETP_DBCLIENTFILE = "equo.db"
 ETP_CLIENT_REPO_DIR = "/client"
 ETP_UPLOADDIR = "/upload/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store/"+ETP_ARCH_CONST
@@ -247,6 +248,7 @@ etpConst = {
     'spmbackendconf': ETP_CONF_DIR+"/spmbackend.conf", # Source Package Manager backend configuration (Portage now)
     'mirrorsconf': ETP_CONF_DIR+"/mirrors.conf", # mirrors.conf file
     'remoteconf': ETP_CONF_DIR+"/remote.conf", # remote.conf file
+    'equoconf': ETP_CONF_DIR+"/equo.conf", # equo.conf file
     'activatoruploaduris': [], # list of URIs that activator can use to upload files (parsed from activator.conf)
     'activatordownloaduris': [], # list of URIs that activator can use to fetch data
     'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
@@ -268,6 +270,7 @@ etpConst = {
     'reagentloglevel': 1 , # Reagent log level (default: 1 - see reagent.conf for more info)
     'activatorloglevel': 1, # # Activator log level (default: 1 - see activator.conf for more info)
     'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
+    'equologlevel': 1, # # Equo log level (default: 1 - see equo.conf for more info)
     'spmbackendloglevel': 1, # # Source Package Manager backend log level (default: 1 - see entropy.conf for more info)
     'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
     
@@ -280,6 +283,7 @@ etpConst = {
     'reagentlogfile': ETP_SYSLOG_DIR+"/reagent.log", # Reagent operations log file
     'activatorlogfile': ETP_SYSLOG_DIR+"/activator.log", # Activator operations log file
     'entropylogfile': ETP_SYSLOG_DIR+"/entropy.log", # Activator operations log file
+    'equologfile': ETP_SYSLOG_DIR+"/equo.log", # Activator operations log file
     
     
     'distcc-status': False, # used by Enzyme, if True distcc is enabled
@@ -287,6 +291,7 @@ etpConst = {
     'etpdatabasedir': ETP_DIR+ETP_DBDIR,
     'etpdatabasefilepath': ETP_DIR+ETP_DBDIR+"/"+ETP_DBFILE,
     'etpdatabaseclientdir': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR,
+    'etpdatabaseclientfilepath': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR+"/"+ETP_DBCLIENTFILE, # path to equo.db - client side database file
     
     'etpapi': ETP_API, # Entropy database API revision
     'headertext': ETP_HEADER_TEXT, # header text that can be outputted to a file
@@ -297,6 +302,7 @@ etpConst = {
     
     'branches': ["stable","unstable"], # available branches, do not scramble!
     'branch': "unstable", # choosen branch
+    'gentoo-compat': False, # Gentoo compatibility (/var/db/pkg + Portage availability)
  }
 
 # Handlers used by entropy to run and retrieve data remotely, using php helpers
@@ -574,7 +580,37 @@ else:
 		print "WARNING: invalid loglevel in: "+etpConst['databaseconf']
 		import time
 		time.sleep(5)
-		
+
+# equo section
+if (not os.path.isfile(etpConst['equoconf'])):
+    print "ERROR: "+etpConst['equoconf']+" does not exist"
+    sys.exit(50)
+else:
+    f = open(etpConst['equoconf'],"r")
+    equoconf = f.readlines()
+    f.close()
+    for line in equoconf:
+	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
+	    loglevel = line.split("loglevel|")[1]
+	    try:
+		loglevel = int(loglevel)
+	    except:
+		print "ERROR: invalid loglevel in: "+etpConst['equoconf']
+		sys.exit(51)
+	    if (loglevel > -1) and (loglevel < 3):
+	        etpConst['equologlevel'] = loglevel
+	    else:
+		print "WARNING: invalid loglevel in: "+etpConst['equoconf']
+		import time
+		time.sleep(5)
+
+	if line.startswith("gentoo-compat|") and (len(line.split("|")) == 2):
+	    compatopt = line.split("|")[1].strip()
+	    if compatopt == "disable":
+		etpConst['gentoo-compat'] = False
+	    else:
+		etpConst['gentoo-compat'] = True
+
 # mirrors section
 if (not os.path.isfile(etpConst['mirrorsconf'])):
     print "ERROR: "+etpConst['mirrorsconf']+" does not exist"

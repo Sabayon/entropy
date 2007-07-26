@@ -730,22 +730,31 @@ class databaseStatus:
 
 class etpDatabase:
 
-    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath']):
+    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False):
 	
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase.__init__ called.")
 	
 	self.readOnly = readOnly
 	self.noUpload = noUpload
+	self.clientDatabase = clientDatabase
 	
-	if (self.readOnly):
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened readonly")
+	if (self.clientDatabase):
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened by Entropy client, file: "+str(dbFile))
 	    # if the database is opened readonly, we don't need to lock the online status
 	    self.connection = sqlite.connect(dbFile)
 	    self.cursor = self.connection.cursor()
 	    # set the table read only
 	    return
 	
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened in read/write mode")
+	if (self.readOnly):
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened readonly, file: "+str(dbFile))
+	    # if the database is opened readonly, we don't need to lock the online status
+	    self.connection = sqlite.connect(dbFile)
+	    self.cursor = self.connection.cursor()
+	    # set the table read only
+	    return
+	
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened in read/write mode, file: "+str(dbFile))
 
 	# check if the database is locked locally
 	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
@@ -804,7 +813,7 @@ class etpDatabase:
 	    # ok done... now sync the new db, if needed
 	    entropyTools.syncRemoteDatabases(self.noUpload)
 	
-	self.connection = sqlite.connect(etpConst['etpdatabasefilepath'])
+	self.connection = sqlite.connect(dbFile)
 	self.cursor = self.connection.cursor()
 
     def closeDB(self):
@@ -813,6 +822,14 @@ class etpDatabase:
 	if (self.readOnly):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in readonly.")
 	    #self.connection.rollback()
+	    self.cursor.close()
+	    self.connection.close()
+	    return
+
+	# if it's equo that's calling the function, just save changes and quit
+	if (self.clientDatabase):
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened by Entropy Client.")
+	    self.commitChanges()
 	    self.cursor.close()
 	    self.connection.close()
 	    return
@@ -844,6 +861,9 @@ class etpDatabase:
 	    self.discardChanges() # is it ok?
 
     def taintDatabase(self):
+	if (self.clientDatabase): # if it's equo to open it, this should be avoided
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"taintDatabase: called by Entropy client, won't do anything.")
+	    return
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"taintDatabase: called.")
 	# taint the database status
 	f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'],"w")
@@ -853,6 +873,9 @@ class etpDatabase:
 	entropyTools.dbStatus.setDatabaseTaint(True)
 
     def untaintDatabase(self):
+	if (self.clientDatabase): # if it's equo to open it, this should be avoided
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called by Entropy client, won't do anything.")
+	    return
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called.")
 	entropyTools.dbStatus.setDatabaseTaint(False)
 	# untaint the database status
@@ -899,6 +922,10 @@ class etpDatabase:
     # otherwise it fires up updatePackage
     def handlePackage(self, etpData, forceBump = False):
 
+	if (self.readOnly):
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: Cannot handle this in read only.")
+	    raise Exception, "What are you trying to do?"
+
         # prepare versiontag
 	versiontag = ""
 	if (etpData['versiontag']):
@@ -913,6 +940,10 @@ class etpDatabase:
 
     # default add an unstable package
     def addPackage(self, etpData, revision = 0, wantedBranch = "unstable"):
+
+	if (self.readOnly):
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: Cannot handle this in read only.")
+	    raise Exception, "What are you trying to do?"
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: called.")
 	
@@ -1115,6 +1146,10 @@ class etpDatabase:
     # returns False,revision if not
     def updatePackage(self, etpData, forceBump = False):
 
+	if (self.readOnly):
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"updatePackage: Cannot handle this in read only.")
+	    raise Exception, "What are you trying to do?"
+
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"updatePackage: called.")
 
         # prepare versiontag
@@ -1184,9 +1219,12 @@ class etpDatabase:
 	return x,y,z
 	
 
-    # You must provide the full atom to this function
-    # FIXME: this must be fixed to work with branches
     def removePackage(self,idpackage):
+
+	if (self.readOnly):
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removePackage: Cannot handle this in read only.")
+	    raise Exception, "What are you trying to do?"
+
 	key = self.retrieveAtom(idpackage)
 	branch = self.retrieveBranch(idpackage)
 	idpackage = str(idpackage)

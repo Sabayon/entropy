@@ -24,6 +24,7 @@ import sys
 import string
 import equoTools
 import entropyTools
+from entropyConstants import *
 from outputTools import *
 
 # CONSTANTS
@@ -37,17 +38,18 @@ def print_help():
     print_info("  --verbose\t\tbe more verbose")
     print_info("  --nocolor\t\tdisable colorized output")
     print_info(blue("Tools available: "))
-    print_info(" \t"+green(bold("repo"))+yellow("\t\t to handle package repositories"))
-    print_info(" \t\t"+green("sync")+red("\t\t\t sync repositories"))
-    print_info(" \t\t"+green("show")+red("\t\t\t show enabled repositories"))
-    print_info(" \t\t"+green("status")+red("\t\t\t show respositories status"))
-    print_info(" \t"+green(bold("package"))+yellow("\t\t to handle packages"))
-    print_info(" \t\t"+green("search")+red("\t\t\t to search a package inside the database"))
-    print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
-    print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
+    print_info(" \t"+darkgreen(bold("repo"))+brown("\t\t to handle package repositories"))
+    print_info(" \t\t"+darkgreen("sync")+red("\t\t\t sync repositories"))
+    print_info(" \t\t"+darkgreen("show")+red("\t\t\t show enabled repositories"))
+    print_info(" \t\t"+darkgreen("status")+red("\t\t\t show respositories status"))
+    print_info(" \t"+darkgreen(bold("package"))+brown("\t\t to handle packages"))
+    print_info(" \t\t"+darkgreen("search")+red("\t\t\t to search a package inside the database"))
+    print_info(" \t\t"+darkgreen("install")+red("\t\t\t to install a package"))
+    print_info(" \t\t\t"+red("--ask")+"\t\t ask before making any changes")
+    print_info(" \t\t\t"+red("--pretend")+"\t just show what would be done")
     
-    print_info(" \t"+green(bold("database"))+yellow("\t to handle installed packages database"))
-    print_info(" \t\t"+green("void")+red("\t\t\t void void void void void void void"))
+    print_info(" \t"+darkgreen(bold("database"))+brown("\t to handle installed packages database"))
+    print_info(" \t\t"+darkgreen("generate")+red("\t\t generate installed packages database"))
 
 options = sys.argv[1:]
 
@@ -81,4 +83,8 @@ elif (options[0] == "repo"):
 
 elif (options[0] == "package"):
     rc = equoTools.package(options[1:])
+    sys.exit(rc)
+
+elif (options[0] == "database"):
+    rc = equoTools.database(options[1:])
     sys.exit(rc)

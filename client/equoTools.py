@@ -29,7 +29,7 @@ sys.path.append('../libraries')
 from entropyConstants import *
 from outputTools import *
 from remoteTools import downloadData
-from entropyTools import unpackGzip,compareMd5,bytesIntoHuman,convertUnixTimeToHumanTime
+from entropyTools import unpackGzip,compareMd5,bytesIntoHuman,convertUnixTimeToHumanTime,askquestion,getRandomNumber
 
 
 ########################################################
@@ -197,6 +197,19 @@ def syncRepositories(reponames = []):
 
     return 0
 
+def backupClientDatabase():
+    if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
+	import shutil
+	rnd = getRandomNumber()
+	source = etpConst['etpdatabaseclientfilepath']
+	dest = etpConst['etpdatabaseclientfilepath']+".backup."+str(rnd)
+	shutil.copy2(source,dest)
+	user = os.stat(source)[4]
+	group = os.stat(source)[5]
+	os.chown(dest,user,group)
+	shutil.copystat(source,dest)
+	return dest
+    return ""
 
 ########################################################
 ####
@@ -228,6 +241,37 @@ def package(options):
 	if len(myopts) > 0:
 	    rc = searchPackage(myopts)
     return rc
+
+
+def database(options):
+
+    if len(options) < 1:
+	return 0
+
+    if (options[0] == "generate"):
+	print_warning(bold("####### ATTENTION -> ")+red("The installed package database will be regenerated, this will take a LOT of time."))
+	print_warning(bold("####### ATTENTION -> ")+red("Sabayon Linux Officially Repository MUST be on top of the repositories list in ")+etpConst['repositoriesconf'])
+	rc = askquestion("     Can I continue ?")
+	if rc == "No":
+	    sys.exit(0)
+	rc = askquestion("     Are you REALLY sure ?")
+	if rc == "No":
+	    sys.exit(0)
+	rc = askquestion("     Do you even know what you're doing ?")
+	if rc == "No":
+	    sys.exit(0)
+	
+	# ok, he/she knows it... hopefully
+	# if exist, copy old database
+	print etpConst['etpdatabaseclientfilepath']
+	print_info(red(" @@ ")+blue("Creating backup of the previous database, if exists.")+red(" @@"))
+	newfile = backupClientDatabase()
+	if (newfile):
+	    print_info(red(" @@ ")+blue("Database copied to file ")+newfile+red(" @@"))
+	
+	# Now reinitialize it
+	# dbconn = etpDatabase(readOnly = False, noUpload = True) -> specify client mode and file
+	# dbconn.initializeDatabase()
 
 
 def searchPackage(packages):
@@ -276,7 +320,7 @@ def searchPackage(packages):
 			if foundBranchIndex > myBranchIndex:
 			    # package found in branch more unstable than the selected one, for us, it does not exist
 			    continue
-			
+		
 		    # now fetch essential info
 		    pkgatom = dbconn.retrieveAtom(id)
 		    pkgname = dbconn.retrieveName(id)

@@ -4,6 +4,7 @@ TODO list:
 - enzyme, build(): add an option to force the continuation of the emerge queue even if a package fails
 - enzyme, add a module that integrates revdep-rebuild
 - test stabilization code
+- equo, when we'll ship the first release with etp, use the packages.db for the client.db
 
 Project Status:
 - entropy: will handle all the three tools below
