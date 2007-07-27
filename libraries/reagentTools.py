@@ -145,11 +145,13 @@ def extractPkgData(package):
     print_info(yellow(" * ")+red("Getting package name/version..."),back = True)
     tbz2File = package
     package = package.split(".tbz2")[0]
-    package = package.split("-unstable")[0]
-    package = package.split("-stable")[0]
-    # strip revision tag
-    package = package.split("-tag")[0]
-    package = package.split("-linux-core")[0]
+    if package.split("-")[len(package.split("-"))-1].startswith("unstable"):
+        package = string.join(package.split("-unstable")[:len(package.split("-unstable"))-1],"-unstable")
+    if package.split("-")[len(package.split("-"))-1].startswith("stable"):
+        package = string.join(package.split("-stable")[:len(package.split("-stable"))-1],"-stable")
+    if package.split("-")[len(package.split("-"))-1].startswith("t"):
+        package = string.join(package.split("-t")[:len(package.split("-t"))-1],"-t")
+    
     package = package.split("-")
     pkgname = ""
     pkglen = len(package)
@@ -263,7 +265,25 @@ def extractPkgData(package):
 	    # get the version of the modules
 	    kmodver = file.split("/lib/modules/")[1]
 	    kmodver = kmodver.split("/")[0]
+	    # substitute "-" with "_"
+	    kmodver = re.subn("-","_", kmodver)
+	    if len(kmodver) >= 2:
+		kmodver = kmodver[0]
+
+	    lp = kmodver.split("-")[len(kmodver.split("-"))-1]
+	    if lp.startswith("r"):
+	        kname = kmodver.split("_")[len(kmodver.split("_"))-2]
+	        kver = kmodver.split("_")[0]+"-"+kmodver.split("_")[len(kmodver.split("_"))-1]
+	    else:
+	        kname = kmodver.split("_")[len(kmodver.split("_"))-1]
+	        kver = kmodver.split("_")[0]
 	    break
+    # validate the results above
+    if (kernelDependentModule):
+	matchatom = "linux-"+kname+"-"+kver
+	if (matchatom == etpData['name']+"-"+etpData['version']):
+	    # discard
+	    kernelDependentModule = False
 
     # add strict kernel dependency
     # done below
@@ -274,8 +294,8 @@ def extractPkgData(package):
     print_info(yellow(" * ")+red("Getting package download URL..."),back = True)
     # Fill download relative URI
     if (kernelDependentModule):
-	etpData['versiontag'] = kmodver
-	versiontag = "-tag-"+etpData['versiontag']
+	etpData['versiontag'] = "t"+kmodver
+	versiontag = "-t"+etpData['versiontag']
     else:
 	versiontag = ""
     etpData['download'] = etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+versiontag+".tbz2"
@@ -465,17 +485,8 @@ def extractPkgData(package):
 	etpData['conflicts'].append(i)
     
     if (kernelDependentModule):
-	# 2.6.22-sabayon-r2
-	rev = ''
-	lp = kmodver.split("-")[len(kmodver.split("-"))-1]
-	if lp.startswith("r"):
-	    kname = kmodver.split("-")[len(kmodver.split("-"))-2]
-	    kmodver = kmodver.split("-")[0]+"-"+kmodver.split("-")[len(kmodver.split("-"))-1]
-	else:
-	    kname = kmodver.split("-")[len(kmodver.split("-"))-1]
-	    kmodver = kmodver.split("-")[0]
 	# add kname to the dependency
-	etpData['dependencies'].append("sys-kernel/linux-"+kname+"-"+kmodver)
+	etpData['dependencies'].append("sys-kernel/linux-"+kname+"-"+kver)
 
     # etpData['rdependencies']
     # Now we need to add environmental dependencies

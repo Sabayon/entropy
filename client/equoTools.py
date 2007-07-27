@@ -29,8 +29,11 @@ sys.path.append('../libraries')
 from entropyConstants import *
 from outputTools import *
 from remoteTools import downloadData
-from entropyTools import unpackGzip,compareMd5,bytesIntoHuman,convertUnixTimeToHumanTime,askquestion,getRandomNumber
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv
 
+# Logging initialization
+import logTools
+equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[Equo]")
 
 ########################################################
 ####
@@ -210,6 +213,40 @@ def backupClientDatabase():
 	shutil.copystat(source,dest)
 	return dest
     return ""
+
+########################################################
+####
+##   Dependency handling functions
+#
+
+'''
+   @description: matches the user chosen package name+ver, if possibile
+   @input atom: string
+   @input dbconn: database connection
+   @output: the package id, if found, otherwise -1
+'''
+def packageMatch(atom, dbconn):
+    
+    # check for direction
+    strippedAtom = dep_getcpv(atom)
+    direction = atom[0:len(atom)-len(strippedAtom)]
+
+    # strip tag
+    # strip revision
+    # get version
+    # get name
+
+    # check for category
+    if (not strippedAtom.find("/")) or (len(strippedAtom.split("/")) != 2):
+	# we need to append category
+	packageCategory = ""
+	# FIXME: search for category
+	
+    else:
+	packageCategory = strippedAtom.split("/")[0]
+
+    # query the database using category and name (without version+tag)
+    # strip version
 
 ########################################################
 ####
