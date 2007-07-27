@@ -295,7 +295,7 @@ def extractPkgData(package):
     # Fill download relative URI
     if (kernelDependentModule):
 	etpData['versiontag'] = "t"+kmodver
-	versiontag = "-t"+etpData['versiontag']
+	versiontag = "-"+etpData['versiontag']
     else:
 	versiontag = ""
     etpData['download'] = etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+versiontag+".tbz2"
