@@ -1339,6 +1339,19 @@ class etpDatabase:
 	    break
 	return idpackage
 
+    def getIDPackageFromFile(self, file, branch = "unstable"):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackageFromFile: retrieving package ID for file "+file+" | branch: "+branch)
+	self.cursor.execute('SELECT "IDPACKAGE" FROM content WHERE file = "'+file+'"')
+	idpackages = []
+	for row in self.cursor:
+	    idpackages.append(row[0])
+	result = []
+	for pkg in idpackages:
+	    self.cursor.execute('SELECT "IDPACKAGE" FROM baseinfo WHERE idpackage = "'+str(pkg)+'" and branch = "'+branch+'"')
+	    for row in self.cursor:
+		result.append(row[0])
+	return result
+
     def getIDCategory(self, category):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDCategory: retrieving category ID for "+str(category))
 	self.cursor.execute('SELECT "idcategory" FROM categories WHERE category = "'+str(category)+'"')
@@ -1757,6 +1770,56 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesInBranch: called.")
 	result = []
 	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE atom LIKE "%'+keyword+'%" AND branch = "'+branch+'"')
+	for row in self.cursor:
+	    result.append(row)
+	return result
+
+    def searchPackagesByName(self, keyword):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByName: called for "+keyword)
+	result = []
+	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+keyword+'"')
+	for row in self.cursor:
+	    result.append(row)
+	return result
+
+    def searchPackagesInBranchByName(self, keyword, branch):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesInBranchByName: called for "+keyword)
+	result = []
+	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+keyword+'" AND branch = "'+branch+'"')
+	for row in self.cursor:
+	    result.append(row)
+	return result
+
+    def searchPackagesInBranchByNameAndCategory(self, name, category, branch):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesInBranchByNameAndCategory: called for "+name+" and category "+category)
+	result = []
+	# get category id
+	idcat = -1
+	self.cursor.execute('SELECT idcategory FROM categories WHERE category = "'+category+'"')
+	for row in self.cursor:
+	    idcat = row[0]
+	    break
+	if idcat == -1:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"searchPackagesInBranchByNameAndCategory: Category "+category+" not available.")
+	    return result
+	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+name+'" AND idcategory = '+str(idcat)+' AND branch = "'+branch+'"')
+	for row in self.cursor:
+	    result.append(row)
+	return result
+
+    def searchPackagesInBranchByNameAndVersionAndCategory(self, name, version, category, branch):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesInBranchByNameAndVersionAndCategoryAndTag: called for "+name+" and version "+version+" and category "+category+" | branch "+branch)
+	result = []
+	# get category id
+	idcat = -1
+	self.cursor.execute('SELECT idcategory FROM categories WHERE category = "'+category+'"')
+	for row in self.cursor:
+	    idcat = row[0]
+	    break
+	if idcat == -1:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"searchPackagesInBranchByNameAndVersionAndCategoryAndTag: Category "+category+" not available.")
+	    return result
+	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+name+'" AND version = "'+version+'" AND idcategory = '+str(idcat)+' AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row)
 	return result

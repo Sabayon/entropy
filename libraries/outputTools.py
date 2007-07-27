@@ -25,6 +25,13 @@
 __docformat__ = "epytext"
 
 import commands,errno,os,re,shlex,sys
+import curses
+curses.setupterm()
+_cols = curses.tigetnum('cols')
+_cleanline = ''
+for x in range(_cols):
+    _cleanline += ' '
+#_lines = curses.tigetnum('lines')
 
 havecolor=1
 dotitles=1
@@ -215,21 +222,21 @@ for c in compat_functions_colors:
 	setattr(sys.modules[__name__], c, create_color_func(c))
 
 def print_error(msg, back = False):
-    writechar("\r                                                                                                           \r")
+    writechar("\r"+_cleanline+"\r")
     if (back):
 	writechar("\r"+red(">>")+" "+msg)
 	return
     print green(">>")+" "+msg
 
 def print_info(msg, back = False):
-    writechar("\r                                                                                                                 \r")
+    writechar("\r"+_cleanline+"\r")
     if (back):
 	writechar("\r"+green(">>")+" "+msg)
 	return
     print green(">>")+" "+msg
 
 def print_warning(msg):
-    writechar("\r                                                                                                                 \r")
+    writechar("\r"+_cleanline+"\r")
     print yellow(">>")+" "+msg
 
 def print_generic(msg): # here we'll wrap any nice formatting

@@ -345,20 +345,8 @@ def compareVersions(ver1, ver2, silent=1):
 	if ver1 == ver2:
 		return 0
 	mykey=ver1+":"+ver2
-	try:
-		return vercmp_cache[mykey]
-	except KeyError:
-		pass
 	match1 = ver_regexp.match(ver1)
 	match2 = ver_regexp.match(ver2)
-	
-	# shortcut for cvs ebuilds (new style)
-	#if match1.group(1) and not match2.group(1):
-	#	vercmp_cache[mykey] = 1
-	#	return 1
-	#elif match2.group(1) and not match1.group(1):
-	#	vercmp_cache[mykey] = -1
-	#	return -1
 	
 	# building lists of the version parts before the suffix
 	# first part is simple
@@ -435,7 +423,6 @@ def compareVersions(ver1, ver2, silent=1):
 		r2 = int(match2.group(10))
 	else:
 		r2 = 0
-	vercmp_cache[mykey] = r1 - r2
 	return r1 - r2
 
 def isnumber(x):

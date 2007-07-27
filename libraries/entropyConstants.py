@@ -303,6 +303,7 @@ etpConst = {
     'branches': ["stable","unstable"], # available branches, do not scramble!
     'branch': "unstable", # choosen branch
     'gentoo-compat': False, # Gentoo compatibility (/var/db/pkg + Portage availability)
+    'filesystemdirs': ['/bin','/boot','/emul','/etc','/lib','/lib32','/lib64','/opt','/sbin','/usr','/var'], # directory of the filesystem
  }
 
 # Handlers used by entropy to run and retrieve data remotely, using php helpers

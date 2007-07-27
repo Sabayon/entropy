@@ -25,11 +25,12 @@
 
 import sys
 import os
+import re
 sys.path.append('../libraries')
 from entropyConstants import *
 from outputTools import *
 from remoteTools import downloadData
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions, catpkgsplit
 
 # Logging initialization
 import logTools
@@ -223,30 +224,295 @@ def backupClientDatabase():
    @description: matches the user chosen package name+ver, if possibile
    @input atom: string
    @input dbconn: database connection
-   @output: the package id, if found, otherwise -1
+   @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = not found, 2 = need more info, 3 = cannot use direction without specifying version
 '''
-def packageMatch(atom, dbconn):
+def atomMatch(atom,dbconn):
     
     # check for direction
     strippedAtom = dep_getcpv(atom)
     direction = atom[0:len(atom)-len(strippedAtom)]
 
-    # strip tag
-    # strip revision
-    # get version
-    # get name
+    #print strippedAtom
+    #print isjustname(strippedAtom)
+    justname = isjustname(strippedAtom)
+    pkgversion = ''
+    if (not justname):
+	# strip tag
+        if strippedAtom.split("-")[len(strippedAtom.split("-"))-1].startswith("t"):
+            strippedAtom = string.join(strippedAtom.split("-t")[:len(strippedAtom.split("-t"))-1],"-t")
+	# get version
+	data = catpkgsplit(strippedAtom)
+	pkgversion = data[2]+"-"+data[3]
 
-    # check for category
-    if (not strippedAtom.find("/")) or (len(strippedAtom.split("/")) != 2):
-	# we need to append category
-	packageCategory = ""
-	# FIXME: search for category
-	
+    pkgkey = dep_getkey(strippedAtom)
+    if len(pkgkey.split("/")) == 2:
+        pkgname = pkgkey.split("/")[1]
+        pkgcat = pkgkey.split("/")[0]
     else:
-	packageCategory = strippedAtom.split("/")[0]
+        pkgname = pkgkey.split("/")[0]
+	pkgcat = "null"
 
-    # query the database using category and name (without version+tag)
-    # strip version
+    #print dep_getkey(strippedAtom)
+    
+    myBranchIndex = etpConst['branches'].index(etpConst['branch'])
+    
+    # IDs found in the database that match our search
+    foundIDs = []
+    
+    for idx in range(myBranchIndex+1)[::-1]: # reverse order
+	print "Searching into -> "+etpConst['branches'][idx]
+	# search into the less stable, if found, break, otherwise continue
+	results = dbconn.searchPackagesInBranchByName(pkgname,etpConst['branches'][idx])
+	
+	# now validate
+	if (not results):
+	    print "results is empty"
+	    continue # search into a stabler branch
+	
+	elif (len(results) > 1):
+	
+	    print "results > 1"
+	
+	    # if it's because category differs, it's a problem
+	    foundCat = ""
+	    for result in results:
+		idpackage = result[1]
+		cat = dbconn.retrieveCategory(idpackage)
+		if (foundCat):
+		    if (cat != foundCat) and (pkgcat == "null"):
+			# got the issue
+			# gosh, return and complain
+			return -1,2
+		else:
+		    foundCat = cat
+	
+	    # I can use foundCat
+	    pkgcat = foundCat
+	
+	    # we need to search using the category
+	    results = dbconn.searchPackagesInBranchByNameAndCategory(pkgname,pkgcat,etpConst['branches'][idx])
+	    # validate again
+	    if (not results):
+		continue  # search into a stabler branch
+	
+	    # if we get here, we have found the needed IDs
+	    foundIDs = results
+	    break
+
+	else:
+	    print "results == 1"
+	    foundIDs.append(results[0])
+	    break
+
+    if (foundIDs):
+	# now we have to handle direction
+	if (direction):
+	    # check if direction is used with justname, in this case, return an error
+	    if (justname):
+		return -1,3 # error, cannot use directions when not specifying version
+
+	    if (direction == "~") or (direction == "="): # any revision within the version specified OR the specified version
+		
+		print direction+" direction"
+		# remove revision (-r0 if none)
+		if (direction == "~") or ((direction == "=") and (pkgversion.split("-")[len(pkgversion.split("-"))-1] == "r0")):
+		    pkgversion = string.join(pkgversion.split("-")[:len(pkgversion.split("-"))-1],"-")
+		dbpkginfo = []
+		for list in foundIDs:
+		    idpackage = list[1]
+		    dbver = dbconn.retrieveVersion(idpackage)
+		    if (direction == "~"):
+		        if dbver.startswith(pkgversion):
+			    # found
+			    dbpkginfo.append([idpackage,dbver])
+		    else:
+		        if (dbver == pkgversion):
+			    # found
+			    dbpkginfo.append([idpackage,dbver])
+		
+		if (not dbpkginfo):
+		    # no version available
+		    return -1,1
+		
+		versions = []
+		for x in dbpkginfo:
+		    versions.append(x[1])
+		# who is newer ?
+		versionlist = getNewerVersion(versions)
+		newerPackage = dbpkginfo[versions.index(versionlist[0])]
+		
+	        # now look if there's another package with the same category, name, version, but different tag
+	        newerPkgName = dbconn.retrieveName(newerPackage[0])
+	        newerPkgCategory = dbconn.retrieveCategory(newerPackage[0])
+	        newerPkgVersion = dbconn.retrieveVersion(newerPackage[0])
+		newerPkgBranch = dbconn.retrieveBranch(newerPackage[0])
+	        similarPackages = dbconn.searchPackagesInBranchByNameAndVersionAndCategory(newerPkgName, newerPkgVersion, newerPkgCategory, newerPkgBranch)
+		
+		#print newerPackage
+		#print similarPackages
+	        if (len(similarPackages) > 1):
+		    # gosh, there are packages with the same name, version, category
+		    # we need to parse version tag
+		    versionTags = []
+		    for pkg in similarPackages:
+		        versionTags.append(dbconn.retrieveVersionTag(pkg[1]))
+		    versiontaglist = getNewerVersionTag(versionTags)
+		    newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
+		
+		#print newerPackage
+		print newerPackage[1]
+		return newerPackage[0],0
+	
+	    elif (direction.find(">") != -1) or (direction.find("<") != -1): # any revision within the version specified
+		
+		print direction+" direction"
+		# remove revision (-r0 if none)
+		if pkgversion.split("-")[len(pkgversion.split("-"))-1] == "r0":
+		    # remove
+		    pkgversion = string.join(pkgversion.split("-")[:len(pkgversion.split("-"))-1],"-")
+
+		dbpkginfo = []
+		for list in foundIDs:
+		    idpackage = list[1]
+		    dbver = dbconn.retrieveVersion(idpackage)
+		    cmp = compareVersions(pkgversion,dbver)
+		    if direction == ">":
+		        if (cmp < 0):
+			    # found
+			    dbpkginfo.append([idpackage,dbver])
+		    elif direction == "<":
+		        if (cmp > 0):
+			    # found
+			    dbpkginfo.append([idpackage,dbver])
+		    elif direction == ">=":
+		        if (cmp <= 0):
+			    # found
+			    dbpkginfo.append([idpackage,dbver])
+		    elif direction == "<=":
+		        if (cmp >= 0):
+			    # found
+			    dbpkginfo.append([idpackage,dbver])
+		
+		if (not dbpkginfo):
+		    # this version is not available
+		    return -1,1
+		
+		versions = []
+		for x in dbpkginfo:
+		    versions.append(x[1])
+		# who is newer ?
+		versionlist = getNewerVersion(versions)
+		newerPackage = dbpkginfo[versions.index(versionlist[0])]
+		
+	        # now look if there's another package with the same category, name, version, but different tag
+	        newerPkgName = dbconn.retrieveName(newerPackage[0])
+	        newerPkgCategory = dbconn.retrieveCategory(newerPackage[0])
+	        newerPkgVersion = dbconn.retrieveVersion(newerPackage[0])
+		newerPkgBranch = dbconn.retrieveBranch(newerPackage[0])
+	        similarPackages = dbconn.searchPackagesInBranchByNameAndVersionAndCategory(newerPkgName, newerPkgVersion, newerPkgCategory, newerPkgBranch)
+		
+		#print newerPackage
+		#print similarPackages
+	        if (len(similarPackages) > 1):
+		    # gosh, there are packages with the same name, version, category
+		    # we need to parse version tag
+		    versionTags = []
+		    for pkg in similarPackages:
+		        versionTags.append(dbconn.retrieveVersionTag(pkg[1]))
+		    versiontaglist = getNewerVersionTag(versionTags)
+		    newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
+		
+		#print newerPackage
+		print newerPackage[1]
+		return newerPackage[0],0
+
+	    else:
+		return -1,1
+		
+	else:
+	    
+	    # not set, just get the newer version
+	    versionIDs = []
+	    for list in foundIDs:
+		versionIDs.append(dbconn.retrieveVersion(list[1]))
+	    
+	    versionlist = getNewerVersion(versionIDs)
+	    newerPackage = foundIDs[versionIDs.index(versionlist[0])]
+	    
+	    # now look if there's another package with the same category, name, version, tag
+	    newerPkgName = dbconn.retrieveName(newerPackage[1])
+	    newerPkgCategory = dbconn.retrieveCategory(newerPackage[1])
+	    newerPkgVersion = dbconn.retrieveVersion(newerPackage[1])
+	    newerPkgBranch = dbconn.retrieveBranch(newerPackage[1])
+	    similarPackages = dbconn.searchPackagesInBranchByNameAndVersionAndCategory(newerPkgName, newerPkgVersion, newerPkgCategory, newerPkgBranch)
+	    
+	    if (similarPackages):
+		# gosh, there are packages with the same name, version, category
+		# we need to parse version tag
+		versionTags = []
+		for pkg in similarPackages:
+		    versionTags.append(dbconn.retrieveVersionTag(pkg[1]))
+		versiontaglist = getNewerVersionTag(versionTags)
+		newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
+	    
+	    return newerPackage[1],0
+
+    else:
+	# package not found in any branch
+	return -1,1
+
+
+'''
+   @description: reorder a version list
+   @input versionlist: a list
+   @output: the ordered list
+   FIXME: using Bubble Sorting is not the fastest way
+'''
+def getNewerVersion(versionlist):
+    rc = False
+    while not rc:
+	change = False
+        for x in range(len(versionlist)):
+	    pkgA = versionlist[x]
+	    try:
+	        pkgB = versionlist[x+1]
+	    except:
+	        pkgB = "0"
+            result = compareVersions(pkgA,pkgB)
+	    #print pkgA + "<->" +pkgB +" = " + str(result)
+	    if result < 0:
+	        # swap positions
+	        versionlist[x] = pkgB
+	        versionlist[x+1] = pkgA
+		change = True
+	if (not change):
+	    rc = True
+    return versionlist
+
+'''
+   @description: reorder a list of strings converted into ascii
+   @input versionlist: a string list
+   @output: the ordered string list
+'''
+def getNewerVersionTag(versionlist):
+    rc = False
+    while not rc:
+	change = False
+        for x in range(len(versionlist)):
+	    pkgA = versionlist[x]
+	    try:
+	        pkgB = versionlist[x+1]
+	    except:
+	        pkgB = "0"
+	    # translate pkgA into numeric string
+	    if pkgA < pkgB:
+	        # swap positions
+	        versionlist[x] = pkgB
+	        versionlist[x+1] = pkgA
+		change = True
+	if (not change):
+	    rc = True
+    return versionlist
 
 ########################################################
 ####
@@ -277,6 +543,11 @@ def package(options):
     if (options[0] == "search"):
 	if len(myopts) > 0:
 	    rc = searchPackage(myopts)
+
+    if (options[0] == "install"):
+	if len(myopts) > 0:
+	    rc,status = installPackages(myopts)
+
     return rc
 
 
@@ -286,8 +557,10 @@ def database(options):
 	return 0
 
     if (options[0] == "generate"):
+	
 	print_warning(bold("####### ATTENTION -> ")+red("The installed package database will be regenerated, this will take a LOT of time."))
 	print_warning(bold("####### ATTENTION -> ")+red("Sabayon Linux Officially Repository MUST be on top of the repositories list in ")+etpConst['repositoriesconf'])
+	print_warning(bold("####### ATTENTION -> ")+red("This method is only used for testing at the moment."))
 	rc = askquestion("     Can I continue ?")
 	if rc == "No":
 	    sys.exit(0)
@@ -300,15 +573,108 @@ def database(options):
 	
 	# ok, he/she knows it... hopefully
 	# if exist, copy old database
-	print etpConst['etpdatabaseclientfilepath']
 	print_info(red(" @@ ")+blue("Creating backup of the previous database, if exists.")+red(" @@"))
 	newfile = backupClientDatabase()
 	if (newfile):
-	    print_info(red(" @@ ")+blue("Database copied to file ")+newfile+red(" @@"))
+	    print_info(red(" @@ ")+blue("Previous database copied to file ")+newfile+red(" @@"))
 	
 	# Now reinitialize it
-	# dbconn = etpDatabase(readOnly = False, noUpload = True) -> specify client mode and file
-	# dbconn.initializeDatabase()
+	from databaseTools import etpDatabase
+	print_info(darkred("  Initializing the new database at "+bold(etpConst['etpdatabaseclientfilepath'])), back = True)
+	clientDbconn = etpDatabase(readOnly = False, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
+	clientDbconn.initializeDatabase()
+	print_info(darkgreen("  Database reinitialized correctly at "+bold(etpConst['etpdatabaseclientfilepath'])))
+	
+	# now collect files in the system
+	tmpfile = etpConst['packagestmpfile']+".diskanalyze"
+	print_info(red("  Collecting installed files... Saving into ")+bold(tmpfile))
+	
+	'''
+	f = open(tmpfile,"w")
+	for dir in etpConst['filesystemdirs']:
+	    if os.path.isdir(dir):
+		for dir,subdirs,files in os.walk(dir):
+		    print_info(darkgreen("  Analyzing directory "+bold(dir[:50]+"...")),back = True)
+		    for file in files:
+			file = dir+"/"+file
+			f.write(file+"\n")
+	
+	f.flush()
+	f.close()
+	'''
+	
+	tmpfile = "/var/lib/entropy/tmp/.random-12859.tmp.diskanalyze"
+	
+	f = open(tmpfile,"r")
+	systemFiles = []
+	for x in f.readlines():
+	    systemFiles.append(x.strip())
+	f.close()
+	
+	orphanedFiles = []
+	foundPackages = []
+	
+	print_info(red("  Now analyzing database content..."))
+	# do for each database
+	repocount = 0
+	for repo in etpRepositories:
+	
+	    repocount += 1
+	
+	    print_info("("+blue(str(repocount))+"/"+darkblue(str(len(etpRepositories)))+") "+red("  Analyzing ")+bold(etpRepositories[repo]['description'])+"...", back = True)
+	
+	    # syncing if needed
+	    dbfile = etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile']
+	    if not os.path.isfile(dbfile):
+		# sync...
+		syncRepositories([repo])
+	    if not os.path.isfile(dbfile):
+		print_error(red("Cannot find repository database")+bold(dbfile))
+		return 129
+	    
+	    if (not orphanedFiles): # first cycle
+	    
+	        # open database
+	        dbRepo = etpDatabase(readOnly = True, noUpload = True, dbFile = dbfile)
+	    
+	        # FIXME: add branch support
+	        # search into database
+	        for file in systemFiles:
+		    pkgids = dbRepo.getIDPackageFromFile(file)
+		    if (pkgids):
+		        for pkg in pkgids:
+		            foundPackages.append([repo,pkg])
+		    else:
+		        orphanedFiles.append(file)
+	        dbRepo.closeDB()
+	    
+	    else:
+		
+		dbRepo = etpDatabase(readOnly = True, noUpload = True, dbFile = dbfile)
+		_orphanedFiles = orphanedFiles
+		orphanedFiles = []
+		
+	        for file in _orphanedFiles:
+		    pkgids = dbRepo.getIDPackageFromFile(file)
+		    if (pkgids):
+		        for pkg in pkgids:
+		            foundPackages.append([repo,pkg])
+		    else:
+		        orphanedFiles.append(file)
+		
+		dbRepo.closeDB()
+		
+	
+	print_info(red("  ### Orphaned files:")+bold(str(len(orphanedFiles))))
+	foundPackages = list(set(foundPackages))
+	print_info(red("  ### Packages matching:")+bold(str(len(foundPackages))))
+	
+	#if os.path.isfile(tmpfile):
+	#    os.remove(tmpfile)
+	
+	
+	
+	clientDbconn.closeDB()
 
 
 def searchPackage(packages):
@@ -380,9 +746,9 @@ def searchPackage(packages):
 		    print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(branch))
 		    print_info(darkgreen("       Category:\t\t")+darkblue(pkgcat))
 		    print_info(darkgreen("       Name:\t\t\t")+darkblue(pkgname))
-		    print_info(darkgreen("       Tag:\t\t\t")+blue(pkgtag))
 		    print_info(darkgreen("       Available version:\t")+blue(pkgver))
 		    print_info(darkgreen("       Installed version:\t")+blue("N/A"))
+		    print_info(darkgreen("       Available version tag:\t\t\t")+blue(pkgtag))
 		    print_info(darkgreen("       Size:\t\t\t")+blue(str(pkgsize)))
 		    print_info(darkgreen("       Download:\t\t")+brown(str(pkgbin)))
 		    print_info(darkgreen("       Checksum:\t\t")+brown(str(pkgdigest)))
@@ -402,3 +768,15 @@ def searchPackage(packages):
 	print_warning(yellow(" @@ ")+red("Something bad happened. Please have a look."))
 	return 129
     return 0
+
+
+########################################################
+####
+##   Actions Handling
+#
+
+# FIXME: must handle multiple results from multiple repositories
+def installPackages(packages):
+    print packages
+    print "not working yet, but atom handling has been implemented"
+    return "asd","asd"
