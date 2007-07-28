@@ -277,13 +277,13 @@ def atomMatchInRepository(atom,dbconn):
     foundIDs = []
     
     for idx in range(myBranchIndex+1)[::-1]: # reverse order
-	print "Searching into -> "+etpConst['branches'][idx]
+	#print "Searching into -> "+etpConst['branches'][idx]
 	# search into the less stable, if found, break, otherwise continue
 	results = dbconn.searchPackagesInBranchByName(pkgname,etpConst['branches'][idx])
 	
 	# now validate
 	if (not results):
-	    print "results is empty"
+	    #print "results is empty"
 	    continue # search into a stabler branch
 	
 	elif (len(results) > 1):
@@ -889,7 +889,6 @@ def database(options):
 		cnt = 0
 		totalcnt = len(_orphanedFiles)
 		
-
 	        for file in _orphanedFiles:
 		    cnt += 1
 		    print_info("    @@ "+red("(")+blue(str(cnt))+"/"+bold(str(totalcnt))+red(")")+red(" Analyzing files..."), back = True)
@@ -1017,12 +1016,71 @@ def searchPackage(packages):
 #
 
 # FIXME: must handle multiple results from multiple repositories
-def installPackages(packages):
-    print packages
+def installPackages(packages, autoDrive = False):
+    #print packages
+
     
     foundAtoms = []
     for package in packages:
-	print atomMatch(package)
+	foundAtoms.append([package,atomMatch(package)])
+
+    # filter not found packages
+    _foundAtoms = []
+    for result in foundAtoms:
+	exitcode = result[1][0]
+	if (exitcode != -1):
+	    _foundAtoms.append(result[1])
+	else:
+	    print_warning(red("## ATTENTION -> package")+bold(" "+result[0]+" ")+red("not found in database"))
+
+    foundAtoms = _foundAtoms
     
-    #print "not working yet, but atom handling has been implemented"
+    # are packages in foundAtoms?
+    if (len(foundAtoms) == 0):
+	print_error(red("No packages found"))
+	return 127,-1
+
+    from databaseTools import etpDatabase
+    # now print the selected packages
+    print_info(red(" @@ ")+blue("These are the chosen packages:"))
+    totalatoms = len(foundAtoms)
+    atomscounter = 0
+    totalDownloadSize = 0
+    for atomInfo in foundAtoms:
+	atomscounter += 1
+	idpackage = atomInfo[0]
+	reponame = atomInfo[1]
+	# open database
+	dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
+	dbconn = etpDatabase(readOnly = True, dbFile = dbfile)
+
+	# get needed info
+	pkgatom = dbconn.retrieveAtom(idpackage)
+	pkgsize = dbconn.retrieveSize(idpackage)
+	pkgver = dbconn.retrieveVersion(idpackage)
+	pkgtag = dbconn.retrieveVersionTag(idpackage)
+	if not pkgtag:
+	    pkgtag = "NoTag"
+	pkgrev = dbconn.retrieveRevision(idpackage)
+	totalDownloadSize += int(pkgsize)
+	pkgsize = bytesIntoHuman(pkgsize)
+
+	print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom))
+	print_info("\t\t"+red("Repository:\t\t")+" "+darkred(etpRepositories[reponame]['description']))
+	print_info("\t\t"+red("Available:\t\t")+" "+blue("version: ")+bold(pkgver)+blue(" ~ tag: ")+bold(pkgtag)+blue(" ~ revision: ")+bold(str(pkgrev)))
+	print_info("\t\t"+red("Installed:\t\t")+" "+darkred("Not implemented"))
+	print_info("\t\t"+red("Download Size:\t\t")+" "+brown(pkgsize))
+	
+	dbconn.closeDB()
+
+    print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
+    # FIXME: add only if the packages have not been downloaded
+    print_info(red(" @@ ")+blue("Total Packages Size: ")+str(bytesIntoHuman(totalDownloadSize)))
+    
+    if (not autoDrive):
+        rc = askquestion("     Would you like to continue with dependencies calculation ?")
+        if rc == "No":
+	    return 0,0
+    
+    print "not working yet :-) ahaha!"
     return 0,0
