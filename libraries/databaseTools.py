@@ -1339,18 +1339,26 @@ class etpDatabase:
 	    break
 	return idpackage
 
-    def getIDPackageFromFile(self, file, branch = "unstable"):
+    def getIDPackageFromFileInBranch(self, file, branch = "unstable"):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackageFromFile: retrieving package ID for file "+file+" | branch: "+branch)
-	self.cursor.execute('SELECT "IDPACKAGE" FROM content WHERE file = "'+file+'"')
+	self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
 	idpackages = []
 	for row in self.cursor:
 	    idpackages.append(row[0])
 	result = []
 	for pkg in idpackages:
-	    self.cursor.execute('SELECT "IDPACKAGE" FROM baseinfo WHERE idpackage = "'+str(pkg)+'" and branch = "'+branch+'"')
+	    self.cursor.execute('SELECT idpackage FROM baseinfo WHERE idpackage = "'+str(pkg)+'" and branch = "'+branch+'"')
 	    for row in self.cursor:
 		result.append(row[0])
 	return result
+
+    def getIDPackagesFromFile(self, file):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackageFromFile: retrieving package ID for file "+file)
+	self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
+	idpackages = []
+	for row in self.cursor:
+	    idpackages.append(row[0])
+	return idpackages
 
     def getIDCategory(self, category):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDCategory: retrieving category ID for "+str(category))

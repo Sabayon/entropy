@@ -30,7 +30,7 @@ sys.path.append('../libraries')
 from entropyConstants import *
 from outputTools import *
 from remoteTools import downloadData
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions, catpkgsplit
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries
 
 # Logging initialization
 import logTools
@@ -215,18 +215,30 @@ def backupClientDatabase():
 	return dest
     return ""
 
+def fetchRepositoryIfNotAvailable(reponame):
+    # open database
+    rc = 0
+    dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
+    if not os.path.isfile(dbfile):
+	# sync
+	rc = syncRepositories([reponame])
+    if not os.path.isfile(dbfile):
+	# so quit
+	print_error(red("Database file for '"+bold(etpRepositories[reponame]['description'])+red("' does not exist. Cannot search.")))
+    return rc
+
 ########################################################
 ####
 ##   Dependency handling functions
 #
 
 '''
-   @description: matches the user chosen package name+ver, if possibile
+   @description: matches the user chosen package name+ver, if possibile, in a single repository
    @input atom: string
    @input dbconn: database connection
    @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = not found, 2 = need more info, 3 = cannot use direction without specifying version
 '''
-def atomMatch(atom,dbconn):
+def atomMatchInRepository(atom,dbconn):
     
     # check for direction
     strippedAtom = dep_getcpv(atom)
@@ -243,6 +255,11 @@ def atomMatch(atom,dbconn):
 	# get version
 	data = catpkgsplit(strippedAtom)
 	pkgversion = data[2]+"-"+data[3]
+	pkgtag = ''
+	if atom.split("-")[len(atom.split("-"))-1].startswith("t"):
+	    pkgtag = atom.split("-")[len(atom.split("-"))-1]
+	    print "TAG: "+pkgtag
+	
 
     pkgkey = dep_getkey(strippedAtom)
     if len(pkgkey.split("/")) == 2:
@@ -271,7 +288,7 @@ def atomMatch(atom,dbconn):
 	
 	elif (len(results) > 1):
 	
-	    print "results > 1"
+	    #print "results > 1"
 	
 	    # if it's because category differs, it's a problem
 	    foundCat = ""
@@ -300,7 +317,7 @@ def atomMatch(atom,dbconn):
 	    break
 
 	else:
-	    print "results == 1"
+	    #print "results == 1"
 	    foundIDs.append(results[0])
 	    break
 
@@ -313,10 +330,11 @@ def atomMatch(atom,dbconn):
 
 	    if (direction == "~") or (direction == "="): # any revision within the version specified OR the specified version
 		
-		print direction+" direction"
+		#print direction+" direction"
 		# remove revision (-r0 if none)
 		if (direction == "~") or ((direction == "=") and (pkgversion.split("-")[len(pkgversion.split("-"))-1] == "r0")):
 		    pkgversion = string.join(pkgversion.split("-")[:len(pkgversion.split("-"))-1],"-")
+		
 		dbpkginfo = []
 		for list in foundIDs:
 		    idpackage = list[1]
@@ -326,7 +344,9 @@ def atomMatch(atom,dbconn):
 			    # found
 			    dbpkginfo.append([idpackage,dbver])
 		    else:
-		        if (dbver == pkgversion):
+			dbtag = dbconn.retrieveVersionTag(idpackage)
+			
+		        if (dbver+dbtag == pkgversion+pkgtag):
 			    # found
 			    dbpkginfo.append([idpackage,dbver])
 		
@@ -365,7 +385,7 @@ def atomMatch(atom,dbconn):
 	
 	    elif (direction.find(">") != -1) or (direction.find("<") != -1): # any revision within the version specified
 		
-		print direction+" direction"
+		#print direction+" direction"
 		# remove revision (-r0 if none)
 		if pkgversion.split("-")[len(pkgversion.split("-"))-1] == "r0":
 		    # remove
@@ -423,7 +443,7 @@ def atomMatch(atom,dbconn):
 		    newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
 		
 		#print newerPackage
-		print newerPackage[1]
+		#print newerPackage[1]
 		return newerPackage[0],0
 
 	    else:
@@ -446,7 +466,7 @@ def atomMatch(atom,dbconn):
 	    newerPkgBranch = dbconn.retrieveBranch(newerPackage[1])
 	    similarPackages = dbconn.searchPackagesInBranchByNameAndVersionAndCategory(newerPkgName, newerPkgVersion, newerPkgCategory, newerPkgBranch)
 	    
-	    if (similarPackages):
+	    if (len(similarPackages) > 1):
 		# gosh, there are packages with the same name, version, category
 		# we need to parse version tag
 		versionTags = []
@@ -463,13 +483,212 @@ def atomMatch(atom,dbconn):
 
 
 '''
+   @description: matches the package that user chose, using atomMatchInRepository searching in all available repositories.
+   @input atom: user choosen package name
+   @output: the matched selection, list: [package id,repository name] | if nothing found, returns: [ -1,1 ]
+   @ exit errors:
+	    -1 => repository cannot be fetched online
+'''
+def atomMatch(atom):
+    repoResults = {}
+    exitstatus = 0
+    exitErrors = {}
+    
+    from databaseTools import etpDatabase
+    for repo in etpRepositories:
+	# sync database if not available
+	rc = fetchRepositoryIfNotAvailable(repo)
+	if (rc != 0):
+	    exitstatus = -1
+	    exitErrors[repo] = -1
+	    continue
+	# open database
+	dbfile = etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile']
+	dbconn = etpDatabase(readOnly = True, dbFile = dbfile)
+	
+	# search
+	query = atomMatchInRepository(atom,dbconn)
+	if query[1] == 0:
+	    # package found, add to our dictionary
+	    repoResults[repo] = query[0]
+	
+	dbconn.closeDB()
+
+    # handle repoResults
+    packageInformation = {}
+    
+    # nothing found
+    if len(repoResults) == 0:
+	return -1,1
+    
+    elif len(repoResults) == 1:
+	# one result found
+	for repo in repoResults:
+	    return repoResults[repo],repo
+    
+    elif len(repoResults) > 1:
+	# we have to decide which version should be taken
+	
+	# get package information for all the entries
+	for repo in repoResults:
+	    
+	    # open database
+	    dbfile = etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile']
+	    dbconn = etpDatabase(readOnly = True, dbFile = dbfile)
+	
+	    # search
+	    packageInformation[repo] = {}
+	    packageInformation[repo]['version'] = dbconn.retrieveVersion(repoResults[repo])
+	    packageInformation[repo]['versiontag'] = dbconn.retrieveVersionTag(repoResults[repo])
+	    packageInformation[repo]['revision'] = dbconn.retrieveRevision(repoResults[repo])
+	    dbconn.closeDB()
+
+	versions = []
+	repoNames = []
+	# compare versions
+	for repo in packageInformation:
+	    repoNames.append(repo)
+	    versions.append(packageInformation[repo]['version'])
+	
+	# found duplicates, this mean that we have to look at the revision and then, at the version tag
+	# if all this shait fails, get the uppest repository
+	# if no duplicates, we're done
+	#print versions
+	filteredVersions = filterDuplicatedEntries(versions)
+	if (len(versions) > len(filteredVersions)):
+	    # there are duplicated results, fetch them
+	    # get the newerVersion
+	    #print versions
+	    newerVersion = getNewerVersion(versions)
+	    newerVersion = newerVersion[0]
+	    # is newerVersion, the duplicated one?
+	    duplicatedEntries = extactDuplicatedEntries(versions)
+	    try:
+		duplicatedEntries.index(newerVersion)
+		needFiltering = True
+	    except:
+		needFiltering = False
+	    
+	    if (needFiltering):
+		# we have to decide which one is good
+		#print "need filtering"
+		# we have newerVersion
+		conflictingEntries = {}
+		for repo in packageInformation:
+		    if packageInformation[repo]['version'] == newerVersion:
+			conflictingEntries[repo] = {}
+			#conflictingEntries[repo]['version'] = packageInformation[repo]['version']
+			conflictingEntries[repo]['versiontag'] = packageInformation[repo]['versiontag']
+			conflictingEntries[repo]['revision'] = packageInformation[repo]['revision']
+		
+		# at this point compare tags
+		tags = []
+		for repo in conflictingEntries:
+		    tags.append(conflictingEntries[repo]['versiontag'])
+		newerTag = getNewerVersionTag(tags)
+		newerTag = newerTag[0]
+		
+		# is the chosen tag duplicated?
+		duplicatedTags = extactDuplicatedEntries(tags)
+		try:
+		    duplicatedTags.index(newerTag)
+		    needFiltering = True
+		except:
+		    needFiltering = False
+		
+		print needFiltering
+		
+		if (needFiltering):
+		    #print "also tags match"
+		    # yes, it is. we need to compare revisions
+		    conflictingTags = {}
+		    for repo in conflictingEntries:
+		        if conflictingEntries[repo]['versiontag'] == newerTag:
+			    conflictingTags[repo] = {}
+			    #conflictingTags[repo]['version'] = conflictingEntries[repo]['version']
+			    #conflictingTags[repo]['versiontag'] = conflictingEntries[repo]['versiontag']
+			    conflictingTags[repo]['revision'] = conflictingEntries[repo]['revision']
+		    
+		    #print tags
+		    #print conflictingTags
+		    revisions = []
+		    for repo in conflictingTags:
+			revisions.append(str(conflictingTags[repo]['revision']))
+		    newerRevision = getNewerVersionTag(revisions)
+		    newerRevision = newerRevision[0]
+		    duplicatedRevisions = extactDuplicatedEntries(revisions)
+		    print duplicatedRevisions
+		    try:
+			duplicatedRevisions.index(newerRevision)
+			needFiltering = True
+		    except:
+			needFiltering = False
+		
+		    if (needFiltering):
+			# ok, we must get the repository with the biggest priority
+			print "d'oh"
+		        # I'm pissed off, now I get the repository name and quit
+			for repository in etpRepositoriesOrder:
+			    for repo in conflictingTags:
+				if repository == repo:
+				    # found it, WE ARE DOOONE!
+				    return [repoResults[repo],repo]
+		    
+		    else:
+			# we are done!!!
+		        reponame = ''
+			#print conflictingTags
+		        for x in conflictingTags:
+		            if str(conflictingTags[x]['revision']) == str(newerRevision):
+			        reponame = x
+			        break
+		        return repoResults[reponame],reponame
+		
+		else:
+		    # we're finally done
+		    reponame = ''
+		    for x in conflictingEntries:
+		        if conflictingEntries[x]['versiontag'] == newerTag:
+			    reponame = x
+			    break
+		    return repoResults[reponame],reponame
+
+	    else:
+		# we are fine, the newerVersion is not one of the duplicated ones
+		reponame = ''
+		for x in packageInformation:
+		    if packageInformation[x]['version'] == newerVersion:
+			reponame = x
+			break
+		return repoResults[reponame],reponame
+
+	    #print versions
+	    
+	    
+	else:
+	    # yeah, we're done, just return the info
+	    #print versions
+	    newerVersion = getNewerVersion(versions)
+	    # get the repository name
+	    newerVersion = newerVersion[0]
+	    reponame = ''
+	    for x in packageInformation:
+		if packageInformation[x]['version'] == newerVersion:
+		    reponame = x
+		    break
+	    #print reponame
+	    return repoResults[reponame],reponame
+
+
+'''
    @description: reorder a version list
    @input versionlist: a list
    @output: the ordered list
    FIXME: using Bubble Sorting is not the fastest way
 '''
-def getNewerVersion(versionlist):
+def getNewerVersion(InputVersionlist):
     rc = False
+    versionlist = InputVersionlist[:]
     while not rc:
 	change = False
         for x in range(len(versionlist)):
@@ -494,14 +713,19 @@ def getNewerVersion(versionlist):
    @input versionlist: a string list
    @output: the ordered string list
 '''
-def getNewerVersionTag(versionlist):
+def getNewerVersionTag(InputVersionlist):
     rc = False
+    versionlist = InputVersionlist[:]
     while not rc:
 	change = False
         for x in range(len(versionlist)):
 	    pkgA = versionlist[x]
+	    if (not pkgA):
+		pkgA = "0"
 	    try:
 	        pkgB = versionlist[x+1]
+		if (not pkgB):
+		    pkgB = "0"
 	    except:
 	        pkgB = "0"
 	    # translate pkgA into numeric string
@@ -556,7 +780,10 @@ def database(options):
     if len(options) < 1:
 	return 0
 
+    # FIXME: need SPEED and completion
     if (options[0] == "generate"):
+	
+	#import threading
 	
 	print_warning(bold("####### ATTENTION -> ")+red("The installed package database will be regenerated, this will take a LOT of time."))
 	print_warning(bold("####### ATTENTION -> ")+red("Sabayon Linux Officially Repository MUST be on top of the repositories list in ")+etpConst['repositoriesconf'])
@@ -589,7 +816,7 @@ def database(options):
 	tmpfile = etpConst['packagestmpfile']+".diskanalyze"
 	print_info(red("  Collecting installed files... Saving into ")+bold(tmpfile))
 	
-	'''
+
 	f = open(tmpfile,"w")
 	for dir in etpConst['filesystemdirs']:
 	    if os.path.isdir(dir):
@@ -601,9 +828,6 @@ def database(options):
 	
 	f.flush()
 	f.close()
-	'''
-	
-	tmpfile = "/var/lib/entropy/tmp/.random-12859.tmp.diskanalyze"
 	
 	f = open(tmpfile,"r")
 	systemFiles = []
@@ -622,16 +846,13 @@ def database(options):
 	    repocount += 1
 	
 	    print_info("("+blue(str(repocount))+"/"+darkblue(str(len(etpRepositories)))+") "+red("  Analyzing ")+bold(etpRepositories[repo]['description'])+"...", back = True)
-	
-	    # syncing if needed
+
+	    # sync if needed
+	    rc = fetchRepositoryIfNotAvailable(repo)
+	    if (rc != 0):
+	        return 129
+
 	    dbfile = etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile']
-	    if not os.path.isfile(dbfile):
-		# sync...
-		syncRepositories([repo])
-	    if not os.path.isfile(dbfile):
-		print_error(red("Cannot find repository database")+bold(dbfile))
-		return 129
-	    
 	    if (not orphanedFiles): # first cycle
 	    
 	        # open database
@@ -639,29 +860,51 @@ def database(options):
 	    
 	        # FIXME: add branch support
 	        # search into database
+		cnt = 0
+		totalcnt = len(systemFiles)
+		
 	        for file in systemFiles:
-		    pkgids = dbRepo.getIDPackageFromFile(file)
+		    cnt += 1
+		    print_info("    @@ "+red("(")+blue(str(cnt))+"/"+bold(str(totalcnt))+red(")")+red(" Analyzing files..."), back = True)
+		    pkgids = dbRepo.getIDPackagesFromFile(file)
 		    if (pkgids):
 		        for pkg in pkgids:
-		            foundPackages.append([repo,pkg])
+			    try:
+				foundPackages.index(int(pkg))
+				# nothing to do
+			    except:
+				# FIXME: if we get here, we need to analyze branch and then add
+		                foundPackages.append([repo,pkg])
 		    else:
 		        orphanedFiles.append(file)
-	        dbRepo.closeDB()
+		print_info(red("    @@ Completed."))
+		dbRepo.closeDB()
 	    
 	    else:
 		
 		dbRepo = etpDatabase(readOnly = True, noUpload = True, dbFile = dbfile)
 		_orphanedFiles = orphanedFiles
 		orphanedFiles = []
+
+		cnt = 0
+		totalcnt = len(_orphanedFiles)
 		
+
 	        for file in _orphanedFiles:
-		    pkgids = dbRepo.getIDPackageFromFile(file)
+		    cnt += 1
+		    print_info("    @@ "+red("(")+blue(str(cnt))+"/"+bold(str(totalcnt))+red(")")+red(" Analyzing files..."), back = True)
+		    pkgids = dbRepo.getIDPackagesFromFile(file)
 		    if (pkgids):
 		        for pkg in pkgids:
-		            foundPackages.append([repo,pkg])
+			    try:
+				foundPackages.index(int(pkg))
+				# nothing to do
+			    except:
+				# FIXME: if we get here, we need to analyze branch and then add
+		                foundPackages.append([repo,pkg])
 		    else:
 		        orphanedFiles.append(file)
-		
+		print_info(red("    @@ Completed."))
 		dbRepo.closeDB()
 		
 	
@@ -669,12 +912,48 @@ def database(options):
 	foundPackages = list(set(foundPackages))
 	print_info(red("  ### Packages matching:")+bold(str(len(foundPackages))))
 	
-	#if os.path.isfile(tmpfile):
-	#    os.remove(tmpfile)
-	
-	
+	if os.path.isfile(tmpfile):
+	    os.remove(tmpfile)
 	
 	clientDbconn.closeDB()
+
+
+def printPackageInfo(idpackage,dbconn):
+    # now fetch essential info
+    pkgatom = dbconn.retrieveAtom(idpackage)
+    pkgname = dbconn.retrieveName(idpackage)
+    pkgcat = dbconn.retrieveCategory(idpackage)
+    pkgver = dbconn.retrieveVersion(idpackage)
+    pkgdesc = dbconn.retrieveDescription(idpackage)
+    pkghome = dbconn.retrieveHomepage(idpackage)
+    pkglic = dbconn.retrieveLicense(idpackage)
+    pkgsize = dbconn.retrieveSize(idpackage)
+    pkgbin = dbconn.retrieveDownloadURL(idpackage)
+    pkgflags = dbconn.retrieveCompileFlags(idpackage)
+    pkgkeywords = dbconn.retrieveBinKeywords(idpackage)
+    pkgtag = dbconn.retrieveVersionTag(idpackage)
+    pkgdigest = dbconn.retrieveDigest(idpackage)
+    pkgbranch = dbconn.retrieveBranch(idpackage)
+    pkgcreatedate = convertUnixTimeToHumanTime(int(dbconn.retrieveDateCreation(idpackage)))
+    if (not pkgtag):
+        pkgtag = "Not tagged"
+    pkgsize = bytesIntoHuman(pkgsize)
+
+    print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(pkgbranch))
+    print_info(darkgreen("       Category:\t\t")+darkblue(pkgcat))
+    print_info(darkgreen("       Name:\t\t\t")+darkblue(pkgname))
+    print_info(darkgreen("       Available version:\t")+blue(pkgver))
+    print_info(darkgreen("       Installed version:\t")+blue("N/A"))
+    print_info(darkgreen("       Available ver. tag:\t")+blue(pkgtag))
+    print_info(darkgreen("       Size:\t\t\t")+blue(str(pkgsize)))
+    print_info(darkgreen("       Download:\t\t")+brown(str(pkgbin)))
+    print_info(darkgreen("       Checksum:\t\t")+brown(str(pkgdigest)))
+    print_info(darkgreen("       Homepage:\t\t")+red(pkghome))
+    print_info(darkgreen("       Description:\t\t")+pkgdesc)
+    print_info(darkgreen("       Compiled with:\t")+blue(pkgflags[1]))
+    print_info(darkgreen("       Architectures:\t")+blue(string.join(pkgkeywords," ")))
+    print_info(darkgreen("       Created:\t\t")+pkgcreatedate)
+    print_info(darkgreen("       License:\t\t")+red(pkglic))
 
 
 def searchPackage(packages):
@@ -691,16 +970,12 @@ def searchPackage(packages):
 	repoNumber += 1
 	print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 	
-	# open database
-	dbfile = etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile']
-	if not os.path.isfile(dbfile):
-	    # sync
-	    syncRepositories([repo])
-	if not os.path.isfile(dbfile):
-	    # so quit
-	    print_error(red("Database file for '"+bold(etpRepositories[repo]['description'])+red("' does not exist. Cannot search.")))
+	rc = fetchRepositoryIfNotAvailable(repo)
+	if (rc != 0):
 	    searchError = True
 	    continue
+	
+	dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
 	    
 	dbconn = etpDatabase(readOnly = True, dbFile = dbfile)
 	for package in packages:
@@ -712,9 +987,9 @@ def searchPackage(packages):
 	        print_info(blue("     Keyword: ")+bold("\t"+package))
 	        print_info(blue("     Found:   ")+bold("\t"+str(len(foundPackages[repo][package])))+red(" entries"))
 	        for pkg in foundPackages[repo][package]:
-		    id = pkg[1]
+		    idpackage = pkg[1]
 		    atom = pkg[0]
-		    branch = dbconn.retrieveBranch(id)
+		    branch = dbconn.retrieveBranch(idpackage)
 		    # does the package exist in the selected branch?
 		    if etpConst['branch'] != branch:
 			# get branch name position in branches
@@ -723,41 +998,7 @@ def searchPackage(packages):
 			if foundBranchIndex > myBranchIndex:
 			    # package found in branch more unstable than the selected one, for us, it does not exist
 			    continue
-		
-		    # now fetch essential info
-		    pkgatom = dbconn.retrieveAtom(id)
-		    pkgname = dbconn.retrieveName(id)
-		    pkgcat = dbconn.retrieveCategory(id)
-		    pkgver = dbconn.retrieveVersion(id)
-		    pkgdesc = dbconn.retrieveDescription(id)
-		    pkghome = dbconn.retrieveHomepage(id)
-		    pkglic = dbconn.retrieveLicense(id)
-		    pkgsize = dbconn.retrieveSize(id)
-		    pkgbin = dbconn.retrieveDownloadURL(id)
-		    pkgflags = dbconn.retrieveCompileFlags(id)
-		    pkgkeywords = dbconn.retrieveBinKeywords(id)
-		    pkgtag = dbconn.retrieveVersionTag(id)
-		    pkgdigest = dbconn.retrieveDigest(id)
-		    pkgcreatedate = convertUnixTimeToHumanTime(int(dbconn.retrieveDateCreation(id)))
-		    if (not pkgtag):
-			pkgtag = "Not tagged"
-		    pkgsize = bytesIntoHuman(pkgsize)
-		    
-		    print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(branch))
-		    print_info(darkgreen("       Category:\t\t")+darkblue(pkgcat))
-		    print_info(darkgreen("       Name:\t\t\t")+darkblue(pkgname))
-		    print_info(darkgreen("       Available version:\t")+blue(pkgver))
-		    print_info(darkgreen("       Installed version:\t")+blue("N/A"))
-		    print_info(darkgreen("       Available version tag:\t\t\t")+blue(pkgtag))
-		    print_info(darkgreen("       Size:\t\t\t")+blue(str(pkgsize)))
-		    print_info(darkgreen("       Download:\t\t")+brown(str(pkgbin)))
-		    print_info(darkgreen("       Checksum:\t\t")+brown(str(pkgdigest)))
-		    print_info(darkgreen("       Homepage:\t\t")+red(pkghome))
-		    print_info(darkgreen("       Description:\t\t")+pkgdesc)
-		    print_info(darkgreen("       Compiled with:\t")+blue(pkgflags[1]))
-		    print_info(darkgreen("       Architectures:\t")+blue(string.join(pkgkeywords," ")))
-		    print_info(darkgreen("       Created:\t\t")+pkgcreatedate)
-		    print_info(darkgreen("       License:\t\t")+red(pkglic))
+		    printPackageInfo(idpackage,dbconn)
 	
 	dbconn.closeDB()
 
@@ -778,5 +1019,10 @@ def searchPackage(packages):
 # FIXME: must handle multiple results from multiple repositories
 def installPackages(packages):
     print packages
-    print "not working yet, but atom handling has been implemented"
-    return "asd","asd"
+    
+    foundAtoms = []
+    for package in packages:
+	print atomMatch(package)
+    
+    #print "not working yet, but atom handling has been implemented"
+    return 0,0

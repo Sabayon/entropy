@@ -344,7 +344,7 @@ if not os.path.isdir(ETP_DIR):
 # Client packages/database repositories
 # used by equo
 etpRepositories = {}
-
+etpRepositoriesOrder = []
 if os.path.isfile(etpConst['repositoriesconf']):
     f = open(etpConst['repositoriesconf'],"r")
     repositoriesconf = f.readlines()
@@ -360,6 +360,7 @@ if os.path.isfile(etpConst['repositoriesconf']):
 	    repodatabase = line.split("|")[4]
 	    if (repopackages.startswith("http://") or repopackages.startswith("ftp://")) and (repodatabase.startswith("http://") or repodatabase.startswith("ftp://")):
 		etpRepositories[reponame] = {}
+		etpRepositoriesOrder.append(reponame)
 		etpRepositories[reponame]['description'] = repodesc
 		etpRepositories[reponame]['packages'] = repopackages+"/"+etpConst['currentarch']
 		etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['currentarch']

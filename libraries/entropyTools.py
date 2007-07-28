@@ -438,20 +438,37 @@ def isnumber(x):
 def filterDuplicatedEntries(nameslist):
     if nameslist == []:
 	return nameslist
-    _nameslist = nameslist
+    _nameslist = nameslist[:]
     for name in _nameslist:
 	try:
-	    first = nameslist.index(name)
-	    nameslist[first] = "x"+nameslist[first]
+	    first = _nameslist.index(name)
+	    _nameslist[first] = "x"+_nameslist[first]
 	    try:
 		while 1:
-		    nameslist.remove(name)
+		    _nameslist.remove(name)
 	    except:
 		pass
-	    nameslist[first] = nameslist[first][1:]
+	    _nameslist[first] = _nameslist[first][1:]
 	except:
 	    pass
-    return nameslist
+    return _nameslist
+	
+# this function returns a list of duplicated entries found in the input list
+def extactDuplicatedEntries(inputlist):
+    filteredList = filterDuplicatedEntries(inputlist)
+    if len(inputlist) == len(filteredList):
+	return []
+    else:
+	newinputlist = inputlist[:]
+	for x in inputlist:
+	    try:
+		while 1:
+		    filteredList.remove(x)
+		    newinputlist.remove(x)
+	    except:
+		pass
+	return newinputlist
+	
 
 # Tool to run commands
 def spawnCommand(command, redirect = None):
