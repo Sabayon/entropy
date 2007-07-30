@@ -31,7 +31,6 @@ import commands
 
 # Instantiate the databaseStatus:
 import databaseTools
-import mirrorTools
 dbStatus = databaseTools.databaseStatus()
 
 # Logging initialization
