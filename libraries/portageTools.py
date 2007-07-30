@@ -58,6 +58,7 @@ import sys
 import os
 import commands
 import entropyTools
+import enzymeTools
 
 # Logging initialization
 import logTools
@@ -398,7 +399,7 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
     if (entropyTools.getDistCCStatus()):
 	# FIXME: add MAKEOPTS too
 	distccopts += 'FEATURES="distcc" '
-	distccjobs = str(len(entropyTools.getDistCCHosts())+3)
+	distccjobs = str(len(enzymeTools.getDistCCHosts())+3)
 	distccopts += 'MAKEOPTS="-j'+distccjobs+'" '
 	#distccopts += 'MAKEOPTS="-j4" '
     rc = entropyTools.spawnCommand(distccopts+cflags+ldflags+useflags+makeopts+elogopts+cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
