@@ -25,6 +25,7 @@ import string
 import equoTools
 import entropyTools
 from entropyConstants import *
+from clientConstants import *
 from outputTools import *
 
 # CONSTANTS

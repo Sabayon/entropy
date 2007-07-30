@@ -25,6 +25,7 @@
 # EXIT STATUSES: 500-599
 
 from entropyConstants import *
+from serverConstants import *
 from entropyTools import *
 import commands
 import re
@@ -537,6 +538,9 @@ def extractPkgData(package):
     print_info(yellow(" * ")+red("Getting Reagent API version..."),back = True)
     # write API info
     etpData['etpapi'] = etpConst['etpapi']
+    
+    # removing temporary directory
+    os.system("rm -rf "+tbz2TmpDir)
 
     print_info(yellow(" * ")+red("Done"),back = True)
     return etpData

@@ -46,6 +46,7 @@ import portage
 import portage_const
 from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv #FIXME: Use the ones from entropyTools
 from entropyConstants import *
+from serverConstants import *
 initializePortageTree()
 
 # colours support

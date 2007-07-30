@@ -28,6 +28,7 @@ import os
 import re
 sys.path.append('../libraries')
 from entropyConstants import *
+from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData
 from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries

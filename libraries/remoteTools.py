@@ -24,6 +24,7 @@
 # EXIT STATUSES: 700-799
 
 from entropyConstants import *
+from clientConstants import *
 from outputTools import *
 import entropyTools
 

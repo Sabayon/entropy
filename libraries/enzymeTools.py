@@ -23,6 +23,7 @@
 # Never do "import portage" here, please use entropyTools binding
 from portageTools import *
 from entropyConstants import *
+from serverConstants import *
 from entropyTools import *
 
 import sys
@@ -589,15 +590,18 @@ def build(atoms):
 	print_info(yellow("  *")+" Compressing runtime dependencies...")
 	for atom in runtimeDepsQuickpkg:
 	    # quickpkg!
-	    print_info(yellow("   *")+" Compressing "+red(atom))
-	    rc = quickpkg(atom,etpConst['packagesstoredir'])
-	    if (rc is not None):
-		packagesPaths.append(rc)
-	    else:
-		enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"build: (runtimeDepsQuickpkg) "+str(dep)+" -> quickpkg error. Cannot continue.")
-		print_error(red("      *")+" quickpkg error for "+red(atom))
-		print_error(red("  ***")+" Fatal error, cannot continue")
-		sys.exit(251)
+	    try:
+		PackagesQuickpkg.index(atom) # has been already quickpkg'd?
+	    except:
+	        print_info(yellow("   *")+" Compressing "+red(atom))
+	        rc = quickpkg(atom,etpConst['packagesstoredir'])
+	        if (rc is not None):
+		    packagesPaths.append(rc)
+	        else:
+		    enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"build: (runtimeDepsQuickpkg) "+str(dep)+" -> quickpkg error. Cannot continue.")
+		    print_error(red("      *")+" quickpkg error for "+red(atom))
+		    print_error(red("  ***")+" Fatal error, cannot continue")
+		    sys.exit(251)
 
     if packagesPaths != []:
 	#print
@@ -1071,3 +1075,170 @@ def distcc(options):
 	    else:
 		availability = green("not running")
 	    print_info(green(" * ")+yellow("\tHost:\t")+blue(host)+red(" :: ")+availability)
+
+
+
+########################################################
+####
+##   DistCC handling functions
+#
+
+# Distcc check status function
+def setDistCC(status = True):
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setDistCC: called. ")
+    
+    f = open(etpConst['enzymeconf'],"r")
+    enzymeconf = f.readlines()
+    f.close()
+    if (status):
+	distccSwitch = "enabled"
+    else:
+	distccSwitch = "disabled"
+    newenzymeconf = []
+    for line in enzymeconf:
+	if line.startswith("distcc-status|"):
+	    line = "distcc-status|"+distccSwitch+"\n"
+	newenzymeconf.append(line)
+    f = open(etpConst['enzymeconf'],"w")
+    f.writelines(newenzymeconf)
+    f.flush()
+    f.close()
+
+def getDistCCHosts():
+
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getDistCCHosts: called.")
+
+    f = open(etpConst['enzymeconf'],"r")
+    enzymeconf = f.readlines()
+    f.close()
+    hostslist = []
+    for line in enzymeconf:
+	if line.startswith("distcc-hosts|") and (len(line.split("|")) == 2):
+	    line = line.strip().split("|")[1].split()
+	    for host in line:
+		hostslist.append(host)
+	    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getDistCCHosts: hosts list dump -> "+str(hostslist))
+	    return hostslist
+    entropyLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"getDistCCHosts: hosts list EMPTY.")
+    return []
+
+# @returns True if validIP (type: string) is a valid IP
+# @param validIP: IP string
+def isValidIP(validIP):
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getDistCCHosts: called. ")
+    validIPExpr = re.compile('(([0-9]|[01]?[0-9]{2}|2([0-4][0-9]|5[0-5]))\.){3}([0-9]|[01]?[0-9]{2}|2([0-4][0-9]|5[0-5]))$')
+    result = validIPExpr.match(validIP)
+
+    if (result != None):
+	return True
+    return False
+
+# you must provide a list
+def addDistCCHosts(hosts):
+    
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addDistCCHosts: called.")
+    
+    hostslist = getDistCCHosts()
+    for host in hosts:
+	hostslist.append(host)
+
+    # filter dupies
+    hostslist = list(set(hostslist))
+
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addDistCCHosts: hostslist dump -> "+str(hostslist))
+
+    # write back to file
+    f = open(etpConst['enzymeconf'],"r")
+    enzymeconf = f.readlines()
+    f.close()
+    newenzymeconf = []
+    distcchostslinefound = False
+    for line in enzymeconf:
+	if line.startswith("distcc-hosts|"):
+	    distcchostslinefound = True
+    if (distcchostslinefound):
+	for line in enzymeconf:
+	    if line.startswith("distcc-hosts|"):
+		hostsline = string.join(hostslist," ")
+		line = "distcc-hosts|"+hostsline+"\n"
+	    newenzymeconf.append(line)
+    else:
+	newenzymeconf = enzymeconf
+	hostsline = string.join(hostslist," ")
+	newenzymeconf.append("distcc-hosts|"+hostsline+"\n")
+
+    # write distcc config file too
+    f = open(etpConst['distccconf'],"w")
+    f.write(hostsline+"\n")
+    f.flush()
+    f.close()
+
+    f = open(etpConst['enzymeconf'],"w")
+    f.writelines(newenzymeconf)
+    f.flush()
+    f.close()
+
+# you must provide a list
+def removeDistCCHosts(hosts):
+
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removeDistCCHosts: called. ")
+
+    hostslist = getDistCCHosts()
+    cleanedhosts = []
+    for host in hostslist:
+	rmfound = False
+	for rmhost in hosts:
+	    if (rmhost == host):
+		# remove
+		rmfound = True
+	if (not rmfound):
+	    cleanedhosts.append(host)
+
+
+    # filter dupies
+    cleanedhosts = list(set(cleanedhosts))
+    
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removeDistCCHosts: cleanedhosts dump: "+cleanedhosts)
+   
+    # write back to file
+    f = open(etpConst['enzymeconf'],"r")
+    enzymeconf = f.readlines()
+    f.close()
+    newenzymeconf = []
+    distcchostslinefound = False
+    for line in enzymeconf:
+	if line.startswith("distcc-hosts|"):
+	    distcchostslinefound = True
+    if (distcchostslinefound):
+	for line in enzymeconf:
+	    if line.startswith("distcc-hosts|"):
+		hostsline = string.join(cleanedhosts," ")
+		line = "distcc-hosts|"+hostsline+"\n"
+	    newenzymeconf.append(line)
+    else:
+	newenzymeconf = enzymeconf
+	hostsline = string.join(cleanedhosts," ")
+	newenzymeconf.append("distcc-hosts|"+hostsline+"\n")
+
+    # write distcc config file too
+    f = open(etpConst['distccconf'],"w")
+    f.write(hostsline+"\n")
+    f.flush()
+    f.close()
+
+    f = open(etpConst['enzymeconf'],"w")
+    f.writelines(newenzymeconf)
+    f.flush()
+    f.close()
+
+def getDistCCStatus():
+    return etpConst['distcc-status']
+
+def isIPAvailable(ip):
+
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isIPAvailable: called. ")
+
+    rc = spawnCommand("ping -c 1 "+ip, "&> /dev/null")
+    if (rc):
+	return False
+    return True

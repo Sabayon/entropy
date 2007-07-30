@@ -30,6 +30,7 @@ sys.path.append('../libraries')
 import entropyTools
 import activatorTools
 from entropyConstants import *
+from serverConstants import *
 from outputTools import *
 
 # CONSTANTS

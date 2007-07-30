@@ -26,7 +26,6 @@
 from entropyConstants import *
 import entropyTools
 from outputTools import *
-import mirrorTools
 from pysqlite2 import dbapi2 as sqlite
 #import commands
 #import re
@@ -43,6 +42,11 @@ dbLog = logTools.LogFile(level = etpConst['databaseloglevel'],filename = etpCons
 # never nest closeDB() and re-init inside a loop !!!!!!!!!!!! NEVER !
 
 def database(options):
+
+    import activatorTools
+    import reagentTools
+    import mirrorTools
+
     if len(options) == 0:
 	print_error(yellow(" * ")+red("Not enough parameters"))
 	sys.exit(301)
@@ -64,7 +68,6 @@ def database(options):
 	dbconn.initializeDatabase()
 	
 	# sync packages directory
-	import activatorTools
 	activatorTools.packages(["sync","--ask"])
 	
 	# now fill the database
@@ -221,7 +224,6 @@ def database(options):
 	    sys.exit(302)
 
 	# sync packages directory
-	import activatorTools
 	activatorTools.packages(["sync","--ask"])
 
 	dbconn = etpDatabase(readOnly = False, noUpload = True)
@@ -265,7 +267,6 @@ def database(options):
 
 	currCounter = 0
 	atomsnumber = len(pkglist)
-	import reagentTools
 	for pkg in pkglist:
 	    print_info(green(" * ")+red("Analyzing: ")+bold(pkg), back = True)
 	    currCounter += 1
@@ -497,7 +498,7 @@ def database(options):
 	    pkgatom = pkg[0]
 	    pkgid = pkg[1]
 	    branch = dbconn.retrieveBranch(pkgid)
-	    print_info(red("\t (*) ")+bold(pkgatom)+blue("\tBRANCH: ")+bold(branch))
+	    print_info(red("\t (*) ")+bold(pkgatom)+blue("\t\t\tBRANCH: ")+bold(branch))
 
 	dbconn.closeDB()
 
@@ -529,7 +530,7 @@ def database(options):
 	print_info(green(" Total Installed Packages\t\t")+red(str(totalpkgs)))
 	print_info(green(" Total Stable Packages\t\t")+red(str(totalstablepkgs)))
 	print_info(green(" Total Unstable Packages\t\t")+red(str(totalunstablepkgs)))
-	entropyTools.syncRemoteDatabases(justStats = True)
+	activatorTools.syncRemoteDatabases(justStats = True)
 	dbconn.closeDB()
 
     # used by reagent
@@ -756,6 +757,9 @@ class etpDatabase:
 	
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened in read/write mode, file: "+str(dbFile))
 
+	import mirrorTools
+	import activatorTools
+
 	# check if the database is locked locally
 	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
 	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"etpDatabase: database already locked")
@@ -789,7 +793,7 @@ class etpDatabase:
 		    # FIXME show the lock status
 
 		    print_info(yellow(" * ")+green("Mirrors status table:"))
-		    dbstatus = entropyTools.getMirrorsLock()
+		    dbstatus = activatorTools.getMirrorsLock()
 		    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: showing mirrors status table:")
 		    for db in dbstatus:
 		        if (db[1]):
@@ -806,12 +810,11 @@ class etpDatabase:
 	            ftp.closeConnection()
 	            sys.exit(320)
 
-		
 	    # if we arrive here, it is because all the mirrors are unlocked so... damn, LOCK!
-	    entropyTools.lockDatabases(True)
-	
+	    activatorTools.lockDatabases(True)
+
 	    # ok done... now sync the new db, if needed
-	    entropyTools.syncRemoteDatabases(self.noUpload)
+	    activatorTools.syncRemoteDatabases(self.noUpload)
 	
 	self.connection = sqlite.connect(dbFile)
 	self.cursor = self.connection.cursor()
@@ -836,6 +839,7 @@ class etpDatabase:
 	
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in read/write.")
 	
+	
 	# FIXME verify all this shit, for now it works...
 	if (entropyTools.dbStatus.isDatabaseAlreadyTainted()) and (not entropyTools.dbStatus.isDatabaseAlreadyBumped()):
 	    # bump revision, setting DatabaseBump causes the session to just bump once
@@ -844,7 +848,8 @@ class etpDatabase:
 	
 	if (not entropyTools.dbStatus.isDatabaseAlreadyTainted()):
 	    # we can unlock it, no changes were made
-	    entropyTools.lockDatabases(False)
+	    import activatorTools
+	    activatorTools.lockDatabases(False)
 	else:
 	    print_info(yellow(" * ")+green("Mirrors have not been unlocked. Run activator."))
 	
