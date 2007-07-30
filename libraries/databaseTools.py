@@ -612,7 +612,7 @@ def database(options):
 		    notDownloadedPackages = []
 		
 		for pkg in toBeDownloaded:
-		    rc = entropyTools.downloadPackageFromMirror(uri,pkg[1])
+		    rc = activatorTools.downloadPackageFromMirror(uri,pkg[1])
 		    if (rc is None):
 			notDownloadedPackages.append(pkg[1])
 		    if (rc == False):
