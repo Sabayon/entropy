@@ -396,7 +396,7 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
     entropyTools.spawnCommand("rm -rf "+elogfile)
     
     distccopts = ""
-    if (entropyTools.getDistCCStatus()):
+    if (enzymeTools.getDistCCStatus()):
 	# FIXME: add MAKEOPTS too
 	distccopts += 'FEATURES="distcc" '
 	distccjobs = str(len(enzymeTools.getDistCCHosts())+3)
