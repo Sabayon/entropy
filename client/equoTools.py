@@ -1138,7 +1138,7 @@ def installPackages(packages, autoDrive = False):
     # check if I am root
     if (not checkRoot()):
 	print_error(red("\t You must run this function as root."))
-	return 1
+	return 1,-1
     
     foundAtoms = []
     for package in packages:
