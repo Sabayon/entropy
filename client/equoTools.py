@@ -837,7 +837,7 @@ def getDependencies(packageInfo):
    @input package: packageInfo: list composed by int(id) and str(repository name)
    @output: dependency tree (list)
 '''
-def getDependencyTree(packageInfo):
+def getNeededDependencies(packageInfo):
     # first of all, get dependencies
     dependencies = getDependencies(packageInfo)
     
@@ -852,11 +852,20 @@ def getDependencyTree(packageInfo):
 	if rc[0] == -1:
 	    unsatisfiedDeps.append(dependency)
     
-    # FIXME: complete this
+    # now look if there are unsatisfied dependencies that could be find inside PROVIDE
+    if (unsatisfiedDeps):
+	_unsatisfiedDeps = []
+	for dep in unsatisfiedDeps:
+	    key = dep_getkey(dep)
+	    result = clientDbconn.searchProvide(key)
+	    if (not result):
+		# we don't have found it
+		_unsatisfiedDeps.append(dep)
+	unsatisfiedDeps = _unsatisfiedDeps
     
-    
-    print unsatisfiedDeps
     clientDbconn.closeDB()
+    return unsatisfiedDeps
+
 
 ########################################################
 ####
@@ -1204,7 +1213,7 @@ def installPackages(packages, autoDrive = False):
 	    return 0,0
 	
     for atomInfo in foundAtoms:
-	getDependencyTree(atomInfo)
+	print getNeededDependencies(atomInfo)
     
     print "not working yet :-) ahaha!"
     return 0,0

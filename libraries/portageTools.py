@@ -604,6 +604,7 @@ def getPackageDependencyList(atom):
 
 # parser of the gentoo db "NEEDED" file
 # this file is contained in the .tbz2->.xpak file
+depcache = {}
 def getPackageRuntimeDependencies(NEEDED):
 
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageRuntimeDependencies: called. ")
@@ -643,10 +644,19 @@ def getPackageRuntimeDependencies(NEEDED):
 
     runtimeNeededPackages = []
     for i in neededLibraries:
-	pkgs = commands.getoutput(pFindLibraryXT+i).split("\n")
-	if (pkgs[0] != ""):
-	    for y in pkgs:
-	        runtimeNeededPackages.append(y)
+	
+	_line_cached = depcache.get(i,None)
+	if _line_cached:
+	    #print "cached"
+	    for x in _line_cached:
+		runtimeNeededPackages.append(x)
+	else:
+	    #print "not cached"
+	    pkgs = commands.getoutput(pFindLibraryXT+i).split("\n")
+	    if (pkgs[0] != ""):
+		depcache[i] = pkgs[:]
+	        for y in pkgs:
+	            runtimeNeededPackages.append(y)
 
     runtimeNeededPackages = list(set(runtimeNeededPackages))
     return runtimeNeededPackages, neededLibraries
