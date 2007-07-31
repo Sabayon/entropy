@@ -798,7 +798,22 @@ def getDependencies(packageInfo):
 	    # find the best
 	    versions = []
 	    for x in deps:
-		# FIXME: find the one in the database and add it back
+		if x.find("|and|"):
+		    anddeps = x.split("|and|")
+		    outanddeps = anddeps[:]
+		    for y in anddeps:
+			ykey = dep_getkey(y)
+			ycat = ykey.split("/")[0]
+			yname = ykey.split("/")[1]
+			yresult = dbconn.searchPackagesByNameAndCategory(yname,ycat)
+			if (yresult):
+			    outanddeps.remove(y)
+		    if (not outanddeps):
+			# all dependencies are found and ok
+			for y in anddeps:
+			    _depend.append(y)
+			break
+		
 		key = dep_getkey(deps[0])
 		cat = key.split("/")[0]
 		name = key.split("/")[1]
