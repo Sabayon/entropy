@@ -47,7 +47,7 @@ class LogFile:
             try:
                 self.logFile = open(file, "aw")
             except:
-                self.logFile = sys.stderr
+                self.logFile = open("/dev/null", "aw") # sys.stderr ??
 	elif file:
 	    self.logFile = file
 	else:

@@ -1795,6 +1795,23 @@ class etpDatabase:
 	    result.append(row)
 	return result
 
+    def searchPackagesByNameAndCategory(self, name, category):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByNameAndCategory: called for name: "+name+" and category: "+category)
+	result = []
+	# get category id
+	idcat = -1
+	self.cursor.execute('SELECT idcategory FROM categories WHERE category = "'+category+'"')
+	for row in self.cursor:
+	    idcat = row[0]
+	    break
+	if idcat == -1:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"searchPackagesByNameAndCategory: Category "+category+" not available.")
+	    return result
+	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+name+'" AND idcategory ='+str(idcat))
+	for row in self.cursor:
+	    result.append(row)
+	return result
+
     def searchPackagesInBranchByName(self, keyword, branch):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesInBranchByName: called for "+keyword)
 	result = []

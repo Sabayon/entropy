@@ -147,7 +147,10 @@ def isjustpkgname(mypkg):
 	    return 0
     return 1
 
-def ververify(myver, silent=1):
+def ververify(myverx, silent=1):
+    myver = myverx[:]
+    if myver.endswith("*"):
+	myver = myver[:len(myver)-1]
     if ver_regexp.match(myver):
 	return 1
     else:
@@ -250,6 +253,7 @@ def pkgsplit(mypkg,silent=1):
     #verify rev
     revok=0
     myrev=myparts[-1]
+    
     if len(myrev) and myrev[0]=="r":
 	try:
 	    int(myrev[1:])

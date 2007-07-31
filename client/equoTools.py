@@ -31,7 +31,8 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific
+from databaseTools import etpDatabase
 
 # Logging initialization
 import logTools
@@ -243,11 +244,17 @@ def atomMatchInRepository(atom,dbconn):
     
     # check for direction
     strippedAtom = dep_getcpv(atom)
+    if atom.endswith("*"):
+	strippedAtom += "*"
     direction = atom[0:len(atom)-len(strippedAtom)]
+    #print direction
 
     #print strippedAtom
-    #print isjustname(strippedAtom)
+    #print isspecific(strippedAtom)
+    #print strippedAtom
+    
     justname = isjustname(strippedAtom)
+    #print justname
     pkgversion = ''
     if (not justname):
 	# strip tag
@@ -259,7 +266,7 @@ def atomMatchInRepository(atom,dbconn):
 	pkgtag = ''
 	if atom.split("-")[len(atom.split("-"))-1].startswith("t"):
 	    pkgtag = atom.split("-")[len(atom.split("-"))-1]
-	    print "TAG: "+pkgtag
+	    #print "TAG: "+pkgtag
 	
 
     pkgkey = dep_getkey(strippedAtom)
@@ -290,7 +297,6 @@ def atomMatchInRepository(atom,dbconn):
 	elif (len(results) > 1):
 	
 	    #print "results > 1"
-	
 	    # if it's because category differs, it's a problem
 	    foundCat = ""
 	    for result in results:
@@ -306,7 +312,7 @@ def atomMatchInRepository(atom,dbconn):
 	
 	    # I can use foundCat
 	    pkgcat = foundCat
-	
+	    
 	    # we need to search using the category
 	    results = dbconn.searchPackagesInBranchByNameAndCategory(pkgname,pkgcat,etpConst['branches'][idx])
 	    # validate again
@@ -327,6 +333,7 @@ def atomMatchInRepository(atom,dbconn):
 	if (direction):
 	    # check if direction is used with justname, in this case, return an error
 	    if (justname):
+		#print "justname"
 		return -1,3 # error, cannot use directions when not specifying version
 
 	    if (direction == "~") or (direction == "="): # any revision within the version specified OR the specified version
@@ -336,6 +343,7 @@ def atomMatchInRepository(atom,dbconn):
 		if (direction == "~") or ((direction == "=") and (pkgversion.split("-")[len(pkgversion.split("-"))-1] == "r0")):
 		    pkgversion = string.join(pkgversion.split("-")[:len(pkgversion.split("-"))-1],"-")
 		
+		#print pkgversion
 		dbpkginfo = []
 		for list in foundIDs:
 		    idpackage = list[1]
@@ -346,10 +354,20 @@ def atomMatchInRepository(atom,dbconn):
 			    dbpkginfo.append([idpackage,dbver])
 		    else:
 			dbtag = dbconn.retrieveVersionTag(idpackage)
-			
-		        if (dbver+dbtag == pkgversion+pkgtag):
-			    # found
-			    dbpkginfo.append([idpackage,dbver])
+			#print pkgversion
+			# media-libs/test-1.2* support
+			if pkgversion.endswith("*"):
+			    testpkgver = pkgversion[:len(pkgversion)-1]
+			    combodb = dbtag+dbver
+			    combopkg = pkgtag+testpkgver
+			    #print combodb
+			    #print combopkg
+			    if combodb.startswith(combopkg):
+				dbpkginfo.append([idpackage,dbver])
+			else:
+		            if (dbver+dbtag == pkgversion+pkgtag):
+			        # found
+			        dbpkginfo.append([idpackage,dbver])
 		
 		if (not dbpkginfo):
 		    # no version available
@@ -381,7 +399,7 @@ def atomMatchInRepository(atom,dbconn):
 		    newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
 		
 		#print newerPackage
-		print newerPackage[1]
+		#print newerPackage[1]
 		return newerPackage[0],0
 	
 	    elif (direction.find(">") != -1) or (direction.find("<") != -1): # any revision within the version specified
@@ -495,7 +513,6 @@ def atomMatch(atom):
     exitstatus = 0
     exitErrors = {}
     
-    from databaseTools import etpDatabase
     for repo in etpRepositories:
 	# sync database if not available
 	rc = fetchRepositoryIfNotAvailable(repo)
@@ -739,6 +756,89 @@ def getNewerVersionTag(InputVersionlist):
 	    rc = True
     return versionlist
 
+'''
+   @description: generates the dependencies of a [id,repository name] combo.
+   @input packageInfo: list composed by int(id) and str(repository name)
+   @output: ordered dependency list
+'''
+def getDependencies(packageInfo):
+    if len(packageInfo) != 2:
+	raise Exception, "getDependencies: I need a list with two values in it." # bad bad bad bad
+    idpackage = packageInfo[0]
+    reponame = packageInfo[1]
+    dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
+    dbconn = etpDatabase(readOnly = True, noUpload = True, dbFile = dbfile)
+    
+    # retrieve dependencies
+    depend = dbconn.retrieveDependencies(idpackage)
+    rundependxt = dbconn.retrieveRunDependenciesXt(idpackage)
+    
+    # filter |or| entries
+    _depend = []
+    for dep in depend:
+	if dep.find("|or|") != -1: # FIXME: handle this correctly
+	    deps = dep.split("|or|")
+	    # find the best
+	    versions = []
+	    for x in deps:
+		# FIXME: find the one in the database and add it back
+		key = dep_getkey(deps[0])
+		cat = key.split("/")[0]
+		name = key.split("/")[1]
+		result = dbconn.searchPackagesByNameAndCategory(name,cat)
+		if (result):
+		    _depend.append(x)
+		    break
+	else:
+	    _depend.append(dep)
+    depend = _depend
+    
+    _rundependxt = rundependxt[:]
+    
+    # filter the  two trees
+    for dep in depend:
+	dep = dep_getkey(dep)
+	for rundep in rundependxt:
+	    xtest = dep_getkey(rundep)
+	    if xtest == dep:
+		# drp it from rundependxt
+		_rundependxt.remove(rundep)
+    rundependxt = _rundependxt
+    
+    # merge into depend
+    for atom in rundependxt:
+	depend.append(">="+atom)
+    del rundependxt
+    
+    dbconn.closeDB()
+    #print depend
+    return depend
+    
+
+
+'''
+   @description: generates a list of unsatisfied dependencies
+   @input package: packageInfo: list composed by int(id) and str(repository name)
+   @output: dependency tree (list)
+'''
+def getDependencyTree(packageInfo):
+    # first of all, get dependencies
+    dependencies = getDependencies(packageInfo)
+    
+    # now create a list with the unsatisfied ones
+    # query the installed packages database
+    #print etpConst['etpdatabaseclientfilepath']
+    clientDbconn = etpDatabase(readOnly = False, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
+    
+    unsatisfiedDeps = []
+    for dependency in dependencies:
+	rc = atomMatchInRepository(dependency,clientDbconn)
+	if rc[0] == -1:
+	    unsatisfiedDeps.append(dependency)
+    
+    print unsatisfiedDeps
+    clientDbconn.closeDB()
+
 ########################################################
 ####
 ##   Database Tools
@@ -807,7 +907,6 @@ def database(options):
 	    print_info(red(" @@ ")+blue("Previous database copied to file ")+newfile+red(" @@"))
 	
 	# Now reinitialize it
-	from databaseTools import etpDatabase
 	print_info(darkred("  Initializing the new database at "+bold(etpConst['etpdatabaseclientfilepath'])), back = True)
 	clientDbconn = etpDatabase(readOnly = False, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
 	clientDbconn.initializeDatabase()
@@ -957,7 +1056,6 @@ def printPackageInfo(idpackage,dbconn):
 
 
 def searchPackage(packages):
-    from databaseTools import etpDatabase
     
     foundPackages = {}
     
@@ -1018,7 +1116,7 @@ def searchPackage(packages):
 
 # FIXME: must handle multiple results from multiple repositories
 def installPackages(packages, autoDrive = False):
-    #print packages
+    print packages
 
     
     foundAtoms = []
@@ -1041,7 +1139,6 @@ def installPackages(packages, autoDrive = False):
 	print_error(red("No packages found"))
 	return 127,-1
 
-    from databaseTools import etpDatabase
     # now print the selected packages
     print_info(red(" @@ ")+blue("These are the chosen packages:"))
     totalatoms = len(foundAtoms)
@@ -1082,6 +1179,9 @@ def installPackages(packages, autoDrive = False):
         rc = askquestion("     Would you like to continue with dependencies calculation ?")
         if rc == "No":
 	    return 0,0
+	
+    for atomInfo in foundAtoms:
+	getDependencyTree(atomInfo)
     
     print "not working yet :-) ahaha!"
     return 0,0
