@@ -609,7 +609,7 @@ def getPackageRuntimeDependencies(NEEDED):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageRuntimeDependencies: called. ")
 
     if not os.path.isfile(NEEDED):
-	return [],[],[] # all empty
+	return [],[] # all empty
 
     f = open(NEEDED,"r")
     includedBins = f.readlines()
