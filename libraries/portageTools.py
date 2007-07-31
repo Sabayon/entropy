@@ -723,7 +723,7 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 		        dependencies += " "
 		elif (openParenthesis == 2):
 		    if dependencies.endswith("+"):
-		        dependencies = dependencies[:len(dependencies)-1]
+		        dependencies = dependencies[:len(dependencies)-len("|and|")]
 		        dependencies += " "
 	    openParenthesis -= 1
 	    if (openParenthesis == 0):
@@ -741,7 +741,7 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 		    dependencies += atom
 		    # check if the or is fucked up
 		    if openParenthesis > 1:
-			dependencies += "+" # !!
+			dependencies += "|and|" # !!
 		    else:
 		        dependencies += dbOR
                 else:
