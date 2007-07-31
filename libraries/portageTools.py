@@ -724,7 +724,7 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 		elif (openParenthesis == 2):
 		    if dependencies.endswith("|and|"):
 		        dependencies = dependencies[:len(dependencies)-len("|and|")]
-		        dependencies += " "
+		        dependencies += dbOR
 	    openParenthesis -= 1
 	    if (openParenthesis == 0):
 		useFlagQuestion = False
