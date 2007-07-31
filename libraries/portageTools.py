@@ -688,14 +688,17 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 	    useFlag = atom.split("?")[0]
 	    useFlagQuestion = True
 	    for i in useflags.split():
-		if i.startswith("!"):
-		    if (i != useFlag):
+		if useFlag.startswith("!"):
+		    checkFlag = "-"+useFlag[1:]
+		    if (i == checkFlag):
 			useMatch = True
 			break
+		    useMatch = False
 		else:
 		    if (i == useFlag):
 		        useMatch = True
 		        break
+		    useMatch = False
 
         if atom.startswith("("):
 	    openParenthesis += 1

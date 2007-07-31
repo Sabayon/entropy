@@ -854,6 +854,7 @@ def getDependencyTree(packageInfo):
     
     # FIXME: complete this
     
+    
     print unsatisfiedDeps
     clientDbconn.closeDB()
 

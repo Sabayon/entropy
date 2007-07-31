@@ -1064,6 +1064,16 @@ class etpDatabase:
 			)
 	    )
 
+	# provide
+	for atom in etpData['provide']:
+	    self.cursor.execute(
+		'INSERT into provide VALUES '
+		'(?,?)'
+		, (	idpackage,
+			atom,
+			)
+	    )
+
 	# conflicts, a list
 	for conflict in etpData['conflicts']:
 	    self.cursor.execute(
@@ -1251,6 +1261,8 @@ class etpDatabase:
 	self.cursor.execute('DELETE FROM dependencies WHERE idpackage = '+idpackage)
 	# rundependencies
 	self.cursor.execute('DELETE FROM rundependencies WHERE idpackage = '+idpackage)
+	# provide
+	self.cursor.execute('DELETE FROM provide WHERE atom = '+idpackage)
 	# conflicts
 	self.cursor.execute('DELETE FROM conflicts WHERE idpackage = '+idpackage)
 	# neededlibs
@@ -1460,6 +1472,7 @@ class etpDatabase:
 	
 	data['dependencies'] = self.retrieveDependencies(idpackage)
 	data['rundependencies'] = self.retrieveRunDependencies(idpackage)
+	data['provide'] = self.retrieveProvide(idpackage)
 	data['conflicts'] = self.retrieveConflicts(idpackage)
 	
 	data['etpapi'] = self.retrieveApi(idpackage)
@@ -1605,6 +1618,14 @@ class etpDatabase:
 	for row in self.cursor:
 	    confl.append(row[0])
 	return confl
+
+    def retrieveProvide(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProvide: retrieving Provide for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "atom" FROM provide WHERE idpackage = "'+str(idpackage)+'"')
+	provide = []
+	for row in self.cursor:
+	    provide.append(row[0])
+	return provide
 
     def retrieveDependencies(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDependencies: retrieving Dependencies for package ID "+str(idpackage))
@@ -1850,6 +1871,20 @@ class etpDatabase:
 	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE atom LIKE "%'+keyword+'%"')
 	for row in self.cursor:
 	    result.append(row)
+	return result
+
+    def searchProvide(self, keyword):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchProvide: called for "+keyword)
+	idpackage = []
+	self.cursor.execute('SELECT idpackage FROM provide WHERE atom = "'+keyword+'"')
+	for row in self.cursor:
+	    idpackage = row[0]
+	    break
+	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
+	result = []
+	for row in self.cursor:
+	    result = row
+	    break
 	return result
 
     def searchPackagesInBranch(self, keyword, branch):

@@ -369,6 +369,20 @@ def extractPkgData(package, etpBranch = "unstable"):
 	else:
 	    etpData['useflags'].append("-"+i)
 
+    print_info(yellow(" * ")+red("Getting package provide content..."),back = True)
+    # Fill Provide
+    etpData['provide'] = []
+    try:
+        f = open(tbz2TmpDir+dbPROVIDE,"r")
+        provide = f.readline().strip()
+        f.close()
+	if (provide):
+	    provide = provide.split()
+	    for x in provide:
+		etpData['provide'].append(x)
+    except:
+        pass
+
     # cleanup
     etpData['useflags'] = filterDuplicatedEntries(etpData['useflags'])
 

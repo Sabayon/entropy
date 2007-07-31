@@ -57,7 +57,8 @@ etpData = {
     'datecreation': u"", # mtime of the .tbz2 file
     'neededlibs': u"", # libraries needed bye the applications in the package
     'size': u"", # the package size
-    'versiontag': u"" # particular version tag
+    'versiontag': u"", # particular version tag
+    'provide': u"" # like, cups provides dep virtual/lpr
 }
 
 # Entropy database SQL initialization Schema and data structure
@@ -69,6 +70,7 @@ DROP TABLE IF EXISTS content;
 DROP TABLE IF EXISTS dependencies;
 DROP TABLE IF EXISTS rundependencies;
 DROP TABLE IF EXISTS rundependenciesxt;
+DROP TABLE IF EXISTS provide;
 DROP TABLE IF EXISTS conflicts;
 DROP TABLE IF EXISTS neededlibs;
 DROP TABLE IF EXISTS mirrorlinks;
@@ -113,6 +115,11 @@ CREATE TABLE extrainfo (
 CREATE TABLE content (
     idpackage INTEGER,
     file VARCHAR
+);
+
+CREATE TABLE provide (
+    idpackage INTEGER,
+    atom VARCHAR
 );
 
 CREATE TABLE dependencies (
