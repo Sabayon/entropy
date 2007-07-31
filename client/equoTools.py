@@ -127,6 +127,12 @@ def getRepositoryDbFileHash(reponame):
     return mhash
 
 def syncRepositories(reponames = []):
+
+    # check if I am root
+    if (not checkRoot()):
+	print_error(red("\t You must run this application as root."))
+	return 1
+
     # check etpRepositories
     if len(etpRepositories) == 0:
 	print_error(yellow(" * ")+red("No repositories specified in ")+etpConst['repositoriesconf'])
@@ -228,6 +234,17 @@ def fetchRepositoryIfNotAvailable(reponame):
 	# so quit
 	print_error(red("Database file for '"+bold(etpRepositories[reponame]['description'])+red("' does not exist. Cannot search.")))
     return rc
+
+'''
+   @description: check we're running this code as root
+   @input atom: nothing
+   @output: True for yes, False for no
+'''
+def checkRoot():
+    import getpass
+    if getpass.getuser() == "root":
+	return True
+    return False
 
 ########################################################
 ####
@@ -1118,6 +1135,10 @@ def searchPackage(packages):
 def installPackages(packages, autoDrive = False):
     print packages
 
+    # check if I am root
+    if (not checkRoot()):
+	print_error(red("\t You must run this function as root."))
+	return 1
     
     foundAtoms = []
     for package in packages:
