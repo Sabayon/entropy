@@ -572,8 +572,8 @@ def build(atoms):
             # unpack the .tbz2 file
             tbz2TmpDir = unpackTbz2(file)
             # parse, if exists, the NEEDED file
-            runtimeNeededPackages, runtimeNeededPackagesXT, neededLibraries = getPackageRuntimeDependencies(tbz2TmpDir+dbNEEDED)
-	    for i in runtimeNeededPackagesXT:
+            runtimeNeededPackages, neededLibraries = getPackageRuntimeDependencies(tbz2TmpDir+dbNEEDED)
+	    for i in runtimeNeededPackages:
 		if (enzymeRequestVerbose): print_info(green("     * ")+yellow("depends on: "+bold(i)))
 		runtimeDepsPackages.append(i)
 	    spawnCommand("rm -rf "+tbz2TmpDir)

@@ -505,7 +505,7 @@ def extractPkgData(package, etpBranch = "unstable"):
     print_info(yellow(" * ")+red("Getting package runtime dependencies..."),back = True)
 	
     # start collecting needed libraries
-    runtimeNeededPackages, runtimeNeededPackagesXT, neededLibraries = getPackageRuntimeDependencies(tbz2TmpDir+"/"+dbNEEDED)
+    runtimeNeededPackages, neededLibraries = getPackageRuntimeDependencies(tbz2TmpDir+"/"+dbNEEDED)
     
     if len(neededLibraries) > 0:
 	etpData['neededlibs'] = neededLibraries
@@ -514,7 +514,7 @@ def extractPkgData(package, etpBranch = "unstable"):
 
     
     etpData['rundependencies'] = []
-    for i in runtimeNeededPackagesXT:
+    for i in runtimeNeededPackages:
 	found = False
 	for x in etpData['dependencies']:
 	    ikey = dep_getkey(i)

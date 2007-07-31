@@ -830,7 +830,6 @@ def getDependencies(packageInfo):
     dbconn.closeDB()
     #print depend
     return depend
-    
 
 
 '''
@@ -852,6 +851,8 @@ def getDependencyTree(packageInfo):
 	rc = atomMatchInRepository(dependency,clientDbconn)
 	if rc[0] == -1:
 	    unsatisfiedDeps.append(dependency)
+    
+    # FIXME: complete this
     
     print unsatisfiedDeps
     clientDbconn.closeDB()

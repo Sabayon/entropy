@@ -642,18 +642,14 @@ def getPackageRuntimeDependencies(NEEDED):
     neededLibraries = _neededLibraries
 
     runtimeNeededPackages = []
-    runtimeNeededPackagesXT = []
     for i in neededLibraries:
 	pkgs = commands.getoutput(pFindLibraryXT+i).split("\n")
 	if (pkgs[0] != ""):
 	    for y in pkgs:
-	        runtimeNeededPackagesXT.append(y)
-		y = dep_getkey(y)
-		runtimeNeededPackages.append(y)
+	        runtimeNeededPackages.append(y)
 
     runtimeNeededPackages = list(set(runtimeNeededPackages))
-    runtimeNeededPackagesXT = list(set(runtimeNeededPackagesXT))
-    return runtimeNeededPackages, runtimeNeededPackagesXT, neededLibraries
+    return runtimeNeededPackages, neededLibraries
 
 def getUSEFlags():
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getUSEFlags: called. ")
