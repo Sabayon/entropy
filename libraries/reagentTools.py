@@ -40,7 +40,7 @@ reagentLog = logTools.LogFile(level=etpConst['reagentloglevel'],filename = etpCo
 
 # reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFunction: example. ")
 
-def generator(package, enzymeRequestBump = False, dbconnection = None):
+def generator(package, enzymeRequestBump = False, dbconnection = None, enzymeRequestBranch = "unstable"):
 
     reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: called -> Package: "+str(package)+" | enzymeRequestBump: "+str(enzymeRequestBump)+" | dbconnection: "+str(dbconnection))
 
@@ -54,7 +54,7 @@ def generator(package, enzymeRequestBump = False, dbconnection = None):
     packagename = os.path.basename(package)
 
     print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
-    etpData = extractPkgData(package)
+    etpData = extractPkgData(package,enzymeRequestBranch)
     
     
     if dbconnection is None:
@@ -91,10 +91,15 @@ def enzyme(options):
     reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"enzyme: called -> options: "+str(options))
 
     enzymeRequestBump = False
+    enzymeRequestBranch = "unstable"
     #_atoms = []
     for i in options:
         if ( i == "--force-bump" ):
 	    enzymeRequestBump = True
+        if ( i == "--branch=" and len(i.split("=")) == 2 ):
+	    mybranch = i.split("=")[1]
+	    if (mybranch):
+	        enzymeRequestBranch = mybranch
 
     tbz2files = os.listdir(etpConst['packagesstoredir'])
     totalCounter = 0
@@ -118,7 +123,7 @@ def enzyme(options):
 	tbz2name = tbz2.split("/")[len(tbz2.split("/"))-1]
 	print_info(" ("+str(counter)+"/"+str(totalCounter)+") Processing "+tbz2name)
 	tbz2path = etpConst['packagesstoredir']+"/"+tbz2
-	rc, newFileName = generator(tbz2path, enzymeRequestBump, dbconn)
+	rc, newFileName = generator(tbz2path, enzymeRequestBump, dbconn, enzymeRequestBranch)
 	if (rc):
 	    etpCreated += 1
 	    # create .hash file
@@ -135,7 +140,7 @@ def enzyme(options):
     print_info(green(" * ")+red("Statistics: ")+blue("Entries created/updated: ")+bold(str(etpCreated))+yellow(" - ")+darkblue("Entries discarded: ")+bold(str(etpNotCreated)))
 
 # This function extracts all the info from a .tbz2 file and returns them
-def extractPkgData(package):
+def extractPkgData(package, etpBranch = "unstable"):
 
     reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractPkgData: called -> package: "+str(package))
 
@@ -149,6 +154,7 @@ def extractPkgData(package):
     if package.split("-")[len(package.split("-"))-1].startswith("unstable"):
         package = string.join(package.split("-unstable")[:len(package.split("-unstable"))-1],"-unstable")
     if package.split("-")[len(package.split("-"))-1].startswith("stable"):
+	etpBranch = "stable"
         package = string.join(package.split("-stable")[:len(package.split("-stable"))-1],"-stable")
     if package.split("-")[len(package.split("-"))-1].startswith("t"):
         package = string.join(package.split("-t")[:len(package.split("-t"))-1],"-t")
@@ -198,7 +204,7 @@ def extractPkgData(package):
 
     print_info(yellow(" * ")+red("Setting package branch..."),back = True)
     # always unstable when created
-    i = etpConst['branches'].index("unstable")
+    i = etpConst['branches'].index(etpBranch)
     etpData['branch'] = etpConst['branches'][i]
 
     print_info(yellow(" * ")+red("Getting package description..."),back = True)
