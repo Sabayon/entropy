@@ -788,7 +788,7 @@ def getDependencies(packageInfo):
     
     # retrieve dependencies
     depend = dbconn.retrieveDependencies(idpackage)
-    rundependxt = dbconn.retrieveRunDependenciesXt(idpackage)
+    rundepend = dbconn.retrieveRunDependencies(idpackage)
     
     # filter |or| entries
     _depend = []
@@ -810,22 +810,22 @@ def getDependencies(packageInfo):
 	    _depend.append(dep)
     depend = _depend
     
-    _rundependxt = rundependxt[:]
+    _rundepend = rundepend[:]
     
     # filter the  two trees
     for dep in depend:
 	dep = dep_getkey(dep)
-	for rundep in rundependxt:
+	for rundep in _rundepend:
 	    xtest = dep_getkey(rundep)
 	    if xtest == dep:
 		# drp it from rundependxt
-		_rundependxt.remove(rundep)
-    rundependxt = _rundependxt
+		_rundepend.remove(rundep)
+    rundepend = _rundepend
     
     # merge into depend
-    for atom in rundependxt:
+    for atom in rundepend:
 	depend.append(">="+atom)
-    del rundependxt
+    del rundepend
     
     dbconn.closeDB()
     #print depend

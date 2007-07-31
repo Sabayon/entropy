@@ -51,8 +51,7 @@ etpData = {
     'content': u"", # content of the package (files)
     'mirrorlinks': u"", # =mirror://openoffice|link1|link2|link3
     'dependencies': u"", # dependencies
-    'rundependencies': u"", # runtime dependencies
-    'rundependenciesXT': u"", # runtime dependencies + version
+    'rundependencies': u"", # runtime dependencies + version
     'conflicts': u"", # blockers
     'etpapi': u"", # Entropy API revision
     'datecreation': u"", # mtime of the .tbz2 file
@@ -75,8 +74,10 @@ DROP TABLE IF EXISTS neededlibs;
 DROP TABLE IF EXISTS mirrorlinks;
 DROP TABLE IF EXISTS sources;
 DROP TABLE IF EXISTS useflags;
+DROP TABLE IF EXISTS useflagsreference;
 DROP TABLE IF EXISTS keywords;
 DROP TABLE IF EXISTS binkeywords;
+DROP TABLE IF EXISTS keywordsreference;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS licenses;
 DROP TABLE IF EXISTS flags;
@@ -124,11 +125,6 @@ CREATE TABLE rundependencies (
     dependency VARCHAR
 );
 
-CREATE TABLE rundependenciesxt (
-    idpackage INTEGER,
-    dependency VARCHAR
-);
-
 CREATE TABLE conflicts (
     idpackage INTEGER,
     conflict VARCHAR
@@ -151,17 +147,27 @@ CREATE TABLE sources (
 
 CREATE TABLE useflags (
     idpackage INTEGER,
-    flag VARCHAR
+    idflag INTEGER
+);
+
+CREATE TABLE useflagsreference (
+    idflag INTEGER PRIMARY KEY,
+    flagname VARCHAR
 );
 
 CREATE TABLE keywords (
     idpackage INTEGER,
-    keyword VARCHAR
+    idkeyword INTEGER
 );
 
 CREATE TABLE binkeywords (
     idpackage INTEGER,
-    binkeyword VARCHAR
+    idkeyword INTEGER
+);
+
+CREATE TABLE keywordsreference (
+    idkeyword INTEGER PRIMARY KEY,
+    keywordname VARCHAR
 );
 
 CREATE TABLE categories (

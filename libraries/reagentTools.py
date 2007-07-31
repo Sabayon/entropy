@@ -506,22 +506,8 @@ def extractPkgData(package):
     else:
 	etpData['neededlibs'] = []
 
+    
     etpData['rundependencies'] = []
-    # now keep only the ones not available in etpData['dependencies']
-    for i in runtimeNeededPackages:
-	found = False
-	for x in etpData['dependencies']:
-	    ikey = dep_getkey(i)
-	    xkey = dep_getkey(x)
-	    if ikey == xkey:
-		found = True
-		break
-	if (not found):
-	    # filter itself
-	    if (i != etpData['category']+"/"+etpData['name']):
-		etpData['rundependencies'].append(i)
-
-    etpData['rundependenciesXT'] = []
     for i in runtimeNeededPackagesXT:
 	found = False
 	for x in etpData['dependencies']:
@@ -533,7 +519,7 @@ def extractPkgData(package):
 	if (not found):
 	    # filter itself
 	    if (i != etpData['category']+"/"+etpData['name']):
-		etpData['rundependenciesXT'].append(i)
+		etpData['rundependencies'].append(i)
 
     print_info(yellow(" * ")+red("Getting Reagent API version..."),back = True)
     # write API info

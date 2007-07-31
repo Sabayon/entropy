@@ -1064,16 +1064,6 @@ class etpDatabase:
 			)
 	    )
 
-	# rundependenciesxt, a list
-	for rdepxt in etpData['rundependenciesXT']:
-	    self.cursor.execute(
-		'INSERT into rundependenciesxt VALUES '
-		'(?,?)'
-		, (	idpackage,
-			rdepxt,
-			)
-	    )
-
 	# conflicts, a list
 	for conflict in etpData['conflicts']:
 	    self.cursor.execute(
@@ -1115,31 +1105,48 @@ class etpDatabase:
 
 	# useflags, a list
 	for flag in etpData['useflags']:
+	    
+	    iduseflag = self.isUseflagAvailable(flag)
+	    if (iduseflag == -1):
+	        # create category
+	        iduseflag = self.addUseflag(flag)
+	    
 	    self.cursor.execute(
 		'INSERT into useflags VALUES '
 		'(?,?)'
 		, (	idpackage,
-			flag,
+			iduseflag,
 			)
 	    )
 
-	# keywords, a list
-	for keyword in etpData['keywords']:
+	# create new keyword if it doesn't exist
+	for key in etpData['keywords']:
+
+	    idkeyword = self.isKeywordAvailable(key)
+	    if (idkeyword == -1):
+	        # create category
+	        idkeyword = self.addKeyword(key)
+
 	    self.cursor.execute(
 		'INSERT into keywords VALUES '
 		'(?,?)'
 		, (	idpackage,
-			keyword,
+			idkeyword,
 			)
 	    )
 
-	# binkeywords, a list
-	for binkeyword in etpData['binkeywords']:
+	for key in etpData['binkeywords']:
+
+	    idbinkeyword = self.isKeywordAvailable(key)
+	    if (idbinkeyword == -1):
+	        # create category
+	        idbinkeyword = self.addKeyword(key)
+
 	    self.cursor.execute(
 		'INSERT into binkeywords VALUES '
 		'(?,?)'
 		, (	idpackage,
-			binkeyword,
+			idbinkeyword,
 			)
 	    )
 
@@ -1244,8 +1251,6 @@ class etpDatabase:
 	self.cursor.execute('DELETE FROM dependencies WHERE idpackage = '+idpackage)
 	# rundependencies
 	self.cursor.execute('DELETE FROM rundependencies WHERE idpackage = '+idpackage)
-	# rundependenciesxt
-	self.cursor.execute('DELETE FROM rundependenciesxt WHERE idpackage = '+idpackage)
 	# conflicts
 	self.cursor.execute('DELETE FROM conflicts WHERE idpackage = '+idpackage)
 	# neededlibs
@@ -1258,6 +1263,10 @@ class etpDatabase:
 	self.cursor.execute('DELETE FROM keywords WHERE idpackage = '+idpackage)
 	# binkeywords
 	self.cursor.execute('DELETE FROM binkeywords WHERE idpackage = '+idpackage)
+	
+	# FIXME, add cleanups
+	# keywords, useflags, binkeywords
+	
 	self.commitChanges()
 
     def removeMirrorEntries(self,mirrorname):
@@ -1286,7 +1295,33 @@ class etpDatabase:
 	    self.commitChanges()
 	    return cat
 	raise Exception, "I tried to insert a category but then, fetching it returned -1. There's something broken."
-	
+
+    def addKeyword(self,keyword):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addKeyword: adding Keyword -> "+str(keyword))
+	self.cursor.execute(
+		'INSERT into keywordsreference VALUES '
+		'(NULL,?)', (keyword,)
+	)
+	# get info about inserted value and return
+	key = self.isKeywordAvailable(keyword)
+	if key != -1:
+	    self.commitChanges()
+	    return key
+	raise Exception, "I tried to insert a keyword but then, fetching it returned -1. There's something broken."
+
+    def addUseflag(self,useflag):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addUseflag: adding Keyword -> "+str(useflag))
+	self.cursor.execute(
+		'INSERT into useflagsreference VALUES '
+		'(NULL,?)', (useflag,)
+	)
+	# get info about inserted value and return
+	use = self.isUseflagAvailable(useflag)
+	if use != -1:
+	    self.commitChanges()
+	    return use
+	raise Exception, "I tried to insert a useflag but then, fetching it returned -1. There's something broken."
+
     def addLicense(self,license):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addLicense: adding License -> "+str(license))
 	self.cursor.execute(
@@ -1425,7 +1460,6 @@ class etpDatabase:
 	
 	data['dependencies'] = self.retrieveDependencies(idpackage)
 	data['rundependencies'] = self.retrieveRunDependencies(idpackage)
-	data['rundependenciesXT'] = self.retrieveRunDependenciesXt(idpackage)
 	data['conflicts'] = self.retrieveConflicts(idpackage)
 	
 	data['etpapi'] = self.retrieveApi(idpackage)
@@ -1551,6 +1585,19 @@ class etpDatabase:
 	    flags.append(row[0])
 	return flags
 
+    def retrieveUseflags(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveUseflags: retrieving USE flags for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "idflag" FROM useflags WHERE idpackage = "'+str(idpackage)+'"')
+	idflgs = []
+	for row in self.cursor:
+	    idflgs.append(row[0])
+	flags = []
+	for idflg in idflgs:
+	    self.cursor.execute('SELECT "flagname" FROM useflagsreference WHERE idflag = "'+str(idflg)+'"')
+	    for row in self.cursor:
+	        flags.append(row[0])
+	return flags
+
     def retrieveConflicts(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveConflicts: retrieving Conflicts for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "conflict" FROM conflicts WHERE idpackage = "'+str(idpackage)+'"')
@@ -1575,28 +1622,30 @@ class etpDatabase:
 	    deps.append(row[0])
 	return deps
 
-    def retrieveRunDependenciesXt(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveRunDependenciesXt: retrieving Runtime Dependencies (+version) for package ID "+str(idpackage))
-	self.cursor.execute('SELECT "dependency" FROM rundependenciesxt WHERE idpackage = "'+str(idpackage)+'"')
-	deps = []
+    def retrieveBinKeywords(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBinKeywords: retrieving Binary Keywords for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "idkeyword" FROM binkeywords WHERE idpackage = "'+str(idpackage)+'"')
+	idkws = []
 	for row in self.cursor:
-	    deps.append(row[0])
-	return deps
+	    idkws.append(row[0])
+	kw = []
+	for idkw in idkws:
+	    self.cursor.execute('SELECT "keywordname" FROM keywordsreference WHERE idkeyword = "'+str(idkw)+'"')
+	    for row in self.cursor:
+	        kw.append(row[0])
+	return kw
 
     def retrieveKeywords(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveKeywords: retrieving Keywords for package ID "+str(idpackage))
-	self.cursor.execute('SELECT "keyword" FROM keywords WHERE idpackage = "'+str(idpackage)+'"')
-	kw = []
+	self.cursor.execute('SELECT "idkeyword" FROM keywords WHERE idpackage = "'+str(idpackage)+'"')
+	idkws = []
 	for row in self.cursor:
-	    kw.append(row[0])
-	return kw
-
-    def retrieveBinKeywords(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBinKeywords: retrieving Binary Keywords for package ID "+str(idpackage))
-	self.cursor.execute('SELECT "binkeyword" FROM binkeywords WHERE idpackage = "'+str(idpackage)+'"')
+	    idkws.append(row[0])
 	kw = []
-	for row in self.cursor:
-	    kw.append(row[0])
+	for idkw in idkws:
+	    self.cursor.execute('SELECT "keywordname" FROM keywordsreference WHERE idkeyword = "'+str(idkw)+'"')
+	    for row in self.cursor:
+	        kw.append(row[0])
 	return kw
 
     def retrieveSources(self, idpackage):
@@ -1745,6 +1794,30 @@ class etpDatabase:
 	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isCategoryAvailable: "+category+" not available.")
 	    return result
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCategoryAvailable: "+category+" available.")
+	return result
+
+    def isKeywordAvailable(self,keyword):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isKeywordAvailable: called.")
+	result = -1
+	self.cursor.execute('SELECT idkeyword FROM keywordsreference WHERE keywordname = "'+keyword+'"')
+	for row in self.cursor:
+	    result = row[0]
+	if result == -1:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isKeywordAvailable: "+keyword+" not available.")
+	    return result
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isKeywordAvailable: "+keyword+" available.")
+	return result
+
+    def isUseflagAvailable(self,useflag):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isUseflagAvailable: called.")
+	result = -1
+	self.cursor.execute('SELECT idflag FROM useflagsreference WHERE flagname = "'+useflag+'"')
+	for row in self.cursor:
+	    result = row[0]
+	if result == -1:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isUseflagAvailable: "+useflag+" not available.")
+	    return result
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isUseflagAvailable: "+useflag+" available.")
 	return result
 
     def isLicenseAvailable(self,license):
