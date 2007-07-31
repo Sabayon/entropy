@@ -711,30 +711,39 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 		    useMatch = False
 
         if atom.startswith("("):
-	    openParenthesis += 1
+	    openParenthesis += 1 # 1 | 2
 
         if atom.startswith(")"):
 	    if (openOr):
 		# remove last "_or_" from dependencies
-		openOr = False
-		if dependencies.endswith(dbOR):
-		    dependencies = dependencies[:len(dependencies)-len(dbOR)]
-		    dependencies += " "
+		if (openParenthesis == 1):
+		    openOr = False
+		    if dependencies.endswith(dbOR):
+		        dependencies = dependencies[:len(dependencies)-len(dbOR)]
+		        dependencies += " "
+		elif (openParenthesis == 2):
+		    if dependencies.endswith("+"):
+		        dependencies = dependencies[:len(dependencies)-1]
+		        dependencies += " "
 	    openParenthesis -= 1
 	    if (openParenthesis == 0):
 		useFlagQuestion = False
 		useMatch = False
 
         if atom.startswith("||"):
-	    openOr = True
+	    openOr = True # V
 	
 	if atom.find("/") != -1 and (not atom.startswith("!")) and (not atom.endswith("?")):
 	    # it's a package name <pkgcat>/<pkgname>-???
 	    if ((useFlagQuestion) and (useMatch)) or ((not useFlagQuestion) and (not useMatch)):
 	        # check if there's an OR
-		dependencies += atom
 		if (openOr):
-		    dependencies += dbOR
+		    dependencies += atom
+		    # check if the or is fucked up
+		    if openParenthesis > 1:
+			dependencies += "+" # !!
+		    else:
+		        dependencies += dbOR
                 else:
 		    dependencies += " "
 
