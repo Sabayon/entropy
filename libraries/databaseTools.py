@@ -2087,6 +2087,24 @@ class etpDatabase:
 	    break
 	return result
 
+    def searchProvideInBranch(self, keyword, branch):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchProvideInBranch: called for "+keyword+" and branch: "+branch)
+	idpackage = []
+	self.cursor.execute('SELECT idpackage FROM provide WHERE atom = "'+keyword+'"')
+	for row in self.cursor:
+	    idpackage = row[0]
+	    break
+	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
+	result = []
+	for row in self.cursor:
+	    data = row
+	    idpackage = data[1]
+	    pkgbranch = self.retrieveBranch(idpackage)
+	    if (branch == pkgbranch):
+		result.append(data)
+		break
+	return result
+
     def searchPackagesInBranch(self, keyword, branch):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesInBranch: called.")
 	result = []

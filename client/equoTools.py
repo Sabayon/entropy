@@ -306,6 +306,10 @@ def atomMatchInRepository(atom,dbconn):
 	# search into the less stable, if found, break, otherwise continue
 	results = dbconn.searchPackagesInBranchByName(pkgname,etpConst['branches'][idx])
 	
+	# if it's a PROVIDE, search with searchProvide
+	if (not results):
+	    results = dbconn.searchProvideInBranch(pkgkey,etpConst['branches'][idx])
+	
 	# now validate
 	if (not results):
 	    #print "results is empty"
@@ -867,18 +871,8 @@ def getNeededDependencies(packageInfo):
 	if rc[0] == -1:
 	    unsatisfiedDeps.append(dependency)
     
-    # now look if there are unsatisfied dependencies that could be find inside PROVIDE
-    if (unsatisfiedDeps):
-	_unsatisfiedDeps = []
-	for dep in unsatisfiedDeps:
-	    key = dep_getkey(dep)
-	    result = clientDbconn.searchProvide(key)
-	    if (not result):
-		# we don't have found it
-		_unsatisfiedDeps.append(dep)
-	unsatisfiedDeps = _unsatisfiedDeps
-    
     clientDbconn.closeDB()
+    #print unsatisfiedDeps
     return unsatisfiedDeps
 
 '''
@@ -889,12 +883,40 @@ def getNeededDependencies(packageInfo):
 treecache = {}
 def generateDependencyTree(unsatisfiedDeps):
     treeview = {}
-    treeview[0] = [] # tree level 0
+    treedepth = 0
+    #treeview[treedepth] = [] # tree level 0
+    
     dbconn = etpDatabase(readOnly = True, noUpload = True)
-    for undep in unsatisfiedDeps:
-	# obtain its dependencies
-	result = atomMatch(undep)
+    
+    remainingDeps = unsatisfiedDeps[:]
+    dependenciesNotFound = []
+    treeview[treedepth] = unsatisfiedDeps[:]
+    depsOk = False
+    while (not depsOk):
+	treedepth += 1
+        for undep in unsatisfiedDeps:
+	    # obtain its dependencies
+	    atom = atomMatch(undep)
+	    if atom[0] == -1:
+		# wth, dependency not in database?
+		dependenciesNotFound.append(undep)
+		remainingDeps.remove(undep)
+	    else:
+		# found, get its deps
+		mydeps = getNeededDependencies(atom)
+		for x in mydeps:
+		    remainingDeps.append(x)
+		remainingDeps.remove(undep)
+	# merge back remainingDeps into unsatisfiedDeps
+	unsatisfiedDeps = remainingDeps[:]
+	
+	if (not unsatisfiedDeps):
+	    depsOk = True
+	else:
+	    treeview[treedepth] = unsatisfiedDeps[:]
+	    depsOk = False
 
+    print treeview
     dbconn.closeDB()
     
 
@@ -1281,6 +1303,10 @@ def installPackages(packages, autoDrive = False):
     if (not checkRoot()):
 	print_error(red("\t You must run this function as root."))
 	return 1,-1
+    
+    lst = ["virtual/lpr","media-sound/amarok","kde-base/kdelibs"]
+    generateDependencyTree(lst)
+    sys.exit()
     
     foundAtoms = []
     for package in packages:
