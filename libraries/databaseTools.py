@@ -1062,11 +1062,17 @@ class etpDatabase:
 
 	# rundependencies, a list
 	for rdep in etpData['rundependencies']:
+	
+	    idrdep = self.isDependencyAvailable(rdep)
+	    if (idrdep == -1):
+	        # create category
+	        idrdep = self.addDependency(rdep)
+	
 	    self.cursor.execute(
 		'INSERT into rundependencies VALUES '
 		'(?,?)'
 		, (	idpackage,
-			rdep,
+			idrdep,
 			)
 	    )
 
