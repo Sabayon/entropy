@@ -1441,6 +1441,7 @@ class etpDatabase:
 	    self.cursor.execute('SELECT idlibrary FROM neededlibs WHERE idlibrary = '+str(idlib))
 	    for row in self.cursor:
 		orphanedLibs.remove(row[0])
+		break
 	# now we have orphans that can be removed safely
 	for idolib in orphanedLibs:
 	    self.cursor.execute('DELETE FROM libraries WHERE idlibrary = '+str(idolib))
@@ -1458,6 +1459,7 @@ class etpDatabase:
 	    self.cursor.execute('SELECT idflag FROM useflags WHERE idflag = '+str(idflag))
 	    for row in self.cursor:
 		orphanedFlags.remove(row[0])
+		break
 	# now we have orphans that can be removed safely
 	for idoflag in orphanedFlags:
 	    self.cursor.execute('DELETE FROM useflagsreference WHERE idflag = '+str(idoflag))
@@ -1475,6 +1477,7 @@ class etpDatabase:
 	    self.cursor.execute('SELECT idsource FROM sources WHERE idsource = '+str(idsource))
 	    for row in self.cursor:
 		orphanedSources.remove(row[0])
+		break
 	# now we have orphans that can be removed safely
 	for idosrc in orphanedSources:
 	    self.cursor.execute('DELETE FROM sourcesreference WHERE idsource = '+str(idosrc))
@@ -1492,10 +1495,12 @@ class etpDatabase:
 	    self.cursor.execute('SELECT iddependency FROM dependencies WHERE iddependency = '+str(iddep))
 	    for row in self.cursor:
 		orphanedDeps.remove(row[0])
+		break
 	for iddep in iddeps:
 	    self.cursor.execute('SELECT iddependency FROM rundependencies WHERE iddependency = '+str(iddep))
 	    for row in self.cursor:
 		orphanedDeps.remove(row[0])
+		break
 	# now we have orphans that can be removed safely
 	for idodep in orphanedDeps:
 	    self.cursor.execute('DELETE FROM dependenciesreference WHERE iddependency = '+str(idodep))
