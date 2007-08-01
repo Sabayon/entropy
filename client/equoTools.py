@@ -946,7 +946,7 @@ def compareVersions(listA,listB):
    @input package: filename to check inside the packages directory -> file, checksum of the package -> checksum
    @output: -1 = should be downloaded, -2 = digest broken (not mandatory), remove & download, 0 = all fine, we don't need to download it
 '''
-checkNeededDownload(file,checksum = None):
+def checkNeededDownload(file,checksum = None):
     # is the file available
     if os.path.isfile(etpConst['packagesbindir']+"/"+file) and os.path.isfile(etpConst['packagesbindir']+"/"+file+etpConst['packageshashfileext']):
 	if checksum is None:
