@@ -31,7 +31,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific
 from databaseTools import etpDatabase
 
 # Logging initialization
@@ -431,7 +431,7 @@ def atomMatchInRepository(atom,dbconn):
 		for list in foundIDs:
 		    idpackage = list[1]
 		    dbver = dbconn.retrieveVersion(idpackage)
-		    cmp = compareVersions(pkgversion,dbver)
+		    cmp = entropyCompareVersions(pkgversion,dbver)
 		    if direction == ">":
 		        if (cmp < 0):
 			    # found
@@ -732,7 +732,7 @@ def getNewerVersion(InputVersionlist):
 	        pkgB = versionlist[x+1]
 	    except:
 	        pkgB = "0"
-            result = compareVersions(pkgA,pkgB)
+            result = entropyCompareVersions(pkgA,pkgB)
 	    #print pkgA + "<->" +pkgB +" = " + str(result)
 	    if result < 0:
 	        # swap positions
@@ -880,6 +880,86 @@ def getNeededDependencies(packageInfo):
     
     clientDbconn.closeDB()
     return unsatisfiedDeps
+
+'''
+   @description: using given information (atom), retrieves idpackage of the installed atom
+   @input package: package atom
+   @output: list of idpackages of the atoms from the installed packages db
+'''
+def getInstalledAtoms(atom):
+
+    clientDbconn = etpDatabase(readOnly = True, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
+
+    results = []
+    if not isjustname(atom):
+	key = dep_getkey(atom)
+    else:
+	key = atom[:]
+    name = key.split("/")[1]
+    cat = key.split("/")[0]
+    rc = clientDbconn.searchPackagesByNameAndCategory(name,cat)
+    if (rc):
+	for x in rc:
+	    results.append(x[1])
+
+    clientDbconn.closeDB()
+    return results
+
+'''
+   @description: compare two lists composed by [version,tag,revision] and [version,tag],revision
+   			if listA > listB --> positive number
+			if listA == listB --> 0
+			if listA < listB --> negative number	
+   @input package: listA[version,tag,rev] and listB[version,tag,rev]
+   @output: integer number
+'''
+def compareVersions(listA,listB):
+    if len(listA) != 3 or len(listB) != 3:
+	raise Exception, "compareVersions: listA and/or listB must be long 3"
+    # start with version
+    rc = entropyCompareVersions(listA[0],listB[0])
+    
+    if (rc == 0):
+	# check tag
+	if listA[1] > listB[1]:
+	    return 1
+	elif listA[1] < listB[1]:
+	    return -1
+	else:
+	    # check rev
+	    if listA[2] > listB[2]:
+		return 1
+	    elif listA[2] < listB[2]:
+		return -1
+	    else:
+		return 0
+    return rc
+
+
+########################################################
+####
+##   Files handling
+#
+
+'''
+   @description: check if Equo has to download the given package
+   @input package: filename to check inside the packages directory -> file, checksum of the package -> checksum
+   @output: -1 = should be downloaded, -2 = digest broken (not mandatory), remove & download, 0 = all fine, we don't need to download it
+'''
+checkNeededDownload(file,checksum = None):
+    # is the file available
+    if os.path.isfile(etpConst['packagesbindir']+"/"+file) and os.path.isfile(etpConst['packagesbindir']+"/"+file+etpConst['packageshashfileext']):
+	if checksum is None:
+	    return 0
+	else:
+	    # check digest
+	    md5res = compareMd5(etpConst['packagesbindir']+"/"+file,checksum)
+	    if (md5res):
+		return 0
+	    else:
+		return -2
+    else:
+	return -1
 
 
 ########################################################
@@ -1074,19 +1154,42 @@ def printPackageInfo(idpackage,dbconn):
     pkgflags = dbconn.retrieveCompileFlags(idpackage)
     pkgkeywords = dbconn.retrieveBinKeywords(idpackage)
     pkgtag = dbconn.retrieveVersionTag(idpackage)
+    pkgrev = dbconn.retrieveRevision(idpackage)
+    pkgslot = dbconn.retrieveSlot(idpackage)
     pkgdigest = dbconn.retrieveDigest(idpackage)
     pkgbranch = dbconn.retrieveBranch(idpackage)
     pkgcreatedate = convertUnixTimeToHumanTime(int(dbconn.retrieveDateCreation(idpackage)))
     if (not pkgtag):
-        pkgtag = "Not tagged"
+        pkgtag = "NoTag"
     pkgsize = bytesIntoHuman(pkgsize)
+
+    # client info
+    installedVer = "Not installed"
+    installedTag = "N/A"
+    installedRev = "N/A"
+    if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
+        clientDbconn = etpDatabase(readOnly = True, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
+        pkginstalled = getInstalledAtoms(pkgatom)
+        if (pkginstalled):
+	    # we need to match slot
+	    for idx in pkginstalled:
+	        islot = clientDbconn.retrieveSlot(idx)
+	        if islot == pkgslot:
+		    # found
+		    installedVer = clientDbconn.retrieveVersion(idx)
+		    installedTag = clientDbconn.retrieveVersionTag(idx)
+		    if not installedTag:
+		        installedTag = "NoTag"
+		    installedRev = clientDbconn.retrieveRevision(idx)
+		    break
+        clientDbconn.closeDB()
 
     print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(pkgbranch))
     print_info(darkgreen("       Category:\t\t")+darkblue(pkgcat))
     print_info(darkgreen("       Name:\t\t\t")+darkblue(pkgname))
-    print_info(darkgreen("       Available version:\t")+blue(pkgver))
-    print_info(darkgreen("       Installed version:\t")+blue("N/A"))
-    print_info(darkgreen("       Available ver. tag:\t")+blue(pkgtag))
+    print_info(darkgreen("       Available:\t\t")+darkblue("version: ")+bold(pkgver)+darkblue(" ~ tag: ")+bold(pkgtag)+darkblue(" ~ revision: ")+bold(str(pkgrev)))
+    print_info(darkgreen("       Installed:\t\t")+darkblue("version: ")+bold(installedVer)+darkblue(" ~ tag: ")+bold(installedTag)+darkblue(" ~ revision: ")+bold(str(installedRev)))
+    print_info(darkgreen("       Slot:\t\t\t")+blue(str(pkgslot)))
     print_info(darkgreen("       Size:\t\t\t")+blue(str(pkgsize)))
     print_info(darkgreen("       Download:\t\t")+brown(str(pkgbin)))
     print_info(darkgreen("       Checksum:\t\t")+brown(str(pkgdigest)))
@@ -1143,9 +1246,6 @@ def searchPackage(packages):
 	
 	dbconn.closeDB()
 
-    #print foundPackages
-    # choose the defaulted version
-
     if searchError:
 	print_warning(yellow(" @@ ")+red("Something bad happened. Please have a look."))
 	return 129
@@ -1159,7 +1259,6 @@ def searchPackage(packages):
 
 # FIXME: must handle multiple results from multiple repositories
 def installPackages(packages, autoDrive = False):
-    print packages
 
     # check if I am root
     if (not checkRoot()):
@@ -1209,12 +1308,50 @@ def installPackages(packages, autoDrive = False):
 	pkgrev = dbconn.retrieveRevision(idpackage)
 	totalDownloadSize += int(pkgsize)
 	pkgsize = bytesIntoHuman(pkgsize)
+	pkgslot = dbconn.retrieveSlot(idpackage)
+	
+	# client info
+	installedVer = "Not installed"
+	installedTag = "N/A"
+	installedRev = "N/A"
+	if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
+	    clientDbconn = etpDatabase(readOnly = True, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
+	    pkginstalled = getInstalledAtoms(pkgatom)
+	    if (pkginstalled):
+	        # we need to match slot
+	        for idx in pkginstalled:
+	            islot = clientDbconn.retrieveSlot(idx)
+		    if islot == pkgslot:
+		        # found
+		        installedVer = clientDbconn.retrieveVersion(idx)
+		        installedTag = clientDbconn.retrieveVersionTag(idx)
+		        if not installedTag:
+			    installedTag = "NoTag"
+		        installedRev = clientDbconn.retrieveRevision(idx)
+		        break
+	    clientDbconn.closeDB()
 
 	print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom))
 	print_info("\t\t"+red("Repository:\t\t")+" "+darkred(etpRepositories[reponame]['description']))
 	print_info("\t\t"+red("Available:\t\t")+" "+blue("version: ")+bold(pkgver)+blue(" ~ tag: ")+bold(pkgtag)+blue(" ~ revision: ")+bold(str(pkgrev)))
-	print_info("\t\t"+red("Installed:\t\t")+" "+darkred("Not implemented"))
+	print_info("\t\t"+red("Installed:\t\t")+" "+blue("version: ")+bold(installedVer)+blue(" ~ tag: ")+bold(installedTag)+blue(" ~ revision: ")+bold(str(installedRev)))
 	print_info("\t\t"+red("Download Size:\t\t")+" "+brown(pkgsize))
+	
+	# tell wether we should update it
+	if installedVer == "Not installed":
+	    insalledVer = "0"
+	if installedTag == "N/A":
+	    installedTag == ''
+	if installedRev == "N/A":
+	    installedRev == 0
+	cmp = compareVersions([pkgver,pkgtag,pkgrev],[installedVer,installedTag,installedRev])
+	if (cmp == 0):
+	    action = darkgreen("No update needed")
+	elif (cmp > 0):
+	    action = red("Downgrade")
+	else:
+	    action = blue("Upgrade")
+	print_info("\t\t"+red("Action:\t\t\t")+" "+action)
 	
 	dbconn.closeDB()
 

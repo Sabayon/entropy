@@ -280,7 +280,7 @@ def pkgsplit(mypkg,silent=1):
     else:
 	return None
 
-def dep_getkey(mydep):
+def dep_getkey(mydepx):
     """
     Return the category/package-name of a depstring.
 
@@ -293,6 +293,12 @@ def dep_getkey(mydep):
     @rtype: String
     @return: The package category/package-version
     """
+    mydep = mydepx[:]
+    if not isjustname(mydep):
+	if mydep.split("-")[len(mydep.split("-"))-1].endswith("t"): # tag -> remove
+	    tag = mydep.split("-")[len(mydep.split("-"))-1]
+	    mydep = mydep[:len(mydep)-len(tag)-2]
+    
     mydep = dep_getcpv(mydep)
     if mydep and isspecific(mydep):
 	mysplit = catpkgsplit(mydep)

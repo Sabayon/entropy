@@ -194,6 +194,11 @@ CREATE TABLE flags (
     cxxflags VARCHAR
 );
 
+CREATE TABLE installedtable (
+    idpackage INTEGER,
+    repositoryname VARCHAR
+);
+
 """
 
 # Entropy directories specifications

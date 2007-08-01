@@ -1000,7 +1000,7 @@ def uploadDatabase(uris):
 	# generate digest
 	hexdigest = md5sum(etpConst['etpdatabasefilepath'])
 	f = open(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'],"w")
-	f.write(hexdigest+"  "+etpConst['etpdatabasehashfile']+"\n")
+	f.write(hexdigest+"  "+etpConst['etpdatabasefile']+"\n")
 	f.flush()
 	f.close()
 
@@ -1057,7 +1057,7 @@ def downloadDatabase(uri):
 	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
     
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: downloading digest file for "+extractFTPHostFromUri(uri))
-    # downlading digest
+    # downlading digest -> FIXME: add digest comparation
     print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['etpdatabasehashfile'])+red(" ..."), back = True)
     rc = ftp.downloadFile(etpConst['etpdatabasehashfile'],os.path.dirname(etpConst['etpdatabasefilepath']),True)
     if (rc == True):
