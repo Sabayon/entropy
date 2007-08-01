@@ -27,6 +27,7 @@ import random
 import sys
 from entropyConstants import *
 
+
 if (commands.getoutput("q -V").find("portage-utils") != -1):
     pFindLibrary = "qfile -qC "
     pFindLibraryXT = "qfile -qeC "
@@ -97,17 +98,17 @@ nocheck  : yes
     f.close()
 
 # fill etpConst['overlays']
-ovlst = os.listdir(etpConst['overlaysdir'])
-_ovlst = []
-for i in ovlst:
-    if os.path.isdir(etpConst['overlaysdir']+"/"+i):
-	_ovlst.append(etpConst['overlaysdir']+"/"+i)
-etpConst['overlays'] = string.join(_ovlst," ")
+if os.path.isdir(etpConst['overlaysdir']):
+    ovlst = os.listdir(etpConst['overlaysdir'])
+    _ovlst = []
+    for i in ovlst:
+        if os.path.isdir(etpConst['overlaysdir']+"/"+i):
+	    _ovlst.append(etpConst['overlaysdir']+"/"+i)
+    etpConst['overlays'] = string.join(_ovlst," ")
 
 # activator section
 if (not os.path.isfile(etpConst['activatorconf'])):
-    print "ERROR: "+etpConst['activatorconf']+" does not exist"
-    sys.exit(50)
+    print "CRITICAL WARNING!!! "+etpConst['activatorconf']+" does not exist"
 else:
     try:
 	if (os.stat(etpConst['activatorconf'])[0] != 33152):
@@ -147,8 +148,7 @@ else:
 
 # enzyme section
 if (not os.path.isfile(etpConst['enzymeconf'])):
-    print "ERROR: "+etpConst['enzymeconf']+" does not exist"
-    sys.exit(50)
+    print "CRITICAL WARNING!!! "+etpConst['enzymeconf']+" does not exist"
 else:
     f = open(etpConst['enzymeconf'],"r")
     enzymeconf = f.readlines()
@@ -173,8 +173,7 @@ else:
 
 # reagent section
 if (not os.path.isfile(etpConst['reagentconf'])):
-    print "ERROR: "+etpConst['reagentconf']+" does not exist"
-    sys.exit(50)
+    print "CRITICAL WARNING!!! "+etpConst['reagentconf']+" does not exist"
 else:
     f = open(etpConst['reagentconf'],"r")
     reagentconf = f.readlines()
@@ -196,8 +195,7 @@ else:
 
 # mirrors section
 if (not os.path.isfile(etpConst['mirrorsconf'])):
-    print "ERROR: "+etpConst['mirrorsconf']+" does not exist"
-    sys.exit(50)
+    print "CRITICAL WARNING!!! "+etpConst['mirrorsconf']+" does not exist"
 else:
     f = open(etpConst['mirrorsconf'],"r")
     databaseconf = f.readlines()
@@ -219,8 +217,7 @@ else:
 
 # spmbackend section
 if (not os.path.isfile(etpConst['spmbackendconf'])):
-    print "ERROR: "+etpConst['spmbackendconf']+" does not exist"
-    sys.exit(50)
+    print "CRITICAL WARNING!!! "+etpConst['spmbackendconf']+" does not exist"
 else:
     f = open(etpConst['spmbackendconf'],"r")
     spmconf = f.readlines()

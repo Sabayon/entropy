@@ -127,7 +127,7 @@ def __downloadFileCommitData(f, buf, output = True, maxsize = 0):
 	bartext += "]"
 	average = str(average)
 	if len(average) < 2:
-	    average = "0"+average
+	    average = " "+average
 	currentText += "\t\t"+average+"% "+bartext
         # print !
         print_info(currentText,back = True)

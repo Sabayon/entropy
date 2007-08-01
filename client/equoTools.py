@@ -878,9 +878,9 @@ def getNeededDependencies(packageInfo):
 '''
    @description: generates a dependency tree using unsatisfied dependencies
    @input package: list of unsatisfied dependencies
-   @output: dependency tree dictionary
+   @output: 	dependency tree dictionary, if a dependency cannot be found,
+   		it will be returned a dictionary with a -1 entry and the list of missing dependencies
 '''
-treecache = {}
 def generateDependencyTree(unsatisfiedDeps):
     treeview = {}
     treedepth = 0
@@ -916,8 +916,16 @@ def generateDependencyTree(unsatisfiedDeps):
 	    treeview[treedepth] = unsatisfiedDeps[:]
 	    depsOk = False
 
+    if (dependenciesNotFound):
+	# Houston, we've got a problem
+	errorView = {}
+	errorView[-1] = dependenciesNotFound
+	return errorView
+
     print treeview
     dbconn.closeDB()
+    return treeview
+
     
 
 '''
@@ -1046,11 +1054,9 @@ def database(options):
     # FIXME: need SPEED and completion
     if (options[0] == "generate"):
 	
-	#import threading
-	
 	print_warning(bold("####### ATTENTION -> ")+red("The installed package database will be regenerated, this will take a LOT of time."))
 	print_warning(bold("####### ATTENTION -> ")+red("Sabayon Linux Officially Repository MUST be on top of the repositories list in ")+etpConst['repositoriesconf'])
-	print_warning(bold("####### ATTENTION -> ")+red("This method is only used for testing at the moment."))
+	print_warning(bold("####### ATTENTION -> ")+red("This method is only used for testing at the moment and you need Portage installed. Don't worry about Portage warnings."))
 	rc = askquestion("     Can I continue ?")
 	if rc == "No":
 	    sys.exit(0)
@@ -1074,107 +1080,42 @@ def database(options):
 	clientDbconn.initializeDatabase()
 	print_info(darkgreen("  Database reinitialized correctly at "+bold(etpConst['etpdatabaseclientfilepath'])))
 	
-	# now collect files in the system
-	tmpfile = etpConst['packagestmpfile']+".diskanalyze"
-	print_info(red("  Collecting installed files... Saving into ")+bold(tmpfile))
+	# now collect packages in the system
+	from portageTools import getInstalledPackages as _portage_getInstalledPackages
+	print_info(red("  Collecting installed packages..."))
 	
-
-	f = open(tmpfile,"w")
-	for dir in etpConst['filesystemdirs']:
-	    if os.path.isdir(dir):
-		for dir,subdirs,files in os.walk(dir):
-		    print_info(darkgreen("  Analyzing directory "+bold(dir[:50]+"...")),back = True)
-		    for file in files:
-			file = dir+"/"+file
-			f.write(file+"\n")
-	
-	f.flush()
-	f.close()
-	
-	f = open(tmpfile,"r")
-	systemFiles = []
-	for x in f.readlines():
-	    systemFiles.append(x.strip())
-	f.close()
-	
-	orphanedFiles = []
-	foundPackages = []
+	portagePackages = _portage_getInstalledPackages()
+	portagePackages = portagePackages[0]
 	
 	print_info(red("  Now analyzing database content..."))
+
+	foundPackages = []
+
 	# do for each database
-	repocount = 0
-	for repo in etpRepositories:
-	
-	    repocount += 1
-	
-	    print_info("("+blue(str(repocount))+"/"+darkblue(str(len(etpRepositories)))+") "+red("  Analyzing ")+bold(etpRepositories[repo]['description'])+"...", back = True)
-
-	    # sync if needed
-	    rc = fetchRepositoryIfNotAvailable(repo)
-	    if (rc != 0):
-	        return 129
-
-	    dbfile = etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile']
-	    if (not orphanedFiles): # first cycle
+	missingPackages = portagePackages[:]
+	for portagePackage in portagePackages: # for portagePackage in remainingPackages
+	    print_info(red("  Analyzing ")+bold(portagePackage), back = True)
 	    
-	        # open database
-	        dbRepo = etpDatabase(readOnly = True, noUpload = True, dbFile = dbfile)
-	    
-	        # FIXME: add branch support
-	        # search into database
-		cnt = 0
-		totalcnt = len(systemFiles)
+	    data = atomMatch(portagePackage)
+	    if (data[0] != -1):
+	        foundPackages.append(data)
+		missingPackages.remove(portagePackage)
 		
-	        for file in systemFiles:
-		    cnt += 1
-		    print_info("    @@ "+red("(")+blue(str(cnt))+"/"+bold(str(totalcnt))+red(")")+red(" Analyzing files..."), back = True)
-		    pkgids = dbRepo.getIDPackagesFromFile(file)
-		    if (pkgids):
-		        for pkg in pkgids:
-			    try:
-				foundPackages.index(int(pkg))
-				# nothing to do
-			    except:
-				# FIXME: if we get here, we need to analyze branch and then add
-		                foundPackages.append([repo,pkg])
-		    else:
-		        orphanedFiles.append(file)
-		print_info(red("    @@ Completed."))
-		dbRepo.closeDB()
-	    
-	    else:
-		
-		dbRepo = etpDatabase(readOnly = True, noUpload = True, dbFile = dbfile)
-		_orphanedFiles = orphanedFiles
-		orphanedFiles = []
+	print_info(red("  ### Packages matching: ")+bold(str(len(foundPackages))))
+	print_info(red("  ### Packages not matching: ")+bold(str(len(missingPackages))))
+	
+	f = open("/tmp/notmatch","w")
+	for x in missingPackages:
+	    f.write(str(x)+"\n")
+	f.flush()
+	f.close()
+	f = open("/tmp/match","w")
+	for x in foundPackages:
+	    f.write(str(x)+"\n")
+	f.flush()
+	f.close()
 
-		cnt = 0
-		totalcnt = len(_orphanedFiles)
-		
-	        for file in _orphanedFiles:
-		    cnt += 1
-		    print_info("    @@ "+red("(")+blue(str(cnt))+"/"+bold(str(totalcnt))+red(")")+red(" Analyzing files..."), back = True)
-		    pkgids = dbRepo.getIDPackagesFromFile(file)
-		    if (pkgids):
-		        for pkg in pkgids:
-			    try:
-				foundPackages.index(int(pkg))
-				# nothing to do
-			    except:
-				# FIXME: if we get here, we need to analyze branch and then add
-		                foundPackages.append([repo,pkg])
-		    else:
-		        orphanedFiles.append(file)
-		print_info(red("    @@ Completed."))
-		dbRepo.closeDB()
-		
-	
-	print_info(red("  ### Orphaned files:")+bold(str(len(orphanedFiles))))
-	foundPackages = list(set(foundPackages))
-	print_info(red("  ### Packages matching:")+bold(str(len(foundPackages))))
-	
-	if os.path.isfile(tmpfile):
-	    os.remove(tmpfile)
+
 	
 	clientDbconn.closeDB()
 
@@ -1240,18 +1181,21 @@ def printPackageInfo(idpackage,dbconn):
     print_info(darkgreen("       License:\t\t")+red(pkglic))
 
 
-def searchPackage(packages):
+def searchPackage(packages, idreturn = False):
     
     foundPackages = {}
     
-    print_info(yellow(" @@ ")+darkgreen("Searching..."))
+    if (not idreturn):
+        print_info(yellow(" @@ ")+darkgreen("Searching..."))
     # search inside each available database
     repoNumber = 0
     searchError = False
     for repo in etpRepositories:
 	foundPackages[repo] = {}
 	repoNumber += 1
-	print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
+	
+	if (not idreturn):
+	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 	
 	rc = fetchRepositoryIfNotAvailable(repo)
 	if (rc != 0):
@@ -1261,14 +1205,16 @@ def searchPackage(packages):
 	dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
 	    
 	dbconn = etpDatabase(readOnly = True, dbFile = dbfile)
+	dataInfo = [] # when idreturn is True
 	for package in packages:
 	    result = dbconn.searchPackages(package)
 	    
 	    if (result):
 		foundPackages[repo][package] = result
 	        # print info
-	        print_info(blue("     Keyword: ")+bold("\t"+package))
-	        print_info(blue("     Found:   ")+bold("\t"+str(len(foundPackages[repo][package])))+red(" entries"))
+		if (not idreturn):
+	            print_info(blue("     Keyword: ")+bold("\t"+package))
+	            print_info(blue("     Found:   ")+bold("\t"+str(len(foundPackages[repo][package])))+red(" entries"))
 	        for pkg in foundPackages[repo][package]:
 		    idpackage = pkg[1]
 		    atom = pkg[0]
@@ -1281,9 +1227,15 @@ def searchPackage(packages):
 			if foundBranchIndex > myBranchIndex:
 			    # package found in branch more unstable than the selected one, for us, it does not exist
 			    continue
-		    printPackageInfo(idpackage,dbconn)
+		    if (idreturn):
+			dataInfo.append([idpackage,repo])
+		    else:
+		        printPackageInfo(idpackage,dbconn)
 	
 	dbconn.closeDB()
+
+    if (idreturn):
+	return dataInfo
 
     if searchError:
 	print_warning(yellow(" @@ ")+red("Something bad happened. Please have a look."))

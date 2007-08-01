@@ -86,6 +86,7 @@ DROP TABLE IF EXISTS keywordsreference;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS licenses;
 DROP TABLE IF EXISTS flags;
+DROP TABLE IF EXISTS installedtable;
 """
 
 etpSQLInit = """
