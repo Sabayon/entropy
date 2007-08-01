@@ -107,7 +107,27 @@ def __downloadFileCommitData(f, buf, output = True, maxsize = 0):
 	maxsize = int(maxsize)
 	if maxsize > 0:
 	    maxsize = float(int(maxsize))/1024
+	average = int((kbytecount/maxsize)*100)
         # create text
         currentText = yellow("        <-> Downloading: ")+green(str(round(kbytecount,1)))+"/"+red(str(round(maxsize,1)))+" kB"
+	# create progress bar
+	barsize = 25
+	bartext = "["
+	curbarsize = 1
+	#print average
+	averagesize = (average*barsize)/100
+	#print averagesize
+	for y in range(averagesize):
+	    curbarsize += 1
+	    bartext += "="
+	bartext += ">"
+	diffbarsize = barsize-curbarsize
+	for y in range(diffbarsize):
+	    bartext += " "
+	bartext += "]"
+	average = str(average)
+	if len(average) < 2:
+	    average = "0"+average
+	currentText += "\t\t"+average+"% "+bartext
         # print !
         print_info(currentText,back = True)
