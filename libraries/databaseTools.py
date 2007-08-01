@@ -1046,11 +1046,17 @@ class etpDatabase:
 	
 	# dependencies, a list
 	for dep in etpData['dependencies']:
+	
+	    iddep = self.isDependencyAvailable(dep)
+	    if (iddep == -1):
+	        # create category
+	        iddep = self.addDependency(dep)
+	
 	    self.cursor.execute(
 		'INSERT into dependencies VALUES '
 		'(?,?)'
 		, (	idpackage,
-			dep,
+			iddep,
 			)
 	    )
 
@@ -1086,11 +1092,17 @@ class etpDatabase:
 
 	# neededlibs, a list
 	for lib in etpData['neededlibs']:
+
+	    idlib = self.isLibraryAvailable(lib)
+	    if (idlib == -1):
+	        # create category
+	        idlib = self.addLibrary(lib)
+
 	    self.cursor.execute(
 		'INSERT into neededlibs VALUES '
 		'(?,?)'
 		, (	idpackage,
-			lib,
+			idlib,
 			)
 	    )
 
@@ -1105,11 +1117,17 @@ class etpDatabase:
 
 	# sources, a list
 	for source in etpData['sources']:
+	    
+	    idsource = self.isSourceAvailable(source)
+	    if (idsource == -1):
+	        # create category
+	        idsource = self.addSource(source)
+	    
 	    self.cursor.execute(
 		'INSERT into sources VALUES '
 		'(?,?)'
 		, (	idpackage,
-			source,
+			idsource,
 			)
 	    )
 
@@ -1276,8 +1294,12 @@ class etpDatabase:
 	# binkeywords
 	self.cursor.execute('DELETE FROM binkeywords WHERE idpackage = '+idpackage)
 	
-	# FIXME, add cleanups
-	# keywords, useflags, binkeywords
+	# Cleanups
+	self.cleanupLibraries()
+	self.cleanupUseflags()
+	self.cleanupSources()
+	self.cleanupDependencies()
+	# keywords, binkeywords
 	
 	self.commitChanges()
 
@@ -1307,6 +1329,45 @@ class etpDatabase:
 	    self.commitChanges()
 	    return cat
 	raise Exception, "I tried to insert a category but then, fetching it returned -1. There's something broken."
+
+    def addLibrary(self,libraryname):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addLibrary: adding Package Library -> "+str(libraryname))
+	self.cursor.execute(
+		'INSERT into libraries VALUES '
+		'(NULL,?)', (libraryname,)
+	)
+	# get info about inserted value and return
+	lib = self.isLibraryAvailable(libraryname)
+	if lib != -1:
+	    self.commitChanges()
+	    return lib
+	raise Exception, "I tried to insert a library but then, fetching it returned -1. There's something broken."
+
+    def addSource(self,source):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addSource: adding Package Source -> "+str(source))
+	self.cursor.execute(
+		'INSERT into sourcesreference VALUES '
+		'(NULL,?)', (source,)
+	)
+	# get info about inserted value and return
+	src = self.isSourceAvailable(source)
+	if src != -1:
+	    self.commitChanges()
+	    return src
+	raise Exception, "I tried to insert a source but then, fetching it returned -1. There's something broken."
+
+    def addDependency(self,dependency):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addDependency: adding Package Dependency -> "+str(dependency))
+	self.cursor.execute(
+		'INSERT into dependenciesreference VALUES '
+		'(NULL,?)', (dependency,)
+	)
+	# get info about inserted value and return
+	dep = self.isDependencyAvailable(dependency)
+	if dep != -1:
+	    self.commitChanges()
+	    return dep
+	raise Exception, "I tried to insert a dependency but then, fetching it returned -1. There's something broken."
 
     def addKeyword(self,keyword):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addKeyword: adding Keyword -> "+str(keyword))
@@ -1360,6 +1421,78 @@ class etpDatabase:
 	    self.commitChanges()
 	    return idflag
 	raise Exception, "I tried to insert a flag tuple but then, fetching it returned -1. There's something broken."
+
+    def cleanupLibraries(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupLibraries: called.")
+	self.cursor.execute('SELECT idlibrary FROM libraries')
+	idlibs = []
+	for row in self.cursor:
+	    idlibs.append(row[0])
+	# now parse them into libraries table
+	idlibs = list(set(idlibs))
+	orphanedLibs = idlibs[:]
+	for idlib in idlibs:
+	    self.cursor.execute('SELECT idlibrary FROM neededlibs WHERE idlibrary = '+str(idlib))
+	    for row in self.cursor:
+		orphanedLibs.remove(row[0])
+	# now we have orphans that can be removed safely
+	for idolib in orphanedLibs:
+	    self.cursor.execute('DELETE FROM libraries WHERE idlibrary = '+str(idolib))
+
+    def cleanupUseflags(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupUseflags: called.")
+	self.cursor.execute('SELECT idflag FROM useflagsreference')
+	idflags = []
+	for row in self.cursor:
+	    idflags.append(row[0])
+	# now parse them into useflags table
+	idflags = list(set(idflags))
+	orphanedFlags = idflags[:]
+	for idflag in idflags:
+	    self.cursor.execute('SELECT idflag FROM useflags WHERE idflag = '+str(idflag))
+	    for row in self.cursor:
+		orphanedFlags.remove(row[0])
+	# now we have orphans that can be removed safely
+	for idoflag in orphanedFlags:
+	    self.cursor.execute('DELETE FROM useflagsreference WHERE idflag = '+str(idoflag))
+
+    def cleanupSources(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupSources: called.")
+	self.cursor.execute('SELECT idsource FROM sourcesreference')
+	idsources = []
+	for row in self.cursor:
+	    idsources.append(row[0])
+	# now parse them into useflags table
+	idsources = list(set(idsources))
+	orphanedSources = idsources[:]
+	for idsource in idsources:
+	    self.cursor.execute('SELECT idsource FROM sources WHERE idsource = '+str(idsource))
+	    for row in self.cursor:
+		orphanedSources.remove(row[0])
+	# now we have orphans that can be removed safely
+	for idosrc in orphanedSources:
+	    self.cursor.execute('DELETE FROM sourcesreference WHERE idsource = '+str(idosrc))
+
+    def cleanupDependencies(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupDependencies: called.")
+	self.cursor.execute('SELECT iddependency FROM dependenciesreference')
+	iddeps = []
+	for row in self.cursor:
+	    iddeps.append(row[0])
+	# now parse them into useflags table
+	iddeps = list(set(iddeps))
+	orphanedDeps = iddeps[:]
+	for iddep in iddeps:
+	    self.cursor.execute('SELECT iddependency FROM dependencies WHERE iddependency = '+str(iddep))
+	    for row in self.cursor:
+		orphanedDeps.remove(row[0])
+	for iddep in iddeps:
+	    self.cursor.execute('SELECT iddependency FROM rundependencies WHERE iddependency = '+str(iddep))
+	    for row in self.cursor:
+		orphanedDeps.remove(row[0])
+	# now we have orphans that can be removed safely
+	for idodep in orphanedDeps:
+	    self.cursor.execute('DELETE FROM dependenciesreference WHERE iddependency = '+str(idodep))
 
     # WARNING: this function must be kept in sync with Entropy database schema
     # returns True if equal
@@ -1629,18 +1762,28 @@ class etpDatabase:
 
     def retrieveDependencies(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDependencies: retrieving Dependencies for package ID "+str(idpackage))
-	self.cursor.execute('SELECT "dependency" FROM dependencies WHERE idpackage = "'+str(idpackage)+'"')
-	deps = []
+	self.cursor.execute('SELECT iddependency FROM dependencies WHERE idpackage = "'+str(idpackage)+'"')
+	iddeps = []
 	for row in self.cursor:
-	    deps.append(row[0])
+	    iddeps.append(row[0])
+	deps = []
+	for iddep in iddeps:
+	    self.cursor.execute('SELECT dependency FROM dependenciesreference WHERE iddependency = "'+str(iddep)+'"')
+	    for row in self.cursor:
+		deps.append(row[0])
 	return deps
 
     def retrieveRunDependencies(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveRunDependencies: retrieving Runtime Dependencies for package ID "+str(idpackage))
-	self.cursor.execute('SELECT "dependency" FROM rundependencies WHERE idpackage = "'+str(idpackage)+'"')
-	deps = []
+	self.cursor.execute('SELECT iddependency FROM rundependencies WHERE idpackage = "'+str(idpackage)+'"')
+	iddeps = []
 	for row in self.cursor:
-	    deps.append(row[0])
+	    iddeps.append(row[0])
+	deps = []
+	for iddep in iddeps:
+	    self.cursor.execute('SELECT dependency FROM dependenciesreference WHERE iddependency = "'+str(iddep)+'"')
+	    for row in self.cursor:
+		deps.append(row[0])
 	return deps
 
     def retrieveBinKeywords(self, idpackage):
@@ -1671,11 +1814,16 @@ class etpDatabase:
 
     def retrieveSources(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSources: retrieving Sources for package ID "+str(idpackage))
-	self.cursor.execute('SELECT "source" FROM sources WHERE idpackage = "'+str(idpackage)+'"')
-	sw = []
+	self.cursor.execute('SELECT idsource FROM sources WHERE idpackage = "'+str(idpackage)+'"')
+	idsources = []
 	for row in self.cursor:
-	    sw.append(row[0])
-	return sw
+	    idsources.append(row[0])
+	sources = []
+	for idsource in idsources:
+	    self.cursor.execute('SELECT source FROM sourcesreference WHERE idsource = "'+str(idsource)+'"')
+	    for row in self.cursor:
+		sources.append(row[0])
+	return sources
 
     def retrieveContent(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveContent: retrieving Content for package ID "+str(idpackage))
@@ -1705,10 +1853,15 @@ class etpDatabase:
     
     def retrieveNeededlibs(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveNeededlibs: retrieving Needed Libraries for package ID "+str(idpackage))
-	self.cursor.execute('SELECT "library" FROM neededlibs WHERE idpackage = "'+str(idpackage)+'"')
-	libs = []
+	self.cursor.execute('SELECT idlibrary FROM neededlibs WHERE idpackage = "'+str(idpackage)+'"')
+	idlibs = []
 	for row in self.cursor:
-	    libs.append(row[0])
+	    idlibs.append(row[0])
+	libs = []
+	for lib in idlibs:
+	    self.cursor.execute('SELECT libraryname FROM libraries WHERE idlibrary = "'+str(lib)+'"')
+	    for row in self.cursor:
+		libs.append(row[0])
 	return libs
 
     def retrieveMirrorInfo(self, mirrorname):
@@ -1815,6 +1968,42 @@ class etpDatabase:
 	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isCategoryAvailable: "+category+" not available.")
 	    return result
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCategoryAvailable: "+category+" available.")
+	return result
+
+    def isLibraryAvailable(self,libraryname):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLibraryAvailable: called.")
+	result = -1
+	self.cursor.execute('SELECT idlibrary FROM libraries WHERE libraryname = "'+libraryname+'"')
+	for row in self.cursor:
+	    result = row[0]
+	if result == -1:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isLibraryAvailable: "+libraryname+" not available.")
+	    return result
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLibraryAvailable: "+libraryname+" available.")
+	return result
+
+    def isSourceAvailable(self,source):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSourceAvailable: called.")
+	result = -1
+	self.cursor.execute('SELECT idsource FROM sourcesreference WHERE source = "'+source+'"')
+	for row in self.cursor:
+	    result = row[0]
+	if result == -1:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isSourceAvailable: "+source+" not available.")
+	    return result
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSourceAvailable: "+source+" available.")
+	return result
+
+    def isDependencyAvailable(self,dependency):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isDependencyAvailable: called.")
+	result = -1
+	self.cursor.execute('SELECT iddependency FROM dependenciesreference WHERE dependency = "'+dependency+'"')
+	for row in self.cursor:
+	    result = row[0]
+	if result == -1:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isDependencyAvailable: "+dependency+" not available.")
+	    return result
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isDependencyAvailable: "+dependency+" available.")
 	return result
 
     def isKeywordAvailable(self,keyword):

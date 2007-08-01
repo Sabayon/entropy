@@ -687,6 +687,7 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 
     useMatch = False
     openParenthesis = 0
+    openParenthesisFromOr = 0
     openOr = False
     useFlagQuestion = False
     dependencies = ""
@@ -711,20 +712,23 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 		    useMatch = False
 
         if atom.startswith("("):
-	    openParenthesis += 1 # 1 | 2
+	    if (openOr):
+		openParenthesisFromOr += 1
+	    openParenthesis += 1 # 1 | 2 | 3
 
         if atom.startswith(")"):
 	    if (openOr):
 		# remove last "_or_" from dependencies
-		if (openParenthesis == 1):
+		if (openParenthesisFromOr == 1):
 		    openOr = False
 		    if dependencies.endswith(dbOR):
 		        dependencies = dependencies[:len(dependencies)-len(dbOR)]
 		        dependencies += " "
-		elif (openParenthesis == 2):
+		elif (openParenthesisFromOr == 2):
 		    if dependencies.endswith("|and|"):
 		        dependencies = dependencies[:len(dependencies)-len("|and|")]
 		        dependencies += dbOR
+		openParenthesisFromOr -= 1
 	    openParenthesis -= 1
 	    if (openParenthesis == 0):
 		useFlagQuestion = False
@@ -740,7 +744,7 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 		if (openOr):
 		    dependencies += atom
 		    # check if the or is fucked up
-		    if openParenthesis > 1:
+		    if openParenthesisFromOr > 1:
 			dependencies += "|and|" # !!
 		    else:
 		        dependencies += dbOR

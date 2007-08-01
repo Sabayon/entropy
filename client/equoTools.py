@@ -850,7 +850,7 @@ def getDependencies(packageInfo):
 '''
    @description: generates a list of unsatisfied dependencies
    @input package: packageInfo: list composed by int(id) and str(repository name)
-   @output: dependency tree (list)
+   @output: list of unsatisfied dependencies
 '''
 def getNeededDependencies(packageInfo):
     # first of all, get dependencies
@@ -880,6 +880,23 @@ def getNeededDependencies(packageInfo):
     
     clientDbconn.closeDB()
     return unsatisfiedDeps
+
+'''
+   @description: generates a dependency tree using unsatisfied dependencies
+   @input package: list of unsatisfied dependencies
+   @output: dependency tree dictionary
+'''
+treecache = {}
+def generateDependencyTree(unsatisfiedDeps):
+    treeview = {}
+    treeview[0] = [] # tree level 0
+    dbconn = etpDatabase(readOnly = True, noUpload = True)
+    for undep in unsatisfiedDeps:
+	# obtain its dependencies
+	result = atomMatch(undep)
+
+    dbconn.closeDB()
+    
 
 '''
    @description: using given information (atom), retrieves idpackage of the installed atom
@@ -1363,9 +1380,14 @@ def installPackages(packages, autoDrive = False):
         rc = askquestion("     Would you like to continue with dependencies calculation ?")
         if rc == "No":
 	    return 0,0
-	
+
+    runQueue = []
+
     for atomInfo in foundAtoms:
-	print getNeededDependencies(atomInfo)
+	deps = getNeededDependencies(atomInfo)
+	for dep in deps:
+	    runQueue.append(dep)
+	runQueue.append(atomInfo)
     
     print "not working yet :-) ahaha!"
     return 0,0

@@ -70,11 +70,14 @@ DROP TABLE IF EXISTS content;
 DROP TABLE IF EXISTS dependencies;
 DROP TABLE IF EXISTS rundependencies;
 DROP TABLE IF EXISTS rundependenciesxt;
+DROP TABLE IF EXISTS dependenciesreference;
 DROP TABLE IF EXISTS provide;
 DROP TABLE IF EXISTS conflicts;
 DROP TABLE IF EXISTS neededlibs;
+DROP TABLE IF EXISTS libraries;
 DROP TABLE IF EXISTS mirrorlinks;
 DROP TABLE IF EXISTS sources;
+DROP TABLE IF EXISTS sourcesreference;
 DROP TABLE IF EXISTS useflags;
 DROP TABLE IF EXISTS useflagsreference;
 DROP TABLE IF EXISTS keywords;
@@ -124,11 +127,16 @@ CREATE TABLE provide (
 
 CREATE TABLE dependencies (
     idpackage INTEGER,
-    dependency VARCHAR
+    iddependency INTEGER
 );
 
 CREATE TABLE rundependencies (
     idpackage INTEGER,
+    iddependency INTEGER
+);
+
+CREATE TABLE dependenciesreference (
+    iddependency INTEGER PRIMARY KEY,
     dependency VARCHAR
 );
 
@@ -139,7 +147,12 @@ CREATE TABLE conflicts (
 
 CREATE TABLE neededlibs (
     idpackage INTEGER,
-    library VARCHAR
+    idlibrary INTEGER
+);
+
+CREATE TABLE libraries (
+    idlibrary INTEGER PRIMARY KEY,
+    libraryname VARCHAR
 );
 
 CREATE TABLE mirrorlinks (
@@ -149,6 +162,11 @@ CREATE TABLE mirrorlinks (
 
 CREATE TABLE sources (
     idpackage INTEGER,
+    idsource INTEGER
+);
+
+CREATE TABLE sourcesreference (
+    idsource INTEGER PRIMARY KEY,
     source VARCHAR
 );
 
