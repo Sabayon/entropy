@@ -221,6 +221,10 @@ def create_color_func(color_key):
 for c in compat_functions_colors:
 	setattr(sys.modules[__name__], c, create_color_func(c))
 
+def enlightenatom(atom):
+    out = atom.split("/")
+    return blue(out[0])+darkgreen("/")+red(out[1])
+
 def print_error(msg, back = False):
     writechar("\r"+_cleanline+"\r")
     if (back):

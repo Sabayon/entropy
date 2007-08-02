@@ -257,7 +257,7 @@ def checkRoot():
    @input dbconn: database connection
    @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = not found, 2 = need more info, 3 = cannot use direction without specifying version
 '''
-def atomMatchInRepository(atom,dbconn):
+def atomMatchInRepository(atom, dbconn, caseSensitive = True):
     
     # check for direction
     strippedAtom = dep_getcpv(atom)
@@ -268,7 +268,7 @@ def atomMatchInRepository(atom,dbconn):
 
     #print strippedAtom
     #print isspecific(strippedAtom)
-    #print strippedAtom
+    #print direction
     
     justname = isjustname(strippedAtom)
     #print justname
@@ -284,6 +284,9 @@ def atomMatchInRepository(atom,dbconn):
 	if atom.split("-")[len(atom.split("-"))-1].startswith("t"):
 	    pkgtag = atom.split("-")[len(atom.split("-"))-1]
 	    #print "TAG: "+pkgtag
+	#print data
+	#print pkgversion
+	#print pkgtag
 	
 
     pkgkey = dep_getkey(strippedAtom)
@@ -304,7 +307,9 @@ def atomMatchInRepository(atom,dbconn):
     for idx in range(myBranchIndex+1)[::-1]: # reverse order
 	#print "Searching into -> "+etpConst['branches'][idx]
 	# search into the less stable, if found, break, otherwise continue
-	results = dbconn.searchPackagesInBranchByName(pkgname,etpConst['branches'][idx])
+	results = dbconn.searchPackagesInBranchByName(pkgname, etpConst['branches'][idx], caseSensitive)
+	
+	#print results
 	
 	# if it's a PROVIDE, search with searchProvide
 	if (not results):
@@ -335,7 +340,7 @@ def atomMatchInRepository(atom,dbconn):
 	    pkgcat = foundCat
 	    
 	    # we need to search using the category
-	    results = dbconn.searchPackagesInBranchByNameAndCategory(pkgname,pkgcat,etpConst['branches'][idx])
+	    results = dbconn.searchPackagesInBranchByNameAndCategory(pkgname,pkgcat,etpConst['branches'][idx], caseSensitive)
 	    # validate again
 	    if (not results):
 		continue  # search into a stabler branch
@@ -406,7 +411,7 @@ def atomMatchInRepository(atom,dbconn):
 	        newerPkgCategory = dbconn.retrieveCategory(newerPackage[0])
 	        newerPkgVersion = dbconn.retrieveVersion(newerPackage[0])
 		newerPkgBranch = dbconn.retrieveBranch(newerPackage[0])
-	        similarPackages = dbconn.searchPackagesInBranchByNameAndVersionAndCategory(newerPkgName, newerPkgVersion, newerPkgCategory, newerPkgBranch)
+	        similarPackages = dbconn.searchPackagesInBranchByNameAndVersionAndCategory(newerPkgName, newerPkgVersion, newerPkgCategory, newerPkgBranch, caseSensitive)
 		
 		#print newerPackage
 		#print similarPackages
@@ -529,7 +534,7 @@ def atomMatchInRepository(atom,dbconn):
    @ exit errors:
 	    -1 => repository cannot be fetched online
 '''
-def atomMatch(atom):
+def atomMatch(atom, caseSentitive = True):
     repoResults = {}
     exitstatus = 0
     exitErrors = {}
@@ -542,11 +547,10 @@ def atomMatch(atom):
 	    exitErrors[repo] = -1
 	    continue
 	# open database
-	dbfile = etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile']
-	dbconn = etpDatabase(readOnly = True, dbFile = dbfile)
+	dbconn = openRepositoryDatabase(repo)
 	
 	# search
-	query = atomMatchInRepository(atom,dbconn)
+	query = atomMatchInRepository(atom,dbconn,caseSentitive)
 	if query[1] == 0:
 	    # package found, add to our dictionary
 	    repoResults[repo] = query[0]
@@ -572,8 +576,7 @@ def atomMatch(atom):
 	for repo in repoResults:
 	    
 	    # open database
-	    dbfile = etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile']
-	    dbconn = etpDatabase(readOnly = True, dbFile = dbfile)
+	    dbconn = openRepositoryDatabase(repo)
 	
 	    # search
 	    packageInformation[repo] = {}
@@ -787,8 +790,7 @@ def getDependencies(packageInfo):
 	raise Exception, "getDependencies: I need a list with two values in it." # bad bad bad bad
     idpackage = packageInfo[0]
     reponame = packageInfo[1]
-    dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
-    dbconn = etpDatabase(readOnly = True, noUpload = True, dbFile = dbfile)
+    dbconn = openRepositoryDatabase(reponame)
     
     # retrieve dependencies
     depend = dbconn.retrieveDependencies(idpackage)
@@ -859,20 +861,20 @@ def getDependencies(packageInfo):
 def getNeededDependencies(packageInfo):
     # first of all, get dependencies
     dependencies = getDependencies(packageInfo)
-    
+
+    unsatisfiedDeps = []
     # now create a list with the unsatisfied ones
     # query the installed packages database
     #print etpConst['etpdatabaseclientfilepath']
-    clientDbconn = etpDatabase(readOnly = False, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
+    clientDbconn = openClientDatabase()
+    if (clientDbconn != -1):
+        for dependency in dependencies:
+	    rc = atomMatchInRepository(dependency,clientDbconn)
+	    if rc[0] == -1:
+	        unsatisfiedDeps.append(dependency)
     
-    unsatisfiedDeps = []
-    for dependency in dependencies:
-	rc = atomMatchInRepository(dependency,clientDbconn)
-	if rc[0] == -1:
-	    unsatisfiedDeps.append(dependency)
+        clientDbconn.closeDB()
     
-    clientDbconn.closeDB()
-    #print unsatisfiedDeps
     return unsatisfiedDeps
 
 '''
@@ -882,17 +884,17 @@ def getNeededDependencies(packageInfo):
    		it will be returned a dictionary with a -1 entry and the list of missing dependencies
 '''
 def generateDependencyTree(unsatisfiedDeps):
-    treeview = {}
-    treedepth = 0
-    #treeview[treedepth] = [] # tree level 0
-    
+
     dbconn = etpDatabase(readOnly = True, noUpload = True)
     
     remainingDeps = unsatisfiedDeps[:]
     dependenciesNotFound = []
-    treeview[treedepth] = unsatisfiedDeps[:]
+    treeview = []
+    treedepth = 0
     depsOk = False
     while (not depsOk):
+	#print "depth "+str(treedepth)
+	#print "neededdeps -> "+str(unsatisfiedDeps)
 	treedepth += 1
         for undep in unsatisfiedDeps:
 	    # obtain its dependencies
@@ -904,29 +906,77 @@ def generateDependencyTree(unsatisfiedDeps):
 	    else:
 		# found, get its deps
 		mydeps = getNeededDependencies(atom)
-		for x in mydeps:
+		myremainingdeps = []
+		if (mydeps):
+		    myremainingdeps = [x for x in mydeps if x not in treeview]
+		#print "old depth "+str(treedepth-1)
+		#print myremainingdeps
+		for x in myremainingdeps:
 		    remainingDeps.append(x)
-		remainingDeps.remove(undep)
+		try:
+		    while 1:
+			remainingDeps.remove(undep)
+		except:
+		    pass
 	# merge back remainingDeps into unsatisfiedDeps
+	remainingDeps = list(set(remainingDeps))
 	unsatisfiedDeps = remainingDeps[:]
+	for x in unsatisfiedDeps:
+	    treeview.append(x)
 	
 	if (not unsatisfiedDeps):
 	    depsOk = True
 	else:
-	    treeview[treedepth] = unsatisfiedDeps[:]
 	    depsOk = False
 
     if (dependenciesNotFound):
 	# Houston, we've got a problem
-	errorView = {}
-	errorView[-1] = dependenciesNotFound
-	return errorView
+	print "error! DEPS NOT FOUND -> "+str(dependenciesNotFound)
+	treeview = dependenciesNotFound
+	return treeview,False
 
-    print treeview
+    # filter duplicates
+    treedata = []
+    if (treeview):
+        treeview = list(set(treeview))
+        for atom in treeview:
+	    data = atomMatch(atom)
+	    treedata.append(data)
+        # filter duplicates
+        if (treedata):
+            treedata = list(set(treedata))
+
+    #print treeview
     dbconn.closeDB()
-    return treeview
+    return treedata,True
 
+
+'''
+   @description: generates a list cotaining the needed dependencies of a list requested atoms
+   @input package: list of atoms that would be installed in list form, whose each element is composed by [idpackage,repository name]
+   @output: list containing, for each element: [idpackage,repository name]
+   		@ if dependencies couldn't be satisfied, the output will be -1
+   @note: this is the function that should be used for 3rd party applications after using atomMatch()
+'''
+def getRequiredPackages(foundAtoms):
+    deplist = []
     
+    for atomInfo in foundAtoms:
+	deps = getNeededDependencies(atomInfo)
+	if (deps):
+	    results = generateDependencyTree(deps)
+	    if (results[1]):
+		results = results[0]
+	    else:
+		return -1
+	    for result in results:
+		deplist.append(result)
+
+    # clean duplicates
+    if (deplist):
+        deplist = list(set(deplist))
+
+    return deplist
 
 '''
    @description: using given information (atom), retrieves idpackage of the installed atom
@@ -935,21 +985,22 @@ def generateDependencyTree(unsatisfiedDeps):
 '''
 def getInstalledAtoms(atom):
 
-    clientDbconn = etpDatabase(readOnly = True, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
-
+    clientDbconn = openClientDatabase()
     results = []
-    if not isjustname(atom):
-	key = dep_getkey(atom)
-    else:
-	key = atom[:]
-    name = key.split("/")[1]
-    cat = key.split("/")[0]
-    rc = clientDbconn.searchPackagesByNameAndCategory(name,cat)
-    if (rc):
-	for x in rc:
-	    results.append(x[1])
+    
+    if (clientDbconn != -1):
+        if not isjustname(atom):
+	    key = dep_getkey(atom)
+        else:
+	    key = atom[:]
+        name = key.split("/")[1]
+        cat = key.split("/")[0]
+        rc = clientDbconn.searchPackagesByNameAndCategory(name,cat)
+        if (rc):
+	    for x in rc:
+	        results.append(x[1])
+        clientDbconn.closeDB()
 
-    clientDbconn.closeDB()
     return results
 
 '''
@@ -993,14 +1044,14 @@ def compareVersions(listA,listB):
    @input package: filename to check inside the packages directory -> file, checksum of the package -> checksum
    @output: -1 = should be downloaded, -2 = digest broken (not mandatory), remove & download, 0 = all fine, we don't need to download it
 '''
-def checkNeededDownload(file,checksum = None):
+def checkNeededDownload(filepath,checksum = None):
     # is the file available
-    if os.path.isfile(etpConst['packagesbindir']+"/"+file) and os.path.isfile(etpConst['packagesbindir']+"/"+file+etpConst['packageshashfileext']):
+    if os.path.isfile(etpConst['entropyworkdir']+"/"+filepath) and os.path.isfile(etpConst['entropyworkdir']+"/"+filepath+etpConst['packageshashfileext']):
 	if checksum is None:
 	    return 0
 	else:
 	    # check digest
-	    md5res = compareMd5(etpConst['packagesbindir']+"/"+file,checksum)
+	    md5res = compareMd5(etpConst['entropyworkdir']+"/"+filepath,checksum)
 	    if (md5res):
 		return 0
 	    else:
@@ -1076,6 +1127,7 @@ def database(options):
 	
 	# Now reinitialize it
 	print_info(darkred("  Initializing the new database at "+bold(etpConst['etpdatabaseclientfilepath'])), back = True)
+	# we can't use openClientDatabase
 	clientDbconn = etpDatabase(readOnly = False, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
 	clientDbconn.initializeDatabase()
 	print_info(darkgreen("  Database reinitialized correctly at "+bold(etpConst['etpdatabaseclientfilepath'])))
@@ -1112,8 +1164,8 @@ def database(options):
 	for x in foundPackages:
 	    # open its database
 	    count += 1
-	    dbpath = etpRepositories[x[1]]['dbpath']+"/"+etpConst['etpdatabasefile']
-	    dbconn = etpDatabase(readOnly = True, noUpload = True, dbFile = dbpath, clientDatabase = True)
+	    dbconn = openRepositoryDatabase(x[1])
+	    
 	    atomName = dbconn.retrieveAtom(x[0])
 	    atomInfo = dbconn.getPackageData(x[0])
 	    atomBranch = dbconn.retrieveBranch(x[0])
@@ -1157,7 +1209,8 @@ def printPackageInfo(idpackage,dbconn):
     installedVer = "Not installed"
     installedTag = "N/A"
     installedRev = "N/A"
-    if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
+    clientDbconn = openClientDatabase()
+    if (clientDbconn != -1):
         clientDbconn = etpDatabase(readOnly = True, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
         pkginstalled = getInstalledAtoms(pkgatom)
         if (pkginstalled):
@@ -1212,9 +1265,7 @@ def searchPackage(packages, idreturn = False):
 	    searchError = True
 	    continue
 	
-	dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
-	    
-	dbconn = etpDatabase(readOnly = True, dbFile = dbfile)
+	dbconn = openRepositoryDatabase(reponame)
 	dataInfo = [] # when idreturn is True
 	for package in packages:
 	    result = dbconn.searchPackages(package)
@@ -1252,6 +1303,31 @@ def searchPackage(packages, idreturn = False):
 	return 129
     return 0
 
+'''
+   @description: open the repository database and returns the pointer
+   @input repositoryName: name of the client database
+   @output: database pointer or, -1 if error
+'''
+def openRepositoryDatabase(repositoryName):
+    dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
+    if not os.path.isfile(dbfile):
+	rc = fetchRepositoryIfNotAvailable(repositoryName)
+	if (rc):
+	    raise Exception, "openRepositoryDatabase: cannot sync repository "+repositoryName
+    conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True)
+    return conn
+
+'''
+   @description: open the installed packages database and returns the pointer
+   @output: database pointer or, -1 if error
+'''
+def openClientDatabase():
+    if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
+        conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
+	return conn
+    else:
+	return -1
+
 
 ########################################################
 ####
@@ -1265,10 +1341,6 @@ def installPackages(packages, autoDrive = False):
     if (not checkRoot()):
 	print_error(red("\t You must run this function as root."))
 	return 1,-1
-    
-    lst = ["virtual/lpr","media-sound/amarok","kde-base/kdelibs"]
-    generateDependencyTree(lst)
-    sys.exit()
     
     foundAtoms = []
     for package in packages:
@@ -1294,33 +1366,28 @@ def installPackages(packages, autoDrive = False):
     print_info(red(" @@ ")+blue("These are the chosen packages:"))
     totalatoms = len(foundAtoms)
     atomscounter = 0
-    totalDownloadSize = 0
     for atomInfo in foundAtoms:
 	atomscounter += 1
 	idpackage = atomInfo[0]
 	reponame = atomInfo[1]
 	# open database
-	dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
-	dbconn = etpDatabase(readOnly = True, dbFile = dbfile)
+	dbconn = openRepositoryDatabase(reponame)
 
 	# get needed info
 	pkgatom = dbconn.retrieveAtom(idpackage)
-	pkgsize = dbconn.retrieveSize(idpackage)
 	pkgver = dbconn.retrieveVersion(idpackage)
 	pkgtag = dbconn.retrieveVersionTag(idpackage)
 	if not pkgtag:
 	    pkgtag = "NoTag"
 	pkgrev = dbconn.retrieveRevision(idpackage)
-	totalDownloadSize += int(pkgsize)
-	pkgsize = bytesIntoHuman(pkgsize)
 	pkgslot = dbconn.retrieveSlot(idpackage)
 	
 	# client info
 	installedVer = "Not installed"
-	installedTag = "N/A"
-	installedRev = "N/A"
-	if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
-	    clientDbconn = etpDatabase(readOnly = True, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
+	installedTag = "NoTag"
+	installedRev = "NoRev"
+	clientDbconn = openClientDatabase()
+	if (clientDbconn != -1):
 	    pkginstalled = getInstalledAtoms(pkgatom)
 	    if (pkginstalled):
 	        # we need to match slot
@@ -1336,33 +1403,33 @@ def installPackages(packages, autoDrive = False):
 		        break
 	    clientDbconn.closeDB()
 
-	print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom))
-	print_info("\t\t"+red("Repository:\t\t")+" "+darkred(etpRepositories[reponame]['description']))
-	print_info("\t\t"+red("Available:\t\t")+" "+blue("version: ")+bold(pkgver)+blue(" ~ tag: ")+bold(pkgtag)+blue(" ~ revision: ")+bold(str(pkgrev)))
-	print_info("\t\t"+red("Installed:\t\t")+" "+blue("version: ")+bold(installedVer)+blue(" ~ tag: ")+bold(installedTag)+blue(" ~ revision: ")+bold(str(installedRev)))
-	print_info("\t\t"+red("Download Size:\t\t")+" "+brown(pkgsize))
-	
+	# fill atomsData
+
+	print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
+	print_info("\t"+red("Versioning:\t")+" "+blue(installedVer)+" / "+blue(installedTag)+" / "+blue(str(installedRev))+bold(" ===> ")+darkgreen(pkgver)+" / "+darkgreen(pkgtag)+" / "+darkgreen(str(pkgrev)))
 	# tell wether we should update it
 	if installedVer == "Not installed":
-	    insalledVer = "0"
-	if installedTag == "N/A":
+	    installedVer = "0"
+	if installedTag == "NoTag":
 	    installedTag == ''
-	if installedRev == "N/A":
+	if installedRev == "NoRev":
 	    installedRev == 0
 	cmp = compareVersions([pkgver,pkgtag,pkgrev],[installedVer,installedTag,installedRev])
 	if (cmp == 0):
 	    action = darkgreen("No update needed")
 	elif (cmp > 0):
-	    action = red("Downgrade")
+	    if (installedVer == "0"):
+		action = darkgreen("Install")
+	    else:
+	        action = blue("Upgrade")
 	else:
-	    action = blue("Upgrade")
-	print_info("\t\t"+red("Action:\t\t\t")+" "+action)
+	    action = red("Downgrade")
+	print_info("\t"+red("Action:\t\t")+" "+action)
 	
 	dbconn.closeDB()
 
     print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
     # FIXME: add only if the packages have not been downloaded
-    print_info(red(" @@ ")+blue("Total Packages Size: ")+str(bytesIntoHuman(totalDownloadSize)))
     
     if (not autoDrive):
         rc = askquestion("     Would you like to continue with dependencies calculation ?")
@@ -1371,11 +1438,89 @@ def installPackages(packages, autoDrive = False):
 
     runQueue = []
 
+    print_info(red(" @@ ")+blue("Calculating..."))
+
+    reqpackages = getRequiredPackages(foundAtoms)
+    # add dependencies
+    for dep in reqpackages:
+	runQueue.append(dep)
+    # remove duplicates
+    runQueue = [x for x in runQueue if x not in foundAtoms]
+    # add our requested packages at the end
     for atomInfo in foundAtoms:
-	deps = getNeededDependencies(atomInfo)
-	for dep in deps:
-	    runQueue.append(dep)
 	runQueue.append(atomInfo)
-    
-    print "not working yet :-) ahaha!"
+
+    downloadSize = 0
+    actionQueue = {}
+
+    if (runQueue):
+	print_info(red(" @@ ")+blue("These are the packages that would be merged:"))
+	for packageInfo in runQueue:
+	    dbconn = openRepositoryDatabase(packageInfo[1])
+	    
+	    pkgatom = dbconn.retrieveAtom(packageInfo[0])
+	    pkgver = dbconn.retrieveVersion(packageInfo[0])
+	    pkgtag = dbconn.retrieveVersionTag(packageInfo[0])
+	    pkgrev = dbconn.retrieveRevision(packageInfo[0])
+	    pkgslot = dbconn.retrieveSlot(packageInfo[0])
+	    pkgdigest = dbconn.retrieveDigest(packageInfo[0])
+	    pkgfile = dbconn.retrieveDownloadURL(packageInfo[0])
+	    
+	    # fill action queue
+	    actionQueue[pkgatom] = {}
+	    actionQueue[pkgatom]['repository'] = packageInfo[1]
+	    actionQueue[pkgatom]['atom'] = pkgatom
+	    actionQueue[pkgatom]['download'] = etpRepositories[packageInfo[1]]['packages']+"/"+pkgfile
+	    actionQueue[pkgatom]['checksum'] = pkgdigest
+	    dl = checkNeededDownload(pkgfile, pkgdigest)
+	    actionQueue[pkgatom]['fetch'] = dl
+	    if dl < 0:
+		pkgsize = dbconn.retrieveSize(packageInfo[0])
+		downloadSize += int(pkgsize)
+
+	    flags = " ["
+
+	    # get installed package data
+	    installedVer = '0'
+	    installedTag = ''
+	    installedRev = 0
+	    clientDbconn = openClientDatabase()
+	    if (clientDbconn != -1):
+	        pkginstalled = getInstalledAtoms(pkgatom)
+	        if (pkginstalled):
+	            # we need to match slot
+	            for idx in pkginstalled:
+	                islot = clientDbconn.retrieveSlot(idx)
+		        if islot == pkgslot:
+		            # found
+		            installedVer = clientDbconn.retrieveVersion(idx)
+		            installedTag = clientDbconn.retrieveVersionTag(idx)
+		            if not installedTag:
+			        installedTag = "NoTag"
+		            installedRev = clientDbconn.retrieveRevision(idx)
+		            break
+	        clientDbconn.closeDB()
+	    
+	    cmp = compareVersions([pkgver,pkgtag,pkgrev],[installedVer,installedTag,installedRev])
+	    if (cmp == 0):
+	        flags += red("R")
+	    elif (cmp > 0):
+	        if (installedVer == "0"):
+	            flags += darkgreen("N")
+	        else:
+		    flags += blue("U")
+	    else:
+	        flags += darkblue("D")
+	    flags += "] "
+
+	    repoinfo = red("[")+brown("from: ")+bold(packageInfo[1])+red("] ")
+
+	    print_info(red("   ##")+flags+repoinfo+blue(enlightenatom(str(pkgatom))))
+	    dbconn.closeDB()
+
+	# show download info
+	print_info(red(" @@ ")+"Packages involved: "+str(len(runQueue)))
+	print_info(red(" @@ ")+"Download size: "+str(bytesIntoHuman(downloadSize)))
+
+    print "not working yet :-)"
     return 0,0

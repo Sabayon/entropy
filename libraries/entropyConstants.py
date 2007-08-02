@@ -291,6 +291,9 @@ etpConst = {
     'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
     'etpurirelativepath': "database/"+ETP_ARCH_CONST+"/", # Relative remote path for the .etp repository.
     							  # TO BE REMOVED? CHECK
+
+    'entropyworkdir': ETP_DIR, # Entropy workdir
+
     'etpdatabaserevisionfile': ETP_DBFILE+".revision", # the local/remote database revision file
     'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum
     'etpdatabaselockfile': ETP_DBFILE+".lock", # the remote database lock file
@@ -351,7 +354,7 @@ etpHandlers = {
 
 
 # Create paths
-if not os.path.isdir(ETP_DIR):
+if not os.path.isdir(etpConst['entropyworkdir']):
     import getpass
     if getpass.getuser() == "root":
 	import re

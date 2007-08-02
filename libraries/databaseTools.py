@@ -2069,10 +2069,13 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"areCompileFlagsAvailable: flags tuple "+chost+"|"+cflags+"|"+cxxflags+" available.")
 	return result
 
-    def searchPackages(self, keyword):
+    def searchPackages(self, keyword, sensitive = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackages: called for "+keyword)
 	result = []
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(atom) LIKE "%'+string.lower(keyword)+'%"')
+	if (sensitive):
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE atom LIKE "%'+keyword+'%"')
+	else:
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(atom) LIKE "%'+string.lower(keyword)+'%"')
 	for row in self.cursor:
 	    result.append(row)
 	return result
@@ -2109,77 +2112,95 @@ class etpDatabase:
 		break
 	return result
 
-    def searchPackagesInBranch(self, keyword, branch):
+    def searchPackagesInBranch(self, keyword, branch, sensitive = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesInBranch: called.")
 	result = []
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(atom) LIKE "%'+string.lower(keyword)+'%" AND branch = "'+branch+'"')
+	if (sensitive):
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE atom LIKE "%'+keyword+'%" AND branch = "'+branch+'"')
+	else:
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(atom) LIKE "%'+string.lower(keyword)+'%" AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row)
 	return result
 
-    def searchPackagesByName(self, keyword):
+    def searchPackagesByName(self, keyword, sensitive = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByName: called for "+keyword)
 	result = []
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+string.lower(keyword)+'"')
+	if (sensitive):
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+keyword+'"')
+	else:
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+string.lower(keyword)+'"')
 	for row in self.cursor:
 	    result.append(row)
 	return result
 
-    def searchPackagesByNameAndCategory(self, name, category):
+    def searchPackagesByNameAndCategory(self, name, category, sensitive = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByNameAndCategory: called for name: "+name+" and category: "+category)
 	result = []
 	# get category id
 	idcat = -1
-	self.cursor.execute('SELECT idcategory FROM categories WHERE LOWER(category) = "'+string.lower(category)+'"')
+	self.cursor.execute('SELECT idcategory FROM categories WHERE category = "'+category+'"')
 	for row in self.cursor:
 	    idcat = row[0]
 	    break
 	if idcat == -1:
 	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"searchPackagesByNameAndCategory: Category "+category+" not available.")
 	    return result
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+string.lower(name)+'" AND idcategory ='+str(idcat))
+	if (sensitive):
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+name+'" AND idcategory ='+str(idcat))
+	else:
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+string.lower(name)+'" AND idcategory ='+str(idcat))
 	for row in self.cursor:
 	    result.append(row)
 	return result
 
-    def searchPackagesInBranchByName(self, keyword, branch):
+    def searchPackagesInBranchByName(self, keyword, branch, sensitive = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesInBranchByName: called for "+keyword)
 	result = []
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+string.lower(keyword)+'" AND branch = "'+branch+'"')
+	if (sensitive):
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+keyword+'" AND branch = "'+branch+'"')
+	else:
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+string.lower(keyword)+'" AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row)
 	return result
 
-    def searchPackagesInBranchByNameAndCategory(self, name, category, branch):
+    def searchPackagesInBranchByNameAndCategory(self, name, category, branch, sensitive = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesInBranchByNameAndCategory: called for "+name+" and category "+category)
 	result = []
 	# get category id
 	idcat = -1
-	self.cursor.execute('SELECT idcategory FROM categories WHERE LOWER(category) = "'+string.lower(category)+'"')
+	self.cursor.execute('SELECT idcategory FROM categories WHERE category = "'+category+'"')
 	for row in self.cursor:
 	    idcat = row[0]
 	    break
 	if idcat == -1:
 	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"searchPackagesInBranchByNameAndCategory: Category "+category+" not available.")
 	    return result
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+string.lower(name)+'" AND idcategory = '+str(idcat)+' AND branch = "'+branch+'"')
+	if (sensitive):
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+name+'" AND idcategory = '+str(idcat)+' AND branch = "'+branch+'"')
+	else:
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+string.lower(name)+'" AND idcategory = '+str(idcat)+' AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row)
 	return result
 
-    def searchPackagesInBranchByNameAndVersionAndCategory(self, name, version, category, branch):
+    def searchPackagesInBranchByNameAndVersionAndCategory(self, name, version, category, branch, sensitive = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesInBranchByNameAndVersionAndCategoryAndTag: called for "+name+" and version "+version+" and category "+category+" | branch "+branch)
 	result = []
 	# get category id
 	idcat = -1
-	self.cursor.execute('SELECT idcategory FROM categories WHERE LOWER(category) = "'+string.lower(category)+'"')
+	self.cursor.execute('SELECT idcategory FROM categories WHERE category = "'+category+'"')
 	for row in self.cursor:
 	    idcat = row[0]
 	    break
 	if idcat == -1:
 	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"searchPackagesInBranchByNameAndVersionAndCategoryAndTag: Category "+category+" not available.")
 	    return result
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+string.lower(name)+'" AND version = "'+version+'" AND idcategory = '+str(idcat)+' AND branch = "'+branch+'"')
+	if (sensitive):
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+name+'" AND version = "'+version+'" AND idcategory = '+str(idcat)+' AND branch = "'+branch+'"')
+	else:
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+string.lower(name)+'" AND version = "'+version+'" AND idcategory = '+str(idcat)+' AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row)
 	return result
