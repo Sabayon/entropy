@@ -1104,19 +1104,29 @@ def database(options):
 	print_info(red("  ### Packages matching: ")+bold(str(len(foundPackages))))
 	print_info(red("  ### Packages not matching: ")+bold(str(len(missingPackages))))
 	
-	f = open("/tmp/notmatch","w")
-	for x in missingPackages:
-	    f.write(str(x)+"\n")
-	f.flush()
-	f.close()
-	f = open("/tmp/match","w")
-	for x in foundPackages:
-	    f.write(str(x)+"\n")
-	f.flush()
-	f.close()
-
-
+	print_info(red("  Now filling the new database..."))
 	
+	count = 0
+	total = str(len(foundPackages))
+	
+	for x in foundPackages:
+	    # open its database
+	    count += 1
+	    dbpath = etpRepositories[x[1]]['dbpath']+"/"+etpConst['etpdatabasefile']
+	    dbconn = etpDatabase(readOnly = True, noUpload = True, dbFile = dbpath, clientDatabase = True)
+	    atomName = dbconn.retrieveAtom(x[0])
+	    atomInfo = dbconn.getPackageData(x[0])
+	    atomBranch = dbconn.retrieveBranch(x[0])
+	    dbconn.closeDB()
+	    # filling
+	    print_info("  "+bold("(")+darkgreen(str(count))+"/"+blue(total)+bold(")")+red(" Injecting ")+bold(atomName), back = True)
+	    # fill clientDbconn # FIXME write a general client side addPackage function
+	    clientDbconn.addPackage(atomInfo, wantedBranch = atomBranch)
+	    # now add the package
+	    clientDbconn.addPackageToInstalledTable(x[0],x[1])
+
+	print_info(red("  Database reinitialized successfully."))
+
 	clientDbconn.closeDB()
 
 

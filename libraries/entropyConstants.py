@@ -341,6 +341,7 @@ etpConst = {
     'branch': "unstable", # choosen branch
     'gentoo-compat': False, # Gentoo compatibility (/var/db/pkg + Portage availability)
     'filesystemdirs': ['/bin','/boot','/emul','/etc','/lib','/lib32','/lib64','/opt','/sbin','/usr','/var'], # directory of the filesystem
+    'officialrepositoryname': "sabayonlinux.org" # our official repository name
  }
 
 # Handlers used by entropy to run and retrieve data remotely, using php helpers

@@ -62,7 +62,13 @@ def generator(package, enzymeRequestBump = False, dbconnection = None, enzymeReq
     else:
 	dbconn = dbconnection
 
-    updated, revision, etpDataUpdated = dbconn.handlePackage(etpData,enzymeRequestBump)
+    idpk, revision, etpDataUpdated = dbconn.handlePackage(etpData,enzymeRequestBump)
+    
+    # add package info to our official repository etpConst['officialrepositoryname']
+    if (idpk != -1):
+        dbconn.removePackageFromInstalledTable(idpk)
+	dbconn.addPackageToInstalledTable(idpk,etpConst['officialrepositoryname'])
+    
     
     # return back also the new possible package filename, so that we can make decisions on that
     newFileName = os.path.basename(etpDataUpdated['download'])
@@ -71,11 +77,11 @@ def generator(package, enzymeRequestBump = False, dbconnection = None, enzymeReq
 	dbconn.commitChanges()
 	dbconn.closeDB()
 
-    if (updated) and (revision != 0):
+    if (idpk != -1) and (revision != 0):
 	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" has been updated to revision: "+str(revision))
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry has been updated. Revision: ")+bold(str(revision)))
 	return True, newFileName
-    elif (updated) and (revision == 0):
+    elif (idpk != -1) and (revision == 0):
 	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" newly created.")
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry newly created."))
 	return True, newFileName

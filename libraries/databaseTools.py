@@ -938,10 +938,10 @@ class etpDatabase:
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: called.")
 	if (not self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag)):
-	    update, revision, etpDataUpdated = self.addPackage(etpData)
+	    idpk, revision, etpDataUpdated = self.addPackage(etpData)
 	else:
-	    update, revision, etpDataUpdated = self.updatePackage(etpData,forceBump)
-	return update, revision, etpDataUpdated
+	    idpk, revision, etpDataUpdated = self.updatePackage(etpData,forceBump)
+	return idpk, revision, etpDataUpdated
 
     # default add an unstable package
     def addPackage(self, etpData, revision = 0, wantedBranch = "unstable"):
@@ -1185,7 +1185,8 @@ class etpDatabase:
 	    )
 
 	self.commitChanges()
-	return True, revision, etpData
+	
+	return idpackage, revision, etpData
 
     # Update already available atom in db
     # returns True,revision if the package has been updated
@@ -1247,7 +1248,7 @@ class etpDatabase:
 	oldPkgAtom = etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag
 	rc = self.comparePackagesData(etpData, oldPkgAtom, branchToQuery = etpData['branch'])
 	if (rc) and (not forceBump):
-	    return False, curRevision, etpData # in this case etpData content does not matter
+	    return -1, curRevision, etpData # in this case etpData content does not matter
 
 	# OTHERWISE:
 	# remove the current selected package, if exists
@@ -1299,6 +1300,9 @@ class etpDatabase:
 	self.cursor.execute('DELETE FROM keywords WHERE idpackage = '+idpackage)
 	# binkeywords
 	self.cursor.execute('DELETE FROM binkeywords WHERE idpackage = '+idpackage)
+	
+	# Remove from installedtable if exist
+	self.removePackageFromInstalledTable(idpackage)
 	
 	# Cleanups
 	self.cleanupLibraries()
@@ -2320,4 +2324,23 @@ class etpDatabase:
 	    
 	    return True,action
 	return False,action
+
+########################################################
+####
+##   Client Database API / but also used by server part
+#
+
+    def addPackageToInstalledTable(self, idpackage,repositoryName):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackageToInstalledTable: called for "+str(idpackage)+" and repository "+str(repositoryName))
+	self.cursor.execute(
+		'INSERT into installedtable VALUES '
+		'(?,?)'
+		, (	idpackage,
+			repositoryName,
+			)
+	)
+
+    def removePackageFromInstalledTable(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removePackageFromInstalledTable: called for "+str(idpackage))
+	self.cursor.execute('DELETE FROM installedtable WHERE idpackage = '+str(idpackage))
 	
