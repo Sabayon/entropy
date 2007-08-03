@@ -938,13 +938,13 @@ class etpDatabase:
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: called.")
 	if (not self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag)):
-	    idpk, revision, etpDataUpdated = self.addPackage(etpData)
+	    idpk, revision, etpDataUpdated, accepted = self.addPackage(etpData)
 	else:
-	    idpk, revision, etpDataUpdated = self.updatePackage(etpData,forceBump)
-	return idpk, revision, etpDataUpdated
+	    idpk, revision, etpDataUpdated, accepted = self.updatePackage(etpData,forceBump)
+	return idpk, revision, etpDataUpdated, accepted
 
     # default add an unstable package
-    def addPackage(self, etpData, revision = 0, wantedBranch = "unstable"):
+    def addPackage(self, etpData, revision = 0, wantedBranch = "unstable", addBranch = True):
 
 	if (self.readOnly):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: Cannot handle this in read only.")
@@ -952,10 +952,11 @@ class etpDatabase:
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: called.")
 	
-	# Handle package name
-	etpData['download'] = etpData['download'].split(".tbz2")[0]
-	# add branch name
-	etpData['download'] += "-"+wantedBranch+".tbz2"
+	if (addBranch):
+	    # Handle package name
+	    etpData['download'] = etpData['download'].split(".tbz2")[0]
+	    # add branch name
+	    etpData['download'] += "-"+wantedBranch+".tbz2"
 
 	# if a similar package, in the same branch exists, mark for removal
 	searchsimilar = self.searchSimilarPackages(etpData['category']+"/"+etpData['name'], branch = wantedBranch)
@@ -1186,7 +1187,7 @@ class etpDatabase:
 
 	self.commitChanges()
 	
-	return idpackage, revision, etpData
+	return idpackage, revision, etpData, True
 
     # Update already available atom in db
     # returns True,revision if the package has been updated
@@ -1248,7 +1249,7 @@ class etpDatabase:
 	oldPkgAtom = etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag
 	rc = self.comparePackagesData(etpData, oldPkgAtom, branchToQuery = etpData['branch'])
 	if (rc) and (not forceBump):
-	    return -1, curRevision, etpData # in this case etpData content does not matter
+	    return idpackage, curRevision, etpData, False # package not accepted
 
 	# OTHERWISE:
 	# remove the current selected package, if exists
@@ -1262,8 +1263,8 @@ class etpDatabase:
 
 	# add the new one
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: complete. Now spawning addPackage.")
-	x,y,z = self.addPackage(etpData,curRevision,etpData['branch'])
-	return x,y,z
+	x,y,z,accepted = self.addPackage(etpData,curRevision,etpData['branch'])
+	return x,y,z,accepted
 	
 
     def removePackage(self,idpackage):
@@ -1431,6 +1432,10 @@ class etpDatabase:
 	    self.commitChanges()
 	    return idflag
 	raise Exception, "I tried to insert a flag tuple but then, fetching it returned -1. There's something broken."
+
+    def setDigest(self, idpackage, digest):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setChecksum: setting new digest for idpackage: "+str(idpackage)+" -> "+str(digest))
+	self.cursor.execute('UPDATE extrainfo SET digest = "'+str(digest)+'" WHERE idpackage = "'+str(idpackage)+'"')
 
     def cleanupLibraries(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupLibraries: called.")

@@ -534,21 +534,6 @@ def quickpkg(atom,dirpath):
     else:
 	return False
 
-def unpackTbz2(tbz2File,tmpdir = None):
-    
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"unpackTbz2: called -> "+tbz2File)
-    
-    import xpak
-    if tmpdir is None:
-	tmpdir = etpConst['packagestmpdir']+"/"+tbz2File.split("/")[len(tbz2File.split("/"))-1].split(".tbz2")[0]+"/"
-    if (not tmpdir.endswith("/")):
-	tmpdir += "/"
-    tbz2 = xpak.tbz2(tbz2File)
-    if os.path.isdir(tmpdir):
-	entropyTools.spawnCommand("rm -rf "+tmpdir+"*")
-    tbz2.decompose(tmpdir)
-    return tmpdir
-
 # NOTE: atom must be a COMPLETE atom, with version!
 def isTbz2PackageAvailable(atom, verbose = False, stable = False, unstable = True):
 

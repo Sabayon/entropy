@@ -105,6 +105,19 @@ def unpackGzip(gzipfilepath):
     del filecont
     return filepath
 
+def extractXpak(tbz2File,tmpdir = None):
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"unpackTbz2: called -> "+tbz2File)
+    import xpak
+    if tmpdir is None:
+	tmpdir = etpConst['packagestmpdir']+"/"+tbz2File.split("/")[len(tbz2File.split("/"))-1].split(".tbz2")[0]+"/"
+    if (not tmpdir.endswith("/")):
+	tmpdir += "/"
+    tbz2 = xpak.tbz2(tbz2File)
+    if os.path.isdir(tmpdir):
+	spawnCommand("rm -rf "+tmpdir+"*")
+    tbz2.decompose(tmpdir)
+    return tmpdir
+
 # This function creates the .hash file related to the given package file
 # @returns the complete hash file path
 # FIXME: add more hashes, SHA1 for example

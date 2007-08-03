@@ -33,6 +33,7 @@ from outputTools import *
 from remoteTools import downloadData
 from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific
 from databaseTools import etpDatabase
+import xpak
 
 # Logging initialization
 import logTools
@@ -1203,7 +1204,7 @@ def database(options):
 	    # filling
 	    print_info("  "+bold("(")+darkgreen(str(count))+"/"+blue(total)+bold(")")+red(" Injecting ")+bold(atomName), back = True)
 	    # fill clientDbconn # FIXME write a general client side addPackage function
-	    clientDbconn.addPackage(atomInfo, wantedBranch = atomBranch)
+	    clientDbconn.addPackage(atomInfo, wantedBranch = atomBranch, addBranch = False)
 	    # now add the package
 	    clientDbconn.addPackageToInstalledTable(x[0],x[1])
 

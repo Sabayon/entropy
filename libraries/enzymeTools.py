@@ -570,7 +570,7 @@ def build(atoms):
         for file in packagesPaths:
 	    print_info(red("   *")+green(" Calculating runtime dependencies for ")+bold(file.split("/")[len(file.split("/"))-1]))
             # unpack the .tbz2 file
-            tbz2TmpDir = unpackTbz2(file)
+            tbz2TmpDir = extractXpak(file)
             # parse, if exists, the NEEDED file
             runtimeNeededPackages, neededLibraries = getPackageRuntimeDependencies(tbz2TmpDir+dbNEEDED)
 	    for i in runtimeNeededPackages:

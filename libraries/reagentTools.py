@@ -32,7 +32,7 @@ import re
 import sys
 import os
 import string
-from portageTools import unpackTbz2, synthetizeRoughDependencies, getPackageRuntimeDependencies, getThirdPartyMirrors
+from portageTools import synthetizeRoughDependencies, getPackageRuntimeDependencies, getThirdPartyMirrors
 
 # Logging initialization
 import logTools
@@ -62,13 +62,12 @@ def generator(package, enzymeRequestBump = False, dbconnection = None, enzymeReq
     else:
 	dbconn = dbconnection
 
-    idpk, revision, etpDataUpdated = dbconn.handlePackage(etpData,enzymeRequestBump)
+    idpk, revision, etpDataUpdated, accepted = dbconn.handlePackage(etpData,enzymeRequestBump)
     
     # add package info to our official repository etpConst['officialrepositoryname']
-    if (idpk != -1):
+    if (accepted):
         dbconn.removePackageFromInstalledTable(idpk)
 	dbconn.addPackageToInstalledTable(idpk,etpConst['officialrepositoryname'])
-    
     
     # return back also the new possible package filename, so that we can make decisions on that
     newFileName = os.path.basename(etpDataUpdated['download'])
@@ -77,18 +76,18 @@ def generator(package, enzymeRequestBump = False, dbconnection = None, enzymeReq
 	dbconn.commitChanges()
 	dbconn.closeDB()
 
-    if (idpk != -1) and (revision != 0):
+    if (accepted) and (revision != 0):
 	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" has been updated to revision: "+str(revision))
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry has been updated. Revision: ")+bold(str(revision)))
-	return True, newFileName
-    elif (idpk != -1) and (revision == 0):
+	return True, newFileName, idpk
+    elif (accepted) and (revision == 0):
 	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" newly created.")
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry newly created."))
-	return True, newFileName
+	return True, newFileName, idpk
     else:
 	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" kept intact, no updates needed.")
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
-	return False, newFileName
+	return False, newFileName, idpk
 
 
 # This tool is used by Entropy after enzyme, it simply parses the content of etpConst['packagesstoredir']
@@ -129,12 +128,41 @@ def enzyme(options):
 	tbz2name = tbz2.split("/")[len(tbz2.split("/"))-1]
 	print_info(" ("+str(counter)+"/"+str(totalCounter)+") Processing "+tbz2name)
 	tbz2path = etpConst['packagesstoredir']+"/"+tbz2
-	rc, newFileName = generator(tbz2path, enzymeRequestBump, dbconn, enzymeRequestBranch)
+	rc, newFileName, idpk = generator(tbz2path, enzymeRequestBump, dbconn, enzymeRequestBranch)
 	if (rc):
 	    etpCreated += 1
-	    # create .hash file
+	    # move the file with its new name
 	    spawnCommand("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/"+newFileName+" -f")
+	    
+	    print_info(yellow(" * ")+red("Injecting database information into ")+bold(newFileName)+red(", please wait..."), back = True)
+	    # uncompressing
+	    tdir = etpConst['packagestmpdir']+"/injection"
+	    if os.path.isdir(tdir):
+	        os.system("rm -rf "+tdir)
+	    os.makedirs(tdir)
+	    os.mkdir(tdir+etpConst['packagecontentdir']) # content directory
+	    os.mkdir(tdir+etpConst['packagedbdir']) # content directory
+	    dbpath = tdir+etpConst['packagedbdir']+"/data.db"
+	    # fill /package
+	    spawnCommand("mv "+etpConst['packagessuploaddir']+"/"+newFileName+" "+tdir+etpConst['packagecontentdir']+"/")
+	    # create db
+	    pkgDbconn = etpDatabase(readOnly = False, noUpload = True, dbFile = dbpath, clientDatabase = True)
+	    pkgDbconn.initializeDatabase()
+	    data = dbconn.getPackageData(idpk)
+	    # inject
+	    pkgDbconn.addPackage(data, revision = data['revision'], wantedBranch = data['branch'], addBranch = False)
+	    pkgDbconn.closeDB()
+	    # recompose the new file
+	    compressTarBz2(etpConst['packagessuploaddir']+"/"+newFileName,tdir+"/")
+	    # update the checksum in the database
+	    digest = md5sum(etpConst['packagessuploaddir']+"/"+newFileName)
+	    dbconn.setDigest(idpk,digest)
 	    hashFilePath = createHashFile(etpConst['packagessuploaddir']+"/"+newFileName)
+	    # remove tdir
+	    spawnCommand("rm -rf "+tdir)
+	    
+	    print_info(yellow(" * ")+red("Database injection complete for ")+newFileName)
+	    
 	else:
 	    etpNotCreated += 1
 	    spawnCommand("rm -rf "+tbz2path)
@@ -200,7 +228,7 @@ def extractPkgData(package, etpBranch = "unstable"):
     print_info(yellow(" * ")+red("Unpacking package data..."),back = True)
     # unpack file
     tbz2TmpDir = etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version']+"/"
-    unpackTbz2(tbz2File,tbz2TmpDir)
+    extractXpak(tbz2File,tbz2TmpDir)
 
     print_info(yellow(" * ")+red("Getting package CHOST..."),back = True)
     # Fill chost
