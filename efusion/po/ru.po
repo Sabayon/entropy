@@ -1,0 +1,1048 @@
+# Russian translation of yumex.
+# Copyright (C) 2005 Free Software Foundation
+# This file is distributed under the same license as the PACKAGE package.
+# Nik <niktr@mail.ru>, 2007
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: yumex-ru\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-04-17 14:02+0200\n"
+"PO-Revision-Date: 2007-05-25 11:46+0200\n"
+"Last-Translator:  Nik <niktr@mail.ru>\n"
+"Language-Team: Russian <ru@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11\n"
+
+#: ../src/callbacks.py:72
+#, python-format
+msgid "Getting : %s"
+msgstr "Получение : %s"
+
+#: ../src/callbacks.py:167 ../src/yumapi.py:193
+msgid "Removing"
+msgstr "Удаляется"
+
+#: ../src/callbacks.py:169
+msgid "Cleanup"
+msgstr "Очистка"
+
+#: ../src/callbacks.py:188
+#, python-format
+msgid "Erased: %s"
+msgstr "Удалено : %s"
+
+#: ../src/callbacks.py:209
+#, python-format
+msgid "Processing metadata from : %s"
+msgstr "Обрабатываются метаданные из : %s"
+
+#: ../src/callbacks.py:211
+msgid "Processing metadata"
+msgstr "Обрабатываются метаданные"
+
+#: ../src/callbacks.py:244
+#, python-format
+msgid "---> Package %s.%s %s:%s-%s set to be %s"
+msgstr "---> Пакет %s.%s %s:%s-%s установлен в %s"
+
+#: ../src/callbacks.py:251
+msgid "--> Running transaction check"
+msgstr "--> Выполняется тестовая транзакция"
+
+#: ../src/callbacks.py:255
+msgid "--> Restarting Dependency Resolution with new changes."
+msgstr "--> Перезапускается разрешение зависимостей с новыми изменениями."
+
+#: ../src/callbacks.py:259
+msgid "--> Finished Dependency Resolution"
+msgstr "--> Разрешение зависимостей завершено"
+
+#: ../src/callbacks.py:263
+#, python-format
+msgid "--> Processing Dependency: %s for package: %s"
+msgstr "--> Обрабатывается зависимость: %s для пакета: %s"
+
+#: ../src/callbacks.py:268
+#, python-format
+msgid "--> Unresolved Dependency: %s"
+msgstr "--> Неразрешённая зависимость: %s"
+
+#: ../src/callbacks.py:272
+#, python-format
+msgid "--> Processing Conflict: %s conflicts %s"
+msgstr "--> Обрабатывается конфликт: %s конфликтует с %s"
+
+#: ../src/callbacks.py:275
+msgid "--> Populating transaction set with selected packages. Please wait."
+msgstr "--> Транзакция заполняется выбранными пакетами. Подождите пожалуйста."
+
+#: ../src/callbacks.py:278
+#, python-format
+msgid "---> Downloading header for %s to pack into transaction set."
+msgstr "---> Загружается заголовок %s для добавления в набор транзакции."
+
+#: ../src/dialogs.py:193
+msgid "Packages to Process"
+msgstr "Пакеты для обработки"
+
+#: ../src/dialogs.py:209 ../src/views.py:477
+msgid "Name"
+msgstr "Имя"
+
+#: ../src/dialogs.py:210 ../src/yumex.glade.h:32
+msgid "Arch"
+msgstr "Архитектура"
+
+#: ../src/dialogs.py:211 ../src/views.py:69
+msgid "Ver"
+msgstr "Версия"
+
+#. Setup reponame & repofile column's
+#: ../src/dialogs.py:212 ../src/views.py:441 ../src/views.py:476
+msgid "Repository"
+msgstr "Хранилище"
+
+#: ../src/dialogs.py:213 ../src/views.py:69
+msgid "Size"
+msgstr "Размер"
+
+#: ../src/dialogs.py:345 ../src/yumex.glade.h:30
+msgid "About Yum Extender"
+msgstr "О программе Yum Extender"
+
+#: ../src/gui.py:65
+#, python-format
+msgid ""
+"Updating : %s\n"
+"\n"
+msgstr ""
+"Обновляется : %s\n"
+"\n"
+
+#: ../src/gui.py:72
+#, fuzzy, python-format
+msgid ""
+"Obsoleting : %s\n"
+"\n"
+msgstr ""
+"Устаревание : %s\n"
+"\n"
+
+#: ../src/gui.py:87
+msgid ""
+"Requires:\n"
+"\n"
+msgstr ""
+"Зависимости:\n"
+"\n"
+
+#: ../src/gui.py:102 ../src/gui.py:112
+#, python-format
+msgid "Can not read the %s attribute"
+msgstr "Не удаётся прочитать атрибут для %s"
+
+#: ../src/gui.py:353
+msgid "Show All Packages"
+msgstr "Показать все пакеты"
+
+#: ../src/gui.py:354
+msgid "Show Package Updates"
+msgstr "Показать пакеты обновлений"
+
+#: ../src/gui.py:355
+msgid "Show available Packages"
+msgstr "Показать все доступные пакеты"
+
+#: ../src/gui.py:356
+msgid "Show Installed Packages"
+msgstr "Показать установленные пакеты"
+
+#. Setup Vertical Toolbar
+#: ../src/gui.py:365
+msgid "Package View"
+msgstr "Выбор пакетов"
+
+#: ../src/gui.py:366
+msgid "Group View"
+msgstr "Выбор группы"
+
+#: ../src/gui.py:367
+msgid "Package Queue View"
+msgstr "Очередь пакетов"
+
+#. TODO: Make repo selection work.
+#: ../src/gui.py:369
+msgid "Repository Selection View"
+msgstr "Выбор хранилищ"
+
+#: ../src/gui.py:370
+msgid "Output View"
+msgstr "Окно вывода"
+
+#.
+#. [1]           [2]               [3]             [4]     [5]     [6]
+#. -------------------------------------------------------------------------
+#: ../src/misc.py:84
+msgid "RPM Groups"
+msgstr "Группы RPM"
+
+#: ../src/misc.py:85
+msgid "Repositories"
+msgstr "Хранилища"
+
+#: ../src/misc.py:86 ../src/views.py:69
+msgid "Architecture"
+msgstr "Архитектура"
+
+#: ../src/misc.py:87
+msgid "Sizes"
+msgstr "Размеры"
+
+#: ../src/misc.py:88
+msgid "Age"
+msgstr "Возраст"
+
+#: ../src/misc.py:98
+msgid "Mandatory"
+msgstr "Обязательные пакеты"
+
+#: ../src/misc.py:99
+msgid "Default"
+msgstr "По умолчанию"
+
+#: ../src/misc.py:100
+msgid "Optional"
+msgstr "Необязательные пакеты"
+
+#: ../src/misc.py:101
+#, fuzzy
+msgid "Conditional"
+msgstr "Условные пакеты"
+
+#: ../src/misc.py:109
+msgid "Programming:"
+msgstr "Разработка:"
+
+#: ../src/misc.py:112
+msgid "Translation:"
+msgstr "Перевод:"
+
+#: ../src/misc.py:132
+msgid "Thank you:"
+msgstr "Благодарности:"
+
+#: ../src/misc.py:350
+msgid "Package Queue:"
+msgstr "Очередь пакетов:"
+
+#: ../src/misc.py:355
+#, python-format
+msgid " Packages to %s"
+msgstr "Пакеты %s"
+
+#: ../src/misc.py:362
+#, python-format
+msgid " Groups to %s"
+msgstr "Группы %s"
+
+#: ../src/misc.py:426
+#, python-format
+msgid "Wrong file application (%s)"
+msgstr "Неверное применение файла (%s)"
+
+#: ../src/misc.py:428
+#, python-format
+msgid "Wrong file type (%s)"
+msgstr "Неверный тип файла (%s)"
+
+#: ../src/misc.py:430
+#, python-format
+msgid "Wrong file version (%s)"
+msgstr "Неверная версия файла (%s)"
+
+#: ../src/misc.py:542
+msgid "Current Settings :"
+msgstr "Параметры :"
+
+#: ../src/views.py:40 ../src/views.py:305
+msgid "Categories"
+msgstr "Категории"
+
+#: ../src/views.py:69 ../src/views.py:99
+msgid "Package"
+msgstr "Пакет"
+
+#: ../src/views.py:69 ../src/views.py:102 ../src/views.py:239
+msgid "Summary"
+msgstr "Сводка"
+
+#: ../src/views.py:69
+msgid "Repo"
+msgstr "Хранилище"
+
+#: ../src/views.py:100
+msgid "Arch."
+msgstr "Арх-ра"
+
+#: ../src/views.py:101
+msgid "Ver."
+msgstr "Версия"
+
+#: ../src/views.py:103
+msgid "Repo."
+msgstr "Хранилище"
+
+#: ../src/views.py:104
+msgid "Size."
+msgstr "Размер"
+
+#: ../src/views.py:234
+msgid "Packages"
+msgstr "Пакеты"
+
+#: ../src/views.py:276
+msgid "<b>Packages To Update</b>"
+msgstr "<b>Пакеты для обновления</b>"
+
+#: ../src/views.py:280
+msgid "<b>Packages To Install</b>"
+msgstr "<b>Пакеты для установки</b>"
+
+#: ../src/views.py:284
+msgid "<b>Packages To Remove</b>"
+msgstr "<b>Пакеты для удаления</b>"
+
+#: ../src/views.py:357
+msgid "Groups"
+msgstr "Группы"
+
+#: ../src/views.py:441
+msgid "Filename"
+msgstr "Файл"
+
+#: ../src/views.py:575
+msgid "Plugin"
+msgstr "Плагин"
+
+#: ../src/yumapi.py:68 ../src/yumapi.py:106
+msgid "Setup Yum : Transaction Set"
+msgstr "Начальная установка Yum : Набор транзакции"
+
+#: ../src/yumapi.py:70 ../src/yumapi.py:108
+msgid "Setup Yum : RPM Db."
+msgstr "Начальная установка Yum: RPM Db."
+
+#. -> Repo Setup
+#: ../src/yumapi.py:73 ../src/yumapi.py:111
+msgid "Setup Yum : Repositories."
+msgstr "Начальная установка Yum: Хранилища."
+
+#. -> Sack Setup
+#: ../src/yumapi.py:76 ../src/yumapi.py:114
+msgid "Setup Yum : Package Sacks"
+msgstr "Начальная установка Yum : Список пакетов"
+
+#. -> Updates Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:79 ../src/yumapi.py:117
+msgid "Setup Yum : Updates"
+msgstr "Начальная установка Yum: Обновления"
+
+#. -> Group Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:82 ../src/yumapi.py:120
+msgid "Setup Yum : Groups"
+msgstr "Начальная установка Yum: Группы"
+
+#: ../src/yumapi.py:84 ../src/yumapi.py:122
+msgid "Setup Yum : Base setup completed"
+msgstr "Начальная установка Yum: Базовая установка завершена"
+
+#: ../src/yumapi.py:151 ../src/yumex.py:605
+msgid "Preparing for install/remove/update"
+msgstr "Подготовка к установке/удалению/обновлению "
+
+#. Install
+#: ../src/yumapi.py:154
+msgid "--> Preparing for install"
+msgstr "--> Подготовка к установке"
+
+#. Remove
+#: ../src/yumapi.py:158
+msgid "--> Preparing for remove"
+msgstr "--> Подготовка к удалению"
+
+#: ../src/yumapi.py:164
+msgid "--> Preparing for a full update"
+msgstr "--> Подготовка к полному обновлению"
+
+#: ../src/yumapi.py:167
+msgid "--> Preparing for a partial update"
+msgstr "--> Подготовка к частичному обновлению"
+
+#: ../src/yumapi.py:169
+msgid "--> Adding all obsoletion to transaction"
+msgstr "--> Добавление всех устаревших пакетов в набор транзакции"
+
+#: ../src/yumapi.py:191 ../src/yumgui/callbacks.py:63
+#: ../src/yumgui/callbacks.py:64 ../src/yumgui/callbacks.py:66
+msgid "Installing"
+msgstr "Установка"
+
+#: ../src/yumapi.py:192 ../src/yumgui/callbacks.py:61
+msgid "Updating"
+msgstr "Обновление"
+
+#: ../src/yumapi.py:194
+msgid "Installing for dependencies"
+msgstr "Устанавливается по зависимостям"
+
+#: ../src/yumapi.py:195
+msgid "Updating for dependencies"
+msgstr "Обновляется по зависимостям"
+
+#: ../src/yumapi.py:196
+msgid "Removing for dependencies"
+msgstr "Удаляется по зависимостям"
+
+#: ../src/yumapi.py:242
+#, python-format
+msgid "Failure getting %s: "
+msgstr "Ошибка при получении %s:"
+
+#: ../src/yumapi.py:264
+msgid "Downloading Packages:"
+msgstr "Загрузка пакетов:"
+
+#: ../src/yumapi.py:280 ../src/yumapi.py:288
+msgid "Error Downloading Packages:\n"
+msgstr "Ошибка загрузки пакетов:\n"
+
+#. Check GPG signatures
+#: ../src/yumapi.py:295
+msgid "Checking GPG Signatures:"
+msgstr "Проверка подписей GPG:"
+
+#: ../src/yumapi.py:300
+msgid "Error checking package signatures:\n"
+msgstr "Ошибка проверки подписей GPG:\n"
+
+#: ../src/yumapi.py:307
+msgid "Traceback in checking package signatures:\n"
+msgstr "Отслеживание ошибок при проверке подписей пакетов:\n"
+
+#: ../src/yumapi.py:315
+msgid "Running Transaction Test"
+msgstr "Выполняется тестовая транзакция"
+
+#: ../src/yumapi.py:333
+msgid "Finished Transaction Test"
+msgstr "Тестовая транзакция завершена"
+
+#: ../src/yumapi.py:335
+msgid "Transaction Check Error: "
+msgstr "Ошибка при тестовой транзакции: "
+
+#: ../src/yumapi.py:340
+msgid "Transaction Test Succeeded"
+msgstr "Тестовая транзакция завершена успешно"
+
+#. self.log( 2, 'Running Transaction' )
+#: ../src/yumapi.py:357
+msgid "Running Transaction"
+msgstr "Выполняется транзакция"
+
+#. print "po: %s userid: %s hexkey: %s " % (str(po),userid,hexkeyid)
+#: ../src/yumapi.py:452
+#, python-format
+msgid "Do you want to import GPG Key : %s \n"
+msgstr "Вы хотите импортировать ключ GPG : %s ? \n"
+
+#: ../src/yumapi.py:454
+#, python-format
+msgid "Needed by %s"
+msgstr "Требуется для %s"
+
+#: ../src/yumex.py:62
+msgid "Cant Quit while running RPM Transactions"
+msgstr "Выполняется транзакция"
+
+#: ../src/yumex.py:67
+msgid "Quiting, please wait !!!!!!"
+msgstr "Завершение, пожалуйста подождите !!!!!!"
+
+#: ../src/yumex.py:155
+msgid "Yum has not been initialized yet"
+msgstr "Yum ещё не инициализирован"
+
+#. Check there are any packages in the queue
+#: ../src/yumex.py:161
+msgid "No packages in queue"
+msgstr "Пакеты не выбраны"
+
+#: ../src/yumex.py:238
+#, python-format
+msgid "You are about to add %s packages\n"
+msgstr "Вы добавляете %s пакеты\n"
+
+#: ../src/yumex.py:239 ../src/yumex.py:253
+msgid "It will take some time\n"
+msgstr "Это займёт некоторое время\n"
+
+#: ../src/yumex.py:240 ../src/yumex.py:254
+msgid "do you want to continue ?"
+msgstr "хотите продолжить ?"
+
+#: ../src/yumex.py:252
+#, python-format
+msgid "You are about to remove %s packages\n"
+msgstr "Вы удаляете %s пакеты \n"
+
+#: ../src/yumex.py:355
+#, python-format
+msgid "Selected the %s profile"
+msgstr "Выбран профиль %s"
+
+#: ../src/yumex.py:375
+#, python-format
+msgid "Profile : %s saved ok"
+msgstr "Профиль: %s сохранен"
+
+#: ../src/yumex.py:377
+#, python-format
+msgid "Profile : %s save failed"
+msgstr "Профиль : ошибка сохранения %s"
+
+#: ../src/yumex.py:382
+msgid "Create New Profile"
+msgstr "Создание нового профиля"
+
+#: ../src/yumex.py:382
+msgid "Name of new profile"
+msgstr "Имя нового профиля"
+
+#: ../src/yumex.py:386
+#, python-format
+msgid "Profile : %s created ok"
+msgstr "Профиль : создан %s"
+
+#: ../src/yumex.py:389
+#, python-format
+msgid "Profile : %s creation failed"
+msgstr "Профиль : ошибка создания %s"
+
+#: ../src/yumex.py:393
+msgid "Cleaning up all yum metadata"
+msgstr "Очистка всех метаданных Yum"
+
+#: ../src/yumex.py:420
+msgid "Yum Config Setup"
+msgstr "Начальная настройка Yum"
+
+#: ../src/yumex.py:436
+msgid "GUI Setup Completed"
+msgstr "Настройка графического интерфейса закончена"
+
+#: ../src/yumex.py:476 ../src/yumex.py:620 ../src/yumex.py:674
+#: ../src/yumex.py:784 ../src/yumex.py:805 ../src/yumex.glade.h:42
+msgid "Error"
+msgstr "Ошибка"
+
+#: ../src/yumex.py:476
+msgid "Error in Yum Setup"
+msgstr "Ошибка в начальной настройке Yum"
+
+#. prepare package lists
+#. -> List setup
+#: ../src/yumex.py:481
+msgid "Building Package Lists"
+msgstr "Построение списков пакетов"
+
+#: ../src/yumex.py:483
+msgid "Building Package Lists Completed"
+msgstr "Построение списков пакетов завершено"
+
+#: ../src/yumex.py:484
+msgid "Building Groups Lists"
+msgstr "Построение списка групп"
+
+#: ../src/yumex.py:487
+msgid "Building Group Lists Completed"
+msgstr "Построение списков групп завершено"
+
+#: ../src/yumex.py:519
+#, python-format
+msgid "Getting packages : %s"
+msgstr "Получение пакетов : %s"
+
+#: ../src/yumex.py:523
+#, python-format
+msgid "Found %d %s packages"
+msgstr "Найдено %d %s пакетов"
+
+#. -> Sort Lists
+#: ../src/yumex.py:526
+msgid "Sorting packages"
+msgstr "Сортировка пакетов"
+
+#: ../src/yumex.py:528
+msgid "Population view with packages"
+msgstr "Заполнение списка пакетами"
+
+#: ../src/yumex.py:534
+msgid "Population Completed"
+msgstr "Заполнение закончено"
+
+#: ../src/yumex.py:541
+msgid "Package View Population"
+msgstr "Список пакетов"
+
+#: ../src/yumex.py:552
+msgid "Package View Population Completed"
+msgstr "Построение списков пакетов завершено"
+
+#: ../src/yumex.py:558
+msgid "Category View Population"
+msgstr "Список категорий"
+
+#: ../src/yumex.py:577
+msgid "Category View Population Completed"
+msgstr "Заполнение списка категорий завершено"
+
+#: ../src/yumex.py:613
+msgid "Processing Packages in queue"
+msgstr "Обработка пакетов в очереди"
+
+#: ../src/yumex.py:619
+msgid "Error in Dependency Resolution"
+msgstr "Ошибка в разрешение зависимостей"
+
+#: ../src/yumex.py:637
+msgid "No packages selected"
+msgstr "Пакеты не выбраны"
+
+#: ../src/yumex.py:644
+msgid "No packages in transaction"
+msgstr "Пакеты для транзакции не выбраны"
+
+#: ../src/yumex.py:654
+msgid "Processing packages (See output for details)"
+msgstr "Обрабатываются пакеты (см. Окно вывода)"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing"
+msgstr "Обработка пакетов"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing completed ok"
+msgstr "Обработка пакетов успешно завершена"
+
+#: ../src/yumex.py:674
+msgid "Error in Transaction"
+msgstr "Ошибка транзакции"
+
+#: ../src/yumex.py:679
+#, python-format
+msgid "Parsing packages to %s "
+msgstr "Анализ пакетов для %s "
+
+#: ../src/yumex.py:713
+#, python-format
+msgid "found %d packages, matching : %s"
+msgstr "Найдено %d пакетов удовлетворяющих : %s"
+
+#: ../src/yumex.py:782
+msgid "Yum is locked by another application"
+msgstr "Yum заблокирован другим приложением"
+
+#: ../src/yumex.py:784 ../src/yumex.py:805
+msgid "Error in Yumex"
+msgstr "Ошибка в Yumex"
+
+#: ../src/yumgui/callbacks.py:62
+msgid "Erasing"
+msgstr "Удаление"
+
+#: ../src/yumgui/callbacks.py:65 ../src/yumgui/callbacks.py:71
+msgid "Obsoleted"
+msgstr "Устаревшие"
+
+#: ../src/yumgui/callbacks.py:67
+msgid "Updated"
+msgstr "Обновлённые"
+
+#: ../src/yumgui/callbacks.py:68
+msgid "Erased"
+msgstr "Удалённые"
+
+#: ../src/yumgui/callbacks.py:69 ../src/yumgui/callbacks.py:70
+#: ../src/yumgui/callbacks.py:72 ../src/yumex.glade.h:49
+msgid "Installed"
+msgstr "Установленные"
+
+#: ../src/yumgui/callbacks.py:182
+msgid "No header - huh?"
+msgstr "Нет заголовка"
+
+#. def main():
+#. """This is a unit test which confirms that all base classes are
+#. traversed when looking up attributes."""
+#.
+#. class BaseTest(Controller):
+#. def __init__(self, gladePath):
+#. ui = UI(gladePath, "app")
+#. Controller.__init__(self, ui)
+#.
+#. def on_exit1_activate(self, *args):
+#. gtk.mainquit()
+#.
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. class Test(BaseTest):
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. gladePath = "_test/data/ui.glade"
+#. c = Test(gladePath)
+#. print 72 * "_"
+#. print "Controller methods:"
+#. methods = c._getAllMethods()
+#. names = methods.keys()
+#. names.sort()
+#. for name in names:
+#. value = methods[name]
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. print 72 * "_"
+#. print "Sample UI instance attributes:"
+#. names = ["root", "new_file1", "exit1"]
+#. names.sort()
+#. for name in names:
+#. value = getattr(c.ui, name)
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. if __name__ == "__main__":
+#. main()
+#: ../src/yumex.glade.h:1
+msgid " "
+msgstr " "
+
+#: ../src/yumex.glade.h:2
+msgid "    "
+msgstr "    "
+
+#: ../src/yumex.glade.h:3
+msgid "0"
+msgstr "0"
+
+#: ../src/yumex.glade.h:4
+msgid "1"
+msgstr "1"
+
+#: ../src/yumex.glade.h:5
+msgid "2"
+msgstr "2"
+
+#: ../src/yumex.glade.h:6
+msgid "3"
+msgstr "3"
+
+#: ../src/yumex.glade.h:7
+msgid "4"
+msgstr "4"
+
+#: ../src/yumex.glade.h:8
+msgid "<b>(C) 2005  - Tim Lauridsen</b>"
+msgstr "<b>(C) 2005  - Tim Lauridsen</b>"
+
+#: ../src/yumex.glade.h:9
+msgid "<b>Behavior</b>"
+msgstr "<b>Поведение</b>"
+
+#: ../src/yumex.glade.h:10
+msgid "<b>Category</b>"
+msgstr "<b>Категория</b>"
+
+#: ../src/yumex.glade.h:11
+msgid "<b>Flags</b>"
+msgstr "<b>Флаги</b>"
+
+#: ../src/yumex.glade.h:12
+msgid "<b>Fonts </b>"
+msgstr "<b>Шрифты</b>"
+
+#: ../src/yumex.glade.h:13
+msgid "<b>GPG Key</b>"
+msgstr "<b>Ключ GPG</b>"
+
+#: ../src/yumex.glade.h:14
+msgid "<b>Packages</b>"
+msgstr "<b>Пакеты</b>"
+
+#: ../src/yumex.glade.h:15
+msgid "<b>Quick add to queue</b>"
+msgstr "<b>Быстрое добавление</b>"
+
+#: ../src/yumex.glade.h:16
+msgid "<b>Repository  Exclude Filters</b>"
+msgstr "<b>Фильтры для исключения хранилищ</b>"
+
+#: ../src/yumex.glade.h:17
+msgid "<b>SUBACTION</b>\n"
+msgstr "<b>SUBACTION</b>\n"
+
+#: ../src/yumex.glade.h:19
+msgid "<b>Select Profile</b>"
+msgstr "<b>Выбор профиля</b>"
+
+#: ../src/yumex.glade.h:20
+msgid "<b>Total Download Size</b>"
+msgstr "<b>Общий объём загрузки</b>"
+
+#: ../src/yumex.glade.h:21
+msgid "<b>URL Type</b>"
+msgstr "<b>Тип URL</b>"
+
+#: ../src/yumex.glade.h:22
+msgid "<b>URLs</b>"
+msgstr "<b>URLы</b>"
+
+#: ../src/yumex.glade.h:23
+msgid "<span size=\"large\"><b>Action</b></span>\n"
+msgstr "<span size=\"large\"><b>Действие</b></span>\n"
+
+#: ../src/yumex.glade.h:25
+msgid "<span size=\"xx-large\" color=\"black\">Group View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Просмотр групп</span>"
+
+#: ../src/yumex.glade.h:26
+msgid "<span size=\"xx-large\" color=\"black\">Output View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Окно вывода</span>"
+
+#: ../src/yumex.glade.h:27
+msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Очередь пакетов</span>"
+
+#: ../src/yumex.glade.h:28
+msgid "<span size=\"xx-large\" color=\"black\">Select Repositories</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Выбор хранилищ</span>"
+
+#: ../src/yumex.glade.h:29
+msgid "About"
+msgstr "О программе"
+
+#: ../src/yumex.glade.h:31
+msgid "All"
+msgstr "Все"
+
+#: ../src/yumex.glade.h:33
+msgid "Available"
+msgstr "Доступные"
+
+#: ../src/yumex.glade.h:34
+msgid "C_hangelog"
+msgstr "Список _изменений"
+
+#: ../src/yumex.glade.h:35
+msgid "Console"
+msgstr "Консоль"
+
+#: ../src/yumex.glade.h:36
+msgid "Credits"
+msgstr "Благодарности"
+
+#: ../src/yumex.glade.h:37
+msgid "Debug _mode"
+msgstr "Режим _отладки"
+
+#: ../src/yumex.glade.h:38
+msgid "Debug mode"
+msgstr "Режим отладки"
+
+#: ../src/yumex.glade.h:39
+msgid "Disable 'Yum Extender Launcher'"
+msgstr "Выключить 'Запуск Yum Extender'"
+
+#: ../src/yumex.glade.h:40
+msgid "Disable Plugins"
+msgstr "Выключить плагины"
+
+#: ../src/yumex.glade.h:41
+msgid "ETA"
+msgstr "ETA"
+
+#: ../src/yumex.glade.h:42
+msgid "Edit Repository"
+msgstr "Изменить хранилище"
+
+#: ../src/yumex.glade.h:44
+msgid "Excludes"
+msgstr "Список исключений"
+
+#: ../src/yumex.glade.h:45
+msgid "Extra"
+msgstr "Экстра"
+
+#: ../src/yumex.glade.h:46
+msgid "Fi_les"
+msgstr "_Файл"
+
+#: ../src/yumex.glade.h:47
+msgid "GUI"
+msgstr "Интерфейс"
+
+#: ../src/yumex.glade.h:48
+msgid "I_nformation"
+msgstr "_Сведения"
+
+#: ../src/yumex.glade.h:50
+msgid "Load Yum Metadata"
+msgstr "Загрузить метеданные Yum"
+
+#: ../src/yumex.glade.h:51
+msgid "Package Descriptions"
+msgstr "Описание пакета"
+
+#: ../src/yumex.glade.h:52
+msgid "Plugins"
+msgstr "Плагины"
+
+#: ../src/yumex.glade.h:53
+msgid "Preferences"
+msgstr "Параметры"
+
+#: ../src/yumex.glade.h:54
+msgid "Process Queue Confirmation"
+msgstr "Подтверждение обработки очереди"
+
+#: ../src/yumex.glade.h:55
+msgid "Repos"
+msgstr "Хранилища"
+
+#: ../src/yumex.glade.h:56
+msgid "Search Options"
+msgstr "Опции поиска"
+
+#: ../src/yumex.glade.h:57
+msgid "Update Only"
+msgstr "Только обновить"
+
+#: ../src/yumex.glade.h:58
+msgid "Updates"
+msgstr "Обновления"
+
+#: ../src/yumex.glade.h:59
+msgid "Use _proxy"
+msgstr "Использовать _прокси-сервер"
+
+#: ../src/yumex.glade.h:60
+msgid "Yum Extender"
+msgstr "Yum Extender"
+
+#: ../src/yumex.glade.h:61
+msgid "Yum Extender Launcher"
+msgstr "Запуск Yum Extender"
+
+#: ../src/yumex.glade.h:62
+msgid "Yum Extender Preferences"
+msgstr "Настройки Yum Extender"
+
+#: ../src/yumex.glade.h:63
+msgid "_Add All"
+msgstr "Добавить _все"
+
+#: ../src/yumex.glade.h:64
+msgid "_Auto refresh on start"
+msgstr "_Автоматически обновлять при запуске"
+
+#: ../src/yumex.glade.h:65
+msgid "_Base url "
+msgstr "_Базовый URL "
+
+#: ../src/yumex.glade.h:66
+msgid "_Description"
+msgstr "_Описание"
+
+#: ../src/yumex.glade.h:67
+msgid "_Deselect All"
+msgstr "О_тменить выделение"
+
+#: ../src/yumex.glade.h:68
+msgid "_Edit"
+msgstr "_Правка"
+
+#: ../src/yumex.glade.h:69
+msgid "_Enabled"
+msgstr "_Включено"
+
+#: ../src/yumex.glade.h:70
+msgid "_File"
+msgstr "_Файл"
+
+#: ../src/yumex.glade.h:71
+msgid "_GPG check"
+msgstr "Проверка _GPG"
+
+#: ../src/yumex.glade.h:72
+msgid "_Help"
+msgstr "_Справка"
+
+#: ../src/yumex.glade.h:73
+msgid "_Mirror list"
+msgstr "Список _зеркал"
+
+#: ../src/yumex.glade.h:74
+msgid "_Name:"
+msgstr "_Имя:"
+
+#: ../src/yumex.glade.h:75
+msgid "_Other"
+msgstr "_Другое"
+
+#: ../src/yumex.glade.h:76
+msgid "_Process Queue"
+msgstr "_Обработка очереди"
+
+#: ../src/yumex.glade.h:77
+msgid "_Profiles"
+msgstr "П_рофили"
+
+#: ../src/yumex.glade.h:78
+msgid "_Remove All"
+msgstr "_Удалить все"
+
+#: ../src/yumex.glade.h:79
+msgid "_Skip"
+msgstr "_Пропустить"
+
+#: ../src/yumex.glade.h:80
+msgid "_Tag:"
+msgstr "_Тег:"
+
+#: ../src/yumex.glade.h:81
+msgid "_Tools"
+msgstr "С_ервис"
+
+#: ../src/yumex.glade.h:82
+msgid "_Yum Clean All"
+msgstr "Очистить _всё"
+
+#: ../src/yumex.glade.h:83
+msgid "_Yum excludes:"
+msgstr "Список _исключений:"
+
+#: ../src/yumex.glade.h:84
+msgid "_Yum plugins:"
+msgstr "_Плагины:"
+
+#: ../src/yumex.glade.h:85
+msgid "dialog1"
+msgstr "диалог1"
+
+#: ../src/yumex.glade.h:86
+msgid "xxxx"
+msgstr "xxxx"

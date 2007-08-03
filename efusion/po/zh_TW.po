@@ -1,0 +1,1035 @@
+# Traditional Chinese Messages for yumex.
+# Copyright (C) 2006 Free Software Foundation, Inc.
+# This file is distributed under the same license as the yumex package.
+# Wei-Lun Chao <william.chao@ossii.com.tw>, 2006, 07.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: yumex 1.9.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-05-29 11:31+0200\n"
+"PO-Revision-Date: 2007-06-07 15:14+0800\n"
+"Last-Translator: Wei-Lun Chao <william.chao@ossii.com.tw>\n"
+"Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../src/callbacks.py:72
+#, python-format
+msgid "Getting : %s"
+msgstr "取得中：%s"
+
+#: ../src/callbacks.py:167 ../src/yumapi.py:193
+msgid "Removing"
+msgstr "移除中"
+
+#: ../src/callbacks.py:169
+msgid "Cleanup"
+msgstr "清理"
+
+#: ../src/callbacks.py:188
+#, python-format
+msgid "Erased: %s"
+msgstr "已清除：%s"
+
+#: ../src/callbacks.py:209
+#, python-format
+msgid "Processing metadata from : %s"
+msgstr "處理後設資料來自：%s"
+
+#: ../src/callbacks.py:211
+msgid "Processing metadata"
+msgstr "處理後設資料"
+
+#: ../src/callbacks.py:244
+#, python-format
+msgid "---> Package %s.%s %s:%s-%s set to be %s"
+msgstr "---> 套件 %s.%s %s:%s-%s 設定為 %s"
+
+#: ../src/callbacks.py:251
+msgid "--> Running transaction check"
+msgstr "--> 執行異動檢查"
+
+#: ../src/callbacks.py:255
+msgid "--> Restarting Dependency Resolution with new changes."
+msgstr "--> 根據新增變更而重新啟動相依性解析。"
+
+#: ../src/callbacks.py:259
+msgid "--> Finished Dependency Resolution"
+msgstr "--> 相依性解析已完成"
+
+#: ../src/callbacks.py:263
+#, python-format
+msgid "--> Processing Dependency: %s for package: %s"
+msgstr "--> 處理相依性：%s 用於套件：%s"
+
+#: ../src/callbacks.py:268
+#, python-format
+msgid "--> Unresolved Dependency: %s"
+msgstr "--> 無法解析的相依性：%s"
+
+#: ../src/callbacks.py:272
+#, python-format
+msgid "--> Processing Conflict: %s conflicts %s"
+msgstr "--> 處理衝突：%s 與 %s 產生衝突"
+
+#: ../src/callbacks.py:275
+msgid "--> Populating transaction set with selected packages. Please wait."
+msgstr "--> 根據已選取的套件填入異動集合。請稍待。"
+
+#: ../src/callbacks.py:278
+#, python-format
+msgid "---> Downloading header for %s to pack into transaction set."
+msgstr "---> 下載 %s 的表頭用以包裝進入異動集合。"
+
+#: ../src/dialogs.py:193
+msgid "Packages to Process"
+msgstr "待處理套件"
+
+#: ../src/dialogs.py:209 ../src/views.py:477
+msgid "Name"
+msgstr "名稱"
+
+#: ../src/dialogs.py:210 ../src/yumex.glade.h:32
+msgid "Arch"
+msgstr "硬體架構"
+
+#: ../src/dialogs.py:211 ../src/views.py:69
+msgid "Ver"
+msgstr "版本"
+
+#. Setup reponame & repofile column's
+#: ../src/dialogs.py:212 ../src/views.py:441 ../src/views.py:476
+msgid "Repository"
+msgstr "儲存庫"
+
+#: ../src/dialogs.py:213 ../src/views.py:69
+msgid "Size"
+msgstr "大小"
+
+#: ../src/dialogs.py:345 ../src/yumex.glade.h:30
+msgid "About Yum Extender"
+msgstr "關於 Yum 延伸程式"
+
+#: ../src/gui.py:65
+#, python-format
+msgid "Updating : %s\n\n"
+msgstr "更新中：%s\n\n"
+
+#: ../src/gui.py:72
+#, python-format
+msgid "Obsoleting : %s\n\n"
+msgstr "淘汰中：%s\n\n"
+
+#: ../src/gui.py:87
+msgid "Requires:\n\n"
+msgstr "需求：\n\n"
+
+#: ../src/gui.py:102 ../src/gui.py:112
+#, python-format
+msgid "Can not read the %s attribute"
+msgstr "無法讀取 %s 屬性"
+
+#: ../src/gui.py:353
+msgid "Show All Packages"
+msgstr "顯示所有套件"
+
+#: ../src/gui.py:354
+msgid "Show Package Updates"
+msgstr "顯示更新套件"
+
+#: ../src/gui.py:355
+msgid "Show available Packages"
+msgstr "顯示可用套件"
+
+#: ../src/gui.py:356
+msgid "Show Installed Packages"
+msgstr "顯示已安裝套件"
+
+#. Setup Vertical Toolbar
+#: ../src/gui.py:365
+msgid "Package View"
+msgstr "套件檢視"
+
+#: ../src/gui.py:366
+msgid "Group View"
+msgstr "群組檢視"
+
+#: ../src/gui.py:367
+msgid "Package Queue View"
+msgstr "套件佇列檢視"
+
+#. TODO: Make repo selection work.
+#: ../src/gui.py:369
+msgid "Repository Selection View"
+msgstr "儲存庫選擇檢視"
+
+#: ../src/gui.py:370
+msgid "Output View"
+msgstr "輸出檢視"
+
+#.
+#. [1]           [2]               [3]             [4]     [5]     [6]
+#. -------------------------------------------------------------------------
+#: ../src/misc.py:84
+msgid "RPM Groups"
+msgstr "RPM 群組"
+
+#: ../src/misc.py:85
+msgid "Repositories"
+msgstr "儲存庫"
+
+#: ../src/misc.py:86 ../src/views.py:69
+msgid "Architecture"
+msgstr "硬體架構"
+
+#: ../src/misc.py:87
+msgid "Sizes"
+msgstr "大小"
+
+#: ../src/misc.py:88
+msgid "Age"
+msgstr "年紀"
+
+#: ../src/misc.py:98
+msgid "Mandatory"
+msgstr "必要性"
+
+#: ../src/misc.py:99
+msgid "Default"
+msgstr "預設"
+
+#: ../src/misc.py:100
+msgid "Optional"
+msgstr "可選的"
+
+#: ../src/misc.py:101
+msgid "Conditional"
+msgstr "條件"
+
+#: ../src/misc.py:109
+msgid "Programming:"
+msgstr "程式設計："
+
+#: ../src/misc.py:112
+msgid "Translation:"
+msgstr "翻譯："
+
+#: ../src/misc.py:132
+msgid "Thank you:"
+msgstr "謝謝您："
+
+#: ../src/misc.py:350
+msgid "Package Queue:"
+msgstr "套件佇列："
+
+#: ../src/misc.py:355
+#, python-format
+msgid " Packages to %s"
+msgstr " 個套件到 %s"
+
+#: ../src/misc.py:362
+#, python-format
+msgid " Groups to %s"
+msgstr " 群組到 %s"
+
+#: ../src/misc.py:426
+#, python-format
+msgid "Wrong file application (%s)"
+msgstr "錯誤檔案應用程式 (%s)"
+
+#: ../src/misc.py:428
+#, python-format
+msgid "Wrong file type (%s)"
+msgstr "錯誤檔案類型 (%s)"
+
+#: ../src/misc.py:430
+#, python-format
+msgid "Wrong file version (%s)"
+msgstr "錯誤檔案版本 (%s)"
+
+#: ../src/misc.py:542
+msgid "Current Settings :"
+msgstr "目前的設定："
+
+#: ../src/views.py:40 ../src/views.py:305
+msgid "Categories"
+msgstr "類別"
+
+#: ../src/views.py:69 ../src/views.py:99
+msgid "Package"
+msgstr "套件"
+
+#: ../src/views.py:69 ../src/views.py:102 ../src/views.py:239
+msgid "Summary"
+msgstr "概要"
+
+#: ../src/views.py:69
+msgid "Repo"
+msgstr "儲存庫"
+
+#: ../src/views.py:100
+msgid "Arch."
+msgstr "硬體架構"
+
+#: ../src/views.py:101
+msgid "Ver."
+msgstr "版本"
+
+#: ../src/views.py:103
+msgid "Repo."
+msgstr "儲存庫"
+
+#: ../src/views.py:104
+msgid "Size."
+msgstr "大小"
+
+#: ../src/views.py:234
+msgid "Packages"
+msgstr "套件"
+
+#: ../src/views.py:276
+msgid "<b>Packages To Update</b>"
+msgstr "<b>待更新套件</b>"
+
+#: ../src/views.py:280
+msgid "<b>Packages To Install</b>"
+msgstr "<b>待安裝套件</b>"
+
+#: ../src/views.py:284
+msgid "<b>Packages To Remove</b>"
+msgstr "<b>待移除套件</b>"
+
+#: ../src/views.py:357
+msgid "Groups"
+msgstr "群組"
+
+#: ../src/views.py:441
+msgid "Filename"
+msgstr "檔名"
+
+#: ../src/views.py:575
+msgid "Plugin"
+msgstr "外掛程式"
+
+#: ../src/yumapi.py:68 ../src/yumapi.py:106
+msgid "Setup Yum : Transaction Set"
+msgstr "設定 Yum：異動集合"
+
+#: ../src/yumapi.py:70 ../src/yumapi.py:108
+msgid "Setup Yum : RPM Db."
+msgstr "設定 Yum：RPM 資料庫"
+
+#. -> Repo Setup
+#: ../src/yumapi.py:73 ../src/yumapi.py:111
+msgid "Setup Yum : Repositories."
+msgstr "設定 Yum：儲存庫"
+
+#. -> Sack Setup
+#: ../src/yumapi.py:76 ../src/yumapi.py:114
+msgid "Setup Yum : Package Sacks"
+msgstr "設定 Yum：套件組合"
+
+#. -> Updates Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:79 ../src/yumapi.py:117
+msgid "Setup Yum : Updates"
+msgstr "設定 Yum：更新套件"
+
+#. -> Group Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:82 ../src/yumapi.py:120
+msgid "Setup Yum : Groups"
+msgstr "設定 Yum：群組"
+
+#: ../src/yumapi.py:84 ../src/yumapi.py:122
+msgid "Setup Yum : Base setup completed"
+msgstr "設定 Yum：基本設定完成"
+
+#: ../src/yumapi.py:151 ../src/yumex.py:605
+msgid "Preparing for install/remove/update"
+msgstr "準備安裝/移除/更新"
+
+#. Install
+#: ../src/yumapi.py:154
+msgid "--> Preparing for install"
+msgstr "--> 準備安裝"
+
+#. Remove
+#: ../src/yumapi.py:158
+msgid "--> Preparing for remove"
+msgstr "--> 準備移除"
+
+#: ../src/yumapi.py:164
+msgid "--> Preparing for a full update"
+msgstr "--> 準備全部更新"
+
+#: ../src/yumapi.py:167
+msgid "--> Preparing for a partial update"
+msgstr "--> 準備部份更新"
+
+#: ../src/yumapi.py:169
+msgid "--> Adding all obsoletion to transaction"
+msgstr "--> 加入所有過時套件到異動資料"
+
+#: ../src/yumapi.py:191 ../src/yumgui/callbacks.py:63
+#: ../src/yumgui/callbacks.py:64 ../src/yumgui/callbacks.py:66
+msgid "Installing"
+msgstr "安裝中"
+
+#: ../src/yumapi.py:192 ../src/yumgui/callbacks.py:61
+msgid "Updating"
+msgstr "更新中"
+
+#: ../src/yumapi.py:194
+msgid "Installing for dependencies"
+msgstr "根據相依性進行安裝"
+
+#: ../src/yumapi.py:195
+msgid "Updating for dependencies"
+msgstr "根據相依性進行更新"
+
+#: ../src/yumapi.py:196
+msgid "Removing for dependencies"
+msgstr "根據相依性進行移除"
+
+#: ../src/yumapi.py:242
+#, python-format
+msgid "Failure getting %s: "
+msgstr "取得 %s 時失敗："
+
+#: ../src/yumapi.py:264
+msgid "Downloading Packages:"
+msgstr "下載套件："
+
+#: ../src/yumapi.py:280 ../src/yumapi.py:288
+msgid "Error Downloading Packages:\n"
+msgstr "下載套件時發生錯誤：\n"
+
+#. Check GPG signatures
+#: ../src/yumapi.py:295
+msgid "Checking GPG Signatures:"
+msgstr "檢查 GPG 簽名："
+
+#: ../src/yumapi.py:300
+msgid "Error checking package signatures:\n"
+msgstr "檢查套件簽名時發生錯誤：\n"
+
+#: ../src/yumapi.py:307
+msgid "Traceback in checking package signatures:\n"
+msgstr "追溯檢查套件簽名：\n"
+
+#: ../src/yumapi.py:315
+msgid "Running Transaction Test"
+msgstr "執行異動測試"
+
+#: ../src/yumapi.py:333
+msgid "Finished Transaction Test"
+msgstr "已完成異動測試"
+
+#: ../src/yumapi.py:335
+msgid "Transaction Check Error: "
+msgstr "異動檢查錯誤："
+
+#: ../src/yumapi.py:340
+msgid "Transaction Test Succeeded"
+msgstr "異動測試成功"
+
+#. self.log( 2, 'Running Transaction' )
+#: ../src/yumapi.py:357
+msgid "Running Transaction"
+msgstr "執行異動"
+
+#. print "po: %s userid: %s hexkey: %s " % (str(po),userid,hexkeyid)
+#: ../src/yumapi.py:452
+#, python-format
+msgid "Do you want to import GPG Key : %s \n"
+msgstr "您要匯入 GPG 金鑰嗎：%s\n"
+
+#: ../src/yumapi.py:454
+#, python-format
+msgid "Needed by %s"
+msgstr "所需的由 %s"
+
+#: ../src/yumex.py:62
+msgid "Cant Quit while running RPM Transactions"
+msgstr "執行 RPM 異動作業時無法離開"
+
+#: ../src/yumex.py:67
+msgid "Quiting, please wait !!!!!!"
+msgstr "離開中，請稍待 !!!!!!"
+
+#: ../src/yumex.py:155
+msgid "Yum has not been initialized yet"
+msgstr "Yum 尚未初始化"
+
+#. Check there are any packages in the queue
+#: ../src/yumex.py:161
+msgid "No packages in queue"
+msgstr "在佇列中沒有套件"
+
+#: ../src/yumex.py:238
+#, python-format
+msgid "You are about to add %s packages\n"
+msgstr "您即將加入 %s 套件\n"
+
+#: ../src/yumex.py:239 ../src/yumex.py:253
+msgid "It will take some time\n"
+msgstr "將要花費一些時間\n"
+
+#: ../src/yumex.py:240 ../src/yumex.py:254
+msgid "do you want to continue ?"
+msgstr "您要繼續嗎？"
+
+#: ../src/yumex.py:252
+#, python-format
+msgid "You are about to remove %s packages\n"
+msgstr "您即將移除 %s 套件\n"
+
+#: ../src/yumex.py:355
+#, python-format
+msgid "Selected the %s profile"
+msgstr "已選取 %s 的設定組合"
+
+#: ../src/yumex.py:375
+#, python-format
+msgid "Profile : %s saved ok"
+msgstr "設定組合：%s 儲存完成"
+
+#: ../src/yumex.py:377
+#, python-format
+msgid "Profile : %s save failed"
+msgstr "設定組合：%s 儲存失敗"
+
+#: ../src/yumex.py:382
+msgid "Create New Profile"
+msgstr "建立新的設定組合"
+
+#: ../src/yumex.py:382
+msgid "Name of new profile"
+msgstr "新的設定組合名稱"
+
+#: ../src/yumex.py:386
+#, python-format
+msgid "Profile : %s created ok"
+msgstr "設定組合：%s 已經建立"
+
+#: ../src/yumex.py:389
+#, python-format
+msgid "Profile : %s creation failed"
+msgstr "設定組合：%s 建立失敗"
+
+#: ../src/yumex.py:393
+msgid "Cleaning up all yum metadata"
+msgstr "清理所有 yum 後設資料"
+
+#: ../src/yumex.py:420
+msgid "Yum Config Setup"
+msgstr "Yum 配置設定"
+
+#: ../src/yumex.py:436
+msgid "GUI Setup Completed"
+msgstr "GUI 設定完成"
+
+#: ../src/yumex.py:476 ../src/yumex.py:620 ../src/yumex.py:674
+#: ../src/yumex.py:784 ../src/yumex.py:805 ../src/yumex.glade.h:43
+msgid "Error"
+msgstr "錯誤"
+
+#: ../src/yumex.py:476
+msgid "Error in Yum Setup"
+msgstr "設定 yum 時發生錯誤"
+
+#. prepare package lists
+#. -> List setup
+#: ../src/yumex.py:481
+msgid "Building Package Lists"
+msgstr "建立套件清單"
+
+#: ../src/yumex.py:483
+msgid "Building Package Lists Completed"
+msgstr "完成建立套件清單"
+
+#: ../src/yumex.py:484
+msgid "Building Groups Lists"
+msgstr "建立群組清單"
+
+#: ../src/yumex.py:487
+msgid "Building Group Lists Completed"
+msgstr "完成建立群組清單"
+
+#: ../src/yumex.py:519
+#, python-format
+msgid "Getting packages : %s"
+msgstr "取得套件：%s"
+
+#: ../src/yumex.py:523
+#, python-format
+msgid "Found %d %s packages"
+msgstr "找到 %d 個 %s 套件"
+
+#. -> Sort Lists
+#: ../src/yumex.py:526
+msgid "Sorting packages"
+msgstr "排序套件"
+
+#: ../src/yumex.py:528
+msgid "Population view with packages"
+msgstr "套件綜覽"
+
+#: ../src/yumex.py:534
+msgid "Population Completed"
+msgstr "綜覽完成"
+
+#: ../src/yumex.py:541
+msgid "Package View Population"
+msgstr "套件檢視綜覽"
+
+#: ../src/yumex.py:552
+msgid "Package View Population Completed"
+msgstr "完成套件檢視綜覽"
+
+#: ../src/yumex.py:558
+msgid "Category View Population"
+msgstr "類別檢視綜覽"
+
+#: ../src/yumex.py:577
+msgid "Category View Population Completed"
+msgstr "完成類別檢視綜覽"
+
+#: ../src/yumex.py:613
+msgid "Processing Packages in queue"
+msgstr "在佇列中處理套件"
+
+#: ../src/yumex.py:619
+msgid "Error in Dependency Resolution"
+msgstr "解析相依性時發生錯誤"
+
+#: ../src/yumex.py:637
+msgid "No packages selected"
+msgstr "未選取任何套件"
+
+#: ../src/yumex.py:644
+msgid "No packages in transaction"
+msgstr "異動作業中無任何套件"
+
+#: ../src/yumex.py:654
+msgid "Processing packages (See output for details)"
+msgstr "處理套件 (查看輸出細節)"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing"
+msgstr "套件處理中"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing completed ok"
+msgstr "套件處理已正確完成"
+
+#: ../src/yumex.py:674
+msgid "Error in Transaction"
+msgstr "異動時發生錯誤"
+
+#: ../src/yumex.py:679
+#, python-format
+msgid "Parsing packages to %s "
+msgstr "剖析套件到 %s "
+
+#: ../src/yumex.py:713
+#, python-format
+msgid "found %d packages, matching : %s"
+msgstr "找到 %d 個套件，符合：%s"
+
+#: ../src/yumex.py:782
+msgid "Yum is locked by another application"
+msgstr "Yum 由另外的應用程式鎖定"
+
+#: ../src/yumex.py:784 ../src/yumex.py:805
+msgid "Error in Yumex"
+msgstr "Yumex 發生錯誤"
+
+#: ../src/yumgui/callbacks.py:62
+msgid "Erasing"
+msgstr "清除中"
+
+#: ../src/yumgui/callbacks.py:65 ../src/yumgui/callbacks.py:71
+msgid "Obsoleted"
+msgstr "過時的"
+
+#: ../src/yumgui/callbacks.py:67
+msgid "Updated"
+msgstr "已更新"
+
+#: ../src/yumgui/callbacks.py:68
+msgid "Erased"
+msgstr "已清除"
+
+#: ../src/yumgui/callbacks.py:69 ../src/yumgui/callbacks.py:70
+#: ../src/yumgui/callbacks.py:72 ../src/yumex.glade.h:49
+msgid "Installed"
+msgstr "已安裝"
+
+#: ../src/yumgui/callbacks.py:182
+msgid "No header - huh?"
+msgstr "無表頭 - 嗯？"
+
+#. def main():
+#. """This is a unit test which confirms that all base classes are
+#. traversed when looking up attributes."""
+#.
+#. class BaseTest(Controller):
+#. def __init__(self, gladePath):
+#. ui = UI(gladePath, "app")
+#. Controller.__init__(self, ui)
+#.
+#. def on_exit1_activate(self, *args):
+#. gtk.mainquit()
+#.
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. class Test(BaseTest):
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. gladePath = "_test/data/ui.glade"
+#. c = Test(gladePath)
+#. print 72 * "_"
+#. print "Controller methods:"
+#. methods = c._getAllMethods()
+#. names = methods.keys()
+#. names.sort()
+#. for name in names:
+#. value = methods[name]
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. print 72 * "_"
+#. print "Sample UI instance attributes:"
+#. names = ["root", "new_file1", "exit1"]
+#. names.sort()
+#. for name in names:
+#. value = getattr(c.ui, name)
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. if __name__ == "__main__":
+#. main()
+#: ../src/yumex.glade.h:1
+msgid " "
+msgstr " "
+
+#: ../src/yumex.glade.h:2
+msgid "    "
+msgstr "    "
+
+#: ../src/yumex.glade.h:3
+msgid "0"
+msgstr "0"
+
+#: ../src/yumex.glade.h:4
+msgid "1"
+msgstr "1"
+
+#: ../src/yumex.glade.h:5
+msgid "2"
+msgstr "2"
+
+#: ../src/yumex.glade.h:6
+msgid "3"
+msgstr "3"
+
+#: ../src/yumex.glade.h:7
+msgid "4"
+msgstr "4"
+
+#: ../src/yumex.glade.h:8
+msgid "<b>(C) 2005  - Tim Lauridsen</b>"
+msgstr "<b>(C) 2005  - Tim Lauridsen</b>"
+
+#: ../src/yumex.glade.h:9
+msgid "<b>Behavior</b>"
+msgstr "<b>運作方式</b>"
+
+#: ../src/yumex.glade.h:10
+msgid "<b>Category</b>"
+msgstr "<b>類別</b>"
+
+#: ../src/yumex.glade.h:11
+msgid "<b>Flags</b>"
+msgstr "<b>旗標</b>"
+
+#: ../src/yumex.glade.h:12
+msgid "<b>Fonts </b>"
+msgstr "<b>字型</b>"
+
+#: ../src/yumex.glade.h:13
+msgid "<b>GPG Key</b>"
+msgstr "<b>GPG 金鑰</b>"
+
+#: ../src/yumex.glade.h:14
+msgid "<b>Packages</b>"
+msgstr "<b>套件</b>"
+
+#: ../src/yumex.glade.h:15
+msgid "<b>Quick add to queue</b>"
+msgstr "<b>快速加入到佇列</b>"
+
+#: ../src/yumex.glade.h:16
+msgid "<b>Repository  Exclude Filters</b>"
+msgstr "<b>儲存庫排除篩選器</b>"
+
+#: ../src/yumex.glade.h:17
+msgid "<b>SUBACTION</b>\n"
+msgstr "<b>子動作</b>\n"
+
+#: ../src/yumex.glade.h:19
+msgid "<b>Select Profile</b>"
+msgstr "<b>選取設定組合</b>"
+
+#: ../src/yumex.glade.h:20
+msgid "<b>Total Download Size</b>"
+msgstr "<b>總計下載大小</b>"
+
+#: ../src/yumex.glade.h:21
+msgid "<b>URL Type</b>"
+msgstr "<b>URL 型態</b>"
+
+#: ../src/yumex.glade.h:22
+msgid "<b>URLs</b>"
+msgstr "<b>URLs</b>"
+
+#: ../src/yumex.glade.h:23
+msgid "<span size=\"large\"><b>Action</b></span>\n"
+msgstr "<span size=\"large\"><b>動作</b></span>\n"
+
+#: ../src/yumex.glade.h:25
+msgid "<span size=\"xx-large\" color=\"black\">Group View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">群組檢視</span>"
+
+#: ../src/yumex.glade.h:26
+msgid "<span size=\"xx-large\" color=\"black\">Output View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">輸出檢視</span>"
+
+#: ../src/yumex.glade.h:27
+msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">套件佇列</span>"
+
+#: ../src/yumex.glade.h:28
+msgid "<span size=\"xx-large\" color=\"black\">Select Repositories</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">選取儲存庫</span>"
+
+#: ../src/yumex.glade.h:29
+msgid "About"
+msgstr "關於"
+
+#: ../src/yumex.glade.h:31
+msgid "All"
+msgstr "全部"
+
+#: ../src/yumex.glade.h:33
+msgid "Available"
+msgstr "可用"
+
+#: ../src/yumex.glade.h:34
+msgid "C_hangelog"
+msgstr "變更記錄(_H)"
+
+#: ../src/yumex.glade.h:35
+msgid "Console"
+msgstr "主控臺"
+
+#: ../src/yumex.glade.h:36
+msgid "Credits"
+msgstr "鳴謝"
+
+#: ../src/yumex.glade.h:37
+msgid "Debug _mode"
+msgstr "除錯模式(_M)"
+
+#: ../src/yumex.glade.h:38
+msgid "Debug mode"
+msgstr "除錯模式"
+
+#: ../src/yumex.glade.h:39
+msgid "Disable 'Yum Extender Launcher'"
+msgstr "停用「Yum 延伸執行程式」"
+
+#: ../src/yumex.glade.h:40
+msgid "Disable Plugins"
+msgstr "停用外掛程式"
+
+#: ../src/yumex.glade.h:41
+msgid "ETA"
+msgstr "估計到達時間"
+
+#: ../src/yumex.glade.h:42
+msgid "Edit Repository"
+msgstr "編輯儲存庫"
+
+#: ../src/yumex.glade.h:44
+msgid "Excludes"
+msgstr "排除清單"
+
+#: ../src/yumex.glade.h:45
+msgid "Extra"
+msgstr "額外套件"
+
+#: ../src/yumex.glade.h:46
+msgid "Fi_les"
+msgstr "檔案(_L)"
+
+#: ../src/yumex.glade.h:47
+msgid "GUI"
+msgstr "圖形介面"
+
+#: ../src/yumex.glade.h:48
+msgid "I_nformation"
+msgstr "資訊(_N)"
+
+#: ../src/yumex.glade.h:50
+msgid "Load Yum Metadata"
+msgstr "載入 Yum 後設資料"
+
+#: ../src/yumex.glade.h:51
+msgid "Package Descriptions"
+msgstr "套件描述"
+
+#: ../src/yumex.glade.h:52
+msgid "Plugins"
+msgstr "外掛清單"
+
+#: ../src/yumex.glade.h:53
+msgid "Preferences"
+msgstr "偏好設定"
+
+#: ../src/yumex.glade.h:54
+msgid "Process Queue Confirmation"
+msgstr "處理佇列確認"
+
+#: ../src/yumex.glade.h:55
+msgid "Repos"
+msgstr "儲存庫"
+
+#: ../src/yumex.glade.h:56
+msgid "Search Options"
+msgstr "搜尋選項"
+
+#: ../src/yumex.glade.h:57
+msgid "Update Only"
+msgstr "只做更新"
+
+#: ../src/yumex.glade.h:58
+msgid "Updates"
+msgstr "更新"
+
+#: ../src/yumex.glade.h:59
+msgid "Use _proxy"
+msgstr "使用代理伺服器(_P)"
+
+#: ../src/yumex.glade.h:60
+msgid "Yum Extender"
+msgstr "Yum 延伸程式"
+
+#: ../src/yumex.glade.h:61
+msgid "Yum Extender Launcher"
+msgstr "Yum 延伸執行程式"
+
+#: ../src/yumex.glade.h:62
+msgid "Yum Extender Preferences"
+msgstr "Yum 延伸程式偏好設定"
+
+#: ../src/yumex.glade.h:63
+msgid "_Add All"
+msgstr "全部加入(_A)"
+
+#: ../src/yumex.glade.h:64
+msgid "_Auto refresh on start"
+msgstr "開始時自動重新整理(_A)"
+
+#: ../src/yumex.glade.h:65
+msgid "_Base url "
+msgstr "基準 URL(_B)"
+
+#: ../src/yumex.glade.h:66
+msgid "_Description"
+msgstr "描述(_D)"
+
+#: ../src/yumex.glade.h:67
+msgid "_Deselect All"
+msgstr "全部不選(_D)"
+
+#: ../src/yumex.glade.h:68
+msgid "_Edit"
+msgstr "編輯(_E)"
+
+#: ../src/yumex.glade.h:69
+msgid "_Enabled"
+msgstr "已啟用(_E)"
+
+#: ../src/yumex.glade.h:70
+msgid "_File"
+msgstr "檔案(_F)"
+
+#: ../src/yumex.glade.h:71
+msgid "_GPG check"
+msgstr "_GPG 檢查"
+
+#: ../src/yumex.glade.h:72
+msgid "_Help"
+msgstr "求助(_H)"
+
+#: ../src/yumex.glade.h:73
+msgid "_Mirror list"
+msgstr "鏡像列表(_M)"
+
+#: ../src/yumex.glade.h:74
+msgid "_Name:"
+msgstr "名稱(_N)："
+
+#: ../src/yumex.glade.h:75
+msgid "_Other"
+msgstr "其他(_O)"
+
+#: ../src/yumex.glade.h:76
+msgid "_Process Queue"
+msgstr "處理佇列(_P)"
+
+#: ../src/yumex.glade.h:77
+msgid "_Profiles"
+msgstr "設定組合(_P)"
+
+#: ../src/yumex.glade.h:78
+msgid "_Remove All"
+msgstr "全部移除(_R)"
+
+#: ../src/yumex.glade.h:79
+msgid "_Skip"
+msgstr "跳過(_S)"
+
+#: ../src/yumex.glade.h:80
+msgid "_Tag:"
+msgstr "標記(_T)："
+
+#: ../src/yumex.glade.h:81
+msgid "_Tools"
+msgstr "工具(_T)"
+
+#: ../src/yumex.glade.h:82
+msgid "_Yum Clean All"
+msgstr "_Yum 全部清除"
+
+#: ../src/yumex.glade.h:83
+msgid "_Yum excludes:"
+msgstr "_Yum 排除套件："
+
+#: ../src/yumex.glade.h:84
+msgid "_Yum plugins:"
+msgstr "_Yum 外掛程式："
+
+#: ../src/yumex.glade.h:85
+msgid "dialog1"
+msgstr "對話框1"
+
+#: ../src/yumex.glade.h:86
+msgid "xxxx"
+msgstr "xxxx"

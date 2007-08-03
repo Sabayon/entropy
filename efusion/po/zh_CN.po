@@ -1,0 +1,1091 @@
+# Chinese/Simplified translation of yumex
+# Copyright (C) 2007 Tim Lauridsen
+# This file is distributed under the same license as the yumex package.
+# 宋浩 <mousesh360@163.com>, 2007.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: yumex 1.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-05-29 11:31+0200\n"
+"PO-Revision-Date: 2007-03-24 18:48+0800\n"
+"Last-Translator: 宋浩 <mousesh360@163.com>\n"
+"Language-Team: Chinese/Simplified <i18n-translation@lists.linux.net.cn>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Country: CHINA\n"
+
+#: ../src/callbacks.py:72
+#, python-format
+msgid "Getting : %s"
+msgstr "正在获取：%s"
+
+#: ../src/callbacks.py:167 ../src/yumapi.py:193
+msgid "Removing"
+msgstr "正在删除"
+
+#: ../src/callbacks.py:169
+msgid "Cleanup"
+msgstr "清理"
+
+#: ../src/callbacks.py:188
+#, fuzzy, python-format
+msgid "Erased: %s"
+msgstr "已被删除：%s"
+
+#: ../src/callbacks.py:209
+#, python-format
+msgid "Processing metadata from : %s"
+msgstr "正在处理来自如下来源的元数据：%s"
+
+#: ../src/callbacks.py:211
+msgid "Processing metadata"
+msgstr "正在处理元数据"
+
+#: ../src/callbacks.py:244
+#, python-format
+msgid "---> Package %s.%s %s:%s-%s set to be %s"
+msgstr "---> 将软件包 %s.%s %s:%s-%s 标记为将被 %s"
+
+#: ../src/callbacks.py:251
+msgid "--> Running transaction check"
+msgstr "--> 正在进行事务检查"
+
+#: ../src/callbacks.py:255
+msgid "--> Restarting Dependency Resolution with new changes."
+msgstr "--> 考虑到新的变化，正在重新开始进行依赖关系分析"
+
+#: ../src/callbacks.py:259
+msgid "--> Finished Dependency Resolution"
+msgstr "--> 依赖关系分析完成"
+
+#: ../src/callbacks.py:263
+#, python-format
+msgid "--> Processing Dependency: %s for package: %s"
+msgstr "--> 处理依赖关系：%s 为如下软件包所必须：%s"
+
+#: ../src/callbacks.py:268
+#, python-format
+msgid "--> Unresolved Dependency: %s"
+msgstr "--> 未被满足的依赖关系：%s"
+
+#: ../src/callbacks.py:272
+#, python-format
+msgid "--> Processing Conflict: %s conflicts %s"
+msgstr "--> 处理冲突：软件包 %s 和软件包 %s 互相冲突"
+
+#: ../src/callbacks.py:275
+#, fuzzy
+msgid "--> Populating transaction set with selected packages. Please wait."
+msgstr "--> 正在将选中的软件包加入事务集合。请稍候。"
+
+#: ../src/callbacks.py:278
+#, fuzzy, python-format
+msgid "---> Downloading header for %s to pack into transaction set."
+msgstr "---> 正在下载软件包 %s 的数据头信息，以便将其加入事务集合。"
+
+#: ../src/dialogs.py:193
+msgid "Packages to Process"
+msgstr "将被处理的软件包"
+
+#: ../src/dialogs.py:209 ../src/views.py:477
+msgid "Name"
+msgstr "名称"
+
+#: ../src/dialogs.py:210 ../src/yumex.glade.h:32
+msgid "Arch"
+msgstr "体系结构"
+
+#: ../src/dialogs.py:211 ../src/views.py:69
+msgid "Ver"
+msgstr "版本"
+
+#. Setup reponame & repofile column's
+#: ../src/dialogs.py:212 ../src/views.py:441 ../src/views.py:476
+msgid "Repository"
+msgstr "软件仓库"
+
+#: ../src/dialogs.py:213 ../src/views.py:69
+msgid "Size"
+msgstr "大小"
+
+#: ../src/dialogs.py:345 ../src/yumex.glade.h:30
+msgid "About Yum Extender"
+msgstr "关于Yum Extender"
+
+#: ../src/gui.py:65
+#, fuzzy, python-format
+msgid ""
+"Updating : %s\n"
+"\n"
+msgstr "即将更新"
+
+#: ../src/gui.py:72
+#, fuzzy, python-format
+msgid ""
+"Obsoleting : %s\n"
+"\n"
+msgstr "正在获取：%s"
+
+#: ../src/gui.py:87
+msgid ""
+"Requires:\n"
+"\n"
+msgstr ""
+"需要：\n"
+"\n"
+
+#: ../src/gui.py:102 ../src/gui.py:112
+#, python-format
+msgid "Can not read the %s attribute"
+msgstr "无法读取“%s”属性"
+
+#: ../src/gui.py:353
+msgid "Show All Packages"
+msgstr "显示所有软件包"
+
+#: ../src/gui.py:354
+msgid "Show Package Updates"
+msgstr "显示软件包更新信息"
+
+#: ../src/gui.py:355
+msgid "Show available Packages"
+msgstr "显示可用的软件包"
+
+#: ../src/gui.py:356
+msgid "Show Installed Packages"
+msgstr "显示已安装的软件包"
+
+#. Setup Vertical Toolbar
+#: ../src/gui.py:365
+#, fuzzy
+msgid "Package View"
+msgstr "软件包列表视图"
+
+#: ../src/gui.py:366
+msgid "Group View"
+msgstr "软件分组视图"
+
+#: ../src/gui.py:367
+msgid "Package Queue View"
+msgstr "待处理软件包队列视图"
+
+#. TODO: Make repo selection work.
+#: ../src/gui.py:369
+msgid "Repository Selection View"
+msgstr "软件仓库选择视图"
+
+#: ../src/gui.py:370
+#, fuzzy
+msgid "Output View"
+msgstr "输出信息视图"
+
+#.
+#. [1]           [2]               [3]             [4]     [5]     [6]
+#. -------------------------------------------------------------------------
+#: ../src/misc.py:84
+msgid "RPM Groups"
+msgstr "RPM软件包分组"
+
+#: ../src/misc.py:85
+msgid "Repositories"
+msgstr "软件仓库"
+
+#: ../src/misc.py:86 ../src/views.py:69
+msgid "Architecture"
+msgstr "体系结构"
+
+#: ../src/misc.py:87
+msgid "Sizes"
+msgstr "大小"
+
+#: ../src/misc.py:88
+#, fuzzy
+msgid "Age"
+msgstr "年龄"
+
+#: ../src/misc.py:98
+msgid "Mandatory"
+msgstr "必需"
+
+#: ../src/misc.py:99
+msgid "Default"
+msgstr "默认"
+
+#: ../src/misc.py:100
+msgid "Optional"
+msgstr "可选"
+
+#: ../src/misc.py:101
+#, fuzzy
+msgid "Conditional"
+msgstr "有前提条件的"
+
+#: ../src/misc.py:109
+msgid "Programming:"
+msgstr ""
+
+#: ../src/misc.py:112
+#, fuzzy
+msgid "Translation:"
+msgstr "正在执行事务"
+
+#: ../src/misc.py:132
+msgid "Thank you:"
+msgstr ""
+
+#: ../src/misc.py:350
+msgid "Package Queue:"
+msgstr "待处理软件包队列："
+
+#: ../src/misc.py:355
+#, fuzzy, python-format
+msgid " Packages to %s"
+msgstr "将要被%s的软件包"
+
+#: ../src/misc.py:362
+#, fuzzy, python-format
+msgid " Groups to %s"
+msgstr " Groups to %s"
+
+#: ../src/misc.py:426
+#, fuzzy, python-format
+msgid "Wrong file application (%s)"
+msgstr "Wrong file application (%s)"
+
+#: ../src/misc.py:428
+#, python-format
+msgid "Wrong file type (%s)"
+msgstr "错误的文件类型（%s）"
+
+#: ../src/misc.py:430
+#, python-format
+msgid "Wrong file version (%s)"
+msgstr "错误的文件版本（%s）"
+
+#: ../src/misc.py:542
+msgid "Current Settings :"
+msgstr "当前设置："
+
+#: ../src/views.py:40 ../src/views.py:305
+msgid "Categories"
+msgstr "类别"
+
+#: ../src/views.py:69 ../src/views.py:99
+msgid "Package"
+msgstr "软件包"
+
+#: ../src/views.py:69 ../src/views.py:102 ../src/views.py:239
+msgid "Summary"
+msgstr "摘要"
+
+#: ../src/views.py:69
+msgid "Repo"
+msgstr "软件仓库"
+
+#: ../src/views.py:100
+msgid "Arch."
+msgstr "体系结构."
+
+#: ../src/views.py:101
+msgid "Ver."
+msgstr "版本."
+
+#: ../src/views.py:103
+msgid "Repo."
+msgstr "软件仓库."
+
+#: ../src/views.py:104
+msgid "Size."
+msgstr "软件包大小."
+
+#: ../src/views.py:234
+msgid "Packages"
+msgstr "软件包"
+
+#: ../src/views.py:276
+msgid "<b>Packages To Update</b>"
+msgstr "<b>将被更新的软件包</b>"
+
+#: ../src/views.py:280
+msgid "<b>Packages To Install</b>"
+msgstr "<b>将被安装的软件包</b>"
+
+#: ../src/views.py:284
+msgid "<b>Packages To Remove</b>"
+msgstr "<b>将被删除的软件包</b>"
+
+#: ../src/views.py:357
+msgid "Groups"
+msgstr "软件分组"
+
+#: ../src/views.py:441
+msgid "Filename"
+msgstr "文件名"
+
+#: ../src/views.py:575
+msgid "Plugin"
+msgstr "插件"
+
+#: ../src/yumapi.py:68 ../src/yumapi.py:106
+msgid "Setup Yum : Transaction Set"
+msgstr "设置Yum：事务集合"
+
+#: ../src/yumapi.py:70 ../src/yumapi.py:108
+msgid "Setup Yum : RPM Db."
+msgstr "设置Yum：RPM数据库"
+
+#. -> Repo Setup
+#: ../src/yumapi.py:73 ../src/yumapi.py:111
+msgid "Setup Yum : Repositories."
+msgstr "设置Yum：软件仓库"
+
+#. -> Sack Setup
+#: ../src/yumapi.py:76 ../src/yumapi.py:114
+#, fuzzy
+msgid "Setup Yum : Package Sacks"
+msgstr "设置Yum：软件包口袋"
+
+#. -> Updates Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:79 ../src/yumapi.py:117
+msgid "Setup Yum : Updates"
+msgstr "设置Yum：软件更新"
+
+#. -> Group Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:82 ../src/yumapi.py:120
+msgid "Setup Yum : Groups"
+msgstr "设置Yum：软件分组"
+
+#: ../src/yumapi.py:84 ../src/yumapi.py:122
+msgid "Setup Yum : Base setup completed"
+msgstr "设置Yum：基础设置完成"
+
+#: ../src/yumapi.py:151 ../src/yumex.py:605
+msgid "Preparing for install/remove/update"
+msgstr "正在准备进行安装/删除/更新"
+
+#. Install
+#: ../src/yumapi.py:154
+msgid "--> Preparing for install"
+msgstr "--> 正在准备安装"
+
+#. Remove
+#: ../src/yumapi.py:158
+msgid "--> Preparing for remove"
+msgstr "--> 正在为删除作准备"
+
+#: ../src/yumapi.py:164
+msgid "--> Preparing for a full update"
+msgstr "--> 正在为全面软件更新作准备"
+
+#: ../src/yumapi.py:167
+msgid "--> Preparing for a partial update"
+msgstr "--> 正在为部分软件更新作准备"
+
+#: ../src/yumapi.py:169
+msgid "--> Adding all obsoletion to transaction"
+msgstr "--> 正在将所有已过时的软件包加入事务"
+
+#: ../src/yumapi.py:191 ../src/yumgui/callbacks.py:63
+#: ../src/yumgui/callbacks.py:64 ../src/yumgui/callbacks.py:66
+#, fuzzy
+msgid "Installing"
+msgstr "即将安装"
+
+#: ../src/yumapi.py:192 ../src/yumgui/callbacks.py:61
+#, fuzzy
+msgid "Updating"
+msgstr "即将更新"
+
+#: ../src/yumapi.py:194
+#, fuzzy
+msgid "Installing for dependencies"
+msgstr "为满足软件包依赖要求，即将安装"
+
+#: ../src/yumapi.py:195
+#, fuzzy
+msgid "Updating for dependencies"
+msgstr "为满足软件包依赖要求，即将更新"
+
+#: ../src/yumapi.py:196
+#, fuzzy
+msgid "Removing for dependencies"
+msgstr "为满足软件包依赖要求，即将删除"
+
+#: ../src/yumapi.py:242
+#, python-format
+msgid "Failure getting %s: "
+msgstr "获取%s失败："
+
+#: ../src/yumapi.py:264
+msgid "Downloading Packages:"
+msgstr "正在下载软件包："
+
+#: ../src/yumapi.py:280 ../src/yumapi.py:288
+msgid "Error Downloading Packages:\n"
+msgstr "下载软件包时出现错误：\n"
+
+#. Check GPG signatures
+#: ../src/yumapi.py:295
+msgid "Checking GPG Signatures:"
+msgstr "正在检查GPG签名："
+
+#: ../src/yumapi.py:300
+msgid "Error checking package signatures:\n"
+msgstr "在检查软件包的签名时出现错误：\n"
+
+#: ../src/yumapi.py:307
+#, fuzzy
+msgid "Traceback in checking package signatures:\n"
+msgstr "检查软件包签名过程中的回溯：\n"
+
+#: ../src/yumapi.py:315
+msgid "Running Transaction Test"
+msgstr "正在进行事务检验"
+
+#: ../src/yumapi.py:333
+msgid "Finished Transaction Test"
+msgstr "事务检验完成"
+
+#: ../src/yumapi.py:335
+msgid "Transaction Check Error: "
+msgstr "事务核对出现错误："
+
+#: ../src/yumapi.py:340
+msgid "Transaction Test Succeeded"
+msgstr "事务检验成功"
+
+#. self.log( 2, 'Running Transaction' )
+#: ../src/yumapi.py:357
+msgid "Running Transaction"
+msgstr "正在执行事务"
+
+#. print "po: %s userid: %s hexkey: %s " % (str(po),userid,hexkeyid)
+#: ../src/yumapi.py:452
+#, python-format
+msgid "Do you want to import GPG Key : %s \n"
+msgstr "你是否希望导入GPG密钥：%s \n"
+
+#: ../src/yumapi.py:454
+#, python-format
+msgid "Needed by %s"
+msgstr "为软件包 %s 所需要"
+
+#: ../src/yumex.py:62
+msgid "Cant Quit while running RPM Transactions"
+msgstr "当正在执行RPM事务时不能退出"
+
+#: ../src/yumex.py:67
+msgid "Quiting, please wait !!!!!!"
+msgstr "正在退出，请稍等！！！！！！"
+
+#: ../src/yumex.py:155
+msgid "Yum has not been initialized yet"
+msgstr "Yum还未被初始化"
+
+#. Check there are any packages in the queue
+#: ../src/yumex.py:161
+msgid "No packages in queue"
+msgstr "在待处理软件包队列中没有软件包"
+
+#: ../src/yumex.py:238
+#, python-format
+msgid "You are about to add %s packages\n"
+msgstr "您即将添加 %s 软件包\n"
+
+#: ../src/yumex.py:239 ../src/yumex.py:253
+msgid "It will take some time\n"
+msgstr "这可能需要一些时间。\n"
+
+#: ../src/yumex.py:240 ../src/yumex.py:254
+msgid "do you want to continue ?"
+msgstr "您希望继续吗？"
+
+#: ../src/yumex.py:252
+#, python-format
+msgid "You are about to remove %s packages\n"
+msgstr "您即将删除%s软件包\n"
+
+#: ../src/yumex.py:355
+#, python-format
+msgid "Selected the %s profile"
+msgstr "配置文件%s被选中"
+
+#: ../src/yumex.py:375
+#, python-format
+msgid "Profile : %s saved ok"
+msgstr "配置文件：%s保存成功"
+
+#: ../src/yumex.py:377
+#, python-format
+msgid "Profile : %s save failed"
+msgstr "配置文件：%s保存失败"
+
+#: ../src/yumex.py:382
+msgid "Create New Profile"
+msgstr "创建新配置文件"
+
+#: ../src/yumex.py:382
+msgid "Name of new profile"
+msgstr "新配置文件的名字"
+
+#: ../src/yumex.py:386
+#, python-format
+msgid "Profile : %s created ok"
+msgstr "配置文件：“%s”创建成功"
+
+#: ../src/yumex.py:389
+#, python-format
+msgid "Profile : %s creation failed"
+msgstr "配置文件：“%s”创建失败"
+
+#: ../src/yumex.py:393
+msgid "Cleaning up all yum metadata"
+msgstr "正在清理所有的yum元数据"
+
+#: ../src/yumex.py:420
+msgid "Yum Config Setup"
+msgstr "Yum配置设置"
+
+#: ../src/yumex.py:436
+msgid "GUI Setup Completed"
+msgstr "图形用户界面设置完成"
+
+#: ../src/yumex.py:476 ../src/yumex.py:620 ../src/yumex.py:674
+#: ../src/yumex.py:784 ../src/yumex.py:805 ../src/yumex.glade.h:43
+msgid "Error"
+msgstr "错误"
+
+#: ../src/yumex.py:476
+msgid "Error in Yum Setup"
+msgstr "Yum设置中存在错误"
+
+#. prepare package lists
+#. -> List setup
+#: ../src/yumex.py:481
+msgid "Building Package Lists"
+msgstr "正在编制软件包列表"
+
+#: ../src/yumex.py:483
+msgid "Building Package Lists Completed"
+msgstr "软件包列表编制完成"
+
+#: ../src/yumex.py:484
+msgid "Building Groups Lists"
+msgstr "正在编制软件分组列表"
+
+#: ../src/yumex.py:487
+msgid "Building Group Lists Completed"
+msgstr "软件分组列表编制完成"
+
+#: ../src/yumex.py:519
+#, python-format
+msgid "Getting packages : %s"
+msgstr "正在获取软件包：%s"
+
+#: ../src/yumex.py:523
+#, python-format
+msgid "Found %d %s packages"
+msgstr "找到 %d 个 %s 软件包"
+
+#. -> Sort Lists
+#: ../src/yumex.py:526
+msgid "Sorting packages"
+msgstr "正在对软件包进行排序"
+
+#: ../src/yumex.py:528
+msgid "Population view with packages"
+msgstr "将软件包信息填入视图"
+
+#: ../src/yumex.py:534
+msgid "Population Completed"
+msgstr "填充完成"
+
+#: ../src/yumex.py:541
+msgid "Package View Population"
+msgstr "软件包视图填充"
+
+#: ../src/yumex.py:552
+msgid "Package View Population Completed"
+msgstr "软件包视图填充完成"
+
+#: ../src/yumex.py:558
+msgid "Category View Population"
+msgstr "分类视图填充"
+
+#: ../src/yumex.py:577
+msgid "Category View Population Completed"
+msgstr "分类视图填充完成"
+
+#: ../src/yumex.py:613
+msgid "Processing Packages in queue"
+msgstr "正在处理队列中的软件包"
+
+#: ../src/yumex.py:619
+msgid "Error in Dependency Resolution"
+msgstr "在依赖关系分析中出现错误"
+
+#: ../src/yumex.py:637
+msgid "No packages selected"
+msgstr "没有软件包被选中"
+
+#: ../src/yumex.py:644
+msgid "No packages in transaction"
+msgstr "事务没有包含任何软件包"
+
+#: ../src/yumex.py:654
+msgid "Processing packages (See output for details)"
+msgstr "正在进行软件包处理（细节请见控制台输出视图）"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing"
+msgstr "软件包处理"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing completed ok"
+msgstr "软件包处理正确完成"
+
+#: ../src/yumex.py:674
+msgid "Error in Transaction"
+msgstr "事务执行中出现错误"
+
+#: ../src/yumex.py:679
+#, python-format
+msgid "Parsing packages to %s "
+msgstr "正在对将要被%s的软件包进行分析"
+
+#: ../src/yumex.py:713
+#, python-format
+msgid "found %d packages, matching : %s"
+msgstr "找到%d个软件包与“%s”匹配"
+
+#: ../src/yumex.py:782
+msgid "Yum is locked by another application"
+msgstr "Yum被另一个程序锁定"
+
+#: ../src/yumex.py:784 ../src/yumex.py:805
+msgid "Error in Yumex"
+msgstr "Yumex遇到错误"
+
+#: ../src/yumgui/callbacks.py:62
+#, fuzzy
+msgid "Erasing"
+msgstr "即将删除"
+
+#: ../src/yumgui/callbacks.py:65 ../src/yumgui/callbacks.py:71
+#, fuzzy
+msgid "Obsoleted"
+msgstr "已过时的"
+
+#: ../src/yumgui/callbacks.py:67
+#, fuzzy
+msgid "Updated"
+msgstr "已被更新的"
+
+#: ../src/yumgui/callbacks.py:68
+#, fuzzy
+msgid "Erased"
+msgstr "已删除的"
+
+#: ../src/yumgui/callbacks.py:69 ../src/yumgui/callbacks.py:70
+#: ../src/yumgui/callbacks.py:72 ../src/yumex.glade.h:49
+msgid "Installed"
+msgstr "已安装"
+
+#: ../src/yumgui/callbacks.py:182
+msgid "No header - huh?"
+msgstr "没有数据头信息 - 呃？"
+
+#. def main():
+#. """This is a unit test which confirms that all base classes are
+#. traversed when looking up attributes."""
+#.
+#. class BaseTest(Controller):
+#. def __init__(self, gladePath):
+#. ui = UI(gladePath, "app")
+#. Controller.__init__(self, ui)
+#.
+#. def on_exit1_activate(self, *args):
+#. gtk.mainquit()
+#.
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. class Test(BaseTest):
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. gladePath = "_test/data/ui.glade"
+#. c = Test(gladePath)
+#. print 72 * "_"
+#. print "Controller methods:"
+#. methods = c._getAllMethods()
+#. names = methods.keys()
+#. names.sort()
+#. for name in names:
+#. value = methods[name]
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. print 72 * "_"
+#. print "Sample UI instance attributes:"
+#. names = ["root", "new_file1", "exit1"]
+#. names.sort()
+#. for name in names:
+#. value = getattr(c.ui, name)
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. if __name__ == "__main__":
+#. main()
+#: ../src/yumex.glade.h:1
+msgid " "
+msgstr " "
+
+#: ../src/yumex.glade.h:2
+msgid "    "
+msgstr "    "
+
+#: ../src/yumex.glade.h:3
+msgid "0"
+msgstr "0"
+
+#: ../src/yumex.glade.h:4
+msgid "1"
+msgstr "1"
+
+#: ../src/yumex.glade.h:5
+msgid "2"
+msgstr "2"
+
+#: ../src/yumex.glade.h:6
+msgid "3"
+msgstr "3"
+
+#: ../src/yumex.glade.h:7
+msgid "4"
+msgstr "4"
+
+#: ../src/yumex.glade.h:8
+msgid "<b>(C) 2005  - Tim Lauridsen</b>"
+msgstr "<b>(C) 2005  - Tim Lauridsen</b>"
+
+#: ../src/yumex.glade.h:9
+#, fuzzy
+msgid "<b>Behavior</b>"
+msgstr "<b>行为</b>"
+
+#: ../src/yumex.glade.h:10
+msgid "<b>Category</b>"
+msgstr "<b>分类</b>"
+
+#: ../src/yumex.glade.h:11
+msgid "<b>Flags</b>"
+msgstr "<b>标记</b>"
+
+#: ../src/yumex.glade.h:12
+msgid "<b>Fonts </b>"
+msgstr "<b>字体 </b>"
+
+#: ../src/yumex.glade.h:13
+msgid "<b>GPG Key</b>"
+msgstr "<b>GPG密钥</b>"
+
+#: ../src/yumex.glade.h:14
+msgid "<b>Packages</b>"
+msgstr "<b>软件包</b>"
+
+#: ../src/yumex.glade.h:15
+msgid "<b>Quick add to queue</b>"
+msgstr "<b>快速加入待处理软件包队列</b>"
+
+#: ../src/yumex.glade.h:16
+msgid "<b>Repository  Exclude Filters</b>"
+msgstr ""
+
+#: ../src/yumex.glade.h:17
+#, fuzzy
+msgid "<b>SUBACTION</b>\n"
+msgstr "<b>子动作</b>\n"
+
+#: ../src/yumex.glade.h:19
+msgid "<b>Select Profile</b>"
+msgstr "<b>选择配置文件</b>"
+
+#: ../src/yumex.glade.h:20
+msgid "<b>Total Download Size</b>"
+msgstr "<b>总共需下载的数据量</b>"
+
+#: ../src/yumex.glade.h:21
+msgid "<b>URL Type</b>"
+msgstr "<b>URL类型</b>"
+
+#: ../src/yumex.glade.h:22
+msgid "<b>URLs</b>"
+msgstr "<b>URL</b>"
+
+#: ../src/yumex.glade.h:23
+msgid "<span size=\"large\"><b>Action</b></span>\n"
+msgstr "<span size=\"large\"><b>动作</b></span>\n"
+
+#: ../src/yumex.glade.h:25
+msgid "<span size=\"xx-large\" color=\"black\">Group View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">软件分组视图</span>"
+
+#: ../src/yumex.glade.h:26
+msgid "<span size=\"xx-large\" color=\"black\">Output View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">控制台输出视图</span>"
+
+#: ../src/yumex.glade.h:27
+msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">待处理软件包队列</span>"
+
+#: ../src/yumex.glade.h:28
+msgid "<span size=\"xx-large\" color=\"black\">Select Repositories</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">被选中的软件仓库</span>"
+
+#: ../src/yumex.glade.h:29
+msgid "About"
+msgstr "关于"
+
+#: ../src/yumex.glade.h:31
+msgid "All"
+msgstr "所有"
+
+#: ../src/yumex.glade.h:33
+msgid "Available"
+msgstr "可用"
+
+#: ../src/yumex.glade.h:34
+msgid "C_hangelog"
+msgstr "变更日志（_H）"
+
+#: ../src/yumex.glade.h:35
+msgid "Console"
+msgstr "控制台"
+
+#: ../src/yumex.glade.h:36
+msgid "Credits"
+msgstr "致谢"
+
+#: ../src/yumex.glade.h:37
+msgid "Debug _mode"
+msgstr "调试模式（_M）"
+
+#: ../src/yumex.glade.h:38
+msgid "Debug mode"
+msgstr "调试模式"
+
+#: ../src/yumex.glade.h:39
+msgid "Disable 'Yum Extender Launcher'"
+msgstr "禁用“Yum Extender启动器”"
+
+#: ../src/yumex.glade.h:40
+msgid "Disable Plugins"
+msgstr "禁用插件"
+
+#: ../src/yumex.glade.h:41
+msgid "ETA"
+msgstr "估计剩余时间"
+
+#: ../src/yumex.glade.h:42
+msgid "Edit Repository"
+msgstr "编辑软件仓库信息"
+
+#: ../src/yumex.glade.h:44
+msgid "Excludes"
+msgstr "排除"
+
+#: ../src/yumex.glade.h:45
+msgid "Extra"
+msgstr "附加"
+
+#: ../src/yumex.glade.h:46
+msgid "Fi_les"
+msgstr "文件（_L）"
+
+#: ../src/yumex.glade.h:47
+msgid "GUI"
+msgstr "图形用户界面"
+
+#: ../src/yumex.glade.h:48
+msgid "I_nformation"
+msgstr "信息（_N）"
+
+#: ../src/yumex.glade.h:50
+msgid "Load Yum Metadata"
+msgstr "载入Yum元数据"
+
+#: ../src/yumex.glade.h:51
+msgid "Package Descriptions"
+msgstr "软件包描述"
+
+#: ../src/yumex.glade.h:52
+msgid "Plugins"
+msgstr "插件"
+
+#: ../src/yumex.glade.h:53
+msgid "Preferences"
+msgstr "首选项"
+
+#: ../src/yumex.glade.h:54
+msgid "Process Queue Confirmation"
+msgstr "待处理软件包队列确认"
+
+#: ../src/yumex.glade.h:55
+msgid "Repos"
+msgstr "软件仓库"
+
+#: ../src/yumex.glade.h:56
+msgid "Search Options"
+msgstr "搜索选项"
+
+#: ../src/yumex.glade.h:57
+msgid "Update Only"
+msgstr "仅进行更新"
+
+#: ../src/yumex.glade.h:58
+msgid "Updates"
+msgstr "软件更新"
+
+#: ../src/yumex.glade.h:59
+msgid "Use _proxy"
+msgstr "使用代理（_P）"
+
+#: ../src/yumex.glade.h:60
+#, fuzzy
+msgid "Yum Extender"
+msgstr "关于Yum Extender"
+
+#: ../src/yumex.glade.h:61
+msgid "Yum Extender Launcher"
+msgstr "Yum Extender启动器"
+
+#: ../src/yumex.glade.h:62
+msgid "Yum Extender Preferences"
+msgstr "Yum Extender首选项"
+
+#: ../src/yumex.glade.h:63
+msgid "_Add All"
+msgstr "加入所有（_A）"
+
+#: ../src/yumex.glade.h:64
+msgid "_Auto refresh on start"
+msgstr "在启动时自动更新（_A）"
+
+#: ../src/yumex.glade.h:65
+msgid "_Base url "
+msgstr "基础URL（_B）"
+
+#: ../src/yumex.glade.h:66
+msgid "_Description"
+msgstr "描述（_D）"
+
+#: ../src/yumex.glade.h:67
+msgid "_Deselect All"
+msgstr "取消所有选定（_D）"
+
+#: ../src/yumex.glade.h:68
+msgid "_Edit"
+msgstr "编辑（_E）"
+
+#: ../src/yumex.glade.h:69
+msgid "_Enabled"
+msgstr "激活的（_E）"
+
+#: ../src/yumex.glade.h:70
+msgid "_File"
+msgstr "文件（_F）"
+
+#: ../src/yumex.glade.h:71
+msgid "_GPG check"
+msgstr "GPG检查（_G）"
+
+#: ../src/yumex.glade.h:72
+msgid "_Help"
+msgstr "帮助（_H）"
+
+#: ../src/yumex.glade.h:73
+msgid "_Mirror list"
+msgstr "镜像站点列表（_M）"
+
+#: ../src/yumex.glade.h:74
+msgid "_Name:"
+msgstr "名称（_N）"
+
+#: ../src/yumex.glade.h:75
+msgid "_Other"
+msgstr "其他（_O）"
+
+#: ../src/yumex.glade.h:76
+msgid "_Process Queue"
+msgstr "处理软件包队列（_P）"
+
+#: ../src/yumex.glade.h:77
+msgid "_Profiles"
+msgstr "配置文件（_P）"
+
+#: ../src/yumex.glade.h:78
+msgid "_Remove All"
+msgstr "删除所有（_R）"
+
+#: ../src/yumex.glade.h:79
+msgid "_Skip"
+msgstr "跳过（_S）"
+
+#: ../src/yumex.glade.h:80
+msgid "_Tag:"
+msgstr "标记（_T）："
+
+#: ../src/yumex.glade.h:81
+msgid "_Tools"
+msgstr "工具"
+
+#: ../src/yumex.glade.h:82
+msgid "_Yum Clean All"
+msgstr "Yum清除所有（_Y）"
+
+#: ../src/yumex.glade.h:83
+msgid "_Yum excludes:"
+msgstr "Yum排除（_Y）："
+
+#: ../src/yumex.glade.h:84
+msgid "_Yum plugins:"
+msgstr "Yum插件（_Y）"
+
+#: ../src/yumex.glade.h:85
+#, fuzzy
+msgid "dialog1"
+msgstr "对话框1"
+
+#: ../src/yumex.glade.h:86
+#, fuzzy
+msgid "xxxx"
+msgstr "xxxx"
+
+#~ msgid "Save"
+#~ msgstr "保存"
+
+#~ msgid "_About"
+#~ msgstr "关于（_A）"
+
+#~ msgid "_Delete from Queue"
+#~ msgstr "从队列中删除（_D）"
+
+#~ msgid "_New"
+#~ msgstr "新建（_N）"
+
+#~ msgid "_Quit"
+#~ msgstr "退出（_Q）"
+
+#~ msgid "_Save"
+#~ msgstr "保存（_S）"
+
+#~ msgid ""
+#~ "Installed version: %s\n"
+#~ "\n"
+#~ msgstr ""
+#~ "当前已安装的版本：%s\n"
+#~ "\n"

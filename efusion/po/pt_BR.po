@@ -1,0 +1,1485 @@
+# translation of pt_BR.po to Brazilian Portuguese
+# Rodrigo Padula de Oliveira <rodrigopadula@gmail.com>, 2005.
+# Rodrigo Padula de Oliveira <rodrigopadula@projetofedora.org>, 2006.
+# This file is distributed under the same license as the PACKAGE package.
+# Gunix Linux - http://www.gunix.com.br
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
+msgid ""
+msgstr ""
+"Project-Id-Version: pt_BR\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-05-29 11:31+0200\n"
+"PO-Revision-Date: 2006-04-05 23:17-0300\n"
+"Last-Translator: Rodrigo Padula de Oliveira <rodrigopadula@projetofedora."
+"org>\n"
+"Language-Team: Brazilian Portuguese\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.1\n"
+"Plural-Forms:  nplurals=2; plural=(n > 1);\n"
+
+#: ../src/callbacks.py:72
+#, fuzzy, python-format
+msgid "Getting : %s"
+msgstr "Detecção de Espelhos : %s"
+
+#: ../src/callbacks.py:167 ../src/yumapi.py:193
+msgid "Removing"
+msgstr "Removendo"
+
+#: ../src/callbacks.py:169
+msgid "Cleanup"
+msgstr "Limpar"
+
+#: ../src/callbacks.py:188
+#, fuzzy, python-format
+msgid "Erased: %s"
+msgstr "Apagado"
+
+#: ../src/callbacks.py:209
+#, python-format
+msgid "Processing metadata from : %s"
+msgstr "Processando metadados de : %s"
+
+#: ../src/callbacks.py:211
+#, fuzzy
+msgid "Processing metadata"
+msgstr "Processando metadados de : %s"
+
+#: ../src/callbacks.py:244
+#, python-format
+msgid "---> Package %s.%s %s:%s-%s set to be %s"
+msgstr "---> Pacote%s.%s %s:%s-%s ajuste para %s"
+
+#: ../src/callbacks.py:251
+msgid "--> Running transaction check"
+msgstr "--> Executando Teste de Transação"
+
+#: ../src/callbacks.py:255
+msgid "--> Restarting Dependency Resolution with new changes."
+msgstr "--> Reinicialize a Resolução de Dependências com as novas alterações."
+
+#: ../src/callbacks.py:259
+msgid "--> Finished Dependency Resolution"
+msgstr "--> Resolução de Dependências Concluída"
+
+#: ../src/callbacks.py:263
+#, python-format
+msgid "--> Processing Dependency: %s for package: %s"
+msgstr "--> Processando Dependências: %s para o pacote: %s"
+
+#: ../src/callbacks.py:268
+#, python-format
+msgid "--> Unresolved Dependency: %s"
+msgstr "--> Dependência não Resolvida: %s"
+
+#: ../src/callbacks.py:272
+#, python-format
+msgid "--> Processing Conflict: %s conflicts %s"
+msgstr "--> Processando Conflitos: %s conflitos %s"
+
+#: ../src/callbacks.py:275
+msgid "--> Populating transaction set with selected packages. Please wait."
+msgstr ""
+"--> Povoando a transação com os pacotes selecionados. Por favor espere."
+
+#: ../src/callbacks.py:278
+#, python-format
+msgid "---> Downloading header for %s to pack into transaction set."
+msgstr "---> Baixando Cabeçalhos de %s para o pacote na transação."
+
+#: ../src/dialogs.py:193
+#, fuzzy
+msgid "Packages to Process"
+msgstr "Processamento de Pacotes"
+
+#: ../src/dialogs.py:209 ../src/views.py:477
+msgid "Name"
+msgstr "Nome"
+
+#: ../src/dialogs.py:210 ../src/yumex.glade.h:32
+msgid "Arch"
+msgstr "Arq"
+
+#: ../src/dialogs.py:211 ../src/views.py:69
+msgid "Ver"
+msgstr "Versão"
+
+#. Setup reponame & repofile column's
+#: ../src/dialogs.py:212 ../src/views.py:441 ../src/views.py:476
+msgid "Repository"
+msgstr "Repositório"
+
+#: ../src/dialogs.py:213 ../src/views.py:69
+msgid "Size"
+msgstr "Tamanho"
+
+#: ../src/dialogs.py:345 ../src/yumex.glade.h:30
+msgid "About Yum Extender"
+msgstr "Sobre Yum Extender"
+
+#: ../src/gui.py:65
+#, fuzzy, python-format
+msgid ""
+"Updating : %s\n"
+"\n"
+msgstr "Atualizando"
+
+#: ../src/gui.py:72
+#, fuzzy, python-format
+msgid ""
+"Obsoleting : %s\n"
+"\n"
+msgstr "Detecção de Espelhos : %s"
+
+#: ../src/gui.py:87
+msgid ""
+"Requires:\n"
+"\n"
+msgstr ""
+"Requer:\n"
+"\n"
+
+#: ../src/gui.py:102 ../src/gui.py:112
+#, python-format
+msgid "Can not read the %s attribute"
+msgstr "Não é possível ler o atributo %s"
+
+#: ../src/gui.py:353
+#, fuzzy
+msgid "Show All Packages"
+msgstr "Pacotes"
+
+#: ../src/gui.py:354
+#, fuzzy
+msgid "Show Package Updates"
+msgstr "%d Pacote(s) a instalar"
+
+#: ../src/gui.py:355
+#, fuzzy
+msgid "Show available Packages"
+msgstr "Pacotes"
+
+#: ../src/gui.py:356
+#, fuzzy
+msgid "Show Installed Packages"
+msgstr "Baixando Pacotes:"
+
+#. Setup Vertical Toolbar
+#: ../src/gui.py:365
+#, fuzzy
+msgid "Package View"
+msgstr "Pacote"
+
+#: ../src/gui.py:366
+msgid "Group View"
+msgstr ""
+
+#: ../src/gui.py:367
+#, fuzzy
+msgid "Package Queue View"
+msgstr "Pacote"
+
+#. TODO: Make repo selection work.
+#: ../src/gui.py:369
+#, fuzzy
+msgid "Repository Selection View"
+msgstr "Falha na Criação de Repositório"
+
+#: ../src/gui.py:370
+#, fuzzy
+msgid "Output View"
+msgstr "Saída"
+
+#.
+#. [1]           [2]               [3]             [4]     [5]     [6]
+#. -------------------------------------------------------------------------
+#: ../src/misc.py:84
+#, fuzzy
+msgid "RPM Groups"
+msgstr "Grupos"
+
+#: ../src/misc.py:85
+#, fuzzy
+msgid "Repositories"
+msgstr "Repositório"
+
+#: ../src/misc.py:86 ../src/views.py:69
+msgid "Architecture"
+msgstr "Arquitetura"
+
+#: ../src/misc.py:87
+#, fuzzy
+msgid "Sizes"
+msgstr "Tamanho"
+
+#: ../src/misc.py:88
+msgid "Age"
+msgstr ""
+
+#: ../src/misc.py:98
+#, fuzzy
+msgid "Mandatory"
+msgstr "_Obrigatório"
+
+#: ../src/misc.py:99
+#, fuzzy
+msgid "Default"
+msgstr "_Padrão"
+
+#: ../src/misc.py:100
+#, fuzzy
+msgid "Optional"
+msgstr "_Opcional"
+
+#: ../src/misc.py:101
+#, fuzzy
+msgid "Conditional"
+msgstr "_Opcional"
+
+#: ../src/misc.py:109
+msgid "Programming:"
+msgstr ""
+
+#: ../src/misc.py:112
+#, fuzzy
+msgid "Translation:"
+msgstr "instalação"
+
+#: ../src/misc.py:132
+msgid "Thank you:"
+msgstr ""
+
+#: ../src/misc.py:350
+#, fuzzy
+msgid "Package Queue:"
+msgstr "Pacote"
+
+#: ../src/misc.py:355
+#, fuzzy, python-format
+msgid " Packages to %s"
+msgstr "%d Pacote(s) a instalar"
+
+#: ../src/misc.py:362
+#, fuzzy, python-format
+msgid " Groups to %s"
+msgstr "Grupos"
+
+#: ../src/misc.py:426
+#, python-format
+msgid "Wrong file application (%s)"
+msgstr ""
+
+#: ../src/misc.py:428
+#, python-format
+msgid "Wrong file type (%s)"
+msgstr ""
+
+#: ../src/misc.py:430
+#, fuzzy, python-format
+msgid "Wrong file version (%s)"
+msgstr ""
+"Versão Instalada: %s (%s) \n"
+"\n"
+
+#: ../src/misc.py:542
+msgid "Current Settings :"
+msgstr "Configurações Atuais :"
+
+#: ../src/views.py:40 ../src/views.py:305
+#, fuzzy
+msgid "Categories"
+msgstr "_Obrigatório"
+
+#: ../src/views.py:69 ../src/views.py:99
+msgid "Package"
+msgstr "Pacote"
+
+#: ../src/views.py:69 ../src/views.py:102 ../src/views.py:239
+msgid "Summary"
+msgstr "Sumário"
+
+#: ../src/views.py:69
+msgid "Repo"
+msgstr "Repositório"
+
+#: ../src/views.py:100
+#, fuzzy
+msgid "Arch."
+msgstr "Arq"
+
+#: ../src/views.py:101
+#, fuzzy
+msgid "Ver."
+msgstr "Versão"
+
+#: ../src/views.py:103
+#, fuzzy
+msgid "Repo."
+msgstr "Repositório"
+
+#: ../src/views.py:104
+#, fuzzy
+msgid "Size."
+msgstr "Tamanho"
+
+#: ../src/views.py:234
+msgid "Packages"
+msgstr "Pacotes"
+
+#: ../src/views.py:276
+msgid "<b>Packages To Update</b>"
+msgstr "<b>Pacotes a Atualizar</b>"
+
+#: ../src/views.py:280
+msgid "<b>Packages To Install</b>"
+msgstr "<b>Pacotes a Instalar</b>"
+
+#: ../src/views.py:284
+msgid "<b>Packages To Remove</b>"
+msgstr "<b>Pacotes a Remover</b>"
+
+#: ../src/views.py:357
+#, fuzzy
+msgid "Groups"
+msgstr "Grupos"
+
+#: ../src/views.py:441
+#, fuzzy
+msgid "Filename"
+msgstr "Arquivo"
+
+#: ../src/views.py:575
+msgid "Plugin"
+msgstr "Plugin"
+
+#: ../src/yumapi.py:68 ../src/yumapi.py:106
+msgid "Setup Yum : Transaction Set"
+msgstr "Configuração do Yum : Set de Transação"
+
+#: ../src/yumapi.py:70 ../src/yumapi.py:108
+msgid "Setup Yum : RPM Db."
+msgstr "Configuração do Yum : RPM Bd."
+
+#. -> Repo Setup
+#: ../src/yumapi.py:73 ../src/yumapi.py:111
+#, fuzzy
+msgid "Setup Yum : Repositories."
+msgstr "Configuração do Yum : Configurações"
+
+#. -> Sack Setup
+#: ../src/yumapi.py:76 ../src/yumapi.py:114
+#, fuzzy
+msgid "Setup Yum : Package Sacks"
+msgstr "Configuração do Yum : Plugins"
+
+#. -> Updates Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:79 ../src/yumapi.py:117
+#, fuzzy
+msgid "Setup Yum : Updates"
+msgstr "Configuração do Yum : Plugins"
+
+#. -> Group Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:82 ../src/yumapi.py:120
+#, fuzzy
+msgid "Setup Yum : Groups"
+msgstr "Configuração do Yum : Plugins"
+
+#: ../src/yumapi.py:84 ../src/yumapi.py:122
+msgid "Setup Yum : Base setup completed"
+msgstr "Configuração do Yum : Instalação básica concluída"
+
+#: ../src/yumapi.py:151 ../src/yumex.py:605
+msgid "Preparing for install/remove/update"
+msgstr "Preparando para instalar/remover/atualizar"
+
+#. Install
+#: ../src/yumapi.py:154
+msgid "--> Preparing for install"
+msgstr "--> Preparando para instalação"
+
+#. Remove
+#: ../src/yumapi.py:158
+msgid "--> Preparing for remove"
+msgstr "--> Preparando para remover"
+
+#: ../src/yumapi.py:164
+msgid "--> Preparing for a full update"
+msgstr "--> Preparando para a atualização completa"
+
+#: ../src/yumapi.py:167
+msgid "--> Preparing for a partial update"
+msgstr "--> Preparando para atualização parcial"
+
+#: ../src/yumapi.py:169
+msgid "--> Adding all obsoletion to transaction"
+msgstr "--> Adicionando todos obsoletion à transação"
+
+#: ../src/yumapi.py:191 ../src/yumgui/callbacks.py:63
+#: ../src/yumgui/callbacks.py:64 ../src/yumgui/callbacks.py:66
+msgid "Installing"
+msgstr "Instalando"
+
+#: ../src/yumapi.py:192 ../src/yumgui/callbacks.py:61
+msgid "Updating"
+msgstr "Atualizando"
+
+#: ../src/yumapi.py:194
+msgid "Installing for dependencies"
+msgstr "Instalando para dependências"
+
+#: ../src/yumapi.py:195
+msgid "Updating for dependencies"
+msgstr "Atualizando para dependências"
+
+#: ../src/yumapi.py:196
+msgid "Removing for dependencies"
+msgstr "Removendo para dependências"
+
+#: ../src/yumapi.py:242
+#, fuzzy, python-format
+msgid "Failure getting %s: "
+msgstr "Configurações Atuais :"
+
+#: ../src/yumapi.py:264
+msgid "Downloading Packages:"
+msgstr "Baixando Pacotes:"
+
+#: ../src/yumapi.py:280 ../src/yumapi.py:288
+msgid "Error Downloading Packages:\n"
+msgstr "Erro ao baixar pacotes:\n"
+
+#. Check GPG signatures
+#: ../src/yumapi.py:295
+msgid "Checking GPG Signatures:"
+msgstr "Checando Assinaturas GPG"
+
+#: ../src/yumapi.py:300
+#, fuzzy
+msgid "Error checking package signatures:\n"
+msgstr "Checando Assinaturas GPG"
+
+#: ../src/yumapi.py:307
+#, fuzzy
+msgid "Traceback in checking package signatures:\n"
+msgstr "Checando Assinaturas GPG"
+
+#: ../src/yumapi.py:315
+msgid "Running Transaction Test"
+msgstr "Executando Teste de Transação"
+
+#: ../src/yumapi.py:333
+msgid "Finished Transaction Test"
+msgstr "Teste de Transação Terminado"
+
+#: ../src/yumapi.py:335
+msgid "Transaction Check Error: "
+msgstr "Erro na verificação de Transação:"
+
+#: ../src/yumapi.py:340
+msgid "Transaction Test Succeeded"
+msgstr "Teste da Transação Sucedido"
+
+#. self.log( 2, 'Running Transaction' )
+#: ../src/yumapi.py:357
+msgid "Running Transaction"
+msgstr "Executando Transação"
+
+#. print "po: %s userid: %s hexkey: %s " % (str(po),userid,hexkeyid)
+#: ../src/yumapi.py:452
+#, python-format
+msgid "Do you want to import GPG Key : %s \n"
+msgstr ""
+
+#: ../src/yumapi.py:454
+#, python-format
+msgid "Needed by %s"
+msgstr ""
+
+#: ../src/yumex.py:62
+#, fuzzy
+msgid "Cant Quit while running RPM Transactions"
+msgstr "Executando Transação"
+
+#: ../src/yumex.py:67
+msgid "Quiting, please wait !!!!!!"
+msgstr ""
+
+#: ../src/yumex.py:155
+msgid "Yum has not been initialized yet"
+msgstr ""
+
+#. Check there are any packages in the queue
+#: ../src/yumex.py:161
+#, fuzzy
+msgid "No packages in queue"
+msgstr "Processando Pacotes da fila"
+
+#: ../src/yumex.py:238
+#, python-format
+msgid "You are about to add %s packages\n"
+msgstr ""
+
+#: ../src/yumex.py:239 ../src/yumex.py:253
+msgid "It will take some time\n"
+msgstr ""
+
+#: ../src/yumex.py:240 ../src/yumex.py:254
+#, fuzzy
+msgid "do you want to continue ?"
+msgstr "Você quer salvar as alterações ?"
+
+#: ../src/yumex.py:252
+#, python-format
+msgid "You are about to remove %s packages\n"
+msgstr ""
+
+#: ../src/yumex.py:355
+#, python-format
+msgid "Selected the %s profile"
+msgstr "Perfil selecionado %s"
+
+#: ../src/yumex.py:375
+#, python-format
+msgid "Profile : %s saved ok"
+msgstr "Perfil : %s salvo"
+
+#: ../src/yumex.py:377
+#, python-format
+msgid "Profile : %s save failed"
+msgstr "Perfil : %s  falha ao salvar"
+
+#: ../src/yumex.py:382
+msgid "Create New Profile"
+msgstr "Criar Novo Perfil"
+
+#: ../src/yumex.py:382
+#, fuzzy
+msgid "Name of new profile"
+msgstr "Criar Novo Perfil"
+
+#: ../src/yumex.py:386
+#, fuzzy, python-format
+msgid "Profile : %s created ok"
+msgstr "Perfil : %s criado"
+
+#: ../src/yumex.py:389
+#, python-format
+msgid "Profile : %s creation failed"
+msgstr "Perfil : %s falha na criação"
+
+#: ../src/yumex.py:393
+msgid "Cleaning up all yum metadata"
+msgstr ""
+
+#: ../src/yumex.py:420
+msgid "Yum Config Setup"
+msgstr ""
+
+#: ../src/yumex.py:436
+msgid "GUI Setup Completed"
+msgstr ""
+
+#: ../src/yumex.py:476 ../src/yumex.py:620 ../src/yumex.py:674
+#: ../src/yumex.py:784 ../src/yumex.py:805 ../src/yumex.glade.h:43
+msgid "Error"
+msgstr "Erro"
+
+#: ../src/yumex.py:476
+#, fuzzy
+msgid "Error in Yum Setup"
+msgstr "Erro na instalação do yum"
+
+#. prepare package lists
+#. -> List setup
+#: ../src/yumex.py:481
+#, fuzzy
+msgid "Building Package Lists"
+msgstr "Construção de Listas de Pacotes Concluída"
+
+#: ../src/yumex.py:483
+#, fuzzy
+msgid "Building Package Lists Completed"
+msgstr "Construção de Listas de Pacotes Concluída"
+
+#: ../src/yumex.py:484
+msgid "Building Groups Lists"
+msgstr ""
+
+#: ../src/yumex.py:487
+#, fuzzy
+msgid "Building Group Lists Completed"
+msgstr "Construção de Listas de Pacotes Concluída"
+
+#: ../src/yumex.py:519
+#, fuzzy, python-format
+msgid "Getting packages : %s"
+msgstr "Detecção de Espelhos : %s"
+
+#: ../src/yumex.py:523
+#, python-format
+msgid "Found %d %s packages"
+msgstr ""
+
+#. -> Sort Lists
+#: ../src/yumex.py:526
+#, fuzzy
+msgid "Sorting packages"
+msgstr "Baixando Pacotes:"
+
+#: ../src/yumex.py:528
+msgid "Population view with packages"
+msgstr ""
+
+#: ../src/yumex.py:534
+msgid "Population Completed"
+msgstr ""
+
+#: ../src/yumex.py:541
+#, fuzzy
+msgid "Package View Population"
+msgstr "Descrição"
+
+#: ../src/yumex.py:552
+#, fuzzy
+msgid "Package View Population Completed"
+msgstr "Processamento de Pacotes completo ok"
+
+#: ../src/yumex.py:558
+msgid "Category View Population"
+msgstr ""
+
+#: ../src/yumex.py:577
+msgid "Category View Population Completed"
+msgstr ""
+
+#: ../src/yumex.py:613
+msgid "Processing Packages in queue"
+msgstr "Processando Pacotes da fila"
+
+#: ../src/yumex.py:619
+msgid "Error in Dependency Resolution"
+msgstr "Erro na Resolução de Dependências"
+
+#: ../src/yumex.py:637
+msgid "No packages selected"
+msgstr "Nenhum pacote selecionado"
+
+#: ../src/yumex.py:644
+#, fuzzy
+msgid "No packages in transaction"
+msgstr "Processando Pacotes da fila"
+
+#: ../src/yumex.py:654
+#, fuzzy
+msgid "Processing packages (See output for details)"
+msgstr "processando pacotes (Veja Saída para detalhes)"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing"
+msgstr "Processamento de Pacotes"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing completed ok"
+msgstr "Processamento de Pacotes completo ok"
+
+#: ../src/yumex.py:674
+msgid "Error in Transaction"
+msgstr "Erro na Transação"
+
+#: ../src/yumex.py:679
+#, fuzzy, python-format
+msgid "Parsing packages to %s "
+msgstr "%d Pacote(s) a instalar"
+
+#: ../src/yumex.py:713
+#, python-format
+msgid "found %d packages, matching : %s"
+msgstr ""
+
+#: ../src/yumex.py:782
+msgid "Yum is locked by another application"
+msgstr ""
+
+#: ../src/yumex.py:784 ../src/yumex.py:805
+#, fuzzy
+msgid "Error in Yumex"
+msgstr "Erro na instalação do yum"
+
+#: ../src/yumgui/callbacks.py:62
+msgid "Erasing"
+msgstr "Apagando"
+
+#: ../src/yumgui/callbacks.py:65 ../src/yumgui/callbacks.py:71
+msgid "Obsoleted"
+msgstr "Obsoleto"
+
+#: ../src/yumgui/callbacks.py:67
+msgid "Updated"
+msgstr "Atualizado"
+
+#: ../src/yumgui/callbacks.py:68
+msgid "Erased"
+msgstr "Apagado"
+
+#: ../src/yumgui/callbacks.py:69 ../src/yumgui/callbacks.py:70
+#: ../src/yumgui/callbacks.py:72 ../src/yumex.glade.h:49
+msgid "Installed"
+msgstr "Instalados"
+
+#: ../src/yumgui/callbacks.py:182
+msgid "No header - huh?"
+msgstr "Nenhum cabeçalho - huh?"
+
+#. def main():
+#. """This is a unit test which confirms that all base classes are
+#. traversed when looking up attributes."""
+#.
+#. class BaseTest(Controller):
+#. def __init__(self, gladePath):
+#. ui = UI(gladePath, "app")
+#. Controller.__init__(self, ui)
+#.
+#. def on_exit1_activate(self, *args):
+#. gtk.mainquit()
+#.
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. class Test(BaseTest):
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. gladePath = "_test/data/ui.glade"
+#. c = Test(gladePath)
+#. print 72 * "_"
+#. print "Controller methods:"
+#. methods = c._getAllMethods()
+#. names = methods.keys()
+#. names.sort()
+#. for name in names:
+#. value = methods[name]
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. print 72 * "_"
+#. print "Sample UI instance attributes:"
+#. names = ["root", "new_file1", "exit1"]
+#. names.sort()
+#. for name in names:
+#. value = getattr(c.ui, name)
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. if __name__ == "__main__":
+#. main()
+#: ../src/yumex.glade.h:1
+msgid " "
+msgstr " "
+
+#: ../src/yumex.glade.h:2
+msgid "    "
+msgstr "    "
+
+#: ../src/yumex.glade.h:3
+msgid "0"
+msgstr "0"
+
+#: ../src/yumex.glade.h:4
+msgid "1"
+msgstr "1"
+
+#: ../src/yumex.glade.h:5
+msgid "2"
+msgstr "2"
+
+#: ../src/yumex.glade.h:6
+msgid "3"
+msgstr "3"
+
+#: ../src/yumex.glade.h:7
+msgid "4"
+msgstr "4"
+
+#: ../src/yumex.glade.h:8
+msgid "<b>(C) 2005  - Tim Lauridsen</b>"
+msgstr "<b>(C) 2005  - Tim Lauridsen</b>"
+
+#: ../src/yumex.glade.h:9
+msgid "<b>Behavior</b>"
+msgstr "<b>Comportamento</b>"
+
+#: ../src/yumex.glade.h:10
+#, fuzzy
+msgid "<b>Category</b>"
+msgstr "<b>Flags</b>"
+
+#: ../src/yumex.glade.h:11
+msgid "<b>Flags</b>"
+msgstr "<b>Flags</b>"
+
+#: ../src/yumex.glade.h:12
+#, fuzzy
+msgid "<b>Fonts </b>"
+msgstr "<b>Flags</b>"
+
+#: ../src/yumex.glade.h:13
+msgid "<b>GPG Key</b>"
+msgstr "<b>CHAVE GPG</b>"
+
+#: ../src/yumex.glade.h:14
+#, fuzzy
+msgid "<b>Packages</b>"
+msgstr "<b>Pacotes a Atualizar</b>"
+
+#: ../src/yumex.glade.h:15
+#, fuzzy
+msgid "<b>Quick add to queue</b>"
+msgstr "%i pacotes adicionas à fila"
+
+#: ../src/yumex.glade.h:16
+msgid "<b>Repository  Exclude Filters</b>"
+msgstr ""
+
+#: ../src/yumex.glade.h:17
+msgid "<b>SUBACTION</b>\n"
+msgstr "<b>SUB AÇÃO</b>\n"
+
+#: ../src/yumex.glade.h:19
+msgid "<b>Select Profile</b>"
+msgstr ""
+
+#: ../src/yumex.glade.h:20
+msgid "<b>Total Download Size</b>"
+msgstr "<b>Tamanho total a baixar</b>"
+
+#: ../src/yumex.glade.h:21
+msgid "<b>URL Type</b>"
+msgstr "<b>Tipo da URL</b>"
+
+#: ../src/yumex.glade.h:22
+msgid "<b>URLs</b>"
+msgstr "<b>URLs</b>"
+
+#: ../src/yumex.glade.h:23
+msgid "<span size=\"large\"><b>Action</b></span>\n"
+msgstr "<span size=\"large\"><b>Ação</b></span>\n"
+
+#: ../src/yumex.glade.h:25
+msgid "<span size=\"xx-large\" color=\"black\">Group View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Visão de Grupo</span>"
+
+#: ../src/yumex.glade.h:26
+msgid "<span size=\"xx-large\" color=\"black\">Output View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Visualizar Saída</span>"
+
+#: ../src/yumex.glade.h:27
+msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Fila de Pacotes</span>"
+
+#: ../src/yumex.glade.h:28
+msgid "<span size=\"xx-large\" color=\"black\">Select Repositories</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Selecionar Repositórios</span>"
+
+#: ../src/yumex.glade.h:29
+msgid "About"
+msgstr "Sobre"
+
+#: ../src/yumex.glade.h:31
+msgid "All"
+msgstr ""
+
+#: ../src/yumex.glade.h:33
+msgid "Available"
+msgstr ""
+
+#: ../src/yumex.glade.h:34
+#, fuzzy
+msgid "C_hangelog"
+msgstr "Change_log"
+
+#: ../src/yumex.glade.h:35
+msgid "Console"
+msgstr ""
+
+#: ../src/yumex.glade.h:36
+msgid "Credits"
+msgstr "Créditos"
+
+#: ../src/yumex.glade.h:37
+msgid "Debug _mode"
+msgstr "_Modo Debug"
+
+#: ../src/yumex.glade.h:38
+#, fuzzy
+msgid "Debug mode"
+msgstr "_Modo Debug"
+
+#: ../src/yumex.glade.h:39
+msgid "Disable 'Yum Extender Launcher'"
+msgstr ""
+
+#: ../src/yumex.glade.h:40
+#, fuzzy
+msgid "Disable Plugins"
+msgstr "Plugins"
+
+#: ../src/yumex.glade.h:41
+msgid "ETA"
+msgstr "ETA"
+
+#: ../src/yumex.glade.h:42
+msgid "Edit Repository"
+msgstr "Editar Repositório"
+
+#: ../src/yumex.glade.h:44
+msgid "Excludes"
+msgstr "Excluir"
+
+#: ../src/yumex.glade.h:45
+msgid "Extra"
+msgstr "Extra"
+
+#: ../src/yumex.glade.h:46
+#, fuzzy
+msgid "Fi_les"
+msgstr "Arqu_ivos"
+
+#: ../src/yumex.glade.h:47
+msgid "GUI"
+msgstr ""
+
+#: ../src/yumex.glade.h:48
+#, fuzzy
+msgid "I_nformation"
+msgstr "_Informações"
+
+#: ../src/yumex.glade.h:50
+msgid "Load Yum Metadata"
+msgstr ""
+
+#: ../src/yumex.glade.h:51
+#, fuzzy
+msgid "Package Descriptions"
+msgstr "Descrição"
+
+#: ../src/yumex.glade.h:52
+msgid "Plugins"
+msgstr "Plugins"
+
+#: ../src/yumex.glade.h:53
+msgid "Preferences"
+msgstr "Preferências"
+
+#: ../src/yumex.glade.h:54
+msgid "Process Queue Confirmation"
+msgstr "Confirmação do Processamento da Fila"
+
+#: ../src/yumex.glade.h:55
+#, fuzzy
+msgid "Repos"
+msgstr "Repos"
+
+#: ../src/yumex.glade.h:56
+msgid "Search Options"
+msgstr ""
+
+#: ../src/yumex.glade.h:57
+#, fuzzy
+msgid "Update Only"
+msgstr "Atualizar"
+
+#: ../src/yumex.glade.h:58
+#, fuzzy
+msgid "Updates"
+msgstr "Atualizar"
+
+#: ../src/yumex.glade.h:59
+msgid "Use _proxy"
+msgstr "Usar _proxy"
+
+#: ../src/yumex.glade.h:60
+#, fuzzy
+msgid "Yum Extender"
+msgstr "Sobre Yum Extender"
+
+#: ../src/yumex.glade.h:61
+#, fuzzy
+msgid "Yum Extender Launcher"
+msgstr "Preferências do Yum Extender"
+
+#: ../src/yumex.glade.h:62
+msgid "Yum Extender Preferences"
+msgstr "Preferências do Yum Extender"
+
+#: ../src/yumex.glade.h:63
+msgid "_Add All"
+msgstr ""
+
+#: ../src/yumex.glade.h:64
+msgid "_Auto refresh on start"
+msgstr "_Auto atualizar ao iniciar"
+
+#: ../src/yumex.glade.h:65
+msgid "_Base url "
+msgstr "Url _Base "
+
+#: ../src/yumex.glade.h:66
+msgid "_Description"
+msgstr "_Descrição"
+
+#: ../src/yumex.glade.h:67
+msgid "_Deselect All"
+msgstr "_Desmarcar Todos"
+
+#: ../src/yumex.glade.h:68
+msgid "_Edit"
+msgstr "_Editar"
+
+#: ../src/yumex.glade.h:69
+msgid "_Enabled"
+msgstr "_Habilitada"
+
+#: ../src/yumex.glade.h:70
+msgid "_File"
+msgstr "_Arquivo"
+
+#: ../src/yumex.glade.h:71
+msgid "_GPG check"
+msgstr "_Checagem GPG"
+
+#: ../src/yumex.glade.h:72
+msgid "_Help"
+msgstr "_Ajuda"
+
+#: ../src/yumex.glade.h:73
+msgid "_Mirror list"
+msgstr "_Fila de Espelhos"
+
+#: ../src/yumex.glade.h:74
+msgid "_Name:"
+msgstr "_Nome:"
+
+#: ../src/yumex.glade.h:75
+msgid "_Other"
+msgstr "_Outros"
+
+#: ../src/yumex.glade.h:76
+msgid "_Process Queue"
+msgstr "_Processar Fila"
+
+#: ../src/yumex.glade.h:77
+msgid "_Profiles"
+msgstr "_Perfis"
+
+#: ../src/yumex.glade.h:78
+#, fuzzy
+msgid "_Remove All"
+msgstr "Remover"
+
+#: ../src/yumex.glade.h:79
+msgid "_Skip"
+msgstr ""
+
+#: ../src/yumex.glade.h:80
+msgid "_Tag:"
+msgstr "_Tag:"
+
+#: ../src/yumex.glade.h:81
+msgid "_Tools"
+msgstr "_Ferramentas"
+
+#: ../src/yumex.glade.h:82
+msgid "_Yum Clean All"
+msgstr ""
+
+#: ../src/yumex.glade.h:83
+msgid "_Yum excludes:"
+msgstr "Excluir Fila"
+
+#: ../src/yumex.glade.h:84
+msgid "_Yum plugins:"
+msgstr "Plugins do _Yum:"
+
+#: ../src/yumex.glade.h:85
+msgid "dialog1"
+msgstr ""
+
+#: ../src/yumex.glade.h:86
+msgid "xxxx"
+msgstr "xxxx"
+
+#, fuzzy
+#~ msgid "Save"
+#~ msgstr "_Salvar"
+
+#~ msgid "_About"
+#~ msgstr "_Sobre"
+
+#~ msgid "_Delete from Queue"
+#~ msgstr "_Deletar da Fila"
+
+#~ msgid "_New"
+#~ msgstr "_Novo"
+
+#, fuzzy
+#~ msgid "_Quit"
+#~ msgstr "_Editar"
+
+#~ msgid "_Save"
+#~ msgstr "_Salvar"
+
+#, fuzzy
+#~ msgid ""
+#~ "Installed version: %s\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Versão Instalada: %s (%s) \n"
+#~ "\n"
+
+#, fuzzy
+#~ msgid "Quiting"
+#~ msgstr "atualização"
+
+#~ msgid "Process (_SafeMode)"
+#~ msgstr "Processar (Modo _Seguro)"
+
+#~ msgid "_Reset Repository Cache"
+#~ msgstr "_Reiniciar Cache de Repositórios"
+
+#, fuzzy
+#~ msgid "(yumex) Erased: %s"
+#~ msgstr "Apagados: %s"
+
+#~ msgid "<b>Mirror Detection</b>"
+#~ msgstr "<b>Detecção de Espelhos</b>"
+
+#~ msgid "Install Repository"
+#~ msgstr "Instalar Repositório"
+
+#~ msgid "_Best"
+#~ msgstr "_Melhor"
+
+#~ msgid "_Default"
+#~ msgstr "_Padrão"
+
+#~ msgid "_Enable 'Process Queue (SafeMode)'"
+#~ msgstr "_Habilitar 'Processamento da Fila (Modo Seguro)'"
+
+#~ msgid "_Fastest"
+#~ msgstr "_Rápida"
+
+#~ msgid "_Show file lists & changelog (longer metadata load time)"
+#~ msgstr ""
+#~ "_Exibir Fila de Arquivos e Changelog (Longo tempo de carga de metadados)"
+
+#, fuzzy
+#~ msgid "_Packages"
+#~ msgstr "Pacotes"
+
+#, fuzzy
+#~ msgid "_Queue"
+#~ msgstr "Fila"
+
+#~ msgid "Filte_r:"
+#~ msgstr "Filt_ro:"
+
+#, fuzzy
+#~ msgid "Sear_ch"
+#~ msgstr "_Procurar"
+
+#, fuzzy
+#~ msgid "_Select All"
+#~ msgstr "Selecionar _Todos"
+
+#~ msgid "_Delete"
+#~ msgstr "_Deletar"
+
+#~ msgid " Do you want to delete the <b>%s</b> repository?"
+#~ msgstr "Você quer deletar o repositório <b>%s</b> ?"
+
+#~ msgid "Delete Repository"
+#~ msgstr "Deletar Repositório"
+
+#~ msgid "_Add to Queue"
+#~ msgstr "_Adicionar à Fila"
+
+#~ msgid "added remove of %s to Queue"
+#~ msgstr "adicionada remoção do %s à fila"
+
+#~ msgid "added install of %s to Queue"
+#~ msgstr "adicionada a instalação do %s à Fila"
+
+#~ msgid "%i packages added to queue for removal"
+#~ msgstr "%i pacotes adicionados à lista para remoção"
+
+#~ msgid "package %s was not found"
+#~ msgstr "pacote %s não encontrado"
+
+#~ msgid "%i packages added to queue for installation"
+#~ msgstr "%i pacotes adicionados à lista para instalação"
+
+#~ msgid "Profile %s not found"
+#~ msgstr "Perfil %s não encontrado"
+
+#~ msgid "No profile selected"
+#~ msgstr "Nenhum perfil selecionado"
+
+#~ msgid "_Profile name:"
+#~ msgstr "_Nome do Perfil:"
+
+#, fuzzy
+#~ msgid "_Update"
+#~ msgstr "Atualizar"
+
+#, fuzzy
+#~ msgid "_Install"
+#~ msgstr "Instalar"
+
+#~ msgid "Updating %s view, populate view with data "
+#~ msgstr "Atualizando visão %s, povoando a visão com dados "
+
+#~ msgid "Using http_proxy=%s"
+#~ msgstr "Usando http_proxy=%s"
+
+#~ msgid "Initializing Repositories"
+#~ msgstr "Inicializando Repositórios"
+
+#~ msgid "Repository initialization completed in %.2f seconds"
+#~ msgstr "Inicialização de repositórios concluída em %.2f segundos"
+
+#~ msgid "Error in loading repository data"
+#~ msgstr "Erro no carregamento de dados do repositório"
+
+#~ msgid "Mirrordetection : %s"
+#~ msgstr "Detecção de Espelhos : %s"
+
+#~ msgid "Yum Version : %s (%s)"
+#~ msgstr "Versão do Yum: %s (%s)"
+
+#~ msgid "Setup Yum : Plugins are disabled"
+#~ msgstr "Configuração do Yum : Plugins estão desabilitados"
+
+#~ msgid "Using yum cache"
+#~ msgstr "Usando cache do yum"
+
+#~ msgid "Loading Repositories Data : Init. %s repository"
+#~ msgstr "Carregando Dados de Repositórios : Inic. repositório %s"
+
+#~ msgid "Determining %s mirrors for %s"
+#~ msgstr "Determinando os espelhos %s para %s"
+
+#~ msgid "--> Mirrors Detected (Top 3)"
+#~ msgstr "--> Espelhos Detectados (Top 3)"
+
+#~ msgid "Using default mirror detection"
+#~ msgstr "Usando detecção padrão de espelhos"
+
+#~ msgid "Loading Repositories Data"
+#~ msgstr "Carregando Dados de Repositórios"
+
+#~ msgid "Loading Repository Group Data"
+#~ msgstr "Carregando Dados do Grupo de Repositórios"
+
+#~ msgid "Loading Repositories Data completed"
+#~ msgstr "Carga de Dados de Repositórios Concluída"
+
+#~ msgid "Writing Mirrorcache to disk"
+#~ msgstr "Escrevendo cache de espelhos no disco"
+
+#~ msgid "--> Repositories saved: %s"
+#~ msgstr "--> Repositórios salvos: %s"
+
+#~ msgid "Enable/Disable Repositories"
+#~ msgstr "Habilitando/Desabilitando Respositórios"
+
+#~ msgid "Building Package Lists : Updates"
+#~ msgstr "Construindo Listas de Pacotes : Atualizações"
+
+#~ msgid "Building Package Lists : %i Updates found"
+#~ msgstr "Construindo Listas de Pacotes : %i Atualizações encontradas"
+
+#~ msgid "Building Package Lists : Installed"
+#~ msgstr "Construindo Listas de Pacotes : Instalados"
+
+#~ msgid "Building Package Lists : %i Installed packages found"
+#~ msgstr "Construindo Listas de Pacotes : %i Pacotes instalados encontrados"
+
+#~ msgid "Building Package Lists : Available"
+#~ msgstr "Construindo Listas de Pacotes : Disponíveis"
+
+#~ msgid "Building Package Lists : %i Available packages found"
+#~ msgstr "Construindo Listas de Pacotes : %i Pacotes disponíveis encontrados"
+
+#~ msgid "Retrieving GPG key from %s"
+#~ msgstr "Recuperando a chave GPG de %s"
+
+#~ msgid "GPG key retrieval failed: "
+#~ msgstr "Falha na recuperação de chave GPG: "
+
+#~ msgid "GPG key parsing failed: "
+#~ msgstr "Falha na análise da chave GPG: "
+
+#~ msgid "GPG key at %s (0x%s) is already installed"
+#~ msgstr "Chave GPG em %s (0x%s) está instalada"
+
+#~ msgid "Importing GPG key 0x%s \"%s\""
+#~ msgstr "Importando Chave GPG 0x%s \"%s\""
+
+#~ msgid "Key import failed (code %d)"
+#~ msgstr "Falha na importação da chave (código %d)"
+
+#~ msgid "Key imported successfully"
+#~ msgstr "Chave importada com sucesso"
+
+#~ msgid ""
+#~ "The GPG keys listed for the \"%s\" repository are already installed but "
+#~ "they are not correct for this package.\n"
+#~ "Check that the correct key URLs are configured for this repository."
+#~ msgstr ""
+#~ "A chave GPG listada para o repositório \"%s\" está instalada mas ela não "
+#~ "é correta para este pacote.\n"
+#~ "Verifique se a URL correta da chave está configurada para este "
+#~ "repositório."
+
+#~ msgid "Import of key(s) didn't help, wrong key(s)?"
+#~ msgstr "A importação da chave(s) não ajudou, chave(s) errada?"
+
+#~ msgid "Warning: Group %s does not exist."
+#~ msgstr "Aviso: O Grupo %s não existe."
+
+#~ msgid "No packages in any requested group available to install or update"
+#~ msgstr ""
+#~ "Nenhum pacote em qualquer grupo disponível para instalar ou atualizar"
+
+#~ msgid "No group named %s exists"
+#~ msgstr "Não existe grupo com o nome %s"
+
+#~ msgid "No packages to remove from groups"
+#~ msgstr "Nenhum pacote para remover dos grupos"
+
+#~ msgid "%d Package(s) to remove"
+#~ msgstr "%d Pacote(s) a remover"
+
+#~ msgid "%s was not deleted"
+#~ msgstr "%s não foi removido"
+
+#~ msgid "Preparing for install Groups"
+#~ msgstr "Preparando para instalar grupos"
+
+#~ msgid "Installing Groups"
+#~ msgstr "Instalando Grupos"
+
+#~ msgid "Error in preparation for package installing"
+#~ msgstr "Erro na preparação para instalação de pacote"
+
+#~ msgid "Install"
+#~ msgstr "Instalar"
+
+#~ msgid "Preparing for Removing Groups"
+#~ msgstr "Preparando para Remover Grupos"
+
+#~ msgid "Removeing Groups"
+#~ msgstr "Removendo Grupos"
+
+#~ msgid "Error in preparation for package removing"
+#~ msgstr "Erro na preparação para remoção de pacote"
+
+#~ msgid "Remove"
+#~ msgstr "Remover"
+
+#~ msgid ""
+#~ "Enabled Repositories:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Repositórios Habilitados:\n"
+#~ "%s"
+
+#~ msgid "default"
+#~ msgstr "padrão"
+
+#~ msgid "fastest"
+#~ msgstr "rápida"
+
+#~ msgid "best"
+#~ msgstr "melhor"
+
+#~ msgid "removal"
+#~ msgstr "remoção"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Install Packages</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Instalar Pacotes</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Remove Packages</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Remover Pacotes</span>"
+
+#, fuzzy
+#~ msgid "<span size=\"xx-large\" color=\"black\">Packages by category</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Fila de Pacotes</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Update Packages</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Atualizar Pacotes</span>"
+
+#~ msgid "New Repository"
+#~ msgstr "Novo Repositório"
+
+#~ msgid "_New repository tag name:"
+#~ msgstr "_Nova tagname de repositório:"
+
+#~ msgid "Save Changes"
+#~ msgstr "Salvar Alterações"
+
+#~ msgid "<span size='x-large'> Packages to Process</span>"
+#~ msgstr "<span size='x-large'> Pacotes a Processar</span>"
+
+#~ msgid "Categories / Groups"
+#~ msgstr "Categorias / Grupos"
+
+#~ msgid "Description"
+#~ msgstr "Descrição"
+
+#~ msgid "All Groups"
+#~ msgstr "Todos os Grupos"
+
+#, fuzzy
+#~ msgid "A_dd to Queue"
+#~ msgstr "_Adicionar à Fila"
+
+#, fuzzy
+#~ msgid "Test"
+#~ msgstr "melhor"
+
+#~ msgid "Cannot open/read repomd.xml file for repository: %s"
+#~ msgstr "Não foi possível abrir/ler o arquivo repomd.xml do repositório: %s"
+
+#~ msgid "Loading Repositories Data : Populate Package Sack for %s"
+#~ msgstr ""
+#~ "Carregando Dados de Repositórios : Povoando bolsa de pacotes para %s"
+
+#~ msgid "Cannot make directory for logfile %s"
+#~ msgstr "Não foi possível criar o diretório para o arquivo de log %s"
+
+#~ msgid "Cannot open logfile %s"
+#~ msgstr "Não foi possível abrir o arquivo de log %s"
+
+#~ msgid "Cleanup Download Packages"
+#~ msgstr "Limpeza de Pacotes Baixados"
+
+#~ msgid "Add to _Queue"
+#~ msgstr "Adicionar à _Fila"
+
+#~ msgid "_Delete downloaded packages after install/update"
+#~ msgstr "_Remover os pacotes baixados após a instalação/atualização"
+
+#~ msgid "Forcing i386 architecture for $basearch variable"
+#~ msgstr "Forçando arquitetura i386 para a variável $basearch"
+
+#~ msgid "Using system's $basearch variable"
+#~ msgstr "Usando a variável de sistema $basearch"
+
+#~ msgid "*"
+#~ msgstr "*"
+
+#~ msgid "F_orce i386 architecture"
+#~ msgstr "Forçar arquitetura i386"

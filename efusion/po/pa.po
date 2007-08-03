@@ -1,0 +1,1051 @@
+# translation of pa.po to Punjabi
+# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
+#
+# Amanpreet Singh Alam <apbrar@gmail.com>, 2006.
+# A S Alam <apbrar@gmail.com>, 2006.
+# A S Alam <aalam@users.sf.net>, 2007.
+msgid ""
+msgstr ""
+"Project-Id-Version: pa\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-05-29 11:31+0200\n"
+"PO-Revision-Date: 2007-05-30 16:37+0530\n"
+"Last-Translator: A S Alam <aalam@users.sf.net>\n"
+"Language-Team: Punjabi <punjabi-l10n@lists.sf.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../src/callbacks.py:72
+#, python-format
+msgid "Getting : %s"
+msgstr "ਲਏ ਜਾ ਰਹੇ ਹਨ: %s"
+
+#: ../src/callbacks.py:167 ../src/yumapi.py:193
+msgid "Removing"
+msgstr "ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ"
+
+#: ../src/callbacks.py:169
+msgid "Cleanup"
+msgstr "ਸਫ਼ਾਈ"
+
+#: ../src/callbacks.py:188
+#, python-format
+msgid "Erased: %s"
+msgstr "ਸਾਫ਼ ਕੀਤਾ: %s"
+
+#: ../src/callbacks.py:209
+#, python-format
+msgid "Processing metadata from : %s"
+msgstr "%s: ਦੇ ਮੈਟਾਡਾਟਾ ਉੱਤੇ ਕਾਰਵਾਈ ਜਾਰੀ"
+
+#: ../src/callbacks.py:211
+msgid "Processing metadata"
+msgstr "ਮੈਟਾਡਾਟਾ ਉੱਤੇ ਕਾਰਵਾਈ ਜਾਰੀ"
+
+#: ../src/callbacks.py:244
+#, python-format
+msgid "---> Package %s.%s %s:%s-%s set to be %s"
+msgstr "---> ਪੈਕੇਜ %s.%s %s:%s-%s ਨੂੰ %s ਸੈੱਟ ਕੀਤਾ ਗਿਆ"
+
+#: ../src/callbacks.py:251
+msgid "--> Running transaction check"
+msgstr "--> ਸੰਚਾਰ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
+
+#: ../src/callbacks.py:255
+msgid "--> Restarting Dependency Resolution with new changes."
+msgstr "--> ਨਵੀਆਂ ਤਬਦੀਲੀਆਂ ਲਈ ਨਿਰਭਰਤਾ ਖਤਮ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।"
+
+#: ../src/callbacks.py:259
+msgid "--> Finished Dependency Resolution"
+msgstr "--> ਨਿਰਭਰਤਾ ਖਤਮ ਕਰਨ ਦਾ ਕੰਮ ਮੁਕੰਮਲ ਹੋਇਆ"
+
+#: ../src/callbacks.py:263
+#, python-format
+msgid "--> Processing Dependency: %s for package: %s"
+msgstr "--> ਨਿਰਭਰਤਾ ਕਾਰਵਾਈ: %s ਲਈ ਪੈਕੇਜ: %s"
+
+#: ../src/callbacks.py:268
+#, python-format
+msgid "--> Unresolved Dependency: %s"
+msgstr "--> ਨਾ-ਹੱਲ਼ ਹੋਈ ਨਿਰਭਰਤਾ: %s"
+
+#: ../src/callbacks.py:272
+#, python-format
+msgid "--> Processing Conflict: %s conflicts %s"
+msgstr "--> ਅਪਵਾਦ: %s ਉੱਤੇ ਕਾਰਵਾਈ %s ਅਪਵਾਦ"
+
+#: ../src/callbacks.py:275
+msgid "--> Populating transaction set with selected packages. Please wait."
+msgstr "--> ਚੁਣੇ ਪੈਕੇਜਾਂ ਨਾਲ ਸੰਚਾਰ ਸੈੱਟ ਦੀ ਤਿਆਰੀ ਜਾਰੀ ਹੈ। ਉਡੀਕੋ ਜੀ।"
+
+#: ../src/callbacks.py:278
+#, python-format
+msgid "---> Downloading header for %s to pack into transaction set."
+msgstr "---> %s ਲਈ ਸੰਚਾਰ ਸੈੱਟ ਲਈ ਹੈਡਰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।"
+
+#: ../src/dialogs.py:193
+msgid "Packages to Process"
+msgstr "ਕਾਰਵਾਈ ਲਈ ਪੈਕੇਜ"
+
+#: ../src/dialogs.py:209 ../src/views.py:477
+msgid "Name"
+msgstr "ਨਾਂ"
+
+#: ../src/dialogs.py:210 ../src/yumex.glade.h:32
+msgid "Arch"
+msgstr "ਢਾਂਚਾ"
+
+#: ../src/dialogs.py:211 ../src/views.py:69
+msgid "Ver"
+msgstr "ਵਰਜਨ"
+
+#. Setup reponame & repofile column's
+#: ../src/dialogs.py:212 ../src/views.py:441 ../src/views.py:476
+msgid "Repository"
+msgstr "ਰਿਪੋਜ਼ਟਰੀ"
+
+#: ../src/dialogs.py:213 ../src/views.py:69
+msgid "Size"
+msgstr "ਅਕਾਰ"
+
+#: ../src/dialogs.py:345 ../src/yumex.glade.h:30
+msgid "About Yum Extender"
+msgstr "ਯੱਮ ਐਕਸਟੈਂਡਰ ਬਾਰੇ"
+
+#: ../src/gui.py:65
+#, python-format
+msgid ""
+"Updating : %s\n"
+"\n"
+msgstr ""
+"ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ: %s\n"
+"\n"
+
+#: ../src/gui.py:72
+#, python-format
+msgid ""
+"Obsoleting : %s\n"
+"\n"
+msgstr ""
+"ਬਰਤਰਫ਼ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ: %s\n"
+"\n"
+
+#: ../src/gui.py:87
+msgid ""
+"Requires:\n"
+"\n"
+msgstr ""
+"ਲੋੜ:\n"
+"\n"
+
+#: ../src/gui.py:102 ../src/gui.py:112
+#, python-format
+msgid "Can not read the %s attribute"
+msgstr "%s ਗੁਣ ਪੜ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਹੈ"
+
+#: ../src/gui.py:353
+msgid "Show All Packages"
+msgstr "ਸਭ ਪੈਕੇਜ ਵੇਖਾਓ"
+
+#: ../src/gui.py:354
+msgid "Show Package Updates"
+msgstr "ਪੈਕੇਜ ਅੱਪਡੇਟ ਵੇਖਾਓ"
+
+#: ../src/gui.py:355
+msgid "Show available Packages"
+msgstr "ਉਪਲੱਬਧ ਪੈਕੇਜ ਵੇਖਾਓ"
+
+#: ../src/gui.py:356
+msgid "Show Installed Packages"
+msgstr "ਇੰਸਟਾਲ ਪੈਕੇਜ ਵੇਖਾਓ"
+
+#. Setup Vertical Toolbar
+#: ../src/gui.py:365
+msgid "Package View"
+msgstr "ਪੈਕੇਜ ਝਲਕ"
+
+#: ../src/gui.py:366
+msgid "Group View"
+msgstr "ਗਰੁੱਪ ਝਲਕ"
+
+#: ../src/gui.py:367
+msgid "Package Queue View"
+msgstr "ਪੈਕੇਜ ਕਤਾਰ ਝਲਕ"
+
+#. TODO: Make repo selection work.
+#: ../src/gui.py:369
+msgid "Repository Selection View"
+msgstr "ਰਿਪੋਜ਼ਟਰੀ ਚੋਣ ਝਲਕ"
+
+#: ../src/gui.py:370
+msgid "Output View"
+msgstr "ਆਉਟਪੁੱਟ ਝਲਕ"
+
+#.
+#. [1]           [2]               [3]             [4]     [5]     [6]
+#. -------------------------------------------------------------------------
+#: ../src/misc.py:84
+msgid "RPM Groups"
+msgstr "RPM ਗਰੁੱਪ"
+
+#: ../src/misc.py:85
+msgid "Repositories"
+msgstr "ਰਿਪੋਜ਼ਟਰੀਆਂ"
+
+#: ../src/misc.py:86 ../src/views.py:69
+msgid "Architecture"
+msgstr "ਢਾਂਚਾ"
+
+#: ../src/misc.py:87
+msgid "Sizes"
+msgstr "ਅਕਾਰ"
+
+#: ../src/misc.py:88
+msgid "Age"
+msgstr "ਉਮਰ"
+
+#: ../src/misc.py:98
+msgid "Mandatory"
+msgstr "ਲਾਜ਼ਮੀ"
+
+#: ../src/misc.py:99
+msgid "Default"
+msgstr "ਮੂਲ"
+
+#: ../src/misc.py:100
+msgid "Optional"
+msgstr "ਚੋਣਵੇਂ"
+
+#: ../src/misc.py:101
+msgid "Conditional"
+msgstr "ਸ਼ਰਤੀਆਂ"
+
+#: ../src/misc.py:109
+msgid "Programming:"
+msgstr "ਪਰੋਗਰਾਮਿੰਗ:"
+
+#: ../src/misc.py:112
+msgid "Translation:"
+msgstr "ਅਨੁਵਾਦ:"
+
+#: ../src/misc.py:132
+msgid "Thank you:"
+msgstr "ਧੰਨਵਾਦ ਹੈ:"
+
+#: ../src/misc.py:350
+msgid "Package Queue:"
+msgstr "ਪੈਕੇਜ ਕਤਾਰ:"
+
+#: ../src/misc.py:355
+#, python-format
+msgid " Packages to %s"
+msgstr " %s ਲਈ ਪੈਕੇਜ"
+
+#: ../src/misc.py:362
+#, python-format
+msgid " Groups to %s"
+msgstr " %s ਲਈ ਗਰੁੱਪ"
+
+#: ../src/misc.py:426
+#, python-format
+msgid "Wrong file application (%s)"
+msgstr "ਗਲਤ ਫਾਇਲ ਕਾਰਜ (%s)"
+
+#: ../src/misc.py:428
+#, python-format
+msgid "Wrong file type (%s)"
+msgstr "ਗਲਤ ਫਾਇਲ ਕਿਸਮ (%s)"
+
+#: ../src/misc.py:430
+#, python-format
+msgid "Wrong file version (%s)"
+msgstr "ਗਲਤ ਫਾਇਲ ਵਰਜਨ (%s)"
+
+#: ../src/misc.py:542
+msgid "Current Settings :"
+msgstr "ਮੌਜੂਦਾ ਸੈਟਿੰਗ :"
+
+#: ../src/views.py:40 ../src/views.py:305
+msgid "Categories"
+msgstr "ਵਰਗ"
+
+#: ../src/views.py:69 ../src/views.py:99
+msgid "Package"
+msgstr "ਪੈਕੇਜ"
+
+#: ../src/views.py:69 ../src/views.py:102 ../src/views.py:239
+msgid "Summary"
+msgstr "ਸੰਖੇਪ"
+
+#: ../src/views.py:69
+msgid "Repo"
+msgstr "ਭੰਡਾਰ"
+
+#: ../src/views.py:100
+msgid "Arch."
+msgstr "ਢਾਂਚਾ"
+
+#: ../src/views.py:101
+msgid "Ver."
+msgstr "ਵਰਜਨ"
+
+#: ../src/views.py:103
+msgid "Repo."
+msgstr "ਰਿਪੋ."
+
+#: ../src/views.py:104
+msgid "Size."
+msgstr "ਅਕਾਰ."
+
+#: ../src/views.py:234
+msgid "Packages"
+msgstr "ਪੈਕੇਜ"
+
+#: ../src/views.py:276
+msgid "<b>Packages To Update</b>"
+msgstr "<b>ਅੱਪਡੇਟ ਲਈ ਪੈਕੇਜ</b>"
+
+#: ../src/views.py:280
+msgid "<b>Packages To Install</b>"
+msgstr "<b>ਇੰਸਟਾਲ ਕਰਨ ਲਈ ਪੈਕੇਜ</b>"
+
+#: ../src/views.py:284
+msgid "<b>Packages To Remove</b>"
+msgstr "<b>ਹਟਾਉਣ ਲਈ ਪੈਕੇਜ</b>"
+
+#: ../src/views.py:357
+msgid "Groups"
+msgstr "ਗਰੁੱਪ"
+
+#: ../src/views.py:441
+msgid "Filename"
+msgstr "ਫਾਇਲ ਨਾਂ"
+
+#: ../src/views.py:575
+msgid "Plugin"
+msgstr "ਪਲੱਗਇਨ"
+
+#: ../src/yumapi.py:68 ../src/yumapi.py:106
+msgid "Setup Yum : Transaction Set"
+msgstr "ਯਮ ਸੈੱਟਅੱਪ : ਸੰਚਾਰ ਸੈੱਟ"
+
+#: ../src/yumapi.py:70 ../src/yumapi.py:108
+msgid "Setup Yum : RPM Db."
+msgstr "ਯਮ ਸੈੱਟਅੱਪ : RPM Db."
+
+#. -> Repo Setup
+#: ../src/yumapi.py:73 ../src/yumapi.py:111
+msgid "Setup Yum : Repositories."
+msgstr "ਯਮ ਸੈੱਟਅੱਪ : ਰਿਪੋਜ਼ਟਰੀਆਂ।"
+
+#. -> Sack Setup
+#: ../src/yumapi.py:76 ../src/yumapi.py:114
+msgid "Setup Yum : Package Sacks"
+msgstr "ਯਮ ਸੈੱਟਅੱਪ : ਪੈਕੇਜ ਭੰਡਾਰ"
+
+#. -> Updates Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:79 ../src/yumapi.py:117
+msgid "Setup Yum : Updates"
+msgstr "ਯਮ ਸੈੱਟਅੱਪ : ਅੱਪਡੇਟ"
+
+#. -> Group Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:82 ../src/yumapi.py:120
+msgid "Setup Yum : Groups"
+msgstr "ਯਮ ਸੈੱਟਅੱਪ : ਗਰੁੱਪ"
+
+#: ../src/yumapi.py:84 ../src/yumapi.py:122
+msgid "Setup Yum : Base setup completed"
+msgstr "ਯਮ ਸੈੱਟਅੱਪ : ਮੂਲ ਸੈੱਟਅੱਪ ਮੁਕੰਮਲ ਹੋਇਆ"
+
+#: ../src/yumapi.py:151 ../src/yumex.py:605
+msgid "Preparing for install/remove/update"
+msgstr "ਇੰਸਟਾਲ/ਹਟਾਉਣ/ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਤਿਆਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ"
+
+#. Install
+#: ../src/yumapi.py:154
+msgid "--> Preparing for install"
+msgstr "--> ਇੰਸਟਾਲ ਕਰਨ ਲਈ ਤਿਆਰੀ ਜਾਰੀ"
+
+#. Remove
+#: ../src/yumapi.py:158
+msgid "--> Preparing for remove"
+msgstr "--> ਹਟਾਉਣ ਲਈ ਤਿਆਰੀ ਜਾਰੀ"
+
+#: ../src/yumapi.py:164
+msgid "--> Preparing for a full update"
+msgstr "--> ਪੂਰੇ ਅੱਪਡੇਟ ਲਈ ਤਿਆਰੀ ਜਾਰੀ"
+
+#: ../src/yumapi.py:167
+msgid "--> Preparing for a partial update"
+msgstr "--> ਅਧੂਰੇ ਅੱਪਡੇਟ ਲਈ ਤਿਆਰੀ ਜਾਰੀ"
+
+#: ../src/yumapi.py:169
+msgid "--> Adding all obsoletion to transaction"
+msgstr "--> ਸੰਚਾਰ ਲਈ ਸਭ ਅਪਵਾਦ ਜੋੜੇ ਜਾ ਰਹੇ ਹਨ"
+
+#: ../src/yumapi.py:191 ../src/yumgui/callbacks.py:63
+#: ../src/yumgui/callbacks.py:64 ../src/yumgui/callbacks.py:66
+msgid "Installing"
+msgstr "ਇੰਸਟਾਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#: ../src/yumapi.py:192 ../src/yumgui/callbacks.py:61
+msgid "Updating"
+msgstr "ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#: ../src/yumapi.py:194
+msgid "Installing for dependencies"
+msgstr "ਨਿਰਭਰਤਾ ਇੰਸਟਾਲ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
+
+#: ../src/yumapi.py:195
+msgid "Updating for dependencies"
+msgstr "ਨਿਰਭਰਤਾ ਲਈ ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#: ../src/yumapi.py:196
+msgid "Removing for dependencies"
+msgstr "ਨਿਰਭਰਤਾ ਲਈ ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ"
+
+#: ../src/yumapi.py:242
+#, python-format
+msgid "Failure getting %s: "
+msgstr "%s ਲੈਣ ਲਈ ਫੇਲ੍ਹ: "
+
+#: ../src/yumapi.py:264
+msgid "Downloading Packages:"
+msgstr "ਪੈਕੇਜ ਡਾਊਨਲੋਡ ਕੀਤੇ ਜਾਂਦੇ ਹਨ:"
+
+#: ../src/yumapi.py:280 ../src/yumapi.py:288
+msgid "Error Downloading Packages:\n"
+msgstr "ਪੈਕੇਜ ਡਾਊਨਲੋਡ ਕਰਨ ਦੌਰਾਨ ਗਲਤੀ:\n"
+
+#. Check GPG signatures
+#: ../src/yumapi.py:295
+msgid "Checking GPG Signatures:"
+msgstr "GPG ਦਸਤਖਤਾਂ ਦੀ ਜਾਂਚ ਜਾਰੀ:"
+
+#: ../src/yumapi.py:300
+msgid "Error checking package signatures:\n"
+msgstr "ਪੈਕੇਜ ਦਸਤਖਤਾਂ ਦੀ ਜਾਂਚ ਦੌਰਾਨ ਗਲਤੀ:\n"
+
+#: ../src/yumapi.py:307
+msgid "Traceback in checking package signatures:\n"
+msgstr "ਪੈਕੇਜ ਦਸਤਖਤ ਦੀ ਜਾਂਚ ਦੌਰਾਨ ਟਰੇਸਬੈਕ:\n"
+
+#: ../src/yumapi.py:315
+msgid "Running Transaction Test"
+msgstr "ਸੰਚਾਰ ਟੈਸਟ ਚੱਲ ਰਿਹਾ ਹੈ"
+
+#: ../src/yumapi.py:333
+msgid "Finished Transaction Test"
+msgstr "ਸੰਚਾਰ ਟੈਸਟ ਮੁਕੰਮਲ ਹੋਇਆ"
+
+#: ../src/yumapi.py:335
+msgid "Transaction Check Error: "
+msgstr "ਸੰਚਾਰ ਜਾਂਚ ਗਲਤੀ: "
+
+#: ../src/yumapi.py:340
+msgid "Transaction Test Succeeded"
+msgstr "ਸੰਚਾਰ ਟੈਸਟ ਸਫ਼ਲ ਹੋਇਆ"
+
+#. self.log( 2, 'Running Transaction' )
+#: ../src/yumapi.py:357
+msgid "Running Transaction"
+msgstr "ਸੰਚਾਰ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. print "po: %s userid: %s hexkey: %s " % (str(po),userid,hexkeyid)
+#: ../src/yumapi.py:452
+#, python-format
+msgid "Do you want to import GPG Key : %s \n"
+msgstr "ਕੀ ਤੁਸੀਂ GPG ਕੁੰਜੀ ਰੱਖਣੀ ਚਾਹੁੰਦੇ ਹੋ: %s \n"
+
+#: ../src/yumapi.py:454
+#, python-format
+msgid "Needed by %s"
+msgstr "%s ਵਲੋਂ ਲੋੜੀਦਾ"
+
+#: ../src/yumex.py:62
+msgid "Cant Quit while running RPM Transactions"
+msgstr "RPM ਸੰਚਾਰ ਜਾਰੀ ਹੋਣ ਦੌਰਾਨ ਬੰਦ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ"
+
+#: ../src/yumex.py:67
+msgid "Quiting, please wait !!!!!!"
+msgstr "ਬੰਦ ਕਰ ਰਿਹਾ ਹੈ ਉਡੀਕੋ ਜੀ!!!!!"
+
+#: ../src/yumex.py:155
+msgid "Yum has not been initialized yet"
+msgstr "ਯੱਮ ਨੂੰ ਹਾਲੇ ਚਾਲੂ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ"
+
+#. Check there are any packages in the queue
+#: ../src/yumex.py:161
+msgid "No packages in queue"
+msgstr "ਕਤਾਰ 'ਚ ਕੋਈ ਪੈਕੇਜ ਨਹੀਂ"
+
+#: ../src/yumex.py:238
+#, python-format
+msgid "You are about to add %s packages\n"
+msgstr "ਤੁਸੀਂ %s ਪੈਕੇਜ ਜੋੜਨ ਜਾ ਰਹੇ ਹੋ\n"
+
+#: ../src/yumex.py:239 ../src/yumex.py:253
+msgid "It will take some time\n"
+msgstr "ਇਸ ਨੂੰ ਕੁਝ ਸਮਾਂ ਲੱਗੇਗਾ\n"
+
+#: ../src/yumex.py:240 ../src/yumex.py:254
+msgid "do you want to continue ?"
+msgstr "ਕੀ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
+
+#: ../src/yumex.py:252
+#, python-format
+msgid "You are about to remove %s packages\n"
+msgstr "ਤੁਸੀਂ %s ਪੈਕੇਜ ਹਟਾਉਣ ਜਾ ਰਹੇ ਹੋ\n"
+
+#: ../src/yumex.py:355
+#, python-format
+msgid "Selected the %s profile"
+msgstr "%s ਪਰੋਫਾਇਲ ਚੁਣਿਆ"
+
+#: ../src/yumex.py:375
+#, python-format
+msgid "Profile : %s saved ok"
+msgstr "ਪ੍ਰੋਫਾਇਲ : %s ਸੰਭਾਲਿਆ ਗਿਆ"
+
+#: ../src/yumex.py:377
+#, python-format
+msgid "Profile : %s save failed"
+msgstr "ਪ੍ਰੋਫਾਇਲ : %s ਸੰਭਾਲਣਾ ਫੇਲ੍ਹ"
+
+#: ../src/yumex.py:382
+msgid "Create New Profile"
+msgstr "ਨਵਾਂ ਪ੍ਰੋਫਾਇਲ ਬਣਾਓ"
+
+#: ../src/yumex.py:382
+msgid "Name of new profile"
+msgstr "ਨਵੇਂ ਪ੍ਰੋਫਾਇਲ ਦਾ ਨਾਂ"
+
+#: ../src/yumex.py:386
+#, python-format
+msgid "Profile : %s created ok"
+msgstr "ਪ੍ਰੋਫਾਇਲ : %s ਬਣਾਇਆ ਗਿਆ"
+
+#: ../src/yumex.py:389
+#, python-format
+msgid "Profile : %s creation failed"
+msgstr "ਪ੍ਰੋਫਾਇਲ : %s ਬਣਾਉਣ ਲਈ ਅਸਫ਼ਲ"
+
+#: ../src/yumex.py:393
+msgid "Cleaning up all yum metadata"
+msgstr "ਸਭ ਯੱਮ ਮੇਟਾਡਾਟਾ ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ"
+
+#: ../src/yumex.py:420
+msgid "Yum Config Setup"
+msgstr "ਯੱਮ ਸੰਰਚਨਾ ਸੈੱਟਅੱਪ"
+
+#: ../src/yumex.py:436
+msgid "GUI Setup Completed"
+msgstr "GUI ਸੈੱਟਅੱਟ ਮੁਕੰਮਲ ਹੋਇਆ"
+
+#: ../src/yumex.py:476 ../src/yumex.py:620 ../src/yumex.py:674
+#: ../src/yumex.py:784 ../src/yumex.py:805 ../src/yumex.glade.h:43
+msgid "Error"
+msgstr "ਗਲਤੀ"
+
+#: ../src/yumex.py:476
+msgid "Error in Yum Setup"
+msgstr "ਯੱਮ(yum) ਸੈੱਟਅੱਪ ਵਿੱਚ ਗਲਤੀ"
+
+#. prepare package lists
+#. -> List setup
+#: ../src/yumex.py:481
+msgid "Building Package Lists"
+msgstr "ਪੈਕੇਜ ਲਿਸਟਾਂ ਬਣਾਈਆਂ ਜਾ ਰਹੀਆਂ ਹਨ"
+
+#: ../src/yumex.py:483
+msgid "Building Package Lists Completed"
+msgstr "ਪੈਕੇਜ ਲਿਸਟਾਂ ਬਣਾਉਣੀਆਂ ਮੁਕੰਮਲ"
+
+#: ../src/yumex.py:484
+msgid "Building Groups Lists"
+msgstr "ਗਰੁੱਪ ਲਿਸਟਾਂ ਬਣਾਈਆਂ ਜਾ ਰਹੀਆਂ ਹਨ"
+
+#: ../src/yumex.py:487
+msgid "Building Group Lists Completed"
+msgstr "ਗਰੁੱਪ ਲਿਸਟਾਂ ਬਣਾਉਣੀਆਂ ਮੁਕੰਮਲ"
+
+#: ../src/yumex.py:519
+#, python-format
+msgid "Getting packages : %s"
+msgstr "ਪੈਕੇਜ ਲਏ ਜਾ ਰਹੇ ਹਨ: %s"
+
+#: ../src/yumex.py:523
+#, python-format
+msgid "Found %d %s packages"
+msgstr "%d %s ਪੈਕੇਜ ਮਿਲੇ"
+
+#. -> Sort Lists
+#: ../src/yumex.py:526
+msgid "Sorting packages"
+msgstr "ਪੈਕੇਜ ਲੜੀਬੱਧ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ"
+
+#: ../src/yumex.py:528
+msgid "Population view with packages"
+msgstr "ਪੈਕੇਜ ਨਾਲ ਝਲਕ ਤਿਆਰ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
+
+#: ../src/yumex.py:534
+msgid "Population Completed"
+msgstr "ਤਿਆਰ ਹੋਇਆ"
+
+#: ../src/yumex.py:541
+msgid "Package View Population"
+msgstr "ਪੈਕੇਜ ਝਲਕ ਤਿਆਰ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
+
+#: ../src/yumex.py:552
+msgid "Package View Population Completed"
+msgstr "ਪੈਕੇਜ ਝਲਕ ਤਿਆਰ ਕੀਤੀ"
+
+#: ../src/yumex.py:558
+msgid "Category View Population"
+msgstr "ਵਰਗ ਝਲਕ ਤਿਆਰ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
+
+#: ../src/yumex.py:577
+msgid "Category View Population Completed"
+msgstr "ਵਰਗ ਝਲਕ ਤਿਆਰ ਹੋਈ"
+
+#: ../src/yumex.py:613
+msgid "Processing Packages in queue"
+msgstr "ਕਤਾਰ ਵਿੱਚ ਪੈਕੇਜ ਉੱਤੇ ਕਾਰਵਾਈ ਜਾਰੀ"
+
+#: ../src/yumex.py:619
+msgid "Error in Dependency Resolution"
+msgstr "ਨਿਰਭਰਤਾ ਹੱਲ਼ ਕਰਨ ਲਈ ਗਲਤੀ"
+
+#: ../src/yumex.py:637
+msgid "No packages selected"
+msgstr "ਕੋਈ ਪੈਕੇਜ ਨਹੀਂ ਚੁਣਿਆ ਗਿਆ"
+
+#: ../src/yumex.py:644
+msgid "No packages in transaction"
+msgstr "ਸੰਚਾਰ ਵਿੱਚ ਕੋਈ ਪੈਕੇਜ ਨਹੀਂ ਹੈ"
+
+#: ../src/yumex.py:654
+msgid "Processing packages (See output for details)"
+msgstr "ਪੈਕੇਜ ਕਾਰਵਾਈ ਜਾਰੀ (ਵੇਰਵਾ ਲਈ ਆਉਟਪੁੱਟ ਵੇਖੋ)"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing"
+msgstr "ਪੈਕੇਜ ਕਾਰਵਾਈ ਜਾਰੀ"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing completed ok"
+msgstr "ਪੈਕੇਜ ਕਾਰਵਾਈ ਮੁਕੰਮਲ ਹੋਈ"
+
+#: ../src/yumex.py:674
+msgid "Error in Transaction"
+msgstr "ਸੰਚਾਰ ਵਿੱਚ ਗਲਤੀ"
+
+#: ../src/yumex.py:679
+#, python-format
+msgid "Parsing packages to %s "
+msgstr "ਪੈਕੇਜ %s ਲਈ ਪਾਰਸ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ"
+
+#: ../src/yumex.py:713
+#, python-format
+msgid "found %d packages, matching : %s"
+msgstr "%d ਪੈਕੇਜ ਮਿਲੇ, ਰਲਦੇ ਹਨ: %s"
+
+#: ../src/yumex.py:782
+msgid "Yum is locked by another application"
+msgstr "ਯੱਮ ਨੂੰ ਹੋਰ ਕਾਰਜ ਵਲੋਂ ਤਾਲਾਬੰਦ ਕੀਤਾ ਗਿਆ"
+
+#: ../src/yumex.py:784 ../src/yumex.py:805
+msgid "Error in Yumex"
+msgstr "ਯੱਮਕਸ 'ਚ ਗਲਤੀ"
+
+#: ../src/yumgui/callbacks.py:62
+msgid "Erasing"
+msgstr "ਸਾਫ਼ ਕੀਤਾ ਜਾਂਦਾ ਹੈ"
+
+#: ../src/yumgui/callbacks.py:65 ../src/yumgui/callbacks.py:71
+msgid "Obsoleted"
+msgstr "ਲੁਪਤ ਕੀਤਾ"
+
+#: ../src/yumgui/callbacks.py:67
+msgid "Updated"
+msgstr "ਅੱਪਡੇਟ ਕੀਤਾ"
+
+#: ../src/yumgui/callbacks.py:68
+msgid "Erased"
+msgstr "ਸਾਫ਼ ਕੀਤੇ"
+
+#: ../src/yumgui/callbacks.py:69 ../src/yumgui/callbacks.py:70
+#: ../src/yumgui/callbacks.py:72 ../src/yumex.glade.h:49
+msgid "Installed"
+msgstr "ਇੰਸਟਾਲ ਹੋਏ"
+
+#: ../src/yumgui/callbacks.py:182
+msgid "No header - huh?"
+msgstr "ਸਿਰਲੇਖ ਨਹੀਂ - ਕੀ?"
+
+#. def main():
+#. """This is a unit test which confirms that all base classes are
+#. traversed when looking up attributes."""
+#.
+#. class BaseTest(Controller):
+#. def __init__(self, gladePath):
+#. ui = UI(gladePath, "app")
+#. Controller.__init__(self, ui)
+#.
+#. def on_exit1_activate(self, *args):
+#. gtk.mainquit()
+#.
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. class Test(BaseTest):
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. gladePath = "_test/data/ui.glade"
+#. c = Test(gladePath)
+#. print 72 * "_"
+#. print "Controller methods:"
+#. methods = c._getAllMethods()
+#. names = methods.keys()
+#. names.sort()
+#. for name in names:
+#. value = methods[name]
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. print 72 * "_"
+#. print "Sample UI instance attributes:"
+#. names = ["root", "new_file1", "exit1"]
+#. names.sort()
+#. for name in names:
+#. value = getattr(c.ui, name)
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. if __name__ == "__main__":
+#. main()
+#: ../src/yumex.glade.h:1
+msgid " "
+msgstr " "
+
+#: ../src/yumex.glade.h:2
+msgid "    "
+msgstr "    "
+
+#: ../src/yumex.glade.h:3
+msgid "0"
+msgstr "0"
+
+#: ../src/yumex.glade.h:4
+msgid "1"
+msgstr "1"
+
+#: ../src/yumex.glade.h:5
+msgid "2"
+msgstr "2"
+
+#: ../src/yumex.glade.h:6
+msgid "3"
+msgstr "3"
+
+#: ../src/yumex.glade.h:7
+msgid "4"
+msgstr "4"
+
+#: ../src/yumex.glade.h:8
+msgid "<b>(C) 2005  - Tim Lauridsen</b>"
+msgstr "<b>(C) 2005  - ਟਿੰਮ ਲਉਰੀਡਸਿਨ</b>"
+
+#: ../src/yumex.glade.h:9
+msgid "<b>Behavior</b>"
+msgstr "<b>ਰਵੱਈਆ</b>"
+
+#: ../src/yumex.glade.h:10
+msgid "<b>Category</b>"
+msgstr "<b>ਵਰਗ</b>"
+
+#: ../src/yumex.glade.h:11
+msgid "<b>Flags</b>"
+msgstr "<b>ਨਿਸ਼ਾਨ</b>"
+
+#: ../src/yumex.glade.h:12
+msgid "<b>Fonts </b>"
+msgstr "<b>ਫੋਂਟ</b>"
+
+#: ../src/yumex.glade.h:13
+msgid "<b>GPG Key</b>"
+msgstr "<b>GPG ਕੁੰਜੀ</b>"
+
+#: ../src/yumex.glade.h:14
+msgid "<b>Packages</b>"
+msgstr "<b>ਪੈਕੇਜ</b>"
+
+#: ../src/yumex.glade.h:15
+msgid "<b>Quick add to queue</b>"
+msgstr "<b>ਕਤਾਰ 'ਚ ਤੁਰੰਤ ਸ਼ਾਮਿਲ</b>"
+
+#: ../src/yumex.glade.h:16
+msgid "<b>Repository  Exclude Filters</b>"
+msgstr "<b>ਰਿਪੋਜ਼ਟਰੀ ਛੱਡਣ ਫਿਲਟਰ</b>"
+
+#: ../src/yumex.glade.h:17
+msgid "<b>SUBACTION</b>\n"
+msgstr "<b>ਘਟਾਓ</b>\n"
+
+#: ../src/yumex.glade.h:19
+msgid "<b>Select Profile</b>"
+msgstr "<b>ਪ੍ਰੋਫਾਇਲ ਚੁਣੋ</b>"
+
+#: ../src/yumex.glade.h:20
+msgid "<b>Total Download Size</b>"
+msgstr "<b>ਕੁੱਲ ਡਾਊਨਲੋਡ ਅਕਾਰ</b>"
+
+#: ../src/yumex.glade.h:21
+msgid "<b>URL Type</b>"
+msgstr "<b>URL ਕਿਸਮ</b>"
+
+#: ../src/yumex.glade.h:22
+msgid "<b>URLs</b>"
+msgstr "<b>URL</b>"
+
+#: ../src/yumex.glade.h:23
+msgid "<span size=\"large\"><b>Action</b></span>\n"
+msgstr "<span size=\"large\"><b>ਕਾਰਵਾਈ</b></span>\n"
+
+#: ../src/yumex.glade.h:25
+msgid "<span size=\"xx-large\" color=\"black\">Group View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">ਗਰੁੱਪ ਝਲਕ</span>"
+
+#: ../src/yumex.glade.h:26
+msgid "<span size=\"xx-large\" color=\"black\">Output View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">ਆਉਟਪੁੱਟ ਝਲਕ</span>"
+
+#: ../src/yumex.glade.h:27
+msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">ਪੈਕੇਜ ਕਤਾਰ</span>"
+
+#: ../src/yumex.glade.h:28
+msgid "<span size=\"xx-large\" color=\"black\">Select Repositories</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">ਰਿਪੋਜ਼ਟਰੀ ਚੁਣੋ</span>"
+
+#: ../src/yumex.glade.h:29
+msgid "About"
+msgstr "ਇਸ ਬਾਰੇ"
+
+#: ../src/yumex.glade.h:31
+msgid "All"
+msgstr "ਸਭ"
+
+#: ../src/yumex.glade.h:33
+msgid "Available"
+msgstr "ਉਪਲੱਬਧ"
+
+#: ../src/yumex.glade.h:34
+msgid "C_hangelog"
+msgstr "ਚੇਜ਼ ਲਾਗ(_h)"
+
+#: ../src/yumex.glade.h:35
+msgid "Console"
+msgstr "ਕੰਨਸੋਲ"
+
+#: ../src/yumex.glade.h:36
+msgid "Credits"
+msgstr "ਮਾਣ"
+
+#: ../src/yumex.glade.h:37
+msgid "Debug _mode"
+msgstr "ਡੀਬੱਗ ਢੰਗ(_M)"
+
+#: ../src/yumex.glade.h:38
+msgid "Debug mode"
+msgstr "ਡੀਬੱਗ ਢੰਗ"
+
+#: ../src/yumex.glade.h:39
+msgid "Disable 'Yum Extender Launcher'"
+msgstr "'Yum Extender Launcher' ਬੰਦ ਰੱਖੋ"
+
+#: ../src/yumex.glade.h:40
+msgid "Disable Plugins"
+msgstr "ਪਲੱਗਇਨਾਂ ਬੰਦ"
+
+#: ../src/yumex.glade.h:41
+msgid "ETA"
+msgstr "ETA"
+
+#: ../src/yumex.glade.h:42
+msgid "Edit Repository"
+msgstr "ਰਿਪੋਜ਼ਟਰੀ ਸੋਧ"
+
+#: ../src/yumex.glade.h:44
+msgid "Excludes"
+msgstr "ਨਾ-ਸ਼ਾਮਿਲ"
+
+#: ../src/yumex.glade.h:45
+msgid "Extra"
+msgstr "ਵਾਧੂ (Extra)"
+
+#: ../src/yumex.glade.h:46
+msgid "Fi_les"
+msgstr "ਫਾਇਲਾਂ(_l)"
+
+#: ../src/yumex.glade.h:47
+msgid "GUI"
+msgstr "GUI"
+
+#: ../src/yumex.glade.h:48
+msgid "I_nformation"
+msgstr "ਜਾਣਕਾਰੀ(_i)"
+
+#: ../src/yumex.glade.h:50
+msgid "Load Yum Metadata"
+msgstr "ਯੱਮ ਮੇਟਾਡਾਟਾ ਲੋਡ ਕਰੋ"
+
+#: ../src/yumex.glade.h:51
+msgid "Package Descriptions"
+msgstr "ਪੈਕੇਜ ਵੇਰਵਾ"
+
+#: ../src/yumex.glade.h:52
+msgid "Plugins"
+msgstr "ਪਲੱਗਇਨ"
+
+#: ../src/yumex.glade.h:53
+msgid "Preferences"
+msgstr "ਮੇਰੀ ਪਸੰਦ"
+
+#: ../src/yumex.glade.h:54
+msgid "Process Queue Confirmation"
+msgstr "ਕਤਾਰ ਕਾਰਵਾਈ ਪੁਸ਼ਟੀ"
+
+#: ../src/yumex.glade.h:55
+msgid "Repos"
+msgstr "ਰਿਪੋ"
+
+#: ../src/yumex.glade.h:56
+msgid "Search Options"
+msgstr "ਖੋਜ ਚੋਣਾਂ"
+
+#: ../src/yumex.glade.h:57
+msgid "Update Only"
+msgstr "ਸਿਰਫ਼ ਅੱਪਡੇਟ ਹੀ"
+
+#: ../src/yumex.glade.h:58
+msgid "Updates"
+msgstr "ਅੱਪਡੇਟ"
+
+#: ../src/yumex.glade.h:59
+msgid "Use _proxy"
+msgstr "ਪਰਾਕਸੀ ਵਰਤੋਂ(_P)"
+
+#: ../src/yumex.glade.h:60
+msgid "Yum Extender"
+msgstr "ਯੱਮ ਐਕਸਟੈਂਡਰ"
+
+#: ../src/yumex.glade.h:61
+msgid "Yum Extender Launcher"
+msgstr "ਯੱਮ ਐਕਸਟੈਂਡਰ ਲਾਂਚਰ"
+
+#: ../src/yumex.glade.h:62
+msgid "Yum Extender Preferences"
+msgstr "ਯੱਮ ਐਕਸਟੈਂਡਰ ਪਸੰਦ"
+
+#: ../src/yumex.glade.h:63
+msgid "_Add All"
+msgstr "ਸਭ ਸ਼ਾਮਿਲ(_A)"
+
+#: ../src/yumex.glade.h:64
+msgid "_Auto refresh on start"
+msgstr "ਸ਼ੁਰੂ ਸਮੇਂ ਆਟੋ ਤਾਜ਼ਾ(_A)"
+
+#: ../src/yumex.glade.h:65
+msgid "_Base url "
+msgstr "ਮੂਲ url (_B)"
+
+#: ../src/yumex.glade.h:66
+msgid "_Description"
+msgstr "ਵੇਰਵਾ(_D)"
+
+#: ../src/yumex.glade.h:67
+msgid "_Deselect All"
+msgstr "ਸਭ ਅਣ-ਚੁਣੇ(_D)"
+
+#: ../src/yumex.glade.h:68
+msgid "_Edit"
+msgstr "ਸੋਧ(_E)"
+
+#: ../src/yumex.glade.h:69
+msgid "_Enabled"
+msgstr "ਯੋਗ(_E)"
+
+#: ../src/yumex.glade.h:70
+msgid "_File"
+msgstr "ਫਾਇਲ(_F)"
+
+#: ../src/yumex.glade.h:71
+msgid "_GPG check"
+msgstr "_GPG ਜਾਂਚ"
+
+#: ../src/yumex.glade.h:72
+msgid "_Help"
+msgstr "ਸਹਾਇਤਾ(_H)"
+
+#: ../src/yumex.glade.h:73
+msgid "_Mirror list"
+msgstr "ਪ੍ਰਤੀਬਿੰਬ ਸੂਚੀ(_M)"
+
+#: ../src/yumex.glade.h:74
+msgid "_Name:"
+msgstr "ਨਾਂ(_N):"
+
+#: ../src/yumex.glade.h:75
+msgid "_Other"
+msgstr "ਹੋਰ(_O)"
+
+#: ../src/yumex.glade.h:76
+msgid "_Process Queue"
+msgstr "ਕਤਾਰ 'ਤੇ ਕਾਰਵਾਈ(_P)"
+
+#: ../src/yumex.glade.h:77
+msgid "_Profiles"
+msgstr "ਪ੍ਰੋਫਾਇਲ(_P)"
+
+#: ../src/yumex.glade.h:78
+msgid "_Remove All"
+msgstr "ਸਭ ਹਟਾਓ(_R)"
+
+#: ../src/yumex.glade.h:79
+msgid "_Skip"
+msgstr "ਵਿੱਚੇ ਛੱਡੋ(_S)"
+
+#: ../src/yumex.glade.h:80
+msgid "_Tag:"
+msgstr "ਟੈਗ(_T):"
+
+#: ../src/yumex.glade.h:81
+msgid "_Tools"
+msgstr "ਸੰਦ(_T)"
+
+#: ../src/yumex.glade.h:82
+msgid "_Yum Clean All"
+msgstr "ਯੱਮ ਸਭ ਸਾਫ਼ ਕਰੋ(_Y)"
+
+#: ../src/yumex.glade.h:83
+msgid "_Yum excludes:"
+msgstr "ਯੱਮ ਨਾ-ਸ਼ਾਮਿਲ(_Y):"
+
+#: ../src/yumex.glade.h:84
+msgid "_Yum plugins:"
+msgstr "ਯੱਮ ਪਲੱਗਇਨ(_Y):"
+
+#: ../src/yumex.glade.h:85
+msgid "dialog1"
+msgstr "dialog1"
+
+#: ../src/yumex.glade.h:86
+msgid "xxxx"
+msgstr "xxxx"
+

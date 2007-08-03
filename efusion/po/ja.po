@@ -1,0 +1,1050 @@
+# Japanese translation of Yumex
+# Copyright (C) 2005, 2006 Tim Lauridsen
+# This file is distributed under the same license as the Yumex package.
+# MATSUURA Takanori <t.matsuu@gmail.com>, 2005-2007.
+# 
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: yumex 1.9.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-05-29 11:31+0200\n"
+"PO-Revision-Date: 2007-06-07 19:54+0900\n"
+"Last-Translator:  <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: "
+
+#: ../src/callbacks.py:72
+#, python-format
+msgid "Getting : %s"
+msgstr "取得中: %s"
+
+#: ../src/callbacks.py:167 ../src/yumapi.py:193
+msgid "Removing"
+msgstr "削除中"
+
+#: ../src/callbacks.py:169
+msgid "Cleanup"
+msgstr "片付け"
+
+#: ../src/callbacks.py:188
+#, python-format
+msgid "Erased: %s"
+msgstr "消去: %s"
+
+#: ../src/callbacks.py:209
+#, python-format
+msgid "Processing metadata from : %s"
+msgstr "メタデータを処理中: %s"
+
+#: ../src/callbacks.py:211
+msgid "Processing metadata"
+msgstr "メタデータを処理中"
+
+#: ../src/callbacks.py:244
+#, python-format
+msgid "---> Package %s.%s %s:%s-%s set to be %s"
+msgstr "---> パッケージ%s.%s %s:%s-%sを%sに設定"
+
+#: ../src/callbacks.py:251
+msgid "--> Running transaction check"
+msgstr "--> トランザクションチェックを実行中"
+
+#: ../src/callbacks.py:255
+msgid "--> Restarting Dependency Resolution with new changes."
+msgstr "--> 新しい変更を適用して、依存関係の解決を再開。"
+
+#: ../src/callbacks.py:259
+msgid "--> Finished Dependency Resolution"
+msgstr "--> 依存関係の解決終了"
+
+#: ../src/callbacks.py:263
+#, python-format
+msgid "--> Processing Dependency: %s for package: %s"
+msgstr "--> 依存関係を確認中: %s 対象パッケージ: %s"
+
+#: ../src/callbacks.py:268
+#, python-format
+msgid "--> Unresolved Dependency: %s"
+msgstr "--> 解決不能な依存関係: %s"
+
+#: ../src/callbacks.py:272
+#, python-format
+msgid "--> Processing Conflict: %s conflicts %s"
+msgstr "--> 衝突を処理中: %sは%sと衝突"
+
+#: ../src/callbacks.py:275
+msgid "--> Populating transaction set with selected packages. Please wait."
+msgstr ""
+"--> 選択されたパッケージで用いるトランザクション・セットを実装中。しばらくお"
+"待ちください。"
+
+#: ../src/callbacks.py:278
+#, python-format
+msgid "---> Downloading header for %s to pack into transaction set."
+msgstr ""
+"---> トランザクション・セットに使用するため、%sのヘッダをダウンロード中。"
+
+#: ../src/dialogs.py:193
+msgid "Packages to Process"
+msgstr "処理するパッケージ"
+
+#: ../src/dialogs.py:209 ../src/views.py:477
+msgid "Name"
+msgstr "名前"
+
+#: ../src/dialogs.py:210 ../src/yumex.glade.h:32
+msgid "Arch"
+msgstr "アーキテクチャ"
+
+#: ../src/dialogs.py:211 ../src/views.py:69
+msgid "Ver"
+msgstr "バージョン"
+
+#. Setup reponame & repofile column's
+#: ../src/dialogs.py:212 ../src/views.py:441 ../src/views.py:476
+msgid "Repository"
+msgstr "リポジトリ"
+
+#: ../src/dialogs.py:213 ../src/views.py:69
+msgid "Size"
+msgstr "サイズ"
+
+#: ../src/dialogs.py:345 ../src/yumex.glade.h:30
+msgid "About Yum Extender"
+msgstr "Yum Extenderについて"
+
+#: ../src/gui.py:65
+#, python-format
+msgid ""
+"Updating : %s\n"
+"\n"
+msgstr ""
+"更新: %s\n"
+"\n"
+
+#: ../src/gui.py:72
+#, python-format
+msgid ""
+"Obsoleting : %s\n"
+"\n"
+msgstr ""
+"除去: %s\n"
+"\n"
+
+#: ../src/gui.py:87
+msgid ""
+"Requires:\n"
+"\n"
+msgstr ""
+"要求するもの:\n"
+"\n"
+
+#: ../src/gui.py:102 ../src/gui.py:112
+#, python-format
+msgid "Can not read the %s attribute"
+msgstr "%s属性を読むことができません。"
+
+#: ../src/gui.py:353
+msgid "Show All Packages"
+msgstr "全てのパッケージを表示"
+
+#: ../src/gui.py:354
+msgid "Show Package Updates"
+msgstr "更新パッケージを表示"
+
+#: ../src/gui.py:355
+msgid "Show available Packages"
+msgstr "利用可能なパッケージを表示"
+
+#: ../src/gui.py:356
+msgid "Show Installed Packages"
+msgstr "インストールされたパッケージを表示"
+
+#. Setup Vertical Toolbar
+#: ../src/gui.py:365
+msgid "Package View"
+msgstr "パッケージ"
+
+#: ../src/gui.py:366
+msgid "Group View"
+msgstr "グループ"
+
+#: ../src/gui.py:367
+msgid "Package Queue View"
+msgstr "パッケージキュー"
+
+#. TODO: Make repo selection work.
+#: ../src/gui.py:369
+msgid "Repository Selection View"
+msgstr "リポジトリ選択"
+
+#: ../src/gui.py:370
+msgid "Output View"
+msgstr "出力"
+
+#.
+#. [1]           [2]               [3]             [4]     [5]     [6]
+#. -------------------------------------------------------------------------
+#: ../src/misc.py:84
+msgid "RPM Groups"
+msgstr "RPMグループ"
+
+#: ../src/misc.py:85
+msgid "Repositories"
+msgstr "リポジトリ"
+
+#: ../src/misc.py:86 ../src/views.py:69
+msgid "Architecture"
+msgstr "アーキテクチャ"
+
+#: ../src/misc.py:87
+msgid "Sizes"
+msgstr "サイズ"
+
+#: ../src/misc.py:88
+msgid "Age"
+msgstr " 日数"
+
+#: ../src/misc.py:98
+msgid "Mandatory"
+msgstr "必須"
+
+#: ../src/misc.py:99
+msgid "Default"
+msgstr "標準"
+
+#: ../src/misc.py:100
+msgid "Optional"
+msgstr "オプション"
+
+#: ../src/misc.py:101
+msgid "Conditional"
+msgstr "条件つき"
+
+#: ../src/misc.py:109
+msgid "Programming:"
+msgstr "プログラミング:"
+
+#: ../src/misc.py:112
+msgid "Translation:"
+msgstr "翻訳:"
+
+#: ../src/misc.py:132
+msgid "Thank you:"
+msgstr "謝辞:"
+
+#: ../src/misc.py:350
+msgid "Package Queue:"
+msgstr "パッケージキュー:"
+
+#: ../src/misc.py:355
+#, python-format
+msgid " Packages to %s"
+msgstr "%sするパッケージ"
+
+#: ../src/misc.py:362
+#, python-format
+msgid " Groups to %s"
+msgstr "%sするグループ"
+
+#: ../src/misc.py:426
+#, python-format
+msgid "Wrong file application (%s)"
+msgstr "誤ったファイルアプリケーション (%s)"
+
+#: ../src/misc.py:428
+#, python-format
+msgid "Wrong file type (%s)"
+msgstr "誤ったファイルタイプ (%s)"
+
+#: ../src/misc.py:430
+#, python-format
+msgid "Wrong file version (%s)"
+msgstr "誤ったファイルバージョン (%s)"
+
+#: ../src/misc.py:542
+msgid "Current Settings :"
+msgstr "現在の設定: "
+
+#: ../src/views.py:40 ../src/views.py:305
+msgid "Categories"
+msgstr "カテゴリ"
+
+#: ../src/views.py:69 ../src/views.py:99
+msgid "Package"
+msgstr "パッケージ"
+
+#: ../src/views.py:69 ../src/views.py:102 ../src/views.py:239
+msgid "Summary"
+msgstr "概要"
+
+#: ../src/views.py:69
+msgid "Repo"
+msgstr "リポジトリ"
+
+#: ../src/views.py:100
+msgid "Arch."
+msgstr "Arch."
+
+#: ../src/views.py:101
+msgid "Ver."
+msgstr "バージョン"
+
+#: ../src/views.py:103
+msgid "Repo."
+msgstr "Repo."
+
+#: ../src/views.py:104
+msgid "Size."
+msgstr "サイズ"
+
+#: ../src/views.py:234
+msgid "Packages"
+msgstr "パッケージ"
+
+#: ../src/views.py:276
+msgid "<b>Packages To Update</b>"
+msgstr "<b>更新するパッケージ</b>"
+
+#: ../src/views.py:280
+msgid "<b>Packages To Install</b>"
+msgstr "<b>インストールするパッケージ</b>"
+
+#: ../src/views.py:284
+msgid "<b>Packages To Remove</b>"
+msgstr "<b>削除するパッケージ</b>"
+
+#: ../src/views.py:357
+msgid "Groups"
+msgstr "グループ"
+
+#: ../src/views.py:441
+msgid "Filename"
+msgstr "ファイル名"
+
+#: ../src/views.py:575
+msgid "Plugin"
+msgstr "プラグイン"
+
+#: ../src/yumapi.py:68 ../src/yumapi.py:106
+msgid "Setup Yum : Transaction Set"
+msgstr "Yum準備: トランザクションセット"
+
+#: ../src/yumapi.py:70 ../src/yumapi.py:108
+msgid "Setup Yum : RPM Db."
+msgstr "Yum準備: RPMデータベース"
+
+#. -> Repo Setup
+#: ../src/yumapi.py:73 ../src/yumapi.py:111
+msgid "Setup Yum : Repositories."
+msgstr "Yum準備: リポジトリ"
+
+#. -> Sack Setup
+#: ../src/yumapi.py:76 ../src/yumapi.py:114
+msgid "Setup Yum : Package Sacks"
+msgstr "Yum準備: パッケージ一式"
+
+#. -> Updates Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:79 ../src/yumapi.py:117
+msgid "Setup Yum : Updates"
+msgstr "Yum準備: 更新"
+
+#. -> Group Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:82 ../src/yumapi.py:120
+msgid "Setup Yum : Groups"
+msgstr "Yum準備: グループ"
+
+#: ../src/yumapi.py:84 ../src/yumapi.py:122
+msgid "Setup Yum : Base setup completed"
+msgstr "Yum準備: 基本設定完了"
+
+#: ../src/yumapi.py:151 ../src/yumex.py:605
+msgid "Preparing for install/remove/update"
+msgstr "インストール/削除/更新の準備中"
+
+#. Install
+#: ../src/yumapi.py:154
+msgid "--> Preparing for install"
+msgstr "--> インストールの準備中.."
+
+#. Remove
+#: ../src/yumapi.py:158
+msgid "--> Preparing for remove"
+msgstr "--> 削除の準備中"
+
+#: ../src/yumapi.py:164
+msgid "--> Preparing for a full update"
+msgstr "--> 全更新の準備中"
+
+#: ../src/yumapi.py:167
+msgid "--> Preparing for a partial update"
+msgstr "--> 部分更新の準備中"
+
+#: ../src/yumapi.py:169
+msgid "--> Adding all obsoletion to transaction"
+msgstr "--> 全ての廃止パッケージをトランザクションに追加中"
+
+#: ../src/yumapi.py:191 ../src/yumgui/callbacks.py:63
+#: ../src/yumgui/callbacks.py:64 ../src/yumgui/callbacks.py:66
+msgid "Installing"
+msgstr "インストール"
+
+#: ../src/yumapi.py:192 ../src/yumgui/callbacks.py:61
+msgid "Updating"
+msgstr "更新"
+
+#: ../src/yumapi.py:194
+msgid "Installing for dependencies"
+msgstr "依存関係を解決するためインストール"
+
+#: ../src/yumapi.py:195
+msgid "Updating for dependencies"
+msgstr "依存関係を解決するため更新"
+
+#: ../src/yumapi.py:196
+msgid "Removing for dependencies"
+msgstr "依存関係を解決するため削除"
+
+#: ../src/yumapi.py:242
+#, python-format
+msgid "Failure getting %s: "
+msgstr "%sの取得に失敗: "
+
+#: ../src/yumapi.py:264
+msgid "Downloading Packages:"
+msgstr "パッケージをダウンロード中"
+
+#: ../src/yumapi.py:280 ../src/yumapi.py:288
+msgid "Error Downloading Packages:\n"
+msgstr "パッケージをダウンロード中にエラー:\n"
+
+#. Check GPG signatures
+#: ../src/yumapi.py:295
+msgid "Checking GPG Signatures:"
+msgstr "GPG署名を確認中"
+
+#: ../src/yumapi.py:300
+msgid "Error checking package signatures:\n"
+msgstr "パッケージ署名を確認中にエラー:\n"
+
+#: ../src/yumapi.py:307
+msgid "Traceback in checking package signatures:\n"
+msgstr "パッケージ署名の確認を追跡:\n"
+
+#: ../src/yumapi.py:315
+msgid "Running Transaction Test"
+msgstr "トランザクションテストを実行中"
+
+#: ../src/yumapi.py:333
+msgid "Finished Transaction Test"
+msgstr "トランザクションテスト完了"
+
+#: ../src/yumapi.py:335
+msgid "Transaction Check Error: "
+msgstr "トランザクション確認エラー: "
+
+#: ../src/yumapi.py:340
+msgid "Transaction Test Succeeded"
+msgstr "トランザクションテスト成功"
+
+#. self.log( 2, 'Running Transaction' )
+#: ../src/yumapi.py:357
+msgid "Running Transaction"
+msgstr "トランザクションを実行中"
+
+#. print "po: %s userid: %s hexkey: %s " % (str(po),userid,hexkeyid)
+#: ../src/yumapi.py:452
+#, python-format
+msgid "Do you want to import GPG Key : %s \n"
+msgstr "鍵を併合しますか: %s\n"
+
+#: ../src/yumapi.py:454
+#, python-format
+msgid "Needed by %s"
+msgstr "%sに必要とされています"
+
+#: ../src/yumex.py:62
+msgid "Cant Quit while running RPM Transactions"
+msgstr "RPMトランザクションを実行中は終了できません"
+
+#: ../src/yumex.py:67
+msgid "Quiting, please wait !!!!!!"
+msgstr "終了中, お待ち下さい!!!!!!"
+
+#: ../src/yumex.py:155
+msgid "Yum has not been initialized yet"
+msgstr "Yumがまだ初期化されていません"
+
+#. Check there are any packages in the queue
+#: ../src/yumex.py:161
+msgid "No packages in queue"
+msgstr "キューにパッケージはありません"
+
+#: ../src/yumex.py:238
+#, python-format
+msgid "You are about to add %s packages\n"
+msgstr "%s個のパッケージをを追加しようとしています\n"
+
+#: ../src/yumex.py:239 ../src/yumex.py:253
+msgid "It will take some time\n"
+msgstr "ある程度時間がかかります\n"
+
+#: ../src/yumex.py:240 ../src/yumex.py:254
+msgid "do you want to continue ?"
+msgstr "続けますか?"
+
+#: ../src/yumex.py:252
+#, python-format
+msgid "You are about to remove %s packages\n"
+msgstr "%s個のパッケージをを削除しようとしています\n"
+
+#: ../src/yumex.py:355
+#, python-format
+msgid "Selected the %s profile"
+msgstr "プロファイル%sが選択されました"
+
+#: ../src/yumex.py:375
+#, python-format
+msgid "Profile : %s saved ok"
+msgstr "プロファイル: %sを保存"
+
+#: ../src/yumex.py:377
+#, python-format
+msgid "Profile : %s save failed"
+msgstr "プロファイル: %sの保存に失敗"
+
+#: ../src/yumex.py:382
+msgid "Create New Profile"
+msgstr "新規プロファイルを作成"
+
+#: ../src/yumex.py:382
+msgid "Name of new profile"
+msgstr "新規プロファイル名"
+
+#: ../src/yumex.py:386
+#, python-format
+msgid "Profile : %s created ok"
+msgstr "プロファイル: %sを作成"
+
+#: ../src/yumex.py:389
+#, python-format
+msgid "Profile : %s creation failed"
+msgstr "プロファイル: %sの作成に失敗"
+
+#: ../src/yumex.py:393
+msgid "Cleaning up all yum metadata"
+msgstr "全てのYumメタデータを消去中"
+
+#: ../src/yumex.py:420
+msgid "Yum Config Setup"
+msgstr "Yum設定"
+
+#: ../src/yumex.py:436
+msgid "GUI Setup Completed"
+msgstr "GUI設定完了"
+
+#: ../src/yumex.py:476 ../src/yumex.py:620 ../src/yumex.py:674
+#: ../src/yumex.py:784 ../src/yumex.py:805 ../src/yumex.glade.h:43
+msgid "Error"
+msgstr "エラー"
+
+#: ../src/yumex.py:476
+msgid "Error in Yum Setup"
+msgstr "Yum設定のエラー"
+
+#. prepare package lists
+#. -> List setup
+#: ../src/yumex.py:481
+msgid "Building Package Lists"
+msgstr "パッケージリストを構築中"
+
+#: ../src/yumex.py:483
+msgid "Building Package Lists Completed"
+msgstr "パッケージリストを構築完了"
+
+#: ../src/yumex.py:484
+msgid "Building Groups Lists"
+msgstr "グループリストを構築中"
+
+#: ../src/yumex.py:487
+msgid "Building Group Lists Completed"
+msgstr "グループリストを構築完了"
+
+#: ../src/yumex.py:519
+#, python-format
+msgid "Getting packages : %s"
+msgstr "パッケージを取得中: %s"
+
+#: ../src/yumex.py:523
+#, python-format
+msgid "Found %d %s packages"
+msgstr "%d個の%sパッケージを発見"
+
+#. -> Sort Lists
+#: ../src/yumex.py:526
+msgid "Sorting packages"
+msgstr "パッケージを選別中"
+
+#: ../src/yumex.py:528
+msgid "Population view with packages"
+msgstr "表示にパッケージを投入"
+
+#: ../src/yumex.py:534
+msgid "Population Completed"
+msgstr "投入完了"
+
+#: ../src/yumex.py:541
+msgid "Package View Population"
+msgstr "パッケージ表示の投入"
+
+#: ../src/yumex.py:552
+msgid "Package View Population Completed"
+msgstr "パッケージ表示を投入完了"
+
+#: ../src/yumex.py:558
+msgid "Category View Population"
+msgstr "カテゴリ表示の投入"
+
+#: ../src/yumex.py:577
+msgid "Category View Population Completed"
+msgstr "カテゴリ表示を投入完了"
+
+#: ../src/yumex.py:613
+msgid "Processing Packages in queue"
+msgstr "キューにあるパッケージを処理中"
+
+#: ../src/yumex.py:619
+msgid "Error in Dependency Resolution"
+msgstr "依存関係の解決中にエラーが発生しました"
+
+#: ../src/yumex.py:637
+msgid "No packages selected"
+msgstr "パッケージが選択されていません"
+
+#: ../src/yumex.py:644
+msgid "No packages in transaction"
+msgstr "トランザクション中のパッケージはありません"
+
+#: ../src/yumex.py:654
+msgid "Processing packages (See output for details)"
+msgstr "パッケージを処理中 (詳細は出力を御覧下さい)"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing"
+msgstr "パッケージを処理中"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing completed ok"
+msgstr "パッケージ処理を完了"
+
+#: ../src/yumex.py:674
+msgid "Error in Transaction"
+msgstr "トランザクション中にエラーが発生しました"
+
+#: ../src/yumex.py:679
+#, python-format
+msgid "Parsing packages to %s "
+msgstr "%sするパッケージを解析中"
+
+#: ../src/yumex.py:713
+#, python-format
+msgid "found %d packages, matching : %s"
+msgstr "%d個のパッケージを検出, 一致: %s"
+
+#: ../src/yumex.py:782
+msgid "Yum is locked by another application"
+msgstr "Yumは別のアプリケーションによってロックされています"
+
+#: ../src/yumex.py:784 ../src/yumex.py:805
+msgid "Error in Yumex"
+msgstr "Yumexのエラー"
+
+#: ../src/yumgui/callbacks.py:62
+msgid "Erasing"
+msgstr "消去中"
+
+#: ../src/yumgui/callbacks.py:65 ../src/yumgui/callbacks.py:71
+msgid "Obsoleted"
+msgstr "廃止"
+
+#: ../src/yumgui/callbacks.py:67
+msgid "Updated"
+msgstr "更新"
+
+#: ../src/yumgui/callbacks.py:68
+msgid "Erased"
+msgstr "消去"
+
+#: ../src/yumgui/callbacks.py:69 ../src/yumgui/callbacks.py:70
+#: ../src/yumgui/callbacks.py:72 ../src/yumex.glade.h:49
+msgid "Installed"
+msgstr "インストール"
+
+#: ../src/yumgui/callbacks.py:182
+msgid "No header - huh?"
+msgstr "ヘッダがありません、ん?"
+
+#. def main():
+#. """This is a unit test which confirms that all base classes are
+#. traversed when looking up attributes."""
+#.
+#. class BaseTest(Controller):
+#. def __init__(self, gladePath):
+#. ui = UI(gladePath, "app")
+#. Controller.__init__(self, ui)
+#.
+#. def on_exit1_activate(self, *args):
+#. gtk.mainquit()
+#.
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. class Test(BaseTest):
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. gladePath = "_test/data/ui.glade"
+#. c = Test(gladePath)
+#. print 72 * "_"
+#. print "Controller methods:"
+#. methods = c._getAllMethods()
+#. names = methods.keys()
+#. names.sort()
+#. for name in names:
+#. value = methods[name]
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. print 72 * "_"
+#. print "Sample UI instance attributes:"
+#. names = ["root", "new_file1", "exit1"]
+#. names.sort()
+#. for name in names:
+#. value = getattr(c.ui, name)
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. if __name__ == "__main__":
+#. main()
+#: ../src/yumex.glade.h:1
+msgid " "
+msgstr " "
+
+#: ../src/yumex.glade.h:2
+msgid "    "
+msgstr "    "
+
+#: ../src/yumex.glade.h:3
+msgid "0"
+msgstr "0"
+
+#: ../src/yumex.glade.h:4
+msgid "1"
+msgstr "1"
+
+#: ../src/yumex.glade.h:5
+msgid "2"
+msgstr "2"
+
+#: ../src/yumex.glade.h:6
+msgid "3"
+msgstr "3"
+
+#: ../src/yumex.glade.h:7
+msgid "4"
+msgstr "4"
+
+#: ../src/yumex.glade.h:8
+msgid "<b>(C) 2005  - Tim Lauridsen</b>"
+msgstr "<b>©2005 - Tim Lauridsen</b>"
+
+#: ../src/yumex.glade.h:9
+msgid "<b>Behavior</b>"
+msgstr "<b>動作</b>"
+
+#: ../src/yumex.glade.h:10
+msgid "<b>Category</b>"
+msgstr "<b>カテゴリ</b>"
+
+#: ../src/yumex.glade.h:11
+msgid "<b>Flags</b>"
+msgstr "<b>フラグ</b>"
+
+#: ../src/yumex.glade.h:12
+msgid "<b>Fonts </b>"
+msgstr "<b>フォント</b>"
+
+#: ../src/yumex.glade.h:13
+msgid "<b>GPG Key</b>"
+msgstr "<b>GPG鍵</b>"
+
+#: ../src/yumex.glade.h:14
+msgid "<b>Packages</b>"
+msgstr "<b>パッケージ</b>"
+
+#: ../src/yumex.glade.h:15
+msgid "<b>Quick add to queue</b>"
+msgstr "<b>すぐにキューに追加</b>"
+
+#: ../src/yumex.glade.h:16
+msgid "<b>Repository  Exclude Filters</b>"
+msgstr "<b>リポジトリ除外フィルタ</b>"
+
+#: ../src/yumex.glade.h:17
+msgid "<b>SUBACTION</b>\n"
+msgstr "<b>SUBACTION</b>\n"
+
+#: ../src/yumex.glade.h:19
+msgid "<b>Select Profile</b>"
+msgstr "<b>プロフィール選択</b>"
+
+#: ../src/yumex.glade.h:20
+msgid "<b>Total Download Size</b>"
+msgstr "<b>合計ファイルサイズ</b>"
+
+#: ../src/yumex.glade.h:21
+msgid "<b>URL Type</b>"
+msgstr "<b>URLの形式</b>"
+
+#: ../src/yumex.glade.h:22
+msgid "<b>URLs</b>"
+msgstr "<b>URLs</b>"
+
+#: ../src/yumex.glade.h:23
+msgid "<span size=\"large\"><b>Action</b></span>\n"
+msgstr "<span size=\"large\" >動作</span>\n"
+
+#: ../src/yumex.glade.h:25
+msgid "<span size=\"xx-large\" color=\"black\">Group View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">グループ</span>"
+
+#: ../src/yumex.glade.h:26
+msgid "<span size=\"xx-large\" color=\"black\">Output View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">出力</span>"
+
+#: ../src/yumex.glade.h:27
+msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">パッケージキュー</span>"
+
+#: ../src/yumex.glade.h:28
+msgid "<span size=\"xx-large\" color=\"black\">Select Repositories</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">リポジトリの選択</span>"
+
+#: ../src/yumex.glade.h:29
+msgid "About"
+msgstr "情報"
+
+#: ../src/yumex.glade.h:31
+msgid "All"
+msgstr "全て"
+
+#: ../src/yumex.glade.h:33
+msgid "Available"
+msgstr "利用可能"
+
+#: ../src/yumex.glade.h:34
+msgid "C_hangelog"
+msgstr "変更履歴(_H)"
+
+#: ../src/yumex.glade.h:35
+msgid "Console"
+msgstr "コンソール"
+
+#: ../src/yumex.glade.h:36
+msgid "Credits"
+msgstr "クレジット"
+
+#: ../src/yumex.glade.h:37
+msgid "Debug _mode"
+msgstr "デバッグモード(_M)"
+
+#: ../src/yumex.glade.h:38
+msgid "Debug mode"
+msgstr "デバッグモード"
+
+#: ../src/yumex.glade.h:39
+msgid "Disable 'Yum Extender Launcher'"
+msgstr "'Yum Extenderランチャ' を無効にする"
+
+#: ../src/yumex.glade.h:40
+msgid "Disable Plugins"
+msgstr "プラグインを無効にする"
+
+#: ../src/yumex.glade.h:41
+msgid "ETA"
+msgstr "ETA"
+
+#: ../src/yumex.glade.h:42
+msgid "Edit Repository"
+msgstr "リポジトリを編集"
+
+#: ../src/yumex.glade.h:44
+msgid "Excludes"
+msgstr "除外"
+
+#: ../src/yumex.glade.h:45
+msgid "Extra"
+msgstr "その他"
+
+#: ../src/yumex.glade.h:46
+msgid "Fi_les"
+msgstr "ファイル(_L)"
+
+#: ../src/yumex.glade.h:47
+msgid "GUI"
+msgstr "GUI"
+
+#: ../src/yumex.glade.h:48
+msgid "I_nformation"
+msgstr "情報(_N)"
+
+#: ../src/yumex.glade.h:50
+msgid "Load Yum Metadata"
+msgstr "Yumのメタデータを読み込む"
+
+#: ../src/yumex.glade.h:51
+msgid "Package Descriptions"
+msgstr "パッケージの説明"
+
+#: ../src/yumex.glade.h:52
+msgid "Plugins"
+msgstr "プラグイン"
+
+#: ../src/yumex.glade.h:53
+msgid "Preferences"
+msgstr "設定"
+
+#: ../src/yumex.glade.h:54
+msgid "Process Queue Confirmation"
+msgstr "処理キューの確認"
+
+#: ../src/yumex.glade.h:55
+msgid "Repos"
+msgstr "リポジトリ"
+
+#: ../src/yumex.glade.h:56
+msgid "Search Options"
+msgstr "検索オプション"
+
+#: ../src/yumex.glade.h:57
+msgid "Update Only"
+msgstr "更新のみ(_I)"
+
+#: ../src/yumex.glade.h:58
+msgid "Updates"
+msgstr "更新"
+
+#: ../src/yumex.glade.h:59
+msgid "Use _proxy"
+msgstr "プロキシを使用する(_U)"
+
+#: ../src/yumex.glade.h:60
+msgid "Yum Extender"
+msgstr "Yum Extender"
+
+#: ../src/yumex.glade.h:61
+msgid "Yum Extender Launcher"
+msgstr "Yum Extenderのランチャ"
+
+#: ../src/yumex.glade.h:62
+msgid "Yum Extender Preferences"
+msgstr "Yum Extenderの設定"
+
+#: ../src/yumex.glade.h:63
+msgid "_Add All"
+msgstr "全て追加(_A)"
+
+#: ../src/yumex.glade.h:64
+msgid "_Auto refresh on start"
+msgstr "全てをリフレッシュして開始(_A)"
+
+#: ../src/yumex.glade.h:65
+msgid "_Base url "
+msgstr "ベースURL(_B)"
+
+#: ../src/yumex.glade.h:66
+msgid "_Description"
+msgstr "説明(_D)"
+
+#: ../src/yumex.glade.h:67
+msgid "_Deselect All"
+msgstr "全て選択解除(_D)"
+
+#: ../src/yumex.glade.h:68
+msgid "_Edit"
+msgstr "編集(_E)"
+
+#: ../src/yumex.glade.h:69
+msgid "_Enabled"
+msgstr "有効にする(_E)"
+
+#: ../src/yumex.glade.h:70
+msgid "_File"
+msgstr "ファイル(_F)"
+
+#: ../src/yumex.glade.h:71
+msgid "_GPG check"
+msgstr "GPGチェック(_G)"
+
+#: ../src/yumex.glade.h:72
+msgid "_Help"
+msgstr "ヘルプ(_H)"
+
+#: ../src/yumex.glade.h:73
+msgid "_Mirror list"
+msgstr "ミラーリスト(_M)"
+
+#: ../src/yumex.glade.h:74
+msgid "_Name:"
+msgstr "名前(_N):"
+
+#: ../src/yumex.glade.h:75
+msgid "_Other"
+msgstr "その他(_O)"
+
+#: ../src/yumex.glade.h:76
+msgid "_Process Queue"
+msgstr "キューを処理する(_P)"
+
+#: ../src/yumex.glade.h:77
+msgid "_Profiles"
+msgstr "プロファイル(_P)"
+
+#: ../src/yumex.glade.h:78
+msgid "_Remove All"
+msgstr "全て削除(_R)"
+
+#: ../src/yumex.glade.h:79
+msgid "_Skip"
+msgstr "スキップ(_S)"
+
+#: ../src/yumex.glade.h:80
+msgid "_Tag:"
+msgstr "タグ(_T):"
+
+#: ../src/yumex.glade.h:81
+msgid "_Tools"
+msgstr "ツール(_T)"
+
+#: ../src/yumex.glade.h:82
+msgid "_Yum Clean All"
+msgstr "Yum全消去(_Y)"
+
+#: ../src/yumex.glade.h:83
+msgid "_Yum excludes:"
+msgstr "Yum除外(_Y):"
+
+#: ../src/yumex.glade.h:84
+msgid "_Yum plugins:"
+msgstr "Yumプラグイン(_Y):"
+
+#: ../src/yumex.glade.h:85
+msgid "dialog1"
+msgstr "ダイアログ1"
+
+#: ../src/yumex.glade.h:86
+msgid "xxxx"
+msgstr "xxxx"

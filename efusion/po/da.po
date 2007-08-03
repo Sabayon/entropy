@@ -1,0 +1,1689 @@
+# Yum Extender Language translation file.
+# Copyright (C) 2005 Tim Lauridsen
+# This file is distributed under the same license as the PACKAGE package.
+# Tim Lauridsen <tla@rasmil.dk>, 2005
+# 
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-05-29 11:31+0200\n"
+"PO-Revision-Date: 2006-02-14 14:52+0100\n"
+"Last-Translator: tim <tla@ramil.dk>\n"
+"Language-Team: Danish <dansk@klid.dk>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/callbacks.py:72
+#, fuzzy, python-format
+msgid "Getting : %s"
+msgstr "Filspejlsdetektion : %s"
+
+#: ../src/callbacks.py:167 ../src/yumapi.py:193
+msgid "Removing"
+msgstr "Sletter"
+
+#: ../src/callbacks.py:169
+msgid "Cleanup"
+msgstr "Oprydning af "
+
+#: ../src/callbacks.py:188
+#, fuzzy, python-format
+msgid "Erased: %s"
+msgstr "Slettet"
+
+#: ../src/callbacks.py:209
+#, python-format
+msgid "Processing metadata from : %s"
+msgstr "Behander metadata fra : %s"
+
+#: ../src/callbacks.py:211
+#, fuzzy
+msgid "Processing metadata"
+msgstr "Behander metadata fra : %s"
+
+#: ../src/callbacks.py:244
+#, python-format
+msgid "---> Package %s.%s %s:%s-%s set to be %s"
+msgstr "---> pakke %s.%s %s:%s-%s sat til at blive %s"
+
+#: ../src/callbacks.py:251
+msgid "--> Running transaction check"
+msgstr "Kører transaktions test"
+
+#: ../src/callbacks.py:255
+msgid "--> Restarting Dependency Resolution with new changes."
+msgstr "--> Genstart Afhængigheds opløsning med nye ændringer."
+
+#: ../src/callbacks.py:259
+msgid "--> Finished Dependency Resolution"
+msgstr "--> Afhængigheds opløsning afslutted"
+
+#: ../src/callbacks.py:263
+#, python-format
+msgid "--> Processing Dependency: %s for package: %s"
+msgstr "--> Behandler Afhængighed: %s for pakke: %s"
+
+#: ../src/callbacks.py:268
+#, python-format
+msgid "--> Unresolved Dependency: %s"
+msgstr "--> manglede afhængighed: %s"
+
+#: ../src/callbacks.py:272
+#, python-format
+msgid "--> Processing Conflict: %s conflicts %s"
+msgstr "--> Behandler Konflikt: %s konfligt %s"
+
+#: ../src/callbacks.py:275
+msgid "--> Populating transaction set with selected packages. Please wait."
+msgstr "--> Populerer transaktion sæt med valgte pakker. Vent Venligst"
+
+#: ../src/callbacks.py:278
+#, python-format
+msgid "---> Downloading header for %s to pack into transaction set."
+msgstr "---> Downloader header for %s til pakning i transaktions sæt."
+
+#: ../src/dialogs.py:193
+#, fuzzy
+msgid "Packages to Process"
+msgstr "Pakke behandling"
+
+#: ../src/dialogs.py:209 ../src/views.py:477
+msgid "Name"
+msgstr "Navn"
+
+#: ../src/dialogs.py:210 ../src/yumex.glade.h:32
+msgid "Arch"
+msgstr "Arch"
+
+#: ../src/dialogs.py:211 ../src/views.py:69
+msgid "Ver"
+msgstr "Ver"
+
+#. Setup reponame & repofile column's
+#: ../src/dialogs.py:212 ../src/views.py:441 ../src/views.py:476
+msgid "Repository"
+msgstr "Kilder"
+
+#: ../src/dialogs.py:213 ../src/views.py:69
+msgid "Size"
+msgstr "Størrelse"
+
+#: ../src/dialogs.py:345 ../src/yumex.glade.h:30
+msgid "About Yum Extender"
+msgstr "Om: Yum Extender"
+
+#: ../src/gui.py:65
+#, fuzzy, python-format
+msgid ""
+"Updating : %s\n"
+"\n"
+msgstr "Opdaterer"
+
+#: ../src/gui.py:72
+#, fuzzy, python-format
+msgid ""
+"Obsoleting : %s\n"
+"\n"
+msgstr "Filspejlsdetektion : %s"
+
+#: ../src/gui.py:87
+msgid ""
+"Requires:\n"
+"\n"
+msgstr ""
+"Afhængigheder:\n"
+"\n"
+
+#: ../src/gui.py:102 ../src/gui.py:112
+#, python-format
+msgid "Can not read the %s attribute"
+msgstr "Kan ikke læse %s attributen"
+
+#: ../src/gui.py:353
+#, fuzzy
+msgid "Show All Packages"
+msgstr "Valgfrie pakker"
+
+#: ../src/gui.py:354
+#, fuzzy
+msgid "Show Package Updates"
+msgstr "%d pakker til installation"
+
+#: ../src/gui.py:355
+#, fuzzy
+msgid "Show available Packages"
+msgstr "_Slet Pakker"
+
+#: ../src/gui.py:356
+#, fuzzy
+msgid "Show Installed Packages"
+msgstr "_Installer pakker"
+
+#. Setup Vertical Toolbar
+#: ../src/gui.py:365
+#, fuzzy
+msgid "Package View"
+msgstr "Pakke"
+
+#: ../src/gui.py:366
+#, fuzzy
+msgid "Group View"
+msgstr "Output vindue"
+
+#: ../src/gui.py:367
+#, fuzzy
+msgid "Package Queue View"
+msgstr "Pakke"
+
+#. TODO: Make repo selection work.
+#: ../src/gui.py:369
+#, fuzzy
+msgid "Repository Selection View"
+msgstr "Kilde Oprettelse fejlede"
+
+#: ../src/gui.py:370
+msgid "Output View"
+msgstr "Output vindue"
+
+#.
+#. [1]           [2]               [3]             [4]     [5]     [6]
+#. -------------------------------------------------------------------------
+#: ../src/misc.py:84
+#, fuzzy
+msgid "RPM Groups"
+msgstr "Grupper"
+
+#: ../src/misc.py:85
+#, fuzzy
+msgid "Repositories"
+msgstr "Tilføj Kilder"
+
+#: ../src/misc.py:86 ../src/views.py:69
+msgid "Architecture"
+msgstr "Arkitektur"
+
+#: ../src/misc.py:87
+#, fuzzy
+msgid "Sizes"
+msgstr "Størrelse"
+
+#: ../src/misc.py:88
+msgid "Age"
+msgstr ""
+
+#: ../src/misc.py:98
+#, fuzzy
+msgid "Mandatory"
+msgstr "Tvungne pakker"
+
+#: ../src/misc.py:99
+msgid "Default"
+msgstr "Standard"
+
+#: ../src/misc.py:100
+#, fuzzy
+msgid "Optional"
+msgstr "Option 4"
+
+#: ../src/misc.py:101
+#, fuzzy
+msgid "Conditional"
+msgstr "Bekræftigelse"
+
+#: ../src/misc.py:109
+msgid "Programming:"
+msgstr ""
+
+#: ../src/misc.py:112
+#, fuzzy
+msgid "Translation:"
+msgstr "Installere"
+
+#: ../src/misc.py:132
+msgid "Thank you:"
+msgstr ""
+
+#: ../src/misc.py:350
+#, fuzzy
+msgid "Package Queue:"
+msgstr "Pakke"
+
+#: ../src/misc.py:355
+#, fuzzy, python-format
+msgid " Packages to %s"
+msgstr "%d pakker til installation"
+
+#: ../src/misc.py:362
+#, fuzzy, python-format
+msgid " Groups to %s"
+msgstr "Grupper"
+
+#: ../src/misc.py:426
+#, python-format
+msgid "Wrong file application (%s)"
+msgstr ""
+
+#: ../src/misc.py:428
+#, python-format
+msgid "Wrong file type (%s)"
+msgstr ""
+
+#: ../src/misc.py:430
+#, fuzzy, python-format
+msgid "Wrong file version (%s)"
+msgstr ""
+"Installeret version: %s (%s) \n"
+"\n"
+
+#: ../src/misc.py:542
+msgid "Current Settings :"
+msgstr "Nuværende opsætning:"
+
+#: ../src/views.py:40 ../src/views.py:305
+#, fuzzy
+msgid "Categories"
+msgstr "Tvungne pakker"
+
+#: ../src/views.py:69 ../src/views.py:99
+msgid "Package"
+msgstr "Pakke"
+
+#: ../src/views.py:69 ../src/views.py:102 ../src/views.py:239
+msgid "Summary"
+msgstr "Kort beskrivelse"
+
+#: ../src/views.py:69
+msgid "Repo"
+msgstr "Kilde"
+
+#: ../src/views.py:100
+#, fuzzy
+msgid "Arch."
+msgstr "Arch"
+
+#: ../src/views.py:101
+#, fuzzy
+msgid "Ver."
+msgstr "Ver"
+
+#: ../src/views.py:103
+#, fuzzy
+msgid "Repo."
+msgstr "Kilde"
+
+#: ../src/views.py:104
+#, fuzzy
+msgid "Size."
+msgstr "Størrelse"
+
+#: ../src/views.py:234
+msgid "Packages"
+msgstr "Pakker"
+
+#: ../src/views.py:276
+msgid "<b>Packages To Update</b>"
+msgstr "<b>Pakker til opdatering:</b>"
+
+#: ../src/views.py:280
+msgid "<b>Packages To Install</b>"
+msgstr "<b>Pakker til installation:</b>"
+
+#: ../src/views.py:284
+msgid "<b>Packages To Remove</b>"
+msgstr "<b>Pakker til sletning:</b>"
+
+#: ../src/views.py:357
+#, fuzzy
+msgid "Groups"
+msgstr "Grupper"
+
+#: ../src/views.py:441
+#, fuzzy
+msgid "Filename"
+msgstr "Fil"
+
+#: ../src/views.py:575
+msgid "Plugin"
+msgstr "Plugin"
+
+#: ../src/yumapi.py:68 ../src/yumapi.py:106
+msgid "Setup Yum : Transaction Set"
+msgstr "Yum opsætning : Transactionssæt"
+
+#: ../src/yumapi.py:70 ../src/yumapi.py:108
+msgid "Setup Yum : RPM Db."
+msgstr "Yum Opsætning : RPM Db."
+
+#. -> Repo Setup
+#: ../src/yumapi.py:73 ../src/yumapi.py:111
+#, fuzzy
+msgid "Setup Yum : Repositories."
+msgstr "VÃÂ¦lg Active Kilder"
+
+#. -> Sack Setup
+#: ../src/yumapi.py:76 ../src/yumapi.py:114
+#, fuzzy
+msgid "Setup Yum : Package Sacks"
+msgstr "Opdaterings-process-klargøring "
+
+#. -> Updates Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:79 ../src/yumapi.py:117
+#, fuzzy
+msgid "Setup Yum : Updates"
+msgstr "Yum Opsætning : Plugins"
+
+#. -> Group Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:82 ../src/yumapi.py:120
+#, fuzzy
+msgid "Setup Yum : Groups"
+msgstr "Yum Opsætning : Plugins"
+
+#: ../src/yumapi.py:84 ../src/yumapi.py:122
+msgid "Setup Yum : Base setup completed"
+msgstr "Yum opsætning : Basis setup færdig"
+
+#: ../src/yumapi.py:151 ../src/yumex.py:605
+msgid "Preparing for install/remove/update"
+msgstr "Forbereder installation/sletning/opdatering"
+
+#. Install
+#: ../src/yumapi.py:154
+msgid "--> Preparing for install"
+msgstr "--> Forbereder installation"
+
+#. Remove
+#: ../src/yumapi.py:158
+msgid "--> Preparing for remove"
+msgstr "--> Forbereder sletning"
+
+#: ../src/yumapi.py:164
+msgid "--> Preparing for a full update"
+msgstr "--> Forbereder fuld opdatering"
+
+#: ../src/yumapi.py:167
+msgid "--> Preparing for a partial update"
+msgstr "--> Forbereder delvis opdatering"
+
+#: ../src/yumapi.py:169
+msgid "--> Adding all obsoletion to transaction"
+msgstr "--> Adding all obsoletion to transaction"
+
+#: ../src/yumapi.py:191 ../src/yumgui/callbacks.py:63
+#: ../src/yumgui/callbacks.py:64 ../src/yumgui/callbacks.py:66
+msgid "Installing"
+msgstr "Installere"
+
+#: ../src/yumapi.py:192 ../src/yumgui/callbacks.py:61
+msgid "Updating"
+msgstr "Opdaterer"
+
+#: ../src/yumapi.py:194
+msgid "Installing for dependencies"
+msgstr "Installer for afhængighed"
+
+#: ../src/yumapi.py:195
+msgid "Updating for dependencies"
+msgstr "Opdater for afhængigheder"
+
+#: ../src/yumapi.py:196
+msgid "Removing for dependencies"
+msgstr "Sletter for afhængigheder"
+
+#: ../src/yumapi.py:242
+#, fuzzy, python-format
+msgid "Failure getting %s: "
+msgstr "Nuværende opsætning:"
+
+#: ../src/yumapi.py:264
+msgid "Downloading Packages:"
+msgstr "Downloader Pakker:"
+
+#: ../src/yumapi.py:280 ../src/yumapi.py:288
+msgid "Error Downloading Packages:\n"
+msgstr "Fejl i download af pakke:\n"
+
+#. Check GPG signatures
+#: ../src/yumapi.py:295
+msgid "Checking GPG Signatures:"
+msgstr "Checker GPG Signaturer:"
+
+#: ../src/yumapi.py:300
+#, fuzzy
+msgid "Error checking package signatures:\n"
+msgstr "Checker GPG Signaturer:"
+
+#: ../src/yumapi.py:307
+#, fuzzy
+msgid "Traceback in checking package signatures:\n"
+msgstr "Checker GPG Signaturer:"
+
+#: ../src/yumapi.py:315
+msgid "Running Transaction Test"
+msgstr "Kører Transaktions Test"
+
+#: ../src/yumapi.py:333
+msgid "Finished Transaction Test"
+msgstr "Fejl i Transaktions Test"
+
+#: ../src/yumapi.py:335
+msgid "Transaction Check Error: "
+msgstr "Fejl i transaction check"
+
+#: ../src/yumapi.py:340
+msgid "Transaction Test Succeeded"
+msgstr "Transaktions Test OK"
+
+#. self.log( 2, 'Running Transaction' )
+#: ../src/yumapi.py:357
+msgid "Running Transaction"
+msgstr "Kører Transaktion"
+
+#. print "po: %s userid: %s hexkey: %s " % (str(po),userid,hexkeyid)
+#: ../src/yumapi.py:452
+#, python-format
+msgid "Do you want to import GPG Key : %s \n"
+msgstr ""
+
+#: ../src/yumapi.py:454
+#, python-format
+msgid "Needed by %s"
+msgstr ""
+
+#: ../src/yumex.py:62
+#, fuzzy
+msgid "Cant Quit while running RPM Transactions"
+msgstr "Kører Transaktion"
+
+#: ../src/yumex.py:67
+#, fuzzy
+msgid "Quiting, please wait !!!!!!"
+msgstr "Opdaterer %s oversigt, Vent venligst "
+
+#: ../src/yumex.py:155
+msgid "Yum has not been initialized yet"
+msgstr ""
+
+#. Check there are any packages in the queue
+#: ../src/yumex.py:161
+#, fuzzy
+msgid "No packages in queue"
+msgstr "Behandler pakker i køen"
+
+#: ../src/yumex.py:238
+#, python-format
+msgid "You are about to add %s packages\n"
+msgstr ""
+
+#: ../src/yumex.py:239 ../src/yumex.py:253
+msgid "It will take some time\n"
+msgstr ""
+
+#: ../src/yumex.py:240 ../src/yumex.py:254
+#, fuzzy
+msgid "do you want to continue ?"
+msgstr "Ønsker du at gemme ændringer ?"
+
+#: ../src/yumex.py:252
+#, python-format
+msgid "You are about to remove %s packages\n"
+msgstr ""
+
+#: ../src/yumex.py:355
+#, python-format
+msgid "Selected the %s profile"
+msgstr "%s profilen er valgt"
+
+#: ../src/yumex.py:375
+#, python-format
+msgid "Profile : %s saved ok"
+msgstr "Profilen : %s er gemt"
+
+#: ../src/yumex.py:377
+#, python-format
+msgid "Profile : %s save failed"
+msgstr "Profilen : %s kunne ikke gemmes"
+
+#: ../src/yumex.py:382
+msgid "Create New Profile"
+msgstr "Opret ny profil"
+
+#: ../src/yumex.py:382
+#, fuzzy
+msgid "Name of new profile"
+msgstr "Opret ny profil"
+
+#: ../src/yumex.py:386
+#, fuzzy, python-format
+msgid "Profile : %s created ok"
+msgstr "Profilen : %s er oprettet "
+
+#: ../src/yumex.py:389
+#, python-format
+msgid "Profile : %s creation failed"
+msgstr "Profilen : %s oprettelse fejlede "
+
+#: ../src/yumex.py:393
+#, fuzzy
+msgid "Cleaning up all yum metadata"
+msgstr "IndlÃÂ¦ser Yum metadata\n"
+
+#: ../src/yumex.py:420
+msgid "Yum Config Setup"
+msgstr ""
+
+#: ../src/yumex.py:436
+msgid "GUI Setup Completed"
+msgstr ""
+
+#: ../src/yumex.py:476 ../src/yumex.py:620 ../src/yumex.py:674
+#: ../src/yumex.py:784 ../src/yumex.py:805 ../src/yumex.glade.h:43
+msgid "Error"
+msgstr "Fejl"
+
+#: ../src/yumex.py:476
+#, fuzzy
+msgid "Error in Yum Setup"
+msgstr "Fejl i opsætning af yum"
+
+#. prepare package lists
+#. -> List setup
+#: ../src/yumex.py:481
+#, fuzzy
+msgid "Building Package Lists"
+msgstr "Bygger Pakke-Lister afsluttet"
+
+#: ../src/yumex.py:483
+#, fuzzy
+msgid "Building Package Lists Completed"
+msgstr "Bygger Pakke-Lister afsluttet"
+
+#: ../src/yumex.py:484
+#, fuzzy
+msgid "Building Groups Lists"
+msgstr "Bygger liste over sletbare pakker"
+
+#: ../src/yumex.py:487
+#, fuzzy
+msgid "Building Group Lists Completed"
+msgstr "Bygger Pakke-Lister afsluttet"
+
+#: ../src/yumex.py:519
+#, fuzzy, python-format
+msgid "Getting packages : %s"
+msgstr "Opdaterer pakker"
+
+#: ../src/yumex.py:523
+#, python-format
+msgid "Found %d %s packages"
+msgstr ""
+
+#. -> Sort Lists
+#: ../src/yumex.py:526
+#, fuzzy
+msgid "Sorting packages"
+msgstr "Sletter Pakker"
+
+#: ../src/yumex.py:528
+msgid "Population view with packages"
+msgstr ""
+
+#: ../src/yumex.py:534
+msgid "Population Completed"
+msgstr ""
+
+#: ../src/yumex.py:541
+#, fuzzy
+msgid "Package View Population"
+msgstr "Beskrivelse"
+
+#: ../src/yumex.py:552
+#, fuzzy
+msgid "Package View Population Completed"
+msgstr "Behandling af pakker ok"
+
+#: ../src/yumex.py:558
+msgid "Category View Population"
+msgstr ""
+
+#: ../src/yumex.py:577
+msgid "Category View Population Completed"
+msgstr ""
+
+#: ../src/yumex.py:613
+msgid "Processing Packages in queue"
+msgstr "Behandler pakker i køen"
+
+#: ../src/yumex.py:619
+msgid "Error in Dependency Resolution"
+msgstr "Fejl i afhængigheder"
+
+#: ../src/yumex.py:637
+msgid "No packages selected"
+msgstr "Ingen valgte pakker"
+
+#: ../src/yumex.py:644
+#, fuzzy
+msgid "No packages in transaction"
+msgstr "Behandler pakker i køen"
+
+#: ../src/yumex.py:654
+#, fuzzy
+msgid "Processing packages (See output for details)"
+msgstr "Behander pakker (Se Output for detaljer)"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing"
+msgstr "Pakke behandling"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing completed ok"
+msgstr "Behandling af pakker ok"
+
+#: ../src/yumex.py:674
+msgid "Error in Transaction"
+msgstr "Fejl i Transaction"
+
+#: ../src/yumex.py:679
+#, fuzzy, python-format
+msgid "Parsing packages to %s "
+msgstr "%d pakker til installation"
+
+#: ../src/yumex.py:713
+#, python-format
+msgid "found %d packages, matching : %s"
+msgstr ""
+
+#: ../src/yumex.py:782
+msgid "Yum is locked by another application"
+msgstr ""
+
+#: ../src/yumex.py:784 ../src/yumex.py:805
+#, fuzzy
+msgid "Error in Yumex"
+msgstr "Fejl i opsætning af yum"
+
+#: ../src/yumgui/callbacks.py:62
+msgid "Erasing"
+msgstr "Sletter"
+
+#: ../src/yumgui/callbacks.py:65 ../src/yumgui/callbacks.py:71
+msgid "Obsoleted"
+msgstr "Obsoleted"
+
+#: ../src/yumgui/callbacks.py:67
+msgid "Updated"
+msgstr "Opdateret"
+
+#: ../src/yumgui/callbacks.py:68
+msgid "Erased"
+msgstr "Slettet"
+
+#: ../src/yumgui/callbacks.py:69 ../src/yumgui/callbacks.py:70
+#: ../src/yumgui/callbacks.py:72 ../src/yumex.glade.h:49
+msgid "Installed"
+msgstr "Installerettt"
+
+#: ../src/yumgui/callbacks.py:182
+msgid "No header - huh?"
+msgstr "Ingen header ???"
+
+#. def main():
+#. """This is a unit test which confirms that all base classes are
+#. traversed when looking up attributes."""
+#.
+#. class BaseTest(Controller):
+#. def __init__(self, gladePath):
+#. ui = UI(gladePath, "app")
+#. Controller.__init__(self, ui)
+#.
+#. def on_exit1_activate(self, *args):
+#. gtk.mainquit()
+#.
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. class Test(BaseTest):
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. gladePath = "_test/data/ui.glade"
+#. c = Test(gladePath)
+#. print 72 * "_"
+#. print "Controller methods:"
+#. methods = c._getAllMethods()
+#. names = methods.keys()
+#. names.sort()
+#. for name in names:
+#. value = methods[name]
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. print 72 * "_"
+#. print "Sample UI instance attributes:"
+#. names = ["root", "new_file1", "exit1"]
+#. names.sort()
+#. for name in names:
+#. value = getattr(c.ui, name)
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. if __name__ == "__main__":
+#. main()
+#: ../src/yumex.glade.h:1
+msgid " "
+msgstr ""
+
+#: ../src/yumex.glade.h:2
+msgid "    "
+msgstr "    "
+
+#: ../src/yumex.glade.h:3
+msgid "0"
+msgstr "0"
+
+#: ../src/yumex.glade.h:4
+msgid "1"
+msgstr "1"
+
+#: ../src/yumex.glade.h:5
+msgid "2"
+msgstr "2"
+
+#: ../src/yumex.glade.h:6
+msgid "3"
+msgstr "3"
+
+#: ../src/yumex.glade.h:7
+msgid "4"
+msgstr "5"
+
+#: ../src/yumex.glade.h:8
+msgid "<b>(C) 2005  - Tim Lauridsen</b>"
+msgstr "<b>(C) 2005  - Tim Lauridsen</b>"
+
+#: ../src/yumex.glade.h:9
+msgid "<b>Behavior</b>"
+msgstr ""
+
+#: ../src/yumex.glade.h:10
+#, fuzzy
+msgid "<b>Category</b>"
+msgstr "<b>Flag</b>"
+
+#: ../src/yumex.glade.h:11
+msgid "<b>Flags</b>"
+msgstr "<b>Flag</b>"
+
+#: ../src/yumex.glade.h:12
+#, fuzzy
+msgid "<b>Fonts </b>"
+msgstr "<b>Flag</b>"
+
+#: ../src/yumex.glade.h:13
+msgid "<b>GPG Key</b>"
+msgstr "<b>GPG Key</b>"
+
+#: ../src/yumex.glade.h:14
+#, fuzzy
+msgid "<b>Packages</b>"
+msgstr "<b>Pakker til opdatering:</b>"
+
+#: ../src/yumex.glade.h:15
+#, fuzzy
+msgid "<b>Quick add to queue</b>"
+msgstr "%i pakker tilføjet til køen"
+
+#: ../src/yumex.glade.h:16
+msgid "<b>Repository  Exclude Filters</b>"
+msgstr ""
+
+#: ../src/yumex.glade.h:17
+msgid "<b>SUBACTION</b>\n"
+msgstr "<b>SUBACTION</b>\n"
+
+#: ../src/yumex.glade.h:19
+#, fuzzy
+msgid "<b>Select Profile</b>"
+msgstr "<b>Afhængigheder:</b>"
+
+#: ../src/yumex.glade.h:20
+msgid "<b>Total Download Size</b>"
+msgstr "<b>Total Download Størrelse:</b>"
+
+#: ../src/yumex.glade.h:21
+msgid "<b>URL Type</b>"
+msgstr "<b>URLType</b>"
+
+#: ../src/yumex.glade.h:22
+msgid "<b>URLs</b>"
+msgstr "<b>URL's</b>"
+
+#: ../src/yumex.glade.h:23
+msgid "<span size=\"large\"><b>Action</b></span>\n"
+msgstr "<span size=\"large\"><b>Action</b></span>\n"
+
+#: ../src/yumex.glade.h:25
+msgid "<span size=\"xx-large\" color=\"black\">Group View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Gruppe Oversigt</span>"
+
+#: ../src/yumex.glade.h:26
+msgid "<span size=\"xx-large\" color=\"black\">Output View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Output Oversigt</span>"
+
+#: ../src/yumex.glade.h:27
+msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Pakke Kø</span>"
+
+#: ../src/yumex.glade.h:28
+msgid "<span size=\"xx-large\" color=\"black\">Select Repositories</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Vælg Kilder</span>"
+
+#: ../src/yumex.glade.h:29
+msgid "About"
+msgstr "Om"
+
+#: ../src/yumex.glade.h:31
+msgid "All"
+msgstr ""
+
+#: ../src/yumex.glade.h:33
+msgid "Available"
+msgstr ""
+
+#: ../src/yumex.glade.h:34
+#, fuzzy
+msgid "C_hangelog"
+msgstr "_Ændringslog"
+
+#: ../src/yumex.glade.h:35
+msgid "Console"
+msgstr ""
+
+#: ../src/yumex.glade.h:36
+msgid "Credits"
+msgstr "Credits"
+
+#: ../src/yumex.glade.h:37
+msgid "Debug _mode"
+msgstr "_Debug tilstand"
+
+#: ../src/yumex.glade.h:38
+#, fuzzy
+msgid "Debug mode"
+msgstr "_Debug tilstand"
+
+#: ../src/yumex.glade.h:39
+msgid "Disable 'Yum Extender Launcher'"
+msgstr ""
+
+#: ../src/yumex.glade.h:40
+#, fuzzy
+msgid "Disable Plugins"
+msgstr "Plugins"
+
+#: ../src/yumex.glade.h:41
+msgid "ETA"
+msgstr "ETA"
+
+#: ../src/yumex.glade.h:42
+msgid "Edit Repository"
+msgstr "Rediger Kilder"
+
+#: ../src/yumex.glade.h:44
+msgid "Excludes"
+msgstr "Fravalgsliste"
+
+#: ../src/yumex.glade.h:45
+msgid "Extra"
+msgstr "Ekstra"
+
+#: ../src/yumex.glade.h:46
+#, fuzzy
+msgid "Fi_les"
+msgstr "_Filer"
+
+#: ../src/yumex.glade.h:47
+msgid "GUI"
+msgstr ""
+
+#: ../src/yumex.glade.h:48
+#, fuzzy
+msgid "I_nformation"
+msgstr "_Information"
+
+#: ../src/yumex.glade.h:50
+#, fuzzy
+msgid "Load Yum Metadata"
+msgstr "IndlÃÂ¦ser Yum metadata"
+
+#: ../src/yumex.glade.h:51
+#, fuzzy
+msgid "Package Descriptions"
+msgstr "Beskrivelse"
+
+#: ../src/yumex.glade.h:52
+msgid "Plugins"
+msgstr "Plugins"
+
+#: ../src/yumex.glade.h:53
+msgid "Preferences"
+msgstr "Egenskaber"
+
+#: ../src/yumex.glade.h:54
+#, fuzzy
+msgid "Process Queue Confirmation"
+msgstr "_Behandling af køen"
+
+#: ../src/yumex.glade.h:55
+#, fuzzy
+msgid "Repos"
+msgstr "Kilde"
+
+#: ../src/yumex.glade.h:56
+msgid "Search Options"
+msgstr ""
+
+#: ../src/yumex.glade.h:57
+#, fuzzy
+msgid "Update Only"
+msgstr "Opdater"
+
+#: ../src/yumex.glade.h:58
+#, fuzzy
+msgid "Updates"
+msgstr "Opdater"
+
+#: ../src/yumex.glade.h:59
+#, fuzzy
+msgid "Use _proxy"
+msgstr "Brug _Proxy"
+
+#: ../src/yumex.glade.h:60
+#, fuzzy
+msgid "Yum Extender"
+msgstr "Afslut Yum Extender"
+
+#: ../src/yumex.glade.h:61
+#, fuzzy
+msgid "Yum Extender Launcher"
+msgstr "Yum Extender Indstilliger"
+
+#: ../src/yumex.glade.h:62
+msgid "Yum Extender Preferences"
+msgstr "Yum Extender Indstilliger"
+
+#: ../src/yumex.glade.h:63
+msgid "_Add All"
+msgstr ""
+
+#: ../src/yumex.glade.h:64
+msgid "_Auto refresh on start"
+msgstr "_Auto opfrisk ved start"
+
+#: ../src/yumex.glade.h:65
+msgid "_Base url "
+msgstr "_Base url "
+
+#: ../src/yumex.glade.h:66
+msgid "_Description"
+msgstr "_Beskrivelse"
+
+#: ../src/yumex.glade.h:67
+msgid "_Deselect All"
+msgstr "_Vælg alle"
+
+#: ../src/yumex.glade.h:68
+msgid "_Edit"
+msgstr "_Rediger"
+
+#: ../src/yumex.glade.h:69
+msgid "_Enabled"
+msgstr "_Aktiv"
+
+#: ../src/yumex.glade.h:70
+msgid "_File"
+msgstr "Filer"
+
+#: ../src/yumex.glade.h:71
+msgid "_GPG check"
+msgstr "_GPG Check"
+
+#: ../src/yumex.glade.h:72
+msgid "_Help"
+msgstr "_Hjælp"
+
+#: ../src/yumex.glade.h:73
+msgid "_Mirror list"
+msgstr "_Mirrorlist"
+
+#: ../src/yumex.glade.h:74
+msgid "_Name:"
+msgstr "_Navn"
+
+#: ../src/yumex.glade.h:75
+#, fuzzy
+msgid "_Other"
+msgstr "_Andre"
+
+#: ../src/yumex.glade.h:76
+msgid "_Process Queue"
+msgstr "_Behandling af køen"
+
+#: ../src/yumex.glade.h:77
+msgid "_Profiles"
+msgstr "_Profiler"
+
+#: ../src/yumex.glade.h:78
+#, fuzzy
+msgid "_Remove All"
+msgstr "_Slet"
+
+#: ../src/yumex.glade.h:79
+msgid "_Skip"
+msgstr ""
+
+#: ../src/yumex.glade.h:80
+msgid "_Tag:"
+msgstr "_Mærke"
+
+#: ../src/yumex.glade.h:81
+msgid "_Tools"
+msgstr "_Værktøjer"
+
+#: ../src/yumex.glade.h:82
+msgid "_Yum Clean All"
+msgstr ""
+
+#: ../src/yumex.glade.h:83
+#, fuzzy
+msgid "_Yum excludes:"
+msgstr "<b>Yum Excludes </b>"
+
+#: ../src/yumex.glade.h:84
+#, fuzzy
+msgid "_Yum plugins:"
+msgstr "<b>Yum Plugins</b>"
+
+#: ../src/yumex.glade.h:85
+msgid "dialog1"
+msgstr ""
+
+#: ../src/yumex.glade.h:86
+msgid "xxxx"
+msgstr "xxxx"
+
+#, fuzzy
+#~ msgid "Save"
+#~ msgstr "_Gem"
+
+#~ msgid "_About"
+#~ msgstr "_Om"
+
+#~ msgid "_Delete from Queue"
+#~ msgstr "_Slet fra Køen"
+
+#~ msgid "_New"
+#~ msgstr "_Ny"
+
+#, fuzzy
+#~ msgid "_Quit"
+#~ msgstr "_Rediger"
+
+#~ msgid "_Save"
+#~ msgstr "_Gem"
+
+#, fuzzy
+#~ msgid ""
+#~ "Installed version: %s\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Installeret version: %s (%s) \n"
+#~ "\n"
+
+#, fuzzy
+#~ msgid "Quiting"
+#~ msgstr "Opdaterer"
+
+#, fuzzy
+#~ msgid "Process (_SafeMode)"
+#~ msgstr "_Behanling (SafeMode)"
+
+#~ msgid "_Reset Repository Cache"
+#~ msgstr "_Reset Filkilde Cache"
+
+#, fuzzy
+#~ msgid "(yumex) Erased: %s"
+#~ msgstr "Slettet"
+
+#~ msgid "<b>Mirror Detection</b>"
+#~ msgstr "<b>Webspejls Detektion</b>"
+
+#~ msgid "Install Repository"
+#~ msgstr "Installer Kilde"
+
+#, fuzzy
+#~ msgid "_Best"
+#~ msgstr "Bedst"
+
+#, fuzzy
+#~ msgid "_Default"
+#~ msgstr "Standard"
+
+#, fuzzy
+#~ msgid "_Enable 'Process Queue (SafeMode)'"
+#~ msgstr "Aktiver 'Behandling (SafeMode)'"
+
+#, fuzzy
+#~ msgid "_Fastest"
+#~ msgstr "Hurtigst"
+
+#~ msgid "_Show file lists & changelog (longer metadata load time)"
+#~ msgstr "_Vis fillister & ændringslog (Længere metadata indlæsningstid)"
+
+#, fuzzy
+#~ msgid "_Packages"
+#~ msgstr "Pakker"
+
+#, fuzzy
+#~ msgid "_Queue"
+#~ msgstr "Kø"
+
+#, fuzzy
+#~ msgid "_Output"
+#~ msgstr "Output"
+
+#, fuzzy
+#~ msgid "Filte_r:"
+#~ msgstr "Fil_ter"
+
+#, fuzzy
+#~ msgid "Sear_ch"
+#~ msgstr "_Søg"
+
+#, fuzzy
+#~ msgid "_Select All"
+#~ msgstr "Vælg _Alle"
+
+#~ msgid "_Delete"
+#~ msgstr "_Slet"
+
+#~ msgid " Do you want to delete the <b>%s</b> repository?"
+#~ msgstr " Ønsker du at slette <b>%s</b> kilden?"
+
+#~ msgid "Delete Repository"
+#~ msgstr "Slet Kilde"
+
+#~ msgid "_Add to Queue"
+#~ msgstr "_Tilføj til Køen"
+
+#~ msgid "added remove of %s to Queue"
+#~ msgstr "tilføjet sletning af %s til køen"
+
+#~ msgid "added install of %s to Queue"
+#~ msgstr "tilføjet installation af %s til køen"
+
+#~ msgid "%i packages added to queue for removal"
+#~ msgstr "%s pakker tilføjet til køen for sletning"
+
+#~ msgid "package %s was not found"
+#~ msgstr "Pakken %s blev ikke fundet"
+
+#~ msgid "%i packages added to queue for installation"
+#~ msgstr "%i pakker tilføjet til køen for installation"
+
+#~ msgid "Profile %s not found"
+#~ msgstr "Profilen %s blev ikke fundet"
+
+#~ msgid "No profile selected"
+#~ msgstr "Ingen profil er valgt"
+
+#~ msgid "_Profile name:"
+#~ msgstr "Profil navn:"
+
+#, fuzzy
+#~ msgid "_Update"
+#~ msgstr "Opdater"
+
+#~ msgid "_Install"
+#~ msgstr "_Installer"
+
+#~ msgid "Updating %s view, populate view with data "
+#~ msgstr "Opdaterer %s oversigt, Vent venligst "
+
+#~ msgid "Using http_proxy=%s"
+#~ msgstr "Benytter http_proxy=%s"
+
+#~ msgid "Initializing Repositories"
+#~ msgstr "Initialsering af kilder"
+
+#~ msgid "Repository initialization completed in %.2f seconds"
+#~ msgstr "Filkilde initialisering afsluttet på %.2f sekunder"
+
+#~ msgid "Error in loading repository data"
+#~ msgstr "Fejl i indlæsning af kilde data"
+
+#~ msgid "Mirrordetection : %s"
+#~ msgstr "Filspejlsdetektion : %s"
+
+#~ msgid "Yum Version : %s (%s)"
+#~ msgstr "Yum Version : %s (%s)"
+
+#~ msgid "Setup Yum : Config"
+#~ msgstr "Yum Opsætning : Konfiguration"
+
+#~ msgid "Setup Yum : Plugins are disabled"
+#~ msgstr "Yum Opsætning : Plugins er deaktiveret"
+
+#~ msgid "Using yum cache"
+#~ msgstr "Bruger yum cache"
+
+#~ msgid "Loading Repositories Data : Init. %s repository"
+#~ msgstr "Indlæser Filkilde Data : Init. filkilden %s"
+
+#~ msgid "Determining %s mirrors for %s"
+#~ msgstr "Bestemmer %s webspejle for %s"
+
+#~ msgid "--> Mirrors Detected (Top 3)"
+#~ msgstr "--> Webspejle fundet (Top 3)"
+
+#~ msgid "Using default mirror detection"
+#~ msgstr "Bruger standard detektion af webspejle"
+
+#~ msgid "Loading Repositories Data"
+#~ msgstr "Indlæser Kilde informationer"
+
+#, fuzzy
+#~ msgid "Setting Up Package Sack : Filelists"
+#~ msgstr "Opdaterings-process-klargøring "
+
+#, fuzzy
+#~ msgid "Setting Up Package Sack : Changelogs"
+#~ msgstr "Opdaterings-process-klargøring "
+
+#~ msgid "Loading Repository Group Data"
+#~ msgstr "Indlæser Kilde gruppe-informationer"
+
+#~ msgid "Loading Repositories Data completed"
+#~ msgstr "indlæsning af kildedata afsluttet"
+
+#~ msgid "Writing Mirrorcache to disk"
+#~ msgstr "Skrive filspejle til disk"
+
+#~ msgid "--> Repositories saved: %s"
+#~ msgstr "--> Filkilder gemt : %s"
+
+#~ msgid "Enable/Disable Repositories"
+#~ msgstr "Aktivering/Deaktivering af kilder"
+
+#~ msgid "Building Package Lists : Updates"
+#~ msgstr "Bygger Pakke Lister : Opdateringer"
+
+#~ msgid "Building Package Lists : %i Updates found"
+#~ msgstr "Bygger Pakke Lister : %i Opdateringer fundet"
+
+#~ msgid "Building Package Lists : Installed"
+#~ msgstr "Bygger pakke Lister : installerede"
+
+#~ msgid "Building Package Lists : %i Installed packages found"
+#~ msgstr "Bygger pakke Lister : %i installerede pakker fundet"
+
+#~ msgid "Building Package Lists : Available"
+#~ msgstr "Bygger Pakke-Lister : Tilgængelige"
+
+#~ msgid "Building Package Lists : %i Available packages found"
+#~ msgstr "Bygger Pakke-Lister : %i tilgængelige pakker fundet"
+
+#~ msgid "Retrieving GPG key from %s"
+#~ msgstr "Henter GPG nøgle for %s"
+
+#~ msgid "GPG key retrieval failed: "
+#~ msgstr "Hentning af GPG nøgle fejlede:"
+
+#~ msgid "GPG key parsing failed: "
+#~ msgstr "GPG Nøgle check fejlede"
+
+#~ msgid "GPG key at %s (0x%s) is already installed"
+#~ msgstr "GPG nøgle hos %s (0x%s) er allerede installeret"
+
+#~ msgid "Importing GPG key 0x%s \"%s\""
+#~ msgstr "Importerer GPG nøgle 0x%s \"%s\""
+
+#~ msgid "Key import failed (code %d)"
+#~ msgstr "nøgle import fejlet (kode %d)"
+
+#~ msgid "Key imported successfully"
+#~ msgstr "Nøgle importeret ok"
+
+#~ msgid "Warning: Group %s does not exist."
+#~ msgstr "Advarsel: Gruppen %s findes ikke"
+
+#~ msgid "No packages in any requested group available to install or update"
+#~ msgstr ""
+#~ "Ingen pakker tilstede for installation eller opdatering i den valgte "
+#~ "gruppe"
+
+#~ msgid "No group named %s exists"
+#~ msgstr "Gruppen %sfindes ikke"
+
+#~ msgid "No packages to remove from groups"
+#~ msgstr "Ingen pakker til sletning fra grupper"
+
+#~ msgid "%d Package(s) to remove"
+#~ msgstr "%d Pakker til sletning"
+
+#~ msgid "%s was not deleted"
+#~ msgstr "%s blev ikke slettet"
+
+#~ msgid "Preparing for install Groups"
+#~ msgstr "Forbereder installation af grupper"
+
+#~ msgid "Installing Groups"
+#~ msgstr "Installer Grupper"
+
+#~ msgid "Error in preparation for package installing"
+#~ msgstr "Fejl i forbedredelsen af pakke installation"
+
+#~ msgid "Install"
+#~ msgstr "Installer"
+
+#~ msgid "Preparing for Removing Groups"
+#~ msgstr "Forbereder sletning af grupper"
+
+#~ msgid "Removeing Groups"
+#~ msgstr "Sletter Grupper"
+
+#~ msgid "Error in preparation for package removing"
+#~ msgstr "Fejl i forbedredelsen af pakke sletning"
+
+#~ msgid "Remove"
+#~ msgstr "Fjern"
+
+#~ msgid ""
+#~ "Enabled Repositories:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Valgte kilder: \n"
+#~ " %s"
+
+#, fuzzy
+#~ msgid "default"
+#~ msgstr "standard"
+
+#, fuzzy
+#~ msgid "fastest"
+#~ msgstr "Hurtigste"
+
+#, fuzzy
+#~ msgid "best"
+#~ msgstr "bedste"
+
+#~ msgid "removal"
+#~ msgstr "Fjern"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Install Packages</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Installer Pakker</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Remove Packages</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Sletning af pakker</span>"
+
+#, fuzzy
+#~ msgid "<span size=\"xx-large\" color=\"black\">Packages by category</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Pakke Kø</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Update Packages</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Updater Pakker</span>"
+
+#~ msgid "New Repository"
+#~ msgstr "Ny Kilde"
+
+#~ msgid "_New repository tag name:"
+#~ msgstr "_Navn på ny kilde"
+
+#~ msgid "Save Changes"
+#~ msgstr "Gem Ændringer"
+
+#, fuzzy
+#~ msgid "<span size='x-large'> Packages to Process</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Pakke til %s</span>"
+
+#~ msgid "Categories / Groups"
+#~ msgstr "Kategorier / Grupper"
+
+#~ msgid "Description"
+#~ msgstr "Beskrivelse"
+
+#~ msgid "All Groups"
+#~ msgstr "Alle Grupper"
+
+#, fuzzy
+#~ msgid "A_dd to Queue"
+#~ msgstr "_Tilføj til Køen"
+
+#, fuzzy
+#~ msgid "Test"
+#~ msgstr "bedste"
+
+#~ msgid "Cannot open/read repomd.xml file for repository: %s"
+#~ msgstr "Kan ikke åbne/læse repomd.xml filen for filkilden: %s"
+
+#~ msgid "Loading Repositories Data : Populate Package Sack for %s"
+#~ msgstr "Indlæser Filkilde Data : Opretter pakke tabel for. %s "
+
+#~ msgid "Cannot make directory for logfile %s"
+#~ msgstr "kan ikke oprette bibliotek for logfilen %s"
+
+#~ msgid "Cannot open logfile %s"
+#~ msgstr "Kan ikke åbne logfilen %s"
+
+#~ msgid "Cleanup Download Packages"
+#~ msgstr "Oprydning af downloadede pakker"
+
+#, fuzzy
+#~ msgid "Add to _Queue"
+#~ msgstr "_Tilføj til Køen"
+
+#~ msgid "_Delete downloaded packages after install/update"
+#~ msgstr "_Slet downloaded pakker efter installation/Opdatering"
+
+#~ msgid "Forcing i386 architecture for $basearch variable"
+#~ msgstr "Tvungen brug af i386 arkitektur for $basearch variablen"
+
+#~ msgid "Using system's $basearch variable"
+#~ msgstr "Bruger systemmets $basearch variabel"
+
+#~ msgid "*"
+#~ msgstr "*"
+
+#, fuzzy
+#~ msgid "F_orce i386 architecture"
+#~ msgstr "Tvungen brug af af i386 Arkitektur"
+
+#~ msgid "Mandatory Packages"
+#~ msgstr "Tvungne pakker"
+
+#~ msgid "Default Packages"
+#~ msgstr "Standard pakker"
+
+#~ msgid "Group Information"
+#~ msgstr "Gruppe Information"
+
+#~ msgid "<b>Preferences</b>"
+#~ msgstr "<b>Egenskaber</b>"
+
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "Files:\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "Filer:\n"
+
+#~ msgid ""
+#~ "Do you want to add these repositories \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Ønsker du at tilføje-disse kilder \n"
+#~ "\n"
+
+#~ msgid "5"
+#~ msgstr "5"
+
+#~ msgid "Installed Groups"
+#~ msgstr "Installer"
+
+#~ msgid "Setting up Install Process"
+#~ msgstr "Installation process-opsætning"
+
+#~ msgid "Setting up Remove Process"
+#~ msgstr "Slette process-klargøring"
+
+#~ msgid "Installing Packages"
+#~ msgstr "Installerer pakker"
+
+#, fuzzy
+#~ msgid "Error in preparation for package installation"
+#~ msgstr "Fejl i forbedredelsen af pakke installation"
+
+#, fuzzy
+#~ msgid "Error in preparation for package removal"
+#~ msgstr "Fejl i forbedredelsen af pakke sletning"
+
+#~ msgid "Error in preparation for package updating"
+#~ msgstr "Fejl i forbedredelsen af pakke opdatering"
+
+#~ msgid "%s completed ok"
+#~ msgstr "%s afsluttet ok"
+
+#~ msgid "Installed / Avaliable Groups"
+#~ msgstr "Installerede/Tilgængelige grupper"
+
+#~ msgid "_Exclude List"
+#~ msgstr "_Fravalgsliste"
+
+#~ msgid "_Update Packages"
+#~ msgstr "_Opdatering af pakker"
+
+#~ msgid "Loading Repositories Data : Init. %s repository (Cached)"
+#~ msgstr "Indlæser Filkilde Data : Init. %s filkilde (Cached)"
+
+#~ msgid "Default Metapkgs"
+#~ msgstr "Standard Metapakker"
+
+#~ msgid "Optional Metapkgs"
+#~ msgstr "Valgfrie Metapakker"
+
+#~ msgid "Could not detect Fastest Mirrors using default"
+#~ msgstr "Kunne ikke bestemt de hurtigste spejle, bruger standarden"
+
+#~ msgid ""
+#~ "\n"
+#~ "Check output page for more info."
+#~ msgstr ""
+#~ "\n"
+#~ "Check Output Siden for mere information"
+
+#~ msgid "_Deselect"
+#~ msgstr "_Fravælg"
+
+#~ msgid "_Install Repository"
+#~ msgstr "_Installer Kilde"
+
+#~ msgid "Progress"
+#~ msgstr "Fremgang"
+
+#~ msgid "Repository Installer"
+#~ msgstr "Kilde Installering"
+
+#~ msgid "Building Install list"
+#~ msgstr "Bygger liste over installerbar pakker"
+
+#~ msgid "Prepare for installation"
+#~ msgstr "Forbereder installation"
+
+#~ msgid "Prepare for Updating"
+#~ msgstr "Forbereder opdatering"
+
+#~ msgid "Yum Command Ended :\n"
+#~ msgstr "Yum Kommando afsluttet: \n"
+
+#~ msgid "Using Proxy: %s \n"
+#~ msgstr "Benytter Proxy: %s \n"
+
+#~ msgid "Running : [%s] \n"
+#~ msgstr "Kører : [%s] \n"
+
+#~ msgid "Yum :  Init."
+#~ msgstr "Yum : initialiseret"
+
+#~ msgid "Yum : parsing Command."
+#~ msgstr "Yum: fortolker kommando"
+
+#~ msgid "Yum : Command complete."
+#~ msgstr "Yum : Kommando udført"
+
+#~ msgid "Run Yum Commands"
+#~ msgstr "Kør Yum Kommadoer"
+
+#~ msgid "Run Cmd"
+#~ msgstr "KÃÂ¸r Cmd"
+
+#~ msgid "See Output "
+#~ msgstr "Se Output"
+
+#~ msgid "Init. Yum"
+#~ msgstr "Initialisere Yum"
+
+#~ msgid "Error in Repository initialisation:\n"
+#~ msgstr "Fejl i initialisering af kilder:\n"
+
+#~ msgid "Error : %s "
+#~ msgstr "Fejl : %s "
+
+#~ msgid "Download and Installing"
+#~ msgstr "Download og installation"
+
+#~ msgid "Download and Updateing"
+#~ msgstr "Download og opdatering"
+
+#~ msgid " Title"
+#~ msgstr " Titel"
+
+#~ msgid "<b>Addtional Parameters:</b>"
+#~ msgstr "<b>Extra Parametere:</b>"
+
+#~ msgid "<b>Command  to Run: (F1 to update)</b>"
+#~ msgstr "<b>Kommando som skal kÃÂ¸res: (F1 for opdatering)</b>"
+
+#~ msgid "<b>Flags:</b>"
+#~ msgstr "<b>Flag:</b>"
+
+#~ msgid "<b>Yum Command:</b>"
+#~ msgstr "<b>Yum Kommando:</b>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Run Yum Commands</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">KÃÂ¸r Yum Kommandoer</span>"
+
+#~ msgid "Answer yes to all questions (-y)"
+#~ msgstr "Svar ja til alle spÃÂ¸rgsmÃÂ¥l. (-y)"
+
+#~ msgid "Option 4"
+#~ msgstr "Option 4"
+
+#~ msgid "Option 5"
+#~ msgstr "Option 5"
+
+#~ msgid "Run from cache only (-C)"
+#~ msgstr "KÃÂ¸r kun for cachen (-C)"
+
+#~ msgid "kurt"
+#~ msgstr "kurt"
+
+#~ msgid "100 %"
+#~ msgstr "100 %"
+
+#~ msgid "Yum Extender 0.33-1"
+#~ msgstr "Yum Extender"

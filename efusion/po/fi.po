@@ -1,0 +1,1525 @@
+# Finnish translation of yumex.
+# Copyright (C) 2006, 2007 Tim Lauridsen
+# This file is distributed under the same license as the yumex package.
+# Tero Hietanen <tero.hietanen@gmail.com>, 2006, 2007.
+# 
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: yumex 1.9.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-05-29 11:31+0200\n"
+"PO-Revision-Date: 2007-05-31 20:34+0300\n"
+"Last-Translator: Tero Hietanen <tero.hietanen@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/callbacks.py:72
+#, python-format
+msgid "Getting : %s"
+msgstr "Haetaan: %s"
+
+#: ../src/callbacks.py:167 ../src/yumapi.py:193
+msgid "Removing"
+msgstr "Poistetaan"
+
+#: ../src/callbacks.py:169
+msgid "Cleanup"
+msgstr "Siivotaan"
+
+#: ../src/callbacks.py:188
+#, python-format
+msgid "Erased: %s"
+msgstr "Poistettu: %s"
+
+#: ../src/callbacks.py:209
+#, python-format
+msgid "Processing metadata from : %s"
+msgstr "Käsitellään metadataa: %s"
+
+#: ../src/callbacks.py:211
+msgid "Processing metadata"
+msgstr "Käsitellään metadataa"
+
+#: ../src/callbacks.py:244
+#, python-format
+msgid "---> Package %s.%s %s:%s-%s set to be %s"
+msgstr "---> Paketti %s.%s %s:%s-%s set to be %s"
+
+#: ../src/callbacks.py:251
+msgid "--> Running transaction check"
+msgstr "--> Suoritetaan tapahtumatestiä"
+
+#: ../src/callbacks.py:255
+msgid "--> Restarting Dependency Resolution with new changes."
+msgstr "--> Aloitetaan riippuvuuksien ratkaisu alusta uusilla muutoksilla."
+
+#: ../src/callbacks.py:259
+msgid "--> Finished Dependency Resolution"
+msgstr "--> Riippuvuuksien ratkaisu päättynyt"
+
+#: ../src/callbacks.py:263
+#, python-format
+msgid "--> Processing Dependency: %s for package: %s"
+msgstr "--> Käsitellään riippuvuutta: %s paketille: %s"
+
+#: ../src/callbacks.py:268
+#, python-format
+msgid "--> Unresolved Dependency: %s"
+msgstr "--> Ratkaisematon riippuvuus: %s"
+
+#: ../src/callbacks.py:272
+#, python-format
+msgid "--> Processing Conflict: %s conflicts %s"
+msgstr "--> Käsitellään ristiriitaa: %s on ristiriidassa %s:n kanssa"
+
+#: ../src/callbacks.py:275
+msgid "--> Populating transaction set with selected packages. Please wait."
+msgstr "--> Täytetään tapahtumajoukkoa valituilla paketeilla. Odota hetki."
+
+#: ../src/callbacks.py:278
+#, python-format
+msgid "---> Downloading header for %s to pack into transaction set."
+msgstr "---> Ladataan otsikkoa paketille %s tapahtumajoukkoon lisättäväksi"
+
+#: ../src/dialogs.py:193
+msgid "Packages to Process"
+msgstr "Käsiteltävät paketit"
+
+#: ../src/dialogs.py:209 ../src/views.py:477
+msgid "Name"
+msgstr "Nimi"
+
+#: ../src/dialogs.py:210 ../src/yumex.glade.h:32
+msgid "Arch"
+msgstr "Arkkitehtuuri"
+
+#: ../src/dialogs.py:211 ../src/views.py:69
+msgid "Ver"
+msgstr "Versio"
+
+#. Setup reponame & repofile column's
+#: ../src/dialogs.py:212 ../src/views.py:441 ../src/views.py:476
+msgid "Repository"
+msgstr "Varasto"
+
+#: ../src/dialogs.py:213 ../src/views.py:69
+msgid "Size"
+msgstr "Koko"
+
+#: ../src/dialogs.py:345 ../src/yumex.glade.h:30
+msgid "About Yum Extender"
+msgstr "Tietoja Yum Extender"
+
+#: ../src/gui.py:65
+#, python-format
+msgid ""
+"Updating : %s\n"
+"\n"
+msgstr ""
+"Päivitetään: %s\n"
+"\n"
+
+#: ../src/gui.py:72
+#, python-format
+msgid ""
+"Obsoleting : %s\n"
+"\n"
+msgstr "Vanhentuu: %s\n"
+"\n"
+
+#: ../src/gui.py:87
+msgid ""
+"Requires:\n"
+"\n"
+msgstr ""
+"Vaatii:\n"
+"\n"
+
+#: ../src/gui.py:102 ../src/gui.py:112
+#, python-format
+msgid "Can not read the %s attribute"
+msgstr "Ei voi lukea %s määritettä"
+
+#: ../src/gui.py:353
+msgid "Show All Packages"
+msgstr "Näytä kaikki paketit"
+
+#: ../src/gui.py:354
+msgid "Show Package Updates"
+msgstr "Näytä pakettipäivitykset"
+
+#: ../src/gui.py:355
+msgid "Show available Packages"
+msgstr "Näytä saatavissa olevat paketit"
+
+#: ../src/gui.py:356
+msgid "Show Installed Packages"
+msgstr "Näytä asennetut paketit"
+
+#. Setup Vertical Toolbar
+#: ../src/gui.py:365
+msgid "Package View"
+msgstr "Paketit"
+
+#: ../src/gui.py:366
+msgid "Group View"
+msgstr "Ryhmät"
+
+#: ../src/gui.py:367
+msgid "Package Queue View"
+msgstr "Pakettijono"
+
+#. TODO: Make repo selection work.
+#: ../src/gui.py:369
+msgid "Repository Selection View"
+msgstr "Varastojen valinta"
+
+#: ../src/gui.py:370
+msgid "Output View"
+msgstr "Tuloste"
+
+#.
+#. [1]           [2]               [3]             [4]     [5]     [6]
+#. -------------------------------------------------------------------------
+#: ../src/misc.py:84
+msgid "RPM Groups"
+msgstr "RPM-ryhmät"
+
+#: ../src/misc.py:85
+msgid "Repositories"
+msgstr "Varastot"
+
+#: ../src/misc.py:86 ../src/views.py:69
+msgid "Architecture"
+msgstr "Arkkitehtuuri"
+
+#: ../src/misc.py:87
+msgid "Sizes"
+msgstr "Koot"
+
+#: ../src/misc.py:88
+msgid "Age"
+msgstr "Ikä"
+
+#: ../src/misc.py:98
+msgid "Mandatory"
+msgstr "Vaaditut"
+
+#: ../src/misc.py:99
+msgid "Default"
+msgstr "Oletus"
+
+#: ../src/misc.py:100
+msgid "Optional"
+msgstr "Valinnaiset"
+
+#: ../src/misc.py:101
+msgid "Conditional"
+msgstr "Ehdolliset"
+
+#: ../src/misc.py:109
+msgid "Programming:"
+msgstr "Ohjelmointi:"
+
+#: ../src/misc.py:112
+msgid "Translation:"
+msgstr "Käännös:"
+
+#: ../src/misc.py:132
+msgid "Thank you:"
+msgstr "Kiitokset:"
+
+#: ../src/misc.py:350
+msgid "Package Queue:"
+msgstr "Pakettijono"
+
+#: ../src/misc.py:355
+#, python-format
+msgid " Packages to %s"
+msgstr " %s paketit"
+
+#: ../src/misc.py:362
+#, python-format
+msgid " Groups to %s"
+msgstr " %s ryhmät"
+
+#: ../src/misc.py:426
+#, python-format
+msgid "Wrong file application (%s)"
+msgstr "Virheellinen tiedostosovellus (%s)"
+
+#: ../src/misc.py:428
+#, python-format
+msgid "Wrong file type (%s)"
+msgstr "Virheellinen tiedostotyyppi (%s)"
+
+#: ../src/misc.py:430
+#, python-format
+msgid "Wrong file version (%s)"
+msgstr "Väärä tiedostoversio (%s)"
+
+#: ../src/misc.py:542
+msgid "Current Settings :"
+msgstr "Nykyiset asetukset:"
+
+#: ../src/views.py:40 ../src/views.py:305
+msgid "Categories"
+msgstr "Luokat"
+
+#: ../src/views.py:69 ../src/views.py:99
+msgid "Package"
+msgstr "Paketti"
+
+#: ../src/views.py:69 ../src/views.py:102 ../src/views.py:239
+msgid "Summary"
+msgstr "Yhteenveto"
+
+#: ../src/views.py:69
+msgid "Repo"
+msgstr "Varasto"
+
+#: ../src/views.py:100
+msgid "Arch."
+msgstr "Arkkitehtuuri"
+
+#: ../src/views.py:101
+msgid "Ver."
+msgstr "Versio"
+
+#: ../src/views.py:103
+msgid "Repo."
+msgstr "Varasto"
+
+#: ../src/views.py:104
+msgid "Size."
+msgstr "Koko"
+
+#: ../src/views.py:234
+msgid "Packages"
+msgstr "Paketit"
+
+#: ../src/views.py:276
+msgid "<b>Packages To Update</b>"
+msgstr "<b>Päivitettävät paketit</b>"
+
+#: ../src/views.py:280
+msgid "<b>Packages To Install</b>"
+msgstr "<b>Asennettavat paketit</b>"
+
+#: ../src/views.py:284
+msgid "<b>Packages To Remove</b>"
+msgstr "<b>Poistettavat paketit</b>"
+
+#: ../src/views.py:357
+msgid "Groups"
+msgstr "Ryhmät"
+
+#: ../src/views.py:441
+msgid "Filename"
+msgstr "Tiedostonnimi"
+
+#: ../src/views.py:575
+msgid "Plugin"
+msgstr "Liitännäinen"
+
+#: ../src/yumapi.py:68 ../src/yumapi.py:106
+msgid "Setup Yum : Transaction Set"
+msgstr "Asetetaan Yum: Tapahtumasarja"
+
+#: ../src/yumapi.py:70 ../src/yumapi.py:108
+msgid "Setup Yum : RPM Db."
+msgstr "Asetetaan Yum: RPM-tietokanta"
+
+#. -> Repo Setup
+#: ../src/yumapi.py:73 ../src/yumapi.py:111
+msgid "Setup Yum : Repositories."
+msgstr "Asetetaan Yum: Varastot"
+
+#. -> Sack Setup
+#: ../src/yumapi.py:76 ../src/yumapi.py:114
+msgid "Setup Yum : Package Sacks"
+msgstr "Asetetaan Yum: Pakettikassit"
+
+#. -> Updates Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:79 ../src/yumapi.py:117
+msgid "Setup Yum : Updates"
+msgstr "Asetetaan Yum: Päivitykset"
+
+#. -> Group Setup
+#. -> Sack Setup
+#: ../src/yumapi.py:82 ../src/yumapi.py:120
+msgid "Setup Yum : Groups"
+msgstr "Asetetaan Yum: Ryhmät"
+
+#: ../src/yumapi.py:84 ../src/yumapi.py:122
+msgid "Setup Yum : Base setup completed"
+msgstr "Asetetaan Yum: Perusasetus valmis"
+
+#: ../src/yumapi.py:151 ../src/yumex.py:605
+msgid "Preparing for install/remove/update"
+msgstr "Valmistellaan asennusta/poistoa/päivitystä"
+
+#. Install
+#: ../src/yumapi.py:154
+msgid "--> Preparing for install"
+msgstr "--> Valmistellaan asennusta"
+
+#. Remove
+#: ../src/yumapi.py:158
+msgid "--> Preparing for remove"
+msgstr "--> Valmistellaan poistoa"
+
+#: ../src/yumapi.py:164
+msgid "--> Preparing for a full update"
+msgstr "--> Valmistellaan täyspäivitystä"
+
+#: ../src/yumapi.py:167
+msgid "--> Preparing for a partial update"
+msgstr "--> Valmistellaan osittaispäivitystä"
+
+#: ../src/yumapi.py:169
+msgid "--> Adding all obsoletion to transaction"
+msgstr "--> Lisätään kaikki vanhentuminen tapahtumaan"
+
+#: ../src/yumapi.py:191 ../src/yumgui/callbacks.py:63
+#: ../src/yumgui/callbacks.py:64 ../src/yumgui/callbacks.py:66
+msgid "Installing"
+msgstr "Asennetaan"
+
+#: ../src/yumapi.py:192 ../src/yumgui/callbacks.py:61
+msgid "Updating"
+msgstr "Päivitetään"
+
+#: ../src/yumapi.py:194
+msgid "Installing for dependencies"
+msgstr "Asennetaan riippuvuuksien vuoksi"
+
+#: ../src/yumapi.py:195
+msgid "Updating for dependencies"
+msgstr "Päivitetään riippuvuuksien vuoksi"
+
+#: ../src/yumapi.py:196
+msgid "Removing for dependencies"
+msgstr "Poistetaan riippuvuuksien vuoksi"
+
+#: ../src/yumapi.py:242
+#, python-format
+msgid "Failure getting %s: "
+msgstr "Virhe haettaessa %s: "
+
+#: ../src/yumapi.py:264
+msgid "Downloading Packages:"
+msgstr "Ladataan paketteja:"
+
+#: ../src/yumapi.py:280 ../src/yumapi.py:288
+msgid "Error Downloading Packages:\n"
+msgstr "Virhe ladattaessa paketteja:\n"
+
+#. Check GPG signatures
+#: ../src/yumapi.py:295
+msgid "Checking GPG Signatures:"
+msgstr "Tarkistetaan GPG-tunnisteita"
+
+#: ../src/yumapi.py:300
+msgid "Error checking package signatures:\n"
+msgstr "Virhe tarkistettaessa pakettien tunnisteita:\n"
+
+#: ../src/yumapi.py:307
+msgid "Traceback in checking package signatures:\n"
+msgstr "Virhe tarkistettaessa pakettien tunnisteita:\n"
+
+#: ../src/yumapi.py:315
+msgid "Running Transaction Test"
+msgstr "Suoritetaan tapahtumatestiä"
+
+#: ../src/yumapi.py:333
+msgid "Finished Transaction Test"
+msgstr "Tapahtumatesti päättynyt"
+
+#: ../src/yumapi.py:335
+msgid "Transaction Check Error: "
+msgstr "Tapahtumatarkistusvirhe: "
+
+#: ../src/yumapi.py:340
+msgid "Transaction Test Succeeded"
+msgstr "Tapahtumatesti onnistui"
+
+#. self.log( 2, 'Running Transaction' )
+#: ../src/yumapi.py:357
+msgid "Running Transaction"
+msgstr "Suoritetaan tapahtumaa"
+
+#. print "po: %s userid: %s hexkey: %s " % (str(po),userid,hexkeyid)
+#: ../src/yumapi.py:452
+#, python-format
+msgid "Do you want to import GPG Key : %s \n"
+msgstr "Haluatko tuoda GPG-avaimen: %s \n"
+
+#: ../src/yumapi.py:454
+#, python-format
+msgid "Needed by %s"
+msgstr "%s:n tarvitsema"
+
+#: ../src/yumex.py:62
+msgid "Cant Quit while running RPM Transactions"
+msgstr "Ei voi sulkea suorittaessa RPM-tapahtumia"
+
+#: ../src/yumex.py:67
+msgid "Quiting, please wait !!!!!!"
+msgstr "Suljetaan, odota hetki !!!!!!"
+
+#: ../src/yumex.py:155
+msgid "Yum has not been initialized yet"
+msgstr "Yum ei ole vielä valmis"
+
+#. Check there are any packages in the queue
+#: ../src/yumex.py:161
+msgid "No packages in queue"
+msgstr "Ei paketteja jonossa"
+
+#: ../src/yumex.py:238
+#, python-format
+msgid "You are about to add %s packages\n"
+msgstr "Olet lisäämässä %s pakettia\n"
+
+#: ../src/yumex.py:239 ../src/yumex.py:253
+msgid "It will take some time\n"
+msgstr "Se vie jonkin verran aikaa\n"
+
+#: ../src/yumex.py:240 ../src/yumex.py:254
+msgid "do you want to continue ?"
+msgstr "haluatko jatkaa?"
+
+#: ../src/yumex.py:252
+#, python-format
+msgid "You are about to remove %s packages\n"
+msgstr "Olet poistamassa %s pakettia\n"
+
+#: ../src/yumex.py:355
+#, python-format
+msgid "Selected the %s profile"
+msgstr "Profiili %s valittu"
+
+#: ../src/yumex.py:375
+#, python-format
+msgid "Profile : %s saved ok"
+msgstr "Profiili: %s tallennettu"
+
+#: ../src/yumex.py:377
+#, python-format
+msgid "Profile : %s save failed"
+msgstr "Profiilin %s tallennus epäonnistui"
+
+#: ../src/yumex.py:382
+msgid "Create New Profile"
+msgstr "Luo uusi profiili"
+
+#: ../src/yumex.py:382
+msgid "Name of new profile"
+msgstr "Uuden profiilin nimi"
+
+#: ../src/yumex.py:386
+#, python-format
+msgid "Profile : %s created ok"
+msgstr "Profiili: %s luotu"
+
+#: ../src/yumex.py:389
+#, python-format
+msgid "Profile : %s creation failed"
+msgstr "Profiilin: %s luonti epäonnistui"
+
+#: ../src/yumex.py:393
+msgid "Cleaning up all yum metadata"
+msgstr "Siivotaan kaikki yum:n metadata"
+
+#: ../src/yumex.py:420
+msgid "Yum Config Setup"
+msgstr "Yum:n asetukset"
+
+#: ../src/yumex.py:436
+msgid "GUI Setup Completed"
+msgstr "GUI:n asetus valmis"
+
+#: ../src/yumex.py:476 ../src/yumex.py:620 ../src/yumex.py:674
+#: ../src/yumex.py:784 ../src/yumex.py:805 ../src/yumex.glade.h:43
+msgid "Error"
+msgstr "Virhe"
+
+#: ../src/yumex.py:476
+msgid "Error in Yum Setup"
+msgstr "Virhe asetettaessa Yum:ta"
+
+#. prepare package lists
+#. -> List setup
+#: ../src/yumex.py:481
+msgid "Building Package Lists"
+msgstr "Rakennetaan pakettilistoja"
+
+#: ../src/yumex.py:483
+msgid "Building Package Lists Completed"
+msgstr "Pakettilistojen rakennus valmis"
+
+#: ../src/yumex.py:484
+msgid "Building Groups Lists"
+msgstr "Rakennetaan ryhmälistoja"
+
+#: ../src/yumex.py:487
+msgid "Building Group Lists Completed"
+msgstr "Ryhmälistojen rakennus valmis"
+
+#: ../src/yumex.py:519
+#, python-format
+msgid "Getting packages : %s"
+msgstr "Haetaan paketteja: %s"
+
+#: ../src/yumex.py:523
+#, python-format
+msgid "Found %d %s packages"
+msgstr "Löydetty %d %s pakettia"
+
+#. -> Sort Lists
+#: ../src/yumex.py:526
+msgid "Sorting packages"
+msgstr "Järjestetään paketteja"
+
+#: ../src/yumex.py:528
+msgid "Population view with packages"
+msgstr "Täytetään näkymää paketeilla"
+
+#: ../src/yumex.py:534
+msgid "Population Completed"
+msgstr "Täyttö valmis"
+
+#: ../src/yumex.py:541
+msgid "Package View Population"
+msgstr "Pakettinäkymän täyttö"
+
+#: ../src/yumex.py:552
+msgid "Package View Population Completed"
+msgstr "Pakettinäkymän täyttö valmis"
+
+#: ../src/yumex.py:558
+msgid "Category View Population"
+msgstr "Luokkanäkymän täyttö"
+
+#: ../src/yumex.py:577
+msgid "Category View Population Completed"
+msgstr "Luokkanäkymän täyttö valmis"
+
+#: ../src/yumex.py:613
+msgid "Processing Packages in queue"
+msgstr "Käsitellään jonossa olevia paketteja"
+
+#: ../src/yumex.py:619
+msgid "Error in Dependency Resolution"
+msgstr "Virhe ratkaistessa riippuvuuksia"
+
+#: ../src/yumex.py:637
+msgid "No packages selected"
+msgstr "Ei paketteja valittuna"
+
+#: ../src/yumex.py:644
+msgid "No packages in transaction"
+msgstr "Ei paketteja tapahtumassa"
+
+#: ../src/yumex.py:654
+msgid "Processing packages (See output for details)"
+msgstr "Käsitellään paketteja (katso tulosteesta lisätietoja)"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing"
+msgstr "Käsitellään paketteja"
+
+#: ../src/yumex.py:670
+msgid "Packages Processing completed ok"
+msgstr "Paketit käsitelty onnistuneesti"
+
+#: ../src/yumex.py:674
+msgid "Error in Transaction"
+msgstr "Virhe tapahtumassa"
+
+#: ../src/yumex.py:679
+#, python-format
+msgid "Parsing packages to %s "
+msgstr "Käsitellään paketteja %s varten"
+
+#: ../src/yumex.py:713
+#, python-format
+msgid "found %d packages, matching : %s"
+msgstr "löydetty %s pakettia, vastaavat: %s"
+
+#: ../src/yumex.py:782
+msgid "Yum is locked by another application"
+msgstr "Toinen ohjelma on lukinnut Yum:n"
+
+#: ../src/yumex.py:784 ../src/yumex.py:805
+msgid "Error in Yumex"
+msgstr "Virhe Yumex:ssa"
+
+#: ../src/yumgui/callbacks.py:62
+msgid "Erasing"
+msgstr "Poistetaan"
+
+#: ../src/yumgui/callbacks.py:65 ../src/yumgui/callbacks.py:71
+msgid "Obsoleted"
+msgstr "Vanhentunut"
+
+#: ../src/yumgui/callbacks.py:67
+msgid "Updated"
+msgstr "Päivitetty"
+
+#: ../src/yumgui/callbacks.py:68
+msgid "Erased"
+msgstr "Poistettu"
+
+#: ../src/yumgui/callbacks.py:69 ../src/yumgui/callbacks.py:70
+#: ../src/yumgui/callbacks.py:72 ../src/yumex.glade.h:49
+msgid "Installed"
+msgstr "Asennettu"
+
+#: ../src/yumgui/callbacks.py:182
+msgid "No header - huh?"
+msgstr "Ei otsikkoa - häh?"
+
+#. def main():
+#. """This is a unit test which confirms that all base classes are
+#. traversed when looking up attributes."""
+#.
+#. class BaseTest(Controller):
+#. def __init__(self, gladePath):
+#. ui = UI(gladePath, "app")
+#. Controller.__init__(self, ui)
+#.
+#. def on_exit1_activate(self, *args):
+#. gtk.mainquit()
+#.
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. class Test(BaseTest):
+#. def on_new_file1_activate(self, *args):
+#. return
+#.
+#. gladePath = "_test/data/ui.glade"
+#. c = Test(gladePath)
+#. print 72 * "_"
+#. print "Controller methods:"
+#. methods = c._getAllMethods()
+#. names = methods.keys()
+#. names.sort()
+#. for name in names:
+#. value = methods[name]
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. print 72 * "_"
+#. print "Sample UI instance attributes:"
+#. names = ["root", "new_file1", "exit1"]
+#. names.sort()
+#. for name in names:
+#. value = getattr(c.ui, name)
+#. print "  %-32.32s %s" % (name, value)
+#.
+#. if __name__ == "__main__":
+#. main()
+#: ../src/yumex.glade.h:1
+msgid " "
+msgstr " "
+
+#: ../src/yumex.glade.h:2
+msgid "    "
+msgstr "    "
+
+#: ../src/yumex.glade.h:3
+msgid "0"
+msgstr "0"
+
+#: ../src/yumex.glade.h:4
+msgid "1"
+msgstr "1"
+
+#: ../src/yumex.glade.h:5
+msgid "2"
+msgstr "2"
+
+#: ../src/yumex.glade.h:6
+msgid "3"
+msgstr "3"
+
+#: ../src/yumex.glade.h:7
+msgid "4"
+msgstr "4"
+
+#: ../src/yumex.glade.h:8
+msgid "<b>(C) 2005  - Tim Lauridsen</b>"
+msgstr "<b>(C) 2005  - Tim Lauridsen</b>"
+
+#: ../src/yumex.glade.h:9
+msgid "<b>Behavior</b>"
+msgstr "<b>Käytös</b>"
+
+#: ../src/yumex.glade.h:10
+msgid "<b>Category</b>"
+msgstr "<b>Luokka</b>"
+
+#: ../src/yumex.glade.h:11
+msgid "<b>Flags</b>"
+msgstr "<b>Liput</b>"
+
+#: ../src/yumex.glade.h:12
+msgid "<b>Fonts </b>"
+msgstr "<b>Fontit </b>"
+
+#: ../src/yumex.glade.h:13
+msgid "<b>GPG Key</b>"
+msgstr "<b>GPG-avain</b>"
+
+#: ../src/yumex.glade.h:14
+msgid "<b>Packages</b>"
+msgstr "<b>Paketit</b>"
+
+#: ../src/yumex.glade.h:15
+msgid "<b>Quick add to queue</b>"
+msgstr "<b>Nopea jonoon lisäys</b>"
+
+#: ../src/yumex.glade.h:16
+msgid "<b>Repository  Exclude Filters</b>"
+msgstr "<b>Varastojen poissulkusuotimet</b>"
+
+#: ../src/yumex.glade.h:17
+msgid "<b>SUBACTION</b>\n"
+msgstr "<b>ALATAPAHTUMA</b>\n"
+
+#: ../src/yumex.glade.h:19
+msgid "<b>Select Profile</b>"
+msgstr "<b>Valitse profiili</b>"
+
+#: ../src/yumex.glade.h:20
+msgid "<b>Total Download Size</b>"
+msgstr "<b>Latauksen koko yhteensä</b>"
+
+#: ../src/yumex.glade.h:21
+msgid "<b>URL Type</b>"
+msgstr "<b>URL-tyyppi</b>"
+
+#: ../src/yumex.glade.h:22
+msgid "<b>URLs</b>"
+msgstr "<b>URL:t</b>"
+
+#: ../src/yumex.glade.h:23
+msgid "<span size=\"large\"><b>Action</b></span>\n"
+msgstr "<span size=\"large\"><b>Tapahtuma</b></span>\n"
+
+#: ../src/yumex.glade.h:25
+msgid "<span size=\"xx-large\" color=\"black\">Group View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Ryhmänäkymä</span>"
+
+#: ../src/yumex.glade.h:26
+msgid "<span size=\"xx-large\" color=\"black\">Output View</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Tulostenäkymä</span>"
+
+#: ../src/yumex.glade.h:27
+msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Pakettijono</span>"
+
+#: ../src/yumex.glade.h:28
+msgid "<span size=\"xx-large\" color=\"black\">Select Repositories</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Valitse varastoja</span>"
+
+#: ../src/yumex.glade.h:29
+msgid "About"
+msgstr "Tietoja"
+
+#: ../src/yumex.glade.h:31
+msgid "All"
+msgstr "Kaikki"
+
+#: ../src/yumex.glade.h:33
+msgid "Available"
+msgstr "Saatavissa"
+
+#: ../src/yumex.glade.h:34
+msgid "C_hangelog"
+msgstr "Muutosloki"
+
+#: ../src/yumex.glade.h:35
+msgid "Console"
+msgstr "Konsoli"
+
+#: ../src/yumex.glade.h:36
+msgid "Credits"
+msgstr "Tekijät"
+
+#: ../src/yumex.glade.h:37
+msgid "Debug _mode"
+msgstr "_Virheenkorjaustila"
+
+#: ../src/yumex.glade.h:38
+msgid "Debug mode"
+msgstr "Virheenkorjaustila"
+
+#: ../src/yumex.glade.h:39
+msgid "Disable 'Yum Extender Launcher'"
+msgstr "Poista 'Yum Extender:n käynnistin' käytöstä"
+
+#: ../src/yumex.glade.h:40
+msgid "Disable Plugins"
+msgstr "Poista liitännäiset käytöstä"
+
+#: ../src/yumex.glade.h:41
+msgid "ETA"
+msgstr "ETA"
+
+#: ../src/yumex.glade.h:42
+msgid "Edit Repository"
+msgstr "Muokkaa varastoa"
+
+#: ../src/yumex.glade.h:44
+msgid "Excludes"
+msgstr "Pois suljetut"
+
+#: ../src/yumex.glade.h:45
+msgid "Extra"
+msgstr "Extra"
+
+#: ../src/yumex.glade.h:46
+msgid "Fi_les"
+msgstr "Tie_dostot"
+
+#: ../src/yumex.glade.h:47
+msgid "GUI"
+msgstr "GUI"
+
+#: ../src/yumex.glade.h:48
+msgid "I_nformation"
+msgstr "Tietoja"
+
+#: ../src/yumex.glade.h:50
+msgid "Load Yum Metadata"
+msgstr "Lataa Yum:n metadata"
+
+#: ../src/yumex.glade.h:51
+msgid "Package Descriptions"
+msgstr "Pakettikuvaukset"
+
+#: ../src/yumex.glade.h:52
+msgid "Plugins"
+msgstr "Liitännäiset"
+
+#: ../src/yumex.glade.h:53
+msgid "Preferences"
+msgstr "Asetukset"
+
+#: ../src/yumex.glade.h:54
+msgid "Process Queue Confirmation"
+msgstr "Jonon käsittelyn varmistus"
+
+#: ../src/yumex.glade.h:55
+msgid "Repos"
+msgstr "Varastot"
+
+#: ../src/yumex.glade.h:56
+msgid "Search Options"
+msgstr "Hakuasetukset"
+
+#: ../src/yumex.glade.h:57
+msgid "Update Only"
+msgstr "Vain päivitys"
+
+#: ../src/yumex.glade.h:58
+msgid "Updates"
+msgstr "Päivitykset"
+
+#: ../src/yumex.glade.h:59
+msgid "Use _proxy"
+msgstr "_Käytä välityspalvelinta"
+
+#: ../src/yumex.glade.h:60
+msgid "Yum Extender"
+msgstr "Yum Extender"
+
+#: ../src/yumex.glade.h:61
+msgid "Yum Extender Launcher"
+msgstr "Yum Extender:n käynnistin"
+
+#: ../src/yumex.glade.h:62
+msgid "Yum Extender Preferences"
+msgstr "Yum Extender:n asetukset"
+
+#: ../src/yumex.glade.h:63
+msgid "_Add All"
+msgstr "_Lisää kaikki"
+
+#: ../src/yumex.glade.h:64
+msgid "_Auto refresh on start"
+msgstr "_Päivitä automaattisesti käynnistettäessä"
+
+#: ../src/yumex.glade.h:65
+msgid "_Base url "
+msgstr "_Perus URL "
+
+#: ../src/yumex.glade.h:66
+msgid "_Description"
+msgstr "Kuvaus"
+
+#: ../src/yumex.glade.h:67
+msgid "_Deselect All"
+msgstr "Poista _kaikkien valinta"
+
+#: ../src/yumex.glade.h:68
+msgid "_Edit"
+msgstr "_Muokkaa"
+
+#: ../src/yumex.glade.h:69
+msgid "_Enabled"
+msgstr "_Käytössä"
+
+#: ../src/yumex.glade.h:70
+msgid "_File"
+msgstr "T_iedosto"
+
+#: ../src/yumex.glade.h:71
+msgid "_GPG check"
+msgstr "_GPG-tarkistus"
+
+#: ../src/yumex.glade.h:72
+msgid "_Help"
+msgstr "O_hje"
+
+#: ../src/yumex.glade.h:73
+msgid "_Mirror list"
+msgstr "_Palvelinlista"
+
+#: ../src/yumex.glade.h:74
+msgid "_Name:"
+msgstr "_Nimi:"
+
+#: ../src/yumex.glade.h:75
+msgid "_Other"
+msgstr "Muuta"
+
+#: ../src/yumex.glade.h:76
+msgid "_Process Queue"
+msgstr "_Käsittele jono"
+
+#: ../src/yumex.glade.h:77
+msgid "_Profiles"
+msgstr "Pro_fiilit"
+
+#: ../src/yumex.glade.h:78
+msgid "_Remove All"
+msgstr "_Poista kaikki"
+
+#: ../src/yumex.glade.h:79
+msgid "_Skip"
+msgstr "_Ohita"
+
+#: ../src/yumex.glade.h:80
+msgid "_Tag:"
+msgstr "_Lyhytnimi:"
+
+#: ../src/yumex.glade.h:81
+msgid "_Tools"
+msgstr "T_yökalut"
+
+#: ../src/yumex.glade.h:82
+msgid "_Yum Clean All"
+msgstr "_Yum siivoa kaikki"
+
+#: ../src/yumex.glade.h:83
+msgid "_Yum excludes:"
+msgstr "_Yum:n pois suljetut:"
+
+#: ../src/yumex.glade.h:84
+msgid "_Yum plugins:"
+msgstr "_Yum:n liitännäiset"
+
+#: ../src/yumex.glade.h:85
+msgid "dialog1"
+msgstr "ikkuna1"
+
+#: ../src/yumex.glade.h:86
+msgid "xxxx"
+msgstr "xxxx"
+
+#, fuzzy
+#~ msgid "Save"
+#~ msgstr "_Tallenna"
+
+#~ msgid "_About"
+#~ msgstr "_Tietoja"
+
+#~ msgid "_Delete from Queue"
+#~ msgstr "_Poista jonosta"
+
+#~ msgid "_New"
+#~ msgstr "_Uusi"
+
+#~ msgid "_Quit"
+#~ msgstr "_Lopeta"
+
+#~ msgid "_Save"
+#~ msgstr "_Tallenna"
+
+#, fuzzy
+#~ msgid ""
+#~ "Installed version: %s\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Asennettu versio: %s (%s) \n"
+#~ "\n"
+
+#, fuzzy
+#~ msgid "Quiting"
+#~ msgstr "päivitetään"
+
+#~ msgid "Process (_SafeMode)"
+#~ msgstr "_Käsittele (varma tila)"
+
+#~ msgid "_Reset Repository Cache"
+#~ msgstr "_Nollaa varastovälimuisti"
+
+#~ msgid "(yumex) Erased: %s"
+#~ msgstr "(yumex) Poistettu: %s"
+
+#~ msgid "<b>Mirror Detection</b>"
+#~ msgstr "<b>Palvelinten tunnistus</b>"
+
+#~ msgid "Install Repository"
+#~ msgstr "Asenna varasto"
+
+#~ msgid "_Best"
+#~ msgstr "P_aras"
+
+#~ msgid "_Default"
+#~ msgstr "O_letus"
+
+#~ msgid "_Enable 'Process Queue (SafeMode)'"
+#~ msgstr "O_ta käyttöön jononkäsittelyn varma tila"
+
+#~ msgid "_Fastest"
+#~ msgstr "Nop_ein"
+
+#~ msgid "_Show file lists & changelog (longer metadata load time)"
+#~ msgstr "_Näytä tiedostolistat ja muutosloki (pidempi metadatan latausaika)"
+
+#, fuzzy
+#~ msgid "_Packages"
+#~ msgstr "Paketit"
+
+#~ msgid "_Queue"
+#~ msgstr "_Jono"
+
+#~ msgid "Filte_r:"
+#~ msgstr "_Suodatin:"
+
+#~ msgid "Sear_ch"
+#~ msgstr "_Etsi"
+
+#~ msgid "_Select All"
+#~ msgstr "_Valitse kaikki"
+
+#~ msgid "_Delete"
+#~ msgstr "P_oista"
+
+#~ msgid " Do you want to delete the <b>%s</b> repository?"
+#~ msgstr " Haluatko poistaa <b>%s</b> varaston?"
+
+#~ msgid "Delete Repository"
+#~ msgstr "Poista varasto"
+
+#~ msgid "_Add to Queue"
+#~ msgstr "_Lisää jonoon"
+
+#~ msgid "added remove of %s to Queue"
+#~ msgstr "lisätty %s:n poisto jonoon"
+
+#~ msgid "added install of %s to Queue"
+#~ msgstr "lisätty %s:n asennus jonoon"
+
+#~ msgid "%i packages added to queue for removal"
+#~ msgstr "%i paketti(a) lisätty jonoon poistoa varten"
+
+#~ msgid "package %s was not found"
+#~ msgstr "pakettia %s ei löytynyt"
+
+#~ msgid "%i packages added to queue for installation"
+#~ msgstr "%i paketti(a) lisätty jonoon asennusta varten"
+
+#~ msgid "Profile %s not found"
+#~ msgstr "Profiilia %s ei löytynyt"
+
+#~ msgid "No profile selected"
+#~ msgstr "Profiilia ei valittu"
+
+#~ msgid "_Profile name:"
+#~ msgstr "_Profiilin nimi:"
+
+#~ msgid "_Update"
+#~ msgstr "P_äivitä"
+
+#~ msgid "_Install"
+#~ msgstr "_Asenna"
+
+#~ msgid "Updating %s view, populate view with data "
+#~ msgstr "Päivitetään %s näkymää, täytetään näkymää datalla"
+
+#~ msgid "Using http_proxy=%s"
+#~ msgstr "Käytetään välityspalvelinta: %s"
+
+#~ msgid "Initializing Repositories"
+#~ msgstr "Alustetaan varastoja"
+
+#~ msgid "Repository initialization completed in %.2f seconds"
+#~ msgstr "Varastojen alustus suoritettu %.2f sekunnissa"
+
+#~ msgid "Error in loading repository data"
+#~ msgstr "Virhe luettaessa varastodataa"
+
+#~ msgid "Mirrordetection : %s"
+#~ msgstr "Palvelinten tunnistus: %s"
+
+#~ msgid "Yum Version : %s (%s)"
+#~ msgstr "Yum:n versio: %s (%s)"
+
+#~ msgid "Setup Yum : Plugins are disabled"
+#~ msgstr "Asetetaan Yum: Liitännäiset pois käytöstä"
+
+#~ msgid "Using yum cache"
+#~ msgstr "Käytetään Yum:n välimuistia"
+
+#~ msgid "Loading Repositories Data : Init. %s repository"
+#~ msgstr "Luetaan varastodataa: Alustetaan varastoa: %s"
+
+#~ msgid "Reading mirror URL's from yumex cache"
+#~ msgstr "Luetaan palvelinten osoitteita yumex:n välimuistista"
+
+#~ msgid "Determining %s mirrors for %s"
+#~ msgstr "Määritetään palvelimia: %s varastolle: %s"
+
+#~ msgid "--> Mirrors Detected (Top 3)"
+#~ msgstr "--> Palvelimet määritetty (Top 3)"
+
+#~ msgid "Using default mirror detection"
+#~ msgstr "Käytetään oletus palvelinten tunnistusta"
+
+#~ msgid "Loading Repositories Data"
+#~ msgstr "Luetaan varastodataa"
+
+#~ msgid "Setting Up Package Sack : Filelists"
+#~ msgstr "Asetetaan pakettikassia: Tiedostolistat"
+
+#~ msgid "Setting Up Package Sack : Changelogs"
+#~ msgstr "Asetetaan pakettikassia: Muutosloki"
+
+#~ msgid "Loading Repository Group Data"
+#~ msgstr "Luetaan varastoryhmädataa"
+
+#~ msgid "Loading Repositories Data completed"
+#~ msgstr "Varastodata luettu"
+
+#~ msgid "Writing Mirrorcache to disk"
+#~ msgstr "Kirjoitetaan palvelinvälimuisti levylle"
+
+#~ msgid "--> Repositories saved: %s"
+#~ msgstr "--> Varastot tallennettu: %s"
+
+#~ msgid "Enable/Disable Repositories"
+#~ msgstr "Otetaan käyttöön/Poistetaan varastoja käytöstä"
+
+#~ msgid "Building Package Lists : Updates"
+#~ msgstr "Rakennetaan pakettilistoja: Päivitykset"
+
+#~ msgid "Building Package Lists : %i Updates found"
+#~ msgstr "Rakennetaan pakettilistoja: %i päivitystä löydetty"
+
+#~ msgid "Building Package Lists : Installed"
+#~ msgstr "Rakennetaan pakettilistoja: Asennetut"
+
+#~ msgid "Building Package Lists : %i Installed packages found"
+#~ msgstr "Rakennetaan pakettilistoja: %i asennettua pakettia löydetty"
+
+#~ msgid "Building Package Lists : Available"
+#~ msgstr "Rakennetaan pakettilistoja: Saatavissa"
+
+#~ msgid "Building Package Lists : %i Available packages found"
+#~ msgstr "Rakennetaan pakettilistoja: %i saatavissa olevaa pakettia löydetty"
+
+#~ msgid "Retrieving GPG key from %s"
+#~ msgstr "Haetaan GPG-avain: %s"
+
+#~ msgid "GPG key retrieval failed: "
+#~ msgstr "GPG-avaimen haku epäonnistui: "
+
+#~ msgid "GPG key parsing failed: "
+#~ msgstr "GPG-avaimen jäsennys epäonnistui: "
+
+#~ msgid "GPG key at %s (0x%s) is already installed"
+#~ msgstr "GPG-avain: %s (0x%s) on jo asennettu"
+
+#~ msgid "Importing GPG key 0x%s \"%s\""
+#~ msgstr "Tuodaan GPG-avain: 0x%s \"%s\""
+
+#~ msgid "Key import failed (code %d)"
+#~ msgstr "Avaimen tuonti epäonnistui (koodi %d)"
+
+#~ msgid "Key imported successfully"
+#~ msgstr "Avaimen tuonti onnistui"
+
+#~ msgid ""
+#~ "The GPG keys listed for the \"%s\" repository are already installed but "
+#~ "they are not correct for this package.\n"
+#~ "Check that the correct key URLs are configured for this repository."
+#~ msgstr ""
+#~ "Varastolle \"%s\" listatut GPG-avaimet ovat jo asennettu, mutta ne ovat "
+#~ "virheellisiä tälle paketille.\n"
+#~ "Tarkista, että oikeat avain-URL:t on asetettu tälle varastolle."
+
+#~ msgid "Import of key(s) didn't help, wrong key(s)?"
+#~ msgstr "Avaimien tuonti ei auttanut, väärät avaimet?"
+
+#~ msgid "Warning: Group %s does not exist."
+#~ msgstr "Varoitus: ryhmää %s ei ole olemassa."
+
+#~ msgid "No packages in any requested group available to install or update"
+#~ msgstr ""
+#~ "Missään pyydetyssä ryhmässä ei ole saatavilla paketteja asennettavaksi "
+#~ "tai päivitettäväksi"
+
+#~ msgid "No group named %s exists"
+#~ msgstr "Ryhmää nimeltä %s ei ole olemassa"
+
+#~ msgid "No packages to remove from groups"
+#~ msgstr "Ei paketteja poistettavaksi ryhmistä"
+
+#~ msgid "%d Package(s) to remove"
+#~ msgstr "%d paketti(a) poistetaan"
+
+#~ msgid "%s was not deleted"
+#~ msgstr "%s ei poistettu"
+
+#~ msgid "Preparing for install Groups"
+#~ msgstr "Valmistellaan ryhmien asennusta"
+
+#~ msgid "Installing Groups"
+#~ msgstr "Asennetaan ryhmiä"
+
+#~ msgid "Error in preparation for package installing"
+#~ msgstr "Virhe valmisteltaessa pakettien asennusta"
+
+#~ msgid "Install"
+#~ msgstr "Asenna"
+
+#~ msgid "Preparing for Removing Groups"
+#~ msgstr "Valmistellaan ryhmien poistoa"
+
+#~ msgid "Removeing Groups"
+#~ msgstr "Poistetaan ryhmiä"
+
+#~ msgid "Error in preparation for package removing"
+#~ msgstr "Virhe valmisteltaessa pakettien poistoa"
+
+#~ msgid "Remove"
+#~ msgstr "Poista"
+
+#~ msgid ""
+#~ "Enabled Repositories:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Otettu käyttöön varastot:\n"
+#~ "%s"
+
+#~ msgid "default"
+#~ msgstr "oletus"
+
+#~ msgid "fastest"
+#~ msgstr "nopein"
+
+#~ msgid "best"
+#~ msgstr "paras"
+
+#~ msgid "removal"
+#~ msgstr "poisto"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Install Packages</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Asenna paketteja</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Remove Packages</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Poista paketteja</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Packages by category</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Paketit luokittain</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Update Packages</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Päivitä paketteja</span>"
+
+#~ msgid ""
+#~ "\n"
+#~ "You are using the <b>--forcei386</b> option which makes yumex\n"
+#~ "to use i386 repositories instead of x86_64. Use it with\n"
+#~ "<b>extreme caution</b> because packages installed in this\n"
+#~ "mode <b>will not be upgraded</b> during normal operation\n"
+#~ "of yumex, yum or other yum-based tools. This may lead to\n"
+#~ "<b>package conflicts</b> which <b>could</b> only be resolved\n"
+#~ "by running yumex with this option again and updating i386\n"
+#~ "packages to their newest versions.\n"
+#~ "<b>***DO NOT USE THIS OPTION*** IF YOU WANT AVOID PROBLEMS IN THE FUTURE</"
+#~ "b>\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Käytät <b>--forcei386</b> valitsinta, joka pakottaa yumex:n\n"
+#~ "käyttämään i386-varastoja x86_64:n sijaan. Käytä sitä\n"
+#~ "<b>äärimmäisen varovaisesti</b>, koska tässä tilassa asennetut\n"
+#~ "paketit <b>eivät päivity</b> normaalissa yumex:n, Yum:n tai muun\n"
+#~ "yum-pohjaisen työkalun käytössä. Tämä voi johtaa <b>paketti\n"
+#~ "ristiriitoihin</b>, jotka <b>voidaan</b> ratkaista vain ajamalla\n"
+#~ "yumex uudelleen tällä valitsimella ja päivittämällä i386-paketit\n"
+#~ "niiden uusimpiin versiohin.\n"
+#~ "<b>***ÄLÄ KÄYTÄ TÄTÄ VALITSINTA*** JOS HALUAT VÄLTTYÄ ONGELMILTA "
+#~ "TULAVAISUUDESSA</b>\n"
+
+#~ msgid "New Repository"
+#~ msgstr "Uusi varasto"
+
+#~ msgid "_New repository tag name:"
+#~ msgstr "_Uuden varaston lyhytnimi:"
+
+#~ msgid "Save Changes"
+#~ msgstr "Tallenna muutokset"
+
+#~ msgid "<span size='x-large'> Packages to Process</span>"
+#~ msgstr "<span size='x-large'> Käsiteltävät paketit</span>"
+
+#~ msgid "%s view is populated"
+#~ msgstr "%s-näkymä on täytetty"
+
+#~ msgid "Categories / Groups"
+#~ msgstr "Luokat / Ryhmät"
+
+#~ msgid "Description"
+#~ msgstr "Kuvaus"
+
+#~ msgid "All Groups"
+#~ msgstr "Kaikki ryhmät"
+
+#~ msgid "A_dd to Queue"
+#~ msgstr "_Lisää jonoon"
+
+#~ msgid "Test"
+#~ msgstr "Kokeile"
+
+#~ msgid "_Add & Process"
+#~ msgstr "Li_sää & käsittele"
+
+#~ msgid "Cannot open/read repomd.xml file for repository: %s"
+#~ msgstr "Ei voitu avata/lukea romp.xml tiedostoa varastolle: %s"
+
+#~ msgid "Loading Repositories Data : Populate Package Sack for %s"
+#~ msgstr "Luetaan varastodataa: Täytetään pakettikassia varastolle: %s"
+
+#~ msgid "Cannot make directory for logfile %s"
+#~ msgstr "Ei voi luoda hakemistoa lokitiedostolle %s"
+
+#~ msgid "Cannot open logfile %s"
+#~ msgstr "Ei voi avata lokitiedostoa %s"
+
+#~ msgid "Cleanup Download Packages"
+#~ msgstr "Siivotaan ladattuja paketteja"
+
+#~ msgid "Add to _Queue"
+#~ msgstr "_Lisää jonoon"
+
+#~ msgid "_Delete downloaded packages after install/update"
+#~ msgstr "P_oista ladatut paketit asennuksen/päivityksen jälkeen"
+
+#~ msgid "Forcing i386 architecture for $basearch variable"
+#~ msgstr "Pakotetaan i386-arkkitehtuuri $basearch-muuttujalle"
+
+#~ msgid "Using system's $basearch variable"
+#~ msgstr "Käytetään järjestelmän $basearch-muuttujaa"
+
+#~ msgid "*"
+#~ msgstr "*"
+
+#~ msgid "F_orce i386 architecture"
+#~ msgstr "Pakota i386-arkkitehtuuri"
+
+#~ msgid "Mandatory Packages"
+#~ msgstr "Vaaditut paketit"
+
+#~ msgid "Default Packages"
+#~ msgstr "Oletuspaketit"
+
+#~ msgid "Group Information"
+#~ msgstr "Tietoja ryhmästä"
+
+#~ msgid "<b>Preferences</b>"
+#~ msgstr "<b>Asetukset</b>"
+
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "Files:\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "Tiedostot:\n"
+
+#~ msgid ""
+#~ "Do you want to add these repositories \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Haluatko lisätä nämä varastot?\n"
+#~ "\n"
+
+#~ msgid "5"
+#~ msgstr "5"
+
+#~ msgid "Installed Groups"
+#~ msgstr "Asennetut ryhmät"
+
+#~ msgid "Setting up Install Process"
+#~ msgstr "Asetetaan asennus prosessia"
+
+#~ msgid "Setting up Remove Process"
+#~ msgstr "Asetetaan poisto prosessia"
+
+#~ msgid "Installing Packages"
+#~ msgstr "Asennetaan paketteja"
+
+#~ msgid "Error in preparation for package installation"
+#~ msgstr "Virhe valmisteltaessa pakettien asennusta"
+
+#~ msgid "Error in preparation for package removal"
+#~ msgstr "Virhe valmisteltaessa pakettien poistoa"
+
+#~ msgid "Error in preparation for package updating"
+#~ msgstr "Virhe valmisteltaessa pakettien päivitystä"
+
+#~ msgid "%s completed ok"
+#~ msgstr "%s-tapahtuma onnistui"
+
+#~ msgid "Installed / Avaliable Groups"
+#~ msgstr "Asennetut/Saatavissa olevat ryhmät"
+
+#~ msgid "_Exclude List"
+#~ msgstr "_Lista pois suljetuista"
+
+#~ msgid "_Update Packages"
+#~ msgstr "P_äivitä paketteja"
+
+#~ msgid "Loading Repositories Data : Init. %s repository (Cached)"
+#~ msgstr "Luetaan varastodataa: Alustetaan varastoa: %s (välimuistissa)"
+
+#~ msgid "Default Metapkgs"
+#~ msgstr "Oletus metapaketit"
+
+#~ msgid "Optional Metapkgs"
+#~ msgstr "Valinnaiset metapaketit"
+
+#~ msgid "Could not detect Fastest Mirrors using default"
+#~ msgstr ""
+#~ "Nopeimpien palvelimien tunnistus epäonnistui, käytetään oletuspalvelimia"
