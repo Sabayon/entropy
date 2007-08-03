@@ -346,6 +346,7 @@ etpConst = {
     'filesystemdirs': ['/bin','/boot','/emul','/etc','/lib','/lib32','/lib64','/opt','/sbin','/usr','/var'], # directory of the filesystem
     'officialrepositoryname': "sabayonlinux.org", # our official repository name
     'packagedbdir': "/db", # directory of the database file in the .tbz2 package
+    'packagedbfile': "/data.db", # database file in the directory above
     'packagecontentdir': "/package" # directory of the package file in the .tbz2 package
  }
 

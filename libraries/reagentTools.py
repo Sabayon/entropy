@@ -142,7 +142,7 @@ def enzyme(options):
 	    os.makedirs(tdir)
 	    os.mkdir(tdir+etpConst['packagecontentdir']) # content directory
 	    os.mkdir(tdir+etpConst['packagedbdir']) # content directory
-	    dbpath = tdir+etpConst['packagedbdir']+"/data.db"
+	    dbpath = tdir+etpConst['packagedbdir']+etpConst['packagedbfile']
 	    # fill /package
 	    spawnCommand("mv "+etpConst['packagessuploaddir']+"/"+newFileName+" "+tdir+etpConst['packagecontentdir']+"/")
 	    # create db
@@ -161,7 +161,6 @@ def enzyme(options):
 	    hashFilePath = createHashFile(etpConst['packagessuploaddir']+"/"+newFileName)
 	    # remove tdir
 	    spawnCommand("rm -rf "+tdir)
-	    
 	    print_info(yellow(" * ")+red("Database injection complete for ")+newFileName)
 	    
 	else:
@@ -214,6 +213,10 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
     etpData['name'] = pkgname
     etpData['version'] = pkgver
 
+    print_info(yellow(" * ")+red("Getting package md5..."),back = True)
+    # .tbz2 md5
+    etpData['digest'] = md5sum(tbz2File)
+
     if (structuredLayout):
 	# extract tbz2
 	structuredPackageDir = etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version']+"-structured"
@@ -223,10 +226,6 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
 	uncompressTarBz2(tbz2File,structuredPackageDir)
 	tbz2filename = os.path.basename(tbz2File)
 	tbz2File = structuredPackageDir+etpConst['packagecontentdir']+"/"+tbz2filename
-
-    print_info(yellow(" * ")+red("Getting package md5..."),back = True)
-    # .tbz2 md5
-    etpData['digest'] = md5sum(tbz2File)
 
     print_info(yellow(" * ")+red("Getting package mtime..."),back = True)
     # .tbz2 md5

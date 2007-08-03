@@ -88,11 +88,11 @@ def database(options):
 	    currCounter += 1
 	    print_info(green("  (")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."))
 	    etpData = reagentTools.extractPkgData(package = etpConst['packagesbindir']+"/"+pkg, structuredLayout = True)
-		
 	    # remove shait
-	    entropyTools.spawnCommand("rm -rf "+etpConst['packagestmpdir']+"/"+pkg)
+	    entropyTools.spawnCommand("rm -rf "+etpConst['packagestmpdir']+"/"+pkg+"*")
 	    # fill the db entry
-	    dbconn.addPackage(etpData)
+	    idpk, revision, etpDataUpdated, accepted = dbconn.addPackage(etpData)
+	    
 	    dbconn.commitChanges()
 	
 	dbconn.closeDB()
