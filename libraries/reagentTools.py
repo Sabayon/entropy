@@ -146,7 +146,7 @@ def enzyme(options):
 	    # fill /package
 	    spawnCommand("mv "+etpConst['packagessuploaddir']+"/"+newFileName+" "+tdir+etpConst['packagecontentdir']+"/")
 	    # create db
-	    pkgDbconn = etpDatabase(readOnly = False, noUpload = True, dbFile = dbpath, clientDatabase = True)
+	    pkgDbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True, dbFile = dbpath, clientDatabase = True)
 	    pkgDbconn.initializeDatabase()
 	    data = dbconn.getPackageData(idpk)
 	    # inject
