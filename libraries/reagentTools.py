@@ -149,9 +149,9 @@ def enzyme(options):
 	    pkgDbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True, dbFile = dbpath, clientDatabase = True)
 	    pkgDbconn.initializeDatabase()
 	    data = dbconn.getPackageData(idpk)
-	    print data
+	    rev = dbconn.retrieveRevision(idpk)
 	    # inject
-	    pkgDbconn.addPackage(data, revision = data['revision'], wantedBranch = data['branch'], addBranch = False)
+	    pkgDbconn.addPackage(data, revision = rev, wantedBranch = data['branch'], addBranch = False)
 	    pkgDbconn.closeDB()
 	    # recompose the new file
 	    compressTarBz2(etpConst['packagessuploaddir']+"/"+newFileName,tdir+"/")
