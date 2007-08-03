@@ -149,6 +149,7 @@ def enzyme(options):
 	    pkgDbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True, dbFile = dbpath, clientDatabase = True)
 	    pkgDbconn.initializeDatabase()
 	    data = dbconn.getPackageData(idpk)
+	    print data
 	    # inject
 	    pkgDbconn.addPackage(data, revision = data['revision'], wantedBranch = data['branch'], addBranch = False)
 	    pkgDbconn.closeDB()
