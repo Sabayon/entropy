@@ -87,7 +87,7 @@ def database(options):
 	    print_info(green(" * ")+red("Analyzing: ")+bold(pkg), back = True)
 	    currCounter += 1
 	    print_info(green("  (")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."))
-	    etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+pkg)
+	    etpData = reagentTools.extractPkgData(package = etpConst['packagesbindir']+"/"+pkg, structuredLayout = True)
 		
 	    # remove shait
 	    entropyTools.spawnCommand("rm -rf "+etpConst['packagestmpdir']+"/"+pkg)

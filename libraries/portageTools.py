@@ -677,29 +677,32 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
     useFlagQuestion = False
     dependencies = ""
     conflicts = ""
+    useflags = useflags.split()
     for atom in roughDependencies:
 
 	if atom.endswith("?"):
 	    # we need to see if that useflag is enabled
 	    useFlag = atom.split("?")[0]
-	    useFlagQuestion = True
-	    for i in useflags.split():
-		if useFlag.startswith("!"):
-		    checkFlag = "-"+useFlag[1:]
-		    if (i == checkFlag):
-			useMatch = True
-			break
+	    useFlagQuestion = True # V
+	    if useFlag.startswith("!"):
+		checkFlag = "-"+useFlag[1:]
+		try:
+		    useflags.index(checkFlag)
+		    useMatch = True
+		except:
 		    useMatch = False
-		else:
-		    if (i == useFlag):
-		        useMatch = True
-		        break
+	    else:
+		try:
+		    useflags.index(useFlag)
+		    useMatch = True # V
+		except:
 		    useMatch = False
+		
 
         if atom.startswith("("):
 	    if (openOr):
-		openParenthesisFromOr += 1
-	    openParenthesis += 1 # 1 | 2 | 3
+		openParenthesisFromOr += 1 # 1
+	    openParenthesis += 1 # 1 | 2
 
         if atom.startswith(")"):
 	    if (openOr):
@@ -722,7 +725,7 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
         if atom.startswith("||"):
 	    openOr = True # V
 	
-	if atom.find("/") != -1 and (not atom.startswith("!")) and (not atom.endswith("?")):
+	if (atom.find("/") != -1) and (not atom.startswith("!")) and (not atom.endswith("?")):
 	    # it's a package name <pkgcat>/<pkgname>-???
 	    if ((useFlagQuestion) and (useMatch)) or ((not useFlagQuestion) and (not useMatch)):
 	        # check if there's an OR
@@ -734,6 +737,7 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 		    else:
 		        dependencies += dbOR
                 else:
+		    dependencies += atom
 		    dependencies += " "
 
         if atom.startswith("!") and (not atom.endswith("?")):

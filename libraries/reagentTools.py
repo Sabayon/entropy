@@ -175,7 +175,7 @@ def enzyme(options):
     print_info(green(" * ")+red("Statistics: ")+blue("Entries created/updated: ")+bold(str(etpCreated))+yellow(" - ")+darkblue("Entries discarded: ")+bold(str(etpNotCreated)))
 
 # This function extracts all the info from a .tbz2 file and returns them
-def extractPkgData(package, etpBranch = "unstable"):
+def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
 
     reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractPkgData: called -> package: "+str(package))
 
@@ -213,6 +213,16 @@ def extractPkgData(package, etpBranch = "unstable"):
     # Fill Package name and version
     etpData['name'] = pkgname
     etpData['version'] = pkgver
+
+    if (structuredLayout):
+	# extract tbz2
+	structuredPackageDir = etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version']+"-structured"
+	if os.path.isdir(structuredPackageDir):
+	    spawnCommand("rm -rf "+structuredPackageDir)
+	os.makedirs(structuredPackageDir)
+	uncompressTarBz2(tbz2File,structuredPackageDir)
+	tbz2filename = os.path.basename(tbz2File)
+	tbz2File = structuredPackageDir+etpConst['packagecontentdir']+"/"+tbz2filename
 
     print_info(yellow(" * ")+red("Getting package md5..."),back = True)
     # .tbz2 md5
@@ -582,6 +592,9 @@ def extractPkgData(package, etpBranch = "unstable"):
     
     # removing temporary directory
     os.system("rm -rf "+tbz2TmpDir)
+    if (structuredLayout):
+	if os.path.isdir(structuredPackageDir):
+	    spawnCommand("rm -rf "+structuredPackageDir)
 
     print_info(yellow(" * ")+red("Done"),back = True)
     return etpData
