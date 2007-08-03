@@ -1060,6 +1060,30 @@ def checkNeededDownload(filepath,checksum = None):
 	return -1
 
 
+'''
+   @description: download a package into etpConst['packagesbindir'] and check for digest if digest is not False
+   @input package: url -> HTTP/FTP url, digest -> md5 hash of the file
+   @output: -1 = download error (cannot find the file), -2 = digest error, 0 = all fine
+'''
+def fetchFile(url,digest = False):
+    # remove old
+    filename = os.path.basename(url)
+    filepath = etpConst['packagesbindir']+"/"+filename
+    if os.path.isfile(filepath):
+	os.system("rm -f "+filepath)
+    # now fetch the new one
+    try:
+        fetchChecksum = downloadData(url,filepath)
+    except:
+	return -1
+    if (digest != False):
+	if (fetchChecksum != digest):
+	    # not properly downloaded
+	    return -2
+	else:
+	    return 0
+    return 0
+
 ########################################################
 ####
 ##   Database Tools
@@ -1067,7 +1091,7 @@ def checkNeededDownload(filepath,checksum = None):
 
 def package(options):
 
-    if len(options) < 2:
+    if len(options) < 1:
 	return 0
 
     # Options available for all the packages submodules
@@ -1075,6 +1099,7 @@ def package(options):
     equoRequestAsk = False
     equoRequestPretend = False
     equoRequestPackagesCheck = False
+    equoRequestVerbose = False
     rc = 0
     _myopts = []
     for opt in myopts:
@@ -1082,6 +1107,8 @@ def package(options):
 	    equoRequestAsk = True
 	elif (opt == "--pretend"):
 	    equoRequestPretend = True
+	elif (opt == "--verbose"):
+	    equoRequestVerbose = True
 	else:
 	    _myopts.append(opt)
     myopts = _myopts
@@ -1092,7 +1119,10 @@ def package(options):
 
     if (options[0] == "install"):
 	if len(myopts) > 0:
-	    rc,status = installPackages(myopts)
+	    rc,status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose)
+	else:
+	    print_error(red(" Nothing to do."))
+	    rc = 127
 
     return rc
 
@@ -1334,11 +1364,10 @@ def openClientDatabase():
 ##   Actions Handling
 #
 
-# FIXME: must handle multiple results from multiple repositories
-def installPackages(packages, autoDrive = False):
+def installPackages(packages, ask = False, pretend = False, verbose = False):
 
     # check if I am root
-    if (not checkRoot()):
+    if (not checkRoot()) and (not pretend):
 	print_error(red("\t You must run this function as root."))
 	return 1,-1
     
@@ -1362,79 +1391,78 @@ def installPackages(packages, autoDrive = False):
 	print_error(red("No packages found"))
 	return 127,-1
 
-    # now print the selected packages
-    print_info(red(" @@ ")+blue("These are the chosen packages:"))
-    totalatoms = len(foundAtoms)
-    atomscounter = 0
-    for atomInfo in foundAtoms:
-	atomscounter += 1
-	idpackage = atomInfo[0]
-	reponame = atomInfo[1]
-	# open database
-	dbconn = openRepositoryDatabase(reponame)
+    if (ask or pretend or verbose):
+        # now print the selected packages
+        print_info(red(" @@ ")+blue("These are the chosen packages:"))
+        totalatoms = len(foundAtoms)
+        atomscounter = 0
+        for atomInfo in foundAtoms:
+	    atomscounter += 1
+	    idpackage = atomInfo[0]
+	    reponame = atomInfo[1]
+	    # open database
+	    dbconn = openRepositoryDatabase(reponame)
 
-	# get needed info
-	pkgatom = dbconn.retrieveAtom(idpackage)
-	pkgver = dbconn.retrieveVersion(idpackage)
-	pkgtag = dbconn.retrieveVersionTag(idpackage)
-	if not pkgtag:
-	    pkgtag = "NoTag"
-	pkgrev = dbconn.retrieveRevision(idpackage)
-	pkgslot = dbconn.retrieveSlot(idpackage)
+	    # get needed info
+	    pkgatom = dbconn.retrieveAtom(idpackage)
+	    pkgver = dbconn.retrieveVersion(idpackage)
+	    pkgtag = dbconn.retrieveVersionTag(idpackage)
+	    if not pkgtag:
+	        pkgtag = "NoTag"
+	    pkgrev = dbconn.retrieveRevision(idpackage)
+	    pkgslot = dbconn.retrieveSlot(idpackage)
 	
-	# client info
-	installedVer = "Not installed"
-	installedTag = "NoTag"
-	installedRev = "NoRev"
-	clientDbconn = openClientDatabase()
-	if (clientDbconn != -1):
-	    pkginstalled = getInstalledAtoms(pkgatom)
-	    if (pkginstalled):
-	        # we need to match slot
-	        for idx in pkginstalled:
-	            islot = clientDbconn.retrieveSlot(idx)
-		    if islot == pkgslot:
-		        # found
-		        installedVer = clientDbconn.retrieveVersion(idx)
-		        installedTag = clientDbconn.retrieveVersionTag(idx)
-		        if not installedTag:
-			    installedTag = "NoTag"
-		        installedRev = clientDbconn.retrieveRevision(idx)
-		        break
-	    clientDbconn.closeDB()
+	    # client info
+	    installedVer = "Not installed"
+	    installedTag = "NoTag"
+	    installedRev = "NoRev"
+	    clientDbconn = openClientDatabase()
+	    if (clientDbconn != -1):
+	        pkginstalled = getInstalledAtoms(pkgatom)
+	        if (pkginstalled):
+	            # we need to match slot
+	            for idx in pkginstalled:
+	                islot = clientDbconn.retrieveSlot(idx)
+		        if islot == pkgslot:
+		            # found
+		            installedVer = clientDbconn.retrieveVersion(idx)
+		            installedTag = clientDbconn.retrieveVersionTag(idx)
+		            if not installedTag:
+			        installedTag = "NoTag"
+		            installedRev = clientDbconn.retrieveRevision(idx)
+		            break
+	        clientDbconn.closeDB()
 
-	# fill atomsData
-
-	print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
-	print_info("\t"+red("Versioning:\t")+" "+blue(installedVer)+" / "+blue(installedTag)+" / "+blue(str(installedRev))+bold(" ===> ")+darkgreen(pkgver)+" / "+darkgreen(pkgtag)+" / "+darkgreen(str(pkgrev)))
-	# tell wether we should update it
-	if installedVer == "Not installed":
-	    installedVer = "0"
-	if installedTag == "NoTag":
-	    installedTag == ''
-	if installedRev == "NoRev":
-	    installedRev == 0
-	cmp = compareVersions([pkgver,pkgtag,pkgrev],[installedVer,installedTag,installedRev])
-	if (cmp == 0):
-	    action = darkgreen("No update needed")
-	elif (cmp > 0):
-	    if (installedVer == "0"):
-		action = darkgreen("Install")
+	    print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
+	    print_info("\t"+red("Versioning:\t")+" "+blue(installedVer)+" / "+blue(installedTag)+" / "+blue(str(installedRev))+bold(" ===> ")+darkgreen(pkgver)+" / "+darkgreen(pkgtag)+" / "+darkgreen(str(pkgrev)))
+	    # tell wether we should update it
+	    if installedVer == "Not installed":
+	        installedVer = "0"
+	    if installedTag == "NoTag":
+	        installedTag == ''
+	    if installedRev == "NoRev":
+	        installedRev == 0
+	    cmp = compareVersions([pkgver,pkgtag,pkgrev],[installedVer,installedTag,installedRev])
+	    if (cmp == 0):
+	        action = darkgreen("No update needed")
+	    elif (cmp > 0):
+	        if (installedVer == "0"):
+		    action = darkgreen("Install")
+	        else:
+	            action = blue("Upgrade")
 	    else:
-	        action = blue("Upgrade")
-	else:
-	    action = red("Downgrade")
-	print_info("\t"+red("Action:\t\t")+" "+action)
+	        action = red("Downgrade")
+	    print_info("\t"+red("Action:\t\t")+" "+action)
 	
-	dbconn.closeDB()
+	    dbconn.closeDB()
 
-    print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
-    # FIXME: add only if the packages have not been downloaded
+	if (verbose or ask or pretend):
+            print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
     
-    if (not autoDrive):
-        rc = askquestion("     Would you like to continue with dependencies calculation ?")
-        if rc == "No":
-	    return 0,0
+        if (ask):
+            rc = askquestion("     Would you like to continue with dependencies calculation ?")
+            if rc == "No":
+	        return 0,0
 
     runQueue = []
 
@@ -1453,8 +1481,17 @@ def installPackages(packages, autoDrive = False):
     downloadSize = 0
     actionQueue = {}
 
+    if (not runQueue):
+	print_error(red("Nothing to do."))
+	return 127,-1
+
     if (runQueue):
-	print_info(red(" @@ ")+blue("These are the packages that would be merged:"))
+	pkgsToInstall = 0
+	pkgsToUpdate = 0
+	pkgsToReinstall = 0
+	pkgsToDowngrade = 0
+	if (ask or pretend):
+	    print_info(red(" @@ ")+blue("These are the packages that would be merged:"))
 	for packageInfo in runQueue:
 	    dbconn = openRepositoryDatabase(packageInfo[1])
 	    
@@ -1470,16 +1507,15 @@ def installPackages(packages, autoDrive = False):
 	    actionQueue[pkgatom] = {}
 	    actionQueue[pkgatom]['repository'] = packageInfo[1]
 	    actionQueue[pkgatom]['atom'] = pkgatom
-	    actionQueue[pkgatom]['download'] = etpRepositories[packageInfo[1]]['packages']+"/"+pkgfile
+	    actionQueue[pkgatom]['remove'] = -1
+	    actionQueue[pkgatom]['download'] = etpRepositories[packageInfo[1]]['packages']+"/"+os.path.basename(pkgfile)
 	    actionQueue[pkgatom]['checksum'] = pkgdigest
 	    dl = checkNeededDownload(pkgfile, pkgdigest)
 	    actionQueue[pkgatom]['fetch'] = dl
 	    if dl < 0:
 		pkgsize = dbconn.retrieveSize(packageInfo[0])
 		downloadSize += int(pkgsize)
-
-	    flags = " ["
-
+	
 	    # get installed package data
 	    installedVer = '0'
 	    installedTag = ''
@@ -1498,18 +1534,27 @@ def installPackages(packages, autoDrive = False):
 		            if not installedTag:
 			        installedTag = "NoTag"
 		            installedRev = clientDbconn.retrieveRevision(idx)
+			    actionQueue[pkgatom]['remove'] = idx
 		            break
 	        clientDbconn.closeDB()
-	    
+
+	    if not (ask or pretend or verbose):
+		continue
+
+	    flags = " ["
 	    cmp = compareVersions([pkgver,pkgtag,pkgrev],[installedVer,installedTag,installedRev])
 	    if (cmp == 0):
+		pkgsToReinstall += 1
 	        flags += red("R")
 	    elif (cmp > 0):
 	        if (installedVer == "0"):
+		    pkgsToInstall += 1
 	            flags += darkgreen("N")
 	        else:
+		    pkgsToUpdate += 1
 		    flags += blue("U")
 	    else:
+		pkgsToDowngrade += 1
 	        flags += darkblue("D")
 	    flags += "] "
 
@@ -1519,8 +1564,84 @@ def installPackages(packages, autoDrive = False):
 	    dbconn.closeDB()
 
 	# show download info
-	print_info(red(" @@ ")+"Packages involved: "+str(len(runQueue)))
-	print_info(red(" @@ ")+"Download size: "+str(bytesIntoHuman(downloadSize)))
+	print_info(red(" @@ ")+blue("Total number of packages:\t")+red(str(len(runQueue))))
+	if (ask or verbose or pretend):
+	    print_info(red(" @@ ")+green("Packages needing install:\t")+green(str(pkgsToInstall)))
+	    print_info(red(" @@ ")+darkgreen("Packages needing reinstall:\t")+darkgreen(str(pkgsToReinstall)))
+	    print_info(red(" @@ ")+blue("Packages needing update:\t\t")+blue(str(pkgsToUpdate)))
+	    print_info(red(" @@ ")+red("Packages needing downgrade:\t")+red(str(pkgsToDowngrade)))
+	print_info(red(" @@ ")+blue("Download size:\t\t\t")+bold(str(bytesIntoHuman(downloadSize))))
 
-    print "not working yet :-)"
+    
+    # running tasks
+    totalqueue = str(len(runQueue))
+    currentqueue = 0
+    for packageInfo in runQueue:
+	currentqueue += 1
+	idpackage = packageInfo[0]
+	repository = packageInfo[1]
+	# get package atom
+	dbconn = openRepositoryDatabase(repository)
+	pkgatom = dbconn.retrieveAtom(idpackage)
+	dbconn.closeDB()
+	#print actionQueue[pkgatom]
+	
+	# fill steps
+	steps = [] # fetch, remove, (preinstall, install postinstall), database, gentoo-sync, cleanup
+	# download
+	if (actionQueue[pkgatom]['fetch'] < 0):
+	    steps.append("fetch")
+	# remove old
+	if (actionQueue[pkgatom]['remove'] != -1):
+	    steps.append("remove")
+	# install
+	steps.append("install")
+	steps.append("database")
+	if (etpConst['gentoo-compat']):
+	    steps.append("gentoo-sync")
+	steps.append("cleanup")
+	
+	#print "steps for "+pkgatom+" -> "+str(steps)
+	print_info(red(" @@ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
+	
+	for step in steps:
+	    rc = stepExecutor(step,actionQueue[pkgatom])
+	    if (rc != 0):
+		return -1,rc
     return 0,0
+
+'''
+    @description: execute the requested step (it is only used by the CLI client)
+    @input: 	step -> name of the step to execute
+    		infoDict -> dictionary containing all the needed information collected by installPackages() -> actionQueue[pkgatom]
+    @output:	-1,"description" for error ; 0,True for no errors
+'''
+def stepExecutor(step,infoDict):
+    output = 0
+    
+    if step == "fetch":
+	print_info(red("     ## ")+blue("Fetching package: ")+red(os.path.basename(infoDict['download'])))
+	output = fetchFile(infoDict['download'],infoDict['checksum'])
+	if output != 0:
+	    if output == -1:
+		errormsg = red("Cannot find the package file online. Try to run: ")+bold("equo repo sync")+red("' and this command again.")
+	    else:
+		errormsg = red("Package checksum does not match. Try to run: '")+bold("equo repo sync")+red("' and this command again.")
+	    print_error(errormsg)
+	    return output
+	# otherwise fetch md5 too
+	print_info(red("     ## ")+blue("Fetching package checksum: ")+red(os.path.basename(infoDict['download']+etpConst['packageshashfileext'])))
+	output = fetchFile(infoDict['download']+etpConst['packageshashfileext'],False)
+	if output != 0:
+	    errormsg = red("Cannot find the checksum file online. Try to run: ")+bold("equo repo sync")+red("' and this command again.")
+	    print_error(errormsg)
+	    return output
+    
+    return output
+
+
+########################################################
+####
+##   Steps Handling
+#
+
