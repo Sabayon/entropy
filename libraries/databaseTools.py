@@ -1288,7 +1288,7 @@ class etpDatabase:
 	# rundependencies
 	self.cursor.execute('DELETE FROM rundependencies WHERE idpackage = '+idpackage)
 	# provide
-	self.cursor.execute('DELETE FROM provide WHERE atom = '+idpackage)
+	self.cursor.execute('DELETE FROM provide WHERE idpackage = '+idpackage)
 	# conflicts
 	self.cursor.execute('DELETE FROM conflicts WHERE idpackage = '+idpackage)
 	# neededlibs
