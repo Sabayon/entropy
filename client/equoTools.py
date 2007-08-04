@@ -398,6 +398,13 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 		
 		if (not dbpkginfo):
 		    # no version available
+		    if (direction == "~"): # if the atom with the same version (any rev) is not found, fallback to the first available
+			for list in foundIDs:
+			    idpackage = list[1]
+			    dbver = dbconn.retrieveVersion(idpackage)
+			    dbpkginfo.append([idpackage,dbver])
+		
+		if (not dbpkginfo):
 		    return -1,1
 		
 		versions = []

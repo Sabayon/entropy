@@ -473,3 +473,10 @@ cdbStatusDistcc = "/etc/init.d/distccd status"
 # Portage options
 odbBuild = " -b "
 odbNodeps = " --nodeps "
+
+if (commands.getoutput("q -V").find("portage-utils") != -1):
+    pFindLibrary = "qfile -qC "
+    pFindLibraryXT = "qfile -qeC "
+else:
+    pFindLibrary = "equery belongs -n "
+    pFindLibraryXT = "equery belongs -en "
