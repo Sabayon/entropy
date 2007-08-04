@@ -31,7 +31,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific, uncompressTarBz2
 from databaseTools import etpDatabase
 import xpak
 
@@ -1085,6 +1085,69 @@ def fetchFile(url,digest = False):
 	    return 0
     return 0
 
+def installFile(package):
+    import shutil
+    pkgpath = etpConst['packagesbindir']+"/"+package
+    if not os.path.isfile(pkgpath):
+	return 1
+    # unpack and install
+    unpackDir = etpConst['entropyunpackdir']+"/"+package
+    if os.path.isdir(unpackDir):
+	os.system("rm -rf "+unpackDir)
+    imageDir = unpackDir+"/image"
+    os.makedirs(imageDir)
+    
+    rc = uncompressTarBz2(pkgpath,unpackDir)
+    if (rc != 0):
+	return rc
+    rc = uncompressTarBz2(unpackDir+etpConst['packagecontentdir']+"/"+package,imageDir)
+    if (rc != 0):
+	return rc
+    if not os.path.isdir(imageDir):
+	return 2
+    
+    # merge data into system
+    for currentdir,subdirs,files in os.walk(imageDir):
+	# create subdirs
+        for dir in subdirs:
+	    #dirpath += "/"+dir
+	    imagepathDir = currentdir + "/" + dir
+	    rootdir = imagepathDir[len(imageDir):]
+	    # get info
+	    if (rootdir):
+	        if not os.path.isdir(rootdir):
+		    #print "creating dir "+rootdir
+		    os.makedirs(rootdir)
+	    user = os.stat(imagepathDir)[4]
+	    group = os.stat(imagepathDir)[5]
+	    os.chown(rootdir,user,group)
+	    shutil.copystat(imagepathDir,rootdir)
+	#dirpath = ''
+	for file in files:
+	    fromfile = currentdir+"/"+file
+	    tofile = fromfile[len(imageDir):]
+	    #print "copying file "+fromfile+" to "+tofile
+
+	    user = os.stat(fromfile)[4]
+	    group = os.stat(fromfile)[5]
+	    
+	    if os.access(tofile,os.F_OK):
+		try:
+		    os.remove(tofile)
+		except:
+		    rc = os.system("rm -f "+tofile)
+		    if (rc != 0):
+			return 3
+	    try:
+		shutil.copy2(fromfile,tofile)
+	    except:
+		rc = os.system("/bin/cp "+fromfile+" "+tofile)
+		if (rc != 0):
+		    return 4
+	    os.chown(tofile,user,group)
+	    shutil.copystat(fromfile,tofile)
+    return 0
+
 ########################################################
 ####
 ##   Database Tools
@@ -1507,6 +1570,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False):
 	    # fill action queue
 	    actionQueue[pkgatom] = {}
 	    actionQueue[pkgatom]['repository'] = packageInfo[1]
+	    actionQueue[pkgatom]['idpackage'] = packageInfo[0]
 	    actionQueue[pkgatom]['atom'] = pkgatom
 	    actionQueue[pkgatom]['remove'] = -1
 	    actionQueue[pkgatom]['download'] = etpRepositories[packageInfo[1]]['packages']+"/"+os.path.basename(pkgfile)
@@ -1619,7 +1683,6 @@ def installPackages(packages, ask = False, pretend = False, verbose = False):
 '''
 def stepExecutor(step,infoDict):
     output = 0
-    
     if step == "fetch":
 	print_info(red("     ## ")+blue("Fetching package: ")+red(os.path.basename(infoDict['download'])))
 	output = fetchFile(infoDict['download'],infoDict['checksum'])
@@ -1635,6 +1698,20 @@ def stepExecutor(step,infoDict):
 	output = fetchFile(infoDict['download']+etpConst['packageshashfileext'],False)
 	if output != 0:
 	    errormsg = red("Cannot find the checksum file online. Try to run: ")+bold("equo repo sync")+red("' and this command again.")
+	    print_error(errormsg)
+	    return output
+    elif step == "install":
+	print_info(red("     ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download'])))
+	output = installFile(os.path.basename(infoDict['download']))
+	if output != 0:
+	    errormsg = red("An error occured while trying to install the package. Check if you have enough disk space on your hard disk.")
+	    print_error(errormsg)
+	    return output
+    elif step == "databasex":
+	print_info(red("     ## ")+blue("Injecting into database: ")+red(os.path.basename(infoDict['download'])))
+	output = injectIntoDatabase(infoDict['idpackage'],infoDict['repository'])
+	if output != 0:
+	    errormsg = red("An error occured while trying to add the package to the database. What have you done?")
 	    print_error(errormsg)
 	    return output
     

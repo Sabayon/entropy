@@ -251,6 +251,7 @@ ETP_CONF_DIR = "/etc/entropy"
 ETP_ROOT_DIR = "/"
 ETP_LOG_DIR = ETP_DIR+"/"+"logs"
 ETP_SYSLOG_DIR = "/var/log/entropy/"
+ETP_VAR_DIR = "/var/tmp/entropy/"
 ETP_LOGLEVEL_NORMAL = 1
 ETP_LOGLEVEL_VERBOSE = 2
 ETP_LOGPRI_INFO = "[ INFO ]"
@@ -293,6 +294,7 @@ etpConst = {
     							  # TO BE REMOVED? CHECK
 
     'entropyworkdir': ETP_DIR, # Entropy workdir
+    'entropyunpackdir': ETP_VAR_DIR, # Entropy workdir
 
     'etpdatabaserevisionfile': ETP_DBFILE+".revision", # the local/remote database revision file
     'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum
