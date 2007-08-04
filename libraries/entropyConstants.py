@@ -347,7 +347,8 @@ etpConst = {
     'officialrepositoryname': "sabayonlinux.org", # our official repository name
     'packagedbdir': "/db", # directory of the database file in the .tbz2 package
     'packagedbfile': "/data.db", # database file in the directory above
-    'packagecontentdir': "/package" # directory of the package file in the .tbz2 package
+    'packagecontentdir': "/package", # directory of the package file in the .tbz2 package
+
  }
 
 # Handlers used by entropy to run and retrieve data remotely, using php helpers

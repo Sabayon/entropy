@@ -144,6 +144,10 @@ class handlerFTP:
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.setPASV: called -> "+str(bool))
 	self.ftpconn.set_pasv(bool)
 
+    def setChmod(self,chmodvalue,file):
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.setChmod: called -> "+str(chmodvalue)+" for file -> "+str(file))
+	return self.ftpconn.voidcmd("SITE CHMOD "+str(chmodvalue)+" "+str(file))
+
     def getFileMtime(self,path):
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getFileMtime: called for -> "+path)
 	rc = self.ftpconn.sendcmd("mdtm "+path)

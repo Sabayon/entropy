@@ -35,7 +35,7 @@ remoteLog = logTools.LogFile(level=etpConst['remoteloglevel'],filename = etpCons
 
 import timeoutsocket
 import urllib2
-timeoutsocket.setDefaultSocketTimeout(60)
+timeoutsocket.setDefaultSocketTimeout(300)
 
 # Get checksum of a package by running md5sum remotely (using php helpers)
 # @returns hex: if the file exists
@@ -61,7 +61,6 @@ def getRemotePackageChecksum(serverName,filename):
         return result
     except: # no HTTP support?
 	return None
-
 
 ###################################################
 # HTTP/FTP equo/download functions

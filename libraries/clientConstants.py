@@ -84,34 +84,3 @@ else:
 		etpConst['gentoo-compat'] = False
 	    else:
 		etpConst['gentoo-compat'] = True
-
-# remote section
-etpRemoteSupport = {}
-if (not os.path.isfile(etpConst['remoteconf'])):
-    print "ERROR: "+etpConst['remoteconf']+" does not exist"
-    sys.exit(50)
-else:
-    f = open(etpConst['remoteconf'],"r")
-    databaseconf = f.readlines()
-    f.close()
-    for line in databaseconf:
-	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
-	    loglevel = line.split("loglevel|")[1]
-	    try:
-		loglevel = int(loglevel)
-	    except:
-		print "ERROR: invalid loglevel in: "+etpConst['remoteconf']
-		sys.exit(51)
-	    if (loglevel > -1) and (loglevel < 3):
-	        etpConst['remoteloglevel'] = loglevel
-	    else:
-		print "WARNING: invalid loglevel in: "+etpConst['remoteconf']
-		import time
-		time.sleep(5)
-
-	if line.startswith("httphandler|") and (len(line.split("|")) > 2):
-	    servername = line.split("|")[1].strip()
-	    url = line.split("|")[2].strip()
-	    if not url.endswith("/"):
-		url = url+"/"
-	    etpRemoteSupport[servername] = url
