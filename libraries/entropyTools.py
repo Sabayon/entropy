@@ -362,6 +362,10 @@ def removePackageOperators(atom):
 # Version compare function taken from portage_versions.py
 # portage_versions.py -- core Portage functionality
 # Copyright 1998-2006 Gentoo Foundation
+ver_regexp = re.compile("^(cvs\\.)?(\\d+)((\\.\\d+)*)([a-z]?)((_(pre|p|beta|alpha|rc)\\d*)*)(-r(\\d+))?$")
+suffix_regexp = re.compile("^(alpha|beta|rc|pre|p)(\\d*)$")
+suffix_value = {"pre": -2, "p": 0, "alpha": -4, "beta": -3, "rc": -1}
+endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
 def compareVersions(ver1, ver2, silent=1):
 	
 	if ver1 == ver2:

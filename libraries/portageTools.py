@@ -45,8 +45,7 @@ os.environ['DISTDIR'] = etpConst['distfilesdir']
 import portage
 import portage_const
 from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv #FIXME: Use the ones from entropyTools
-from entropyConstants import *
-from serverConstants import *
+#from serverConstants import *
 initializePortageTree()
 
 # colours support
@@ -58,12 +57,14 @@ import sys
 import os
 import commands
 import entropyTools
-import enzymeTools
 
 # Logging initialization
-import logTools
-portageLog = logTools.LogFile(level=etpConst['spmbackendloglevel'],filename = etpConst['spmbackendlogfile'], header = "[Portage]")
-# portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFunction: example. ")
+try:
+    import logTools
+    portageLog = logTools.LogFile(level=etpConst['spmbackendloglevel'],filename = etpConst['spmbackendlogfile'], header = "[Portage]")
+    # portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFunction: example. ")
+except:
+    pass
 
 ############
 # Functions and Classes
@@ -152,7 +153,7 @@ def calculateFullAtomsDependencies(atoms, deep = False, extraopts = ""):
 
 
 def calculateAtomUSEFlags(atom):
-
+    
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"calculateAtomUSEFlags: called -> "+str(atom))
 
     try:
@@ -325,6 +326,7 @@ def unmerge(atom):
 # TO THIS FUNCTION:
 # must be provided a valid and complete atom
 def extractPkgNameVer(atom):
+    import enzymeTools
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractPkgNameVer: called -> "+atom)
     package = dep_getcpv(atom)
     package = atom.split("/")[len(atom.split("/"))-1]
@@ -345,6 +347,7 @@ def extractPkgNameVer(atom):
     return pkgname,pkgver
 
 def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
+    import enzymeTools
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"emerge: called -> "+atom+" | options: "+str(options)+" | redirect: "+str(redirect)+" | outfile: "+str(outfile)+" | simulate: "+str(simulate))
     if (simulate):
 	return 0,"" # simulation enabled

@@ -48,6 +48,7 @@ def print_help():
     print_info(" \t\t"+darkgreen("install")+red("\t\t\t to install a package"))
     print_info(" \t\t\t"+red("--ask")+"\t\t ask before making any changes")
     print_info(" \t\t\t"+red("--pretend")+"\t just show what would be done")
+    print_info(" \t\t\t"+red("--nodeps")+"\t do not manage any dependency")
     print_info(" \t\t\t"+red("--verbose")+"\t show more details about what's going on")
     
     print_info(" \t"+darkgreen(bold("database"))+brown("\t to handle installed packages database"))

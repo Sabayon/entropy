@@ -31,7 +31,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific, uncompressTarBz2
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific, uncompressTarBz2, extractXpak
 from databaseTools import etpDatabase
 import xpak
 
@@ -891,11 +891,11 @@ def generateDependencyTree(unsatisfiedDeps):
     remainingDeps = unsatisfiedDeps[:]
     dependenciesNotFound = []
     treeview = []
+    tree = {}
     treedepth = 0
+    tree[treedepth] = remainingDeps
     depsOk = False
     while (not depsOk):
-	#print "depth "+str(treedepth)
-	#print "neededdeps -> "+str(unsatisfiedDeps)
 	treedepth += 1
         for undep in unsatisfiedDeps:
 	    # obtain its dependencies
@@ -921,6 +921,8 @@ def generateDependencyTree(unsatisfiedDeps):
 		    pass
 	# merge back remainingDeps into unsatisfiedDeps
 	remainingDeps = list(set(remainingDeps))
+	if (remainingDeps):
+	    tree[treedepth] = remainingDeps[:]
 	unsatisfiedDeps = remainingDeps[:]
 	for x in unsatisfiedDeps:
 	    treeview.append(x)
@@ -933,23 +935,38 @@ def generateDependencyTree(unsatisfiedDeps):
     if (dependenciesNotFound):
 	# Houston, we've got a problem
 	print "error! DEPS NOT FOUND -> "+str(dependenciesNotFound)
-	treeview = dependenciesNotFound
+	treeview = {}
+	treeview[0] = {}
+	treeview[0][0] = dependenciesNotFound
 	return treeview,False
 
-    # filter duplicates
-    treedata = []
-    if (treeview):
-        treeview = list(set(treeview))
-        for atom in treeview:
-	    data = atomMatch(atom)
-	    treedata.append(data)
-        # filter duplicates
-        if (treedata):
-            treedata = list(set(treedata))
+    newtree = {} # tree list
+    if (tree):
+	for x in tree:
+	    newtree[x] = []
+	    for y in tree[x]:
+		newtree[x].append(atomMatch(y))
+	    if (newtree[x]):
+	        newtree[x] = list(set(newtree[x]))
+	# now filter newtree
+	treelength = len(newtree)
+	for count in range(treelength)[::-1]:
+	    x = 0
+	    while x < count:
+		# remove dups in this list
+		for z in newtree[count]:
+		    try:
+			while 1:
+			    newtree[x].remove(z)
+			    #print "removing "+str(z)
+		    except:
+			pass
+		x += 1
+    del tree
 
     #print treeview
     dbconn.closeDB()
-    return treedata,True
+    return newtree,True # treeview is used to show deps while tree is used to run the dependency code.
 
 
 '''
@@ -960,24 +977,49 @@ def generateDependencyTree(unsatisfiedDeps):
    @note: this is the function that should be used for 3rd party applications after using atomMatch()
 '''
 def getRequiredPackages(foundAtoms):
-    deplist = []
+    deptree = {}
+    depcount = -1
     
     for atomInfo in foundAtoms:
+	depcount += 1
 	deps = getNeededDependencies(atomInfo)
+	treedata = ''
 	if (deps):
-	    results = generateDependencyTree(deps)
-	    if (results[1]):
-		results = results[0]
-	    else:
-		return -1
-	    for result in results:
-		deplist.append(result)
+	    newtree, result = generateDependencyTree(deps)
+	    if (not result):
+		return newtree, result
+	if (newtree):
+	    deptree[depcount] = newtree.copy()
+	    #print deptree[depcount]
 
-    # clean duplicates
-    if (deplist):
-        deplist = list(set(deplist))
+    newdeptree = deptree.copy() # tree list
+    if (deptree):
+	# now filter newtree
+	treelength = len(newdeptree)
+	for count in range(treelength)[::-1]:
+	    pkglist = []
+	    #print count
+	    for x in newdeptree[count]:
+		for y in newdeptree[count][x]:
+		    pkglist.append(y)
+	    #print len(pkglist)
+	    # remove dups in the other lists
+	    for pkg in pkglist:
+		x = 0
+		while x < count:
+		    #print x
+		    for z in newdeptree[x]:
+		        try:
+		            while 1:
+			        newdeptree[x][z].remove(pkg)
+			        #print "removing "+str(pkg)
+		        except:
+			    pass
+			    
+		    x += 1
+    del deptree
 
-    return deplist
+    return newdeptree,True
 
 '''
    @description: using given information (atom), retrieves idpackage of the installed atom
@@ -1085,7 +1127,14 @@ def fetchFile(url,digest = False):
 	    return 0
     return 0
 
-def installFile(package):
+
+'''
+   @description: unpack the given file on the system and also update gentoo db if requested
+   @input package: package file (without path)
+   @output: 0 = all fine, >0 = error!
+'''
+# FIXME: add gentoo db handling
+def installFile(package, infoDict = None):
     import shutil
     pkgpath = etpConst['packagesbindir']+"/"+package
     if not os.path.isfile(pkgpath):
@@ -1146,7 +1195,94 @@ def installFile(package):
 		    return 4
 	    os.chown(tofile,user,group)
 	    shutil.copystat(fromfile,tofile)
+
+    os.system("rm -rf "+imageDir)
+
+    if infoDict is not None:
+	rc = installPackageIntoGentooDatabase(infoDict,unpackDir+etpConst['packagecontentdir']+"/"+package)
+	if (rc >= 0):
+	    os.system("rm -rf "+unpackDir)
+	    return rc
+    
+    # remove unpack dir
+    os.system("rm -rf "+unpackDir)
     return 0
+
+'''
+   @description: inject the database information into the Gentoo database
+   @input package: dictionary containing information collected by installPackages (important are atom, slot, category, name, version)
+   @output: 0 = all fine, >0 = error!
+'''
+def installPackageIntoGentooDatabase(infoDict,packageFile):
+    # handle gentoo-compat
+    
+    _portage_avail = False
+    try:
+	from portageTools import getInstalledAtoms as _portage_getInstalledAtoms, getPackageSlot as _portage_getPackageSlot, getPortageAppDbPath as _portage_getPortageAppDbPath
+	_portage_avail = True
+    except:
+	return -1 # no Portage support
+    if (_portage_avail):
+	portDbDir = _portage_getPortageAppDbPath()
+	# extract xpak from unpackDir+etpConst['packagecontentdir']+"/"+package
+	key = infoDict['category']+"/"+infoDict['name']
+	#print _portage_getInstalledAtom(key)
+	atomsfound = _portage_getInstalledAtoms(key)
+	
+	### REMOVE
+	# parse slot and match and remove)
+	if atomsfound is not None:
+	    pkgToRemove = ''
+	    for atom in atomsfound:
+	        atomslot = _portage_getPackageSlot(atom)
+	        if atomslot == infoDict['slot']:
+		    #print "match slot, remove -> "+str(atomslot)
+		    pkgToRemove = atom
+		    break
+	    if (pkgToRemove):
+	        removePath = portDbDir+pkgToRemove
+	        os.system("rm -rf "+removePath)
+	        #print "removing -> "+removePath
+	
+	### INSTALL NEW
+	extractPath = os.path.dirname(packageFile)
+	extractPath += "/xpak"
+	extractXpak(packageFile,extractPath)
+	if not os.path.isdir(portDbDir+infoDict['category']):
+	    os.makedirs(portDbDir+infoDict['category'])
+	os.rename(extractPath,portDbDir+infoDict['category']+"/"+infoDict['name']+"-"+infoDict['version'])
+
+    return 0
+
+'''
+   @description: unpack the given file on the system and also update gentoo db if requested
+   @input package: package file (without path)
+   @output: 0 = all fine, >0 = error!
+'''
+def installPackageIntoDatabase(idpackage,repository):
+    # fetch info
+    dbconn = openRepositoryDatabase(repository)
+    data = dbconn.getPackageData(idpackage)
+    # get current revision
+    rev = dbconn.retrieveRevision(idpackage)
+    branch = dbconn.retrieveBranch(idpackage)
+    dbconn.closeDB()
+    
+    # inject
+    clientDbconn = openClientDatabase()
+    idpk, rev, x, status = clientDbconn.addPackage(data, revision = rev, wantedBranch = branch, addBranch = False)
+    del x
+    if (not status):
+	clientDbconn.closeDB()
+	return 1 # it hasn't been insterted ? why??
+    
+    # add idpk to the installedtable
+    clientDbconn.removePackageFromInstalledTable(idpk)
+    clientDbconn.addPackageToInstalledTable(idpk,repository)
+    
+    clientDbconn.closeDB()
+    return 0
+
 
 ########################################################
 ####
@@ -1164,6 +1300,7 @@ def package(options):
     equoRequestPretend = False
     equoRequestPackagesCheck = False
     equoRequestVerbose = False
+    equoRequestDeps = True
     rc = 0
     _myopts = []
     for opt in myopts:
@@ -1173,6 +1310,8 @@ def package(options):
 	    equoRequestPretend = True
 	elif (opt == "--verbose"):
 	    equoRequestVerbose = True
+	elif (opt == "--nodeps"):
+	    equoRequestDeps = False
 	else:
 	    _myopts.append(opt)
     myopts = _myopts
@@ -1183,7 +1322,7 @@ def package(options):
 
     if (options[0] == "install"):
 	if len(myopts) > 0:
-	    rc,status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose)
+	    rc,status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps)
 	else:
 	    print_error(red(" Nothing to do."))
 	    rc = 127
@@ -1428,7 +1567,7 @@ def openClientDatabase():
 ##   Actions Handling
 #
 
-def installPackages(packages, ask = False, pretend = False, verbose = False):
+def installPackages(packages, ask = False, pretend = False, verbose = False, deps = True):
 
     # check if I am root
     if (not checkRoot()) and (not pretend):
@@ -1532,12 +1671,27 @@ def installPackages(packages, ask = False, pretend = False, verbose = False):
 
     print_info(red(" @@ ")+blue("Calculating..."))
 
-    reqpackages = getRequiredPackages(foundAtoms)
-    # add dependencies
-    for dep in reqpackages:
-	runQueue.append(dep)
+    if (deps):
+        treepackages, result = getRequiredPackages(foundAtoms)
+        # add dependencies, explode them
+
+	if (not result):
+	    print_error(red(" @@ ")+blue("Cannot find needed dependencies: ")+str(treepackages))
+	    return 130
+	pkgs = []
+	for x in range(len(treepackages))[::-1]:
+	    #print x
+	    for z in treepackages[x]:
+		#print treepackages[x][z]
+		for a in treepackages[x][z]:
+		    pkgs.append(a)
+	#print pkgs
+        for dep in pkgs:
+	    runQueue.append(dep)
+    
     # remove duplicates
     runQueue = [x for x in runQueue if x not in foundAtoms]
+    
     # add our requested packages at the end
     for atomInfo in foundAtoms:
 	runQueue.append(atomInfo)
@@ -1566,12 +1720,18 @@ def installPackages(packages, ask = False, pretend = False, verbose = False):
 	    pkgslot = dbconn.retrieveSlot(packageInfo[0])
 	    pkgdigest = dbconn.retrieveDigest(packageInfo[0])
 	    pkgfile = dbconn.retrieveDownloadURL(packageInfo[0])
+	    pkgcat = dbconn.retrieveCategory(packageInfo[0])
+	    pkgname = dbconn.retrieveName(packageInfo[0])
 	    
 	    # fill action queue
 	    actionQueue[pkgatom] = {}
 	    actionQueue[pkgatom]['repository'] = packageInfo[1]
 	    actionQueue[pkgatom]['idpackage'] = packageInfo[0]
+	    actionQueue[pkgatom]['slot'] = pkgslot
 	    actionQueue[pkgatom]['atom'] = pkgatom
+	    actionQueue[pkgatom]['version'] = pkgver
+	    actionQueue[pkgatom]['category'] = pkgcat
+	    actionQueue[pkgatom]['name'] = pkgname
 	    actionQueue[pkgatom]['remove'] = -1
 	    actionQueue[pkgatom]['download'] = etpRepositories[packageInfo[1]]['packages']+"/"+os.path.basename(pkgfile)
 	    actionQueue[pkgatom]['checksum'] = pkgdigest
@@ -1591,13 +1751,14 @@ def installPackages(packages, ask = False, pretend = False, verbose = False):
 	        if (pkginstalled):
 	            # we need to match slot
 	            for idx in pkginstalled:
+			#print clientDbconn.retrieveAtom(idx)
 	                islot = clientDbconn.retrieveSlot(idx)
 		        if islot == pkgslot:
 		            # found
 		            installedVer = clientDbconn.retrieveVersion(idx)
 		            installedTag = clientDbconn.retrieveVersionTag(idx)
 		            if not installedTag:
-			        installedTag = "NoTag"
+			        installedTag = ''
 		            installedRev = clientDbconn.retrieveRevision(idx)
 			    actionQueue[pkgatom]['remove'] = idx
 		            break
@@ -1637,6 +1798,11 @@ def installPackages(packages, ask = False, pretend = False, verbose = False):
 	    print_info(red(" @@ ")+red("Packages needing downgrade:\t")+red(str(pkgsToDowngrade)))
 	print_info(red(" @@ ")+blue("Download size:\t\t\t")+bold(str(bytesIntoHuman(downloadSize))))
 
+
+    if (ask):
+        rc = askquestion("     Would you like to continue with the installation ?")
+        if rc == "No":
+	    return 0,0
     
     # running tasks
     totalqueue = str(len(runQueue))
@@ -1662,8 +1828,6 @@ def installPackages(packages, ask = False, pretend = False, verbose = False):
 	# install
 	steps.append("install")
 	steps.append("database")
-	if (etpConst['gentoo-compat']):
-	    steps.append("gentoo-sync")
 	steps.append("cleanup")
 	
 	#print "steps for "+pkgatom+" -> "+str(steps)
@@ -1688,30 +1852,34 @@ def stepExecutor(step,infoDict):
 	output = fetchFile(infoDict['download'],infoDict['checksum'])
 	if output != 0:
 	    if output == -1:
-		errormsg = red("Cannot find the package file online. Try to run: ")+bold("equo repo sync")+red("' and this command again.")
+		errormsg = red("Cannot find the package file online. Try to run: ")+bold("equo repo sync")+red("' and this command again. Error "+str(output))
 	    else:
-		errormsg = red("Package checksum does not match. Try to run: '")+bold("equo repo sync")+red("' and this command again.")
+		errormsg = red("Package checksum does not match. Try to run: '")+bold("equo repo sync")+red("' and this command again. Error "+str(output))
 	    print_error(errormsg)
 	    return output
 	# otherwise fetch md5 too
 	print_info(red("     ## ")+blue("Fetching package checksum: ")+red(os.path.basename(infoDict['download']+etpConst['packageshashfileext'])))
 	output = fetchFile(infoDict['download']+etpConst['packageshashfileext'],False)
 	if output != 0:
-	    errormsg = red("Cannot find the checksum file online. Try to run: ")+bold("equo repo sync")+red("' and this command again.")
+	    errormsg = red("Cannot find the checksum file online. Try to run: ")+bold("equo repo sync")+red("' and this command again. Error "+str(output))
 	    print_error(errormsg)
 	    return output
     elif step == "install":
-	print_info(red("     ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download'])))
-	output = installFile(os.path.basename(infoDict['download']))
+	if (etpConst['gentoo-compat']):
+	    print_info(red("     ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download']))+" ## w/Gentoo compatibility")
+	    output = installFile(os.path.basename(infoDict['download']),infoDict)
+	else:
+	    print_info(red("     ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download'])))
+	    output = installFile(os.path.basename(infoDict['download']))
 	if output != 0:
-	    errormsg = red("An error occured while trying to install the package. Check if you have enough disk space on your hard disk.")
+	    errormsg = red("An error occured while trying to install the package. Check if you have enough disk space on your hard disk. Error "+str(output))
 	    print_error(errormsg)
 	    return output
-    elif step == "databasex":
+    elif step == "database":
 	print_info(red("     ## ")+blue("Injecting into database: ")+red(os.path.basename(infoDict['download'])))
-	output = injectIntoDatabase(infoDict['idpackage'],infoDict['repository'])
+	output = installPackageIntoDatabase(infoDict['idpackage'],infoDict['repository'])
 	if output != 0:
-	    errormsg = red("An error occured while trying to add the package to the database. What have you done?")
+	    errormsg = red("An error occured while trying to add the package to the database. What have you done? Error "+str(output))
 	    print_error(errormsg)
 	    return output
     

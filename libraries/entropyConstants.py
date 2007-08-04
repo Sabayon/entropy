@@ -434,3 +434,42 @@ else:
 		print "WARNING: invalid loglevel in: "+etpConst['databaseconf']
 		import time
 		time.sleep(5)
+
+# Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
+# you never know if gentoo devs change these things
+dbDESCRIPTION = "DESCRIPTION"
+dbHOMEPAGE = "HOMEPAGE"
+dbCHOST = "CHOST"
+dbCATEGORY = "CATEGORY"
+dbCFLAGS = "CFLAGS"
+dbCXXFLAGS = "CXXFLAGS"
+dbLICENSE = "LICENSE"
+dbSRC_URI = "SRC_URI"
+dbUSE = "USE"
+dbIUSE = "IUSE"
+dbSLOT = "SLOT"
+dbPROVIDE = "PROVIDE"
+dbDEPEND = "DEPEND"
+dbRDEPEND = "RDEPEND"
+dbPDEPEND = "PDEPEND"
+dbNEEDED = "NEEDED"
+dbOR = "|or|"
+dbKEYWORDS = "KEYWORDS"
+dbCONTENTS = "CONTENTS"
+dbPORTAGE_ELOG_OPTS = 'PORTAGE_ELOG_CLASSES="warn info log" PORTAGE_ELOG_SYSTEM="save" PORT_LOGDIR="'+etpConst['logdir']+'"'
+
+# Portage variables reference
+# vdbVARIABLE --> $VARIABLE
+vdbPORTDIR = "PORTDIR"
+vdbPORTDIR_OVERLAY = "PORTDIR_OVERLAY"
+
+# Portage & misc commands
+cdbEMERGE = "emerge"
+cdbRunEmerge = vdbPORTDIR+"='"+etpConst['portagetreedir']+"' "+vdbPORTDIR_OVERLAY+"='"+etpConst['overlays']+"' "+cdbEMERGE
+cdbStartDistcc = "/etc/init.d/distccd start --nodeps"
+cdbStopDistcc = "/etc/init.d/distccd stop --nodeps"
+cdbStatusDistcc = "/etc/init.d/distccd status"
+
+# Portage options
+odbBuild = " -b "
+odbNodeps = " --nodeps "
