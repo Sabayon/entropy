@@ -595,7 +595,7 @@ def getPackageDependencyList(atom):
 depcache = {}
 def getPackageRuntimeDependencies(NEEDED):
 
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageRuntimeDependencies: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageRuntimeDependencies: called.")
 
     if not os.path.isfile(NEEDED):
 	return [],[] # all empty
@@ -683,7 +683,15 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
     useflags = useflags.split()
     for atom in roughDependencies:
 
-	if atom.endswith("?"):
+        if atom.startswith("("):
+	    if (openOr):
+		openParenthesisFromOr += 1 # 1
+	    openParenthesis += 1 # 1
+
+	elif atom.endswith("?"):
+	    
+	    if (useFlagQuestion) and (not useMatch): # if we're already in a question and the question is not accepted, skip the cycle
+	        continue
 	    # we need to see if that useflag is enabled
 	    useFlag = atom.split("?")[0]
 	    useFlagQuestion = True # V
@@ -693,21 +701,16 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 		    useflags.index(checkFlag)
 		    useMatch = True
 		except:
-		    useMatch = False
+		    useMatch = False # V
 	    else:
 		try:
 		    useflags.index(useFlag)
-		    useMatch = True # V
+		    useMatch = True
 		except:
-		    useMatch = False
+		    useMatch = False # V
 		
 
-        if atom.startswith("("):
-	    if (openOr):
-		openParenthesisFromOr += 1 # 1
-	    openParenthesis += 1 # 1 | 2
-
-        if atom.startswith(")"):
+        elif atom.startswith(")"):
 	    if (openOr):
 		# remove last "_or_" from dependencies
 		if (openParenthesisFromOr == 1):
@@ -725,12 +728,12 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 		useFlagQuestion = False
 		useMatch = False
 
-        if atom.startswith("||"):
+        elif atom.startswith("||"):
 	    openOr = True # V
 	
-	if (atom.find("/") != -1) and (not atom.startswith("!")) and (not atom.endswith("?")):
+	elif (atom.find("/") != -1) and (not atom.startswith("!")) and (not atom.endswith("?")):
 	    # it's a package name <pkgcat>/<pkgname>-???
-	    if ((useFlagQuestion) and (useMatch)) or ((not useFlagQuestion) and (not useMatch)):
+	    if ((useFlagQuestion == True) and (useMatch == True)) or ((useFlagQuestion == False) and (useMatch == False)):
 	        # check if there's an OR
 		if (openOr):
 		    dependencies += atom
@@ -743,7 +746,7 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 		    dependencies += atom
 		    dependencies += " "
 
-        if atom.startswith("!") and (not atom.endswith("?")):
+        elif atom.startswith("!") and (not atom.endswith("?")):
 	    if ((useFlagQuestion) and (useMatch)) or ((not useFlagQuestion) and (not useMatch)):
 		conflicts += atom
 		if (openOr):

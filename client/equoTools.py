@@ -941,7 +941,7 @@ def generateDependencyTree(unsatisfiedDeps):
 
     if (dependenciesNotFound):
 	# Houston, we've got a problem
-	print "error! DEPS NOT FOUND -> "+str(dependenciesNotFound)
+	#print "error! DEPS NOT FOUND -> "+str(dependenciesNotFound)
 	treeview = {}
 	treeview[0] = {}
 	treeview[0][0] = dependenciesNotFound
@@ -1184,9 +1184,6 @@ def installFile(package, infoDict = None):
 	    tofile = fromfile[len(imageDir):]
 	    #print "copying file "+fromfile+" to "+tofile
 
-	    user = os.stat(fromfile)[4]
-	    group = os.stat(fromfile)[5]
-	    
 	    if os.access(tofile,os.F_OK):
 		try:
 		    os.remove(tofile)
@@ -1200,8 +1197,13 @@ def installFile(package, infoDict = None):
 		rc = os.system("/bin/cp "+fromfile+" "+tofile)
 		if (rc != 0):
 		    return 4
-	    os.chown(tofile,user,group)
-	    shutil.copystat(fromfile,tofile)
+	    try:
+	        user = os.stat(fromfile)[4]
+	        group = os.stat(fromfile)[5]
+	        os.chown(tofile,user,group)
+	        shutil.copystat(fromfile,tofile)
+	    except:
+		pass # sometimes, gentoo packages are fucked up and contain broken symlinks
 
     os.system("rm -rf "+imageDir)
 
