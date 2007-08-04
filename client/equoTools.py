@@ -1684,7 +1684,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 
 	if (not result):
 	    print_error(red(" @@ ")+blue("Cannot find needed dependencies: ")+str(treepackages))
-	    return 130
+	    return 130, -1
 	pkgs = []
 	for x in range(len(treepackages))[::-1]:
 	    #print x
@@ -1891,10 +1891,4 @@ def stepExecutor(step,infoDict):
 	    return output
     
     return output
-
-
-########################################################
-####
-##   Steps Handling
-#
 
