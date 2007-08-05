@@ -30,7 +30,7 @@ sys.path.append('../libraries')
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
-from remoteTools import downloadData
+from remoteTools import downloadData, getOnlineContent
 from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific, uncompressTarBz2, extractXpak
 from databaseTools import etpDatabase
 import xpak
@@ -51,15 +51,18 @@ def repositories(options):
     equoRequestAsk = False
     equoRequestPretend = False
     equoRequestPackagesCheck = False
+    equoRequestForceUpdate = False
     rc = 0
     for opt in myopts:
 	if (opt == "--ask"):
 	    equoRequestAsk = True
 	elif (opt == "--pretend"):
 	    equoRequestPretend = True
+	elif (opt == "--force"):
+	    equoRequestForceUpdate = True
 
     if (options[0] == "sync"):
-	rc = syncRepositories()
+	rc = syncRepositories(forceUpdate = equoRequestForceUpdate)
 
     if (options[0] == "status"):
 	for repo in etpRepositories:
@@ -116,6 +119,17 @@ def getRepositoryRevision(reponame):
 	revision = -1
     return revision
 
+# @returns -1 if the file is not available
+# @returns int>0 if the revision has been retrieved
+def getOnlineRepositoryRevision(reponame):
+    url = etpRepositories[reponame]['database']+"/"+etpConst['etpdatabaserevisionfile']
+    status = getOnlineContent(url)
+    if (status != False):
+	status = status[0].strip()
+	return int(status)
+    else:
+	return -1
+
 # @returns -1 if the file does not exist
 # @returns int>0 if the file exists
 def getRepositoryDbFileHash(reponame):
@@ -127,7 +141,7 @@ def getRepositoryDbFileHash(reponame):
 	mhash = "-1"
     return mhash
 
-def syncRepositories(reponames = []):
+def syncRepositories(reponames = [], forceUpdate = False):
 
     # check if I am root
     if (not checkRoot()):
@@ -153,6 +167,14 @@ def syncRepositories(reponames = []):
 	print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 	print_info(red("\tDatabase URL: ")+green(etpRepositories[repo]['database']))
 	print_info(red("\tDatabase local path: ")+green(etpRepositories[repo]['dbpath']))
+	
+	# check if database is already updated to the latest revision
+	onlinestatus = getOnlineRepositoryRevision(repo)
+	if (onlinestatus != -1):
+	    localstatus = getRepositoryRevision(repo)
+	    if (localstatus == onlinestatus) and (forceUpdate == False):
+		print_info(bold("\tAttention: ")+red("database is already up to date."))
+		continue
 	
 	# get database lock
 	rc = downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabasedownloadlockfile'],"/dev/null")
@@ -449,7 +471,7 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 		    idpackage = list[1]
 		    dbver = dbconn.retrieveVersion(idpackage)
 		    cmp = entropyCompareVersions(pkgversion,dbver)
-		    if direction == ">":
+		    if direction == ">": # the --deep mode should really act on this
 		        if (cmp < 0):
 			    # found
 			    dbpkginfo.append([idpackage,dbver])
@@ -457,7 +479,7 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 		        if (cmp > 0):
 			    # found
 			    dbpkginfo.append([idpackage,dbver])
-		    elif direction == ">=":
+		    elif direction == ">=": # the --deep mode should really act on this
 		        if (cmp <= 0):
 			    # found
 			    dbpkginfo.append([idpackage,dbver])
@@ -474,7 +496,7 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 		for x in dbpkginfo:
 		    versions.append(x[1])
 		# who is newer ?
-		versionlist = getNewerVersion(versions)
+		versionlist = getNewerVersion(versions) ## FIXME: this is already running in --deep mode, maybe adding a function that is more gentle with pulling dependencies?
 		newerPackage = dbpkginfo[versions.index(versionlist[0])]
 		
 	        # now look if there's another package with the same category, name, version, but different tag
@@ -801,12 +823,17 @@ def getDependencies(packageInfo):
     dbconn = openRepositoryDatabase(reponame)
     
     # retrieve dependencies
-    depend = dbconn.retrieveDependencies(idpackage)
-    rundepend = dbconn.retrieveRunDependencies(idpackage)
+    depend = dbconn.retrieveDependencies(idpackage) # XXX
+    #rundepend = dbconn.retrieveRunDependencies(idpackage)
+    rundepend = []
     
     # filter |or| entries
     _depend = []
     for dep in depend:
+	
+	if dep.startswith("!"):
+	    continue # FIXME: add conflicts SUPPORT
+	
 	if dep.find("|or|") != -1: # FIXME: handle this correctly
 	    deps = dep.split("|or|")
 	    # find the best
@@ -931,8 +958,6 @@ def filterSatisfiedDependencies(dependencies): # FIXME add force reinstall optio
 		cmp = compareVersions([repo_pkgver,repo_pkgtag,repo_pkgrev],[installedVer,installedTag,installedRev])
 		if cmp != 0:
 	            unsatisfiedDeps.append(dependency)
-		#else:
-		#    print " ----> "+dependency+" already installed."
 	    else:
 		#print " ----> "+dependency+" NOT installed."
 		unsatisfiedDeps.append(dependency)
@@ -947,7 +972,7 @@ def filterSatisfiedDependencies(dependencies): # FIXME add force reinstall optio
    @output: 	dependency tree dictionary, if a dependency cannot be found,
    		it will be returned a dictionary with a -1 entry and the list of missing dependencies
 '''
-def generateDependencyTree(atomInfo):
+def generateDependencyTree(atomInfo, emptydeps = False):
 
     unsatisfiedDeps = getDependencies(atomInfo)
     remainingDeps = unsatisfiedDeps[:]
@@ -955,7 +980,10 @@ def generateDependencyTree(atomInfo):
     treeview = []
     tree = {}
     treedepth = 0
-    tree[treedepth] = filterSatisfiedDependencies(remainingDeps)
+    if emptydeps:
+	tree[treedepth] = remainingDeps[:]
+    else:
+        tree[treedepth] = filterSatisfiedDependencies(remainingDeps)
     depsOk = False
     #print unsatisfiedDeps
     while (not depsOk):
@@ -973,7 +1001,8 @@ def generateDependencyTree(atomInfo):
 		myremainingdeps = []
 		if (mydeps):
 		    myremainingdeps = [x for x in mydeps if x not in treeview]
-		    # if force reinstall is False
+		    # if empty deps is False
+		    #if not emptydeps:
 		    myremainingdeps = filterSatisfiedDependencies(myremainingdeps)
 		for x in myremainingdeps:
 		    remainingDeps.append(x)
@@ -1038,13 +1067,13 @@ def generateDependencyTree(atomInfo):
    		@ if dependencies couldn't be satisfied, the output will be -1
    @note: this is the function that should be used for 3rd party applications after using atomMatch()
 '''
-def getRequiredPackages(foundAtoms):
+def getRequiredPackages(foundAtoms, emptydeps = False):
     deptree = {}
     depcount = -1
     
     for atomInfo in foundAtoms:
 	depcount += 1
-	newtree, result = generateDependencyTree(atomInfo)
+	newtree, result = generateDependencyTree(atomInfo, emptydeps)
 	if (not result):
 	    return newtree, result
 	if (newtree):
@@ -1245,10 +1274,14 @@ def installFile(package, infoDict = None):
 			return 3
 	    try:
 		shutil.copy2(fromfile,tofile)
-	    except:
-		rc = os.system("/bin/cp "+fromfile+" "+tofile)
-		if (rc != 0):
-		    return 4
+	    except IOError,(errno,strerror):
+		if errno == 2:
+		    # better to pass away, sometimes gentoo packages are fucked up and contain broken things
+		    pass
+		else:
+		    rc = os.system("/bin/cp "+fromfile+" "+tofile)
+		    if (rc != 0):
+		        return 4
 	    try:
 	        user = os.stat(fromfile)[4]
 	        group = os.stat(fromfile)[5]
@@ -1362,6 +1395,7 @@ def package(options):
     equoRequestPackagesCheck = False
     equoRequestVerbose = False
     equoRequestDeps = True
+    equoRequestEmptyDeps = False
     rc = 0
     _myopts = []
     for opt in myopts:
@@ -1373,6 +1407,8 @@ def package(options):
 	    equoRequestVerbose = True
 	elif (opt == "--nodeps"):
 	    equoRequestDeps = False
+	elif (opt == "--empty"):
+	    equoRequestEmptyDeps = True
 	else:
 	    _myopts.append(opt)
     myopts = _myopts
@@ -1383,7 +1419,7 @@ def package(options):
 
     if (options[0] == "install"):
 	if len(myopts) > 0:
-	    rc,status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps)
+	    rc,status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps)
 	else:
 	    print_error(red(" Nothing to do."))
 	    rc = 127
@@ -1628,7 +1664,7 @@ def openClientDatabase():
 ##   Actions Handling
 #
 
-def installPackages(packages, ask = False, pretend = False, verbose = False, deps = True):
+def installPackages(packages, ask = False, pretend = False, verbose = False, deps = True, emptydeps = False):
 
     # check if I am root
     if (not checkRoot()) and (not pretend):
@@ -1733,7 +1769,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
     print_info(red(" @@ ")+blue("Calculating..."))
 
     if (deps):
-        treepackages, result = getRequiredPackages(foundAtoms)
+        treepackages, result = getRequiredPackages(foundAtoms, emptydeps)
         # add dependencies, explode them
 
 	if (not result):

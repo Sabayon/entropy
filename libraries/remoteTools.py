@@ -40,7 +40,7 @@ timeoutsocket.setDefaultSocketTimeout(60)
 # Get checksum of a package by running md5sum remotely (using php helpers)
 # @returns hex: if the file exists
 # @returns None: if the server does not support HTTP handlers
-# @returns False: if the file is not found
+# @returns None: if the file is not found
 def getRemotePackageChecksum(serverName,filename):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getRemotePackageChecksum: called.")
     # etpHandlers['md5sum'] is the command
@@ -93,6 +93,20 @@ def downloadData(url,pathToSave, bufferSize = 8192, checksum = True):
     else:
 	# return -2
 	return "-2"
+
+# Get the content of an online page
+# @returns content: if the file exists
+# @returns False: if the file is not found
+def getOnlineContent(url):
+    remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getOnlineContent: called. Requested URL -> "+str(url))
+
+    # now pray the server
+    try:
+        file = urllib2.urlopen(url)
+        result = file.readlines()
+        return result
+    except:
+	return False
 
 ###################################################
 # HTTP/FTP equo INTERNAL FUNCTIONS
