@@ -681,36 +681,68 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
     dependencies = ""
     conflicts = ""
     useflags = useflags.split()
-    for atom in roughDependencies:
+    
+    length = len(roughDependencies)
+    global atomcount
+    atomcount = -1
 
+    while atomcount < length:
+	
+	atomcount += 1
+	try:
+	    atom = roughDependencies[atomcount]
+	except:
+	    break
+	
         if atom.startswith("("):
 	    if (openOr):
 		openParenthesisFromOr += 1 # 1
-	    openParenthesis += 1 # 1
+	    openParenthesis += 1 # 1 | 2
+	    curparenthesis = openParenthesis
+	    if (useFlagQuestion == True) and (useMatch == False):
+		skip = True
+		action = False
+		while (skip == True):
+		    atomcount += 1
+		    atom = roughDependencies[atomcount]
+		    if atom.startswith("("):
+			action = True
+			curparenthesis += 1
+		    elif atom.startswith(")"):
+			curparenthesis -= 1
+		    if (action) and (curparenthesis == openParenthesis):
+			skip = False
+		useFlagQuestion = False
 
 	elif atom.endswith("?"):
 	    
-	    if (useFlagQuestion) and (not useMatch): # if we're already in a question and the question is not accepted, skip the cycle
-	        continue
+	    #if (useFlagQuestion) and (not useMatch): # if we're already in a question and the question is not accepted, skip the cycle
+	    #    continue
 	    # we need to see if that useflag is enabled
 	    useFlag = atom.split("?")[0]
 	    useFlagQuestion = True # V
+	    #openParenthesisFromLastUseFlagQuestion = 0
 	    if useFlag.startswith("!"):
 		checkFlag = "-"+useFlag[1:]
 		try:
 		    useflags.index(checkFlag)
 		    useMatch = True
 		except:
-		    useMatch = False # V
+		    useMatch = False
 	    else:
 		try:
 		    useflags.index(useFlag)
-		    useMatch = True
+		    useMatch = True # V
 		except:
-		    useMatch = False # V
-		
-
+		    useMatch = False
+	
         elif atom.startswith(")"):
+	
+	    openParenthesis -= 1
+	    if (openParenthesis == 0):
+		useFlagQuestion = False
+		useMatch = False
+	    
 	    if (openOr):
 		# remove last "_or_" from dependencies
 		if (openParenthesisFromOr == 1):
@@ -723,10 +755,6 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 		        dependencies = dependencies[:len(dependencies)-len("|and|")]
 		        dependencies += dbOR
 		openParenthesisFromOr -= 1
-	    openParenthesis -= 1
-	    if (openParenthesis == 0):
-		useFlagQuestion = False
-		useMatch = False
 
         elif atom.startswith("||"):
 	    openOr = True # V
@@ -753,7 +781,7 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 		    conflicts += dbOR
                 else:
 		    conflicts += " "
-		
+    
 
     # format properly
     tmpConflicts = list(set(conflicts.split()))
