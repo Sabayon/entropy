@@ -696,22 +696,20 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 	
         if atom.startswith("("):
 	    if (openOr):
-		openParenthesisFromOr += 1 # 1
-	    openParenthesis += 1 # 1 | 2
-	    curparenthesis = openParenthesis
+		openParenthesisFromOr += 1
+	    openParenthesis += 1
+	    curparenthesis = openParenthesis # 2
 	    if (useFlagQuestion == True) and (useMatch == False):
 		skip = True
-		action = False
 		while (skip == True):
 		    atomcount += 1
 		    atom = roughDependencies[atomcount]
 		    if atom.startswith("("):
-			action = True
 			curparenthesis += 1
 		    elif atom.startswith(")"):
+		        if (curparenthesis == openParenthesis):
+			    skip = False
 			curparenthesis -= 1
-		    if (action) and (curparenthesis == openParenthesis):
-			skip = False
 		useFlagQuestion = False
 
 	elif atom.endswith("?"):
