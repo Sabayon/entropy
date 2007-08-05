@@ -862,13 +862,13 @@ def getDependencies(packageInfo):
 
 
 '''
-   @description: generates a list of unsatisfied dependencies
-   @input package: packageInfo: list composed by int(id) and str(repository name)
-   @output: list of unsatisfied dependencies
+   @description: filter the already installed dependencies
+   @input dependencies: list of dependencies to check
+   @output: filtered list, aka the needed ones
 '''
-def getNeededDependencies(packageInfo):
-    # first of all, get dependencies
-    dependencies = getDependencies(packageInfo)
+installed_depcache = {}
+repo_test_depcache = {}
+def filterSatisfiedDependencies(dependencies): # FIXME add force reinstall option
 
     unsatisfiedDeps = []
     # now create a list with the unsatisfied ones
@@ -877,31 +877,87 @@ def getNeededDependencies(packageInfo):
     clientDbconn = openClientDatabase()
     if (clientDbconn != -1):
         for dependency in dependencies:
-	    rc = atomMatchInRepository(dependency,clientDbconn)
-	    if rc[0] == -1:
-	        unsatisfiedDeps.append(dependency)
+
+	    ### caching
+	    repo_cached = repo_test_depcache.get(dependency)
+	    if repo_cached:
+		repo_test_rc = repo_test_depcache[dependency]['repo_test_rc']
+		if repo_test_rc[0] != -1:
+		    repo_pkgver = repo_test_depcache[dependency]['pkgver']
+		    repo_pkgtag = repo_test_depcache[dependency]['pkgtag']
+		    repo_pkgrev = repo_test_depcache[dependency]['pkgrev']
+		else:
+		    continue # dependency does not exist in our database
+	    else:
+		repo_test_depcache[dependency] = {}
+		repo_test_rc = atomMatch(dependency)
+		repo_test_depcache[dependency]['repo_test_rc'] = repo_test_rc
+		if repo_test_rc[0] != -1:
+		    dbconn = openRepositoryDatabase(repo_test_rc[1])
+		    repo_pkgver = dbconn.retrieveVersion(repo_test_rc[0])
+		    repo_pkgtag = dbconn.retrieveVersionTag(repo_test_rc[0])
+		    repo_pkgrev = dbconn.retrieveRevision(repo_test_rc[0])
+		    repo_test_depcache[dependency]['pkgver'] = repo_pkgver
+		    repo_test_depcache[dependency]['pkgtag'] = repo_pkgtag
+		    repo_test_depcache[dependency]['pkgrev'] = repo_pkgrev
+		    dbconn.closeDB()
+		else:
+		    # dependency does not exist in our database
+		    unsatisfiedDeps.append(dependency)
+		    continue
+
+
+	    ### caching
+	    ins_cached = installed_depcache.get(dependency)
+	    if ins_cached:
+		rc = installed_depcache[dependency]['rc']
+		if rc[0] != -1:
+		    installedVer = installed_depcache[dependency]['installedVer']
+		    installedTag = installed_depcache[dependency]['installedTag']
+		    installedRev = installed_depcache[dependency]['installedRev']
+	    else:
+		installed_depcache[dependency] = {}
+		rc = atomMatchInRepository(dependency,clientDbconn)
+		if rc[0] != -1:
+		    installedVer = clientDbconn.retrieveVersion(rc[0])
+		    installedTag = clientDbconn.retrieveVersionTag(rc[0])
+		    installedRev = clientDbconn.retrieveRevision(rc[0])
+		    installed_depcache[dependency]['installedVer'] = installedVer
+		    installed_depcache[dependency]['installedTag'] = installedTag
+		    installed_depcache[dependency]['installedRev'] = installedRev
+		installed_depcache[dependency]['rc'] = rc
+	    
+	    if rc[0] != -1:
+		cmp = compareVersions([repo_pkgver,repo_pkgtag,repo_pkgrev],[installedVer,installedTag,installedRev])
+		if cmp != 0:
+	            unsatisfiedDeps.append(dependency)
+		#else:
+		#    print " ----> "+dependency+" already installed."
+	    else:
+		#print " ----> "+dependency+" NOT installed."
+		unsatisfiedDeps.append(dependency)
     
         clientDbconn.closeDB()
-    
+
     return unsatisfiedDeps
 
 '''
    @description: generates a dependency tree using unsatisfied dependencies
-   @input package: list of unsatisfied dependencies
+   @input package: atomInfo [idpackage,reponame]
    @output: 	dependency tree dictionary, if a dependency cannot be found,
    		it will be returned a dictionary with a -1 entry and the list of missing dependencies
 '''
-def generateDependencyTree(unsatisfiedDeps):
+def generateDependencyTree(atomInfo):
 
-    dbconn = etpDatabase(readOnly = True, noUpload = True)
-    
+    unsatisfiedDeps = getDependencies(atomInfo)
     remainingDeps = unsatisfiedDeps[:]
     dependenciesNotFound = []
     treeview = []
     tree = {}
     treedepth = 0
-    tree[treedepth] = remainingDeps
+    tree[treedepth] = filterSatisfiedDependencies(remainingDeps)
     depsOk = False
+    #print unsatisfiedDeps
     while (not depsOk):
 	treedepth += 1
         for undep in unsatisfiedDeps:
@@ -913,12 +969,12 @@ def generateDependencyTree(unsatisfiedDeps):
 		remainingDeps.remove(undep)
 	    else:
 		# found, get its deps
-		mydeps = getNeededDependencies(atom)
+		mydeps = getDependencies(atom)
 		myremainingdeps = []
 		if (mydeps):
 		    myremainingdeps = [x for x in mydeps if x not in treeview]
-		#print "old depth "+str(treedepth-1)
-		#print myremainingdeps
+		    # if force reinstall is False
+		    myremainingdeps = filterSatisfiedDependencies(myremainingdeps)
 		for x in myremainingdeps:
 		    remainingDeps.append(x)
 		try:
@@ -972,7 +1028,6 @@ def generateDependencyTree(unsatisfiedDeps):
     del tree
 
     #print treeview
-    dbconn.closeDB()
     return newtree,True # treeview is used to show deps while tree is used to run the dependency code.
 
 
@@ -989,12 +1044,9 @@ def getRequiredPackages(foundAtoms):
     
     for atomInfo in foundAtoms:
 	depcount += 1
-	deps = getNeededDependencies(atomInfo)
-	treedata = ''
-	if (deps):
-	    newtree, result = generateDependencyTree(deps)
-	    if (not result):
-		return newtree, result
+	newtree, result = generateDependencyTree(atomInfo)
+	if (not result):
+	    return newtree, result
 	if (newtree):
 	    deptree[depcount] = newtree.copy()
 	    #print deptree[depcount]
