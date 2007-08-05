@@ -824,8 +824,6 @@ def getDependencies(packageInfo):
     
     # retrieve dependencies
     depend = dbconn.retrieveDependencies(idpackage) # XXX
-    #rundepend = dbconn.retrieveRunDependencies(idpackage)
-    rundepend = []
     
     # filter |or| entries
     _depend = []
@@ -865,23 +863,6 @@ def getDependencies(packageInfo):
 	else:
 	    _depend.append(dep)
     depend = _depend
-    
-    _rundepend = rundepend[:]
-    
-    # filter the  two trees
-    for dep in depend:
-	dep = dep_getkey(dep)
-	for rundep in _rundepend:
-	    xtest = dep_getkey(rundep)
-	    if xtest == dep:
-		# drp it from rundependxt
-		_rundepend.remove(rundep)
-    rundepend = _rundepend
-    
-    # merge into depend
-    for atom in rundepend:
-	depend.append(">="+atom)
-    del rundepend
     
     dbconn.closeDB()
     #print depend
@@ -972,6 +953,7 @@ def filterSatisfiedDependencies(dependencies): # FIXME add force reinstall optio
    @output: 	dependency tree dictionary, if a dependency cannot be found,
    		it will be returned a dictionary with a -1 entry and the list of missing dependencies
 '''
+treecache = {}
 def generateDependencyTree(atomInfo, emptydeps = False):
 
     unsatisfiedDeps = getDependencies(atomInfo)
@@ -979,50 +961,76 @@ def generateDependencyTree(atomInfo, emptydeps = False):
     dependenciesNotFound = []
     treeview = []
     tree = {}
-    treedepth = 0
-    if emptydeps:
-	tree[treedepth] = remainingDeps[:]
-    else:
-        tree[treedepth] = filterSatisfiedDependencies(remainingDeps)
+    treedepth = -1
     depsOk = False
-    #print unsatisfiedDeps
+    
+    clientDbconn = openClientDatabase()
     while (not depsOk):
 	treedepth += 1
+	tree[treedepth] = []
         for undep in unsatisfiedDeps:
+	
+	    passed = treecache.get(undep,None)
+	    if passed:
+		try:
+		    while 1: remainingDeps.remove(undep)
+		except:
+		    pass
+		continue
+	
+	    # FIXME: add support for conflicts
+	    if undep.startswith("!"):
+		try:
+		    while 1: remainingDeps.remove(undep)
+		except:
+		    pass
+		continue
+	
 	    # obtain its dependencies
 	    atom = atomMatch(undep)
 	    if atom[0] == -1:
 		# wth, dependency not in database?
 		dependenciesNotFound.append(undep)
-		remainingDeps.remove(undep)
+		print "not found"
+		try:
+		    while 1: remainingDeps.remove(undep)
+		except:
+		    pass
 	    else:
 		# found, get its deps
 		mydeps = getDependencies(atom)
-		myremainingdeps = []
-		if (mydeps):
-		    myremainingdeps = [x for x in mydeps if x not in treeview]
-		    # if empty deps is False
-		    #if not emptydeps:
-		    myremainingdeps = filterSatisfiedDependencies(myremainingdeps)
-		for x in myremainingdeps:
-		    remainingDeps.append(x)
+		mydeps = filterSatisfiedDependencies(mydeps)
+		for dep in mydeps:
+		    remainingDeps.append(dep)
+		xmatch = atomMatchInRepository(undep,clientDbconn)
+		if xmatch[0] == -1:
+		    tree[treedepth].append(undep)
+		treecache[undep] = True
 		try:
-		    while 1:
-			remainingDeps.remove(undep)
+		    while 1: remainingDeps.remove(undep)
 		except:
 		    pass
 	# merge back remainingDeps into unsatisfiedDeps
 	remainingDeps = list(set(remainingDeps))
-	if (remainingDeps):
-	    tree[treedepth] = remainingDeps[:]
+	#cnt = 0
+        #for x in tree:
+	#    cnt += len(tree[x])
+	#print str(len(remainingDeps))+" "+str(cnt)
 	unsatisfiedDeps = remainingDeps[:]
-	for x in unsatisfiedDeps:
-	    treeview.append(x)
 	
 	if (not unsatisfiedDeps):
 	    depsOk = True
 	else:
 	    depsOk = False
+
+    clientDbconn.closeDB()
+
+    #print tree
+    #cnt = 0
+    #for x in tree:
+    #    cnt += len(tree[x])
+    #print cnt
+    #sys.exit()
 
     if (dependenciesNotFound):
 	# Houston, we've got a problem
