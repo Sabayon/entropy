@@ -61,14 +61,14 @@ def repositories(options):
 	elif (opt == "--force"):
 	    equoRequestForceUpdate = True
 
-    if (options[0] == "sync"):
+    if (options[0] == "update"):
 	rc = syncRepositories(forceUpdate = equoRequestForceUpdate)
 
     if (options[0] == "status"):
 	for repo in etpRepositories:
 	    showRepositoryInfo(repo)
 
-    if (options[0] == "show"):
+    if (options[0] == "repoinfo"):
 	showRepositories()
     return rc
 
