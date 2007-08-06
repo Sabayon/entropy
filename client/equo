@@ -58,6 +58,7 @@ def print_help():
     print_info(" \t"+blue(bold("query"))+brown("\t\t to do misc queries on repository and local databases"))
     print_info(" \t\t"+darkgreen("installed")+red("\t\t search a package into the local database"))
     print_info(" \t\t"+darkgreen("belongs")+red("\t\t\t search from what package a file belongs"))
+    print_info(" \t\t"+darkgreen("depends")+red("\t\t\t search which packages depend on the provided atom"))
     print_info(" \t\t"+darkgreen("description")+red("\t\t search a package description"))
 
     print_info(" \t"+blue(bold("database"))+brown("\t to handle installed packages database"))

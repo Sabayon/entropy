@@ -1393,14 +1393,25 @@ def query(options):
     if len(options) < 1:
 	return rc
 
+    equoRequestVerbose = False
+    myopts = []
+    for opt in options:
+	if (opt == "--verbose"):
+	    equoRequestVerbose = True
+	else:
+	    myopts.append(opt)
+
     if options[0] == "installed":
-	rc = searchInstalledPackages(options[1:])
+	rc = searchInstalledPackages(myopts[1:])
 
     elif options[0] == "belongs":
-	rc = searchBelongs(options[1:])
+	rc = searchBelongs(myopts[1:])
+
+    elif options[0] == "depends":
+	rc = searchDepends(myopts[1:], verbose = equoRequestVerbose)
 
     elif options[0] == "description":
-	rc = searchDescription(options[1:])
+	rc = searchDescription(myopts[1:])
 
     return rc
 
@@ -1541,28 +1552,30 @@ def database(options):
 	clientDbconn.closeDB()
 
 
-def printPackageInfo(idpackage,dbconn, clientSearch = False):
+def printPackageInfo(idpackage,dbconn, clientSearch = False, strictOutput = False):
     # now fetch essential info
     pkgatom = dbconn.retrieveAtom(idpackage)
-    pkgname = dbconn.retrieveName(idpackage)
-    pkgcat = dbconn.retrieveCategory(idpackage)
-    pkgver = dbconn.retrieveVersion(idpackage)
-    pkgdesc = dbconn.retrieveDescription(idpackage)
+    if (not strictOutput):
+        pkgname = dbconn.retrieveName(idpackage)
+        pkgcat = dbconn.retrieveCategory(idpackage)
+        pkglic = dbconn.retrieveLicense(idpackage)
+        pkgsize = dbconn.retrieveSize(idpackage)
+        pkgbin = dbconn.retrieveDownloadURL(idpackage)
+        pkgflags = dbconn.retrieveCompileFlags(idpackage)
+        pkgkeywords = dbconn.retrieveBinKeywords(idpackage)
+        pkgdigest = dbconn.retrieveDigest(idpackage)
+        pkgcreatedate = convertUnixTimeToHumanTime(int(dbconn.retrieveDateCreation(idpackage)))
+        pkgsize = bytesIntoHuman(pkgsize)
+
     pkghome = dbconn.retrieveHomepage(idpackage)
-    pkglic = dbconn.retrieveLicense(idpackage)
-    pkgsize = dbconn.retrieveSize(idpackage)
-    pkgbin = dbconn.retrieveDownloadURL(idpackage)
-    pkgflags = dbconn.retrieveCompileFlags(idpackage)
-    pkgkeywords = dbconn.retrieveBinKeywords(idpackage)
+    pkgslot = dbconn.retrieveSlot(idpackage)
+    pkgver = dbconn.retrieveVersion(idpackage)
     pkgtag = dbconn.retrieveVersionTag(idpackage)
     pkgrev = dbconn.retrieveRevision(idpackage)
-    pkgslot = dbconn.retrieveSlot(idpackage)
-    pkgdigest = dbconn.retrieveDigest(idpackage)
+    pkgdesc = dbconn.retrieveDescription(idpackage)
     pkgbranch = dbconn.retrieveBranch(idpackage)
-    pkgcreatedate = convertUnixTimeToHumanTime(int(dbconn.retrieveDateCreation(idpackage)))
     if (not pkgtag):
         pkgtag = "NoTag"
-    pkgsize = bytesIntoHuman(pkgsize)
 
     if (not clientSearch):
         # client info
@@ -1587,22 +1600,26 @@ def printPackageInfo(idpackage,dbconn, clientSearch = False):
 		        break
             clientDbconn.closeDB()
 
+
     print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(pkgbranch))
-    print_info(darkgreen("       Category:\t\t")+darkblue(pkgcat))
-    print_info(darkgreen("       Name:\t\t\t")+darkblue(pkgname))
+    if (not strictOutput):
+        print_info(darkgreen("       Category:\t\t")+darkblue(pkgcat))
+        print_info(darkgreen("       Name:\t\t\t")+darkblue(pkgname))
     print_info(darkgreen("       Available:\t\t")+darkblue("version: ")+bold(pkgver)+darkblue(" ~ tag: ")+bold(pkgtag)+darkblue(" ~ revision: ")+bold(str(pkgrev)))
     if (not clientSearch):
         print_info(darkgreen("       Installed:\t\t")+darkblue("version: ")+bold(installedVer)+darkblue(" ~ tag: ")+bold(installedTag)+darkblue(" ~ revision: ")+bold(str(installedRev)))
-    print_info(darkgreen("       Slot:\t\t\t")+blue(str(pkgslot)))
-    print_info(darkgreen("       Size:\t\t\t")+blue(str(pkgsize)))
-    print_info(darkgreen("       Download:\t\t")+brown(str(pkgbin)))
-    print_info(darkgreen("       Checksum:\t\t")+brown(str(pkgdigest)))
+    if (not strictOutput):
+        print_info(darkgreen("       Slot:\t\t\t")+blue(str(pkgslot)))
+        print_info(darkgreen("       Size:\t\t\t")+blue(str(pkgsize)))
+        print_info(darkgreen("       Download:\t\t")+brown(str(pkgbin)))
+        print_info(darkgreen("       Checksum:\t\t")+brown(str(pkgdigest)))
     print_info(darkgreen("       Homepage:\t\t")+red(pkghome))
     print_info(darkgreen("       Description:\t\t")+pkgdesc)
-    print_info(darkgreen("       Compiled with:\t")+blue(pkgflags[1]))
-    print_info(darkgreen("       Architectures:\t")+blue(string.join(pkgkeywords," ")))
-    print_info(darkgreen("       Created:\t\t")+pkgcreatedate)
-    print_info(darkgreen("       License:\t\t")+red(pkglic))
+    if (not strictOutput):
+	print_info(darkgreen("       Compiled with:\t")+blue(pkgflags[1]))
+        print_info(darkgreen("       Architectures:\t")+blue(string.join(pkgkeywords," ")))
+        print_info(darkgreen("       Created:\t\t")+pkgcreatedate)
+        print_info(darkgreen("       License:\t\t")+red(pkglic))
 
 
 def searchPackage(packages, idreturn = False):
@@ -1724,6 +1741,50 @@ def searchBelongs(files, idreturn = False):
 	return dataInfo
     
     return 0
+
+
+def searchDepends(atoms, idreturn = False, verbose = False):
+    
+    if (not idreturn):
+        print_info(yellow(" @@ ")+darkgreen("Depends Search..."))
+
+    # validate atoms
+    _atoms = []
+    for atom in atoms:
+	try:
+	    key = dep_getkey(atom)
+	    _atoms.append(key)
+	except:
+	    print_warning(red("  !! ")+bold(atom)+red(" is not valid."))
+	    pass
+    atoms = _atoms
+    #packages = searchPackage(atoms,idreturn = True)
+
+    clientDbconn = openClientDatabase()
+    dataInfo = [] # when idreturn is True
+    for atom in atoms:
+	result = clientDbconn.searchDepends(atom)
+	if (result):
+	    # print info
+	    if (not idreturn):
+	        print_info(blue("     Keyword: ")+bold("\t"+atom))
+	        print_info(blue("     Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
+	    for idpackage in result:
+		if (idreturn):
+		    dataInfo.append(idpackage)
+		else:
+		    if (verbose):
+		        printPackageInfo(idpackage, clientDbconn, clientSearch = True)
+		    else:
+		        printPackageInfo(idpackage, clientDbconn, clientSearch = True, strictOutput = True)
+	
+    clientDbconn.closeDB()
+
+    if (idreturn):
+	return dataInfo
+    
+    return 0
+
 
 def searchDescription(descriptions, idreturn = False):
     

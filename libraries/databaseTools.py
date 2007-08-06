@@ -1949,6 +1949,19 @@ class etpDatabase:
 	    result.append(row[0])
 	return result
 
+    def searchDepends(self, atomkey):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchDepends: called for "+atomkey)
+	iddeps = []
+	self.cursor.execute('SELECT iddependency FROM dependenciesreference WHERE dependency LIKE "%'+atomkey+'%"')
+	for row in self.cursor:
+	    iddeps.append(row[0])
+	result = []
+	for iddep in iddeps:
+	    self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = "'+str(iddep)+'"')
+	    for row in self.cursor:
+	        result.append(row[0])
+	return result
+
     def searchPackages(self, keyword, sensitive = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackages: called for "+keyword)
 	result = []
