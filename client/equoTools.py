@@ -1388,6 +1388,29 @@ def installPackageIntoDatabase(idpackage,repository):
 
 ########################################################
 ####
+##   Query Tools
+#
+
+def query(options):
+
+    rc = 0
+
+    if len(options) < 1:
+	return rc
+
+    if options[0] == "installed":
+	rc = searchInstalledPackages(options[1:])
+
+    elif options[0] == "belongs":
+	rc = searchBelongs(options[1:])
+
+    elif options[0] == "description":
+	rc = searchDescription(options[1:])
+
+    return rc
+
+########################################################
+####
 ##   Database Tools
 #
 
@@ -1404,6 +1427,7 @@ def package(options):
     equoRequestVerbose = False
     equoRequestDeps = True
     equoRequestEmptyDeps = False
+    equoRequestOnlyFetch = False
     rc = 0
     _myopts = []
     for opt in myopts:
@@ -1417,6 +1441,8 @@ def package(options):
 	    equoRequestDeps = False
 	elif (opt == "--empty"):
 	    equoRequestEmptyDeps = True
+	elif (opt == "--fetch"):
+	    equoRequestOnlyFetch = True
 	else:
 	    _myopts.append(opt)
     myopts = _myopts
@@ -1427,7 +1453,7 @@ def package(options):
 
     if (options[0] == "install"):
 	if len(myopts) > 0:
-	    rc,status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps)
+	    rc,status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch)
 	else:
 	    print_error(red(" Nothing to do."))
 	    rc = 127
@@ -1520,7 +1546,7 @@ def database(options):
 	clientDbconn.closeDB()
 
 
-def printPackageInfo(idpackage,dbconn):
+def printPackageInfo(idpackage,dbconn, clientSearch = False):
     # now fetch essential info
     pkgatom = dbconn.retrieveAtom(idpackage)
     pkgname = dbconn.retrieveName(idpackage)
@@ -1543,33 +1569,35 @@ def printPackageInfo(idpackage,dbconn):
         pkgtag = "NoTag"
     pkgsize = bytesIntoHuman(pkgsize)
 
-    # client info
-    installedVer = "Not installed"
-    installedTag = "N/A"
-    installedRev = "N/A"
-    clientDbconn = openClientDatabase()
-    if (clientDbconn != -1):
-        clientDbconn = etpDatabase(readOnly = True, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
-        pkginstalled = getInstalledAtoms(pkgatom)
-        if (pkginstalled):
-	    # we need to match slot
-	    for idx in pkginstalled:
-	        islot = clientDbconn.retrieveSlot(idx)
-	        if islot == pkgslot:
-		    # found
-		    installedVer = clientDbconn.retrieveVersion(idx)
-		    installedTag = clientDbconn.retrieveVersionTag(idx)
-		    if not installedTag:
-		        installedTag = "NoTag"
-		    installedRev = clientDbconn.retrieveRevision(idx)
-		    break
-        clientDbconn.closeDB()
+    if (not clientSearch):
+        # client info
+        installedVer = "Not installed"
+        installedTag = "N/A"
+        installedRev = "N/A"
+        clientDbconn = openClientDatabase()
+        if (clientDbconn != -1):
+            clientDbconn = etpDatabase(readOnly = True, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
+            pkginstalled = getInstalledAtoms(pkgatom)
+            if (pkginstalled):
+	        # we need to match slot
+	        for idx in pkginstalled:
+	            islot = clientDbconn.retrieveSlot(idx)
+	            if islot == pkgslot:
+		        # found
+		        installedVer = clientDbconn.retrieveVersion(idx)
+		        installedTag = clientDbconn.retrieveVersionTag(idx)
+		        if not installedTag:
+		            installedTag = "NoTag"
+		        installedRev = clientDbconn.retrieveRevision(idx)
+		        break
+            clientDbconn.closeDB()
 
     print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(pkgbranch))
     print_info(darkgreen("       Category:\t\t")+darkblue(pkgcat))
     print_info(darkgreen("       Name:\t\t\t")+darkblue(pkgname))
     print_info(darkgreen("       Available:\t\t")+darkblue("version: ")+bold(pkgver)+darkblue(" ~ tag: ")+bold(pkgtag)+darkblue(" ~ revision: ")+bold(str(pkgrev)))
-    print_info(darkgreen("       Installed:\t\t")+darkblue("version: ")+bold(installedVer)+darkblue(" ~ tag: ")+bold(installedTag)+darkblue(" ~ revision: ")+bold(str(installedRev)))
+    if (not clientSearch):
+        print_info(darkgreen("       Installed:\t\t")+darkblue("version: ")+bold(installedVer)+darkblue(" ~ tag: ")+bold(installedTag)+darkblue(" ~ revision: ")+bold(str(installedRev)))
     print_info(darkgreen("       Slot:\t\t\t")+blue(str(pkgslot)))
     print_info(darkgreen("       Size:\t\t\t")+blue(str(pkgsize)))
     print_info(darkgreen("       Download:\t\t")+brown(str(pkgbin)))
@@ -1603,7 +1631,7 @@ def searchPackage(packages, idreturn = False):
 	    searchError = True
 	    continue
 	
-	dbconn = openRepositoryDatabase(reponame)
+	dbconn = openRepositoryDatabase(repo)
 	dataInfo = [] # when idreturn is True
 	for package in packages:
 	    result = dbconn.searchPackages(package)
@@ -1641,6 +1669,117 @@ def searchPackage(packages, idreturn = False):
 	return 129
     return 0
 
+
+def searchInstalledPackages(packages, idreturn = False):
+    
+    if (not idreturn):
+        print_info(yellow(" @@ ")+darkgreen("Searching..."))
+
+    clientDbconn = openClientDatabase()
+    dataInfo = [] # when idreturn is True
+    
+    for package in packages:
+	result = clientDbconn.searchPackages(package)
+	if (result):
+	    # print info
+	    if (not idreturn):
+	        print_info(blue("     Keyword: ")+bold("\t"+package))
+	        print_info(blue("     Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
+	    for pkg in result:
+		idpackage = pkg[1]
+		atom = pkg[0]
+		branch = clientDbconn.retrieveBranch(idpackage)
+		if (idreturn):
+		    dataInfo.append(idpackage)
+		else:
+		    printPackageInfo(idpackage,clientDbconn, clientSearch = True)
+	
+    clientDbconn.closeDB()
+
+    if (idreturn):
+	return dataInfo
+    
+    return 0
+
+
+def searchBelongs(files, idreturn = False):
+    
+    if (not idreturn):
+        print_info(yellow(" @@ ")+darkgreen("Belong Search..."))
+
+    clientDbconn = openClientDatabase()
+    dataInfo = [] # when idreturn is True
+    
+    for file in files:
+	result = clientDbconn.searchBelongs(file)
+	if (result):
+	    # print info
+	    if (not idreturn):
+	        print_info(blue("     Keyword: ")+bold("\t"+file))
+	        print_info(blue("     Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
+	    for idpackage in result:
+		if (idreturn):
+		    dataInfo.append(idpackage)
+		else:
+		    printPackageInfo(idpackage, clientDbconn, clientSearch = True)
+	
+    clientDbconn.closeDB()
+
+    if (idreturn):
+	return dataInfo
+    
+    return 0
+
+def searchDescription(descriptions, idreturn = False):
+    
+    foundPackages = {}
+    
+    if (not idreturn):
+        print_info(yellow(" @@ ")+darkgreen("Description Search..."))
+    # search inside each available database
+    repoNumber = 0
+    searchError = False
+    for repo in etpRepositories:
+	foundPackages[repo] = {}
+	repoNumber += 1
+	
+	if (not idreturn):
+	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
+	
+	rc = fetchRepositoryIfNotAvailable(repo)
+	if (rc != 0):
+	    searchError = True
+	    continue
+	
+	dbconn = openRepositoryDatabase(repo)
+	dataInfo = [] # when idreturn is True
+	for desc in descriptions:
+	    result = dbconn.searchPackagesByDescription(desc)
+	    if (result):
+		foundPackages[repo][desc] = result
+	        # print info
+		if (not idreturn):
+	            print_info(blue("     Keyword: ")+bold("\t"+desc))
+	            print_info(blue("     Found:   ")+bold("\t"+str(len(foundPackages[repo][desc])))+red(" entries"))
+	        for pkg in foundPackages[repo][desc]:
+		    idpackage = pkg[1]
+		    atom = pkg[0]
+		    if (idreturn):
+			dataInfo.append([idpackage,repo])
+		    else:
+		        printPackageInfo(idpackage,dbconn)
+	
+	dbconn.closeDB()
+
+    if (idreturn):
+	return dataInfo
+
+    if searchError:
+	print_warning(yellow(" @@ ")+red("Something bad happened. Please have a look."))
+	return 129
+    return 0
+
+
 '''
    @description: open the repository database and returns the pointer
    @input repositoryName: name of the client database
@@ -1672,7 +1811,7 @@ def openClientDatabase():
 ##   Actions Handling
 #
 
-def installPackages(packages, ask = False, pretend = False, verbose = False, deps = True, emptydeps = False):
+def installPackages(packages, ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False):
 
     # check if I am root
     if (not checkRoot()) and (not pretend):
@@ -1927,13 +2066,15 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	# download
 	if (actionQueue[pkgatom]['fetch'] < 0):
 	    steps.append("fetch")
-	# remove old
-	if (actionQueue[pkgatom]['remove'] != -1):
-	    steps.append("remove")
-	# install
-	steps.append("install")
-	steps.append("database")
-	steps.append("cleanup")
+	
+	if (not onlyfetch):
+	    # remove old
+	    if (actionQueue[pkgatom]['remove'] != -1):
+	        steps.append("remove")
+	    # install
+	    steps.append("install")
+	    steps.append("database")
+	    steps.append("cleanup")
 	
 	#print "steps for "+pkgatom+" -> "+str(steps)
 	print_info(red(" @@ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))

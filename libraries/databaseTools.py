@@ -816,7 +816,7 @@ class etpDatabase:
 	    # ok done... now sync the new db, if needed
 	    activatorTools.syncRemoteDatabases(self.noUpload)
 	
-	self.connection = sqlite.connect(dbFile)
+	self.connection = sqlite.connect(dbFile,timeout=300.0)
 	self.cursor = self.connection.cursor()
 
     def closeDB(self):
@@ -2074,6 +2074,14 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"areCompileFlagsAvailable: flags tuple "+chost+"|"+cflags+"|"+cxxflags+" available.")
 	return result
 
+    def searchBelongs(self, file):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchBelongs: called for "+file)
+	result = []
+	self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
+	for row in self.cursor:
+	    result.append(row[0])
+	return result
+
     def searchPackages(self, keyword, sensitive = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackages: called for "+keyword)
 	result = []
@@ -2126,6 +2134,19 @@ class etpDatabase:
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(atom) LIKE "%'+string.lower(keyword)+'%" AND branch = "'+branch+'"')
 	for row in self.cursor:
 	    result.append(row)
+	return result
+
+    def searchPackagesByDescription(self, keyword):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByDescription: called for "+keyword)
+	idpkgs = []
+	self.cursor.execute('SELECT idpackage FROM extrainfo WHERE LOWER(description) LIKE "%'+string.lower(keyword)+'%"')
+	for row in self.cursor:
+	    idpkgs.append(row[0])
+	result = []
+	for idpk in idpkgs:
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE idpackage = "'+str(idpk)+'"')
+	    for row in self.cursor:
+	        result.append(row)
 	return result
 
     def searchPackagesByName(self, keyword, sensitive = False):

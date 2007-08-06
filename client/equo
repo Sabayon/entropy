@@ -44,15 +44,22 @@ def print_help():
     print_info(" \t\t\t"+red("--force")+"\t\t force the sync even if the database is already up to date")
     print_info(" \t\t"+darkgreen("show")+red("\t\t\t show enabled repositories"))
     print_info(" \t\t"+darkgreen("status")+red("\t\t\t show respositories status"))
+    
     #print_info(" \t"+darkgreen(bold("package"))+brown("\t\t to handle packages"))
-    print_info(" \t"+blue("search")+brown("\t\t to search a package inside the database"))
+    print_info(" \t"+blue("search")+brown("\t\t to search a package trough repositories"))
     print_info(" \t"+blue("install")+brown("\t\t to install a package"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
+    print_info(" \t\t"+red("--fetch")+"\t\t\t just download packages without doing the install")
     print_info(" \t\t"+red("--nodeps")+"\t\t do not manage any dependency")
     print_info(" \t\t"+red("--empty")+"\t\t\t also include already installed packages")
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
-    
+
+    print_info(" \t"+blue(bold("query"))+brown("\t\t to do misc queries on repository and local databases"))
+    print_info(" \t\t"+darkgreen("installed")+red("\t\t search a package into the local database"))
+    print_info(" \t\t"+darkgreen("belongs")+red("\t\t\t search from what package a file belongs"))
+    print_info(" \t\t"+darkgreen("description")+red("\t\t search a package description"))
+
     print_info(" \t"+blue(bold("database"))+brown("\t to handle installed packages database"))
     print_info(" \t\t"+darkgreen("generate")+red("\t\t generate installed packages database"))
 
@@ -88,6 +95,10 @@ elif (options[0] == "repo"):
 
 elif (options[0] == "search") or (options[0] == "install"):
     rc = equoTools.package(options)
+    sys.exit(rc)
+
+elif (options[0] == "query"):
+    rc = equoTools.query(options[1:])
     sys.exit(rc)
 
 elif (options[0] == "database"):
