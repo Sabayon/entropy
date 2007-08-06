@@ -1394,10 +1394,13 @@ def query(options):
 	return rc
 
     equoRequestVerbose = False
+    equoRequestQuiet = False
     myopts = []
     for opt in options:
 	if (opt == "--verbose"):
 	    equoRequestVerbose = True
+	if (opt == "--quiet"):
+	    equoRequestQuiet = True
 	else:
 	    myopts.append(opt)
 
@@ -1409,6 +1412,9 @@ def query(options):
 
     elif options[0] == "depends":
 	rc = searchDepends(myopts[1:], verbose = equoRequestVerbose)
+
+    elif options[0] == "files":
+	rc = searchFiles(myopts[1:], quiet = equoRequestQuiet)
 
     elif options[0] == "description":
 	rc = searchDescription(myopts[1:])
@@ -1785,6 +1791,39 @@ def searchDepends(atoms, idreturn = False, verbose = False):
     
     return 0
 
+
+def searchFiles(atoms, idreturn = False, quiet = False):
+    
+    if (not idreturn) and (not quiet):
+        print_info(yellow(" @@ ")+darkgreen("Files Search..."))
+
+    results = searchInstalledPackages(atoms, idreturn = True)
+    clientDbconn = openClientDatabase()
+    dataInfo = [] # when idreturn is True
+    for result in results:
+	if (result != -1):
+	    files = clientDbconn.retrieveContent(result)
+	    atom = clientDbconn.retrieveAtom(result)
+	    # print info
+	    if (not idreturn) and (not quiet):
+	        print_info(blue("     Package: ")+bold("\t"+atom))
+	        print_info(blue("     Found:   ")+bold("\t"+str(len(files)))+red(" files"))
+	    if (idreturn):
+		dataInfo.append([result,files])
+	    else:
+		if quiet:
+		    for file in files:
+			print file
+		else:
+		    for file in files:
+		        print_info(blue(" ### ")+red(str(file)))
+	
+    clientDbconn.closeDB()
+
+    if (idreturn):
+	return dataInfo
+    
+    return 0
 
 def searchDescription(descriptions, idreturn = False):
     
