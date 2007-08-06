@@ -363,28 +363,21 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
 	    entropyTools.spawnCommand("rm -rf "+outfile)
 
     # Get specified USE flags
-    try:
-	useflags = " USE='"+os.environ['USE']+"' "
-    except:
-	useflags = " "
-
+    useflags = " "
+    useflags += getUSEFlags()
+    useflags += " "
     # Get specified MAKEOPTS
-    try:
-	makeopts = " MAKEOPTS='"+os.environ['MAKEOPTS']+"' "
-    except:
-	makeopts = " "
-
+    makeopts = " "
+    makeopts += getMAKEOPTS()
+    makeopts += " "
     # Get specified CFLAGS
-    try:
-	cflags = " CFLAGS='"+os.environ['CFLAGS']+"' "
-    except:
-	cflags = " "
-
+    cflags = " "
+    cflags += getCFLAGS()
+    cflags += " "
     # Get specified LDFLAGS
-    try:
-	ldflags = " LDFLAGS='"+os.environ['LDFLAGS']+"' "
-    except:
-	ldflags = " "
+    ldflags = " "
+    ldflags += getLDFLAGS()
+    ldflags += " "
 
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"emerge: USE: "+useflags+" | CFLAGS: "+cflags+" | MAKEOPTS: "+makeopts+" | LDFLAGS: "+ldflags)
     
@@ -590,68 +583,21 @@ def getPackageDependencyList(atom):
 	pkgSplittedDeps.append(i)
     return pkgSplittedDeps
 
-# parser of the gentoo db "NEEDED" file
-# this file is contained in the .tbz2->.xpak file
-depcache = {}
-def getPackageRuntimeDependencies(NEEDED):
-
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageRuntimeDependencies: called.")
-
-    if not os.path.isfile(NEEDED):
-	return [],[] # all empty
-
-    f = open(NEEDED,"r")
-    includedBins = f.readlines()
-    f.close()
-
-    neededLibraries = []
-    # filter the first word
-    for line in includedBins:
-        line = line.strip().split()
-	line = line[0]
-	depLibs = commands.getoutput("ldd "+line).split("\n")
-	for i in depLibs:
-	    i = i.strip()
-	    if i.find("=>") != -1:
-	        i = i.split("=>")[1]
-	    # format properly
-	    if i.startswith(" "):
-	        i = i[1:]
-	    if i.startswith("//"):
-	        i = i[1:]
-	    i = i.split()[0]
-	    neededLibraries.append(i)
-    neededLibraries = list(set(neededLibraries))
-    
-    # filter garbage
-    _neededLibraries = []
-    for i in neededLibraries:
-	if i.startswith("/"):
-	    _neededLibraries.append(i)
-    neededLibraries = _neededLibraries
-
-    runtimeNeededPackages = []
-    for i in neededLibraries:
-	
-	_line_cached = depcache.get(i,None)
-	if _line_cached:
-	    #print "cached"
-	    for x in _line_cached:
-		runtimeNeededPackages.append(x)
-	else:
-	    #print "not cached"
-	    pkgs = commands.getoutput(pFindLibraryXT+i).split("\n")
-	    if (pkgs[0] != ""):
-		depcache[i] = pkgs[:]
-	        for y in pkgs:
-	            runtimeNeededPackages.append(y)
-
-    runtimeNeededPackages = list(set(runtimeNeededPackages))
-    return runtimeNeededPackages, neededLibraries
-
 def getUSEFlags():
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getUSEFlags: called. ")
-    return getPortageEnv('USE')
+    return portage.settings['USE']
+
+def getMAKEOPTS():
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getMAKEOPTS: called. ")
+    return portage.settings['MAKEOPTS']
+
+def getCFLAGS():
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getCFLAGS: called. ")
+    return portage.settings['CFLAGS']
+
+def getLDFLAGS():
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getLDFLAGS: called. ")
+    return portage.settings['LDFLAGS']
 
 # you must provide a complete atom
 def getPackageIUSE(atom):

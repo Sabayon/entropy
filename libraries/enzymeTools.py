@@ -559,50 +559,6 @@ def build(atoms):
 		print_error(red("  ***")+" Fatal error, cannot continue")
 		sys.exit(251)
 
-    # Now we have packagesPaths that contains all the compressed packages
-    # We need to run the runtime dependencies detection on them and quickpkg
-    # the rest of the needed packages if they're not available in the store.
-    # FIXME: add --no-runtime-dependencies
-    runtimeDepsPackages = []
-    runtimeDepsQuickpkg = []
-    if packagesPaths != []:
-	print_info(yellow("  *")+" Calculating runtime dependencies...")
-        for file in packagesPaths:
-	    print_info(red("   *")+green(" Calculating runtime dependencies for ")+bold(file.split("/")[len(file.split("/"))-1]))
-            # unpack the .tbz2 file
-            tbz2TmpDir = extractXpak(file)
-            # parse, if exists, the NEEDED file
-            runtimeNeededPackages, neededLibraries = getPackageRuntimeDependencies(tbz2TmpDir+dbNEEDED)
-	    for i in runtimeNeededPackages:
-		if (enzymeRequestVerbose): print_info(green("     * ")+yellow("depends on: "+bold(i)))
-		runtimeDepsPackages.append(i)
-	    spawnCommand("rm -rf "+tbz2TmpDir)
-
-    # filter dups
-    runtimeDepsPackages = list(set(runtimeDepsPackages))
-    # now it's time to check the packages that need to be compressed
-    for atom in runtimeDepsPackages:
-	if (not isTbz2PackageAvailable(atom, stable = True, unstable = True)):
-	    if (enzymeRequestVerbose): print_info(yellow("   * ")+"I would like to quickpkg "+bold(atom))
-	    runtimeDepsQuickpkg.append(atom)
-
-    if runtimeDepsQuickpkg != []:
-	print_info(yellow("  *")+" Compressing runtime dependencies...")
-	for atom in runtimeDepsQuickpkg:
-	    # quickpkg!
-	    try:
-		PackagesQuickpkg.index(atom) # has been already quickpkg'd?
-	    except:
-	        print_info(yellow("   *")+" Compressing "+red(atom))
-	        rc = quickpkg(atom,etpConst['packagesstoredir'])
-	        if (rc is not None):
-		    packagesPaths.append(rc)
-	        else:
-		    enzymeLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"build: (runtimeDepsQuickpkg) "+str(dep)+" -> quickpkg error. Cannot continue.")
-		    print_error(red("      *")+" quickpkg error for "+red(atom))
-		    print_error(red("  ***")+" Fatal error, cannot continue")
-		    sys.exit(251)
-
     if packagesPaths != []:
 	#print
 	print_info(red("  *")+" These are the binary packages created:")

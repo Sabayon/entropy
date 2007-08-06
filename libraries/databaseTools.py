@@ -183,12 +183,6 @@ def database(options):
 			print_info(darkred("\t    # Depends on: ")+dep)
 		#print_info(red("\t Blah: ")+result[20]) --> it's a dup of [21]
 		
-		rundependencies = dbconn.retrieveRunDependencies(result[1])
-		if (rundependencies):
-		    print_info(red("\t Built with runtime dependencies"))
-		    for rundep in rundependencies:
-			print_info(darkred("\t    # Dependency: ")+rundep)
-		
 		conflicts = dbconn.retrieveConflicts(result[1])
 		if (conflicts):
 		    print_info(red("\t Conflicts with"))
@@ -200,12 +194,6 @@ def database(options):
 		
 		date = dbconn.retrieveDateCreation(result[1])
 		print_info(red("\t Package Creation date: ")+str(entropyTools.convertUnixTimeToHumanTime(int(date))))
-		
-		neededlibs = dbconn.retrieveNeededlibs(result[1])
-		if (neededlibs):
-		    print_info(red("\t Built with needed libraries"))
-		    for lib in neededlibs:
-			print_info(darkred("\t    # Needed library: ")+lib)
 		
 		revision = dbconn.retrieveRevision(result[1])
 		print_info(red("\t Entry revision: ")+str(revision))
@@ -1061,22 +1049,6 @@ class etpDatabase:
 			)
 	    )
 
-	# rundependencies, a list
-	for rdep in etpData['rundependencies']:
-	
-	    idrdep = self.isDependencyAvailable(rdep)
-	    if (idrdep == -1):
-	        # create category
-	        idrdep = self.addDependency(rdep)
-	
-	    self.cursor.execute(
-		'INSERT into rundependencies VALUES '
-		'(?,?)'
-		, (	idpackage,
-			idrdep,
-			)
-	    )
-
 	# provide
 	for atom in etpData['provide']:
 	    self.cursor.execute(
@@ -1094,22 +1066,6 @@ class etpDatabase:
 		'(?,?)'
 		, (	idpackage,
 			conflict,
-			)
-	    )
-
-	# neededlibs, a list
-	for lib in etpData['neededlibs']:
-
-	    idlib = self.isLibraryAvailable(lib)
-	    if (idlib == -1):
-	        # create category
-	        idlib = self.addLibrary(lib)
-
-	    self.cursor.execute(
-		'INSERT into neededlibs VALUES '
-		'(?,?)'
-		, (	idpackage,
-			idlib,
 			)
 	    )
 
@@ -1222,18 +1178,8 @@ class etpDatabase:
 	
 	if (stableFound):
 	    
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: found an old stable package, if etpData['neededlibs'] is equal, mark the branch of this updated package, stable too")
-	    
-	    # in this case, we should compare etpData['neededlibs'] with the db entry to see if there has been a API breakage
-	    idpackage = self.getIDPackage(etpData['category'] + "/" + etpData['name'] + "-" + etpData['version']+versiontag,"stable")
-	    dbStoredNeededLibs = self.retrieveNeededlibs(idpackage)
-	    if (etpData['neededlibs'] == dbStoredNeededLibs):
-		# it is safe to keep it as stable because of:
-		# - name/version match
-		# - same libraries requirements
-		# setup etpData['branch'] accordingly
-		etpData['branch'] = "stable"
-		dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: yes, their etpData['neededlibs'] match, marking the new package stable.")
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: mark the branch of this updated package, stable too")
+	    etpData['branch'] = "stable"
 
 
 	# get selected package revision
@@ -1285,8 +1231,6 @@ class etpDatabase:
 	self.cursor.execute('DELETE FROM content WHERE idpackage = '+idpackage)
 	# dependencies
 	self.cursor.execute('DELETE FROM dependencies WHERE idpackage = '+idpackage)
-	# rundependencies
-	self.cursor.execute('DELETE FROM rundependencies WHERE idpackage = '+idpackage)
 	# provide
 	self.cursor.execute('DELETE FROM provide WHERE idpackage = '+idpackage)
 	# conflicts
@@ -1306,7 +1250,6 @@ class etpDatabase:
 	self.removePackageFromInstalledTable(idpackage)
 	
 	# Cleanups
-	self.cleanupLibraries()
 	self.cleanupUseflags()
 	self.cleanupSources()
 	self.cleanupDependencies()
@@ -1340,19 +1283,6 @@ class etpDatabase:
 	    self.commitChanges()
 	    return cat
 	raise Exception, "I tried to insert a category but then, fetching it returned -1. There's something broken."
-
-    def addLibrary(self,libraryname):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addLibrary: adding Package Library -> "+str(libraryname))
-	self.cursor.execute(
-		'INSERT into libraries VALUES '
-		'(NULL,?)', (libraryname,)
-	)
-	# get info about inserted value and return
-	lib = self.isLibraryAvailable(libraryname)
-	if lib != -1:
-	    self.commitChanges()
-	    return lib
-	raise Exception, "I tried to insert a library but then, fetching it returned -1. There's something broken."
 
     def addSource(self,source):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addSource: adding Package Source -> "+str(source))
@@ -1437,24 +1367,6 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setChecksum: setting new digest for idpackage: "+str(idpackage)+" -> "+str(digest))
 	self.cursor.execute('UPDATE extrainfo SET digest = "'+str(digest)+'" WHERE idpackage = "'+str(idpackage)+'"')
 
-    def cleanupLibraries(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupLibraries: called.")
-	self.cursor.execute('SELECT idlibrary FROM libraries')
-	idlibs = []
-	for row in self.cursor:
-	    idlibs.append(row[0])
-	# now parse them into libraries table
-	idlibs = list(set(idlibs))
-	orphanedLibs = idlibs[:]
-	for idlib in idlibs:
-	    self.cursor.execute('SELECT idlibrary FROM neededlibs WHERE idlibrary = '+str(idlib))
-	    for row in self.cursor:
-		orphanedLibs.remove(row[0])
-		break
-	# now we have orphans that can be removed safely
-	for idolib in orphanedLibs:
-	    self.cursor.execute('DELETE FROM libraries WHERE idlibrary = '+str(idolib))
-
     def cleanupUseflags(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupUseflags: called.")
 	self.cursor.execute('SELECT idflag FROM useflagsreference')
@@ -1502,11 +1414,6 @@ class etpDatabase:
 	orphanedDeps = iddeps[:]
 	for iddep in iddeps:
 	    self.cursor.execute('SELECT iddependency FROM dependencies WHERE iddependency = '+str(iddep))
-	    for row in self.cursor:
-		orphanedDeps.remove(row[0])
-		break
-	for iddep in iddeps:
-	    self.cursor.execute('SELECT iddependency FROM rundependencies WHERE iddependency = '+str(iddep))
 	    for row in self.cursor:
 		orphanedDeps.remove(row[0])
 		break
@@ -1624,13 +1531,11 @@ class etpDatabase:
 	data['content'] = self.retrieveContent(idpackage)
 	
 	data['dependencies'] = self.retrieveDependencies(idpackage)
-	data['rundependencies'] = self.retrieveRunDependencies(idpackage)
 	data['provide'] = self.retrieveProvide(idpackage)
 	data['conflicts'] = self.retrieveConflicts(idpackage)
 	
 	data['etpapi'] = self.retrieveApi(idpackage)
 	data['datecreation'] = self.retrieveDateCreation(idpackage)
-	data['neededlibs'] = self.retrieveNeededlibs(idpackage)
 	data['size'] = self.retrieveSize(idpackage)
 	return data
 
@@ -1793,19 +1698,6 @@ class etpDatabase:
 		deps.append(row[0])
 	return deps
 
-    def retrieveRunDependencies(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveRunDependencies: retrieving Runtime Dependencies for package ID "+str(idpackage))
-	self.cursor.execute('SELECT iddependency FROM rundependencies WHERE idpackage = "'+str(idpackage)+'"')
-	iddeps = []
-	for row in self.cursor:
-	    iddeps.append(row[0])
-	deps = []
-	for iddep in iddeps:
-	    self.cursor.execute('SELECT dependency FROM dependenciesreference WHERE iddependency = "'+str(iddep)+'"')
-	    for row in self.cursor:
-		deps.append(row[0])
-	return deps
-
     def retrieveBinKeywords(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBinKeywords: retrieving Binary Keywords for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "idkeyword" FROM binkeywords WHERE idpackage = "'+str(idpackage)+'"')
@@ -1871,19 +1763,6 @@ class etpDatabase:
 	    break
 	return ver
     
-    def retrieveNeededlibs(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveNeededlibs: retrieving Needed Libraries for package ID "+str(idpackage))
-	self.cursor.execute('SELECT idlibrary FROM neededlibs WHERE idpackage = "'+str(idpackage)+'"')
-	idlibs = []
-	for row in self.cursor:
-	    idlibs.append(row[0])
-	libs = []
-	for lib in idlibs:
-	    self.cursor.execute('SELECT libraryname FROM libraries WHERE idlibrary = "'+str(lib)+'"')
-	    for row in self.cursor:
-		libs.append(row[0])
-	return libs
-
     def retrieveMirrorInfo(self, mirrorname):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveMirrorInfo: retrieving Mirror info for mirror name "+str(mirrorname))
 	self.cursor.execute('SELECT "mirrorlink" FROM mirrorlinks WHERE mirrorname = "'+str(mirrorname)+'"')
@@ -1988,18 +1867,6 @@ class etpDatabase:
 	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isCategoryAvailable: "+category+" not available.")
 	    return result
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCategoryAvailable: "+category+" available.")
-	return result
-
-    def isLibraryAvailable(self,libraryname):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLibraryAvailable: called.")
-	result = -1
-	self.cursor.execute('SELECT idlibrary FROM libraries WHERE libraryname = "'+libraryname+'"')
-	for row in self.cursor:
-	    result = row[0]
-	if result == -1:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isLibraryAvailable: "+libraryname+" not available.")
-	    return result
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLibraryAvailable: "+libraryname+" available.")
 	return result
 
     def isSourceAvailable(self,source):
@@ -2315,9 +2182,7 @@ class etpDatabase:
 	self.cursor.execute('SELECT * FROM extrainfo')
 	self.cursor.execute('SELECT * FROM content')
 	self.cursor.execute('SELECT * FROM dependencies')
-	self.cursor.execute('SELECT * FROM rundependencies')
 	self.cursor.execute('SELECT * FROM conflicts')
-	self.cursor.execute('SELECT * FROM neededlibs')
 	self.cursor.execute('SELECT * FROM mirrorlinks')
 	self.cursor.execute('SELECT * FROM sources')
 	self.cursor.execute('SELECT * FROM useflags')

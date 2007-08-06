@@ -32,7 +32,7 @@ import re
 import sys
 import os
 import string
-from portageTools import synthetizeRoughDependencies, getPackageRuntimeDependencies, getThirdPartyMirrors
+from portageTools import synthetizeRoughDependencies, getThirdPartyMirrors
 
 # Logging initialization
 import logTools
@@ -553,39 +553,7 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
 	# add kname to the dependency
 	etpData['dependencies'].append("sys-kernel/linux-"+kname+"-"+kver)
 
-    # etpData['rdependencies']
-    # Now we need to add environmental dependencies
-    # Notes (take the example of mplayer that needed a newer libcaca release):
-    # - we can use (from /var/db) "NEEDED" file to catch all the needed libraries to run the binary package
-    # - we can use (from /var/db) "CONTENTS" to rapidly search the NEEDED files in the file above
-    # return all the collected info
-
-    print_info(yellow(" * ")+red("Getting package runtime dependencies..."),back = True)
-	
-    # start collecting needed libraries
-    runtimeNeededPackages, neededLibraries = getPackageRuntimeDependencies(tbz2TmpDir+"/"+dbNEEDED)
-    
-    if len(neededLibraries) > 0:
-	etpData['neededlibs'] = neededLibraries
-    else:
-	etpData['neededlibs'] = []
-
-    
-    etpData['rundependencies'] = []
-    for i in runtimeNeededPackages:
-	found = False
-	for x in etpData['dependencies']:
-	    ikey = dep_getkey(i)
-	    xkey = dep_getkey(x)
-	    if ikey == xkey:
-		found = True
-		break
-	if (not found):
-	    # filter itself
-	    if (i != etpData['category']+"/"+etpData['name']):
-		etpData['rundependencies'].append(i)
-
-    print_info(yellow(" * ")+red("Getting Reagent API version..."),back = True)
+    print_info(yellow(" * ")+red("Getting Entropy API version..."),back = True)
     # write API info
     etpData['etpapi'] = etpConst['etpapi']
     

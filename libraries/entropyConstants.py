@@ -51,11 +51,9 @@ etpData = {
     'content': u"", # content of the package (files)
     'mirrorlinks': u"", # =mirror://openoffice|link1|link2|link3
     'dependencies': u"", # dependencies
-    'rundependencies': u"", # runtime dependencies + version
     'conflicts': u"", # blockers
     'etpapi': u"", # Entropy API revision
     'datecreation': u"", # mtime of the .tbz2 file
-    'neededlibs': u"", # libraries needed bye the applications in the package
     'size': u"", # the package size
     'versiontag': u"", # particular version tag
     'provide': u"" # like, cups provides dep virtual/lpr
@@ -131,11 +129,6 @@ CREATE TABLE dependencies (
     iddependency INTEGER
 );
 
-CREATE TABLE rundependencies (
-    idpackage INTEGER,
-    iddependency INTEGER
-);
-
 CREATE TABLE dependenciesreference (
     iddependency INTEGER PRIMARY KEY,
     dependency VARCHAR
@@ -144,16 +137,6 @@ CREATE TABLE dependenciesreference (
 CREATE TABLE conflicts (
     idpackage INTEGER,
     conflict VARCHAR
-);
-
-CREATE TABLE neededlibs (
-    idpackage INTEGER,
-    idlibrary INTEGER
-);
-
-CREATE TABLE libraries (
-    idlibrary INTEGER PRIMARY KEY,
-    libraryname VARCHAR
 );
 
 CREATE TABLE mirrorlinks (

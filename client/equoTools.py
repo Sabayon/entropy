@@ -1,7 +1,7 @@
 #!/usr/bin/python
 '''
     # DESCRIPTION:
-    # Equilibrium Library used by Python frontends
+    # Equo Library used by Python frontends
 
     Copyright (C) 2007 Fabio Erculiani
 
