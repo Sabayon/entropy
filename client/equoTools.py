@@ -950,8 +950,7 @@ def filterSatisfiedDependencies(dependencies): # FIXME add force reinstall optio
 '''
    @description: generates a dependency tree using unsatisfied dependencies
    @input package: atomInfo [idpackage,reponame]
-   @output: 	dependency tree dictionary, if a dependency cannot be found,
-   		it will be returned a dictionary with a -1 entry and the list of missing dependencies
+   @output: 	dependency tree dictionary, plus status code
 '''
 treecache = {}
 def generateDependencyTree(atomInfo, emptydeps = False):
@@ -965,6 +964,9 @@ def generateDependencyTree(atomInfo, emptydeps = False):
     depsOk = False
     
     clientDbconn = openClientDatabase()
+    if (clientDbconn == -1):
+	return [],-1
+    
     while (not depsOk):
 	treedepth += 1
 	tree[treedepth] = []
@@ -1025,20 +1027,13 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 
     clientDbconn.closeDB()
 
-    #print tree
-    #cnt = 0
-    #for x in tree:
-    #    cnt += len(tree[x])
-    #print cnt
-    #sys.exit()
-
     if (dependenciesNotFound):
 	# Houston, we've got a problem
 	#print "error! DEPS NOT FOUND -> "+str(dependenciesNotFound)
 	treeview = {}
 	treeview[0] = {}
 	treeview[0][0] = dependenciesNotFound
-	return treeview,False
+	return treeview,1
 
     newtree = {} # tree list
     if (tree):
@@ -1065,7 +1060,7 @@ def generateDependencyTree(atomInfo, emptydeps = False):
     del tree
 
     #print treeview
-    return newtree,True # treeview is used to show deps while tree is used to run the dependency code.
+    return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
 
 '''
@@ -1082,7 +1077,7 @@ def getRequiredPackages(foundAtoms, emptydeps = False):
     for atomInfo in foundAtoms:
 	depcount += 1
 	newtree, result = generateDependencyTree(atomInfo, emptydeps)
-	if (not result):
+	if (result != 0):
 	    return newtree, result
 	if (newtree):
 	    deptree[depcount] = newtree.copy()
@@ -1919,9 +1914,12 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
         treepackages, result = getRequiredPackages(foundAtoms, emptydeps)
         # add dependencies, explode them
 
-	if (not result):
+	if (result == 1):
 	    print_error(red(" @@ ")+blue("Cannot find needed dependencies: ")+str(treepackages))
 	    return 130, -1
+	elif (result == -1): # no database connection
+	    print_error(red(" @@ ")+blue("Cannot find the Installed Packages Database. It's needed to accomplish dependency resolving. Try to run ")+bold("equo database generate"))
+	    return 200, -1
 	pkgs = []
 	for x in range(len(treepackages))[::-1]:
 	    #print x
