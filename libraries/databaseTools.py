@@ -1235,8 +1235,6 @@ class etpDatabase:
 	self.cursor.execute('DELETE FROM provide WHERE idpackage = '+idpackage)
 	# conflicts
 	self.cursor.execute('DELETE FROM conflicts WHERE idpackage = '+idpackage)
-	# neededlibs
-	self.cursor.execute('DELETE FROM neededlibs WHERE idpackage = '+idpackage)
 	# sources
 	self.cursor.execute('DELETE FROM sources WHERE idpackage = '+idpackage)
 	# useflags
