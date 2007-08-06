@@ -115,5 +115,5 @@ elif (options[0] == "smartapps"):
 
 # cleanup
 if (options[0] == "cleanup"):
-    entropyTools.cleanup(options[1:])
+    entropyTools.cleanup()
     sys.exit(0)

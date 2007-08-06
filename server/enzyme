@@ -154,5 +154,5 @@ if (options[0] == "orphans"):
     sys.exit(0)
 # cleanup tool
 if (options[0] == "cleanup"):
-    entropyTools.cleanup(options[1:])
+    entropyTools.cleanup()
     sys.exit(0)

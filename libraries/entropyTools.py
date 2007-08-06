@@ -615,15 +615,16 @@ def alphaSorter(seq):
     return list(x[1] for x in deco)
 
 # Temporary files cleaner
-def cleanup(options):
+def cleanup(toCleanDirs = []):
 
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanup: with options: "+str(options))
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanup: called.")
 
-    toCleanDirs = [ etpConst['packagestmpdir'], etpConst['logdir'] ]
+    if (not toCleanDirs):
+        toCleanDirs = [ etpConst['packagestmpdir'], etpConst['logdir'] ]
     counter = 0
 
     for dir in toCleanDirs:
-        print_info(red(" * ")+"Cleaning "+yellow(dir)+" directory...", back = True)
+        print_info(red(" * ")+"Cleaning "+darkgreen(dir)+" directory...", back = True)
 	dircontent = os.listdir(dir)
 	if dircontent != []:
 	    for data in dircontent:

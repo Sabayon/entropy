@@ -66,6 +66,7 @@ def print_help():
 
     print_info(" \t"+blue(bold("database"))+brown("\t handle installed packages database"))
     print_info(" \t\t"+darkgreen("generate")+red("\t\t generate installed packages database"))
+    print_info(" \t"+blue(bold("cleanup"))+brown("\t\t remove downloaded packages and clean temporary directories"))
 
 options = sys.argv[1:]
 
@@ -108,3 +109,7 @@ elif (options[0] == "query"):
 elif (options[0] == "database"):
     rc = equoTools.database(options[1:])
     sys.exit(rc)
+
+elif (options[0] == "cleanup"):
+    entropyTools.cleanup([ etpConst['packagestmpdir'], etpConst['logdir'], etpConst['entropyunpackdir'], etpConst['packagesbindir'] ])
+    sys.exit(0)
