@@ -44,14 +44,25 @@ activatorLog = logTools.LogFile(level=etpConst['activatorloglevel'],filename = e
 import remoteTools
 
 def sync(options, justTidy = False):
-
+	
+    activatorRequestNoAsk = False
+    myopts = []
+    for i in options:
+        if ( i == "--noask" ):
+	    activatorRequestNoAsk = True
+	else:
+	    myopts.append(i)
+    options = myopts
+	
     activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: called with justTidy -> "+str(justTidy))
-
     print_info(green(" * ")+red("Starting to sync data across mirrors (packages/database) ..."))
     
     if (not justTidy):
         # firstly sync the packages
-        rc = packages([ "sync" , "--ask" ])
+	if (activatorRequestNoAsk):
+	    rc = packages([ "sync" ])
+	else:
+	    rc = packages([ "sync" , "--ask" ])
         # then sync the database, if the packages sync completed successfully
         if (rc == False):
 	    sys.exit(401)
@@ -62,10 +73,11 @@ def sync(options, justTidy = False):
 	    import databaseTools
 	    databaseTools.database(['md5check'])
 	    time.sleep(2)
-	    # ask question
-	    rc = askquestion("     Should I continue with the tidy procedure ?")
-	    if rc == "No":
-		sys.exit(0)
+	    if (not activatorRequestNoAsk):
+	        # ask question
+	        rc = askquestion("     Should I continue with the tidy procedure ?")
+	        if rc == "No":
+		    sys.exit(0)
     
     print_info(green(" * ")+red("Starting to collect packages that would be removed from the repository ..."), back = True)
     
@@ -103,9 +115,10 @@ def sync(options, justTidy = False):
 	print_info(green("\t* ")+yellow(file))
 	
     # ask question
-    rc = askquestion("     Would you like to continue ?")
-    if rc == "No":
-	sys.exit(0)
+    if (not activatorRequestNoAsk):
+        rc = askquestion("     Would you like to continue ?")
+        if rc == "No":
+	    sys.exit(0)
 
     # remove them!
     activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: starting to remove packages from mirrors.")

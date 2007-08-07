@@ -45,6 +45,7 @@ def print_help():
     print_info("  --nocolor\t\tdisable colorized output")
     print_info(blue("Tools available: "))
     print_info(" \t"+green(bold("sync"))+yellow("\t\t to sync packages, database and also do some tidy"))
+    print_info(" \t\t"+red("--noask")+"\t\t\t do not make any question")
     print_info(" \t"+green(bold("tidy"))+yellow("\t\t to just remove binary packages that are not in the Entropy database anymore"))
     print_info(" \t"+green(bold("packages"))+yellow("\t to manage binary packages"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
