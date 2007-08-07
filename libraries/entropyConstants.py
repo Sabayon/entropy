@@ -449,6 +449,15 @@ else:
 		url = url+"/"
 	    etpRemoteSupport[servername] = url
 
+# fill etpConst['overlays']
+if os.path.isdir(etpConst['overlaysdir']):
+    ovlst = os.listdir(etpConst['overlaysdir'])
+    _ovlst = []
+    for i in ovlst:
+        if os.path.isdir(etpConst['overlaysdir']+"/"+i):
+	    _ovlst.append(etpConst['overlaysdir']+"/"+i)
+    etpConst['overlays'] = string.join(_ovlst," ")
+
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things
 dbDESCRIPTION = "DESCRIPTION"

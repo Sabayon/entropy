@@ -119,10 +119,10 @@ def calculateFullAtomsDependencies(atoms, deep = False, extraopts = ""):
     deplist = []
     blocklist = []
     
-    try:
-	useflags = "USE='"+os.environ['USE']+"' "
-    except:
-	useflags = ""
+    useflags = " USE='"
+    useflags += getUSEFlags()
+    useflags += "' "
+
     cmd = useflags+cdbRunEmerge+" --pretend --color=n --quiet "+deepOpt+" "+extraopts+" "+atoms
     result = commands.getoutput(cmd).split("\n")
     for line in result:

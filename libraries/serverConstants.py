@@ -90,15 +90,6 @@ nocheck  : yes
     f.flush()
     f.close()
 
-# fill etpConst['overlays']
-if os.path.isdir(etpConst['overlaysdir']):
-    ovlst = os.listdir(etpConst['overlaysdir'])
-    _ovlst = []
-    for i in ovlst:
-        if os.path.isdir(etpConst['overlaysdir']+"/"+i):
-	    _ovlst.append(etpConst['overlaysdir']+"/"+i)
-    etpConst['overlays'] = string.join(_ovlst," ")
-
 # activator section
 if (not os.path.isfile(etpConst['activatorconf'])):
     print "CRITICAL WARNING!!! "+etpConst['activatorconf']+" does not exist"
