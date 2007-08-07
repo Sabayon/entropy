@@ -1155,7 +1155,7 @@ def generateRemovalTree(atoms):
 	    #print mydepends
 	    for depend in depends:
 		if depend in treeview:
-		    print "changed"
+		    #print "changed"
 		    change = True
 		    try:
 			while 1:
@@ -1994,7 +1994,7 @@ def openClientDatabase():
         conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
 	return conn
     else:
-	return -1
+	raise Exception,"openClientDatabase: installed packages database not found. At this stage, the only way to have it is to run 'equo database generate'."
 
 
 ########################################################

@@ -847,7 +847,10 @@ class etpDatabase:
     def commitChanges(self):
 	if (not self.readOnly):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"commitChanges: writing changes to database.")
-	    self.connection.commit()
+	    try:
+	        self.connection.commit()
+	    except:
+		pass
 	    self.taintDatabase()
 	else:
 	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"commitChanges: discarding changes to database (opened readonly).")
@@ -1382,6 +1385,8 @@ class etpDatabase:
 	# now we have orphans that can be removed safely
 	for idoflag in orphanedFlags:
 	    self.cursor.execute('DELETE FROM useflagsreference WHERE idflag = '+str(idoflag))
+	    for row in self.cursor:
+		x = row # really necessary ?
 
     def cleanupSources(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupSources: called.")
@@ -1400,6 +1405,8 @@ class etpDatabase:
 	# now we have orphans that can be removed safely
 	for idosrc in orphanedSources:
 	    self.cursor.execute('DELETE FROM sourcesreference WHERE idsource = '+str(idosrc))
+	    for row in self.cursor:
+		x = row # really necessary ?
 
     def cleanupDependencies(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupDependencies: called.")
@@ -1418,6 +1425,8 @@ class etpDatabase:
 	# now we have orphans that can be removed safely
 	for idodep in orphanedDeps:
 	    self.cursor.execute('DELETE FROM dependenciesreference WHERE iddependency = '+str(idodep))
+	    for row in self.cursor:
+		x = row # really necessary ?
 
     # WARNING: this function must be kept in sync with Entropy database schema
     # returns True if equal
