@@ -399,19 +399,18 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
     etpData['useflags'] = []
     f = open(tbz2TmpDir+dbUSE,"r")
     tmpUSE = f.readline().strip()
+    for x in tmpUSE.split():
+	if (x):
+	    etpData['useflags'].append(x)
     f.close()
+    '''
     try:
         f = open(tbz2TmpDir+dbIUSE,"r")
         tmpIUSE = f.readline().strip().split()
         f.close()
     except IOError:
         tmpIUSE = []
-
-    for i in tmpIUSE:
-	if tmpUSE.find(" "+i+" ") != -1:
-	    etpData['useflags'].append(i)
-	else:
-	    etpData['useflags'].append("-"+i)
+   '''
 
     print_info(yellow(" * ")+red("Getting package provide content..."),back = True)
     # Fill Provide
@@ -426,9 +425,6 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
 		etpData['provide'].append(x)
     except:
         pass
-
-    # cleanup
-    etpData['useflags'] = filterDuplicatedEntries(etpData['useflags'])
 
     print_info(yellow(" * ")+red("Getting package sources information..."),back = True)
     # Fill sources

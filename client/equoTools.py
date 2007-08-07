@@ -1031,11 +1031,11 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 
     if (dependenciesNotFound):
 	# Houston, we've got a problem
-	#print "error! DEPS NOT FOUND -> "+str(dependenciesNotFound)
+	print "error! DEPS NOT FOUND -> "+str(dependenciesNotFound)
 	treeview = {}
 	treeview[0] = {}
 	treeview[0][0] = dependenciesNotFound
-	return treeview,1
+	return treeview,-2
 
     newtree = {} # tree list
     if (tree):
@@ -1112,7 +1112,7 @@ def getRequiredPackages(foundAtoms, emptydeps = False):
 		    x += 1
     del deptree
 
-    return newdeptree,True
+    return newdeptree,0
 
 
 '''
@@ -1663,6 +1663,7 @@ def printPackageInfo(idpackage,dbconn, clientSearch = False, strictOutput = Fals
         pkgdigest = dbconn.retrieveDigest(idpackage)
         pkgcreatedate = convertUnixTimeToHumanTime(int(dbconn.retrieveDateCreation(idpackage)))
         pkgsize = bytesIntoHuman(pkgsize)
+	pkgdeps = dbconn.retrieveDependencies(idpackage)
 
     pkghome = dbconn.retrieveHomepage(idpackage)
     pkgslot = dbconn.retrieveSlot(idpackage)
@@ -1710,6 +1711,10 @@ def printPackageInfo(idpackage,dbconn, clientSearch = False, strictOutput = Fals
         print_info(darkgreen("       Size:\t\t\t")+blue(str(pkgsize)))
         print_info(darkgreen("       Download:\t\t")+brown(str(pkgbin)))
         print_info(darkgreen("       Checksum:\t\t")+brown(str(pkgdigest)))
+	if (pkgdeps):
+	    print_info(darkred("       ##")+darkgreen(" Dependencies:"))
+	    for pdep in pkgdeps:
+		print_info(darkred("       ## \t\t\t")+brown(pdep))
     print_info(darkgreen("       Homepage:\t\t")+red(pkghome))
     print_info(darkgreen("       Description:\t\t")+pkgdesc)
     if (not strictOutput):
@@ -2104,8 +2109,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
     if (deps):
         treepackages, result = getRequiredPackages(foundAtoms, emptydeps)
         # add dependencies, explode them
-
-	if (result == 1):
+	if (result == -2):
 	    print_error(red(" @@ ")+blue("Cannot find needed dependencies: ")+str(treepackages))
 	    return 130, -1
 	elif (result == -1): # no database connection
