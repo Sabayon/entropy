@@ -169,6 +169,7 @@ def build(atoms):
     enzymeRequestSimulation = False
     enzymeRequestSkipfirst = False
     enzymeRequestSkipN = False
+    enzymeRequestNoSync = False
     _atoms = []
     for i in atoms:
         if ( i == "--verbose" ) or ( i == "-v" ):
@@ -190,6 +191,8 @@ def build(atoms):
 	    enzymeRequestForceRebuild = True
 	elif ( i == "--use" ):
 	    enzymeRequestUse = True
+	elif ( i == "--nosync" ):
+	    enzymeRequestNoSync = True
 	elif ( i == "--skipfirst" ):
 	    enzymeRequestSkipfirst = True
 	elif ( i.startswith("--skip=") ):
@@ -434,11 +437,12 @@ def build(atoms):
 	    sys.exit(0)
 
     # sync binary packages repository
-    import activatorTools
-    if (enzymeRequestInteraction):
-        activatorTools.packages(["sync" , "--ask"])
-    else:
-        activatorTools.packages(["sync"])
+    if (not enzymeRequestNoSync):
+        import activatorTools
+        if (enzymeRequestInteraction):
+            activatorTools.packages(["sync" , "--ask"])
+        else:
+            activatorTools.packages(["sync"])
 
 
     # when the compilation ends, enzyme runs reagent
@@ -585,6 +589,7 @@ def world(options):
     enzymeRequestJustRepackageWorld = False
     enzymeRequestSkipfirst = False
     enzymeRequestSkipN = False
+    enzymeRequestNoSync = False
     for i in myopts:
         if ( i == "--verbose" ) or ( i == "-v" ):
 	    enzymeRequestVerbose = True
@@ -594,8 +599,10 @@ def world(options):
 	    enzymeRequestAsk = True
 	elif ( i == "--pretend" ):
 	    enzymeRequestPretend = True
+	elif ( i == "--nosync" ):
+	    enzymeRequestPretend = True
 	elif ( i == "--skipfirst" ):
-	    enzymeRequestSkipfirst = True
+	    enzymeRequestNoSync = True
 	elif ( i.startswith("--skip=") ):
 	    enzymeRequestSkipN = True
 	    skip_number = i.split("--skip=")[len(i.split("--skip="))-1]
@@ -664,6 +671,8 @@ def world(options):
 	atoms.append("--nodeps")
 	if (enzymeRequestPretend):
 	    atoms.append("--pretend")
+	if (enzymeRequestNoSync):
+	    atoms.append("--nosync")
 	elif (enzymeRequestAsk):
 	    atoms.append("--ask")
 	build(atoms)

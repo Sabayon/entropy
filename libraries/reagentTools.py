@@ -408,16 +408,17 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
     except IOError:
         tmpIUSE = []
 
-    for i in tmpIUSE:
-	if tmpUSE.find(" "+i+" ") != -1:
-	    etpData['useflags'].append(i)
-	else:
-	    etpData['useflags'].append("-"+i)
-
     PackageFlags = []
     for x in tmpUSE.split():
 	if (x):
 	    PackageFlags.append(x)
+
+    for i in tmpIUSE:
+	try:
+	    PackageFlags.index(i)
+	    etpData['useflags'].append(i)
+	except:
+	    etpData['useflags'].append("-"+i)
 
     print_info(yellow(" * ")+red("Getting package provide content..."),back = True)
     # Fill Provide
