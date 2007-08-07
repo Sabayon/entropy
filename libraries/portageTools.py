@@ -667,12 +667,12 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 	    useFlagQuestion = True # V
 	    #openParenthesisFromLastUseFlagQuestion = 0
 	    if useFlag.startswith("!"):
-		checkFlag = "-"+useFlag[1:]
+		checkFlag = useFlag[1:]
 		try:
 		    useflags.index(checkFlag)
-		    useMatch = True
-		except:
 		    useMatch = False
+		except:
+		    useMatch = True
 	    else:
 		try:
 		    useflags.index(useFlag)
