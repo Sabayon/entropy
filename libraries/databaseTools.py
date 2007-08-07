@@ -1959,12 +1959,29 @@ class etpDatabase:
     def searchDepends(self, atomkey):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchDepends: called for "+atomkey)
 	iddeps = []
-	self.cursor.execute('SELECT iddependency FROM dependenciesreference WHERE dependency LIKE "%'+atomkey+'%"')
+	self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference WHERE dependency LIKE "%'+atomkey+'%"') # FIXME: handle slotted packages, even if it's not a big issue atm
 	for row in self.cursor:
-	    iddeps.append(row[0])
+	    iddeps.append(row)
+	try:
+	    atomkey = entropyTools.dep_getkey(atomkey)
+	    atomcat = atomkey.split("/")[0]
+	    atomname = atomkey.split("/")[1]
+	    if iddeps:
+		_iddeps = iddeps[:]
+	        for x in _iddeps:
+		    if x:
+			mykey = entropyTools.dep_getkey(x[1])
+			mycat = mykey.split("/")[0]
+			myname = mykey.split("/")[1]
+			if mykey.find("|or|") == -1 and mykey.find("|and|") == -1: # maybe find a better way
+			    if (mycat != atomcat) or (myname != atomname):
+			        iddeps.remove(x)
+	except:
+	    pass
 	result = []
 	for iddep in iddeps:
-	    self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = "'+str(iddep)+'"')
+	    #print iddep
+	    self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = "'+str(iddep[0])+'"')
 	    for row in self.cursor:
 	        result.append(row[0])
 	return result

@@ -1855,6 +1855,7 @@ def searchDepends(atoms, idreturn = False, verbose = False):
         print_info(yellow(" @@ ")+darkgreen("Depends Search..."))
 
     # validate atoms
+    '''
     _atoms = []
     for atom in atoms:
 	try:
@@ -1864,6 +1865,7 @@ def searchDepends(atoms, idreturn = False, verbose = False):
 	    print_warning(red("  !! ")+bold(atom)+red(" is not valid."))
 	    pass
     atoms = _atoms
+    '''
     #packages = searchPackage(atoms,idreturn = True)
 
     clientDbconn = openClientDatabase()
