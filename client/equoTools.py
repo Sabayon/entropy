@@ -1003,11 +1003,15 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 	    else:
 		# found, get its deps
 		mydeps = getDependencies(atom)
-		mydeps = filterSatisfiedDependencies(mydeps)
+		if (emptydeps):
+		    mydeps = filterSatisfiedDependencies(mydeps)
 		for dep in mydeps:
 		    remainingDeps.append(dep)
 		xmatch = atomMatchInRepository(undep,clientDbconn)
-		if xmatch[0] == -1:
+		if (not emptydeps):
+		    if xmatch[0] == -1:
+		        tree[treedepth].append(undep)
+		else:
 		    tree[treedepth].append(undep)
 		treecache[undep] = True
 		try:
@@ -1031,7 +1035,7 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 
     if (dependenciesNotFound):
 	# Houston, we've got a problem
-	print "error! DEPS NOT FOUND -> "+str(dependenciesNotFound)
+	#print "error! DEPS NOT FOUND -> "+str(dependenciesNotFound)
 	treeview = {}
 	treeview[0] = {}
 	treeview[0][0] = dependenciesNotFound

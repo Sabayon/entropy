@@ -572,7 +572,7 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
 
 
 def smartapps(options):
-    
+
     reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"smartapps: called -> options: "+str(options))
     
     if (len(options) == 0):
@@ -594,7 +594,7 @@ def smartapps(options):
 	for opt in myopts:
 	    pkgsfound = dbconn.searchPackages(opt)
 	    for pkg in pkgsfound:
-		validPackages.append(pkg[0])
+		validPackages.append(pkg)
 
 	dbconn.closeDB()
 
@@ -605,14 +605,14 @@ def smartapps(options):
 	# print the list
 	print_info(green(" * ")+red("This is the list of the packages that would be worked out:"))
 	for pkg in validPackages:
-	    print_info(green("\t[SMART] - ")+bold(pkg))
+	    print_info(green("\t[SMART] - ")+bold(pkg[0]))
 
 	rc = askquestion(">>   Would you like to create the packages above ?")
 	if rc == "No":
 	    sys.exit(0)
 	
 	for pkg in validPackages:
-	    print_info(green(" * ")+red("Creating smartapp package from ")+bold(pkg))
+	    print_info(green(" * ")+red("Creating smartapp package from ")+bold(pkg[0]))
 	    smartgenerator(pkg)
 
 	print_info(green(" * ")+red("Smartapps creation done, remember to test them before publishing."))
@@ -621,110 +621,62 @@ def smartapps(options):
 # tool that generates .tar.bz2 packages with all the binary dependencies included
 # @returns the package file path
 # NOTE: this section is highly portage dependent
-def smartgenerator(atom):
+def smartgenerator(atomInfo):
     
-    reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"smartgenerator: called -> package: "+str(atom))
-    
+    reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"smartgenerator: called -> package: "+str(atomInfo))
     dbconn = databaseTools.etpDatabase(readOnly = True)
-    
-    # handle branch management:
-    # if unstable package is found, that will be used
-    # otherwise we revert to the stable one
-    if (dbconn.isSpecificPackageAvailable(package, branch == "unstable")):
-	branch = "unstable"
-    else:
-	branch = "stable"
+
+    sys.path.append('../client')
+    import equoTools
+
+    idpackage = atomInfo[1]
+    atom = atomInfo[0]
     
     # check if the application package is available, otherwise, download
-    pkgfilepath = dbconn.retrievePackageVar(atom,"download", branch)
-    pkgneededlibs = dbconn.retrievePackageVar(atom,"neededlibs", branch)
-    pkgneededlibs = pkgneededlibs.split()
-    pkgcontent = dbconn.retrievePackageVar(atom,"content", branch)
-    pkgfilename = pkgfilepath.split("/")[len(pkgfilepath.split("/"))-1]
+    pkgfilepath = dbconn.retrieveDownloadURL(idpackage)
+    pkgcontent = dbconn.retrieveContent(idpackage)
+    pkgfilename = os.path.basename(pkgfilepath)
     pkgname = pkgfilename.split(".tbz2")[0]
     
-    # extra dependency check
-    extraDeps = []
-    
-    pkgdependencies = dbconn.retrievePackageVar(atom,"dependencies", branch).split()
-    for dep in pkgdependencies:
-	# remove unwanted dependencies
-	if (dep.find("sys-devel") == -1) \
-		and (dep.find("dev-util") == -1) \
-		and (dep.find("dev-lang") == -1) \
-		and (dep.find("x11-libs") == -1) \
-		and (dep.find("x11-proto") == -1):
-	    extraDeps.append(dep_getkey(dep))
+    pkgdependencies, result = equoTools.getRequiredPackages([[idpackage,etpConst['officialrepositoryname']]], emptydeps = True)
+    # flatten them
+    pkgs = []
+    if (result == 0):
+	for x in range(len(pkgdependencies))[::-1]:
+	    #print x
+	    for z in pkgdependencies[x]:
+		#print treepackages[x][z]
+		for a in pkgdependencies[x][z]:
+		    pkgs.append(a)
+    elif (result == -2):
+	print_error(green(" * ")+red("Missing dependencies: ")+str(pkgdependencies))
+	sys.exit(505)
+    elif (result == -1):
+	print_error(green(" * ")+red("Database file not found or no database connection. --> ")+str(pkgdependencies))
+	sys.exit(506)
 
-    # expand dependencies
-    _extraDeps = []
-    for dep in extraDeps:
-	depnames = dbconn.searchPackages(dep)
-	for depname in depnames:
-	    _extraDeps.append(depname[0])
-	    if depname[0].find("dev-libs/glib") != -1:
-		# add pango
-		pangopkgs = dbconn.searchSimilarPackages("x11-libs/pango")
-		for pangopkg in pangopkgs:
-		    extraDeps.append(pangopkg)
-    
-    extraDeps = list(set(_extraDeps))
-    
-    extraPackages = []
-    # get their files
-    for dep in extraDeps:
-	depcontent = dbconn.retrievePackageVar(dep,"download", branch)
-	extraPackages.append(depcontent.split("/")[len(depcontent.split("/"))-1])
-	
-    pkgneededlibs = list(set(pkgneededlibs))
-    extraPackages = list(set(extraPackages))
-    
     print_info(green(" * ")+red("This is the list of the dependencies that would be included:"))
-    for i in extraPackages:
-        print_info(green("    [] ")+red(i))
+    for i in pkgs:
+	atom = dbconn.retrieveAtom(i[0])
+        print_info(green("    [] ")+red(atom))
 	
-    pkgdlpaths = [
-    		etpConst['packagesbindir'],
-		etpConst['packagessuploaddir'],
-    ]
-    
-    mainBinaryPath = ""
-    # check the main binary
-    for path in pkgdlpaths:
-	if os.path.isfile(path+"/"+pkgfilename):
-	    mainBinaryPath = path+"/"+pkgfilename
-	    break
-    # now check - do a for cycle
-    if (mainBinaryPath == ""):
-	# I have to download it
-	# FIXME: complete this
-	# do it when we have all the atoms that should be downloaded
-	print "download needed: not yet implemented"
-
-    extraPackagesPaths = []
-    # check dependencies
-    for dep in extraPackages:
-	for path in pkgdlpaths:
-	    if os.path.isfile(path+"/"+dep):
-		extraPackagesPaths.append(path+"/"+dep)
-		break
-    
-    #print mainBinaryPath
-    #print extraPackagesPaths
-    
     # create the working directory
     pkgtmpdir = etpConst['packagestmpdir']+"/"+pkgname
     #print "DEBUG: "+pkgtmpdir
     if os.path.isdir(pkgtmpdir):
 	spawnCommand("rm -rf "+pkgtmpdir)
-    os.makedirs(pkgtmpdir)
-    uncompressTarBz2(mainBinaryPath,pkgtmpdir)
+    os.makedirs(pkgtmpdir+"/content")
+    mainBinaryPath = etpConst['packagesbindir']+"/"+pkgfilename
+    print_info(green(" * ")+red("Unpacking main package ")+bold(str(pkgfilename)))
+    uncompressTarBz2(mainBinaryPath,pkgtmpdir) # first unpack
+    uncompressTarBz2(pkgtmpdir+etpConst['packagecontentdir']+"/"+pkgfilename,pkgtmpdir+"/content") # second unpack
+    if os.path.isfile(pkgtmpdir+etpConst['packagecontentdir']+"/"+pkgfilename):
+	os.remove(pkgtmpdir+etpConst['packagecontentdir']+"/"+pkgfilename)
 
     binaryExecs = []
-    pkgcontent = pkgcontent.split()
     for file in pkgcontent:
 	# remove /
-	filepath = pkgtmpdir+file
+	filepath = pkgtmpdir+"/content"+file
 	import commands
 	if os.access(filepath,os.X_OK):
 	    # test if it's an exec
@@ -733,60 +685,25 @@ def smartgenerator(atom):
 		binaryExecs.append(file)
 	# check if file is executable
 
+
     # now uncompress all the rest
-    for dep in extraPackagesPaths:
-	uncompressTarBz2(dep,pkgtmpdir)
+    contentdir = pkgtmpdir+"/content"
+    for dep in pkgs:
+	download = os.path.basename(dbconn.retrieveDownloadURL(dep[0]))
+	print_info(green(" * ")+red("Unpacking dependency package ")+bold(str(download)))
+	deppath = etpConst['packagesbindir']+"/"+download
+	uncompressTarBz2(deppath,pkgtmpdir) # first unpack
+	uncompressTarBz2(pkgtmpdir+etpConst['packagecontentdir']+"/"+download,contentdir) # second unpack
+        if os.path.isfile(pkgtmpdir+etpConst['packagecontentdir']+"/"+download):
+	    os.remove(pkgtmpdir+etpConst['packagecontentdir']+"/"+download)
+	
+	
 
     # remove unwanted files (header files)
-    for (dir, subdirs, files) in os.walk(pkgtmpdir):
-	for file in files:
-	    if file.endswith(".h"):
-		try:
-		    os.remove(file)
-		except:
-		    pass
+    os.system('for file in `find '+contentdir+' -name "*.h"`; do rm $file; done')
 
-    librariesBlacklist = []
-    # add glibc libraries to the blacklist
-    glibcPkg = dbconn.searchPackages("sys-libs/glibc")
-    if len(glibcPkg) > 0:
-        glibcContent = dbconn.retrievePackageVar(glibcPkg[0][0],"content", branch)
-	for file in glibcContent.split():
-	    if ((file.startswith("/lib/")) or (file.startswith("/lib64/"))) and (file.find(".so") != -1):
-		librariesBlacklist.append(file)
-    # add here more blacklisted files
-    
-    # now copy all the needed libraries inside the tmpdir
-    # FIXME: should we rely on the libraries in the packages instead of copying them from the system?
-    # FIXME: in this case, we have to d/l them if they're not in the packages directory
-    _pkgneededlibs = []
-    for lib in pkgneededlibs:
-	# extract dir, filter /lib because it causes troubles ?
-	# FIXME: I think that sould be better creating a blacklist instead
-	fileOk = True
-	for file in librariesBlacklist:
-	    if lib == file:
-		fileOk = False
-		break
-	if (fileOk):
-	    _pkgneededlibs.append(lib)
-	    libdir = os.path.dirname(lib)
-	    #print lib
-	    if not os.path.isdir(pkgtmpdir+libdir):
-	        os.makedirs(pkgtmpdir+libdir)
-	    spawnCommand("cp -p "+lib+" "+pkgtmpdir+libdir)
-    pkgneededlibs = _pkgneededlibs
-    # collect libraries in the directories
-    
-    # catch /usr/lib/gcc/
-    gcclibpath = ""
-    for i in pkgneededlibs:
-	if i.startswith("/usr/lib/gcc"):
-	    gcclibpath += ":"+os.path.dirname(i)
-	    break
-    
     # now create the bash script for each binaryExecs
-    os.makedirs(pkgtmpdir+"/wrp")
+    os.makedirs(contentdir+"/wrp")
     bashScript = []
     bashScript.append(
     			'#!/bin/sh\n'
@@ -800,7 +717,7 @@ def smartgenerator(atom):
 			
 			'export LD_LIBRARY_PATH='
 			'$PWD/lib:'
-			'$PWD/lib64'+gcclibpath+':'
+			'$PWD/lib64:'
 			'$PWD/usr/lib:'
 			'$PWD/usr/lib64:'
 			'$PWD/usr/lib/nss:'
@@ -841,12 +758,12 @@ def smartgenerator(atom):
 			'fi\n'
 			'$2\n'
     )
-    f = open(pkgtmpdir+"/wrp/wrapper","w")
+    f = open(contentdir+"/wrp/wrapper","w")
     f.writelines(bashScript)
     f.flush()
     f.close()
     # chmod
-    os.chmod(pkgtmpdir+"/wrp/wrapper",0755)
+    os.chmod(contentdir+"/wrp/wrapper",0755)
 
 
 
@@ -868,17 +785,17 @@ def smartgenerator(atom):
 			'  return rc;\n'
 			'}\n'
 	)
-	f = open(pkgtmpdir+"/"+file+".cc","w")
+	f = open(contentdir+"/"+file+".cc","w")
 	f.writelines(runFile)
 	f.flush()
 	f.close()
 	# now compile
-	spawnCommand("cd "+pkgtmpdir+"/ ; g++ -Wall "+file+".cc -o "+file+".exe")
-	os.remove(pkgtmpdir+"/"+file+".cc")
+	spawnCommand("cd "+contentdir+"/ ; g++ -Wall "+file+".cc -o "+file+".exe")
+	os.remove(contentdir+"/"+file+".cc")
 
     # now compress in .tar.bz2 and place in etpConst['smartappsdir']
     #print etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tar.bz2"
     #print pkgtmpdir+"/"
-    compressTarBz2(etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tbz2",pkgtmpdir+"/")
+    compressTarBz2(etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tbz2",contentdir+"/")
     
     dbconn.closeDB()
