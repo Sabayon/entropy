@@ -220,55 +220,69 @@ def packages(options):
 	        # if a package is in the packages directory but not online, we have to upload it
 		# we have localPackagesRepository and remotePackages
 	        for localPackage in localPackagesRepository:
-		    try:
-			remotePackages.index(localPackage)
-			# it's already on the mirror, but... is its size correct?? FIXME: add md5 check
-			localSize = int(os.stat(etpConst['packagesbindir']+"/"+localPackage)[6])
-			remoteSize = 0
-			for file in remotePackagesInfo:
-			    if file.split()[8] == remotePackage:
-				remoteSize = int(file.split()[4])
-			if (localSize != remoteSize) and (localSize != 0):
-			    uploadQueue.append(localPackage)
-		    except:
+		    pkgfound = False
+		    for remotePackage in remotePackages:
+		        if localPackage == remotePackage:
+			    pkgfound = True
+			    # it's already on the mirror, but... is its size correct??
+			    localSize = int(os.stat(etpConst['packagesbindir']+"/"+localPackage)[6])
+			    remoteSize = 0
+			    for file in remotePackagesInfo:
+			        if file.split()[8] == remotePackage:
+				    remoteSize = int(file.split()[4])
+			    if (localSize != remoteSize) and (localSize != 0):
+			        # size does not match, adding to the upload queue
+			        uploadQueue.append(localPackage)
+			    break
+		
+		    if (not pkgfound):
 		        # this means that the local package does not exist
 		        # so, we need to download it
 		        uploadQueue.append(localPackage)
 		
 	        # Fill uploadQueue and if something weird is found, add the packages to downloadQueue
 	        for localPackage in toBeUploaded:
-		    try:
-			remotePackages.index(localPackage)
-			# it's already on the mirror, but... is its size correct??
-			localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+localPackage)[6])
-			remoteSize = 0
-			for file in remotePackagesInfo:
-			    if file.split()[8] == remotePackage:
-				remoteSize = int(file.split()[4])
-			if (localSize != remoteSize) and (localSize != 0):
-			    uploadQueue.append(localPackage)
-		    except:
+		    pkgfound = False
+		    for remotePackage in remotePackages:
+		        if localPackage == remotePackage:
+			    pkgfound = True
+			    # it's already on the mirror, but... is its size correct??
+			    localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+localPackage)[6])
+			    remoteSize = 0
+			    for file in remotePackagesInfo:
+			        if file.split()[8] == remotePackage:
+				    remoteSize = int(file.split()[4])
+			    if (localSize != remoteSize) and (localSize != 0):
+			        # size does not match, adding to the upload queue
+			        uploadQueue.append(localPackage)
+			    break
+		
+		    if (not pkgfound):
 		        # this means that the local package does not exist
 		        # so, we need to download it
 		        uploadQueue.append(localPackage)
 
 	        # Fill downloadQueue and removalQueue
 	        for remotePackage in remotePackages:
-		    try:
-			localPackagesRepository.index(remotePackage)
-			# it's already on the mirror, but... is its size correct??
-			localSize = int(os.stat(etpConst['packagesbindir']+"/"+localPackage)[6])
-			remoteSize = 0
-			for file in remotePackagesInfo:
-			    if file.split()[8] == remotePackage:
-				remoteSize = int(file.split()[4])
-			if (localSize != remoteSize) and (localSize != 0):
-			    # size does not match, remove first
-			    #print "removal of "+localPackage+" because its size differ"
-			    removalQueue.append(localPackage) # just remove something that differs from the content of the mirror
-			    # then add to the download queue
-			    downloadQueue.append(remotePackage)
-		    except:
+		    pkgfound = False
+		    for localPackage in localPackagesRepository:
+		        if localPackage == remotePackage:
+			    pkgfound = True
+			    # it's already on the mirror, but... is its size correct??
+			    localSize = int(os.stat(etpConst['packagesbindir']+"/"+localPackage)[6])
+			    remoteSize = 0
+			    for file in remotePackagesInfo:
+			        if file.split()[8] == remotePackage:
+				    remoteSize = int(file.split()[4])
+			    if (localSize != remoteSize) and (localSize != 0):
+			        # size does not match, remove first
+				#print "removal of "+localPackage+" because its size differ"
+			        removalQueue.append(localPackage) # just remove something that differs from the content of the mirror
+			        # then add to the download queue
+			        downloadQueue.append(remotePackage)
+			    break
+		
+		    if (not pkgfound):
 		        # this means that the local package does not exist
 		        # so, we need to download it
 			if not remotePackage.endswith(".tmp"): # ignore .tmp files
