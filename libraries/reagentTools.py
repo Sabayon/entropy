@@ -399,18 +399,25 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
     etpData['useflags'] = []
     f = open(tbz2TmpDir+dbUSE,"r")
     tmpUSE = f.readline().strip()
-    for x in tmpUSE.split():
-	if (x):
-	    etpData['useflags'].append(x)
     f.close()
-    '''
+
     try:
         f = open(tbz2TmpDir+dbIUSE,"r")
         tmpIUSE = f.readline().strip().split()
         f.close()
     except IOError:
         tmpIUSE = []
-   '''
+
+    for i in tmpIUSE:
+	if tmpUSE.find(" "+i+" ") != -1:
+	    etpData['useflags'].append(i)
+	else:
+	    etpData['useflags'].append("-"+i)
+
+    PackageFlags = []
+    for x in tmpUSE.split():
+	if (x):
+	    PackageFlags.append(x)
 
     print_info(yellow(" * ")+red("Getting package provide content..."),back = True)
     # Fill Provide
@@ -537,7 +544,7 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
     
     # variables filled
     # etpData['dependencies'], etpData['conflicts']
-    deps,conflicts = synthetizeRoughDependencies(roughDependencies,string.join(etpData['useflags']," "))
+    deps,conflicts = synthetizeRoughDependencies(roughDependencies,string.join(PackageFlags," "))
     etpData['dependencies'] = []
     for i in deps.split():
 	etpData['dependencies'].append(i)
