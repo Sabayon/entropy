@@ -54,6 +54,7 @@ def print_help():
     print_info(" \t\t"+red("--nodeps")+"\t\t do not manage any dependency")
     print_info(" \t\t"+red("--empty")+"\t\t\t also include already installed packages")
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
+    print_info(" \t"+blue("remove")+brown("\t\t remove a package"))
 
     print_info(" \t"+blue(bold("query"))+brown("\t\t do misc queries on repository and local databases"))
     print_info(" \t\t"+darkgreen("installed")+red("\t\t search a package into the local database"))
@@ -98,7 +99,7 @@ elif (options[0] == "update") or (options[0] == "repoinfo") or (options[0] == "s
     rc = equoTools.repositories(options)
     sys.exit(rc)
 
-elif (options[0] == "search") or (options[0] == "install"):
+elif (options[0] == "search") or (options[0] == "install") or (options[0] == "remove"):
     rc = equoTools.package(options)
     sys.exit(rc)
 

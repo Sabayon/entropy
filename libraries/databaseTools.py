@@ -2134,7 +2134,14 @@ class etpDatabase:
 	    result.append(row)
 	return result
 
-    # FIXME: listAllPackages now retrieves branch too
+    def listAllDependencies(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllDependencies: called.")
+	self.cursor.execute('SELECT * FROM dependenciesreference')
+	result = []
+	for row in self.cursor:
+	    result.append(row)
+	return result
+
     def listAllPackagesTbz2(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllPackagesTbz2: called.")
         result = []

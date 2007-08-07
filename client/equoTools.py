@@ -812,7 +812,7 @@ def getNewerVersionTag(InputVersionlist):
 
 '''
    @description: generates the dependencies of a [id,repository name] combo.
-   @input packageInfo: list composed by int(id) and str(repository name)
+   @input packageInfo: list composed by int(id) and str(repository name), if this one is int(0), the client database will be opened.
    @output: ordered dependency list
 '''
 def getDependencies(packageInfo):
@@ -820,10 +820,13 @@ def getDependencies(packageInfo):
 	raise Exception, "getDependencies: I need a list with two values in it." # bad bad bad bad
     idpackage = packageInfo[0]
     reponame = packageInfo[1]
-    dbconn = openRepositoryDatabase(reponame)
+    if reponame == 0:
+	dbconn = openClientDatabase()
+    else:
+	dbconn = openRepositoryDatabase(reponame)
     
     # retrieve dependencies
-    depend = dbconn.retrieveDependencies(idpackage) # XXX
+    depend = dbconn.retrieveDependencies(idpackage)
     
     # filter |or| entries
     _depend = []
@@ -832,7 +835,7 @@ def getDependencies(packageInfo):
 	if dep.startswith("!"):
 	    continue # FIXME: add conflicts SUPPORT
 	
-	if dep.find("|or|") != -1: # FIXME: handle this correctly
+	if dep.find("|or|") != -1:
 	    deps = dep.split("|or|")
 	    # find the best
 	    versions = []
@@ -865,7 +868,6 @@ def getDependencies(packageInfo):
     depend = _depend
     
     dbconn.closeDB()
-    #print depend
     return depend
 
 
@@ -993,7 +995,7 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 	    if atom[0] == -1:
 		# wth, dependency not in database?
 		dependenciesNotFound.append(undep)
-		print "not found"
+		#print "not found"
 		try:
 		    while 1: remainingDeps.remove(undep)
 		except:
@@ -1111,6 +1113,88 @@ def getRequiredPackages(foundAtoms, emptydeps = False):
     del deptree
 
     return newdeptree,True
+
+
+'''
+   @description: generates a list of packages that can be added to the removal queue of atoms (list)
+   @input package: atomInfo [idpackage,reponame]
+   @output: removal tree dictionary, plus status code
+'''
+def generateRemovalTree(atoms):
+
+    clientDbconn = openClientDatabase()
+    dependencies = []
+    atomsInfo = []
+    for atom in atoms:
+        atomInfo = atomMatchInRepository(atom,clientDbconn)
+	atomsInfo.append(atomInfo)
+        mydeps = getDependencies([atomInfo[0],0]) # get dependencies from client database
+	for x in mydeps:
+	    xmatch = atomMatchInRepository(x,clientDbconn)
+	    xatom = clientDbconn.retrieveAtom(xmatch[0])
+	    xdepends = clientDbconn.searchDepends(dep_getkey(xatom))
+	    dependencies.append([xmatch[0],xdepends])
+
+    remainingDeps = dependencies[:]
+    treeview = []
+    for atomInfo in atomsInfo:
+        treeview.append(atomInfo[0])
+    #tree[treedepth] = [x for x in tree[treedepth] if x not in set(remainingDeps)] # remove self dependency
+    depsOk = False
+    
+    if (clientDbconn == -1):
+	return [],-1
+
+    #atom = clientDbconn.searchDepends(dep_getkey(dependencies[0]))
+
+    while (not depsOk):
+	change = False
+	for dep in remainingDeps:
+	    atom = clientDbconn.retrieveAtom(dep[0])
+	    depends = dep[1]
+	    #print mydepends
+	    for depend in depends:
+		if depend in treeview:
+		    print "changed"
+		    change = True
+		    try:
+			while 1:
+		            dep[1].remove(depend)
+		    except:
+			pass
+	    if (dep[1] == []):
+		#print dep
+		# I can safely add this
+		treeview.append(dep[0])
+		xdeps = getDependencies([dep,0])
+		for x in xdeps:
+		    xdep = atomMatchInRepository(x,clientDbconn)
+		    xdepends = clientDbconn.searchDepends(dep_getkey(xdep))
+		    dependencies.append([xdep[0],xdepends])
+		try:
+		    while 1: dependencies.remove(dep)
+		except:
+		    pass
+
+	remainingDeps = dependencies[:]
+	if (change == False):
+	    depsOk = True
+	else:
+	    depsOk = False
+
+    
+    print len(treeview)
+    treeview = list(set(treeview))
+    print len(treeview)
+    print treeview
+    for x in treeview:
+	print clientDbconn.retrieveAtom(x)
+
+    clientDbconn.closeDB()
+
+    #print treeview
+    return treeview,0 # treeview is used to show deps while tree is used to run the dependency code.
+
 
 '''
    @description: using given information (atom), retrieves idpackage of the installed atom
@@ -1465,7 +1549,14 @@ def package(options):
 
     if (options[0] == "install"):
 	if len(myopts) > 0:
-	    rc,status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch)
+	    rc, status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch)
+	else:
+	    print_error(red(" Nothing to do."))
+	    rc = 127
+
+    if (options[0] == "remove"):
+	if len(myopts) > 0:
+	    rc, status = removePackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps)
 	else:
 	    print_error(red(" Nothing to do."))
 	    rc = 127
@@ -2181,6 +2272,12 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	    rc = stepExecutor(step,actionQueue[pkgatom])
 	    if (rc != 0):
 		return -1,rc
+    return 0,0
+
+
+def removePackages(packages, ask = False, pretend = False, verbose = False, deps = True):
+    generateRemovalTree(packages)
+    print "not yet implemented"
     return 0,0
 
 '''
