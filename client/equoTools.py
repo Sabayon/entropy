@@ -458,7 +458,7 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 		#print newerPackage[1]
 		return newerPackage[0],0
 	
-	    elif (direction.find(">") != -1) or (direction.find("<") != -1): # any revision within the version specified
+	    elif (direction.find(">") != -1) or (direction.find("<") != -1): # FIXME: add slot scopes
 		
 		#print direction+" direction"
 		# remove revision (-r0 if none)

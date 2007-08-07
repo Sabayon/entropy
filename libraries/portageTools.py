@@ -28,6 +28,7 @@
 # Portage initialization
 #####################################################################################
 
+'''
 def initializePortageTree():
     portage.settings.unlock()
     portage.settings['PORTDIR'] = etpConst['portagetreedir']
@@ -35,18 +36,19 @@ def initializePortageTree():
     portage.settings['PORTDIR_OVERLAY'] = etpConst['overlays']
     portage.settings.lock()
     portage.portdb.__init__(etpConst['portagetreedir'])
+'''
 
 # Fix for wrong cache entries - DO NOT REMOVE
 import os
 from entropyConstants import *
-os.environ['PORTDIR'] = etpConst['portagetreedir']
-os.environ['PORTDIR_OVERLAY'] = etpConst['overlays']
-os.environ['DISTDIR'] = etpConst['distfilesdir']
+#os.environ['PORTDIR'] = etpConst['portagetreedir']
+#os.environ['PORTDIR_OVERLAY'] = etpConst['overlays']
+#os.environ['DISTDIR'] = etpConst['distfilesdir']
 import portage
 import portage_const
 from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv #FIXME: Use the ones from entropyTools
 #from serverConstants import *
-initializePortageTree()
+#initializePortageTree()
 
 # colours support
 from outputTools import *
@@ -363,21 +365,21 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
 	    entropyTools.spawnCommand("rm -rf "+outfile)
 
     # Get specified USE flags
-    useflags = " "
+    useflags = " USE='"
     useflags += getUSEFlags()
-    useflags += " "
+    useflags += "' "
     # Get specified MAKEOPTS
-    makeopts = " "
+    makeopts = " MAKEOPTS='"
     makeopts += getMAKEOPTS()
-    makeopts += " "
+    makeopts += "' "
     # Get specified CFLAGS
-    cflags = " "
+    cflags = " CFLAGS='"
     cflags += getCFLAGS()
-    cflags += " "
+    cflags += "' "
     # Get specified LDFLAGS
-    ldflags = " "
+    ldflags = " LDFLAGS='"
     ldflags += getLDFLAGS()
-    ldflags += " "
+    ldflags += "' "
 
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"emerge: USE: "+useflags+" | CFLAGS: "+cflags+" | MAKEOPTS: "+makeopts+" | LDFLAGS: "+ldflags)
     

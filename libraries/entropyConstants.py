@@ -221,7 +221,7 @@ ETP_TMPDIR = "/tmp"
 ETP_RANDOM = str(random.random())[2:7]
 ETP_TMPFILE = "/.random-"+ETP_RANDOM+".tmp"
 ETP_REPODIR = "/packages/"+ETP_ARCH_CONST
-ETP_PORTDIR = "/portage"
+ETP_PORTDIR = "/usr/portage"
 ETP_DISTFILESDIR = "/distfiles"
 ETP_DBDIR = "/database/"+ETP_ARCH_CONST
 ETP_DBFILE = "packages.db"
@@ -254,9 +254,9 @@ etpConst = {
     'smartappsdir': ETP_DIR+ETP_SMARTAPPSDIR, # etpConst['smartappsdir'] location where smart apps files are places
     'packagesstoredir': ETP_DIR+ETP_STOREDIR, # etpConst['packagesstoredir'] --> directory where .tbz2 files are stored waiting for being processed by reagent
     'packagessuploaddir': ETP_DIR+ETP_UPLOADDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
-    'portagetreedir': ETP_DIR+ETP_PORTDIR, # directory where is stored our local portage tree
-    'distfilesdir': ETP_DIR+ETP_PORTDIR+ETP_DISTFILESDIR, # directory where our sources are downloaded
-    'overlaysdir': ETP_DIR+ETP_PORTDIR+"/local/layman", # directory where overlays are stored
+    'portagetreedir': ETP_PORTDIR, # directory where is stored our local portage tree
+    'distfilesdir': ETP_PORTDIR+ETP_DISTFILESDIR, # directory where our sources are downloaded
+    'overlaysdir': ETP_PORTDIR+"/local/layman", # directory where overlays are stored
     'overlays': "", # variable PORTDIR_OVERLAY
     'overlaysconffile': ETP_CONF_DIR+"/layman.cfg", # layman configuration file
     'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
