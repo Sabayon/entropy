@@ -2254,6 +2254,8 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
         rc = askquestion("     Would you like to continue with the installation ?")
         if rc == "No":
 	    return 0,0
+    if (pretend):
+	return 0,0
     
     # running tasks
     totalqueue = str(len(runQueue))
