@@ -34,6 +34,7 @@ from remoteTools import downloadData, getOnlineContent
 from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific, uncompressTarBz2, extractXpak
 from databaseTools import etpDatabase
 import xpak
+import time
 
 # Logging initialization
 import logTools
@@ -1346,7 +1347,11 @@ def installFile(package, infoDict = None):
 		if os.path.islink(rootdir):
 		    if not os.access(os.readlink(rootdir),os.R_OK): # broken symlink
 		        os.remove(rootdir)
-	        if not os.path.isdir(rootdir):
+		elif os.path.isfile(rootdir): # weird
+		    print_warning(red(" *** ")+bold(rootdir)+red(" is a file when it should be a directory !! Removing in 10 seconds..."))
+		    time.sleep(10)
+		    os.remove(rootdir)
+	        if (not os.path.isdir(rootdir)) and (not os.access(rootdir,os.R_OK)):
 		    #print "creating dir "+rootdir
 		    os.makedirs(rootdir)
 	    user = os.stat(imagepathDir)[4]
