@@ -1343,8 +1343,9 @@ def installFile(package, infoDict = None):
 	    rootdir = imagepathDir[len(imageDir):]
 	    # get info
 	    if (rootdir):
-		if os.path.islink(rootdir) or os.path.isfile(rootdir):
-		    os.remove(rootdir)
+		if os.path.islink(rootdir):
+		    if not os.access(os.readlink(rootdir),os.R_OK): # broken symlink
+		        os.remove(rootdir)
 	        if not os.path.isdir(rootdir):
 		    #print "creating dir "+rootdir
 		    os.makedirs(rootdir)
