@@ -335,8 +335,45 @@ etpConst = {
     'packagecontentdir': "/package", # directory of the package file in the .tbz2 package
     'dependenciesfilter': ['sys-devel/automake','sys-devel/autoconf','sys-devel/libtool','dev-util/pkgconfig','sys-devel/make'],
     'developmentcategories': ['sys-devel','dev-'],
+    'pidfile': "/var/run/equo.pid",
+    'applicationlock': False,
 
- }
+}
+
+# handle pid file
+piddir = os.path.dirname(etpConst['pidfile'])
+if not os.path.exists(piddir):
+    if os.getuid() == 0:
+	os.makedirs(piddir)
+    else:
+        print "you need to run this as root at least once."
+        sys.exit(100)
+# PID creation
+pid = os.getpid()
+if os.path.exists(etpConst['pidfile']):
+    f = open(etpConst['pidfile'],"r")
+    foundPid = f.readline().strip()
+    f.close()
+    if foundPid != str(pid):
+	# is foundPid still running ?
+	import commands
+	pids = commands.getoutput("pidof python").split("\n")[0].split()
+	try:
+	    pids.index(foundPid)
+	    etpConst['applicationlock'] = True
+	except:
+	    # if root, write new pid
+	    if os.getuid() == 0:
+		f = open(etpConst['pidfile'],"w")
+		f.write(str(pid))
+		f.flush()
+		f.close()
+	    pass
+else:
+    f = open(etpConst['pidfile'],"w")
+    f.write(str(pid))
+    f.flush()
+    f.close()
 
 # Handlers used by entropy to run and retrieve data remotely, using php helpers
 etpHandlers = {
@@ -346,8 +383,7 @@ etpHandlers = {
 
 # Create paths
 if not os.path.isdir(etpConst['entropyworkdir']):
-    import getpass
-    if getpass.getuser() == "root":
+    if os.getuid() == 0:
 	import re
 	for x in etpConst:
 	    if (type(etpConst[x]) is str):

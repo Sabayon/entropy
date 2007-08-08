@@ -23,7 +23,7 @@
 # FIXME: this depends on portage, should be moved from here ASAP
 from outputTools import *
 from entropyConstants import *
-
+import os
 import re
 import sys
 import random
@@ -51,10 +51,15 @@ def getDebug():
     return __etp_debug
 
 def isRoot():
-    import getpass
-    if (getpass.getuser() == "root"):
+    if (os.getuid() == 0):
         return True
     return False
+
+def applicationLockCheck(option = None):
+    if (etpConst['applicationlock']):
+	print_error(red("Another instance of Equo is running. Action: ")+bold(str(option))+red(" denied."))
+	print_error(red("If I am lying (maybe). Please remove ")+bold(etpConst['pidfile']))
+	sys.exit(10)
 
 def getRandomNumber():
     return int(str(random.random())[2:7])

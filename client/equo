@@ -96,10 +96,16 @@ if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(
 
 # sync mirrors tool
 elif (options[0] == "update") or (options[0] == "repoinfo") or (options[0] == "status"):
+    if options[0] == "update":
+        entropyTools.applicationLockCheck("update")
     rc = equoTools.repositories(options)
     sys.exit(rc)
 
 elif (options[0] == "search") or (options[0] == "install") or (options[0] == "remove"):
+    if options[0] == "install":
+        entropyTools.applicationLockCheck("install")
+    elif options[0] == "remove":
+        entropyTools.applicationLockCheck("remove")
     rc = equoTools.package(options)
     sys.exit(rc)
 
@@ -108,9 +114,11 @@ elif (options[0] == "query"):
     sys.exit(rc)
 
 elif (options[0] == "database"):
+    entropyTools.applicationLockCheck("database")
     rc = equoTools.database(options[1:])
     sys.exit(rc)
 
 elif (options[0] == "cleanup"):
+    entropyTools.applicationLockCheck("cleanup")
     entropyTools.cleanup([ etpConst['packagestmpdir'], etpConst['logdir'], etpConst['entropyunpackdir'], etpConst['packagesbindir'] ])
     sys.exit(0)
