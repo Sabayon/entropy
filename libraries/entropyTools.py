@@ -461,23 +461,9 @@ def isnumber(x):
 # this functions removes duplicates without breaking the list order
 # nameslist: a list that contains duplicated names
 # @returns filtered list
-def filterDuplicatedEntries(nameslist):
-    if nameslist == []:
-	return nameslist
-    _nameslist = nameslist[:]
-    for name in _nameslist:
-	try:
-	    first = _nameslist.index(name)
-	    _nameslist[first] = "x"+_nameslist[first]
-	    try:
-		while 1:
-		    _nameslist.remove(name)
-	    except:
-		pass
-	    _nameslist[first] = _nameslist[first][1:]
-	except:
-	    pass
-    return _nameslist
+def filterDuplicatedEntries(alist):
+    set = {}
+    return [set.setdefault(e,e) for e in alist if e not in set]
 	
 # this function returns a list of duplicated entries found in the input list
 def extactDuplicatedEntries(inputlist):

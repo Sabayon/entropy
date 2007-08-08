@@ -31,7 +31,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific, uncompressTarBz2, extractXpak
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific, uncompressTarBz2, extractXpak, filterDuplicatedEntries
 from databaseTools import etpDatabase
 import xpak
 import time
@@ -1020,7 +1020,7 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 		except:
 		    pass
 	# merge back remainingDeps into unsatisfiedDeps
-	remainingDeps = list(set(remainingDeps))
+	remainingDeps = filterDuplicatedEntries(remainingDeps)
 	#cnt = 0
         #for x in tree:
 	#    cnt += len(tree[x])
@@ -1049,7 +1049,7 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 	    for y in tree[x]:
 		newtree[x].append(atomMatch(y))
 	    if (newtree[x]):
-	        newtree[x] = list(set(newtree[x]))
+	        newtree[x] = filterDuplicatedEntries(newtree[x])
 	# now filter newtree
 	treelength = len(newtree)
 	for count in range(treelength)[::-1]:
@@ -1189,7 +1189,7 @@ def generateRemovalTree(atoms):
 
     
     print len(treeview)
-    treeview = list(set(treeview))
+    treeview = filterDuplicatedEntries(treeview)
     print len(treeview)
     print treeview
     for x in treeview:
