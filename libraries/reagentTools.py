@@ -32,7 +32,7 @@ import re
 import sys
 import os
 import string
-from portageTools import synthetizeRoughDependencies, getThirdPartyMirrors
+from portageTools import synthetizeRoughDependencies, getThirdPartyMirrors, getPackagesInSystem
 
 # Logging initialization
 import logTools
@@ -575,6 +575,17 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
     if (kernelDependentModule):
 	# add kname to the dependency
 	etpData['dependencies'].append("sys-kernel/linux-"+kname+"-"+kver)
+
+    print_info(yellow(" * ")+red("Getting System package List..."),back = True)
+    # write only if it's a systempackage
+    systemPackages = getPackagesInSystem()
+    for x in systemPackages:
+	x = dep_getkey(x)
+	y = etpData['category']+"/"+etpData['name']
+	if x == y:
+	    # found
+	    etpData['systempackage'] = "xxx"
+	    break
 
     print_info(yellow(" * ")+red("Getting Entropy API version..."),back = True)
     # write API info

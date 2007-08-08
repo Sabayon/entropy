@@ -56,7 +56,8 @@ etpData = {
     'datecreation': u"", # mtime of the .tbz2 file
     'size': u"", # the package size
     'versiontag': u"", # particular version tag
-    'provide': u"" # like, cups provides dep virtual/lpr
+    'provide': u"", # like, cups provides dep virtual/lpr
+    'systempackage': u"" # if this is a system package, this will be != ""
 }
 
 # Entropy database SQL initialization Schema and data structure
@@ -84,6 +85,7 @@ DROP TABLE IF EXISTS keywordsreference;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS licenses;
 DROP TABLE IF EXISTS flags;
+DROP TABLE IF EXISTS systempackages;
 DROP TABLE IF EXISTS installedtable;
 """
 
@@ -194,6 +196,10 @@ CREATE TABLE flags (
     chost VARCHAR,
     cflags VARCHAR,
     cxxflags VARCHAR
+);
+
+CREATE TABLE systempackages (
+    idpackage INTEGER
 );
 
 CREATE TABLE installedtable (

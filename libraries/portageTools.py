@@ -85,9 +85,16 @@ def getPortageEnv(var):
 	portageLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"getPortageEnv: variable not available -> "+str(var))
 	return None
 
-# Packages in system
+# Packages in system (in the Portage language -> emerge system, remember?)
 def getPackagesInSystem():
-    return portage.settings.packages
+    system = portage.settings.packages
+    sysoutput = []
+    for x in system:
+	y = getInstalledAtoms(x)
+	if (y != None):
+	    for z in y:
+	        sysoutput.append(z)
+    return sysoutput
 
 # resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1

@@ -1064,6 +1064,15 @@ class etpDatabase:
 			atom,
 			)
 	    )
+	
+	# is it a system package?
+	if etpData['systempackage']:
+	    self.cursor.execute(
+		'INSERT into systempackages VALUES '
+		'(?)'
+		, (	idpackage,
+			)
+	    )
 
 	# conflicts, a list
 	for conflict in etpData['conflicts']:
@@ -1249,6 +1258,8 @@ class etpDatabase:
 	self.cursor.execute('DELETE FROM keywords WHERE idpackage = '+idpackage)
 	# binkeywords
 	self.cursor.execute('DELETE FROM binkeywords WHERE idpackage = '+idpackage)
+	# systempackage
+	self.cursor.execute('DELETE FROM systempackages WHERE idpackage = '+idpackage)
 	
 	# Remove from installedtable if exist
 	self.removePackageFromInstalledTable(idpackage)
@@ -1938,6 +1949,19 @@ class etpDatabase:
 	    return result
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLicenseAvailable: "+license+" available.")
 	return result
+
+    def isSystemPackage(self,idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSystemPackage: called.")
+	result = -1
+	self.cursor.execute('SELECT idpackage FROM systempackages WHERE idpackage = "'+str(idpackage)+'"')
+	for row in self.cursor:
+	    result = row[0]
+	    break
+	if result != -1:
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSystemPackage: package is in system.")
+	    return True
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSystemPackage: package is NOT in system.")
+	return False
 
     def areCompileFlagsAvailable(self,chost,cflags,cxxflags):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"areCompileFlagsAvailable: called.")
