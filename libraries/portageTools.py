@@ -85,6 +85,10 @@ def getPortageEnv(var):
 	portageLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"getPortageEnv: variable not available -> "+str(var))
 	return None
 
+# Packages in system
+def getPackagesInSystem():
+    return portage.settings.packages
+
 # resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1
 def getBestAtom(atom):

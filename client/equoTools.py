@@ -281,7 +281,13 @@ def checkRoot():
    @input dbconn: database connection
    @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = not found, 2 = need more info, 3 = cannot use direction without specifying version
 '''
+atomMatchInRepositoryCache = {}
 def atomMatchInRepository(atom, dbconn, caseSensitive = True):
+    
+    cached = atomMatchInRepositoryCache.get(atom)
+    if (cached):
+	if (str(cached['dbconn']) == str(dbconn)):
+	    return cached['result']
     
     # check for direction
     strippedAtom = dep_getcpv(atom)
@@ -356,6 +362,9 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 		    if (cat != foundCat) and (pkgcat == "null"):
 			# got the issue
 			# gosh, return and complain
+			atomMatchInRepositoryCache[atom] = {}
+			atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
+			atomMatchInRepositoryCache[atom]['result'] = -1,2
 			return -1,2
 		else:
 		    foundCat = cat
@@ -384,6 +393,9 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 	    # check if direction is used with justname, in this case, return an error
 	    if (justname):
 		#print "justname"
+		atomMatchInRepositoryCache[atom] = {}
+		atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
+		atomMatchInRepositoryCache[atom]['result'] = -1,3
 		return -1,3 # error, cannot use directions when not specifying version
 
 	    if (direction == "~") or (direction == "="): # any revision within the version specified OR the specified version
@@ -428,6 +440,9 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 			    dbpkginfo.append([idpackage,dbver])
 		
 		if (not dbpkginfo):
+		    atomMatchInRepositoryCache[atom] = {}
+		    atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
+		    atomMatchInRepositoryCache[atom]['result'] = -1,1
 		    return -1,1
 		
 		versions = []
@@ -457,6 +472,9 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 		
 		#print newerPackage
 		#print newerPackage[1]
+		atomMatchInRepositoryCache[atom] = {}
+		atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
+		atomMatchInRepositoryCache[atom]['result'] = newerPackage[0],0
 		return newerPackage[0],0
 	
 	    elif (direction.find(">") != -1) or (direction.find("<") != -1): # FIXME: add slot scopes
@@ -491,6 +509,9 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 		
 		if (not dbpkginfo):
 		    # this version is not available
+		    atomMatchInRepositoryCache[atom] = {}
+		    atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
+		    atomMatchInRepositoryCache[atom]['result'] = -1,1
 		    return -1,1
 		
 		versions = []
@@ -520,9 +541,15 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 		
 		#print newerPackage
 		#print newerPackage[1]
+		atomMatchInRepositoryCache[atom] = {}
+		atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
+		atomMatchInRepositoryCache[atom]['result'] = newerPackage[0],0
 		return newerPackage[0],0
 
 	    else:
+		atomMatchInRepositoryCache[atom] = {}
+		atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
+		atomMatchInRepositoryCache[atom]['result'] = -1,1
 		return -1,1
 		
 	else:
@@ -551,10 +578,16 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 		versiontaglist = getNewerVersionTag(versionTags)
 		newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
 	    
+	    atomMatchInRepositoryCache[atom] = {}
+	    atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
+	    atomMatchInRepositoryCache[atom]['result'] = newerPackage[1],0
 	    return newerPackage[1],0
 
     else:
 	# package not found in any branch
+	atomMatchInRepositoryCache[atom] = {}
+	atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
+	atomMatchInRepositoryCache[atom]['result'] = -1,1
 	return -1,1
 
 
@@ -565,7 +598,13 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
    @ exit errors:
 	    -1 => repository cannot be fetched online
 '''
+atomMatchCache = {}
 def atomMatch(atom, caseSentitive = True):
+
+    cached = atomMatchCache.get(atom)
+    if cached:
+	return cached
+
     repoResults = {}
     exitstatus = 0
     exitErrors = {}
@@ -593,11 +632,13 @@ def atomMatch(atom, caseSentitive = True):
     
     # nothing found
     if len(repoResults) == 0:
+	atomMatchCache[atom] = -1,1
 	return -1,1
     
     elif len(repoResults) == 1:
 	# one result found
 	for repo in repoResults:
+	    atomMatchCache[atom] = repoResults[repo],repo
 	    return repoResults[repo],repo
     
     elif len(repoResults) > 1:
@@ -705,6 +746,7 @@ def atomMatch(atom, caseSentitive = True):
 			    for repo in conflictingTags:
 				if repository == repo:
 				    # found it, WE ARE DOOONE!
+				    atomMatchCache[atom] = [repoResults[repo],repo]
 				    return [repoResults[repo],repo]
 		    
 		    else:
@@ -715,6 +757,7 @@ def atomMatch(atom, caseSentitive = True):
 		            if str(conflictingTags[x]['revision']) == str(newerRevision):
 			        reponame = x
 			        break
+			atomMatchCache[atom] = repoResults[reponame],reponame
 		        return repoResults[reponame],reponame
 		
 		else:
@@ -724,6 +767,7 @@ def atomMatch(atom, caseSentitive = True):
 		        if conflictingEntries[x]['versiontag'] == newerTag:
 			    reponame = x
 			    break
+		    atomMatchCache[atom] = repoResults[reponame],reponame
 		    return repoResults[reponame],reponame
 
 	    else:
@@ -733,6 +777,7 @@ def atomMatch(atom, caseSentitive = True):
 		    if packageInformation[x]['version'] == newerVersion:
 			reponame = x
 			break
+		atomMatchCache[atom] = repoResults[reponame],reponame
 		return repoResults[reponame],reponame
 
 	    #print versions
@@ -750,6 +795,7 @@ def atomMatch(atom, caseSentitive = True):
 		    reponame = x
 		    break
 	    #print reponame
+	    atomMatchCache[atom] = repoResults[reponame],reponame
 	    return repoResults[reponame],reponame
 
 
@@ -875,13 +921,14 @@ def getDependencies(packageInfo):
 '''
    @description: filter the already installed dependencies
    @input dependencies: list of dependencies to check
-   @output: filtered list, aka the needed ones
+   @output: filtered list, aka the needed ones and the ones satisfied
 '''
 installed_depcache = {}
 repo_test_depcache = {}
 def filterSatisfiedDependencies(dependencies): # FIXME add force reinstall option
 
     unsatisfiedDeps = []
+    satisfiedDeps = []
     # now create a list with the unsatisfied ones
     # query the installed packages database
     #print etpConst['etpdatabaseclientfilepath']
@@ -942,13 +989,14 @@ def filterSatisfiedDependencies(dependencies): # FIXME add force reinstall optio
 		cmp = compareVersions([repo_pkgver,repo_pkgtag,repo_pkgrev],[installedVer,installedTag,installedRev])
 		if cmp != 0:
 	            unsatisfiedDeps.append(dependency)
+		satisfiedDeps.append(dependency)
 	    else:
 		#print " ----> "+dependency+" NOT installed."
 		unsatisfiedDeps.append(dependency)
     
         clientDbconn.closeDB()
 
-    return unsatisfiedDeps
+    return unsatisfiedDeps, satisfiedDeps
 
 '''
    @description: generates a dependency tree using unsatisfied dependencies
@@ -1125,79 +1173,107 @@ def getRequiredPackages(foundAtoms, emptydeps = False):
    @input package: atomInfo [idpackage,reponame]
    @output: removal tree dictionary, plus status code
 '''
-def generateRemovalTree(atoms):
+dictDeps = {}
+def generateRemovalTree(atoms, output = False):
 
     clientDbconn = openClientDatabase()
+    if (clientDbconn == -1):
+	return [],-1
+    
     dependencies = []
     atomsInfo = []
+    treeview = []
+    removeList = []
+    # Initialize
     for atom in atoms:
         atomInfo = atomMatchInRepository(atom,clientDbconn)
 	atomsInfo.append(atomInfo)
-        mydeps = getDependencies([atomInfo[0],0]) # get dependencies from client database
-	for x in mydeps:
-	    xmatch = atomMatchInRepository(x,clientDbconn)
-	    xatom = clientDbconn.retrieveAtom(xmatch[0])
-	    xdepends = clientDbconn.searchDepends(dep_getkey(xatom))
-	    dependencies.append([xmatch[0],xdepends])
+	xatom = clientDbconn.retrieveAtom(atomInfo[0])
+	xdepends = clientDbconn.searchDepends(dep_getkey(xatom))
+	dependencies.append(atomInfo[0])
+	dictDeps[atomInfo[0]] = set(xdepends)
+	# even add my depends?
+	for x in xdepends:
+	    #print x
+	    treeview.append(x)
 
     remainingDeps = dependencies[:]
-    treeview = []
+    dependencies = set(dependencies)
     for atomInfo in atomsInfo:
         treeview.append(atomInfo[0])
-    #tree[treedepth] = [x for x in tree[treedepth] if x not in set(remainingDeps)] # remove self dependency
     depsOk = False
     
-    if (clientDbconn == -1):
-	return [],-1
-
-    #atom = clientDbconn.searchDepends(dep_getkey(dependencies[0]))
-
+    #print treeview
+    
     while (not depsOk):
 	change = False
 	for dep in remainingDeps:
-	    atom = clientDbconn.retrieveAtom(dep[0])
-	    depends = dep[1]
-	    #print mydepends
+
+	    if dep in removeList: # if it has been already removed
+		try:
+		    while 1: dependencies.remove(dep)
+		except:
+		    pass
+		continue
+
+            #myatom = clientDbconn.retrieveAtom(dep[0])
+	    #key = dep_getkey(myatom)
+	    depends = dictDeps[dep].copy()
+	    #print "--------"
+	    #print depends
+	    #print clientDbconn.retrieveAtom(dep)
+	    #print "--------"
+	    
 	    for depend in depends:
 		if depend in treeview:
 		    #print "changed"
 		    change = True
 		    try:
 			while 1:
-		            dep[1].remove(depend)
+		            dictDeps[dep].remove(depend)
 		    except:
 			pass
-	    if (dep[1] == []):
-		#print dep
+	    
+	    if (list(dictDeps[dep]) == []):
+
+		#print "here"
 		# I can safely add this
-		treeview.append(dep[0])
-		xdeps = getDependencies([dep,0])
-		for x in xdeps:
-		    xdep = atomMatchInRepository(x,clientDbconn)
-		    xdepends = clientDbconn.searchDepends(dep_getkey(xdep))
-		    dependencies.append([xdep[0],xdepends])
+		change = True
+		treeview.append(dep)
+		removeList.append(dep)
 		try:
 		    while 1: dependencies.remove(dep)
 		except:
 		    pass
+		if 1:
+		    printatom = clientDbconn.retrieveAtom(dep)
+		    print_info(red(" @@ Adding ")+bold(printatom))
+		xdeps = getDependencies([dep,0])
+		for x in xdeps:
+		    xdep = atomMatchInRepository(x,clientDbconn)
+		    mydepends = clientDbconn.searchDepends(dep_getkey(x))
+		    dependencies.add(xdep[0])
+		    dictDeps[xdep[0]] = set(mydepends)
+		    
+	    #print "--------"
 
-	remainingDeps = dependencies[:]
+	remainingDeps = list(dependencies)[:]
 	if (change == False):
 	    depsOk = True
 	else:
 	    depsOk = False
 
-    
-    print len(treeview)
     treeview = filterDuplicatedEntries(treeview)
-    print len(treeview)
-    print treeview
+    # remove atomsInfo
+    for atomInfo in atomsInfo:
+	try:
+	    while 1: treeview.remove(atomInfo[0])
+	except:
+	    pass
     for x in treeview:
-	print clientDbconn.retrieveAtom(x)
+        print clientDbconn.retrieveAtom(x)
 
     clientDbconn.closeDB()
-
-    #print treeview
     return treeview,0 # treeview is used to show deps while tree is used to run the dependency code.
 
 
@@ -2024,14 +2100,14 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 
     # check if I am root
     if (not checkRoot()) and (not pretend):
-	print_error(red("\t You must run this function as root."))
+	print_error(red("You must run this function as superuser."))
 	return 1,-1
     
     foundAtoms = []
     for package in packages:
 	foundAtoms.append([package,atomMatch(package)])
 
-    # filter not found packages
+    # filter packages not found
     _foundAtoms = []
     for result in foundAtoms:
 	exitcode = result[1][0]
@@ -2300,9 +2376,40 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 
 
 def removePackages(packages, ask = False, pretend = False, verbose = False, deps = True):
+    
+    # check if I am root
+    if (not checkRoot()) and (not pretend):
+	print_error(red("You must run this function as superuser."))
+	return 1,-1
+    
+    clientDbconn = openClientDatabase()
+    
+    foundAtoms = []
+    for package in packages:
+	foundAtoms.append([package,atomMatchInRepository(package,clientDbconn)])
+
+    # filter packages not found
+    _foundAtoms = []
+    for result in foundAtoms:
+	exitcode = result[1][0]
+	if (exitcode != -1):
+	    _foundAtoms.append(result[1])
+	else:
+	    print_warning(red("## ATTENTION -> package")+bold(" "+result[0]+" ")+red("is not installed."))
+
+    foundAtoms = _foundAtoms
+    
+    # are packages in foundAtoms?
+    if (len(foundAtoms) == 0):
+	print_error(red("No packages found"))
+	return 127,-1
+    
+    print packages
     generateRemovalTree(packages)
     print "not yet implemented"
     return 0,0
+
+
 
 '''
     @description: execute the requested step (it is only used by the CLI client)

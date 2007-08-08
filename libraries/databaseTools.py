@@ -727,6 +727,9 @@ class etpDatabase:
 	self.noUpload = noUpload
 	self.clientDatabase = clientDatabase
 	
+	# caching dictionaries
+	self.dependCache = {}
+	
 	if (self.clientDatabase):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened by Entropy client, file: "+str(dbFile))
 	    # if the database is opened readonly, we don't need to lock the online status
@@ -1958,6 +1961,11 @@ class etpDatabase:
 
     def searchDepends(self, atomkey):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchDepends: called for "+atomkey)
+	
+	cached = self.dependCache.get(atomkey)
+	if cached:
+	    return cached
+
 	iddeps = []
 	self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference WHERE dependency LIKE "%'+atomkey+'%"') # FIXME: handle slotted packages, even if it's not a big issue atm
 	for row in self.cursor:
@@ -1984,6 +1992,8 @@ class etpDatabase:
 	    self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = "'+str(iddep[0])+'"')
 	    for row in self.cursor:
 	        result.append(row[0])
+	# caching
+	self.dependCache[atomkey] = result
 	return result
 
     def searchPackages(self, keyword, sensitive = False):
