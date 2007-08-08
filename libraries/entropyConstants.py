@@ -333,6 +333,8 @@ etpConst = {
     'packagedbdir': "/db", # directory of the database file in the .tbz2 package
     'packagedbfile': "/data.db", # database file in the directory above
     'packagecontentdir': "/package", # directory of the package file in the .tbz2 package
+    'dependenciesfilter': ['sys-devel/automake','sys-devel/autoconf','sys-devel/libtool','dev-util/pkgconfig','sys-devel/make'],
+    'developmentcategories': ['sys-devel','dev-'],
 
  }
 

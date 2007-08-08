@@ -1335,6 +1335,8 @@ def installFile(package, infoDict = None):
     if not os.path.isdir(imageDir):
 	return 2
     
+    # setup imageDir properly
+    imageDir = imageDir.encode(sys.getfilesystemencoding())
     # merge data into system
     for currentdir,subdirs,files in os.walk(imageDir):
 	# create subdirs
@@ -1345,7 +1347,9 @@ def installFile(package, infoDict = None):
 	    # get info
 	    if (rootdir):
 		if os.path.islink(rootdir):
-		    if not os.access(os.readlink(rootdir),os.R_OK): # broken symlink
+		    if not os.path.exists(rootdir): # broken symlink
+			#print "I want to remove "+rootdir
+			#print os.readlink(rootdir)
 		        os.remove(rootdir)
 		elif os.path.isfile(rootdir): # weird
 		    print_warning(red(" *** ")+bold(rootdir)+red(" is a file when it should be a directory !! Removing in 10 seconds..."))

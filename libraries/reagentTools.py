@@ -297,7 +297,7 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
 	_outcontent = []
 	for i in outcontent:
 	    try:
-		i.encode("utf-8")
+		i = i.encode(sys.getfilesystemencoding())
 		_outcontent.append(i)
 	    except:
 		pass
@@ -552,6 +552,25 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
     etpData['conflicts'] = []
     for i in conflicts.split():
 	etpData['conflicts'].append(i)
+    
+    # filter development dependencies
+    devPackage = False
+    for cat in etpConst['developmentcategories']:
+	if etpData['category'].startswith(cat):
+	    devPackage = True
+	    break
+    if (not devPackage):
+	# rip away building dependencies
+	if (etpData['dependencies']):
+	    newdeps = etpData['dependencies'][:]
+	    for dep in newdeps:
+		for develdep in etpConst['dependenciesfilter']:
+		    if dep.find(develdep) != -1:
+			try:
+			    while 1: etpData['dependencies'].remove(dep)
+			except:
+			    pass
+	
     
     if (kernelDependentModule):
 	# add kname to the dependency
