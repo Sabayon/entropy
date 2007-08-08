@@ -747,7 +747,40 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
     dependencies = ''
     for i in tmpDeps:
 	tmpData.append(i)
-    dependencies = string.join(tmpData," ")
+
+    # now filter |or| and |and|
+    _tmpData = []
+    for dep in tmpData:
+	
+	if dep.find("|or|") != -1:
+	    deps = dep.split("|or|")
+	    # find the best
+	    results = []
+	    for x in deps:
+		if x.find("|and|") != -1:
+		    anddeps = x.split("|and|")
+		    results.append(anddeps)
+		else:
+		    if x:
+		        results.append([x])
+	
+	    # now parse results
+	    for result in results:
+		outdeps = result[:]
+		for y in result:
+		    yresult = getInstalledAtoms(y)
+		    if (yresult != None):
+			outdeps.remove(y)
+		if (not outdeps):
+		    # find it
+		    for y in result:
+			_tmpData.append(y)
+		    break
+	
+	else:
+	    _tmpData.append(dep)
+
+    dependencies = string.join(_tmpData," ")
 
     return dependencies, conflicts
 

@@ -881,37 +881,8 @@ def getDependencies(packageInfo):
 	
 	if dep.startswith("!"):
 	    continue # FIXME: add conflicts SUPPORT
+	_depend.append(dep)
 	
-	if dep.find("|or|") != -1:
-	    deps = dep.split("|or|")
-	    # find the best
-	    versions = []
-	    for x in deps:
-		if x.find("|and|"):
-		    anddeps = x.split("|and|")
-		    outanddeps = anddeps[:]
-		    for y in anddeps:
-			ykey = dep_getkey(y)
-			ycat = ykey.split("/")[0]
-			yname = ykey.split("/")[1]
-			yresult = dbconn.searchPackagesByNameAndCategory(yname,ycat)
-			if (yresult):
-			    outanddeps.remove(y)
-		    if (not outanddeps):
-			# all dependencies are found and ok
-			for y in anddeps:
-			    _depend.append(y)
-			break
-		
-		key = dep_getkey(deps[0])
-		cat = key.split("/")[0]
-		name = key.split("/")[1]
-		result = dbconn.searchPackagesByNameAndCategory(name,cat)
-		if (result):
-		    _depend.append(x)
-		    break
-	else:
-	    _depend.append(dep)
     depend = _depend
     
     dbconn.closeDB()
