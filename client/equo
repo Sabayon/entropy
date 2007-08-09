@@ -126,6 +126,8 @@ try:
         entropyTools.applicationLockCheck("cleanup")
         entropyTools.cleanup([ etpConst['packagestmpdir'], etpConst['logdir'], etpConst['entropyunpackdir'], etpConst['packagesbindir'] ])
         sys.exit(0)
+except SystemExit:
+    pass
 except:
     from entropyTools import askquestion
     from remoteTools import getOnlineContent, reportApplicationError
