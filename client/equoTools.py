@@ -2367,9 +2367,45 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
     if (len(foundAtoms) == 0):
 	print_error(red("No packages found"))
 	return 127,-1
+
+
+    lookForOrphanedPackages = True
+    # now print the selected packages
+    print_info(red(" @@ ")+blue("These are the chosen packages:"))
+    totalatoms = len(foundAtoms)
+    atomscounter = 0
+    for atomInfo in foundAtoms:
+	atomscounter += 1
+	idpackage = atomInfo[0]
+
+	# get needed info
+	pkgatom = clientDbconn.retrieveAtom(idpackage)
+	pkgver = clientDbconn.retrieveVersion(idpackage)
+	pkgtag = clientDbconn.retrieveVersionTag(idpackage)
+	if not pkgtag:
+	    pkgtag = "NoTag"
+	pkgrev = clientDbconn.retrieveRevision(idpackage)
+	pkgslot = clientDbconn.retrieveSlot(idpackage)
+	installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
+	
+	print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" | Installed from: "+red(installedfrom))
+	print_info("\t"+red("Versioning:\t")+" "+red(pkgver)+" / "+blue(pkgtag)+" / "+(str(pkgrev)))
+
+    if (verbose or ask or pretend):
+        print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
     
+    if (ask):
+        rc = askquestion("     Would you like to look for packages that can be removed along with the ones above?")
+        if rc == "No":
+	    lookForOrphanedPackages = False
+
+    #print lookForOrphanedPackages
+
     print packages
     generateRemovalTree(packages)
+    
+    # check for system packages
+    
     print "not yet implemented"
     return 0,0
 

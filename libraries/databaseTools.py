@@ -2335,6 +2335,15 @@ class etpDatabase:
 			)
 	)
 
+    def retrievePackageFromInstalledTable(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrievePackageFromInstalledTable: called. ")
+	result = 'Not available'
+	self.cursor.execute('SELECT repositoryname FROM installedtable WHERE idpackage = "'+str(idpackage)+'"')
+	for row in self.cursor:
+	    result = row[0]
+	    break
+	return result
+
     def removePackageFromInstalledTable(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removePackageFromInstalledTable: called for "+str(idpackage))
 	self.cursor.execute('DELETE FROM installedtable WHERE idpackage = '+str(idpackage))
