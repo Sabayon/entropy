@@ -1538,6 +1538,11 @@ class etpDatabase:
 	data['digest'] = self.retrieveDigest(idpackage)
 	data['sources'] = self.retrieveSources(idpackage)
 	
+	if (self.isSystemPackage(idpackage)):
+	    data['systempackage'] = 'xxx'
+	else:
+	    data['systempackage'] = ''
+	
 	mirrornames = []
 	for x in data['sources']:
 	    if x.startswith("mirror://"):

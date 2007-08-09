@@ -1221,6 +1221,7 @@ def generateRemovalTree(atoms, output = False):
 		    print_info(red(" @@ Adding ")+bold(printatom))
 		xdeps = getDependencies([dep,0])
 		for x in xdeps:
+		    print x
 		    xdep = atomMatchInRepository(x,clientDbconn)
 		    mydepends = clientDbconn.searchDepends(dep_getkey(x))
 		    dependencies.add(xdep[0])
@@ -1552,13 +1553,13 @@ def query(options):
 	    myopts.append(opt)
 
     if options[0] == "installed":
-	rc = searchInstalledPackages(myopts[1:])
+	rc = searchInstalledPackages(myopts[1:], quiet = equoRequestQuiet)
 
     elif options[0] == "belongs":
 	rc = searchBelongs(myopts[1:])
 
     elif options[0] == "depends":
-	rc = searchDepends(myopts[1:], verbose = equoRequestVerbose)
+	rc = searchDepends(myopts[1:], verbose = equoRequestVerbose, quiet = equoRequestQuiet)
 
     elif options[0] == "files":
 	rc = searchFiles(myopts[1:], quiet = equoRequestQuiet)
@@ -1712,9 +1713,14 @@ def database(options):
 	clientDbconn.closeDB()
 
 
-def printPackageInfo(idpackage,dbconn, clientSearch = False, strictOutput = False):
+def printPackageInfo(idpackage,dbconn, clientSearch = False, strictOutput = False, quiet = False):
     # now fetch essential info
     pkgatom = dbconn.retrieveAtom(idpackage)
+    
+    if (quiet):
+	print pkgatom
+	return
+    
     if (not strictOutput):
         pkgname = dbconn.retrieveName(idpackage)
         pkgcat = dbconn.retrieveCategory(idpackage)
@@ -1847,9 +1853,9 @@ def searchPackage(packages, idreturn = False):
     return 0
 
 
-def searchInstalledPackages(packages, idreturn = False):
+def searchInstalledPackages(packages, idreturn = False, quiet = False):
     
-    if (not idreturn):
+    if (not idreturn) and (not quiet):
         print_info(yellow(" @@ ")+darkgreen("Searching..."))
 
     clientDbconn = openClientDatabase()
@@ -1859,7 +1865,7 @@ def searchInstalledPackages(packages, idreturn = False):
 	result = clientDbconn.searchPackages(package)
 	if (result):
 	    # print info
-	    if (not idreturn):
+	    if (not idreturn) and (not quiet):
 	        print_info(blue("     Keyword: ")+bold("\t"+package))
 	        print_info(blue("     Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
 	    for pkg in result:
@@ -1869,7 +1875,7 @@ def searchInstalledPackages(packages, idreturn = False):
 		if (idreturn):
 		    dataInfo.append(idpackage)
 		else:
-		    printPackageInfo(idpackage,clientDbconn, clientSearch = True)
+		    printPackageInfo(idpackage,clientDbconn, clientSearch = True, quiet = quiet)
 	
     clientDbconn.closeDB()
 
@@ -1908,24 +1914,11 @@ def searchBelongs(files, idreturn = False):
     return 0
 
 
-def searchDepends(atoms, idreturn = False, verbose = False):
+def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
     
-    if (not idreturn):
+    if (not idreturn) and (not quiet):
         print_info(yellow(" @@ ")+darkgreen("Depends Search..."))
 
-    # validate atoms
-    '''
-    _atoms = []
-    for atom in atoms:
-	try:
-	    key = dep_getkey(atom)
-	    _atoms.append(key)
-	except:
-	    print_warning(red("  !! ")+bold(atom)+red(" is not valid."))
-	    pass
-    atoms = _atoms
-    '''
-    #packages = searchPackage(atoms,idreturn = True)
 
     clientDbconn = openClientDatabase()
     dataInfo = [] # when idreturn is True
@@ -1933,7 +1926,7 @@ def searchDepends(atoms, idreturn = False, verbose = False):
 	result = clientDbconn.searchDepends(atom)
 	if (result):
 	    # print info
-	    if (not idreturn):
+	    if (not idreturn) and (not quiet):
 	        print_info(blue("     Keyword: ")+bold("\t"+atom))
 	        print_info(blue("     Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
 	    for idpackage in result:
@@ -1941,9 +1934,9 @@ def searchDepends(atoms, idreturn = False, verbose = False):
 		    dataInfo.append(idpackage)
 		else:
 		    if (verbose):
-		        printPackageInfo(idpackage, clientDbconn, clientSearch = True)
+		        printPackageInfo(idpackage, clientDbconn, clientSearch = True, quiet = quiet)
 		    else:
-		        printPackageInfo(idpackage, clientDbconn, clientSearch = True, strictOutput = True)
+		        printPackageInfo(idpackage, clientDbconn, clientSearch = True, strictOutput = True, quiet = quiet)
 	
     clientDbconn.closeDB()
 
