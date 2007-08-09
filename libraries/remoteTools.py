@@ -27,6 +27,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 import entropyTools
+import string
 
 # Logging initialization
 import logTools
@@ -100,6 +101,28 @@ def downloadData(url,pathToSave, bufferSize = 8192, checksum = True):
 def getOnlineContent(url):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getOnlineContent: called. Requested URL -> "+str(url))
 
+    # now pray the server
+    try:
+        file = urllib2.urlopen(url)
+        result = file.readlines()
+        return result
+    except:
+	return False
+
+# Error reporting function
+# @input: error string (please use repr())
+# @returns bool: True if ok. False if not.
+# @returns False: if the file is not found
+def reportApplicationError(errorstring):
+    remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"reportApplicationError: called. Requested string -> "+str(errorstring))
+    outstring = ""
+    for char in errorstring:
+        if char == " ":
+	    char = "%20"
+	outstring += char
+    outstring = outstring.split("\n")
+    outstring = string.join(outstring,"<br>")
+    url = etpHandlers['errorsend']+outstring
     # now pray the server
     try:
         file = urllib2.urlopen(url)

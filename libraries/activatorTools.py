@@ -641,7 +641,7 @@ def packages(options):
 		
 		print_error(yellow(" * ")+red("packages: Exception caught: ")+str(e)+red(" . Showing traceback:"))
 		import traceback
-		traceback.print_stack()
+		traceback.print_exc()
 		
 		# trap CTRL+C
 		if (str(e) == "100"):

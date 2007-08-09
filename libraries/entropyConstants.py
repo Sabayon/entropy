@@ -384,6 +384,7 @@ else:
 # Handlers used by entropy to run and retrieve data remotely, using php helpers
 etpHandlers = {
     'md5sum': "md5sum.php?arch="+ETP_ARCH_CONST+"&package=", # md5sum handler
+    'errorsend': "http://svn.sabayonlinux.org/entropy/handlers/error_report.php?arch="+ETP_ARCH_CONST+"&stacktrace=",
 }
 
 

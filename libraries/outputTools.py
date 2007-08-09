@@ -230,7 +230,7 @@ def print_error(msg, back = False):
     if (back):
 	writechar("\r"+red(">>")+" "+msg)
 	return
-    print green(">>")+" "+msg
+    print red(">>")+" "+msg
 
 def print_info(msg, back = False):
     writechar("\r"+_cleanline+"\r")

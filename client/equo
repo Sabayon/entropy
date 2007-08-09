@@ -97,31 +97,76 @@ if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(
 	entropyTools.print_error("not enough parameters")
     sys.exit(1)
 
-# sync mirrors tool
-elif (options[0] == "update") or (options[0] == "repoinfo") or (options[0] == "status"):
-    if options[0] == "update":
-        entropyTools.applicationLockCheck("update")
-    rc = equoTools.repositories(options)
-    sys.exit(rc)
+try:
+    # sync mirrors tool
+    if (options[0] == "update") or (options[0] == "repoinfo") or (options[0] == "status"):
+        if options[0] == "update":
+            entropyTools.applicationLockCheck("update")
+        rc = equoTools.repositories(options)
+        sys.exit(rc)
 
-elif (options[0] == "search") or (options[0] == "install") or (options[0] == "remove") or (options[0] == "deptest"):
-    if options[0] == "install":
-        entropyTools.applicationLockCheck("install")
-    elif options[0] == "remove":
-        entropyTools.applicationLockCheck("remove")
-    rc = equoTools.package(options)
-    sys.exit(rc)
+    elif (options[0] == "search") or (options[0] == "install") or (options[0] == "remove") or (options[0] == "deptest"):
+        if options[0] == "install":
+            entropyTools.applicationLockCheck("install")
+        elif options[0] == "remove":
+            entropyTools.applicationLockCheck("remove")
+        rc = equoTools.package(options)
+        sys.exit(rc)
 
-elif (options[0] == "query"):
-    rc = equoTools.query(options[1:])
-    sys.exit(rc)
+    elif (options[0] == "query"):
+        rc = equoTools.query(options[1:])
+        sys.exit(rc)
 
-elif (options[0] == "database"):
-    entropyTools.applicationLockCheck("database")
-    rc = equoTools.database(options[1:])
-    sys.exit(rc)
+    elif (options[0] == "database"):
+        entropyTools.applicationLockCheck("database")
+        rc = equoTools.database(options[1:])
+        sys.exit(rc)
 
-elif (options[0] == "cleanup"):
-    entropyTools.applicationLockCheck("cleanup")
-    entropyTools.cleanup([ etpConst['packagestmpdir'], etpConst['logdir'], etpConst['entropyunpackdir'], etpConst['packagesbindir'] ])
-    sys.exit(0)
+    elif (options[0] == "cleanup"):
+        entropyTools.applicationLockCheck("cleanup")
+        entropyTools.cleanup([ etpConst['packagestmpdir'], etpConst['logdir'], etpConst['entropyunpackdir'], etpConst['packagesbindir'] ])
+        sys.exit(0)
+except:
+    from entropyTools import askquestion
+    from remoteTools import getOnlineContent, reportApplicationError
+    import string
+    print_error(darkred("Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. Well, you know, shit happens."))
+    print_error(darkred("But there's something you could do to help Equo to be a better application."))
+    print_error(darkgreen("Now I am showing you what happened. Don't panic, I'm here to help you. Suddenly happened:"))
+    print
+    import traceback
+    traceback.print_exc()
+    try:
+        ferror = open("/tmp/equoerror.txt","w")
+        traceback.print_exc(file = ferror)
+        ferror.flush()
+        ferror.close()
+	f = open("/tmp/equoerror.txt","r")
+	errorText = f.readlines()
+	f.close()
+	errorText = string.join(errorText," ")
+    except:
+	print
+	print_error(darkred("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org."))
+	sys.exit(1)
+    print
+    print_error(blue("Ok, back here. Let me see if you are connected to the Internet. Yes, I am blue now, so?"))
+    conntest = getOnlineContent("http://svn.sabayonlinux.org")
+    if (conntest != False):
+	print_error(darkgreen("Of course you are on the Internet..."))
+	rc = askquestion("   Erm... Can I send the error to my creators so they can fix me?")
+	if rc == "No":
+	    print_error(darkgreen("Ok, ok ok ok... Sorry!"))
+	    sys.exit(2)
+    else:
+	print_error(darkgreen("Gosh, you aren't! Well, I wrote the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
+	sys.exit(3)
+    
+    # ok, come on!
+    result = reportApplicationError(errorText)
+    if (result != False):
+	print_error(darkgreen("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible."))
+    else:
+	print_error(darkred("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
+	sys.exit(4)
+    
