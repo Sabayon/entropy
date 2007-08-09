@@ -31,7 +31,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific, uncompressTarBz2, extractXpak, filterDuplicatedEntries
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific, uncompressTarBz2, extractXpak, filterDuplicatedEntries, applicationLockCheck
 from databaseTools import etpDatabase
 import xpak
 import time
@@ -864,7 +864,7 @@ def getNewerVersionTag(InputVersionlist):
 '''
 def getDependencies(packageInfo):
     if len(packageInfo) != 2:
-	raise Exception, "getDependencies: I need a list with two values in it." # bad bad bad bad
+	raise Exception, "getDependencies: I need a list with two values in it."
     idpackage = packageInfo[0]
     reponame = packageInfo[1]
     if reponame == 0:
@@ -1504,7 +1504,7 @@ def installPackageIntoGentooDatabase(infoDict,packageFile):
    @input package: package file (without path)
    @output: 0 = all fine, >0 = error!
 '''
-def installPackageIntoDatabase(idpackage,repository):
+def installPackageIntoDatabase(idpackage,repository, clientDbconn = None):
     # fetch info
     dbconn = openRepositoryDatabase(repository)
     data = dbconn.getPackageData(idpackage)
@@ -1513,20 +1513,26 @@ def installPackageIntoDatabase(idpackage,repository):
     branch = dbconn.retrieveBranch(idpackage)
     dbconn.closeDB()
     
+    exitstatus = 0
+    
     # inject
-    clientDbconn = openClientDatabase()
+    closedb = False
+    if clientDbconn == None:
+	closedb = True
+	clientDbconn = openClientDatabase()
     idpk, rev, x, status = clientDbconn.addPackage(data, revision = rev, wantedBranch = branch, addBranch = False)
     del x
     if (not status):
 	clientDbconn.closeDB()
-	return 1 # it hasn't been insterted ? why??
+	exitstatus = 1 # it hasn't been insterted ? why??
+    else:
+        # add idpk to the installedtable
+        clientDbconn.removePackageFromInstalledTable(idpk)
+        clientDbconn.addPackageToInstalledTable(idpk,repository)
     
-    # add idpk to the installedtable
-    clientDbconn.removePackageFromInstalledTable(idpk)
-    clientDbconn.addPackageToInstalledTable(idpk,repository)
-    
-    clientDbconn.closeDB()
-    return 0
+    if (closedb):
+        clientDbconn.closeDB()
+    return exitstatus
 
 
 ########################################################
@@ -1588,6 +1594,7 @@ def package(options):
     equoRequestDeps = True
     equoRequestEmptyDeps = False
     equoRequestOnlyFetch = False
+    equoRequestQuiet = False
     rc = 0
     _myopts = []
     for opt in myopts:
@@ -1601,6 +1608,8 @@ def package(options):
 	    equoRequestDeps = False
 	elif (opt == "--empty"):
 	    equoRequestEmptyDeps = True
+	elif (opt == "--quiet"):
+	    equoRequestQuiet = True
 	elif (opt == "--fetch"):
 	    equoRequestOnlyFetch = True
 	else:
@@ -1611,14 +1620,17 @@ def package(options):
 	if len(myopts) > 0:
 	    rc = searchPackage(myopts)
 
-    if (options[0] == "install"):
+    elif (options[0] == "deptest"):
+	rc = dependenciesTest(quiet = equoRequestQuiet, ask = equoRequestAsk, pretend = equoRequestPretend)
+
+    elif (options[0] == "install"):
 	if len(myopts) > 0:
 	    rc, status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch)
 	else:
 	    print_error(red(" Nothing to do."))
 	    rc = 127
 
-    if (options[0] == "remove"):
+    elif (options[0] == "remove"):
 	if len(myopts) > 0:
 	    rc, status = removePackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps)
 	else:
@@ -2155,10 +2167,11 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	if (verbose or ask or pretend):
             print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
     
-        if (ask):
-            rc = askquestion("     Would you like to continue with dependencies calculation ?")
-            if rc == "No":
-	        return 0,0
+        if (deps):
+            if (ask):
+                rc = askquestion("     Would you like to continue with dependencies calculation ?")
+                if rc == "No":
+	            return 0,0
 
     runQueue = []
 
@@ -2310,6 +2323,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	repository = packageInfo[1]
 	# get package atom
 	dbconn = openRepositoryDatabase(repository)
+	clientDbconn = openClientDatabase()
 	pkgatom = dbconn.retrieveAtom(idpackage)
 	dbconn.closeDB()
 	#print actionQueue[pkgatom]
@@ -2333,9 +2347,11 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	print_info(red(" @@ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
 	
 	for step in steps:
-	    rc = stepExecutor(step,actionQueue[pkgatom])
+	    rc = stepExecutor(step,actionQueue[pkgatom],clientDbconn)
 	    if (rc != 0):
+		clientDbconn.closeDB()
 		return -1,rc
+	clientDbconn.closeDB()
     return 0,0
 
 
@@ -2410,6 +2426,86 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
     return 0,0
 
 
+def dependenciesTest(quiet = False, ask = False, pretend = False):
+    
+    if (not quiet):
+        print_info(red(" @@ ")+blue("Running dependency test..."))
+    
+    clientDbconn = openClientDatabase()
+    # get all the installed packages
+    installedPackages = clientDbconn.listAllIdpackages()
+    
+    depsNotFound = {}
+    depsNotSatisfied = {}
+    # now look
+    length = str((len(installedPackages)))
+    count = 0
+    for xidpackage in installedPackages:
+	count += 1
+	atom = clientDbconn.retrieveAtom(xidpackage)
+	print_info(darkred(" @@ ")+bold("(")+blue(str(count))+"/"+red(length)+bold(")")+darkgreen(" Checking ")+bold(atom), back = True)
+	deptree, status = generateDependencyTree([xidpackage,0])
+	'''
+	if (status == -2): # dependencies not found
+	    depsNotFound[idpackage] = []
+	    for x in range(len(deptree))[::-1]:
+	        for z in deptree[x]:
+		    for a in deptree[x][z]:
+		        depsNotFound[idpackage].append(a)
+	'''
+	if (status == 0):
+	    depsNotSatisfied[xidpackage] = []
+	    for x in range(len(deptree))[::-1]:
+	        for z in deptree[x]:
+		    depsNotSatisfied[xidpackage].append(z)
+	    if (not depsNotSatisfied[xidpackage]):
+		del depsNotSatisfied[xidpackage]
+	
+    packagesNeeded = []
+    if (depsNotSatisfied):
+        if (not quiet):
+            print_info(red(" @@ ")+blue("These are the packages that lack dependencies: "))
+	for dict in depsNotSatisfied:
+	    pkgatom = clientDbconn.retrieveAtom(dict)
+	    if (not quiet):
+	        print_info(darkred("   ### ")+blue(pkgatom))
+	    for dep in depsNotSatisfied[dict]:
+		iddep = dep[0]
+		repo = dep[1]
+		dbconn = openRepositoryDatabase(repo)
+		depatom = dbconn.retrieveAtom(iddep)
+		dbconn.closeDB()
+		if (not quiet):
+		    print_info(bold("       :: ")+red(depatom))
+		else:
+		    print depatom
+		packagesNeeded.append([depatom,dep])
+
+    if (pretend):
+	clientDbconn.closeDB()
+	return 0, packagesNeeded
+
+    if (packagesNeeded) and (not quiet):
+        if (ask):
+            rc = askquestion("     Would you like to install them?")
+            if rc == "No":
+		clientDbconn.closeDB()
+	        return 0,packagesNeeded
+	else:
+	    print_info(red(" @@ ")+blue("Installing dependencies in ")+red("10 seconds")+blue("..."))
+	    time.sleep(10)
+	# install them
+	packages = []
+	for dep in packagesNeeded:
+	    packages.append(dep[0])
+	
+	# check for equo.pid
+	applicationLockCheck("install")
+	installPackages(packages, deps = False, ask = ask)
+	    
+
+    clientDbconn.closeDB()
+    return 0,packagesNeeded
 
 '''
     @description: execute the requested step (it is only used by the CLI client)
@@ -2417,7 +2513,13 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
     		infoDict -> dictionary containing all the needed information collected by installPackages() -> actionQueue[pkgatom]
     @output:	-1,"description" for error ; 0,True for no errors
 '''
-def stepExecutor(step,infoDict):
+def stepExecutor(step,infoDict, clientDbconn = None):
+
+    closedb = False
+    if clientDbconn == None:
+	closedb = True
+	clientDbconn = openClientDatabase()
+
     output = 0
     if step == "fetch":
 	print_info(red("     ## ")+blue("Fetching package: ")+red(os.path.basename(infoDict['download'])))
@@ -2428,14 +2530,12 @@ def stepExecutor(step,infoDict):
 	    else:
 		errormsg = red("Package checksum does not match. Try to run: '")+bold("equo repo sync")+red("' and this command again. Error "+str(output))
 	    print_error(errormsg)
-	    return output
 	# otherwise fetch md5 too
 	print_info(red("     ## ")+blue("Fetching package checksum: ")+red(os.path.basename(infoDict['download']+etpConst['packageshashfileext'])))
 	output = fetchFile(infoDict['download']+etpConst['packageshashfileext'],False)
 	if output != 0:
 	    errormsg = red("Cannot find the checksum file online. Try to run: ")+bold("equo repo sync")+red("' and this command again. Error "+str(output))
 	    print_error(errormsg)
-	    return output
     elif step == "install":
 	if (etpConst['gentoo-compat']):
 	    print_info(red("     ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download']))+" ## w/Gentoo compatibility")
@@ -2446,14 +2546,15 @@ def stepExecutor(step,infoDict):
 	if output != 0:
 	    errormsg = red("An error occured while trying to install the package. Check if you have enough disk space on your hard disk. Error "+str(output))
 	    print_error(errormsg)
-	    return output
     elif step == "database":
 	print_info(red("     ## ")+blue("Injecting into database: ")+red(os.path.basename(infoDict['download'])))
-	output = installPackageIntoDatabase(infoDict['idpackage'],infoDict['repository'])
+	output = installPackageIntoDatabase(infoDict['idpackage'],infoDict['repository'], clientDbconn)
 	if output != 0:
 	    errormsg = red("An error occured while trying to add the package to the database. What have you done? Error "+str(output))
 	    print_error(errormsg)
-	    return output
+    
+    if (closedb):
+	clientDbconn.closeDB()
     
     return output
 

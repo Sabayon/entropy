@@ -725,6 +725,7 @@ class etpDatabase:
 	
 	self.readOnly = readOnly
 	self.noUpload = noUpload
+	self.packagesRemoved = False
 	self.clientDatabase = clientDatabase
 	
 	# caching dictionaries
@@ -820,6 +821,12 @@ class etpDatabase:
 	    self.connection.close()
 	    return
 
+	# Cleanups if at least one package has been removed
+	if (self.packagesRemoved):
+	    self.cleanupUseflags()
+	    self.cleanupSources()
+	    self.cleanupDependencies()
+
 	# if it's equo that's calling the function, just save changes and quit
 	if (self.clientDatabase):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened by Entropy Client.")
@@ -829,7 +836,6 @@ class etpDatabase:
 	    return
 	
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in read/write.")
-	
 	
 	# FIXME verify all this shit, for now it works...
 	if (entropyTools.dbStatus.isDatabaseAlreadyTainted()) and (not entropyTools.dbStatus.isDatabaseAlreadyBumped()):
@@ -1263,12 +1269,8 @@ class etpDatabase:
 	
 	# Remove from installedtable if exist
 	self.removePackageFromInstalledTable(idpackage)
-	
-	# Cleanups
-	self.cleanupUseflags()
-	self.cleanupSources()
-	self.cleanupDependencies()
-	# keywords, binkeywords
+	# need a final cleanup
+	self.packagesRemoved = True
 	
 	self.commitChanges()
 
@@ -2189,14 +2191,20 @@ class etpDatabase:
 	    result.append(row)
 	return result
 
-    # NOTE: unstable and stable packages are pulled in
-    # so, there might be duplicates! that's normal
     def listAllPackages(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllPackages: called.")
 	self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo')
 	result = []
 	for row in self.cursor:
 	    result.append(row)
+	return result
+
+    def listAllIdpackages(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllIdpackages: called.")
+	self.cursor.execute('SELECT idpackage FROM baseinfo')
+	result = []
+	for row in self.cursor:
+	    result.append(row[0])
 	return result
 
     def listAllDependencies(self):
