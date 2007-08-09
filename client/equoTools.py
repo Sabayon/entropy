@@ -710,8 +710,6 @@ def atomMatch(atom, caseSentitive = True):
 		except:
 		    needFiltering = False
 		
-		print needFiltering
-		
 		if (needFiltering):
 		    #print "also tags match"
 		    # yes, it is. we need to compare revisions
@@ -731,7 +729,7 @@ def atomMatch(atom, caseSentitive = True):
 		    newerRevision = getNewerVersionTag(revisions)
 		    newerRevision = newerRevision[0]
 		    duplicatedRevisions = extactDuplicatedEntries(revisions)
-		    print duplicatedRevisions
+		    #print duplicatedRevisions
 		    try:
 			duplicatedRevisions.index(newerRevision)
 			needFiltering = True
@@ -740,7 +738,7 @@ def atomMatch(atom, caseSentitive = True):
 		
 		    if (needFiltering):
 			# ok, we must get the repository with the biggest priority
-			print "d'oh"
+			#print "d'oh"
 		        # I'm pissed off, now I get the repository name and quit
 			for repository in etpRepositoriesOrder:
 			    for repo in conflictingTags:
@@ -1621,7 +1619,7 @@ def package(options):
 	    rc = searchPackage(myopts)
 
     elif (options[0] == "deptest"):
-	rc = dependenciesTest(quiet = equoRequestQuiet, ask = equoRequestAsk, pretend = equoRequestPretend)
+	rc, garbage = dependenciesTest(quiet = equoRequestQuiet, ask = equoRequestAsk, pretend = equoRequestPretend)
 
     elif (options[0] == "install"):
 	if len(myopts) > 0:
@@ -2443,7 +2441,8 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
     for xidpackage in installedPackages:
 	count += 1
 	atom = clientDbconn.retrieveAtom(xidpackage)
-	print_info(darkred(" @@ ")+bold("(")+blue(str(count))+"/"+red(length)+bold(")")+darkgreen(" Checking ")+bold(atom), back = True)
+	if (not quiet):
+	    print_info(darkred(" @@ ")+bold("(")+blue(str(count))+"/"+red(length)+bold(")")+darkgreen(" Checking ")+bold(atom), back = True)
 	deptree, status = generateDependencyTree([xidpackage,0])
 	'''
 	if (status == -2): # dependencies not found
@@ -2500,6 +2499,7 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
 	    packages.append(dep[0])
 	
 	# check for equo.pid
+	packages = filterDuplicatedEntries(packages)
 	applicationLockCheck("install")
 	installPackages(packages, deps = False, ask = ask)
 	    
