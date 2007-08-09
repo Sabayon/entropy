@@ -1560,7 +1560,7 @@ def query(options):
 	rc = searchInstalledPackages(myopts[1:], quiet = equoRequestQuiet)
 
     elif options[0] == "belongs":
-	rc = searchBelongs(myopts[1:])
+	rc = searchBelongs(myopts[1:], quiet = equoRequestQuiet)
 
     elif options[0] == "depends":
 	rc = searchDepends(myopts[1:], verbose = equoRequestVerbose, quiet = equoRequestQuiet)
@@ -1569,7 +1569,7 @@ def query(options):
 	rc = searchFiles(myopts[1:], quiet = equoRequestQuiet)
 
     elif options[0] == "description":
-	rc = searchDescription(myopts[1:])
+	rc = searchDescription(myopts[1:], quiet = equoRequestQuiet)
 
     return rc
 
@@ -1895,9 +1895,9 @@ def searchInstalledPackages(packages, idreturn = False, quiet = False):
     return 0
 
 
-def searchBelongs(files, idreturn = False):
+def searchBelongs(files, idreturn = False, quiet = False):
     
-    if (not idreturn):
+    if (not idreturn) and (not quiet):
         print_info(yellow(" @@ ")+darkgreen("Belong Search..."))
 
     clientDbconn = openClientDatabase()
@@ -1907,12 +1907,14 @@ def searchBelongs(files, idreturn = False):
 	result = clientDbconn.searchBelongs(file)
 	if (result):
 	    # print info
-	    if (not idreturn):
+	    if (not idreturn) and (not quiet):
 	        print_info(blue("     Keyword: ")+bold("\t"+file))
 	        print_info(blue("     Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
 	    for idpackage in result:
 		if (idreturn):
 		    dataInfo.append(idpackage)
+		elif (quiet):
+		    print clientDbconn.retrieveAtom(idpackage)
 		else:
 		    printPackageInfo(idpackage, clientDbconn, clientSearch = True)
 	
@@ -1989,11 +1991,11 @@ def searchFiles(atoms, idreturn = False, quiet = False):
     
     return 0
 
-def searchDescription(descriptions, idreturn = False):
+def searchDescription(descriptions, idreturn = False, quiet = False):
     
     foundPackages = {}
     
-    if (not idreturn):
+    if (not idreturn) and (not quiet):
         print_info(yellow(" @@ ")+darkgreen("Description Search..."))
     # search inside each available database
     repoNumber = 0
@@ -2002,7 +2004,7 @@ def searchDescription(descriptions, idreturn = False):
 	foundPackages[repo] = {}
 	repoNumber += 1
 	
-	if (not idreturn):
+	if (not idreturn) and (not quiet):
 	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 	
 	rc = fetchRepositoryIfNotAvailable(repo)
@@ -2017,7 +2019,7 @@ def searchDescription(descriptions, idreturn = False):
 	    if (result):
 		foundPackages[repo][desc] = result
 	        # print info
-		if (not idreturn):
+		if (not idreturn) and (not quiet):
 	            print_info(blue("     Keyword: ")+bold("\t"+desc))
 	            print_info(blue("     Found:   ")+bold("\t"+str(len(foundPackages[repo][desc])))+red(" entries"))
 	        for pkg in foundPackages[repo][desc]:
@@ -2025,6 +2027,8 @@ def searchDescription(descriptions, idreturn = False):
 		    atom = pkg[0]
 		    if (idreturn):
 			dataInfo.append([idpackage,repo])
+		    elif (quiet):
+			print dbconn.retrieveAtom(idpackage)
 		    else:
 		        printPackageInfo(idpackage,dbconn)
 	
