@@ -64,12 +64,15 @@ def applicationLockCheck(option = None):
 def getRandomNumber():
     return int(str(random.random())[2:7])
 
-def countdown(secs=5,what="Counting..."):
+def countdown(secs=5,what="Counting...", back = False):
     import time
     if secs:
-	print what
-        for i in range(secs):
-            sys.stdout.write(str(i)+" ")
+	if back:
+	    sys.stdout.write(what)
+	else:
+	    print what
+        for i in range(secs)[::-1]:
+            sys.stdout.write(red(str(i+1)+" "))
             sys.stdout.flush()
 	    time.sleep(1)
 

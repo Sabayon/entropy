@@ -31,7 +31,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific, uncompressTarBz2, extractXpak, filterDuplicatedEntries, applicationLockCheck
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific, uncompressTarBz2, extractXpak, filterDuplicatedEntries, applicationLockCheck, countdown
 from databaseTools import etpDatabase
 import xpak
 import time
@@ -1155,29 +1155,28 @@ def getRequiredPackages(foundAtoms, emptydeps = False):
 
 
 '''
-   @description: generates a list of packages that can be added to the removal queue of atoms (list)
-   @input package: atomInfo [idpackage,reponame]
+   @description: generates a list of packages id that can be added to the removal queue of atoms (list)
+   @input package: list of packages id taken from the client database
    @output: removal tree dictionary, plus status code
 '''
 dictDeps = {}
-def generateRemovalTree(atoms, output = False):
+def generateRemovalTree(idpackages, output = False):
 
     clientDbconn = openClientDatabase()
     if (clientDbconn == -1):
 	return [],-1
     
     dependencies = []
-    atomsInfo = []
+    atomIds = []
     treeview = []
     removeList = []
     # Initialize
-    for atom in atoms:
-        atomInfo = atomMatchInRepository(atom,clientDbconn)
-	atomsInfo.append(atomInfo)
-	xatom = clientDbconn.retrieveAtom(atomInfo[0])
+    for idpackage in idpackages:
+	atomIds.append(idpackage)
+	xatom = clientDbconn.retrieveAtom(idpackage)
 	xdepends = clientDbconn.searchDepends(dep_getkey(xatom))
-	dependencies.append(atomInfo[0])
-	dictDeps[atomInfo[0]] = set(xdepends)
+	dependencies.append(idpackage)
+	dictDeps[idpackage] = set(xdepends)
 	# even add my depends?
 	for x in xdepends:
 	    #print x
@@ -1185,8 +1184,8 @@ def generateRemovalTree(atoms, output = False):
 
     remainingDeps = dependencies[:]
     dependencies = set(dependencies)
-    for atomInfo in atomsInfo:
-        treeview.append(atomInfo[0])
+    for atomId in atomIds:
+        treeview.append(atomId)
     depsOk = False
     
     #print treeview
@@ -1225,6 +1224,7 @@ def generateRemovalTree(atoms, output = False):
 		#print "here"
 		# I can safely add this
 		change = True
+		
 		treeview.append(dep)
 		removeList.append(dep)
 		try:
@@ -1233,7 +1233,7 @@ def generateRemovalTree(atoms, output = False):
 		    pass
 		if output:
 		    printatom = clientDbconn.retrieveAtom(dep)
-		    print_info(red(" @@ Adding ")+bold(printatom), back = True)
+		    print_info(red(" @@ Analyzing ")+bold(printatom), back = True)
 		xdeps = getDependencies([dep,0])
 		for x in xdeps:
 		    #print x
@@ -1252,13 +1252,11 @@ def generateRemovalTree(atoms, output = False):
 
     treeview = filterDuplicatedEntries(treeview)
     # remove atomsInfo
-    for atomInfo in atomsInfo:
+    for atomId in atomIds:
 	try:
-	    while 1: treeview.remove(atomInfo[0])
+	    while 1: treeview.remove(atomId)
 	except:
 	    pass
-    for x in treeview:
-        print clientDbconn.retrieveAtom(x)
 
     clientDbconn.closeDB()
     return treeview,0 # treeview is used to show deps while tree is used to run the dependency code.
@@ -2354,12 +2352,12 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	    steps.append("fetch")
 	
 	if (not onlyfetch):
-	    # remove old
-	    if (actionQueue[pkgatom]['remove'] != -1):
-	        steps.append("remove")
+	    # remove old - not needed
+	    #if (actionQueue[pkgatom]['remove'] != -1):
+	    #    steps.append("remove")
 	    # install
 	    steps.append("install")
-	    steps.append("database")
+	    steps.append("installdatabase")
 	    steps.append("cleanup")
 	
 	#print "steps for "+pkgatom+" -> "+str(steps)
@@ -2403,7 +2401,8 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 	print_error(red("No packages found"))
 	return 127,-1
 
-
+    plainRemovalQueue = []
+    
     lookForOrphanedPackages = True
     # now print the selected packages
     print_info(red(" @@ ")+blue("These are the chosen packages:"))
@@ -2412,6 +2411,7 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
     for atomInfo in foundAtoms:
 	atomscounter += 1
 	idpackage = atomInfo[0]
+	systemPackage = clientDbconn.isSystemPackage(idpackage)
 
 	# get needed info
 	pkgatom = clientDbconn.retrieveAtom(idpackage)
@@ -2420,8 +2420,13 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 	if not pkgtag:
 	    pkgtag = "NoTag"
 	pkgrev = clientDbconn.retrieveRevision(idpackage)
-	pkgslot = clientDbconn.retrieveSlot(idpackage)
+	#pkgslot = clientDbconn.retrieveSlot(idpackage)
 	installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
+
+	if (systemPackage):
+	    print_warning(darkred("   # !!! ")+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+red(" is a vital package. Removal forbidden."))
+	    continue
+	plainRemovalQueue.append(idpackage)
 	
 	print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" | Installed from: "+red(installedfrom))
 	print_info("\t"+red("Versioning:\t")+" "+red(pkgver)+" / "+blue(pkgtag)+" / "+(str(pkgrev)))
@@ -2430,18 +2435,88 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
         print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
     
     if (ask):
-        rc = askquestion("     Would you like to look for packages that can be removed along with the ones above?")
+        rc = askquestion("     Would you like to look for packages that can be removed along with the selected above?")
         if rc == "No":
 	    lookForOrphanedPackages = False
 
-    #print lookForOrphanedPackages
 
-    #print packages
-    generateRemovalTree(packages)
+    if (not plainRemovalQueue):
+	print_error(red("Nothing to do."))
+	return 127,-1
+
+    removalQueue = []
     
-    # check for system packages
+    if (lookForOrphanedPackages):
+	choosenRemovalQueue = []
+	print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
+	treeview = generateRemovalTree(plainRemovalQueue)
+	if treeview[1] == 0:
+	    for x in treeview[0]:
+		systemPackage = clientDbconn.isSystemPackage(idpackage) # FIXME: maybe adding this to generateRemovalTree ? 
+		if (not systemPackage):
+		    if (x != -1):
+		        choosenRemovalQueue.append(x)
+	
+	    if (choosenRemovalQueue):
+	        print_info(red(" @@ ")+blue("These are the packages that would added to the removal queue:"))
+	        totalatoms = str(len(choosenRemovalQueue))
+	        atomscounter = 0
+	    
+	        for idpackage in choosenRemovalQueue:
+	            atomscounter += 1
+	            rematom = clientDbconn.retrieveAtom(idpackage)
+	            installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
+
+	            # get needed info
+	            pkgver = clientDbconn.retrieveVersion(idpackage)
+	            pkgtag = clientDbconn.retrieveVersionTag(idpackage)
+	            if not pkgtag:
+	                pkgtag = "NoTag"
+	            pkgrev = clientDbconn.retrieveRevision(idpackage)
+	            #pkgslot = clientDbconn.retrieveSlot(idpackage)
+	            print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(rematom)+" | Installed from: "+red(installedfrom))
+	            print_info("\t"+red("Versioning:\t")+" "+red(pkgver)+" / "+blue(pkgtag)+" / "+(str(pkgrev)))
+	    
+                if (ask):
+                    rc = askquestion("     Would you like to add these packages to your removal queue?")
+                    if rc != "No":
+	                for x in choosenRemovalQueue:
+			    removalQueue.append(x)
+		else:
+	            for x in choosenRemovalQueue:
+			removalQueue.append(x)
+	
+	else:
+	    print_info(red(" @@ ")+blue("Removal Tree generation not available for this set of packages."))
+
+    if (ask):
+        rc = askquestion("     I am going to start the removal. Are you sure?")
+        if rc == "No":
+	    clientDbconn.closeDB()
+	    return 0,0
+    else:
+	countdown(what = red(" @@ ")+blue("Starting removal in "),back = True)
+	
+
+    for idpackage in plainRemovalQueue:
+	#print clientDbconn.retrieveAtom(idpackage)
+	removalQueue.append(idpackage)
     
-    print "not yet implemented"
+    # FIXME: complete
+    for idpackage in removalQueue:
+	steps = []
+	steps.append("remove")
+	steps.append("removedatabase")
+	steps.append("postremove")
+	for step in steps:
+	    rc = stepExecutor(step,idpackage,clientDbconn)
+	    if (rc != 0):
+		clientDbconn.closeDB()
+		return -1,rc
+    
+    print_info(red(" @@ ")+blue("All done."))
+    
+    clientDbconn.closeDB()
     return 0,0
 
 
@@ -2465,14 +2540,7 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
 	if (not quiet):
 	    print_info(darkred(" @@ ")+bold("(")+blue(str(count))+"/"+red(length)+bold(")")+darkgreen(" Checking ")+bold(atom), back = True)
 	deptree, status = generateDependencyTree([xidpackage,0])
-	'''
-	if (status == -2): # dependencies not found
-	    depsNotFound[idpackage] = []
-	    for x in range(len(deptree))[::-1]:
-	        for z in deptree[x]:
-		    for a in deptree[x][z]:
-		        depsNotFound[idpackage].append(a)
-	'''
+
 	if (status == 0):
 	    depsNotSatisfied[xidpackage] = []
 	    for x in range(len(deptree))[::-1]:
@@ -2525,6 +2593,7 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
 	installPackages(packages, deps = False, ask = ask)
 	    
 
+    print_info(red(" @@ ")+blue("All done."))
     clientDbconn.closeDB()
     return 0,packagesNeeded
 
@@ -2567,7 +2636,7 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 	if output != 0:
 	    errormsg = red("An error occured while trying to install the package. Check if you have enough disk space on your hard disk. Error "+str(output))
 	    print_error(errormsg)
-    elif step == "database":
+    elif step == "installdatabase":
 	print_info(red("     ## ")+blue("Injecting into database: ")+red(os.path.basename(infoDict['download'])))
 	output = installPackageIntoDatabase(infoDict['idpackage'],infoDict['repository'], clientDbconn)
 	if output != 0:
