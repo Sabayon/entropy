@@ -142,18 +142,22 @@ def getRepositoryDbFileHash(reponame):
 	mhash = "-1"
     return mhash
 
-def syncRepositories(reponames = [], forceUpdate = False):
+def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 
     # check if I am root
     if (not checkRoot()):
-	print_error(red("\t You must run this application as root."))
+	if (not quiet):
+	    print_error(red("\t You must run this application as root."))
 	return 1
 
     # check etpRepositories
     if len(etpRepositories) == 0:
-	print_error(yellow(" * ")+red("No repositories specified in ")+etpConst['repositoriesconf'])
+	if (not quiet):
+	    print_error(yellow(" * ")+red("No repositories specified in ")+etpConst['repositoriesconf'])
 	return 127
-    print_info(yellow(" @@ ")+green("Repositories syncronization..."))
+
+    if (not quiet):
+        print_info(yellow(" @@ ")+green("Repositories syncronization..."))
     repoNumber = 0
     syncErrors = False
     
@@ -165,51 +169,61 @@ def syncRepositories(reponames = [], forceUpdate = False):
 	
 	repoNumber += 1
 	
-	print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
-	print_info(red("\tDatabase URL: ")+green(etpRepositories[repo]['database']))
-	print_info(red("\tDatabase local path: ")+green(etpRepositories[repo]['dbpath']))
+	if (not quiet):
+	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
+	    print_info(red("\tDatabase URL: ")+green(etpRepositories[repo]['database']))
+	    print_info(red("\tDatabase local path: ")+green(etpRepositories[repo]['dbpath']))
 	
 	# check if database is already updated to the latest revision
 	onlinestatus = getOnlineRepositoryRevision(repo)
 	if (onlinestatus != -1):
 	    localstatus = getRepositoryRevision(repo)
 	    if (localstatus == onlinestatus) and (forceUpdate == False):
-		print_info(bold("\tAttention: ")+red("database is already up to date."))
+		if (not quiet):
+		    print_info(bold("\tAttention: ")+red("database is already up to date."))
 		continue
 	
 	# get database lock
 	rc = downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabasedownloadlockfile'],"/dev/null")
 	if rc != "-3": # cannot download database
-	    print_error(bold("\tATTENTION -> ")+red("repository is being updated. Try again in few minutes."))
+	    if (not quiet):
+	        print_error(bold("\tATTENTION -> ")+red("repository is being updated. Try again in few minutes."))
 	    syncErrors = True
 	    continue
 	
 	# starting to download
-	print_info(red("\tDownloading database ")+green(etpConst['etpdatabasefilegzip'])+red(" ..."))
+	if (not quiet):
+	    print_info(red("\tDownloading database ")+green(etpConst['etpdatabasefilegzip'])+red(" ..."))
 	# create dir if it doesn't exist
 	if not os.path.isdir(etpRepositories[repo]['dbpath']):
-	    print_info(red("\t\tCreating database directory..."))
+	    if (not quiet):
+	        print_info(red("\t\tCreating database directory..."))
 	    os.makedirs(etpRepositories[repo]['dbpath'])
 	# download
 	downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabasefilegzip'],etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefilegzip'])
 	
-	print_info(red("\tUnpacking database to ")+green(etpConst['etpdatabasefile'])+red(" ..."))
+	if (not quiet):
+	    print_info(red("\tUnpacking database to ")+green(etpConst['etpdatabasefile'])+red(" ..."))
 	unpackGzip(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefilegzip'])
 	# download etpdatabasehashfile
-	print_info(red("\tDownloading checksum ")+green(etpConst['etpdatabasehashfile'])+red(" ..."))
+	if (not quiet):
+	    print_info(red("\tDownloading checksum ")+green(etpConst['etpdatabasehashfile'])+red(" ..."))
 	downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabasehashfile'],etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'])
 	# checking checksum
-	print_info(red("\tChecking downloaded database ")+green(etpConst['etpdatabasefile'])+red(" ..."), back = True)
+	if (not quiet):
+	    print_info(red("\tChecking downloaded database ")+green(etpConst['etpdatabasefile'])+red(" ..."), back = True)
 	f = open(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
 	md5hash = f.readline().strip()
 	md5hash = md5hash.split()[0]
 	f.close()
 	rc = compareMd5(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile'],md5hash)
 	if rc:
-	    print_info(red("\tDownloaded database status: ")+bold("OK"))
+	    if (not quiet):
+	        print_info(red("\tDownloaded database status: ")+bold("OK"))
 	else:
-	    print_error(red("\tDownloaded database status: ")+yellow("ERROR"))
-	    print_error(red("\t An error occured while checking database integrity"))
+	    if (not quiet):
+	        print_error(red("\tDownloaded database status: ")+yellow("ERROR"))
+	        print_error(red("\t An error occured while checking database integrity"))
 	    # delete all
 	    if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile']):
 		os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'])
@@ -221,14 +235,17 @@ def syncRepositories(reponames = [], forceUpdate = False):
 	    continue
 	
 	# download etpdatabaserevisionfile
-	print_info(red("\tDownloading revision ")+green(etpConst['etpdatabaserevisionfile'])+red(" ..."))
+	if (not quiet):
+	    print_info(red("\tDownloading revision ")+green(etpConst['etpdatabaserevisionfile'])+red(" ..."))
 	downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabaserevisionfile'],etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'])
 	
-	print_info(red("\tUpdated repository revision: ")+bold(str(getRepositoryRevision(repo))))
+	if (not quiet):
+	    print_info(red("\tUpdated repository revision: ")+bold(str(getRepositoryRevision(repo))))
 	print_info(yellow("\tUpdate completed"))
 
     if syncErrors:
-	print_warning(yellow(" @@ ")+red("Something bad happened. Please have a look."))
+	if (not quiet):
+	    print_warning(yellow(" @@ ")+red("Something bad happened. Please have a look."))
 	return 128
 
     return 0
@@ -1214,12 +1231,12 @@ def generateRemovalTree(atoms, output = False):
 		    while 1: dependencies.remove(dep)
 		except:
 		    pass
-		if 1:
+		if output:
 		    printatom = clientDbconn.retrieveAtom(dep)
-		    print_info(red(" @@ Adding ")+bold(printatom))
+		    print_info(red(" @@ Adding ")+bold(printatom), back = True)
 		xdeps = getDependencies([dep,0])
 		for x in xdeps:
-		    print x
+		    #print x
 		    xdep = atomMatchInRepository(x,clientDbconn)
 		    mydepends = clientDbconn.searchDepends(dep_getkey(x))
 		    dependencies.add(xdep[0])
@@ -2419,7 +2436,7 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 
     #print lookForOrphanedPackages
 
-    print packages
+    #print packages
     generateRemovalTree(packages)
     
     # check for system packages

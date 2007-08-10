@@ -601,6 +601,96 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
     return etpData
 
 
+def dependenciesTest(options):
+
+    reagentRequestQuiet = False
+    for opt in options:
+	if opt.startswith("--quiet"):
+	    reagentRequestQuiet = True
+
+    if (not reagentRequestQuiet):
+        print_info(red(" @@ ")+blue("ATTENTION: you need to have equo.conf properly configured only for your running repository !!"))
+        print_info(red(" @@ ")+blue("Running dependency test..."))
+
+    dbconn = databaseTools.etpDatabase(readOnly = True)
+    
+    # hey Equo, how are you?
+    sys.path.append('../client')
+    import equoTools
+    equoTools.syncRepositories(quiet = reagentRequestQuiet)
+
+    # get all the installed packages
+    installedPackages = dbconn.listAllIdpackages()
+    
+    depsNotFound = {}
+    depsNotSatisfied = {}
+    # now look
+    length = str((len(installedPackages)))
+    count = 0
+    for xidpackage in installedPackages:
+	count += 1
+	atom = dbconn.retrieveAtom(xidpackage)
+	if (not reagentRequestQuiet):
+	    print_info(darkred(" @@ ")+bold("(")+blue(str(count))+"/"+red(length)+bold(")")+darkgreen(" Checking ")+bold(atom), back = True)
+	deptree, status = equoTools.generateDependencyTree([xidpackage,0])
+	
+	if (status == -2): # dependencies not found
+	    depsNotFound[xidpackage] = []
+	    for x in deptree:
+		for z in deptree[x]:
+		    for a in deptree[x][z]:
+		        depsNotFound[xidpackage].append(a)
+	    if (not depsNotFound[xidpackage]):
+		del depsNotFound[xidpackage]
+
+	if (status == 0):
+	    depsNotSatisfied[xidpackage] = []
+	    for x in range(len(deptree))[::-1]:
+	        for z in deptree[x]:
+		    depsNotSatisfied[xidpackage].append(z)
+	    if (not depsNotSatisfied[xidpackage]):
+		del depsNotSatisfied[xidpackage]
+	
+    packagesNeeded = []
+    if (depsNotSatisfied):
+	if (not reagentRequestQuiet):
+            print_info(red(" @@ ")+blue("These are the packages that lack dependencies: "))
+	for dict in depsNotSatisfied:
+	    pkgatom = dbconn.retrieveAtom(dict)
+	    if (not reagentRequestQuiet):
+	        print_info(darkred("   ### ")+blue(pkgatom))
+	    for dep in depsNotSatisfied[dict]:
+		iddep = dep[0]
+		repo = dep[1]
+		depatom = dbconn.retrieveAtom(iddep)
+		dbconn.closeDB()
+		if (not reagentRequestQuiet):
+		    print_info(bold("       :: ")+red(depatom))
+		packagesNeeded.append([depatom,dep])
+
+    packagesNotFound = []
+    if (depsNotFound):
+	if (not reagentRequestQuiet):
+            print_info(red(" @@ ")+blue("These are the packages not found, that respective packages in repository need:"))
+	for dict in depsNotFound:
+	    pkgatom = dbconn.retrieveAtom(dict)
+	    if (not reagentRequestQuiet):
+	        print_info(darkred("   ### ")+blue(pkgatom))
+	    for pkg in depsNotFound[dict]:
+		if (not reagentRequestQuiet):
+	            print_info(bold("       :: ")+red(pkg))
+	        packagesNotFound.append(pkg)
+
+    packagesNotFound = filterDuplicatedEntries(packagesNotFound)
+
+    if (reagentRequestQuiet):
+	for x in packagesNotFound:
+	    print x
+
+    dbconn.closeDB()
+    return 0,packagesNeeded,packagesNotFound
+
+
 def smartapps(options):
 
     reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"smartapps: called -> options: "+str(options))
@@ -631,6 +721,11 @@ def smartapps(options):
 	if (len(validPackages) == 0):
 	    print_error(yellow(" * ")+red("No valid packages specified."))
 	    sys.exit(503)
+
+        print_info(red(" @@ ")+blue("ATTENTION: you need to have equo.conf properly configured only for your running repository !!"))
+        sys.path.append('../client')
+        import equoTools
+	equoTools.syncRepositories()
 
 	# print the list
 	print_info(green(" * ")+red("This is the list of the packages that would be worked out:"))
