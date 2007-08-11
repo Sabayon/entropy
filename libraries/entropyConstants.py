@@ -57,7 +57,9 @@ etpData = {
     'size': u"", # the package size
     'versiontag': u"", # particular version tag
     'provide': u"", # like, cups provides dep virtual/lpr
-    'systempackage': u"" # if this is a system package, this will be != ""
+    'systempackage': u"", # if this is a system package, this will be != ""
+    'config_protect': u"", # list of directories that contain files that should not be overwritten
+    'config_protect_mask': u"", # list of directories that contain files that should be overwritten
 }
 
 # Entropy database SQL initialization Schema and data structure
@@ -86,6 +88,9 @@ DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS licenses;
 DROP TABLE IF EXISTS flags;
 DROP TABLE IF EXISTS systempackages;
+DROP TABLE IF EXISTS configprotect;
+DROP TABLE IF EXISTS configprotectmask;
+DROP TABLE IF EXISTS configprotectreference;
 DROP TABLE IF EXISTS installedtable;
 """
 
@@ -196,6 +201,21 @@ CREATE TABLE flags (
     chost VARCHAR,
     cflags VARCHAR,
     cxxflags VARCHAR
+);
+
+CREATE TABLE configprotect (
+    idpackage INTEGER,
+    idprotect INTEGER
+);
+
+CREATE TABLE configprotectmask (
+    idpackage INTEGER,
+    idprotect INTEGER
+);
+
+CREATE TABLE configprotectreference (
+    idprotect INTEGER PRIMARY KEY,
+    protect VARCHAR
 );
 
 CREATE TABLE systempackages (

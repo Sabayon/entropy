@@ -1080,6 +1080,34 @@ class etpDatabase:
 			)
 	    )
 
+	# create new protect if it doesn't exist
+	for protect in etpData['config_protect']:
+	    idprotect = self.isProtectAvailable(protect)
+	    if (idprotect == -1):
+	        # create category
+	        idprotect = self.addProtect(protect)
+	    # fill configprotect
+	    self.cursor.execute(
+		'INSERT into configprotect VALUES '
+		'(?,?)'
+		, (	idpackage,
+			idprotect,
+			)
+	    )
+	for protect_mask in etpData['config_protect_mask']:
+	    idprotect = self.isProtectAvailable(protect_mask)
+	    if (idprotect == -1):
+	        # create category
+	        idprotect = self.addProtect(protect_mask)
+	    # fill configprotect
+	    self.cursor.execute(
+		'INSERT into configprotectmask VALUES '
+		'(?,?)'
+		, (	idpackage,
+			idprotect,
+			)
+	    )
+
 	# conflicts, a list
 	for conflict in etpData['conflicts']:
 	    self.cursor.execute(
@@ -1256,6 +1284,10 @@ class etpDatabase:
 	self.cursor.execute('DELETE FROM provide WHERE idpackage = '+idpackage)
 	# conflicts
 	self.cursor.execute('DELETE FROM conflicts WHERE idpackage = '+idpackage)
+	# protect
+	self.cursor.execute('DELETE FROM configprotect WHERE idpackage = '+idpackage)
+	# protect_mask
+	self.cursor.execute('DELETE FROM configprotectmask WHERE idpackage = '+idpackage)
 	# sources
 	self.cursor.execute('DELETE FROM sources WHERE idpackage = '+idpackage)
 	# useflags
@@ -1300,6 +1332,19 @@ class etpDatabase:
 	    self.commitChanges()
 	    return cat
 	raise Exception, "I tried to insert a category but then, fetching it returned -1. There's something broken."
+
+    def addProtect(self,protect):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addProtect: adding CONFIG_PROTECT/CONFIG_PROTECT_MASK -> "+str(protect))
+	self.cursor.execute(
+		'INSERT into configprotectreference VALUES '
+		'(NULL,?)', (protect,)
+	)
+	# get info about inserted value and return
+	prt = self.isProtectAvailable(protect)
+	if prt != -1:
+	    self.commitChanges()
+	    return prt
+	raise Exception, "I tried to insert a protect but then, fetching it returned -1. There's something broken."
 
     def addSource(self,source):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addSource: adding Package Source -> "+str(source))
@@ -1545,6 +1590,9 @@ class etpDatabase:
 	else:
 	    data['systempackage'] = ''
 	
+	data['config_protect'] = self.retrieveProtect(idpackage)
+	data['config_protect'] = self.retrieveProtectMask(idpackage)
+	
 	mirrornames = []
 	for x in data['sources']:
 	    if x.startswith("mirror://"):
@@ -1675,7 +1723,7 @@ class etpDatabase:
 	    api = row[0]
 	    break
 	return api
-    
+
     def retrieveUseflags(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveUseflags: retrieving USE flags for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "flag" FROM useflags WHERE idpackage = "'+str(idpackage)+'"')
@@ -1751,6 +1799,32 @@ class etpDatabase:
 	    for row in self.cursor:
 	        kw.append(row[0])
 	return kw
+
+    def retrieveProtect(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProtect: retrieving CONFIG_PROTECT for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "idprotect" FROM configprotect WHERE idpackage = "'+str(idpackage)+'"')
+	idprotects = []
+	for row in self.cursor:
+	    idprotects.append(row[0])
+	protects = []
+	for idprotect in idprotects:
+	    self.cursor.execute('SELECT "protect" FROM configprotectreference WHERE idprotect = "'+str(idprotect)+'"')
+	    for row in self.cursor:
+	        protects.append(row[0])
+	return protects
+
+    def retrieveProtectMask(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProtectMask: retrieving CONFIG_PROTECT_MASK for package ID "+str(idpackage))
+	self.cursor.execute('SELECT "idprotect" FROM configprotectmask WHERE idpackage = "'+str(idpackage)+'"')
+	idprotects = []
+	for row in self.cursor:
+	    idprotects.append(row[0])
+	protects = []
+	for idprotect in idprotects:
+	    self.cursor.execute('SELECT "protect" FROM configprotectreference WHERE idprotect = "'+str(idprotect)+'"')
+	    for row in self.cursor:
+	        protects.append(row[0])
+	return protects
 
     def retrieveSources(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSources: retrieving Sources for package ID "+str(idpackage))
@@ -1895,6 +1969,18 @@ class etpDatabase:
 	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isCategoryAvailable: "+category+" not available.")
 	    return result
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCategoryAvailable: "+category+" available.")
+	return result
+
+    def isProtectAvailable(self,protect):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isProtectAvailable: called.")
+	result = -1
+	self.cursor.execute('SELECT idprotect FROM configprotectreference WHERE protect = "'+protect+'"')
+	for row in self.cursor:
+	    result = row[0]
+	if result == -1:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isProtectAvailable: "+protect+" not available.")
+	    return result
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isProtectAvailable: "+protect+" available.")
 	return result
 
     def isSourceAvailable(self,source):

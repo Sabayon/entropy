@@ -76,7 +76,7 @@ def getThirdPartyMirrors(mirrorname):
     return portage.thirdpartymirrors[mirrorname]
 
 def getPortageEnv(var):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPortageEnv: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPortageEnv: called.")
     try:
 	rc = portage.config(clone=portage.settings).environ()[var]
 	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPortageEnv: variable available -> "+str(var))
@@ -95,6 +95,25 @@ def getPackagesInSystem():
 	    for z in y:
 	        sysoutput.append(z)
     return sysoutput
+
+def getConfigProtectAndMask(var):
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getConfigProtectAndMask: called.")
+    config_protect = portage.settings['CONFIG_PROTECT']
+    config_protect = config_protect.split()
+    config_protect_mask = portage.settings['CONFIG_PROTECT_MASK']
+    config_protect_mask = config_protect_mask.split()
+    # explode
+    protect = []
+    for x in config_protect:
+	if x.startswith("$"): #FIXME: small hack
+	    x = commands.getoutput("echo "+x).split("\n")[0]
+	protect.append(x)
+    mask = []
+    for x in config_protect_mask:
+	if x.startswith("$"): #FIXME: small hack
+	    x = commands.getoutput("echo "+x).split("\n")[0]
+	mask.append(x)
+    return protect,mask
 
 # resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1

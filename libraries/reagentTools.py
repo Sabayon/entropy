@@ -32,7 +32,7 @@ import re
 import sys
 import os
 import string
-from portageTools import synthetizeRoughDependencies, getThirdPartyMirrors, getPackagesInSystem
+from portageTools import synthetizeRoughDependencies, getThirdPartyMirrors, getPackagesInSystem, getConfigProtectAndMask
 
 # Logging initialization
 import logTools
@@ -586,6 +586,12 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
 	    # found
 	    etpData['systempackage'] = "xxx"
 	    break
+
+    print_info(yellow(" * ")+red("Getting CONFIG_PROTECT/CONFIG_PROTECT_MASK List..."),back = True)
+    # write only if it's a systempackage
+    protect, mask = getConfigProtectAndMask()
+    etpData['config_protect'] = protect
+    etpData['config_protect_mask'] = mask
 
     print_info(yellow(" * ")+red("Getting Entropy API version..."),back = True)
     # write API info
