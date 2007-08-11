@@ -356,8 +356,6 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 	# search into the less stable, if found, break, otherwise continue
 	results = dbconn.searchPackagesInBranchByName(pkgname, etpConst['branches'][idx], caseSensitive)
 	
-	#print results
-	
 	# if it's a PROVIDE, search with searchProvide
 	if (not results):
 	    results = dbconn.searchProvideInBranch(pkgkey,etpConst['branches'][idx])
@@ -375,16 +373,16 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 	    for result in results:
 		idpackage = result[1]
 		cat = dbconn.retrieveCategory(idpackage)
-		if (foundCat):
-		    if (cat != foundCat) and (pkgcat == "null"):
-			# got the issue
-			# gosh, return and complain
-			atomMatchInRepositoryCache[atom] = {}
-			atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
-			atomMatchInRepositoryCache[atom]['result'] = -1,2
-			return -1,2
-		else:
+		if (cat == pkgcat):
 		    foundCat = cat
+		    break
+	    if (not foundCat) and (pkgcat == "null"):
+		# got the issue
+		# gosh, return and complain
+		atomMatchInRepositoryCache[atom] = {}
+		atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
+		atomMatchInRepositoryCache[atom]['result'] = -1,2
+		return -1,2
 	
 	    # I can use foundCat
 	    pkgcat = foundCat
@@ -2128,7 +2126,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	if (exitcode != -1):
 	    _foundAtoms.append(result[1])
 	else:
-	    print_warning(red("## ATTENTION -> package")+bold(" "+result[0]+" ")+red("not found in database"))
+	    print_warning(red("## ATTENTION: no match for ")+bold(" "+result[0]+" ")+red(" in database. If you omitted the category, try adding it."))
 
     foundAtoms = _foundAtoms
     
