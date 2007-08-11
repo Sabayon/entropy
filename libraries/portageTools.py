@@ -96,7 +96,7 @@ def getPackagesInSystem():
 	        sysoutput.append(z)
     return sysoutput
 
-def getConfigProtectAndMask(var):
+def getConfigProtectAndMask():
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getConfigProtectAndMask: called.")
     config_protect = portage.settings['CONFIG_PROTECT']
     config_protect = config_protect.split()
