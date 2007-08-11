@@ -71,7 +71,7 @@ def sync(options, justTidy = False):
 	    database(["sync"])
 	    # now check packages checksum
 	    import databaseTools
-	    databaseTools.database(['md5check'])
+	    databaseTools.database(['md5check','--noask'])
 	    time.sleep(2)
 	    if (not activatorRequestNoAsk):
 	        # ask question
@@ -514,27 +514,27 @@ def packages(options):
 			while not ckOk:
 			    rc = ftp.uploadFile(uploadItem)
 			    # verify upload using remoteTools
-			    print_info(counterInfo+red("   -> Verifying ")+green(item[0])+bold(" checksum")+red(" (if supported)"), back = True)
+			    print_info("    "+red("   -> Verifying ")+green(item[0])+bold(" checksum")+red(" (if supported)"), back = True)
 			    ck = remoteTools.getRemotePackageChecksum(extractFTPHostFromUri(uri),item[0])
 			    if (ck == None):
-				print_warning(counterInfo+red("   -> Digest verification of ")+green(item[0])+bold(" not supported"))
+				print_warning("    "+red("   -> Digest verification of ")+green(item[0])+bold(" not supported"))
 				ckOk = True
 			    else:
 				if (ck == False):
 				    # file does not exist???
-				    print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not exist remotely. Reuploading..."))
+				    print_warning("    "+red("   -> Package ")+bold(item[0])+red(" does not exist remotely. Reuploading..."))
 				else:
 				    if len(ck) == 32:
 					# valid checksum, checking
 					ckres = compareMd5(uploadItem,ck)
 					if (ckres):
-					    print_info(counterInfo+red("   -> Package ")+bold(item[0])+red(" has been uploaded correctly."))
+					    print_info("    "+red("   -> Package ")+bold(item[0])+red(" has been uploaded correctly."))
 					    ckOk = True
 					else:
-					    print_warning(counterInfo+red("   -> Package ")+bold(item[0])+yellow(" has NOT been uploaded correctly. Reuploading..."))
+					    print_warning("    "+red("   -> Package ")+bold(item[0])+yellow(" has NOT been uploaded correctly. Reuploading..."))
 				    else:
 					# hum, what the hell is this checksum!?!?!?!
-					print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum: "+str(ck)+". Reuploading..."))
+					print_warning("    "+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum: "+str(ck)+". Reuploading..."))
 			
 			if not os.path.isfile(uploadItem+etpConst['packageshashfileext']):
 			    hashfile = createHashFile(uploadItem)
@@ -542,32 +542,32 @@ def packages(options):
 			    hashfile = uploadItem+etpConst['packageshashfileext']
 
 			# upload md5 hash
-			print_info(counterInfo+red("   -> Uploading checksum of ")+bold(item[0]) + red(" to ") + bold(extractFTPHostFromUri(uri)) +red(" ..."))
+			print_info("    "+red("   -> Uploading checksum of ")+bold(item[0]) + red(" to ") + bold(extractFTPHostFromUri(uri)) +red(" ..."))
 			ckOk = False
 			while not ckOk:
 			    rcmd5 = ftp.uploadFile(hashfile,ascii = True)
 			    # verify upload using remoteTools
-			    print_info(counterInfo+red("   -> Verifying ")+green(item[0]+etpConst['packageshashfileext'])+bold(" checksum")+red(" (if supported)"), back = True)
+			    print_info("    "+red("   -> Verifying ")+green(item[0]+etpConst['packageshashfileext'])+bold(" checksum")+red(" (if supported)"), back = True)
 			    ck = remoteTools.getRemotePackageChecksum(extractFTPHostFromUri(uri),item[0]+etpConst['packageshashfileext'])
 			    if (ck == None):
-				print_warning(counterInfo+red("   -> Digest verification of ")+green(item[0]+etpConst['packageshashfileext'])+bold(" not supported"))
+				print_warning("    "+red("   -> Digest verification of ")+green(item[0]+etpConst['packageshashfileext'])+bold(" not supported"))
 				ckOk = True
 			    else:
 				if (ck == False):
 				    # file does not exist???
-				    print_warning(counterInfo+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" does not exist remotely. Reuploading..."))
+				    print_warning("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" does not exist remotely. Reuploading..."))
 				else:
 				    if len(ck) == 32:
 					# valid checksum, checking
 					ckres = compareMd5(hashfile,ck)
 					if (ckres):
-					    print_info(counterInfo+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" has been uploaded correctly."))
+					    print_info("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" has been uploaded correctly."))
 					    ckOk = True
 					else:
-					    print_warning(counterInfo+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+yellow(" has NOT been uploaded correctly. Reuploading..."))
+					    print_warning("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+yellow(" has NOT been uploaded correctly. Reuploading..."))
 				    else:
 					# hum, what the hell is this checksum!?!?!?!
-					print_warning(counterInfo+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" does not have a proper checksum: "+str(ck)+" Reuploading..."))
+					print_warning("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" does not have a proper checksum: "+str(ck)+" Reuploading..."))
 
 			# now check
 			if (rc) and (rcmd5):

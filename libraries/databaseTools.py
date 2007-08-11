@@ -47,6 +47,15 @@ def database(options):
     import reagentTools
     import mirrorTools
 
+    databaseRequestNoAsk = False
+    _options = []
+    for opt in options:
+	if opt.startswith("--noask"):
+	    databaseRequestNoAsk = True
+	else:
+	    _options.append(opt)
+    options = _options
+
     if len(options) == 0:
 	print_error(yellow(" * ")+red("Not enough parameters"))
 	sys.exit(301)
@@ -585,9 +594,10 @@ def database(options):
 		if (not worldSelected): print_info(green("   - [MUST DOWNLOAD] ")+yellow(pkgatom)+" -> "+bold(pkgfile))
 		toBeDownloaded.append([id,pkgfile])
 	
-	rc = entropyTools.askquestion("     Would you like to continue ?")
-	if rc == "No":
-	    sys.exit(0)
+	if (not databaseRequestNoAsk):
+	    rc = entropyTools.askquestion("     Would you like to continue ?")
+	    if rc == "No":
+	        sys.exit(0)
 
 	notDownloadedPackages = []
 	if (toBeDownloaded != []):
