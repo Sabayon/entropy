@@ -1081,32 +1081,31 @@ class etpDatabase:
 	    )
 
 	# create new protect if it doesn't exist
-	for protect in etpData['config_protect']:
-	    idprotect = self.isProtectAvailable(protect)
-	    if (idprotect == -1):
-	        # create category
-	        idprotect = self.addProtect(protect)
-	    # fill configprotect
-	    self.cursor.execute(
+	idprotect = self.isProtectAvailable(etpData['config_protect'])
+	if (idprotect == -1):
+	    # create category
+	    idprotect = self.addProtect(etpData['config_protect'])
+	# fill configprotect
+	self.cursor.execute(
 		'INSERT into configprotect VALUES '
 		'(?,?)'
 		, (	idpackage,
 			idprotect,
 			)
-	    )
-	for protect_mask in etpData['config_protect_mask']:
-	    idprotect = self.isProtectAvailable(protect_mask)
-	    if (idprotect == -1):
-	        # create category
-	        idprotect = self.addProtect(protect_mask)
-	    # fill configprotect
-	    self.cursor.execute(
+	)
+	    
+	idprotect = self.isProtectAvailable(etpData['config_protect_mask'])
+	if (idprotect == -1):
+	    # create category
+	    idprotect = self.addProtect(etpData['config_protect_mask'])
+	# fill configprotect
+	self.cursor.execute(
 		'INSERT into configprotectmask VALUES '
 		'(?,?)'
 		, (	idpackage,
 			idprotect,
 			)
-	    )
+	)
 
 	# conflicts, a list
 	for conflict in etpData['conflicts']:
@@ -1803,28 +1802,34 @@ class etpDatabase:
     def retrieveProtect(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProtect: retrieving CONFIG_PROTECT for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "idprotect" FROM configprotect WHERE idpackage = "'+str(idpackage)+'"')
-	idprotects = []
+	idprotect = -1
 	for row in self.cursor:
-	    idprotects.append(row[0])
-	protects = []
-	for idprotect in idprotects:
-	    self.cursor.execute('SELECT "protect" FROM configprotectreference WHERE idprotect = "'+str(idprotect)+'"')
-	    for row in self.cursor:
-	        protects.append(row[0])
-	return protects
+	    idprotect = row[0]
+	    break
+	protect = ''
+	if idprotect == -1:
+	    return protect
+	self.cursor.execute('SELECT "protect" FROM configprotectreference WHERE idprotect = "'+str(idprotect)+'"')
+	for row in self.cursor:
+	    protect = row[0]
+	    break
+	return protect
 
     def retrieveProtectMask(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProtectMask: retrieving CONFIG_PROTECT_MASK for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "idprotect" FROM configprotectmask WHERE idpackage = "'+str(idpackage)+'"')
-	idprotects = []
+	idprotect = -1
 	for row in self.cursor:
-	    idprotects.append(row[0])
-	protects = []
-	for idprotect in idprotects:
-	    self.cursor.execute('SELECT "protect" FROM configprotectreference WHERE idprotect = "'+str(idprotect)+'"')
-	    for row in self.cursor:
-	        protects.append(row[0])
-	return protects
+	    idprotect = row[0]
+	    break
+	protect = ''
+	if idprotect == -1:
+	    return protect
+	self.cursor.execute('SELECT "protect" FROM configprotectreference WHERE idprotect = "'+str(idprotect)+'"')
+	for row in self.cursor:
+	    protect = row[0]
+	    break
+	return protect
 
     def retrieveSources(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSources: retrieving Sources for package ID "+str(idpackage))

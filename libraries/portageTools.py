@@ -113,7 +113,7 @@ def getConfigProtectAndMask():
 	if x.startswith("$"): #FIXME: small hack
 	    x = commands.getoutput("echo "+x).split("\n")[0]
 	mask.append(x)
-    return protect,mask
+    return string.join(protect," "),string.join(mask," ")
 
 # resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1
