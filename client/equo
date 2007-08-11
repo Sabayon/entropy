@@ -70,6 +70,7 @@ def print_help():
 
     print_info(" \t"+blue("database")+brown("\t handle installed packages database"))
     print_info(" \t\t"+darkgreen("generate")+red("\t\t generate installed packages database"))
+    print_info(" \t\t"+red("--exact")+"\t\t only install packages whose version match exactly")
     print_info(" \t"+blue("cleanup")+brown("\t\t remove downloaded packages and clean temporary directories"))
 
 options = sys.argv[1:]

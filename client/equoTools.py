@@ -1655,6 +1655,15 @@ def package(options):
 
 def database(options):
 
+    databaseExactMatch = False
+    _options = []
+    for opt in options:
+	if opt == "--exact":
+	    databaseExactMatch = True
+	else:
+	    _options.append(opt)
+    options = _options
+
     if len(options) < 1:
 	return 0
 
@@ -1703,8 +1712,10 @@ def database(options):
 	missingPackages = portagePackages[:]
 	for portagePackage in portagePackages: # for portagePackage in remainingPackages
 	    print_info(red("  Analyzing ")+bold(portagePackage), back = True)
-	    
-	    data = atomMatch(portagePackage)
+	    if (databaseExactMatch):
+	        data = atomMatch("="+portagePackage)
+	    else:
+		data = atomMatch(portagePackage)
 	    if (data[0] != -1):
 	        foundPackages.append(data)
 		missingPackages.remove(portagePackage)
