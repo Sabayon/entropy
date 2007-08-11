@@ -1723,7 +1723,8 @@ def database(options):
 	notmatchingstatus = ''
 	if len(missingPackages) > 0:
 	    f = open("/tmp/equo-not-matching.txt","w")
-	    f.writelines(missingPackages)
+	    for x in missingPackages:
+		f.write(x+"\n")
 	    f.flush()
 	    f.close()
 	    notmatchingstatus = " [wrote: /tmp/equo-not-matching.txt]"

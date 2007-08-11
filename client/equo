@@ -129,6 +129,8 @@ try:
         sys.exit(0)
 except SystemExit:
     pass
+except KeyboardInterrupt:
+    pass
 except:
     from entropyTools import askquestion
     from remoteTools import getOnlineContent, reportApplicationError
