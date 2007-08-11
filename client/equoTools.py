@@ -1719,9 +1719,18 @@ def database(options):
 	    if (data[0] != -1):
 	        foundPackages.append(data)
 		missingPackages.remove(portagePackage)
-		
+	
+	notmatchingstatus = ''
+	if len(missingPackages) > 0:
+	    f = open("/tmp/equo-not-matching.txt","w")
+	    f.writelines(missingPackages)
+	    f.flush()
+	    f.close()
+	    notmatchingstatus = " [wrote: /tmp/equo-not-matching.txt]"
+	    
+	
 	print_info(red("  ### Packages matching: ")+bold(str(len(foundPackages))))
-	print_info(red("  ### Packages not matching: ")+bold(str(len(missingPackages))))
+	print_info(red("  ### Packages not matching: ")+bold(str(len(missingPackages)))+notmatchingstatus)
 	
 	print_info(red("  Now filling the new database..."))
 	
