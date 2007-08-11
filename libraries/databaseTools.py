@@ -1590,7 +1590,7 @@ class etpDatabase:
 	    data['systempackage'] = ''
 	
 	data['config_protect'] = self.retrieveProtect(idpackage)
-	data['config_protect'] = self.retrieveProtectMask(idpackage)
+	data['config_protect_mask'] = self.retrieveProtectMask(idpackage)
 	
 	mirrornames = []
 	for x in data['sources']:
