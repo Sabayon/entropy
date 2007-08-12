@@ -1175,6 +1175,7 @@ def generateRemovalTree(idpackages, output = False):
     atomIds = []
     treeview = []
     removeList = []
+    upstairsDepends = []
     # Initialize
     for idpackage in idpackages:
 	atomIds.append(idpackage)
@@ -1184,8 +1185,15 @@ def generateRemovalTree(idpackages, output = False):
 	dictDeps[idpackage] = set(xdepends)
 	# even add my depends?
 	for x in xdepends:
-	    #print x
 	    treeview.append(x)
+	    # add here now, and look at the end if it has been removed from it
+	    # if not, remove from treeview too
+	    upstairsDepends.append(x)
+	    dependencies.append(x)
+	    xatom = clientDbconn.retrieveAtom(x)
+	    xdep = clientDbconn.searchDepends(dep_getkey(xatom))
+	    dictDeps[x] = set(xdep)
+	    
 
     remainingDeps = dependencies[:]
     dependencies = set(dependencies)
@@ -1262,6 +1270,15 @@ def generateRemovalTree(idpackages, output = False):
 	    while 1: treeview.remove(atomId)
 	except:
 	    pass
+    # filter unremovable dependencies
+    for idpackage in remainingDeps:
+	if idpackage in upstairsDepends:
+	    try:
+		# remove from treeview
+		treeview.remove(idpackage)
+	    except:
+		pass
+
 
     clientDbconn.closeDB()
     return treeview,0 # treeview is used to show deps while tree is used to run the dependency code.
@@ -1390,9 +1407,7 @@ def removeFile(idpackage, clientDbconn = None):
     # Handle gentoo database
     if etpConst['gentoo-compat']:
 	gentooAtom = clientDbconn.retrieveCategory(idpackage)+"/"+clientDbconn.retrieveName(idpackage)+"-"+clientDbconn.retrieveVersion(idpackage)
-	rc = removePackageFromGentooDatabase(gentooAtom)
-	if (rc >= 0):
-	    return rc
+	removePackageFromGentooDatabase(gentooAtom)
 
     # merge data into system
     for file in content:
@@ -1511,7 +1526,7 @@ def installFile(package, infoDict = None):
 '''
    @description: remove package entry from Gentoo database
    @input gentoo package atom (cat/name+ver):
-   @output: 0 = all fine, >0 = error!
+   @output: 0 = all fine, <0 = error!
 '''
 def removePackageFromGentooDatabase(atom):
 
@@ -1688,6 +1703,9 @@ def query(options):
 
     elif options[0] == "files":
 	rc = searchFiles(myopts[1:], quiet = equoRequestQuiet)
+
+    elif options[0] == "removal":
+	rc = searchRemoval(myopts[1:], quiet = equoRequestQuiet)
 
     elif options[0] == "description":
 	rc = searchDescription(myopts[1:], quiet = equoRequestQuiet)
@@ -2134,6 +2152,58 @@ def searchFiles(atoms, idreturn = False, quiet = False):
 
     if (idreturn):
 	return dataInfo
+    
+    return 0
+
+def searchRemoval(atoms, idreturn = False, quiet = False):
+    
+    if (not idreturn) and (not quiet):
+        print_info(yellow(" @@ ")+darkgreen("Removal Search..."))
+
+    clientDbconn = openClientDatabase()
+    foundAtoms = []
+    for atom in atoms:
+	match = atomMatchInRepository(atom,clientDbconn)
+	if match[1] == 0:
+	    foundAtoms.append(match[0])
+
+    # are packages in foundAtoms?
+    if (len(foundAtoms) == 0):
+	print_error(red("No packages found."))
+	return 127,-1
+
+    choosenRemovalQueue = []
+    if (not quiet):
+        print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
+    treeview = generateRemovalTree(foundAtoms)
+    if treeview[1] != 0:
+	return []
+    else:
+	for x in treeview[0]:
+	    choosenRemovalQueue.append(x)
+	
+    if (choosenRemovalQueue):
+	if (not quiet):
+	    print_info(red(" @@ ")+blue("These are the packages that would added to the removal queue:"))
+	totalatoms = str(len(choosenRemovalQueue))
+	atomscounter = 0
+	    
+	for idpackage in choosenRemovalQueue:
+	    atomscounter += 1
+	    rematom = clientDbconn.retrieveAtom(idpackage)
+	    if (not quiet):
+	        installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
+	        repositoryInfo = bold("[")+red("from: ")+brown(installedfrom)+bold("]")
+	        stratomscounter = str(atomscounter)
+	        while len(stratomscounter) < len(totalatoms):
+		    stratomscounter = " "+stratomscounter
+	        print_info("   # "+red("(")+bold(stratomscounter)+"/"+blue(str(totalatoms))+red(")")+repositoryInfo+" "+blue(rematom))
+	    else:
+		print rematom
+
+
+    if (idreturn):
+	return treeview
     
     return 0
 
@@ -2609,6 +2679,7 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
                 if (ask):
                     rc = askquestion("     Would you like to add these packages to the removal queue?")
                     if rc != "No":
+			print_info(red(" @@ ")+blue("Removal Queue updated."))
 	                for x in choosenRemovalQueue:
 			    removalQueue.append(x)
 		else:
@@ -2619,6 +2690,7 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 	    print_info(red(" @@ ")+blue("Removal Tree generation not available for this set of packages."))
 
     if (ask):
+	print
         rc = askquestion("     I am going to start the removal. Are you sure?")
         if rc == "No":
 	    clientDbconn.closeDB()
@@ -2633,12 +2705,15 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
     
     # FIXME: complete
     for idpackage in removalQueue:
+	infoDict = {}
+	infoDict['remove'] = idpackage
 	steps = []
+	steps.append("preremove") # not implemented
 	steps.append("remove")
 	steps.append("removedatabase")
-	steps.append("postremove")
+	steps.append("postremove") # not implemented
 	for step in steps:
-	    rc = stepExecutor(step,idpackage,clientDbconn)
+	    rc = stepExecutor(step,infoDict,clientDbconn)
 	    if (rc != 0):
 		clientDbconn.closeDB()
 		return -1,rc
@@ -2757,32 +2832,32 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 	#    print_error(errormsg)
     elif step == "install":
 	if (etpConst['gentoo-compat']):
-	    print_info(red("     ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download']))+" ## w/Gentoo compatibility")
+	    print_info(red("   ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download']))+" ## w/Gentoo compatibility")
 	    output = installFile(os.path.basename(infoDict['download']),infoDict)
 	else:
-	    print_info(red("     ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download'])))
+	    print_info(red("   ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download'])))
 	    output = installFile(os.path.basename(infoDict['download']))
 	if output != 0:
 	    errormsg = red("An error occured while trying to install the package. Check if you have enough disk space on your hard disk. Error "+str(output))
 	    print_error(errormsg)
     elif step == "remove":
 	if (etpConst['gentoo-compat']):
-	    print_info(red("     ## ")+blue("Removing installed package: ")+red(clientDbconn.retrieveAtom(infoDict['remove']))+" ## w/Gentoo compatibility")
+	    print_info(red("   ## ")+blue("Removing installed package: ")+red(clientDbconn.retrieveAtom(infoDict['remove']))+" ## w/Gentoo compatibility")
 	    output = removeFile(infoDict['remove'],clientDbconn)
 	else:
-	    print_info(red("     ## ")+blue("Removing installed package: ")+red(clientDbconn.retrieveAtom(infoDict['remove'])))
+	    print_info(red("   ## ")+blue("Removing installed package: ")+red(clientDbconn.retrieveAtom(infoDict['remove'])))
 	    output = removeFile(infoDict['remove'],clientDbconn)
 	if output != 0:
 	    errormsg = red("An error occured while trying to remove the package. Check if you have enough disk space on your hard disk. Error "+str(output))
 	    print_error(errormsg)
     elif step == "installdatabase":
-	print_info(red("     ## ")+blue("Injecting into database: ")+red(os.path.basename(infoDict['download'])))
+	print_info(red("   ## ")+blue("Injecting into database: ")+red(os.path.basename(infoDict['download'])))
 	output = installPackageIntoDatabase(infoDict['idpackage'],infoDict['repository'], clientDbconn)
 	if output != 0:
 	    errormsg = red("An error occured while trying to add the package to the database. What have you done? Error "+str(output))
 	    print_error(errormsg)
     elif step == "removedatabase":
-	print_info(red("     ## ")+blue("Removing from database: ")+red(clientDbconn.retrieveAtom(infoDict['remove'])))
+	print_info(red("   ## ")+blue("Removing from database: ")+red(clientDbconn.retrieveAtom(infoDict['remove'])))
 	output = removePackageFromDatabase(infoDict['remove'], clientDbconn)
 	if output != 0:
 	    errormsg = red("An error occured while trying to remove the package from database. What have you done? Error "+str(output))
