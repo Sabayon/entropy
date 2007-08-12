@@ -127,6 +127,13 @@ def sync(options, justTidy = False):
 	ftp = mirrorTools.handlerFTP(uri)
 	ftp.setCWD(etpConst['binaryurirelativepath'])
 	for file in removeList:
+	
+	    if file.endswith(etpConst['packageshashfileext']):
+		checkfile = file[:len(file)-len(etpConst['packageshashfileext'])]
+		if os.path.isfile(etpConst['packagesbindir']+"/"+checkfile):
+		    # skip removal
+		    continue
+	
 	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (remote) file "+file)
 	    print_info(green(" * ")+red("Removing file: ")+bold(file), back = True)
 	    # remove remotely

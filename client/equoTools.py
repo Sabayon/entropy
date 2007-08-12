@@ -2816,7 +2816,7 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 
     output = 0
     if step == "fetch":
-	print_info(red("     ## ")+blue("Fetching package: ")+red(os.path.basename(infoDict['download'])))
+	print_info(red("   ## ")+blue("Fetching package: ")+red(os.path.basename(infoDict['download'])))
 	output = fetchFile(infoDict['download'],infoDict['checksum'])
 	if output != 0:
 	    if output == -1:

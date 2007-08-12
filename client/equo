@@ -132,6 +132,8 @@ except SystemExit:
     pass
 except KeyboardInterrupt:
     pass
+except Timeout:
+    pass
 except:
     from entropyTools import askquestion
     from remoteTools import getOnlineContent, reportApplicationError
