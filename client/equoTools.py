@@ -1386,7 +1386,14 @@ def removeFile(idpackage, clientDbconn = None):
 	closedb = True
 	clientDbconn = openClientDatabase()
     content = clientDbconn.retrieveContent(idpackage)
-    
+
+    # Handle gentoo database
+    if etpConst['gentoo-compat']:
+	gentooAtom = clientDbconn.retrieveCategory(idpackage)+"/"+clientDbconn.retrieveName(idpackage)+"-"+clientDbconn.retrieveVersion(idpackage)
+	rc = removePackageFromGentooDatabase(gentooAtom)
+	if (rc >= 0):
+	    return rc
+
     # merge data into system
     for file in content:
 	file = file.encode(sys.getfilesystemencoding())
@@ -1400,13 +1407,6 @@ def removeFile(idpackage, clientDbconn = None):
 	    except:
 		print "error? the dir wasn't empty? -> "+str(file)
 		pass
-
-    # Handle gentoo database
-    if etpConst['gentoo-compat']:
-	gentooAtom = clientDbconn.retrieveCategory(idpackage)+"/"+clientDbconn.retrieveName(idpackage)+"-"+clientDbconn.retrieveVersion(idpackage)
-	rc = removePackageFromGentooDatabase(gentooAtom)
-	if (rc >= 0):
-	    return rc
 
     return 0
 
