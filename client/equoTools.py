@@ -1539,7 +1539,13 @@ def removePackageFromGentooDatabase(atom):
 	othersInstalled = _portage_getInstalledAtoms(key)
 	if othersInstalled == None:
 	    # safest way (error free) is to use sed without loading the file
-	    os.system("sed -i '/"+key+"/d' /var/lib/portage/world")
+	    # escape /
+	    skippedKey = ''
+	    for x in key:
+		if x == "/":
+		    x = "\/"
+		skippedKey += x
+	    os.system("sed -i '/"+skippedKey+"/d' /var/lib/portage/world")
 
     return 0
 
@@ -1549,8 +1555,8 @@ def removePackageFromGentooDatabase(atom):
    @output: 0 = all fine, >0 = error!
 '''
 def installPackageIntoGentooDatabase(infoDict,packageFile):
-    # handle gentoo-compat
     
+    # handle gentoo-compat
     _portage_avail = False
     try:
 	from portageTools import getInstalledAtoms as _portage_getInstalledAtoms, getPackageSlot as _portage_getPackageSlot, getPortageAppDbPath as _portage_getPortageAppDbPath
@@ -1590,8 +1596,10 @@ def installPackageIntoGentooDatabase(infoDict,packageFile):
     return 0
 
 '''
-   @description: unpack the given file on the system and also update gentoo db if requested
-   @input package: package file (without path)
+   @description: injects package info into the installed packages database
+   @input int(idpackage): idpackage matched into repository
+   @input str(repository): name of the repository where idpackage is
+   @input pointer(clientDbconn): client database connection pointer (optional)
    @output: 0 = all fine, >0 = error!
 '''
 def installPackageIntoDatabase(idpackage,repository, clientDbconn = None):
@@ -1623,6 +1631,27 @@ def installPackageIntoDatabase(idpackage,repository, clientDbconn = None):
     if (closedb):
         clientDbconn.closeDB()
     return exitstatus
+
+'''
+   @description: remove the package from the installed packages database..
+   		 This function is a wrapper around databaseTools.removePackage that will let us to add our custom things
+   @input int(idpackage): idpackage matched into repository
+   @input pointer(clientDbconn): client database connection pointer (optional)
+   @output: 0 = all fine, >0 = error!
+'''
+def removePackageFromDatabase(idpackage, clientDbconn = None):
+    
+    closedb = False
+    if clientDbconn == None:
+	closedb = True
+	clientDbconn = openClientDatabase()
+
+    clientDbconn.removePackage(idpackage)
+    
+    if (closedb):
+        clientDbconn.closeDB()
+    
+    return 0
 
 
 ########################################################
@@ -2459,6 +2488,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	    # remove old - not needed
 	    if (actionQueue[pkgatom]['remove'] != -1):
 	        steps.append("remove")
+		steps.append("removedatabase")
 	    # install
 	    steps.append("install")
 	    steps.append("installdatabase")
@@ -2747,13 +2777,19 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 	    print_info(red("     ## ")+blue("Removing installed package: ")+red(clientDbconn.retrieveAtom(infoDict['remove'])))
 	    output = removeFile(infoDict['remove'],clientDbconn)
 	if output != 0:
-	    errormsg = red("An error occured while trying to install the package. Check if you have enough disk space on your hard disk. Error "+str(output))
+	    errormsg = red("An error occured while trying to remove the package. Check if you have enough disk space on your hard disk. Error "+str(output))
 	    print_error(errormsg)
     elif step == "installdatabase":
 	print_info(red("     ## ")+blue("Injecting into database: ")+red(os.path.basename(infoDict['download'])))
 	output = installPackageIntoDatabase(infoDict['idpackage'],infoDict['repository'], clientDbconn)
 	if output != 0:
 	    errormsg = red("An error occured while trying to add the package to the database. What have you done? Error "+str(output))
+	    print_error(errormsg)
+    elif step == "removedatabase":
+	print_info(red("     ## ")+blue("Removing from database: ")+red(clientDbconn.retrieveAtom(infoDict['remove'])))
+	output = removePackageFromDatabase(infoDict['remove'], clientDbconn)
+	if output != 0:
+	    errormsg = red("An error occured while trying to remove the package from database. What have you done? Error "+str(output))
 	    print_error(errormsg)
     
     if (closedb):
