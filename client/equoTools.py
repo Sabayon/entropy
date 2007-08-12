@@ -370,12 +370,19 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 	    #print "results > 1"
 	    # if it's because category differs, it's a problem
 	    foundCat = ""
+	    cats = []
 	    for result in results:
 		idpackage = result[1]
 		cat = dbconn.retrieveCategory(idpackage)
+		cats.append(cat)
 		if (cat == pkgcat):
 		    foundCat = cat
 		    break
+	    # if categories are the same...
+	    if (not foundCat) and (len(cats) > 0):
+		cats = filterDuplicatedEntries(cats)
+		if len(cats) == 1:
+		    foundCat = cats[0]
 	    if (not foundCat) and (pkgcat == "null"):
 		# got the issue
 		# gosh, return and complain
