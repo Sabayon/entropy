@@ -1418,9 +1418,9 @@ def removeFile(idpackage, clientDbconn = None):
 	except OSError:
 	    try:
 		os.removedirs(file) # is it a dir?, empty?
-	        print "was a dir"
+	        #print "debug: was a dir"
 	    except:
-		print "error? the dir wasn't empty? -> "+str(file)
+		#print "debug: the dir wasn't empty? -> "+str(file)
 		pass
 
     return 0
