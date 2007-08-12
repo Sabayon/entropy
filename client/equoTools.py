@@ -1238,12 +1238,19 @@ def generateRemovalTree(idpackages, output = False):
 		# I can safely add this
 		change = True
 		
-		treeview.append(dep)
-		removeList.append(dep)
+		systemPackage = clientDbconn.isSystemPackage(dep)
 		try:
 		    while 1: dependencies.remove(dep)
 		except:
 		    pass
+		
+		# skip system packages
+		if (systemPackage):
+		    continue
+		
+		treeview.append(dep)
+		removeList.append(dep)
+		
 		if output:
 		    printatom = clientDbconn.retrieveAtom(dep)
 		    print_info(red(" @@ Analyzing ")+bold(printatom), back = True)
