@@ -2723,12 +2723,12 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 	    else:
 		errormsg = red("Package checksum does not match. Try to run: '")+bold("equo repo sync")+red("' and this command again. Error "+str(output))
 	    print_error(errormsg)
-	# otherwise fetch md5 too
-	print_info(red("     ## ")+blue("Fetching package checksum: ")+red(os.path.basename(infoDict['download']+etpConst['packageshashfileext'])))
-	output = fetchFile(infoDict['download']+etpConst['packageshashfileext'],False)
-	if output != 0:
-	    errormsg = red("Cannot find the checksum file online. Try to run: ")+bold("equo repo sync")+red("' and this command again. Error "+str(output))
-	    print_error(errormsg)
+	# database entry will be used
+	#print_info(red("     ## ")+blue("Fetching package checksum: ")+red(os.path.basename(infoDict['download']+etpConst['packageshashfileext'])))
+	#output = fetchFile(infoDict['download']+etpConst['packageshashfileext'],False)
+	#if output != 0:
+	#    errormsg = red("Cannot find the checksum file online. Try to run: ")+bold("equo repo sync")+red("' and this command again. Error "+str(output))
+	#    print_error(errormsg)
     elif step == "install":
 	if (etpConst['gentoo-compat']):
 	    print_info(red("     ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download']))+" ## w/Gentoo compatibility")
