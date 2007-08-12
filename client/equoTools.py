@@ -2600,18 +2600,14 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 	            atomscounter += 1
 	            rematom = clientDbconn.retrieveAtom(idpackage)
 	            installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
-
-	            # get needed info
-	            pkgver = clientDbconn.retrieveVersion(idpackage)
-	            pkgtag = clientDbconn.retrieveVersionTag(idpackage)
-	            if not pkgtag:
-	                pkgtag = "NoTag"
-	            pkgrev = clientDbconn.retrieveRevision(idpackage)
-	            print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(rematom)+" | Installed from: "+red(installedfrom))
-	            print_info("\t"+red("Versioning:\t")+" "+red(pkgver)+" / "+blue(pkgtag)+" / "+(str(pkgrev)))
+		    repositoryInfo = bold("[")+red("from: ")+brown(installedfrom)+bold("]")
+		    stratomscounter = str(atomscounter)
+		    while len(stratomscounter) < len(totalatoms):
+			stratomscounter = " "+stratomscounter
+	            print_info("   # "+red("(")+bold(stratomscounter)+"/"+blue(str(totalatoms))+red(")")+repositoryInfo+" "+blue(rematom))
 	    
                 if (ask):
-                    rc = askquestion("     Would you like to add these packages to your removal queue?")
+                    rc = askquestion("     Would you like to add these packages to the removal queue?")
                     if rc != "No":
 	                for x in choosenRemovalQueue:
 			    removalQueue.append(x)

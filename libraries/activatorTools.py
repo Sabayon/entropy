@@ -100,17 +100,16 @@ def sync(options, justTidy = False):
 		found = True
 		break
 	if (not found):
-	    if (not repoBin.endswith(etpConst['packageshashfileext'])): # filter hash files
-	        # then remove
-	        removeList.append(repoBin)
+	    # then remove
+	    removeList.append(repoBin)
     
-    if (removeList == []):
+    if (not removeList):
 	activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: no packages to remove from the lirrors.")
 	print_info(green(" * ")+red("No packages to remove from the mirrors."))
 	print_info(green(" * ")+red("Syncronization across mirrors completed."))
 	return
     
-    print_info(green(" * ")+red("This is the list of the packages that would be removed from the mirrors: "))
+    print_info(green(" * ")+red("This is the list of files that would be removed from the mirrors: "))
     for file in removeList:
 	print_info(green("\t* ")+yellow(file))
 	
