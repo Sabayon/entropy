@@ -94,6 +94,7 @@ def getPackagesInSystem():
 	if (y != None):
 	    for z in y:
 	        sysoutput.append(z)
+    sysoutput.append("sys-kernel/linux-sabayon") # our kernel
     return sysoutput
 
 def getConfigProtectAndMask():
