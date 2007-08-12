@@ -94,14 +94,9 @@ def sync(options, justTidy = False):
     removeList = []
     # select packages
     for repoBin in repoBinaries:
-	found = False
-	for dbBin in dbBinaries:
-	    if dbBin == repoBin:
-		found = True
-		break
-	if (not found):
-	    # then remove
-	    removeList.append(repoBin)
+	if (not repoBin.startswith(etpConst['packageshashfileext'])):
+	    if repoBin not in dbBinaries:
+		removeList.append(repoBin)
     
     if (not removeList):
 	activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: no packages to remove from the lirrors.")
@@ -128,12 +123,6 @@ def sync(options, justTidy = False):
 	ftp.setCWD(etpConst['binaryurirelativepath'])
 	for file in removeList:
 	
-	    if file.endswith(etpConst['packageshashfileext']):
-		checkfile = file[:len(file)-len(etpConst['packageshashfileext'])]
-		if os.path.isfile(etpConst['packagesbindir']+"/"+checkfile):
-		    # skip removal
-		    continue
-	
 	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (remote) file "+file)
 	    print_info(green(" * ")+red("Removing file: ")+bold(file), back = True)
 	    # remove remotely
@@ -143,11 +132,23 @@ def sync(options, justTidy = False):
 		    print_info(green(" * ")+red("Package file: ")+bold(file)+red(" removed successfully from ")+bold(extractFTPHostFromUri(uri)))
 	        else:
 		    print_warning(yellow(" * ")+red("ATTENTION: remote file ")+bold(file)+red(" cannot be removed."))
+	    # checksum
+	    if (ftp.isFileAvailable(file+etpConst['packageshashfileext'])):
+	        rc = ftp.deleteFile(file+etpConst['packageshashfileext'])
+	        if (rc):
+		    print_info(green(" * ")+red("Checksum file: ")+bold(file)+red(" removed successfully from ")+bold(extractFTPHostFromUri(uri)))
+	        else:
+		    print_warning(yellow(" * ")+red("ATTENTION: remote checksum file ")+bold(file)+red(" cannot be removed."))
 	    # remove locally
 	    if os.path.isfile(etpConst['packagesbindir']+"/"+file):
 		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+file)
 		print_info(green(" * ")+red("Package file: ")+bold(file)+red(" removed successfully from ")+bold(etpConst['packagesbindir']))
 		os.remove(etpConst['packagesbindir']+"/"+file)
+	    # checksum
+	    if os.path.isfile(etpConst['packagesbindir']+"/"+file+etpConst['packageshashfileext']):
+		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+file+etpConst['packageshashfileext'])
+		print_info(green(" * ")+red("Checksum file: ")+bold(file+etpConst['packageshashfileext'])+red(" removed successfully from ")+bold(etpConst['packagesbindir']))
+		os.remove(etpConst['packagesbindir']+"/"+file+etpConst['packageshashfileext'])
 	ftp.closeConnection()
 	
     print_info(green(" * ")+red("Syncronization across mirrors completed."))
