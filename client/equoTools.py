@@ -1375,11 +1375,47 @@ def fetchFile(url,digest = False):
 
 
 '''
+   @description: remove files installed by idpackage from the client database
+   @input int(idpackage): idpackage from client database
+   @output: 0 = all fine, >0 = error!
+'''
+def removeFile(idpackage, clientDbconn = None):
+    import shutil
+    closedb = False
+    if (clientDbconn == None):
+	closedb = True
+	clientDbconn = openClientDatabase()
+    content = clientDbconn.retrieveContent(idpackage)
+    
+    # merge data into system
+    for file in content:
+	file = file.encode(sys.getfilesystemencoding())
+	try:
+	    os.remove(file)
+	    #print file
+	except OSError:
+	    try:
+		os.removedirs(file) # is it a dir?, empty?
+	        print "was a dir"
+	    except:
+		print "error? the dir wasn't empty? -> "+str(file)
+		pass
+
+    # Handle gentoo database
+    if etpConst['gentoo-compat']:
+	gentooAtom = clientDbconn.retrieveCategory(idpackage)+"/"+clientDbconn.retrieveName(idpackage)+"-"+clientDbconn.retrieveVersion(idpackage)
+	rc = removePackageFromGentooDatabase(gentooAtom)
+	if (rc >= 0):
+	    return rc
+
+    return 0
+
+
+'''
    @description: unpack the given file on the system and also update gentoo db if requested
    @input package: package file (without path)
    @output: 0 = all fine, >0 = error!
 '''
-# FIXME: add gentoo db handling
 def installFile(package, infoDict = None):
     import shutil
     pkgpath = etpConst['packagesbindir']+"/"+package
@@ -1442,6 +1478,7 @@ def installFile(package, infoDict = None):
 		    if (rc != 0):
 			return 3
 	    try:
+		# this also handles symlinks
 		shutil.move(fromfile,tofile)
 	    except IOError,(errno,strerror):
 		if errno == 2:
@@ -1464,11 +1501,46 @@ def installFile(package, infoDict = None):
     if infoDict is not None:
 	rc = installPackageIntoGentooDatabase(infoDict,unpackDir+etpConst['packagecontentdir']+"/"+package)
 	if (rc >= 0):
-	    os.system("rm -rf "+unpackDir)
+	    shutil.rmtree(unpackDir,True)
 	    return rc
     
     # remove unpack dir
-    os.system("rm -rf "+unpackDir)
+    shutil.rmtree(unpackDir,True)
+    return 0
+
+'''
+   @description: remove package entry from Gentoo database
+   @input gentoo package atom (cat/name+ver):
+   @output: 0 = all fine, >0 = error!
+'''
+def removePackageFromGentooDatabase(atom):
+
+    if (isjustname(atom)):
+	return -2
+
+    # handle gentoo-compat
+    import shutil
+    _portage_avail = False
+    try:
+	from portageTools import getPortageAppDbPath as _portage_getPortageAppDbPath, getInstalledAtoms as _portage_getInstalledAtoms
+	_portage_avail = True
+    except:
+	return -1 # no Portage support
+    
+    if (_portage_avail):
+	portDbDir = _portage_getPortageAppDbPath()
+	removePath = portDbDir+atom
+	#print removePath
+	try:
+	    shutil.rmtree(removePath,True)
+	except:
+	    pass
+	key = dep_getkey(atom)
+	othersInstalled = _portage_getInstalledAtoms(key)
+	if othersInstalled == None:
+	    # safest way (error free) is to use sed without loading the file
+	    os.system("sed -i '/"+key+"/d' /var/lib/portage/world")
+
     return 0
 
 '''
@@ -2326,10 +2398,12 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	    cmp = compareVersions([pkgver,pkgtag,pkgrev],[installedVer,installedTag,installedRev])
 	    if (cmp == 0):
 		pkgsToReinstall += 1
+		actionQueue[pkgatom]['remove'] = -1 # disable removal, not needed
 	        flags += red("R")
 	    elif (cmp > 0):
 	        if (installedVer == "0"):
 		    pkgsToInstall += 1
+		    actionQueue[pkgatom]['remove'] = -1 # disable removal, not needed
 	            flags += darkgreen("N")
 	        else:
 		    pkgsToUpdate += 1
@@ -2383,8 +2457,8 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	
 	if (not onlyfetch):
 	    # remove old - not needed
-	    #if (actionQueue[pkgatom]['remove'] != -1):
-	    #    steps.append("remove")
+	    if (actionQueue[pkgatom]['remove'] != -1):
+	        steps.append("remove")
 	    # install
 	    steps.append("install")
 	    steps.append("installdatabase")
@@ -2503,7 +2577,6 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 	            if not pkgtag:
 	                pkgtag = "NoTag"
 	            pkgrev = clientDbconn.retrieveRevision(idpackage)
-	            #pkgslot = clientDbconn.retrieveSlot(idpackage)
 	            print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(rematom)+" | Installed from: "+red(installedfrom))
 	            print_info("\t"+red("Versioning:\t")+" "+red(pkgver)+" / "+blue(pkgtag)+" / "+(str(pkgrev)))
 	    
@@ -2663,6 +2736,16 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 	else:
 	    print_info(red("     ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download'])))
 	    output = installFile(os.path.basename(infoDict['download']))
+	if output != 0:
+	    errormsg = red("An error occured while trying to install the package. Check if you have enough disk space on your hard disk. Error "+str(output))
+	    print_error(errormsg)
+    elif step == "remove":
+	if (etpConst['gentoo-compat']):
+	    print_info(red("     ## ")+blue("Removing installed package: ")+red(clientDbconn.retrieveAtom(infoDict['remove']))+" ## w/Gentoo compatibility")
+	    output = removeFile(infoDict['remove'],clientDbconn)
+	else:
+	    print_info(red("     ## ")+blue("Removing installed package: ")+red(clientDbconn.retrieveAtom(infoDict['remove'])))
+	    output = removeFile(infoDict['remove'],clientDbconn)
 	if output != 0:
 	    errormsg = red("An error occured while trying to install the package. Check if you have enough disk space on your hard disk. Error "+str(output))
 	    print_error(errormsg)
