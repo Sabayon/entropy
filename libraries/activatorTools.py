@@ -94,7 +94,7 @@ def sync(options, justTidy = False):
     removeList = []
     # select packages
     for repoBin in repoBinaries:
-	if (not repoBin.startswith(etpConst['packageshashfileext'])):
+	if (not repoBin.endswith(etpConst['packageshashfileext'])):
 	    if repoBin not in dbBinaries:
 		removeList.append(repoBin)
     
