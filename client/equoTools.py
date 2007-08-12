@@ -1435,13 +1435,13 @@ def installFile(package, infoDict = None):
 		    if (rc != 0):
 			return 3
 	    try:
-		shutil.copy2(fromfile,tofile)
+		shutil.move(fromfile,tofile)
 	    except IOError,(errno,strerror):
 		if errno == 2:
 		    # better to pass away, sometimes gentoo packages are fucked up and contain broken things
 		    pass
 		else:
-		    rc = os.system("/bin/cp "+fromfile+" "+tofile)
+		    rc = os.system("mv "+fromfile+" "+tofile)
 		    if (rc != 0):
 		        return 4
 	    try:
@@ -1452,7 +1452,7 @@ def installFile(package, infoDict = None):
 	    except:
 		pass # sometimes, gentoo packages are fucked up and contain broken symlinks
 
-    os.system("rm -rf "+imageDir)
+    shutil.rmtree(imageDir,True) # rm and ignore errors
 
     if infoDict is not None:
 	rc = installPackageIntoGentooDatabase(infoDict,unpackDir+etpConst['packagecontentdir']+"/"+package)
@@ -1938,7 +1938,11 @@ def searchBelongs(files, idreturn = False, quiet = False):
     dataInfo = [] # when idreturn is True
     
     for file in files:
-	result = clientDbconn.searchBelongs(file)
+	like = False
+	if file.find("*") != -1:
+	    like = True
+	    file = "%"+file+"%"
+	result = clientDbconn.searchBelongs(file, like)
 	if (result):
 	    # print info
 	    if (not idreturn) and (not quiet):

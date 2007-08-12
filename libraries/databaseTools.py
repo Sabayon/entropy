@@ -2083,10 +2083,13 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"areCompileFlagsAvailable: flags tuple "+chost+"|"+cflags+"|"+cxxflags+" available.")
 	return result
 
-    def searchBelongs(self, file):
+    def searchBelongs(self, file, like = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchBelongs: called for "+file)
 	result = []
-	self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
+	if (like):
+	    self.cursor.execute('SELECT idpackage FROM content WHERE file LIKE "'+file+'"')
+	else:
+	    self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
 	for row in self.cursor:
 	    result.append(row[0])
 	return result
