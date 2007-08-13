@@ -280,7 +280,7 @@ def build(atoms):
 	        atoms = "="+atoms[0]
         
 	if (not enzymeRequestForceRepackage):
-	    print_info(green("  Sanity check on packages..."))
+	    print_info(green("  Checking packages..."))
             atomdeps, atomconflicts = calculateFullAtomsDependencies(atoms,enzymeRequestDeep)
             for conflict in atomconflicts:
 	        if getInstalledAtom(conflict) is not None:

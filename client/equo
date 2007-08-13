@@ -22,10 +22,7 @@
 
 import sys
 import string
-import equoTools
-import entropyTools
-from entropyConstants import *
-from clientConstants import *
+sys.path.append('../libraries')
 from outputTools import *
 
 # CONSTANTS
@@ -71,33 +68,39 @@ def print_help():
 
     print_info(" \t"+blue("database")+brown("\t handle installed packages database"))
     print_info(" \t\t"+darkgreen("generate")+red("\t\t generate installed packages database"))
-    print_info(" \t\t"+red("--exact")+"\t\t only install packages whose version match exactly")
     print_info(" \t"+blue("cleanup")+brown("\t\t remove downloaded packages and clean temporary directories"))
 
 options = sys.argv[1:]
 
-# preliminary options parsing
-_options = []
-for opt in options:
-    if (opt == "--nocolor"):
-	entropyTools.nocolor()
-    elif (opt == "--debug"):
-	entropyTools.enableDebug()
-    else:
-	_options.append(opt)
-options = _options
-
 # print version
 if (string.join(options).find("--version") != -1) or (string.join(options).find(" -V") != -1):
-    entropyTools.print_generic(APPNAME+": "+APPVERSION)
+    print_generic(APPNAME+": "+APPVERSION)
     sys.exit(0)
 
 # print help
 if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(options).find(" -h") != -1:
     print_help()
     if len(options) < 1:
-	entropyTools.print_error("not enough parameters")
+	print_error("not enough parameters")
     sys.exit(1)
+
+
+import equoTools
+import entropyTools
+from entropyConstants import *
+from clientConstants import *
+
+# preliminary options parsing
+_options = []
+for opt in options:
+    if (opt == "--nocolor"):
+	nocolor()
+    elif (opt == "--debug"):
+	entropyTools.enableDebug()
+    else:
+	_options.append(opt)
+options = _options
+
 
 try:
     # sync mirrors tool
@@ -132,8 +135,8 @@ except SystemExit:
     pass
 except KeyboardInterrupt:
     pass
-except Timeout:
-    pass
+#except Timeout:
+#    pass
 except:
     from entropyTools import askquestion
     from remoteTools import getOnlineContent, reportApplicationError

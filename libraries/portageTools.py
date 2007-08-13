@@ -95,6 +95,8 @@ def getPackagesInSystem():
 	    for z in y:
 	        sysoutput.append(z)
     sysoutput.append("sys-kernel/linux-sabayon") # our kernel
+    sysoutput.append("dev-db/sqlite") # our interface
+    sysoutput.append("dev-python/pysqlite") # our python interface to our interface (lol)
     return sysoutput
 
 def getConfigProtectAndMask():
@@ -154,6 +156,7 @@ def calculateFullAtomsDependencies(atoms, deep = False, extraopts = ""):
     useflags += getUSEFlags()
     useflags += "' "
 
+    # FIXME: rewrite this
     cmd = useflags+cdbRunEmerge+" --pretend --color=n --quiet "+deepOpt+" "+extraopts+" "+atoms
     result = commands.getoutput(cmd).split("\n")
     for line in result:
@@ -185,26 +188,178 @@ def calculateFullAtomsDependencies(atoms, deep = False, extraopts = ""):
 	sys.exit(100)
 
 
-def calculateAtomUSEFlags(atom):
+def calculateAtomUSEFlags(atom, format = True):
     
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"calculateAtomUSEFlags: called -> "+str(atom))
 
-    try:
-	useflags = "USE='"+os.environ['USE']+"' "
-    except:
-	useflags = ""
-    cmd = useflags+cdbRunEmerge+" --pretend --color=n --nodeps --quiet --verbose "+atom
-    result = commands.getoutput(cmd).split("\n")
-    useparm = ""
-    for line in result:
-	if line.startswith("[ebuild") and (line.find("USE=") != -1):
-	    useparm = line.split('USE="')[len(line.split('USE="'))-1].split('"')[0].strip()
-    useparm = useparm.split()
-    _useparm = []
+    
+    uses = getUSEFlags()
+    uses = uses.split()
+    iuses = getPackageIUSE(atom)
+    iuses = iuses.split()
+    olduses = getInstalledPackageVar(atom,'USE') # FIXME: this should be a key and the function should handle slots
+    olduses = olduses.split()
+    useforce = getUSEForce()
+    usemask = getUSEMask()
+    
+    iuses.sort()
+    
+    useparm = []
+    for iuse in iuses:
+	if iuse in uses:
+	    if iuse in olduses:
+		useparm.append(iuse)
+	    else:
+		useparm.append(iuse+"*")
+	else:
+	    if iuse in olduses:
+		useparm.append("-"+iuse+"*")
+	    elif iuse in useforce:
+		useparm.append("("+iuse+")")
+	    else:
+	        if iuse in usemask:
+		    useparm.append("(-"+iuse+")")
+	        else:
+		    useparm.append("-"+iuse)
     
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"calculateAtomUSEFlags: USE flags -> "+str(useparm))
     
-    for use in useparm:
+    # pack properly
+    enabled = []
+    new = []
+    disabled = []
+    disabled_new = []
+    impossible = []
+
+    for x in useparm:
+	if x.startswith("("):
+	    impossible.append(x)
+	elif x.startswith("-") and not x.endswith("*"):
+	    disabled.append(x)
+	elif x.startswith("-") and x.endswith("*"):
+            disabled_new.append(x)
+	elif x.endswith("*"):
+	    new.append(x)
+	else:
+	    enabled.append(x)
+
+    useparm = []
+    useparm = enabled
+    if (new):
+        useparm += new
+    if (disabled_new):
+        useparm += disabled_new
+    if (disabled):
+        useparm += disabled
+    if (impossible):
+        useparm += impossible
+    
+
+    linguas = []
+    video_cards = []
+    input_devices = []
+    lirc_devices = []
+    alsa_pcm_plugins = []
+    alsa_cards = []
+    if (format):
+	linguas = [x for x in useparm if x.startswith("linguas_") or x.startswith("-linguas_")]
+	if (linguas):
+	    useparm = [x for x in useparm if not x.startswith("linguas_") and not x.startswith("-linguas_")]
+	    linguas_en = [x[8:] for x in linguas if not x.startswith("-")]
+	    linguas_dis = ["-"+x[9:] for x in linguas if x.startswith("-")]
+	    linguas = linguas_en
+	    linguas += linguas_dis
+	    linguas = string.join(linguas," ")
+
+	video_cards = [x for x in useparm if x.startswith("video_cards_") or x.startswith("-video_cards_") or x.startswith("(video_cards_") or x.startswith("(-video_cards_")]
+	if (video_cards):
+	    useparm = [x for x in useparm if not x.startswith("video_cards_") and not x.startswith("-video_cards_") and not x.startswith("(video_cards_") and not x.startswith("(-video_cards_")]
+	    cards_en = [x[12:] for x in video_cards if not x.startswith("-") and not x.startswith("(")]
+	    cards_dis = ["-"+x[13:] for x in video_cards if x.startswith("-")]
+	    cards_impossible = ["(-"+x[14:] for x in video_cards if x.startswith("(")]
+	    video_cards = cards_en
+	    video_cards += cards_dis
+	    video_cards += cards_impossible
+	    video_cards = string.join(video_cards," ")
+
+	input_devices = [x for x in useparm if x.startswith("input_devices_") or x.startswith("-input_devices_") or x.startswith("(input_devices_") or x.startswith("(-input_devices_")]
+	if (input_devices):
+	    useparm = [x for x in useparm if not x.startswith("input_devices_") and not x.startswith("-input_devices_") and not x.startswith("(input_devices_") and not x.startswith("(-video_cards_")]
+	    input_en = [x[14:] for x in input_devices if not x.startswith("-") and not x.startswith("(")]
+	    input_dis = ["-"+x[15:] for x in input_devices if x.startswith("-")]
+	    input_impossible = ["(-"+x[16:] for x in input_devices if x.startswith("(")]
+	    input_devices = input_en
+	    input_devices += input_dis
+	    input_devices += input_impossible
+	    input_devices = string.join(input_devices," ")
+
+	lirc_devices = [x for x in useparm if x.startswith("lirc_devices_") or x.startswith("-lirc_devices_") or x.startswith("(lirc_devices_") or x.startswith("(-lirc_devices_")]
+	if (lirc_devices):
+	    useparm = [x for x in useparm if not x.startswith("lirc_devices_") and not x.startswith("-lirc_devices_") and not x.startswith("(lirc_devices_") and not x.startswith("(-lirc_devices_")]
+	    lirc_en = [x[13:] for x in lirc_devices if not x.startswith("-") and not x.startswith("(")]
+	    lirc_dis = ["-"+x[14:] for x in lirc_devices if x.startswith("-")]
+	    lirc_impossible = ["(-"+x[15:] for x in lirc_devices if x.startswith("(")]
+	    lirc_devices = lirc_en
+	    lirc_devices += lirc_dis
+	    lirc_devices += lirc_impossible
+	    lirc_devices = string.join(lirc_devices," ")
+
+	alsa_pcm_plugins = [x for x in useparm if x.startswith("alsa_pcm_plugins_") or x.startswith("-alsa_pcm_plugins_") or x.startswith("(alsa_pcm_plugins_") or x.startswith("(-alsa_pcm_plugins_")]
+	if (alsa_pcm_plugins):
+	    useparm = [x for x in useparm if not x.startswith("alsa_pcm_plugins_") and not x.startswith("-alsa_pcm_plugins_") and not x.startswith("(alsa_pcm_plugins_") and not x.startswith("(-alsa_pcm_plugins_")]
+	    alsa_en = [x[17:] for x in alsa_pcm_plugins if not x.startswith("-") and not x.startswith("(")]
+	    alsa_dis = ["-"+x[18:] for x in alsa_pcm_plugins if x.startswith("-")]
+	    alsa_impossible = ["(-"+x[19:] for x in alsa_pcm_plugins if x.startswith("(")]
+	    alsa_pcm_plugins = alsa_en
+	    alsa_pcm_plugins += alsa_dis
+	    alsa_pcm_plugins += alsa_impossible
+	    alsa_pcm_plugins = string.join(alsa_pcm_plugins," ")
+
+	alsa_cards = [x for x in useparm if x.startswith("alsa_cards_") or x.startswith("-alsa_cards_") or x.startswith("(alsa_cards_") or x.startswith("(-alsa_cards_")]
+	if (alsa_cards):
+	    useparm = [x for x in useparm if not x.startswith("alsa_cards_") and not x.startswith("-alsa_cards_") and not x.startswith("(alsa_cards_") and not x.startswith("(-alsa_cards_")]
+	    alsa_en = [x[11:] for x in alsa_cards if not x.startswith("-") and not x.startswith("(")]
+	    alsa_dis = ["-"+x[12:] for x in alsa_cards if x.startswith("-")]
+	    alsa_impossible = ["(-"+x[13:] for x in alsa_cards if x.startswith("(")]
+	    alsa_cards = alsa_en
+	    alsa_cards += alsa_dis
+	    alsa_cards += alsa_impossible
+	    alsa_cards = string.join(alsa_cards," ")
+
+    useparm = string.join(useparm," ")
+    useparm = colorizeUseflags(useparm)
+    if (format):
+	if (linguas):
+	    linguas = colorizeUseflags(linguas)
+	    linguas = bold(" LINGUAS=( ")+linguas+bold(" )")
+	    useparm += linguas
+	if (video_cards):
+	    video_cards = colorizeUseflags(video_cards)
+	    video_cards = bold(" VIDEO_CARDS=( ")+video_cards+bold(" )")
+	    useparm += video_cards
+	if (input_devices):
+	    input_devices = colorizeUseflags(input_devices)
+	    input_devices = bold(" INPUT_DEVICES=( ")+input_devices+bold(" )")
+	    useparm += input_devices
+	if (lirc_devices):
+	    lirc_devices = colorizeUseflags(lirc_devices)
+	    lirc_devices = bold(" LIRC_DEVICES=( ")+lirc_devices+bold(" )")
+	    useparm += lirc_devices
+	if (alsa_pcm_plugins):
+	    alsa_pcm_plugins = colorizeUseflags(alsa_pcm_plugins)
+	    alsa_pcm_plugins = bold(" ALSA_PCM_PLUGINS=( ")+alsa_pcm_plugins+bold(" )")
+	    useparm += alsa_pcm_plugins
+	if (alsa_cards):
+	    alsa_cards = colorizeUseflags(alsa_cards)
+	    alsa_cards = bold(" ALSA_CARDS=( ")+alsa_cards+bold(" )")
+	    useparm += alsa_cards
+    
+    return useparm
+
+
+def colorizeUseflags(usestring):
+    out = []
+    for use in usestring.split():
 	# -cups
 	if use.startswith("-") and (not use.endswith("*")):
 	    use = darkblue(use)
@@ -219,10 +374,8 @@ def calculateAtomUSEFlags(atom):
 	    use = green(use)
 	else:
 	    use = darkred(use)
-	_useparm.append(use)
-    useparm = string.join(_useparm," ")
-    return useparm
-
+	out.append(use)
+    return string.join(out," ")
 
 # should be only used when a pkgcat/pkgname <-- is not specified (example: db, amarok, AND NOT media-sound/amarok)
 def getAtomCategory(atom):
@@ -617,25 +770,43 @@ def getPackageDependencyList(atom):
     return pkgSplittedDeps
 
 def getUSEFlags():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getUSEFlags: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getUSEFlags: called.")
     return portage.settings['USE']
 
+def getUSEForce():
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getUSEForce: called.")
+    return portage.settings.useforce
+
+def getUSEMask():
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getUSEMask: called.")
+    return portage.settings.usemask
+
 def getMAKEOPTS():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getMAKEOPTS: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getMAKEOPTS: called.")
     return portage.settings['MAKEOPTS']
 
 def getCFLAGS():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getCFLAGS: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getCFLAGS: called.")
     return portage.settings['CFLAGS']
 
 def getLDFLAGS():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getLDFLAGS: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getLDFLAGS: called.")
     return portage.settings['LDFLAGS']
 
 # you must provide a complete atom
 def getPackageIUSE(atom):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageIUSE: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageIUSE: called.")
     return getPackageVar(atom,"IUSE")
+
+def getInstalledPackageVar(atom, var):
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackageVar: called.")
+    try:
+        if atom.startswith("="):
+	    return portage.db['/']['vartree'].dbapi.aux_get(atom[1:], [var])[0]
+        else:
+	    return portage.db['/']['vartree'].dbapi.aux_get(atom, [var])[0]
+    except:
+	return ''
 
 def getPackageVar(atom,var):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageVar: called -> "+atom+" | var: "+var)

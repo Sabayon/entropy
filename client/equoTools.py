@@ -31,7 +31,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific, uncompressTarBz2, extractXpak, filterDuplicatedEntries, applicationLockCheck, countdown
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific, uncompressTarBz2, extractXpak, filterDuplicatedEntries, applicationLockCheck, countdown, dep_striptag, istagged
 from databaseTools import etpDatabase
 import xpak
 import time
@@ -326,6 +326,8 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
             strippedAtom = string.join(strippedAtom.split("-t")[:len(strippedAtom.split("-t"))-1],"-t")
 	# get version
 	data = catpkgsplit(strippedAtom)
+	if data == None:
+	    return -1,3 # atom is badly formatted
 	pkgversion = data[2]+"-"+data[3]
 	pkgtag = ''
 	if atom.split("-")[len(atom.split("-"))-1].startswith("t"):
@@ -411,7 +413,7 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 
     if (foundIDs):
 	# now we have to handle direction
-	if (direction):
+	if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
 	    # check if direction is used with justname, in this case, return an error
 	    if (justname):
 		#print "justname"
@@ -419,8 +421,11 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 		atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
 		atomMatchInRepositoryCache[atom]['result'] = -1,3
 		return -1,3 # error, cannot use directions when not specifying version
-
-	    if (direction == "~") or (direction == "="): # any revision within the version specified OR the specified version
+	    
+	    if (direction == "~") or (direction == "=") or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")): # any revision within the version specified OR the specified version
+		
+		if (direction == '' and not justname):
+		    direction = "="
 		
 		#print direction+" direction"
 		# remove revision (-r0 if none)
@@ -442,8 +447,9 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 			# media-libs/test-1.2* support
 			if pkgversion.endswith("*"):
 			    testpkgver = pkgversion[:len(pkgversion)-1]
-			    combodb = dbtag+dbver
-			    combopkg = pkgtag+testpkgver
+			    #print testpkgver
+			    combodb = dbver+dbtag
+			    combopkg = testpkgver+pkgtag
 			    #print combodb
 			    #print combopkg
 			    if combodb.startswith(combopkg):
@@ -1043,8 +1049,8 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 	    else:
 		# found, get its deps
 		mydeps = getDependencies(atom)
-		if (emptydeps):
-		    mydeps = filterSatisfiedDependencies(mydeps)
+		if (not emptydeps):
+		    mydeps, xxx = filterSatisfiedDependencies(mydeps)
 		for dep in mydeps:
 		    remainingDeps.append(dep)
 		xmatch = atomMatchInRepository(undep,clientDbconn)
@@ -1193,7 +1199,6 @@ def generateRemovalTree(idpackages, output = False):
 	    xatom = clientDbconn.retrieveAtom(x)
 	    xdep = clientDbconn.searchDepends(dep_getkey(xatom))
 	    dictDeps[x] = set(xdep)
-	    
 
     remainingDeps = dependencies[:]
     dependencies = set(dependencies)
@@ -1219,8 +1224,12 @@ def generateRemovalTree(idpackages, output = False):
 	    depends = dictDeps[dep].copy()
 	    #print "--------"
 	    #print depends
-	    #print clientDbconn.retrieveAtom(dep)
+	    #atx = clientDbconn.retrieveAtom(dep)
+	    #if atx.find("virtual/jdk") != -1:
+		#print atx
 	    #print "--------"
+	    
+	   
 	    
 	    for depend in depends:
 		if depend in treeview:
@@ -1789,7 +1798,7 @@ def database(options):
     databaseExactMatch = False
     _options = []
     for opt in options:
-	if opt == "--exact":
+	if opt == "--exact": # removed
 	    databaseExactMatch = True
 	else:
 	    _options.append(opt)
@@ -1843,10 +1852,7 @@ def database(options):
 	missingPackages = portagePackages[:]
 	for portagePackage in portagePackages: # for portagePackage in remainingPackages
 	    print_info(red("  Analyzing ")+bold(portagePackage), back = True)
-	    if (databaseExactMatch):
-	        data = atomMatch("="+portagePackage)
-	    else:
-		data = atomMatch(portagePackage)
+	    data = atomMatch("~"+portagePackage)
 	    if (data[0] != -1):
 	        foundPackages.append(data)
 		missingPackages.remove(portagePackage)

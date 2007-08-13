@@ -28,11 +28,6 @@ import sys
 import string
 
 sys.path.append('../libraries')
-import entropyTools
-import reagentTools
-import databaseTools
-from entropyConstants import *
-from serverConstants import *
 from outputTools import *
 
 # CONSTANTS
@@ -70,6 +65,24 @@ def print_help():
 
 options = sys.argv[1:]
 
+# print version
+if (string.join(options).find("--version") != -1) or (string.join(options).find(" -V") != -1):
+    print_generic(APPNAME+": "+APPVERSION)
+    sys.exit(0)
+
+# print help
+if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(options).find(" -h") != -1:
+    print_help()
+    if len(options) < 1:
+	print_error("not enough parameters")
+    sys.exit(1)
+
+import entropyTools
+import reagentTools
+import databaseTools
+from entropyConstants import *
+from serverConstants import *
+
 # preliminary options parsing
 _options = []
 for opt in options:
@@ -81,17 +94,7 @@ for opt in options:
 	_options.append(opt)
 options = _options
 
-# print version
-if (string.join(options).find("--version") != -1) or (string.join(options).find(" -V") != -1):
-    entropyTools.print_generic(APPNAME+": "+APPVERSION)
-    sys.exit(0)
 
-# print help
-if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(options).find(" -h") != -1:
-    print_help()
-    if len(options) < 1:
-	entropyTools.print_error("not enough parameters")
-    sys.exit(1)
 
 if (not entropyTools.isRoot()):
     print_error("you must be root in order to run "+APPNAME)
