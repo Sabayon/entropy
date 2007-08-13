@@ -2002,6 +2002,12 @@ def searchPackage(packages, idreturn = False):
 	for package in packages:
 	    result = dbconn.searchPackages(package)
 	    
+	    if (not result): # look for provide
+		provide = dbconn.searchProvide(package)
+		if (provide):
+		    result = [[provide[0],provide[1]]]
+		
+	    
 	    if (result):
 		foundPackages[repo][package] = result
 	        # print info
