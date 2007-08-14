@@ -155,12 +155,8 @@ def calculateFullAtomsDependencies(atoms, deep = False, extraopts = ""):
     deplist = []
     blocklist = []
     
-    useflags = " USE='"
-    useflags += getUSEFlags()
-    useflags += "' "
-
     # FIXME: rewrite this
-    cmd = useflags+cdbRunEmerge+" --pretend --color=n --quiet "+deepOpt+" "+extraopts+" "+atoms
+    cmd = cdbRunEmerge+" --pretend --color=n --quiet "+deepOpt+" "+extraopts+" "+atoms
     result = commands.getoutput(cmd).split("\n")
     for line in result:
 	if line.startswith("[ebuild"):
@@ -489,27 +485,7 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
 	try:
 	    os.remove(outfile)
 	except:
-	    entropyTools.spawnCommand("rm -rf "+outfile)
-
-    # Get specified USE flags
-    useflags = " USE='"
-    useflags += getUSEFlags()
-    useflags += "' "
-    # Get specified MAKEOPTS
-    makeopts = " MAKEOPTS='"
-    makeopts += getMAKEOPTS()
-    makeopts += "' "
-    # Get specified CFLAGS
-    cflags = " CFLAGS='"
-    cflags += getCFLAGS()
-    cflags += "' "
-    # Get specified LDFLAGS
-    ldflags = " LDFLAGS='"
-    ldflags += getLDFLAGS()
-    ldflags += "' "
-
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"emerge: USE: "+useflags+" | CFLAGS: "+cflags+" | MAKEOPTS: "+makeopts+" | LDFLAGS: "+ldflags)
-    
+	    entropyTools.spawnCommand("rm -rf "+outfile)    
     # elog configuration
     elogopts = dbPORTAGE_ELOG_OPTS+" "
     # clean elog shit
@@ -527,7 +503,7 @@ def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
 	distccjobs = str(len(enzymeTools.getDistCCHosts())+3)
 	distccopts += 'MAKEOPTS="-j'+distccjobs+'" '
 	#distccopts += 'MAKEOPTS="-j4" '
-    rc = entropyTools.spawnCommand(distccopts+cflags+ldflags+useflags+makeopts+elogopts+cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
+    rc = entropyTools.spawnCommand(distccopts+elogopts+cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
     return rc, outfile
 
 def parseElogFile(atom):
