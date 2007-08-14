@@ -409,10 +409,11 @@ def build(atoms):
 	
 	for i in PackagesQuickpkg:
 	    useflags = ""
-	    if enzymeRequestUse: useflags = bold(" [")+yellow("USE: ")+calculateAtomUSEFlags("="+i)+bold("]")
 	    if i.startswith("quick|"):
+		if enzymeRequestUse: useflags = bold(" [")+yellow("USE: ")+calculateAtomUSEFlags("="+i.split("quick|")[len(i.split("quick|"))-1])+bold("]")
 	        print_info(green("     *")+bold(" [")+green("QUICK")+bold("] ")+yellow("[R ] ") +i.split("quick|")[len(i.split("quick|"))-1])
 	    elif i.startswith("avail|"):
+		if enzymeRequestUse: useflags = bold(" [")+yellow("USE: ")+calculateAtomUSEFlags("="+i.split("avail|")[len(i.split("avail|"))-1])+bold("]")
 	        print_info(yellow("     *")+bold(" [")+yellow("NOACT")+bold("] ")+yellow("[R ] ")+i.split("avail|")[len(i.split("avail|"))-1])
 	    else:
 		# I should never get here

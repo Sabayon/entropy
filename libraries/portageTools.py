@@ -47,6 +47,8 @@ from entropyConstants import *
 import portage
 import portage_const
 from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv #FIXME: Use the ones from entropyTools
+from portage_util import grabdict_package
+from portage_const import USER_CONFIG_PATH
 #from serverConstants import *
 #initializePortageTree()
 
@@ -97,6 +99,7 @@ def getPackagesInSystem():
     sysoutput.append("sys-kernel/linux-sabayon") # our kernel
     sysoutput.append("dev-db/sqlite") # our interface
     sysoutput.append("dev-python/pysqlite") # our python interface to our interface (lol)
+    sysoutput.append("virtual/cron") # our cron service
     return sysoutput
 
 def getConfigProtectAndMask():
@@ -197,10 +200,16 @@ def calculateAtomUSEFlags(atom, format = True):
     uses = uses.split()
     iuses = getPackageIUSE(atom)
     iuses = iuses.split()
-    olduses = getInstalledPackageVar(atom,'USE') # FIXME: this should be a key and the function should handle slots
+    olduses = getInstalledPackageVar(atom,'USE')
     olduses = olduses.split()
     useforce = getUSEForce()
     usemask = getUSEMask()
+    
+    # package.use FIXME: this should also handle package.use.mask and use.mask
+    etc_use = get_user_config('package.use',ebuild = atom)
+    for x in etc_use:
+	if x not in uses:
+	    uses.append(x)
     
     iuses.sort()
     
@@ -255,104 +264,37 @@ def calculateAtomUSEFlags(atom, format = True):
         useparm += impossible
     
 
-    linguas = []
-    video_cards = []
-    input_devices = []
-    lirc_devices = []
-    alsa_pcm_plugins = []
-    alsa_cards = []
+    expanded = {}
     if (format):
-	linguas = [x for x in useparm if x.startswith("linguas_") or x.startswith("-linguas_")]
-	if (linguas):
-	    useparm = [x for x in useparm if not x.startswith("linguas_") and not x.startswith("-linguas_")]
-	    linguas_en = [x[8:] for x in linguas if not x.startswith("-")]
-	    linguas_dis = ["-"+x[9:] for x in linguas if x.startswith("-")]
-	    linguas = linguas_en
-	    linguas += linguas_dis
-	    linguas = string.join(linguas," ")
-
-	video_cards = [x for x in useparm if x.startswith("video_cards_") or x.startswith("-video_cards_") or x.startswith("(video_cards_") or x.startswith("(-video_cards_")]
-	if (video_cards):
-	    useparm = [x for x in useparm if not x.startswith("video_cards_") and not x.startswith("-video_cards_") and not x.startswith("(video_cards_") and not x.startswith("(-video_cards_")]
-	    cards_en = [x[12:] for x in video_cards if not x.startswith("-") and not x.startswith("(")]
-	    cards_dis = ["-"+x[13:] for x in video_cards if x.startswith("-")]
-	    cards_impossible = ["(-"+x[14:] for x in video_cards if x.startswith("(")]
-	    video_cards = cards_en
-	    video_cards += cards_dis
-	    video_cards += cards_impossible
-	    video_cards = string.join(video_cards," ")
-
-	input_devices = [x for x in useparm if x.startswith("input_devices_") or x.startswith("-input_devices_") or x.startswith("(input_devices_") or x.startswith("(-input_devices_")]
-	if (input_devices):
-	    useparm = [x for x in useparm if not x.startswith("input_devices_") and not x.startswith("-input_devices_") and not x.startswith("(input_devices_") and not x.startswith("(-video_cards_")]
-	    input_en = [x[14:] for x in input_devices if not x.startswith("-") and not x.startswith("(")]
-	    input_dis = ["-"+x[15:] for x in input_devices if x.startswith("-")]
-	    input_impossible = ["(-"+x[16:] for x in input_devices if x.startswith("(")]
-	    input_devices = input_en
-	    input_devices += input_dis
-	    input_devices += input_impossible
-	    input_devices = string.join(input_devices," ")
-
-	lirc_devices = [x for x in useparm if x.startswith("lirc_devices_") or x.startswith("-lirc_devices_") or x.startswith("(lirc_devices_") or x.startswith("(-lirc_devices_")]
-	if (lirc_devices):
-	    useparm = [x for x in useparm if not x.startswith("lirc_devices_") and not x.startswith("-lirc_devices_") and not x.startswith("(lirc_devices_") and not x.startswith("(-lirc_devices_")]
-	    lirc_en = [x[13:] for x in lirc_devices if not x.startswith("-") and not x.startswith("(")]
-	    lirc_dis = ["-"+x[14:] for x in lirc_devices if x.startswith("-")]
-	    lirc_impossible = ["(-"+x[15:] for x in lirc_devices if x.startswith("(")]
-	    lirc_devices = lirc_en
-	    lirc_devices += lirc_dis
-	    lirc_devices += lirc_impossible
-	    lirc_devices = string.join(lirc_devices," ")
-
-	alsa_pcm_plugins = [x for x in useparm if x.startswith("alsa_pcm_plugins_") or x.startswith("-alsa_pcm_plugins_") or x.startswith("(alsa_pcm_plugins_") or x.startswith("(-alsa_pcm_plugins_")]
-	if (alsa_pcm_plugins):
-	    useparm = [x for x in useparm if not x.startswith("alsa_pcm_plugins_") and not x.startswith("-alsa_pcm_plugins_") and not x.startswith("(alsa_pcm_plugins_") and not x.startswith("(-alsa_pcm_plugins_")]
-	    alsa_en = [x[17:] for x in alsa_pcm_plugins if not x.startswith("-") and not x.startswith("(")]
-	    alsa_dis = ["-"+x[18:] for x in alsa_pcm_plugins if x.startswith("-")]
-	    alsa_impossible = ["(-"+x[19:] for x in alsa_pcm_plugins if x.startswith("(")]
-	    alsa_pcm_plugins = alsa_en
-	    alsa_pcm_plugins += alsa_dis
-	    alsa_pcm_plugins += alsa_impossible
-	    alsa_pcm_plugins = string.join(alsa_pcm_plugins," ")
-
-	alsa_cards = [x for x in useparm if x.startswith("alsa_cards_") or x.startswith("-alsa_cards_") or x.startswith("(alsa_cards_") or x.startswith("(-alsa_cards_")]
-	if (alsa_cards):
-	    useparm = [x for x in useparm if not x.startswith("alsa_cards_") and not x.startswith("-alsa_cards_") and not x.startswith("(alsa_cards_") and not x.startswith("(-alsa_cards_")]
-	    alsa_en = [x[11:] for x in alsa_cards if not x.startswith("-") and not x.startswith("(")]
-	    alsa_dis = ["-"+x[12:] for x in alsa_cards if x.startswith("-")]
-	    alsa_impossible = ["(-"+x[13:] for x in alsa_cards if x.startswith("(")]
-	    alsa_cards = alsa_en
-	    alsa_cards += alsa_dis
-	    alsa_cards += alsa_impossible
-	    alsa_cards = string.join(alsa_cards," ")
+	use_expand = portage.settings['USE_EXPAND'] # FIXME add support for USE_EXPAND_MASK ?
+	use_expand_low = use_expand.lower()
+	use_expand_low = use_expand_low.split()
+	for expand in use_expand_low:
+	    myexp = []
+	    myexp = [x for x in useparm if x.startswith(expand+"_") or x.startswith("-"+expand+"_") or x.startswith("(-"+expand+"_") or x.startswith("("+expand+"_")]
+	    if (myexp):
+		useparm = [x for x in useparm if not x.startswith(expand+"_") and not x.startswith("-"+expand+"_") and not x.startswith("(-"+expand+"_") and not x.startswith("("+expand+"_")]
+		expand_en = [x[len(expand)+1:] for x in myexp if not x.startswith("-") and not x.startswith("(")]
+		expand_dis = ["-"+x[len(expand)+2:] for x in myexp if x.startswith("-")]
+		expand_impossible_en = ["("+x[len(expand)+2:] for x in myexp if x.startswith("(") and not x.startswith("(-")]
+		expand_impossible_dis = ["(-"+x[len(expand)+3:] for x in myexp if x.startswith("(-")]
+		myexp = expand_en
+		myexp += expand_en
+		myexp += expand_impossible_en
+		myexp += expand_impossible_dis
+		myexp = list(set(myexp))
+		myexp.sort()
+		expanded[expand.upper()] = string.join(myexp," ")
 
     useparm = string.join(useparm," ")
     useparm = colorizeUseflags(useparm)
     if (format):
-	if (linguas):
-	    linguas = colorizeUseflags(linguas)
-	    linguas = bold(" LINGUAS=( ")+linguas+bold(" )")
-	    useparm += linguas
-	if (video_cards):
-	    video_cards = colorizeUseflags(video_cards)
-	    video_cards = bold(" VIDEO_CARDS=( ")+video_cards+bold(" )")
-	    useparm += video_cards
-	if (input_devices):
-	    input_devices = colorizeUseflags(input_devices)
-	    input_devices = bold(" INPUT_DEVICES=( ")+input_devices+bold(" )")
-	    useparm += input_devices
-	if (lirc_devices):
-	    lirc_devices = colorizeUseflags(lirc_devices)
-	    lirc_devices = bold(" LIRC_DEVICES=( ")+lirc_devices+bold(" )")
-	    useparm += lirc_devices
-	if (alsa_pcm_plugins):
-	    alsa_pcm_plugins = colorizeUseflags(alsa_pcm_plugins)
-	    alsa_pcm_plugins = bold(" ALSA_PCM_PLUGINS=( ")+alsa_pcm_plugins+bold(" )")
-	    useparm += alsa_pcm_plugins
-	if (alsa_cards):
-	    alsa_cards = colorizeUseflags(alsa_cards)
-	    alsa_cards = bold(" ALSA_CARDS=( ")+alsa_cards+bold(" )")
-	    useparm += alsa_cards
+	if (expanded):
+	    for key in expanded:
+		if expanded[key]:
+		    content = colorizeUseflags(expanded[key])
+		    content = bold(" "+key+"=( ")+content+bold(" )")
+		    useparm += content
     
     return useparm
 
@@ -376,6 +318,7 @@ def colorizeUseflags(usestring):
 	    use = darkred(use)
 	out.append(use)
     return string.join(out," ")
+
 
 # should be only used when a pkgcat/pkgname <-- is not specified (example: db, amarok, AND NOT media-sound/amarok)
 def getAtomCategory(atom):
@@ -1043,3 +986,69 @@ def packageSearch(keyword):
     # filter dupies
     SearchDirs = list(set(SearchDirs))
     return SearchDirs
+
+
+'''
+    Imported from portagelib.py of Porthole, thanks!
+'''
+def get_user_config(file, name=None, ebuild=None):
+    """
+    Function for parsing package.use, package.mask, package.unmask
+    and package.keywords.
+    
+    Returns /etc/portage/<file> as a dictionary of ebuilds, with
+    dict[ebuild] = list of flags.
+    If name is given, it will be parsed for ebuilds with xmatch('match-all'),
+    and only those ebuilds will be returned in dict.
+    
+    If <ebuild> is given, it will be matched against each line in <file>.
+    For package.use/keywords, a list of applicable flags is returned.
+    For package.mask/unmask, a list containing the matching lines is returned.
+    """
+    #print_info("PORTAGELIB: get_user_config('%s')" % file)
+    maskfiles = ['package.mask', 'package.unmask']
+    otherfiles = ['package.use', 'package.keywords']
+    package_files = otherfiles + maskfiles
+    if file not in package_files:
+        print_info(" * PORTAGELIB: get_user_config(): unsupported config file '%s'" % file)
+        return None
+    filename = '/'.join([portage_const.USER_CONFIG_PATH, file])
+    if not os.access(filename, os.R_OK):
+        print_info(" * PORTAGELIB: get_user_config(): no read access on '%s'?" % file)
+        return {}
+    configfile = open(filename, 'r')
+    configlines = configfile.readlines()
+    configfile.close()
+    config = [line.split() for line in configlines]
+    # e.g. [['media-video/mplayer', 'real', '-v4l'], [app-portage/porthole', 'sudo']]
+    dict = {}
+    if ebuild is not None:
+        result = []
+        for line in config:
+            if line and line[0]:
+                if line[0].startswith('#'):
+                    continue
+                match = portage.portdb.xmatch('match-list', line[0], mylist=[ebuild])
+                if match:
+                    if file in maskfiles: result.extend(line[0]) # package.mask/unmask
+                    else: result.extend(line[1:]) # package.use/keywords
+        return result
+    if name:
+        target = portage.portdb.xmatch('match-all', name)
+        for line in config:
+            if line and line[0]:
+                if line[0].startswith('#'):
+                    continue
+                ebuilds = portage.portdb.xmatch('match-all', line[0])
+                for ebuild in ebuilds:
+                    if ebuild in target:
+                        dict[ebuild] = line[1:]
+    else:
+        for line in config:
+            if line and line[0]:
+                if line[0].startswith('#'):
+                    continue
+                ebuilds = portage.portdb.xmatch('match-all', line[0])
+                for ebuild in ebuilds:
+                    dict[ebuild] = line[1:]
+    return dict
