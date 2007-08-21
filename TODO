@@ -4,6 +4,12 @@ TODO list:
 - enzyme, build(): add an option to force the continuation of the emerge queue even if a package fails
 - enzyme, add a module that integrates revdep-rebuild
 - test stabilization code
+  CLIENT:
+  - add conflicts dependencies support
+  - trap elogs when running enzyme and add them to the database, maybe I can write a file and then let reagent look for it
+  - add multi download source support
+  - add etc-update-alike support
+  - add preinst/postinst/prerm/postrm scripts
 
 Project Status:
 - entropy: will handle all the three tools below

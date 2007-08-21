@@ -172,7 +172,14 @@ except:
     else:
 	print_error(darkgreen("Gosh, you aren't! Well, I wrote the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
 	sys.exit(3)
+
+    print_error(darkgreen("If you want to be contacted back (and actively supported), also answer the questions below:"))
+    fullname = readtext("Your Full name: ")
+    mail = readtext("Your E-Mail address: ")
+    errorText += "\n\nFull name: "+str(fullname)+"\n"
+    errorText += "E-mail: "+str(mail)+"\n"
     
+
     # ok, come on!
     result = reportApplicationError(errorText)
     if (result != False):

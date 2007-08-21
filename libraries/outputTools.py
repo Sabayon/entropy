@@ -248,3 +248,10 @@ def print_generic(msg): # here we'll wrap any nice formatting
 
 def writechar(char):
 	sys.stdout.write(char); sys.stdout.flush()
+
+# function that reads user input printing a request like this:
+# Your name: <user input> <ENTER> where "Your name:" is request
+# the user input is returned
+def readtext(request):
+    text = raw_input(request)
+    return text

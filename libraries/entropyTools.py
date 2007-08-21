@@ -483,7 +483,62 @@ def isnumber(x):
 def filterDuplicatedEntries(alist):
     set = {}
     return [set.setdefault(e,e) for e in alist if e not in set]
-	
+
+
+import string
+
+# Escapeing functions
+mappings = {
+	"'":"''",
+	'"':'""',
+	' ':'+'
+}
+
+def escape(*args):
+    arg_lst = []
+    if len(args)==1:
+        return escape_single(args[0])
+    for x in args:
+        arg_lst.append(escape_single(x))
+    return tuple(arg_lst)
+
+def escape_single(x):
+    if type(x)==type(()) or type(x)==type([]):
+        return escape(x)
+    if type(x)==type(""):
+        tmpstr=''
+        for c in range(len(x)):
+            if x[c] in mappings.keys():
+                if x[c] in ("'", '"'):
+                    if c+1<len(x):
+                        if x[c+1]!=x[c]:
+                            tmpstr+=mappings[x[c]]
+                    else:
+                        tmpstr+=mappings[x[c]]
+                else:
+                   tmpstr+=mappings[x[c]]
+            else:
+                tmpstr+=x[c]
+    else:
+        tmpstr=x
+    return tmpstr
+
+def unescape(val):
+    if type(val)==type(""):
+        tmpstr=''
+        for key,item in mappings.items():
+            val=string.replace(val,item,key)
+        tmpstr = val
+    else:
+        tmpstr=val
+    return tmpstr
+
+def unescape_list(*args):
+    arg_lst = []
+    for x in args:
+        arg_lst.append(unescape(x))
+    return tuple(arg_lst)
+
 # this function returns a list of duplicated entries found in the input list
 def extactDuplicatedEntries(inputlist):
     filteredList = filterDuplicatedEntries(inputlist)
