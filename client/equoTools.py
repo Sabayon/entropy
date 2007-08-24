@@ -1171,7 +1171,7 @@ def getRequiredPackages(foundAtoms, emptydeps = False):
    @output: removal tree dictionary, plus status code
 '''
 dictDeps = {}
-def generateRemovalTree(idpackages, output = False):
+def generateRemovalTree(idpackages, output = False, deep = False):
 
     clientDbconn = openClientDatabase()
     if (clientDbconn == -1):
@@ -1185,8 +1185,7 @@ def generateRemovalTree(idpackages, output = False):
     # Initialize
     for idpackage in idpackages:
 	atomIds.append(idpackage)
-	xatom = clientDbconn.retrieveAtom(idpackage)
-	xdepends = clientDbconn.searchDepends(dep_getkey(xatom))
+	xdepends = clientDbconn.searchDepends(idpackage)
 	dependencies.append(idpackage)
 	dictDeps[idpackage] = set(xdepends)
 	# even add my depends?
@@ -1196,8 +1195,7 @@ def generateRemovalTree(idpackages, output = False):
 	    # if not, remove from treeview too
 	    upstairsDepends.append(x)
 	    dependencies.append(x)
-	    xatom = clientDbconn.retrieveAtom(x)
-	    xdep = clientDbconn.searchDepends(dep_getkey(xatom))
+	    xdep = clientDbconn.searchDepends(x)
 	    dictDeps[x] = set(xdep)
 
     remainingDeps = dependencies[:]
@@ -1228,8 +1226,6 @@ def generateRemovalTree(idpackages, output = False):
 	    #if atx.find("virtual/jdk") != -1:
 		#print atx
 	    #print "--------"
-	    
-	   
 	    
 	    for depend in depends:
 		if depend in treeview:
@@ -1267,7 +1263,7 @@ def generateRemovalTree(idpackages, output = False):
 		for x in xdeps:
 		    #print x
 		    xdep = atomMatchInRepository(x,clientDbconn)
-		    mydepends = clientDbconn.searchDepends(dep_getkey(x))
+		    mydepends = clientDbconn.searchDepends(xdep[0])
 		    dependencies.add(xdep[0])
 		    dictDeps[xdep[0]] = set(mydepends)
 		    
@@ -1368,7 +1364,7 @@ def compareVersions(listA,listB):
 '''
 def checkNeededDownload(filepath,checksum = None):
     # is the file available
-    if os.path.isfile(etpConst['entropyworkdir']+"/"+filepath) and os.path.isfile(etpConst['entropyworkdir']+"/"+filepath+etpConst['packageshashfileext']):
+    if os.path.isfile(etpConst['entropyworkdir']+"/"+filepath):
 	if checksum is None:
 	    return 0
 	else:
@@ -1678,6 +1674,10 @@ def removePackageFromDatabase(idpackage, clientDbconn = None):
 	clientDbconn = openClientDatabase()
 
     clientDbconn.removePackage(idpackage)
+    # also remove from dependstable
+    x = clientDbconn.removePackageFromDependsTable(idpackage)
+    if (x == 1): #`shit, needs regeneration
+	regenerateDependsTable(clientDbconn)
     
     if (closedb):
         clientDbconn.closeDB()
@@ -1891,9 +1891,18 @@ def database(options):
 	    # now add the package
 	    clientDbconn.addPackageToInstalledTable(x[0],x[1])
 
+	print_info(red("  Now generating depends caching table..."))
+	regenerateDependsTable(clientDbconn)
 	print_info(red("  Database reinitialized successfully."))
 
 	clientDbconn.closeDB()
+
+    elif (options[0] == "depends"):
+	print_info(red("  Regenerating depends caching table..."))
+	clientDbconn = openClientDatabase()
+	regenerateDependsTable(clientDbconn)
+	clientDbconn.closeDB()
+	print_info(red("  Depends caching table regenerated successfully."))
 
 
 def printPackageInfo(idpackage,dbconn, clientSearch = False, strictOutput = False, quiet = False):
@@ -2118,13 +2127,18 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
     clientDbconn = openClientDatabase()
     dataInfo = [] # when idreturn is True
     for atom in atoms:
-	result = clientDbconn.searchDepends(atom)
-	if (result):
+	result = atomMatchInRepository(atom,clientDbconn)
+	if (result[0] != -1):
+	    searchResults = clientDbconn.searchDepends(result[0])
+	    if searchResults == -2:
+		# I need to generate dependstable
+		regenerateDependsTable(clientDbconn)
+	        searchResults = clientDbconn.searchDepends(result[0])
 	    # print info
 	    if (not idreturn) and (not quiet):
 	        print_info(blue("     Keyword: ")+bold("\t"+atom))
-	        print_info(blue("     Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
-	    for idpackage in result:
+	        print_info(blue("     Found:   ")+bold("\t"+str(len(searchResults)))+red(" entries"))
+	    for idpackage in searchResults:
 		if (idreturn):
 		    dataInfo.append(idpackage)
 		else:
@@ -2277,6 +2291,26 @@ def searchDescription(descriptions, idreturn = False, quiet = False):
 	return 129
     return 0
 
+
+'''
+   @description: recreate dependstable table in the client database, it's used for caching searchDepends requests
+   @input Nothing
+   @output: Nothing
+'''
+def regenerateDependsTable(dbconn,output = True):
+    dbconn.createDependsTable()
+    depends = dbconn.listAllDependencies()
+    count = 0
+    total = str(len(depends))
+    for depend in depends:
+	count += 1
+	atom = depend[1]
+	iddep = depend[0]
+	if output:
+	    print_info("  "+bold("(")+darkgreen(str(count))+"/"+blue(total)+bold(")")+red(" Resolving ")+bold(atom), back = True)
+	match = atomMatchInRepository(atom,dbconn)
+	if (match[0] != -1):
+	    dbconn.addDependRelationToDependsTable(iddep,match[0])
 
 '''
    @description: open the repository database and returns the pointer
@@ -2556,13 +2590,14 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
     # running tasks
     totalqueue = str(len(runQueue))
     currentqueue = 0
+    clientDbconn = openClientDatabase()
+    
     for packageInfo in runQueue:
 	currentqueue += 1
 	idpackage = packageInfo[0]
 	repository = packageInfo[1]
 	# get package atom
 	dbconn = openRepositoryDatabase(repository)
-	clientDbconn = openClientDatabase()
 	pkgatom = dbconn.retrieveAtom(idpackage)
 	dbconn.closeDB()
 	#print actionQueue[pkgatom]
@@ -2591,7 +2626,14 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	    if (rc != 0):
 		clientDbconn.closeDB()
 		return -1,rc
-	clientDbconn.closeDB()
+
+    # regenerate depends table
+    print_info(red(" @@ ")+blue("Regenerating depends caching table..."), back = True)
+    regenerateDependsTable(clientDbconn, output = False)
+    print_info(red(" @@ ")+blue("Install Complete."))
+
+    clientDbconn.closeDB()
+
     return 0,0
 
 

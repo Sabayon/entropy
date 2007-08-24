@@ -669,7 +669,6 @@ def database(options):
 #####################################################################################
 
 # this class simply describes the current database status
-
 class databaseStatus:
 
     def __init__(self):
@@ -736,10 +735,10 @@ class etpDatabase:
 	self.readOnly = readOnly
 	self.noUpload = noUpload
 	self.packagesRemoved = False
+	self.packagesAdded = False
 	self.clientDatabase = clientDatabase
 	
 	# caching dictionaries
-	self.dependCache = {}
 	
 	if (self.clientDatabase):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened by Entropy client, file: "+str(dbFile))
@@ -1199,6 +1198,7 @@ class etpDatabase:
 			)
 	    )
 
+	self.packagesAdded = True
 	self.commitChanges()
 	
 	return idpackage, revision, etpData, True
@@ -1351,7 +1351,6 @@ class etpDatabase:
 	# get info about inserted value and return
 	prt = self.isProtectAvailable(protect)
 	if prt != -1:
-	    self.commitChanges()
 	    return prt
 	raise Exception, "I tried to insert a protect but then, fetching it returned -1. There's something broken."
 
@@ -1364,7 +1363,6 @@ class etpDatabase:
 	# get info about inserted value and return
 	src = self.isSourceAvailable(source)
 	if src != -1:
-	    self.commitChanges()
 	    return src
 	raise Exception, "I tried to insert a source but then, fetching it returned -1. There's something broken."
 
@@ -1377,7 +1375,6 @@ class etpDatabase:
 	# get info about inserted value and return
 	dep = self.isDependencyAvailable(dependency)
 	if dep != -1:
-	    self.commitChanges()
 	    return dep
 	raise Exception, "I tried to insert a dependency but then, fetching it returned -1. There's something broken."
 
@@ -1390,7 +1387,6 @@ class etpDatabase:
 	# get info about inserted value and return
 	key = self.isKeywordAvailable(keyword)
 	if key != -1:
-	    self.commitChanges()
 	    return key
 	raise Exception, "I tried to insert a keyword but then, fetching it returned -1. There's something broken."
 
@@ -1403,7 +1399,6 @@ class etpDatabase:
 	# get info about inserted value and return
 	use = self.isUseflagAvailable(useflag)
 	if use != -1:
-	    self.commitChanges()
 	    return use
 	raise Exception, "I tried to insert a useflag but then, fetching it returned -1. There's something broken."
 
@@ -1416,7 +1411,6 @@ class etpDatabase:
 	# get info about inserted value and return
 	lic = self.isLicenseAvailable(license)
 	if lic != -1:
-	    self.commitChanges()
 	    return lic
 	raise Exception, "I tried to insert a license but then, fetching it returned -1. There's something broken."
 
@@ -1430,7 +1424,6 @@ class etpDatabase:
 	# get info about inserted value and return
 	idflag = self.areCompileFlagsAvailable(chost,cflags,cxxflags)
 	if idflag != -1:
-	    self.commitChanges()
 	    return idflag
 	raise Exception, "I tried to insert a flag tuple but then, fetching it returned -1. There's something broken."
 
@@ -2094,43 +2087,6 @@ class etpDatabase:
 	    result.append(row[0])
 	return result
 
-    def searchDepends(self, atomkey):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchDepends: called for "+atomkey)
-	
-	cached = self.dependCache.get(atomkey)
-	if cached:
-	    return cached
-
-	iddeps = []
-	self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference WHERE dependency LIKE "%'+atomkey+'%"') # FIXME: handle slotted packages, even if it's not a big issue atm
-	for row in self.cursor:
-	    iddeps.append(row)
-	try:
-	    atomkey = entropyTools.dep_getkey(atomkey)
-	    atomcat = atomkey.split("/")[0]
-	    atomname = atomkey.split("/")[1]
-	    if iddeps:
-		_iddeps = iddeps[:]
-	        for x in _iddeps:
-		    if x:
-			mykey = entropyTools.dep_getkey(x[1])
-			mycat = mykey.split("/")[0]
-			myname = mykey.split("/")[1]
-			if mykey.find("|or|") == -1 and mykey.find("|and|") == -1: # maybe find a better way
-			    if (mycat != atomcat) or (myname != atomname):
-			        iddeps.remove(x)
-	except:
-	    pass
-	result = []
-	for iddep in iddeps:
-	    #print iddep
-	    self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = "'+str(iddep[0])+'"')
-	    for row in self.cursor:
-	        result.append(row[0])
-	# caching
-	self.dependCache[atomkey] = result
-	return result
-
     def searchPackages(self, keyword, sensitive = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackages: called for "+keyword)
 	result = []
@@ -2458,5 +2414,54 @@ class etpDatabase:
 
     def removePackageFromInstalledTable(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removePackageFromInstalledTable: called for "+str(idpackage))
-	self.cursor.execute('DELETE FROM installedtable WHERE idpackage = '+str(idpackage))
-	
+	try:
+	    self.cursor.execute('DELETE FROM installedtable WHERE idpackage = '+str(idpackage))
+	except:
+	    self.createInstalledTable()
+
+    def removePackageFromDependsTable(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removePackageFromDependsTable: called for "+str(idpackage))
+	try:
+	    self.cursor.execute('DELETE FROM dependstable WHERE idpackage = '+idpackage)
+	    return 0
+	except:
+	    return 1 # need reinit
+
+    def searchDepends(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchDepends: called for idpackage "+str(idpackage))
+	iddeps = []
+	try:
+	    self.cursor.execute('SELECT iddependency FROM dependstable WHERE idpackage = "'+str(idpackage)+'"')
+	except:
+	    return -2 # table does not exist, please regenerate and re-run
+	for row in self.cursor:
+	    iddeps.append(row[0])
+	result = []
+	for iddep in iddeps:
+	    #print iddep
+	    self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = "'+str(iddep)+'"')
+	    for row in self.cursor:
+	        result.append(row[0])
+	return result
+
+    # temporary/compat functions
+    def createDependsTable(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createDependsTable: called.")
+	self.cursor.execute('DROP TABLE IF EXISTS dependstable;')
+	self.cursor.execute('CREATE TABLE dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );')
+
+    def createInstalledTable(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createInstalledTable: called.")
+	self.cursor.execute('DROP TABLE IF EXISTS installedtable;')
+	self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER, repositoryname VARCHAR );')
+
+    def addDependRelationToDependsTable(self, iddependency, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addDependRelationToDependsTable: called for iddependency "+str(iddependency)+" and idpackage "+str(idpackage))
+	# FIXME: should check for existance of the PK?
+	self.cursor.execute(
+		'INSERT into dependstable VALUES '
+		'(?,?)'
+		, (	iddependency,
+			idpackage,
+			)
+	)

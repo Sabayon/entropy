@@ -92,6 +92,7 @@ DROP TABLE IF EXISTS configprotect;
 DROP TABLE IF EXISTS configprotectmask;
 DROP TABLE IF EXISTS configprotectreference;
 DROP TABLE IF EXISTS installedtable;
+DROP TABLE IF EXISTS dependstable;
 """
 
 etpSQLInit = """
