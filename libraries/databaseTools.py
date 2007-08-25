@@ -2393,7 +2393,7 @@ class etpDatabase:
 ##   Client Database API / but also used by server part
 #
 
-    def addPackageToInstalledTable(self, idpackage,repositoryName):
+    def addPackageToInstalledTable(self, idpackage, repositoryName):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackageToInstalledTable: called for "+str(idpackage)+" and repository "+str(repositoryName))
 	self.cursor.execute(
 		'INSERT into installedtable VALUES '

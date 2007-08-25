@@ -1043,7 +1043,7 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 		dependenciesNotFound.append(undep)
 		#print "not found"
 		try:
-		    while 1: remainingDeps.remove(undep)
+		    while 1: remainingDeps.remove(undep) # FIXME: use sets
 		except:
 		    pass
 	    else:
@@ -1056,12 +1056,12 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 		xmatch = atomMatchInRepository(undep,clientDbconn)
 		if (not emptydeps):
 		    if xmatch[0] == -1:
-		        tree[treedepth].append(undep)
+		        tree[treedepth].append(undep) 
 		else:
 		    tree[treedepth].append(undep)
 		treecache[undep] = True
 		try:
-		    while 1: remainingDeps.remove(undep)
+		    while 1: remainingDeps.remove(undep) # FIXME: use sets
 		except:
 		    pass
 	# merge back remainingDeps into unsatisfiedDeps
@@ -1166,134 +1166,88 @@ def getRequiredPackages(foundAtoms, emptydeps = False):
 
 
 '''
-   @description: generates a list of packages id that can be added to the removal queue of atoms (list)
-   @input package: list of packages id taken from the client database
-   @output: removal tree dictionary, plus status code
+   @description: generates a depends tree using provided idpackages (from client database)
+   		 !!! you can see it as the function that generates the removal tree
+   @input package: idpackages list
+   @output: 	depends tree dictionary, plus status code
 '''
-dictDeps = {}
-def generateRemovalTree(idpackages, output = False, deep = False):
+dependscache = {}
+def generateDependsTree(idpackages):
 
     clientDbconn = openClientDatabase()
-    if (clientDbconn == -1):
-	return [],-1
+    dependsOk = False
+    treeview = set(idpackages)
+    treelevel = idpackages[:]
+    tree = {}
+    treedepth = 0 # I start from level 1 because level 0 is idpackages itself
+    tree[treedepth] = idpackages[:]
     
-    dependencies = []
-    atomIds = []
-    treeview = []
-    removeList = []
-    upstairsDepends = []
-    # Initialize
-    for idpackage in idpackages:
-	atomIds.append(idpackage)
-	xdepends = clientDbconn.searchDepends(idpackage)
-	dependencies.append(idpackage)
-	dictDeps[idpackage] = set(xdepends)
-	# even add my depends?
-	for x in xdepends:
-	    treeview.append(x)
-	    # add here now, and look at the end if it has been removed from it
-	    # if not, remove from treeview too
-	    upstairsDepends.append(x)
-	    dependencies.append(x)
-	    xdep = clientDbconn.searchDepends(x)
-	    dictDeps[x] = set(xdep)
+    # check if dependstable is sane before beginning
+    rx = clientDbconn.searchDepends(idpackages[0])
+    if rx == -2:
+	# generation needed
+	regenerateDependsTable(clientDbconn, output = False)
+    
+    while (not dependsOk):
+	treedepth += 1
+	tree[treedepth] = []
+        for idpackage in treelevel:
 
-    remainingDeps = dependencies[:]
-    dependencies = set(dependencies)
-    for atomId in atomIds:
-        treeview.append(atomId)
-    depsOk = False
-    
-    #print treeview
-    
-    while (not depsOk):
-	change = False
-	for dep in remainingDeps:
-
-	    if dep in removeList: # if it has been already removed
+	    passed = dependscache.get(idpackage,None)
+	    if passed:
 		try:
-		    while 1: dependencies.remove(dep)
+		    while 1: treeview.remove(idpackage)
 		except:
 		    pass
 		continue
 
-            #myatom = clientDbconn.retrieveAtom(dep[0])
-	    #key = dep_getkey(myatom)
-	    depends = dictDeps[dep].copy()
-	    #print "--------"
-	    #print depends
-	    #atx = clientDbconn.retrieveAtom(dep)
-	    #if atx.find("virtual/jdk") != -1:
-		#print atx
-	    #print "--------"
-	    
-	    for depend in depends:
-		if depend in treeview:
-		    #print "changed"
-		    change = True
+	    # obtain its depends
+	    depends = clientDbconn.searchDepends(idpackage)
+	    if (depends): # something depends on idpackage
+		for x in depends:
+		    if x not in tree[treedepth]:
+			tree[treedepth].append(x)
+		        treeview.add(x)
+	
+	    dependscache[idpackage] = True
+	    try:
+		while 1: treeview.remove(idpackage)
+	    except:
+	        pass
+	
+	treelevel = list(treeview)[:]
+	if (not treelevel):
+	    if not tree[treedepth]:
+		del tree[treedepth] # probably the last one is empty then
+	    dependsOk = True
+
+    newtree = tree.copy() # tree list
+    if (tree):
+	# now filter newtree
+	treelength = len(newtree)
+	for count in range(treelength)[::-1]:
+	    x = 0
+	    while x < count:
+		# remove dups in this list
+		for z in newtree[count]:
 		    try:
 			while 1:
-		            dictDeps[dep].remove(depend)
+			    newtree[x].remove(z)
+			    #print "removing "+str(z)
 		    except:
 			pass
-	    
-	    if (list(dictDeps[dep]) == []):
+		x += 1
+    del tree
 
-		#print "here"
-		# I can safely add this
-		change = True
-		
-		systemPackage = clientDbconn.isSystemPackage(dep)
-		try:
-		    while 1: dependencies.remove(dep)
-		except:
-		    pass
-		
-		# skip system packages
-		if (systemPackage):
-		    continue
-		
-		treeview.append(dep)
-		removeList.append(dep)
-		
-		if output:
-		    printatom = clientDbconn.retrieveAtom(dep)
-		    print_info(red(" @@ Analyzing ")+bold(printatom), back = True)
-		xdeps = getDependencies([dep,0])
-		for x in xdeps:
-		    #print x
-		    xdep = atomMatchInRepository(x,clientDbconn)
-		    mydepends = clientDbconn.searchDepends(xdep[0])
-		    dependencies.add(xdep[0])
-		    dictDeps[xdep[0]] = set(mydepends)
-		    
-	    #print "--------"
-
-	remainingDeps = list(dependencies)[:]
-	if (change == False):
-	    depsOk = True
-	else:
-	    depsOk = False
-
-    treeview = filterDuplicatedEntries(treeview)
-    # remove atomsInfo
-    for atomId in atomIds:
-	try:
-	    while 1: treeview.remove(atomId)
-	except:
-	    pass
-    # filter unremovable dependencies
-    for idpackage in remainingDeps:
-	if idpackage in upstairsDepends:
-	    try:
-		# remove from treeview
-		treeview.remove(idpackage)
-	    except:
-		pass
-
+    #l = len(newtree)
+    #for x in range(l)[::-1]:
+	#print "LEVEL: "+str(x)
+	#for y in newtree[x]:
+	    #print clientDbconn.retrieveAtom(y)
 
     clientDbconn.closeDB()
-    return treeview,0 # treeview is used to show deps while tree is used to run the dependency code.
+
+    return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
 
 '''
@@ -1649,6 +1603,7 @@ def installPackageIntoDatabase(idpackage,repository, clientDbconn = None):
     del x
     if (not status):
 	clientDbconn.closeDB()
+	print "DEBUG!!! Package "+str(idpk)+" has not been inserted, status: "+str(status)
 	exitstatus = 1 # it hasn't been insterted ? why??
     else:
         # add idpk to the installedtable
@@ -1879,7 +1834,6 @@ def database(options):
 	    # open its database
 	    count += 1
 	    dbconn = openRepositoryDatabase(x[1])
-	    
 	    atomName = dbconn.retrieveAtom(x[0])
 	    atomInfo = dbconn.getPackageData(x[0])
 	    atomBranch = dbconn.retrieveBranch(x[0])
@@ -1887,9 +1841,9 @@ def database(options):
 	    # filling
 	    print_info("  "+bold("(")+darkgreen(str(count))+"/"+blue(total)+bold(")")+red(" Injecting ")+bold(atomName), back = True)
 	    # fill clientDbconn # FIXME write a general client side addPackage function
-	    clientDbconn.addPackage(atomInfo, wantedBranch = atomBranch, addBranch = False)
-	    # now add the package
-	    clientDbconn.addPackageToInstalledTable(x[0],x[1])
+	    idpk, rev, xx, status = clientDbconn.addPackage(atomInfo, wantedBranch = atomBranch, addBranch = False)
+	    # now add the package to the installed table
+	    clientDbconn.addPackageToInstalledTable(idpk,x[1])
 
 	print_info(red("  Now generating depends caching table..."))
 	regenerateDependsTable(clientDbconn)
@@ -2208,12 +2162,13 @@ def searchRemoval(atoms, idreturn = False, quiet = False):
     choosenRemovalQueue = []
     if (not quiet):
         print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
-    treeview = generateRemovalTree(foundAtoms)
-    if treeview[1] != 0:
-	return []
-    else:
-	for x in treeview[0]:
-	    choosenRemovalQueue.append(x)
+    treeview = generateDependsTree(foundAtoms)
+    treelength = len(treeview[0])
+    if treelength > 1:
+	treeview = treeview[0]
+	for x in range(treelength)[::-1]:
+	    for y in treeview[x]:
+		choosenRemovalQueue.append(y)
 	
     if (choosenRemovalQueue):
 	if (not quiet):
@@ -2714,13 +2669,13 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
     if (lookForOrphanedPackages):
 	choosenRemovalQueue = []
 	print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
-	treeview = generateRemovalTree(plainRemovalQueue)
-	if treeview[1] == 0:
-	    for x in treeview[0]:
-		systemPackage = clientDbconn.isSystemPackage(idpackage) # FIXME: maybe adding this to generateRemovalTree ? 
-		if (not systemPackage):
-		    if (x != -1):
-		        choosenRemovalQueue.append(x)
+	treeview = generateDependsTree(plainRemovalQueue)
+	treelength = len(treeview[0])
+	if treelength > 1:
+	    treeview = treeview[0]
+	    for x in range(treelength)[::-1]:
+		for y in treeview[x]:
+		    choosenRemovalQueue.append(y)
 	
 	    if (choosenRemovalQueue):
 	        print_info(red(" @@ ")+blue("These are the packages that would added to the removal queue:"))
@@ -2746,9 +2701,6 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 		else:
 	            for x in choosenRemovalQueue:
 			removalQueue.append(x)
-	
-	else:
-	    print_info(red(" @@ ")+blue("Removal Tree generation not available for this set of packages."))
 
     if (ask):
 	print
