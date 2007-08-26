@@ -55,8 +55,7 @@ def print_help():
     print_info(" \t\t"+green("stabilize")+"\t\t\t\t Mark as stable a package, a list of packages, world")
     print_info(" \t\t"+green("unstabilize")+"\t\t\t\t Mark as unstable a package, a list of packages, world")
     print_info(" \t\t"+green("md5check")+"\t\t\t\t Check digest of a package, a list of packages, world")
-    #print_info(" \t\t"+green(bold("orphans"))+"\t\t\t Dump the list of files that don't belong on any installed package")
-    print_info(" \t\t"+green(bold("sanity-check"))+"\t\t\t\t Do a quick check on the database to assure data integrity")
+    #print_info(" \t\t"+green(bold("orphans"))+"\t\t\t Dump the list of files that don't belong on any installed package") FIXME can be done using sets
     print_info(" \t"+green(bold("deptest"))+yellow("\t\t Look for unsatisfied dependencies inside database"))
     print_info(" \t\t"+red("--quiet")+"\t\t\t\t\t just print the dependencies list")
     print_info(" \t"+green(bold("smartapps"))+yellow("\t Entropy application tool to create self-dependant applications [EXPERIMENTAL]"))

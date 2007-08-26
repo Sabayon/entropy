@@ -444,13 +444,6 @@ def database(options):
 	print_info(green(" * ")+red("All the selected packages have been marked as requested. Have fun."))
 	dbconn.closeDB()
 
-    elif (options[0] == "sanity-check"):
-	print_info(green(" * ")+red("Running sanity check on the database ... "), back = True)
-	dbconn = etpDatabase(readOnly = True)
-	dbconn.noopCycle()
-	dbconn.closeDB()
-	print_info(green(" * ")+red("Database sanity check passed."))
-
     elif (options[0] == "remove"):
 
 	print_info(green(" * ")+red("Scanning packages that would be removed ..."), back = True)
@@ -739,6 +732,7 @@ class etpDatabase:
 	self.clientDatabase = clientDatabase
 	
 	# caching dictionaries
+	self.databaseCache = {}
 	
 	if (self.clientDatabase):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened by Entropy client, file: "+str(dbFile))
@@ -1619,123 +1613,281 @@ class etpDatabase:
 
     def retrieveAtom(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveAtom: retrieving Atom for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveAtom',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "atom" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	atom = ''
 	for row in self.cursor:
 	    atom = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveAtom'] = atom
 	return atom
 
     def retrieveBranch(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBranch: retrieving Branch for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveBranch',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "branch" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
-	atom = ''
+	br = ''
 	for row in self.cursor:
-	    atom = row[0]
+	    br = row[0]
 	    break
-	return atom
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveBranch'] = br
+	return br
 
     def retrieveDownloadURL(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDownloadURL: retrieving download URL for package ID "+str(idpackage))
+	
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveDownloadURL',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "download" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	download = ''
 	for row in self.cursor:
 	    download = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveDownloadURL'] = download
 	return download
 
     def retrieveDescription(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDescription: retrieving description for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveDescription',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "description" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	description = ''
 	for row in self.cursor:
 	    description = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveDescription'] = description
 	return description
 
     def retrieveHomepage(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveHomepage: retrieving Homepage for package ID "+str(idpackage))
+	
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveHomepage',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "homepage" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	home = ''
 	for row in self.cursor:
 	    home = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveHomepage'] = home
 	return home
 
     # in bytes
     def retrieveSize(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSize: retrieving Size for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveSize',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "size" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	size = 'N/A'
 	for row in self.cursor:
 	    size = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveSize'] = size
 	return size
 
     def retrieveDigest(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDigest: retrieving Digest for package ID "+str(idpackage))
+	
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveDigest',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "digest" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	digest = ''
 	for row in self.cursor:
 	    digest = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveDigest'] = digest
 	return digest
 
     def retrieveName(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveName: retrieving Name for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveName',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "name" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	name = ''
 	for row in self.cursor:
 	    name = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveName'] = name
 	return name
 
     def retrieveVersion(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveVersion: retrieving Version for package ID "+str(idpackage))
+	
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveVersion',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "version" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	ver = ''
 	for row in self.cursor:
 	    ver = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveVersion'] = ver
 	return ver
 
     def retrieveRevision(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveRevision: retrieving Revision for package ID "+str(idpackage))
+	
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveRevision',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "revision" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	rev = ''
 	for row in self.cursor:
 	    rev = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveRevision'] = rev
 	return rev
 
     def retrieveDateCreation(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDateCreation: retrieving Creation Date for package ID "+str(idpackage))
+	
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveDateCreation',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "datecreation" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	date = 'N/A'
 	for row in self.cursor:
 	    date = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveDateCreation'] = date
 	return date
 
     def retrieveApi(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"v: retrieving Database API for package ID "+str(idpackage))
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveApi: retrieving Database API for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveApi',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "etpapi" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	api = -1
 	for row in self.cursor:
 	    api = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveApi'] = api
 	return api
 
     def retrieveUseflags(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveUseflags: retrieving USE flags for package ID "+str(idpackage))
-	self.cursor.execute('SELECT "flag" FROM useflags WHERE idpackage = "'+str(idpackage)+'"')
-	flags = []
-	for row in self.cursor:
-	    flags.append(row[0])
-	return flags
 
-    def retrieveUseflags(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveUseflags: retrieving USE flags for package ID "+str(idpackage))
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveUseflags',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "idflag" FROM useflags WHERE idpackage = "'+str(idpackage)+'"')
 	idflgs = []
 	for row in self.cursor:
@@ -1745,27 +1897,65 @@ class etpDatabase:
 	    self.cursor.execute('SELECT "flagname" FROM useflagsreference WHERE idflag = "'+str(idflg)+'"')
 	    for row in self.cursor:
 	        flags.append(row[0])
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveUseflags'] = flags
 	return flags
 
     def retrieveConflicts(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveConflicts: retrieving Conflicts for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveConflicts',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "conflict" FROM conflicts WHERE idpackage = "'+str(idpackage)+'"')
 	confl = []
 	for row in self.cursor:
 	    confl.append(row[0])
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveConflicts'] = confl
 	return confl
 
     def retrieveProvide(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProvide: retrieving Provide for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveProvide',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "atom" FROM provide WHERE idpackage = "'+str(idpackage)+'"')
 	provide = []
 	for row in self.cursor:
 	    provide.append(row[0])
+	
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveProvide'] = provide
 	return provide
 
     def retrieveDependencies(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDependencies: retrieving Dependencies for package ID "+str(idpackage))
 	self.cursor.execute('SELECT iddependency FROM dependencies WHERE idpackage = "'+str(idpackage)+'"')
+	
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveDependencies',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+	
 	iddeps = []
 	for row in self.cursor:
 	    iddeps.append(row[0])
@@ -1774,10 +1964,44 @@ class etpDatabase:
 	    self.cursor.execute('SELECT dependency FROM dependenciesreference WHERE iddependency = "'+str(iddep)+'"')
 	    for row in self.cursor:
 		deps.append(row[0])
+	
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveDependencies'] = deps
 	return deps
+
+    def retrieveIdDependencies(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDependencies: retrieving Dependencies for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveIdDependencies',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
+	self.cursor.execute('SELECT iddependency FROM dependencies WHERE idpackage = "'+str(idpackage)+'"')
+	iddeps = []
+	for row in self.cursor:
+	    iddeps.append(row[0])
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveIdDependencies'] = iddeps
+	return iddeps
 
     def retrieveBinKeywords(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBinKeywords: retrieving Binary Keywords for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveBinKeywords',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "idkeyword" FROM binkeywords WHERE idpackage = "'+str(idpackage)+'"')
 	idkws = []
 	for row in self.cursor:
@@ -1787,9 +2011,22 @@ class etpDatabase:
 	    self.cursor.execute('SELECT "keywordname" FROM keywordsreference WHERE idkeyword = "'+str(idkw)+'"')
 	    for row in self.cursor:
 	        kw.append(row[0])
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveBinKeywords'] = kw
 	return kw
 
     def retrieveKeywords(self, idpackage):
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveKeywords',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveKeywords: retrieving Keywords for package ID "+str(idpackage))
 	self.cursor.execute('SELECT "idkeyword" FROM keywords WHERE idpackage = "'+str(idpackage)+'"')
 	idkws = []
@@ -1800,10 +2037,23 @@ class etpDatabase:
 	    self.cursor.execute('SELECT "keywordname" FROM keywordsreference WHERE idkeyword = "'+str(idkw)+'"')
 	    for row in self.cursor:
 	        kw.append(row[0])
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveKeywords'] = kw
 	return kw
 
     def retrieveProtect(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProtect: retrieving CONFIG_PROTECT for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveProtect',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "idprotect" FROM configprotect WHERE idpackage = "'+str(idpackage)+'"')
 	idprotect = -1
 	for row in self.cursor:
@@ -1816,10 +2066,23 @@ class etpDatabase:
 	for row in self.cursor:
 	    protect = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveProtect'] = protect
 	return protect
 
     def retrieveProtectMask(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProtectMask: retrieving CONFIG_PROTECT_MASK for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveProtectMask',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "idprotect" FROM configprotectmask WHERE idpackage = "'+str(idpackage)+'"')
 	idprotect = -1
 	for row in self.cursor:
@@ -1832,10 +2095,23 @@ class etpDatabase:
 	for row in self.cursor:
 	    protect = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveProtectMask'] = protect
 	return protect
 
     def retrieveSources(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSources: retrieving Sources for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveSources',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT idsource FROM sources WHERE idpackage = "'+str(idpackage)+'"')
 	idsources = []
 	for row in self.cursor:
@@ -1845,44 +2121,109 @@ class etpDatabase:
 	    self.cursor.execute('SELECT source FROM sourcesreference WHERE idsource = "'+str(idsource)+'"')
 	    for row in self.cursor:
 		sources.append(row[0])
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveSources'] = sources
 	return sources
 
     def retrieveContent(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveContent: retrieving Content for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveContent',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "file" FROM content WHERE idpackage = "'+str(idpackage)+'"')
 	fl = []
 	for row in self.cursor:
 	    fl.append(row[0])
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveContent'] = fl
 	return fl
 
     def retrieveSlot(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSlot: retrieving Slot for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveSlot',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "slot" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	ver = ''
 	for row in self.cursor:
 	    ver = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveSlot'] = ver
 	return ver
     
     def retrieveVersionTag(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveVersionTag: retrieving Version TAG for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveVersionTag',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "versiontag" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	ver = ''
 	for row in self.cursor:
 	    ver = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveVersionTag'] = ver
 	return ver
     
     def retrieveMirrorInfo(self, mirrorname):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveMirrorInfo: retrieving Mirror info for mirror name "+str(mirrorname))
+
+	''' caching '''
+	cached = self.databaseCache.get(mirrorname, None)
+	if cached:
+	    rslt = self.databaseCache[mirrorname].get('retrieveMirrorInfo',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[mirrorname] = {}
+
 	self.cursor.execute('SELECT "mirrorlink" FROM mirrorlinks WHERE mirrorname = "'+str(mirrorname)+'"')
 	mirrorlist = []
 	for row in self.cursor:
 	    mirrorlist.append(row[0])
+
+	''' caching '''
+	self.databaseCache[mirrorname]['retrieveMirrorInfo'] = mirrorlist
 	return mirrorlist
 
     def retrieveCategory(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveCategory: retrieving Category for package ID for "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveCategory',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "idcategory" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	cat = ''
 	for row in self.cursor:
@@ -1894,10 +2235,23 @@ class etpDatabase:
 	for row in self.cursor:
 	    cat = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveCategory'] = cat
 	return cat
 
     def retrieveLicense(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveLicense: retrieving License for package ID for "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveLicense',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "idlicense" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	lic = -1
 	for row in self.cursor:
@@ -1909,10 +2263,23 @@ class etpDatabase:
 	for row in self.cursor:
 	    licname = row[0]
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveLicense'] = licname
 	return licname
 
     def retrieveCompileFlags(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveCompileFlags: retrieving CHOST,CFLAGS,CXXFLAGS for package ID for "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveCompileFlags',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	self.cursor.execute('SELECT "idflags" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	idflag = -1
 	for row in self.cursor:
@@ -1924,6 +2291,9 @@ class etpDatabase:
 	for row in self.cursor:
 	    flags = row
 	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveCompileFlags'] = flags
 	return flags
 
     # You must provide the full atom to this function
@@ -2053,16 +2423,31 @@ class etpDatabase:
 
     def isSystemPackage(self,idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSystemPackage: called.")
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('isSystemPackage',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	result = -1
 	self.cursor.execute('SELECT idpackage FROM systempackages WHERE idpackage = "'+str(idpackage)+'"')
 	for row in self.cursor:
 	    result = row[0]
 	    break
+	rslt = False
 	if result != -1:
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSystemPackage: package is in system.")
-	    return True
+	    rslt = True
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSystemPackage: package is NOT in system.")
-	return False
+
+	''' caching '''
+	self.databaseCache[idpackage]['isSystemPackage'] = rslt
+	
+	return rslt
 
     def areCompileFlagsAvailable(self,chost,cflags,cxxflags):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"areCompileFlagsAvailable: called.")
@@ -2100,6 +2485,16 @@ class etpDatabase:
 
     def searchProvide(self, keyword):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchProvide: called for "+keyword)
+
+	''' caching '''
+	cached = self.databaseCache.get(keyword, None)
+	if cached:
+	    rslt = self.databaseCache[keyword].get('searchProvide',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[keyword] = {}
+
 	idpackage = []
 	self.cursor.execute('SELECT idpackage FROM provide WHERE atom = "'+keyword+'"')
 	for row in self.cursor:
@@ -2110,6 +2505,10 @@ class etpDatabase:
 	for row in self.cursor:
 	    result = row
 	    break
+
+	''' caching '''
+	self.databaseCache[keyword]['searchProvide'] = result
+
 	return result
 
     def searchProvideInBranch(self, keyword, branch):
@@ -2325,25 +2724,6 @@ class etpDatabase:
 	    result.append(row)
 	return result
 
-    # useful to quickly retrieve (and trash) all the data
-    # and look for problems.
-    def noopCycle(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"noopCycle: called. ")
-	self.cursor.execute('SELECT * FROM baseinfo')
-	self.cursor.execute('SELECT * FROM extrainfo')
-	self.cursor.execute('SELECT * FROM content')
-	self.cursor.execute('SELECT * FROM dependencies')
-	self.cursor.execute('SELECT * FROM conflicts')
-	self.cursor.execute('SELECT * FROM mirrorlinks')
-	self.cursor.execute('SELECT * FROM sources')
-	self.cursor.execute('SELECT * FROM useflags')
-	self.cursor.execute('SELECT * FROM keywords')
-	self.cursor.execute('SELECT * FROM binkeywords')
-	self.cursor.execute('SELECT * FROM categories')
-	self.cursor.execute('SELECT * FROM licenses')
-	self.cursor.execute('SELECT * FROM flags')
-	
-
     def stabilizePackage(self,atom,stable = True):
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"stabilizePackage: called for "+atom+" | branch stable? -> "+str(stable))
@@ -2429,6 +2809,16 @@ class etpDatabase:
 
     def searchDepends(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchDepends: called for idpackage "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('searchDepends',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
 	iddeps = []
 	try:
 	    self.cursor.execute('SELECT iddependency FROM dependstable WHERE idpackage = "'+str(idpackage)+'"')
@@ -2442,6 +2832,10 @@ class etpDatabase:
 	    self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = "'+str(iddep)+'"')
 	    for row in self.cursor:
 	        result.append(row[0])
+
+	''' caching '''
+	self.databaseCache[idpackage]['searchDepends'] = result
+
 	return result
 
     # temporary/compat functions
@@ -2457,7 +2851,6 @@ class etpDatabase:
 
     def addDependRelationToDependsTable(self, iddependency, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addDependRelationToDependsTable: called for iddependency "+str(iddependency)+" and idpackage "+str(idpackage))
-	# FIXME: should check for existance of the PK?
 	self.cursor.execute(
 		'INSERT into dependstable VALUES '
 		'(?,?)'

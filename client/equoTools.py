@@ -998,11 +998,11 @@ def filterSatisfiedDependencies(dependencies): # FIXME add force reinstall optio
 '''
    @description: generates a dependency tree using unsatisfied dependencies
    @input package: atomInfo [idpackage,reponame]
-   @output: 	dependency tree dictionary, plus status code
+   @output: dependency tree dictionary, plus status code
 '''
-treecache = {}
 def generateDependencyTree(atomInfo, emptydeps = False):
 
+    treecache = {}
     unsatisfiedDeps = getDependencies(atomInfo)
     remainingDeps = unsatisfiedDeps[:]
     dependenciesNotFound = []
@@ -1171,16 +1171,25 @@ def getRequiredPackages(foundAtoms, emptydeps = False):
    @input package: idpackages list
    @output: 	depends tree dictionary, plus status code
 '''
-dependscache = {}
-def generateDependsTree(idpackages):
+def generateDependsTree(idpackages, dbconn = None):
 
-    clientDbconn = openClientDatabase()
+    dependscache = {}
+    closedb = False
+    
+    # database istance is passed?
+    if dbconn == None:
+	closedb = True
+        clientDbconn = openClientDatabase()
+    else:
+	clientDbconn = dbconn
+
     dependsOk = False
     treeview = set(idpackages)
     treelevel = idpackages[:]
     tree = {}
     treedepth = 0 # I start from level 1 because level 0 is idpackages itself
     tree[treedepth] = idpackages[:]
+    monotree = set(idpackages[:]) # monodimensional tree
     
     # check if dependstable is sane before beginning
     rx = clientDbconn.searchDepends(idpackages[0])
@@ -1190,11 +1199,12 @@ def generateDependsTree(idpackages):
     
     while (not dependsOk):
 	treedepth += 1
-	tree[treedepth] = []
+	tree[treedepth] = set([])
         for idpackage in treelevel:
 
 	    passed = dependscache.get(idpackage,None)
-	    if passed:
+	    systempkg = clientDbconn.isSystemPackage(idpackage)
+	    if passed or systempkg:
 		try:
 		    while 1: treeview.remove(idpackage)
 		except:
@@ -1203,12 +1213,34 @@ def generateDependsTree(idpackages):
 
 	    # obtain its depends
 	    depends = clientDbconn.searchDepends(idpackage)
+	    # filter already satisfied ones
+	    depends = [x for x in depends if x not in list(monotree)]
 	    if (depends): # something depends on idpackage
 		for x in depends:
 		    if x not in tree[treedepth]:
-			tree[treedepth].append(x)
+			tree[treedepth].add(x)
+			monotree.add(x)
 		        treeview.add(x)
-	
+	    else: # if no depends found, grab its dependencies and check
+		
+	        mydeps = set(clientDbconn.retrieveDependencies(idpackage))
+		_mydeps = set([])
+		for x in mydeps:
+		    match = atomMatchInRepository(x,clientDbconn)
+		    if match and match[1] == 0:
+		        _mydeps.add(match[0])
+		mydeps = _mydeps
+		# now filter them
+		mydeps = [x for x in mydeps if x not in list(monotree)]
+		for x in mydeps:
+		    #print clientDbconn.retrieveAtom(x)
+		    mydepends = clientDbconn.searchDepends(x)
+		    mydepends = [y for y in mydepends if y not in list(monotree)]
+		    if (not mydepends):
+			tree[treedepth].add(x)
+			monotree.add(x)
+			treeview.add(x)
+
 	    dependscache[idpackage] = True
 	    try:
 		while 1: treeview.remove(idpackage)
@@ -1237,16 +1269,10 @@ def generateDependsTree(idpackages):
 		    except:
 			pass
 		x += 1
+    
     del tree
-
-    #l = len(newtree)
-    #for x in range(l)[::-1]:
-	#print "LEVEL: "+str(x)
-	#for y in newtree[x]:
-	    #print clientDbconn.retrieveAtom(y)
-
-    clientDbconn.closeDB()
-
+    if closedb:
+        clientDbconn.closeDB()
     return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
 
@@ -1632,7 +1658,7 @@ def removePackageFromDatabase(idpackage, clientDbconn = None):
     # also remove from dependstable
     x = clientDbconn.removePackageFromDependsTable(idpackage)
     if (x == 1): #`shit, needs regeneration
-	regenerateDependsTable(clientDbconn)
+	regenerateDependsTable(clientDbconn, output = False)
     
     if (closedb):
         clientDbconn.closeDB()
@@ -1677,6 +1703,9 @@ def query(options):
 
     elif options[0] == "removal":
 	rc = searchRemoval(myopts[1:], quiet = equoRequestQuiet)
+
+    elif options[0] == "orphans":
+	rc = searchOrphans(quiet = equoRequestQuiet)
 
     elif options[0] == "description":
 	rc = searchDescription(myopts[1:], quiet = equoRequestQuiet)
@@ -2142,6 +2171,65 @@ def searchFiles(atoms, idreturn = False, quiet = False):
     
     return 0
 
+def searchOrphans(quiet = False):
+
+    if (not quiet):
+        print_info(yellow(" @@ ")+darkgreen("Orphans Search..."))
+
+    # start to list all files on the system:
+    dirs = etpConst['filesystemdirs']
+    foundFiles = set([])
+    for dir in dirs:
+	for currentdir,subdirs,files in os.walk(dir):
+	    for filename in files:
+		file = currentdir+"/"+filename
+		mask = [x for x in etpConst['filesystemdirsmask'] if file.startswith(x)]
+		if (not mask):
+		    if (not quiet):
+		        print_info(red(" @@ ")+blue("Looking: ")+bold(file[:20]+"..."), back = True)
+	            foundFiles.add(file)
+    totalfiles = len(foundFiles)
+    if (not quiet):
+	print_info(red(" @@ ")+blue("Analyzed directories: ")+string.join(etpConst['filesystemdirs']," "))
+	print_info(red(" @@ ")+blue("Masked directories: ")+string.join(etpConst['filesystemdirsmask']," "))
+        print_info(red(" @@ ")+blue("Number of files collected on the filesystem: ")+bold(str(totalfiles)))
+        print_info(red(" @@ ")+blue("Now looking into Installed Packages database..."))
+
+    # list all idpackages
+    clientDbconn = openClientDatabase()
+    idpackages = clientDbconn.listAllIdpackages()
+    # create content list
+    length = str(len(idpackages))
+    count = 0
+    for idpackage in idpackages:
+	if (not quiet):
+	    count += 1
+	    atom = clientDbconn.retrieveAtom(idpackage)
+	    txt = "["+str(count)+"/"+length+"] "
+	    print_info(red(" @@ ")+blue("Intersecting content of package: ")+txt+bold(atom), back = True)
+	content = clientDbconn.retrieveContent(idpackage)
+	_content = set([])
+	for x in content:
+	    if x.startswith("/usr/lib64"):
+		x = "/usr/lib"+x[len("/usr/lib64"):]
+	    _content.add(x)
+	# remove from foundFiles
+	del content
+	foundFiles.difference_update(_content)
+    if (not quiet):
+        print_info(red(" @@ ")+blue("Intersection completed. Showing statistics: "))
+	print_info(red(" @@ ")+blue("Number of total files: ")+bold(str(totalfiles)))
+	print_info(red(" @@ ")+blue("Number of matching files: ")+bold(str(totalfiles - len(foundFiles))))
+	print_info(red(" @@ ")+blue("Number of orphaned files: ")+bold(str(len(foundFiles))))
+
+    print len(foundFiles)
+    f = open("/tmp/foundfiles.txt","w")
+    for x in foundFiles:
+	f.write(x+"\n")
+    f.flush()
+    f.close()
+	
+
 def searchRemoval(atoms, idreturn = False, quiet = False):
     
     if (not idreturn) and (not quiet):
@@ -2162,7 +2250,7 @@ def searchRemoval(atoms, idreturn = False, quiet = False):
     choosenRemovalQueue = []
     if (not quiet):
         print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
-    treeview = generateDependsTree(foundAtoms)
+    treeview = generateDependsTree(foundAtoms,clientDbconn)
     treelength = len(treeview[0])
     if treelength > 1:
 	treeview = treeview[0]
@@ -2669,7 +2757,7 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
     if (lookForOrphanedPackages):
 	choosenRemovalQueue = []
 	print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
-	treeview = generateDependsTree(plainRemovalQueue)
+	treeview = generateDependsTree(plainRemovalQueue, clientDbconn)
 	treelength = len(treeview[0])
 	if treelength > 1:
 	    treeview = treeview[0]

@@ -3,6 +3,7 @@ TODO list:
 - enzyme, reagent: test kernel dependent packages
 - enzyme, build(): add an option to force the continuation of the emerge queue even if a package fails
 - enzyme, add a module that integrates revdep-rebuild
+- database: complete caching infrastructure for all search*, list* and is/are*
 - test stabilization code
   CLIENT:
   - add conflicts dependencies support
