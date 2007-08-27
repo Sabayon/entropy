@@ -2183,10 +2183,13 @@ def searchOrphans(quiet = False):
 	for currentdir,subdirs,files in os.walk(dir):
 	    for filename in files:
 		file = currentdir+"/"+filename
+		# filter python compiled objects?
+		if filename.endswith(".pyo") or filename.startswith(".pyc") or filename == '.keep':
+		    continue
 		mask = [x for x in etpConst['filesystemdirsmask'] if file.startswith(x)]
 		if (not mask):
 		    if (not quiet):
-		        print_info(red(" @@ ")+blue("Looking: ")+bold(file[:20]+"..."), back = True)
+		        print_info(red(" @@ ")+blue("Looking: ")+bold(file[:50]+"..."), back = True)
 	            foundFiles.add(file)
     totalfiles = len(foundFiles)
     if (not quiet):
@@ -2222,12 +2225,22 @@ def searchOrphans(quiet = False):
 	print_info(red(" @@ ")+blue("Number of matching files: ")+bold(str(totalfiles - len(foundFiles))))
 	print_info(red(" @@ ")+blue("Number of orphaned files: ")+bold(str(len(foundFiles))))
 
-    print len(foundFiles)
-    f = open("/tmp/foundfiles.txt","w")
-    for x in foundFiles:
-	f.write(x+"\n")
-    f.flush()
-    f.close()
+    # order
+    foundFiles = list(foundFiles)
+    foundFiles.sort()
+    if (not quiet):
+	print_info(red(" @@ ")+blue("Writing file to disk: ")+bold("/tmp/equo-orphans.txt"))
+        f = open("/tmp/equo-orphans.txt","w")
+        for x in foundFiles:
+	    f.write(x+"\n")
+        f.flush()
+        f.close()
+	return 0
+    else:
+	for x in foundFiles:
+	    print x
+
+    return 0
 	
 
 def searchRemoval(atoms, idreturn = False, quiet = False):

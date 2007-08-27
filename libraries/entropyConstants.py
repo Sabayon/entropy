@@ -356,7 +356,10 @@ etpConst = {
     'branch': "unstable", # choosen branch
     'gentoo-compat': False, # Gentoo compatibility (/var/db/pkg + Portage availability)
     'filesystemdirs': ['/bin','/boot','/emul','/etc','/lib','/lib32','/lib64','/opt','/sbin','/usr','/var'], # directory of the filesystem
-    'filesystemdirsmask': ['/var/cache','/var/db','/var/empty','/var/lib/portage','/var/lib/entropy','/var/log','/var/mail','/var/tmp','/var/www', '/usr/portage'],
+    'filesystemdirsmask': [
+    				'/var/cache','/var/db','/var/empty','/var/lib/portage','/var/lib/entropy','/var/log','/var/mail','/var/tmp','/var/www', '/usr/portage',
+    				'/var/lib/scrollkeeper', '/usr/src', '/etc/skel', '/etc/ssh', '/etc/ssl', '/var/run', '/var/spool/cron', '/var/lib/init.d'
+    ],
     'officialrepositoryname': "sabayonlinux.org", # our official repository name
     'packagedbdir': "/db", # directory of the database file in the .tbz2 package
     'packagedbfile': "/data.db", # database file in the directory above

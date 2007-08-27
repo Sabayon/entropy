@@ -221,22 +221,37 @@ def create_color_func(color_key):
 for c in compat_functions_colors:
 	setattr(sys.modules[__name__], c, create_color_func(c))
 
+_lastline = _cleanline
+#_linelength = [' ' for x in _cleanline]
+
 def enlightenatom(atom):
     out = atom.split("/")
     return blue(out[0])+darkgreen("/")+red(out[1])
 
 def print_error(msg, back = False):
-    writechar("\r"+_cleanline+"\r")
+    global _lastline
     if (back):
+        if _lastline != msg:
+	    _lastline = msg
+        else:
+	    return
+	writechar("\r"+_cleanline+"\r")
 	writechar("\r"+red(">>")+" "+msg)
 	return
+    writechar("\r"+_cleanline+"\r")
     print red(">>")+" "+msg
 
 def print_info(msg, back = False):
-    writechar("\r"+_cleanline+"\r")
+    global _lastline
     if (back):
+	if _lastline != msg:
+	    _lastline = msg
+        else:
+	    return
+	writechar("\r"+_cleanline+"\r")
 	writechar("\r"+green(">>")+" "+msg)
 	return
+    writechar("\r"+_cleanline+"\r")
     print green(">>")+" "+msg
 
 def print_warning(msg):

@@ -292,7 +292,15 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
 	for line in content:
 	    line = line.strip().split()
 	    if (line[0] == "obj") or (line[0] == "sym"):
-		outcontent.append(line[1].strip())
+		# remove first object (obj or sym)
+		datafile = line[1:]
+		# remove checksum and mtime - obj and sym have it
+		try:
+		    datafile = datafile[:len(datafile)-2]
+		    datafile = string.join(datafile,' ')
+		except:
+		    datafile = datafile[0] # FIXME: handle shit better
+		outcontent.append(datafile)
 	# filter bad utf-8 chars
 	_outcontent = []
 	for i in outcontent:
