@@ -296,7 +296,10 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
 		datafile = line[1:]
 		# remove checksum and mtime - obj and sym have it
 		try:
-		    datafile = datafile[:len(datafile)-2]
+		    if line[0] == "obj":
+		        datafile = datafile[:len(datafile)-2]
+		    else:
+			datafile = datafile[:len(datafile)-3]
 		    datafile = string.join(datafile,' ')
 		except:
 		    datafile = datafile[0] # FIXME: handle shit better
