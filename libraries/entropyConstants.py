@@ -358,7 +358,8 @@ etpConst = {
     'filesystemdirs': ['/bin','/boot','/emul','/etc','/lib','/lib32','/lib64','/opt','/sbin','/usr','/var'], # directory of the filesystem
     'filesystemdirsmask': [
     				'/var/cache','/var/db','/var/empty','/var/lib/portage','/var/lib/entropy','/var/log','/var/mail','/var/tmp','/var/www', '/usr/portage',
-    				'/var/lib/scrollkeeper', '/usr/src', '/etc/skel', '/etc/ssh', '/etc/ssl', '/var/run', '/var/spool/cron', '/var/lib/init.d'
+    				'/var/lib/scrollkeeper', '/usr/src', '/etc/skel', '/etc/ssh', '/etc/ssl', '/var/run', '/var/spool/cron', '/var/lib/init.d',
+				'/lib/modules'
     ],
     'officialrepositoryname': "sabayonlinux.org", # our official repository name
     'packagedbdir': "/db", # directory of the database file in the .tbz2 package

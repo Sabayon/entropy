@@ -429,7 +429,10 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 		
 		#print direction+" direction"
 		# remove revision (-r0 if none)
-		if (direction == "~") or ((direction == "=") and (pkgversion.split("-")[len(pkgversion.split("-"))-1] == "r0")):
+		if (direction == "="):
+		    if (pkgversion.split("-")[len(pkgversion.split("-"))-1] == "r0"):
+		        pkgversion = string.join(pkgversion.split("-")[:len(pkgversion.split("-"))-1],"-")
+		if (direction == "~"):
 		    pkgversion = string.join(pkgversion.split("-")[:len(pkgversion.split("-"))-1],"-")
 		
 		#print pkgversion
@@ -628,6 +631,8 @@ def atomMatchInRepository(atom, dbconn, caseSensitive = True):
 '''
 atomMatchCache = {}
 def atomMatch(atom, caseSentitive = True):
+
+    #print atom
 
     cached = atomMatchCache.get(atom)
     if cached:
@@ -922,7 +927,7 @@ def getDependencies(packageInfo):
 '''
 installed_depcache = {}
 repo_test_depcache = {}
-def filterSatisfiedDependencies(dependencies): # FIXME add force reinstall option
+def filterSatisfiedDependencies(dependencies):
 
     unsatisfiedDeps = []
     satisfiedDeps = []
@@ -946,6 +951,11 @@ def filterSatisfiedDependencies(dependencies): # FIXME add force reinstall optio
 	    else:
 		repo_test_depcache[dependency] = {}
 		repo_test_rc = atomMatch(dependency)
+		
+		#xdb = openRepositoryDatabase(repo_test_rc[1])
+		#print xdb.retrieveAtom(repo_test_rc[0])
+		#xdb.closeDB()
+
 		repo_test_depcache[dependency]['repo_test_rc'] = repo_test_rc
 		if repo_test_rc[0] != -1:
 		    dbconn = openRepositoryDatabase(repo_test_rc[1])
@@ -984,7 +994,10 @@ def filterSatisfiedDependencies(dependencies): # FIXME add force reinstall optio
 	    
 	    if rc[0] != -1:
 		cmp = compareVersions([repo_pkgver,repo_pkgtag,repo_pkgrev],[installedVer,installedTag,installedRev])
+		#print repo_pkgver+"<-->"+installedVer
+		#print cmp
 		if cmp != 0:
+		    #print dependency
 	            unsatisfiedDeps.append(dependency)
 		satisfiedDeps.append(dependency)
 	    else:
@@ -1047,16 +1060,23 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 		except:
 		    pass
 	    else:
+
 		# found, get its deps
 		mydeps = getDependencies(atom)
+		#print mydeps
 		if (not emptydeps):
 		    mydeps, xxx = filterSatisfiedDependencies(mydeps)
 		for dep in mydeps:
 		    remainingDeps.append(dep)
 		xmatch = atomMatchInRepository(undep,clientDbconn)
-		if (not emptydeps):
-		    if xmatch[0] == -1:
-		        tree[treedepth].append(undep) 
+		if (not emptydeps): # FIXME: fix emptydeps - must do something useful
+		    if xmatch[0] == -1: # if dependency is not installed
+		        tree[treedepth].append(undep)
+		    else: # if it's installed, check if the version is ok
+			unsatisfied, satisfied = filterSatisfiedDependencies([undep])
+			if (unsatisfied):
+			    tree[treedepth].append(undep)
+		
 		else:
 		    tree[treedepth].append(undep)
 		treecache[undep] = True
