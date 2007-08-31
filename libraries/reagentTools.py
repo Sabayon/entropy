@@ -319,6 +319,18 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
     except IOError:
         pass
 
+    # files size on disk
+    if (etpData['content']):
+	etpData['disksize'] = 0
+	for file in etpData['content']:
+	    try:
+		size = os.stat(file)[6]
+		etpData['disksize'] += size
+	    except:
+		pass
+    else:
+	etpData['disksize'] = 0
+
     # [][][] Kernel dependent packages hook [][][]
     kernelDependentModule = False
     for file in etpData['content']:

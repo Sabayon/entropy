@@ -60,6 +60,7 @@ etpData = {
     'systempackage': u"", # if this is a system package, this will be != ""
     'config_protect': u"", # list of directories that contain files that should not be overwritten
     'config_protect_mask': u"", # list of directories that contain files that should be overwritten
+    'disksize': u"", # size on the hard disk in bytes (integer)
 }
 
 # Entropy database SQL initialization Schema and data structure
@@ -93,6 +94,8 @@ DROP TABLE IF EXISTS configprotectmask;
 DROP TABLE IF EXISTS configprotectreference;
 DROP TABLE IF EXISTS installedtable;
 DROP TABLE IF EXISTS dependstable;
+DROP TABLE IF EXISTS sizes;
+DROP TABLE IF EXISTS messages;
 """
 
 etpSQLInit = """
@@ -226,6 +229,16 @@ CREATE TABLE systempackages (
 CREATE TABLE installedtable (
     idpackage INTEGER,
     repositoryname VARCHAR
+);
+
+CREATE TABLE sizes (
+    idpackage INTEGER,
+    size INTEGER
+);
+
+CREATE TABLE messages (
+    idpackage INTEGER,
+    message VARCHAR
 );
 
 """

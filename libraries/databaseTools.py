@@ -1048,6 +1048,15 @@ class etpDatabase:
 			)
 	    )
 	
+	# on disk size
+	self.cursor.execute(
+	    'INSERT into sizes VALUES '
+	    '(?,?)'
+	    , (	idpackage,
+		etpData['disksize'],
+		)
+	)
+	
 	# dependencies, a list
 	for dep in etpData['dependencies']:
 	
@@ -1301,6 +1310,11 @@ class etpDatabase:
 	self.cursor.execute('DELETE FROM binkeywords WHERE idpackage = '+idpackage)
 	# systempackage
 	self.cursor.execute('DELETE FROM systempackages WHERE idpackage = '+idpackage)
+	try:
+	    # on disk sizes
+	    self.cursor.execute('DELETE FROM sizes WHERE idpackage = '+idpackage)
+	except:
+	    pass
 	
 	# Remove from installedtable if exist
 	self.removePackageFromInstalledTable(idpackage)
@@ -1609,6 +1623,7 @@ class etpDatabase:
 	data['etpapi'] = self.retrieveApi(idpackage)
 	data['datecreation'] = self.retrieveDateCreation(idpackage)
 	data['size'] = self.retrieveSize(idpackage)
+	data['disksize'] = self.retrieveOnDiskSize(idpackage)
 	return data
 
     def retrieveAtom(self, idpackage):
@@ -1742,6 +1757,33 @@ class etpDatabase:
 
 	''' caching '''
 	self.databaseCache[idpackage]['retrieveSize'] = size
+	return size
+
+    # in bytes
+    def retrieveOnDiskSize(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveOnDiskSize: retrieving On Disk Size for package ID "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('retrieveOnDiskSize',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
+	try:
+	    self.cursor.execute('SELECT size FROM sizes WHERE idpackage = "'+str(idpackage)+'"')
+	except:
+	    # table does not exist?
+	    return 0
+	size = 0
+	for row in self.cursor:
+	    size = row[0]
+	    break
+
+	''' caching '''
+	self.databaseCache[idpackage]['retrieveOnDiskSize'] = size
 	return size
 
     def retrieveDigest(self, idpackage):

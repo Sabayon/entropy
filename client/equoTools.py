@@ -1405,9 +1405,11 @@ def fetchFile(url,digest = False):
 '''
    @description: remove files installed by idpackage from the client database
    @input int(idpackage): idpackage from client database
+   @input clientDbconn: an already opened database connection (to the client one)
+   @input newContent: if this function is called by installFile, newContent will contain the new package list and a differential removal will be run instead
    @output: 0 = all fine, >0 = error!
 '''
-def removeFile(idpackage, clientDbconn = None):
+def removeFile(idpackage, clientDbconn = None, newContent = []):
     import shutil
     closedb = False
     if (clientDbconn == None):
@@ -1415,10 +1417,18 @@ def removeFile(idpackage, clientDbconn = None):
 	clientDbconn = openClientDatabase()
     content = clientDbconn.retrieveContent(idpackage)
 
+    if (newContent):
+	# doing a diff removal
+	content = [x for x in content if x not in newContent]
+	#print content
+
     # Handle gentoo database
-    if etpConst['gentoo-compat']:
+    if (etpConst['gentoo-compat']):
 	gentooAtom = clientDbconn.retrieveCategory(idpackage)+"/"+clientDbconn.retrieveName(idpackage)+"-"+clientDbconn.retrieveVersion(idpackage)
 	removePackageFromGentooDatabase(gentooAtom)
+
+    if (closedb):
+	clientDbconn.closeDB()
 
     # merge data into system
     for file in content:
@@ -1442,8 +1452,16 @@ def removeFile(idpackage, clientDbconn = None):
    @input package: package file (without path)
    @output: 0 = all fine, >0 = error!
 '''
-def installFile(package, infoDict = None):
+def installFile(infoDict, clientDbconn = None):
     import shutil
+    package = os.path.basename(infoDict['download'])
+    removePackage = infoDict['remove']
+
+    closedb = False
+    if (clientDbconn == None):
+	closedb = True
+	clientDbconn = openClientDatabase()
+    
     pkgpath = etpConst['packagesbindir']+"/"+package
     if not os.path.isfile(pkgpath):
 	return 1
@@ -1462,6 +1480,8 @@ def installFile(package, infoDict = None):
 	return rc
     if not os.path.isdir(imageDir):
 	return 2
+    
+    packageContent = []
     
     # setup imageDir properly
     imageDir = imageDir.encode(sys.getfilesystemencoding())
@@ -1494,6 +1514,7 @@ def installFile(package, infoDict = None):
 	for file in files:
 	    fromfile = currentdir+"/"+file
 	    tofile = fromfile[len(imageDir):]
+	    
 	    #print "copying file "+fromfile+" to "+tofile
 
 	    if os.access(tofile,os.F_OK):
@@ -1506,6 +1527,7 @@ def installFile(package, infoDict = None):
 	    try:
 		# this also handles symlinks
 		shutil.move(fromfile,tofile)
+		packageContent.append(tofile)
 	    except IOError,(errno,strerror):
 		if errno == 2:
 		    # better to pass away, sometimes gentoo packages are fucked up and contain broken things
@@ -1514,6 +1536,7 @@ def installFile(package, infoDict = None):
 		    rc = os.system("mv "+fromfile+" "+tofile)
 		    if (rc != 0):
 		        return 4
+		    packageContent.append(tofile)
 	    try:
 	        user = os.stat(fromfile)[4]
 	        group = os.stat(fromfile)[5]
@@ -1523,8 +1546,19 @@ def installFile(package, infoDict = None):
 		pass # sometimes, gentoo packages are fucked up and contain broken symlinks
 
     shutil.rmtree(imageDir,True) # rm and ignore errors
+    
+    if (removePackage != -1):
+	# doing a diff removal
+	if (etpConst['gentoo-compat']):
+	    print_info(red("   ## ")+blue("Cleaning old package files...")+" ## w/Gentoo compatibility")
+	else:
+	    print_info(red("   ## ")+blue("Cleaning old package files..."))
+	removeFile(removePackage, clientDbconn, packageContent)
 
-    if infoDict is not None:
+    if (closedb):
+	clientDbconn.closeDB()
+
+    if (etpConst['gentoo-compat']):
 	rc = installPackageIntoGentooDatabase(infoDict,unpackDir+etpConst['packagecontentdir']+"/"+package)
 	if (rc >= 0):
 	    shutil.rmtree(unpackDir,True)
@@ -2551,6 +2585,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	runQueue.append(atomInfo)
 
     downloadSize = 0
+    onDiskSize = 0
     actionQueue = {}
 
     if (not runQueue):
@@ -2576,6 +2611,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	    pkgfile = dbconn.retrieveDownloadURL(packageInfo[0])
 	    pkgcat = dbconn.retrieveCategory(packageInfo[0])
 	    pkgname = dbconn.retrieveName(packageInfo[0])
+	    onDiskSize += dbconn.retrieveOnDiskSize(packageInfo[0])
 	    
 	    # fill action queue
 	    actionQueue[pkgatom] = {}
@@ -2653,6 +2689,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	    print_info(red(" @@ ")+blue("Packages needing update:\t\t")+blue(str(pkgsToUpdate)))
 	    print_info(red(" @@ ")+red("Packages needing downgrade:\t")+red(str(pkgsToDowngrade)))
 	print_info(red(" @@ ")+blue("Download size:\t\t\t")+bold(str(bytesIntoHuman(downloadSize))))
+	print_info(red(" @@ ")+blue("Used disk space:\t\t\t")+bold(str(bytesIntoHuman(onDiskSize))))
 
 
     if (ask):
@@ -2684,12 +2721,12 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	    steps.append("fetch")
 	
 	if (not onlyfetch):
-	    # remove old - not needed
-	    if (actionQueue[pkgatom]['remove'] != -1):
-	        steps.append("remove")
-		steps.append("removedatabase")
 	    # install
 	    steps.append("install")
+	    # remove
+	    if (actionQueue[pkgatom]['remove'] != -1):
+	        #steps.append("remove") differential remove will be processed by install step
+		steps.append("removedatabase")
 	    steps.append("installdatabase")
 	    steps.append("cleanup")
 	
@@ -2957,19 +2994,12 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 	    else:
 		errormsg = red("Package checksum does not match. Try to run: '")+bold("equo repo sync")+red("' and this command again. Error "+str(output))
 	    print_error(errormsg)
-	# database entry will be used
-	#print_info(red("     ## ")+blue("Fetching package checksum: ")+red(os.path.basename(infoDict['download']+etpConst['packageshashfileext'])))
-	#output = fetchFile(infoDict['download']+etpConst['packageshashfileext'],False)
-	#if output != 0:
-	#    errormsg = red("Cannot find the checksum file online. Try to run: ")+bold("equo repo sync")+red("' and this command again. Error "+str(output))
-	#    print_error(errormsg)
     elif step == "install":
 	if (etpConst['gentoo-compat']):
 	    print_info(red("   ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download']))+" ## w/Gentoo compatibility")
-	    output = installFile(os.path.basename(infoDict['download']),infoDict)
 	else:
 	    print_info(red("   ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download'])))
-	    output = installFile(os.path.basename(infoDict['download']))
+	output = installFile(infoDict, clientDbconn)
 	if output != 0:
 	    errormsg = red("An error occured while trying to install the package. Check if you have enough disk space on your hard disk. Error "+str(output))
 	    print_error(errormsg)
