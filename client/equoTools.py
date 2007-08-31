@@ -1076,7 +1076,6 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 			unsatisfied, satisfied = filterSatisfiedDependencies([undep])
 			if (unsatisfied):
 			    tree[treedepth].append(undep)
-		
 		else:
 		    tree[treedepth].append(undep)
 		treecache[undep] = True
