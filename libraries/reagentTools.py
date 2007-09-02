@@ -169,6 +169,10 @@ def enzyme(options):
 	dbconn.commitChanges()
 
     dbconn.commitChanges()
+    
+    # regen dependstable
+    dependsTableInitialize(dbconn, False)
+    
     dbconn.closeDB()
 
     print_info(green(" * ")+red("Statistics: ")+blue("Entries created/updated: ")+bold(str(etpCreated))+yellow(" - ")+darkblue("Entries discarded: ")+bold(str(etpNotCreated)))
@@ -628,6 +632,24 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
 
     print_info(yellow(" * ")+red("Done"),back = True)
     return etpData
+
+
+def dependsTableInitialize(dbconn = None, runActivator = True):
+    closedb = False
+    if dbconn is None:
+	dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
+	closedb = True
+    sys.path.append('../client')
+    import equoTools
+    equoTools.regenerateDependsTable(dbconn)
+    # now taint
+    dbconn.taintDatabase()
+    if (closedb):
+        dbconn.closeDB()
+    # running activator
+    if (runActivator):
+	import activatorTools
+	activatorTools.database(['sync'])
 
 
 def dependenciesTest(options):

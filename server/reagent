@@ -57,6 +57,7 @@ def print_help():
     print_info(" \t\t"+green("md5check")+"\t\t\t\t Check digest of a package, a list of packages, world")
     #print_info(" \t\t"+green(bold("orphans"))+"\t\t\t Dump the list of files that don't belong on any installed package") FIXME can be done using sets
     print_info(" \t"+green(bold("deptest"))+yellow("\t\t Look for unsatisfied dependencies inside database"))
+    print_info(" \t"+green(bold("depends"))+yellow("\t\t Regenerate depends table (plus database lock and bump)"))
     print_info(" \t\t"+red("--quiet")+"\t\t\t\t\t just print the dependencies list")
     print_info(" \t"+green(bold("smartapps"))+yellow("\t Entropy application tool to create self-dependant applications [EXPERIMENTAL]"))
     print_info(" \t\t"+green(bold("create"))+"\t\t\t\t\t Create a smartapp package using the package names provided")
@@ -117,9 +118,14 @@ elif (options[0] == "smartapps"):
     reagentTools.smartapps(options[1:])
     sys.exit(0)
 
-# smartapps tool
+# deptest tool
 elif (options[0] == "deptest"):
     reagentTools.dependenciesTest(options[1:])
+    sys.exit(0)
+
+# deptest tool
+elif (options[0] == "depends"):
+    reagentTools.dependsTableInitialize()
     sys.exit(0)
 
 # cleanup

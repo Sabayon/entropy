@@ -104,6 +104,9 @@ def database(options):
 	    
 	    dbconn.commitChanges()
 	
+	# regen dependstable
+        reagentTools.dependsTableInitialize(dbconn, False)
+	
 	dbconn.closeDB()
 	print_info(green(" * ")+red("Entropy database has been reinitialized using binary packages available"))
 

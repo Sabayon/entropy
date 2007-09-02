@@ -2159,13 +2159,16 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
     if (not idreturn) and (not quiet):
         print_info(yellow(" @@ ")+darkgreen("Depends Search..."))
 
-
     clientDbconn = openClientDatabase()
+
     dataInfo = [] # when idreturn is True
     for atom in atoms:
 	result = atomMatchInRepository(atom,clientDbconn)
+	print result
+	result = atomMatch(atom)
 	if (result[0] != -1):
-	    searchResults = clientDbconn.searchDepends(result[0])
+	    dbconn = openRepositoryDatabase(result[1])
+	    searchResults = dbconn.searchDepends(result[0])
 	    if searchResults == -2:
 		# I need to generate dependstable
 		regenerateDependsTable(clientDbconn)
@@ -2183,6 +2186,7 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
 		    else:
 		        printPackageInfo(idpackage, clientDbconn, clientSearch = True, strictOutput = True, quiet = quiet)
 	
+
     clientDbconn.closeDB()
 
     if (idreturn):
@@ -2402,7 +2406,7 @@ def searchDescription(descriptions, idreturn = False, quiet = False):
 
 
 '''
-   @description: recreate dependstable table in the client database, it's used for caching searchDepends requests
+   @description: recreate dependstable table in the chosen database, it's used for caching searchDepends requests
    @input Nothing
    @output: Nothing
 '''
