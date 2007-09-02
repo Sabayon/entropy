@@ -636,7 +636,7 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
 
 def dependsTableInitialize(dbconn = None, runActivator = True):
     closedb = False
-    if dbconn is None:
+    if dbconn == None:
 	dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
 	closedb = True
     sys.path.append('../client')

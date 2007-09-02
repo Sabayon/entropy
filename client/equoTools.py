@@ -2164,28 +2164,45 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
     dataInfo = [] # when idreturn is True
     for atom in atoms:
 	result = atomMatchInRepository(atom,clientDbconn)
-	print result
-	result = atomMatch(atom)
+	matchInRepo = False
+	if (result[0] == -1):
+	    matchInRepo = True
+	    result = atomMatch(atom)
 	if (result[0] != -1):
-	    dbconn = openRepositoryDatabase(result[1])
+	    if (matchInRepo):
+	        dbconn = openRepositoryDatabase(result[1])
+	    else:
+		dbconn = clientDbconn
 	    searchResults = dbconn.searchDepends(result[0])
 	    if searchResults == -2:
-		# I need to generate dependstable
-		regenerateDependsTable(clientDbconn)
-	        searchResults = clientDbconn.searchDepends(result[0])
+		if (matchInRepo):
+		    # run equo update
+		    dbconn.closeDB()
+		    syncRepositories([result[1]], forceUpdate = True)
+		    dbconn = openRepositoryDatabase(result[1])
+		else:
+		    # I need to generate dependstable
+		    regenerateDependsTable(dbconn)
+	        searchResults = dbconn.searchDepends(result[0])
 	    # print info
 	    if (not idreturn) and (not quiet):
 	        print_info(blue("     Keyword: ")+bold("\t"+atom))
-	        print_info(blue("     Found:   ")+bold("\t"+str(len(searchResults)))+red(" entries"))
+		if (matchInRepo):
+		    where = " from repository "+str(result[1])
+		else:
+		    where = " from installed packages database"
+	        print_info(blue("     Found:   ")+bold("\t"+str(len(searchResults)))+red(" entries")+where)
 	    for idpackage in searchResults:
 		if (idreturn):
 		    dataInfo.append(idpackage)
 		else:
 		    if (verbose):
-		        printPackageInfo(idpackage, clientDbconn, clientSearch = True, quiet = quiet)
+		        printPackageInfo(idpackage, dbconn, clientSearch = True, quiet = quiet)
 		    else:
-		        printPackageInfo(idpackage, clientDbconn, clientSearch = True, strictOutput = True, quiet = quiet)
+		        printPackageInfo(idpackage, dbconn, clientSearch = True, strictOutput = True, quiet = quiet)
 	
+	if (matchInRepo):
+	    dbconn.closeDB()
 
     clientDbconn.closeDB()
 
@@ -2410,7 +2427,7 @@ def searchDescription(descriptions, idreturn = False, quiet = False):
    @input Nothing
    @output: Nothing
 '''
-def regenerateDependsTable(dbconn,output = True):
+def regenerateDependsTable(dbconn, output = True):
     dbconn.createDependsTable()
     depends = dbconn.listAllDependencies()
     count = 0

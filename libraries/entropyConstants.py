@@ -242,6 +242,7 @@ CREATE TABLE messages (
 );
 
 """
+# ^^ add dependstable?
 
 # Entropy directories specifications
 # THIS IS THE KEY PART OF ENTROPY BINARY PACKAGES MANAGEMENT

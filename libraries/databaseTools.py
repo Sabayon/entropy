@@ -2827,6 +2827,7 @@ class etpDatabase:
 			repositoryName,
 			)
 	)
+	self.commitChanges()
 
     def retrievePackageFromInstalledTable(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrievePackageFromInstalledTable: called. ")
@@ -2841,6 +2842,7 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removePackageFromInstalledTable: called for "+str(idpackage))
 	try:
 	    self.cursor.execute('DELETE FROM installedtable WHERE idpackage = '+str(idpackage))
+	    self.commitChanges()
 	except:
 	    self.createInstalledTable()
 
@@ -2848,6 +2850,7 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removePackageFromDependsTable: called for "+str(idpackage))
 	try:
 	    self.cursor.execute('DELETE FROM dependstable WHERE idpackage = '+idpackage)
+	    self.commitChanges()
 	    return 0
 	except:
 	    return 1 # need reinit
@@ -2888,11 +2891,13 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createDependsTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS dependstable;')
 	self.cursor.execute('CREATE TABLE dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );')
+	self.commitChanges()
 
     def createInstalledTable(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createInstalledTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS installedtable;')
 	self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER, repositoryname VARCHAR );')
+	self.commitChanges()
 
     def addDependRelationToDependsTable(self, iddependency, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addDependRelationToDependsTable: called for iddependency "+str(iddependency)+" and idpackage "+str(idpackage))
@@ -2903,3 +2908,4 @@ class etpDatabase:
 			idpackage,
 			)
 	)
+	self.commitChanges()
