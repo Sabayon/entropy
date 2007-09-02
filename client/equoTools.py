@@ -2497,6 +2497,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     # get all the installed packages
     # FIXME: add branch support
     packages = clientDbconn.listAllPackages()
+    print "here's the list of the packages that would be updated"
     for package in packages:
 	atom = package[0]
 	idpackage = package[1]
@@ -2506,7 +2507,6 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	atomkey = category+"/"+name
 	# search in the packages
 	match = atomMatch(atom)
-	print "here's the list of the packages that would be updated"
 	if match[0] == -1:
 	    print atom
 	    updateList.append(match)
