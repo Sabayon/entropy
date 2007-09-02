@@ -1998,11 +1998,11 @@ def printPackageInfo(idpackage,dbconn, clientSearch = False, strictOutput = Fals
 
     print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(pkgbranch))
     if (not strictOutput):
-        print_info(darkgreen("       Category:\t\t")+darkblue(pkgcat))
-        print_info(darkgreen("       Name:\t\t\t")+darkblue(pkgname))
-    print_info(darkgreen("       Available:\t\t")+darkblue("version: ")+bold(pkgver)+darkblue(" ~ tag: ")+bold(pkgtag)+darkblue(" ~ revision: ")+bold(str(pkgrev)))
+        print_info(darkgreen("       Category:\t\t")+blue(pkgcat))
+        print_info(darkgreen("       Name:\t\t\t")+blue(pkgname))
+    print_info(darkgreen("       Available:\t\t")+blue("version: ")+bold(pkgver)+blue(" ~ tag: ")+bold(pkgtag)+blue(" ~ revision: ")+bold(str(pkgrev)))
     if (not clientSearch):
-        print_info(darkgreen("       Installed:\t\t")+darkblue("version: ")+bold(installedVer)+darkblue(" ~ tag: ")+bold(installedTag)+darkblue(" ~ revision: ")+bold(str(installedRev)))
+        print_info(darkgreen("       Installed:\t\t")+blue("version: ")+bold(installedVer)+blue(" ~ tag: ")+bold(installedTag)+blue(" ~ revision: ")+bold(str(installedRev)))
     if (not strictOutput):
         print_info(darkgreen("       Slot:\t\t\t")+blue(str(pkgslot)))
         print_info(darkgreen("       Size:\t\t\t")+blue(str(pkgsize)))
