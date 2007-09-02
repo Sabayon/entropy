@@ -2811,11 +2811,13 @@ class etpDatabase:
 	else:
 	    self.databaseCache[idpackage] = {}
 
+	# sanity check on the table
+	sanity = self.isDependsTableSane() #FIXME: perhaps running this only on a client database?
+	if (not sanity):
+	    return -2 # table does not exist or is broken, please regenerate and re-run
+
 	iddeps = []
-	try:
-	    self.cursor.execute('SELECT iddependency FROM dependstable WHERE idpackage = "'+str(idpackage)+'"')
-	except:
-	    return -2 # table does not exist, please regenerate and re-run
+	self.cursor.execute('SELECT iddependency FROM dependstable WHERE idpackage = "'+str(idpackage)+'"')
 	for row in self.cursor:
 	    iddeps.append(row[0])
 	result = []
@@ -2835,7 +2837,30 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createDependsTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS dependstable;')
 	self.cursor.execute('CREATE TABLE dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );')
+	# this will be removed when dependstable is refilled properly
+	self.cursor.execute(
+		'INSERT into dependstable VALUES '
+		'(?,?)'
+		, (	-1,
+			-1,
+			)
+	)
 	self.commitChanges()
+
+    def sanitizeDependsTable(self):
+	self.cursor.execute('DELETE FROM dependstable where iddependency = -1')
+	self.commitChanges()
+
+    def isDependsTableSane(self):
+	sane = True
+	try:
+	    self.cursor.execute('SELECT iddependency FROM dependstable WHERE iddependency = -1')
+	except:
+	    return False # table does not exist, please regenerate and re-run
+	for row in self.cursor:
+	    sane = False
+	    break
+	return sane
 
     def createSizesTable(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createSizesTable: called.")

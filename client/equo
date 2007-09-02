@@ -43,6 +43,7 @@ def print_help():
     
     #print_info(" \t"+darkgreen(bold("package"))+brown("\t\t to handle packages"))
     print_info(" \t"+blue("search")+brown("\t\t search a package trough repositories"))
+    print_info(" \t"+blue("world")+brown("\t\t update packages to the latest version"))
     print_info(" \t"+blue("install")+brown("\t\t install a package"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
@@ -112,11 +113,13 @@ try:
         rc = equoTools.repositories(options)
         sys.exit(rc)
 
-    elif (options[0] == "search") or (options[0] == "install") or (options[0] == "remove") or (options[0] == "deptest"):
+    elif (options[0] == "search") or (options[0] == "install") or (options[0] == "remove") or (options[0] == "deptest") or (options[0] == "world"):
         if options[0] == "install":
             entropyTools.applicationLockCheck("install")
         elif options[0] == "remove":
             entropyTools.applicationLockCheck("remove")
+	elif options[0] == "world":
+	    entropyTools.applicationLockCheck("remove")
         rc = equoTools.package(options)
         sys.exit(rc)
 

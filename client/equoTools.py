@@ -1821,6 +1821,9 @@ def package(options):
 	    print_error(red(" Nothing to do."))
 	    rc = 127
 
+    elif (options[0] == "world"):
+	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch)
+
     elif (options[0] == "remove"):
 	if len(myopts) > 0:
 	    rc, status = removePackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps)
@@ -2443,6 +2446,9 @@ def regenerateDependsTable(dbconn, output = True):
 	if (match[0] != -1):
 	    dbconn.addDependRelationToDependsTable(iddep,match[0])
 
+    # now validate dependstable
+    dbconn.sanitizeDependsTable()
+
 '''
    @description: open the repository database and returns the pointer
    @input repositoryName: name of the client database
@@ -2473,6 +2479,39 @@ def openClientDatabase():
 ####
 ##   Actions Handling
 #
+
+
+def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False):
+
+    # check if I am root
+    if (not checkRoot()) and (not pretend):
+	print_error(red("You must run this function as superuser."))
+	return 1,-1
+
+    # FIXME: handle version upgrades
+    
+    updateList = []
+    syncRepositories()
+    
+    clientDbconn = openClientDatabase()
+    # get all the installed packages
+    # FIXME: add branch support
+    packages = clientDbconn.listAllPackages()
+    for package in packages:
+	atom = package[0]
+	idpackage = package[1]
+	branch = package[2]
+	name = clientDbconn.retrieveName(idpackage)
+	category = clientDbconn.retrieveCategory(idpackage)
+	atomkey = category+"/"+name
+	# search in the packages
+	match = atomMatch(atom)
+	print "here's the list of the packages that would be updated"
+	if match[0] == -1:
+	    print atom
+	    updateList.append(match)
+    print "not implemented yet"
+    return 0,0
 
 def installPackages(packages, ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False):
 
