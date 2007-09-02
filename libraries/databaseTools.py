@@ -1052,13 +1052,17 @@ class etpDatabase:
 	    )
 	
 	# on disk size
-	self.cursor.execute(
+	try:
+	    self.cursor.execute(
 	    'INSERT into sizes VALUES '
 	    '(?,?)'
 	    , (	idpackage,
 		etpData['disksize'],
 		)
-	)
+	    )
+	except:
+	    # create sizes table, temp hack
+	    self.createSizesTable()
 	
 	# dependencies, a list
 	for dep in etpData['dependencies']:
@@ -2891,6 +2895,12 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createDependsTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS dependstable;')
 	self.cursor.execute('CREATE TABLE dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );')
+	self.commitChanges()
+
+    def createSizesTable(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createSizesTable: called.")
+	self.cursor.execute('DROP TABLE IF EXISTS sizes;')
+	self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
 	self.commitChanges()
 
     def createInstalledTable(self):
