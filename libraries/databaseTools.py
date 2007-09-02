@@ -1063,6 +1063,13 @@ class etpDatabase:
 	except:
 	    # create sizes table, temp hack
 	    self.createSizesTable()
+	    self.cursor.execute(
+	    'INSERT into sizes VALUES '
+	    '(?,?)'
+	    , (	idpackage,
+		etpData['disksize'],
+		)
+	    )
 	
 	# dependencies, a list
 	for dep in etpData['dependencies']:
