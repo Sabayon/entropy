@@ -32,7 +32,7 @@ import sys
 # DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU'RE DOING !!
 etpData = {
     'name': u"", # the Package Name
-    'version': u"", # the Package version plus our -etpXX revision
+    'version': u"", # the Package version
     'description': u"", # the Package description
     'category': u"", # the gentoo category
     'chost': u"", # the CHOST used to compile it

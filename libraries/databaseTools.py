@@ -216,72 +216,6 @@ def database(options):
 	    print_warning(red(" * ")+red("Nothing found."))
 	else:
 	    print
-    
-    elif (options[0] == "restore-package-info"):
-	mypackages = options[1:]
-	if (len(mypackages) == 0):
-	    print_error(yellow(" * ")+red("Not enough parameters"))
-	    sys.exit(302)
-
-	# sync packages directory
-	activatorTools.packages(["sync","--ask"])
-
-	dbconn = etpDatabase(readOnly = False, noUpload = True)
-	
-	# validate entries
-	_mypackages = []
-	for pkg in mypackages:
-	    if (dbconn.isPackageAvailable(pkg)):
-		_mypackages.append(pkg)
-	mypackages = _mypackages
-	
-	if len(mypackages) == 0:
-	    print_error(yellow(" * ")+red("No valid package found. You must specify category/atom-version."))
-	    sys.exit(303)
-	
-	print_info(green(" * ")+red("Reinitializing Entropy database using Packages in the repository ..."))
-	
-	# get the file list
-	pkglist = []
-	branches = []
-	for pkg in mypackages:
-	    # dump both branches if exist
-	    if (dbconn.isSpecificPackageAvailable(pkg, branch = "stable")):
-		branches.append("stable")
-	    if (dbconn.isSpecificPackageAvailable(pkg, branch = "unstable")):
-		branches.append("unstable")
-	    for branch in branches:
-		idpackage = dbconn.getIDPackage(pkg,branch)
-		pkgfile = dbconn.retrieveDownloadURL(idpackage)
-	        pkgfile = os.path.basename(pkgfile)
-	        pkglist.append(pkgfile)
-
-	# validate files
-	_pkglist = []
-	for file in pkglist:
-	    if (not os.path.isfile(etpConst['packagesbindir']+"/"+file)):
-	        print_info(yellow(" * ")+red("Attention: ")+bold(file)+red(" does not exist anymore."))
-	    else:
-		_pkglist.append(file)
-	pkglist = _pkglist
-
-	currCounter = 0
-	atomsnumber = len(pkglist)
-	for pkg in pkglist:
-	    print_info(green(" * ")+red("Analyzing: ")+bold(pkg), back = True)
-	    currCounter += 1
-	    print_info(green("  (")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."))
-	    etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+pkg)
-	    # remove shait
-	    entropyTools.spawnCommand("rm -rf "+etpConst['packagestmpdir']+"/"+pkg)
-	    # fill the db entry
-	    dbconn.handlePackage(etpData)
-	    dbconn.commitChanges()
-
-	dbconn.commitChanges()
-	dbconn.closeDB()
-	print_info(green(" * ")+red("Successfully restored database information for the chosen packages."))
-
 
     elif (options[0] == "create-empty-database"):
 	mypath = options[1:]
@@ -931,7 +865,7 @@ class etpDatabase:
     # this function manages the submitted package
     # if it does not exist, it fires up addPackage
     # otherwise it fires up updatePackage
-    def handlePackage(self, etpData, forceBump = False):
+    def handlePackage(self, etpData, addBranch = True, forcedRevision = -1, forcedBranch = False):
 
 	if (self.readOnly):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: Cannot handle this in read only.")
@@ -944,12 +878,18 @@ class etpDatabase:
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: called.")
 	if (not self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag)):
-	    idpk, revision, etpDataUpdated, accepted = self.addPackage(etpData)
+	    if (forcedRevision < 0):
+		forcedRevision = 0
+	    if (forcedBranch):
+	        idpk, revision, etpDataUpdated, accepted = self.addPackage(etpData, addBranch = addBranch, revision = forcedRevision, wantedBranch = etpData['branch'])
+	    else:
+		idpk, revision, etpDataUpdated, accepted = self.addPackage(etpData, addBranch = addBranch, revision = forcedRevision)
 	else:
-	    idpk, revision, etpDataUpdated, accepted = self.updatePackage(etpData,forceBump)
+	    idpk, revision, etpDataUpdated, accepted = self.updatePackage(etpData, forcedRevision) # branch and revision info will be overwritten
 	return idpk, revision, etpDataUpdated, accepted
 
-    # default add an unstable package
+
+    # FIXME: default add an unstable package ~~ use indexes
     def addPackage(self, etpData, revision = 0, wantedBranch = "unstable", addBranch = True):
 
 	if (self.readOnly):
@@ -1223,7 +1163,7 @@ class etpDatabase:
     # Update already available atom in db
     # returns True,revision if the package has been updated
     # returns False,revision if not
-    def updatePackage(self, etpData, forceBump = False):
+    def updatePackage(self, etpData, forcedRevision = -1):
 
 	if (self.readOnly):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"updatePackage: Cannot handle this in read only.")
@@ -1235,57 +1175,48 @@ class etpDatabase:
 	versiontag = ""
 	if (etpData['versiontag']):
 	    versiontag = "-"+etpData['versiontag']
-
-	# are there any stable packages?
-	searchsimilarStable = self.searchSimilarPackages(etpData['category']+"/"+etpData['name'], branch = "stable")
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: here is the list of similar stable packages found for "+etpData['category']+"/"+etpData['name']+": "+str(searchsimilarStable))
-	# filter the one with the same version
-	stableFound = False
-	for pkg in searchsimilarStable:
-	    # get version
-	    idpackage = pkg[1]
-	    dbStoredVer = self.retrieveVersion(idpackage)
-	    dbStoredVerTag = self.retrieveVersionTag(idpackage)
-	    if (etpData['version'] == dbStoredVer) and (etpData['versiontag'] == dbStoredVerTag):
-	        # found it !
-		stableFound = True
-		break
-	
-	if (stableFound):
-	    
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: mark the branch of this updated package, stable too")
-	    etpData['branch'] = "stable"
-
-
-	# get selected package revision
+	# build atom string
 	pkgatom = etpData['category'] + "/" + etpData['name'] + "-" + etpData['version']+versiontag
-	idpackage = self.getIDPackage(pkgatom,etpData['branch'])
-	
-	if (idpackage != -1):
-	    curRevision = self.retrieveRevision(idpackage)
+
+	# if client opened the database, before starting the update, remove previous entries - same atom, all branches
+	if (self.clientDatabase):
+	    
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"updatePackage: client request. Removing duplicated entries.")
+	    atomInfos = self.searchPackages(pkgatom)
+	    for atomInfo in atomInfos:
+		idpackage = atomInfo[1]
+		self.removePackage(idpackage)
+	    
+	    if (forcedRevision < 0):
+		forcedRevision = 0 # FIXME: this shouldn't happen
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: removal complete. Now spawning addPackage.")
+	    x,y,z,accepted = self.addPackage(etpData, revision = forcedRevision, wantedBranch = etpData['branch'])
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: returned back from addPackage.")
+	    return x,y,z,accepted
+	    
 	else:
-	    curRevision = 0
+	    # update package in etpData['branch']
+	    # get its package revision
+	    idpackage = self.getIDPackage(pkgatom,etpData['branch'])
+	    if (forcedRevision == -1):
+	        if (idpackage != -1):
+	            curRevision = self.retrieveRevision(idpackage)
+	        else:
+	            curRevision = 0
+	    else:
+		curRevision = forcedRevision
 
-	# do I really have to update the database entry? If the information are the same, drop all
-	oldPkgAtom = etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag
-	rc = self.comparePackagesData(etpData, oldPkgAtom, branchToQuery = etpData['branch'])
-	if (rc) and (not forceBump):
-	    return idpackage, curRevision, etpData, False # package not accepted
+	    if (idpackage != -1): # remove old package in branch
+	        self.removePackage(idpackage)
+		if (forcedRevision == -1):
+		    curRevision += 1
+	    
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: current revision set to "+str(curRevision))
 
-	# OTHERWISE:
-	# remove the current selected package, if exists
-	if (idpackage != -1):
-	    self.removePackage(idpackage)
-
-	# bump revision nevertheless
-	curRevision += 1
-
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: current revision set to "+str(curRevision))
-
-	# add the new one
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: complete. Now spawning addPackage.")
-	x,y,z,accepted = self.addPackage(etpData,curRevision,etpData['branch'])
-	return x,y,z,accepted
+	    # add the new one
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: complete. Now spawning addPackage.")
+	    x,y,z,accepted = self.addPackage(etpData, revision = curRevision, wantedBranch = etpData['branch'])
+	    return x,y,z,accepted
 	
 
     def removePackage(self,idpackage):
@@ -2760,6 +2691,7 @@ class etpDatabase:
 	    result.append(row)
 	return result
 
+    # FIXME: remove this, we don't just have stable/unstable branches
     def searchStablePackages(self,atom):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchStablePackages: called for "+atom)
 	category = atom.split("/")[0]
@@ -2770,6 +2702,7 @@ class etpDatabase:
 	    result.append(row)
 	return result
 
+    # FIXME: also remove this
     def searchUnstablePackages(self,atom):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchUnstablePackages: called for "+atom)
 	category = atom.split("/")[0]

@@ -1662,7 +1662,7 @@ def installPackageIntoGentooDatabase(infoDict,packageFile):
    @input pointer(clientDbconn): client database connection pointer (optional)
    @output: 0 = all fine, >0 = error!
 '''
-def installPackageIntoDatabase(idpackage,repository, clientDbconn = None):
+def installPackageIntoDatabase(idpackage, repository, clientDbconn = None):
     # fetch info
     dbconn = openRepositoryDatabase(repository)
     data = dbconn.getPackageData(idpackage)
@@ -1678,7 +1678,7 @@ def installPackageIntoDatabase(idpackage,repository, clientDbconn = None):
     if clientDbconn == None:
 	closedb = True
 	clientDbconn = openClientDatabase()
-    idpk, rev, x, status = clientDbconn.addPackage(data, revision = rev, wantedBranch = branch, addBranch = False)
+    idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = rev, forcedBranch = True, addBranch = False)
     del x
     if (not status):
 	clientDbconn.closeDB()
@@ -1740,7 +1740,8 @@ def query(options):
 	if (opt == "--quiet"):
 	    equoRequestQuiet = True
 	else:
-	    myopts.append(opt)
+	    if not opt.startswith("-"):
+	        myopts.append(opt)
 
     if options[0] == "installed":
 	rc = searchInstalledPackages(myopts[1:], quiet = equoRequestQuiet)
@@ -1922,7 +1923,7 @@ def database(options):
 	    dbconn.closeDB()
 	    # filling
 	    print_info("  "+bold("(")+darkgreen(str(count))+"/"+blue(total)+bold(")")+red(" Injecting ")+bold(atomName), back = True)
-	    # fill clientDbconn # FIXME write a general client side addPackage function
+	    # fill client database
 	    idpk, rev, xx, status = clientDbconn.addPackage(atomInfo, wantedBranch = atomBranch, addBranch = False)
 	    # now add the package to the installed table
 	    clientDbconn.addPackageToInstalledTable(idpk,x[1])
@@ -2672,6 +2673,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 			        installedTag = ''
 		            installedRev = clientDbconn.retrieveRevision(idx)
 			    actionQueue[pkgatom]['remove'] = idx
+			    actionQueue[pkgatom]['removeatom'] = clientDbconn.retrieveAtom(idx)
 		            break
 	        clientDbconn.closeDB()
 
@@ -2744,10 +2746,6 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	if (not onlyfetch):
 	    # install
 	    steps.append("install")
-	    # remove
-	    if (actionQueue[pkgatom]['remove'] != -1):
-	        #steps.append("remove") differential remove will be processed by install step
-		steps.append("removedatabase")
 	    steps.append("installdatabase")
 	    steps.append("cleanup")
 	
@@ -2891,10 +2889,8 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 	
 
     for idpackage in plainRemovalQueue:
-	#print clientDbconn.retrieveAtom(idpackage)
 	removalQueue.append(idpackage)
     
-    # FIXME: complete
     for idpackage in removalQueue:
 	infoDict = {}
 	infoDict['remove'] = idpackage
@@ -3035,13 +3031,13 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 	    errormsg = red("An error occured while trying to remove the package. Check if you have enough disk space on your hard disk. Error "+str(output))
 	    print_error(errormsg)
     elif step == "installdatabase":
-	print_info(red("   ## ")+blue("Injecting into database: ")+red(os.path.basename(infoDict['download'])))
-	output = installPackageIntoDatabase(infoDict['idpackage'],infoDict['repository'], clientDbconn)
+	print_info(red("   ## ")+blue("Injecting into database: ")+red(infoDict['atom']))
+	output = installPackageIntoDatabase(infoDict['idpackage'], infoDict['repository'], clientDbconn)
 	if output != 0:
 	    errormsg = red("An error occured while trying to add the package to the database. What have you done? Error "+str(output))
 	    print_error(errormsg)
     elif step == "removedatabase":
-	print_info(red("   ## ")+blue("Removing from database: ")+red(clientDbconn.retrieveAtom(infoDict['remove'])))
+	print_info(red("   ## ")+blue("Removing from database: ")+red(infoDict['removeatom']))
 	output = removePackageFromDatabase(infoDict['remove'], clientDbconn)
 	if output != 0:
 	    errormsg = red("An error occured while trying to remove the package from database. What have you done? Error "+str(output))

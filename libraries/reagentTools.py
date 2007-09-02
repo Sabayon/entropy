@@ -40,9 +40,9 @@ reagentLog = logTools.LogFile(level=etpConst['reagentloglevel'],filename = etpCo
 
 # reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFunction: example. ")
 
-def generator(package, enzymeRequestBump = False, dbconnection = None, enzymeRequestBranch = "unstable"):
+def generator(package, dbconnection = None, enzymeRequestBranch = "unstable"):
 
-    reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: called -> Package: "+str(package)+" | enzymeRequestBump: "+str(enzymeRequestBump)+" | dbconnection: "+str(dbconnection))
+    reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: called -> Package: "+str(package)+" | dbconnection: "+str(dbconnection))
 
     # check if the package provided is valid
     validFile = False
@@ -62,7 +62,7 @@ def generator(package, enzymeRequestBump = False, dbconnection = None, enzymeReq
     else:
 	dbconn = dbconnection
 
-    idpk, revision, etpDataUpdated, accepted = dbconn.handlePackage(etpData,enzymeRequestBump)
+    idpk, revision, etpDataUpdated, accepted = dbconn.handlePackage(etpData)
     
     # add package info to our official repository etpConst['officialrepositoryname']
     if (accepted):
@@ -95,12 +95,9 @@ def enzyme(options):
 
     reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"enzyme: called -> options: "+str(options))
 
-    enzymeRequestBump = False
     enzymeRequestBranch = "unstable"
     #_atoms = []
     for i in options:
-        if ( i == "--force-bump" ):
-	    enzymeRequestBump = True
         if ( i == "--branch=" and len(i.split("=")) == 2 ):
 	    mybranch = i.split("=")[1]
 	    if (mybranch):
@@ -128,7 +125,7 @@ def enzyme(options):
 	tbz2name = tbz2.split("/")[len(tbz2.split("/"))-1]
 	print_info(" ("+str(counter)+"/"+str(totalCounter)+") Processing "+tbz2name)
 	tbz2path = etpConst['packagesstoredir']+"/"+tbz2
-	rc, newFileName, idpk = generator(tbz2path, enzymeRequestBump, dbconn, enzymeRequestBranch)
+	rc, newFileName, idpk = generator(tbz2path, dbconn, enzymeRequestBranch)
 	if (rc):
 	    etpCreated += 1
 	    # move the file with its new name
