@@ -1893,7 +1893,7 @@ def database(options):
 	missingPackages = portagePackages[:]
 	for portagePackage in portagePackages: # for portagePackage in remainingPackages
 	    print_info(red("  Analyzing ")+bold(portagePackage), back = True)
-	    data = atomMatch("~"+portagePackage)
+	    data = atomMatch("="+portagePackage)
 	    if (data[0] != -1):
 	        foundPackages.append(data)
 		missingPackages.remove(portagePackage)
