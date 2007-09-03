@@ -416,10 +416,14 @@ if os.path.exists(etpConst['pidfile']):
 		f.close()
 	    pass
 else:
-    f = open(etpConst['pidfile'],"w")
-    f.write(str(pid))
-    f.flush()
-    f.close()
+    if os.getuid() == 0:
+        f = open(etpConst['pidfile'],"w")
+        f.write(str(pid))
+        f.flush()
+        f.close()
+    else:
+        print "you need to run this as root at least once."
+        sys.exit(100)
 
 # Handlers used by entropy to run and retrieve data remotely, using php helpers
 etpHandlers = {

@@ -2489,6 +2489,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	return 1,-1
 
     # FIXME: handle version upgrades
+    # FIXME: handle ask, pretend, verbose, onlyfetch
     
     updateList = []
     syncRepositories()
