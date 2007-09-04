@@ -761,12 +761,6 @@ class etpDatabase:
 	    self.connection.close()
 	    return
 
-	# Cleanups if at least one package has been removed
-	if (self.packagesRemoved):
-	    self.cleanupUseflags()
-	    self.cleanupSources()
-	    self.cleanupDependencies()
-
 	# if it's equo that's calling the function, just save changes and quit
 	if (self.clientDatabase):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened by Entropy Client.")
@@ -774,7 +768,14 @@ class etpDatabase:
 	    self.cursor.close()
 	    self.connection.close()
 	    return
-	
+
+	# Cleanups if at least one package has been removed
+	# Please NOTE: the client database does not need it
+	if (self.packagesRemoved):
+	    self.cleanupUseflags()
+	    self.cleanupSources()
+	    self.cleanupDependencies()
+
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in read/write.")
 	
 	# FIXME verify all this shit, for now it works...
@@ -1261,8 +1262,10 @@ class etpDatabase:
 	except:
 	    pass
 	
-	# Remove from installedtable if exist
+	# Remove from installedtable if exists
 	self.removePackageFromInstalledTable(idpackage)
+	# Remove from dependstable if exists
+	self.removePackageFromDependsTable(idpackage)
 	# need a final cleanup
 	self.packagesRemoved = True
 	
@@ -1387,12 +1390,11 @@ class etpDatabase:
     def cleanupUseflags(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupUseflags: called.")
 	self.cursor.execute('SELECT idflag FROM useflagsreference')
-	idflags = []
+	idflags = set([])
 	for row in self.cursor:
-	    idflags.append(row[0])
+	    idflags.add(row[0])
 	# now parse them into useflags table
-	idflags = list(set(idflags))
-	orphanedFlags = idflags[:]
+	orphanedFlags = idflags.copy()
 	for idflag in idflags:
 	    self.cursor.execute('SELECT idflag FROM useflags WHERE idflag = '+str(idflag))
 	    for row in self.cursor:
@@ -1401,18 +1403,17 @@ class etpDatabase:
 	# now we have orphans that can be removed safely
 	for idoflag in orphanedFlags:
 	    self.cursor.execute('DELETE FROM useflagsreference WHERE idflag = '+str(idoflag))
-	    for row in self.cursor:
-		x = row # really necessary ?
+	for row in self.cursor:
+	    x = row # really necessary ?
 
     def cleanupSources(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupSources: called.")
 	self.cursor.execute('SELECT idsource FROM sourcesreference')
-	idsources = []
+	idsources = set([])
 	for row in self.cursor:
-	    idsources.append(row[0])
+	    idsources.add(row[0])
 	# now parse them into useflags table
-	idsources = list(set(idsources))
-	orphanedSources = idsources[:]
+	orphanedSources = idsources.copy()
 	for idsource in idsources:
 	    self.cursor.execute('SELECT idsource FROM sources WHERE idsource = '+str(idsource))
 	    for row in self.cursor:
@@ -1421,18 +1422,17 @@ class etpDatabase:
 	# now we have orphans that can be removed safely
 	for idosrc in orphanedSources:
 	    self.cursor.execute('DELETE FROM sourcesreference WHERE idsource = '+str(idosrc))
-	    for row in self.cursor:
-		x = row # really necessary ?
+	for row in self.cursor:
+	    x = row # really necessary ?
 
     def cleanupDependencies(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupDependencies: called.")
 	self.cursor.execute('SELECT iddependency FROM dependenciesreference')
-	iddeps = []
+	iddeps = set([])
 	for row in self.cursor:
-	    iddeps.append(row[0])
+	    iddeps.add(row[0])
 	# now parse them into useflags table
-	iddeps = list(set(iddeps))
-	orphanedDeps = iddeps[:]
+	orphanedDeps = iddeps.copy()
 	for iddep in iddeps:
 	    self.cursor.execute('SELECT iddependency FROM dependencies WHERE iddependency = '+str(iddep))
 	    for row in self.cursor:
@@ -1441,8 +1441,8 @@ class etpDatabase:
 	# now we have orphans that can be removed safely
 	for idodep in orphanedDeps:
 	    self.cursor.execute('DELETE FROM dependenciesreference WHERE iddependency = '+str(idodep))
-	    for row in self.cursor:
-		x = row # really necessary ?
+	for row in self.cursor:
+	    x = row # really necessary ?
 
     # WARNING: this function must be kept in sync with Entropy database schema
     # returns True if equal
@@ -2661,6 +2661,19 @@ class etpDatabase:
 	    result.append(row)
 	return result
 
+    def listIdpackageDependencies(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listIdpackageDependencies: called.")
+	self.cursor.execute('SELECT iddependency FROM dependencies where idpackage = "'+str(idpackage)+'"')
+	iddeps = []
+	for row in self.cursor:
+	    iddeps.append(row[0])
+	result = []
+	for iddep in iddeps:
+	    self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference where iddependency = "'+str(iddep)+'"')
+	    for row in self.cursor:
+	        result.append(row)
+	return result
+
     def listAllPackagesTbz2(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllPackagesTbz2: called.")
         result = []
@@ -2793,7 +2806,16 @@ class etpDatabase:
     def removePackageFromDependsTable(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removePackageFromDependsTable: called for "+str(idpackage))
 	try:
-	    self.cursor.execute('DELETE FROM dependstable WHERE idpackage = '+idpackage)
+	    self.cursor.execute('DELETE FROM dependstable WHERE idpackage = '+str(idpackage))
+	    self.commitChanges()
+	    return 0
+	except:
+	    return 1 # need reinit
+
+    def removeDependencyFromDependsTable(self, iddependency):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removeDependencyFromDependsTable: called for "+str(iddependency))
+	try:
+	    self.cursor.execute('DELETE FROM dependstable WHERE iddependency = '+str(iddependency))
 	    self.commitChanges()
 	    return 0
 	except:

@@ -1387,22 +1387,29 @@ def fetchFileOnMirrors(repository, filename, digest = False):
     uris = etpRepositories[repository]['packages'][::-1]
     remaining = set(uris[:])
 
+    mirrorcount = 0
     for uri in uris:
 	
 	if len(remaining) == 0:
 	    # tried all the mirrors, quitting for error
 	    return -3
-	
+	mirrorcount += 1
+	mirrorCountText = "( mirror #"+str(mirrorcount)+" ) "
         # now fetch the new one
 	url = uri+"/"+filename
-	print_info(red("   ## ")+blue("Downloading from: ")+red(url))
+	print_info(red("   ## ")+mirrorCountText+blue("Downloading from: ")+red(url))
 	rc = fetchFile(url, digest)
 	if rc == 0:
-	    print_info(red("   ## ")+blue("Successfully downloaded from: ")+red(url))
+	    print_info(red("   ## ")+mirrorCountText+blue("Successfully downloaded from: ")+red(url))
 	    return 0
 	else:
 	    # something bad happened
-	    print_info(red("   ## ")+blue("Error downloading from: ")+red(url)+" ["+str(rc)+"] | looking for another mirror...")
+	    if rc == -1:
+		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(url)+" - file not available on this mirror.")
+	    elif rc == -2:
+		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(url)+" - wrong checksum.")
+	    else:
+		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(url)+" - unknown reason.")
 	    remaining.remove(uri)
 
 '''
@@ -1713,10 +1720,24 @@ def installPackageIntoDatabase(idpackage, repository, clientDbconn = None):
 	clientDbconn.closeDB()
 	print "DEBUG!!! Package "+str(idpk)+" has not been inserted, status: "+str(status)
 	exitstatus = 1 # it hasn't been insterted ? why??
-    else:
+    else: # all fine
         # add idpk to the installedtable
         clientDbconn.removePackageFromInstalledTable(idpk)
         clientDbconn.addPackageToInstalledTable(idpk,repository)
+	# update dependstable
+	try:
+	    depends = clientDbconn.listIdpackageDependencies(idpk)
+	    for depend in depends:
+		atom = depend[1]
+		iddep = depend[0]
+		match = atomMatchInRepository(atom,clientDbconn)
+		if (match[0] != -1):
+		    clientDbconn.removeDependencyFromDependsTable(iddep)
+		    clientDbconn.addDependRelationToDependsTable(iddep,match[0])
+		    
+	except:
+	    print "DEBUG!!! dependstable not found"
+	    regenerateDependsTable(clientDbconn)
     
     if (closedb):
         clientDbconn.closeDB()
@@ -1737,10 +1758,6 @@ def removePackageFromDatabase(idpackage, clientDbconn = None):
 	clientDbconn = openClientDatabase()
 
     clientDbconn.removePackage(idpackage)
-    # also remove from dependstable
-    x = clientDbconn.removePackageFromDependsTable(idpackage)
-    if (x == 1): #`shit, needs regeneration
-	regenerateDependsTable(clientDbconn, output = False)
     
     if (closedb):
         clientDbconn.closeDB()
@@ -2828,8 +2845,8 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 		return -1,rc
 
     # regenerate depends table
-    print_info(red(" @@ ")+blue("Regenerating depends caching table..."), back = True)
-    regenerateDependsTable(clientDbconn, output = False)
+    #print_info(red(" @@ ")+blue("Regenerating depends caching table..."), back = True)
+    #regenerateDependsTable(clientDbconn, output = False)
     print_info(red(" @@ ")+blue("Install Complete."))
 
     clientDbconn.closeDB()
