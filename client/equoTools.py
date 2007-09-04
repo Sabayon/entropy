@@ -75,13 +75,13 @@ def repositories(options):
 
 # this function shows a list of enabled repositories
 def showRepositories():
-    print_info(yellow(" * ")+green("Active Repositories:"))
+    print_info(yellow(" * ")+darkgreen("Active Repositories:"))
     repoNumber = 0
     for repo in etpRepositories:
 	repoNumber += 1
 	print_info(blue("\t#"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
-	print_info(red("\t\tPackages URL: ")+green(etpRepositories[repo]['packages']))
-	print_info(red("\t\tDatabase URL: ")+green(etpRepositories[repo]['database']))
+	print_info(red("\t\tPackages URL: ")+darkgreen(etpRepositories[repo]['packages']))
+	print_info(red("\t\tDatabase URL: ")+darkgreen(etpRepositories[repo]['database']))
 	print_info(red("\t\tRepository name: ")+bold(repo))
 	print_info(red("\t\tRepository database path: ")+blue(etpRepositories[repo]['dbpath']))
     return 0
@@ -98,15 +98,15 @@ def showRepositoryInfo(reponame):
     else:
 	status = "never synced"
     print_info(red("\tStatus: ")+yellow(status))
-    print_info(red("\tPackages URL: ")+green(etpRepositories[reponame]['packages']))
-    print_info(red("\tDatabase URL: ")+green(etpRepositories[reponame]['database']))
+    print_info(red("\tPackages URL: ")+darkgreen(etpRepositories[reponame]['packages']))
+    print_info(red("\tDatabase URL: ")+darkgreen(etpRepositories[reponame]['database']))
     print_info(red("\tRepository name: ")+bold(reponame))
     print_info(red("\tRepository database path: ")+blue(etpRepositories[reponame]['dbpath']))
     revision = getRepositoryRevision(reponame)
     mhash = getRepositoryDbFileHash(reponame)
 
     print_info(red("\tRepository database checksum: ")+mhash)
-    print_info(red("\tRepository revision: ")+green(str(revision)))
+    print_info(red("\tRepository revision: ")+darkgreen(str(revision)))
     return 0
 
 # @returns -1 if the file does not exist
@@ -157,7 +157,7 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	return 127
 
     if (not quiet):
-        print_info(yellow(" @@ ")+green("Repositories syncronization..."))
+        print_info(yellow(" @@ ")+darkgreen("Repositories syncronization..."))
     repoNumber = 0
     syncErrors = False
     
@@ -171,8 +171,8 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	
 	if (not quiet):
 	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
-	    print_info(red("\tDatabase URL: ")+green(etpRepositories[repo]['database']))
-	    print_info(red("\tDatabase local path: ")+green(etpRepositories[repo]['dbpath']))
+	    print_info(red("\tDatabase URL: ")+darkgreen(etpRepositories[repo]['database']))
+	    print_info(red("\tDatabase local path: ")+darkgreen(etpRepositories[repo]['dbpath']))
 	
 	# check if database is already updated to the latest revision
 	onlinestatus = getOnlineRepositoryRevision(repo)
@@ -193,7 +193,7 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	
 	# starting to download
 	if (not quiet):
-	    print_info(red("\tDownloading database ")+green(etpConst['etpdatabasefilegzip'])+red(" ..."))
+	    print_info(red("\tDownloading database ")+darkgreen(etpConst['etpdatabasefilegzip'])+red(" ..."))
 	# create dir if it doesn't exist
 	if not os.path.isdir(etpRepositories[repo]['dbpath']):
 	    if (not quiet):
@@ -203,15 +203,15 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabasefilegzip'],etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefilegzip'])
 	
 	if (not quiet):
-	    print_info(red("\tUnpacking database to ")+green(etpConst['etpdatabasefile'])+red(" ..."))
+	    print_info(red("\tUnpacking database to ")+darkgreen(etpConst['etpdatabasefile'])+red(" ..."))
 	unpackGzip(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefilegzip'])
 	# download etpdatabasehashfile
 	if (not quiet):
-	    print_info(red("\tDownloading checksum ")+green(etpConst['etpdatabasehashfile'])+red(" ..."))
+	    print_info(red("\tDownloading checksum ")+darkgreen(etpConst['etpdatabasehashfile'])+red(" ..."))
 	downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabasehashfile'],etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'])
 	# checking checksum
 	if (not quiet):
-	    print_info(red("\tChecking downloaded database ")+green(etpConst['etpdatabasefile'])+red(" ..."), back = True)
+	    print_info(red("\tChecking downloaded database ")+darkgreen(etpConst['etpdatabasefile'])+red(" ..."), back = True)
 	f = open(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
 	md5hash = f.readline().strip()
 	md5hash = md5hash.split()[0]
@@ -236,7 +236,7 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	
 	# download etpdatabaserevisionfile
 	if (not quiet):
-	    print_info(red("\tDownloading revision ")+green(etpConst['etpdatabaserevisionfile'])+red(" ..."))
+	    print_info(red("\tDownloading revision ")+darkgreen(etpConst['etpdatabaserevisionfile'])+red(" ..."))
 	downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabaserevisionfile'],etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'])
 	
 	if (not quiet):
@@ -1378,29 +1378,58 @@ def checkNeededDownload(filepath,checksum = None):
 
 
 '''
+   @description: download a package into etpConst['packagesbindir'] passing all the available mirrors
+   @input package: repository -> name of the repository, filename -> name of the file to download, digest -> md5 hash of the file
+   @output: 0 = all fine, -3 = error on all the available mirrors
+'''
+def fetchFileOnMirrors(repository, filename, digest = False):
+
+    uris = etpRepositories[repository]['packages'][::-1]
+    remaining = set(uris[:])
+
+    for uri in uris:
+	
+	if len(remaining) == 0:
+	    # tried all the mirrors, quitting for error
+	    return -3
+	
+        # now fetch the new one
+	url = uri+"/"+filename
+	print_info(red("   ## ")+blue("Downloading from: ")+red(url))
+	rc = fetchFile(url, digest)
+	if rc == 0:
+	    print_info(red("   ## ")+blue("Successfully downloaded from: ")+red(url))
+	    return 0
+	else:
+	    # something bad happened
+	    print_info(red("   ## ")+blue("Error downloading from: ")+red(url)+" ["+str(rc)+"] | looking for another mirror...")
+	    remaining.remove(uri)
+
+'''
    @description: download a package into etpConst['packagesbindir'] and check for digest if digest is not False
    @input package: url -> HTTP/FTP url, digest -> md5 hash of the file
    @output: -1 = download error (cannot find the file), -2 = digest error, 0 = all fine
 '''
-def fetchFile(url,digest = False):
+def fetchFile(url, digest = False):
     # remove old
     filename = os.path.basename(url)
     filepath = etpConst['packagesbindir']+"/"+filename
-    if os.path.isfile(filepath):
-	os.system("rm -f "+filepath)
+    if os.path.exists(filepath):
+	os.remove(filepath)
+
     # now fetch the new one
     try:
         fetchChecksum = downloadData(url,filepath)
     except:
 	return -1
     if (digest != False):
+	#print digest+" <--> "+fetchChecksum
 	if (fetchChecksum != digest):
 	    # not properly downloaded
 	    return -2
 	else:
 	    return 0
     return 0
-
 
 '''
    @description: remove files installed by idpackage from the client database
@@ -2685,7 +2714,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	    actionQueue[pkgatom]['category'] = pkgcat
 	    actionQueue[pkgatom]['name'] = pkgname
 	    actionQueue[pkgatom]['remove'] = -1
-	    actionQueue[pkgatom]['download'] = etpRepositories[packageInfo[1]]['packages']+"/"+os.path.basename(pkgfile)
+	    actionQueue[pkgatom]['download'] = os.path.basename(pkgfile)
 	    actionQueue[pkgatom]['checksum'] = pkgdigest
 	    dl = checkNeededDownload(pkgfile, pkgdigest)
 	    actionQueue[pkgatom]['fetch'] = dl
@@ -2747,7 +2776,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	# show download info
 	print_info(red(" @@ ")+blue("Total number of packages:\t")+red(str(len(runQueue))))
 	if (ask or verbose or pretend):
-	    print_info(red(" @@ ")+green("Packages needing install:\t")+green(str(pkgsToInstall)))
+	    print_info(red(" @@ ")+darkgreen("Packages needing install:\t")+darkgreen(str(pkgsToInstall)))
 	    print_info(red(" @@ ")+darkgreen("Packages needing reinstall:\t")+darkgreen(str(pkgsToReinstall)))
 	    print_info(red(" @@ ")+blue("Packages needing update:\t\t")+blue(str(pkgsToUpdate)))
 	    print_info(red(" @@ ")+red("Packages needing downgrade:\t")+red(str(pkgsToDowngrade)))
@@ -3044,13 +3073,9 @@ def stepExecutor(step,infoDict, clientDbconn = None):
     output = 0
     if step == "fetch":
 	print_info(red("   ## ")+blue("Fetching package: ")+red(os.path.basename(infoDict['download'])))
-	output = fetchFile(infoDict['download'],infoDict['checksum'])
-	if output != 0:
-	    if output == -1:
-		errormsg = red("Cannot find the package file online. Try to run: ")+bold("equo repo sync")+red("' and this command again. Error "+str(output))
-	    else:
-		errormsg = red("Package checksum does not match. Try to run: '")+bold("equo repo sync")+red("' and this command again. Error "+str(output))
-	    print_error(errormsg)
+	output = fetchFileOnMirrors(infoDict['repository'],infoDict['download'],infoDict['checksum'])
+	if output < 0:
+	    print_error(red("Package cannot be fetched. Try to run: ")+bold("equo repo sync")+red("' and this command again. Error "+str(output)))
     elif step == "install":
 	if (etpConst['gentoo-compat']):
 	    print_info(red("   ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download']))+" ## w/Gentoo compatibility")
