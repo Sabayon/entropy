@@ -2909,11 +2909,11 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 
 	# get needed info
 	pkgatom = clientDbconn.retrieveAtom(idpackage)
-	pkgver = clientDbconn.retrieveVersion(idpackage)
-	pkgtag = clientDbconn.retrieveVersionTag(idpackage)
-	if not pkgtag:
-	    pkgtag = "NoTag"
-	pkgrev = clientDbconn.retrieveRevision(idpackage)
+	#pkgver = clientDbconn.retrieveVersion(idpackage)
+	#pkgtag = clientDbconn.retrieveVersionTag(idpackage)
+	#if not pkgtag:
+	#    pkgtag = "NoTag"
+	#pkgrev = clientDbconn.retrieveRevision(idpackage)
 	#pkgslot = clientDbconn.retrieveSlot(idpackage)
 	installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
 
@@ -2923,7 +2923,7 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 	plainRemovalQueue.append(idpackage)
 	
 	print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" | Installed from: "+red(installedfrom))
-	print_info("\t"+red("Versioning:\t")+" "+red(pkgver)+" / "+blue(pkgtag)+" / "+(str(pkgrev)))
+	#print_info("\t"+red("Versioning:\t")+" "+red(pkgver)+" / "+blue(pkgtag)+" / "+(str(pkgrev)))
 
     if (verbose or ask or pretend):
         print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
