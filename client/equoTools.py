@@ -2986,6 +2986,7 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
     for idpackage in removalQueue:
 	infoDict = {}
 	infoDict['remove'] = idpackage
+	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
 	steps = []
 	steps.append("preremove") # not implemented
 	steps.append("remove")
