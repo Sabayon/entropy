@@ -1193,7 +1193,7 @@ def getRequiredPackages(foundAtoms, emptydeps = False):
    @input package: idpackages list
    @output: 	depends tree dictionary, plus status code
 '''
-def generateDependsTree(idpackages, dbconn = None):
+def generateDependsTree(idpackages, dbconn = None, deep = False):
 
     dependscache = {}
     closedb = False
@@ -1243,7 +1243,7 @@ def generateDependsTree(idpackages, dbconn = None):
 			tree[treedepth].add(x)
 			monotree.add(x)
 		        treeview.add(x)
-	    else: # if no depends found, grab its dependencies and check
+	    elif deep: # if no depends found, grab its dependencies and check
 		
 	        mydeps = set(clientDbconn.retrieveDependencies(idpackage))
 		_mydeps = set([])
@@ -1785,12 +1785,15 @@ def query(options):
 
     equoRequestVerbose = False
     equoRequestQuiet = False
+    equoRequestDeep = False
     myopts = []
     for opt in options:
 	if (opt == "--verbose"):
 	    equoRequestVerbose = True
-	if (opt == "--quiet"):
+	elif (opt == "--quiet"):
 	    equoRequestQuiet = True
+	elif (opt == "--deep"):
+	    equoRequestDeep = True
 	else:
 	    if not opt.startswith("-"):
 	        myopts.append(opt)
@@ -1808,7 +1811,7 @@ def query(options):
 	rc = searchFiles(myopts[1:], quiet = equoRequestQuiet)
 
     elif options[0] == "removal":
-	rc = searchRemoval(myopts[1:], quiet = equoRequestQuiet)
+	rc = searchRemoval(myopts[1:], quiet = equoRequestQuiet, deep = equoRequestDeep)
 
     elif options[0] == "orphans":
 	rc = searchOrphans(quiet = equoRequestQuiet)
@@ -1838,6 +1841,7 @@ def package(options):
     equoRequestEmptyDeps = False
     equoRequestOnlyFetch = False
     equoRequestQuiet = False
+    equoRequestDeep = False
     rc = 0
     _myopts = []
     for opt in myopts:
@@ -1855,6 +1859,8 @@ def package(options):
 	    equoRequestQuiet = True
 	elif (opt == "--fetch"):
 	    equoRequestOnlyFetch = True
+	elif (opt == "--deep"):
+	    equoRequestDeep = True
 	else:
 	    _myopts.append(opt)
     myopts = _myopts
@@ -1878,7 +1884,7 @@ def package(options):
 
     elif (options[0] == "remove"):
 	if len(myopts) > 0:
-	    rc, status = removePackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps)
+	    rc, status = removePackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, deep = equoRequestDeep)
 	else:
 	    print_error(red(" Nothing to do."))
 	    rc = 127
@@ -2373,7 +2379,7 @@ def searchOrphans(quiet = False):
     return 0
 	
 
-def searchRemoval(atoms, idreturn = False, quiet = False):
+def searchRemoval(atoms, idreturn = False, quiet = False, deep = False):
     
     if (not idreturn) and (not quiet):
         print_info(yellow(" @@ ")+darkgreen("Removal Search..."))
@@ -2393,7 +2399,7 @@ def searchRemoval(atoms, idreturn = False, quiet = False):
     choosenRemovalQueue = []
     if (not quiet):
         print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
-    treeview = generateDependsTree(foundAtoms,clientDbconn)
+    treeview = generateDependsTree(foundAtoms,clientDbconn, deep = deep)
     treelength = len(treeview[0])
     if treelength > 1:
 	treeview = treeview[0]
@@ -2860,7 +2866,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
     return 0,0
 
 
-def removePackages(packages, ask = False, pretend = False, verbose = False, deps = True):
+def removePackages(packages, ask = False, pretend = False, verbose = False, deps = True, deep = False):
     
     # check if I am root
     if (not checkRoot()) and (not pretend):
@@ -2937,7 +2943,7 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
     if (lookForOrphanedPackages):
 	choosenRemovalQueue = []
 	print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
-	treeview = generateDependsTree(plainRemovalQueue, clientDbconn)
+	treeview = generateDependsTree(plainRemovalQueue, clientDbconn, deep = deep)
 	treelength = len(treeview[0])
 	if treelength > 1:
 	    treeview = treeview[0]
