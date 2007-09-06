@@ -685,11 +685,12 @@ def cleanup(toCleanDirs = []):
 
     for dir in toCleanDirs:
         print_info(red(" * ")+"Cleaning "+darkgreen(dir)+" directory...", back = True)
-	dircontent = os.listdir(dir)
-	if dircontent != []:
-	    for data in dircontent:
-		spawnCommand("rm -rf "+dir+"/"+data)
-		counter += 1
+	if os.path.isdir(dir):
+	    dircontent = os.listdir(dir)
+	    if dircontent != []:
+	        for data in dircontent:
+		    spawnCommand("rm -rf "+dir+"/"+data)
+		    counter += 1
 
     print_info(green(" * ")+"Cleaned: "+str(counter)+" files and directories")
 
