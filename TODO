@@ -10,6 +10,7 @@ TODO list:
   - add multi download source support
   - add etc-update-alike support
   - add preinst/postinst/prerm/postrm scripts
+  - centralized management?
 
 Project Status:
 - entropy: will handle all the three tools below

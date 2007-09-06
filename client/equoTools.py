@@ -80,7 +80,10 @@ def showRepositories():
     for repo in etpRepositories:
 	repoNumber += 1
 	print_info(blue("\t#"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
-	print_info(red("\t\tPackages URL: ")+darkgreen(etpRepositories[repo]['packages']))
+	sourcecount = 0
+	for pkgrepo in etpRepositories[repo]['packages']:
+	    sourcecount += 1
+	    print_info(red("\t\tPackages Mirror #"+str(sourcecount)+" : ")+darkgreen(pkgrepo))
 	print_info(red("\t\tDatabase URL: ")+darkgreen(etpRepositories[repo]['database']))
 	print_info(red("\t\tRepository name: ")+bold(repo))
 	print_info(red("\t\tRepository database path: ")+blue(etpRepositories[repo]['dbpath']))
@@ -1410,7 +1413,10 @@ def fetchFileOnMirrors(repository, filename, digest = False):
 		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(url)+" - wrong checksum.")
 	    else:
 		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(url)+" - unknown reason.")
-	    remaining.remove(uri)
+	    try:
+	        remaining.remove(uri)
+	    except:
+		pass
 
 '''
    @description: download a package into etpConst['packagesbindir'] and check for digest if digest is not False
@@ -3129,4 +3135,3 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 	clientDbconn.closeDB()
     
     return output
-
