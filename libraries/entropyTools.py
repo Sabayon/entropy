@@ -160,7 +160,7 @@ def md5string(string):
 # Imported from Gentoo portage_dep.py
 # Copyright 2003-2004 Gentoo Foundation
 # done to avoid the import of portage_dep here
-ver_regexp = re.compile("^(cvs\\.)?(\\d+)((\\.\\d+)*)([a-z]?)((_(pre|p|beta|alpha|rc)\\d*)*)(-r(\\d+))?$")
+ver_regexp = re.compile("^(cvs\\.)?(\\d+)((\\.\\d+)*)([a-z]?)((_(pre|p|beta|alpha|rc)\\d*)*)(-r(\\d+))(-t(\\S+))?$")
 def isjustpkgname(mypkg):
     myparts = mypkg.split('-')
     for x in myparts:
@@ -303,10 +303,10 @@ def pkgsplit(mypkg,silent=1):
 
 def dep_striptag(mydepx):
     mydep = mydepx[:]
-    if not isjustname(mydep):
-	if mydep.split("-")[len(mydep.split("-"))-1].endswith("t"): # tag -> remove
+    if not (isjustname(mydep)):
+	if mydep.split("-")[len(mydep.split("-"))-1].startswith("t"): # tag -> remove
 	    tag = mydep.split("-")[len(mydep.split("-"))-1]
-	    mydep = mydep[:len(mydep)-len(tag)-2]
+	    mydep = mydep[:len(mydep)-len(tag)-1]
     return mydep
 
 def istagged(mydepx):

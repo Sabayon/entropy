@@ -1816,6 +1816,13 @@ def query(options):
     elif options[0] == "orphans":
 	rc = searchOrphans(quiet = equoRequestQuiet)
 
+    elif options[0] == "list":
+	mylistopts = options[1:]
+	if len(mylistopts) > 0:
+	    if mylistopts[0] == "installed":
+	        rc = searchInstalled(verbose = equoRequestVerbose, quiet = equoRequestQuiet)
+	    # add more here
+
     elif options[0] == "description":
 	rc = searchDescription(myopts[1:], quiet = equoRequestQuiet)
 
@@ -2431,6 +2438,43 @@ def searchRemoval(atoms, idreturn = False, quiet = False, deep = False):
 	return treeview
     
     return 0
+
+
+def searchInstalled(idreturn = False, verbose = False, quiet = False):
+    
+    if (not idreturn) and (not quiet):
+        print_info(yellow(" @@ ")+darkgreen("Installed Search..."))
+
+    clientDbconn = openClientDatabase()
+    installedPackages = clientDbconn.listAllPackages()
+    installedPackages.sort()
+    if (not idreturn):
+        if (not quiet):
+	    print_info(red(" @@ ")+blue("These are the installed packages:"))
+        for package in installedPackages:
+	    if (not verbose):
+	        atom = dep_getkey(package[0])
+	    else:
+	        atom = package[0]
+	    branchinfo = ""
+	    if (verbose):
+	        branchinfo = darkgreen(" [")+red(package[2])+darkgreen("]")
+	    if (not quiet):
+	        print_info(red("  #")+blue(str(package[1]))+branchinfo+" "+atom)
+	    else:
+	        print atom
+	clientDbconn.closeDB()
+	return 0
+    else:
+	idpackages = set([])
+	for x in installedPackages:
+	    idpackages.add(package[1])
+        clientDbconn.closeDB()
+        return list(idpackages)
+    
+
+
+
 
 def searchDescription(descriptions, idreturn = False, quiet = False):
     
