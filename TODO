@@ -7,10 +7,14 @@ TODO list:
   CLIENT:
   - add conflicts dependencies support
   - trap elogs when running enzyme and add them to the database, maybe I can write a file and then let reagent look for it
-  - add multi download source support
   - add etc-update-alike support
   - add preinst/postinst/prerm/postrm scripts
   - centralized management?
+  - removal function: use getInstalledAtoms alike function instead of atomMatchInRepository to handle slotted packages correctly
+  - have a look why dev-dotnet/pe-format-0 is being pulled in
+  - strengthen build dependencies filter
+  - write a dependency reordering function
+  - rewrite branches management
 
 Project Status:
 - entropy: will handle all the three tools below

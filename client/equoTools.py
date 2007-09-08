@@ -2274,7 +2274,8 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
 		        printPackageInfo(idpackage, dbconn, clientSearch = True, quiet = quiet)
 		    else:
 		        printPackageInfo(idpackage, dbconn, clientSearch = True, strictOutput = True, quiet = quiet)
-	
+	else:
+	    continue
 	if (matchInRepo):
 	    dbconn.closeDB()
 

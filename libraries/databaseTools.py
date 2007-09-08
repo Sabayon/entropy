@@ -390,7 +390,13 @@ def database(options):
 	branch = ''
 	for opt in myopts:
 	    if (opt.startswith("--branch=")) and (len(opt.split("=")) == 2):
-		branch = opt.split("=")[1]
+		
+		try:
+		    branch = opt.split("=")[1]
+		    idx = etpConst['branches'].index(branch)
+		    etpConst['branch'] = branch
+		except:
+		    pass
 	    else:
 		_myopts.append(opt)
 	myopts = _myopts
@@ -402,13 +408,13 @@ def database(options):
 	pkglist = []
 	dbconn = etpDatabase(readOnly = True)
 	
+	sys.path.append('../client')
+	import equoTools
+	
 	for atom in myopts:
-	    if (branch):
-		pkg = dbconn.searchPackagesInBranch(atom,branch)
-	    else:
-	        pkg = dbconn.searchPackages(atom)
-	    for x in pkg:
-		pkglist.append(x)
+	    pkg = equoTools.atomMatchInRepository(atom,dbconn)
+	    if pkg[0] != -1:
+	        pkglist.append(pkg[0])
 
 	# filter dups
 	pkglist = list(set(pkglist))
@@ -422,10 +428,9 @@ def database(options):
 	print_info(green(" * ")+red("These are the packages that would be removed from the database:"))
 
 	for pkg in pkglist:
-	    pkgatom = pkg[0]
-	    pkgid = pkg[1]
-	    branch = dbconn.retrieveBranch(pkgid)
-	    print_info(red("\t (*) ")+bold(pkgatom)+blue("\t\t\tBRANCH: ")+bold(branch))
+	    pkgatom = dbconn.retrieveAtom(pkg)
+	    branch = dbconn.retrieveBranch(pkg)
+	    print_info(red("\t (*) ")+bold(pkgatom)+blue(" [")+red(branch)+blue("]"))
 
 	dbconn.closeDB()
 
@@ -440,8 +445,9 @@ def database(options):
 	# open db
 	dbconn = etpDatabase(readOnly = False, noUpload = True)
 	for pkg in pkglist:
-	    print_info(green(" * ")+red("Removing package: ")+bold(pkg[0])+red(" ..."), back = True)
-	    dbconn.removePackage(pkg[1])
+	    pkgatom = dbconn.retrieveAtom(pkg)
+	    print_info(green(" * ")+red("Removing package: ")+bold(pkgatom)+red(" ..."), back = True)
+	    dbconn.removePackage(pkg)
 	dbconn.commitChanges()
 	print_info(green(" * ")+red("All the selected packages have been removed as requested. To remove online binary packages, just run Activator."))
 	dbconn.closeDB()
