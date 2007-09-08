@@ -1214,7 +1214,7 @@ def generateDependsTree(idpackages, dbconn = None, deep = False):
     monotree = set(idpackages[:]) # monodimensional tree
     
     # check if dependstable is sane before beginning
-    rx = clientDbconn.searchDepends(idpackages[0])
+    rx = clientDbconn.retrieveDepends(idpackages[0])
     if rx == -2:
 	# generation needed
 	regenerateDependsTable(clientDbconn, output = False)
@@ -1234,7 +1234,7 @@ def generateDependsTree(idpackages, dbconn = None, deep = False):
 		continue
 
 	    # obtain its depends
-	    depends = clientDbconn.searchDepends(idpackage)
+	    depends = clientDbconn.retrieveDepends(idpackage)
 	    # filter already satisfied ones
 	    depends = [x for x in depends if x not in list(monotree)]
 	    if (depends): # something depends on idpackage
@@ -1256,7 +1256,7 @@ def generateDependsTree(idpackages, dbconn = None, deep = False):
 		mydeps = [x for x in mydeps if x not in list(monotree)]
 		for x in mydeps:
 		    #print clientDbconn.retrieveAtom(x)
-		    mydepends = clientDbconn.searchDepends(x)
+		    mydepends = clientDbconn.retrieveDepends(x)
 		    mydepends = [y for y in mydepends if y not in list(monotree)]
 		    if (not mydepends):
 			tree[treedepth].add(x)
@@ -1478,6 +1478,11 @@ def removeFile(idpackage, clientDbconn = None, newContent = []):
 	try:
 	    os.remove(file)
 	    #print file
+	    # is now empty?
+	    filedir = os.path.dirname(file)
+	    dirlist = os.listdir(filedir)
+	    if (not dirlist):
+		os.removedirs(filedir)
 	except OSError:
 	    try:
 		os.removedirs(file) # is it a dir?, empty?
@@ -2242,7 +2247,7 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
 	        dbconn = openRepositoryDatabase(result[1])
 	    else:
 		dbconn = clientDbconn
-	    searchResults = dbconn.searchDepends(result[0])
+	    searchResults = dbconn.retrieveDepends(result[0])
 	    if searchResults == -2:
 		if (matchInRepo):
 		    # run equo update
@@ -2252,7 +2257,7 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
 		else:
 		    # I need to generate dependstable
 		    regenerateDependsTable(dbconn)
-	        searchResults = dbconn.searchDepends(result[0])
+	        searchResults = dbconn.retrieveDepends(result[0])
 	    # print info
 	    if (not idreturn) and (not quiet):
 	        print_info(blue("     Keyword: ")+bold("\t"+atom))
@@ -2471,9 +2476,6 @@ def searchInstalled(idreturn = False, verbose = False, quiet = False):
 	    idpackages.add(package[1])
         clientDbconn.closeDB()
         return list(idpackages)
-    
-
-
 
 
 def searchDescription(descriptions, idreturn = False, quiet = False):
@@ -2953,12 +2955,6 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 
 	# get needed info
 	pkgatom = clientDbconn.retrieveAtom(idpackage)
-	#pkgver = clientDbconn.retrieveVersion(idpackage)
-	#pkgtag = clientDbconn.retrieveVersionTag(idpackage)
-	#if not pkgtag:
-	#    pkgtag = "NoTag"
-	#pkgrev = clientDbconn.retrieveRevision(idpackage)
-	#pkgslot = clientDbconn.retrieveSlot(idpackage)
 	installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
 
 	if (systemPackage):
@@ -2967,7 +2963,6 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 	plainRemovalQueue.append(idpackage)
 	
 	print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" | Installed from: "+red(installedfrom))
-	#print_info("\t"+red("Versioning:\t")+" "+red(pkgver)+" / "+blue(pkgtag)+" / "+(str(pkgrev)))
 
     if (verbose or ask or pretend):
         print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
@@ -3019,6 +3014,8 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 		else:
 	            for x in choosenRemovalQueue:
 			removalQueue.append(x)
+	    else:
+		print
 
     if (ask):
 	print
@@ -3100,7 +3097,7 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
 		if (not quiet):
 		    print_info(bold("       :: ")+red(depatom))
 		else:
-		    print depatom
+		    print pkgatom+" -> "+depatom
 		packagesNeeded.append([depatom,dep])
 
     if (pretend):

@@ -957,9 +957,8 @@ class etpDatabase:
 			etpData['etpapi'],
 			)
 	)
-	
-	# I don't use lastrowid because the db must be multiuser aware
-	idpackage = self.getIDPackage(etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag,wantedBranch)
+	self.connection.commit()
+	idpackage = self.cursor.lastrowid
 
 	# create new idflag if it doesn't exist
 	idflags = self.areCompileFlagsAvailable(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
@@ -2283,6 +2282,39 @@ class etpDatabase:
 	self.databaseCache[idpackage]['retrieveCompileFlags'] = flags
 	return flags
 
+    def retrieveDepends(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDepends: called for idpackage "+str(idpackage))
+
+	''' caching '''
+	cached = self.databaseCache.get(idpackage, None)
+	if cached:
+	    rslt = self.databaseCache[idpackage].get('searchDepends',None)
+	    if rslt:
+		return rslt
+	else:
+	    self.databaseCache[idpackage] = {}
+
+	# sanity check on the table
+	sanity = self.isDependsTableSane() #FIXME: perhaps running this only on a client database?
+	if (not sanity):
+	    return -2 # table does not exist or is broken, please regenerate and re-run
+
+	iddeps = []
+	self.cursor.execute('SELECT iddependency FROM dependstable WHERE idpackage = "'+str(idpackage)+'"')
+	for row in self.cursor:
+	    iddeps.append(row[0])
+	result = []
+	for iddep in iddeps:
+	    #print iddep
+	    self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = "'+str(iddep)+'"')
+	    for row in self.cursor:
+	        result.append(row[0])
+
+	''' caching '''
+	self.databaseCache[idpackage]['searchDepends'] = result
+
+	return result
+
     # You must provide the full atom to this function
     # WARNING: this function does not support branches !!!
     def isPackageAvailable(self,pkgkey):
@@ -2789,10 +2821,13 @@ class etpDatabase:
     def retrievePackageFromInstalledTable(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrievePackageFromInstalledTable: called. ")
 	result = 'Not available'
-	self.cursor.execute('SELECT repositoryname FROM installedtable WHERE idpackage = "'+str(idpackage)+'"')
-	for row in self.cursor:
-	    result = row[0]
-	    break
+	try:
+	    self.cursor.execute('SELECT repositoryname FROM installedtable WHERE idpackage = "'+str(idpackage)+'"')
+	    for row in self.cursor:
+	        result = row[0]
+	        break
+	except:
+	    pass
 	return result
 
     def removePackageFromInstalledTable(self, idpackage):
@@ -2820,39 +2855,6 @@ class etpDatabase:
 	    return 0
 	except:
 	    return 1 # need reinit
-
-    def searchDepends(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchDepends: called for idpackage "+str(idpackage))
-
-	''' caching '''
-	cached = self.databaseCache.get(idpackage, None)
-	if cached:
-	    rslt = self.databaseCache[idpackage].get('searchDepends',None)
-	    if rslt:
-		return rslt
-	else:
-	    self.databaseCache[idpackage] = {}
-
-	# sanity check on the table
-	sanity = self.isDependsTableSane() #FIXME: perhaps running this only on a client database?
-	if (not sanity):
-	    return -2 # table does not exist or is broken, please regenerate and re-run
-
-	iddeps = []
-	self.cursor.execute('SELECT iddependency FROM dependstable WHERE idpackage = "'+str(idpackage)+'"')
-	for row in self.cursor:
-	    iddeps.append(row[0])
-	result = []
-	for iddep in iddeps:
-	    #print iddep
-	    self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = "'+str(iddep)+'"')
-	    for row in self.cursor:
-	        result.append(row[0])
-
-	''' caching '''
-	self.databaseCache[idpackage]['searchDepends'] = result
-
-	return result
 
     # temporary/compat functions
     def createDependsTable(self):
