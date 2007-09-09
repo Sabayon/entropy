@@ -31,7 +31,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, dep_getcpv, isjustname, dep_getkey, compareVersions as entropyCompareVersions, catpkgsplit, filterDuplicatedEntries, extactDuplicatedEntries, isspecific, uncompressTarBz2, extractXpak, filterDuplicatedEntries, applicationLockCheck, countdown, dep_striptag, istagged
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extactDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot
 from databaseTools import etpDatabase
 import xpak
 import time
@@ -39,6 +39,9 @@ import time
 # Logging initialization
 import logTools
 equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[Equo]")
+
+global atomMatchCache
+atomMatchCache = {}
 
 ########################################################
 ####
@@ -148,7 +151,7 @@ def getRepositoryDbFileHash(reponame):
 def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 
     # check if I am root
-    if (not checkRoot()):
+    if (not isRoot()):
 	if (not quiet):
 	    print_error(red("\t You must run this application as root."))
 	return 1
@@ -279,16 +282,6 @@ def fetchRepositoryIfNotAvailable(reponame):
 	print_error(red("Database file for '"+bold(etpRepositories[reponame]['description'])+red("' does not exist. Cannot search.")))
     return rc
 
-'''
-   @description: check we're running this code as root
-   @input atom: nothing
-   @output: True for yes, False for no
-'''
-def checkRoot():
-    import getpass
-    if getpass.getuser() == "root":
-	return True
-    return False
 
 ########################################################
 ####
@@ -296,343 +289,12 @@ def checkRoot():
 #
 
 '''
-   @description: matches the user chosen package name+ver, if possibile, in a single repository
-   @input atom: string
-   @input dbconn: database connection
-   @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = not found, 2 = need more info, 3 = cannot use direction without specifying version
-'''
-atomMatchInRepositoryCache = {}
-def atomMatchInRepository(atom, dbconn, caseSensitive = True):
-    
-    cached = atomMatchInRepositoryCache.get(atom)
-    if (cached):
-	if (str(cached['dbconn']) == str(dbconn)):
-	    return cached['result']
-    
-    # check for direction
-    strippedAtom = dep_getcpv(atom)
-    if atom.endswith("*"):
-	strippedAtom += "*"
-    direction = atom[0:len(atom)-len(strippedAtom)]
-    #print direction
-
-    #print strippedAtom
-    #print isspecific(strippedAtom)
-    #print direction
-    
-    justname = isjustname(strippedAtom)
-    #print justname
-    pkgversion = ''
-    if (not justname):
-	# strip tag
-        if strippedAtom.split("-")[len(strippedAtom.split("-"))-1].startswith("t"):
-            strippedAtom = string.join(strippedAtom.split("-t")[:len(strippedAtom.split("-t"))-1],"-t")
-	# get version
-	data = catpkgsplit(strippedAtom)
-	if data == None:
-	    return -1,3 # atom is badly formatted
-	pkgversion = data[2]+"-"+data[3]
-	pkgtag = ''
-	if atom.split("-")[len(atom.split("-"))-1].startswith("t"):
-	    pkgtag = atom.split("-")[len(atom.split("-"))-1]
-	    #print "TAG: "+pkgtag
-	#print data
-	#print pkgversion
-	#print pkgtag
-	
-
-    pkgkey = dep_getkey(strippedAtom)
-    if len(pkgkey.split("/")) == 2:
-        pkgname = pkgkey.split("/")[1]
-        pkgcat = pkgkey.split("/")[0]
-    else:
-        pkgname = pkgkey.split("/")[0]
-	pkgcat = "null"
-
-    #print dep_getkey(strippedAtom)
-    
-    myBranchIndex = etpConst['branches'].index(etpConst['branch'])
-    
-    # IDs found in the database that match our search
-    foundIDs = []
-    
-    for idx in range(myBranchIndex+1)[::-1]: # reverse order
-	#print "Searching into -> "+etpConst['branches'][idx]
-	# search into the less stable, if found, break, otherwise continue
-	results = dbconn.searchPackagesInBranchByName(pkgname, etpConst['branches'][idx], caseSensitive)
-	
-	# if it's a PROVIDE, search with searchProvide
-	if (not results):
-	    results = dbconn.searchProvideInBranch(pkgkey,etpConst['branches'][idx])
-	
-	# now validate
-	if (not results):
-	    #print "results is empty"
-	    continue # search into a stabler branch
-	
-	elif (len(results) > 1):
-	
-	    #print "results > 1"
-	    # if it's because category differs, it's a problem
-	    foundCat = ""
-	    cats = []
-	    for result in results:
-		idpackage = result[1]
-		cat = dbconn.retrieveCategory(idpackage)
-		cats.append(cat)
-		if (cat == pkgcat):
-		    foundCat = cat
-		    break
-	    # if categories are the same...
-	    if (not foundCat) and (len(cats) > 0):
-		cats = filterDuplicatedEntries(cats)
-		if len(cats) == 1:
-		    foundCat = cats[0]
-	    if (not foundCat) and (pkgcat == "null"):
-		# got the issue
-		# gosh, return and complain
-		atomMatchInRepositoryCache[atom] = {}
-		atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
-		atomMatchInRepositoryCache[atom]['result'] = -1,2
-		return -1,2
-	
-	    # I can use foundCat
-	    pkgcat = foundCat
-	    
-	    # we need to search using the category
-	    results = dbconn.searchPackagesInBranchByNameAndCategory(pkgname,pkgcat,etpConst['branches'][idx], caseSensitive)
-	    # validate again
-	    if (not results):
-		continue  # search into a stabler branch
-	
-	    # if we get here, we have found the needed IDs
-	    foundIDs = results
-	    break
-
-	else:
-	    #print "results == 1"
-	    foundIDs.append(results[0])
-	    break
-
-    if (foundIDs):
-	# now we have to handle direction
-	if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
-	    # check if direction is used with justname, in this case, return an error
-	    if (justname):
-		#print "justname"
-		atomMatchInRepositoryCache[atom] = {}
-		atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
-		atomMatchInRepositoryCache[atom]['result'] = -1,3
-		return -1,3 # error, cannot use directions when not specifying version
-	    
-	    if (direction == "~") or (direction == "=") or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")): # any revision within the version specified OR the specified version
-		
-		if (direction == '' and not justname):
-		    direction = "="
-		
-		#print direction+" direction"
-		# remove revision (-r0 if none)
-		if (direction == "="):
-		    if (pkgversion.split("-")[len(pkgversion.split("-"))-1] == "r0"):
-		        pkgversion = string.join(pkgversion.split("-")[:len(pkgversion.split("-"))-1],"-")
-		if (direction == "~"):
-		    pkgversion = string.join(pkgversion.split("-")[:len(pkgversion.split("-"))-1],"-")
-		
-		#print pkgversion
-		dbpkginfo = []
-		for list in foundIDs:
-		    idpackage = list[1]
-		    dbver = dbconn.retrieveVersion(idpackage)
-		    if (direction == "~"):
-		        if dbver.startswith(pkgversion):
-			    # found
-			    dbpkginfo.append([idpackage,dbver])
-		    else:
-			dbtag = dbconn.retrieveVersionTag(idpackage)
-			#print pkgversion
-			# media-libs/test-1.2* support
-			if pkgversion.endswith("*"):
-			    testpkgver = pkgversion[:len(pkgversion)-1]
-			    #print testpkgver
-			    combodb = dbver+dbtag
-			    combopkg = testpkgver+pkgtag
-			    #print combodb
-			    #print combopkg
-			    if combodb.startswith(combopkg):
-				dbpkginfo.append([idpackage,dbver])
-			else:
-		            if (dbver+dbtag == pkgversion+pkgtag):
-			        # found
-			        dbpkginfo.append([idpackage,dbver])
-		
-		if (not dbpkginfo):
-		    # no version available
-		    if (direction == "~"): # if the atom with the same version (any rev) is not found, fallback to the first available
-			for list in foundIDs:
-			    idpackage = list[1]
-			    dbver = dbconn.retrieveVersion(idpackage)
-			    dbpkginfo.append([idpackage,dbver])
-		
-		if (not dbpkginfo):
-		    atomMatchInRepositoryCache[atom] = {}
-		    atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
-		    atomMatchInRepositoryCache[atom]['result'] = -1,1
-		    return -1,1
-		
-		versions = []
-		for x in dbpkginfo:
-		    versions.append(x[1])
-		# who is newer ?
-		versionlist = getNewerVersion(versions)
-		newerPackage = dbpkginfo[versions.index(versionlist[0])]
-		
-	        # now look if there's another package with the same category, name, version, but different tag
-	        newerPkgName = dbconn.retrieveName(newerPackage[0])
-	        newerPkgCategory = dbconn.retrieveCategory(newerPackage[0])
-	        newerPkgVersion = dbconn.retrieveVersion(newerPackage[0])
-		newerPkgBranch = dbconn.retrieveBranch(newerPackage[0])
-	        similarPackages = dbconn.searchPackagesInBranchByNameAndVersionAndCategory(newerPkgName, newerPkgVersion, newerPkgCategory, newerPkgBranch, caseSensitive)
-		
-		#print newerPackage
-		#print similarPackages
-	        if (len(similarPackages) > 1):
-		    # gosh, there are packages with the same name, version, category
-		    # we need to parse version tag
-		    versionTags = []
-		    for pkg in similarPackages:
-		        versionTags.append(dbconn.retrieveVersionTag(pkg[1]))
-		    versiontaglist = getNewerVersionTag(versionTags)
-		    newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
-		
-		#print newerPackage
-		#print newerPackage[1]
-		atomMatchInRepositoryCache[atom] = {}
-		atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
-		atomMatchInRepositoryCache[atom]['result'] = newerPackage[0],0
-		return newerPackage[0],0
-	
-	    elif (direction.find(">") != -1) or (direction.find("<") != -1): # FIXME: add slot scopes
-		
-		#print direction+" direction"
-		# remove revision (-r0 if none)
-		if pkgversion.split("-")[len(pkgversion.split("-"))-1] == "r0":
-		    # remove
-		    pkgversion = string.join(pkgversion.split("-")[:len(pkgversion.split("-"))-1],"-")
-
-		dbpkginfo = []
-		for list in foundIDs:
-		    idpackage = list[1]
-		    dbver = dbconn.retrieveVersion(idpackage)
-		    cmp = entropyCompareVersions(pkgversion,dbver)
-		    if direction == ">": # the --deep mode should really act on this
-		        if (cmp < 0):
-			    # found
-			    dbpkginfo.append([idpackage,dbver])
-		    elif direction == "<":
-		        if (cmp > 0):
-			    # found
-			    dbpkginfo.append([idpackage,dbver])
-		    elif direction == ">=": # the --deep mode should really act on this
-		        if (cmp <= 0):
-			    # found
-			    dbpkginfo.append([idpackage,dbver])
-		    elif direction == "<=":
-		        if (cmp >= 0):
-			    # found
-			    dbpkginfo.append([idpackage,dbver])
-		
-		if (not dbpkginfo):
-		    # this version is not available
-		    atomMatchInRepositoryCache[atom] = {}
-		    atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
-		    atomMatchInRepositoryCache[atom]['result'] = -1,1
-		    return -1,1
-		
-		versions = []
-		for x in dbpkginfo:
-		    versions.append(x[1])
-		# who is newer ?
-		versionlist = getNewerVersion(versions) ## FIXME: this is already running in --deep mode, maybe adding a function that is more gentle with pulling dependencies?
-		newerPackage = dbpkginfo[versions.index(versionlist[0])]
-		
-	        # now look if there's another package with the same category, name, version, but different tag
-	        newerPkgName = dbconn.retrieveName(newerPackage[0])
-	        newerPkgCategory = dbconn.retrieveCategory(newerPackage[0])
-	        newerPkgVersion = dbconn.retrieveVersion(newerPackage[0])
-		newerPkgBranch = dbconn.retrieveBranch(newerPackage[0])
-	        similarPackages = dbconn.searchPackagesInBranchByNameAndVersionAndCategory(newerPkgName, newerPkgVersion, newerPkgCategory, newerPkgBranch)
-		
-		#print newerPackage
-		#print similarPackages
-	        if (len(similarPackages) > 1):
-		    # gosh, there are packages with the same name, version, category
-		    # we need to parse version tag
-		    versionTags = []
-		    for pkg in similarPackages:
-		        versionTags.append(dbconn.retrieveVersionTag(pkg[1]))
-		    versiontaglist = getNewerVersionTag(versionTags)
-		    newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
-		
-		#print newerPackage
-		#print newerPackage[1]
-		atomMatchInRepositoryCache[atom] = {}
-		atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
-		atomMatchInRepositoryCache[atom]['result'] = newerPackage[0],0
-		return newerPackage[0],0
-
-	    else:
-		atomMatchInRepositoryCache[atom] = {}
-		atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
-		atomMatchInRepositoryCache[atom]['result'] = -1,1
-		return -1,1
-		
-	else:
-	    
-	    # not set, just get the newer version
-	    versionIDs = []
-	    for list in foundIDs:
-		versionIDs.append(dbconn.retrieveVersion(list[1]))
-	    
-	    versionlist = getNewerVersion(versionIDs)
-	    newerPackage = foundIDs[versionIDs.index(versionlist[0])]
-	    
-	    # now look if there's another package with the same category, name, version, tag
-	    newerPkgName = dbconn.retrieveName(newerPackage[1])
-	    newerPkgCategory = dbconn.retrieveCategory(newerPackage[1])
-	    newerPkgVersion = dbconn.retrieveVersion(newerPackage[1])
-	    newerPkgBranch = dbconn.retrieveBranch(newerPackage[1])
-	    similarPackages = dbconn.searchPackagesInBranchByNameAndVersionAndCategory(newerPkgName, newerPkgVersion, newerPkgCategory, newerPkgBranch)
-	    
-	    if (len(similarPackages) > 1):
-		# gosh, there are packages with the same name, version, category
-		# we need to parse version tag
-		versionTags = []
-		for pkg in similarPackages:
-		    versionTags.append(dbconn.retrieveVersionTag(pkg[1]))
-		versiontaglist = getNewerVersionTag(versionTags)
-		newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
-	    
-	    atomMatchInRepositoryCache[atom] = {}
-	    atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
-	    atomMatchInRepositoryCache[atom]['result'] = newerPackage[1],0
-	    return newerPackage[1],0
-
-    else:
-	# package not found in any branch
-	atomMatchInRepositoryCache[atom] = {}
-	atomMatchInRepositoryCache[atom]['dbconn'] = dbconn
-	atomMatchInRepositoryCache[atom]['result'] = -1,1
-	return -1,1
-
-
-'''
-   @description: matches the package that user chose, using atomMatchInRepository searching in all available repositories.
+   @description: matches the package that user chose, using dbconnection.atomMatch searching in all available repositories.
    @input atom: user choosen package name
    @output: the matched selection, list: [package id,repository name] | if nothing found, returns: [ -1,1 ]
    @ exit errors:
 	    -1 => repository cannot be fetched online
 '''
-atomMatchCache = {}
 def atomMatch(atom, caseSentitive = True):
 
     #print atom
@@ -656,7 +318,7 @@ def atomMatch(atom, caseSentitive = True):
 	dbconn = openRepositoryDatabase(repo)
 	
 	# search
-	query = atomMatchInRepository(atom,dbconn,caseSentitive)
+	query = dbconn.atomMatch(atom,caseSentitive)
 	if query[1] == 0:
 	    # package found, add to our dictionary
 	    repoResults[repo] = query[0]
@@ -834,64 +496,6 @@ def atomMatch(atom, caseSentitive = True):
 
 
 '''
-   @description: reorder a version list
-   @input versionlist: a list
-   @output: the ordered list
-   FIXME: using Bubble Sorting is not the fastest way
-'''
-def getNewerVersion(InputVersionlist):
-    rc = False
-    versionlist = InputVersionlist[:]
-    while not rc:
-	change = False
-        for x in range(len(versionlist)):
-	    pkgA = versionlist[x]
-	    try:
-	        pkgB = versionlist[x+1]
-	    except:
-	        pkgB = "0"
-            result = entropyCompareVersions(pkgA,pkgB)
-	    #print pkgA + "<->" +pkgB +" = " + str(result)
-	    if result < 0:
-	        # swap positions
-	        versionlist[x] = pkgB
-	        versionlist[x+1] = pkgA
-		change = True
-	if (not change):
-	    rc = True
-    return versionlist
-
-'''
-   @description: reorder a list of strings converted into ascii
-   @input versionlist: a string list
-   @output: the ordered string list
-'''
-def getNewerVersionTag(InputVersionlist):
-    rc = False
-    versionlist = InputVersionlist[:]
-    while not rc:
-	change = False
-        for x in range(len(versionlist)):
-	    pkgA = versionlist[x]
-	    if (not pkgA):
-		pkgA = "0"
-	    try:
-	        pkgB = versionlist[x+1]
-		if (not pkgB):
-		    pkgB = "0"
-	    except:
-	        pkgB = "0"
-	    # translate pkgA into numeric string
-	    if pkgA < pkgB:
-	        # swap positions
-	        versionlist[x] = pkgB
-	        versionlist[x+1] = pkgA
-		change = True
-	if (not change):
-	    rc = True
-    return versionlist
-
-'''
    @description: generates the dependencies of a [id,repository name] combo.
    @input packageInfo: list composed by int(id) and str(repository name), if this one is int(0), the client database will be opened.
    @output: ordered dependency list
@@ -985,7 +589,7 @@ def filterSatisfiedDependencies(dependencies):
 		    installedRev = installed_depcache[dependency]['installedRev']
 	    else:
 		installed_depcache[dependency] = {}
-		rc = atomMatchInRepository(dependency,clientDbconn)
+		rc = clientDbconn.atomMatch(dependency)
 		if rc[0] != -1:
 		    installedVer = clientDbconn.retrieveVersion(rc[0])
 		    installedTag = clientDbconn.retrieveVersionTag(rc[0])
@@ -1071,7 +675,7 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 		    mydeps, xxx = filterSatisfiedDependencies(mydeps)
 		for dep in mydeps:
 		    remainingDeps.append(dep)
-		xmatch = atomMatchInRepository(undep,clientDbconn)
+		xmatch = clientDbconn.atomMatch(undep)
 		if (not emptydeps): # FIXME: fix emptydeps - must do something useful
 		    if xmatch[0] == -1: # if dependency is not installed
 		        tree[treedepth].append(undep)
@@ -1248,7 +852,7 @@ def generateDependsTree(idpackages, dbconn = None, deep = False):
 	        mydeps = set(clientDbconn.retrieveDependencies(idpackage))
 		_mydeps = set([])
 		for x in mydeps:
-		    match = atomMatchInRepository(x,clientDbconn)
+		    match = clientDbconn.atomMatch(x)
 		    if match and match[1] == 0:
 		        _mydeps.add(match[0])
 		mydeps = _mydeps
@@ -1741,7 +1345,7 @@ def installPackageIntoDatabase(idpackage, repository, clientDbconn = None):
 	    for depend in depends:
 		atom = depend[1]
 		iddep = depend[0]
-		match = atomMatchInRepository(atom,clientDbconn)
+		match = clientDbconn.atomMatch(atom)
 		if (match[0] != -1):
 		    clientDbconn.removeDependencyFromDependsTable(iddep)
 		    clientDbconn.addDependRelationToDependsTable(iddep,match[0])
@@ -1749,7 +1353,10 @@ def installPackageIntoDatabase(idpackage, repository, clientDbconn = None):
 	except:
 	    print "DEBUG!!! dependstable not found"
 	    regenerateDependsTable(clientDbconn)
-    
+
+    # reset atomMatch cache
+    atomMatchCache = {}
+
     if (closedb):
         clientDbconn.closeDB()
     return exitstatus
@@ -1769,6 +1376,8 @@ def removePackageFromDatabase(idpackage, clientDbconn = None):
 	clientDbconn = openClientDatabase()
 
     clientDbconn.removePackage(idpackage)
+    # reset atomMatch cache
+    atomMatchCache = {}
     
     if (closedb):
         clientDbconn.closeDB()
@@ -2237,7 +1846,7 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
 
     dataInfo = [] # when idreturn is True
     for atom in atoms:
-	result = atomMatchInRepository(atom,clientDbconn)
+	result = clientDbconn.atomMatch(atom)
 	matchInRepo = False
 	if (result[0] == -1):
 	    matchInRepo = True
@@ -2400,7 +2009,7 @@ def searchRemoval(atoms, idreturn = False, quiet = False, deep = False):
     clientDbconn = openClientDatabase()
     foundAtoms = []
     for atom in atoms:
-	match = atomMatchInRepository(atom,clientDbconn)
+	match = clientDbconn.atomMatch(atom)
 	if match[1] == 0:
 	    foundAtoms.append(match[0])
 
@@ -2547,7 +2156,7 @@ def regenerateDependsTable(dbconn, output = True):
 	iddep = depend[0]
 	if output:
 	    print_info("  "+bold("(")+darkgreen(str(count))+"/"+blue(total)+bold(")")+red(" Resolving ")+bold(atom), back = True)
-	match = atomMatchInRepository(atom,dbconn)
+	match = dbconn.atomMatch(atom)
 	if (match[0] != -1):
 	    dbconn.addDependRelationToDependsTable(iddep,match[0])
 
@@ -2589,7 +2198,7 @@ def openClientDatabase():
 def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False):
 
     # check if I am root
-    if (not checkRoot()) and (not pretend):
+    if (not isRoot()) and (not pretend):
 	print_error(red("You must run this function as superuser."))
 	return 1,-1
 
@@ -2622,7 +2231,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 def installPackages(packages, ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False):
 
     # check if I am root
-    if (not checkRoot()) and (not pretend):
+    if (not isRoot()) and (not pretend):
 	print_error(red("You must run this function as superuser."))
 	return 1,-1
     
@@ -2916,7 +2525,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 def removePackages(packages, ask = False, pretend = False, verbose = False, deps = True, deep = False):
     
     # check if I am root
-    if (not checkRoot()) and (not pretend):
+    if (not isRoot()) and (not pretend):
 	print_error(red("You must run this function as superuser."))
 	return 1,-1
     
@@ -2924,7 +2533,7 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
     
     foundAtoms = []
     for package in packages:
-	foundAtoms.append([package,atomMatchInRepository(package,clientDbconn)])
+	foundAtoms.append([package,clientDbconn.atomMatch(package)])
 
     # filter packages not found
     _foundAtoms = []

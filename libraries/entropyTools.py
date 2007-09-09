@@ -470,6 +470,64 @@ def compareVersions(ver1, ver2, silent=1):
 		r2 = 0
 	return r1 - r2
 
+'''
+   @description: reorder a version list
+   @input versionlist: a list
+   @output: the ordered list
+   FIXME: using Bubble Sorting is not the fastest way
+'''
+def getNewerVersion(InputVersionlist):
+    rc = False
+    versionlist = InputVersionlist[:]
+    while not rc:
+	change = False
+        for x in range(len(versionlist)):
+	    pkgA = versionlist[x]
+	    try:
+	        pkgB = versionlist[x+1]
+	    except:
+	        pkgB = "0"
+            result = compareVersions(pkgA,pkgB)
+	    #print pkgA + "<->" +pkgB +" = " + str(result)
+	    if result < 0:
+	        # swap positions
+	        versionlist[x] = pkgB
+	        versionlist[x+1] = pkgA
+		change = True
+	if (not change):
+	    rc = True
+    return versionlist
+
+'''
+   @description: reorder a list of strings converted into ascii
+   @input versionlist: a string list
+   @output: the ordered string list
+'''
+def getNewerVersionTag(InputVersionlist):
+    rc = False
+    versionlist = InputVersionlist[:]
+    while not rc:
+	change = False
+        for x in range(len(versionlist)):
+	    pkgA = versionlist[x]
+	    if (not pkgA):
+		pkgA = "0"
+	    try:
+	        pkgB = versionlist[x+1]
+		if (not pkgB):
+		    pkgB = "0"
+	    except:
+	        pkgB = "0"
+	    # translate pkgA into numeric string
+	    if pkgA < pkgB:
+	        # swap positions
+	        versionlist[x] = pkgB
+	        versionlist[x+1] = pkgA
+		change = True
+	if (not change):
+	    rc = True
+    return versionlist
+
 def isnumber(x):
     try:
 	t = int(x)
