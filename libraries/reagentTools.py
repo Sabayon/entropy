@@ -40,7 +40,7 @@ reagentLog = logTools.LogFile(level=etpConst['reagentloglevel'],filename = etpCo
 
 # reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFunction: example. ")
 
-def generator(package, dbconnection = None, enzymeRequestBranch = "unstable"):
+def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['branch']):
 
     reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: called -> Package: "+str(package)+" | dbconnection: "+str(dbconnection))
 
@@ -54,7 +54,7 @@ def generator(package, dbconnection = None, enzymeRequestBranch = "unstable"):
     packagename = os.path.basename(package)
 
     print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
-    etpData = extractPkgData(package,enzymeRequestBranch)
+    etpData = extractPkgData(package, enzymeRequestBranch)
     
     
     if dbconnection is None:
@@ -91,11 +91,82 @@ def generator(package, dbconnection = None, enzymeRequestBranch = "unstable"):
 
 
 # This tool is used by Entropy after enzyme, it simply parses the content of etpConst['packagesstoredir']
-def enzyme(options):
+def update(options):
 
-    reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"enzyme: called -> options: "+str(options))
+    reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"update: called -> options: "+str(options))
 
-    enzymeRequestBranch = "unstable"
+    # differential checking
+    # collect differences between the packages in the database and the ones on the system
+    
+
+    print_info(yellow(" * ")+red("Scanning the database for differences..."))
+    dbconn = databaseTools.etpDatabase(readOnly = True, noUpload = True)
+    from portageTools import getInstalledPackagesCounters, quickpkg
+    installedPackages = getInstalledPackagesCounters()
+    installedCounters = {}
+    databasePackages = dbconn.listAllPackages()
+    toBeAdded = []
+    toBeRemoved = []
+    
+    # fill lists
+    
+    # packages to be added
+    for x in installedPackages[0]:
+	installedCounters[x[1]] = 1
+	counter = dbconn.isCounterAvailable(x[1])
+	if (not counter):
+	    toBeAdded.append(x)
+
+    # packages to be removed from the database
+    databaseCounters = dbconn.listAllCounters()
+    for x in databaseCounters:
+	match = installedCounters.get(x[0], None)
+	#print match
+	if (not match):
+	    toBeRemoved.append(x[1])
+    
+    if (not toBeRemoved) and (not toBeAdded):
+	print_info(yellow(" * ")+red("Nothing to do, check later."))
+	# then exit gracefully
+	sys.exit(0)
+    
+    if (toBeRemoved):
+	print_info(yellow(" @@ ")+blue("These are the packages that would be removed from the database:"))
+	for x in toBeRemoved:
+	    atom = dbconn.retrieveAtom(x)
+	    print_info(yellow("    # ")+red(atom))
+	rc = askquestion(">>   Would you like to remove them now ?")
+	if rc == "Yes":
+	    rwdbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
+	    for x in toBeRemoved:
+		atom = rwdbconn.retrieveAtom(x)
+		print_info(yellow(" @@ ")+blue("Removing from database: ")+red(atom), back = True)
+		rwdbconn.removePackage(x)
+	    rwdbconn.closeDB()
+	    print_info(yellow(" @@ ")+blue("Database removal complete.")+red(atom))
+    
+    if (toBeAdded):
+	print_info(yellow(" @@ ")+blue("These are the packages that would be added to the add list:"))
+	for x in toBeAdded:
+	    print_info(yellow("    # ")+red(x[0]))
+	rc = askquestion(">>   Would you like to packetize them now ?")
+	if rc == "No":
+	    sys.exit(0)
+
+    # package them
+    print_info(yellow(" @@ ")+blue("Compressing packages..."))
+    for x in toBeAdded:
+	print_info(yellow("    # ")+red(x[0]+"..."))
+	rc = quickpkg(x[0],etpConst['packagesstoredir'])
+	if (rc is None):
+	    reagentLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"update: "+str(dep)+" -> quickpkg error. Cannot continue.")
+	    print_error(red("      *")+" quickpkg error for "+red(dep))
+	    print_error(red("  ***")+" Fatal error, cannot continue")
+	    sys.exit(251)
+
+    dbconn.closeDB()
+
+    enzymeRequestBranch = etpConst['branch']
     #_atoms = []
     for i in options:
         if ( i == "--branch=" and len(i.split("=")) == 2 ):
@@ -175,7 +246,7 @@ def enzyme(options):
     print_info(green(" * ")+red("Statistics: ")+blue("Entries created/updated: ")+bold(str(etpCreated))+yellow(" - ")+darkblue("Entries discarded: ")+bold(str(etpNotCreated)))
 
 # This function extracts all the info from a .tbz2 file and returns them
-def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
+def extractPkgData(package, etpBranch = etpConst['branch'], structuredLayout = False):
 
     reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractPkgData: called -> package: "+str(package))
 
@@ -374,6 +445,12 @@ def extractPkgData(package, etpBranch = "unstable", structuredLayout = False):
     else:
 	versiontag = ""
     etpData['download'] = etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+versiontag+".tbz2"
+
+    print_info(yellow(" * ")+red("Getting package counter..."),back = True)
+    # Fill category
+    f = open(tbz2TmpDir+dbCOUNTER,"r")
+    etpData['counter'] = f.readline().strip()
+    f.close()
 
     print_info(yellow(" * ")+red("Getting package category..."),back = True)
     # Fill category
@@ -636,7 +713,7 @@ def dependsTableInitialize(dbconn = None, runActivator = True):
     if dbconn == None:
 	dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
 	closedb = True
-    sys.path.append('../client')
+    sys.path.append('../client') # FIXME
     import equoTools
     equoTools.regenerateDependsTable(dbconn)
     # now taint

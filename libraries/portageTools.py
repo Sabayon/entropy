@@ -923,6 +923,25 @@ def getInstalledPackages():
 	        installedAtoms.append(pkgatom)
     return installedAtoms, len(installedAtoms)
 
+def getInstalledPackagesCounters():
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackages: called. ")
+    import os
+    appDbDir = getPortageAppDbPath()
+    dbDirs = os.listdir(appDbDir)
+    installedAtoms = []
+    for pkgsdir in dbDirs:
+	pkgdir = os.listdir(appDbDir+pkgsdir)
+	for pdir in pkgdir:
+	    pkgcat = pkgsdir.split("/")[len(pkgsdir.split("/"))-1]
+	    pkgatom = pkgcat+"/"+pdir
+	    if pkgatom.find("-MERGING-") == -1:
+		# get counter
+		f = open(appDbDir+pkgsdir+"/"+pdir+"/"+dbCOUNTER,"r")
+		counter = f.readline().strip()
+		f.close()
+	        installedAtoms.append([pkgatom,int(counter)])
+    return installedAtoms, len(installedAtoms)
+
 def packageSearch(keyword):
 
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packageSearch: called. ")

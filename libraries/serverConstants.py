@@ -27,69 +27,6 @@ import random
 import sys
 from entropyConstants import *
 
-
-# configure layman.cfg properly
-if (not os.path.isfile(etpConst['overlaysconffile'])):
-    laymanConf = """
-[MAIN]
-
-#-----------------------------------------------------------
-# Path to the config directory
-
-config_dir: /etc/layman
-
-#-----------------------------------------------------------
-# Defines the directory where overlays should be installed
-
-storage   : """+etpConst['overlaysdir']+"""
-
-#-----------------------------------------------------------
-# Remote overlay lists will be stored here
-# layman will append _md5(url).xml to each filename
-
-cache     : %(storage)s/cache
-
-#-----------------------------------------------------------
-# The list of locally installed overlays
-
-local_list: %(storage)s/overlays.xml
-
-#-----------------------------------------------------------
-# Path to the make.conf file that should be modified by
-# layman
-
-make_conf : %(storage)s/make.conf
-
-#-----------------------------------------------------------
-# URLs of the remote lists of overlays (one per line) or
-# local overlay definitions
-#
-#overlays  : http://www.gentoo.org/proj/en/overlays/layman-global.txt
-#            http://dev.gentoo.org/~wrobel/layman/global-overlays.xml
-#            http://mydomain.org/my-layman-list.xml
-#            file:///usr/portage/local/layman/my-list.xml
-
-overlays  : http://www.gentoo.org/proj/en/overlays/layman-global.txt
-
-#-----------------------------------------------------------
-# Proxy support
-#
-#proxy  : http://www.my-proxy.org:3128
-
-#-----------------------------------------------------------
-# Strict checking of overlay definitions
-#
-# Set either to "yes" or "no". If "no" layman will issue
-# warnings if an overlay definition is missing either
-# description or contact information.
-#
-nocheck  : yes
-"""
-    f = open(etpConst['overlaysconffile'],"w")
-    f.writelines(laymanConf)
-    f.flush()
-    f.close()
-
 # activator section
 if (not os.path.isfile(etpConst['activatorconf'])):
     print "CRITICAL WARNING!!! "+etpConst['activatorconf']+" does not exist"
@@ -129,31 +66,6 @@ else:
 		print "WARNING: invalid loglevel in: "+etpConst['activatorconf']
 		import time
 		time.sleep(5)
-
-# enzyme section
-if (not os.path.isfile(etpConst['enzymeconf'])):
-    print "CRITICAL WARNING!!! "+etpConst['enzymeconf']+" does not exist"
-else:
-    f = open(etpConst['enzymeconf'],"r")
-    enzymeconf = f.readlines()
-    f.close()
-    for line in enzymeconf:
-	if line.startswith("distcc-status|") and (len(line.split("|")) == 2) and (line.strip().split("|")[1] == "enabled"):
-	    etpConst['distcc-status'] = True
-	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
-	    loglevel = line.split("loglevel|")[1]
-	    try:
-		loglevel = int(loglevel)
-	    except:
-		print "ERROR: invalid loglevel in: "+etpConst['enzymeconf']
-		sys.exit(51)
-	    if (loglevel > -1) and (loglevel < 3):
-	        etpConst['enzymeloglevel'] = loglevel
-	    else:
-		print "WARNING: invalid loglevel in: "+etpConst['enzymeconf']
-		import time
-		time.sleep(5)
-		
 
 # reagent section
 if (not os.path.isfile(etpConst['reagentconf'])):
@@ -198,6 +110,7 @@ else:
 		print "WARNING: invalid loglevel in: "+etpConst['mirrorsconf']
 		import time
 		time.sleep(5)
+
 
 # spmbackend section
 if (not os.path.isfile(etpConst['spmbackendconf'])):

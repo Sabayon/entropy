@@ -22,10 +22,7 @@ STRUCTURE:
      |           ENTROPY           // master CLI interface to own them all
      |             |||
      |             |||
-     |            enzyme           // creates .tbz2 packages (automatically on some specified packages)
-     |              |
-     |              |
-    \ /          reagent           // transform metadata info of .tbz2 packages in entropy specification files
+    \ /          reagent           // transform metadata info of .tbz2 packages in entropy database entries
      '              |
      |              |
      |          activator          // does some QA tests on .etp and .tbz2 files upload data in a consistent way
@@ -42,7 +39,8 @@ STRUCTURE:
                     |
                 GUI CLIENTs
 
-Binary Packages path: creation (enzyme) --> Packages store directory --> reagent --> packages upload directory --> activator --> upload --> packages directory
 
-
-Fabio's note: Project Entropy is dedicated to my father (dead on 2007, January the 9th). Tu come me, non hai mai smesso di credere nei sogni, è questo che ci rende invincibili dentro, ma a volte fragili fuori. Non ti deluderò, ciao papà, ti voglio bene. Non dimenticarti più dei tuoi figli.
+Project Entropy is dedicated to my father (dead on 2007, January the 9th).
+	"""
+		Tu come me, non hai mai smesso di credere nei sogni, è questo che ci rende invincibili dentro, ma a volte fragili fuori. Non ti deluderò, ciao papà, ti voglio bene. Non dimenticarti più dei tuoi figli.
+	"""

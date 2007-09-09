@@ -1,8 +1,5 @@
 TODO list:
 - reagent: complete smartapps section
-- enzyme, reagent: test kernel dependent packages
-- enzyme, build(): add an option to force the continuation of the emerge queue even if a package fails
-- enzyme, add a module that integrates revdep-rebuild
 - test stabilization code
   CLIENT:
   - add conflicts dependencies support
@@ -18,7 +15,6 @@ TODO list:
 
 Project Status:
 - entropy: will handle all the three tools below
-- enzyme: complete. Bug fixing mode.
 - reagent: complete. Bug fixing mode.
 - activator: complete. Bug fixing mode.
 ============

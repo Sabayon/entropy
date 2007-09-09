@@ -991,6 +991,16 @@ class etpDatabase:
 			)
 	    )
 	
+	# counter, if != -1
+	if etpData['counter'] != -1:
+	    self.cursor.execute(
+	    'INSERT into counters VALUES '
+	    '(?,?)'
+	    , (	etpData['counter'],
+		idpackage,
+		)
+	    )
+	
 	# on disk size
 	try:
 	    self.cursor.execute(
@@ -1265,6 +1275,11 @@ class etpDatabase:
 	self.cursor.execute('DELETE FROM binkeywords WHERE idpackage = '+idpackage)
 	# systempackage
 	self.cursor.execute('DELETE FROM systempackages WHERE idpackage = '+idpackage)
+	try:
+	    # cpunter
+	    self.cursor.execute('DELETE FROM counters WHERE idpackage = '+idpackage)
+	except:
+	    pass
 	try:
 	    # on disk sizes
 	    self.cursor.execute('DELETE FROM sizes WHERE idpackage = '+idpackage)
@@ -1548,6 +1563,7 @@ class etpDatabase:
 	data['download'] = self.retrieveDownloadURL(idpackage)
 	data['digest'] = self.retrieveDigest(idpackage)
 	data['sources'] = self.retrieveSources(idpackage)
+	data['counter'] = self.retrieveCounter(idpackage)
 	
 	if (self.isSystemPackage(idpackage)):
 	    data['systempackage'] = 'xxx'
@@ -1699,6 +1715,33 @@ class etpDatabase:
 	if (self.xcache):
 	    self.databaseCache[int(idpackage)]['retrieveHomepage'] = home
 	return home
+
+    def retrieveCounter(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveCounter: retrieving Counter for package ID "+str(idpackage))
+	
+	''' caching '''
+	if (self.xcache):
+	    cached = self.databaseCache.get(int(idpackage), None)
+	    if cached:
+	        rslt = self.databaseCache[int(idpackage)].get('retrieveCounter',None)
+	        if rslt:
+		    return rslt
+	    else:
+	        self.databaseCache[int(idpackage)] = {}
+
+	counter = -1
+	try:
+	    self.cursor.execute('SELECT "counter" FROM counters WHERE idpackage = "'+str(idpackage)+'"')
+	    for row in self.cursor:
+	        counter = row[0]
+	        break
+	except:
+	    pass
+
+	''' caching '''
+	if (self.xcache):
+	    self.databaseCache[int(idpackage)]['retrieveCounter'] = counter
+	return counter
 
     # in bytes
     def retrieveSize(self, idpackage):
@@ -2487,6 +2530,18 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isUseflagAvailable: "+useflag+" available.")
 	return result
 
+    def isCounterAvailable(self,counter):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCounterAvailable: called.")
+	result = False
+	self.cursor.execute('SELECT counter FROM counters WHERE counter = "'+str(counter)+'"')
+	for row in self.cursor:
+	    result = True
+	if (result):
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isCounterAvailable: "+str(counter)+" not available.")
+	else:
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCounterAvailable: "+str(counter)+" available.")
+	return result
+
     def isLicenseAvailable(self,license):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLicenseAvailable: called.")
 	result = -1
@@ -2721,6 +2776,14 @@ class etpDatabase:
     def listAllPackages(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllPackages: called.")
 	self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo')
+	result = []
+	for row in self.cursor:
+	    result.append(row)
+	return result
+
+    def listAllCounters(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllCounters: called.")
+	self.cursor.execute('SELECT counter,idpackage FROM counters')
 	result = []
 	for row in self.cursor:
 	    result.append(row)

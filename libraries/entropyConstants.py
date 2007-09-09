@@ -61,6 +61,7 @@ etpData = {
     'config_protect': u"", # list of directories that contain files that should not be overwritten
     'config_protect_mask': u"", # list of directories that contain files that should be overwritten
     'disksize': u"", # size on the hard disk in bytes (integer)
+    'counter': u"", # aka. COUNTER file
 }
 
 # Entropy database SQL initialization Schema and data structure
@@ -96,6 +97,7 @@ DROP TABLE IF EXISTS installedtable;
 DROP TABLE IF EXISTS dependstable;
 DROP TABLE IF EXISTS sizes;
 DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS counters;
 """
 
 etpSQLInit = """
@@ -241,6 +243,11 @@ CREATE TABLE messages (
     message VARCHAR
 );
 
+CREATE TABLE counters (
+    counter INTEGER PRIMARY KEY,
+    idpackage INTEGER
+);
+
 """
 # ^^ add dependstable?
 
@@ -303,13 +310,12 @@ etpConst = {
     'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
     'entropyconf': ETP_CONF_DIR+"/entropy.conf", # entropy.conf file
     'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
-    'enzymeconf': ETP_CONF_DIR+"/enzyme.conf", # enzyme.conf file
     'activatorconf': ETP_CONF_DIR+"/activator.conf", # activator.conf file
     'reagentconf': ETP_CONF_DIR+"/reagent.conf", # reagent.conf file
     'databaseconf': ETP_CONF_DIR+"/database.conf", # database.conf file
-    'spmbackendconf': ETP_CONF_DIR+"/spmbackend.conf", # Source Package Manager backend configuration (Portage now)
     'mirrorsconf': ETP_CONF_DIR+"/mirrors.conf", # mirrors.conf file
     'remoteconf': ETP_CONF_DIR+"/remote.conf", # remote.conf file
+    'spmbackendconf': ETP_CONF_DIR+"/spmbackend.conf", # spmbackend.conf file
     'equoconf': ETP_CONF_DIR+"/equo.conf", # equo.conf file
     'activatoruploaduris': [], # list of URIs that activator can use to upload files (parsed from activator.conf)
     'activatordownloaduris': [], # list of URIs that activator can use to fetch data
@@ -332,7 +338,6 @@ etpConst = {
     'databaseloglevel': 1, # Database log level (default: 1 - see database.conf for more info)
     'mirrorsloglevel': 1, # Mirrors log level (default: 1 - see mirrors.conf for more info)
     'remoteloglevel': 1, # Remote handlers (/handlers) log level (default: 1 - see remote.conf for more info)
-    'enzymeloglevel': 1 , # Enzyme log level (default: 1 - see enzyme.conf for more info)
     'reagentloglevel': 1 , # Reagent log level (default: 1 - see reagent.conf for more info)
     'activatorloglevel': 1, # # Activator log level (default: 1 - see activator.conf for more info)
     'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
@@ -345,14 +350,12 @@ etpConst = {
     'remotelogfile': ETP_SYSLOG_DIR+"/remote.log", # Mirrors operations log file
     'spmbackendlogfile': ETP_SYSLOG_DIR+"/spmbackend.log", # Source Package Manager backend configuration log file
     'databaselogfile': ETP_SYSLOG_DIR+"/database.log", # Database operations log file
-    'enzymelogfile': ETP_SYSLOG_DIR+"/enzyme.log", # Enzyme operations log file
     'reagentlogfile': ETP_SYSLOG_DIR+"/reagent.log", # Reagent operations log file
     'activatorlogfile': ETP_SYSLOG_DIR+"/activator.log", # Activator operations log file
     'entropylogfile': ETP_SYSLOG_DIR+"/entropy.log", # Activator operations log file
     'equologfile': ETP_SYSLOG_DIR+"/equo.log", # Activator operations log file
     
     
-    'distcc-status': False, # used by Enzyme, if True distcc is enabled
     'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file
     'etpdatabasedir': ETP_DIR+ETP_DBDIR,
     'etpdatabasefilepath': ETP_DIR+ETP_DBDIR+"/"+ETP_DBFILE,
@@ -568,6 +571,7 @@ dbNEEDED = "NEEDED"
 dbOR = "|or|"
 dbKEYWORDS = "KEYWORDS"
 dbCONTENTS = "CONTENTS"
+dbCOUNTER = "COUNTER"
 dbPORTAGE_ELOG_OPTS = 'PORTAGE_ELOG_CLASSES="warn info log" PORTAGE_ELOG_SYSTEM="save" PORT_LOGDIR="'+etpConst['logdir']+'"'
 
 # Portage variables reference
