@@ -126,6 +126,17 @@ def extractXpak(tbz2File,tmpdir = None):
     tbz2.decompose(tmpdir)
     return tmpdir
 
+def aggregateEntropyDb(tbz2file,dbfile):
+    f = open(tbz2file,"abw")
+    g = open(dbfile,"rb")
+    dbx = g.readlines()
+    # append tag
+    f.write(etpConst['databasestarttag'])
+    for x in dbx:
+	f.write(x)
+    f.flush()
+    f.close()
+
 # This function creates the .hash file related to the given package file
 # @returns the complete hash file path
 # FIXME: add more hashes, SHA1 for example

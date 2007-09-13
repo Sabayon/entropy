@@ -56,7 +56,6 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
     print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
     etpData = extractPkgData(package, enzymeRequestBranch)
     
-    
     if dbconnection is None:
 	dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
     else:
@@ -81,7 +80,7 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry has been updated. Revision: ")+bold(str(revision)))
 	return True, newFileName, idpk
     elif (accepted) and (revision == 0):
-	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" newly created.")
+	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" newly created or version bumped.")
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry newly created."))
 	return True, newFileName, idpk
     else:
@@ -101,7 +100,7 @@ def update(options):
 
     print_info(yellow(" * ")+red("Scanning the database for differences..."))
     dbconn = databaseTools.etpDatabase(readOnly = True, noUpload = True)
-    from portageTools import getInstalledPackagesCounters, quickpkg
+    from portageTools import getInstalledPackagesCounters, quickpkg, getPackageSlot
     installedPackages = getInstalledPackagesCounters()
     installedCounters = {}
     databasePackages = dbconn.listAllPackages()
@@ -123,7 +122,22 @@ def update(options):
 	match = installedCounters.get(x[0], None)
 	#print match
 	if (not match):
-	    toBeRemoved.append(x[1])
+	    # check if the package is in toBeAdded
+	    if (toBeAdded):
+	        atomkey = dep_getkey(dbconn.retrieveAtom(x[1]))
+		atomslot = dbconn.retrieveSlot(x[1])
+		add = True
+		for pkgdata in toBeAdded:
+		    addslot = getPackageSlot(pkgdata[0])
+		    addkey = dep_getkey(pkgdata[0])
+		    if (atomkey == addkey) and (atomslot == addslot):
+			# do not add to toBeRemoved
+			add = False
+			break
+		if add:
+		    toBeRemoved.append(x[1])
+	    else:
+	        toBeRemoved.append(x[1])
     
     if (not toBeRemoved) and (not toBeAdded):
 	print_info(yellow(" * ")+red("Nothing to do, check later."))
@@ -143,10 +157,10 @@ def update(options):
 		print_info(yellow(" @@ ")+blue("Removing from database: ")+red(atom), back = True)
 		rwdbconn.removePackage(x)
 	    rwdbconn.closeDB()
-	    print_info(yellow(" @@ ")+blue("Database removal complete.")+red(atom))
+	    print_info(yellow(" @@ ")+blue("Database removal complete."))
     
     if (toBeAdded):
-	print_info(yellow(" @@ ")+blue("These are the packages that would be added to the add list:"))
+	print_info(yellow(" @@ ")+blue("These are the packages that would be added/updated to the add list:"))
 	for x in toBeAdded:
 	    print_info(yellow("    # ")+red(x[0]))
 	rc = askquestion(">>   Would you like to packetize them now ?")
@@ -200,35 +214,26 @@ def update(options):
 	if (rc):
 	    etpCreated += 1
 	    # move the file with its new name
-	    spawnCommand("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/"+newFileName+" -f")
-	    
+	    spawnCommand("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName+" -f")
 	    print_info(yellow(" * ")+red("Injecting database information into ")+bold(newFileName)+red(", please wait..."), back = True)
-	    # uncompressing
-	    tdir = etpConst['packagestmpdir']+"/injection"
-	    if os.path.isdir(tdir):
-	        os.system("rm -rf "+tdir)
-	    os.makedirs(tdir)
-	    os.mkdir(tdir+etpConst['packagecontentdir']) # content directory
-	    os.mkdir(tdir+etpConst['packagedbdir']) # content directory
-	    dbpath = tdir+etpConst['packagedbdir']+etpConst['packagedbfile']
-	    # fill /package
-	    spawnCommand("mv "+etpConst['packagessuploaddir']+"/"+newFileName+" "+tdir+etpConst['packagecontentdir']+"/")
+	    
+	    dbpath = etpConst['packagestmpdir']+"/"+etpConst['packagedbfile']
 	    # create db
 	    pkgDbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True, dbFile = dbpath, clientDatabase = True)
 	    pkgDbconn.initializeDatabase()
 	    data = dbconn.getPackageData(idpk)
 	    rev = dbconn.retrieveRevision(idpk)
 	    # inject
-	    pkgDbconn.addPackage(data, revision = rev, wantedBranch = data['branch'], addBranch = False)
+	    pkgDbconn.addPackage(data, revision = rev, wantedBranch = data['branch'])
 	    pkgDbconn.closeDB()
-	    # recompose the new file
-	    compressTarBz2(etpConst['packagessuploaddir']+"/"+newFileName,tdir+"/")
-	    # update the checksum in the database
-	    digest = md5sum(etpConst['packagessuploaddir']+"/"+newFileName)
+	    # append the database to the new file
+	    aggregateEntropyDb(tbz2file = etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName, dbfile = dbpath)
+	    
+	    digest = md5sum(etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName)
 	    dbconn.setDigest(idpk,digest)
-	    hashFilePath = createHashFile(etpConst['packagessuploaddir']+"/"+newFileName)
-	    # remove tdir
-	    spawnCommand("rm -rf "+tdir)
+	    hashFilePath = createHashFile(etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName)
+	    # remove garbage
+	    spawnCommand("rm -rf "+dbpath)
 	    print_info(yellow(" * ")+red("Database injection complete for ")+newFileName)
 	    
 	else:
@@ -246,7 +251,7 @@ def update(options):
     print_info(green(" * ")+red("Statistics: ")+blue("Entries created/updated: ")+bold(str(etpCreated))+yellow(" - ")+darkblue("Entries discarded: ")+bold(str(etpNotCreated)))
 
 # This function extracts all the info from a .tbz2 file and returns them
-def extractPkgData(package, etpBranch = etpConst['branch'], structuredLayout = False):
+def extractPkgData(package, etpBranch = etpConst['branch']):
 
     reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractPkgData: called -> package: "+str(package))
 
@@ -257,11 +262,6 @@ def extractPkgData(package, etpBranch = etpConst['branch'], structuredLayout = F
     print_info(yellow(" * ")+red("Getting package name/version..."),back = True)
     tbz2File = package
     package = package.split(".tbz2")[0]
-    if package.split("-")[len(package.split("-"))-1].startswith("unstable"):
-        package = string.join(package.split("-unstable")[:len(package.split("-unstable"))-1],"-unstable")
-    if package.split("-")[len(package.split("-"))-1].startswith("stable"):
-	etpBranch = "stable"
-        package = string.join(package.split("-stable")[:len(package.split("-stable"))-1],"-stable")
     if package.split("-")[len(package.split("-"))-1].startswith("t"):
         package = string.join(package.split("-t")[:len(package.split("-t"))-1],"-t")
     
@@ -288,16 +288,6 @@ def extractPkgData(package, etpBranch = etpConst['branch'], structuredLayout = F
     print_info(yellow(" * ")+red("Getting package md5..."),back = True)
     # .tbz2 md5
     etpData['digest'] = md5sum(tbz2File)
-
-    if (structuredLayout):
-	# extract tbz2
-	structuredPackageDir = etpConst['packagestmpdir']+"/"+etpData['name']+"-"+etpData['version']+"-structured"
-	if os.path.isdir(structuredPackageDir):
-	    spawnCommand("rm -rf "+structuredPackageDir)
-	os.makedirs(structuredPackageDir)
-	uncompressTarBz2(tbz2File,structuredPackageDir)
-	tbz2filename = os.path.basename(tbz2File)
-	tbz2File = structuredPackageDir+etpConst['packagecontentdir']+"/"+tbz2filename
 
     print_info(yellow(" * ")+red("Getting package mtime..."),back = True)
     # .tbz2 md5
@@ -434,9 +424,6 @@ def extractPkgData(package, etpBranch = etpConst['branch'], structuredLayout = F
     # add strict kernel dependency
     # done below
     
-    # modify etpData['download']
-    # done below
-
     print_info(yellow(" * ")+red("Getting package download URL..."),back = True)
     # Fill download relative URI
     if (kernelDependentModule):
@@ -444,7 +431,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], structuredLayout = F
 	versiontag = "-"+etpData['versiontag']
     else:
 	versiontag = ""
-    etpData['download'] = etpConst['binaryurirelativepath']+etpData['name']+"-"+etpData['version']+versiontag+".tbz2"
+    etpData['download'] = etpConst['binaryurirelativepath']+"/"+etpData['branch']+"/"+etpData['name']+"-"+etpData['version']+versiontag+".tbz2"
 
     print_info(yellow(" * ")+red("Getting package counter..."),back = True)
     # Fill category
@@ -700,9 +687,6 @@ def extractPkgData(package, etpBranch = etpConst['branch'], structuredLayout = F
     
     # removing temporary directory
     os.system("rm -rf "+tbz2TmpDir)
-    if (structuredLayout):
-	if os.path.isdir(structuredPackageDir):
-	    spawnCommand("rm -rf "+structuredPackageDir)
 
     print_info(yellow(" * ")+red("Done"),back = True)
     return etpData
@@ -885,6 +869,7 @@ def smartgenerator(atomInfo):
     # check if the application package is available, otherwise, download
     pkgfilepath = dbconn.retrieveDownloadURL(idpackage)
     pkgcontent = dbconn.retrieveContent(idpackage)
+    pkgbranch = dbconn.retrieveBranch(idpackage)
     pkgfilename = os.path.basename(pkgfilepath)
     pkgname = pkgfilename.split(".tbz2")[0]
     
@@ -915,18 +900,14 @@ def smartgenerator(atomInfo):
     #print "DEBUG: "+pkgtmpdir
     if os.path.isdir(pkgtmpdir):
 	spawnCommand("rm -rf "+pkgtmpdir)
-    os.makedirs(pkgtmpdir+"/content")
-    mainBinaryPath = etpConst['packagesbindir']+"/"+pkgfilename
+    mainBinaryPath = etpConst['packagesbindir']+"/"+pkgbranch+"/"+pkgfilename
     print_info(green(" * ")+red("Unpacking main package ")+bold(str(pkgfilename)))
     uncompressTarBz2(mainBinaryPath,pkgtmpdir) # first unpack
-    uncompressTarBz2(pkgtmpdir+etpConst['packagecontentdir']+"/"+pkgfilename,pkgtmpdir+"/content") # second unpack
-    if os.path.isfile(pkgtmpdir+etpConst['packagecontentdir']+"/"+pkgfilename):
-	os.remove(pkgtmpdir+etpConst['packagecontentdir']+"/"+pkgfilename)
 
     binaryExecs = []
     for file in pkgcontent:
 	# remove /
-	filepath = pkgtmpdir+"/content"+file
+	filepath = pkgtmpdir+file
 	import commands
 	if os.access(filepath,os.X_OK):
 	    # test if it's an exec
@@ -937,16 +918,12 @@ def smartgenerator(atomInfo):
 
 
     # now uncompress all the rest
-    contentdir = pkgtmpdir+"/content"
     for dep in pkgs:
 	download = os.path.basename(dbconn.retrieveDownloadURL(dep[0]))
+	depbranch = dbconn.retrieveBranch(dep[0])
 	print_info(green(" * ")+red("Unpacking dependency package ")+bold(str(download)))
-	deppath = etpConst['packagesbindir']+"/"+download
+	deppath = etpConst['packagesbindir']+"/"+depbranch+"/"+download
 	uncompressTarBz2(deppath,pkgtmpdir) # first unpack
-	uncompressTarBz2(pkgtmpdir+etpConst['packagecontentdir']+"/"+download,contentdir) # second unpack
-        if os.path.isfile(pkgtmpdir+etpConst['packagecontentdir']+"/"+download):
-	    os.remove(pkgtmpdir+etpConst['packagecontentdir']+"/"+download)
-	
 	
 
     # remove unwanted files (header files)

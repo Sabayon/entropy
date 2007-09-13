@@ -75,29 +75,35 @@ def database(options):
 	activatorTools.packages(["sync","--ask"])
 	
 	# now fill the database
-	pkglist = os.listdir(etpConst['packagesbindir'])
-	# filter .md5
-	_pkglist = []
-	for i in pkglist:
-	    if not i.endswith(etpConst['packageshashfileext']):
-		_pkglist.append(i)
-	pkglist = _pkglist
+	pkgbranches = os.listdir(etpConst['packagesbindir'])
+	pkgbranches = [x for x if os.path.isdir(x)]
+	
+	for mybranch in pkgbranches:
+	
+	    pkglist = os.listdir(etpConst['packagesbindir']+"/"+mybranch)
+	
+	    # filter .md5
+	    _pkglist = []
+	    for i in pkglist:
+	        if not i.endswith(etpConst['packageshashfileext']):
+		    _pkglist.append(i)
+	    pkglist = _pkglist
 
-	print_info(green(" * ")+red("Reinitializing Entropy database using Packages in the repository ..."))
-	currCounter = 0
-	atomsnumber = len(pkglist)
-	import reagentTools
-	for pkg in pkglist:
-	    print_info(green(" * ")+red("Analyzing: ")+bold(pkg), back = True)
-	    currCounter += 1
-	    print_info(green("  (")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."))
-	    etpData = reagentTools.extractPkgData(package = etpConst['packagesbindir']+"/"+pkg, structuredLayout = True)
-	    # remove shait
-	    entropyTools.spawnCommand("rm -rf "+etpConst['packagestmpdir']+"/"+pkg+"*")
-	    # fill the db entry
-	    idpk, revision, etpDataUpdated, accepted = dbconn.addPackage(etpData)
+	    print_info(green(" * ")+red("Reinitializing Entropy database using Packages in the repository ..."))
+	    currCounter = 0
+	    atomsnumber = len(pkglist)
+	    import reagentTools
+	    for pkg in pkglist:
+	        print_info(darkgreen(" [")+red(mybranch)+darkgreen("] ")+red("Analyzing: ")+bold(pkg), back = True)
+	        currCounter += 1
+	        print_info(darkgreen(" [")+red(mybranch)+darkgreen("] ")+green("  (")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."))
+	        etpData = reagentTools.extractPkgData(package = etpConst['packagesbindir']+"/"+mybranch+"/"+pkg, mybranch)
+	        # remove shait
+	        entropyTools.spawnCommand("rm -rf "+etpConst['packagestmpdir']+"/"+pkg+"*")
+	        # fill the db entry
+	        idpk, revision, etpDataUpdated, accepted = dbconn.addPackage(etpData, wantedBranch = mybranch)
 	    
-	    dbconn.commitChanges()
+	        dbconn.commitChanges()
 	
 	# regen dependstable
         reagentTools.dependsTableInitialize(dbconn, False)
@@ -866,7 +872,7 @@ class etpDatabase:
     # this function manages the submitted package
     # if it does not exist, it fires up addPackage
     # otherwise it fires up updatePackage
-    def handlePackage(self, etpData, addBranch = True, forcedRevision = -1, forcedBranch = False):
+    def handlePackage(self, etpData, forcedRevision = -1, forcedBranch = False):
 
 	if (self.readOnly):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: Cannot handle this in read only.")
@@ -882,16 +888,16 @@ class etpDatabase:
 	    if (forcedRevision < 0):
 		forcedRevision = 0
 	    if (forcedBranch):
-	        idpk, revision, etpDataUpdated, accepted = self.addPackage(etpData, addBranch = addBranch, revision = forcedRevision, wantedBranch = etpData['branch'])
+	        idpk, revision, etpDataUpdated, accepted = self.addPackage(etpData, revision = forcedRevision, wantedBranch = etpData['branch'])
 	    else:
-		idpk, revision, etpDataUpdated, accepted = self.addPackage(etpData, addBranch = addBranch, revision = forcedRevision)
+		idpk, revision, etpDataUpdated, accepted = self.addPackage(etpData, revision = forcedRevision)
 	else:
 	    idpk, revision, etpDataUpdated, accepted = self.updatePackage(etpData, forcedRevision) # branch and revision info will be overwritten
 	return idpk, revision, etpDataUpdated, accepted
 
 
     # FIXME: default add an unstable package ~~ use indexes
-    def addPackage(self, etpData, revision = 0, wantedBranch = "unstable", addBranch = True):
+    def addPackage(self, etpData, revision = 0, wantedBranch = "unstable"):
 
 	if (self.readOnly):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: Cannot handle this in read only.")
@@ -899,12 +905,6 @@ class etpDatabase:
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: called.")
 	
-	if (addBranch):
-	    # Handle package name
-	    etpData['download'] = etpData['download'].split(".tbz2")[0]
-	    # add branch name
-	    etpData['download'] += "-"+wantedBranch+".tbz2"
-
 	# if a similar package, in the same branch exists, mark for removal
 	searchsimilar = self.searchSimilarPackages(etpData['category']+"/"+etpData['name'], branch = wantedBranch)
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"addPackage: here is the list of similar packages (that will be removed) found for "+etpData['category']+"/"+etpData['name']+": "+str(searchsimilar))

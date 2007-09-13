@@ -379,9 +379,7 @@ etpConst = {
 				'/lib/modules', '/etc/env.d', '/etc/gconf', '/etc/runlevels', '/lib/splash/cache', '/usr/share/mime', '/etc/portage'
     ],
     'officialrepositoryname': "sabayonlinux.org", # our official repository name
-    'packagedbdir': "/db", # directory of the database file in the .tbz2 package
-    'packagedbfile': "/data.db", # database file in the directory above
-    'packagecontentdir': "/package", # directory of the package file in the .tbz2 package
+    'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|", # tag to append to .tbz2 file before entropy database
     'dependenciesfilter': ['sys-devel/automake','sys-devel/autoconf','sys-devel/libtool','dev-util/pkgconfig','sys-devel/make'],
     'developmentcategories': ['sys-devel','dev-'],
     'pidfile': "/var/run/equo.pid",
@@ -462,6 +460,15 @@ if not os.path.isdir(etpConst['entropyworkdir']):
     else:
         print "you need to run this as root at least once."
         sys.exit(100)
+
+
+# check for packages and upload directories
+if os.getuid() == 0:
+    for x in etpConst['branches']:
+        if not os.path.isdir(etpConst['packagesbindir']+"/"+x):
+	    os.makedirs(etpConst['packagesbindir']+"/"+x)
+        if not os.path.isdir(etpConst['packagessuploaddir']+"/"+x):
+	    os.makedirs(etpConst['packagessuploaddir']+"/"+x)
 
 # entropy section
 if (not os.path.isfile(etpConst['entropyconf'])):

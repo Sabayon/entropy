@@ -1329,7 +1329,7 @@ def installPackageIntoDatabase(idpackage, repository, clientDbconn = None):
     if clientDbconn == None:
 	closedb = True
 	clientDbconn = openClientDatabase()
-    idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = rev, forcedBranch = True, addBranch = False)
+    idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = rev, forcedBranch = True)
     del x
     if (not status):
 	clientDbconn.closeDB()
@@ -1606,7 +1606,7 @@ def database(options):
 	    # filling
 	    print_info("  "+bold("(")+darkgreen(str(count))+"/"+blue(total)+bold(")")+red(" Injecting ")+bold(atomName), back = True)
 	    # fill client database
-	    idpk, rev, xx, status = clientDbconn.addPackage(atomInfo, wantedBranch = atomBranch, addBranch = False)
+	    idpk, rev, xx, status = clientDbconn.addPackage(atomInfo, wantedBranch = atomBranch)
 	    # now add the package to the installed table
 	    clientDbconn.addPackageToInstalledTable(idpk,x[1])
 
