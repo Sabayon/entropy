@@ -76,7 +76,7 @@ def database(options):
 	
 	# now fill the database
 	pkgbranches = os.listdir(etpConst['packagesbindir'])
-	pkgbranches = [x for x if os.path.isdir(x)]
+	pkgbranches = [x for x in pkgbranches if os.path.isdir(x)]
 	
 	for mybranch in pkgbranches:
 	
@@ -97,7 +97,7 @@ def database(options):
 	        print_info(darkgreen(" [")+red(mybranch)+darkgreen("] ")+red("Analyzing: ")+bold(pkg), back = True)
 	        currCounter += 1
 	        print_info(darkgreen(" [")+red(mybranch)+darkgreen("] ")+green("  (")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."))
-	        etpData = reagentTools.extractPkgData(package = etpConst['packagesbindir']+"/"+mybranch+"/"+pkg, mybranch)
+	        etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+mybranch+"/"+pkg, mybranch)
 	        # remove shait
 	        entropyTools.spawnCommand("rm -rf "+etpConst['packagestmpdir']+"/"+pkg+"*")
 	        # fill the db entry
