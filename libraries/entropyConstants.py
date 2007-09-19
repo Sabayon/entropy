@@ -355,7 +355,6 @@ etpConst = {
     'entropylogfile': ETP_SYSLOG_DIR+"/entropy.log", # Activator operations log file
     'equologfile': ETP_SYSLOG_DIR+"/equo.log", # Activator operations log file
     
-    
     'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file
     'etpdatabasedir': ETP_DIR+ETP_DBDIR,
     'etpdatabasefilepath': ETP_DIR+ETP_DBDIR+"/"+ETP_DBFILE,

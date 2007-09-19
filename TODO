@@ -13,6 +13,7 @@ TODO list:
   - write a dependency reordering function
   - rewrite branches management
   - equo: during removal/add handle /etc/init.d/* files ?
+  - equo: add support for PDEPEND
 
 Project Status:
 - entropy: will handle all the three tools below

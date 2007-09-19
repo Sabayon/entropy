@@ -76,7 +76,7 @@ def database(options):
 	
 	# now fill the database
 	pkgbranches = os.listdir(etpConst['packagesbindir'])
-	pkgbranches = [x for x in pkgbranches if os.path.isdir(x)]
+	pkgbranches = [x for x in pkgbranches if os.path.isdir(etpConst['packagesbindir']+"/"+x)]
 	
 	for mybranch in pkgbranches:
 	
@@ -241,7 +241,7 @@ def database(options):
 	connection.close()
 	print_info(green(" * ")+red("Entropy database file ")+bold(mypath[0])+red(" successfully initialized."))
 
-    elif (options[0] == "stabilize") or (options[0] == "unstabilize"):
+    elif (options[0] == "stabilize") or (options[0] == "unstabilize"): # FIXME: adapt to the new branches structure
 
 	if options[0] == "stabilize":
 	    stable = True
@@ -2818,6 +2818,7 @@ class etpDatabase:
 	        result.append(row)
 	return result
 
+    ### DEPRECATED
     def listAllPackagesTbz2(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllPackagesTbz2: called.")
         result = []
@@ -2826,24 +2827,32 @@ class etpDatabase:
 	    idpackage = pkg[1]
 	    url = self.retrieveDownloadURL(idpackage)
 	    if url:
+		result.append(url)
+        # filter dups?
+	if (result):
+            result = list(set(result))
+	    result.sort()
+	return result
+
+    def listBranchPackagesTbz2(self, branch):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listBranchPackagesTbz2: called with "+str(branch))
+        result = []
+        pkglist = self.listBranchPackages(branch)
+        for pkg in pkglist:
+	    idpackage = pkg[1]
+	    url = self.retrieveDownloadURL(idpackage)
+	    if url:
 		result.append(os.path.basename(url))
         # filter dups?
 	if (result):
             result = list(set(result))
+	    result.sort()
 	return result
 
-    def listStablePackages(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listStablePackages: called.")
+    def listBranchPackages(self, branch):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listBranchPackages: called with "+str(branch))
 	result = []
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE branch = "stable"')
-	for row in self.cursor:
-	    result.append(row)
-	return result
-
-    def listUnstablePackages(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listUnstablePackages: called. ")
-	result = []
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE branch = "unstable"')
+	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE branch = "'+str(branch)+'"')
 	for row in self.cursor:
 	    result.append(row)
 	return result

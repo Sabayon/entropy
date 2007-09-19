@@ -130,6 +130,9 @@ def update(options):
 		for pkgdata in toBeAdded:
 		    addslot = getPackageSlot(pkgdata[0])
 		    addkey = dep_getkey(pkgdata[0])
+		    # workaround for ebuilds not having slot
+		    if addslot == None:
+			addslot = ''
 		    if (atomkey == addkey) and (atomslot == addslot):
 			# do not add to toBeRemoved
 			add = False
@@ -217,7 +220,7 @@ def update(options):
 	    spawnCommand("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName+" -f")
 	    print_info(yellow(" * ")+red("Injecting database information into ")+bold(newFileName)+red(", please wait..."), back = True)
 	    
-	    dbpath = etpConst['packagestmpdir']+"/"+etpConst['packagedbfile']
+	    dbpath = etpConst['packagestmpdir']+"/"+"data.db"
 	    # create db
 	    pkgDbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True, dbFile = dbpath, clientDatabase = True)
 	    pkgDbconn.initializeDatabase()
@@ -431,7 +434,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 	versiontag = "-"+etpData['versiontag']
     else:
 	versiontag = ""
-    etpData['download'] = etpConst['binaryurirelativepath']+"/"+etpData['branch']+"/"+etpData['name']+"-"+etpData['version']+versiontag+".tbz2"
+    etpData['download'] = etpConst['binaryurirelativepath']+etpData['branch']+"/"+etpData['name']+"-"+etpData['version']+versiontag+".tbz2"
 
     print_info(yellow(" * ")+red("Getting package counter..."),back = True)
     # Fill category

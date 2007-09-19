@@ -42,7 +42,7 @@ timeoutsocket.setDefaultSocketTimeout(60)
 # @returns hex: if the file exists
 # @returns None: if the server does not support HTTP handlers
 # @returns None: if the file is not found
-def getRemotePackageChecksum(serverName,filename):
+def getRemotePackageChecksum(serverName,filename, branch):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getRemotePackageChecksum: called.")
     # etpHandlers['md5sum'] is the command
     # create the request
@@ -52,7 +52,7 @@ def getRemotePackageChecksum(serverName,filename):
 	# not found, does not support HTTP handlers
 	return None
     
-    request = url+etpHandlers['md5sum']+filename
+    request = url+etpHandlers['md5sum']+filename+"&branch="+branch
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getRemotePackageChecksum: requested url -> "+request)
     
     # now pray the server
