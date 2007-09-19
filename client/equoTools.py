@@ -1081,6 +1081,12 @@ def removeFile(idpackage, clientDbconn = None, newContent = []):
 	file = file.encode(sys.getfilesystemencoding())
 	try:
 	    os.remove(file)
+	    # also remove py[c,o]?
+	    if file.endswith(".py"):
+		if os.path.exists(file+"c"):
+		    os.remove(file+"c")
+		if os.path.exists(file+"o"):
+		    os.remove(file+"o")
 	    #print file
 	    # is now empty?
 	    filedir = os.path.dirname(file)
@@ -1123,10 +1129,7 @@ def installFile(infoDict, clientDbconn = None):
     imageDir = unpackDir+"/image"
     os.makedirs(imageDir)
     
-    rc = uncompressTarBz2(pkgpath,unpackDir)
-    if (rc != 0):
-	return rc
-    rc = uncompressTarBz2(unpackDir+etpConst['packagecontentdir']+"/"+package,imageDir)
+    rc = uncompressTarBz2(pkgpath,imageDir)
     if (rc != 0):
 	return rc
     if not os.path.isdir(imageDir):
@@ -1196,8 +1199,6 @@ def installFile(infoDict, clientDbconn = None):
 	    except:
 		pass # sometimes, gentoo packages are fucked up and contain broken symlinks
 
-    shutil.rmtree(imageDir,True) # rm and ignore errors
-    
     if (removePackage != -1):
 	# doing a diff removal
 	if (etpConst['gentoo-compat']):
@@ -1210,13 +1211,13 @@ def installFile(infoDict, clientDbconn = None):
 	clientDbconn.closeDB()
 
     if (etpConst['gentoo-compat']):
-	rc = installPackageIntoGentooDatabase(infoDict,unpackDir+etpConst['packagecontentdir']+"/"+package)
+	rc = installPackageIntoGentooDatabase(infoDict,pkgpath)
 	if (rc >= 0):
 	    shutil.rmtree(unpackDir,True)
 	    return rc
     
     # remove unpack dir
-    shutil.rmtree(unpackDir,True)
+    shutil.rmtree(imageDir,True)
     return 0
 
 '''

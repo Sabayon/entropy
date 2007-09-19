@@ -288,7 +288,7 @@ class handlerFTP:
 	    except Exception, e: # connection reset by peer
 		mirrorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"handlerFTP.uploadFile: Caught Exception: "+str(e)+", upload issues, retrying...")
 		import traceback
-		traceback.print_stack()
+		traceback.print_exc()
 		print_warning("")
 		print_warning(red("  Upload issue: ")+bold(str(e))+red(", retrying... #"+str(i+1)))
 		self.reconnectHost() # reconnect
