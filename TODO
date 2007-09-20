@@ -12,8 +12,15 @@ TODO list:
   - strengthen build dependencies filter
   - write a dependency reordering function
   - rewrite branches management
-  - equo: during removal/add handle /etc/init.d/* files ?
+  - equo: during removal/add handle:
+	- /etc/init.d/* files ?
+	- GConf2 database
+	- desktop mime database
+	- shared mime database
+	- scrollkeeper database
+	- icons cache
   - equo: add support for PDEPEND
+  - 
 
 Project Status:
 - entropy: will handle all the three tools below
