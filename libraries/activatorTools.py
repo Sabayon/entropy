@@ -182,7 +182,6 @@ def packages(options):
     if (options[0] == "sync"):
 	print_info(green(" * ")+red("Starting ")+bold("binary")+yellow(" packages")+red(" syncronization across servers ..."))
 	
-	syncSuccessful = False
 	totalUris = len(etpConst['activatoruploaduris'])
 	currentUri = 0
 	totalSuccessfulUri = 0
@@ -190,7 +189,8 @@ def packages(options):
 	activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: called sync.")
 	
 	for uri in etpConst['activatoruploaduris']:
-	
+		
+	    uriSuccessfulSync = 0
 	    currentUri += 1
 	    try:
 	        print_info(green(" * ")+yellow("Working on ")+bold(extractFTPHostFromUri(uri)+red(" mirror.")))
@@ -408,8 +408,9 @@ def packages(options):
 
 	            if (len(uploadQueue) == 0) and (len(downloadQueue) == 0) and (len(removalQueue) == 0):
 		        print_info(green(" * ")+red("Nothing to syncronize for ")+bold(extractFTPHostFromUri(uri)+red(". Queue empty.")))
-		        totalSuccessfulUri += 1
-		        syncSuccessful = True
+		        uriSuccessfulSync += 1
+			if (uriSuccessfulSync == len(pkgbranches)):
+			    totalSuccessfulUri += 1
 		        continue
 
 	            totalRemovalSize = 0
@@ -654,8 +655,11 @@ def packages(options):
 
 		    uploadCounter = int(uploadCounter)
 		    downloadCounter = int(downloadCounter)
-
+		    
 		    if (successfulUploadCounter == uploadCounter) and (successfulDownloadCounter == downloadCounter):
+			uriSuccessfulSync += 1
+
+		    if (uriSuccessfulSync == len(pkgbranches)):
 		        totalSuccessfulUri += 1
 
 	    # trap exceptions, failed to upload/download someting?
@@ -697,10 +701,17 @@ def packages(options):
 	if (totalSuccessfulUri > 0) and (not activatorRequestPretend):
 	    import shutil
 	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"packages: all done. Now it's time to move packages to "+etpConst['packagesbindir'])
-	    for file in os.listdir(etpConst['packagessuploaddir']):
-		source = etpConst['packagessuploaddir']+"/"+file
-		dest = etpConst['packagesbindir']+"/"+file
-		shutil.move(source,dest)
+	    pkgbranches = os.listdir(etpConst['packagessuploaddir'])
+	    pkgbranches = [x for x in pkgbranches if os.path.isdir(etpConst['packagessuploaddir']+"/"+x)]
+	    for branch in pkgbranches:
+		branchcontent = os.listdir(etpConst['packagessuploaddir']+"/"+branch)
+		for file in branchcontent:
+		    source = etpConst['packagessuploaddir']+"/"+branch+"/"+file
+		    destdir = etpConst['packagesbindir']+"/"+branch
+		    if not os.path.isdir(destdir):
+		        os.makedirs(destdir)
+		    dest = destdir+"/"+file
+		    shutil.move(source,dest)
 	    return True
 	else:
 	    sys.exit(470)
