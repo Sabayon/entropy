@@ -97,91 +97,102 @@ def update(options):
     # differential checking
     # collect differences between the packages in the database and the ones on the system
     
+    reagentRequestSeekStore = False
+    _options = []
+    for opt in options:
+	if opt.startswith("--seekstore"):
+	    reagentRequestSeekStore = True
+	else:
+	    _options.append(opt)
+    options = _options
 
-    print_info(yellow(" * ")+red("Scanning the database for differences..."))
-    dbconn = databaseTools.etpDatabase(readOnly = True, noUpload = True)
-    from portageTools import getInstalledPackagesCounters, quickpkg, getPackageSlot
-    installedPackages = getInstalledPackagesCounters()
-    installedCounters = {}
-    databasePackages = dbconn.listAllPackages()
-    toBeAdded = []
-    toBeRemoved = []
-    
-    # fill lists
-    
-    # packages to be added
-    for x in installedPackages[0]:
-	installedCounters[x[1]] = 1
-	counter = dbconn.isCounterAvailable(x[1])
-	if (not counter):
-	    toBeAdded.append(x)
 
-    # packages to be removed from the database
-    databaseCounters = dbconn.listAllCounters()
-    for x in databaseCounters:
-	match = installedCounters.get(x[0], None)
-	#print match
-	if (not match):
-	    # check if the package is in toBeAdded
-	    if (toBeAdded):
-	        atomkey = dep_getkey(dbconn.retrieveAtom(x[1]))
-		atomslot = dbconn.retrieveSlot(x[1])
-		add = True
-		for pkgdata in toBeAdded:
-		    addslot = getPackageSlot(pkgdata[0])
-		    addkey = dep_getkey(pkgdata[0])
-		    # workaround for ebuilds not having slot
-		    if addslot == None:
-			addslot = ''
-		    if (atomkey == addkey) and (atomslot == addslot):
-			# do not add to toBeRemoved
-			add = False
-			break
-		if add:
-		    toBeRemoved.append(x[1])
-	    else:
-	        toBeRemoved.append(x[1])
+    if (not reagentRequestSeekStore):
+
+        print_info(yellow(" * ")+red("Scanning the database for differences..."))
+        dbconn = databaseTools.etpDatabase(readOnly = True, noUpload = True)
+        from portageTools import getInstalledPackagesCounters, quickpkg, getPackageSlot
+        installedPackages = getInstalledPackagesCounters()
+        installedCounters = {}
+        databasePackages = dbconn.listAllPackages()
+        toBeAdded = []
+        toBeRemoved = []
     
-    if (not toBeRemoved) and (not toBeAdded):
-	print_info(yellow(" * ")+red("Nothing to do, check later."))
-	# then exit gracefully
-	sys.exit(0)
+        # fill lists
     
-    if (toBeRemoved):
-	print_info(yellow(" @@ ")+blue("These are the packages that would be removed from the database:"))
-	for x in toBeRemoved:
-	    atom = dbconn.retrieveAtom(x)
-	    print_info(yellow("    # ")+red(atom))
-	rc = askquestion(">>   Would you like to remove them now ?")
-	if rc == "Yes":
-	    rwdbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
-	    for x in toBeRemoved:
-		atom = rwdbconn.retrieveAtom(x)
-		print_info(yellow(" @@ ")+blue("Removing from database: ")+red(atom), back = True)
-		rwdbconn.removePackage(x)
-	    rwdbconn.closeDB()
-	    print_info(yellow(" @@ ")+blue("Database removal complete."))
+        # packages to be added
+        for x in installedPackages[0]:
+	    installedCounters[x[1]] = 1
+	    counter = dbconn.isCounterAvailable(x[1])
+	    if (not counter):
+	        toBeAdded.append(x)
+
+        # packages to be removed from the database
+        databaseCounters = dbconn.listAllCounters()
+        for x in databaseCounters:
+	    match = installedCounters.get(x[0], None)
+	    #print match
+	    if (not match):
+	        # check if the package is in toBeAdded
+	        if (toBeAdded):
+	            atomkey = dep_getkey(dbconn.retrieveAtom(x[1]))
+		    atomslot = dbconn.retrieveSlot(x[1])
+		    add = True
+		    for pkgdata in toBeAdded:
+		        addslot = getPackageSlot(pkgdata[0])
+		        addkey = dep_getkey(pkgdata[0])
+		        # workaround for ebuilds not having slot
+		        if addslot == None:
+			    addslot = ''
+		        if (atomkey == addkey) and (atomslot == addslot):
+			    # do not add to toBeRemoved
+			    add = False
+			    break
+		    if add:
+		        toBeRemoved.append(x[1])
+	        else:
+	            toBeRemoved.append(x[1])
     
-    if (toBeAdded):
-	print_info(yellow(" @@ ")+blue("These are the packages that would be added/updated to the add list:"))
-	for x in toBeAdded:
-	    print_info(yellow("    # ")+red(x[0]))
-	rc = askquestion(">>   Would you like to packetize them now ?")
-	if rc == "No":
+        if (not toBeRemoved) and (not toBeAdded):
+	    print_info(yellow(" * ")+red("Nothing to do, check later."))
+	    # then exit gracefully
 	    sys.exit(0)
+    
+        if (toBeRemoved):
+	    print_info(yellow(" @@ ")+blue("These are the packages that would be removed from the database:"))
+	    for x in toBeRemoved:
+	        atom = dbconn.retrieveAtom(x)
+	        print_info(yellow("    # ")+red(atom))
+	    rc = askquestion(">>   Would you like to remove them now ?")
+	    if rc == "Yes":
+	        rwdbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
+	        for x in toBeRemoved:
+		    atom = rwdbconn.retrieveAtom(x)
+		    print_info(yellow(" @@ ")+blue("Removing from database: ")+red(atom), back = True)
+		    rwdbconn.removePackage(x)
+	        rwdbconn.closeDB()
+	        print_info(yellow(" @@ ")+blue("Database removal complete."))
+    
+        if (toBeAdded):
+	    print_info(yellow(" @@ ")+blue("These are the packages that would be added/updated to the add list:"))
+	    for x in toBeAdded:
+	        print_info(yellow("    # ")+red(x[0]))
+	    rc = askquestion(">>   Would you like to packetize them now ?")
+	    if rc == "No":
+	        sys.exit(0)
 
-    # package them
-    print_info(yellow(" @@ ")+blue("Compressing packages..."))
-    for x in toBeAdded:
-	print_info(yellow("    # ")+red(x[0]+"..."))
-	rc = quickpkg(x[0],etpConst['packagesstoredir'])
-	if (rc is None):
-	    reagentLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"update: "+str(dep)+" -> quickpkg error. Cannot continue.")
-	    print_error(red("      *")+" quickpkg error for "+red(dep))
-	    print_error(red("  ***")+" Fatal error, cannot continue")
-	    sys.exit(251)
+        # package them
+        print_info(yellow(" @@ ")+blue("Compressing packages..."))
+        for x in toBeAdded:
+	    print_info(yellow("    # ")+red(x[0]+"..."))
+	    rc = quickpkg(x[0],etpConst['packagesstoredir'])
+	    if (rc is None):
+	        reagentLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"update: "+str(dep)+" -> quickpkg error. Cannot continue.")
+	        print_error(red("      *")+" quickpkg error for "+red(dep))
+	        print_error(red("  ***")+" Fatal error, cannot continue")
+	        sys.exit(251)
 
-    dbconn.closeDB()
+        dbconn.closeDB()
 
     enzymeRequestBranch = etpConst['branch']
     #_atoms = []

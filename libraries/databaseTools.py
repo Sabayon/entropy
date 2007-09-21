@@ -498,16 +498,6 @@ def database(options):
 		for i in results:
 		    pkgs2check.append(i)
 
-	# filter idpackage only
-	_pkgs2check = []
-	for x in pkgs2check:
-	    _pkgs2check.append(x[1])
-	pkgs2check = _pkgs2check
-
-	# filter dups
-	if (pkgs2check):
-	    pkgs2check = entropyTools.filterDuplicatedEntries(pkgs2check)
-
 	if (not worldSelected):
 	    print_info(red("   This is the list of the packages that would be checked:"))
 	else:
@@ -515,18 +505,21 @@ def database(options):
 	
 	toBeDownloaded = []
 	availList = []
-	for id in pkgs2check:
-	    pkgfile = dbconn.retrieveDownloadURL(id)
+	for pkginfo in pkgs2check:
+	
+	    pkgatom = pkginfo[0]
+	    idpackage = pkginfo[1]
+	    pkgbranch = pkginfo[2]
+	    pkgfile = dbconn.retrieveDownloadURL(idpackage)
 	    pkgfile = os.path.basename(pkgfile)
-	    pkgatom = dbconn.retrieveAtom(id)
-	    if (os.path.isfile(etpConst['packagesbindir']+"/"+pkgfile)):
+	    if (os.path.isfile(etpConst['packagesbindir']+"/"+pkgbranch+"/"+pkgfile)):
 		if (not worldSelected): print_info(green("   - [PKG AVAILABLE] ")+red(pkgatom)+" -> "+bold(pkgfile))
-		availList.append(id)
-	    elif (os.path.isfile(etpConst['packagessuploaddir']+"/"+pkgfile)):
+		availList.append(idpackage)
+	    elif (os.path.isfile(etpConst['packagessuploaddir']+"/"+pkgbranch+"/"+pkgfile)):
 		if (not worldSelected): print_info(green("   - [RUN ACTIVATOR] ")+darkred(pkgatom)+" -> "+bold(pkgfile))
 	    else:
 		if (not worldSelected): print_info(green("   - [MUST DOWNLOAD] ")+yellow(pkgatom)+" -> "+bold(pkgfile))
-		toBeDownloaded.append([id,pkgfile])
+		toBeDownloaded.append([idpackage,pkgfile,pkgbranch])
 	
 	if (not databaseRequestNoAsk):
 	    rc = entropyTools.askquestion("     Would you like to continue ?")
@@ -544,11 +537,11 @@ def database(options):
 		    notDownloadedPackages = []
 		
 		for pkg in toBeDownloaded:
-		    rc = activatorTools.downloadPackageFromMirror(uri,pkg[1])
+		    rc = activatorTools.downloadPackageFromMirror(uri,pkg[1],pkg[2])
 		    if (rc is None):
-			notDownloadedPackages.append(pkg[1])
+			notDownloadedPackages.append([pkg[1],pkg[2]])
 		    if (rc == False):
-			notDownloadedPackages.append(pkg[1])
+			notDownloadedPackages.append([pkg[1],pkg[2]])
 		    if (rc == True):
 			pkgDownloadedSuccessfully += 1
 			availList.append(pkg[0])
@@ -561,31 +554,35 @@ def database(options):
 		print_warning(red("   These are the packages that cannot be found online:"))
 		for i in notDownloadedPackages:
 		    pkgDownloadedError += 1
-		    print_warning(red("    * ")+yellow(i))
+		    print_warning(red("    * ")+yellow(i[0])+" in "+blue(i[1]))
 		print_warning(red("   They won't be checked."))
 	
 	brokenPkgsList = []
+	totalcounter = str(len(availList))
+	currentcounter = 0
 	for pkg in availList:
+	    currentcounter += 1
 	    pkgfile = dbconn.retrieveDownloadURL(pkg)
+	    pkgbranch = dbconn.retrieveBranch(pkg)
 	    pkgfile = os.path.basename(pkgfile)
-	    print_info(red("   Checking hash of ")+yellow(pkgfile)+red(" ..."), back = True)
+	    print_info("  ("+red(str(currentcounter))+"/"+blue(totalcounter)+") "+red("Checking hash of ")+yellow(pkgfile)+red(" in branch: ")+blue(pkgbranch)+red(" ..."), back = True)
 	    storedmd5 = dbconn.retrieveDigest(pkg)
-	    result = entropyTools.compareMd5(etpConst['packagesbindir']+"/"+pkgfile,storedmd5)
+	    result = entropyTools.compareMd5(etpConst['packagesbindir']+"/"+pkgbranch+"/"+pkgfile,storedmd5)
 	    if (result):
 		# match !
 		pkgMatch += 1
 		#print_info(red("   Package ")+yellow(pkg)+green(" is healthy. Checksum: ")+yellow(storedmd5), back = True)
 	    else:
 		pkgNotMatch += 1
-		print_error(red("   Package ")+yellow(pkgfile)+red(" is _NOT_ healthy !!!! Stored checksum: ")+yellow(storedmd5))
-		brokenPkgsList.append(pkgfile)
+		print_error(red("   Package ")+yellow(pkgfile)+red(" in branch: ")+blue(pkgbranch)+red(" is _NOT_ healthy !!!! Stored checksum: ")+yellow(storedmd5))
+		brokenPkgsList.append([pkgfile,pkgbranch])
 
 	dbconn.closeDB()
 
 	if (brokenPkgsList != []):
 	    print_info(blue(" *  This is the list of the BROKEN packages: "))
 	    for bp in brokenPkgsList:
-		print_info(red("    * Package file: ")+bold(bp))
+		print_info(red("    * Package file: ")+bold(bp[0])+red(" in branch: ")+blue(bp[1]))
 
 	# print stats
 	print_info(blue(" *  Statistics: "))
@@ -2611,9 +2608,9 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackages: called for "+keyword)
 	result = []
 	if (sensitive):
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE atom LIKE "%'+keyword+'%"')
+	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE atom LIKE "%'+keyword+'%"')
 	else:
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(atom) LIKE "%'+string.lower(keyword)+'%"')
+	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE LOWER(atom) LIKE "%'+string.lower(keyword)+'%"')
 	for row in self.cursor:
 	    result.append(row)
 	return result

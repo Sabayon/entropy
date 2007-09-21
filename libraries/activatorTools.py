@@ -624,28 +624,32 @@ def packages(options):
 				    rc = ftp.downloadFile(item[0],etpConst['packagesbindir']+"/"+mybranch+"/")
 
 			        # verify upload using remoteTools
-			        print_info(counterInfo+red("   -> Verifying ")+green(item[0])+bold(" checksum")+red(" (if supported)"), back = True)
-			        ck = remoteTools.getRemotePackageChecksum(extractFTPHostFromUri(uri),item[0], mybranch)
-			        if (ck == None):
-				    print_warning(counterInfo+red("   -> Digest verification of ")+green(item[0])+bold(" not supported"))
-				    ckOk = True
-			        else:
-				    if (ck == False):
-				        # file does not exist???
-				        print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not exist remotely. Reuploading..."))
-				    else:
-				        if len(ck) == 32:
-					    # valid checksum, checking
-					    filepath = etpConst['packagesbindir']+"/"+mybranch+"/"+item[0]
-					    ckres = compareMd5(filepath,ck)
-					    if (ckres):
-					        print_info(counterInfo+red("   -> Package ")+bold(item[0])+red(" has been uploaded correctly."))
-					        ckOk = True
-					    else:
-					        print_warning(counterInfo+red("   -> Package ")+bold(item[0])+yellow(" has NOT been uploaded correctly. Reuploading..."))
+				if not item[0].endswith(etpConst['packageshashfileext']):
+			            print_info(counterInfo+red("   -> Verifying ")+green(item[0])+bold(" checksum")+red(" (if supported)"), back = True)
+			            ck = remoteTools.getRemotePackageChecksum(extractFTPHostFromUri(uri),item[0], mybranch)
+			            if (ck == None):
+				        print_warning(counterInfo+red("   -> Digest verification of ")+green(item[0])+bold(" not supported"))
+				        ckOk = True
+			            else:
+				        if (ck == False):
+				            # file does not exist???
+				            print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not exist remotely. Skipping ..."))
+					    ckOk = True
 				        else:
-					    # hum, what the hell is this checksum!?!?!?!
-					    print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum: "+str(ck)+" Reuploading..."))
+				            if len(ck) == 32:
+					        # valid checksum, checking
+					        filepath = etpConst['packagesbindir']+"/"+mybranch+"/"+item[0]
+					        ckres = compareMd5(filepath,ck)
+					        if (ckres):
+					            print_info(counterInfo+red("   -> Package ")+bold(item[0])+red(" has been downloaded correctly."))
+					            ckOk = True
+					        else:
+					            print_warning(counterInfo+red("   -> Package ")+bold(item[0])+yellow(" has NOT been downloaded correctly. Redownloading..."))
+				            else:
+					        # hum, what the hell is this checksum!?!?!?!
+					        print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum: "+str(ck)+" Redownloading..."))
+				else: # skip checking for .md5 files
+				    ckOk = True
 			
 			    if (rc):
 			        successfulDownloadCounter += 1
@@ -1171,7 +1175,7 @@ def getEtpRemoteDatabaseStatus():
 
     return uriDbInfo
 
-def downloadPackageFromMirror(uri,pkgfile):
+def downloadPackageFromMirror(uri,pkgfile,branch):
 
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: called for "+extractFTPHostFromUri(uri)+" and file -> "+str(pkgfile))
 
@@ -1181,41 +1185,41 @@ def downloadPackageFromMirror(uri,pkgfile):
 	
 	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+str(tries)+"/"+str(maxtries)+") downloading -> "+pkgfile)
 	
-	pkgfilename = pkgfile.split("/")[len(pkgfile.split("/"))-1]
         print_info(red("  * Connecting to ")+bold(extractFTPHostFromUri(uri)), back = True)
         # connect
         ftp = mirrorTools.handlerFTP(uri)
-        ftp.setCWD(etpConst['binaryurirelativepath'])
+        ftp.setCWD(etpConst['binaryurirelativepath']+"/"+branch)
         # get the files
-        print_info(red("  * Downloading ")+yellow(pkgfilename)+red(" from ")+bold(extractFTPHostFromUri(uri)))
-        rc = ftp.downloadFile(pkgfilename,etpConst['packagesbindir'])
+        print_info(red("  * Downloading ")+yellow(pkgfile)+red(" from ")+bold(extractFTPHostFromUri(uri)))
+        rc = ftp.downloadFile(pkgfile,etpConst['packagesbindir']+"/"+branch)
 	if (rc is None):
 	    entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+str(tries)+"/"+str(maxtries)+") Error. File not found. -> "+pkgfile)
 	    # file does not exist
-	    print_warning(red("  * File ")+yellow(pkgfilename)+red(" does not exist remotely on ")+bold(extractFTPHostFromUri(uri)))
+	    print_warning(red("  * File ")+yellow(pkgfile)+red(" does not exist remotely on ")+bold(extractFTPHostFromUri(uri)))
 	    ftp.closeConnection()
 	    return None
 	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+str(tries)+"/"+str(maxtries)+") checking md5 for -> "+pkgfile)
         # check md5
 	dbconn = databaseTools.etpDatabase(readOnly = True)
-	storedmd5 = dbconn.retrievePackageVarFromBinaryPackage(pkgfilename,"digest")
+	idpackage = dbconn.getIDPackageFromFileInBranch(pkgfile,branch)
+	storedmd5 = dbconn.retrieveDigest(idpackage)
 	dbconn.closeDB()
-	print_info(red("  * Checking MD5 of ")+yellow(pkgfilename)+red(": should be ")+bold(storedmd5), back = True)
-	md5check = compareMd5(etpConst['packagesbindir']+"/"+pkgfilename,storedmd5)
+	print_info(red("  * Checking MD5 of ")+yellow(pkgfile)+red(": should be ")+bold(storedmd5), back = True)
+	md5check = compareMd5(etpConst['packagesbindir']+"/"+branch+"/"+pkgfile,storedmd5)
 	if (md5check):
-	    print_info(red("  * Package ")+yellow(pkgfilename)+red("downloaded successfully."))
+	    print_info(red("  * Package ")+yellow(pkgfile)+red("downloaded successfully."))
 	    return True
 	else:
 	    if (tries == maxtries):
 		entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: Max tries limit reached. Checksum does not match. Please consider to download or repackage again. Giving up.")
-		print_warning(red("  * Package ")+yellow(pkgfilename)+red(" checksum does not match. Please consider to download or repackage again. Giving up."))
+		print_warning(red("  * Package ")+yellow(pkgfile)+red(" checksum does not match. Please consider to download or repackage again. Giving up."))
 		return False
 	    else:
 		entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: Checksum does not match. Trying to download it again...")
-		print_warning(red("  * Package ")+yellow(pkgfilename)+red(" checksum does not match. Trying to download it again..."))
+		print_warning(red("  * Package ")+yellow(pkgfile)+red(" checksum does not match. Trying to download it again..."))
 		tries += 1
-		if os.path.isfile(etpConst['packagesbindir']+"/"+pkgfilename):
-		    os.remove(etpConst['packagesbindir']+"/"+pkgfilename)
+		if os.path.isfile(etpConst['packagesbindir']+"/"+branch+"/"+pkgfile):
+		    os.remove(etpConst['packagesbindir']+"/"+branch+"/"+pkgfile)
 
 def lockDatabases(lock = True, mirrorList = []):
 
