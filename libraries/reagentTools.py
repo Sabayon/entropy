@@ -623,12 +623,13 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     print_info(yellow(" * ")+red("Getting package dependencies..."),back = True)
     # Fill dependencies
     # to fill dependencies we use *DEPEND files
-    f = open(tbz2TmpDir+dbDEPEND,"r")
+    f = open(tbz2TmpDir+dbRDEPEND,"r")
     roughDependencies = f.readline().strip()
     f.close()
-    f = open(tbz2TmpDir+dbRDEPEND,"r")
-    roughDependencies += " "+f.readline().strip()
-    f.close()
+    if (not roughDependencies):
+        f = open(tbz2TmpDir+dbDEPEND,"r")
+        roughDependencies = f.readline().strip()
+        f.close()
     f = open(tbz2TmpDir+dbPDEPEND,"r")
     roughDependencies += " "+f.readline().strip()
     f.close()
