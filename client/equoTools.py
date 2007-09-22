@@ -1642,7 +1642,7 @@ def printPackageInfo(idpackage,dbconn, clientSearch = False, strictOutput = Fals
         pkgflags = dbconn.retrieveCompileFlags(idpackage)
         pkgkeywords = dbconn.retrieveBinKeywords(idpackage)
         pkgdigest = dbconn.retrieveDigest(idpackage)
-        pkgcreatedate = convertUnixTimeToHumanTime(int(dbconn.retrieveDateCreation(idpackage)))
+        pkgcreatedate = convertUnixTimeToHumanTime(float(dbconn.retrieveDateCreation(idpackage)))
         pkgsize = bytesIntoHuman(pkgsize)
 	pkgdeps = dbconn.retrieveDependencies(idpackage)
 

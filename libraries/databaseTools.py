@@ -109,10 +109,13 @@ def database(options):
 	    currCounter = 0
 	    atomsnumber = len(pkglist)
 	    import reagentTools
+	    
 	    for pkg in pkglist:
+		
 	        print_info(darkgreen(" [")+red(mybranch)+darkgreen("] ")+red("Analyzing: ")+bold(pkg), back = True)
 	        currCounter += 1
 	        print_info(darkgreen(" [")+red(mybranch)+darkgreen("] ")+green("(")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."), back = True)
+		
 	        etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+mybranch+"/"+pkg, mybranch)
 	        # remove disgregated package
 		revisionAvail = revisionsMatch.get(os.path.basename(etpData['download']),None)
@@ -122,6 +125,7 @@ def database(options):
 			addRevision = revisionAvail[1]+1
 	        # fill the db entry
 	        idpk, revision, etpDataUpdated, accepted = dbconn.addPackage(etpData, revision = addRevision, wantedBranch = mybranch)
+		
 		print_info(darkgreen(" [")+red(mybranch)+darkgreen("] ")+green("(")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(". Revision: ")+blue(str(addRevision)))
 	    
 	    dbconn.commitChanges()
@@ -227,7 +231,7 @@ def database(options):
 		print_info(red("\t Entry API: ")+green(str(api)))
 		
 		date = dbconn.retrieveDateCreation(result[1])
-		print_info(red("\t Package Creation date: ")+str(entropyTools.convertUnixTimeToHumanTime(int(date))))
+		print_info(red("\t Package Creation date: ")+str(entropyTools.convertUnixTimeToHumanTime(float(date))))
 		
 		revision = dbconn.retrieveRevision(result[1])
 		print_info(red("\t Entry revision: ")+str(revision))
