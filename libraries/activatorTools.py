@@ -107,7 +107,7 @@ def sync(options, justTidy = False):
 	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: no packages to remove from the lirrors.")
 	    print_info(green(" * ")+red("No packages to remove from the mirrors."))
 	    print_info(green(" * ")+red("Syncronization across mirrors completed."))
-	    return
+	    continue
     
         print_info(green(" * ")+red("This is the list of files that would be removed from the mirrors: "))
         for file in removeList:
@@ -141,7 +141,7 @@ def sync(options, justTidy = False):
 	        if (ftp.isFileAvailable(file+etpConst['packageshashfileext'])):
 	            rc = ftp.deleteFile(file+etpConst['packageshashfileext'])
 	            if (rc):
-		        print_info(green(" * ")+red("Checksum file: ")+bold(file)+red(" removed successfully from ")+bold(extractFTPHostFromUri(uri)))
+		        print_info(green(" * ")+red("Checksum file: ")+bold(file+etpConst['packageshashfileext'])+red(" removed successfully from ")+bold(extractFTPHostFromUri(uri)))
 	            else:
 		        print_warning(yellow(" * ")+red("ATTENTION: remote checksum file ")+bold(file)+red(" cannot be removed."))
 	        # remove locally
