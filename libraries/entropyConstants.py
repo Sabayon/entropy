@@ -379,8 +379,6 @@ etpConst = {
     ],
     'officialrepositoryname': "sabayonlinux.org", # our official repository name
     'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|", # tag to append to .tbz2 file before entropy database
-    'dependenciesfilter': ['sys-devel/automake','sys-devel/autoconf','sys-devel/libtool','dev-util/pkgconfig','sys-devel/make'],
-    'developmentcategories': ['sys-devel','dev-'],
     'pidfile': "/var/run/equo.pid",
     'applicationlock': False,
 

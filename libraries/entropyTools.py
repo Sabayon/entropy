@@ -115,18 +115,49 @@ def unpackGzip(gzipfilepath):
 
 def extractXpak(tbz2File,tmpdir = None):
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"unpackTbz2: called -> "+tbz2File)
+    # extract xpak content
+    xpakpath = etpConst['packagestmpdir']+"/"+os.path.basename(tbz2File).split(".tbz2")[0]+".xpak"
+    xpakfile = open(xpakpath,"wb")
+    allowWrite = False
+    
+    byte = f.read(1)
+    while byte:
+	if byte == "X":
+	    # investigate
+	    currpos = f.tell()
+	    chunk = byte+f.read(7)
+	    if chunk == "XPAKPACK":
+		f.seek(currpos)
+		allowWrite = True
+	    elif chunk == "XPAKSTOP":
+		break
+	    else:
+		f.seek(currpos)
+	if (allowWrite):
+	    xpakfile.write(byte)
+	byte = f.read(1)
+    
+    xpakfile.write("XPAKSTOP")
+    xpakfile.flush()
+    xpakfile.close()
+    os.system("cp "+xpakpath+" /tmp/")
+    
     import xpak
     if tmpdir is None:
-	tmpdir = etpConst['packagestmpdir']+"/"+tbz2File.split("/")[len(tbz2File.split("/"))-1].split(".tbz2")[0]+"/"
-    if (not tmpdir.endswith("/")):
-	tmpdir += "/"
-    tbz2 = xpak.tbz2(tbz2File)
+	tmpdir = etpConst['packagestmpdir']+"/"+os.path.basename(tbz2File).split(".tbz2")[0]+"/"
     if os.path.isdir(tmpdir):
-	spawnCommand("rm -rf "+tmpdir+"*")
-    tbz2.decompose(tmpdir)
+	spawnCommand("rm -rf "+tmpdir)
+    os.makedirs(tmpdir)
+    xpakdata = xpak.getboth(xpakpath)
+    xpak.xpand(xpakdata,tmpdir)
+    try:
+	os.remove(xpakpath)
+    except:
+        pass
     return tmpdir
 
 def aggregateEntropyDb(tbz2file,dbfile):
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"aggregateEntropyDb: called -> "+tbz2file+" and "+dbfile)
     f = open(tbz2file,"abw")
     g = open(dbfile,"rb")
     dbx = g.readlines()
@@ -136,6 +167,41 @@ def aggregateEntropyDb(tbz2file,dbfile):
 	f.write(x)
     f.flush()
     f.close()
+
+# This function removes entropy database entry from the .tbz2
+# the result is a gentoo compatible package
+def disgregateEntropyDb(oldtbz2,newtbz2):
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"disgregateEntropyDb: called -> "+oldtbz2+" and "+newtbz2)
+    old = open(oldtbz2,"rb")
+    new = open(newtbz2,"wb")
+    dbpath = newtbz2+".db"
+    db = open(dbpath,"wb")
+    allowWrite = False # allow write to db file
+    
+    byte = old.read(1)
+    while byte:
+        if byte == "|":
+            # investigate
+            currpos = old.tell()
+            chunk = byte+old.read(31)
+            if chunk == etpConst['databasestarttag']:
+                allowWrite = True
+                byte = None
+            else:
+                old.seek(currpos)
+        if (allowWrite):
+            if byte != None:
+                db.write(byte)
+        else:
+            new.write(byte)
+        byte = old.read(1)
+    
+    db.flush()
+    db.close()
+    new.flush()
+    new.close()
+    old.close()
+
 
 # This function creates the .hash file related to the given package file
 # @returns the complete hash file path
