@@ -120,6 +120,7 @@ def extractXpak(tbz2File,tmpdir = None):
     xpakfile = open(xpakpath,"wb")
     allowWrite = False
     
+    f = open(tbz2File,"rb")
     byte = f.read(1)
     while byte:
 	if byte == "X":

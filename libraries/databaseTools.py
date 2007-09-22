@@ -1014,14 +1014,17 @@ class etpDatabase:
 	    )
 	
 	# counter, if != -1
-	if etpData['counter'] != -1:
-	    self.cursor.execute(
-	    'INSERT into counters VALUES '
-	    '(?,?)'
-	    , (	etpData['counter'],
-		idpackage,
-		)
-	    )
+	try:
+	    if etpData['counter'] != -1:
+	        self.cursor.execute(
+	        'INSERT into counters VALUES '
+	        '(?,?)'
+	        , (	etpData['counter'],
+		    idpackage,
+		    )
+	        )
+	except:
+	    pass # FIXME: temp woraround, add check for clientDbconn
 	
 	# on disk size
 	try:

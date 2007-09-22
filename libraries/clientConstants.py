@@ -50,7 +50,7 @@ if os.path.isfile(etpConst['repositoriesconf']):
 		etpRepositories[reponame]['description'] = repodesc
 		etpRepositories[reponame]['packages'] = []
 		for x in repopackages.split():
-		    etpRepositories[reponame]['packages'].append(x+"/"+etpConst['currentarch'])
+		    etpRepositories[reponame]['packages'].append(x)
 		etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['currentarch']
 		etpRepositories[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['currentarch']
 	elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):

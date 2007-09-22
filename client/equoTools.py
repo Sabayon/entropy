@@ -500,6 +500,7 @@ def atomMatch(atom, caseSentitive = True):
    @input packageInfo: list composed by int(id) and str(repository name), if this one is int(0), the client database will be opened.
    @output: ordered dependency list
 '''
+# FIXME: we should integrate this into the parent function
 def getDependencies(packageInfo):
     if len(packageInfo) != 2:
 	raise Exception, "getDependencies: I need a list with two values in it."
@@ -512,17 +513,6 @@ def getDependencies(packageInfo):
     
     # retrieve dependencies
     depend = dbconn.retrieveDependencies(idpackage)
-    
-    # filter |or| entries
-    _depend = []
-    for dep in depend:
-	
-	if dep.startswith("!"):
-	    continue # FIXME: add conflicts SUPPORT
-	_depend.append(dep)
-	
-    depend = _depend
-    
     dbconn.closeDB()
     return depend
 
@@ -620,11 +610,11 @@ def filterSatisfiedDependencies(dependencies):
    @input package: atomInfo [idpackage,reponame]
    @output: dependency tree dictionary, plus status code
 '''
-def generateDependencyTree(atomInfo, emptydeps = False):
+def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 
     treecache = {}
     unsatisfiedDeps = getDependencies(atomInfo)
-    remainingDeps = unsatisfiedDeps[:]
+    remainingDeps = set(unsatisfiedDeps[:]) # needed [:] ?
     dependenciesNotFound = []
     treeview = []
     tree = {}
@@ -642,30 +632,23 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 	
 	    passed = treecache.get(undep,None)
 	    if passed:
-		try:
-		    while 1: remainingDeps.remove(undep)
-		except:
-		    pass
+		remainingDeps.remove(undep)
 		continue
 	
 	    # FIXME: add support for conflicts
 	    if undep.startswith("!"):
-		try:
-		    while 1: remainingDeps.remove(undep)
-		except:
-		    pass
+		remainingDeps.remove(undep)
 		continue
 	
 	    # obtain its dependencies
 	    atom = atomMatch(undep)
 	    if atom[0] == -1:
+		
 		# wth, dependency not in database?
 		dependenciesNotFound.append(undep)
 		#print "not found"
-		try:
-		    while 1: remainingDeps.remove(undep) # FIXME: use sets
-		except:
-		    pass
+		remainingDeps.remove(undep)
+		
 	    else:
 
 		# found, get its deps
@@ -674,29 +657,37 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 		if (not emptydeps):
 		    mydeps, xxx = filterSatisfiedDependencies(mydeps)
 		for dep in mydeps:
-		    remainingDeps.append(dep)
+		    remainingDeps.add(dep)
 		xmatch = clientDbconn.atomMatch(undep)
-		if (not emptydeps): # FIXME: fix emptydeps - must do something useful
-		    if xmatch[0] == -1: # if dependency is not installed
+		if (not emptydeps):
+		    if xmatch[0] == -1: # no match
 		        tree[treedepth].append(undep)
-		    else: # if it's installed, check if the version is ok
+		    elif (deepdeps):
 			unsatisfied, satisfied = filterSatisfiedDependencies([undep])
 			if (unsatisfied):
 			    tree[treedepth].append(undep)
+		    else: # if package is found installed with the same ver, also check for revision
+			myrev = clientDbconn.retrieveRevision(xmatch[0])
+			myver = clientDbconn.retrieveVersion(xmatch[0])
+			#mytag = clientDbconn.retrieveVersionTag(xmatch[0])
+			repoconn = openRepositoryDatabase(atom[1])
+			availrev = repoconn.retrieveRevision(atom[0])
+			availver = repoconn.retrieveVersion(atom[0])
+			#availtag = repoconn.retrieveVersionTag(atom[0])
+			repoconn.closeDB()
+			
+			if (myver == availver) and (myrev != availrev):
+			    tree[treedepth].append(undep)
+
 		else:
 		    tree[treedepth].append(undep)
 		treecache[undep] = True
-		try:
-		    while 1: remainingDeps.remove(undep) # FIXME: use sets
-		except:
-		    pass
-	# merge back remainingDeps into unsatisfiedDeps
-	remainingDeps = filterDuplicatedEntries(remainingDeps)
-	#cnt = 0
-        #for x in tree:
-	#    cnt += len(tree[x])
-	#print str(len(remainingDeps))+" "+str(cnt)
-	unsatisfiedDeps = remainingDeps[:]
+		
+		# remove from list
+		remainingDeps.remove(undep)
+
+	# regen list to cycle
+	unsatisfiedDeps = list(remainingDeps)
 	
 	if (not unsatisfiedDeps):
 	    depsOk = True
@@ -707,7 +698,6 @@ def generateDependencyTree(atomInfo, emptydeps = False):
 
     if (dependenciesNotFound):
 	# Houston, we've got a problem
-	#print "error! DEPS NOT FOUND -> "+str(dependenciesNotFound)
 	treeview = {}
 	treeview[0] = {}
 	treeview[0][0] = dependenciesNotFound
@@ -1030,7 +1020,7 @@ def fetchFileOnMirrors(repository, filename, digest = False):
 def fetchFile(url, digest = False):
     # remove old
     filename = os.path.basename(url)
-    filepath = etpConst['packagesbindir']+"/"+filename
+    filepath = etpConst['packagesbindir']+"/"+etpConst['branch']+"/"+filename
     if os.path.exists(filepath):
 	os.remove(filepath)
 
@@ -1111,7 +1101,7 @@ def removeFile(idpackage, clientDbconn = None, newContent = []):
 '''
 def installFile(infoDict, clientDbconn = None):
     import shutil
-    package = os.path.basename(infoDict['download'])
+    package = infoDict['download']
     removePackage = infoDict['remove']
 
     closedb = False
@@ -1119,7 +1109,7 @@ def installFile(infoDict, clientDbconn = None):
 	closedb = True
 	clientDbconn = openClientDatabase()
     
-    pkgpath = etpConst['packagesbindir']+"/"+package
+    pkgpath = etpConst['entropyworkdir']+"/"+package
     if not os.path.isfile(pkgpath):
 	return 1
     # unpack and install
@@ -2400,7 +2390,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	    actionQueue[pkgatom]['category'] = pkgcat
 	    actionQueue[pkgatom]['name'] = pkgname
 	    actionQueue[pkgatom]['remove'] = -1
-	    actionQueue[pkgatom]['download'] = os.path.basename(pkgfile)
+	    actionQueue[pkgatom]['download'] = pkgfile
 	    actionQueue[pkgatom]['checksum'] = pkgdigest
 	    dl = checkNeededDownload(pkgfile, pkgdigest)
 	    actionQueue[pkgatom]['fetch'] = dl
@@ -2757,7 +2747,7 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 	print_info(red("   ## ")+blue("Fetching package: ")+red(os.path.basename(infoDict['download'])))
 	output = fetchFileOnMirrors(infoDict['repository'],infoDict['download'],infoDict['checksum'])
 	if output < 0:
-	    print_error(red("Package cannot be fetched. Try to run: ")+bold("equo repo sync")+red("' and this command again. Error "+str(output)))
+	    print_error(red("Package cannot be fetched. Try to run: ")+bold("equo update")+red("' and this command again. Error "+str(output)))
     elif step == "install":
 	if (etpConst['gentoo-compat']):
 	    print_info(red("   ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download']))+" ## w/Gentoo compatibility")
