@@ -3067,7 +3067,7 @@ class etpDatabase:
        @input dbconn: database connection
        @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = not found, 2 = need more info, 3 = cannot use direction without specifying version
     '''
-    def atomMatch(self, atom, caseSensitive = True):
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None):
     
         if (self.xcache):
             cached = self.matchCache.get(atom)
@@ -3346,10 +3346,18 @@ class etpDatabase:
 		
 	    else:
 	    
-	        # not set, just get the newer version
+	        # not set, just get the newer version, matching slot choosen if matchSlot != None
 	        versionIDs = []
+		#print foundIDs
 	        for list in foundIDs:
-		    versionIDs.append(self.retrieveVersion(list[1]))
+		    if (matchSlot == None):
+		        versionIDs.append(self.retrieveVersion(list[1]))
+		    else:
+			foundslot = self.retrieveSlot(list[1])
+			if foundslot != matchSlot:
+			    continue
+			versionIDs.append(self.retrieveVersion(list[1]))
+	    
 	    
 	        versionlist = entropyTools.getNewerVersion(versionIDs)
 	        newerPackage = foundIDs[versionIDs.index(versionlist[0])]

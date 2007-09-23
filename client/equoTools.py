@@ -295,7 +295,7 @@ def fetchRepositoryIfNotAvailable(reponame):
    @ exit errors:
 	    -1 => repository cannot be fetched online
 '''
-def atomMatch(atom, caseSentitive = True):
+def atomMatch(atom, caseSentitive = True, matchSlot = None):
 
     #print atom
 
@@ -318,7 +318,7 @@ def atomMatch(atom, caseSentitive = True):
 	dbconn = openRepositoryDatabase(repo)
 	
 	# search
-	query = dbconn.atomMatch(atom,caseSentitive)
+	query = dbconn.atomMatch(atom, caseSentitive, matchSlot)
 	if query[1] == 0:
 	    # package found, add to our dictionary
 	    repoResults[repo] = query[0]
@@ -513,6 +513,10 @@ def getDependencies(packageInfo):
     
     # retrieve dependencies
     depend = dbconn.retrieveDependencies(idpackage)
+    # and conflicts
+    conflicts = dbconn.retrieveConflicts(idpackage)
+    for x in conflicts:
+	depend.append("!"+x)
     dbconn.closeDB()
     return depend
 
@@ -618,7 +622,9 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
     dependenciesNotFound = []
     treeview = []
     tree = {}
-    treedepth = -1
+    treedepth = 0 # in tree[0] are the conflicts
+    tree[0] = []
+    conflicts = set([])
     depsOk = False
     
     clientDbconn = openClientDatabase()
@@ -632,12 +638,33 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	
 	    passed = treecache.get(undep,None)
 	    if passed:
-		remainingDeps.remove(undep)
+		try:
+		    remainingDeps.remove(undep)
+		except:
+		    pass
 		continue
 	
-	    # FIXME: add support for conflicts
+	    # Handling conflicts
 	    if undep.startswith("!"):
-		remainingDeps.remove(undep)
+		myconflict = undep[1:]
+		# look if the package is installed
+		xmatch = clientDbconn.atomMatch(myconflict)
+		if xmatch[0] != -1:
+		    conflicts.add(xmatch[0])
+		    conflictSlot = clientDbconn.retrieveSlot(xmatch[0])
+		    # now look if the latest version still has blockers
+		    cid = atomMatch(dep_getkey(myconflict), matchSlot = conflictSlot)
+		    if cid[0] != -1:
+			cdbconn = openRepositoryDatabase(cid[1])
+			catom = cdbconn.retrieveAtom(cid[0])
+			cdbconn.closeDB()
+			#print catom
+			remainingDeps.add(catom)
+			
+			# still available
+			
+		    #print clientDbconn.retrieveAtom(xmatch[0])
+		remainingDeps.remove(undep) # no conflict
 		continue
 	
 	    # obtain its dependencies
@@ -726,9 +753,12 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 			pass
 		x += 1
     del tree
-
-    #print treeview
-    return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
+    
+    if (conflicts):
+	newtree[0] = list(conflicts)
+	newtree[0].sort()
+	#print newtree[0]
+    return newtree,0 # note: newtree[0] contains possible conflicts
 
 
 '''
@@ -1518,7 +1548,6 @@ def database(options):
     if len(options) < 1:
 	return 0
 
-    # FIXME: need SPEED and completion
     if (options[0] == "generate"):
 	
 	print_warning(bold("####### ATTENTION -> ")+red("The installed package database will be regenerated, this will take a LOT of time."))
@@ -2321,7 +2350,8 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	            return 0,0
 
     runQueue = []
-
+    removalQueue = [] # aka, conflicts
+    
     print_info(red(" @@ ")+blue("Calculating..."))
 
     if (deps):
@@ -2333,37 +2363,50 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	elif (result == -1): # no database connection
 	    print_error(red(" @@ ")+blue("Cannot find the Installed Packages Database. It's needed to accomplish dependency resolving. Try to run ")+bold("equo database generate"))
 	    return 200, -1
-	pkgs = []
+	
+	# conflicts, adding to a separate array
+	removalQueue = treepackages[0].get(0,None)
+	treepackages[0][0] = []
+	
 	for x in range(len(treepackages))[::-1]:
-	    #print x
 	    for z in treepackages[x]:
-		#print treepackages[x][z]
 		for a in treepackages[x][z]:
-		    pkgs.append(a)
-	#print pkgs
-        for dep in pkgs:
-	    runQueue.append(dep)
+		    runQueue.append(a)
     
     # remove duplicates
-    runQueue = [x for x in runQueue if x not in foundAtoms]
+    runQueue = [x for x in runQueue if x not in foundAtoms] # needed?
     
     # add our requested packages at the end
     for atomInfo in foundAtoms:
 	runQueue.append(atomInfo)
 
     downloadSize = 0
-    onDiskSize = 0
+    onDiskUsedSize = 0
+    onDiskFreedSize = 0
+    pkgsToInstall = 0
+    pkgsToUpdate = 0
+    pkgsToReinstall = 0
+    pkgsToDowngrade = 0
+    pkgsToRemove = len(removalQueue)
     actionQueue = {}
 
     if (not runQueue):
 	print_error(red("Nothing to do."))
 	return 127,-1
 
+    if (removalQueue):
+	if (ask or pretend or verbose):
+	    print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("removed")+blue(":"))
+	    clientDbconn = openClientDatabase()
+	    for idpackage in removalQueue:
+	        pkgatom = clientDbconn.retrieveAtom(idpackage)
+	        onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idpackage)
+	        installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
+		repoinfo = red("[")+brown("from: ")+bold(installedfrom)+red("] ")
+	        print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
+	    clientDbconn.closeDB()
+
     if (runQueue):
-	pkgsToInstall = 0
-	pkgsToUpdate = 0
-	pkgsToReinstall = 0
-	pkgsToDowngrade = 0
 	if (ask or pretend):
 	    print_info(red(" @@ ")+blue("These are the packages that would be merged:"))
 	for packageInfo in runQueue:
@@ -2378,7 +2421,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	    pkgfile = dbconn.retrieveDownloadURL(packageInfo[0])
 	    pkgcat = dbconn.retrieveCategory(packageInfo[0])
 	    pkgname = dbconn.retrieveName(packageInfo[0])
-	    onDiskSize += dbconn.retrieveOnDiskSize(packageInfo[0])
+	    onDiskUsedSize += dbconn.retrieveOnDiskSize(packageInfo[0])
 	    
 	    # fill action queue
 	    actionQueue[pkgatom] = {}
@@ -2419,6 +2462,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 		            installedRev = clientDbconn.retrieveRevision(idx)
 			    actionQueue[pkgatom]['remove'] = idx
 			    actionQueue[pkgatom]['removeatom'] = clientDbconn.retrieveAtom(idx)
+			    onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idx)
 		            break
 	        clientDbconn.closeDB()
 
@@ -2444,24 +2488,33 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	        flags += darkblue("D")
 	    flags += "] "
 
+	    # disable removal for packages already in removalQueue
+	    if actionQueue[pkgatom]['remove'] in removalQueue:
+		actionQueue[pkgatom]['remove'] = -1
+
 	    repoinfo = red("[")+brown("from: ")+bold(packageInfo[1])+red("] ")
 
-	    print_info(red("   ##")+flags+repoinfo+blue(enlightenatom(str(pkgatom))))
+	    print_info(darkgreen("   ##")+flags+repoinfo+blue(enlightenatom(str(pkgatom))))
 	    dbconn.closeDB()
 
 	# show download info
-	print_info(red(" @@ ")+blue("Total number of packages:\t")+red(str(len(runQueue))))
+	print_info(red(" @@ ")+blue("Ppackages needing install:\t")+red(str(len(runQueue))))
+	print_info(red(" @@ ")+blue("Packages needing removal:\t")+red(str(pkgsToRemove)))
 	if (ask or verbose or pretend):
 	    print_info(red(" @@ ")+darkgreen("Packages needing install:\t")+darkgreen(str(pkgsToInstall)))
 	    print_info(red(" @@ ")+darkgreen("Packages needing reinstall:\t")+darkgreen(str(pkgsToReinstall)))
 	    print_info(red(" @@ ")+blue("Packages needing update:\t\t")+blue(str(pkgsToUpdate)))
 	    print_info(red(" @@ ")+red("Packages needing downgrade:\t")+red(str(pkgsToDowngrade)))
 	print_info(red(" @@ ")+blue("Download size:\t\t\t")+bold(str(bytesIntoHuman(downloadSize))))
-	print_info(red(" @@ ")+blue("Used disk space:\t\t\t")+bold(str(bytesIntoHuman(onDiskSize))))
+	deltaSize = onDiskUsedSize - onDiskFreedSize
+	if (deltaSize > 0):
+	    print_info(red(" @@ ")+blue("Used disk space:\t\t\t")+bold(str(bytesIntoHuman(deltaSize))))
+	else:
+	    print_info(red(" @@ ")+blue("Freed disk space:\t\t\t")+bold(str(bytesIntoHuman(abs(deltaSize)))))
 
 
     if (ask):
-        rc = askquestion("     Would you like to continue with the installation ?")
+        rc = askquestion("     Would you like to run the queue ?")
         if rc == "No":
 	    return 0,0
     if (pretend):
@@ -2470,7 +2523,23 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
     # running tasks
     totalqueue = str(len(runQueue))
     currentqueue = 0
+    currentremovalqueue = 0
     clientDbconn = openClientDatabase()
+    
+    for idpackage in removalQueue:
+	infoDict = {}
+	infoDict['remove'] = idpackage
+	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
+	steps = []
+	steps.append("preremove") # not implemented
+	steps.append("remove")
+	steps.append("removedatabase")
+	steps.append("postremove") # not implemented
+	for step in steps:
+	    rc = stepExecutor(step,infoDict,clientDbconn)
+	    if (rc != 0):
+		clientDbconn.closeDB()
+		return -1,rc
     
     for packageInfo in runQueue:
 	currentqueue += 1
@@ -2487,6 +2556,8 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	# download
 	if (actionQueue[pkgatom]['fetch'] < 0):
 	    steps.append("fetch")
+	
+	
 	
 	if (not onlyfetch):
 	    # install
@@ -2513,7 +2584,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
     return 0,0
 
 
-def removePackages(packages, ask = False, pretend = False, verbose = False, deps = True, deep = False):
+def removePackages(packages, ask = False, pretend = False, verbose = False, deps = True, deep = False, systemPackagesCheck = True):
     
     # check if I am root
     if (not isRoot()) and (not pretend):
@@ -2558,7 +2629,7 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 	pkgatom = clientDbconn.retrieveAtom(idpackage)
 	installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
 
-	if (systemPackage):
+	if (systemPackage) and (systemPackagesCheck):
 	    print_warning(darkred("   # !!! ")+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+red(" is a vital package. Removal forbidden."))
 	    continue
 	plainRemovalQueue.append(idpackage)
