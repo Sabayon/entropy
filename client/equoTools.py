@@ -651,19 +651,6 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 		xmatch = clientDbconn.atomMatch(myconflict)
 		if xmatch[0] != -1:
 		    conflicts.add(xmatch[0])
-		    conflictSlot = clientDbconn.retrieveSlot(xmatch[0])
-		    # now look if the latest version still has blockers
-		    cid = atomMatch(dep_getkey(myconflict), matchSlot = conflictSlot)
-		    if cid[0] != -1:
-			cdbconn = openRepositoryDatabase(cid[1])
-			catom = cdbconn.retrieveAtom(cid[0])
-			cdbconn.closeDB()
-			#print catom
-			remainingDeps.add(catom)
-			
-			# still available
-			
-		    #print clientDbconn.retrieveAtom(xmatch[0])
 		remainingDeps.remove(undep) # no conflict
 		continue
 	
@@ -687,13 +674,14 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 		    remainingDeps.add(dep)
 		xmatch = clientDbconn.atomMatch(undep)
 		if (not emptydeps):
-		    if xmatch[0] == -1: # no match
+		    if xmatch[0] == -1: # not installed
 		        tree[treedepth].append(undep)
 		    elif (deepdeps):
 			unsatisfied, satisfied = filterSatisfiedDependencies([undep])
 			if (unsatisfied):
 			    tree[treedepth].append(undep)
 		    else: # if package is found installed with the same ver, also check for revision
+			# FIXME: need to sort out all this shit
 			myrev = clientDbconn.retrieveRevision(xmatch[0])
 			myver = clientDbconn.retrieveVersion(xmatch[0])
 			#mytag = clientDbconn.retrieveVersionTag(xmatch[0])
@@ -768,13 +756,13 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
    		@ if dependencies couldn't be satisfied, the output will be -1
    @note: this is the function that should be used for 3rd party applications after using atomMatch()
 '''
-def getRequiredPackages(foundAtoms, emptydeps = False):
+def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False):
     deptree = {}
     depcount = -1
     
     for atomInfo in foundAtoms:
 	depcount += 1
-	newtree, result = generateDependencyTree(atomInfo, emptydeps)
+	newtree, result = generateDependencyTree(atomInfo, emptydeps, deepdeps)
 	if (result != 0):
 	    return newtree, result
 	if (newtree):
@@ -1516,7 +1504,7 @@ def package(options):
 
     elif (options[0] == "install"):
 	if len(myopts) > 0:
-	    rc, status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch)
+	    rc, status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep)
 	else:
 	    print_error(red(" Nothing to do."))
 	    rc = 127
@@ -2248,7 +2236,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     print "not implemented yet"
     return 0,0
 
-def installPackages(packages, ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False):
+def installPackages(packages, ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False):
 
     # check if I am root
     if (not isRoot()) and (not pretend):
@@ -2355,7 +2343,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
     print_info(red(" @@ ")+blue("Calculating..."))
 
     if (deps):
-        treepackages, result = getRequiredPackages(foundAtoms, emptydeps)
+        treepackages, result = getRequiredPackages(foundAtoms, emptydeps, deepdeps)
         # add dependencies, explode them
 	if (result == -2):
 	    print_error(red(" @@ ")+blue("Cannot find needed dependencies: ")+str(treepackages))

@@ -3063,16 +3063,20 @@ class etpDatabase:
 
     '''
        @description: matches the user chosen package name+ver, if possibile, in a single repository
-       @input atom: string
-       @input dbconn: database connection
+       @input atom: string, atom to match
+       @input caseSensitive: bool, should the atom be parsed case sensitive?
+       @input matchSlot: string, match atoms with the provided slot
+       @input multiMatch: bool, return all the available atoms
        @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = not found, 2 = need more info, 3 = cannot use direction without specifying version
     '''
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None):
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False):
     
         if (self.xcache):
             cached = self.matchCache.get(atom)
             if cached:
-	        return cached['result']
+		# check if matchSlot and multiMatch were the same
+		if (matchSlot == cached['matchSlot']) and (multiMatch == cached['multiMatch']):
+	            return cached['result']
     
         # check for direction
         strippedAtom = entropyTools.dep_getcpv(atom)
@@ -3157,6 +3161,8 @@ class etpDatabase:
 		    # got the issue
 		    # gosh, return and complain
 		    self.matchCache[atom] = {}
+		    self.matchCache[atom]['matchSlot'] = matchSlot
+		    self.matchCache[atom]['multiMatch'] = multiMatch
 		    self.matchCache[atom]['result'] = -1,2
 		    return -1,2
 	
@@ -3185,10 +3191,13 @@ class etpDatabase:
 	        if (justname):
 		    #print "justname"
 		    self.matchCache[atom] = {}
+		    self.matchCache[atom]['matchSlot'] = matchSlot
+		    self.matchCache[atom]['multiMatch'] = multiMatch
 		    self.matchCache[atom]['result'] = -1,3
 		    return -1,3 # error, cannot use directions when not specifying version
 	    
 	        if (direction == "~") or (direction == "=") or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")): # any revision within the version specified OR the specified version
+		# FIXME: add slot scopes
 		
 		    if (direction == '' and not justname):
 		        direction = "="
@@ -3238,12 +3247,26 @@ class etpDatabase:
 		
 		    if (not dbpkginfo):
 		        self.matchCache[atom] = {}
+		        self.matchCache[atom]['matchSlot'] = matchSlot
+		        self.matchCache[atom]['multiMatch'] = multiMatch
 		        self.matchCache[atom]['result'] = -1,1
 		        return -1,1
 		
 		    versions = []
 		    for x in dbpkginfo:
+			if (matchSlot != None):
+			    mslot = self.retrieveSlot(x[0])
+			    if (mslot != matchSlot):
+				continue
 		        versions.append(x[1])
+		
+		    if (not versions):
+		        self.matchCache[atom] = {}
+		        self.matchCache[atom]['matchSlot'] = matchSlot
+		        self.matchCache[atom]['multiMatch'] = multiMatch
+		        self.matchCache[atom]['result'] = -1,1
+			return -1,1
+		
 		    # who is newer ?
 		    versionlist = entropyTools.getNewerVersion(versions)
 		    newerPackage = dbpkginfo[versions.index(versionlist[0])]
@@ -3254,7 +3277,14 @@ class etpDatabase:
 	            newerPkgVersion = self.retrieveVersion(newerPackage[0])
 		    newerPkgBranch = self.retrieveBranch(newerPackage[0])
 	            similarPackages = self.searchPackagesInBranchByNameAndVersionAndCategory(newerPkgName, newerPkgVersion, newerPkgCategory, newerPkgBranch, caseSensitive)
-		
+		    
+		    if (multiMatch):
+		        self.matchCache[atom] = {}
+		        self.matchCache[atom]['matchSlot'] = matchSlot
+		        self.matchCache[atom]['multiMatch'] = multiMatch
+		        self.matchCache[atom]['result'] = similarPackages,0
+			return similarPackages,0
+		    
 		    #print newerPackage
 		    #print similarPackages
 	            if (len(similarPackages) > 1):
@@ -3269,6 +3299,8 @@ class etpDatabase:
 		    #print newerPackage
 		    #print newerPackage[1]
 		    self.matchCache[atom] = {}
+		    self.matchCache[atom]['matchSlot'] = matchSlot
+		    self.matchCache[atom]['multiMatch'] = multiMatch
 		    self.matchCache[atom]['result'] = newerPackage[0],0
 		    return newerPackage[0],0
 	
@@ -3305,14 +3337,34 @@ class etpDatabase:
 		    if (not dbpkginfo):
 		        # this version is not available
 		        self.matchCache[atom] = {}
+		        self.matchCache[atom]['matchSlot'] = matchSlot
+		        self.matchCache[atom]['multiMatch'] = multiMatch
 		        self.matchCache[atom]['result'] = -1,1
 		        return -1,1
 		
 		    versions = []
+		    multiMatchList = []
 		    for x in dbpkginfo:
+			if (matchSlot != None):
+			    mslot = self.retrieveSlot(x[0])
+			    if matchSlot != mslot:
+				continue
+			if (multiMatch):
+			    multiMatchList.append(x[0])
 		        versions.append(x[1])
+		    
+		    if (multiMatch):
+			return multiMatchList,0
+
+		    if (not versions):
+		        self.matchCache[atom] = {}
+		        self.matchCache[atom]['matchSlot'] = matchSlot
+		        self.matchCache[atom]['multiMatch'] = multiMatch
+		        self.matchCache[atom]['result'] = -1,1
+			return -1,1
+
 		    # who is newer ?
-		    versionlist = entropyTools.getNewerVersion(versions) ## FIXME: this is already running in --deep mode, maybe adding a function that is more gentle with pulling dependencies?
+		    versionlist = entropyTools.getNewerVersion(versions)
 		    newerPackage = dbpkginfo[versions.index(versionlist[0])]
 		
 	            # now look if there's another package with the same category, name, version, but different tag
@@ -3321,7 +3373,14 @@ class etpDatabase:
 	            newerPkgVersion = self.retrieveVersion(newerPackage[0])
 		    newerPkgBranch = self.retrieveBranch(newerPackage[0])
 	            similarPackages = self.searchPackagesInBranchByNameAndVersionAndCategory(newerPkgName, newerPkgVersion, newerPkgCategory, newerPkgBranch)
-		
+
+		    if (multiMatch):
+		        self.matchCache[atom] = {}
+		        self.matchCache[atom]['matchSlot'] = matchSlot
+		        self.matchCache[atom]['multiMatch'] = multiMatch
+		        self.matchCache[atom]['result'] = similarPackages,0
+			return similarPackages,0
+
 		    #print newerPackage
 		    #print similarPackages
 	            if (len(similarPackages) > 1):
@@ -3336,11 +3395,15 @@ class etpDatabase:
 		    #print newerPackage
 		    #print newerPackage[1]
 		    self.matchCache[atom] = {}
+		    self.matchCache[atom]['matchSlot'] = matchSlot
+		    self.matchCache[atom]['multiMatch'] = multiMatch
 		    self.matchCache[atom]['result'] = newerPackage[0],0
 		    return newerPackage[0],0
 
 	        else:
 		    self.matchCache[atom] = {}
+		    self.matchCache[atom]['matchSlot'] = matchSlot
+		    self.matchCache[atom]['multiMatch'] = multiMatch
 		    self.matchCache[atom]['result'] = -1,1
 		    return -1,1
 		
@@ -3349,16 +3412,30 @@ class etpDatabase:
 	        # not set, just get the newer version, matching slot choosen if matchSlot != None
 	        versionIDs = []
 		#print foundIDs
+		multiMatchList = []
 	        for list in foundIDs:
 		    if (matchSlot == None):
 		        versionIDs.append(self.retrieveVersion(list[1]))
+			if (multiMatch):
+			    multiMatchList.append(list[1])
 		    else:
 			foundslot = self.retrieveSlot(list[1])
 			if foundslot != matchSlot:
 			    continue
 			versionIDs.append(self.retrieveVersion(list[1]))
+			if (multiMatch):
+			    multiMatchList.append(list[1])
 	    
-	    
+		if (multiMatch):
+		    return multiMatchList,0
+		
+		if (not versionIDs):
+		    self.matchCache[atom] = {}
+		    self.matchCache[atom]['matchSlot'] = matchSlot
+		    self.matchCache[atom]['multiMatch'] = multiMatch
+		    self.matchCache[atom]['result'] = -1,1
+		    return -1,1
+		
 	        versionlist = entropyTools.getNewerVersion(versionIDs)
 	        newerPackage = foundIDs[versionIDs.index(versionlist[0])]
 	    
@@ -3368,7 +3445,7 @@ class etpDatabase:
 	        newerPkgVersion = self.retrieveVersion(newerPackage[1])
 	        newerPkgBranch = self.retrieveBranch(newerPackage[1])
 	        similarPackages = self.searchPackagesInBranchByNameAndVersionAndCategory(newerPkgName, newerPkgVersion, newerPkgCategory, newerPkgBranch)
-	    
+
 	        if (len(similarPackages) > 1):
 		    # gosh, there are packages with the same name, version, category
 		    # we need to parse version tag
@@ -3379,12 +3456,16 @@ class etpDatabase:
 		    newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
 	    
 		self.matchCache[atom] = {}
+		self.matchCache[atom]['matchSlot'] = matchSlot
+		self.matchCache[atom]['multiMatch'] = multiMatch
 		self.matchCache[atom]['result'] = newerPackage[1],0
 	        return newerPackage[1],0
 
         else:
 	    # package not found in any branch
 	    self.matchCache[atom] = {}
+	    self.matchCache[atom]['matchSlot'] = matchSlot
+	    self.matchCache[atom]['multiMatch'] = multiMatch
 	    self.matchCache[atom]['result'] = -1,1
 	    return -1,1
 	

@@ -19,6 +19,7 @@ TODO list:
 	- shared mime database
 	- scrollkeeper database
 	- icons cache
+	- fonts cache (run mkfontdir after writes in /usr/share/fonts)
   - equo: add support for PDEPEND
 
 Project Status:
