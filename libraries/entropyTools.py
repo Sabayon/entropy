@@ -28,6 +28,7 @@ import re
 import sys
 import random
 import commands
+import urlparse
 
 # Instantiate the databaseStatus:
 import databaseTools
@@ -701,11 +702,13 @@ def spawnCommand(command, redirect = None):
     return rc
 
 def extractFTPHostFromUri(uri):
-    ftphost = uri.split("ftp://")[len(uri.split("ftp://"))-1]
-    ftphost = ftphost.split("@")[len(ftphost.split("@"))-1]
-    ftphost = ftphost.split("/")[0]
-    ftphost = ftphost.split(":")[0]
-    return ftphost
+    myuri = spliturl(uri)[1]
+    # remove username:pass@
+    myuri = myuri.split("@")[len(myuri.split("@"))-1]
+    return myuri
+
+def spliturl(url):
+    return urlparse.urlsplit(url)
 
 # tar.bz2 compress function...
 def compressTarBz2(storepath,pathtocompress):

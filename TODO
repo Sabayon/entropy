@@ -6,6 +6,7 @@ TODO list:
   - add preinst/postinst/prerm/postrm scripts
   - centralized management?
   - have a look why dev-dotnet/pe-format-0 is being pulled in
+  - move branches to version naming (3.5, 3.6, 3.7) instead of using stable, unstable...
   - during removal/add handle:
 	- /etc/init.d/* files ?
 	- GConf2 database
@@ -14,11 +15,12 @@ TODO list:
 	- scrollkeeper database
 	- icons cache
 	- fonts cache (run mkfontdir after writes in /usr/share/fonts)
-  - add support for PDEPEND
   - split world function in "world update" and "world upgrade" (do the latter first)
+  - remove TAGS and substitute them with forced SLOT setting
   - branch reorganization based on the release:
     - install only looks inside the configured branch
     - world looks inside the latest (if run with "upgrade")
+    - world: add --prune option that removes packages not available anymore
 
 
 Project Status:

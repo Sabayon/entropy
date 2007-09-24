@@ -31,7 +31,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extactDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extactDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl
 from databaseTools import etpDatabase
 import xpak
 import time
@@ -295,13 +295,14 @@ def fetchRepositoryIfNotAvailable(reponame):
    @ exit errors:
 	    -1 => repository cannot be fetched online
 '''
-def atomMatch(atom, caseSentitive = True, matchSlot = None):
+def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = []):
 
     #print atom
 
     cached = atomMatchCache.get(atom)
     if cached:
-	return cached
+	if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches):
+	    return cached['result']
 
     repoResults = {}
     exitstatus = 0
@@ -318,7 +319,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None):
 	dbconn = openRepositoryDatabase(repo)
 	
 	# search
-	query = dbconn.atomMatch(atom, caseSentitive, matchSlot)
+	query = dbconn.atomMatch(atom, caseSentitive, matchSlot, matchBranches = matchBranches)
 	if query[1] == 0:
 	    # package found, add to our dictionary
 	    repoResults[repo] = query[0]
@@ -327,16 +328,22 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None):
 
     # handle repoResults
     packageInformation = {}
-    
+
     # nothing found
     if len(repoResults) == 0:
-	atomMatchCache[atom] = -1,1
+	atomMatchCache[atom] = {}
+	atomMatchCache[atom]['result'] = [-1,1]
+	atomMatchCache[atom]['matchSlot'] = matchSlot
+	atomMatchCache[atom]['matchBranches'] = matchBranches
 	return -1,1
     
     elif len(repoResults) == 1:
 	# one result found
 	for repo in repoResults:
-	    atomMatchCache[atom] = repoResults[repo],repo
+	    atomMatchCache[atom] = {}
+	    atomMatchCache[atom]['result'] = [repoResults[repo],repo]
+	    atomMatchCache[atom]['matchSlot'] = matchSlot
+	    atomMatchCache[atom]['matchBranches'] = matchBranches
 	    return repoResults[repo],repo
     
     elif len(repoResults) > 1:
@@ -442,7 +449,10 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None):
 			    for repo in conflictingTags:
 				if repository == repo:
 				    # found it, WE ARE DOOONE!
-				    atomMatchCache[atom] = [repoResults[repo],repo]
+				    atomMatchCache[atom] = {}
+				    atomMatchCache[atom]['result'] = [repoResults[repo],repo]
+				    atomMatchCache[atom]['matchSlot'] = matchSlot
+				    atomMatchCache[atom]['matchBranches'] = matchBranches
 				    return [repoResults[repo],repo]
 		    
 		    else:
@@ -453,7 +463,10 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None):
 		            if str(conflictingTags[x]['revision']) == str(newerRevision):
 			        reponame = x
 			        break
-			atomMatchCache[atom] = repoResults[reponame],reponame
+			atomMatchCache[atom] = {}
+			atomMatchCache[atom]['result'] = [repoResults[reponame],reponame]
+			atomMatchCache[atom]['matchSlot'] = matchSlot
+			atomMatchCache[atom]['matchBranches'] = matchBranches
 		        return repoResults[reponame],reponame
 		
 		else:
@@ -463,7 +476,10 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None):
 		        if conflictingEntries[x]['versiontag'] == newerTag:
 			    reponame = x
 			    break
-		    atomMatchCache[atom] = repoResults[reponame],reponame
+		    atomMatchCache[atom] = {}
+		    atomMatchCache[atom]['result'] = [repoResults[reponame],reponame]
+		    atomMatchCache[atom]['matchSlot'] = matchSlot
+		    atomMatchCache[atom]['matchBranches'] = matchBranches
 		    return repoResults[reponame],reponame
 
 	    else:
@@ -473,7 +489,10 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None):
 		    if packageInformation[x]['version'] == newerVersion:
 			reponame = x
 			break
-		atomMatchCache[atom] = repoResults[reponame],reponame
+		atomMatchCache[atom] = {}
+		atomMatchCache[atom]['result'] = [repoResults[reponame],reponame]
+		atomMatchCache[atom]['matchSlot'] = matchSlot
+		atomMatchCache[atom]['matchBranches'] = matchBranches
 		return repoResults[reponame],reponame
 
 	    #print versions
@@ -491,7 +510,10 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None):
 		    reponame = x
 		    break
 	    #print reponame
-	    atomMatchCache[atom] = repoResults[reponame],reponame
+	    atomMatchCache[atom] = {}
+	    atomMatchCache[atom]['result'] = [repoResults[reponame],reponame]
+	    atomMatchCache[atom]['matchSlot'] = matchSlot
+	    atomMatchCache[atom]['matchBranches'] = matchBranches
 	    return repoResults[reponame],reponame
 
 
@@ -681,7 +703,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False): #FIXM
 			if (unsatisfied):
 			    tree[treedepth].append(undep)
 		    else: # if package is found installed with the same ver, also check for revision
-			# FIXME: need to sort out all this shit
+			# FIXME: this is just a workaround for now, I'll need to rethink this
 			myrev = clientDbconn.retrieveRevision(xmatch[0])
 			myver = clientDbconn.retrieveVersion(xmatch[0])
 			#mytag = clientDbconn.retrieveVersionTag(xmatch[0])
@@ -1012,19 +1034,19 @@ def fetchFileOnMirrors(repository, filename, digest = False):
 	mirrorCountText = "( mirror #"+str(mirrorcount)+" ) "
         # now fetch the new one
 	url = uri+"/"+filename
-	print_info(red("   ## ")+mirrorCountText+blue("Downloading from: ")+red(url))
+	print_info(red("   ## ")+mirrorCountText+blue("Downloading from: ")+red(spliturl(url)[1]))
 	rc = fetchFile(url, digest)
 	if rc == 0:
-	    print_info(red("   ## ")+mirrorCountText+blue("Successfully downloaded from: ")+red(url))
+	    print_info(red("   ## ")+mirrorCountText+blue("Successfully downloaded from: ")+red(spliturl(url)[1]))
 	    return 0
 	else:
 	    # something bad happened
 	    if rc == -1:
-		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(url)+" - file not available on this mirror.")
+		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - file not available on this mirror.")
 	    elif rc == -2:
-		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(url)+" - wrong checksum.")
+		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - wrong checksum.")
 	    else:
-		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(url)+" - unknown reason.")
+		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - unknown reason.")
 	    try:
 	        remaining.remove(uri)
 	    except:
@@ -1510,7 +1532,12 @@ def package(options):
 	    rc = 127
 
     elif (options[0] == "world"):
-	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch)
+	myopts = options[1:]
+	doupgrade = False
+	for opt in myopts:
+	    if opt == "upgrade":
+		doupgrade = True
+	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch, upgrade = doupgrade)
 
     elif (options[0] == "remove"):
 	if len(myopts) > 0:
@@ -2203,37 +2230,65 @@ def openClientDatabase():
 #
 
 
-def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False):
+def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False, upgrade = False):
 
     # check if I am root
     if (not isRoot()) and (not pretend):
 	print_error(red("You must run this function as superuser."))
 	return 1,-1
 
-    # FIXME: handle version upgrades
+    if (not upgrade):
+	branches = [etpConst['branch']]
+	print "NOT YET IMPLEMENTED: update function not working, try adding 'upgrade' to the opts"
+    else:
+	branches = etpConst['branches']
     # FIXME: handle ask, pretend, verbose, onlyfetch
     
-    updateList = []
+    updateList = set([])
+    fineList = set([])
+    removedList = set([])
     syncRepositories()
     
     clientDbconn = openClientDatabase()
     # get all the installed packages
     # FIXME: add branch support
     packages = clientDbconn.listAllPackages()
-    print "here's the list of the packages that would be updated"
+    print_info(red(" @@ ")+blue("Calculating world packages..."))
     for package in packages:
+	tainted = False
 	atom = package[0]
 	idpackage = package[1]
 	branch = package[2]
 	name = clientDbconn.retrieveName(idpackage)
 	category = clientDbconn.retrieveCategory(idpackage)
+	revision = clientDbconn.retrieveRevision(idpackage)
+	slot = clientDbconn.retrieveSlot(idpackage)
 	atomkey = category+"/"+name
 	# search in the packages
 	match = atomMatch(atom)
-	if match[0] == -1:
-	    print atom
-	    updateList.append(match)
-    print "not implemented yet"
+	if match[0] == -1: # atom has been changed, or removed?
+	    tainted = True
+	else: # not changed, is the revision changed?
+	    adbconn = openRepositoryDatabase(match[1])
+	    arevision = adbconn.retrieveRevision(match[0])
+	    adbconn.closeDB()
+	    if revision != arevision:
+		tainted = True
+	if (tainted):
+	    # Alice! use the key! ... and the slot
+	    matchresults = atomMatch(atomkey, matchSlot = slot)
+	    if matchresults[0] != -1:
+		#print green("match: ")+str(matchresults[0])
+		updateList.add(matchresults)
+	    else:
+		removedList.add(idpackage)
+		#print red("not match: ")+str(atom)
+	else:
+	    fineList.add(idpackage)
+    print "matching update: "+str(len(updateList))
+    print "matching not available: "+str(len(removedList))
+    print "matching already up to date: "+str(len(fineList))
+    print "not fully implemented yet"
     return 0,0
 
 def installPackages(packages, ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False):

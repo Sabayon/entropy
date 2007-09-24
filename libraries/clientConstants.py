@@ -56,6 +56,15 @@ if os.path.isfile(etpConst['repositoriesconf']):
 	elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
 	    branch = line.split("|")[1]
 	    etpConst['branch'] = branch
+	    if branch not in etpConst['branches']:
+		etpConst['branches'].append(branch)
+		if not os.path.isdir(etpConst['packagesbindir']+"/"+branch):
+        	    if os.getuid() == 0:
+			os.makedirs(etpConst['packagesbindir']+"/"+branch)
+		    else:
+			print "ERROR: please run equo as root at least once or create: "+str(etpConst['packagesbindir']+"/"+branch)
+			sys.exit(49)
+		
 
 # equo section
 if (not os.path.isfile(etpConst['equoconf'])):

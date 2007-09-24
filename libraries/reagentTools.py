@@ -655,7 +655,9 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 	etpData['dependencies'].append(i)
     etpData['conflicts'] = []
     for i in conflicts.split():
-	etpData['conflicts'].append(i)
+	# check if i == PROVIDE
+	if i not in etpData['provide']: # we handle these conflicts using emerge, so we can just filter them out
+	    etpData['conflicts'].append(i)
     
     if (kernelDependentModule):
 	# add kname to the dependency

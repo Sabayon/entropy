@@ -919,7 +919,7 @@ class etpDatabase:
 
 
     # FIXME: default add an unstable package ~~ use indexes
-    def addPackage(self, etpData, revision = 0, wantedBranch = "unstable"):
+    def addPackage(self, etpData, revision = 0, wantedBranch = etpConst['branch']):
 
 	if (self.readOnly):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: Cannot handle this in read only.")
@@ -3069,7 +3069,7 @@ class etpDatabase:
        @input multiMatch: bool, return all the available atoms
        @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = not found, 2 = need more info, 3 = cannot use direction without specifying version
     '''
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False):
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = []):
     
         if (self.xcache):
             cached = self.matchCache.get(atom)
@@ -3119,20 +3119,22 @@ class etpDatabase:
 	    pkgcat = "null"
 
         #print dep_getkey(strippedAtom)
-    
-        myBranchIndex = etpConst['branches'].index(etpConst['branch'])
+	if (matchBranches):
+	    myBranchIndex = matchBranches
+	else:
+	    myBranchIndex = [etpConst['branch']]
     
         # IDs found in the database that match our search
         foundIDs = []
     
-        for idx in range(myBranchIndex+1)[::-1]: # reverse order
+        for idx in myBranchIndex: # myBranchIndex is ordered by importance
 	    #print "Searching into -> "+etpConst['branches'][idx]
 	    # search into the less stable, if found, break, otherwise continue
-	    results = self.searchPackagesInBranchByName(pkgname, etpConst['branches'][idx], caseSensitive)
+	    results = self.searchPackagesInBranchByName(pkgname, idx, caseSensitive)
 	
 	    # if it's a PROVIDE, search with searchProvide
 	    if (not results):
-	        results = self.searchProvideInBranch(pkgkey,etpConst['branches'][idx])
+	        results = self.searchProvideInBranch(pkgkey,idx)
 	
 	    # now validate
 	    if (not results):
@@ -3170,7 +3172,7 @@ class etpDatabase:
 	        pkgcat = foundCat
 	    
 	        # we need to search using the category
-	        results = self.searchPackagesInBranchByNameAndCategory(pkgname,pkgcat,etpConst['branches'][idx], caseSensitive)
+	        results = self.searchPackagesInBranchByNameAndCategory(pkgname, pkgcat, idx, caseSensitive)
 	        # validate again
 	        if (not results):
 		    continue  # search into a stabler branch
@@ -3256,7 +3258,7 @@ class etpDatabase:
 		    for x in dbpkginfo:
 			if (matchSlot != None):
 			    mslot = self.retrieveSlot(x[0])
-			    if (mslot != matchSlot):
+			    if (str(mslot) != str(matchSlot)):
 				continue
 		        versions.append(x[1])
 		
@@ -3347,7 +3349,7 @@ class etpDatabase:
 		    for x in dbpkginfo:
 			if (matchSlot != None):
 			    mslot = self.retrieveSlot(x[0])
-			    if matchSlot != mslot:
+			    if (str(matchSlot) != str(mslot)):
 				continue
 			if (multiMatch):
 			    multiMatchList.append(x[0])
@@ -3420,7 +3422,7 @@ class etpDatabase:
 			    multiMatchList.append(list[1])
 		    else:
 			foundslot = self.retrieveSlot(list[1])
-			if foundslot != matchSlot:
+			if (str(foundslot) != str(matchSlot)):
 			    continue
 			versionIDs.append(self.retrieveVersion(list[1]))
 			if (multiMatch):
