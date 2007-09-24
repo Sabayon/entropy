@@ -768,10 +768,7 @@ def dependenciesTest(options):
 	    if (not reagentRequestQuiet):
 	        print_info(darkred("   ### ")+blue(pkgatom))
 	    for dep in depsNotSatisfied[dict]:
-		iddep = dep[0]
-		repo = dep[1]
-		depatom = dbconn.retrieveAtom(iddep)
-		dbconn.closeDB()
+		depatom = dbconn.retrieveAtom(dep)
 		if (not reagentRequestQuiet):
 		    print_info(bold("       :: ")+red(depatom))
 		packagesNeeded.append([depatom,dep])

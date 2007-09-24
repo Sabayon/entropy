@@ -159,6 +159,8 @@ except:
     print
     import traceback
     traceback.print_exc()
+    #import pdb
+    #pdb.pm()
     try:
         ferror = open("/tmp/equoerror.txt","w")
         traceback.print_exc(file = ferror)

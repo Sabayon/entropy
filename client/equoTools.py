@@ -332,7 +332,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = []):
     # nothing found
     if len(repoResults) == 0:
 	atomMatchCache[atom] = {}
-	atomMatchCache[atom]['result'] = [-1,1]
+	atomMatchCache[atom]['result'] = -1,1
 	atomMatchCache[atom]['matchSlot'] = matchSlot
 	atomMatchCache[atom]['matchBranches'] = matchBranches
 	return -1,1
@@ -341,7 +341,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = []):
 	# one result found
 	for repo in repoResults:
 	    atomMatchCache[atom] = {}
-	    atomMatchCache[atom]['result'] = [repoResults[repo],repo]
+	    atomMatchCache[atom]['result'] = repoResults[repo],repo
 	    atomMatchCache[atom]['matchSlot'] = matchSlot
 	    atomMatchCache[atom]['matchBranches'] = matchBranches
 	    return repoResults[repo],repo
@@ -450,7 +450,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = []):
 				if repository == repo:
 				    # found it, WE ARE DOOONE!
 				    atomMatchCache[atom] = {}
-				    atomMatchCache[atom]['result'] = [repoResults[repo],repo]
+				    atomMatchCache[atom]['result'] = repoResults[repo],repo
 				    atomMatchCache[atom]['matchSlot'] = matchSlot
 				    atomMatchCache[atom]['matchBranches'] = matchBranches
 				    return [repoResults[repo],repo]
@@ -464,7 +464,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = []):
 			        reponame = x
 			        break
 			atomMatchCache[atom] = {}
-			atomMatchCache[atom]['result'] = [repoResults[reponame],reponame]
+			atomMatchCache[atom]['result'] = repoResults[reponame],reponame
 			atomMatchCache[atom]['matchSlot'] = matchSlot
 			atomMatchCache[atom]['matchBranches'] = matchBranches
 		        return repoResults[reponame],reponame
@@ -477,7 +477,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = []):
 			    reponame = x
 			    break
 		    atomMatchCache[atom] = {}
-		    atomMatchCache[atom]['result'] = [repoResults[reponame],reponame]
+		    atomMatchCache[atom]['result'] = repoResults[reponame],reponame
 		    atomMatchCache[atom]['matchSlot'] = matchSlot
 		    atomMatchCache[atom]['matchBranches'] = matchBranches
 		    return repoResults[reponame],reponame
@@ -490,7 +490,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = []):
 			reponame = x
 			break
 		atomMatchCache[atom] = {}
-		atomMatchCache[atom]['result'] = [repoResults[reponame],reponame]
+		atomMatchCache[atom]['result'] = repoResults[reponame],reponame
 		atomMatchCache[atom]['matchSlot'] = matchSlot
 		atomMatchCache[atom]['matchBranches'] = matchBranches
 		return repoResults[reponame],reponame
@@ -511,7 +511,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = []):
 		    break
 	    #print reponame
 	    atomMatchCache[atom] = {}
-	    atomMatchCache[atom]['result'] = [repoResults[reponame],reponame]
+	    atomMatchCache[atom]['result'] = repoResults[reponame],reponame
 	    atomMatchCache[atom]['matchSlot'] = matchSlot
 	    atomMatchCache[atom]['matchBranches'] = matchBranches
 	    return repoResults[reponame],reponame
@@ -748,6 +748,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False): #FIXM
 		newtree[x].append(atomMatch(y))
 	    if (newtree[x]):
 	        newtree[x] = filterDuplicatedEntries(newtree[x])
+
 	# now filter newtree
 	treelength = len(newtree)
 	for count in range(treelength)[::-1]:
@@ -2243,8 +2244,9 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     else:
 	branches = etpConst['branches']
     # FIXME: handle ask, pretend, verbose, onlyfetch
+    # FIXME: handle upgrade/not upgrade
     
-    updateList = set([])
+    updateList = []
     fineList = set([])
     removedList = set([])
     syncRepositories()
@@ -2278,29 +2280,39 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	    # Alice! use the key! ... and the slot
 	    matchresults = atomMatch(atomkey, matchSlot = slot)
 	    if matchresults[0] != -1:
+		mdbconn = openRepositoryDatabase(matchresults[1])
+		matchatom = mdbconn.retrieveAtom(matchresults[0])
+		mdbconn.closeDB()
 		#print green("match: ")+str(matchresults[0])
-		updateList.add(matchresults)
+		updateList.append([matchatom,matchresults])
 	    else:
 		removedList.add(idpackage)
 		#print red("not match: ")+str(atom)
 	else:
 	    fineList.add(idpackage)
-    print "matching update: "+str(len(updateList))
-    print "matching not available: "+str(len(removedList))
-    print "matching already up to date: "+str(len(fineList))
-    print "not fully implemented yet"
-    return 0,0
 
-def installPackages(packages, ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False):
+    if (verbose or pretend):
+	print_info(red(" @@ ")+darkgreen("Packages matching update:\t\t")+bold(str(len(updateList))))
+	print_info(red(" @@ ")+darkred("Packages matching not available:\t\t")+bold(str(len(removedList))))
+	print_info(red(" @@ ")+blue("Packages matching already up to date:\t")+bold(str(len(fineList))))
+
+    print_info(red(" @@ ")+blue("Calculating queue..."))
+    result = installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch)
+    return result
+
+def installPackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False):
 
     # check if I am root
     if (not isRoot()) and (not pretend):
 	print_error(red("You must run this function as superuser."))
 	return 1,-1
     
-    foundAtoms = []
-    for package in packages:
-	foundAtoms.append([package,atomMatch(package)])
+    if (atomsdata):
+	foundAtoms = atomsdata
+    else:
+        foundAtoms = []
+        for package in packages:
+	    foundAtoms.append([package,atomMatch(package)])
 
     # filter packages not found
     _foundAtoms = []
@@ -2541,7 +2553,7 @@ def installPackages(packages, ask = False, pretend = False, verbose = False, dep
 	    dbconn.closeDB()
 
 	# show download info
-	print_info(red(" @@ ")+blue("Ppackages needing install:\t")+red(str(len(runQueue))))
+	print_info(red(" @@ ")+blue("Packages needing install:\t")+red(str(len(runQueue))))
 	print_info(red(" @@ ")+blue("Packages needing removal:\t")+red(str(pkgsToRemove)))
 	if (ask or verbose or pretend):
 	    print_info(red(" @@ ")+darkgreen("Packages needing install:\t")+darkgreen(str(pkgsToInstall)))
