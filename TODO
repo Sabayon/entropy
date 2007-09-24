@@ -1,18 +1,12 @@
 TODO list:
 - reagent: complete smartapps section
-- test stabilization code
   CLIENT:
-  - add conflicts dependencies support
   - trap elogs when running enzyme and add them to the database, maybe I can write a file and then let reagent look for it
   - add etc-update-alike support
   - add preinst/postinst/prerm/postrm scripts
   - centralized management?
-  - removal function: use getInstalledAtoms alike function instead of atomMatchInRepository to handle slotted packages correctly
   - have a look why dev-dotnet/pe-format-0 is being pulled in
-  - strengthen build dependencies filter
-  - write a dependency reordering function
-  - rewrite branches management
-  - equo: during removal/add handle:
+  - during removal/add handle:
 	- /etc/init.d/* files ?
 	- GConf2 database
 	- desktop mime database
@@ -20,7 +14,12 @@ TODO list:
 	- scrollkeeper database
 	- icons cache
 	- fonts cache (run mkfontdir after writes in /usr/share/fonts)
-  - equo: add support for PDEPEND
+  - add support for PDEPEND
+  - split world function in "world update" and "world upgrade" (do the latter first)
+  - branch reorganization based on the release:
+    - install only looks inside the configured branch
+    - world looks inside the latest (if run with "upgrade")
+
 
 Project Status:
 - entropy: will handle all the three tools below

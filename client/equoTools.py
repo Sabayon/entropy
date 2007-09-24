@@ -614,7 +614,7 @@ def filterSatisfiedDependencies(dependencies):
    @input package: atomInfo [idpackage,reponame]
    @output: dependency tree dictionary, plus status code
 '''
-def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
+def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False): #FIXME: find a reason for deepdeps and emptydeps otherwise drop
 
     treecache = {}
     unsatisfiedDeps = getDependencies(atomInfo)
