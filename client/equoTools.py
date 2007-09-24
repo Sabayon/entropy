@@ -672,6 +672,10 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False): #FIXM
 		# look if the package is installed
 		xmatch = clientDbconn.atomMatch(myconflict)
 		if xmatch[0] != -1:
+		    #print "---"
+		    #print clientDbconn.retrieveAtom(xmatch[0])
+		    #print undep
+		    #print "---"
 		    conflicts.add(xmatch[0])
 		remainingDeps.remove(undep) # no conflict
 		continue
@@ -735,10 +739,8 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False): #FIXM
 
     if (dependenciesNotFound):
 	# Houston, we've got a problem
-	treeview = {}
-	treeview[0] = {}
-	treeview[0][0] = dependenciesNotFound
-	return treeview,-2
+	flatview = dependenciesNotFound
+	return flatview,-2
 
     newtree = {} # tree list
     if (tree):
@@ -2800,6 +2802,12 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
 	deptree, status = generateDependencyTree([xidpackage,0])
 
 	if (status == 0):
+
+	    # skip conflicts
+	    conflicts = deptree.get(0,None)
+	    if (conflicts):
+	        deptree[0] = []
+
 	    depsNotSatisfied[xidpackage] = []
 	    for x in range(len(deptree))[::-1]:
 	        for z in deptree[x]:

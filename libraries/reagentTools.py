@@ -744,14 +744,18 @@ def dependenciesTest(options):
 	
 	if (status == -2): # dependencies not found
 	    depsNotFound[xidpackage] = []
-	    for x in deptree:
-		for z in deptree[x]:
-		    for a in deptree[x][z]:
-		        depsNotFound[xidpackage].append(a)
-	    if (not depsNotFound[xidpackage]):
-		del depsNotFound[xidpackage]
+	    if (deptree):
+	        for x in deptree:
+	            depsNotFound[xidpackage].append(x)
 
-	if (status == 0):
+	elif (status == 0):
+
+	    # FIXME: add conflicts handling (aka, show up something!)
+	    conflicts = deptree.get(0,None)
+	    if (conflicts):
+		print conflicts
+	        deptree[0] = []
+
 	    depsNotSatisfied[xidpackage] = []
 	    for x in range(len(deptree))[::-1]:
 	        for z in deptree[x]:

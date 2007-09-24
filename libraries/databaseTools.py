@@ -3109,7 +3109,6 @@ class etpDatabase:
 	    #print pkgversion
 	    #print pkgtag
 	
-
         pkgkey = entropyTools.dep_getkey(strippedAtom)
         if len(pkgkey.split("/")) == 2:
             pkgname = pkgkey.split("/")[1]
@@ -3170,7 +3169,7 @@ class etpDatabase:
 	
 	        # I can use foundCat
 	        pkgcat = foundCat
-	    
+
 	        # we need to search using the category
 	        results = self.searchPackagesInBranchByNameAndCategory(pkgname, pkgcat, idx, caseSensitive)
 	        # validate again
@@ -3182,9 +3181,17 @@ class etpDatabase:
 	        break
 
 	    else:
-	        #print "results == 1"
-	        foundIDs.append(results[0])
-	        break
+
+		# check if category matches
+		if pkgcat != "null":
+		    foundCat = self.retrieveCategory(results[0][1])
+		    if pkgcat == foundCat:
+			foundIDs.append(results[0])
+		    else:
+			continue
+		else:
+	            foundIDs.append(results[0])
+	            break
 
         if (foundIDs):
 	    # now we have to handle direction
