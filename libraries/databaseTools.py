@@ -3061,6 +3061,29 @@ class etpDatabase:
 	)
 	self.commitChanges()
 
+    '''
+       @description: recreate dependstable table in the chosen database, it's used for caching searchDepends requests
+       @input Nothing
+       @output: Nothing
+    '''
+    def regenerateDependsTable(self, output = True):
+        self.createDependsTable()
+        depends = self.listAllDependencies()
+        count = 0
+        total = str(len(depends))
+        for depend in depends:
+	    count += 1
+	    atom = depend[1]
+	    iddep = depend[0]
+	    if output:
+	        print_info("  "+bold("(")+darkgreen(str(count))+"/"+blue(total)+bold(")")+red(" Resolving ")+bold(atom), back = True)
+	    match = self.atomMatch(atom)
+	    if (match[0] != -1):
+	        self.addDependRelationToDependsTable(iddep,match[0])
+
+        # now validate dependstable
+        self.sanitizeDependsTable()
+
 
 ########################################################
 ####

@@ -96,6 +96,7 @@ if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(
 
 
 import equoTools
+import queryTools
 import entropyTools
 from entropyConstants import *
 from clientConstants import *
@@ -120,7 +121,7 @@ try:
         rc = equoTools.repositories(options)
         sys.exit(rc)
 
-    elif (options[0] == "search") or (options[0] == "install") or (options[0] == "remove") or (options[0] == "deptest") or (options[0] == "world"):
+    elif (options[0] == "install") or (options[0] == "remove") or (options[0] == "deptest") or (options[0] == "world"):
         if options[0] == "install":
             entropyTools.applicationLockCheck("install")
         elif options[0] == "remove":
@@ -131,8 +132,13 @@ try:
         sys.exit(rc)
 
     elif (options[0] == "query"):
-        rc = equoTools.query(options[1:])
+        rc = queryTools.query(options[1:])
         sys.exit(rc)
+
+    elif (options[0] == "search"):
+	if len(options) > 1:
+            rc = queryTools.searchPackage(options[1:])
+            sys.exit(rc)
 
     elif (options[0] == "database"):
         entropyTools.applicationLockCheck("database")

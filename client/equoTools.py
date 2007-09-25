@@ -20,9 +20,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-# RETURN STATUSES: 0-255
-# NEVER USE SYS.EXIT !
-
 import sys
 import os
 import re
@@ -44,6 +41,7 @@ global atomMatchCache
 atomMatchCache = {}
 global atomClientMatchCache
 atomClientMatchCache = {}
+
 
 ########################################################
 ####
@@ -660,7 +658,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
     
     while (not depsOk):
 	treedepth += 1
-	tree[treedepth] = set()
+	tree[treedepth] = [] # do not use set(), will scramble the order
         for undep in unsatisfiedDeps:
 	
 	    passed = treecache.get(undep,None)
@@ -688,14 +686,14 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	    # obtain its dependencies
 	    atom = atomMatch(undep)
 	    if atom[0] == -1:
-		
 		# wth, dependency not in database?
 		dependenciesNotFound.append(undep)
 		#print "not found"
-		remainingDeps.remove(undep)
-		
+		try:
+		    while 1: remainingDeps.remove(undep)
+		except:
+		    pass
 	    else:
-
 		# found, get its deps
 		mydeps = getDependencies(atom)
 		#print mydeps
@@ -706,11 +704,11 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 		xmatch = clientDbconn.atomMatch(undep)
 		if (not emptydeps):
 		    if xmatch[0] == -1: # not installed
-		        tree[treedepth].add(undep)
+		        tree[treedepth].append(undep)
 		    elif (deepdeps): # attention: used by the world update function
 			unsatisfied, satisfied = filterSatisfiedDependencies([undep])
 			if (unsatisfied):
-			    tree[treedepth].add(undep)
+			    tree[treedepth].append(undep)
 		    else: # if package is found installed with the same ver, also check for revision
 			# FIXME: this is just a workaround for now, I'll need to rethink this
 			myrev = clientDbconn.retrieveRevision(xmatch[0])
@@ -723,15 +721,15 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 			repoconn.closeDB()
 			
 			if (myver == availver) and (myrev != availrev):
-			    tree[treedepth].add(undep)
-
+			    tree[treedepth].append(undep)
 		else:
-		    tree[treedepth].add(undep)
+		    tree[treedepth].append(undep)
 		treecache[undep] = True
 		
 		# remove from list
 		remainingDeps.remove(undep)
 
+	print len(remainingDeps)
 	# regen list to cycle
 	unsatisfiedDeps = list(remainingDeps)
 	
@@ -861,7 +859,7 @@ def generateDependsTree(idpackages, dbconn = None, deep = False):
     rx = clientDbconn.retrieveDepends(idpackages[0])
     if rx == -2:
 	# generation needed
-	regenerateDependsTable(clientDbconn, output = False)
+	clientDbconn.regenerateDependsTable(output = False)
     
     while (not dependsOk):
 	treedepth += 1
@@ -941,31 +939,6 @@ def generateDependsTree(idpackages, dbconn = None, deep = False):
         closeClientDatabase(clientDbconn)
     return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
-
-'''
-   @description: using given information (atom), retrieves idpackage of the installed atom
-   @input package: package atom
-   @output: list of idpackages of the atoms from the installed packages db
-'''
-def getInstalledAtoms(atom):
-
-    clientDbconn = openClientDatabase()
-    results = []
-    
-    if (clientDbconn != -1):
-        if not isjustname(atom):
-	    key = dep_getkey(atom)
-        else:
-	    key = atom[:]
-        name = key.split("/")[1]
-        cat = key.split("/")[0]
-        rc = clientDbconn.searchPackagesByNameAndCategory(name,cat)
-        if (rc):
-	    for x in rc:
-	        results.append(x[1])
-        closeClientDatabase(clientDbconn)
-
-    return results
 
 '''
    @description: compare two lists composed by [version,tag,revision] and [version,tag],revision
@@ -1161,7 +1134,10 @@ def installFile(infoDict, clientDbconn = None):
     
     pkgpath = etpConst['entropyworkdir']+"/"+package
     if not os.path.isfile(pkgpath):
-	return 1
+	# try to fetch, added for safety
+	fetch = fetchFileOnMirrors(infoDict['repository'],infoDict['download'],infoDict['checksum'])
+	if fetch != 0:
+	    return 1
     # unpack and install
     unpackDir = etpConst['entropyunpackdir']+"/"+package
     if os.path.isdir(unpackDir):
@@ -1393,7 +1369,7 @@ def installPackageIntoDatabase(idpackage, repository, clientDbconn = None):
 		    
 	except:
 	    print "DEBUG!!! dependstable not found"
-	    regenerateDependsTable(clientDbconn)
+	    clientDbconn.regenerateDependsTable()
 
     # reset atomMatch cache
     atomMatchCache = {}
@@ -1426,62 +1402,7 @@ def removePackageFromDatabase(idpackage, clientDbconn = None):
     return 0
 
 
-########################################################
-####
-##   Query Tools
-#
 
-def query(options):
-
-    rc = 0
-
-    if len(options) < 1:
-	return rc
-
-    equoRequestVerbose = False
-    equoRequestQuiet = False
-    equoRequestDeep = False
-    myopts = []
-    for opt in options:
-	if (opt == "--verbose"):
-	    equoRequestVerbose = True
-	elif (opt == "--quiet"):
-	    equoRequestQuiet = True
-	elif (opt == "--deep"):
-	    equoRequestDeep = True
-	else:
-	    if not opt.startswith("-"):
-	        myopts.append(opt)
-
-    if options[0] == "installed":
-	rc = searchInstalledPackages(myopts[1:], quiet = equoRequestQuiet)
-
-    elif options[0] == "belongs":
-	rc = searchBelongs(myopts[1:], quiet = equoRequestQuiet)
-
-    elif options[0] == "depends":
-	rc = searchDepends(myopts[1:], verbose = equoRequestVerbose, quiet = equoRequestQuiet)
-
-    elif options[0] == "files":
-	rc = searchFiles(myopts[1:], quiet = equoRequestQuiet)
-
-    elif options[0] == "removal":
-	rc = searchRemoval(myopts[1:], quiet = equoRequestQuiet, deep = equoRequestDeep)
-
-    elif options[0] == "orphans":
-	rc = searchOrphans(quiet = equoRequestQuiet)
-
-    elif options[0] == "list":
-	mylistopts = options[1:]
-	if len(mylistopts) > 0:
-	    if mylistopts[0] == "installed":
-	        rc = searchInstalled(verbose = equoRequestVerbose, quiet = equoRequestQuiet)
-	    # add more here
-
-    elif options[0] == "description":
-	rc = searchDescription(myopts[1:], quiet = equoRequestQuiet)
-
-    return rc
 
 ########################################################
 ####
@@ -1527,11 +1448,7 @@ def package(options):
 	    _myopts.append(opt)
     myopts = _myopts
 
-    if (options[0] == "search"):
-	if len(myopts) > 0:
-	    rc = searchPackage(myopts)
-
-    elif (options[0] == "deptest"):
+    if (options[0] == "deptest"):
 	rc, garbage = dependenciesTest(quiet = equoRequestQuiet, ask = equoRequestAsk, pretend = equoRequestPretend)
 
     elif (options[0] == "install"):
@@ -1656,7 +1573,7 @@ def database(options):
 	    clientDbconn.addPackageToInstalledTable(idpk,x[1])
 
 	print_info(red("  Now generating depends caching table..."))
-	regenerateDependsTable(clientDbconn)
+	clientDbconn.regenerateDependsTable()
 	print_info(red("  Database reinitialized successfully."))
 
 	closeClientDatabase(clientDbconn)
@@ -1664,7 +1581,7 @@ def database(options):
     elif (options[0] == "depends"):
 	print_info(red("  Regenerating depends caching table..."))
 	clientDbconn = openClientDatabase()
-	regenerateDependsTable(clientDbconn)
+	clientDbconn.regenerateDependsTable()
 	closeClientDatabase(clientDbconn)
 	print_info(red("  Depends caching table regenerated successfully."))
 
@@ -1707,21 +1624,16 @@ def printPackageInfo(idpackage,dbconn, clientSearch = False, strictOutput = Fals
         installedRev = "N/A"
         clientDbconn = openClientDatabase()
         if (clientDbconn != -1):
-            clientDbconn = etpDatabase(readOnly = True, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
-            pkginstalled = getInstalledAtoms(pkgatom)
-            if (pkginstalled):
-	        # we need to match slot
-	        for idx in pkginstalled:
-	            islot = clientDbconn.retrieveSlot(idx)
-	            if islot == pkgslot:
-		        # found
-		        installedVer = clientDbconn.retrieveVersion(idx)
-		        installedTag = clientDbconn.retrieveVersionTag(idx)
-		        if not installedTag:
-		            installedTag = "NoTag"
-		        installedRev = clientDbconn.retrieveRevision(idx)
-		        break
-            closeClientDatabase(clientDbconn)
+            pkginstalled = clientDbconn.atomMatch(dep_getkey(pkgatom), matchSlot = pkgslot)
+            if (pkginstalled[1] == 0):
+		idx = pkginstalled[0]
+	        # found
+		installedVer = clientDbconn.retrieveVersion(idx)
+		installedTag = clientDbconn.retrieveVersionTag(idx)
+		if not installedTag:
+		    installedTag = "NoTag"
+		installedRev = clientDbconn.retrieveRevision(idx)
+	    closeClientDatabase(clientDbconn)
 
 
     print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(pkgbranch))
@@ -1748,465 +1660,6 @@ def printPackageInfo(idpackage,dbconn, clientSearch = False, strictOutput = Fals
         print_info(darkgreen("       Created:\t\t")+pkgcreatedate)
         print_info(darkgreen("       License:\t\t")+red(pkglic))
 
-
-def searchPackage(packages, idreturn = False):
-    
-    foundPackages = {}
-    
-    if (not idreturn):
-        print_info(yellow(" @@ ")+darkgreen("Searching..."))
-    # search inside each available database
-    repoNumber = 0
-    searchError = False
-    for repo in etpRepositories:
-	foundPackages[repo] = {}
-	repoNumber += 1
-	
-	if (not idreturn):
-	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
-	
-	rc = fetchRepositoryIfNotAvailable(repo)
-	if (rc != 0):
-	    searchError = True
-	    continue
-	
-	dbconn = openRepositoryDatabase(repo)
-	dataInfo = [] # when idreturn is True
-	for package in packages:
-	    result = dbconn.searchPackages(package)
-	    
-	    if (not result): # look for provide
-		provide = dbconn.searchProvide(package)
-		if (provide):
-		    result = [[provide[0],provide[1]]]
-		
-	    
-	    if (result):
-		foundPackages[repo][package] = result
-	        # print info
-		if (not idreturn):
-	            print_info(blue("     Keyword: ")+bold("\t"+package))
-	            print_info(blue("     Found:   ")+bold("\t"+str(len(foundPackages[repo][package])))+red(" entries"))
-	        for pkg in foundPackages[repo][package]:
-		    idpackage = pkg[1]
-		    atom = pkg[0]
-		    branch = dbconn.retrieveBranch(idpackage)
-		    # does the package exist in the selected branch?
-		    if etpConst['branch'] != branch:
-			# get branch name position in branches
-			myBranchIndex = etpConst['branches'].index(etpConst['branch'])
-			foundBranchIndex = etpConst['branches'].index(branch)
-			if foundBranchIndex > myBranchIndex:
-			    # package found in branch more unstable than the selected one, for us, it does not exist
-			    continue
-		    if (idreturn):
-			dataInfo.append([idpackage,repo])
-		    else:
-		        printPackageInfo(idpackage,dbconn)
-	
-	dbconn.closeDB()
-
-    if (idreturn):
-	return dataInfo
-
-    if searchError:
-	print_warning(yellow(" @@ ")+red("Something bad happened. Please have a look."))
-	return 129
-    return 0
-
-
-def searchInstalledPackages(packages, idreturn = False, quiet = False):
-    
-    if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Searching..."))
-
-    clientDbconn = openClientDatabase()
-    dataInfo = [] # when idreturn is True
-    
-    for package in packages:
-	result = clientDbconn.searchPackages(package)
-	if (result):
-	    # print info
-	    if (not idreturn) and (not quiet):
-	        print_info(blue("     Keyword: ")+bold("\t"+package))
-	        print_info(blue("     Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
-	    for pkg in result:
-		idpackage = pkg[1]
-		atom = pkg[0]
-		branch = clientDbconn.retrieveBranch(idpackage)
-		if (idreturn):
-		    dataInfo.append(idpackage)
-		else:
-		    printPackageInfo(idpackage,clientDbconn, clientSearch = True, quiet = quiet)
-	
-    closeClientDatabase(clientDbconn)
-
-    if (idreturn):
-	return dataInfo
-    
-    return 0
-
-
-def searchBelongs(files, idreturn = False, quiet = False):
-    
-    if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Belong Search..."))
-
-    clientDbconn = openClientDatabase()
-    dataInfo = [] # when idreturn is True
-    
-    for file in files:
-	like = False
-	if file.find("*") != -1:
-	    like = True
-	    file = "%"+file+"%"
-	result = clientDbconn.searchBelongs(file, like)
-	if (result):
-	    # print info
-	    if (not idreturn) and (not quiet):
-	        print_info(blue("     Keyword: ")+bold("\t"+file))
-	        print_info(blue("     Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
-	    for idpackage in result:
-		if (idreturn):
-		    dataInfo.append(idpackage)
-		elif (quiet):
-		    print clientDbconn.retrieveAtom(idpackage)
-		else:
-		    printPackageInfo(idpackage, clientDbconn, clientSearch = True)
-	
-    closeClientDatabase(clientDbconn)
-
-    if (idreturn):
-	return dataInfo
-    
-    return 0
-
-
-def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
-    
-    if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Depends Search..."))
-
-    clientDbconn = openClientDatabase()
-
-    dataInfo = [] # when idreturn is True
-    for atom in atoms:
-	result = clientDbconn.atomMatch(atom)
-	matchInRepo = False
-	if (result[0] == -1):
-	    matchInRepo = True
-	    result = atomMatch(atom)
-	if (result[0] != -1):
-	    if (matchInRepo):
-	        dbconn = openRepositoryDatabase(result[1])
-	    else:
-		dbconn = clientDbconn
-	    searchResults = dbconn.retrieveDepends(result[0])
-	    if searchResults == -2:
-		if (matchInRepo):
-		    # run equo update
-		    dbconn.closeDB()
-		    syncRepositories([result[1]], forceUpdate = True)
-		    dbconn = openRepositoryDatabase(result[1])
-		else:
-		    # I need to generate dependstable
-		    regenerateDependsTable(dbconn)
-	        searchResults = dbconn.retrieveDepends(result[0])
-	    # print info
-	    if (not idreturn) and (not quiet):
-	        print_info(blue("     Keyword: ")+bold("\t"+atom))
-		if (matchInRepo):
-		    where = " from repository "+str(result[1])
-		else:
-		    where = " from installed packages database"
-	        print_info(blue("     Found:   ")+bold("\t"+str(len(searchResults)))+red(" entries")+where)
-	    for idpackage in searchResults:
-		if (idreturn):
-		    dataInfo.append(idpackage)
-		else:
-		    if (verbose):
-		        printPackageInfo(idpackage, dbconn, clientSearch = True, quiet = quiet)
-		    else:
-		        printPackageInfo(idpackage, dbconn, clientSearch = True, strictOutput = True, quiet = quiet)
-	else:
-	    continue
-	if (matchInRepo):
-	    dbconn.closeDB()
-
-    closeClientDatabase(clientDbconn)
-
-    if (idreturn):
-	return dataInfo
-    
-    return 0
-
-
-def searchFiles(atoms, idreturn = False, quiet = False):
-    
-    if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Files Search..."))
-
-    results = searchInstalledPackages(atoms, idreturn = True)
-    clientDbconn = openClientDatabase()
-    dataInfo = [] # when idreturn is True
-    for result in results:
-	if (result != -1):
-	    files = clientDbconn.retrieveContent(result)
-	    atom = clientDbconn.retrieveAtom(result)
-	    # print info
-	    if (not idreturn) and (not quiet):
-	        print_info(blue("     Package: ")+bold("\t"+atom))
-	        print_info(blue("     Found:   ")+bold("\t"+str(len(files)))+red(" files"))
-	    if (idreturn):
-		dataInfo.append([result,files])
-	    else:
-		if quiet:
-		    for file in files:
-			print file
-		else:
-		    for file in files:
-		        print_info(blue(" ### ")+red(str(file)))
-	
-    closeClientDatabase(clientDbconn)
-
-    if (idreturn):
-	return dataInfo
-    
-    return 0
-
-def searchOrphans(quiet = False):
-
-    if (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Orphans Search..."))
-
-    # start to list all files on the system:
-    dirs = etpConst['filesystemdirs']
-    foundFiles = set()
-    for dir in dirs:
-	for currentdir,subdirs,files in os.walk(dir):
-	    for filename in files:
-		file = currentdir+"/"+filename
-		# filter python compiled objects?
-		if filename.endswith(".pyo") or filename.startswith(".pyc") or filename == '.keep':
-		    continue
-		mask = [x for x in etpConst['filesystemdirsmask'] if file.startswith(x)]
-		if (not mask):
-		    if (not quiet):
-		        print_info(red(" @@ ")+blue("Looking: ")+bold(file[:50]+"..."), back = True)
-	            foundFiles.add(file)
-    totalfiles = len(foundFiles)
-    if (not quiet):
-	print_info(red(" @@ ")+blue("Analyzed directories: ")+string.join(etpConst['filesystemdirs']," "))
-	print_info(red(" @@ ")+blue("Masked directories: ")+string.join(etpConst['filesystemdirsmask']," "))
-        print_info(red(" @@ ")+blue("Number of files collected on the filesystem: ")+bold(str(totalfiles)))
-        print_info(red(" @@ ")+blue("Now looking into Installed Packages database..."))
-
-    # list all idpackages
-    clientDbconn = openClientDatabase()
-    idpackages = clientDbconn.listAllIdpackages()
-    # create content list
-    length = str(len(idpackages))
-    count = 0
-    for idpackage in idpackages:
-	if (not quiet):
-	    count += 1
-	    atom = clientDbconn.retrieveAtom(idpackage)
-	    txt = "["+str(count)+"/"+length+"] "
-	    print_info(red(" @@ ")+blue("Intersecting content of package: ")+txt+bold(atom), back = True)
-	content = clientDbconn.retrieveContent(idpackage)
-	_content = set()
-	for x in content:
-	    if x.startswith("/usr/lib64"):
-		x = "/usr/lib"+x[len("/usr/lib64"):]
-	    _content.add(x)
-	# remove from foundFiles
-	del content
-	foundFiles.difference_update(_content)
-    if (not quiet):
-        print_info(red(" @@ ")+blue("Intersection completed. Showing statistics: "))
-	print_info(red(" @@ ")+blue("Number of total files: ")+bold(str(totalfiles)))
-	print_info(red(" @@ ")+blue("Number of matching files: ")+bold(str(totalfiles - len(foundFiles))))
-	print_info(red(" @@ ")+blue("Number of orphaned files: ")+bold(str(len(foundFiles))))
-
-    # order
-    foundFiles = list(foundFiles)
-    foundFiles.sort()
-    if (not quiet):
-	print_info(red(" @@ ")+blue("Writing file to disk: ")+bold("/tmp/equo-orphans.txt"))
-        f = open("/tmp/equo-orphans.txt","w")
-        for x in foundFiles:
-	    f.write(x+"\n")
-        f.flush()
-        f.close()
-	return 0
-    else:
-	for x in foundFiles:
-	    print x
-
-    return 0
-	
-
-def searchRemoval(atoms, idreturn = False, quiet = False, deep = False):
-    
-    if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Removal Search..."))
-
-    clientDbconn = openClientDatabase()
-    foundAtoms = []
-    for atom in atoms:
-	match = clientDbconn.atomMatch(atom)
-	if match[1] == 0:
-	    foundAtoms.append(match[0])
-
-    # are packages in foundAtoms?
-    if (len(foundAtoms) == 0):
-	print_error(red("No packages found."))
-	return 127,-1
-
-    choosenRemovalQueue = []
-    if (not quiet):
-        print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
-    treeview = generateDependsTree(foundAtoms,clientDbconn, deep = deep)
-    treelength = len(treeview[0])
-    if treelength > 1:
-	treeview = treeview[0]
-	for x in range(treelength)[::-1]:
-	    for y in treeview[x]:
-		choosenRemovalQueue.append(y)
-	
-    if (choosenRemovalQueue):
-	if (not quiet):
-	    print_info(red(" @@ ")+blue("These are the packages that would added to the removal queue:"))
-	totalatoms = str(len(choosenRemovalQueue))
-	atomscounter = 0
-	    
-	for idpackage in choosenRemovalQueue:
-	    atomscounter += 1
-	    rematom = clientDbconn.retrieveAtom(idpackage)
-	    if (not quiet):
-	        installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
-	        repositoryInfo = bold("[")+red("from: ")+brown(installedfrom)+bold("]")
-	        stratomscounter = str(atomscounter)
-	        while len(stratomscounter) < len(totalatoms):
-		    stratomscounter = " "+stratomscounter
-	        print_info("   # "+red("(")+bold(stratomscounter)+"/"+blue(str(totalatoms))+red(")")+repositoryInfo+" "+blue(rematom))
-	    else:
-		print rematom
-
-
-    if (idreturn):
-	return treeview
-    
-    return 0
-
-
-def searchInstalled(idreturn = False, verbose = False, quiet = False):
-    
-    if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Installed Search..."))
-
-    clientDbconn = openClientDatabase()
-    installedPackages = clientDbconn.listAllPackages()
-    installedPackages.sort()
-    if (not idreturn):
-        if (not quiet):
-	    print_info(red(" @@ ")+blue("These are the installed packages:"))
-        for package in installedPackages:
-	    if (not verbose):
-	        atom = dep_getkey(package[0])
-	    else:
-	        atom = package[0]
-	    branchinfo = ""
-	    if (verbose):
-	        branchinfo = darkgreen(" [")+red(package[2])+darkgreen("]")
-	    if (not quiet):
-	        print_info(red("  #")+blue(str(package[1]))+branchinfo+" "+atom)
-	    else:
-	        print atom
-	closeClientDatabase(clientDbconn)
-	return 0
-    else:
-	idpackages = set()
-	for x in installedPackages:
-	    idpackages.add(package[1])
-        closeClientDatabase(clientDbconn)
-        return list(idpackages)
-
-
-def searchDescription(descriptions, idreturn = False, quiet = False):
-    
-    foundPackages = {}
-    
-    if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Description Search..."))
-    # search inside each available database
-    repoNumber = 0
-    searchError = False
-    for repo in etpRepositories:
-	foundPackages[repo] = {}
-	repoNumber += 1
-	
-	if (not idreturn) and (not quiet):
-	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
-	
-	rc = fetchRepositoryIfNotAvailable(repo)
-	if (rc != 0):
-	    searchError = True
-	    continue
-	
-	dbconn = openRepositoryDatabase(repo)
-	dataInfo = [] # when idreturn is True
-	for desc in descriptions:
-	    result = dbconn.searchPackagesByDescription(desc)
-	    if (result):
-		foundPackages[repo][desc] = result
-	        # print info
-		if (not idreturn) and (not quiet):
-	            print_info(blue("     Keyword: ")+bold("\t"+desc))
-	            print_info(blue("     Found:   ")+bold("\t"+str(len(foundPackages[repo][desc])))+red(" entries"))
-	        for pkg in foundPackages[repo][desc]:
-		    idpackage = pkg[1]
-		    atom = pkg[0]
-		    if (idreturn):
-			dataInfo.append([idpackage,repo])
-		    elif (quiet):
-			print dbconn.retrieveAtom(idpackage)
-		    else:
-		        printPackageInfo(idpackage,dbconn)
-	
-	dbconn.closeDB()
-
-    if (idreturn):
-	return dataInfo
-
-    if searchError:
-	print_warning(yellow(" @@ ")+red("Something bad happened. Please have a look."))
-	return 129
-    return 0
-
-
-'''
-   @description: recreate dependstable table in the chosen database, it's used for caching searchDepends requests
-   @input Nothing
-   @output: Nothing
-'''
-def regenerateDependsTable(dbconn, output = True):
-    dbconn.createDependsTable()
-    depends = dbconn.listAllDependencies()
-    count = 0
-    total = str(len(depends))
-    for depend in depends:
-	count += 1
-	atom = depend[1]
-	iddep = depend[0]
-	if output:
-	    print_info("  "+bold("(")+darkgreen(str(count))+"/"+blue(total)+bold(")")+red(" Resolving ")+bold(atom), back = True)
-	match = dbconn.atomMatch(atom)
-	if (match[0] != -1):
-	    dbconn.addDependRelationToDependsTable(iddep,match[0])
-
-    # now validate dependstable
-    dbconn.sanitizeDependsTable()
 
 '''
    @description: open the repository database and returns the pointer
@@ -2374,19 +1827,15 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    installedRev = "NoRev"
 	    clientDbconn = openClientDatabase()
 	    if (clientDbconn != -1):
-	        pkginstalled = getInstalledAtoms(pkgatom)
-	        if (pkginstalled):
-	            # we need to match slot
-	            for idx in pkginstalled:
-	                islot = clientDbconn.retrieveSlot(idx)
-		        if islot == pkgslot:
-		            # found
-		            installedVer = clientDbconn.retrieveVersion(idx)
-		            installedTag = clientDbconn.retrieveVersionTag(idx)
-		            if not installedTag:
-			        installedTag = "NoTag"
-		            installedRev = clientDbconn.retrieveRevision(idx)
-		            break
+	        pkginstalled = clientDbconn.atomMatch(dep_getkey(pkgatom), matchSlot = pkgslot)
+	        if (pkginstalled[1] == 0):
+	            # found
+		    idx = pkginstalled[0]
+		    installedVer = clientDbconn.retrieveVersion(idx)
+		    installedTag = clientDbconn.retrieveVersionTag(idx)
+		    if not installedTag:
+			installedTag = "NoTag"
+		    installedRev = clientDbconn.retrieveRevision(idx)
 		closeClientDatabase(clientDbconn)
 
 	    print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
@@ -2426,8 +1875,6 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     
     print_info(red(" @@ ")+blue("Calculating... "))
 
-    debugShit = []
-
     if (deps):
         treepackages, result = getRequiredPackages(foundAtoms, emptydeps, deepdeps)
         # add dependencies, explode them
@@ -2437,8 +1884,6 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	elif (result == -1): # no database connection
 	    print_error(red(" @@ ")+blue("Cannot find the Installed Packages Database. It's needed to accomplish dependency resolving. Try to run ")+bold("equo database generate"))
 	    return 200, -1
-	
-	debugShit.append([treepackages, result])
 	
 	for x in range(len(treepackages))[::-1]:
 	    for z in treepackages[x]:
@@ -2527,24 +1972,19 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    installedTag = ''
 	    installedRev = 0
 	    clientDbconn = openClientDatabase()
-	    if (clientDbconn != -1):
-	        pkginstalled = getInstalledAtoms(pkgatom)
-	        if (pkginstalled):
-	            # we need to match slot
-	            for idx in pkginstalled:
-			#print clientDbconn.retrieveAtom(idx)
-	                islot = clientDbconn.retrieveSlot(idx)
-		        if islot == pkgslot:
-		            # found
-		            installedVer = clientDbconn.retrieveVersion(idx)
-		            installedTag = clientDbconn.retrieveVersionTag(idx)
-		            if not installedTag:
-			        installedTag = ''
-		            installedRev = clientDbconn.retrieveRevision(idx)
-			    actionQueue[pkgatom]['remove'] = idx
-			    actionQueue[pkgatom]['removeatom'] = clientDbconn.retrieveAtom(idx)
-			    onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idx)
-		            break
+            if (clientDbconn != -1):
+                pkginstalled = clientDbconn.atomMatch(dep_getkey(pkgatom), matchSlot = pkgslot)
+                if (pkginstalled[1] == 0):
+	            # found
+		    idx = pkginstalled[0]
+		    installedVer = clientDbconn.retrieveVersion(idx)
+		    installedTag = clientDbconn.retrieveVersionTag(idx)
+		    if not installedTag:
+		        installedTag = "NoTag"
+		    installedRev = clientDbconn.retrieveRevision(idx)
+		    actionQueue[pkgatom]['remove'] = idx
+		    actionQueue[pkgatom]['removeatom'] = clientDbconn.retrieveAtom(idx)
+		    onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idx)
 	        closeClientDatabase(clientDbconn)
 
 	    if not (ask or pretend or verbose):
@@ -2637,8 +2077,6 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	# download
 	if (actionQueue[pkgatom]['fetch'] < 0):
 	    steps.append("fetch")
-	
-	
 	
 	if (not onlyfetch):
 	    # install
@@ -2906,6 +2344,7 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 	output = fetchFileOnMirrors(infoDict['repository'],infoDict['download'],infoDict['checksum'])
 	if output < 0:
 	    print_error(red("Package cannot be fetched. Try to run: ")+bold("equo update")+red("' and this command again. Error "+str(output)))
+    
     elif step == "install":
 	if (etpConst['gentoo-compat']):
 	    print_info(red("   ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download']))+" ## w/Gentoo compatibility")
@@ -2915,6 +2354,7 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 	if output != 0:
 	    errormsg = red("An error occured while trying to install the package. Check if you have enough disk space on your hard disk. Error "+str(output))
 	    print_error(errormsg)
+    
     elif step == "remove":
 	if (etpConst['gentoo-compat']):
 	    print_info(red("   ## ")+blue("Removing installed package: ")+red(clientDbconn.retrieveAtom(infoDict['remove']))+" ## w/Gentoo compatibility")
@@ -2925,12 +2365,14 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 	if output != 0:
 	    errormsg = red("An error occured while trying to remove the package. Check if you have enough disk space on your hard disk. Error "+str(output))
 	    print_error(errormsg)
+    
     elif step == "installdatabase":
 	print_info(red("   ## ")+blue("Injecting into database: ")+red(infoDict['atom']))
 	output = installPackageIntoDatabase(infoDict['idpackage'], infoDict['repository'], clientDbconn)
 	if output != 0:
 	    errormsg = red("An error occured while trying to add the package to the database. What have you done? Error "+str(output))
 	    print_error(errormsg)
+    
     elif step == "removedatabase":
 	print_info(red("   ## ")+blue("Removing from database: ")+red(infoDict['removeatom']))
 	output = removePackageFromDatabase(infoDict['remove'], clientDbconn)

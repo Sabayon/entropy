@@ -1,11 +1,10 @@
 TODO list:
 - reagent: complete smartapps section
   CLIENT:
-  - trap elogs when running enzyme and add them to the database, maybe I can write a file and then let reagent look for it
+  - trap elogs in reagent
   - add etc-update-alike support
   - add preinst/postinst/prerm/postrm scripts
   - centralized management?
-  - have a look why dev-dotnet/pe-format-0 is being pulled in
   - move branches to version naming (3.5, 3.6, 3.7) instead of using stable, unstable...
   - during removal/add handle:
 	- /etc/init.d/* files ?
@@ -15,12 +14,15 @@ TODO list:
 	- scrollkeeper database
 	- icons cache
 	- fonts cache (run mkfontdir after writes in /usr/share/fonts)
+	- switch gcc profile
+	- switch binutils profile
   - split world function in "world update" and "world upgrade" (do the latter first)
-  - remove TAGS and substitute them with forced SLOT setting
+  - remove TAGS and substitute them with forced SLOT setting (just keep it for the package filename)
   - branch reorganization based on the release:
     - install only looks inside the configured branch
     - world looks inside the latest (if run with "upgrade")
     - world: add --prune option that removes packages not available anymore
+  - write a dependency reorder function for each level of the dependency tree?
 
 
 Project Status:
@@ -28,8 +30,4 @@ Project Status:
 - reagent: complete. Bug fixing mode.
 - activator: complete. Bug fixing mode.
 ============
-- client part: started.
-
-
-Features plan:
-- build() and world(), on enzyme, add the support for whitelist+cron
+- client part: 50%

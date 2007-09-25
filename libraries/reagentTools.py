@@ -696,9 +696,7 @@ def dependsTableInitialize(dbconn = None, runActivator = True):
     if dbconn == None:
 	dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
 	closedb = True
-    sys.path.append('../client') # FIXME
-    import equoTools
-    equoTools.regenerateDependsTable(dbconn)
+    dbconn.regenerateDependsTable()
     # now taint
     dbconn.taintDatabase()
     if (closedb):
