@@ -553,7 +553,7 @@ def getDependencies(packageInfo):
 '''
 installed_depcache = {}
 repo_test_depcache = {}
-def filterSatisfiedDependencies(dependencies):
+def filterSatisfiedDependencies(dependencies, deepdeps = False):
 
     unsatisfiedDeps = []
     satisfiedDeps = []
@@ -563,6 +563,16 @@ def filterSatisfiedDependencies(dependencies):
     clientDbconn = openClientDatabase()
     if (clientDbconn != -1):
         for dependency in dependencies:
+
+	    ### conflict
+	    if dependency.startswith("!"):
+		testdep = dependency[1:]
+		xmatch = clientDbconn.atomMatch(testdep)
+		if xmatch[0] != -1:
+		    unsatisfiedDeps.append(dependency)
+		else:
+		    satisfiedDeps.append(dependency)
+		continue
 
 	    ### caching
 	    repo_cached = repo_test_depcache.get(dependency)
@@ -618,14 +628,18 @@ def filterSatisfiedDependencies(dependencies):
 		    installed_depcache[dependency]['installedRev'] = installedRev
 		installed_depcache[dependency]['rc'] = rc
 	    
-	    if rc[0] != -1:
-		cmp = compareVersions([repo_pkgver,repo_pkgtag,repo_pkgrev],[installedVer,installedTag,installedRev])
-		#print repo_pkgver+"<-->"+installedVer
-		#print cmp
-		if cmp != 0:
-		    #print dependency
-	            unsatisfiedDeps.append(dependency)
-		satisfiedDeps.append(dependency)
+	    if (rc[0] != -1):
+		if (deepdeps):
+		    cmp = compareVersions([repo_pkgver,repo_pkgtag,repo_pkgrev],[installedVer,installedTag,installedRev])
+		    #print repo_pkgver+"<-->"+installedVer
+		    #print cmp
+		    if cmp != 0:
+		        #print dependency
+	                unsatisfiedDeps.append(dependency)
+		    else:
+		        satisfiedDeps.append(dependency)
+		else:
+		    satisfiedDeps.append(dependency)
 	    else:
 		#print " ----> "+dependency+" NOT installed."
 		unsatisfiedDeps.append(dependency)
@@ -641,47 +655,65 @@ def filterSatisfiedDependencies(dependencies):
 '''
 def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 
+    print ":::: enter ::::"
+
     treecache = {}
     unsatisfiedDeps = getDependencies(atomInfo)
-    remainingDeps = set(unsatisfiedDeps[:]) # needed [:] ?
+    unsatisfiedDeps, xxx = filterSatisfiedDependencies(unsatisfiedDeps, deepdeps = deepdeps)
     dependenciesNotFound = []
     treeview = []
     tree = {}
     treedepth = 0 # in tree[0] are the conflicts
     tree[0] = []
     conflicts = set()
-    depsOk = False
     
     clientDbconn = openClientDatabase()
     if (clientDbconn == -1):
 	return [],-1
     
-    while (not depsOk):
+    while 1:
 	treedepth += 1
-	tree[treedepth] = [] # do not use set(), will scramble the order
-        for undep in unsatisfiedDeps:
+	tree[treedepth] = []
 	
-	    passed = treecache.get(undep,None)
-	    if passed:
-		try:
-		    remainingDeps.remove(undep)
-		except:
-		    pass
-		continue
-	
+	for undep in unsatisfiedDeps:
+
+            passed = treecache.get(undep,None) # already analyzed
+            if passed:
+                continue
+
 	    # Handling conflicts
 	    if undep.startswith("!"):
-		myconflict = undep[1:]
-		# look if the package is installed
-		xmatch = clientDbconn.atomMatch(myconflict)
-		if xmatch[0] != -1:
-		    #print "---"
-		    #print clientDbconn.retrieveAtom(xmatch[0])
-		    #print undep
-		    #print "---"
-		    conflicts.add(xmatch[0])
-		remainingDeps.remove(undep) # no conflict
+		xmatch = clientDbconn.atomMatch(undep[1:])
+		conflicts.add(xmatch[0])
 		continue
+	    
+	    atom = atomMatch(undep)
+	    
+	    # handle dependencies not found
+	    if atom[0] == -1:
+		dependenciesNotFound.append(undep)
+		continue
+	    
+	    # add to the tree level
+	    tree[treedepth].append(undep)
+	    treecache[undep] = True
+	
+	if (not tree[treedepth]):
+	    print darkgreen("satisfied: ")+str(tree[treedepth])
+	    break
+	else:
+	    print red("not satisfied: ")+str(tree[treedepth])
+	    # cycle again, load unsatisfiedDeps
+	    unsatisfiedDeps = []
+	    for dep in tree[treedepth]:
+		atom = atomMatch(dep)
+		deps = getDependencies(atom)
+		if (not emptydeps):
+		    deps, xxx = filterSatisfiedDependencies(deps, deepdeps = deepdeps) #FIXME add deepdeps
+		unsatisfiedDeps += deps[:]
+	
+	'''
+        for undep in unsatisfiedDeps:
 	
 	    # obtain its dependencies
 	    atom = atomMatch(undep)
@@ -709,19 +741,6 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 			unsatisfied, satisfied = filterSatisfiedDependencies([undep])
 			if (unsatisfied):
 			    tree[treedepth].append(undep)
-		    else: # if package is found installed with the same ver, also check for revision
-			# FIXME: this is just a workaround for now, I'll need to rethink this
-			myrev = clientDbconn.retrieveRevision(xmatch[0])
-			myver = clientDbconn.retrieveVersion(xmatch[0])
-			#mytag = clientDbconn.retrieveVersionTag(xmatch[0])
-			repoconn = openRepositoryDatabase(atom[1])
-			availrev = repoconn.retrieveRevision(atom[0])
-			availver = repoconn.retrieveVersion(atom[0])
-			#availtag = repoconn.retrieveVersionTag(atom[0])
-			repoconn.closeDB()
-			
-			if (myver == availver) and (myrev != availrev):
-			    tree[treedepth].append(undep)
 		else:
 		    tree[treedepth].append(undep)
 		treecache[undep] = True
@@ -736,6 +755,8 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	    depsOk = True
 	else:
 	    depsOk = False
+	'''
+	
 
     closeClientDatabase(clientDbconn)
 
@@ -1585,7 +1606,7 @@ def database(options):
 	print_info(red("  Depends caching table regenerated successfully."))
 
 
-def printPackageInfo(idpackage,dbconn, clientSearch = False, strictOutput = False, quiet = False):
+def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, quiet = False):
     # now fetch essential info
     pkgatom = dbconn.retrieveAtom(idpackage)
     
@@ -1624,6 +1645,7 @@ def printPackageInfo(idpackage,dbconn, clientSearch = False, strictOutput = Fals
         clientDbconn = openClientDatabase()
         if (clientDbconn != -1):
             pkginstalled = clientDbconn.atomMatch(dep_getkey(pkgatom), matchSlot = pkgslot)
+	    print pkginstalled
             if (pkginstalled[1] == 0):
 		idx = pkginstalled[0]
 	        # found

@@ -3104,9 +3104,12 @@ class etpDatabase:
             cached = self.matchCache.get(atom)
             if cached:
 		# check if matchSlot and multiMatch were the same
-		if (matchSlot == cached['matchSlot']) and (multiMatch == cached['multiMatch']):
+		if (matchSlot == cached['matchSlot']) \
+			and (multiMatch == cached['multiMatch']) \
+			and (caseSensitive == cached['caseSensitive']) \
+			and (matchBranches == cached['matchBranches']):
 	            return cached['result']
-    
+	
         # check for direction
         strippedAtom = entropyTools.dep_getcpv(atom)
         if atom.endswith("*"):
@@ -3202,6 +3205,8 @@ class etpDatabase:
 		    self.matchCache[atom] = {}
 		    self.matchCache[atom]['matchSlot'] = matchSlot
 		    self.matchCache[atom]['multiMatch'] = multiMatch
+		    self.matchCache[atom]['caseSensitive'] = caseSensitive
+		    self.matchCache[atom]['matchBranches'] = matchBranches
 		    self.matchCache[atom]['result'] = -1,2
 		    return -1,2
 	
@@ -3241,6 +3246,8 @@ class etpDatabase:
 		    self.matchCache[atom] = {}
 		    self.matchCache[atom]['matchSlot'] = matchSlot
 		    self.matchCache[atom]['multiMatch'] = multiMatch
+		    self.matchCache[atom]['caseSensitive'] = caseSensitive
+		    self.matchCache[atom]['matchBranches'] = matchBranches
 		    self.matchCache[atom]['result'] = -1,3
 		    return -1,3 # error, cannot use directions when not specifying version
 	    
@@ -3297,6 +3304,8 @@ class etpDatabase:
 		        self.matchCache[atom] = {}
 		        self.matchCache[atom]['matchSlot'] = matchSlot
 		        self.matchCache[atom]['multiMatch'] = multiMatch
+		        self.matchCache[atom]['caseSensitive'] = caseSensitive
+		        self.matchCache[atom]['matchBranches'] = matchBranches
 		        self.matchCache[atom]['result'] = -1,1
 		        return -1,1
 		
@@ -3312,6 +3321,8 @@ class etpDatabase:
 		        self.matchCache[atom] = {}
 		        self.matchCache[atom]['matchSlot'] = matchSlot
 		        self.matchCache[atom]['multiMatch'] = multiMatch
+		        self.matchCache[atom]['caseSensitive'] = caseSensitive
+		        self.matchCache[atom]['matchBranches'] = matchBranches
 		        self.matchCache[atom]['result'] = -1,1
 			return -1,1
 		
@@ -3330,6 +3341,8 @@ class etpDatabase:
 		        self.matchCache[atom] = {}
 		        self.matchCache[atom]['matchSlot'] = matchSlot
 		        self.matchCache[atom]['multiMatch'] = multiMatch
+		        self.matchCache[atom]['caseSensitive'] = caseSensitive
+		        self.matchCache[atom]['matchBranches'] = matchBranches
 		        self.matchCache[atom]['result'] = similarPackages,0
 			return similarPackages,0
 		    
@@ -3349,6 +3362,8 @@ class etpDatabase:
 		    self.matchCache[atom] = {}
 		    self.matchCache[atom]['matchSlot'] = matchSlot
 		    self.matchCache[atom]['multiMatch'] = multiMatch
+		    self.matchCache[atom]['caseSensitive'] = caseSensitive
+		    self.matchCache[atom]['matchBranches'] = matchBranches
 		    self.matchCache[atom]['result'] = newerPackage[0],0
 		    return newerPackage[0],0
 	
@@ -3387,11 +3402,14 @@ class etpDatabase:
 		        self.matchCache[atom] = {}
 		        self.matchCache[atom]['matchSlot'] = matchSlot
 		        self.matchCache[atom]['multiMatch'] = multiMatch
+		        self.matchCache[atom]['caseSensitive'] = caseSensitive
+		        self.matchCache[atom]['matchBranches'] = matchBranches
 		        self.matchCache[atom]['result'] = -1,1
 		        return -1,1
 		
 		    versions = []
 		    multiMatchList = []
+		    _dbpkginfo = []
 		    for x in dbpkginfo:
 			if (matchSlot != None):
 			    mslot = self.retrieveSlot(x[0])
@@ -3400,6 +3418,8 @@ class etpDatabase:
 			if (multiMatch):
 			    multiMatchList.append(x[0])
 		        versions.append(x[1])
+			_dbpkginfo.append(x)
+		    dbpkginfo = _dbpkginfo
 		    
 		    if (multiMatch):
 			return multiMatchList,0
@@ -3408,6 +3428,8 @@ class etpDatabase:
 		        self.matchCache[atom] = {}
 		        self.matchCache[atom]['matchSlot'] = matchSlot
 		        self.matchCache[atom]['multiMatch'] = multiMatch
+		        self.matchCache[atom]['caseSensitive'] = caseSensitive
+		        self.matchCache[atom]['matchBranches'] = matchBranches
 		        self.matchCache[atom]['result'] = -1,1
 			return -1,1
 
@@ -3426,6 +3448,8 @@ class etpDatabase:
 		        self.matchCache[atom] = {}
 		        self.matchCache[atom]['matchSlot'] = matchSlot
 		        self.matchCache[atom]['multiMatch'] = multiMatch
+		        self.matchCache[atom]['caseSensitive'] = caseSensitive
+		        self.matchCache[atom]['matchBranches'] = matchBranches
 		        self.matchCache[atom]['result'] = similarPackages,0
 			return similarPackages,0
 
@@ -3445,6 +3469,8 @@ class etpDatabase:
 		    self.matchCache[atom] = {}
 		    self.matchCache[atom]['matchSlot'] = matchSlot
 		    self.matchCache[atom]['multiMatch'] = multiMatch
+		    self.matchCache[atom]['caseSensitive'] = caseSensitive
+		    self.matchCache[atom]['matchBranches'] = matchBranches
 		    self.matchCache[atom]['result'] = newerPackage[0],0
 		    return newerPackage[0],0
 
@@ -3452,15 +3478,20 @@ class etpDatabase:
 		    self.matchCache[atom] = {}
 		    self.matchCache[atom]['matchSlot'] = matchSlot
 		    self.matchCache[atom]['multiMatch'] = multiMatch
+		    self.matchCache[atom]['caseSensitive'] = caseSensitive
+		    self.matchCache[atom]['matchBranches'] = matchBranches
 		    self.matchCache[atom]['result'] = -1,1
 		    return -1,1
 		
 	    else:
 	    
+	        #print foundIDs
+	    
 	        # not set, just get the newer version, matching slot choosen if matchSlot != None
 	        versionIDs = []
 		#print foundIDs
 		multiMatchList = []
+		_foundIDs = []
 	        for list in foundIDs:
 		    if (matchSlot == None):
 		        versionIDs.append(self.retrieveVersion(list[1]))
@@ -3473,6 +3504,8 @@ class etpDatabase:
 			versionIDs.append(self.retrieveVersion(list[1]))
 			if (multiMatch):
 			    multiMatchList.append(list[1])
+		    _foundIDs.append(list)
+		foundIDs = _foundIDs
 	    
 		if (multiMatch):
 		    return multiMatchList,0
@@ -3481,6 +3514,8 @@ class etpDatabase:
 		    self.matchCache[atom] = {}
 		    self.matchCache[atom]['matchSlot'] = matchSlot
 		    self.matchCache[atom]['multiMatch'] = multiMatch
+		    self.matchCache[atom]['caseSensitive'] = caseSensitive
+		    self.matchCache[atom]['matchBranches'] = matchBranches
 		    self.matchCache[atom]['result'] = -1,1
 		    return -1,1
 		
@@ -3506,6 +3541,8 @@ class etpDatabase:
 		self.matchCache[atom] = {}
 		self.matchCache[atom]['matchSlot'] = matchSlot
 		self.matchCache[atom]['multiMatch'] = multiMatch
+		self.matchCache[atom]['caseSensitive'] = caseSensitive
+		self.matchCache[atom]['matchBranches'] = matchBranches
 		self.matchCache[atom]['result'] = newerPackage[1],0
 	        return newerPackage[1],0
 
@@ -3514,6 +3551,8 @@ class etpDatabase:
 	    self.matchCache[atom] = {}
 	    self.matchCache[atom]['matchSlot'] = matchSlot
 	    self.matchCache[atom]['multiMatch'] = multiMatch
+	    self.matchCache[atom]['caseSensitive'] = caseSensitive
+	    self.matchCache[atom]['matchBranches'] = matchBranches
 	    self.matchCache[atom]['result'] = -1,1
 	    return -1,1
 	

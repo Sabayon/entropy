@@ -111,7 +111,7 @@ def searchInstalledPackages(packages, idreturn = False, quiet = False):
 		if (idreturn):
 		    dataInfo.append(idpackage)
 		else:
-		    printPackageInfo(idpackage,clientDbconn, clientSearch = True, quiet = quiet)
+		    printPackageInfo(idpackage, clientDbconn, clientSearch = True, quiet = quiet)
 	
     closeClientDatabase(clientDbconn)
 
