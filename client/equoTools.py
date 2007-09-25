@@ -712,52 +712,6 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 		    deps, xxx = filterSatisfiedDependencies(deps, deepdeps = deepdeps) #FIXME add deepdeps
 		unsatisfiedDeps += deps[:]
 	
-	'''
-        for undep in unsatisfiedDeps:
-	
-	    # obtain its dependencies
-	    atom = atomMatch(undep)
-	    if atom[0] == -1:
-		# wth, dependency not in database?
-		dependenciesNotFound.append(undep)
-		#print "not found"
-		try:
-		    while 1: remainingDeps.remove(undep)
-		except:
-		    pass
-	    else:
-		# found, get its deps
-		mydeps = getDependencies(atom)
-		#print mydeps
-		if (not emptydeps):
-		    mydeps, xxx = filterSatisfiedDependencies(mydeps)
-		for dep in mydeps:
-		    remainingDeps.add(dep)
-		xmatch = clientDbconn.atomMatch(undep)
-		if (not emptydeps):
-		    if xmatch[0] == -1: # not installed
-		        tree[treedepth].append(undep)
-		    elif (deepdeps): # attention: used by the world update function
-			unsatisfied, satisfied = filterSatisfiedDependencies([undep])
-			if (unsatisfied):
-			    tree[treedepth].append(undep)
-		else:
-		    tree[treedepth].append(undep)
-		treecache[undep] = True
-		
-		# remove from list
-		remainingDeps.remove(undep)
-
-	# regen list to cycle
-	unsatisfiedDeps = list(remainingDeps)
-	
-	if (not unsatisfiedDeps):
-	    depsOk = True
-	else:
-	    depsOk = False
-	'''
-	
-
     closeClientDatabase(clientDbconn)
 
     if (dependenciesNotFound):
