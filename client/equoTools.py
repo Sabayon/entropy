@@ -42,6 +42,8 @@ equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst[
 
 global atomMatchCache
 atomMatchCache = {}
+global atomClientMatchCache
+atomClientMatchCache = {}
 
 ########################################################
 ####
@@ -539,7 +541,10 @@ def getDependencies(packageInfo):
     conflicts = dbconn.retrieveConflicts(idpackage)
     for x in conflicts:
 	depend.append("!"+x)
-    dbconn.closeDB()
+    if reponame == 0:
+	closeClientDatabase(dbconn)
+    else:
+        dbconn.closeDB()
     return depend
 
 
@@ -627,7 +632,7 @@ def filterSatisfiedDependencies(dependencies):
 		#print " ----> "+dependency+" NOT installed."
 		unsatisfiedDeps.append(dependency)
     
-        clientDbconn.closeDB()
+        closeClientDatabase(clientDbconn)
 
     return unsatisfiedDeps, satisfiedDeps
 
@@ -636,7 +641,7 @@ def filterSatisfiedDependencies(dependencies):
    @input package: atomInfo [idpackage,reponame]
    @output: dependency tree dictionary, plus status code
 '''
-def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False): #FIXME: find a reason for deepdeps and emptydeps otherwise drop
+def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 
     treecache = {}
     unsatisfiedDeps = getDependencies(atomInfo)
@@ -646,7 +651,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False): #FIXM
     tree = {}
     treedepth = 0 # in tree[0] are the conflicts
     tree[0] = []
-    conflicts = set([])
+    conflicts = set()
     depsOk = False
     
     clientDbconn = openClientDatabase()
@@ -655,7 +660,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False): #FIXM
     
     while (not depsOk):
 	treedepth += 1
-	tree[treedepth] = []
+	tree[treedepth] = set()
         for undep in unsatisfiedDeps:
 	
 	    passed = treecache.get(undep,None)
@@ -701,11 +706,11 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False): #FIXM
 		xmatch = clientDbconn.atomMatch(undep)
 		if (not emptydeps):
 		    if xmatch[0] == -1: # not installed
-		        tree[treedepth].append(undep)
-		    elif (deepdeps):
+		        tree[treedepth].add(undep)
+		    elif (deepdeps): # attention: used by the world update function
 			unsatisfied, satisfied = filterSatisfiedDependencies([undep])
 			if (unsatisfied):
-			    tree[treedepth].append(undep)
+			    tree[treedepth].add(undep)
 		    else: # if package is found installed with the same ver, also check for revision
 			# FIXME: this is just a workaround for now, I'll need to rethink this
 			myrev = clientDbconn.retrieveRevision(xmatch[0])
@@ -718,10 +723,10 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False): #FIXM
 			repoconn.closeDB()
 			
 			if (myver == availver) and (myrev != availrev):
-			    tree[treedepth].append(undep)
+			    tree[treedepth].add(undep)
 
 		else:
-		    tree[treedepth].append(undep)
+		    tree[treedepth].add(undep)
 		treecache[undep] = True
 		
 		# remove from list
@@ -735,7 +740,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False): #FIXM
 	else:
 	    depsOk = False
 
-    clientDbconn.closeDB()
+    closeClientDatabase(clientDbconn)
 
     if (dependenciesNotFound):
 	# Houston, we've got a problem
@@ -787,6 +792,7 @@ def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False):
     
     for atomInfo in foundAtoms:
 	depcount += 1
+	#print depcount
 	newtree, result = generateDependencyTree(atomInfo, emptydeps, deepdeps)
 	if (result != 0):
 	    return newtree, result
@@ -799,11 +805,11 @@ def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False):
 	# now filter newtree
 	treelength = len(newdeptree)
 	for count in range(treelength)[::-1]:
-	    pkglist = []
+	    pkglist = set()
 	    #print count
 	    for x in newdeptree[count]:
 		for y in newdeptree[count][x]:
-		    pkglist.append(y)
+		    pkglist.add(y)
 	    #print len(pkglist)
 	    # remove dups in the other lists
 	    for pkg in pkglist:
@@ -813,6 +819,7 @@ def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False):
 		    for z in newdeptree[x]:
 		        try:
 		            while 1:
+				#print newdeptree[x][z]
 			        newdeptree[x][z].remove(pkg)
 			        #print "removing "+str(pkg)
 		        except:
@@ -858,7 +865,7 @@ def generateDependsTree(idpackages, dbconn = None, deep = False):
     
     while (not dependsOk):
 	treedepth += 1
-	tree[treedepth] = set([])
+	tree[treedepth] = set()
         for idpackage in treelevel:
 
 	    passed = dependscache.get(idpackage,None)
@@ -883,7 +890,7 @@ def generateDependsTree(idpackages, dbconn = None, deep = False):
 	    elif deep: # if no depends found, grab its dependencies and check
 		
 	        mydeps = set(clientDbconn.retrieveDependencies(idpackage))
-		_mydeps = set([])
+		_mydeps = set()
 		for x in mydeps:
 		    match = clientDbconn.atomMatch(x)
 		    if match and match[1] == 0:
@@ -931,7 +938,7 @@ def generateDependsTree(idpackages, dbconn = None, deep = False):
     
     del tree
     if closedb:
-        clientDbconn.closeDB()
+        closeClientDatabase(clientDbconn)
     return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
 
@@ -956,7 +963,7 @@ def getInstalledAtoms(atom):
         if (rc):
 	    for x in rc:
 	        results.append(x[1])
-        clientDbconn.closeDB()
+        closeClientDatabase(clientDbconn)
 
     return results
 
@@ -1107,7 +1114,7 @@ def removeFile(idpackage, clientDbconn = None, newContent = []):
 	removePackageFromGentooDatabase(gentooAtom)
 
     if (closedb):
-	clientDbconn.closeDB()
+	closeClientDatabase(clientDbconn)
 
     # merge data into system
     for file in content:
@@ -1241,7 +1248,7 @@ def installFile(infoDict, clientDbconn = None):
 	removeFile(removePackage, clientDbconn, packageContent)
 
     if (closedb):
-	clientDbconn.closeDB()
+	closeClientDatabase(clientDbconn)
 
     if (etpConst['gentoo-compat']):
 	rc = installPackageIntoGentooDatabase(infoDict,pkgpath)
@@ -1366,7 +1373,7 @@ def installPackageIntoDatabase(idpackage, repository, clientDbconn = None):
     idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = rev, forcedBranch = True)
     del x
     if (not status):
-	clientDbconn.closeDB()
+	closeClientDatabase(clientDbconn)
 	print "DEBUG!!! Package "+str(idpk)+" has not been inserted, status: "+str(status)
 	exitstatus = 1 # it hasn't been insterted ? why??
     else: # all fine
@@ -1392,7 +1399,7 @@ def installPackageIntoDatabase(idpackage, repository, clientDbconn = None):
     atomMatchCache = {}
 
     if (closedb):
-        clientDbconn.closeDB()
+        closeClientDatabase(clientDbconn)
     return exitstatus
 
 '''
@@ -1414,7 +1421,7 @@ def removePackageFromDatabase(idpackage, clientDbconn = None):
     atomMatchCache = {}
     
     if (closedb):
-        clientDbconn.closeDB()
+        closeClientDatabase(clientDbconn)
     
     return 0
 
@@ -1652,13 +1659,13 @@ def database(options):
 	regenerateDependsTable(clientDbconn)
 	print_info(red("  Database reinitialized successfully."))
 
-	clientDbconn.closeDB()
+	closeClientDatabase(clientDbconn)
 
     elif (options[0] == "depends"):
 	print_info(red("  Regenerating depends caching table..."))
 	clientDbconn = openClientDatabase()
 	regenerateDependsTable(clientDbconn)
-	clientDbconn.closeDB()
+	closeClientDatabase(clientDbconn)
 	print_info(red("  Depends caching table regenerated successfully."))
 
 
@@ -1714,7 +1721,7 @@ def printPackageInfo(idpackage,dbconn, clientSearch = False, strictOutput = Fals
 		            installedTag = "NoTag"
 		        installedRev = clientDbconn.retrieveRevision(idx)
 		        break
-            clientDbconn.closeDB()
+            closeClientDatabase(clientDbconn)
 
 
     print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(pkgbranch))
@@ -1832,7 +1839,7 @@ def searchInstalledPackages(packages, idreturn = False, quiet = False):
 		else:
 		    printPackageInfo(idpackage,clientDbconn, clientSearch = True, quiet = quiet)
 	
-    clientDbconn.closeDB()
+    closeClientDatabase(clientDbconn)
 
     if (idreturn):
 	return dataInfo
@@ -1867,7 +1874,7 @@ def searchBelongs(files, idreturn = False, quiet = False):
 		else:
 		    printPackageInfo(idpackage, clientDbconn, clientSearch = True)
 	
-    clientDbconn.closeDB()
+    closeClientDatabase(clientDbconn)
 
     if (idreturn):
 	return dataInfo
@@ -1926,7 +1933,7 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
 	if (matchInRepo):
 	    dbconn.closeDB()
 
-    clientDbconn.closeDB()
+    closeClientDatabase(clientDbconn)
 
     if (idreturn):
 	return dataInfo
@@ -1960,7 +1967,7 @@ def searchFiles(atoms, idreturn = False, quiet = False):
 		    for file in files:
 		        print_info(blue(" ### ")+red(str(file)))
 	
-    clientDbconn.closeDB()
+    closeClientDatabase(clientDbconn)
 
     if (idreturn):
 	return dataInfo
@@ -1974,7 +1981,7 @@ def searchOrphans(quiet = False):
 
     # start to list all files on the system:
     dirs = etpConst['filesystemdirs']
-    foundFiles = set([])
+    foundFiles = set()
     for dir in dirs:
 	for currentdir,subdirs,files in os.walk(dir):
 	    for filename in files:
@@ -2007,7 +2014,7 @@ def searchOrphans(quiet = False):
 	    txt = "["+str(count)+"/"+length+"] "
 	    print_info(red(" @@ ")+blue("Intersecting content of package: ")+txt+bold(atom), back = True)
 	content = clientDbconn.retrieveContent(idpackage)
-	_content = set([])
+	_content = set()
 	for x in content:
 	    if x.startswith("/usr/lib64"):
 		x = "/usr/lib"+x[len("/usr/lib64"):]
@@ -2116,13 +2123,13 @@ def searchInstalled(idreturn = False, verbose = False, quiet = False):
 	        print_info(red("  #")+blue(str(package[1]))+branchinfo+" "+atom)
 	    else:
 	        print atom
-	clientDbconn.closeDB()
+	closeClientDatabase(clientDbconn)
 	return 0
     else:
-	idpackages = set([])
+	idpackages = set()
 	for x in installedPackages:
 	    idpackages.add(package[1])
-        clientDbconn.closeDB()
+        closeClientDatabase(clientDbconn)
         return list(idpackages)
 
 
@@ -2219,13 +2226,20 @@ def openRepositoryDatabase(repositoryName):
    @description: open the installed packages database and returns the pointer
    @output: database pointer or, -1 if error
 '''
-def openClientDatabase():
+def openClientDatabase(xcache = True):
     if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
         conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
+	# load cache
+	if (xcache):
+	    conn.loadMatchCache(atomClientMatchCache)
 	return conn
     else:
 	raise Exception,"openClientDatabase: installed packages database not found. At this stage, the only way to have it is to run 'equo database generate'."
 
+def closeClientDatabase(conn, xcache = True):
+    if (xcache):
+	atomClientMatchCache = conn.getMatchCache()
+    conn.closeDB()
 
 ########################################################
 ####
@@ -2249,8 +2263,8 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     # FIXME: handle upgrade/not upgrade
     
     updateList = []
-    fineList = set([])
-    removedList = set([])
+    fineList = set()
+    removedList = set()
     syncRepositories()
     
     clientDbconn = openClientDatabase()
@@ -2299,7 +2313,8 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	print_info(red(" @@ ")+blue("Packages matching already up to date:\t")+bold(str(len(fineList))))
 
     print_info(red(" @@ ")+blue("Calculating queue..."))
-    result = installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch)
+    result = installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch, deepdeps = upgrade)
+    closeClientDatabase(clientDbconn)
     return result
 
 def installPackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False):
@@ -2372,7 +2387,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 			        installedTag = "NoTag"
 		            installedRev = clientDbconn.retrieveRevision(idx)
 		            break
-	        clientDbconn.closeDB()
+		closeClientDatabase(clientDbconn)
 
 	    print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
 	    print_info("\t"+red("Versioning:\t")+" "+blue(installedVer)+" / "+blue(installedTag)+" / "+blue(str(installedRev))+bold(" ===> ")+darkgreen(pkgver)+" / "+darkgreen(pkgtag)+" / "+darkgreen(str(pkgrev)))
@@ -2409,7 +2424,9 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     runQueue = []
     removalQueue = [] # aka, conflicts
     
-    print_info(red(" @@ ")+blue("Calculating..."))
+    print_info(red(" @@ ")+blue("Calculating... "))
+
+    debugShit = []
 
     if (deps):
         treepackages, result = getRequiredPackages(foundAtoms, emptydeps, deepdeps)
@@ -2421,14 +2438,17 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    print_error(red(" @@ ")+blue("Cannot find the Installed Packages Database. It's needed to accomplish dependency resolving. Try to run ")+bold("equo database generate"))
 	    return 200, -1
 	
-	# conflicts, adding to a separate array
-	removalQueue = treepackages[0].get(0,None)
-	treepackages[0][0] = []
+	debugShit.append([treepackages, result])
 	
 	for x in range(len(treepackages))[::-1]:
 	    for z in treepackages[x]:
-		for a in treepackages[x][z]:
-		    runQueue.append(a)
+		if z == 0:
+		    # conflicts
+		    for a in treepackages[x][z]:
+			removalQueue.append(a)
+		else:
+		    for a in treepackages[x][z]:
+		        runQueue.append(a)
     
     # remove duplicates
     runQueue = [x for x in runQueue if x not in foundAtoms] # needed?
@@ -2461,13 +2481,17 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	        installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
 		repoinfo = red("[")+brown("from: ")+bold(installedfrom)+red("] ")
 	        print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
-	    clientDbconn.closeDB()
+	    closeClientDatabase(clientDbconn)
 
     if (runQueue):
 	if (ask or pretend):
 	    print_info(red(" @@ ")+blue("These are the packages that would be merged:"))
 	for packageInfo in runQueue:
-	    dbconn = openRepositoryDatabase(packageInfo[1])
+	    try:
+	        dbconn = openRepositoryDatabase(packageInfo[1])
+	    except:
+		import pdb
+		pdb.set_trace()
 	    
 	    pkgatom = dbconn.retrieveAtom(packageInfo[0])
 	    pkgver = dbconn.retrieveVersion(packageInfo[0])
@@ -2521,7 +2545,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 			    actionQueue[pkgatom]['removeatom'] = clientDbconn.retrieveAtom(idx)
 			    onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idx)
 		            break
-	        clientDbconn.closeDB()
+	        closeClientDatabase(clientDbconn)
 
 	    if not (ask or pretend or verbose):
 		continue
@@ -2595,7 +2619,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	for step in steps:
 	    rc = stepExecutor(step,infoDict,clientDbconn)
 	    if (rc != 0):
-		clientDbconn.closeDB()
+		closeClientDatabase(clientDbconn)
 		return -1,rc
     
     for packageInfo in runQueue:
@@ -2628,7 +2652,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	for step in steps:
 	    rc = stepExecutor(step,actionQueue[pkgatom],clientDbconn)
 	    if (rc != 0):
-		clientDbconn.closeDB()
+		closeClientDatabase(clientDbconn)
 		return -1,rc
 
     # regenerate depends table
@@ -2636,7 +2660,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     #regenerateDependsTable(clientDbconn, output = False)
     print_info(red(" @@ ")+blue("Install Complete."))
 
-    clientDbconn.closeDB()
+    closeClientDatabase(clientDbconn)
 
     return 0,0
 
@@ -2750,7 +2774,7 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 	print
         rc = askquestion("     I am going to start the removal. Are you sure?")
         if rc == "No":
-	    clientDbconn.closeDB()
+	    closeClientDatabase(clientDbconn)
 	    return 0,0
     else:
 	countdown(what = red(" @@ ")+blue("Starting removal in "),back = True)
@@ -2771,12 +2795,12 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 	for step in steps:
 	    rc = stepExecutor(step,infoDict,clientDbconn)
 	    if (rc != 0):
-		clientDbconn.closeDB()
+		closeClientDatabase(clientDbconn)
 		return -1,rc
     
     print_info(red(" @@ ")+blue("All done."))
     
-    clientDbconn.closeDB()
+    closeClientDatabase(clientDbconn)
     return 0,0
 
 
@@ -2836,14 +2860,14 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
 		packagesNeeded.append([depatom,dep])
 
     if (pretend):
-	clientDbconn.closeDB()
+	closeClientDatabase(clientDbconn)
 	return 0, packagesNeeded
 
     if (packagesNeeded) and (not quiet):
         if (ask):
             rc = askquestion("     Would you like to install them?")
             if rc == "No":
-		clientDbconn.closeDB()
+		closeClientDatabase(clientDbconn)
 	        return 0,packagesNeeded
 	else:
 	    print_info(red(" @@ ")+blue("Installing dependencies in ")+red("10 seconds")+blue("..."))
@@ -2860,7 +2884,7 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
 	    
 
     print_info(red(" @@ ")+blue("All done."))
-    clientDbconn.closeDB()
+    closeClientDatabase(clientDbconn)
     return 0,packagesNeeded
 
 '''
@@ -2915,6 +2939,6 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 	    print_error(errormsg)
     
     if (closedb):
-	clientDbconn.closeDB()
+	closeClientDatabase(clientDbconn)
     
     return output
