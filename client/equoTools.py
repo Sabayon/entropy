@@ -655,7 +655,7 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
 '''
 def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 
-    print ":::: enter ::::"
+    #print ":::: enter ::::"
 
     treecache = {}
     unsatisfiedDeps = getDependencies(atomInfo)
@@ -699,10 +699,10 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	    treecache[undep] = True
 	
 	if (not tree[treedepth]):
-	    print darkgreen("satisfied: ")+str(tree[treedepth])
+	    #print darkgreen("satisfied: ")+str(tree[treedepth])
 	    break
 	else:
-	    print red("not satisfied: ")+str(tree[treedepth])
+	    #print red("not satisfied: ")+str(tree[treedepth])
 	    # cycle again, load unsatisfiedDeps
 	    unsatisfiedDeps = []
 	    for dep in tree[treedepth]:
@@ -1645,7 +1645,6 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
         clientDbconn = openClientDatabase()
         if (clientDbconn != -1):
             pkginstalled = clientDbconn.atomMatch(dep_getkey(pkgatom), matchSlot = pkgslot)
-	    print pkginstalled
             if (pkginstalled[1] == 0):
 		idx = pkginstalled[0]
 	        # found
@@ -1730,7 +1729,6 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 
     if (not upgrade):
 	branches = [etpConst['branch']]
-	print "NOT YET IMPLEMENTED: update function not working, try adding 'upgrade' to the opts"
     else:
 	branches = etpConst['branches']
     # FIXME: handle ask, pretend, verbose, onlyfetch
@@ -1951,7 +1949,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 
     if (runQueue):
 	if (ask or pretend):
-	    print_info(red(" @@ ")+blue("These are the packages that would be merged:"))
+	    print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("merged:"))
 	for packageInfo in runQueue:
 	    try:
 	        dbconn = openRepositoryDatabase(packageInfo[1])
@@ -2000,8 +1998,6 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 		    idx = pkginstalled[0]
 		    installedVer = clientDbconn.retrieveVersion(idx)
 		    installedTag = clientDbconn.retrieveVersionTag(idx)
-		    if not installedTag:
-		        installedTag = "NoTag"
 		    installedRev = clientDbconn.retrieveRevision(idx)
 		    actionQueue[pkgatom]['remove'] = idx
 		    actionQueue[pkgatom]['removeatom'] = clientDbconn.retrieveAtom(idx)

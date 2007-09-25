@@ -56,11 +56,15 @@ def isRoot():
         return True
     return False
 
-def applicationLockCheck(option = None):
+def applicationLockCheck(option = None, gentle = False):
     if (etpConst['applicationlock']):
 	print_error(red("Another instance of Equo is running. Action: ")+bold(str(option))+red(" denied."))
 	print_error(red("If I am lying (maybe). Please remove ")+bold(etpConst['pidfile']))
-	sys.exit(10)
+	if (not gentle):
+	    sys.exit(10)
+	else:
+	    return True
+    return False
 
 def getRandomNumber():
     return int(str(random.random())[2:7])

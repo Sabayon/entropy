@@ -123,11 +123,23 @@ try:
 
     elif (options[0] == "install") or (options[0] == "remove") or (options[0] == "deptest") or (options[0] == "world"):
         if options[0] == "install":
-            entropyTools.applicationLockCheck("install")
+            cr = entropyTools.applicationLockCheck("install", gentle = True)
+	    if (cr):
+		print_warning(red("Running with ")+bold("--pretend")+red("..."))
+		if "--pretend" not in options:
+		    options.append("--pretend")
         elif options[0] == "remove":
-            entropyTools.applicationLockCheck("remove")
+            cr = entropyTools.applicationLockCheck("remove", gentle = True)
+	    if (cr):
+		print_warning(red("Running with ")+bold("--pretend")+red("..."))
+		if "--pretend" not in options:
+		    options.append("--pretend")
 	elif options[0] == "world":
-	    entropyTools.applicationLockCheck("remove")
+	    cr = entropyTools.applicationLockCheck("world", gentle = True)
+	    if (cr):
+		print_warning(red("Running with ")+bold("--pretend")+red("..."))
+		if "--pretend" not in options:
+		    options.append("--pretend")
         rc = equoTools.package(options)
         sys.exit(rc)
 
