@@ -1171,7 +1171,11 @@ def installFile(infoDict, clientDbconn = None):
 	    try:
 		# this also handles symlinks
 		shutil.move(fromfile,tofile)
-		packageContent.append(tofile)
+		try:
+		    packageContent.append(tofile.encode("utf-8"))
+		except:
+		    print_error("DEBUG!!: file error: "+str(tofile)+" cannot be converted into UTF-8, skipping")
+		    pass
 	    except IOError,(errno,strerror):
 		if errno == 2:
 		    # better to pass away, sometimes gentoo packages are fucked up and contain broken things
