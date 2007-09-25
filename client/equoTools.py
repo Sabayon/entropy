@@ -729,7 +729,6 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 		# remove from list
 		remainingDeps.remove(undep)
 
-	print len(remainingDeps)
 	# regen list to cycle
 	unsatisfiedDeps = list(remainingDeps)
 	
