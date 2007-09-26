@@ -1039,14 +1039,6 @@ def uploadDatabase(uris):
 	# remove the gzip
 	os.remove(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip'])
 	
-	print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" ..."), back = True)
-	# uploading revision file
-	rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'],True)
-	if (rc == True):
-	    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" completed."))
-	else:
-	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
-
 	# generate digest
 	hexdigest = md5sum(etpConst['etpdatabasefilepath'])
 	f = open(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'],"w")
@@ -1062,6 +1054,14 @@ def uploadDatabase(uris):
 	    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'])+red(" completed. Disconnecting."))
 	else:
 	    entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"uploadDatabase: uploading to: "+extractFTPHostFromUri(uri)+" UNSUCCESSFUL! ERROR!.")
+	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+	
+	print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" ..."), back = True)
+	# uploading revision file
+	rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'],True)
+	if (rc == True):
+	    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" completed."))
+	else:
 	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 	
 	# close connection

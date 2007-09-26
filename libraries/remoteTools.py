@@ -67,14 +67,23 @@ def getRemotePackageChecksum(serverName,filename, branch):
 # HTTP/FTP equo/download functions
 ###################################################
 
-def downloadData(url,pathToSave, bufferSize = 8192, checksum = True):
+def downloadData(url,pathToSave, bufferSize = 8192, checksum = True, showSpeed = True):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadFile: called.")
+
+    # start scheduler
+    if (showSpeed):
+	etpFileTransfer['datatransfer'] = 0
+	etpFileTransfer['oldgather'] = 0
+	etpFileTransfer['gather'] = 0
+	speedUpdater = entropyTools.TimeScheduled(__updateSpeedInfo,etpFileTransfer['transferpollingtime'])
+	speedUpdater.start()
     
+    rc = "-1"
     try:
         remotefile = urllib2.urlopen(url)
     except Exception, e:
 	remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"downloadFile: Exception caught for: "+str(url)+" -> "+str(e))
-	return "-3"
+	rc = "-3"
     try:
 	maxsize = remotefile.headers.get("content-length")
     except:
@@ -84,16 +93,21 @@ def downloadData(url,pathToSave, bufferSize = 8192, checksum = True):
     rsx = "x"
     while rsx != '':
 	rsx = remotefile.read(bufferSize)
-	__downloadFileCommitData(localfile,rsx,maxsize = maxsize)
+	__downloadFileCommitData(localfile, rsx, maxsize = maxsize, showSpeed = showSpeed)
     localfile.flush()
     localfile.close()
     #print_info("",back = True)
     if checksum:
 	# return digest
-	return entropyTools.md5sum(pathToSave)
+	rc = entropyTools.md5sum(pathToSave)
     else:
 	# return -2
-	return "-2"
+	rc = "-2"
+
+    if (showSpeed):
+	speedUpdater.kill()
+
+    return rc
 
 # Get the content of an online page
 # @returns content: if the file exists
@@ -134,7 +148,7 @@ def reportApplicationError(errorstring):
 ###################################################
 # HTTP/FTP equo INTERNAL FUNCTIONS
 ###################################################
-def __downloadFileCommitData(f, buf, output = True, maxsize = 0):
+def __downloadFileCommitData(f, buf, output = True, maxsize = 0, showSpeed = True):
     # writing file buffer
     f.write(buf)
     # update progress
@@ -160,10 +174,21 @@ def __downloadFileCommitData(f, buf, output = True, maxsize = 0):
 	diffbarsize = barsize-curbarsize
 	for y in range(diffbarsize):
 	    bartext += " "
-	bartext += "]"
+	if (showSpeed):
+	    etpFileTransfer['gather'] = f.tell()
+	    bartext += "] => "+str(entropyTools.bytesIntoHuman(etpFileTransfer['datatransfer']))+"/sec"
+	else:
+	    bartext += "]"
 	average = str(average)
 	if len(average) < 2:
 	    average = " "+average
-	currentText += "        "+average+"% "+bartext
+	currentText += "    <->  "+average+"% "+bartext
         # print !
         print_info(currentText,back = True)
+
+
+def __updateSpeedInfo():
+    diff = etpFileTransfer['gather'] - etpFileTransfer['oldgather']
+    # we have the diff size
+    etpFileTransfer['datatransfer'] = diff / etpFileTransfer['transferpollingtime']
+    etpFileTransfer['oldgather'] = etpFileTransfer['gather']

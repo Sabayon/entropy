@@ -709,7 +709,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 		atom = atomMatch(dep)
 		deps = getDependencies(atom)
 		if (not emptydeps):
-		    deps, xxx = filterSatisfiedDependencies(deps, deepdeps = deepdeps) #FIXME add deepdeps
+		    deps, xxx = filterSatisfiedDependencies(deps, deepdeps = deepdeps)
 		unsatisfiedDeps += deps[:]
 	
     closeClientDatabase(clientDbconn)
@@ -1002,6 +1002,8 @@ def fetchFileOnMirrors(repository, filename, digest = False):
 		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - file not available on this mirror.")
 	    elif rc == -2:
 		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - wrong checksum.")
+	    elif rc == -3:
+		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - not found.")
 	    else:
 		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - unknown reason.")
 	    try:
@@ -1026,6 +1028,8 @@ def fetchFile(url, digest = False):
         fetchChecksum = downloadData(url,filepath)
     except:
 	return -1
+    if fetchChecksum == -3:
+	return -3
     if (digest != False):
 	#print digest+" <--> "+fetchChecksum
 	if (fetchChecksum != digest):
@@ -2327,7 +2331,10 @@ def stepExecutor(step,infoDict, clientDbconn = None):
 	    print_info(red("   ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download'])))
 	output = installFile(infoDict, clientDbconn)
 	if output != 0:
-	    errormsg = red("An error occured while trying to install the package. Check if you have enough disk space on your hard disk. Error "+str(output))
+	    if output == 512:
+	        errormsg = red("You are running out of disk space. I bet, you're probably Michele. Error 512")
+	    else:
+	        errormsg = red("An error occured while trying to install the package. Check if your hard disk is healthy. Error "+str(output))
 	    print_error(errormsg)
     
     elif step == "remove":

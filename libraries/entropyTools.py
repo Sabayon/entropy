@@ -29,6 +29,7 @@ import sys
 import random
 import commands
 import urlparse
+import threading, time
 
 # Instantiate the databaseStatus:
 import databaseTools
@@ -56,6 +57,22 @@ def isRoot():
         return True
     return False
 
+class TimeScheduled(threading.Thread):
+    def __init__(self, function, delay):
+        threading.Thread.__init__(self)
+        self.function = function
+        self.delay = delay
+    def run(self):
+        self.alive = 1
+        while self.alive:
+            self.function()
+	    try:
+                time.sleep(self.delay)
+	    except:
+		pass
+    def kill(self):
+        self.alive = 0
+
 def applicationLockCheck(option = None, gentle = False):
     if (etpConst['applicationlock']):
 	print_error(red("Another instance of Equo is running. Action: ")+bold(str(option))+red(" denied."))
@@ -70,7 +87,6 @@ def getRandomNumber():
     return int(str(random.random())[2:7])
 
 def countdown(secs=5,what="Counting...", back = False):
-    import time
     if secs:
 	if back:
 	    sys.stdout.write(what)

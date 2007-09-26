@@ -429,6 +429,13 @@ etpHandlers = {
     'errorsend': "http://svn.sabayonlinux.org/entropy/handlers/error_report.php?arch="+ETP_ARCH_CONST+"&stacktrace=",
 }
 
+### file transfer settings
+etpFileTransfer = {
+    'datatransfer': 0,
+    'oldgather': 0,
+    'gather': 0,
+    'transferpollingtime': float(1)/2 # 0.5secs = 2Hz
+}
 
 # Create paths
 if not os.path.isdir(etpConst['entropyworkdir']):
@@ -576,27 +583,8 @@ dbOR = "|or|"
 dbKEYWORDS = "KEYWORDS"
 dbCONTENTS = "CONTENTS"
 dbCOUNTER = "COUNTER"
-dbPORTAGE_ELOG_OPTS = 'PORTAGE_ELOG_CLASSES="warn info log" PORTAGE_ELOG_SYSTEM="save" PORT_LOGDIR="'+etpConst['logdir']+'"'
 
 # Portage variables reference
 # vdbVARIABLE --> $VARIABLE
 vdbPORTDIR = "PORTDIR"
 vdbPORTDIR_OVERLAY = "PORTDIR_OVERLAY"
-
-# Portage & misc commands
-cdbEMERGE = "emerge"
-cdbRunEmerge = vdbPORTDIR+"='"+etpConst['portagetreedir']+"' "+vdbPORTDIR_OVERLAY+"='"+etpConst['overlays']+"' "+cdbEMERGE
-cdbStartDistcc = "/etc/init.d/distccd start --nodeps"
-cdbStopDistcc = "/etc/init.d/distccd stop --nodeps"
-cdbStatusDistcc = "/etc/init.d/distccd status"
-
-# Portage options
-odbBuild = " -b "
-odbNodeps = " --nodeps "
-
-if (commands.getoutput("q -V").find("portage-utils") != -1):
-    pFindLibrary = "qfile -qC "
-    pFindLibraryXT = "qfile -qeC "
-else:
-    pFindLibrary = "equery belongs -n "
-    pFindLibraryXT = "equery belongs -en "
