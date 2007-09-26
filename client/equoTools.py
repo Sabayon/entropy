@@ -1746,9 +1746,14 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	print_info(red(" @@ ")+darkred("Packages matching not available:\t\t")+bold(str(len(removedList))))
 	print_info(red(" @@ ")+blue("Packages matching already up to date:\t")+bold(str(len(fineList))))
 
-    print_info(red(" @@ ")+blue("Calculating queue..."))
-    result = installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch, deepdeps = upgrade)
-    closeClientDatabase(clientDbconn)
+    if (updateList):
+        print_info(red(" @@ ")+blue("Calculating queue..."))
+        result = installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch, deepdeps = upgrade)
+    else:
+	print_info(red(" @@ ")+blue("All up to date."))
+	result = 0,0
+
+    clientDbconn.closeDB() # I don't need to save cache
     return result
 
 def installPackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False):
@@ -2128,8 +2133,18 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 	installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
 
 	if (systemPackage) and (systemPackagesCheck):
-	    print_warning(darkred("   # !!! ")+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+red(" is a vital package. Removal forbidden."))
-	    continue
+	    # check if the package is slotted and exist more than one installed first
+	    sysresults = clientDbconn.atomMatch(dep_getkey(pkgatom), multiMatch = True)
+	    slots = set()
+	    if sysresults[1] == 0:
+	        for x in sysresults[0]:
+		    slots.add(clientDbconn.retrieveSlot(x))
+		if len(slots) < 2:
+	            print_warning(darkred("   # !!! ")+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+red(" is a vital package. Removal forbidden."))
+		    continue
+	    else:
+	        print_warning(darkred("   # !!! ")+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+red(" is a vital package. Removal forbidden."))
+	        continue
 	plainRemovalQueue.append(idpackage)
 	
 	print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" | Installed from: "+red(installedfrom))

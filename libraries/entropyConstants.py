@@ -434,7 +434,7 @@ etpFileTransfer = {
     'datatransfer': 0,
     'oldgather': 0,
     'gather': 0,
-    'transferpollingtime': float(1)/2 # 0.5secs = 2Hz
+    'transferpollingtime': float(1)/4 # 0.25secs = 4Hz
 }
 
 # Create paths

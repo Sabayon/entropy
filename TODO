@@ -2,7 +2,8 @@ TODO list:
 - reagent: complete smartapps section
   CLIENT:
   - trap elogs in reagent
-  - add etc-update-alike support
+  - add etc-update alike support
+  - add env-update alike support
   - add preinst/postinst/prerm/postrm scripts
   - centralized management?
   - move branches to version naming (3.5, 3.6, 3.7) instead of using stable, unstable...
@@ -23,6 +24,7 @@ TODO list:
     - world looks inside the latest (if run with "upgrade")
     - world: add --prune option that removes packages not available anymore
   - write a dependency reorder function for each level of the dependency tree?
+  - world upgrade should switch python to 2.5
 
 
 Project Status:
