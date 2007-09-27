@@ -95,3 +95,10 @@ else:
 		etpConst['gentoo-compat'] = False
 	    else:
 		etpConst['gentoo-compat'] = True
+
+	if line.startswith("collisionprotect|") and (len(line.split("|")) == 2):
+	    collopt = line.split("|")[1].strip()
+	    if collopt == "0" or collopt == "1" or collopt == "2":
+		etpConst['collisionprotect'] = int(collopt)
+	    else:
+		print "WARNING: invalid collisionprotect in: "+etpConst['equoconf']

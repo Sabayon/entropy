@@ -15,7 +15,7 @@ TODO list:
 	- scrollkeeper database
 	- icons cache
 	- fonts cache (run mkfontdir after writes in /usr/share/fonts)
-	- switch gcc profile
+	- switch gcc profile (when installing one)
 	- switch binutils profile
   - split world function in "world update" and "world upgrade" (do the latter first)
   - remove TAGS and substitute them with forced SLOT setting (just keep it for the package filename)

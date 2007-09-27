@@ -23,12 +23,13 @@
 import sys
 import os
 import re
+import shutil
 sys.path.append('../libraries')
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extactDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extactDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, dep_striptag
 from databaseTools import etpDatabase
 import xpak
 import time
@@ -41,7 +42,8 @@ global atomMatchCache
 atomMatchCache = {}
 global atomClientMatchCache
 atomClientMatchCache = {}
-
+global contentCache
+contentCache = {}
 
 ########################################################
 ####
@@ -258,7 +260,6 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 
 def backupClientDatabase():
     if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
-	import shutil
 	rnd = getRandomNumber()
 	source = etpConst['etpdatabaseclientfilepath']
 	dest = etpConst['etpdatabaseclientfilepath']+".backup."+str(rnd)
@@ -1039,45 +1040,35 @@ def fetchFile(url, digest = False):
 	    return 0
     return 0
 
-'''
-   @description: remove files installed by idpackage from the client database
-   @input int(idpackage): idpackage from client database
-   @input clientDbconn: an already opened database connection (to the client one)
-   @input newContent: if this function is called by installFile, newContent will contain the new package list and a differential removal will be run instead
-   @output: 0 = all fine, >0 = error!
-'''
-def removeFile(idpackage, clientDbconn = None, newContent = []):
-    import shutil
-    closedb = False
-    if (clientDbconn == None):
-	closedb = True
-	clientDbconn = openClientDatabase()
-    content = clientDbconn.retrieveContent(idpackage)
 
-    if (newContent):
-	# doing a diff removal
-	content = [x for x in content if x not in newContent]
-	#print content
+def removeFile(atom, content):
+
+    # load content cache if found empty
+    if etpConst['collisionprotect'] > 0:
+        if (not contentCache):
+	    xlist = clientDbconn.listAllFiles(clean = True)
+	    for x in xlist:
+		contentCache[x] = 1
 
     # Handle gentoo database
     if (etpConst['gentoo-compat']):
-	gentooAtom = clientDbconn.retrieveCategory(idpackage)+"/"+clientDbconn.retrieveName(idpackage)+"-"+clientDbconn.retrieveVersion(idpackage)
+	gentooAtom = dep_striptag(atom) # FIXME: tags will be removed
 	removePackageFromGentooDatabase(gentooAtom)
-
-    if (closedb):
-	closeClientDatabase(clientDbconn)
 
     # merge data into system
     for file in content:
+	# collision check
+	if etpConst['collisionprotect'] > 0:
+	    if file in contentCache:
+	        print "DEBUG!!: collision found for "+file.encode(sys.getfilesystemencoding()) #FIXME: beautify
+	        continue
+	    try:
+	        del contentCache[file]
+	    except:
+	        pass
 	file = file.encode(sys.getfilesystemencoding())
 	try:
 	    os.remove(file)
-	    # also remove py[c,o]?
-	    if file.endswith(".py"):
-		if os.path.exists(file+"c"):
-		    os.remove(file+"c")
-		if os.path.exists(file+"o"):
-		    os.remove(file+"o")
 	    #print file
 	    # is now empty?
 	    filedir = os.path.dirname(file)
@@ -1101,15 +1092,20 @@ def removeFile(idpackage, clientDbconn = None, newContent = []):
    @output: 0 = all fine, >0 = error!
 '''
 def installFile(infoDict, clientDbconn = None):
-    import shutil
     package = infoDict['download']
-    removePackage = infoDict['remove']
 
     closedb = False
     if (clientDbconn == None):
 	closedb = True
 	clientDbconn = openClientDatabase()
-    
+
+    # load content cache if found empty
+    if etpConst['collisionprotect'] > 0:
+        if (not contentCache):
+	    xlist = clientDbconn.listAllFiles(clean = True)
+	    for x in xlist:
+		contentCache[x] = 1
+
     pkgpath = etpConst['entropyworkdir']+"/"+package
     if not os.path.isfile(pkgpath):
 	# try to fetch, added for safety
@@ -1163,6 +1159,10 @@ def installFile(infoDict, clientDbconn = None):
 	    fromfile = currentdir+"/"+file
 	    tofile = fromfile[len(imageDir):]
 	    
+	    if etpConst['collisionprotect'] > 1:
+		if tofile in contentCache:
+		    print "DEBUG!!: collision found for "+file.encode(sys.getfilesystemencoding()) #FIXME: beautify
+		    continue
 	    #print "copying file "+fromfile+" to "+tofile
 
 	    if os.access(tofile,os.F_OK):
@@ -1197,13 +1197,13 @@ def installFile(infoDict, clientDbconn = None):
 	    except:
 		pass # sometimes, gentoo packages are fucked up and contain broken symlinks
 
-    if (removePackage != -1):
+    if (infoDict['removeidpackage'] != -1):
 	# doing a diff removal
 	if (etpConst['gentoo-compat']):
 	    print_info(red("   ## ")+blue("Cleaning old package files...")+" ## w/Gentoo compatibility")
 	else:
 	    print_info(red("   ## ")+blue("Cleaning old package files..."))
-	removeFile(removePackage, clientDbconn, packageContent)
+	removeFile(infoDict['removeatom'], infoDict['removecontent'])
 
     if (closedb):
 	closeClientDatabase(clientDbconn)
@@ -1229,7 +1229,6 @@ def removePackageFromGentooDatabase(atom):
 	return -2
 
     # handle gentoo-compat
-    import shutil
     _portage_avail = False
     try:
 	from portageTools import getPortageAppDbPath as _portage_getPortageAppDbPath, getInstalledAtoms as _portage_getInstalledAtoms
@@ -1319,7 +1318,6 @@ def installPackageIntoDatabase(idpackage, repository, clientDbconn = None):
     # get current revision
     rev = dbconn.retrieveRevision(idpackage)
     branch = dbconn.retrieveBranch(idpackage)
-    dbconn.closeDB()
     
     exitstatus = 0
     
@@ -1328,13 +1326,28 @@ def installPackageIntoDatabase(idpackage, repository, clientDbconn = None):
     if clientDbconn == None:
 	closedb = True
 	clientDbconn = openClientDatabase()
+
+    # load content cache
+    if etpConst['collisionprotect'] > 0:
+        if (not contentCache):
+	    xlist = clientDbconn.listAllFiles(clean = True)
+	    for x in xlist:
+		contentCache[x] = 1
+
+        # sync contentCache before install
+        content = dbconn.retrieveContent(idpackage)
+        for x in content:
+	    contentCache[x] = 1
+    dbconn.closeDB()
+
     idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = rev, forcedBranch = True)
     del x
     if (not status):
 	closeClientDatabase(clientDbconn)
-	print "DEBUG!!! Package "+str(idpk)+" has not been inserted, status: "+str(status)
+	print "DEBUG!!! THIS SHOULD NOT NEVER HAPPEN. Package "+str(idpk)+" has not been inserted, status: "+str(status)
 	exitstatus = 1 # it hasn't been insterted ? why??
     else: # all fine
+
         # add idpk to the installedtable
         clientDbconn.removePackageFromInstalledTable(idpk)
         clientDbconn.addPackageToInstalledTable(idpk,repository)
@@ -1373,6 +1386,20 @@ def removePackageFromDatabase(idpackage, clientDbconn = None):
     if clientDbconn == None:
 	closedb = True
 	clientDbconn = openClientDatabase()
+
+    # load content cache
+    if etpConst['collisionprotect'] > 0:
+        if (not contentCache):
+	    xlist = clientDbconn.listAllFiles(clean = True)
+	    for x in xlist:
+		contentCache[x] = 1
+        # sync contentCache before removal
+        content = clientDbconn.retrieveContent(idpackage)
+        for x in content:
+	    try:
+	        del contentCache[x]
+	    except:
+	        pass
 
     clientDbconn.removePackage(idpackage)
     # reset atomMatch cache
@@ -1693,8 +1720,6 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	branches = [etpConst['branch']]
     else:
 	branches = etpConst['branches']
-    # FIXME: handle ask, pretend, verbose, onlyfetch
-    # FIXME: handle upgrade/not upgrade
     
     updateList = []
     fineList = set()
@@ -1703,7 +1728,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     
     clientDbconn = openClientDatabase()
     # get all the installed packages
-    # FIXME: add branch support
+
     packages = clientDbconn.listAllPackages()
     print_info(red(" @@ ")+blue("Calculating world packages..."))
     for package in packages:
@@ -1728,7 +1753,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 		tainted = True
 	if (tainted):
 	    # Alice! use the key! ... and the slot
-	    matchresults = atomMatch(atomkey, matchSlot = slot)
+	    matchresults = atomMatch(atomkey, matchSlot = slot, matchBranches = branches)
 	    if matchresults[0] != -1:
 		mdbconn = openRepositoryDatabase(matchresults[1])
 		matchatom = mdbconn.retrieveAtom(matchresults[0])
@@ -1748,13 +1773,37 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 
     if (updateList):
         print_info(red(" @@ ")+blue("Calculating queue..."))
-        result = installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch, deepdeps = upgrade)
+        installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch, deepdeps = upgrade)
     else:
-	print_info(red(" @@ ")+blue("All up to date."))
-	result = 0,0
+	print_info(red(" @@ ")+blue("Nothing to update."))
 
-    clientDbconn.closeDB() # I don't need to save cache
-    return result
+    if (removedList):
+	removedList = list(removedList)
+	removedList.sort()
+	print_info(red(" @@ ")+blue("On the system there are packages that are not available anymore in the online repositories."))
+	print_info(red(" @@ ")+blue("Even if they are usually harmless, it is suggested to remove them."))
+	
+	if (not pretend):
+	    if (ask):
+	        rc = askquestion("     Would you like to query them ?")
+	        if rc == "No":
+		    clientDbconn.closeDB()
+		    return 0,0
+	    else:
+		print_info(red(" @@ ")+blue("Running query in ")+red("5 seconds")+blue("..."))
+		print_info(red(" @@ ")+blue(":: Hit CTRL+C to stop"))
+	        time.sleep(5)
+	
+	    # run removePackages with --nodeps
+	    removePackages(atomsdata = removedList, ask = ask, verbose = verbose, deps = False)
+	else:
+	    print_info(red(" @@ ")+blue("Calculation complete."))
+
+    else:
+	print_info(red(" @@ ")+blue("Nothing to remove."))
+
+    clientDbconn.closeDB() # don't need to save cache
+    return 0,0
 
 def installPackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False):
 
@@ -1944,7 +1993,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    actionQueue[pkgatom]['version'] = pkgver
 	    actionQueue[pkgatom]['category'] = pkgcat
 	    actionQueue[pkgatom]['name'] = pkgname
-	    actionQueue[pkgatom]['remove'] = -1
+	    actionQueue[pkgatom]['removeidpackage'] = -1
 	    actionQueue[pkgatom]['download'] = pkgfile
 	    actionQueue[pkgatom]['checksum'] = pkgdigest
 	    dl = checkNeededDownload(pkgfile, pkgdigest)
@@ -1966,8 +2015,9 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 		    installedVer = clientDbconn.retrieveVersion(idx)
 		    installedTag = clientDbconn.retrieveVersionTag(idx)
 		    installedRev = clientDbconn.retrieveRevision(idx)
-		    actionQueue[pkgatom]['remove'] = idx
+		    actionQueue[pkgatom]['removeidpackage'] = idx
 		    actionQueue[pkgatom]['removeatom'] = clientDbconn.retrieveAtom(idx)
+		    actionQueue[pkgatom]['removecontent'] = clientDbconn.retrieveAtom(idx)
 		    onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idx)
 	        closeClientDatabase(clientDbconn)
 
@@ -1978,12 +2028,12 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    cmp = compareVersions([pkgver,pkgtag,pkgrev],[installedVer,installedTag,installedRev])
 	    if (cmp == 0):
 		pkgsToReinstall += 1
-		actionQueue[pkgatom]['remove'] = -1 # disable removal, not needed
+		actionQueue[pkgatom]['removeidpackage'] = -1 # disable removal, not needed
 	        flags += red("R")
 	    elif (cmp > 0):
 	        if (installedVer == "0"):
 		    pkgsToInstall += 1
-		    actionQueue[pkgatom]['remove'] = -1 # disable removal, not needed
+		    actionQueue[pkgatom]['removeidpackage'] = -1 # disable removal, not needed
 	            flags += darkgreen("N")
 	        else:
 		    pkgsToUpdate += 1
@@ -1994,8 +2044,8 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    flags += "] "
 
 	    # disable removal for packages already in removalQueue
-	    if actionQueue[pkgatom]['remove'] in removalQueue:
-		actionQueue[pkgatom]['remove'] = -1
+	    if actionQueue[pkgatom]['removeidpackage'] in removalQueue:
+		actionQueue[pkgatom]['removeidpackage'] = -1
 
 	    repoinfo = red("[")+brown("from: ")+bold(packageInfo[1])+red("] ")
 
@@ -2033,15 +2083,18 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     
     for idpackage in removalQueue:
 	infoDict = {}
-	infoDict['remove'] = idpackage
 	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
+	infoDict['removecontent'] = clientDbconn.retrieveContent(idpackage)
 	steps = []
 	steps.append("preremove") # not implemented
-	steps.append("remove")
+	### Attention, strict order!
+	# removedatabase must be spawned before remove
+	# because remove look at the database to handle collisions
 	steps.append("removedatabase")
+	steps.append("remove")
 	steps.append("postremove") # not implemented
 	for step in steps:
-	    rc = stepExecutor(step,infoDict,clientDbconn)
+	    rc = stepExecutor(step,infoDict)
 	    if (rc != 0):
 		closeClientDatabase(clientDbconn)
 		return -1,rc
@@ -2053,15 +2106,21 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	# get package atom
 	dbconn = openRepositoryDatabase(repository)
 	pkgatom = dbconn.retrieveAtom(idpackage)
-	dbconn.closeDB()
-	#print actionQueue[pkgatom]
-	
+
 	# fill steps
 	steps = [] # fetch, remove, (preinstall, install postinstall), database, gentoo-sync, cleanup
 	# download
 	if (actionQueue[pkgatom]['fetch'] < 0):
 	    steps.append("fetch")
 	
+	# differential remove list
+	if (actionQueue[pkgatom]['removeidpackage'] != -1):
+	    oldcontent = clientDbconn.retrieveContent(actionQueue[pkgatom]['removeidpackage'])
+	    newcontent = dbconn.retrieveContent(idpackage)
+	    actionQueue[pkgatom]['removecontent'] = [x for x in oldcontent if x not in newcontent]
+
+	dbconn.closeDB()
+
 	if (not onlyfetch):
 	    # install
 	    steps.append("install")
@@ -2072,9 +2131,9 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	print_info(red(" @@ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
 	
 	for step in steps:
-	    rc = stepExecutor(step,actionQueue[pkgatom],clientDbconn)
+	    rc = stepExecutor(step,actionQueue[pkgatom])
 	    if (rc != 0):
-		closeClientDatabase(clientDbconn)
+		clientDbconn.closeDB()
 		return -1,rc
 
     # regenerate depends table
@@ -2087,18 +2146,22 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     return 0,0
 
 
-def removePackages(packages, ask = False, pretend = False, verbose = False, deps = True, deep = False, systemPackagesCheck = True):
+def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, deep = False, systemPackagesCheck = True):
     
     # check if I am root
     if (not isRoot()) and (not pretend):
 	print_error(red("You must run this function as superuser."))
 	return 1,-1
-    
+
     clientDbconn = openClientDatabase()
-    
+
     foundAtoms = []
-    for package in packages:
-	foundAtoms.append([package,clientDbconn.atomMatch(package)])
+    if (atomsdata):
+	for idpackage in atomsdata:
+	    foundAtoms.append([clientDbconn.retrieveAtom(idpackage),(idpackage,0)])
+    else:
+	for package in packages:
+	    foundAtoms.append([package,clientDbconn.atomMatch(package)])
 
     # filter packages not found
     _foundAtoms = []
@@ -2140,23 +2203,30 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 	        for x in sysresults[0]:
 		    slots.add(clientDbconn.retrieveSlot(x))
 		if len(slots) < 2:
-	            print_warning(darkred("   # !!! ")+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+red(" is a vital package. Removal forbidden."))
+	            print_warning(darkred("   # !!! ")+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+red(" is a vital package. Removal forbidden."))
 		    continue
 	    else:
-	        print_warning(darkred("   # !!! ")+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+red(" is a vital package. Removal forbidden."))
+	        print_warning(darkred("   # !!! ")+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+red(" is a vital package. Removal forbidden."))
 	        continue
 	plainRemovalQueue.append(idpackage)
 	
-	print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" | Installed from: "+red(installedfrom))
+	print_info("   # "+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+" | Installed from: "+red(installedfrom))
 
     if (verbose or ask or pretend):
         print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
     
-    if (ask):
-        rc = askquestion("     Would you like to look for packages that can be removed along with the selected above?")
-        if rc == "No":
-	    lookForOrphanedPackages = False
+    if (deps):
+	question = "     Would you like to look for packages that can be removed along with the selected above?"
+    else:
+	question = "     Would you like to remove them now?"
+	lookForOrphanedPackages = False
 
+    if (ask):
+        rc = askquestion(question)
+        if rc == "No":
+	    if (not deps):
+	        closeClientDatabase(clientDbconn)
+		return 0,0
 
     if (not plainRemovalQueue):
 	print_error(red("Nothing to do."))
@@ -2203,11 +2273,12 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
 		print
 
     if (ask):
-	print
-        rc = askquestion("     I am going to start the removal. Are you sure?")
-        if rc == "No":
-	    closeClientDatabase(clientDbconn)
-	    return 0,0
+	if (deps):
+	    print
+            rc = askquestion("     I am going to start the removal. Are you sure?")
+            if rc == "No":
+	        closeClientDatabase(clientDbconn)
+	        return 0,0
     else:
 	countdown(what = red(" @@ ")+blue("Starting removal in "),back = True)
 	
@@ -2217,17 +2288,21 @@ def removePackages(packages, ask = False, pretend = False, verbose = False, deps
     
     for idpackage in removalQueue:
 	infoDict = {}
-	infoDict['remove'] = idpackage
+	infoDict['removeidpackage'] = idpackage
 	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
+	infoDict['removecontent'] = clientDbconn.retrieveContent(idpackage)
 	steps = []
 	steps.append("preremove") # not implemented
-	steps.append("remove")
+	### Attention, strict order!
+	# removedatabase must be spawned before remove
+	# because remove look at the database to handle collisions
 	steps.append("removedatabase")
+	steps.append("remove")
 	steps.append("postremove") # not implemented
 	for step in steps:
-	    rc = stepExecutor(step,infoDict,clientDbconn)
+	    rc = stepExecutor(step,infoDict)
 	    if (rc != 0):
-		closeClientDatabase(clientDbconn)
+		clientDbconn.closeDB()
 		return -1,rc
     
     print_info(red(" @@ ")+blue("All done."))
@@ -2325,14 +2400,11 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
     		infoDict -> dictionary containing all the needed information collected by installPackages() -> actionQueue[pkgatom]
     @output:	-1,"description" for error ; 0,True for no errors
 '''
-def stepExecutor(step,infoDict, clientDbconn = None):
+def stepExecutor(step,infoDict):
 
-    closedb = False
-    if clientDbconn == None:
-	closedb = True
-	clientDbconn = openClientDatabase()
-
+    clientDbconn = openClientDatabase()
     output = 0
+    
     if step == "fetch":
 	print_info(red("   ## ")+blue("Fetching package: ")+red(os.path.basename(infoDict['download'])))
 	output = fetchFileOnMirrors(infoDict['repository'],infoDict['download'],infoDict['checksum'])
@@ -2354,11 +2426,11 @@ def stepExecutor(step,infoDict, clientDbconn = None):
     
     elif step == "remove":
 	if (etpConst['gentoo-compat']):
-	    print_info(red("   ## ")+blue("Removing installed package: ")+red(clientDbconn.retrieveAtom(infoDict['remove']))+" ## w/Gentoo compatibility")
-	    output = removeFile(infoDict['remove'],clientDbconn)
+	    print_info(red("   ## ")+blue("Removing installed package: ")+red(infoDict['removeatom'])+" ## w/Gentoo compatibility")
+	    output = removeFile(infoDict['removeatom'],infoDict['removecontent'])
 	else:
-	    print_info(red("   ## ")+blue("Removing installed package: ")+red(clientDbconn.retrieveAtom(infoDict['remove'])))
-	    output = removeFile(infoDict['remove'],clientDbconn)
+	    print_info(red("   ## ")+blue("Removing installed package: ")+red(infoDict['removeatom']))
+	    output = removeFile(infoDict['removeatom'],infoDict['removecontent'])
 	if output != 0:
 	    errormsg = red("An error occured while trying to remove the package. Check if you have enough disk space on your hard disk. Error "+str(output))
 	    print_error(errormsg)
@@ -2372,12 +2444,11 @@ def stepExecutor(step,infoDict, clientDbconn = None):
     
     elif step == "removedatabase":
 	print_info(red("   ## ")+blue("Removing from database: ")+red(infoDict['removeatom']))
-	output = removePackageFromDatabase(infoDict['remove'], clientDbconn)
+	output = removePackageFromDatabase(infoDict['removeidpackage'], clientDbconn)
 	if output != 0:
 	    errormsg = red("An error occured while trying to remove the package from database. What have you done? Error "+str(output))
 	    print_error(errormsg)
     
-    if (closedb):
-	closeClientDatabase(clientDbconn)
+    closeClientDatabase(clientDbconn)
     
     return output

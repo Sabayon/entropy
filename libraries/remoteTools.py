@@ -83,7 +83,9 @@ def downloadData(url,pathToSave, bufferSize = 8192, checksum = True, showSpeed =
         remotefile = urllib2.urlopen(url)
     except Exception, e:
 	remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"downloadFile: Exception caught for: "+str(url)+" -> "+str(e))
-	rc = "-3"
+	if (showSpeed):
+	    speedUpdater.kill()
+	return "-3"
     try:
 	maxsize = remotefile.headers.get("content-length")
     except:

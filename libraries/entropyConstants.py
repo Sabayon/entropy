@@ -381,6 +381,7 @@ etpConst = {
     'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|", # tag to append to .tbz2 file before entropy database
     'pidfile': "/var/run/equo.pid",
     'applicationlock': False,
+    'collisionprotect': 1, # collision protection option, read equo.conf for more info
 
 }
 

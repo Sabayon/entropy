@@ -2888,6 +2888,20 @@ class etpDatabase:
 	    result.append(row)
 	return result
 
+    def listAllFiles(self, clean = False):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllFiles: called.")
+	if clean:
+	    result = set()
+	else:
+	    result = []
+	self.cursor.execute('SELECT file FROM content')
+	for row in self.cursor:
+	    if clean:
+	        result.add(row[0])
+		continue
+	    result.append(row[0])
+	return result
+
     # FIXME: remove this, we don't just have stable/unstable branches
     def searchStablePackages(self,atom):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchStablePackages: called for "+atom)

@@ -842,13 +842,13 @@ def cleanup(toCleanDirs = []):
         toCleanDirs = [ etpConst['packagestmpdir'], etpConst['logdir'] ]
     counter = 0
 
-    for dir in toCleanDirs:
-        print_info(red(" * ")+"Cleaning "+darkgreen(dir)+" directory...", back = True)
-	if os.path.isdir(dir):
-	    dircontent = os.listdir(dir)
+    for xdir in toCleanDirs:
+        print_info(red(" * ")+"Cleaning "+darkgreen(xdir)+" directory...", back = True)
+	if os.path.isdir(xdir):
+	    dircontent = os.listdir(xdir)
 	    if dircontent != []:
 	        for data in dircontent:
-		    spawnCommand("rm -rf "+dir+"/"+data)
+		    spawnCommand("rm -rf "+xdir+"/"+data)
 		    counter += 1
 
     print_info(green(" * ")+"Cleaned: "+str(counter)+" files and directories")
