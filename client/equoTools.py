@@ -1050,9 +1050,11 @@ def removePackage(infoDict):
     # load content cache if found empty
     if etpConst['collisionprotect'] > 0:
         if (not contentCache):
+	    clientDbconn = openClientDatabase()
 	    xlist = clientDbconn.listAllFiles(clean = True)
 	    for x in xlist:
 		contentCache[x] = 1
+	    closeClientDatabase(clientDbconn)
 
     # remove from database
     if removeidpackage != -1:
