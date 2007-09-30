@@ -2849,7 +2849,7 @@ class etpDatabase:
 	        result.append(row)
 	return result
 
-    ### DEPRECATED
+    #FIXME: DEPRECATED
     def listAllPackagesTbz2(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllPackagesTbz2: called.")
         result = []
@@ -2902,28 +2902,41 @@ class etpDatabase:
 	    result.append(row[0])
 	return result
 
-    # FIXME: remove this, we don't just have stable/unstable branches
-    def searchStablePackages(self,atom):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchStablePackages: called for "+atom)
-	category = atom.split("/")[0]
-	name = atom.split("/")[1]
-	result = []
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE category = "'+category+'" AND name = "'+name+'" AND branch = "stable"')
+    def listConfigProtectDirectories(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listConfigProtectDirectories: called.")
+	dirs = set()
+	idprotects = set()
+	self.cursor.execute('SELECT idprotect FROM configprotect')
 	for row in self.cursor:
-	    result.append(row)
-	return result
+	    idprotects.add(row[0])
+	for idprotect in idprotects:
+	    self.cursor.execute('SELECT protect FROM configprotectreference WHERE idprotect = "'+str(idprotect)+'"')
+	    for row in self.cursor:
+	        var = row[0]
+	        for x in var.split():
+		    dirs.add(x)
+	dirs = list(dirs)
+	dirs.sort()
+	return dirs
 
-    # FIXME: also remove this
-    def searchUnstablePackages(self,atom):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchUnstablePackages: called for "+atom)
-	category = atom.split("/")[0]
-	name = atom.split("/")[1]
-	result = []
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE category = "'+category+'" AND name = "'+name+'" AND branch = "stable"')
+    def listConfigProtectMaskDirectories(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listConfigProtectMaskDirectories: called.")
+	dirs = set()
+	idprotects = set()
+	self.cursor.execute('SELECT idprotect FROM configprotectmask')
 	for row in self.cursor:
-	    result.append(row)
-	return result
-
+	    idprotects.add(row[0])
+	for idprotect in idprotects:
+	    self.cursor.execute('SELECT protect FROM configprotectreference WHERE idprotect = "'+str(idprotect)+'"')
+	    for row in self.cursor:
+	        var = row[0]
+	        for x in var.split():
+		    dirs.add(x)
+	dirs = list(dirs)
+	dirs.sort()
+	return dirs
+    
+    # FIXME: get it working with the new branch layout
     def stabilizePackage(self,atom,stable = True):
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"stabilizePackage: called for "+atom+" | branch stable? -> "+str(stable))

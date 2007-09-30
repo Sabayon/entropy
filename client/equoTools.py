@@ -2449,7 +2449,7 @@ def getinfo(dict = False):
     info['OS'] = osinfo[0]
     info['Kernel'] = osinfo[2]
     info['Architecture'] = osinfo[4]
-    info['Version'] = etpConst['entropyversion']
+    info['Entropy version'] = etpConst['entropyversion']
     
     # variables
     info['User protected directories'] = etpConst['configprotect']
@@ -2465,7 +2465,7 @@ def getinfo(dict = False):
     info['Entropy work directory'] = etpConst['entropyworkdir']
     info['Entropy unpack directory'] = etpConst['entropyunpackdir']
     info['Entropy packages directory'] = etpConst['packagesbindir']
-    info['Entropy logs directory'] = etpConst['logdir']
+    info['Entropy logging directory'] = etpConst['logdir']
     info['Entropy Official Repository name'] = etpConst['officialrepositoryname']
     info['Entropy API'] = etpConst['etpapi']
     info['Equo pidfile'] = etpConst['pidfile']
@@ -2480,8 +2480,49 @@ def getinfo(dict = False):
     except:
 	pass
     info['Installed database'] = conn
-    #if (conn):
-	# print some stuff
-	#print "hi"
-    # FIXME: not completely implemented
-    print info
+    if (conn):
+	# print db info
+	info['Removal internal protected directories'] = clientDbconn.listConfigProtectDirectories()
+	info['Removal internal protected directory masks'] = clientDbconn.listConfigProtectMaskDirectories()
+	info['Total installed packages'] = len(clientDbconn.listAllIdpackages())
+	clientDbconn.closeDB()
+    
+    # repository databases info (if found on the system)
+    info['Repository databases'] = {}
+    for x in etpRepositories:
+	dbfile = etpRepositories[x]['dbpath']+"/"+etpConst['etpdatabasefile']
+	if os.path.isfile(dbfile):
+	    # print info about this database
+	    dbconn = openRepositoryDatabase(x)
+	    info['Repository databases'][x] = {}
+	    info['Repository databases'][x]['Installation internal protected directories'] = dbconn.listConfigProtectDirectories()
+	    info['Repository databases'][x]['Installation internal protected directory masks'] = dbconn.listConfigProtectMaskDirectories()
+	    info['Repository databases'][x]['Total available packages'] = len(dbconn.listAllIdpackages())
+	    info['Repository databases'][x]['Database revision'] = getRepositoryRevision(x)
+	    info['Repository databases'][x]['Database hash'] = getRepositoryDbFileHash(x)
+	    dbconn.closeDB()
+    
+    if (dict):
+	return info
+    
+    import types
+    keys = info.keys()
+    keys.sort()
+    for x in keys:
+	#print type(info[x])
+	if type(info[x]) is types.DictType:
+	    toptext = x
+	    ykeys = info[x].keys()
+	    ykeys.sort()
+	    for y in ykeys:
+		if type(info[x][y]) is types.DictType:
+		    topsubtext = y
+		    zkeys = info[x][y].keys()
+		    zkeys.sort()
+		    for z in zkeys:
+			print red(toptext)+": "+blue(topsubtext)+" => "+darkgreen(z)+" => "+str(info[x][y][z])
+		else:
+		    print red(toptext)+": "+blue(y)+" => "+str(info[x][y])
+	    #print info[x]
+	else:
+	    print red(x)+": "+str(info[x])
