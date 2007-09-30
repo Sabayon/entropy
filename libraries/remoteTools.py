@@ -121,6 +121,8 @@ def getOnlineContent(url):
     try:
         file = urllib2.urlopen(url)
         result = file.readlines()
+	if (not result):
+	    return False
         return result
     except:
 	return False
