@@ -27,7 +27,6 @@ from outputTools import *
 
 # CONSTANTS
 APPNAME = "Equo"
-APPVERSION = "0.1"
 def print_help():
     print_info("Sabayon Linux "+darkred(APPNAME+" Package Manager")+" (C - 2007)")
     print_info("General Options:")
@@ -35,13 +34,11 @@ def print_help():
     print_info("  --version\t\tprint version")
     print_info("  --nocolor\t\tdisable colorized output")
     print_info(red("Tools available: "))
-    #print_info(" \t"+blue(bold("repo"))+brown("\t\t to handle package repositories"))
     print_info(" \t"+blue("update")+brown("\t\t update repositories (download new data)"))
     print_info(" \t\t"+red("--force")+"\t\t\t force the sync even if the database is already up to date")
     print_info(" \t"+blue("repoinfo")+brown("\t show enabled repositories"))
     print_info(" \t"+blue("status")+brown("\t\t show respositories status"))
     
-    #print_info(" \t"+darkgreen(bold("package"))+brown("\t\t to handle packages"))
     print_info(" \t"+blue("search")+brown("\t\t search a package trough repositories"))
     print_info(" \t"+blue("world")+brown("\t\t update packages to the latest version"))
     print_info(" \t\t"+darkgreen("update")+red("\t\t\t update the system in the current branch"))
@@ -83,13 +80,9 @@ def print_help():
     print_info(" \t\t"+darkgreen("generate")+red("\t\t generate installed packages database"))
     print_info(" \t\t"+darkgreen("depends")+red("\t\t\t to regenerate/generate depends caching table"))
     print_info(" \t"+blue("cleanup")+brown("\t\t remove downloaded packages and clean temporary directories"))
+    print_info(" \t"+blue("--info")+brown("\t\t show Equo System information"))
 
 options = sys.argv[1:]
-
-# print version
-if (string.join(options).find("--version") != -1) or (string.join(options).find(" -V") != -1):
-    print_generic(APPNAME+": "+APPVERSION)
-    sys.exit(0)
 
 # print help
 if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(options).find(" -h") != -1:
@@ -116,6 +109,13 @@ for opt in options:
 	_options.append(opt)
 options = _options
 
+# print version
+if (options[0] == "--version"):
+    print_generic(APPNAME+": v"+etpConst['entropyversion'])
+    sys.exit(0)
+elif (options[0] == "--info"):
+    equoTools.getinfo()
+    sys.exit(0)
 
 try:
     # sync mirrors tool
@@ -186,6 +186,7 @@ except:
     try:
         ferror = open("/tmp/equoerror.txt","w")
         traceback.print_exc(file = ferror)
+	ferror.write("\n\nRevision: "+etpConst['entropyversion']+"\n")
         ferror.flush()
         ferror.close()
 	f = open("/tmp/equoerror.txt","r")

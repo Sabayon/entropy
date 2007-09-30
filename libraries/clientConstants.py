@@ -102,3 +102,8 @@ else:
 		etpConst['collisionprotect'] = int(collopt)
 	    else:
 		print "WARNING: invalid collisionprotect in: "+etpConst['equoconf']
+
+	if line.startswith("configprotect|") and (len(line.split("|")) == 2):
+	    configprotect = line.split("|")[1].strip()
+	    for x in configprotect.split():
+		etpConst['configprotect'].append(x)

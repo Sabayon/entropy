@@ -1703,7 +1703,7 @@ def openClientDatabase(xcache = True):
 	    conn.loadMatchCache(atomClientMatchCache)
 	return conn
     else:
-	raise Exception,"openClientDatabase: installed packages database not found. At this stage, the only way to have it is to run 'equo database generate'."
+	raise Exception,"openClientDatabase: installed packages database not found. At this stage, the only way to have it is to run 'equo database generate'. Please note: don't use Equo on a critical environment !!"
 
 def closeClientDatabase(conn, xcache = True):
     if (xcache):
@@ -2435,3 +2435,53 @@ def stepExecutor(step,infoDict):
     closeClientDatabase(clientDbconn)
     
     return output
+
+
+'''
+    @description: prints entropy configuration information
+    @input: dict (bool) -> if True, returns a dictionary with packed info. if False, just print to STDOUT
+    @output:	dictionary or STDOUT
+'''
+def getinfo(dict = False):
+    # sysinfo
+    info = {}
+    osinfo = os.uname()
+    info['OS'] = osinfo[0]
+    info['Kernel'] = osinfo[2]
+    info['Architecture'] = osinfo[4]
+    info['Version'] = etpConst['entropyversion']
+    
+    # variables
+    info['User protected directories'] = etpConst['configprotect']
+    info['Collision Protection'] = etpConst['collisionprotect']
+    info['Gentoo Compatibility'] = etpConst['gentoo-compat']
+    info['Equo Log Level'] = etpConst['equologlevel']
+    info['Database Log Level'] = etpConst['databaseloglevel']
+    info['entropyTools Log Level'] = etpConst['entropyloglevel']
+    info['remoteTools Log Level'] = etpConst['remoteloglevel']
+    info['Current branch'] = etpConst['branch']
+    info['Available branches'] = etpConst['branches']
+    info['Entropy configuration directory'] = etpConst['confdir']
+    info['Entropy work directory'] = etpConst['entropyworkdir']
+    info['Entropy unpack directory'] = etpConst['entropyunpackdir']
+    info['Entropy packages directory'] = etpConst['packagesbindir']
+    info['Entropy logs directory'] = etpConst['logdir']
+    info['Entropy Official Repository name'] = etpConst['officialrepositoryname']
+    info['Entropy API'] = etpConst['etpapi']
+    info['Equo pidfile'] = etpConst['pidfile']
+    info['Entropy database tag'] = etpConst['databasestarttag']
+    info['Repositories'] = etpRepositories
+    
+    # client database info
+    conn = False
+    try:
+	clientDbconn = openClientDatabase()
+	conn = True
+    except:
+	pass
+    info['Installed database'] = conn
+    #if (conn):
+	# print some stuff
+	#print "hi"
+    # FIXME: not completely implemented
+    print info

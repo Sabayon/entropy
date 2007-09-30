@@ -289,10 +289,6 @@ ETP_LOGPRI_INFO = "[ INFO ]"
 ETP_LOGPRI_WARNING = "[ WARNING ]"
 ETP_LOGPRI_ERROR = "[ ERROR ]"
 
-# NEVER APPEND another \n to this file because it will break the md5 check of reagent
-ETP_HEADER_TEXT = "# Sabayon Linux (C - 2007) - Entropy Package Specifications (GPLv2)\n"
-MAX_ETP_REVISION_COUNT = 99999
-
 etpConst = {
     'packagestmpdir': ETP_DIR+ETP_TMPDIR, # etpConst['packagestmpdir'] --> temp directory
     'packagestmpfile': ETP_DIR+ETP_TMPDIR+ETP_TMPFILE, # etpConst['packagestmpfile'] --> general purpose tmp file
@@ -305,8 +301,6 @@ etpConst = {
     'portagetreedir': ETP_PORTDIR, # directory where is stored our local portage tree
     'distfilesdir': ETP_PORTDIR+ETP_DISTFILESDIR, # directory where our sources are downloaded
     'overlaysdir': ETP_PORTDIR+"/local/layman", # directory where overlays are stored
-    'overlays': "", # variable PORTDIR_OVERLAY
-    'overlaysconffile': ETP_CONF_DIR+"/layman.cfg", # layman configuration file
     'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
     'entropyconf': ETP_CONF_DIR+"/entropy.conf", # entropy.conf file
     'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
@@ -324,7 +318,7 @@ etpConst = {
     							  # TO BE REMOVED? CHECK
 
     'entropyworkdir': ETP_DIR, # Entropy workdir
-    'entropyunpackdir': ETP_VAR_DIR, # Entropy workdir
+    'entropyunpackdir': ETP_VAR_DIR, # Entropy unpack directory
 
     'etpdatabaserevisionfile': ETP_DBFILE+".revision", # the local/remote database revision file
     'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum
@@ -362,7 +356,6 @@ etpConst = {
     'etpdatabaseclientfilepath': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR+"/"+ETP_DBCLIENTFILE, # path to equo.db - client side database file
     
     'etpapi': ETP_API, # Entropy database API revision
-    'headertext': ETP_HEADER_TEXT, # header text that can be outputted to a file
     'currentarch': ETP_ARCH_CONST, # contains the current running architecture
     'supportedarchs': ETP_ARCHS, # Entropy supported Archs
     'preinstallscript': "preinstall.sh", # used by the client to run some pre-install actions
@@ -382,8 +375,17 @@ etpConst = {
     'pidfile': "/var/run/equo.pid",
     'applicationlock': False,
     'collisionprotect': 1, # collision protection option, read equo.conf for more info
+    'configprotect': [], # list of user specified CONFIG_PROTECT directories (see Gentoo manual to understand the meaining of this parameter)
+    'entropyversion': "1.0", # default Entropy release version
 
 }
+
+# handle Entropy Version
+ETP_REVISION_FILE = "../libraries/revision"
+if os.path.isfile(ETP_REVISION_FILE):
+    f = open(ETP_REVISION_FILE,"r")
+    myrev = f.readline().strip()
+    etpConst['entropyversion'] = myrev
 
 # handle pid file
 piddir = os.path.dirname(etpConst['pidfile'])
