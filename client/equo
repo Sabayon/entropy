@@ -186,7 +186,7 @@ except:
     try:
         ferror = open("/tmp/equoerror.txt","w")
         traceback.print_exc(file = ferror)
-	ferror.write("\n\nRevision: "+etpConst['entropyversion']+"\n")
+	ferror.write("\nRevision: "+etpConst['entropyversion']+"\n")
         ferror.flush()
         ferror.close()
 	f = open("/tmp/equoerror.txt","r")

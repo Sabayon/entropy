@@ -106,8 +106,10 @@ def showRepositoryInfo(reponame):
     else:
 	status = "never synced"
     print_info(red("\tStatus: ")+yellow(status))
-    for repourl in etpRepositories[reponame]['packages']:
-        print_info(red("\tPackages URL: ")+darkgreen(repourl))
+    urlcount = 0
+    for repourl in etpRepositories[reponame]['packages'][::-1]:
+	urlcount += 1
+        print_info(red("\tPackages URL #"+str(urlcount)+": ")+darkgreen(repourl))
     print_info(red("\tDatabase URL: ")+darkgreen(etpRepositories[reponame]['database']))
     print_info(red("\tRepository name: ")+bold(reponame))
     print_info(red("\tRepository database path: ")+blue(etpRepositories[reponame]['dbpath']))
