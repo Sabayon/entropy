@@ -712,10 +712,10 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	    treecache[undep] = True
 	
 	if (not tree[treedepth]):
-	    print darkgreen("satisfied: ")+str(tree[treedepth])
+	    #print darkgreen("satisfied: ")+str(tree[treedepth])
 	    break
 	else:
-	    print red("not satisfied: ")+str(tree[treedepth])
+	    #print red("not satisfied: ")+str(tree[treedepth])
 	    # cycle again, load unsatisfiedDeps
 	    unsatisfiedDeps = set()
 	    for dep in tree[treedepth]:
