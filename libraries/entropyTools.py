@@ -30,6 +30,7 @@ import random
 import commands
 import urlparse
 import threading, time
+import string
 
 # Instantiate the databaseStatus:
 import databaseTools
@@ -255,6 +256,22 @@ def md5string(string):
     m = md5.new()
     m.update(string)
     return m.hexdigest()
+
+# used by equo, this function retrieves the new safe Gentoo-aware file path
+def allocateMaskedFile(file):
+    counter = -1
+    newfile = ""
+    while 1:
+	counter += 1
+	txtcounter = str(counter)
+	for x in range(4-len(txtcounter)):
+	    txtcounter = "0"+txtcounter
+	newfile = os.path.dirname(file)+"/"+".cfg"+txtcounter+"_"+os.path.basename(file)
+	if not os.path.exists(newfile):
+	    break
+    if not newfile:
+	newfile = os.path.dirname(file)+"/"+".cfg0000_"+os.path.basename(file)
+    return newfile
 
 # Imported from Gentoo portage_dep.py
 # Copyright 2003-2004 Gentoo Foundation
@@ -634,6 +651,30 @@ def isnumber(x):
     except:
 	return False
 
+
+text_characters = "".join(map(chr, range(32, 127)) + list("\n\r\t\b"))
+_null_trans = string.maketrans("", "")
+
+def istextfile(filename, blocksize = 512):
+    return istext(open(filename).read(blocksize))
+
+def istext(s):
+    if "\0" in s:
+        return False
+    
+    if not s:  # Empty files are considered text
+        return True
+
+    # Get the non-text characters (maps a character to itself then
+    # use the 'remove' option to get rid of the text characters.)
+    t = s.translate(_null_trans, text_characters)
+
+    # If more than 30% non-text characters, then
+    # this is considered a binary file
+    if len(t)/len(s) > 0.30:
+        return False
+    return True
+
 # this functions removes duplicates without breaking the list order
 # nameslist: a list that contains duplicated names
 # @returns filtered list
@@ -641,8 +682,6 @@ def filterDuplicatedEntries(alist):
     set = {}
     return [set.setdefault(e,e) for e in alist if e not in set]
 
-
-import string
 
 # Escapeing functions
 mappings = {
@@ -765,7 +804,6 @@ def hideFTPpassword(uri):
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"hideFTPpassword: called. ")
     ftppassword = uri.split("@")[:len(uri.split("@"))-1]
     if len(ftppassword) > 1:
-	import string
 	ftppassword = string.join(ftppassword,"@")
 	ftppassword = ftppassword.split(":")[len(ftppassword.split(":"))-1]
 	if (ftppassword == ""):

@@ -29,7 +29,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extactDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, dep_striptag
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extactDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, dep_striptag, md5sum, allocateMaskedFile, istextfile
 from databaseTools import etpDatabase
 import xpak
 import time
@@ -1069,6 +1069,10 @@ def removePackage(infoDict):
 	gentooAtom = dep_striptag(atom) # FIXME: tags will be removed
 	removePackageFromGentooDatabase(gentooAtom)
 
+    # load CONFIG_PROTECT and its mask - client database at this point has been surely opened, so our dicts are already filled
+    protect = etpConst['dbconfigprotect']
+    mask = etpConst['dbconfigprotectmask']
+
     # merge data into system
     for file in content:
 	# collision check
@@ -1081,21 +1085,42 @@ def removePackage(infoDict):
 	    except:
 	        pass
 	file = file.encode(sys.getfilesystemencoding())
-	try:
-	    os.remove(file)
-	    #print file
-	    # is now empty?
-	    filedir = os.path.dirname(file)
-	    dirlist = os.listdir(filedir)
-	    if (not dirlist):
-		os.removedirs(filedir)
-	except OSError:
+
+	protected = False
+	if (not infoDict['removeconfig']):
+	    # -- CONFIGURATION FILE PROTECTION --
+	    if os.access(file,os.R_OK):
+	        for x in protect:
+		    if file.startswith(x):
+		        protected = True
+		        break
+	        if (protected):
+		    for x in mask:
+		        if file.startswith(x):
+			    protected = False
+			    break
+	        if (protected):
+		    protected = istextfile(file)
+	    # -- CONFIGURATION FILE PROTECTION --
+	
+	if (protected):
+	    print "DEBUG: PROTECTED -> "+str(file)
+	else:
 	    try:
-		os.removedirs(file) # is it a dir?, empty?
-	        #print "debug: was a dir"
-	    except:
-		#print "debug: the dir wasn't empty? -> "+str(file)
-		pass
+	        os.remove(file)
+	        #print file
+	        # is now empty?
+	        filedir = os.path.dirname(file)
+	        dirlist = os.listdir(filedir)
+	        if (not dirlist):
+		    os.removedirs(filedir)
+	    except OSError:
+	        try:
+		    os.removedirs(file) # is it a dir?, empty?
+	            #print "debug: was a dir"
+	        except:
+		    #print "debug: the dir wasn't empty? -> "+str(file)
+		    pass
 
     return 0
 
@@ -1136,6 +1161,10 @@ def installPackage(infoDict):
     if not os.path.isdir(imageDir):
 	return 2
     
+    # load CONFIG_PROTECT and its mask
+    protect = etpRepositories[infoDict['repository']]['configprotect']
+    mask = etpRepositories[infoDict['repository']]['configprotectmask']
+    
     packageContent = []
     
     # setup imageDir properly
@@ -1174,15 +1203,49 @@ def installPackage(infoDict):
 		if tofile in contentCache:
 		    print "DEBUG!! [install]: collision found for "+file.encode(sys.getfilesystemencoding()) #FIXME: beautify
 		    continue
-	    #print "copying file "+fromfile+" to "+tofile
 
+	    # -- CONFIGURATION FILE PROTECTION --
+	    
+	    protected = False
+	    for x in protect:
+		if tofile.startswith(x):
+		    protected = True
+		    break
+	    if (protected): # check if perhaps, file is masked, so unprotected
+		for x in mask:
+		    if tofile.startswith(x):
+			protected = False
+			break
+	    
 	    if os.access(tofile,os.F_OK):
 		try:
-		    os.remove(tofile)
+		    if not protected: os.remove(tofile)
 		except:
-		    rc = os.system("rm -f "+tofile)
-		    if (rc != 0):
-			return 3
+		    if not protected:
+		        rc = os.system("rm -f "+tofile)
+		        if (rc != 0):
+			    return 3
+	    else:
+		protected = False # file doesn't exist
+
+	    # check if it's a text file
+	    if (protected):
+		protected = istextfile(tofile)
+
+	    # check md5
+	    if (protected):
+		mymd5 = md5sum(fromfile)
+		sysmd5 = md5sum(tofile)
+		if mymd5 == sysmd5:
+		    protected = False # files are the same
+
+	    # request new tofile then
+	    if (protected):
+		print "DEBUG: PROTECTED ->"+str(tofile)
+		tofile = allocateMaskedFile(tofile)
+	    
+	    # -- CONFIGURATION FILE PROTECTION --
+
 	    try:
 		# this also handles symlinks
 		shutil.move(fromfile,tofile)
@@ -1444,6 +1507,7 @@ def package(options):
     equoRequestOnlyFetch = False
     equoRequestQuiet = False
     equoRequestDeep = False
+    equoRequestConfigFiles = False
     rc = 0
     _myopts = []
     for opt in myopts:
@@ -1463,6 +1527,8 @@ def package(options):
 	    equoRequestOnlyFetch = True
 	elif (opt == "--deep"):
 	    equoRequestDeep = True
+	elif (opt == "--configfiles"):
+	    equoRequestConfigFiles = True
 	else:
 	    _myopts.append(opt)
     myopts = _myopts
@@ -1487,7 +1553,7 @@ def package(options):
 
     elif (options[0] == "remove"):
 	if len(myopts) > 0:
-	    rc, status = removePackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, deep = equoRequestDeep)
+	    rc, status = removePackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, deep = equoRequestDeep, configFiles = equoRequestConfigFiles)
 	else:
 	    print_error(red(" Nothing to do."))
 	    rc = 127
@@ -1692,6 +1758,12 @@ def openRepositoryDatabase(repositoryName):
 	if (rc):
 	    raise Exception, "openRepositoryDatabase: cannot sync repository "+repositoryName
     conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True)
+    # initialize CONFIG_PROTECT
+    if (not etpRepositories[repositoryName]['configprotect']) or (not etpRepositories[repositoryName]['configprotectmask']):
+        etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
+        etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectMaskDirectories()
+	etpRepositories[repositoryName]['configprotect'] += [x for x in etpConst['configprotect'] if x not in etpRepositories[repositoryName]['configprotect']]
+	etpRepositories[repositoryName]['configprotectmask'] += [x for x in etpConst['configprotectmask'] if x not in etpRepositories[repositoryName]['configprotectmask']]
     return conn
 
 '''
@@ -1704,6 +1776,12 @@ def openClientDatabase(xcache = True):
 	# load cache
 	if (xcache):
 	    conn.loadMatchCache(atomClientMatchCache)
+	if (not etpConst['dbconfigprotect']):
+	    # config protect not prepared
+	    etpConst['dbconfigprotect'] = conn.listConfigProtectDirectories()
+	    etpConst['dbconfigprotectmask'] = conn.listConfigProtectMaskDirectories()
+	    etpConst['dbconfigprotect'] += [x for x in etpConst['configprotect'] if x not in etpConst['dbconfigprotect']]
+	    etpConst['dbconfigprotectmask'] += [x for x in etpConst['configprotectmask'] if x not in etpConst['dbconfigprotectmask']]
 	return conn
     else:
 	raise Exception,"openClientDatabase: installed packages database not found. At this stage, the only way to have it is to run 'equo database generate'. Please note: don't use Equo on a critical environment !!"
@@ -2095,6 +2173,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	infoDict = {}
 	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
 	infoDict['removecontent'] = clientDbconn.retrieveContent(idpackage)
+	infoDict['removeconfig'] = False # this will force old configuration files to be kept
 	steps = []
 	steps.append("preremove") # not implemented
 	steps.append("remove")
@@ -2151,7 +2230,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     return 0,0
 
 
-def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, deep = False, systemPackagesCheck = True):
+def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, deep = False, systemPackagesCheck = True, configFiles = False):
     
     # check if I am root
     if (not isRoot()) and (not pretend):
@@ -2296,6 +2375,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
 	infoDict['removeidpackage'] = idpackage
 	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
 	infoDict['removecontent'] = clientDbconn.retrieveContent(idpackage)
+	infoDict['removeconfig'] = configFiles
 	steps = []
 	steps.append("preremove") # not implemented
 	steps.append("remove")

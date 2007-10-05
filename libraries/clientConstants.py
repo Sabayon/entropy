@@ -53,6 +53,9 @@ if os.path.isfile(etpConst['repositoriesconf']):
 		    etpRepositories[reponame]['packages'].append(x)
 		etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['currentarch']
 		etpRepositories[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['currentarch']
+		# initialize CONFIG_PROTECT - will be filled the first time the db will be opened
+		etpRepositories[reponame]['configprotect'] = set()
+		etpRepositories[reponame]['configprotectmask'] = set()
 	elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
 	    branch = line.split("|")[1]
 	    etpConst['branch'] = branch

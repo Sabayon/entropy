@@ -57,6 +57,7 @@ def print_help():
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
     print_info(" \t"+blue("remove")+brown("\t\t remove a package"))
     print_info(" \t\t"+red("--deep")+"\t\t\t also pull unused dependencies where depends list is empty")
+    print_info(" \t\t"+red("--configfiles")+"\t\t\t also remove configuration files")
     print_info(" \t"+blue("deptest")+brown("\t\t look for unsatisfied dependencies"))
     print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
@@ -145,6 +146,9 @@ try:
 		if "--pretend" not in options:
 		    options.append("--pretend")
         rc = equoTools.package(options)
+	if etpConst['configprotectcounter'] > 0:
+	    print_warning(red("Attention: ")+darkgreen("at least "+str(etpConst['configprotectcounter'])+" have been updated in this session."))
+	    print_warning(red("Please run: ")+bold("etc-update")) # FIXME: add our tool
         sys.exit(rc)
 
     elif (options[0] == "query"):

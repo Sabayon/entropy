@@ -376,6 +376,10 @@ etpConst = {
     'applicationlock': False,
     'collisionprotect': 1, # collision protection option, read equo.conf for more info
     'configprotect': [], # list of user specified CONFIG_PROTECT directories (see Gentoo manual to understand the meaining of this parameter)
+    'configprotectmask': [], # list of user specified CONFIG_PROTECT_MASK directories
+    'dbconfigprotect': [], # installed database CONFIG_PROTECT directories
+    'dbconfigprotectmask': [], # installed database CONFIG_PROTECT_MASK directories
+    'configprotectcounter': 0, # this will be used to show the number of updated files at the end of the processes
     'entropyversion': "1.0", # default Entropy release version
 
 }
