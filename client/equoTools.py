@@ -1555,7 +1555,7 @@ def package(options):
 
     elif (options[0] == "install"):
 	if len(myopts) > 0:
-	    rc, status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep)
+	    rc, status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep, configFiles = equoRequestConfigFiles)
 	else:
 	    print_error(red(" Nothing to do."))
 	    rc = 127
@@ -1910,7 +1910,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     clientDbconn.closeDB() # don't need to save cache
     return 0,0
 
-def installPackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False):
+def installPackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False):
 
     # check if I am root
     if (not isRoot()) and (not pretend):
@@ -2101,6 +2101,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    actionQueue[pkgatom]['removeidpackage'] = -1
 	    actionQueue[pkgatom]['download'] = pkgfile
 	    actionQueue[pkgatom]['checksum'] = pkgdigest
+	    actionQueue[pkgatom]['removeconfig'] = configFiles
 	    dl = checkNeededDownload(pkgfile, pkgdigest)
 	    actionQueue[pkgatom]['fetch'] = dl
 	    if dl < 0:

@@ -55,6 +55,7 @@ def print_help():
     print_info(" \t\t"+red("--empty")+"\t\t\t also include already installed packages")
     print_info(" \t\t"+red("--deep")+"\t\t\t analyze dependencies deeply")
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
+    print_info(" \t\t"+red("--configfiles")+"\t\t also remove old configuration files [use with care]")
     print_info(" \t"+blue("remove")+brown("\t\t remove a package"))
     print_info(" \t\t"+red("--deep")+"\t\t\t also pull unused dependencies where depends list is empty")
     print_info(" \t\t"+red("--configfiles")+"\t\t also remove configuration files")
