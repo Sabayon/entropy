@@ -266,11 +266,11 @@ def allocateMaskedFile(file):
 	txtcounter = str(counter)
 	for x in range(4-len(txtcounter)):
 	    txtcounter = "0"+txtcounter
-	newfile = os.path.dirname(file)+"/"+".cfg"+txtcounter+"_"+os.path.basename(file)
+	newfile = os.path.dirname(file)+"/"+"._cfg"+txtcounter+"_"+os.path.basename(file)
 	if not os.path.exists(newfile):
 	    break
     if not newfile:
-	newfile = os.path.dirname(file)+"/"+".cfg0000_"+os.path.basename(file)
+	newfile = os.path.dirname(file)+"/"+"._cfg0000_"+os.path.basename(file)
     return newfile
 
 # Imported from Gentoo portage_dep.py
