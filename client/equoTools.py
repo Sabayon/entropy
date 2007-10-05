@@ -44,6 +44,8 @@ global atomClientMatchCache
 atomClientMatchCache = {}
 global contentCache
 contentCache = {}
+global getDependenciesCache
+getDependenciesCache = {}
 
 ########################################################
 ####
@@ -526,8 +528,13 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = []):
    @input packageInfo: list composed by int(id) and str(repository name), if this one is int(0), the client database will be opened.
    @output: ordered dependency list
 '''
-# FIXME: we should integrate this into the parent function
+
 def getDependencies(packageInfo):
+
+    cached = getDependenciesCache.get(packageInfo)
+    if cached:
+	return cached
+
     if len(packageInfo) != 2:
 	raise Exception, "getDependencies: I need a list with two values in it."
     idpackage = packageInfo[0]
@@ -547,6 +554,7 @@ def getDependencies(packageInfo):
 	closeClientDatabase(dbconn)
     else:
         dbconn.closeDB()
+    getDependenciesCache[packageInfo] = depend
     return depend
 
 
@@ -664,6 +672,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
     treecache = {}
     unsatisfiedDeps = getDependencies(atomInfo)
     unsatisfiedDeps, xxx = filterSatisfiedDependencies(unsatisfiedDeps, deepdeps = deepdeps)
+    unsatisfiedDeps = set(unsatisfiedDeps)
     dependenciesNotFound = []
     treeview = []
     tree = {}
@@ -677,7 +686,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
     
     while 1:
 	treedepth += 1
-	tree[treedepth] = []
+	tree[treedepth] = set()
 	
 	for undep in unsatisfiedDeps:
 
@@ -699,22 +708,24 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 		continue
 	    
 	    # add to the tree level
-	    tree[treedepth].append(undep)
+	    tree[treedepth].add(undep)
 	    treecache[undep] = True
 	
 	if (not tree[treedepth]):
-	    #print darkgreen("satisfied: ")+str(tree[treedepth])
+	    print darkgreen("satisfied: ")+str(tree[treedepth])
 	    break
 	else:
-	    #print red("not satisfied: ")+str(tree[treedepth])
+	    print red("not satisfied: ")+str(tree[treedepth])
 	    # cycle again, load unsatisfiedDeps
-	    unsatisfiedDeps = []
+	    unsatisfiedDeps = set()
 	    for dep in tree[treedepth]:
 		atom = atomMatch(dep)
 		deps = getDependencies(atom)
 		if (not emptydeps):
 		    deps, xxx = filterSatisfiedDependencies(deps, deepdeps = deepdeps)
-		unsatisfiedDeps += deps[:]
+		for x in deps:
+		    unsatisfiedDeps.add(x)
+	tree[treedepth] = list(tree[treedepth])
 	
     closeClientDatabase(clientDbconn)
 
