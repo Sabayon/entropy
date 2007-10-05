@@ -2184,6 +2184,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	infoDict = {}
 	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
 	infoDict['removecontent'] = clientDbconn.retrieveContent(idpackage)
+	infoDict['removeidpackage'] = idpackage
 	infoDict['removeconfig'] = False # this will force old configuration files to be kept
 	steps = []
 	steps.append("preremove") # not implemented
