@@ -1110,8 +1110,10 @@ def removePackage(infoDict):
 		        if file.startswith(x):
 			    protected = False
 			    break
-	        if (protected):
+	        if (protected) and os.path.isfile(file):
 		    protected = istextfile(file)
+		else:
+		    protected = False # it's not a file
 	    # -- CONFIGURATION FILE PROTECTION --
 	
 	if (protected):
@@ -1240,15 +1242,19 @@ def installPackage(infoDict):
 		protected = False # file doesn't exist
 
 	    # check if it's a text file
-	    if (protected):
+	    if (protected) and os.path.isfile(tofile):
 		protected = istextfile(tofile)
+	    else:
+		protected = False # it's not a file
 
 	    # check md5
-	    if (protected):
+	    if (protected) and os.path.isfile(tofile) and os.path.isfile(fromfile):
 		mymd5 = md5sum(fromfile)
 		sysmd5 = md5sum(tofile)
 		if mymd5 == sysmd5:
 		    protected = False # files are the same
+	    else:
+		protected = False # a broken symlink inside our image dir
 
 	    # request new tofile then
 	    if (protected):
