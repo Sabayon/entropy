@@ -57,32 +57,32 @@ def query(options):
 	    if not opt.startswith("-"):
 	        myopts.append(opt)
 
-    if options[0] == "installed":
+    if myopts[0] == "installed":
 	rc = searchInstalledPackages(myopts[1:], quiet = equoRequestQuiet)
 
-    elif options[0] == "belongs":
+    elif myopts[0] == "belongs":
 	rc = searchBelongs(myopts[1:], quiet = equoRequestQuiet)
 
-    elif options[0] == "depends":
+    elif myopts[0] == "depends":
 	rc = searchDepends(myopts[1:], verbose = equoRequestVerbose, quiet = equoRequestQuiet)
 
-    elif options[0] == "files":
+    elif myopts[0] == "files":
 	rc = searchFiles(myopts[1:], quiet = equoRequestQuiet)
 
-    elif options[0] == "removal":
+    elif myopts[0] == "removal":
 	rc = searchRemoval(myopts[1:], quiet = equoRequestQuiet, deep = equoRequestDeep)
 
-    elif options[0] == "orphans":
+    elif myopts[0] == "orphans":
 	rc = searchOrphans(quiet = equoRequestQuiet)
 
-    elif options[0] == "list":
+    elif myopts[0] == "list":
 	mylistopts = options[1:]
 	if len(mylistopts) > 0:
 	    if mylistopts[0] == "installed":
 	        rc = searchInstalled(verbose = equoRequestVerbose, quiet = equoRequestQuiet)
 	    # add more here
 
-    elif options[0] == "description":
+    elif myopts[0] == "description":
 	rc = searchDescription(myopts[1:], quiet = equoRequestQuiet)
 
     return rc

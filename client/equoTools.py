@@ -1089,7 +1089,7 @@ def removePackage(infoDict):
 	# collision check
 	if etpConst['collisionprotect'] > 0:
 	    if file in contentCache:
-	        print "DEBUG!! [remove]: collision found for "+file.encode(sys.getfilesystemencoding()) #FIXME: beautify
+		print_warning(yellow("   ## ")+red("Collision found during remove for ")+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
 	        continue
 	    try:
 	        del contentCache[file]
@@ -1099,25 +1099,28 @@ def removePackage(infoDict):
 
 	protected = False
 	if (not infoDict['removeconfig']):
-	    # -- CONFIGURATION FILE PROTECTION --
-	    if os.access(file,os.R_OK):
-	        for x in protect:
-		    if file.startswith(x):
-		        protected = True
-		        break
-	        if (protected):
-		    for x in mask:
+	    try:
+	        # -- CONFIGURATION FILE PROTECTION --
+	        if os.access(file,os.R_OK):
+	            for x in protect:
 		        if file.startswith(x):
-			    protected = False
-			    break
-	        if (protected) and os.path.isfile(file):
-		    protected = istextfile(file)
-		else:
-		    protected = False # it's not a file
-	    # -- CONFIGURATION FILE PROTECTION --
+		            protected = True
+		            break
+	            if (protected):
+		        for x in mask:
+		            if file.startswith(x):
+			        protected = False
+			        break
+	            if (protected) and os.path.isfile(file):
+		        protected = istextfile(file)
+		    else:
+		        protected = False # it's not a file
+	        # -- CONFIGURATION FILE PROTECTION --
+	    except:
+		pass # some filenames are buggy encoded
 	
 	if (protected):
-	    print "DEBUG: PROTECTED -> "+str(file)
+	    print_warning(yellow("   ## ")+red("Protecting config file: ")+str(file))
 	else:
 	    try:
 	        os.remove(file)
@@ -1214,54 +1217,59 @@ def installPackage(infoDict):
 	    
 	    if etpConst['collisionprotect'] > 1:
 		if tofile in contentCache:
-		    print "DEBUG!! [install]: collision found for "+file.encode(sys.getfilesystemencoding()) #FIXME: beautify
+		    print_warning(yellow("   ## ")+red("Collision found during install for ")+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
+		    print_warning(yellow("   ## ")+red("Protecting config file: ")+str(tofile))
 		    continue
 
 	    # -- CONFIGURATION FILE PROTECTION --
-	    
-	    protected = False
-	    for x in protect:
-		if tofile.startswith(x):
-		    protected = True
-		    break
-	    if (protected): # check if perhaps, file is masked, so unprotected
-		for x in mask:
+
+	    try:
+	        protected = False
+	        for x in protect:
 		    if tofile.startswith(x):
-			protected = False
-			break
+		        protected = True
+		        break
+	        if (protected): # check if perhaps, file is masked, so unprotected
+		    for x in mask:
+		        if tofile.startswith(x):
+			    protected = False
+			    break
 	    
-	    if os.access(tofile,os.F_OK):
-		try:
-		    if not protected: os.remove(tofile)
-		except:
-		    if not protected:
-		        rc = os.system("rm -f "+tofile)
-		        if (rc != 0):
-			    return 3
-	    else:
-		protected = False # file doesn't exist
+	        if os.access(tofile,os.F_OK):
+		    try:
+		        if not protected: os.remove(tofile)
+		    except:
+		        if not protected:
+		            rc = os.system("rm -f "+tofile)
+		            if (rc != 0):
+			        return 3
+	        else:
+		    protected = False # file doesn't exist
 
-	    # check if it's a text file
-	    if (protected) and os.path.isfile(tofile):
-		protected = istextfile(tofile)
-	    else:
-		protected = False # it's not a file
+	        # check if it's a text file
+	        if (protected) and os.path.isfile(tofile):
+		    protected = istextfile(tofile)
+	        else:
+		    protected = False # it's not a file
 
-	    # check md5
-	    if (protected) and os.path.isfile(tofile) and os.path.isfile(fromfile):
-		mymd5 = md5sum(fromfile)
-		sysmd5 = md5sum(tofile)
-		if mymd5 == sysmd5:
-		    protected = False # files are the same
-	    else:
-		protected = False # a broken symlink inside our image dir
+	        # check md5
+	        if (protected) and os.path.isfile(tofile) and os.path.isfile(fromfile):
+		    mymd5 = md5sum(fromfile)
+		    sysmd5 = md5sum(tofile)
+		    if mymd5 == sysmd5:
+		        protected = False # files are the same
+	        else:
+		    protected = False # a broken symlink inside our image dir
 
-	    # request new tofile then
-	    if (protected):
-		print "DEBUG: PROTECTED ->"+str(tofile)
-		tofile = allocateMaskedFile(tofile)
+	        # request new tofile then
+	        if (protected):
+		    print_warning(yellow("   ## ")+red("Protecting config file: ")+str(tofile))
+		    tofile = allocateMaskedFile(tofile)
 	    
-	    # -- CONFIGURATION FILE PROTECTION --
+	        # -- CONFIGURATION FILE PROTECTION --
+	
+	    except:
+	        pass # some files are buggy encoded
 
 	    try:
 		# this also handles symlinks
@@ -1269,7 +1277,7 @@ def installPackage(infoDict):
 		try:
 		    packageContent.append(tofile.encode("utf-8"))
 		except:
-		    print_error("DEBUG!!: file error: "+str(tofile)+" cannot be converted into UTF-8, skipping")
+		    print_warning(yellow("   ## ")+red("Cannot convert filename into UTF-8, skipping ")+str(tofile))
 		    pass
 	    except IOError,(errno,strerror):
 		if errno == 2:
