@@ -79,14 +79,14 @@ def scanfs(quiet = True):
     counter = 0
     for path in etpConst['dbconfigprotect']:
 	# it's a file?
-	deep = True
 	if os.path.isfile(path):
 	    # find inside basename
-	    path = os.path.basename(path)
-	    deep = False
+	    path = os.path.dirname(path)
 	
 	for currentdir,subdirs,files in os.walk(path):
 	    for file in files:
+		#if currentdir.startswith("/usr/share/X11"):
+		#    print file
 		filepath = currentdir+"/"+file
 		if file.startswith("._cfg"):
 		    # further check then
@@ -97,7 +97,6 @@ def scanfs(quiet = True):
 			continue # not a valid etc-update file
 		    if file[9] != "_": # no valid format provided
 			continue
-		    # FIXME: add automerging trivial changes
 		    tofile = file[10:]
 		    tofilepath = currentdir+"/"+tofile
 		    scandata[filepath] = {}
@@ -107,6 +106,15 @@ def scanfs(quiet = True):
 			scandata[filepath]['automerge'] = False
 		    else:
 			scandata[filepath]['automerge'] = True
+		    if (not scandata[filepath]['automerge']):
+			# is it trivial?
+			try:
+			    result = commands.getoutput('diff -Nua '+filepath+' '+tofilepath+' | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'')
+			    if not result:
+				scandata[filepath]['automerge'] = True
+			except:
+			    print "ERROR"
+			    pass
 		    counter += 1
 		    try:
 		        if (not quiet): print_info("("+blue(str(counter))+") "+red(" Found file: ")+filepath)
@@ -125,6 +133,3 @@ def confinfo():
     data = scanfs(quiet = False)
     print len(data)
     return 0
-
-    
-    
