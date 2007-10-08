@@ -40,11 +40,13 @@ def dumpobj(name,object):
     text = doc.createTextNode(unicode(object))
     data.appendChild(text)
     # etpConst['dumpstoragedir']
-    f = open(etpConst['dumpstoragedir']+"/"+name+".dmp","w") #FIXME add check
-    f.writelines(doc.toprettyxml(indent="  "))
-    f.flush()
-    f.close()
-    return 0
+    try:
+        f = open(etpConst['dumpstoragedir']+"/"+name+".dmp","w") #FIXME add check
+        f.writelines(doc.toprettyxml(indent="  "))
+        f.flush()
+        f.close()
+    except:
+        raise IOError,"can't write to file"
 
 
 '''
@@ -62,6 +64,4 @@ def loadobj(name):
 	    x = eval(data.firstChild.data.strip())
 	    return x
 	except:
-	    return -2
-    else:
-	return -1
+	    raise SyntaxError,"cannot eval() data"

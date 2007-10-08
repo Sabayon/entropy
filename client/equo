@@ -150,8 +150,10 @@ try:
 		if "--pretend" not in options:
 		    options.append("--pretend")
         rc = equoTools.package(options)
-	if etpConst['configprotectcounter'] > 0:
-	    print_warning(red("Attention: ")+darkgreen("at least "+str(etpConst['configprotectcounter'])+" have been updated in this session."))
+	import confTools
+	scandata = confTools.scanfs(quiet = True, dcache = True)
+	if len(scandata) > 0:
+	    print_warning(darkgreen("There are "+str(len(scandata))+" configuration files that need update."))
 	    print_warning(red("Please run: ")+bold("etc-update")) # FIXME: add our tool
         sys.exit(rc)
 

@@ -31,6 +31,7 @@ from outputTools import *
 from remoteTools import downloadData, getOnlineContent
 from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extactDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, dep_striptag, md5sum, allocateMaskedFile, istextfile
 from databaseTools import etpDatabase
+import confTools
 import xpak
 import time
 
@@ -1120,7 +1121,7 @@ def removePackage(infoDict):
 		pass # some filenames are buggy encoded
 	
 	if (protected):
-	    print_warning(yellow("   ## ")+red("Protecting config file: ")+str(file))
+	    print_warning(yellow("   ## ")+red("[remove] Protecting config file: ")+str(file))
 	else:
 	    try:
 	        os.remove(file)
@@ -1218,7 +1219,7 @@ def installPackage(infoDict):
 	    if etpConst['collisionprotect'] > 1:
 		if tofile in contentCache:
 		    print_warning(yellow("   ## ")+red("Collision found during install for ")+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
-		    print_warning(yellow("   ## ")+red("Protecting config file: ")+str(tofile))
+		    print_warning(yellow("   ## ")+red("[collision] Protecting config file: ")+str(tofile))
 		    continue
 
 	    # -- CONFIGURATION FILE PROTECTION --
@@ -1265,6 +1266,9 @@ def installPackage(infoDict):
 	        if (protected):
 		    print_warning(yellow("   ## ")+red("Protecting config file: ")+str(tofile))
 		    tofile = allocateMaskedFile(tofile)
+		    # add to disk cache
+		    confTools.addtocache(tofile)
+		    
 	    
 	        # -- CONFIGURATION FILE PROTECTION --
 	
@@ -1298,6 +1302,7 @@ def installPackage(infoDict):
 
     # inject into database
     print_info(red("   ## ")+blue("Updating database with: ")+red(infoDict['atom']))
+
     installPackageIntoDatabase(infoDict['idpackage'], infoDict['repository'])
 
     # remove old files and gentoo stuff
@@ -1372,7 +1377,7 @@ def installPackageIntoGentooDatabase(infoDict,packageFile):
     # handle gentoo-compat
     _portage_avail = False
     try:
-	from portageTools import getInstalledAtoms as _portage_getInstalledAtoms, getPackageSlot as _portage_getPackageSlot, getPortageAppDbPath as _portage_getPortageAppDbPath
+	from portageTools import getPackageSlot as _portage_getPackageSlot, getPortageAppDbPath as _portage_getPortageAppDbPath
 	_portage_avail = True
     except:
 	return -1 # no Portage support
@@ -1381,14 +1386,22 @@ def installPackageIntoGentooDatabase(infoDict,packageFile):
 	# extract xpak from unpackDir+etpConst['packagecontentdir']+"/"+package
 	key = infoDict['category']+"/"+infoDict['name']
 	#print _portage_getInstalledAtom(key)
-	atomsfound = _portage_getInstalledAtoms(key)
+	atomsfound = set()
+	for xdir in os.listdir(portDbDir):
+	    if xdir == (infoDict['category']):
+		for ydir in os.listdir(portDbDir+"/"+xdir):
+		    if (key == dep_getkey(xdir+"/"+ydir)):
+			atomsfound.add(xdir+"/"+ydir)
+	
+	# atomsfound = _portage_getInstalledAtoms(key) too slow!
 	
 	### REMOVE
 	# parse slot and match and remove)
-	if atomsfound is not None:
+	if atomsfound:
 	    pkgToRemove = ''
 	    for atom in atomsfound:
 	        atomslot = _portage_getPackageSlot(atom)
+		# get slot from gentoo db
 	        if atomslot == infoDict['slot']:
 		    #print "match slot, remove -> "+str(atomslot)
 		    pkgToRemove = atom
@@ -1415,6 +1428,7 @@ def installPackageIntoGentooDatabase(infoDict,packageFile):
    @output: 0 = all fine, >0 = error!
 '''
 def installPackageIntoDatabase(idpackage, repository):
+
     # fetch info
     dbconn = openRepositoryDatabase(repository)
     data = dbconn.getPackageData(idpackage)
@@ -1437,7 +1451,8 @@ def installPackageIntoDatabase(idpackage, repository):
         for x in newcontent:
 	    contentCache[x] = 1
     dbconn.closeDB()
-
+    
+    
     idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = rev, forcedBranch = True)
     del x
     if (not status):
@@ -1446,11 +1461,10 @@ def installPackageIntoDatabase(idpackage, repository):
 	exitstatus = 1 # it hasn't been insterted ? why??
     else: # all fine
 
-	# FIXME: regenerate contentCache
+	# regenerate contentCache
         if etpConst['collisionprotect'] > 0:
 	    xlist = clientDbconn.listAllFiles(clean = True)
-	    for x in contentCache.keys():
-		del contentCache[x]
+	    contentCache.clear()
 	    for x in xlist:
 		contentCache[x] = 1
 
@@ -1467,12 +1481,13 @@ def installPackageIntoDatabase(idpackage, repository):
 		if (match[0] != -1):
 		    clientDbconn.removeDependencyFromDependsTable(iddep)
 		    clientDbconn.addDependRelationToDependsTable(iddep,match[0])
+
 	except:
 	    print "DEBUG!!! dependstable not found"
 	    clientDbconn.regenerateDependsTable()
 
     # reset atomMatch cache
-    atomMatchCache = {}
+    atomMatchCache.clear()
 
     closeClientDatabase(clientDbconn)
     return exitstatus

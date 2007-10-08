@@ -27,7 +27,8 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 import entropyTools
-from equoTools import openClientDatabase, closeClientDatabase
+import dumpTools
+import equoTools
 
 # test if diff is installed
 difftest = entropyTools.spawnCommand("diff -v", redirect = "&> /dev/null")
@@ -69,26 +70,41 @@ def configurator(options):
    @description: scan for files that need to be merged
    @output: dictionary using filename as key
 '''
-def scanfs(quiet = True):
+def scanfs(quiet = True, dcache = True):
+
+    if (dcache):
+	# can we load cache?
+	try:
+	    c = loadcache()
+	    return c
+	except:
+	    pass
+
     # load etpConst['dbconfigprotect']
-    clientDbconn = openClientDatabase()
-    closeClientDatabase(clientDbconn)
+    clientDbconn = equoTools.openClientDatabase()
+    equoTools.closeClientDatabase(clientDbconn)
     # etpConst['dbconfigprotect']
     if (not quiet): print_info(yellow(" @@ ")+darkgreen("Scanning filesystem..."))
     scandata = {}
     counter = 0
     for path in etpConst['dbconfigprotect']:
 	# it's a file?
+	scanfile = False
 	if os.path.isfile(path):
 	    # find inside basename
 	    path = os.path.dirname(path)
+	    scanfile = True
 	
 	for currentdir,subdirs,files in os.walk(path):
 	    for file in files:
-		#if currentdir.startswith("/usr/share/X11"):
-		#    print file
+		
+		if (scanfile):
+		    if path != file:
+			continue
+		
 		filepath = currentdir+"/"+file
 		if file.startswith("._cfg"):
+		    
 		    # further check then
 		    number = file[5:9]
 		    try:
@@ -97,39 +113,117 @@ def scanfs(quiet = True):
 			continue # not a valid etc-update file
 		    if file[9] != "_": # no valid format provided
 			continue
-		    tofile = file[10:]
-		    tofilepath = currentdir+"/"+tofile
-		    scandata[filepath] = {}
-		    scandata[filepath]['revision'] = number
-		    scandata[filepath]['destination'] = tofilepath
-		    if os.path.isfile(tofilepath):
-			scandata[filepath]['automerge'] = False
-		    else:
-			scandata[filepath]['automerge'] = True
-		    if (not scandata[filepath]['automerge']):
-			# is it trivial?
-			try:
-			    result = commands.getoutput('diff -Nua '+filepath+' '+tofilepath+' | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'')
-			    if not result:
-				scandata[filepath]['automerge'] = True
-			except:
-			    print "ERROR"
-			    pass
+		    
+		    mydict = generatedict(filepath)
+		    scandata[filepath] = mydict.copy()
+
 		    counter += 1
 		    try:
-		        if (not quiet): print_info("("+blue(str(counter))+") "+red(" Found file: ")+filepath)
+		        if (not quiet): print_info("("+blue(str(counter))+") "+"[auto:"+str(scandata[filepath]['automerge'])+"]"+red(" file: ")+filepath)
 		    except:
 			pass # possible encoding issues
+    # store data
+    try:
+        dumpTools.dumpobj(etpCache['configfiles'],scandata)
+    except:
+	pass
     return scandata
 
 
+def loadcache():
+    try:
+	sd = dumpTools.loadobj(etpCache['configfiles'])
+	# check for corruption?
+	if isinstance(sd, dict):
+	    # quick test if data is reliable
+	    try:
+		taint = False
+		for x in sd:
+		    if not os.path.isfile(x):
+			taint = True
+			break
+		if (not taint):
+		    return sd
+		else:
+		    raise Exception
+	    except:
+		raise Exception
+    except:
+	raise Exception
+
+
+def generatedict(filepath):
+    file = os.path.basename(filepath)
+    currentdir = os.path.dirname(filepath)
+    tofile = file[10:]
+    number = file[5:9]
+    try:
+	int(number)
+    except:
+	raise Exception,"bad formatted filepath"
+    tofilepath = currentdir+"/"+tofile
+    mydict = {}
+    mydict['revision'] = number
+    mydict['destination'] = tofilepath
+    mydict['automerge'] = False
+    if not os.path.isfile(tofilepath):
+        mydict['automerge'] = True
+    if (not mydict['automerge']):
+        # is it trivial?
+        try:
+	    result = commands.getoutput('diff -Nua '+filepath+' '+tofilepath+' | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'')
+	    if not result:
+	        mydict['automerge'] = True
+        except:
+	    pass
+    return mydict
+
+'''
+   @description: prints information about config files that should be updated
+   @attention: please be sure that filepath is properly formatted before using this function
+'''
+# 
+def addtocache(filepath):
+    try:
+	scandata = loadcache()
+    except:
+	scandata = scanfs(quiet = True, dcache = False)
+    try:
+	del scandata[filepath]
+    except:
+	pass
+    mydata = generatedict(filepath)
+    scandata[filepath] = mydata.copy()
+    try:
+        dumpTools.dumpobj(etpCache['configfiles'],scandata)
+    except:
+	pass
+
+def removefromcache(filepath):
+    try:
+	scandata = loadcache()
+    except:
+	scandata = scanfs(quiet = True, dcache = False)
+    try:
+	del scandata[filepath]
+	dumpTools.dumpobj(etpCache['configfiles'],scandata)
+    except:
+	pass
 
 '''
    @description: prints information about config files that should be updated
 '''
 def confinfo():
-    
-    print_info(yellow(" @@ ")+darkgreen("Loading information..."), back = True)
-    data = scanfs(quiet = False)
-    print len(data)
+    print_info(yellow(" @@ ")+darkgreen("These are the files that would be updated:"))
+    data = scanfs(quiet = False, dcache = True)
+    counter = 0
+    for file in data:
+	counter += 1
+	print_info(" ("+blue(str(counter))+") "+"[auto:"+str(data[file]['automerge'])+"]"+red(" file: ")+file)
+    print_info(red(" @@ ")+brown("Unique files that would be update:\t\t")+red(str(len(data))))
+    automerge = 0
+    for x in data:
+	if data[x]['automerge']:
+	    automerge += 1
+    print_info(red(" @@ ")+brown("Unique files that would be automerged:\t\t")+green(str(automerge)))
     return 0

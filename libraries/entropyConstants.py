@@ -278,6 +278,7 @@ ETP_CLIENT_REPO_DIR = "/client"
 ETP_UPLOADDIR = "/upload/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store/"+ETP_ARCH_CONST
 ETP_SMARTAPPSDIR = "/smartapps/"+ETP_ARCH_CONST
+ETP_XMLDIR = "/xml/"
 ETP_CONF_DIR = "/etc/entropy"
 ETP_ROOT_DIR = "/"
 ETP_LOG_DIR = ETP_DIR+"/"+"logs"
@@ -381,7 +382,14 @@ etpConst = {
     'dbconfigprotectmask': [], # installed database CONFIG_PROTECT_MASK directories
     'configprotectcounter': 0, # this will be used to show the number of updated files at the end of the processes
     'entropyversion': "1.0", # default Entropy release version
+    
+    'dumpstoragedir': ETP_DIR+ETP_XMLDIR, # data storage directory, useful to speed up equo across multiple issued commands
 
+}
+
+# disk caching dictionary
+etpCache = {
+    'configfiles': 'scanfs', # used to store information about files that should be merged using "equo conf merge"
 }
 
 # handle Entropy Version

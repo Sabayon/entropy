@@ -261,16 +261,30 @@ def md5string(string):
 def allocateMaskedFile(file):
     counter = -1
     newfile = ""
+    previousfile = ""
     while 1:
 	counter += 1
 	txtcounter = str(counter)
+	oldtxtcounter = str(counter-1)
 	for x in range(4-len(txtcounter)):
 	    txtcounter = "0"+txtcounter
+	    oldtxtcounter = "0"+oldtxtcounter
 	newfile = os.path.dirname(file)+"/"+"._cfg"+txtcounter+"_"+os.path.basename(file)
+	if counter > 0:
+	    previousfile = os.path.dirname(file)+"/"+"._cfg"+oldtxtcounter+"_"+os.path.basename(file)
+	else:
+	    previousfile = os.path.dirname(file)+"/"+"._cfg0000_"+os.path.basename(file)
 	if not os.path.exists(newfile):
 	    break
     if not newfile:
 	newfile = os.path.dirname(file)+"/"+"._cfg0000_"+os.path.basename(file)
+    else:
+	if os.path.exists(previousfile):
+	    # compare old and new, if they match, suggest previousfile directly
+	    new = md5sum(file)
+	    old = md5sum(previousfile)
+	    if (new == old):
+		newfile = previousfile
     return newfile
 
 # Imported from Gentoo portage_dep.py
