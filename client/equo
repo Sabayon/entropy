@@ -169,6 +169,7 @@ try:
 
     elif (options[0] == "search"):
 	if len(options) > 1:
+	    import queryTools
             rc = queryTools.searchPackage(options[1:])
             sys.exit(rc)
 
