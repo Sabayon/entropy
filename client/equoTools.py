@@ -31,6 +31,7 @@ from outputTools import *
 from remoteTools import downloadData, getOnlineContent
 from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extactDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, dep_striptag, md5sum, allocateMaskedFile, istextfile
 from databaseTools import etpDatabase
+import triggerTools
 import confTools
 import xpak
 import time
@@ -1151,7 +1152,7 @@ def installPackage(infoDict):
 
     clientDbconn = openClientDatabase()
     package = infoDict['download']
-
+    
     # load content cache if found empty
     if etpConst['collisionprotect'] > 0:
         if (not contentCache):
@@ -1183,7 +1184,6 @@ def installPackage(infoDict):
     mask = etpRepositories[infoDict['repository']]['configprotectmask']
     
     packageContent = []
-    
     # setup imageDir properly
     imageDir = imageDir.encode(sys.getfilesystemencoding())
     # merge data into system
@@ -2246,12 +2246,16 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    newcontent = dbconn.retrieveContent(idpackage)
 	    actionQueue[pkgatom]['removecontent'] = [x for x in oldcontent if x not in newcontent]
 
+	# get data for triggerring tool
+	etpInstallTriggers[pkgatom] = dbconn.getPackageData(idpackage) # XXX: maybe that actionQueue is enough?
+
 	dbconn.closeDB()
 
 	if (not onlyfetch):
 	    # install
+	    steps.append("preinstall")
 	    steps.append("install")
-	    steps.append("cleanup")
+	    steps.append("postinstall")
 	
 	#print "steps for "+pkgatom+" -> "+str(steps)
 	print_info(red(" @@ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
@@ -2262,9 +2266,6 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 		clientDbconn.closeDB()
 		return -1,rc
 
-    # regenerate depends table
-    #print_info(red(" @@ ")+blue("Regenerating depends caching table..."), back = True)
-    #regenerateDependsTable(clientDbconn, output = False)
     print_info(red(" @@ ")+blue("Install Complete."))
 
     closeClientDatabase(clientDbconn)
@@ -2556,6 +2557,21 @@ def stepExecutor(step,infoDict):
 	if output != 0:
 	    errormsg = red("An error occured while trying to remove the package. Check if you have enough disk space on your hard disk. Error "+str(output))
 	    print_error(errormsg)
+    
+    elif step == "postinstall":
+	# analyze atom
+	pkgdata = etpInstallTriggers.get(infoDict['atom'])
+	if pkgdata:
+	    triggerTools.postinstall(pkgdata)
+
+    #elif step == "preinstall":
+	# analyze atom
+#	match = etpInstallTriggers.get(infoDict['atom'])
+#	if match:
+#	    prematch = match.get('prematch')
+#	    if prematch:
+	        # run post-install triggers
+#	        print prematch
     
     closeClientDatabase(clientDbconn)
     

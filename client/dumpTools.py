@@ -41,6 +41,8 @@ def dumpobj(name,object):
     data.appendChild(text)
     # etpConst['dumpstoragedir']
     try:
+	if not os.path.isdir(etpConst['dumpstoragedir']):
+	    os.makedirs(etpConst['dumpstoragedir'])
         f = open(etpConst['dumpstoragedir']+"/"+name+".dmp","w") #FIXME add check
         f.writelines(doc.toprettyxml(indent="  "))
         f.flush()

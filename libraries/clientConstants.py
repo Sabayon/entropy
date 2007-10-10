@@ -27,6 +27,14 @@ import random
 import sys
 from entropyConstants import *
 
+### Equo triggering functions for pre/post-install scripts
+### index: package atom, content: name of the function to call
+etpInstallTriggers = {}
+
+### Equo triggering functions for pre/post-remove scripts
+### structure same as above
+etpRemovalTriggers = {}
+
 # Client packages/database repositories
 # used by equo
 etpRepositories = {}

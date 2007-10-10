@@ -22,6 +22,7 @@ TODO list:
     - install only looks inside the configured branch
   - if a mirror fails several times, disable it
   - move branches to version naming (3.5, 3.6, 3.7) instead of using stable, unstable...
+  - embed python and pysqlite to avoid dependency from the one installed on the system
 
 Project Status:
 - entropy: will handle all the three tools below

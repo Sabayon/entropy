@@ -215,7 +215,7 @@ def removefromcache(filepath):
 '''
 def confinfo():
     print_info(yellow(" @@ ")+darkgreen("These are the files that would be updated:"))
-    data = scanfs(quiet = False, dcache = True)
+    data = scanfs(quiet = True, dcache = False)
     counter = 0
     for file in data:
 	counter += 1
