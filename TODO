@@ -2,12 +2,9 @@ TODO list:
 - reagent: complete smartapps section
   CLIENT:
   - trap elogs in reagent
-  - add etc-update alike support
-    - rewrite the bash stuff in python
-    - add cached scan stuff
-  - add env-update alike support
+  - complete etc-update alike support
+  - add disk caching support to slow functions
   - add preinst/postinst/prerm/postrm scripts
-  - move branches to version naming (3.5, 3.6, 3.7) instead of using stable, unstable...
   - during removal/add handle:
 	- /etc/init.d/* files ?
 	- GConf2 database
@@ -19,19 +16,16 @@ TODO list:
 	- switch gcc profile (when installing one)
 	- switch binutils profile
 	- kernel modules (depmod and moduledb)
-  - split world function in "world update" and "world upgrade" (do the latter first)
+  - world upgrade should switch python to 2.5
   - remove TAGS and substitute them with forced SLOT setting (just keep it for the package filename)
   - branch reorganization based on the release:
     - install only looks inside the configured branch
-    - world looks inside the latest (if run with "upgrade")
-    - world: add --prune option that removes packages not available anymore
-  - world upgrade should switch python to 2.5
   - if a mirror fails several times, disable it
-
+  - move branches to version naming (3.5, 3.6, 3.7) instead of using stable, unstable...
 
 Project Status:
 - entropy: will handle all the three tools below
 - reagent: complete. Bug fixing mode.
 - activator: complete. Bug fixing mode.
 ============
-- client part: 50%
+- client part: 70%
