@@ -287,6 +287,29 @@ def allocateMaskedFile(file):
 		newfile = previousfile
     return newfile
 
+def extractElog(file):
+
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractElog: called.")
+
+    logline = False
+    logoutput = []
+    f = open(file,"r")
+    reallog = f.readlines()
+    f.close()
+    
+    for line in reallog:
+	if line.startswith("INFO: postinst") or line.startswith("LOG: postinst"):
+	    logline = True
+	    continue
+	    # disable all the others
+	elif line.startswith("INFO:") or line.startswith("LOG:"):
+	    logline = False
+	    continue
+	if (logline) and (line.strip()):
+	    # trap !
+	    logoutput.append(line.strip())
+    return logoutput
+
 # Imported from Gentoo portage_dep.py
 # Copyright 2003-2004 Gentoo Foundation
 # done to avoid the import of portage_dep here

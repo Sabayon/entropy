@@ -679,6 +679,29 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     protect, mask = getConfigProtectAndMask()
     etpData['config_protect'] = protect
     etpData['config_protect_mask'] = mask
+    
+    # fill etpData['messages']
+    # etpConst['logdir']+"/elog"
+    etpData['messages'] = []
+    if os.path.isdir(etpConst['logdir']+"/elog"):
+        elogfiles = os.listdir(etpConst['logdir']+"/elog")
+	myelogfile = etpData['category']+":"+etpData['name']+"-"+etpData['version']
+	foundfiles = []
+	for file in elogfiles:
+	    if file.startswith(myelogfile):
+		foundfiles.append(file)
+	if foundfiles:
+	    elogfile = foundfiles[0]
+	    if len(foundfiles) > 1:
+		# get the latest
+		mtimes = []
+		for file in foundfiles:
+		    mtimes.append((getFileUnixMtime(etpConst['logdir']+"/elog/"+file),file))
+		mtimes.sort()
+		elogfile = mtimes[len(mtimes)-1][1]
+	    etpData['messages'] = extractElog(etpConst['logdir']+"/elog/"+elogfile)
+    else:
+	print_warning(red(etpConst['logdir']+"/elog")+" not set, have you configured make.conf properly?")
 
     print_info(yellow(" * ")+red(info_package+"Getting Entropy API version..."),back = True)
     # write API info

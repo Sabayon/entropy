@@ -1,7 +1,6 @@
 TODO list:
 - reagent: complete smartapps section
   CLIENT:
-  - trap elogs in reagent
   - complete etc-update alike support
   - add disk caching support to slow functions
   - add preinst/postinst/prerm/postrm scripts
@@ -11,9 +10,6 @@ TODO list:
 	- desktop mime database
 	- shared mime database
 	- scrollkeeper database
-	- icons cache
-	- fonts cache (run mkfontdir after writes in /usr/share/fonts)
-	- switch gcc profile (when installing one)
 	- switch binutils profile
 	- kernel modules (depmod and moduledb)
   - world upgrade should switch python to 2.5
@@ -29,4 +25,4 @@ Project Status:
 - reagent: complete. Bug fixing mode.
 - activator: complete. Bug fixing mode.
 ============
-- client part: 70%
+- client part: 75%

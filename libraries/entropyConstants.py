@@ -62,6 +62,7 @@ etpData = {
     'config_protect_mask': u"", # list of directories that contain files that should be overwritten
     'disksize': u"", # size on the hard disk in bytes (integer)
     'counter': u"", # aka. COUNTER file
+    'messages': u"" # elog content from portage
 }
 
 # Entropy database SQL initialization Schema and data structure
@@ -338,7 +339,7 @@ etpConst = {
     'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
     'equologlevel': 1, # # Equo log level (default: 1 - see equo.conf for more info)
     'spmbackendloglevel': 1, # # Source Package Manager backend log level (default: 1 - see entropy.conf for more info)
-    'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their shit
+    'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their stuff
     
     'syslogdir': ETP_SYSLOG_DIR, # Entropy system tools log directory
     'mirrorslogfile': ETP_SYSLOG_DIR+"/mirrors.log", # Mirrors operations log file

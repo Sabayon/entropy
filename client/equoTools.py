@@ -2110,6 +2110,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    pkgfile = dbconn.retrieveDownloadURL(packageInfo[0])
 	    pkgcat = dbconn.retrieveCategory(packageInfo[0])
 	    pkgname = dbconn.retrieveName(packageInfo[0])
+	    pkgmessages = dbconn.retrieveMessages(packageInfo[0])
 	    onDiskUsedSize += dbconn.retrieveOnDiskSize(packageInfo[0])
 	    
 	    # fill action queue
@@ -2124,6 +2125,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    actionQueue[pkgatom]['removeidpackage'] = -1
 	    actionQueue[pkgatom]['download'] = pkgfile
 	    actionQueue[pkgatom]['checksum'] = pkgdigest
+	    actionQueue[pkgatom]['messages'] = pkgmessages
 	    actionQueue[pkgatom]['removeconfig'] = configFiles
 	    dl = checkNeededDownload(pkgfile, pkgdigest)
 	    actionQueue[pkgatom]['fetch'] = dl
@@ -2256,6 +2258,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    steps.append("preinstall")
 	    steps.append("install")
 	    steps.append("postinstall")
+	    steps.append("showmessages")
 	
 	#print "steps for "+pkgatom+" -> "+str(steps)
 	print_info(red(" @@ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
@@ -2457,7 +2460,6 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
 	deptree, status = generateDependencyTree([xidpackage,0])
 
 	if (status == 0):
-
 	    # skip conflicts
 	    conflicts = deptree.get(0,None)
 	    if (conflicts):
@@ -2558,11 +2560,18 @@ def stepExecutor(step,infoDict):
 	    errormsg = red("An error occured while trying to remove the package. Check if you have enough disk space on your hard disk. Error "+str(output))
 	    print_error(errormsg)
     
+    elif step == "showmessages":
+	# get messages
+	for msg in infoDict['messages']: # FIXME: add logging support
+	    print_warning(brown('  ## ')+msg)
+    
     elif step == "postinstall":
 	# analyze atom
 	pkgdata = etpInstallTriggers.get(infoDict['atom'])
 	if pkgdata:
-	    triggerTools.postinstall(pkgdata)
+	    triggers = triggerTools.postinstall(pkgdata)
+	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
+		eval("triggerTools."+trigger)(pkgdata)
 
     #elif step == "preinstall":
 	# analyze atom

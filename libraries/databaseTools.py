@@ -1077,6 +1077,28 @@ class etpDatabase:
 			atom,
 			)
 	    )
+
+	# compile messages
+	try:
+	    for message in etpData['messages']:
+	        self.cursor.execute(
+		'INSERT into messages VALUES '
+		'(?,?)'
+		, (	idpackage,
+			message,
+			)
+	        )
+	except:
+	    # FIXME: temp workaround, create messages table
+	    self.cursor.execute("CREATE TABLE messages ( idpackage INTEGER, message VARCHAR);")
+	    for message in etpData['messages']:
+	        self.cursor.execute(
+		'INSERT into messages VALUES '
+		'(?,?)'
+		, (	idpackage,
+			message,
+			)
+	        )
 	
 	# is it a system package?
 	if etpData['systempackage']:
@@ -1100,7 +1122,7 @@ class etpDatabase:
 			idprotect,
 			)
 	)
-	    
+	
 	idprotect = self.isProtectAvailable(etpData['config_protect_mask'])
 	if (idprotect == -1):
 	    # create category
@@ -1304,6 +1326,11 @@ class etpDatabase:
 	self.cursor.execute('DELETE FROM keywords WHERE idpackage = '+idpackage)
 	# binkeywords
 	self.cursor.execute('DELETE FROM binkeywords WHERE idpackage = '+idpackage)
+	try:
+	    # messages
+	    self.cursor.execute('DELETE FROM messages WHERE idpackage = '+idpackage)
+	except:
+	    pass # FIXME: temp workaround
 	# systempackage
 	self.cursor.execute('DELETE FROM systempackages WHERE idpackage = '+idpackage)
 	try:
@@ -1595,6 +1622,7 @@ class etpDatabase:
 	data['digest'] = self.retrieveDigest(idpackage)
 	data['sources'] = self.retrieveSources(idpackage)
 	data['counter'] = self.retrieveCounter(idpackage)
+	data['messages'] = self.retrieveMessages(idpackage)
 	
 	if (self.isSystemPackage(idpackage)):
 	    data['systempackage'] = 'xxx'
@@ -1773,6 +1801,32 @@ class etpDatabase:
 	if (self.xcache):
 	    self.databaseCache[int(idpackage)]['retrieveCounter'] = counter
 	return counter
+
+    def retrieveMessages(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveMessages: retrieving messages for package ID "+str(idpackage))
+	
+	''' caching '''
+	if (self.xcache):
+	    cached = self.databaseCache.get(int(idpackage), None)
+	    if cached:
+	        rslt = self.databaseCache[int(idpackage)].get('retrieveMessages',None)
+	        if rslt:
+		    return rslt
+	    else:
+	        self.databaseCache[int(idpackage)] = {}
+
+	messages = []
+	try:
+	    self.cursor.execute('SELECT "message" FROM messages WHERE idpackage = "'+str(idpackage)+'"')
+	    for row in self.cursor:
+	        messages.append(row[0])
+	except:
+	    pass
+
+	''' caching '''
+	if (self.xcache):
+	    self.databaseCache[int(idpackage)]['retrieveMessages'] = messages
+	return messages
 
     # in bytes
     def retrieveSize(self, idpackage):

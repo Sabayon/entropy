@@ -153,7 +153,7 @@ try:
 	import confTools
 	scandata = confTools.scanfs(quiet = True, dcache = True)
 	if len(scandata) > 0:
-	    print_warning(darkgreen("There are "+str(len(scandata))+" configuration files that need(s) to be updated."))
+	    print_warning(darkgreen("There are "+str(len(scandata))+" configuration file(s) that need(s) to be updated."))
 	    print_warning(red("Please run: ")+bold("etc-update")) # FIXME: add our tool
         sys.exit(rc)
 
