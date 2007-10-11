@@ -22,17 +22,22 @@
 
 import sys
 import os
+import commands
 sys.path.append('../libraries')
 from outputTools import *
 import entropyTools
 
+'''
+   @ description: Gentoo toolchain variables
+'''
+MODULEDB_DIR="/var/lib/module-rebuild/"
 
 '''
    @description: pkgdata parser that collects post-install scripts that would be run
 '''
 def postinstall(pkgdata):
     
-    functions = []
+    functions = set()
     
     # fonts configuration
     if pkgdata['category'] == "media-fonts":
@@ -42,22 +47,28 @@ def postinstall(pkgdata):
     if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/gcc":
 	functions.append("gccswitch")
 
+    # binutils configuration
+    if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/binutils":
+	functions.append("binutilsswitch")
+
     # icons cache setup
     mycnt = set(pkgdata['content'])
-    icons = [x for x in mycnt if x.startswith("/usr/share/icons") and x.endswith("index.theme")]
-    mime_mime = [x for x in mycnt if x.startswith("/usr/share/mime")]
-    mime_desktop = [x for x in mycnt if x.startswith("/usr/share/applications")]
-    omf_files = [x for x in mycnt if x.startswith("/usr/share/omf")]
-    if icons:
-	functions.append('iconscache')
-    if mime_mime:
-	functions.append('mimeupdate')
-    if mime_desktop:
-	functions.append('mimedesktopupdate')
-    if omf_files:
-	functions.append('scrollkeeper')
+    
+    for x in mycnt:
+	if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
+	    functions.add('iconscache')
+	if x.startswith("/usr/share/mime"):
+	    functions.add('mimeupdate')
+	if x.startswith("/usr/share/applications"):
+	    functions.add('mimedesktopupdate')
+	if x.startswith("/usr/share/omf"):
+	    functions.add('scrollkeeper')
+	if x.startswith("/etc/gconf/schemas"):
+	    functions.add('gconfreload')
+	if x.startswith('/lib/modules/') and x.endswith('.ko'):
+	    functions.add('kernelmod')
 
-    return functions
+    return list(functions) # need a list??
 
 
 ########################################################
@@ -108,6 +119,22 @@ def scrollkeeper(pkgdata):
     print_info(" "+brown("[POST] Updating scrollkeeper database..."))
     update_scrollkeeper_db()
 
+def gconfreload(pkgdata):
+    print_info(" "+brown("[POST] Reloading GConf2 database..."))
+    reload_gconf_db()
+
+def binutilsswitch(pkgdata):
+    print_info(" "+brown("[POST] Configuring Binutils Profile..."))
+    # get binutils profile
+    pkgsplit = entropyTools.catpkgsplit(pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version'])
+    profile = pkgdata['chost']+"-"+pkgsplit[2]
+    set_binutils_profile(profile)
+
+def kernelmod(pkgdata):
+    print_info(" "+brown("[POST] Updating moduledb..."))
+    item = 'a:1:'+pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
+    update_moduledb(item)
+
 ########################################################
 ####
 ##   Internal functions
@@ -146,6 +173,15 @@ def set_gcc_profile(profile):
     return 0
 
 '''
+   @description: set chosen binutils profile
+   @output: returns int() as exit status
+'''
+def set_binutils_profile(profile):
+    if os.access('/usr/bin/binutils-config',os.X_OK):
+	os.system('/usr/bin/binutils-config '+profile)
+    return 0
+
+'''
    @description: creates/updates icons cache
    @output: returns int() as exit status
 '''
@@ -172,9 +208,48 @@ def update_mime_desktop_db():
 	os.system('/usr/bin/update-desktop-database -q /usr/share/applications')
     return 0
 
+'''
+   @description: updates /var/lib/scrollkeeper database
+   @output: returns int() as exit status
+'''
 def update_scrollkeeper_db():
     if os.access('/usr/bin/scrollkeeper-update',os.X_OK):
 	if not os.path.isdir('/var/lib/scrollkeeper'):
 	    os.makedirs('/var/lib/scrollkeeper')
 	os.system('/usr/bin/scrollkeeper-update -q -p /var/lib/scrollkeeper')
+    return 0
+
+'''
+   @description: respawn gconfd-2 if found
+   @output: returns int() as exit status
+'''
+def reload_gconf_db():
+    rc = os.system('pgrep -x gconfd-2')
+    if (rc == 0):
+	pids = commands.getoutput('pgrep -x gconfd-2').split("\n")
+	pidsstr = ''
+	for pid in pids:
+	    if pid:
+		pidsstr += pid+' '
+	pidsstr = pidsstr.strip()
+	if pidsstr:
+	    os.system('kill -HUP '+pidsstr)
+    return 0
+
+'''
+   @description: updates moduledb
+   @output: returns int() as exit status
+'''
+def update_moduledb(item):
+    if os.access('/usr/sbin/module-rebuild',os.X_OK):
+	if os.path.isfile(MODULEDB_DIR+'moduledb'):
+	    f = open(MODULEDB_DIR+'moduledb',"r")
+	    moduledb = f.readlines()
+	    f.close()
+	    avail = [x for x in moduledb if x.strip() == item]
+	    if (not avail):
+		f = open(MODULEDB_DIR+'moduledb',"aw")
+		f.write(item+"\n")
+		f.flush()
+		f.close()
     return 0
