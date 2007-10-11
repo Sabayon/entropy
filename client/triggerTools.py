@@ -44,10 +44,18 @@ def postinstall(pkgdata):
 
     # icons cache setup
     mycnt = set(pkgdata['content'])
-    for file in mycnt:
-	if file.startswith("/usr/share/icons") and file.endswith("index.theme"):
-	    functions.append('iconscache')
-	    break
+    icons = [x for x in mycnt if x.startswith("/usr/share/icons") and x.endswith("index.theme")]
+    mime_mime = [x for x in mycnt if x.startswith("/usr/share/mime")]
+    mime_desktop = [x for x in mycnt if x.startswith("/usr/share/applications")]
+    omf_files = [x for x in mycnt if x.startswith("/usr/share/omf")]
+    if icons:
+	functions.append('iconscache')
+    if mime_mime:
+	functions.append('mimeupdate')
+    if mime_desktop:
+	functions.append('mimedesktopupdate')
+    if omf_files:
+	functions.append('scrollkeeper')
 
     return functions
 
@@ -70,15 +78,15 @@ def fontconfig(pkgdata):
     if (fontdirs):
 	print_info(" "+brown("[POST] Configuring fonts directory..."))
     for fontdir in fontdirs:
-	setupfontdir(fontdir)
-	setupfontcache(fontdir)
+	setup_font_dir(fontdir)
+	setup_font_cache(fontdir)
 
 def gccswitch(pkgdata):
     print_info(" "+brown("[POST] Configuring GCC Profile..."))
     # get gcc profile
     pkgsplit = entropyTools.catpkgsplit(pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version'])
     profile = pkgdata['chost']+"-"+pkgsplit[2]
-    setgccprofile(profile)
+    set_gcc_profile(profile)
 
 def iconscache(pkgdata):
     print_info(" "+brown("[POST] Updating icons cache..."))
@@ -86,7 +94,19 @@ def iconscache(pkgdata):
     for file in mycnt:
 	if file.startswith("/usr/share/icons") and file.endswith("index.theme"):
 	    cachedir = os.path.dirname(file)
-	    generateiconscache(cachedir)
+	    generate_icons_cache(cachedir)
+
+def mimeupdate(pkgdata):
+    print_info(" "+brown("[POST] Updating shared mime info database..."))
+    update_mime_db()
+
+def mimedesktopupdate(pkgdata):
+    print_info(" "+brown("[POST] Updating desktop mime database..."))
+    update_mime_desktop_db()
+
+def scrollkeeper(pkgdata):
+    print_info(" "+brown("[POST] Updating scrollkeeper database..."))
+    update_scrollkeeper_db()
 
 ########################################################
 ####
@@ -97,7 +117,7 @@ def iconscache(pkgdata):
    @description: creates Xfont files
    @output: returns int() as exit status
 '''
-def setupfontdir(fontdir):
+def setup_font_dir(fontdir):
     # mkfontscale
     if os.access('/usr/bin/mkfontscale',os.X_OK):
 	os.system('/usr/bin/mkfontscale '+unicode(fontdir))
@@ -110,7 +130,7 @@ def setupfontdir(fontdir):
    @description: creates font cache
    @output: returns int() as exit status
 '''
-def setupfontcache(fontdir):
+def setup_font_cache(fontdir):
     # fc-cache -f gooooo!
     if os.access('/usr/bin/fc-cache',os.X_OK):
 	os.system('HOME="/root" /usr/bin/fc-cache -f '+unicode(fontdir))
@@ -120,7 +140,7 @@ def setupfontcache(fontdir):
    @description: set chosen gcc profile
    @output: returns int() as exit status
 '''
-def setgccprofile(profile):
+def set_gcc_profile(profile):
     if os.access('/usr/bin/gcc-config',os.X_OK):
 	os.system('/usr/bin/gcc-config '+profile)
     return 0
@@ -129,7 +149,32 @@ def setgccprofile(profile):
    @description: creates/updates icons cache
    @output: returns int() as exit status
 '''
-def generateiconscache(cachedir):
+def generate_icons_cache(cachedir):
     if os.access('/usr/bin/gtk-update-icon-cache',os.X_OK):
 	os.system('/usr/bin/gtk-update-icon-cache -qf '+cachedir)
+    return 0
+
+'''
+   @description: updates /usr/share/mime database
+   @output: returns int() as exit status
+'''
+def update_mime_db():
+    if os.access('/usr/bin/update-mime-database',os.X_OK):
+	os.system('/usr/bin/update-mime-database /usr/share/mime')
+    return 0
+
+'''
+   @description: updates /usr/share/applications database
+   @output: returns int() as exit status
+'''
+def update_mime_desktop_db():
+    if os.access('/usr/bin/update-desktop-database',os.X_OK):
+	os.system('/usr/bin/update-desktop-database -q /usr/share/applications')
+    return 0
+
+def update_scrollkeeper_db():
+    if os.access('/usr/bin/scrollkeeper-update',os.X_OK):
+	if not os.path.isdir('/var/lib/scrollkeeper'):
+	    os.makedirs('/var/lib/scrollkeeper')
+	os.system('/usr/bin/scrollkeeper-update -q -p /var/lib/scrollkeeper')
     return 0

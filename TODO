@@ -7,9 +7,6 @@ TODO list:
   - during removal/add handle:
 	- /etc/init.d/* files ?
 	- GConf2 database
-	- desktop mime database
-	- shared mime database
-	- scrollkeeper database
 	- switch binutils profile
 	- kernel modules (depmod and moduledb)
   - world upgrade should switch python to 2.5
