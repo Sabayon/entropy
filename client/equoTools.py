@@ -2221,10 +2221,12 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	infoDict['removecontent'] = clientDbconn.retrieveContent(idpackage)
 	infoDict['removeidpackage'] = idpackage
 	infoDict['removeconfig'] = False # this will force old configuration files to be kept
+	etpRemovalTriggers[infoDict['removeatom']] = clientDbconn.getPackageData(idpackage)
+	etpRemovalTriggers[infoDict['removeatom']]['removecontent'] = infoDict['removecontent'][:]
 	steps = []
-	steps.append("preremove") # not implemented
+	steps.append("preremove")
 	steps.append("remove")
-	steps.append("postremove") # not implemented
+	steps.append("postremove")
 	for step in steps:
 	    rc = stepExecutor(step,infoDict)
 	    if (rc != 0):
@@ -2250,16 +2252,23 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    oldcontent = clientDbconn.retrieveContent(actionQueue[pkgatom]['removeidpackage'])
 	    newcontent = dbconn.retrieveContent(idpackage)
 	    actionQueue[pkgatom]['removecontent'] = [x for x in oldcontent if x not in newcontent]
+	    etpRemovalTriggers[pkgatom] = clientDbconn.getPackageData(actionQueue[pkgatom]['removeidpackage'])
+	    etpRemovalTriggers[pkgatom]['removecontent'] = actionQueue[pkgatom]['removecontent'][:]
 
 	# get data for triggerring tool
-	etpInstallTriggers[pkgatom] = dbconn.getPackageData(idpackage) # XXX: maybe that actionQueue is enough?
+	etpInstallTriggers[pkgatom] = dbconn.getPackageData(idpackage)
+
 
 	dbconn.closeDB()
 
 	if (not onlyfetch):
 	    # install
+	    if (actionQueue[pkgatom]['removeidpackage'] != -1):
+		steps.append("preremove")
 	    steps.append("preinstall")
 	    steps.append("install")
+	    if (actionQueue[pkgatom]['removeidpackage'] != -1):
+		steps.append("postremove")
 	    steps.append("postinstall")
 	    steps.append("showmessages")
 	
@@ -2425,10 +2434,12 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
 	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
 	infoDict['removecontent'] = clientDbconn.retrieveContent(idpackage)
 	infoDict['removeconfig'] = configFiles
+	etpRemovalTriggers[infoDict['removeatom']] = clientDbconn.getPackageData(idpackage)
+	etpRemovalTriggers[infoDict['removeatom']]['removecontent'] = infoDict['removecontent'][:]
 	steps = []
-	steps.append("preremove") # not implemented
+	steps.append("preremove")
 	steps.append("remove")
-	steps.append("postremove") # not implemented
+	steps.append("postremove")
 	for step in steps:
 	    rc = stepExecutor(step,infoDict)
 	    if (rc != 0):
@@ -2576,14 +2587,29 @@ def stepExecutor(step,infoDict):
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
 		eval("triggerTools."+trigger)(pkgdata)
 
-    #elif step == "preinstall":
+    elif step == "preinstall":
 	# analyze atom
-#	match = etpInstallTriggers.get(infoDict['atom'])
-#	if match:
-#	    prematch = match.get('prematch')
-#	    if prematch:
-	        # run post-install triggers
-#	        print prematch
+	pkgdata = etpInstallTriggers.get(infoDict['atom'])
+	if pkgdata:
+	    triggers = triggerTools.preinstall(pkgdata)
+	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
+		eval("triggerTools."+trigger)(pkgdata)
+
+    elif step == "preremove":
+	# analyze atom
+	pkgdata = etpRemovalTriggers.get(infoDict['removeatom'])
+	if pkgdata:
+	    triggers = triggerTools.preremove(pkgdata)
+	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
+		eval("triggerTools."+trigger)(pkgdata)
+
+    elif step == "postremove":
+	# analyze atom
+	pkgdata = etpRemovalTriggers.get(infoDict['removeatom'])
+	if pkgdata:
+	    triggers = triggerTools.postremove(pkgdata)
+	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
+		eval("triggerTools."+trigger)(pkgdata)
     
     closeClientDatabase(clientDbconn)
     

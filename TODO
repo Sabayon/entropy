@@ -4,7 +4,11 @@ TODO list:
   - complete etc-update alike support
   - on disk caching for all user commands
   - during removal/add handle (trigger functions):
-	- /etc/init.d/* files ? # removal
+	- complete preremove()
+	- complete postremove()
+	- complete preinstall()
+	- complete postinstall()
+	- new kernel? grub configuration at your service
   - remove TAGS and substitute them with forced SLOT setting (just keep it for the package filename)
   - branch reorganization based on the release:
     - install only looks inside the configured branch
@@ -13,10 +17,11 @@ TODO list:
   - embed python and pysqlite to avoid dependency from the one installed on the system
   - add scripts directory that contains pre/post-install-remove scripts that is synced using activator
   - implement logTools into new functions
+  - implement installation messages infrastructure (where are collected all installation messages)
 
 Project Status:
 - entropy: will handle all the three tools below
-- reagent: complete. Bug fixing mode.
-- activator: complete. Bug fixing mode.
+- reagent: complete. Stabilization mode.
+- activator: complete. Stabilization mode.
 ============
-- client part: 75%
+- client part: 78%

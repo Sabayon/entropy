@@ -31,6 +31,7 @@ import entropyTools
    @ description: Gentoo toolchain variables
 '''
 MODULEDB_DIR="/var/lib/module-rebuild/"
+INITSERVICES_DIR="/var/lib/init.d/"
 
 '''
    @description: pkgdata parser that collects post-install scripts that would be run
@@ -55,7 +56,7 @@ def postinstall(pkgdata):
     if pkgdata['category']+"/"+pkgdata['name'] == "dev-lang/python":
 	functions.add("pythoninst")
 
-    # icons cache setup
+    # prepare content
     mycnt = set(pkgdata['content'])
     
     for x in mycnt:
@@ -72,8 +73,74 @@ def postinstall(pkgdata):
 	if x.startswith('/lib/modules/') and x.endswith('.ko') and (pkgdata['category'] != 'sys-kernel'):
 	    functions.add('kernelmod')
 
-    return list(functions) # need a list??
+    return list(functions)
 
+'''
+   @description: pkgdata parser that collects pre-install scripts that would be run
+'''
+def preinstall(pkgdata):
+    
+    functions = set()
+    
+    # prepare content
+    mycnt = set(pkgdata['content'])
+    
+    for x in mycnt:
+	if x.startswith("/etc/init.d/"):
+	    functions.add('initinform')
+
+    return list(functions)
+
+'''
+   @description: pkgdata parser that collects post-remove scripts that would be run
+'''
+def postremove(pkgdata):
+    
+    functions = set()
+    
+    # FIXME gcc configuration
+    #if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/gcc":
+    #    functions.add("gccswitch")
+
+    # FIXME binutils configuration
+    #if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/binutils":
+    #    functions.dda("binutilsswitch")
+
+    # FIXME python configuration
+    #if pkgdata['category']+"/"+pkgdata['name'] == "dev-lang/python":
+    #    functions.add("pythoninst")
+
+    # prepare content
+    mycnt = set(pkgdata['removecontent'])
+    
+    for x in mycnt:
+	if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
+	    functions.add('iconscache')
+	if x.startswith("/usr/share/mime"):
+	    functions.add('mimeupdate')
+	if x.startswith("/usr/share/applications"):
+	    functions.add('mimedesktopupdate')
+	if x.startswith("/usr/share/omf"):
+	    functions.add('scrollkeeper')
+	if x.startswith("/etc/gconf/schemas"):
+	    functions.add('gconfreload')
+
+    return list(functions)
+
+'''
+   @description: pkgdata parser that collects pre-remove scripts that would be run
+'''
+def preremove(pkgdata):
+    
+    functions = set()
+    # prepare content
+    mycnt = set(pkgdata['removecontent'])
+    
+    for x in mycnt:
+	if x.startswith("/etc/init.d/"):
+	    functions.add('initdisable')
+
+    return list(functions)
 
 ########################################################
 ####
@@ -145,6 +212,21 @@ def kernelmod(pkgdata):
 def pythoninst(pkgdata):
     print_info(" "+brown("[POST] Configuring Python..."))
     python_update_symlink()
+
+def initdisable(pkgdata):
+    mycnt = set(pkgdata['removecontent'])
+    for file in mycnt:
+	if file.startswith("/etc/init.d/") and os.path.isfile(file):
+	    # running?
+	    running = os.path.isfile(INITSERVICES_DIR+'/started/'+os.path.basename(file))
+	    scheduled = not os.system('rc-update show | grep '+os.path.basename(file)+'&> /dev/null')
+	    initdeactivate(file, running, scheduled)
+
+def initinform(pkgdata):
+    mycnt = set(pkgdata['content'])
+    for file in mycnt:
+	if file.startswith("/etc/init.d/") and not os.path.isfile(file):
+	    print_info(" "+brown("[PRE] A new service will be installed: ")+file)
 
 ########################################################
 ####
@@ -287,3 +369,16 @@ def python_update_symlink():
     os.system('ln -sf /usr/bin/python'+str(latest)+' /usr/bin/python')
     os.system('ln -sf /usr/bin/python'+str(latest)+' /usr/bin/python2')
     return 0
+
+'''
+   @description: shuts down selected init script, and remove from runlevel
+   @output: returns int() as exit status
+'''
+def initdeactivate(file, running, scheduled):
+    if (running):
+        os.system(file+' stop --quiet')
+    if (scheduled):
+	os.system('rc-update del '+os.path.basename(file))
+    return 0
+
+
