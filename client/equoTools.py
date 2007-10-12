@@ -1417,7 +1417,10 @@ def installPackageIntoGentooDatabase(infoDict,packageFile):
 	extractXpak(packageFile,extractPath)
 	if not os.path.isdir(portDbDir+infoDict['category']):
 	    os.makedirs(portDbDir+infoDict['category'])
-	os.rename(extractPath,portDbDir+infoDict['category']+"/"+infoDict['name']+"-"+infoDict['version'])
+	destination = portDbDir+infoDict['category']+"/"+infoDict['name']+"-"+infoDict['version']
+	if os.path.isdir(destination):
+	    shutil.rmtree(destination)
+	os.rename(extractPath,destination)
 
     return 0
 

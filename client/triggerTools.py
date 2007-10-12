@@ -41,15 +41,19 @@ def postinstall(pkgdata):
     
     # fonts configuration
     if pkgdata['category'] == "media-fonts":
-	functions.append("fontconfig")
+	functions.add("fontconfig")
 
     # gcc configuration
     if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/gcc":
-	functions.append("gccswitch")
+	functions.add("gccswitch")
 
     # binutils configuration
     if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/binutils":
-	functions.append("binutilsswitch")
+	functions.dda("binutilsswitch")
+
+    # python configuration
+    if pkgdata['category']+"/"+pkgdata['name'] == "dev-lang/python":
+	functions.add("pythoninst")
 
     # icons cache setup
     mycnt = set(pkgdata['content'])
@@ -65,7 +69,7 @@ def postinstall(pkgdata):
 	    functions.add('scrollkeeper')
 	if x.startswith("/etc/gconf/schemas"):
 	    functions.add('gconfreload')
-	if x.startswith('/lib/modules/') and x.endswith('.ko'):
+	if x.startswith('/lib/modules/') and x.endswith('.ko') and (pkgdata['category'] != 'sys-kernel'):
 	    functions.add('kernelmod')
 
     return list(functions) # need a list??
@@ -134,6 +138,13 @@ def kernelmod(pkgdata):
     print_info(" "+brown("[POST] Updating moduledb..."))
     item = 'a:1:'+pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
     update_moduledb(item)
+    print_info(" "+brown("[POST] Running depmod..."))
+    kos = [x for x in pkgdata['content'] if x.startswith("/lib/modules") and x.endswith(".ko")]
+    run_depmod(kos, pkgdata['versiontag'])
+
+def pythoninst(pkgdata):
+    print_info(" "+brown("[POST] Configuring Python..."))
+    python_update_symlink()
 
 ########################################################
 ####
@@ -252,4 +263,27 @@ def update_moduledb(item):
 		f.write(item+"\n")
 		f.flush()
 		f.close()
+    return 0
+
+'''
+   @description: insert kernel object into kernel modules db
+   @output: returns int() as exit status
+'''
+def run_depmod(files, kv):
+    if os.access('/sbin/depmod',os.X_OK):
+	for file in files:
+	    rc = os.system('/sbin/depmod -a -v '+kv+' '+file+' &> /dev/null')
+    return 0
+
+'''
+   @description: update /usr/bin/python and /usr/bin/python2 symlink
+   @output: returns int() as exit status
+'''
+def python_update_symlink():
+    bins = [x for x in os.listdir("/usr/bin") if x.startswith("python2.")]
+    versions = [x[6:] for x in bins]
+    versions.sort()
+    latest = versions[len(versions)-1]
+    os.system('ln -sf /usr/bin/python'+str(latest)+' /usr/bin/python')
+    os.system('ln -sf /usr/bin/python'+str(latest)+' /usr/bin/python2')
     return 0

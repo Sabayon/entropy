@@ -5,14 +5,14 @@ TODO list:
   - on disk caching for all user commands
   - during removal/add handle (trigger functions):
 	- /etc/init.d/* files ? # removal
-	- kernel modules (depmod and moduledb)
-  - world upgrade should switch python to 2.5
   - remove TAGS and substitute them with forced SLOT setting (just keep it for the package filename)
   - branch reorganization based on the release:
     - install only looks inside the configured branch
   - if a mirror fails several times, disable it
   - move branches to version naming (3.5, 3.6, 3.7) instead of using stable, unstable...
   - embed python and pysqlite to avoid dependency from the one installed on the system
+  - add scripts directory that contains pre/post-install-remove scripts that is synced using activator
+  - implement logTools into new functions
 
 Project Status:
 - entropy: will handle all the three tools below
