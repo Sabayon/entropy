@@ -79,7 +79,7 @@ def update():
 	scandata = scanfs(quiet = False, dcache = cache_status)
 	if (cache_status):
 	    for x in scandata:
-		print_info("("+blue(str(x))+") "+"[auto:"+str(scandata[x]['automerge'])+"]"+red(" file: ")+scandata[x]['source'])
+		print_info("("+blue(str(x))+") "+red(" file: ")+scandata[x]['source'])
 	cache_status = True
 	
 	if (not scandata):
@@ -249,7 +249,6 @@ def selfile():
 '''
 def selaction():
     print_info(darkred("Please choose an action to take for the selected file."))
-    print_info(darkred("Other options are:"))
     print_info("  ("+blue("-1")+")"+darkgreen(" Come back to the files list"))
     print_info("  ("+blue("1")+")"+brown(" Replace original with update"))
     print_info("  ("+blue("2")+")"+darkred(" Delete update, keeping original as is"))
@@ -339,11 +338,17 @@ def scanfs(quiet = True, dcache = True):
 			continue
 		    
 		    mydict = generatedict(filepath)
-		    counter += 1
-		    scandata[counter] = mydict.copy()
+		    if mydict['automerge']:
+		        if (not quiet): print_info(darkred("Automerging file: ")+darkgreen(mydict['source']))
+			if os.path.isfile(mydict['source']):
+		            os.rename(mydict['source'],mydict['destination'])
+			continue
+		    else:
+			counter += 1
+		        scandata[counter] = mydict.copy()
 
 		    try:
-		        if (not quiet): print_info("("+blue(str(counter))+") "+"[auto:"+str(scandata[counter]['automerge'])+"]"+red(" file: ")+filepath)
+		        if (not quiet): print_info("("+blue(str(counter))+") "+red(" file: ")+filepath)
 		    except:
 			pass # possible encoding issues
     # store data
@@ -401,6 +406,14 @@ def generatedict(filepath):
 	        mydict['automerge'] = True
         except:
 	    pass
+	# another test
+	if (not mydict['automerge']):
+	    try:
+		result = os.system('diff -Bbua '+filepath+' '+tofilepath+' | egrep \'^[+-]\' | egrep -v \'^[+-][\t ]*#|^--- |^\+\+\+ \' | egrep -qv \'^[-+][\t ]*$\'')
+		if result == 1:
+		    mydict['automerge'] = True
+	    except:
+		pass
     return mydict
 
 '''

@@ -18,6 +18,9 @@ TODO list:
   - add scripts directory that contains pre/post-install-remove scripts that is synced using activator
   - implement installation messages infrastructure (where are collected all installation messages)
   - add support for new atoms layout (cpv:SLOT)
+  - equo conf update:
+     - automerge trivial changes
+     - automerge comments changes
 
 Project Status:
 - entropy: will handle all the three tools below
