@@ -72,13 +72,15 @@ def configurator(options):
    @description: scan for files that need to be merged
    @output: dictionary using filename as key
 '''
-global update_cache
-update_cache = {}
-update_cache['cached'] = False
 def update():
+    cache_status = False
     while 1:
-	scandata = scanfs(quiet = False, dcache = update_cache['cached'])
-	update_cache['cached'] = True
+	print cache_status
+	scandata = scanfs(quiet = False, dcache = cache_status)
+	if (cache_status):
+	    for x in scandata:
+		print_info("("+blue(str(x))+") "+"[auto:"+str(scandata[x]['automerge'])+"]"+red(" file: ")+scandata[x]['source'])
+	cache_status = True
 	
 	if (not scandata):
 	    print_info(darkred("All fine baby. Nothing to do!"))
@@ -101,7 +103,7 @@ def update():
 	    # automerge files asking one by one
 	    for key in keys:
 		if not os.path.isfile(scandata[key]['source']):
-		    removefromcache(scandata[key]['source'])
+		    scandata = removefromcache(scandata,key)
 		    continue
 		print_info(darkred("Configuration file: ")+darkgreen(scandata[key]['source']))
 		if cmd == -3:
@@ -111,14 +113,14 @@ def update():
 		print_info(darkred("Moving ")+darkgreen(scandata[key]['source'])+darkred(" to ")+brown(scandata[key]['destination']))
 		os.rename(scandata[key]['source'],scandata[key]['destination'])
 		# remove from cache
-		removefromcache(scandata[key]['source'])
+		scandata = removefromcache(scandata,key)
 	    break
 	
 	elif cmd in (-7,-9):
 	    for key in keys:
 		
 		if not os.path.isfile(scandata[key]['source']):
-		    removefromcache(scandata[key]['source'])
+		    scandata = removefromcache(scandata,key)
 		    continue
 		print_info(darkred("Configuration file: ")+darkgreen(scandata[key]['source']))
 		if cmd == -7:
@@ -130,7 +132,7 @@ def update():
 		    os.remove(scandata[key]['source'])
 		except:
 		    pass
-		removefromcache(scandata[key]['source'])
+		scandata = removefromcache(scandata,key)
 		
 	    break
 	
@@ -139,12 +141,12 @@ def update():
 		
 		# do files exist?
 		if not os.path.isfile(scandata[cmd]['source']):
-		    removefromcache(scandata[key]['source'])
+		    scandata = removefromcache(scandata,key)
 		    continue
 		if not os.path.isfile(scandata[cmd]['destination']):
 		    print_info(darkred("Automerging file: ")+darkgreen(scandata[cmd]['source']))
 		    os.rename(scandata[key]['source'],scandata[key]['destination'])
-		    removefromcache(scandata[key]['source'])
+		    scandata = removefromcache(scandata,key)
 		    continue
 		# end check
 		
@@ -152,7 +154,7 @@ def update():
 		if (not diff):
 		    print_info(darkred("Automerging file ")+darkgreen(scandata[cmd]['source']))
 		    os.rename(scandata[cmd]['source'],scandata[cmd]['destination'])
-		    removefromcache(scandata[cmd]['source'])
+		    scandata = removefromcache(scandata,key)
 		    continue
 	        print_info(darkred("Selected file: ")+darkgreen(scandata[cmd]['source']))
 
@@ -172,7 +174,7 @@ def update():
 		    elif action == 1:
 			print_info(darkred("Replacing ")+darkgreen(scandata[cmd]['destination'])+darkred(" with ")+darkgreen(scandata[cmd]['source']))
 			os.rename(scandata[cmd]['source'],scandata[cmd]['destination'])
-			removefromcache(scandata[cmd]['source'])
+			scandata = removefromcache(scandata,cmd)
 			comeback = True
 			break
 		
@@ -182,7 +184,7 @@ def update():
 			    os.remove(scandata[cmd]['source'])
 			except:
 			    pass
-			removefromcache(scandata[cmd]['source'])
+			scandata = removefromcache(scandata,cmd)
 			comeback = True
 			break
 		
@@ -209,7 +211,7 @@ def update():
 			if (not diff):
 			    print_info(darkred("Automerging file ")+darkgreen(scandata[cmd]['source']))
 			    os.rename(scandata[cmd]['source'],scandata[cmd]['destination'])
-			    removefromcache(scandata[cmd]['source'])
+			    scandata = removefromcache(scandata, cmd)
 			    comeback = True
 			    break
 			
@@ -361,7 +363,7 @@ def loadcache():
 	    try:
 		taint = False
 		for x in sd:
-		    if not os.path.isfile(x):
+		    if not os.path.isfile(sd[x]['source']):
 			taint = True
 			break
 		if (not taint):
@@ -405,7 +407,6 @@ def generatedict(filepath):
    @description: prints information about config files that should be updated
    @attention: please be sure that filepath is properly formatted before using this function
 '''
-# 
 def addtocache(filepath):
     try:
 	scandata = loadcache()
@@ -432,19 +433,13 @@ def addtocache(filepath):
     except:
 	pass
 
-def removefromcache(filepath):
+def removefromcache(sd,key):
     try:
-	scandata = loadcache()
-    except:
-	scandata = scanfs(quiet = True, dcache = False)
-    keys = scandata.keys()
-    try:
-	for key in keys:
-	    if scandata[key]['source'] == filepath:
-		del scandata[key]
-	dumpTools.dumpobj(etpCache['configfiles'],scandata)
+        del sd[key]
     except:
 	pass
+    dumpTools.dumpobj(etpCache['configfiles'],sd)
+    return sd
 
 '''
    @description: prints information about config files that should be updated
