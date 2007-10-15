@@ -950,7 +950,7 @@ def umountProc():
 
 def askquestion(prompt):
     responses, colours = ["Yes", "No"], [green, red]
-    print green(prompt),
+    print darkgreen(prompt),
     try:
 	while True:
 	    response=raw_input("["+"/".join([colours[i](responses[i]) for i in range(len(responses))])+"] ")

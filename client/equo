@@ -66,6 +66,7 @@ def print_help():
 
     print_info(" \t"+blue("conf")+brown("\t\t configuration files update tool"))
     print_info(" \t\t"+darkgreen("info")+red("\t\t\t show info about configuration files that should be updated"))
+    print_info(" \t\t"+darkgreen("update")+red("\t\t\t run the configuration files update tool"))
 
     print_info(" \t"+blue(bold("query"))+brown("\t\t do misc queries on repository and local databases"))
     print_info(" \t\t"+darkgreen("installed")+red("\t\t search a package into the local database"))

@@ -61,10 +61,71 @@ def configurator(options):
     if myopts[0] == "info":
 	rc = confinfo()
 
-    #elif options[0] == "belongs":
-	#rc = searchBelongs(myopts[1:], quiet = equoRequestQuiet)
+    elif myopts[0] == "update":
+	rc = update()
 
     return rc
+
+
+'''
+   @description: scan for files that need to be merged
+   @output: dictionary using filename as key
+'''
+def update():
+    scandata = scanfs(quiet = False, dcache = True) # put dcache to true
+    while scandata:
+	keys = scandata.keys()
+	cmd = selfile()
+	try:
+	    cmd = int(cmd)
+	except:
+	    print_error("You don't have typed a number.")
+	    continue
+	
+	# actions
+	
+	if cmd == -1:
+	    # exit
+	    return -1
+	if cmd in (-3,-5):
+	    # automerge files asking one by one
+	    for key in keys:
+		if not os.path.isfile(scandata[key]['source']):
+		    removefromcache(scandata[key]['source'])
+		    continue
+		showdiff(scandata[key]['destination'],scandata[key]['source'])
+		print_info(darkred("Moving ")+darkgreen(scandata[key]['source'])+darkred(" to ")+brown(scandata[key]['destination']))
+		if cmd == -3:
+		    rc = entropyTools.askquestion(">>   Overwrite ?") # also show diff
+		    if rc == "No":
+			continue
+		os.rename(scandata[key]['source'],scandata[key]['destination'])
+		# remove from cache
+		removefromcache(scandata[key]['source'])
+	    break
+		
+	print cmd
+
+
+'''
+   @description: show files commands and let the user to choose
+   @output: action number
+'''
+def selfile():
+    print_info(darkred("Please choose a file to update by typing its identification number."))
+    print_info(darkred("Other options are:"))
+    print_info("  ("+blue("-1")+")"+darkgreen(" Exit"))
+    print_info("  ("+blue("-3")+")"+brown(" Automerge all the files asking you one by one"))
+    print_info("  ("+blue("-5")+")"+darkred(" Automerge all the files without questioning"))
+    print_info("  ("+blue("-7")+")"+brown(" Discard all the files asking you one by one"))
+    print_info("  ("+blue("-9")+")"+darkred(" Discard all the files without questioning"))
+    # wait user interaction
+    action = readtext("Your choice (type a number and press enter): ")
+    return action
+
+
+def showdiff(fromfile,tofile):
+    print "showdiff"
 
 '''
    @description: scan for files that need to be merged
@@ -116,11 +177,11 @@ def scanfs(quiet = True, dcache = True):
 			continue
 		    
 		    mydict = generatedict(filepath)
-		    scandata[filepath] = mydict.copy()
-
 		    counter += 1
+		    scandata[counter] = mydict.copy()
+
 		    try:
-		        if (not quiet): print_info("("+blue(str(counter))+") "+"[auto:"+str(scandata[filepath]['automerge'])+"]"+red(" file: ")+filepath)
+		        if (not quiet): print_info("("+blue(str(counter))+") "+"[auto:"+str(scandata[counter]['automerge'])+"]"+red(" file: ")+filepath)
 		    except:
 			pass # possible encoding issues
     # store data
@@ -166,6 +227,7 @@ def generatedict(filepath):
     mydict = {}
     mydict['revision'] = number
     mydict['destination'] = tofilepath
+    mydict['source'] = filepath
     mydict['automerge'] = False
     if not os.path.isfile(tofilepath):
         mydict['automerge'] = True
@@ -189,12 +251,22 @@ def addtocache(filepath):
 	scandata = loadcache()
     except:
 	scandata = scanfs(quiet = True, dcache = False)
+    keys = scandata.keys()
     try:
-	del scandata[filepath]
+	for key in keys:
+	    if scandata[key]['source'] == filepath:
+		del scandata[key]
     except:
 	pass
+    # get next counter
+    if keys:
+        keys.sort()
+        index = keys[len(keys)-1]
+    else:
+	index = 0
+    index += 1
     mydata = generatedict(filepath)
-    scandata[filepath] = mydata.copy()
+    scandata[index] = mydata.copy()
     try:
         dumpTools.dumpobj(etpCache['configfiles'],scandata)
     except:
@@ -205,8 +277,11 @@ def removefromcache(filepath):
 	scandata = loadcache()
     except:
 	scandata = scanfs(quiet = True, dcache = False)
+    keys = scandata.keys()
     try:
-	del scandata[filepath]
+	for key in keys:
+	    if scandata[key]['source'] == filepath:
+		del scandata[key]
 	dumpTools.dumpobj(etpCache['configfiles'],scandata)
     except:
 	pass
