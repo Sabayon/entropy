@@ -22,6 +22,7 @@
 
 import sys
 import commands
+import string
 sys.path.append('../libraries')
 from entropyConstants import *
 from clientConstants import *
@@ -72,8 +73,13 @@ def configurator(options):
    @output: dictionary using filename as key
 '''
 def update():
-    scandata = scanfs(quiet = False, dcache = True) # put dcache to true
-    while scandata:
+    while 1:
+	scandata = scanfs(quiet = False, dcache = True) # put dcache to False
+	
+	if (not scandata):
+	    print_info(darkred("All fine baby. Nothing to do!"))
+	    break
+	
 	keys = scandata.keys()
 	cmd = selfile()
 	try:
@@ -87,25 +93,133 @@ def update():
 	if cmd == -1:
 	    # exit
 	    return -1
-	if cmd in (-3,-5):
+	elif cmd in (-3,-5):
 	    # automerge files asking one by one
 	    for key in keys:
 		if not os.path.isfile(scandata[key]['source']):
 		    removefromcache(scandata[key]['source'])
 		    continue
-		showdiff(scandata[key]['destination'],scandata[key]['source'])
-		print_info(darkred("Moving ")+darkgreen(scandata[key]['source'])+darkred(" to ")+brown(scandata[key]['destination']))
+		print_info(darkred("Configuration file: ")+darkgreen(scandata[key]['source']))
 		if cmd == -3:
-		    rc = entropyTools.askquestion(">>   Overwrite ?") # also show diff
+		    rc = entropyTools.askquestion(">>   Overwrite ?")
 		    if rc == "No":
 			continue
+		print_info(darkred("Moving ")+darkgreen(scandata[key]['source'])+darkred(" to ")+brown(scandata[key]['destination']))
 		os.rename(scandata[key]['source'],scandata[key]['destination'])
 		# remove from cache
 		removefromcache(scandata[key]['source'])
 	    break
+	
+	elif cmd in (-7,-9):
+	    for key in keys:
 		
-	print cmd
+		if not os.path.isfile(scandata[key]['source']):
+		    removefromcache(scandata[key]['source'])
+		    continue
+		print_info(darkred("Configuration file: ")+darkgreen(scandata[key]['source']))
+		if cmd == -7:
+		    rc = entropyTools.askquestion(">>   Discard ?")
+		    if rc == "No":
+			continue
+		print_info(darkred("Discarding ")+darkgreen(scandata[key]['source']))
+		try:
+		    os.remove(scandata[key]['source'])
+		except:
+		    pass
+		removefromcache(scandata[key]['source'])
+		
+	    break
+	
+	elif cmd > 0:
+	    if scandata.get(cmd):
+		
+		# do files exist?
+		if not os.path.isfile(scandata[cmd]['source']):
+		    removefromcache(scandata[key]['source'])
+		    continue
+		if not os.path.isfile(scandata[cmd]['destination']):
+		    print_info(darkred("Automerging file: ")+darkgreen(scandata[cmd]['source']))
+		    os.rename(scandata[key]['source'],scandata[key]['destination'])
+		    removefromcache(scandata[key]['source'])
+		    continue
+		# end check
+		
+	        print_info(darkred("Selected file: ")+darkgreen(scandata[cmd]['source']))
+		diff = showdiff(scandata[cmd]['source'],scandata[cmd]['destination'])
+		if (not diff):
+		    print_info(darkred("Automerging file ")+darkgreen(scandata[cmd]['source']))
+		    os.rename(scandata[cmd]['source'],scandata[cmd]['destination'])
+		    removefromcache(scandata[cmd]['source'])
+		    continue
 
+		comeback = False
+		while 1:
+		    action = selaction()
+		    try:
+			action = int(action)
+		    except:
+			print_error("You don't have typed a number.")
+			continue
+		    
+		    # actions handling
+		    if action == -1:
+			comeback = True
+			break
+		    elif action == 1:
+			print_info(darkred("Replacing ")+darkgreen(scandata[cmd]['destination'])+darkred(" with ")+darkgreen(scandata[cmd]['source']))
+			os.rename(scandata[cmd]['source'],scandata[cmd]['destination'])
+			removefromcache(scandata[cmd]['source'])
+			comeback = True
+			break
+		
+		    elif action == 2:
+			print_info(darkred("Deleting file ")+darkgreen(scandata[cmd]['source']))
+			try:
+			    os.remove(scandata[cmd]['source'])
+			except:
+			    pass
+			removefromcache(scandata[cmd]['source'])
+			comeback = True
+			break
+		
+		    elif action == 3:
+			print_info(darkred("Editing file ")+darkgreen(scandata[cmd]['source']))
+			if os.getenv("EDITOR"):
+			    os.system("$EDITOR "+scandata[cmd]['source'])
+			elif os.access("/bin/nano",os.X_OK):
+			    os.system("/bin/nano "+scandata[cmd]['source'])
+			elif os.access("/bin/vi",os.X_OK):
+			    os.system("/bin/vi "+scandata[cmd]['source'])
+			elif os.access("/usr/bin/vi",os.X_OK):
+			    os.system("/usr/bin/vi "+scandata[cmd]['source'])
+			elif os.access("/usr/bin/emacs",os.X_OK):
+			    os.system("/usr/bin/emacs "+scandata[cmd]['source'])
+			elif os.access("/bin/emacs",os.X_OK):
+			    os.system("/bin/emacs "+scandata[cmd]['source'])
+			else:
+			    print_error(" Cannot find a suitable editor. Can't edit file directly.")
+			    comeback = True
+			    break
+			print_info(darkred("Edited file ")+darkgreen(scandata[cmd]['source'])+darkred(" - showing differencies:"))
+			diff = showdiff(scandata[cmd]['source'],scandata[cmd]['destination'])
+			if (not diff):
+			    print_info(darkred("Automerging file ")+darkgreen(scandata[cmd]['source']))
+			    os.rename(scandata[cmd]['source'],scandata[cmd]['destination'])
+			    removefromcache(scandata[cmd]['source'])
+			    comeback = True
+			    break
+			
+			continue
+
+		    elif action == 4:
+			# show diffs again
+			diff = showdiff(scandata[cmd]['source'],scandata[cmd]['destination'])
+			continue
+		
+		if (comeback):
+		    continue
+		
+		break
 
 '''
    @description: show files commands and let the user to choose
@@ -123,9 +237,51 @@ def selfile():
     action = readtext("Your choice (type a number and press enter): ")
     return action
 
+'''
+   @description: show actions for a chosen file
+   @output: action number
+'''
+def selaction():
+    print_info(darkred("Please choose an action to take for the selected file."))
+    print_info(darkred("Other options are:"))
+    print_info("  ("+blue("-1")+")"+darkgreen(" Come back to the files list"))
+    print_info("  ("+blue("1")+")"+brown(" Replace original with update"))
+    print_info("  ("+blue("2")+")"+darkred(" Delete update, keeping original as is"))
+    print_info("  ("+blue("3")+")"+brown(" Edit proposed file and show diffs again"))
+    print_info("  ("+blue("4")+")"+darkred(" Show differences again"))
+    # wait user interaction
+    action = readtext("Your choice (type a number and press enter): ")
+    return action
 
 def showdiff(fromfile,tofile):
-    print "showdiff"
+    # run diff
+    diffcmd = "diff -Nu "+fromfile+" "+tofile #+" | less --no-init --QUIT-AT-EOF"
+    output = commands.getoutput(diffcmd).split("\n")
+    coloured = []
+    for line in output:
+	if line.startswith("---"):
+	    line = darkred(line)
+	elif line.startswith("+++"):
+	    line = red(line)
+	elif line.startswith("@@"):
+	    line = brown(line)
+	elif line.startswith("-"):
+	    line = blue(line)
+	elif line.startswith("+"):
+	    line = darkgreen(line)
+	coloured.append(line+"\n")
+    f = open("/tmp/"+os.path.basename(fromfile),"w")
+    f.writelines(coloured)
+    f.flush()
+    f.close()
+    print
+    os.system("cat /tmp/"+os.path.basename(fromfile)+" | less --no-init --QUIT-AT-EOF")
+    try:
+	os.remove("/tmp/"+os.path.basename(fromfile))
+    except:
+	pass
+    if output == ['']: output = [] #FIXME beautify
+    return output
 
 '''
    @description: scan for files that need to be merged

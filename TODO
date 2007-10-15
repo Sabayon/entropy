@@ -1,7 +1,6 @@
 TODO list:
 - reagent: complete smartapps section
   CLIENT:
-  - complete etc-update alike support
   - on disk caching for all user commands
   - implement logTools into new Equo functions (especially messages)
   - during removal/add handle (trigger functions):
