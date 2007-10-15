@@ -72,9 +72,13 @@ def configurator(options):
    @description: scan for files that need to be merged
    @output: dictionary using filename as key
 '''
+global update_cache
+update_cache = {}
+update_cache['cached'] = False
 def update():
     while 1:
-	scandata = scanfs(quiet = False, dcache = True) # put dcache to False
+	scandata = scanfs(quiet = False, dcache = update_cache['cached'])
+	update_cache['cached'] = True
 	
 	if (not scandata):
 	    print_info(darkred("All fine baby. Nothing to do!"))
@@ -144,13 +148,13 @@ def update():
 		    continue
 		# end check
 		
-	        print_info(darkred("Selected file: ")+darkgreen(scandata[cmd]['source']))
 		diff = showdiff(scandata[cmd]['source'],scandata[cmd]['destination'])
 		if (not diff):
 		    print_info(darkred("Automerging file ")+darkgreen(scandata[cmd]['source']))
 		    os.rename(scandata[cmd]['source'],scandata[cmd]['destination'])
 		    removefromcache(scandata[cmd]['source'])
 		    continue
+	        print_info(darkred("Selected file: ")+darkgreen(scandata[cmd]['source']))
 
 		comeback = False
 		while 1:
