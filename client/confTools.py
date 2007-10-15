@@ -76,7 +76,8 @@ def scanfs(quiet = True, dcache = True):
 	# can we load cache?
 	try:
 	    c = loadcache()
-	    return c
+	    if c != None:
+	        return c
 	except:
 	    pass
 
