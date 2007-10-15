@@ -915,12 +915,13 @@ def getInstalledPackages():
     dbDirs = os.listdir(appDbDir)
     installedAtoms = []
     for pkgsdir in dbDirs:
-	pkgdir = os.listdir(appDbDir+pkgsdir)
-	for pdir in pkgdir:
-	    pkgcat = pkgsdir.split("/")[len(pkgsdir.split("/"))-1]
-	    pkgatom = pkgcat+"/"+pdir
-	    if pkgatom.find("-MERGING-") == -1:
-	        installedAtoms.append(pkgatom)
+	if os.path.isdir(appDbDir+pkgsdir):
+	    pkgdir = os.listdir(appDbDir+pkgsdir)
+	    for pdir in pkgdir:
+	        pkgcat = pkgsdir.split("/")[len(pkgsdir.split("/"))-1]
+	        pkgatom = pkgcat+"/"+pdir
+	        if pkgatom.find("-MERGING-") == -1:
+	            installedAtoms.append(pkgatom)
     return installedAtoms, len(installedAtoms)
 
 def getInstalledPackagesCounters():
