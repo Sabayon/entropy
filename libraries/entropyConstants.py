@@ -391,6 +391,7 @@ etpConst = {
 # disk caching dictionary
 etpCache = {
     'configfiles': 'scanfs', # used to store information about files that should be merged using "equo conf merge"
+    'atomMatch': 'atomMatchCache', # used to store info about repository dependencies solving
 }
 
 # handle Entropy Version

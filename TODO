@@ -1,8 +1,7 @@
 TODO list:
 - reagent: complete smartapps section
   CLIENT:
-  - on disk caching for all user commands
-  - implement logTools into new Equo functions (especially messages)
+  - implement logTools into new Equo functions (especially messages) --> messages should go into equo.log
   - during removal/add handle (trigger functions):
 	- complete preremove()
 	- complete postremove()
@@ -21,6 +20,7 @@ TODO list:
   - equo conf update:
      - automerge trivial changes
      - automerge comments changes
+  - maybe on-disk cache for removal functions?
 
 Project Status:
 - entropy: will handle all the three tools below

@@ -33,6 +33,7 @@ from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTime
 from databaseTools import etpDatabase
 import triggerTools
 import confTools
+import dumpTools
 import xpak
 import time
 
@@ -40,14 +41,20 @@ import time
 import logTools
 equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[Equo]")
 
-global atomMatchCache
-atomMatchCache = {}
-global atomClientMatchCache
-atomClientMatchCache = {}
-global contentCache
-contentCache = {}
-global getDependenciesCache
-getDependenciesCache = {}
+### Caching functions
+
+def loadCaches():
+    print_info(darkred(" @@ ")+blue("Loading On-Disk Cache..."))
+    mycache = dumpTools.loadobj(etpCache['atomMatch'])
+    if isinstance(mycache, dict):
+	global atomMatchCache
+	atomMatchCache = mycache.copy()
+	#print "loadCaches: "+str(len(atomMatchCache))
+
+def saveCaches():
+    # atomMatchCache
+    dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
+    #print "saveCaches: "+str(len(atomMatchCache))
 
 ########################################################
 ####
@@ -205,6 +212,10 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	        print_error(bold("\tATTENTION -> ")+red("repository is being updated. Try again in few minutes."))
 	    syncErrors = True
 	    continue
+	
+	# clear repository cache
+	atomMatchCache.clear()
+	dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
 	
 	# starting to download
 	if (not quiet):
@@ -1489,9 +1500,6 @@ def installPackageIntoDatabase(idpackage, repository):
 	    print "DEBUG!!! dependstable not found"
 	    clientDbconn.regenerateDependsTable()
 
-    # reset atomMatch cache
-    atomMatchCache.clear()
-
     closeClientDatabase(clientDbconn)
     return exitstatus
 
@@ -1520,8 +1528,6 @@ def removePackageFromDatabase(idpackage):
 	        pass
     
     clientDbconn.removePackage(idpackage)
-    # reset atomMatch cache
-    atomMatchCache = {}
     
     closeClientDatabase(clientDbconn)
     return 0
@@ -1577,10 +1583,12 @@ def package(options):
     myopts = _myopts
 
     if (options[0] == "deptest"):
+	loadCaches()
 	rc, garbage = dependenciesTest(quiet = equoRequestQuiet, ask = equoRequestAsk, pretend = equoRequestPretend)
 
     elif (options[0] == "install"):
 	if len(myopts) > 0:
+	    loadCaches()
 	    rc, status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep, configFiles = equoRequestConfigFiles)
 	else:
 	    print_error(red(" Nothing to do."))
@@ -1592,10 +1600,12 @@ def package(options):
 	for opt in myopts:
 	    if opt == "upgrade":
 		doupgrade = True
+	loadCaches()
 	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch, upgrade = doupgrade)
 
     elif (options[0] == "remove"):
 	if len(myopts) > 0:
+	    loadCaches()
 	    rc, status = removePackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, deep = equoRequestDeep, configFiles = equoRequestConfigFiles)
 	else:
 	    print_error(red(" Nothing to do."))
