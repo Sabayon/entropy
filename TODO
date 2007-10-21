@@ -1,6 +1,7 @@
 TODO list:
 - reagent: complete smartapps section
   CLIENT:
+  - implement md5 check for dumpTools
   - implement logTools into new Equo functions (especially messages) --> messages should go into equo.log
   - during removal/add handle (trigger functions):
 	- complete preremove()

@@ -50,7 +50,7 @@ def postinstall(pkgdata):
 
     # binutils configuration
     if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/binutils":
-	functions.dda("binutilsswitch")
+	functions.add("binutilsswitch")
 
     # python configuration
     if pkgdata['category']+"/"+pkgdata['name'] == "dev-lang/python":
