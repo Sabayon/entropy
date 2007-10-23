@@ -1,8 +1,7 @@
 TODO list:
 - reagent: complete smartapps section
   CLIENT:
-  - implement md5 check for dumpTools
-  - implement logTools into new Equo functions (especially messages) --> messages should go into equo.log
+  - implement logTools into new Equo functions (especially messages) --> messages should go into (install/remove packages) equo.log
   - during removal/add handle (trigger functions):
 	- complete preremove()
 	- complete postremove()
@@ -12,15 +11,10 @@ TODO list:
   - remove TAGS and substitute them with forced SLOT setting (just keep it for the package filename)
   - branch reorganization based on the release:
     - install only looks inside the configured branch
-  - if a mirror fails several times, disable it
   - move branches to version naming (3.5, 3.6, 3.7) instead of using stable, unstable...
-  - embed python and pysqlite to avoid dependency from the one installed on the system
   - add scripts directory that contains pre/post-install-remove scripts that is synced using activator
   - implement installation messages infrastructure (where are collected all installation messages)
   - add support for new atoms layout (cpv:SLOT)
-  - equo conf update:
-     - automerge trivial changes
-     - automerge comments changes
   - maybe on-disk cache for removal functions?
 
 Project Status:

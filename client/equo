@@ -85,8 +85,13 @@ def print_help():
     print_info(" \t"+blue("database")+brown("\t handle installed packages database"))
     print_info(" \t\t"+darkgreen("generate")+red("\t\t generate installed packages database"))
     print_info(" \t\t"+darkgreen("depends")+red("\t\t\t to regenerate/generate depends caching table"))
-    print_info(" \t"+blue("cleanup")+brown("\t\t remove downloaded packages and clean temporary directories"))
-    print_info(" \t"+blue("--info")+brown("\t\t show Equo System information"))
+    print_info(" \t"+blue("cache")+brown("\t\t handle Equo on-disk cache"))
+    print_info(" \t\t"+darkgreen("clean")+red("\t\t\t clean on-disk cache"))
+    print_info(" \t\t"+darkgreen("generate")+red("\t\t generate on-disk cache (to speed up Equo)"))
+    print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
+    print_info(" \t\t"+red("--verbose")+"\t\t\t show more details about what's going on")
+    print_info(" \t"+blue("cleanup")+brown("\t\t remove downloaded packages and clean temporary directories (not cache)"))
+    print_info(" \t"+blue("--info")+brown("\t\t show system information"))
     
 
 options = sys.argv[1:]
@@ -168,6 +173,11 @@ try:
     elif (options[0] == "conf"):
 	import confTools
         rc = confTools.configurator(options[1:])
+        sys.exit(rc)
+
+    elif (options[0] == "cache"):
+	import cacheTools
+        rc = cacheTools.cache(options[1:])
         sys.exit(rc)
 
     elif (options[0] == "search"):
