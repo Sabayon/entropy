@@ -76,45 +76,47 @@ def cleanCache(quiet = False):
    @description: load entropy data and scan packages to collect info and fill caches
    @output: status code
 '''
-def generateCache(quiet = False, verbose = False):
-    # do some tidy
-    if (not quiet): print_warning(blue("(")+bold("@@")+blue(")")+darkred(" Cleaning"))
-    cleanCache(quiet = quiet)
-    if (not quiet): print_warning(blue("(")+bold("@@")+blue(")")+darkred(" Dependencies"))
-    # loading repo db
-    if (not quiet): print_warning(blue("(")+bold("*")+blue(")")+darkred(" Scanning repositories"))
-    names = set()
-    keys = set()
-    depends = set()
-    for reponame in etpRepositories:
-	if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Scanning ")+brown(etpRepositories[reponame]['description']), back = True)
-	# get all packages keys
-	dbconn = equoTools.openRepositoryDatabase(reponame)
-	pkgdata = dbconn.listAllPackages()
-	pkgdata = set(pkgdata)
-	for info in pkgdata:
-	    key = entropyTools.dep_getkey(info[0])
-	    keys.add(key)
-	    names.add(key.split("/")[1])
-	# dependencies
-	pkgdata = dbconn.listAllDependencies()
-	for info in pkgdata:
-	    depends.add(info[1])
-	dbconn.closeDB()
-    if (not quiet): print_warning(blue("(")+bold("*")+blue(")")+darkred(" Resolving metadata"))
-    for name in names:
-	if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Resolving name: ")+brown(name), back = not verbose)
-	equoTools.atomMatch(name)
-    for key in keys:
-	if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Resolving key: ")+brown(key), back = not verbose)
-	equoTools.atomMatch(key)
-    for depend in depends:
-	if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Resolving dependencies: ")+brown(depend), back = not verbose)
-	equoTools.atomMatch(depend)
-    if (not quiet): print_warning(blue("(")+bold("@@")+blue(")")+darkred(" Dependencies filled. Flushing to disk."))
-    equoTools.saveCaches()
-    if (not quiet): print_warning(blue("(")+bold("@@")+blue(")")+darkred(" Configuration files"))
-    if (not quiet): print_warning("  "+blue("(")+bold("*")+blue(")")+darkred(" Scanning hard disk"))
-    confTools.scanfs(quiet = not verbose, dcache = False)
-    if (not quiet): print_info(darkred(" Cache generation complete."))
+def generateCache(quiet = False, verbose = False, depcache = True, configcache = True):
+
+    if (depcache):
+        if (not quiet): print_warning(blue("(")+bold("@@")+blue(")")+darkred(" Dependencies"))
+        # loading repo db
+        if (not quiet): print_warning(blue("(")+bold("*")+blue(")")+darkred(" Scanning repositories"))
+        names = set()
+        keys = set()
+        depends = set()
+        for reponame in etpRepositories:
+	    if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Scanning ")+brown(etpRepositories[reponame]['description']), back = True)
+	    # get all packages keys
+	    dbconn = equoTools.openRepositoryDatabase(reponame)
+	    pkgdata = dbconn.listAllPackages()
+	    pkgdata = set(pkgdata)
+	    for info in pkgdata:
+	        key = entropyTools.dep_getkey(info[0])
+	        keys.add(key)
+	        names.add(key.split("/")[1])
+	    # dependencies
+	    pkgdata = dbconn.listAllDependencies()
+	    for info in pkgdata:
+	        depends.add(info[1])
+	    dbconn.closeDB()
+        if (not quiet): print_warning(blue("(")+bold("*")+blue(")")+darkred(" Resolving metadata"))
+        for name in names:
+	    if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Resolving name: ")+brown(name), back = not verbose)
+	    equoTools.atomMatch(name)
+        for key in keys:
+	    if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Resolving key: ")+brown(key), back = not verbose)
+	    equoTools.atomMatch(key)
+        for depend in depends:
+	    if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Resolving dependencies: ")+brown(depend), back = not verbose)
+	    equoTools.atomMatch(depend)
+        if (not quiet): print_warning(blue("(")+bold("@@")+blue(")")+darkred(" Dependencies filled. Flushing to disk."))
+        equoTools.saveCaches()
+    
+    if (configcache):
+        if (not quiet): print_warning(blue("(")+bold("@@")+blue(")")+darkred(" Configuration files"))
+        if (not quiet): print_warning("  "+blue("(")+bold("*")+blue(")")+darkred(" Scanning hard disk"))
+        confTools.scanfs(quiet = not verbose, dcache = False)
+        if (not quiet): print_info(darkred(" Cache generation complete."))
+    
     return 0

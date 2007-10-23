@@ -274,6 +274,9 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	    print_warning(yellow(" @@ ")+red("Something bad happened. Please have a look."))
 	return 128
 
+    import cacheTools
+    cacheTools.generateCache(quiet = quiet, depcache = True, configcache = False)
+
     return 0
 
 def backupClientDatabase():
