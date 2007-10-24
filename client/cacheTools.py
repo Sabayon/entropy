@@ -85,6 +85,7 @@ def generateCache(quiet = False, verbose = False, depcache = True, configcache =
         names = set()
         keys = set()
         depends = set()
+	atoms = set()
         for reponame in etpRepositories:
 	    if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Scanning ")+brown(etpRepositories[reponame]['description']), back = True)
 	    # get all packages keys
@@ -95,6 +96,7 @@ def generateCache(quiet = False, verbose = False, depcache = True, configcache =
 	        key = entropyTools.dep_getkey(info[0])
 	        keys.add(key)
 	        names.add(key.split("/")[1])
+		atoms.add(info[0])
 	    # dependencies
 	    pkgdata = dbconn.listAllDependencies()
 	    for info in pkgdata:
@@ -107,6 +109,9 @@ def generateCache(quiet = False, verbose = False, depcache = True, configcache =
         for key in keys:
 	    if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Resolving key: ")+brown(key), back = not verbose)
 	    equoTools.atomMatch(key)
+        for atom in atoms:
+	    if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Resolving atom: ")+brown(atom), back = not verbose)
+	    equoTools.atomMatch(atom)
         for depend in depends:
 	    if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Resolving dependencies: ")+brown(depend), back = not verbose)
 	    equoTools.atomMatch(depend)
