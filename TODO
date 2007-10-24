@@ -2,6 +2,7 @@ TODO list:
 - reagent: complete smartapps section
   CLIENT:
   - implement logTools into new Equo functions (especially messages) --> messages should go into (install/remove packages) equo.log
+  - add multithreading support
   - during removal/add handle (trigger functions):
 	- complete preremove()
 	- complete postremove()

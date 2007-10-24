@@ -1237,9 +1237,9 @@ def installPackage(infoDict):
 		    continue
 
 	    # -- CONFIGURATION FILE PROTECTION --
+	    protected = False
 
 	    try:
-	        protected = False
 	        for x in protect:
 		    if tofile.startswith(x):
 		        protected = True
@@ -1280,8 +1280,6 @@ def installPackage(infoDict):
 	        if (protected):
 		    print_warning(yellow("   ## ")+red("Protecting config file: ")+str(tofile))
 		    tofile = allocateMaskedFile(tofile)
-		    # add to disk cache
-		    confTools.addtocache(tofile)
 		    
 	    
 	        # -- CONFIGURATION FILE PROTECTION --
@@ -1313,6 +1311,10 @@ def installPackage(infoDict):
 	        shutil.copystat(fromfile,tofile)
 	    except:
 		pass # sometimes, gentoo packages are fucked up and contain broken symlinks
+	    
+	    if (protected):
+		# add to disk cache
+		confTools.addtocache(tofile)
 
     # inject into database
     print_info(red("   ## ")+blue("Updating database with: ")+red(infoDict['atom']))
