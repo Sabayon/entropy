@@ -2486,7 +2486,7 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
 	atom = clientDbconn.retrieveAtom(xidpackage)
 	if (not quiet):
 	    print_info(darkred(" @@ ")+bold("(")+blue(str(count))+"/"+red(length)+bold(")")+darkgreen(" Checking ")+bold(atom), back = True)
-	deptree, status = generateDependencyTree([xidpackage,0])
+	deptree, status = generateDependencyTree((xidpackage,0))
 
 	if (status == 0):
 	    # skip conflicts

@@ -150,7 +150,7 @@ def update():
 		    continue
 		# end check
 		
-		diff = showdiff(scandata[cmd]['source'],scandata[cmd]['destination'])
+		diff = showdiff(scandata[cmd]['destination'],scandata[cmd]['source'])
 		if (not diff):
 		    print_info(darkred("Automerging file ")+darkgreen(scandata[cmd]['source']))
 		    os.rename(scandata[cmd]['source'],scandata[cmd]['destination'])
