@@ -91,7 +91,7 @@ def repositories(options):
 
 # this function shows a list of enabled repositories
 def showRepositories():
-    print_info(yellow(" * ")+darkgreen("Active Repositories:"))
+    print_info(darkred(" * ")+darkgreen("Active Repositories:"))
     repoNumber = 0
     for repo in etpRepositories:
 	repoNumber += 1
@@ -116,7 +116,7 @@ def showRepositoryInfo(reponame):
 	status = "active"
     else:
 	status = "never synced"
-    print_info(red("\tStatus: ")+yellow(status))
+    print_info(darkgreen("\tStatus: ")+darkred(status))
     urlcount = 0
     for repourl in etpRepositories[reponame]['packages'][::-1]:
 	urlcount += 1
@@ -175,17 +175,19 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
     # check etpRepositories
     if len(etpRepositories) == 0:
 	if (not quiet):
-	    print_error(yellow(" * ")+red("No repositories specified in ")+etpConst['repositoriesconf'])
+	    print_error(darkred(" * ")+red("No repositories specified in ")+etpConst['repositoriesconf'])
 	return 127
 
     if (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Repositories syncronization..."))
+        print_info(darkred(" @@ ")+darkgreen("Repositories syncronization..."))
     repoNumber = 0
     syncErrors = False
     
     if (reponames == []):
 	for x in etpRepositories:
 	    reponames.append(x)
+    
+    dbupdated = False
     
     for repo in reponames:
 	
@@ -214,6 +216,7 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	    continue
 	
 	# clear repository cache
+	dbupdated = True
 	atomMatchCache.clear()
 	dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
 	
@@ -248,7 +251,7 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	        print_info(red("\tDownloaded database status: ")+bold("OK"))
 	else:
 	    if (not quiet):
-	        print_error(red("\tDownloaded database status: ")+yellow("ERROR"))
+	        print_error(red("\tDownloaded database status: ")+darkred("ERROR"))
 	        print_error(red("\t An error occured while checking database integrity"))
 	    # delete all
 	    if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile']):
@@ -267,15 +270,16 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	
 	if (not quiet):
 	    print_info(red("\tUpdated repository revision: ")+bold(str(getRepositoryRevision(repo))))
-	print_info(yellow("\tUpdate completed"))
+	print_info(darkgreen("\tUpdate completed"))
 
     if syncErrors:
 	if (not quiet):
-	    print_warning(yellow(" @@ ")+red("Something bad happened. Please have a look."))
+	    print_warning(darkred(" @@ ")+red("Something bad happened. Please have a look."))
 	return 128
 
-    import cacheTools
-    cacheTools.generateCache(quiet = quiet, depcache = True, configcache = False)
+    if (dbupdated):
+        import cacheTools
+        cacheTools.generateCache(quiet = quiet, depcache = True, configcache = False)
 
     return 0
 
@@ -1105,7 +1109,7 @@ def removePackage(infoDict):
 	# collision check
 	if etpConst['collisionprotect'] > 0:
 	    if file in contentCache:
-		print_warning(yellow("   ## ")+red("Collision found during remove for ")+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
+		print_warning(darkred("   ## ")+red("Collision found during remove for ")+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
 	        continue
 	    try:
 	        del contentCache[file]
@@ -1136,7 +1140,7 @@ def removePackage(infoDict):
 		pass # some filenames are buggy encoded
 	
 	if (protected):
-	    print_warning(yellow("   ## ")+red("[remove] Protecting config file: ")+str(file))
+	    print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+str(file))
 	else:
 	    try:
 	        os.remove(file)
@@ -1232,8 +1236,8 @@ def installPackage(infoDict):
 	    
 	    if etpConst['collisionprotect'] > 1:
 		if tofile in contentCache:
-		    print_warning(yellow("   ## ")+red("Collision found during install for ")+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
-		    print_warning(yellow("   ## ")+red("[collision] Protecting config file: ")+str(tofile))
+		    print_warning(darkred("   ## ")+red("Collision found during install for ")+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
+		    print_warning(darkred("   ## ")+red("[collision] Protecting config file: ")+str(tofile))
 		    continue
 
 	    # -- CONFIGURATION FILE PROTECTION --
@@ -1278,7 +1282,7 @@ def installPackage(infoDict):
 
 	        # request new tofile then
 	        if (protected):
-		    print_warning(yellow("   ## ")+red("Protecting config file: ")+str(tofile))
+		    print_warning(darkred("   ## ")+red("Protecting config file: ")+str(tofile))
 		    tofile = allocateMaskedFile(tofile)
 		    
 	    
@@ -1293,7 +1297,7 @@ def installPackage(infoDict):
 		try:
 		    packageContent.append(tofile.encode("utf-8"))
 		except:
-		    print_warning(yellow("   ## ")+red("Cannot convert filename into UTF-8, skipping ")+str(tofile))
+		    print_warning(darkred("   ## ")+red("Cannot convert filename into UTF-8, skipping ")+str(tofile))
 		    pass
 	    except IOError,(errno,strerror):
 		if errno == 2:
@@ -2296,7 +2300,10 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 		clientDbconn.closeDB()
 		return -1,rc
 
-    print_info(red(" @@ ")+blue("Install Complete."))
+    if (onlyfetch):
+	print_info(red(" @@ ")+blue("Fetch Complete."))
+    else:
+	print_info(red(" @@ ")+blue("Install Complete."))
 
     closeClientDatabase(clientDbconn)
 
@@ -2393,7 +2400,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
     
     if (lookForOrphanedPackages):
 	choosenRemovalQueue = []
-	print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
+	print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."))
 	treeview = generateDependsTree(plainRemovalQueue, clientDbconn, deep = deep)
 	treelength = len(treeview[0])
 	if treelength > 1:

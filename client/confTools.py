@@ -75,7 +75,6 @@ def configurator(options):
 def update():
     cache_status = False
     while 1:
-	print cache_status
 	scandata = scanfs(quiet = False, dcache = cache_status)
 	if (cache_status):
 	    for x in scandata:

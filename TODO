@@ -11,6 +11,7 @@ TODO list:
 	- new kernel? grub configuration at your service (add a trigger)
 	- add kbuildsycoca trigger
 	- if something is installed in /boot and this is a not mounted mountpoint, mount it (preinstall trigger)
+	- if something is installed in /usr/lib/xorg/modules trigger eselect
   - remove TAGS and substitute them with forced SLOT setting (just keep it for the package filename)
   - branch reorganization based on the release:
     - install only looks inside the configured branch
