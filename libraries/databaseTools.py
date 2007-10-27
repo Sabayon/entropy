@@ -1739,7 +1739,6 @@ class etpDatabase:
 	data['homepage'] = self.retrieveHomepage(idpackage)
 	data['useflags'] = self.retrieveUseflags(idpackage)
 	data['license'] = self.retrieveLicense(idpackage)
-	data['eclasses'] = self.retrieveEclasses(idpackage)
 	
 	data['keywords'] = self.retrieveKeywords(idpackage)
 	data['binkeywords'] = self.retrieveBinKeywords(idpackage)
@@ -1756,8 +1755,24 @@ class etpDatabase:
 	else:
 	    data['systempackage'] = ''
 	
-	data['config_protect'] = self.retrieveProtect(idpackage)
-	data['config_protect_mask'] = self.retrieveProtectMask(idpackage)
+	# FIXME: this will be removed when 1.0 will be out
+	try:
+	    data['config_protect'] = self.retrieveProtect(idpackage)
+	    data['config_protect_mask'] = self.retrieveProtectMask(idpackage)
+	except:
+	    self.createProtectTable()
+	    data['config_protect'] = self.retrieveProtect(idpackage)
+	    data['config_protect_mask'] = self.retrieveProtectMask(idpackage)
+	try:
+	    data['eclasses'] = self.retrieveEclasses(idpackage)
+	except:
+	    self.createEclassesTable()
+	    data['eclasses'] = self.retrieveEclasses(idpackage)
+	try:
+	    data['needed'] = self.retrieveNeeded(idpackage)
+	except:
+	    self.createNeededTable()
+	    data['needed'] = self.retrieveNeeded(idpackage)
 	
 	mirrornames = []
 	for x in data['sources']:
