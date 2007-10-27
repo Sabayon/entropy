@@ -1076,10 +1076,12 @@ def fetchFile(url, digest = False):
 
 
 def removePackage(infoDict):
-
+    
     atom = infoDict['removeatom']
     content = infoDict['removecontent']
     removeidpackage = infoDict['removeidpackage']
+
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package: "+str(atom))
 
     # load content cache if found empty
     if etpConst['collisionprotect'] > 0:
@@ -1098,6 +1100,7 @@ def removePackage(infoDict):
     # Handle gentoo database
     if (etpConst['gentoo-compat']):
 	gentooAtom = dep_striptag(atom) # FIXME: tags will be removed
+        equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package from Gentoo database: "+str(gentooAtom))
 	removePackageFromGentooDatabase(gentooAtom)
 
     # load CONFIG_PROTECT and its mask - client database at this point has been surely opened, so our dicts are already filled
@@ -1110,7 +1113,8 @@ def removePackage(infoDict):
 	if etpConst['collisionprotect'] > 0:
 	    if file in contentCache:
 		print_warning(darkred("   ## ")+red("Collision found during remove for ")+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
-	        continue
+        	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"Collision found during remove for "+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
+		continue
 	    try:
 	        del contentCache[file]
 	    except:
@@ -1140,6 +1144,7 @@ def removePackage(infoDict):
 		pass # some filenames are buggy encoded
 	
 	if (protected):
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file:  "+str(file))
 	    print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+str(file))
 	else:
 	    try:
@@ -1170,7 +1175,9 @@ def installPackage(infoDict):
 
     clientDbconn = openClientDatabase()
     package = infoDict['download']
-    
+
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing package: "+str(infoDict['atom']))
+
     # load content cache if found empty
     if etpConst['collisionprotect'] > 0:
         if (not contentCache):
@@ -1219,6 +1226,7 @@ def installPackage(infoDict):
 			#print os.readlink(rootdir)
 		        os.remove(rootdir)
 		elif os.path.isfile(rootdir): # weird
+    		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+str(rootdir)+" is a file when it should be a directory !! Removing in 10 seconds...")
 		    print_warning(red(" *** ")+bold(rootdir)+red(" is a file when it should be a directory !! Removing in 10 seconds..."))
 		    time.sleep(10)
 		    os.remove(rootdir)
@@ -1237,6 +1245,8 @@ def installPackage(infoDict):
 	    if etpConst['collisionprotect'] > 1:
 		if tofile in contentCache:
 		    print_warning(darkred("   ## ")+red("Collision found during install for ")+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
+    		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! Collision found during install for "+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
+    		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[collision] Protecting config file: "+str(tofile))
 		    print_warning(darkred("   ## ")+red("[collision] Protecting config file: ")+str(tofile))
 		    continue
 
@@ -1282,6 +1292,7 @@ def installPackage(infoDict):
 
 	        # request new tofile then
 	        if (protected):
+		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Protecting config file: "+str(tofile))
 		    print_warning(darkred("   ## ")+red("Protecting config file: ")+str(tofile))
 		    tofile = allocateMaskedFile(tofile)
 		    
@@ -1297,6 +1308,7 @@ def installPackage(infoDict):
 		try:
 		    packageContent.append(tofile.encode("utf-8"))
 		except:
+		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Cannot convert filename into UTF-8, skipping: "+str(tofile))
 		    print_warning(darkred("   ## ")+red("Cannot convert filename into UTF-8, skipping ")+str(tofile))
 		    pass
 	    except IOError,(errno,strerror):
@@ -1328,8 +1340,10 @@ def installPackage(infoDict):
     # remove old files and gentoo stuff
     if (infoDict['removeidpackage'] != -1):
 	# doing a diff removal
+	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Remove old package: "+str(infoDict['removeatom']))
 	infoDict['removeidpackage'] = -1 # disabling database removal
 	if (etpConst['gentoo-compat']):
+	    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing Gentoo database entry for "+str(infoDict['removeatom']))
 	    print_info(red("   ## ")+blue("Cleaning old package files...")+" ## w/Gentoo compatibility")
 	else:
 	    print_info(red("   ## ")+blue("Cleaning old package files..."))
@@ -1338,6 +1352,7 @@ def installPackage(infoDict):
     closeClientDatabase(clientDbconn)
 
     if (etpConst['gentoo-compat']):
+	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing new Gentoo database entry: "+str(infoDict['atom']))
 	rc = installPackageIntoGentooDatabase(infoDict,pkgpath)
 	if (rc >= 0):
 	    shutil.rmtree(unpackDir,True)

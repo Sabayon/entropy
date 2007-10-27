@@ -62,7 +62,9 @@ etpData = {
     'config_protect_mask': u"", # list of directories that contain files that should be overwritten
     'disksize': u"", # size on the hard disk in bytes (integer)
     'counter': u"", # aka. COUNTER file
-    'messages': u"" # elog content from portage
+    'messages': u"", # elog content from portage
+    'eclasses': u"", # eclasses used by the ebuild
+    'needed': u"" # runtime libraries needed by the package
 }
 
 # Entropy database SQL initialization Schema and data structure
@@ -99,6 +101,10 @@ DROP TABLE IF EXISTS dependstable;
 DROP TABLE IF EXISTS sizes;
 DROP TABLE IF EXISTS messages;
 DROP TABLE IF EXISTS counters;
+DROP TABLE IF EXISTS eclasses;
+DROP TABLE IF EXISTS eclassesreference;
+DROP TABLE IF EXISTS needed;
+DROP TABLE IF EXISTS neededreference;
 """
 
 etpSQLInit = """
@@ -247,6 +253,26 @@ CREATE TABLE messages (
 CREATE TABLE counters (
     counter INTEGER PRIMARY KEY,
     idpackage INTEGER
+);
+
+CREATE TABLE eclasses (
+    idpackage INTEGER,
+    idclass INTEGER
+);
+
+CREATE TABLE eclassesreference (
+    idclass INTEGER PRIMARY KEY,
+    classname VARCHAR
+);
+
+CREATE TABLE needed (
+    idpackage INTEGER,
+    idneeded INTEGER
+);
+
+CREATE TABLE neededreference (
+    idneeded INTEGER PRIMARY KEY,
+    library VARCHAR
 );
 
 """
@@ -596,6 +622,7 @@ dbDEPEND = "DEPEND"
 dbRDEPEND = "RDEPEND"
 dbPDEPEND = "PDEPEND"
 dbNEEDED = "NEEDED"
+dbINHERITED = "INHERITED"
 dbOR = "|or|"
 dbKEYWORDS = "KEYWORDS"
 dbCONTENTS = "CONTENTS"

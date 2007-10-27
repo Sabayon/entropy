@@ -358,6 +358,36 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     except IOError:
         pass
 
+    print_info(yellow(" * ")+red(info_package+"Getting package eclasses information..."),back = True)
+    # fill eclasses list
+    etpData['eclasses'] = []
+    try:
+        f = open(tbz2TmpDir+dbINHERITED,"r")
+        etpData['eclasses'] = f.readline().strip().split()
+        f.close()
+    except IOError:
+        pass
+
+    print_info(yellow(" * ")+red(info_package+"Getting package needed libraries information..."),back = True)
+    # fill needed list
+    etpData['needed'] = set()
+    try:
+        f = open(tbz2TmpDir+dbNEEDED,"r")
+	lines = f.readlines()
+	f.close()
+	for line in lines:
+	    line = line.strip()
+	    if line:
+	        needed = line.split()
+		if len(needed) == 2:
+		    libs = needed[1].split(",")
+		    for lib in libs:
+			if (lib.find(".so") != -1):
+			    etpData['needed'].add(lib)
+    except IOError:
+        pass
+    etpData['needed'] = list(etpData['needed'])
+
     print_info(yellow(" * ")+red(info_package+"Getting package content..."),back = True)
     # dbCONTENTS
     etpData['content'] = []

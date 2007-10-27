@@ -83,6 +83,7 @@ def database(options):
         dbconn = etpDatabase(readOnly = False, noUpload = True)
 	dbconn.initializeDatabase()
 	
+	#print revisionsMatch
 	# sync packages directory
 	activatorTools.packages(["sync","--ask"])
 	
@@ -806,6 +807,8 @@ class etpDatabase:
 	if (self.packagesRemoved):
 	    self.cleanupUseflags()
 	    self.cleanupSources()
+	    self.cleanupEclasses()
+	    self.cleanupNeeded()
 	    self.cleanupDependencies()
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in read/write.")
@@ -1051,6 +1054,48 @@ class etpDatabase:
 		etpData['disksize'],
 		)
 	    )
+
+	# eclasses table
+	for var in etpData['eclasses']:
+	    
+	    try:
+	        idclass = self.isEclassAvailable(var)
+	    except:
+		self.createEclassesTable()
+		idclass = self.isEclassAvailable(var)
+	    
+	    if (idclass == -1):
+	        # create eclass
+	        idclass = self.addEclass(var)
+	    
+	    self.cursor.execute(
+		'INSERT into eclasses VALUES '
+		'(?,?)'
+		, (	idpackage,
+			idclass,
+			)
+	    )
+
+	# needed table
+	for var in etpData['needed']:
+	    
+	    try:
+	        idneeded = self.isNeededAvailable(var)
+	    except:
+		self.createNeededTable()
+		idneeded = self.isNeededAvailable(var)
+	    
+	    if (idclass == -1):
+	        # create eclass
+	        idneeded = self.addNeeded(var)
+	    
+	    self.cursor.execute(
+		'INSERT into needed VALUES '
+		'(?,?)'
+		, (	idpackage,
+			idneeded,
+			)
+	    )
 	
 	# dependencies, a list
 	for dep in etpData['dependencies']:
@@ -1110,7 +1155,11 @@ class etpDatabase:
 	    )
 
 	# create new protect if it doesn't exist
-	idprotect = self.isProtectAvailable(etpData['config_protect'])
+	try:
+	    idprotect = self.isProtectAvailable(etpData['config_protect'])
+	except:
+	    self.createProtectTable()
+	    idprotect = self.isProtectAvailable(etpData['config_protect'])
 	if (idprotect == -1):
 	    # create category
 	    idprotect = self.addProtect(etpData['config_protect'])
@@ -1326,21 +1375,36 @@ class etpDatabase:
 	self.cursor.execute('DELETE FROM keywords WHERE idpackage = '+idpackage)
 	# binkeywords
 	self.cursor.execute('DELETE FROM binkeywords WHERE idpackage = '+idpackage)
+	
+	#
+	# WARNING: exception won't be handled anymore with 1.0
+	#
+	
 	try:
 	    # messages
 	    self.cursor.execute('DELETE FROM messages WHERE idpackage = '+idpackage)
 	except:
-	    pass # FIXME: temp workaround
+	    pass
 	# systempackage
 	self.cursor.execute('DELETE FROM systempackages WHERE idpackage = '+idpackage)
 	try:
-	    # cpunter
+	    # counter
 	    self.cursor.execute('DELETE FROM counters WHERE idpackage = '+idpackage)
 	except:
 	    pass
 	try:
 	    # on disk sizes
 	    self.cursor.execute('DELETE FROM sizes WHERE idpackage = '+idpackage)
+	except:
+	    pass
+	try:
+	    # eclasses
+	    self.cursor.execute('DELETE FROM eclasses WHERE idpackage = '+idpackage)
+	except:
+	    pass
+	try:
+	    # needed
+	    self.cursor.execute('DELETE FROM needed WHERE idpackage = '+idpackage)
 	except:
 	    pass
 	
@@ -1440,6 +1504,30 @@ class etpDatabase:
 	    return use
 	raise Exception, "I tried to insert a useflag but then, fetching it returned -1. There's something broken."
 
+    def addEclass(self,eclass):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addEclass: adding Eclass -> "+str(eclass))
+	self.cursor.execute(
+		'INSERT into eclassesreference VALUES '
+		'(NULL,?)', (eclass,)
+	)
+	# get info about inserted value and return
+	myclass = self.isEclassAvailable(eclass)
+	if myclass != -1:
+	    return myclass
+	raise Exception, "I tried to insert an eclass but then, fetching it returned -1. There's something broken."
+
+    def addNeeded(self,needed):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addNeeded: adding needed library -> "+str(needed))
+	self.cursor.execute(
+		'INSERT into neededreference VALUES '
+		'(NULL,?)', (needed,)
+	)
+	# get info about inserted value and return
+	myneeded = self.isNeededAvailable(needed)
+	if myneeded != -1:
+	    return myneeded
+	raise Exception, "I tried to insert a needed library but then, fetching it returned -1. There's something broken."
+
     def addLicense(self,license):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addLicense: adding License -> "+str(license))
 	self.cursor.execute(
@@ -1504,6 +1592,44 @@ class etpDatabase:
 	# now we have orphans that can be removed safely
 	for idosrc in orphanedSources:
 	    self.cursor.execute('DELETE FROM sourcesreference WHERE idsource = '+str(idosrc))
+	for row in self.cursor:
+	    x = row # really necessary ?
+
+    def cleanupEclasses(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupEclasses: called.")
+	self.cursor.execute('SELECT idclass FROM eclassesreference')
+	idclasses = set([])
+	for row in self.cursor:
+	    idclasses.add(row[0])
+	# now parse them into eclasses table
+	orphanedClasses = idclasses.copy()
+	for idclass in idclasses:
+	    self.cursor.execute('SELECT idclass FROM eclasses WHERE idclass = '+str(idclass))
+	    for row in self.cursor:
+		orphanedClasses.remove(row[0])
+		break
+	# now we have orphans that can be removed safely
+	for idoclass in orphanedClasses:
+	    self.cursor.execute('DELETE FROM eclassesreference WHERE idclass = '+str(idoclass))
+	for row in self.cursor:
+	    x = row # really necessary ?
+
+    def cleanupNeeded(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupNeeded: called.")
+	self.cursor.execute('SELECT idneeded FROM neededreference')
+	idneededs = set([])
+	for row in self.cursor:
+	    idneededs.add(row[0])
+	# now parse them into needed table
+	orphanedNeededs = idneededs.copy()
+	for idneeded in idneededs:
+	    self.cursor.execute('SELECT idneeded FROM needed WHERE idneeded = '+str(idneeded))
+	    for row in self.cursor:
+		orphanedNeededs.remove(row[0])
+		break
+	# now we have orphans that can be removed safely
+	for idoneeded in orphanedNeededs:
+	    self.cursor.execute('DELETE FROM neededreference WHERE idneeded = '+str(idoneeded))
 	for row in self.cursor:
 	    x = row # really necessary ?
 
@@ -1613,6 +1739,7 @@ class etpDatabase:
 	data['homepage'] = self.retrieveHomepage(idpackage)
 	data['useflags'] = self.retrieveUseflags(idpackage)
 	data['license'] = self.retrieveLicense(idpackage)
+	data['eclasses'] = self.retrieveEclasses(idpackage)
 	
 	data['keywords'] = self.retrieveKeywords(idpackage)
 	data['binkeywords'] = self.retrieveBinKeywords(idpackage)
@@ -2054,8 +2181,64 @@ class etpDatabase:
 	    self.databaseCache[int(idpackage)]['retrieveUseflags'] = flags
 	return flags
 
+    def retrieveEclasses(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveEclasses: retrieving eclasses for package ID "+str(idpackage))
+
+	''' caching '''
+	if (self.xcache):
+	    cached = self.databaseCache.get(int(idpackage), None)
+	    if cached:
+	        rslt = self.databaseCache[int(idpackage)].get('retrieveEclasses',None)
+	        if rslt:
+		    return rslt
+	    else:
+	        self.databaseCache[int(idpackage)] = {}
+
+	self.cursor.execute('SELECT "idclass" FROM eclasses WHERE idpackage = "'+str(idpackage)+'"')
+	idclasses = []
+	for row in self.cursor:
+	    idclasses.append(row[0])
+	classes = []
+	for idclass in idclasses:
+	    self.cursor.execute('SELECT "classname" FROM eclassesreference WHERE idclass = "'+str(idclass)+'"')
+	    for row in self.cursor:
+	        classes.append(row[0])
+
+	''' caching '''
+	if (self.xcache):
+	    self.databaseCache[int(idpackage)]['retrieveEclasses'] = classes
+	return classes
+
+    def retrieveNeeded(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveNeeded: retrieving needed libraries for package ID "+str(idpackage))
+
+	''' caching '''
+	if (self.xcache):
+	    cached = self.databaseCache.get(int(idpackage), None)
+	    if cached:
+	        rslt = self.databaseCache[int(idpackage)].get('retrieveNeeded',None)
+	        if rslt:
+		    return rslt
+	    else:
+	        self.databaseCache[int(idpackage)] = {}
+
+	self.cursor.execute('SELECT "idneeded" FROM needed WHERE idpackage = "'+str(idpackage)+'"')
+	idneededs = []
+	for row in self.cursor:
+	    idneededs.append(row[0])
+	needed = []
+	for idneeded in idneededs:
+	    self.cursor.execute('SELECT "library" FROM neededreference WHERE idneeded = "'+str(idneeded)+'"')
+	    for row in self.cursor:
+	        needed.append(row[0])
+
+	''' caching '''
+	if (self.xcache):
+	    self.databaseCache[int(idpackage)]['retrieveNeeded'] = needed
+	return needed
+
     def retrieveConflicts(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveConflicts: retrieving Conflicts for package ID "+str(idpackage))
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveEclasses: retrieving Conflicts for package ID "+str(idpackage))
 
 	''' caching '''
 	if (self.xcache):
@@ -2615,6 +2798,30 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isUseflagAvailable: "+useflag+" available.")
 	return result
 
+    def isEclassAvailable(self,eclass):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isEclassAvailable: called.")
+	result = -1
+	self.cursor.execute('SELECT idclass FROM eclassesreference WHERE classname = "'+eclass+'"')
+	for row in self.cursor:
+	    result = row[0]
+	if result == -1:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isEclassAvailable: "+eclass+" not available.")
+	    return result
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isEclassAvailable: "+eclass+" available.")
+	return result
+
+    def isNeededAvailable(self,needed):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isNeededAvailable: called.")
+	result = -1
+	self.cursor.execute('SELECT idneeded FROM neededreference WHERE needed = "'+needed+'"')
+	for row in self.cursor:
+	    result = row[0]
+	if result == -1:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isNeededAvailable: "+needed+" not available.")
+	    return result
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isNeededAvailable: "+needed+" available.")
+	return result
+
     def isCounterAvailable(self,counter):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCounterAvailable: called.")
 	result = False
@@ -3119,10 +3326,40 @@ class etpDatabase:
 	    break
 	return sane
 
+    #
+    # FIXME: remove these when 1.0 will be out
+    #
+    
     def createSizesTable(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createSizesTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS sizes;')
 	self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
+	self.commitChanges()
+
+    def createEclassesTable(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createEclassesTable: called.")
+	self.cursor.execute('DROP TABLE IF EXISTS eclasses;')
+	self.cursor.execute('DROP TABLE IF EXISTS eclassesreference;')
+	self.cursor.execute('CREATE TABLE eclasses ( idpackage INTEGER, idclass INTEGER );')
+	self.cursor.execute('CREATE TABLE eclassesreference ( idclass INTEGER PRIMARY KEY, classname VARCHAR );')
+	self.commitChanges()
+
+    def createNeededTable(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createNeededTable: called.")
+	self.cursor.execute('DROP TABLE IF EXISTS needed;')
+	self.cursor.execute('DROP TABLE IF EXISTS neededreference;')
+	self.cursor.execute('CREATE TABLE needed ( idpackage INTEGER, idneeded INTEGER );')
+	self.cursor.execute('CREATE TABLE neededreference ( idneeded INTEGER PRIMARY KEY, library VARCHAR );')
+	self.commitChanges()
+
+    def createProtectTable(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createProtectTable: called.")
+	self.cursor.execute('DROP TABLE IF EXISTS configprotect;')
+	self.cursor.execute('DROP TABLE IF EXISTS configprotectmask;')
+	self.cursor.execute('DROP TABLE IF EXISTS configprotectreference;')
+	self.cursor.execute('CREATE TABLE configprotect ( idpackage INTEGER, idprotect INTEGER );')
+	self.cursor.execute('CREATE TABLE configprotectmask ( idpackage INTEGER, idprotect INTEGER );')
+	self.cursor.execute('CREATE TABLE configprotectreference ( idprotect INTEGER PRIMARY KEY, protect VARCHAR );')
 	self.commitChanges()
 
     def createInstalledTable(self):
