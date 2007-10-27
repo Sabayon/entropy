@@ -451,7 +451,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 	    if len(kmodver) >= 2:
 		kmodver = kmodver[0]
 
-	    lp = kmodver.split("-")[len(kmodver.split("-"))-1]
+	    lp = kmodver.split("_")[len(kmodver.split("_"))-1]
 	    if lp.startswith("r"):
 	        kname = kmodver.split("_")[len(kmodver.split("_"))-2]
 	        kver = kmodver.split("_")[0]+"-"+kmodver.split("_")[len(kmodver.split("_"))-1]

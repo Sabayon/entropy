@@ -807,8 +807,16 @@ class etpDatabase:
 	if (self.packagesRemoved):
 	    self.cleanupUseflags()
 	    self.cleanupSources()
-	    self.cleanupEclasses()
-	    self.cleanupNeeded()
+	    try:
+	        self.cleanupEclasses()
+	    except:
+		self.createEclassesTable()
+		self.cleanupEclasses()
+	    try:
+	        self.cleanupNeeded()
+	    except:
+		self.createNeededTable()
+	        self.cleanupNeeded()
 	    self.cleanupDependencies()
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in read/write.")
