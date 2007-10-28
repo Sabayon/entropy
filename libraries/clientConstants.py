@@ -44,6 +44,9 @@ global contentCache
 contentCache = {}
 global getDependenciesCache
 getDependenciesCache = {}
+global generateDependsTreeCache
+generateDependsTreeCache = {}
+
 
 # Client packages/database repositories
 # used by equo

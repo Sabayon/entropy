@@ -45,15 +45,27 @@ equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst[
 
 def loadCaches():
     print_info(darkred(" @@ ")+blue("Loading On-Disk Cache..."))
+    # atomMatch
     mycache = dumpTools.loadobj(etpCache['atomMatch'])
     if isinstance(mycache, dict):
 	global atomMatchCache
 	atomMatchCache = mycache.copy()
-	#print "loadCaches: "+str(len(atomMatchCache))
+    # install dependencies
+    mycache2 = dumpTools.loadobj(etpCache['getDependencies'])
+    if isinstance(mycache2, dict):
+	global getDependenciesCache
+	getDependenciesCache = mycache2.copy()
+    # removal dependencies
+    mycache3 = dumpTools.loadobj(etpCache['generateDependsTree'])
+    if isinstance(mycache3, dict):
+	global generateDependsTreeCache
+	generateDependsTreeCache = mycache3.copy()
 
 def saveCaches():
     # atomMatchCache
     dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
+    dumpTools.dumpobj(etpCache['getDependencies'],getDependenciesCache)
+    dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
     #print "saveCaches: "+str(len(atomMatchCache))
 
 ########################################################
@@ -215,10 +227,8 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	    syncErrors = True
 	    continue
 	
-	# clear repository cache
+	# database is going to be updated
 	dbupdated = True
-	atomMatchCache.clear()
-	dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
 	
 	# starting to download
 	if (not quiet):
@@ -278,6 +288,14 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	return 128
 
     if (dbupdated):
+	
+	# safely clean caches
+	atomMatchCache.clear()
+	dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
+	getDependenciesCache.clear()
+	dumpTools.dumpobj(etpCache['getDependencies'],getDependenciesCache)
+	
+	# generate cache
         import cacheTools
         cacheTools.generateCache(quiet = quiet, depcache = True, configcache = False)
 
@@ -522,8 +540,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = []):
 		return repoResults[reponame],reponame
 
 	    #print versions
-	    
-	    
+	
 	else:
 	    # yeah, we're done, just return the info
 	    #print versions
@@ -548,7 +565,6 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = []):
    @input packageInfo: list composed by int(id) and str(repository name), if this one is int(0), the client database will be opened.
    @output: ordered dependency list
 '''
-
 def getDependencies(packageInfo):
 
     cached = getDependenciesCache.get(packageInfo)
@@ -576,7 +592,6 @@ def getDependencies(packageInfo):
         dbconn.closeDB()
     getDependenciesCache[packageInfo] = depend
     return depend
-
 
 '''
    @description: filter the already installed dependencies
@@ -844,17 +859,16 @@ def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False):
    @input package: idpackages list
    @output: 	depends tree dictionary, plus status code
 '''
-def generateDependsTree(idpackages, dbconn = None, deep = False):
+def generateDependsTree(idpackages, deep = False):
+
+    ''' caching '''
+    cached = generateDependsTreeCache.get(tuple(idpackages))
+    if cached:
+	if (cached['deep'] == deep):
+	    return cached['result']
 
     dependscache = {}
-    closedb = False
-    
-    # database istance is passed?
-    if dbconn == None:
-	closedb = True
-        clientDbconn = openClientDatabase()
-    else:
-	clientDbconn = dbconn
+    clientDbconn = openClientDatabase()
 
     dependsOk = False
     treeview = set(idpackages)
@@ -944,8 +958,13 @@ def generateDependsTree(idpackages, dbconn = None, deep = False):
 		x += 1
     
     del tree
-    if closedb:
-        closeClientDatabase(clientDbconn)
+    
+    closeClientDatabase(clientDbconn)
+    
+    ''' caching '''
+    generateDependsTreeCache[tuple(idpackages)] = {}
+    generateDependsTreeCache[tuple(idpackages)]['result'] = newtree,0
+    generateDependsTreeCache[tuple(idpackages)]['deep'] = deep
     return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
 
@@ -1083,6 +1102,12 @@ def removePackage(infoDict):
 
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package: "+str(atom))
 
+    # clear on-disk cache
+    getDependenciesCache.clear()
+    dumpTools.dumpobj(etpCache['getDependencies'],getDependenciesCache)
+    generateDependsTreeCache.clear()
+    dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
+
     # load content cache if found empty
     if etpConst['collisionprotect'] > 0:
         if (not contentCache):
@@ -1175,6 +1200,12 @@ def installPackage(infoDict):
 
     clientDbconn = openClientDatabase()
     package = infoDict['download']
+
+    # clear on-disk cache
+    getDependenciesCache.clear()
+    dumpTools.dumpobj(etpCache['getDependencies'],getDependenciesCache)
+    generateDependsTreeCache.clear()
+    dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
 
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing package: "+str(infoDict['atom']))
 
@@ -1488,6 +1519,8 @@ def installPackageIntoDatabase(idpackage, repository):
         # sync contentCache before install
         for x in newcontent:
 	    contentCache[x] = 1
+    
+    closeClientDatabase(clientDbconn)
     dbconn.closeDB()
     
     
@@ -1535,7 +1568,6 @@ def installPackageIntoDatabase(idpackage, repository):
 '''
 def removePackageFromDatabase(idpackage):
     
-    closedb = False
     clientDbconn = openClientDatabase()
     # load content cache
     if etpConst['collisionprotect'] > 0:
@@ -2416,7 +2448,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
     if (lookForOrphanedPackages):
 	choosenRemovalQueue = []
 	print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."))
-	treeview = generateDependsTree(plainRemovalQueue, clientDbconn, deep = deep)
+	treeview = generateDependsTree(plainRemovalQueue, deep = deep)
 	treelength = len(treeview[0])
 	if treelength > 1:
 	    treeview = treeview[0]
@@ -2701,7 +2733,7 @@ def getinfo(dict = False):
 	info['Removal internal protected directories'] = clientDbconn.listConfigProtectDirectories()
 	info['Removal internal protected directory masks'] = clientDbconn.listConfigProtectMaskDirectories()
 	info['Total installed packages'] = len(clientDbconn.listAllIdpackages())
-	clientDbconn.closeDB()
+	closeClientDatabase(clientDbconn)
     
     # repository databases info (if found on the system)
     info['Repository databases'] = {}

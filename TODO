@@ -1,7 +1,6 @@
 TODO list:
 - reagent: complete smartapps section
   CLIENT:
-  - on-disk/static cache for removal functions?
   - handle libraries reverse lookup during install to assure a consistent system
   - add multithreading support
   - during removal/add handle (trigger functions):

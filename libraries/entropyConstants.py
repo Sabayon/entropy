@@ -418,6 +418,8 @@ etpConst = {
 etpCache = {
     'configfiles': 'scanfs', # used to store information about files that should be merged using "equo conf merge"
     'atomMatch': 'atomMatchCache', # used to store info about repository dependencies solving
+    'getDependencies': 'getDependenciesCache', # used to store info about package dependencies
+    'generateDependsTree': 'generateDependsTreeCache', # used to store info about removal dependencies
 }
 
 # handle Entropy Version
