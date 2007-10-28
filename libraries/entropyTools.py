@@ -302,7 +302,7 @@ def extractElog(file):
 	    logline = True
 	    continue
 	    # disable all the others
-	elif line.startswith("INFO:") or line.startswith("LOG:"):
+	elif line.startswith("LOG:"):
 	    logline = False
 	    continue
 	if (logline) and (line.strip()):
