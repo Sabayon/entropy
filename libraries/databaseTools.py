@@ -83,8 +83,9 @@ def database(options):
         dbconn = etpDatabase(readOnly = False, noUpload = True)
 	dbconn.initializeDatabase()
 	
-	#print revisionsMatch
 	# sync packages directory
+	print "Revisions dump:"
+	print revisionsMatch
 	activatorTools.packages(["sync","--ask"])
 	
 	# now fill the database
@@ -1093,7 +1094,7 @@ class etpDatabase:
 		self.createNeededTable()
 		idneeded = self.isNeededAvailable(var)
 	    
-	    if (idclass == -1):
+	    if (idneeded == -1):
 	        # create eclass
 	        idneeded = self.addNeeded(var)
 	    
@@ -1459,7 +1460,11 @@ class etpDatabase:
 		'(NULL,?)', (protect,)
 	)
 	# get info about inserted value and return
-	prt = self.isProtectAvailable(protect)
+	try:
+	    prt = self.isProtectAvailable(protect)
+	except:
+	    self.createProtectTable()
+	    prt = self.isProtectAvailable(protect)
 	if prt != -1:
 	    return prt
 	raise Exception, "I tried to insert a protect but then, fetching it returned -1. There's something broken."
@@ -1519,7 +1524,11 @@ class etpDatabase:
 		'(NULL,?)', (eclass,)
 	)
 	# get info about inserted value and return
-	myclass = self.isEclassAvailable(eclass)
+	try:
+	    myclass = self.isEclassAvailable(eclass)
+	except:
+	    self.createEclassesTable()
+	    myclass = self.isEclassAvailable(eclass)
 	if myclass != -1:
 	    return myclass
 	raise Exception, "I tried to insert an eclass but then, fetching it returned -1. There's something broken."
@@ -1531,7 +1540,11 @@ class etpDatabase:
 		'(NULL,?)', (needed,)
 	)
 	# get info about inserted value and return
-	myneeded = self.isNeededAvailable(needed)
+	try:
+	    myneeded = self.isNeededAvailable(needed)
+	except:
+	    self.createNeededTable()
+	    myneeded = self.isNeededAvailable(needed)
 	if myneeded != -1:
 	    return myneeded
 	raise Exception, "I tried to insert a needed library but then, fetching it returned -1. There's something broken."
@@ -2836,7 +2849,7 @@ class etpDatabase:
     def isNeededAvailable(self,needed):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isNeededAvailable: called.")
 	result = -1
-	self.cursor.execute('SELECT idneeded FROM neededreference WHERE needed = "'+needed+'"')
+	self.cursor.execute('SELECT idneeded FROM neededreference WHERE library = "'+needed+'"')
 	for row in self.cursor:
 	    result = row[0]
 	if result == -1:
