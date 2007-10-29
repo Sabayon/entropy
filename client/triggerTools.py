@@ -512,6 +512,9 @@ timeout=10
     if os.path.isfile("/proc/cmdline"):
 	f = open("/proc/cmdline","r")
 	cmdline = " "+f.readline().strip()
+	params = cmdline.split()
+	if "dolvm" not in params: # support new kernels >= 2.6.23
+	    cmdline += " dolvm "
 	f.close()
     grub.write("title="+etpConst['systemname']+" ("+os.path.basename(kernel)+")\n")
     grub.write("\troot "+boot_dev+"\n")
