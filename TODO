@@ -3,15 +3,6 @@ TODO list:
   CLIENT:
   - handle libraries reverse lookup during install to assure a consistent system
   - add multithreading support
-  - during removal/add handle (trigger functions):
-	- complete preremove()
-	- complete postremove()
-	- complete preinstall()
-	- complete postinstall()
-	- new kernel? grub configuration at your service (add a trigger)
-	- add kbuildsycoca trigger (using eclasses info)
-	- if something is installed in /boot and this is a not mounted mountpoint, mount it (preinstall trigger)
-	- if something is installed in /usr/lib/xorg/modules trigger eselect
   - remove TAGS and substitute them with forced SLOT setting (just keep it for the package filename)
   - branch reorganization based on the release:
     - install only looks inside the configured branch
@@ -19,12 +10,11 @@ TODO list:
   - add scripts directory that contains pre/post-install-remove scripts that is synced using activator
   - implement installation messages infrastructure (where are collected all installation messages)
   - add support for new atoms layout (cpv:SLOT)
-  - on-disk/static cache for removal functions?
   - optimize database interface
+  - include more triggers
 
 Project Status:
-- entropy: will handle all the three tools below
 - reagent: complete. Stabilization mode.
 - activator: complete. Stabilization mode.
 ============
-- client part: 78%
+- equo (client): 80%

@@ -25,7 +25,11 @@ import os
 import commands
 sys.path.append('../libraries')
 from outputTools import *
+from entropyConstants import *
 import entropyTools
+# Logging initialization
+import logTools
+equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[Equo]")
 
 '''
    @ description: Gentoo toolchain variables
@@ -44,6 +48,10 @@ def postinstall(pkgdata):
     if pkgdata['category'] == "media-fonts":
 	functions.add("fontconfig")
 
+    # opengl configuration
+    if pkgdata['category'] == "x11-drivers":
+	functions.add("openglsetup")
+
     # gcc configuration
     if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/gcc":
 	functions.add("gccswitch")
@@ -55,6 +63,10 @@ def postinstall(pkgdata):
     # python configuration
     if pkgdata['category']+"/"+pkgdata['name'] == "dev-lang/python":
 	functions.add("pythoninst")
+
+    # kde package ?
+    if "kde" in pkgdata['eclasses']:
+	functions.add("kbuildsycoca")
 
     # prepare content
     mycnt = set(pkgdata['content'])
@@ -72,6 +84,8 @@ def postinstall(pkgdata):
 	    functions.add('gconfreload')
 	if x.startswith('/lib/modules/') and x.endswith('.ko') and (pkgdata['category'] != 'sys-kernel'):
 	    functions.add('kernelmod')
+	if x.startswith('/boot/kernel-'):
+	    functions.add('addbootablekernel')
 
     return list(functions)
 
@@ -88,6 +102,8 @@ def preinstall(pkgdata):
     for x in mycnt:
 	if x.startswith("/etc/init.d/"):
 	    functions.add('initinform')
+	if x.startswith("/boot"):
+	    functions.add('mountboot')
 
     return list(functions)
 
@@ -98,17 +114,13 @@ def postremove(pkgdata):
     
     functions = set()
     
-    # FIXME gcc configuration
-    #if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/gcc":
-    #    functions.add("gccswitch")
+    # opengl configuration
+    if pkgdata['category'] == "x11-drivers":
+	functions.add("openglsetup")
 
-    # FIXME binutils configuration
-    #if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/binutils":
-    #    functions.dda("binutilsswitch")
-
-    # FIXME python configuration
-    #if pkgdata['category']+"/"+pkgdata['name'] == "dev-lang/python":
-    #    functions.add("pythoninst")
+    # kde package ?
+    if "kde" in pkgdata['eclasses']:
+	functions.add("kbuildsycoca")
 
     # prepare content
     mycnt = set(pkgdata['removecontent'])
@@ -124,6 +136,8 @@ def postremove(pkgdata):
 	    functions.add('scrollkeeper')
 	if x.startswith("/etc/gconf/schemas"):
 	    functions.add('gconfreload')
+	if x.startswith('/boot/kernel-'):
+	    functions.add('removebootablekernel')
 
     return list(functions)
 
@@ -139,6 +153,8 @@ def preremove(pkgdata):
     for x in mycnt:
 	if x.startswith("/etc/init.d/"):
 	    functions.add('initdisable')
+	if x.startswith("/boot"):
+	    functions.add('mountboot')
 
     return list(functions)
 
@@ -158,12 +174,14 @@ def fontconfig(pkgdata):
 		    if os.path.isdir(xdir[:16]+"/"+origdir):
 		        fontdirs.add(xdir[:16]+"/"+origdir)
     if (fontdirs):
+	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring fonts directory...")
 	print_info(" "+brown("[POST] Configuring fonts directory..."))
     for fontdir in fontdirs:
 	setup_font_dir(fontdir)
 	setup_font_cache(fontdir)
 
 def gccswitch(pkgdata):
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GCC Profile...")
     print_info(" "+brown("[POST] Configuring GCC Profile..."))
     # get gcc profile
     pkgsplit = entropyTools.catpkgsplit(pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version'])
@@ -171,6 +189,7 @@ def gccswitch(pkgdata):
     set_gcc_profile(profile)
 
 def iconscache(pkgdata):
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating icons cache...")
     print_info(" "+brown("[POST] Updating icons cache..."))
     mycnt = set(pkgdata['content'])
     for file in mycnt:
@@ -179,22 +198,27 @@ def iconscache(pkgdata):
 	    generate_icons_cache(cachedir)
 
 def mimeupdate(pkgdata):
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating shared mime info database...")
     print_info(" "+brown("[POST] Updating shared mime info database..."))
     update_mime_db()
 
 def mimedesktopupdate(pkgdata):
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating desktop mime database...")
     print_info(" "+brown("[POST] Updating desktop mime database..."))
     update_mime_desktop_db()
 
 def scrollkeeper(pkgdata):
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating scrollkeeper database...")
     print_info(" "+brown("[POST] Updating scrollkeeper database..."))
     update_scrollkeeper_db()
 
 def gconfreload(pkgdata):
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reloading GConf2 database...")
     print_info(" "+brown("[POST] Reloading GConf2 database..."))
     reload_gconf_db()
 
 def binutilsswitch(pkgdata):
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Binutils Profile...")
     print_info(" "+brown("[POST] Configuring Binutils Profile..."))
     # get binutils profile
     pkgsplit = entropyTools.catpkgsplit(pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version'])
@@ -202,6 +226,7 @@ def binutilsswitch(pkgdata):
     set_binutils_profile(profile)
 
 def kernelmod(pkgdata):
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating moduledb...")
     print_info(" "+brown("[POST] Updating moduledb..."))
     item = 'a:1:'+pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
     update_moduledb(item)
@@ -210,6 +235,7 @@ def kernelmod(pkgdata):
     run_depmod(kos, pkgdata['versiontag'])
 
 def pythoninst(pkgdata):
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Python...")
     print_info(" "+brown("[POST] Configuring Python..."))
     python_update_symlink()
 
@@ -226,7 +252,86 @@ def initinform(pkgdata):
     mycnt = set(pkgdata['content'])
     for file in mycnt:
 	if file.startswith("/etc/init.d/") and not os.path.isfile(file):
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+file)
 	    print_info(" "+brown("[PRE] A new service will be installed: ")+file)
+
+def openglsetup(pkgdata):
+    opengl = "xorg-x11"
+    if pkgdata['name'] == "nvidia-drivers":
+	opengl = "nvidia"
+    elif pkgdata['name'] == "ati-drivers":
+	opengl = "ati"
+    # is there eselect ?
+    eselect = os.system("eselect opengl &> /dev/null")
+    if eselect == 0:
+	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to "+opengl+" ...")
+	print_info(" "+brown("[POST] Reconfiguring OpenGL..."))
+	os.system("eselect opengl set --use-old "+opengl)
+    else:
+	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
+	print_info(" "+brown("[POST] Eselect NOT found, cannot run OpenGL trigger"))
+
+# FIXME: this only supports grub (no lilo support)
+def addbootablekernel(pkgdata):
+    kernels = [x for x in pkgdata['content'] if x.startswith("/boot/kernel-")]
+    for kernel in kernels:
+	initramfs = "/boot/initramfs-"+kernel[13:]
+	if initramfs not in pkgdata['content']:
+	    initramfs = ''
+	# configure GRUB
+	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Adding the new kernel...")
+	print_info(" "+brown("[POST] Configuring GRUB bootloader. Adding the new kernel..."))
+	configure_boot_grub(kernel,initramfs)
+	
+
+# FIXME: this only supports grub (no lilo support)
+def removebootablekernel(pkgdata):
+    kernels = [x for x in pkgdata['content'] if x.startswith("/boot/kernel-")]
+    for kernel in kernels:
+	initramfs = "/boot/initramfs-"+kernel[13:]
+	if initramfs not in pkgdata['content']:
+	    initramfs = ''
+	# configure GRUB
+	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Removing the selected kernel...")
+	print_info(" "+brown("[POST] Configuring GRUB bootloader. Removing the selected kernel..."))
+	remove_boot_grub(kernel,initramfs)
+
+def mountboot(pkgdata):
+    # is in fstab?
+    if os.path.isfile("/etc/fstab"):
+        f = open("/etc/fstab","r")
+	fstab = f.readlines()
+	f.close()
+	for line in fstab:
+	    fsline = line.split()
+	    if len(fsline) > 1:
+		if fsline[1] == "/boot":
+		    # trigger mount /boot
+		    rc = os.system("mount /boot &> /dev/null")
+		    if rc == 0:
+			equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Mounted /boot successfully")
+			print_info(" "+brown("[PRE] Mounted /boot successfully"))
+		    elif rc != 8192: # already mounted
+			equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Cannot mount /boot automatically !!")
+			print_info(" "+brown("[PRE] Cannot mount /boot automatically !!"))
+		    break
+
+def kbuildsycoca(pkgdata):
+    kdedirs = ''
+    try:
+	kdedirs = os.environ['KDEDIRS']
+    except:
+	pass
+    if kdedirs:
+	dirs = kdedirs.split(":")
+	for builddir in dirs:
+	    if os.access(builddir+"/bin/kbuildsycoca",os.X_OK):
+		os.makedirs("/usr/share/services")
+		os.chown("/usr/share/services",0,0)
+		os.chmod("/usr/share/services",0755)
+		equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca to build global KDE database")
+		print_info(" "+brown("[POST] Running kbuildsycoca to build global KDE database"))
+		os.system(builddir+"/bin/kbuildsycoca --global --noincremental &> /dev/null")
 
 ########################################################
 ####
@@ -381,4 +486,124 @@ def initdeactivate(file, running, scheduled):
 	os.system('rc-update del '+os.path.basename(file))
     return 0
 
+'''
+   @description: append kernel entry to grub.conf
+   @output: returns int() as exit status
+'''
+def configure_boot_grub(kernel,initramfs):
+    if not os.path.isdir("/boot/grub"):
+	os.makedirs("/boot/grub")
+    if os.path.isfile("/boot/grub/grub.conf"):
+	# open in append
+	grub = open("/boot/grub/grub.conf","aw")
+	# get boot dev
+	boot_dev = get_grub_boot_dev()
+    else:
+	# create
+	boot_dev = "(hd0,0)"
+	grub = open("/boot/grub/grub.conf","w")
+	# write header - guess (hd0,0)... since it is weird having a running system without a bootloader, at least, grub.
+	grub_header = '''
+default=0
+timeout=10
+	'''
+	grub.write(grub_header)
+    cmdline = ' '
+    if os.path.isfile("/proc/cmdline"):
+	f = open("/proc/cmdline","r")
+	cmdline = " "+f.readline().strip()
+	f.close()
+    grub.write("title="+etpConst['systemname']+" ("+os.path.basename(kernel)+")\n")
+    grub.write("\troot "+boot_dev+"\n")
+    grub.write("\tkernel "+kernel+cmdline+"\n")
+    if initramfs:
+        grub.write("\tinitrd "+initramfs+"\n")
+    grub.write("\n")
+    grub.flush()
+    grub.close()
 
+def remove_boot_grub(kernel,initramfs):
+    if os.path.isdir("/boot/grub") and os.path.isfile("/boot/grub/grub.conf"):
+	f = open("/boot/grub/grub.conf","r")
+	grub_conf = f.readlines()
+	kernelname = os.path.basename(kernel)
+	new_conf = []
+	skip = False
+	for line in grub_conf:
+	    if (line.find(kernelname) != -1) or (line.find(initramfs) != -1):
+		skip = True
+		continue
+	    if (skip) and (line.find("root ") != -1):
+		skip = False
+		continue
+	    new_conf.append(line)
+	f = open("/boot/grub/grub.conf","w")
+	f.writelines(new_conf)
+	f.flush()
+	f.close()
+
+def get_grub_boot_dev():
+    import re
+    df_avail = os.system("which df &> /dev/null")
+    if df_avail != 0:
+	print "DEBUG: cannot find df!! Cannot properly configure kernel! Defaulting to (hd0,0)"
+	return "(hd0,0)"
+    grub_avail = os.system("which grub &> /dev/null")
+    if grub_avail != 0:
+	print "DEBUG: cannot find grub!! Cannot properly configure kernel! Defaulting to (hd0,0)"
+	return "(hd0,0)"
+    
+    gboot = commands.getoutput("df /boot").split("\n")[-1].split()[0]
+    if gboot.startswith("/dev/"):
+	# it's ok - handle /dev/md
+	if gboot.startswith("/dev/md"):
+	    md = os.path.basename(gboot)
+	    if not md.startswith("md"):
+		md = "md"+md
+	    f = open("/proc/mdstat","r")
+	    mdstat = f.readlines()
+	    mdstat = [x for x in mdstat if x.startswith(md)]
+	    f.close()
+	    if mdstat:
+		mdstat = mdstat[0].strip().split()
+		mddevs = []
+		for x in mdstat:
+		    if x.startswith("sd"):
+			mddevs.append(x[:-3])
+		mddevs.sort()
+		if mddevs:
+		    gboot = "/dev/"+mddevs[0]
+		else:
+		    gboot = "/dev/sda1"
+	    else:
+		gboot = "/dev/sda1"
+	# get disk
+	match = re.subn("[0-9]","",gboot)
+	gdisk = match[0]
+	match = re.subn("[a-z/]","",gboot)
+	gpartnum = str(int(match[0])-1)
+	# now match with grub
+	device_map = etpConst['packagestmpdir']+"/grub.map"
+	if os.path.isfile(device_map):
+	    os.remove(device_map)
+	# generate device.map
+	os.system('echo "quit" | grub --device-map='+device_map+' --no-floppy --batch &> /dev/null')
+	if os.path.isfile(device_map):
+	    f = open(device_map,"r")
+	    device_map_file = f.readlines()
+	    f.close()
+	    grub_dev = [x for x in device_map_file if (x.find(gdisk) != -1)]
+	    if grub_dev:
+		grub_disk = grub_dev[0].strip().split()[0]
+		grub_dev = grub_disk[:-1]+","+gpartnum+")"
+		return grub_dev
+	    else:
+		print "DEBUG: cannot match grub device with linux one!! Cannot properly configure kernel! Defaulting to (hd0,0)"
+		return "(hd0,0)"
+	else:
+	    print "DEBUG: cannot find generated device.map!! Cannot properly configure kernel! Defaulting to (hd0,0)"
+	    return "(hd0,0)"
+    else:
+	print "DEBUG: cannot run df /boot!! Cannot properly configure kernel! Defaulting to (hd0,0)"
+	return "(hd0,0)"
+	

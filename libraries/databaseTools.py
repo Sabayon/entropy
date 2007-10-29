@@ -26,7 +26,11 @@
 from entropyConstants import *
 import entropyTools
 from outputTools import *
-from pysqlite2 import dbapi2 as sqlite
+# FIXME: we'll drop extra sqlite support before 1.0
+try: # try with sqlite3 from python 2.5 - default one
+    from sqlite3 import dbapi2 as sqlite
+except ImportError: # fallback to embedded pysqlite
+    from pysqlite2 import dbapi2 as sqlite
 import os
 import sys
 import string

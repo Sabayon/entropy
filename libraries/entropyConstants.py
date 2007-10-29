@@ -409,6 +409,7 @@ etpConst = {
     'dbconfigprotectmask': [], # installed database CONFIG_PROTECT_MASK directories
     'configprotectcounter': 0, # this will be used to show the number of updated files at the end of the processes
     'entropyversion': "1.0", # default Entropy release version
+    'systemname': "Sabayon Linux", # default system name
     
     'dumpstoragedir': ETP_DIR+ETP_XMLDIR, # data storage directory, useful to speed up equo across multiple issued commands
 

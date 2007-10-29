@@ -1520,9 +1520,7 @@ def installPackageIntoDatabase(idpackage, repository):
         for x in newcontent:
 	    contentCache[x] = 1
     
-    closeClientDatabase(clientDbconn)
     dbconn.closeDB()
-    
     
     idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = rev, forcedBranch = True)
     del x
