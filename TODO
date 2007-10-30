@@ -2,7 +2,7 @@ TODO list:
 - reagent: complete smartapps section
   CLIENT:
   - handle libraries reverse lookup during install to assure a consistent system
-  - on-disk caching directly on the db interface using reponame? (then remove getDependenciesCache?)
+  - regenerate client database from / content
   - add support for new atoms layout (cpv:SLOT)
   - branch reorganization based on the release:
     - install only looks inside the configured branch
