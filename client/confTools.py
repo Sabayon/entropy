@@ -304,7 +304,7 @@ def scanfs(quiet = True, dcache = True):
 
     # load etpConst['dbconfigprotect']
     clientDbconn = equoTools.openClientDatabase()
-    equoTools.closeClientDatabase(clientDbconn)
+    clientDbconn.closeDB()
     # etpConst['dbconfigprotect']
     if (not quiet): print_info(yellow(" @@ ")+darkgreen("Scanning filesystem..."))
     scandata = {}

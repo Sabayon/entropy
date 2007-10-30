@@ -2,16 +2,16 @@ TODO list:
 - reagent: complete smartapps section
   CLIENT:
   - handle libraries reverse lookup during install to assure a consistent system
-  - add multithreading support
-  - remove TAGS and substitute them with forced SLOT setting (just keep it for the package filename)
+  - on-disk caching directly on the db interface using reponame? (then remove getDependenciesCache?)
+  - add support for new atoms layout (cpv:SLOT)
   - branch reorganization based on the release:
     - install only looks inside the configured branch
   - move branches to version naming (3.5, 3.6, 3.7) instead of using stable, unstable...
+
   - add scripts directory that contains pre/post-install-remove scripts that is synced using activator
-  - implement installation messages infrastructure (where are collected all installation messages)
-  - add support for new atoms layout (cpv:SLOT)
-  - optimize database interface
   - include more triggers
+  - optimize database interface
+  - add multithreading support
 
 Project Status:
 - reagent: complete. Stabilization mode.

@@ -791,7 +791,7 @@ def dependenciesTest(options):
 	atom = dbconn.retrieveAtom(xidpackage)
 	if (not reagentRequestQuiet):
 	    print_info(darkred(" @@ ")+bold("(")+blue(str(count))+"/"+red(length)+bold(")")+darkgreen(" Checking ")+bold(atom), back = True)
-	deptree, status = equoTools.generateDependencyTree([xidpackage,0])
+	deptree, status = equoTools.generateDependencyTree((xidpackage,0))
 	
 	if (status == -2): # dependencies not found
 	    depsNotFound[xidpackage] = []

@@ -28,7 +28,7 @@ from clientConstants import *
 from outputTools import *
 from databaseTools import etpDatabase
 from entropyTools import dep_getkey
-from equoTools import openClientDatabase, closeClientDatabase, openRepositoryDatabase, printPackageInfo, generateDependsTree # move them away?
+from equoTools import openClientDatabase, openRepositoryDatabase, printPackageInfo, generateDependsTree, atomMatch # move them away?
 
 ########################################################
 ####
@@ -113,7 +113,7 @@ def searchInstalledPackages(packages, idreturn = False, quiet = False):
 		else:
 		    printPackageInfo(idpackage, clientDbconn, clientSearch = True, quiet = quiet)
 	
-    closeClientDatabase(clientDbconn)
+    clientDbconn.closeDB()
 
     if (idreturn):
 	return dataInfo
@@ -148,7 +148,7 @@ def searchBelongs(files, idreturn = False, quiet = False):
 		else:
 		    printPackageInfo(idpackage, clientDbconn, clientSearch = True)
 	
-    closeClientDatabase(clientDbconn)
+    clientDbconn.closeDB()
 
     if (idreturn):
 	return dataInfo
@@ -208,7 +208,7 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
 	if (matchInRepo):
 	    dbconn.closeDB()
 
-    closeClientDatabase(clientDbconn)
+    clientDbconn.closeDB()
 
     if (idreturn):
 	return dataInfo
@@ -242,7 +242,7 @@ def searchFiles(atoms, idreturn = False, quiet = False):
 		    for file in files:
 		        print_info(blue(" ### ")+red(str(file)))
 	
-    closeClientDatabase(clientDbconn)
+    clientDbconn.closeDB()
 
     if (idreturn):
 	return dataInfo
@@ -401,13 +401,13 @@ def searchInstalled(idreturn = False, verbose = False, quiet = False):
 	        print_info(red("  #")+blue(str(package[1]))+branchinfo+" "+atom)
 	    else:
 	        print atom
-	closeClientDatabase(clientDbconn)
+	clientDbconn.closeDB()
 	return 0
     else:
 	idpackages = set()
 	for x in installedPackages:
 	    idpackages.add(package[1])
-        closeClientDatabase(clientDbconn)
+        clientDbconn.closeDB()
         return list(idpackages)
 
 

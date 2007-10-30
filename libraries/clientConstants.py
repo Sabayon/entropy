@@ -35,18 +35,6 @@ etpInstallTriggers = {}
 ### structure same as above
 etpRemovalTriggers = {}
 
-### Application disk cache
-global atomMatchCache
-atomMatchCache = {}
-global atomClientMatchCache
-atomClientMatchCache = {}
-global contentCache
-contentCache = {}
-global getDependenciesCache
-getDependenciesCache = {}
-global generateDependsTreeCache
-generateDependsTreeCache = {}
-
 
 # Client packages/database repositories
 # used by equo

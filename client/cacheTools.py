@@ -65,19 +65,22 @@ def cleanCache(quiet = False):
     dumpdir = etpConst['dumpstoragedir']
     if not dumpdir.endswith("/"): dumpdir = dumpdir+"/"
     for key in etpCache:
-	cachefile = dumpdir+etpCache[key]+".dmp"
+	cachefile = dumpdir+etpCache[key]+"*.dmp"
 	if (not quiet): print_warning(blue("(")+bold("*")+blue(")")+darkred(" Cleaning "+cachefile)+" ...")
-	if os.path.isfile(cachefile):
-	    os.remove(cachefile)
+	try:
+	    os.system("rm -f "+cachefile)
+	except:
+	    pass
     if (not quiet): print_info(blue("(")+bold("*")+blue(")")+darkred(" Cache in now empty."))
     return 0
 
 '''
-   @description: load entropy data and scan packages to collect info and fill caches
+   @description: cache entropy data and scan packages to collect info and fill caches
    @output: status code
 '''
 def generateCache(quiet = False, verbose = False, depcache = True, configcache = True):
-
+    cleanCache(quiet = True)
+    const_resetCache()
     if (depcache):
         if (not quiet): print_warning(blue("(")+bold("@@")+blue(")")+darkred(" Dependencies"))
         # loading repo db
@@ -103,17 +106,34 @@ def generateCache(quiet = False, verbose = False, depcache = True, configcache =
 	        depends.add(info[1])
 	    dbconn.closeDB()
         if (not quiet): print_warning(blue("(")+bold("*")+blue(")")+darkred(" Resolving metadata"))
+	atomMatchCache.clear()
+	maxlen = str(len(names))
+	cnt = 0
         for name in names:
-	    if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Resolving name: ")+brown(name), back = not verbose)
+	    cnt += 1
+	    lenstat = str(cnt)+"/"+maxlen
+	    if (not quiet): print_info("  "+darkgreen("(")+bold(lenstat)+darkgreen(")")+darkred(" Resolving name: ")+brown(name), back = not verbose)
 	    equoTools.atomMatch(name)
+	maxlen = str(len(keys))
+	cnt = 0
         for key in keys:
-	    if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Resolving key: ")+brown(key), back = not verbose)
+	    cnt += 1
+	    lenstat = str(cnt)+"/"+maxlen
+	    if (not quiet): print_info("  "+darkgreen("(")+bold(lenstat)+darkgreen(")")+darkred(" Resolving key: ")+brown(key), back = not verbose)
 	    equoTools.atomMatch(key)
+	maxlen = str(len(atoms))
+	cnt = 0
         for atom in atoms:
-	    if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Resolving atom: ")+brown(atom), back = not verbose)
+	    cnt += 1
+	    lenstat = str(cnt)+"/"+maxlen
+	    if (not quiet): print_info("  "+darkgreen("(")+bold(lenstat)+darkgreen(")")+darkred(" Resolving atom: ")+brown(atom), back = not verbose)
 	    equoTools.atomMatch(atom)
+	maxlen = str(len(depends))
+	cnt = 0
         for depend in depends:
-	    if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Resolving dependencies: ")+brown(depend), back = not verbose)
+	    cnt += 1
+	    lenstat = str(cnt)+"/"+maxlen
+	    if (not quiet): print_info("  "+darkgreen("(")+bold(lenstat)+darkgreen(")")+darkred(" Resolving dependencies: ")+brown(depend), back = not verbose)
 	    equoTools.atomMatch(depend)
         if (not quiet): print_warning(blue("(")+bold("@@")+blue(")")+darkred(" Dependencies filled. Flushing to disk."))
         equoTools.saveCaches()

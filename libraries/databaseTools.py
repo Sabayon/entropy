@@ -31,6 +31,7 @@ try: # try with sqlite3 from python 2.5 - default one
     from sqlite3 import dbapi2 as sqlite
 except ImportError: # fallback to embedded pysqlite
     from pysqlite2 import dbapi2 as sqlite
+import dumpTools
 import os
 import sys
 import string
@@ -121,12 +122,12 @@ def database(options):
 	        print_info(darkgreen(" [")+red(mybranch)+darkgreen("] ")+green("(")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."), back = True)
 		
 	        etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+mybranch+"/"+pkg, mybranch)
-	        # remove disgregated package
+	        # get previous revision
 		revisionAvail = revisionsMatch.get(os.path.basename(etpData['download']),None)
 		addRevision = 0
 		if (revisionAvail):
 		    if mybranch == revisionAvail[0]:
-			addRevision = revisionAvail[1]+1
+			addRevision = revisionAvail[1]
 	        # fill the db entry
 	        idpk, revision, etpDataUpdated, accepted = dbconn.addPackage(etpData, revision = addRevision, wantedBranch = mybranch)
 		
@@ -688,7 +689,7 @@ class databaseStatus:
 
 class etpDatabase:
 
-    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = True):
+    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = True, dbname = 'etpdb'):
 	
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase.__init__ called.")
 	
@@ -698,10 +699,38 @@ class etpDatabase:
 	self.packagesAdded = False
 	self.clientDatabase = clientDatabase
 	self.xcache = xcache
+	self.dbname = dbname
 	
 	# caching dictionaries
-	self.databaseCache = {}
-	self.matchCache = {} # dependencies resolving
+	global dbCacheStore
+	if self.xcache:
+	    ''' database query cache '''
+	    dbinfo = dbCacheStore.get(etpCache['dbInfo']+self.dbname)
+	    if dbinfo:
+		self.databaseCache = dbinfo.copy()
+		del dbinfo
+	    else:
+		self.databaseCache = dumpTools.loadobj(etpCache['dbInfo']+self.dbname)
+	        if self.databaseCache == None: self.databaseCache = {}
+		dbCacheStore[etpCache['dbInfo']+self.dbname] = {} # create dict
+		dbCacheStore[etpCache['dbInfo']+self.dbname] = self.databaseCache.copy()
+
+	    ''' database atom dependencies cache '''
+	    dbmatch = dbCacheStore.get(etpCache['dbMatch']+self.dbname)
+	    if dbmatch:
+		self.matchCache = dbmatch.copy()
+		del dbmatch
+	    else:
+	        self.matchCache = dumpTools.loadobj(etpCache['dbMatch']+self.dbname)
+	        if self.matchCache == None: self.matchCache = {}
+		dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
+		dbCacheStore[etpCache['dbMatch']+self.dbname] = self.matchCache.copy()
+	else:
+	    self.databaseCache = {}
+	    self.matchCache = {}
+	    dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
+	    dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
+
 	
 	if (self.clientDatabase):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened by Entropy client, file: "+str(dbFile))
@@ -783,14 +812,22 @@ class etpDatabase:
 	self.connection = sqlite.connect(dbFile,timeout=300.0)
 	self.cursor = self.connection.cursor()
 
-    def loadMatchCache(self, cache):
-	self.matchCache = cache
-	
-    def getMatchCache(self):
-	return self.matchCache
-
     def closeDB(self):
-	
+
+	# save caches
+	if self.xcache:
+	    global dbCacheStore
+	    dbCacheStore[etpCache['dbInfo']+self.dbname].clear()
+	    dbCacheStore[etpCache['dbMatch']+self.dbname].clear()
+	    dbCacheStore[etpCache['dbInfo']+self.dbname] = self.databaseCache.copy()
+	    dbCacheStore[etpCache['dbMatch']+self.dbname] = self.matchCache.copy()
+	else:
+	    try:
+		dbCacheStore[etpCache['dbInfo']+self.dbname].clear()
+		dbCacheStore[etpCache['dbMatch']+self.dbname].clear()
+	    except:
+		pass
+
 	# if the class is opened readOnly, close and forget
 	if (self.readOnly):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in readonly.")
@@ -947,7 +984,9 @@ class etpDatabase:
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: called.")
 	
-	self.matchCache = {} # dependencies handling cache tainted
+	self.matchCache = {} # dependencies handling cache tainted - good to clear even if self.xcache is False
+	dbCacheStore[etpCache['dbMatch']+self.dbname].clear()
+	dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
 	
 	# if a similar package, in the same branch exists, mark for removal
 	searchsimilar = self.searchSimilarPackages(etpData['category']+"/"+etpData['name'], branch = wantedBranch)
@@ -1358,9 +1397,15 @@ class etpDatabase:
 	if xcached:
 	    try:
 	        del self.databaseCache[int(idpackage)]
-	    except:
+		global dbCacheStore
+		del dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]
+		if self.xcache:
+		    dumpTools.dumpobj(etpCache['dbInfo']+self.dbname,self.databaseCache)
+	    except KeyError:
 		pass
-	self.matchCache = {} # dependencies handling cache tainted
+	self.matchCache = {} # dependencies handling cache tainted - good to clear even if self.xcache is False
+	dbCacheStore[etpCache['dbMatch']+self.dbname].clear()
+	dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
 
 	idpackage = str(idpackage)
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"removePackage: trying to remove (if exists) -> "+idpackage+":"+str(key)+" | branch: "+branch)
@@ -1746,7 +1791,7 @@ class etpDatabase:
 	    break
 	return idpackage
 
-    def getPackageData(self, idpackage):
+    def getPackageData(self, idpackage): # FIXME: add caching
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageData: retrieving etpData for package ID for "+str(idpackage))
 	data = {}
 	
@@ -2324,8 +2369,8 @@ class etpDatabase:
 	return provide
 
     def retrieveDependencies(self, idpackage):
-	self.cursor.execute('SELECT iddependency FROM dependencies WHERE idpackage = "'+str(idpackage)+'"')
-	
+	#dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDependencies: retrieving dependency for package ID "+str(idpackage)) # too slow?
+
 	''' caching '''
 	if (self.xcache):
 	    cached = self.databaseCache.get(int(idpackage), None)
@@ -2336,6 +2381,7 @@ class etpDatabase:
 	    else:
 	        self.databaseCache[int(idpackage)] = {}
 	
+	self.cursor.execute('SELECT iddependency FROM dependencies WHERE idpackage = "'+str(idpackage)+'"')
 	iddeps = []
 	for row in self.cursor:
 	    iddeps.append(row[0])
@@ -2351,7 +2397,7 @@ class etpDatabase:
 	return deps
 
     def retrieveIdDependencies(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDependencies: retrieving Dependencies for package ID "+str(idpackage))
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveIdDependencies: retrieving Dependencies for package ID "+str(idpackage))
 
 	''' caching '''
 	if (self.xcache):
@@ -2937,6 +2983,24 @@ class etpDatabase:
 	    self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
 	for row in self.cursor:
 	    result.append(row[0])
+	return result
+
+    ''' search dependency string inside dependenciesreference table and retrieve iddependency '''
+    def searchDependency(self, dep):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchDependency: called for "+dep)
+	iddep = -1
+	self.cursor.execute('SELECT iddependency FROM dependenciesreference WHERE dependency = "'+dep+'"')
+	for row in self.cursor:
+	    iddep = row[0]
+	return iddep
+
+    ''' search iddependency inside dependencies table and retrieve idpackages '''
+    def searchIdpackageFromIddependency(self, iddep):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchIdpackageFromIddependency: called for "+str(iddep))
+	result = set()
+	self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = "'+str(iddep)+'"')
+	for row in self.cursor:
+	    result.add(row[0])
 	return result
 
     def searchPackages(self, keyword, sensitive = False):

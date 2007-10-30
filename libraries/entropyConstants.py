@@ -418,10 +418,29 @@ etpConst = {
 # disk caching dictionary
 etpCache = {
     'configfiles': 'scanfs', # used to store information about files that should be merged using "equo conf merge"
+    'dbMatch': 'cache_', # used by the database controller as prefix to the cache files belonging to etpDatabase class (dep solving)
+    'dbInfo': 'info_', # used by the database controller as prefix to the cache files belonging to etpDatabase class (info retrival)
     'atomMatch': 'atomMatchCache', # used to store info about repository dependencies solving
-    'getDependencies': 'getDependenciesCache', # used to store info about package dependencies
     'generateDependsTree': 'generateDependsTreeCache', # used to store info about removal dependencies
 }
+
+### Application disk cache
+global dbCacheStore
+dbCacheStore = {}
+global atomMatchCache
+atomMatchCache = {}
+global atomClientMatchCache
+atomClientMatchCache = {}
+global contentCache
+contentCache = {}
+global generateDependsTreeCache
+generateDependsTreeCache = {}
+def const_resetCache():
+    dbCacheStore.clear()
+    atomMatchCache.clear()
+    atomClientMatchCache.clear()
+    contentCache.clear()
+    generateDependsTreeCache.clear()
 
 # handle Entropy Version
 ETP_REVISION_FILE = "../libraries/revision"

@@ -50,11 +50,6 @@ def loadCaches():
     if isinstance(mycache, dict):
 	global atomMatchCache
 	atomMatchCache = mycache.copy()
-    # install dependencies
-    mycache2 = dumpTools.loadobj(etpCache['getDependencies'])
-    if isinstance(mycache2, dict):
-	global getDependenciesCache
-	getDependenciesCache = mycache2.copy()
     # removal dependencies
     mycache3 = dumpTools.loadobj(etpCache['generateDependsTree'])
     if isinstance(mycache3, dict):
@@ -64,8 +59,9 @@ def loadCaches():
 def saveCaches():
     # atomMatchCache
     dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
-    dumpTools.dumpobj(etpCache['getDependencies'],getDependenciesCache)
     dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
+    for dbinfo in dbCacheStore:
+	dumpTools.dumpobj(dbinfo,dbCacheStore[dbinfo])
     #print "saveCaches: "+str(len(atomMatchCache))
 
 ########################################################
@@ -229,6 +225,8 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	
 	# database is going to be updated
 	dbupdated = True
+	# clear database interface cache belonging to this repository
+	dumpTools.dumpobj(etpCache['dbInfo']+repo,{})
 	
 	# starting to download
 	if (not quiet):
@@ -292,8 +290,6 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	# safely clean caches
 	atomMatchCache.clear()
 	dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
-	getDependenciesCache.clear()
-	dumpTools.dumpobj(etpCache['getDependencies'],getDependenciesCache)
 	
 	# generate cache
         import cacheTools
@@ -339,14 +335,14 @@ def fetchRepositoryIfNotAvailable(reponame):
    @ exit errors:
 	    -1 => repository cannot be fetched online
 '''
-def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = []):
+def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = [], xcache = True):
 
     #print atom
-
-    cached = atomMatchCache.get(atom)
-    if cached:
-	if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches):
-	    return cached['result']
+    if xcache:
+        cached = atomMatchCache.get(atom)
+        if cached:
+	    if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches):
+	        return cached['result']
 
     repoResults = {}
     exitstatus = 0
@@ -360,7 +356,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = []):
 	    exitErrors[repo] = -1
 	    continue
 	# open database
-	dbconn = openRepositoryDatabase(repo)
+	dbconn = openRepositoryDatabase(repo, xcache = xcache)
 	
 	# search
 	query = dbconn.atomMatch(atom, caseSentitive, matchSlot, matchBranches = matchBranches)
@@ -562,17 +558,17 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = []):
 
 '''
    @description: generates the dependencies of a [id,repository name] combo.
-   @input packageInfo: list composed by int(id) and str(repository name), if this one is int(0), the client database will be opened.
+   @input packageInfo: tuple composed by int(id) and str(repository name), if this one is int(0), the client database will be opened.
    @output: ordered dependency list
 '''
+getDependenciesCache = {}
 def getDependencies(packageInfo):
 
-    cached = getDependenciesCache.get(packageInfo)
+    ''' caching '''
+    cached = getDependenciesCache.get(tuple(packageInfo))
     if cached:
-	return cached
+	return cached['result']
 
-    if len(packageInfo) != 2:
-	raise Exception, "getDependencies: I need a list with two values in it."
     idpackage = packageInfo[0]
     reponame = packageInfo[1]
     if reponame == 0:
@@ -586,11 +582,12 @@ def getDependencies(packageInfo):
     conflicts = dbconn.retrieveConflicts(idpackage)
     for x in conflicts:
 	depend.append("!"+x)
-    if reponame == 0:
-	closeClientDatabase(dbconn)
-    else:
-        dbconn.closeDB()
-    getDependenciesCache[packageInfo] = depend
+    dbconn.closeDB()
+
+    ''' caching '''
+    getDependenciesCache[tuple(packageInfo)] = {}
+    getDependenciesCache[tuple(packageInfo)]['result'] = depend
+
     return depend
 
 '''
@@ -598,12 +595,11 @@ def getDependencies(packageInfo):
    @input dependencies: list of dependencies to check
    @output: filtered list, aka the needed ones and the ones satisfied
 '''
-installed_depcache = {}
-repo_test_depcache = {}
+filterSatisfiedDependenciesCache = {}
 def filterSatisfiedDependencies(dependencies, deepdeps = False):
 
-    unsatisfiedDeps = []
-    satisfiedDeps = []
+    unsatisfiedDeps = set()
+    satisfiedDeps = set()
     # now create a list with the unsatisfied ones
     # query the installed packages database
     #print etpConst['etpdatabaseclientfilepath']
@@ -611,103 +607,92 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
     if (clientDbconn != -1):
         for dependency in dependencies:
 
+	    depsatisfied = set()
+	    depunsatisfied = set()
+
+            ''' caching '''
+	    cached = filterSatisfiedDependenciesCache.get(dependency)
+	    if cached:
+		if (cached['deepdeps'] == deepdeps):
+		    unsatisfiedDeps.update(cached['depunsatisfied'])
+		    satisfiedDeps.update(cached['depsatisfied'])
+		    continue
+
 	    ### conflict
 	    if dependency.startswith("!"):
 		testdep = dependency[1:]
 		xmatch = clientDbconn.atomMatch(testdep)
 		if xmatch[0] != -1:
-		    unsatisfiedDeps.append(dependency)
+		    depunsatisfied.add(dependency)
 		else:
-		    satisfiedDeps.append(dependency)
+		    depsatisfied.add(dependency)
 		continue
 
-	    ### caching
-	    repo_cached = repo_test_depcache.get(dependency)
-	    if repo_cached:
-		repo_test_rc = repo_test_depcache[dependency]['repo_test_rc']
-		if repo_test_rc[0] != -1:
-		    repo_pkgver = repo_test_depcache[dependency]['pkgver']
-		    repo_pkgtag = repo_test_depcache[dependency]['pkgtag']
-		    repo_pkgrev = repo_test_depcache[dependency]['pkgrev']
-		else:
-		    continue # dependency does not exist in our database
+	    repoMatch = atomMatch(dependency)
+	    if repoMatch[0] != -1:
+		dbconn = openRepositoryDatabase(repoMatch[1])
+		repo_pkgver = dbconn.retrieveVersion(repoMatch[0])
+		repo_pkgtag = dbconn.retrieveVersionTag(repoMatch[0])
+		repo_pkgrev = dbconn.retrieveRevision(repoMatch[0])
+		dbconn.closeDB()
 	    else:
-		repo_test_depcache[dependency] = {}
-		repo_test_rc = atomMatch(dependency)
+		# dependency does not exist in our database
+		depunsatisfied.add(dependency)
+		continue
+
+	    clientMatch = clientDbconn.atomMatch(dependency)
+	    if clientMatch[0] != -1:
 		
-		#xdb = openRepositoryDatabase(repo_test_rc[1])
-		#print xdb.retrieveAtom(repo_test_rc[0])
-		#xdb.closeDB()
-
-		repo_test_depcache[dependency]['repo_test_rc'] = repo_test_rc
-		if repo_test_rc[0] != -1:
-		    dbconn = openRepositoryDatabase(repo_test_rc[1])
-		    repo_pkgver = dbconn.retrieveVersion(repo_test_rc[0])
-		    repo_pkgtag = dbconn.retrieveVersionTag(repo_test_rc[0])
-		    repo_pkgrev = dbconn.retrieveRevision(repo_test_rc[0])
-		    repo_test_depcache[dependency]['pkgver'] = repo_pkgver
-		    repo_test_depcache[dependency]['pkgtag'] = repo_pkgtag
-		    repo_test_depcache[dependency]['pkgrev'] = repo_pkgrev
-		    dbconn.closeDB()
-		else:
-		    # dependency does not exist in our database
-		    unsatisfiedDeps.append(dependency)
-		    continue
-
-
-	    ### caching
-	    ins_cached = installed_depcache.get(dependency)
-	    if ins_cached:
-		rc = installed_depcache[dependency]['rc']
-		if rc[0] != -1:
-		    installedVer = installed_depcache[dependency]['installedVer']
-		    installedTag = installed_depcache[dependency]['installedTag']
-		    installedRev = installed_depcache[dependency]['installedRev']
-	    else:
-		installed_depcache[dependency] = {}
-		rc = clientDbconn.atomMatch(dependency)
-		if rc[0] != -1:
-		    installedVer = clientDbconn.retrieveVersion(rc[0])
-		    installedTag = clientDbconn.retrieveVersionTag(rc[0])
-		    installedRev = clientDbconn.retrieveRevision(rc[0])
-		    installed_depcache[dependency]['installedVer'] = installedVer
-		    installed_depcache[dependency]['installedTag'] = installedTag
-		    installed_depcache[dependency]['installedRev'] = installedRev
-		installed_depcache[dependency]['rc'] = rc
-	    
-	    if (rc[0] != -1):
+		installedVer = clientDbconn.retrieveVersion(clientMatch[0])
+		installedTag = clientDbconn.retrieveVersionTag(clientMatch[0])
+		installedRev = clientDbconn.retrieveRevision(clientMatch[0])
+		
 		if (deepdeps):
 		    cmp = compareVersions([repo_pkgver,repo_pkgtag,repo_pkgrev],[installedVer,installedTag,installedRev])
 		    #print repo_pkgver+"<-->"+installedVer
 		    #print cmp
 		    if cmp != 0:
 		        #print dependency
-	                unsatisfiedDeps.append(dependency)
+	                depunsatisfied.add(dependency)
 		    else:
-		        satisfiedDeps.append(dependency)
+		        depsatisfied.add(dependency)
 		else:
-		    satisfiedDeps.append(dependency)
+		    depsatisfied.add(dependency)
 	    else:
 		#print " ----> "+dependency+" NOT installed."
-		unsatisfiedDeps.append(dependency)
+		depunsatisfied.add(dependency)
+	
+	    
+	    unsatisfiedDeps.update(depunsatisfied)
+	    satisfiedDeps.update(depsatisfied)
+	    
+	    ''' caching '''
+	    filterSatisfiedDependenciesCache[dependency] = {}
+	    filterSatisfiedDependenciesCache[dependency]['depunsatisfied'] = depunsatisfied
+	    filterSatisfiedDependenciesCache[dependency]['depsatisfied'] = depsatisfied
+	    filterSatisfiedDependenciesCache[dependency]['deepdeps'] = deepdeps
     
-        closeClientDatabase(clientDbconn)
+        clientDbconn.closeDB()
 
     return unsatisfiedDeps, satisfiedDeps
 
 '''
    @description: generates a dependency tree using unsatisfied dependencies
-   @input package: atomInfo [idpackage,reponame]
+   @input package: atomInfo (idpackage,reponame)
    @output: dependency tree dictionary, plus status code
 '''
+generateDependencyTreeCache = {}
 def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 
-    #print ":::: enter ::::"
+    ''' caching '''
+    cached = generateDependencyTreeCache.get(tuple(atomInfo))
+    if cached:
+	if (cached['emptydeps'] == emptydeps) and (cached['deepdeps'] == deepdeps):
+	    return cached['result']
 
     treecache = {}
     unsatisfiedDeps = getDependencies(atomInfo)
     unsatisfiedDeps, xxx = filterSatisfiedDependencies(unsatisfiedDeps, deepdeps = deepdeps)
-    unsatisfiedDeps = set(unsatisfiedDeps)
     dependenciesNotFound = []
     treeview = []
     tree = {}
@@ -762,7 +747,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 		    unsatisfiedDeps.add(x)
 	tree[treedepth] = list(tree[treedepth])
 	
-    closeClientDatabase(clientDbconn)
+    clientDbconn.closeDB()
 
     if (dependenciesNotFound):
 	# Houston, we've got a problem
@@ -772,9 +757,9 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
     newtree = {} # tree list
     if (tree):
 	for x in tree:
-	    newtree[x] = []
+	    newtree[x] = set()
 	    for y in tree[x]:
-		newtree[x].append(atomMatch(y))
+		newtree[x].add(atomMatch(y))
 	    if (newtree[x]):
 	        newtree[x] = filterDuplicatedEntries(newtree[x])
 
@@ -798,6 +783,12 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	newtree[0] = list(conflicts)
 	newtree[0].sort()
 	#print newtree[0]
+
+    ''' caching '''
+    generateDependencyTreeCache[tuple(atomInfo)] = {}
+    generateDependencyTreeCache[tuple(atomInfo)]['result'] = newtree,0
+    generateDependencyTreeCache[tuple(atomInfo)]['emptydeps'] = emptydeps
+    generateDependencyTreeCache[tuple(atomInfo)]['deepdeps'] = deepdeps
     return newtree,0 # note: newtree[0] contains possible conflicts
 
 
@@ -808,11 +799,13 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
    		@ if dependencies couldn't be satisfied, the output will be -1
    @note: this is the function that should be used for 3rd party applications after using atomMatch()
 '''
-def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False):
+def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False, spinning = False):
     deptree = {}
     depcount = -1
     
+    if spinning: atomlen = len(foundAtoms); count = 0
     for atomInfo in foundAtoms:
+	if spinning: count += 1; print_info(":: "+str(round((float(count)/atomlen)*100,1))+"% ::", back = True)
 	depcount += 1
 	#print depcount
 	newtree, result = generateDependencyTree(atomInfo, emptydeps, deepdeps)
@@ -959,7 +952,7 @@ def generateDependsTree(idpackages, deep = False):
     
     del tree
     
-    closeClientDatabase(clientDbconn)
+    clientDbconn.closeDB()
     
     ''' caching '''
     generateDependsTreeCache[tuple(idpackages)] = {}
@@ -1103,8 +1096,6 @@ def removePackage(infoDict):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package: "+str(atom))
 
     # clear on-disk cache
-    getDependenciesCache.clear()
-    dumpTools.dumpobj(etpCache['getDependencies'],getDependenciesCache)
     generateDependsTreeCache.clear()
     dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
 
@@ -1115,7 +1106,7 @@ def removePackage(infoDict):
 	    xlist = clientDbconn.listAllFiles(clean = True)
 	    for x in xlist:
 		contentCache[x] = 1
-	    closeClientDatabase(clientDbconn)
+	    clientDbconn.closeDB()
 
     # remove from database
     if removeidpackage != -1:
@@ -1202,8 +1193,6 @@ def installPackage(infoDict):
     package = infoDict['download']
 
     # clear on-disk cache
-    getDependenciesCache.clear()
-    dumpTools.dumpobj(etpCache['getDependencies'],getDependenciesCache)
     generateDependsTreeCache.clear()
     dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
 
@@ -1380,7 +1369,7 @@ def installPackage(infoDict):
 	    print_info(red("   ## ")+blue("Cleaning old package files..."))
 	removePackage(infoDict)
 
-    closeClientDatabase(clientDbconn)
+    clientDbconn.closeDB()
 
     if (etpConst['gentoo-compat']):
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing new Gentoo database entry: "+str(infoDict['atom']))
@@ -1525,7 +1514,7 @@ def installPackageIntoDatabase(idpackage, repository):
     idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = rev, forcedBranch = True)
     del x
     if (not status):
-	closeClientDatabase(clientDbconn)
+	clientDbconn.closeDB()
 	print "DEBUG!!! THIS SHOULD NOT NEVER HAPPEN. Package "+str(idpk)+" has not been inserted, status: "+str(status)
 	exitstatus = 1 # it hasn't been insterted ? why??
     else: # all fine
@@ -1555,7 +1544,7 @@ def installPackageIntoDatabase(idpackage, repository):
 	    print "DEBUG!!! dependstable not found"
 	    clientDbconn.regenerateDependsTable()
 
-    closeClientDatabase(clientDbconn)
+    clientDbconn.closeDB()
     return exitstatus
 
 '''
@@ -1583,7 +1572,7 @@ def removePackageFromDatabase(idpackage):
     
     clientDbconn.removePackage(idpackage)
     
-    closeClientDatabase(clientDbconn)
+    clientDbconn.closeDB()
     return 0
 
 
@@ -1707,7 +1696,7 @@ def database(options):
 	# Now reinitialize it
 	print_info(darkred("  Initializing the new database at "+bold(etpConst['etpdatabaseclientfilepath'])), back = True)
 	# we can't use openClientDatabase
-	clientDbconn = etpDatabase(readOnly = False, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
+	clientDbconn = etpDatabase(readOnly = False, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = 'client')
 	clientDbconn.initializeDatabase()
 	print_info(darkgreen("  Database reinitialized correctly at "+bold(etpConst['etpdatabaseclientfilepath'])))
 	
@@ -1768,13 +1757,13 @@ def database(options):
 	clientDbconn.regenerateDependsTable()
 	print_info(red("  Database reinitialized successfully."))
 
-	closeClientDatabase(clientDbconn)
+	clientDbconn.closeDB()
 
     elif (options[0] == "depends"):
 	print_info(red("  Regenerating depends caching table..."))
 	clientDbconn = openClientDatabase()
 	clientDbconn.regenerateDependsTable()
-	closeClientDatabase(clientDbconn)
+	clientDbconn.closeDB()
 	print_info(red("  Depends caching table regenerated successfully."))
 
 
@@ -1825,7 +1814,7 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
 		if not installedTag:
 		    installedTag = "NoTag"
 		installedRev = clientDbconn.retrieveRevision(idx)
-	    closeClientDatabase(clientDbconn)
+	    clientDbconn.closeDB()
 
 
     print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(pkgbranch))
@@ -1858,13 +1847,13 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
    @input repositoryName: name of the client database
    @output: database pointer or, -1 if error
 '''
-def openRepositoryDatabase(repositoryName):
+def openRepositoryDatabase(repositoryName, xcache = True):
     dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
     if not os.path.isfile(dbfile):
 	rc = fetchRepositoryIfNotAvailable(repositoryName)
 	if (rc):
 	    raise Exception, "openRepositoryDatabase: cannot sync repository "+repositoryName
-    conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True)
+    conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = 'repo_'+repositoryName, xcache = xcache)
     # initialize CONFIG_PROTECT
     if (not etpRepositories[repositoryName]['configprotect']) or (not etpRepositories[repositoryName]['configprotectmask']):
         etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
@@ -1879,10 +1868,7 @@ def openRepositoryDatabase(repositoryName):
 '''
 def openClientDatabase(xcache = True):
     if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
-        conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True)
-	# load cache
-	if (xcache):
-	    conn.loadMatchCache(atomClientMatchCache)
+        conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = 'client', xcache = xcache)
 	if (not etpConst['dbconfigprotect']):
 	    # config protect not prepared
 	    etpConst['dbconfigprotect'] = conn.listConfigProtectDirectories()
@@ -1892,11 +1878,6 @@ def openClientDatabase(xcache = True):
 	return conn
     else:
 	raise Exception,"openClientDatabase: installed packages database not found. At this stage, the only way to have it is to run 'equo database generate'. Please note: don't use Equo on a critical environment !!"
-
-def closeClientDatabase(conn, xcache = True):
-    if (xcache):
-	atomClientMatchCache = conn.getMatchCache()
-    conn.closeDB()
 
 ########################################################
 ####
@@ -1968,7 +1949,9 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 
     if (updateList):
         print_info(red(" @@ ")+blue("Calculating queue..."))
-        installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch, deepdeps = upgrade)
+        rc = installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch, deepdeps = upgrade)
+	if rc[0] != 0:
+	    return rc
     else:
 	print_info(red(" @@ ")+blue("Nothing to update."))
 
@@ -2066,7 +2049,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 		    if not installedTag:
 			installedTag = "NoTag"
 		    installedRev = clientDbconn.retrieveRevision(idx)
-		closeClientDatabase(clientDbconn)
+		clientDbconn.closeDB()
 
 	    print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
 	    print_info("\t"+red("Versioning:\t")+" "+blue(installedVer)+" / "+blue(installedTag)+" / "+blue(str(installedRev))+bold(" ===> ")+darkgreen(pkgver)+" / "+darkgreen(pkgtag)+" / "+darkgreen(str(pkgrev)))
@@ -2106,10 +2089,22 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     print_info(red(" @@ ")+blue("Calculating... "))
 
     if (deps):
-        treepackages, result = getRequiredPackages(foundAtoms, emptydeps, deepdeps)
+        treepackages, result = getRequiredPackages(foundAtoms, emptydeps, deepdeps, spinning = True)
         # add dependencies, explode them
 	if (result == -2):
 	    print_error(red(" @@ ")+blue("Cannot find needed dependencies: ")+str(treepackages))
+	    for atom in treepackages:
+		for repo in etpRepositories:
+		    rdbconn = openRepositoryDatabase(repo)
+		    riddep = rdbconn.searchDependency(atom)
+		    if riddep != -1:
+		        ridpackages = rdbconn.searchIdpackageFromIddependency(riddep)
+			if ridpackages:
+			    print_error(red(" @@ ")+blue("Dependency found and probably needed by:"))
+			for i in ridpackages:
+			    iatom = rdbconn.retrieveAtom(i)
+			    print_error(red("     # ")+" [from:"+repo+"] "+darkred(iatom))
+		    rdbconn.closeDB()
 	    return 130, -1
 	elif (result == -1): # no database connection
 	    print_error(red(" @@ ")+blue("Cannot find the Installed Packages Database. It's needed to accomplish dependency resolving. Try to run ")+bold("equo database generate"))
@@ -2156,7 +2151,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	        installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
 		repoinfo = red("[")+brown("from: ")+bold(installedfrom)+red("] ")
 	        print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
-	    closeClientDatabase(clientDbconn)
+	    clientDbconn.closeDB()
 
     if (runQueue):
 	if (ask or pretend):
@@ -2217,7 +2212,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 		    actionQueue[pkgatom]['removeatom'] = clientDbconn.retrieveAtom(idx)
 		    actionQueue[pkgatom]['removecontent'] = clientDbconn.retrieveAtom(idx)
 		    onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idx)
-	        closeClientDatabase(clientDbconn)
+	        clientDbconn.closeDB()
 
 	    if not (ask or pretend or verbose):
 		continue
@@ -2294,7 +2289,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	for step in steps:
 	    rc = stepExecutor(step,infoDict)
 	    if (rc != 0):
-		closeClientDatabase(clientDbconn)
+		clientDbconn.closeDB()
 		return -1,rc
     
     for packageInfo in runQueue:
@@ -2350,7 +2345,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     else:
 	print_info(red(" @@ ")+blue("Install Complete."))
 
-    closeClientDatabase(clientDbconn)
+    clientDbconn.closeDB()
 
     return 0,0
 
@@ -2434,7 +2429,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
         rc = askquestion(question)
         if rc == "No":
 	    if (not deps):
-	        closeClientDatabase(clientDbconn)
+	        clientDbconn.closeDB()
 		return 0,0
 
     if (not plainRemovalQueue):
@@ -2486,7 +2481,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
 	    print
             rc = askquestion("     I am going to start the removal. Are you sure?")
             if rc == "No":
-	        closeClientDatabase(clientDbconn)
+	        clientDbconn.closeDB()
 	        return 0,0
     else:
 	countdown(what = red(" @@ ")+blue("Starting removal in "),back = True)
@@ -2515,7 +2510,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
     
     print_info(red(" @@ ")+blue("All done."))
     
-    closeClientDatabase(clientDbconn)
+    clientDbconn.closeDB()
     return 0,0
 
 
@@ -2574,14 +2569,14 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
 		packagesNeeded.append([depatom,dep])
 
     if (pretend):
-	closeClientDatabase(clientDbconn)
+	clientDbconn.closeDB()
 	return 0, packagesNeeded
 
     if (packagesNeeded) and (not quiet):
         if (ask):
             rc = askquestion("     Would you like to install them?")
             if rc == "No":
-		closeClientDatabase(clientDbconn)
+		clientDbconn.closeDB()
 	        return 0,packagesNeeded
 	else:
 	    print_info(red(" @@ ")+blue("Installing dependencies in ")+red("10 seconds")+blue("..."))
@@ -2598,7 +2593,7 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
 	    
 
     print_info(red(" @@ ")+blue("All done."))
-    closeClientDatabase(clientDbconn)
+    clientDbconn.closeDB()
     return 0,packagesNeeded
 
 '''
@@ -2616,7 +2611,7 @@ def stepExecutor(step,infoDict):
 	print_info(red("   ## ")+blue("Fetching package: ")+red(os.path.basename(infoDict['download'])))
 	output = fetchFileOnMirrors(infoDict['repository'],infoDict['download'],infoDict['checksum'])
 	if output < 0:
-	    print_error(red("Package cannot be fetched. Try to run: ")+bold("equo update")+red("' and this command again. Error "+str(output)))
+	    print_error(red("Package cannot be fetched. Try to run: '")+bold("equo update")+red("' and this command again. Error "+str(output)))
     
     elif step == "install":
 	if (etpConst['gentoo-compat']):
@@ -2643,8 +2638,13 @@ def stepExecutor(step,infoDict):
     
     elif step == "showmessages":
 	# get messages
+	if infoDict['messages']:
+	    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Message from "+infoDict['atom']+" :")
 	for msg in infoDict['messages']: # FIXME: add logging support
+	    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,msg)
 	    print_warning(brown('  ## ')+msg)
+	if infoDict['messages']:
+	    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"End message.")
     
     elif step == "postinstall":
 	# analyze atom
@@ -2678,7 +2678,7 @@ def stepExecutor(step,infoDict):
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
 		eval("triggerTools."+trigger)(pkgdata)
     
-    closeClientDatabase(clientDbconn)
+    clientDbconn.closeDB()
     
     return output
 
@@ -2731,7 +2731,7 @@ def getinfo(dict = False):
 	info['Removal internal protected directories'] = clientDbconn.listConfigProtectDirectories()
 	info['Removal internal protected directory masks'] = clientDbconn.listConfigProtectMaskDirectories()
 	info['Total installed packages'] = len(clientDbconn.listAllIdpackages())
-	closeClientDatabase(clientDbconn)
+	clientDbconn.closeDB()
     
     # repository databases info (if found on the system)
     info['Repository databases'] = {}
