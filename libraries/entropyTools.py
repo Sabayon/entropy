@@ -522,6 +522,30 @@ def dep_getcpv(mydep):
 	mydep = mydep[:colon]
     return mydep
 
+def dep_getslot(mydep):
+    """
+    Retrieve the slot on a depend.
+    
+    Example usage:
+	>>> dep_getslot('app-misc/test:3')
+	'3'
+    	
+    @param mydep: The depstring to retrieve the slot of
+    @type mydep: String
+    @rtype: String
+    @return: The slot
+    """
+    colon = mydep.rfind(":")
+    if colon != -1:
+	return mydep[colon+1:]
+    return None
+
+def remove_slot(mydep):
+    colon = mydep.rfind(":")
+    if colon != -1:
+	mydep = mydep[:colon]
+    return mydep
+
 def removePackageOperators(atom):
     if atom.startswith(">") or atom.startswith("<"):
 	atom = atom[1:]

@@ -3532,6 +3532,13 @@ class etpDatabase:
 			and (matchBranches == cached['matchBranches']):
 	            return cached['result']
 	
+	# check if slot is provided -> app-foo/foo-1.2.3:SLOT
+	atomSlot = entropyTools.dep_getslot(atom)
+	# then remove
+	atom = entropyTools.remove_slot(atom)
+	if (matchSlot == None) and (atomSlot != None): # new slotdeps support
+	    matchSlot = atomSlot
+	
         # check for direction
         strippedAtom = entropyTools.dep_getcpv(atom)
         if atom.endswith("*"):
@@ -3548,7 +3555,7 @@ class etpDatabase:
         pkgversion = ''
         if (not justname):
 	    # strip tag
-            if strippedAtom.split("-")[len(strippedAtom.split("-"))-1].startswith("t"):
+            if strippedAtom.split("-")[-1].startswith("t"):
                 strippedAtom = string.join(strippedAtom.split("-t")[:len(strippedAtom.split("-t"))-1],"-t")
 	    # get version
 	    data = entropyTools.catpkgsplit(strippedAtom)
