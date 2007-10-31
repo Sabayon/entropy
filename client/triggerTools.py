@@ -68,6 +68,16 @@ def postinstall(pkgdata):
     if "kde" in pkgdata['eclasses']:
 	functions.add("kbuildsycoca")
 
+    # update mime
+    if "fdo-mime" in pkgdata['eclasses']:
+	functions.add('mimeupdate')
+	functions.add('mimedesktopupdate')
+
+    # update gconf db and icon cache
+    if "gnome2" in pkgdata['eclasses']:
+	functions.add('iconscache')
+	functions.add('gconfreload') # FIXME: add gnome2 gconf schemas installation 
+
     # prepare content
     mycnt = set(pkgdata['content'])
     
@@ -326,7 +336,8 @@ def kbuildsycoca(pkgdata):
 	dirs = kdedirs.split(":")
 	for builddir in dirs:
 	    if os.access(builddir+"/bin/kbuildsycoca",os.X_OK):
-		os.makedirs("/usr/share/services")
+		if not os.path.isdir("/usr/share/services"):
+		    os.makedirs("/usr/share/services")
 		os.chown("/usr/share/services",0,0)
 		os.chmod("/usr/share/services",0755)
 		equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca to build global KDE database")

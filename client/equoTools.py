@@ -48,16 +48,13 @@ def loadCaches():
     # atomMatch
     mycache = dumpTools.loadobj(etpCache['atomMatch'])
     if isinstance(mycache, dict):
-	global atomMatchCache
 	atomMatchCache = mycache.copy()
     # removal dependencies
     mycache3 = dumpTools.loadobj(etpCache['generateDependsTree'])
     if isinstance(mycache3, dict):
-	global generateDependsTreeCache
 	generateDependsTreeCache = mycache3.copy()
 
 def saveCaches():
-    # atomMatchCache
     dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
     dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
     for dbinfo in dbCacheStore:
@@ -596,6 +593,7 @@ def getDependencies(packageInfo):
    @output: filtered list, aka the needed ones and the ones satisfied
 '''
 filterSatisfiedDependenciesCache = {}
+filterSatisfiedDependenciesCmpResults = {} # 0: not installed, <0 a<b | >0 a>b
 def filterSatisfiedDependencies(dependencies, deepdeps = False):
 
     unsatisfiedDeps = set()
@@ -648,11 +646,12 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
 		installedRev = clientDbconn.retrieveRevision(clientMatch[0])
 		
 		if (deepdeps):
-		    cmp = compareVersions([repo_pkgver,repo_pkgtag,repo_pkgrev],[installedVer,installedTag,installedRev])
+		    cmp = compareVersions((repo_pkgver,repo_pkgtag,repo_pkgrev),(installedVer,installedTag,installedRev))
 		    #print repo_pkgver+"<-->"+installedVer
 		    #print cmp
 		    if cmp != 0:
 		        #print dependency
+			filterSatisfiedDependenciesCmpResults[dependency] = cmp
 	                depunsatisfied.add(dependency)
 		    else:
 		        depsatisfied.add(dependency)
@@ -660,6 +659,7 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
 		    depsatisfied.add(dependency)
 	    else:
 		#print " ----> "+dependency+" NOT installed."
+		filterSatisfiedDependenciesCmpResults[dependency] = 0
 		depunsatisfied.add(dependency)
 	
 	    
@@ -726,6 +726,22 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	    if atom[0] == -1:
 		dependenciesNotFound.append(undep)
 		continue
+	    
+	    # handle possible library breakage
+	    '''
+	    action = filterSatisfiedDependenciesCmpResults.get(undep)
+	    if action and ((action < 0) or (action > 0)): # do not use != 0 since action can be "None"
+		i = clientDbconn.atomMatch(undep)
+		if i[0] != -1:
+		    oldneeded = clientDbconn.retrieveNeeded(i[0])
+		    if oldneeded: # if there are needed
+		        ndbconn = openRepositoryDatabase(atom[1])
+		        needed = ndbconn.retrieveNeeded(atom[0])
+		        ndbconn.closeDB()
+		        needed.difference_update(oldneeded)
+			if needed:
+		            print needed
+	    '''
 	    
 	    # add to the tree level
 	    tree[treedepth].add(undep)
@@ -1194,7 +1210,7 @@ def installPackage(infoDict):
 
     # clear on-disk cache
     generateDependsTreeCache.clear()
-    dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
+    dumpTools.dumpobj(etpCache['generateDependsTree'],{})
 
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing package: "+str(infoDict['atom']))
 
@@ -1900,7 +1916,8 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     updateList = []
     fineList = set()
     removedList = set()
-    syncRepositories()
+    print "FIXME: re-enable syncRepositories()"
+    #syncRepositories()
     
     clientDbconn = openClientDatabase()
     # get all the installed packages
@@ -2060,7 +2077,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	        installedTag == ''
 	    if installedRev == "NoRev":
 	        installedRev == 0
-	    cmp = compareVersions([pkgver,pkgtag,pkgrev],[installedVer,installedTag,installedRev])
+	    cmp = compareVersions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
 	    if (cmp == 0):
 	        action = darkgreen("No update needed")
 	    elif (cmp > 0):

@@ -5,7 +5,7 @@ TODO list:
   - regenerate client database from / content
   - branch reorganization based on the release:
     - install only looks inside the configured branch
-  - move branches to version naming (3.5, 3.6, 3.7) instead of using stable, unstable...
+    - move branches to version naming (3.5, 3.6, 3.7) instead of using stable, unstable...
 
   - add scripts directory that contains pre/post-install-remove scripts that is synced using activator
   - include more triggers

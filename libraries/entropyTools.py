@@ -651,7 +651,6 @@ def compareVersions(ver1, ver2, silent=1):
    @description: reorder a version list
    @input versionlist: a list
    @output: the ordered list
-   FIXME: using Bubble Sorting is not the fastest way
 '''
 def getNewerVersion(InputVersionlist):
     rc = False
@@ -681,29 +680,9 @@ def getNewerVersion(InputVersionlist):
    @output: the ordered string list
 '''
 def getNewerVersionTag(InputVersionlist):
-    rc = False
     versionlist = InputVersionlist[:]
-    while not rc:
-	change = False
-        for x in range(len(versionlist)):
-	    pkgA = versionlist[x]
-	    if (not pkgA):
-		pkgA = "0"
-	    try:
-	        pkgB = versionlist[x+1]
-		if (not pkgB):
-		    pkgB = "0"
-	    except:
-	        pkgB = "0"
-	    # translate pkgA into numeric string
-	    if pkgA < pkgB:
-	        # swap positions
-	        versionlist[x] = pkgB
-	        versionlist[x+1] = pkgA
-		change = True
-	if (not change):
-	    rc = True
-    return versionlist
+    versionlist.sort()
+    return versionlist[::-1]
 
 def isnumber(x):
     try:
