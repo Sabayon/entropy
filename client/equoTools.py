@@ -1162,7 +1162,7 @@ def removePackage(infoDict):
 	if etpConst['collisionprotect'] > 0:
 	    if file in contentCache:
 		print_warning(darkred("   ## ")+red("Collision found during remove for ")+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
-        	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"Collision found during remove for "+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
+        	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove for "+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
 		continue
 	    try:
 	        del contentCache[file]
@@ -1728,8 +1728,7 @@ def database(options):
 	
 	# Now reinitialize it
 	print_info(darkred("  Initializing the new database at "+bold(etpConst['etpdatabaseclientfilepath'])), back = True)
-	# we can't use openClientDatabase
-	clientDbconn = etpDatabase(readOnly = False, noUpload = True, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = 'client')
+	clientDbconn = openClientDatabase()
 	clientDbconn.initializeDatabase()
 	print_info(darkgreen("  Database reinitialized correctly at "+bold(etpConst['etpdatabaseclientfilepath'])))
 	

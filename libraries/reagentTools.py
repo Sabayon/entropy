@@ -729,7 +729,11 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 		    mtimes.append((getFileUnixMtime(etpConst['logdir']+"/elog/"+file),file))
 		mtimes.sort()
 		elogfile = mtimes[len(mtimes)-1][1]
-	    etpData['messages'] = extractElog(etpConst['logdir']+"/elog/"+elogfile)
+	    messages = extractElog(etpConst['logdir']+"/elog/"+elogfile)
+	    for message in messages:
+		out = re.subn("emerge","equo install",message)
+		message = out[0]
+		etpData['messages'].append(message)
     else:
 	print_warning(red(etpConst['logdir']+"/elog")+" not set, have you configured make.conf properly?")
 

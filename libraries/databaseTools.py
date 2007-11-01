@@ -707,7 +707,7 @@ class etpDatabase:
 	    ''' database query cache '''
 	    broken1 = False
 	    dbinfo = dbCacheStore.get(etpCache['dbInfo']+self.dbname)
-	    if not dbinfo:
+	    if dbinfo == None:
 		dbCacheStore[etpCache['dbInfo']+self.dbname] = dumpTools.loadobj(etpCache['dbInfo']+self.dbname)
 	        if dbCacheStore[etpCache['dbInfo']+self.dbname] == None:
 		    broken1 = True
@@ -716,7 +716,7 @@ class etpDatabase:
 	    ''' database atom dependencies cache '''
 	    dbmatch = dbCacheStore.get(etpCache['dbMatch']+self.dbname)
 	    broken2 = False
-	    if not dbmatch:
+	    if dbmatch == None:
 	        dbCacheStore[etpCache['dbMatch']+self.dbname] = dumpTools.loadobj(etpCache['dbMatch']+self.dbname)
 	        if dbCacheStore[etpCache['dbMatch']+self.dbname] == None:
 		    broken2 = True
@@ -1303,8 +1303,8 @@ class etpDatabase:
 	    )
 
 	# clear caches
-	dbCacheStore[etpCache['dbInfo']+self.dbname].clear()
-	dbCacheStore[etpCache['dbMatch']+self.dbname].clear()
+	dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
+	dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
 	# dump to be sure
 	dumpTools.dumpobj(etpCache['dbInfo']+self.dbname,{})
 	dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
@@ -1449,8 +1449,8 @@ class etpDatabase:
 	self.packagesRemoved = True
 
 	# clear caches
-	dbCacheStore[etpCache['dbInfo']+self.dbname].clear()
-	dbCacheStore[etpCache['dbMatch']+self.dbname].clear()
+	dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
+	dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
 	# dump to be sure
 	dumpTools.dumpobj(etpCache['dbInfo']+self.dbname,{})
 	dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
@@ -3272,7 +3272,11 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listConfigProtectDirectories: called.")
 	dirs = set()
 	idprotects = set()
-	self.cursor.execute('SELECT idprotect FROM configprotect')
+	try:
+	    self.cursor.execute('SELECT idprotect FROM configprotect')
+	except:
+	    self.createProtectTable()
+	    self.cursor.execute('SELECT idprotect FROM configprotect')
 	for row in self.cursor:
 	    idprotects.add(row[0])
 	for idprotect in idprotects:
@@ -3289,7 +3293,11 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listConfigProtectMaskDirectories: called.")
 	dirs = set()
 	idprotects = set()
-	self.cursor.execute('SELECT idprotect FROM configprotectmask')
+	try:
+	    self.cursor.execute('SELECT idprotect FROM configprotectmask')
+	except:
+	    self.createProtectTable()
+	    self.cursor.execute('SELECT idprotect FROM configprotect')
 	for row in self.cursor:
 	    idprotects.add(row[0])
 	for idprotect in idprotects:

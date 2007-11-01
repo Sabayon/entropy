@@ -4,6 +4,8 @@ TODO list:
   - regenerate client database from / content
   - triggers:
 	- alternatives eclass
+	  :: sqlite needs it (/usr/bin/lemon)
+
   - branch reorganization based on the release:
     - install only looks inside the configured branch
     - move branches to version naming (3.5, 3.6, 3.7) instead of using stable, unstable...
