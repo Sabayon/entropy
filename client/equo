@@ -70,8 +70,9 @@ def print_help():
 
     print_info(" \t"+blue(bold("query"))+brown("\t\t do misc queries on repository and local databases"))
     print_info(" \t\t"+darkgreen("installed")+red("\t\t search a package into the local database"))
-    print_info(" \t\t"+darkgreen("belongs")+red("\t\t\t search from what package a file belongs"))
+    print_info(" \t\t"+darkgreen("belongs")+red("\t\t\t search from what package a file belongs [*filename* allowed]"))
     print_info(" \t\t"+darkgreen("depends")+red("\t\t\t search which packages depend on the provided atoms"))
+    print_info(" \t\t"+darkgreen("needed")+red("\t\t\t print runtime libraries needed for the provided atoms"))
     print_info(" \t\t"+darkgreen("files")+red("\t\t\t search files owned by the provided atoms"))
     print_info(" \t\t"+darkgreen("removal")+red("\t\t\t print the removal tree for specified atoms"))
     print_info(" \t\t\t"+red("--deep")+"\t\t also pull unused dependencies where depends list is empty")

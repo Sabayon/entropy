@@ -226,7 +226,7 @@ _lastline = _cleanline
 
 def enlightenatom(atom):
     out = atom.split("/")
-    return blue(out[0])+darkgreen("/")+red(out[1])
+    return blue(out[0])+"/"+red(out[1])
 
 def print_error(msg, back = False):
     global _lastline

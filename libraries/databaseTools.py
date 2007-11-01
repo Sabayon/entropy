@@ -2967,6 +2967,25 @@ class etpDatabase:
 	    result.append(row[0])
 	return result
 
+    ''' search packages that need the specified library (in neededreference table) specified by keyword '''
+    def searchNeeded(self, keyword):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchNeeded: called for "+keyword)
+	idpackages = set()
+	self.cursor.execute('SELECT needed.idpackage FROM needed,neededreference WHERE library = "'+keyword+'" and needed.idneeded = neededreference.idneeded')
+	for row in self.cursor:
+	    idpackages.add(row[0])
+	return idpackages
+
+    ''' same as above but with branch support '''
+    def searchNeededInBranch(self, keyword, branch):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchNeeded: called for "+keyword+" and branch: "+branch)
+	idpackages = set()
+	self.cursor.execute('SELECT needed.idpackage FROM needed,neededreference,baseinfo WHERE library = "'+keyword+'" and needed.idneeded = neededreference.idneeded and baseinfo.branch = "'+branch+'"')
+	for row in self.cursor:
+	    idpackages.add(row[0])
+	return idpackages
+
+
     ''' search dependency string inside dependenciesreference table and retrieve iddependency '''
     def searchDependency(self, dep):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchDependency: called for "+dep)

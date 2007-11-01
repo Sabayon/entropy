@@ -69,6 +69,9 @@ def query(options):
     elif myopts[0] == "files":
 	rc = searchFiles(myopts[1:], quiet = equoRequestQuiet)
 
+    elif myopts[0] == "needed":
+	rc = searchNeeded(myopts[1:], quiet = equoRequestQuiet)
+
     elif myopts[0] == "removal":
 	rc = searchRemoval(myopts[1:], quiet = equoRequestQuiet, deep = equoRequestDeep)
 
@@ -132,8 +135,10 @@ def searchBelongs(files, idreturn = False, quiet = False):
     for file in files:
 	like = False
 	if file.find("*") != -1:
+	    import re
+	    out = re.subn("\*","%",file)
+	    file = out[0]
 	    like = True
-	    file = "%"+file+"%"
 	result = clientDbconn.searchBelongs(file, like)
 	if (result):
 	    # print info
@@ -215,6 +220,37 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
     
     return 0
 
+def searchNeeded(atoms, idreturn = False, quiet = False):
+    
+    if (not idreturn) and (not quiet):
+        print_info(yellow(" @@ ")+darkgreen("Needed Search..."))
+
+    clientDbconn = openClientDatabase()
+    dataInfo = [] # when idreturn is True
+    
+    for atom in atoms:
+	match = clientDbconn.atomMatch(atom)
+	if (match[0] != -1):
+	    # print info
+	    myatom = clientDbconn.retrieveAtom(match[0])
+	    myneeded = clientDbconn.retrieveNeeded(match[0])
+	    if (not idreturn) and (not quiet):
+	        print_info(blue("     Atom: ")+bold("\t"+myatom))
+	        print_info(blue("     Found:   ")+bold("\t"+str(len(myneeded)))+red(" libraries"))
+	    for needed in myneeded:
+		if (idreturn):
+		    dataInfo.append(needed)
+		elif (quiet):
+		    print needed
+		else:
+		    print_info(blue("       # ")+red(str(needed)))
+	
+    clientDbconn.closeDB()
+
+    if (idreturn):
+	return dataInfo
+    
+    return 0
 
 def searchFiles(atoms, idreturn = False, quiet = False):
     

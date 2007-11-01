@@ -29,7 +29,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extactDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, dep_striptag, md5sum, allocateMaskedFile, istextfile
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extactDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber
 from databaseTools import etpDatabase
 import triggerTools
 import confTools
@@ -617,7 +617,7 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
 		    continue
 
 	    ### conflict
-	    if dependency.startswith("!"):
+	    if dependency[0] == "!":
 		testdep = dependency[1:]
 		xmatch = clientDbconn.atomMatch(testdep)
 		if xmatch[0] != -1:
@@ -715,7 +715,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
                 continue
 
 	    # Handling conflicts
-	    if undep.startswith("!"):
+	    if undep[0] == "!":
 		xmatch = clientDbconn.atomMatch(undep[1:])
 		conflicts.add(xmatch[0])
 		continue
@@ -728,7 +728,6 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 		continue
 	    
 	    # handle possible library breakage
-	    '''
 	    action = filterSatisfiedDependenciesCmpResults.get(undep)
 	    if action and ((action < 0) or (action > 0)): # do not use != 0 since action can be "None"
 		i = clientDbconn.atomMatch(undep)
@@ -738,11 +737,29 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 		        ndbconn = openRepositoryDatabase(atom[1])
 		        needed = ndbconn.retrieveNeeded(atom[0])
 		        ndbconn.closeDB()
-		        needed.difference_update(oldneeded)
-			if needed:
-		            print needed
-	    '''
-	    
+		        oldneeded.difference_update(needed)
+			if oldneeded:
+			    # reverse lookup to find belonging package
+			    for need in oldneeded:
+				myidpackages = clientDbconn.searchNeeded(need)
+				for myidpackage in myidpackages:
+				    myname = clientDbconn.retrieveName(myidpackage)
+				    mycategory = clientDbconn.retrieveCategory(myidpackage)
+				    myslot = clientDbconn.retrieveSlot(myidpackage)
+				    mykey = mycategory+"/"+myname
+				    mymatch = atomMatch(mykey, matchSlot = myslot) # search in our repo
+				    if mymatch[0] != -1:
+					mydbconn = openRepositoryDatabase(mymatch[1])
+					mynewatom = mydbconn.retrieveAtom(mymatch[0])
+					mydbconn.closeDB()
+					if not treecache.get(mynewatom):
+					    tree[treedepth].add(mynewatom)
+					    treecache[mynewatom] = True
+				    else:
+					#FIXME: we bastardly ignore the missing library for now
+					continue
+				# retrieve packages that need it, in the right branch!
+			    
 	    # add to the tree level
 	    tree[treedepth].add(undep)
 	    treecache[undep] = True
@@ -761,7 +778,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 		    deps, xxx = filterSatisfiedDependencies(deps, deepdeps = deepdeps)
 		for x in deps:
 		    unsatisfiedDeps.add(x)
-	tree[treedepth] = list(tree[treedepth])
+	#tree[treedepth] = list(tree[treedepth])
 	
     clientDbconn.closeDB()
 
@@ -1916,8 +1933,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     updateList = []
     fineList = set()
     removedList = set()
-    print "FIXME: re-enable syncRepositories()"
-    #syncRepositories()
+    syncRepositories()
     
     clientDbconn = openClientDatabase()
     # get all the installed packages
@@ -1935,6 +1951,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	slot = clientDbconn.retrieveSlot(idpackage)
 	atomkey = category+"/"+name
 	# search in the packages
+	# FIXME: is it useful to do two atomMatch ??
 	match = atomMatch(atom)
 	if match[0] == -1: # atom has been changed, or removed?
 	    tainted = True
@@ -2234,12 +2251,14 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    if not (ask or pretend or verbose):
 		continue
 
+	    action = 0
 	    flags = " ["
 	    cmp = compareVersions([pkgver,pkgtag,pkgrev],[installedVer,installedTag,installedRev])
 	    if (cmp == 0):
 		pkgsToReinstall += 1
 		actionQueue[pkgatom]['removeidpackage'] = -1 # disable removal, not needed
 	        flags += red("R")
+		action = 1
 	    elif (cmp > 0):
 	        if (installedVer == "0"):
 		    pkgsToInstall += 1
@@ -2248,18 +2267,27 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	        else:
 		    pkgsToUpdate += 1
 		    flags += blue("U")
+		    action = 2
 	    else:
 		pkgsToDowngrade += 1
 	        flags += darkblue("D")
+		action = -1
 	    flags += "] "
 
 	    # disable removal for packages already in removalQueue
 	    if actionQueue[pkgatom]['removeidpackage'] in removalQueue:
 		actionQueue[pkgatom]['removeidpackage'] = -1
 
-	    repoinfo = red("[")+brown("from: ")+bold(packageInfo[1])+red("] ")
+	    repoinfo = red("[")+bold(packageInfo[1])+red("] ")
+	    oldinfo = ''
+	    if action != 0:
+		oldinfo = "   ["+blue(installedVer)+"/"+red(str(installedRev))
+		oldtag = "]"
+		if installedTag:
+		    oldtag = "/"+darkred(installedTag)+oldtag
+		oldinfo += oldtag
 
-	    print_info(darkgreen("   ##")+flags+repoinfo+blue(enlightenatom(str(pkgatom))))
+	    print_info(darkred(" ##")+flags+repoinfo+enlightenatom(str(pkgatom))+"/"+str(pkgrev)+oldinfo)
 	    dbconn.closeDB()
 
 	# show download info
