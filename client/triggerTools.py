@@ -76,7 +76,8 @@ def postinstall(pkgdata):
     # update gconf db and icon cache
     if "gnome2" in pkgdata['eclasses']:
 	functions.add('iconscache')
-	functions.add('gconfreload') # FIXME: add gnome2 gconf schemas installation 
+	functions.add('gconfinstallschemas')
+	functions.add('gconfreload')
 
     # prepare content
     mycnt = set(pkgdata['content'])
@@ -343,6 +344,17 @@ def kbuildsycoca(pkgdata):
 		equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca to build global KDE database")
 		print_info(" "+brown("[POST] Running kbuildsycoca to build global KDE database"))
 		os.system(builddir+"/bin/kbuildsycoca --global --noincremental &> /dev/null")
+
+def gconfinstallschemas(pkgdata):
+    gtest = os.system("which gconftool-2 &> /dev/null")
+    if gtest == 0:
+	schemas = [x for x in pkgdata['content'] if x.startswith("/etc/gconf/schemas") and x.endswith(".schemas")]
+	for schema in schemas:
+	    os.system("""
+	    unset GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL
+	    export GCONF_CONFIG_SOURCE=$(gconftool-2 --get-default-source)
+	    gconftool-2 --makefile-install-rule """+schema+""" 1>/dev/null
+	    """)
 
 ########################################################
 ####

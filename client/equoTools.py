@@ -1997,7 +1997,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     else:
 	print_info(red(" @@ ")+blue("Nothing to remove."))
 
-    clientDbconn.closeDB() # don't need to save cache
+    clientDbconn.closeDB()
     return 0,0
 
 def installPackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False):

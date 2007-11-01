@@ -376,6 +376,8 @@ def loadcache():
 		    raise Exception
 	    except:
 		raise Exception
+	else:
+	    raise Exception
     except:
 	raise Exception
 
