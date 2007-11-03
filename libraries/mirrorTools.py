@@ -39,7 +39,6 @@ mirrorLog = logTools.LogFile(level=etpConst['mirrorsloglevel'],filename = etpCon
 
 class handlerFTP:
 
-    # ftp://linuxsabayon:asdasd@silk.dreamhost.com/sabayon.org
     # this must be run before calling the other functions
     def __init__(self, ftpuri, debug = None):
 
@@ -48,8 +47,6 @@ class handlerFTP:
 	    debug = True
 	else:
 	    debug = False
-	# FIXME: remove this
-	#debug = True
 
         # import FTP modules
         import timeoutsocket
@@ -207,6 +204,11 @@ class handlerFTP:
 	except:
 	    mirrorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"handlerFTP.deleteFile: result -> False (exception occured!!!)")
 	    return False
+
+    def mkdir(self,directory):
+	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.mkdir: called for -> "+str(directory))
+	# FIXME: add rc
+	self.ftpconn.mkd(directory)
 
     # this function also supports callback, because storbinary doesn't
     def advancedStorBinary(self, cmd, fp, callback=None, blocksize=8192):

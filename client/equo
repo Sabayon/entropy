@@ -40,9 +40,7 @@ def print_help():
     print_info(" \t"+blue("status")+brown("\t\t show respositories status"))
     
     print_info(" \t"+blue("search")+brown("\t\t search a package trough repositories"))
-    print_info(" \t"+blue("world")+brown("\t\t update packages to the latest version"))
-    print_info(" \t\t"+darkgreen("update")+red("\t\t\t update the system in the current branch"))
-    print_info(" \t\t"+darkgreen("upgrade")+red("\t\t\t upgrade the system to the latest branch"))
+    print_info(" \t"+blue("world")+brown("\t\t update system with the latest available packages"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t"+red("--fetch")+"\t\t\t just download packages without doing the install")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
@@ -85,12 +83,13 @@ def print_help():
 
     print_info(" \t"+blue("database")+brown("\t handle installed packages database"))
     print_info(" \t\t"+darkgreen("generate")+red("\t\t generate installed packages database"))
+    print_info(" \t\t"+darkgreen("resurrect")+red("\t\t generate installed packages database using system content [last hope]"))
     print_info(" \t\t"+darkgreen("depends")+red("\t\t\t to regenerate/generate depends caching table"))
     print_info(" \t"+blue("cache")+brown("\t\t handle Equo on-disk cache"))
     print_info(" \t\t"+darkgreen("clean")+red("\t\t\t clean on-disk cache"))
     print_info(" \t\t"+darkgreen("generate")+red("\t\t generate on-disk cache (to speed up Equo)"))
     print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
-    print_info(" \t\t"+red("--verbose")+"\t\t\t show more details about what's going on")
+    print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
     print_info(" \t"+blue("cleanup")+brown("\t\t remove downloaded packages and clean temporary directories (not cache)"))
     print_info(" \t"+blue("--info")+brown("\t\t show system information"))
     

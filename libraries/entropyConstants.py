@@ -389,8 +389,8 @@ etpConst = {
     'preinstallscript': "preinstall.sh", # used by the client to run some pre-install actions
     'postinstallscript': "postinstall.sh", # used by the client to run some post-install actions
     
-    'branches': ["stable","unstable"], # available branches, do not scramble!
-    'branch': "unstable", # choosen branch
+    'branches': ["3.5","2008"], # available branches, this only exists for the server part
+    'branch': "3.5", # choosen branch
     'gentoo-compat': False, # Gentoo compatibility (/var/db/pkg + Portage availability)
     'filesystemdirs': ['/bin','/boot','/emul','/etc','/lib','/lib32','/lib64','/opt','/sbin','/usr','/var'], # directory of the filesystem
     'filesystemdirsmask': [
@@ -562,6 +562,45 @@ else:
 		import time
 		time.sleep(5)
 
+# Client packages/database repositories
+etpRepositories = {}
+etpRepositoriesOrder = []
+if os.path.isfile(etpConst['repositoriesconf']):
+    f = open(etpConst['repositoriesconf'],"r")
+    repositoriesconf = f.readlines()
+    f.close()
+    
+    for line in repositoriesconf:
+	line = line.strip()
+        # populate etpRepositories
+	if (line.find("repository|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 5):
+	    reponame = line.split("|")[1]
+	    repodesc = line.split("|")[2]
+	    repopackages = line.split("|")[3]
+	    repodatabase = line.split("|")[4]
+	    if (repopackages.startswith("http://") or repopackages.startswith("ftp://")) and (repodatabase.startswith("http://") or repodatabase.startswith("ftp://")):
+		etpRepositories[reponame] = {}
+		etpRepositoriesOrder.append(reponame)
+		etpRepositories[reponame]['description'] = repodesc
+		etpRepositories[reponame]['packages'] = []
+		for x in repopackages.split():
+		    etpRepositories[reponame]['packages'].append(x)
+		etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['currentarch']
+		etpRepositories[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['currentarch']
+		# initialize CONFIG_PROTECT - will be filled the first time the db will be opened
+		etpRepositories[reponame]['configprotect'] = set()
+		etpRepositories[reponame]['configprotectmask'] = set()
+	elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+	    branch = line.split("|")[1]
+	    etpConst['branch'] = branch
+	    if branch not in etpConst['branches']:
+		etpConst['branches'].append(branch)
+		if not os.path.isdir(etpConst['packagesbindir']+"/"+branch):
+        	    if os.getuid() == 0:
+			os.makedirs(etpConst['packagesbindir']+"/"+branch)
+		    else:
+			print "ERROR: please run equo as root at least once or create: "+str(etpConst['packagesbindir']+"/"+branch)
+			sys.exit(49)
 
 # database section
 if (not os.path.isfile(etpConst['databaseconf'])):

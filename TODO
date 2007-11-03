@@ -1,19 +1,17 @@
 TODO list:
 - reagent: complete smartapps section
   CLIENT:
-  - regenerate client database from / content
-  - triggers:
-	- alternatives eclass
-	  :: sqlite needs it (/usr/bin/lemon)
-
+  - add external triggerable hooks support
   - branch reorganization based on the release:
     - install only looks inside the configured branch
     - move branches to version naming (3.5, 3.6, 3.7) instead of using stable, unstable...
+  - atom|tag ?
 
   - add scripts directory that contains pre/post-install-remove scripts that is synced using activator
   - include more triggers
   - optimize database interface
   - add multithreading support
+  - limit items/size in on-disk cache?
 
 Project Status:
 - reagent: complete. Stabilization mode.

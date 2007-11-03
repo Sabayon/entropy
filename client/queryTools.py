@@ -27,7 +27,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from databaseTools import etpDatabase
-from entropyTools import dep_getkey
+from entropyTools import dep_getkey, dep_getslot, remove_slot
 from equoTools import openClientDatabase, openRepositoryDatabase, printPackageInfo, generateDependsTree, atomMatch # move them away?
 
 ########################################################
@@ -101,7 +101,9 @@ def searchInstalledPackages(packages, idreturn = False, quiet = False):
     dataInfo = [] # when idreturn is True
     
     for package in packages:
-	result = clientDbconn.searchPackages(package)
+	slot = dep_getslot(package)
+	package = remove_slot(package)
+	result = clientDbconn.searchPackages(package, slot = slot)
 	if (result):
 	    # print info
 	    if (not idreturn) and (not quiet):
@@ -132,6 +134,8 @@ def searchBelongs(files, idreturn = False, quiet = False):
     clientDbconn = openClientDatabase()
     dataInfo = [] # when idreturn is True
     
+    results = {}
+    flatresults = {}
     for file in files:
 	like = False
 	if file.find("*") != -1:
@@ -139,9 +143,18 @@ def searchBelongs(files, idreturn = False, quiet = False):
 	    out = re.subn("\*","%",file)
 	    file = out[0]
 	    like = True
-	result = clientDbconn.searchBelongs(file, like)
-	if (result):
+	results[file] = set()
+	idpackages = clientDbconn.searchBelongs(file, like)
+	for idpackage in idpackages:
+	    if not flatresults.get(idpackage):
+		results[file].add(idpackage)
+		flatresults[idpackage] = True
+    
+    if (results):
+	for result in results:
 	    # print info
+	    file = result
+	    result = results[result]
 	    if (not idreturn) and (not quiet):
 	        print_info(blue("     Keyword: ")+bold("\t"+file))
 	        print_info(blue("     Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
@@ -466,10 +479,12 @@ def searchPackage(packages, idreturn = False):
 	dbconn = openRepositoryDatabase(repo)
 	dataInfo = [] # when idreturn is True
 	for package in packages:
-	    result = dbconn.searchPackages(package)
+	    slot = dep_getslot(package)
+	    package = remove_slot(package)
+	    result = dbconn.searchPackages(package, slot = slot)
 	    
 	    if (not result): # look for provide
-		provide = dbconn.searchProvide(package)
+		provide = dbconn.searchProvide(package, slot = slot)
 		if (provide):
 		    result = [[provide[0],provide[1]]]
 		
@@ -484,14 +499,6 @@ def searchPackage(packages, idreturn = False):
 		    idpackage = pkg[1]
 		    atom = pkg[0]
 		    branch = dbconn.retrieveBranch(idpackage)
-		    # does the package exist in the selected branch?
-		    if etpConst['branch'] != branch:
-			# get branch name position in branches
-			myBranchIndex = etpConst['branches'].index(etpConst['branch'])
-			foundBranchIndex = etpConst['branches'].index(branch)
-			if foundBranchIndex > myBranchIndex:
-			    # package found in branch more unstable than the selected one, for us, it does not exist
-			    continue
 		    if (idreturn):
 			dataInfo.append([idpackage,repo])
 		    else:

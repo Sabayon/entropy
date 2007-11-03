@@ -328,11 +328,11 @@ def fetchRepositoryIfNotAvailable(reponame):
 '''
    @description: matches the package that user chose, using dbconnection.atomMatch searching in all available repositories.
    @input atom: user choosen package name
-   @output: the matched selection, list: [package id,repository name] | if nothing found, returns: [ -1,1 ]
+   @output: the matched selection, list: [package id,repository name] | if nothing found, returns: ( -1,1 )
    @ exit errors:
 	    -1 => repository cannot be fetched online
 '''
-def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = [], xcache = True):
+def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), xcache = True): # no one seems to use matchBranches :D
 
     #print atom
     if xcache:
@@ -356,7 +356,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = [], 
 	dbconn = openRepositoryDatabase(repo, xcache = xcache)
 	
 	# search
-	query = dbconn.atomMatch(atom, caseSentitive, matchSlot, matchBranches = matchBranches)
+	query = dbconn.atomMatch(atom, caseSensitive = caseSentitive, matchSlot = matchSlot, matchBranches = matchBranches)
 	if query[1] == 0:
 	    # package found, add to our dictionary
 	    repoResults[repo] = query[0]
@@ -574,11 +574,11 @@ def getDependencies(packageInfo):
 	dbconn = openRepositoryDatabase(reponame)
     
     # retrieve dependencies
-    depend = dbconn.retrieveDependencies(idpackage)
+    depend = set(dbconn.retrieveDependencies(idpackage))
     # and conflicts
-    conflicts = dbconn.retrieveConflicts(idpackage)
+    conflicts = set(dbconn.retrieveConflicts(idpackage))
     for x in conflicts:
-	depend.append("!"+x)
+	depend.add("!"+x)
     dbconn.closeDB()
 
     ''' caching '''
@@ -1476,7 +1476,7 @@ def installPackageIntoGentooDatabase(infoDict,packageFile):
 	#print _portage_getInstalledAtom(key)
 	atomsfound = set()
 	for xdir in os.listdir(portDbDir):
-	    if xdir == (infoDict['category']):
+	    if (xdir == infoDict['category']):
 		for ydir in os.listdir(portDbDir+"/"+xdir):
 		    if (key == dep_getkey(xdir+"/"+ydir)):
 			atomsfound.add(xdir+"/"+ydir)
@@ -1574,7 +1574,6 @@ def installPackageIntoDatabase(idpackage, repository):
 		    clientDbconn.addDependRelationToDependsTable(iddep,match[0])
 
 	except:
-	    print "DEBUG!!! dependstable not found"
 	    clientDbconn.regenerateDependsTable()
 
     clientDbconn.closeDB()
@@ -1671,13 +1670,8 @@ def package(options):
 	    rc = 127
 
     elif (options[0] == "world"):
-	myopts = options[1:]
-	doupgrade = False
-	for opt in myopts:
-	    if opt == "upgrade":
-		doupgrade = True
 	loadCaches()
-	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch, upgrade = doupgrade)
+	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch)
 
     elif (options[0] == "remove"):
 	if len(myopts) > 0:
@@ -1706,9 +1700,10 @@ def database(options):
 
     if (options[0] == "generate"):
 	
-	print_warning(bold("####### ATTENTION -> ")+red("The installed package database will be regenerated, this will take a LOT of time."))
+	print_warning(bold("####### ATTENTION -> ")+red("The installed package database will be regenerated."))
 	print_warning(bold("####### ATTENTION -> ")+red("Sabayon Linux Officially Repository MUST be on top of the repositories list in ")+etpConst['repositoriesconf'])
 	print_warning(bold("####### ATTENTION -> ")+red("This method is only used for testing at the moment and you need Portage installed. Don't worry about Portage warnings."))
+	print_warning(bold("####### ATTENTION -> ")+red("Please use this function ONLY if you are using an Entropy-enabled Sabayon distribution."))
 	rc = askquestion("     Can I continue ?")
 	if rc == "No":
 	    sys.exit(0)
@@ -1718,6 +1713,11 @@ def database(options):
 	rc = askquestion("     Do you even know what you're doing ?")
 	if rc == "No":
 	    sys.exit(0)
+
+	# clean caches
+	import cacheTools
+	cacheTools.cleanCache(quiet = True)
+	const_resetCache()
 	
 	# ok, he/she knows it... hopefully
 	# if exist, copy old database
@@ -1790,6 +1790,101 @@ def database(options):
 	print_info(red("  Database reinitialized successfully."))
 
 	clientDbconn.closeDB()
+
+    elif (options[0] == "resurrect"):
+
+	print_warning(bold("####### ATTENTION -> ")+red("The installed package database will be resurrected, this will take a LOT of time."))
+	print_warning(bold("####### ATTENTION -> ")+red("Please use this function ONLY if you are using an Entropy-enabled Sabayon distribution."))
+	rc = askquestion("     Can I continue ?")
+	if rc == "No":
+	    sys.exit(0)
+	rc = askquestion("     Are you REALLY sure ?")
+	if rc == "No":
+	    sys.exit(0)
+	rc = askquestion("     Do you even know what you're doing ?")
+	if rc == "No":
+	    sys.exit(0)
+	
+	# clean caches
+	import cacheTools
+	cacheTools.cleanCache(quiet = True)
+	const_resetCache()
+
+	# ok, he/she knows it... hopefully
+	# if exist, copy old database
+	print_info(red(" @@ ")+blue("Creating backup of the previous database, if exists.")+red(" @@"))
+	newfile = backupClientDatabase()
+	if (newfile):
+	    print_info(red(" @@ ")+blue("Previous database copied to file ")+newfile+red(" @@"))
+	
+	# Now reinitialize it
+	print_info(darkred("  Initializing the new database at "+bold(etpConst['etpdatabaseclientfilepath'])), back = True)
+	clientDbconn = openClientDatabase()
+	clientDbconn.initializeDatabase()
+	print_info(darkgreen("  Database reinitialized correctly at "+bold(etpConst['etpdatabaseclientfilepath'])))
+	
+	print_info(red("  Collecting installed files. Writing: "+etpConst['packagestmpfile']+" Please wait..."), back = True)
+	
+	# since we use find, see if it's installed
+	find = os.system("which find &> /dev/null")
+	if find != 0:
+	    print_error(darkred("Attention: ")+red("You must have 'find' installed!"))
+	    return
+	# spawn process
+	if os.path.isfile(etpConst['packagestmpfile']):
+	    os.remove(etpConst['packagestmpfile'])
+	os.system("find / -mount 1> "+etpConst['packagestmpfile'])
+	if not os.path.isfile(etpConst['packagestmpfile']):
+	    print_error(darkred("Attention: ")+red("find couldn't generate an output file."))
+	    return
+	
+	f = open(etpConst['packagestmpfile'],"r")
+	# creating list of files
+	filelist = set()
+	file = f.readline().strip()
+	while file:
+	    filelist.add(file)
+	    file = f.readline().strip()
+	f.close()
+	entries = len(filelist)
+	
+	print_info(red("  Found "+str(entries)+" files on the system. Assigning packages..."))
+	atoms = {}
+	pkgsfound = set()
+	
+	for repo in etpRepositories:
+	    print_info(red("  Matching in repository: ")+etpRepositories[repo]['description'])
+	    # get all idpackages
+	    dbconn = openRepositoryDatabase(repo)
+	    idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'])
+	    count = str(len(idpackages))
+	    cnt = 0
+	    for idpackage in idpackages:
+		cnt += 1
+		idpackageatom = dbconn.retrieveAtom(idpackage)
+		print_info("  ("+str(cnt)+"/"+count+")"+red(" Matching files from packages..."), back = True)
+		# content
+		content = dbconn.retrieveContent(idpackage)
+		for file in content:
+		    if file in filelist:
+			pkgsfound.add((idpackage,repo))
+			atoms[(idpackage,repo)] = idpackageatom
+			filelist.difference_update(set(content))
+			break
+	    dbconn.closeDB()
+	
+	print_info(red("  Found "+str(len(pkgsfound))+" packages. Filling database..."))
+	count = str(len(pkgsfound))
+	cnt = 0
+	#XXXos.remove(etpConst['packagestmpfile'])
+	
+	for pkgfound in pkgsfound:
+	    cnt += 1
+	    print_info("  ("+str(cnt)+"/"+count+") "+red("Adding: ")+atoms[pkgfound], back = True)
+	    installPackageIntoDatabase(pkgfound[0],pkgfound[1])
+
+	print_info(red("  Database resurrected successfully."))
+	print_warning(red("  Keep in mind that virtual/meta packages couldn't be matched. They don't own any files."))
 
     elif (options[0] == "depends"):
 	print_info(red("  Regenerating depends caching table..."))
@@ -1917,18 +2012,14 @@ def openClientDatabase(xcache = True):
 #
 
 
-def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False, upgrade = False):
+def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False):
 
     # check if I am root
     if (not isRoot()) and (not pretend):
 	print_error(red("You must run this function as superuser."))
 	return 1,-1
 
-    if (not upgrade):
-	branches = [etpConst['branch']]
-    else:
-	branches = etpConst['branches']
-    
+    branches = (etpConst['branch'],)
     updateList = []
     fineList = set()
     removedList = set()
@@ -1982,7 +2073,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 
     if (updateList):
         print_info(red(" @@ ")+blue("Calculating queue..."))
-        rc = installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch, deepdeps = upgrade)
+        rc = installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch)
 	if rc[0] != 0:
 	    return rc
     else:

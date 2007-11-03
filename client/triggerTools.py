@@ -64,6 +64,9 @@ def postinstall(pkgdata):
     if pkgdata['category']+"/"+pkgdata['name'] == "dev-lang/python":
 	functions.add("pythoninst")
 
+    if pkgdata['category']+"/"+pkgdata['name'] == "dev-db/sqlite":
+	functions.add('sqliteinst')
+
     # kde package ?
     if "kde" in pkgdata['eclasses']:
 	functions.add("kbuildsycoca")
@@ -78,6 +81,9 @@ def postinstall(pkgdata):
 	functions.add('iconscache')
 	functions.add('gconfinstallschemas')
 	functions.add('gconfreload')
+
+    if pkgdata['name'] == "pygtk":
+	functions.add('pygtksetup')
 
     # prepare content
     mycnt = set(pkgdata['content'])
@@ -127,11 +133,25 @@ def postremove(pkgdata):
     
     # opengl configuration
     if pkgdata['category'] == "x11-drivers":
-	functions.add("openglsetup")
+	functions.add("openglsetup_xorg")
 
     # kde package ?
     if "kde" in pkgdata['eclasses']:
 	functions.add("kbuildsycoca")
+
+    if pkgdata['name'] == "pygtk":
+	functions.add('pygtkremove')
+
+    if pkgdata['category']+"/"+pkgdata['name'] == "dev-db/sqlite":
+	functions.add('sqliteinst')
+
+    # python configuration
+    if pkgdata['category']+"/"+pkgdata['name'] == "dev-lang/python":
+	functions.add("pythoninst")
+
+    # fonts configuration
+    if pkgdata['category'] == "media-fonts":
+	functions.add("fontconfig")
 
     # prepare content
     mycnt = set(pkgdata['removecontent'])
@@ -243,12 +263,17 @@ def kernelmod(pkgdata):
     update_moduledb(item)
     print_info(" "+brown("[POST] Running depmod..."))
     kos = [x for x in pkgdata['content'] if x.startswith("/lib/modules") and x.endswith(".ko")]
-    run_depmod(kos, pkgdata['versiontag'])
+    run_depmod()
 
 def pythoninst(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Python...")
     print_info(" "+brown("[POST] Configuring Python..."))
     python_update_symlink()
+
+def sqliteinst(pkgdata):
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring SQLite...")
+    print_info(" "+brown("[POST] Configuring SQLite..."))
+    sqlite_update_symlink()
 
 def initdisable(pkgdata):
     mycnt = set(pkgdata['removecontent'])
@@ -278,6 +303,16 @@ def openglsetup(pkgdata):
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to "+opengl+" ...")
 	print_info(" "+brown("[POST] Reconfiguring OpenGL..."))
 	os.system("eselect opengl set --use-old "+opengl)
+    else:
+	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
+	print_info(" "+brown("[POST] Eselect NOT found, cannot run OpenGL trigger"))
+
+def openglsetup_xorg(pkgdata):
+    eselect = os.system("eselect opengl &> /dev/null")
+    if eselect == 0:
+	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to fallback xorg-x11 ...")
+	print_info(" "+brown("[POST] Reconfiguring OpenGL..."))
+	os.system("eselect opengl set xorg-x11")
     else:
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
 	print_info(" "+brown("[POST] Eselect NOT found, cannot run OpenGL trigger"))
@@ -349,12 +384,25 @@ def gconfinstallschemas(pkgdata):
     gtest = os.system("which gconftool-2 &> /dev/null")
     if gtest == 0:
 	schemas = [x for x in pkgdata['content'] if x.startswith("/etc/gconf/schemas") and x.endswith(".schemas")]
+	print_info(" "+brown("[POST] Installing GConf2 schemas..."))
 	for schema in schemas:
 	    os.system("""
 	    unset GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL
 	    export GCONF_CONFIG_SOURCE=$(gconftool-2 --get-default-source)
 	    gconftool-2 --makefile-install-rule """+schema+""" 1>/dev/null
 	    """)
+
+def pygtksetup(pkgdata):
+    python_sym_files = [x for x in pkgdata['content'] if x.startswith("/usr/lib/python") and (x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0"))]
+    for file in python_sym_files:
+	if os.path.isfile(file):
+	    os.symlink(file,file[:-4])
+
+def pygtkremove(pkgdata):
+    python_sym_files = [x for x in pkgdata['content'] if x.startswith("/usr/lib/python") and (x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0"))]
+    for file in python_sym_files:
+	if os.path.isfile(file[:-4]):
+	    os.remove(file[:-4])
 
 ########################################################
 ####
@@ -479,10 +527,9 @@ def update_moduledb(item):
    @description: insert kernel object into kernel modules db
    @output: returns int() as exit status
 '''
-def run_depmod(files, kv):
+def run_depmod():
     if os.access('/sbin/depmod',os.X_OK):
-	for file in files:
-	    rc = os.system('/sbin/depmod -a -v '+kv+' '+file+' &> /dev/null')
+	os.system('/sbin/depmod -a &> /dev/null')
     return 0
 
 '''
@@ -493,9 +540,21 @@ def python_update_symlink():
     bins = [x for x in os.listdir("/usr/bin") if x.startswith("python2.")]
     versions = [x[6:] for x in bins]
     versions.sort()
-    latest = versions[len(versions)-1]
+    latest = versions[-1]
     os.system('ln -sf /usr/bin/python'+str(latest)+' /usr/bin/python')
     os.system('ln -sf /usr/bin/python'+str(latest)+' /usr/bin/python2')
+    return 0
+
+'''
+   @description: update /usr/bin/lemon symlink
+   @output: returns int() as exit status
+'''
+def sqlite_update_symlink():
+    bins = [x for x in os.listdir("/usr/bin") if x.startswith("lemon-")]
+    versions = [x[6:] for x in bins]
+    versions.sort()
+    latest = versions[-1]
+    os.system('ln -sf /usr/bin/lemon-'+str(latest)+' /usr/bin/lemon')
     return 0
 
 '''
@@ -521,6 +580,12 @@ def configure_boot_grub(kernel,initramfs):
 	grub = open("/boot/grub/grub.conf","aw")
 	# get boot dev
 	boot_dev = get_grub_boot_dev()
+	# test if entry has been already added
+	grubtest = open("/boot/grub/grub.conf","r")
+	content = grubtest.readlines()
+	if "title="+etpConst['systemname']+" ("+os.path.basename(kernel)+")\n" in content:
+	    grubtest.close()
+	    return
     else:
 	# create
 	boot_dev = "(hd0,0)"

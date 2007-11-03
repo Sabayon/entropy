@@ -347,7 +347,7 @@ def scanfs(quiet = True, dcache = True):
 		        scandata[counter] = mydict.copy()
 
 		    try:
-		        if (not quiet): print_info("("+blue(str(counter))+") "+red(" file: ")+filepath)
+		        if (not quiet): print_info("("+blue(str(counter))+") "+red(" file: ")+os.path.dirname(filepath)+"/"+os.path.basename(filepath)[10:])
 		    except:
 			pass # possible encoding issues
     # store data
