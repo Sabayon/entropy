@@ -718,6 +718,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	    if undep[0] == "!":
 		xmatch = clientDbconn.atomMatch(undep[1:])
 		conflicts.add(xmatch[0])
+		print undep
 		continue
 	    
 	    atom = atomMatch(undep)

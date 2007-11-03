@@ -1757,11 +1757,11 @@ class etpDatabase:
 	    self.createNeededTable()
 	    data['needed'] = self.retrieveNeeded(idpackage)
 	
-	mirrornames = []
+	mirrornames = set()
 	for x in data['sources']:
 	    if x.startswith("mirror://"):
 		mirrorname = x.split("/")[2]
-		mirrornames.append(mirrorname)
+		mirrornames.add(mirrorname)
 	data['mirrorlinks'] = []
 	for mirror in mirrornames:
 	    mirrorlinks = self.retrieveMirrorInfo(mirror)
@@ -2474,7 +2474,9 @@ class etpDatabase:
 	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
 
 	self.cursor.execute('SELECT "versiontag" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
-	ver = self.cursor.fetchone()[0]
+	ver = self.cursor.fetchone()
+	if ver:
+	    ver = ver[0]
 
 	''' caching '''
 	if (self.xcache):
@@ -2485,7 +2487,7 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveMirrorInfo: retrieving Mirror info for mirror name "+str(mirrorname))
 
 	self.cursor.execute('SELECT "mirrorlink" FROM mirrorlinks WHERE mirrorname = "'+str(mirrorname)+'"')
-	mirrorlist = self.cursor.fetchall()
+	mirrorlist = self.fetchall2set(self.cursor.fetchall())
 
 	return mirrorlist
 
@@ -2503,7 +2505,9 @@ class etpDatabase:
 	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
 
 	self.cursor.execute('SELECT category FROM baseinfo,categories WHERE baseinfo.idpackage = "'+str(idpackage)+'" and baseinfo.idcategory = categories.idcategory ')
-	cat = self.cursor.fetchone()[0]
+	cat = self.cursor.fetchone()
+	if cat:
+	    cat = cat[0]
 
 	''' caching '''
 	if (self.xcache):
@@ -2524,7 +2528,9 @@ class etpDatabase:
 	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
 
 	self.cursor.execute('SELECT license FROM baseinfo,licenses WHERE baseinfo.idpackage = "'+str(idpackage)+'" and baseinfo.idlicense = licenses.idlicense')
-	licname = self.cursor.fetchone()[0]
+	licname = self.cursor.fetchone()
+	if licname:
+	    licname = licname[0]
 
 	''' caching '''
 	if (self.xcache):
@@ -2545,10 +2551,14 @@ class etpDatabase:
 	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
 
 	self.cursor.execute('SELECT "idflags" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
-	idflag = self.cursor.fetchone()[0]
+	idflag = self.cursor.fetchone()
+	if idflag:
+	    idflag = idflag[0]
 	# now get the flags
 	self.cursor.execute('SELECT chost,cflags,cxxflags FROM flags WHERE idflags = '+str(idflag))
-        flags = self.cursor.fetchone()[0]
+        flags = self.cursor.fetchone()
+	if flags:
+	    flags = flags[0]
         if not flags:
             flags = ["N/A","N/A","N/A"]
 
@@ -2835,7 +2845,7 @@ class etpDatabase:
     def searchProvideInBranch(self, keyword, branch):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchProvideInBranch: called for "+keyword+" and branch: "+branch)
 	self.cursor.execute('SELECT idpackage FROM provide WHERE atom = "'+keyword+'"')
-	results = set()
+	results = []
         idpackages = self.fetchall2set(self.cursor.fetchall())
 	for idpackage in idpackages:
 	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
@@ -2845,7 +2855,7 @@ class etpDatabase:
 	        idpackage = data[1]
 	        pkgbranch = data[2]
 	        if (branch == pkgbranch):
-		    results.add((atom,idpackage))
+		    results.append((atom,idpackage))
 	return results
 
     def searchPackagesInBranch(self, keyword, branch, sensitive = False):
