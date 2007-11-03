@@ -230,7 +230,10 @@ def packages(options):
 	    
 	            print_info(green(" * ")+yellow("Fetching remote statistics..."), back = True)
 	            ftp = mirrorTools.handlerFTP(uri)
-	            ftp.setCWD(etpConst['binaryurirelativepath']+"/"+mybranch)
+		    ftp.setCWD(etpConst['binaryurirelativepath'])
+		    if (not ftp.isFileAvailable(mybranch)):
+			ftp.mkdir(mybranch)
+	            ftp.setCWD(mybranch)
 	            remotePackages = ftp.listDir()
 	            remotePackagesInfo = ftp.getRoughList()
 	            ftp.closeConnection()

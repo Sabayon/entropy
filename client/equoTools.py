@@ -621,9 +621,9 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
 		testdep = dependency[1:]
 		xmatch = clientDbconn.atomMatch(testdep)
 		if xmatch[0] != -1:
-		    depunsatisfied.add(dependency)
+		    unsatisfiedDeps.add(dependency)
 		else:
-		    depsatisfied.add(dependency)
+		    satisfiedDeps.add(dependency)
 		continue
 
 	    repoMatch = atomMatch(dependency)
@@ -635,7 +635,7 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
 		dbconn.closeDB()
 	    else:
 		# dependency does not exist in our database
-		depunsatisfied.add(dependency)
+		unsatisfiedDeps.add(dependency)
 		continue
 
 	    clientMatch = clientDbconn.atomMatch(dependency)
@@ -718,7 +718,6 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	    if undep[0] == "!":
 		xmatch = clientDbconn.atomMatch(undep[1:])
 		conflicts.add(xmatch[0])
-		print undep
 		continue
 	    
 	    atom = atomMatch(undep)
@@ -1915,6 +1914,7 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
         pkgcreatedate = convertUnixTimeToHumanTime(float(dbconn.retrieveDateCreation(idpackage)))
         pkgsize = bytesIntoHuman(pkgsize)
 	pkgdeps = dbconn.retrieveDependencies(idpackage)
+	pkgconflicts = dbconn.retrieveConflicts(idpackage)
 
     pkghome = dbconn.retrieveHomepage(idpackage)
     pkgslot = dbconn.retrieveSlot(idpackage)
@@ -1961,6 +1961,10 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
 	    print_info(darkred("       ##")+darkgreen(" Dependencies:"))
 	    for pdep in pkgdeps:
 		print_info(darkred("       ## \t\t\t")+brown(pdep))
+	if (pkgconflicts):
+	    print_info(darkred("       ##")+darkgreen(" Conflicts:"))
+	    for conflict in pkgconflicts:
+		print_info(darkred("       ## \t\t\t")+brown(conflict))
     print_info(darkgreen("       Homepage:\t\t")+red(pkghome))
     print_info(darkgreen("       Description:\t\t")+pkgdesc)
     if (not strictOutput):
