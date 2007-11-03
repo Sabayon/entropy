@@ -29,7 +29,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extactDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extactDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber
 from databaseTools import etpDatabase
 import triggerTools
 import confTools
@@ -334,7 +334,6 @@ def fetchRepositoryIfNotAvailable(reponame):
 '''
 def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), xcache = True): # no one seems to use matchBranches :D
 
-    #print atom
     if xcache:
         cached = atomMatchCache.get(atom)
         if cached:
@@ -365,7 +364,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 
     # handle repoResults
     packageInformation = {}
-
+    
     # nothing found
     if len(repoResults) == 0:
 	atomMatchCache[atom] = {}
@@ -759,7 +758,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 					#FIXME: we bastardly ignore the missing library for now
 					continue
 				# retrieve packages that need it, in the right branch!
-			    
+	    
 	    # add to the tree level
 	    tree[treedepth].add(undep)
 	    treecache[undep] = True
@@ -1148,7 +1147,7 @@ def removePackage(infoDict):
 
     # Handle gentoo database
     if (etpConst['gentoo-compat']):
-	gentooAtom = dep_striptag(atom) # FIXME: tags will be removed
+	gentooAtom = dep_striptag(remove_tag(atom)) # FIXME: remove dep_striptag asap
         equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package from Gentoo database: "+str(gentooAtom))
 	removePackageFromGentooDatabase(gentooAtom)
 

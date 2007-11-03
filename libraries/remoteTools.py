@@ -52,7 +52,14 @@ def getRemotePackageChecksum(serverName,filename, branch):
 	# not found, does not support HTTP handlers
 	return None
     
-    request = url+etpHandlers['md5sum']+filename+"&branch="+branch
+    # does the package has "#" (== tag) ? hackish thing that works
+    tag = entropyTools.dep_gettag(filename)
+    tagstring = ''
+    if tag:
+	filename = entropyTools.remove_tag(filename)
+	tagstring = "&tag="+tag
+    
+    request = url+etpHandlers['md5sum']+filename+"&branch="+branch+tagstring
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getRemotePackageChecksum: requested url -> "+request)
     
     # now pray the server

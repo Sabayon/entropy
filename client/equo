@@ -73,6 +73,7 @@ def print_help():
     print_info(" \t\t"+darkgreen("needed")+red("\t\t\t print runtime libraries needed for the provided atoms"))
     print_info(" \t\t"+darkgreen("files")+red("\t\t\t search files owned by the provided atoms"))
     print_info(" \t\t"+darkgreen("removal")+red("\t\t\t print the removal tree for specified atoms"))
+    print_info(" \t\t"+darkgreen("tags")+red("\t\t\t search packages that have the specified tags"))
     print_info(" \t\t\t"+red("--deep")+"\t\t also pull unused dependencies where depends list is empty")
     print_info(" \t\t"+darkgreen("list")+red("\t\t\t list packages based on the chosen parameter below"))
     print_info(" \t\t\t"+green("installed")+red("\t list installed packages"))

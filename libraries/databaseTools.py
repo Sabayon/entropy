@@ -318,7 +318,7 @@ def database(options):
 	
 	# sync packages
 	import activatorTools
-	#activatorTools.packages(["sync","--ask"])
+	activatorTools.packages(["sync","--ask"])
 	
 	print_info(green(" * ")+red("Switching selected packages ..."))
 	import re
@@ -940,7 +940,7 @@ class etpDatabase:
 	# look for configured versiontag
 	versiontag = ""
 	if (etpData['versiontag']):
-	    versiontag = "-"+etpData['versiontag']
+	    versiontag = "#"+etpData['versiontag']
 
 	# baseinfo
 	self.cursor.execute(
@@ -1263,7 +1263,7 @@ class etpDatabase:
         # prepare versiontag
 	versiontag = ""
 	if (etpData['versiontag']):
-	    versiontag = "-"+etpData['versiontag']
+	    versiontag = "#"+etpData['versiontag']
 	# build atom string
 	pkgatom = etpData['category'] + "/" + etpData['name'] + "-" + etpData['version']+versiontag
 
@@ -2787,6 +2787,16 @@ class etpDatabase:
 
 	return self.fetchall2set(self.cursor.fetchall())
 
+    ''' search packages whose versiontag matches the one provided '''
+    def searchTaggedPackages(self, tag, atoms = False): # atoms = return atoms directly
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchTaggedPackages: called for "+tag)
+	if atoms:
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE versiontag = "'+tag+'"')
+	    return self.cursor.fetchall()
+	else:
+	    self.cursor.execute('SELECT idpackage FROM baseinfo WHERE versiontag = "'+tag+'"')
+	    return self.fetchall2set(self.cursor.fetchall())
+
     ''' search packages that need the specified library (in neededreference table) specified by keyword '''
     def searchNeeded(self, keyword):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchNeeded: called for "+keyword)
@@ -2815,31 +2825,39 @@ class etpDatabase:
 	self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = "'+str(iddep)+'"')
 	return self.fetchall2set(self.cursor.fetchall())
 
-    def searchPackages(self, keyword, sensitive = False, slot = None):
+    def searchPackages(self, keyword, sensitive = False, slot = None, tag = None):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackages: called for "+keyword)
+	
 	slotstring = ''
 	if slot:
 	    slotstring = ' and slot = "'+slot+'"'
+	tagstring = ''
+	if tag:
+	    tagstring = ' and versiontag = "'+tag+'"'
+	
 	if (sensitive):
-	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE atom LIKE "%'+keyword+'%"'+slotstring)
+	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE atom LIKE "%'+keyword+'%"'+slotstring+tagstring)
 	else:
-	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE LOWER(atom) LIKE "%'+string.lower(keyword)+'%"'+slotstring)
+	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE LOWER(atom) LIKE "%'+string.lower(keyword)+'%"'+slotstring+tagstring)
 	return self.cursor.fetchall()
 
-    def searchProvide(self, keyword, slot = None):
+    def searchProvide(self, keyword, slot = None, tag = None):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchProvide: called for "+keyword)
 
 	slotstring = ''
 	if slot:
 	    slotstring = ' and slot = "'+slot+'"'
-	
+	tagstring = ''
+	if tag:
+	    tagstring = ' and versiontag = "'+tag+'"'
+
 	idpackage = ''
 	self.cursor.execute('SELECT idpackage FROM provide WHERE atom = "'+keyword+'"')
 	idpackage = self.cursor.fetchone()
 	if not idpackage:
 	    return ''
 	
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE idpackage = "'+str(idpackage[0])+'"'+slotstring)
+	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE idpackage = "'+str(idpackage[0])+'"'+slotstring+tagstring)
 	result = self.cursor.fetchone()
 	if result:
 	    return result[0]
@@ -3311,7 +3329,7 @@ class etpDatabase:
        @input multiMatch: bool, return all the available atoms
        @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = not found, 2 = need more info, 3 = cannot use direction without specifying version
     '''
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = ()):
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = (), matchTag = None):
         if (self.xcache):
             cached = dbCacheStore[etpCache['dbMatch']+self.dbname].get(atom)
             if cached:
@@ -3319,16 +3337,23 @@ class etpDatabase:
 		if (matchSlot == cached['matchSlot']) \
 			and (multiMatch == cached['multiMatch']) \
 			and (caseSensitive == cached['caseSensitive']) \
+			and (matchTag == cached['matchTag']) \
 			and (matchBranches == cached['matchBranches']):
 	            return cached['result']
 	
-	# check if slot is provided -> app-foo/foo-1.2.3:SLOT
+	# check if tag is provided -> app-foo/foo-1.2.3:SLOT|TAG or app-foo/foo-1.2.3|TAG
+	atomTag = entropyTools.dep_gettag(atom)
 	atomSlot = entropyTools.dep_getslot(atom)
-	# then remove
-	atom = entropyTools.remove_slot(atom)
-	if (matchSlot == None) and (atomSlot != None): # new slotdeps support
-	    matchSlot = atomSlot
+
+	atom = entropyTools.remove_tag(atom)
+	if (matchTag == None) and (atomTag != None):
+	    matchTag = atomTag
 	
+	# check if slot is provided -> app-foo/foo-1.2.3:SLOT
+	atom = entropyTools.remove_slot(atom)
+	if (matchSlot == None) and (atomSlot != None):
+	    matchSlot = atomSlot
+
         # check for direction
         strippedAtom = entropyTools.dep_getcpv(atom)
         if atom.endswith("*"):
@@ -3340,20 +3365,22 @@ class etpDatabase:
         pkgversion = ''
         if (not justname):
 	    # strip tag
+	    strippedAtom = entropyTools.remove_tag(strippedAtom)
+	    
+	    # FIXME: deprecated - will be removed soonly
             if strippedAtom.split("-")[-1].startswith("t"):
                 strippedAtom = string.join(strippedAtom.split("-t")[:len(strippedAtom.split("-t"))-1],"-t")
+	    
 	    # get version
 	    data = entropyTools.catpkgsplit(strippedAtom)
 	    if data == None:
 	        return -1,3 # atom is badly formatted
 	    pkgversion = data[2]+"-"+data[3]
-	    pkgtag = ''
-	    if atom.split("-")[len(atom.split("-"))-1].startswith("t"):
-	        pkgtag = atom.split("-")[len(atom.split("-"))-1]
-	        #print "TAG: "+pkgtag
-	    #print data
-	    #print pkgversion
-	    #print pkgtag
+	    
+	    # FIXME: deprecated - will be removed soonly
+	    if not atomTag:
+	        if atom.split("-")[len(atom.split("-"))-1].startswith("t"):
+	            atomTag = atom.split("-")[len(atom.split("-"))-1]
 	
         pkgkey = entropyTools.dep_getkey(strippedAtom)
         if len(pkgkey.split("/")) == 2:
@@ -3417,6 +3444,7 @@ class etpDatabase:
 		    # gosh, return and complain
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
@@ -3458,6 +3486,7 @@ class etpDatabase:
 		    #print "justname"
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
@@ -3495,12 +3524,16 @@ class etpDatabase:
 			        testpkgver = pkgversion[:len(pkgversion)-1]
 			        #print testpkgver
 			        combodb = dbver+dbtag
+				if atomTag == None: pkgtag = ''
+				else: pkgtag = atomTag
 			        combopkg = testpkgver+pkgtag
 			        #print combodb
 			        #print combopkg
 			        if combodb.startswith(combopkg):
 				    dbpkginfo.append([idpackage,dbver])
 			    else:
+				if atomTag == None: pkgtag = ''
+				else: pkgtag = atomTag
 		                if (dbver+dbtag == pkgversion+pkgtag):
 			            # found
 			            dbpkginfo.append([idpackage,dbver])
@@ -3516,6 +3549,7 @@ class etpDatabase:
 		    if (not dbpkginfo):
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+			dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
@@ -3528,11 +3562,15 @@ class etpDatabase:
 			    mslot = self.retrieveSlot(x[0])
 			    if (str(mslot) != str(matchSlot)):
 				continue
+			if (matchTag != None):
+			    if matchTag != self.retrieveVersionTag(x[0]):
+				continue
 		        versions.append(x[1])
 		
 		    if (not versions):
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+			dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
@@ -3553,6 +3591,7 @@ class etpDatabase:
 		    if (multiMatch):
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
@@ -3567,13 +3606,14 @@ class etpDatabase:
 		        versionTags = []
 		        for pkg in similarPackages:
 		            versionTags.append(self.retrieveVersionTag(pkg[1]))
-		        versiontaglist = entropyTools.getNewerVersionTag(versionTags)
+			versiontaglist = entropyTools.getNewerVersionTag(versionTags)
 		        newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
 		
 		    #print newerPackage
 		    #print newerPackage[1]
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
@@ -3614,6 +3654,7 @@ class etpDatabase:
 		        # this version is not available
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+			dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
@@ -3628,6 +3669,9 @@ class etpDatabase:
 			    mslot = self.retrieveSlot(x[0])
 			    if (str(matchSlot) != str(mslot)):
 				continue
+			if (matchTag != None):
+			    if matchTag != self.retrieveVersionTag(x[0]):
+				continue
 			if (multiMatch):
 			    multiMatchList.append(x[0])
 		        versions.append(x[1])
@@ -3640,6 +3684,7 @@ class etpDatabase:
 		    if (not versions):
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+			dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
@@ -3660,6 +3705,7 @@ class etpDatabase:
 		    if (multiMatch):
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+			dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
@@ -3681,6 +3727,7 @@ class etpDatabase:
 		    #print newerPackage[1]
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
@@ -3690,6 +3737,7 @@ class etpDatabase:
 	        else:
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
@@ -3706,14 +3754,18 @@ class etpDatabase:
 		multiMatchList = []
 		_foundIDs = []
 	        for list in foundIDs:
-		    if (matchSlot == None):
+		    if (matchSlot == None) and (matchTag == None):
 		        versionIDs.append(self.retrieveVersion(list[1]))
 			if (multiMatch):
 			    multiMatchList.append(list[1])
 		    else:
-			foundslot = self.retrieveSlot(list[1])
-			if (str(foundslot) != str(matchSlot)):
-			    continue
+			if (matchSlot != None):
+			    foundslot = self.retrieveSlot(list[1])
+			    if (str(foundslot) != str(matchSlot)):
+			        continue
+			if (matchTag != None):
+			    if matchTag != self.retrieveVersionTag(list[1]):
+				continue
 			versionIDs.append(self.retrieveVersion(list[1]))
 			if (multiMatch):
 			    multiMatchList.append(list[1])
@@ -3726,6 +3778,7 @@ class etpDatabase:
 		if (not versionIDs):
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
 		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
@@ -3753,6 +3806,7 @@ class etpDatabase:
 	    
 		dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 		dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+		dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
 		dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
 		dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
 		dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
@@ -3763,6 +3817,7 @@ class etpDatabase:
 	    # package not found in any branch
 	    dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 	    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+	    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
 	    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
 	    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
 	    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches

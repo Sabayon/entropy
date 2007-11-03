@@ -27,7 +27,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from databaseTools import etpDatabase
-from entropyTools import dep_getkey, dep_getslot, remove_slot
+from entropyTools import dep_getkey, dep_getslot, remove_slot, dep_gettag, remove_tag
 from equoTools import openClientDatabase, openRepositoryDatabase, printPackageInfo, generateDependsTree, atomMatch # move them away?
 
 ########################################################
@@ -75,6 +75,10 @@ def query(options):
     elif myopts[0] == "removal":
 	rc = searchRemoval(myopts[1:], quiet = equoRequestQuiet, deep = equoRequestDeep)
 
+    elif myopts[0] == "tags":
+	if (len(myopts) > 1):
+	    rc = searchTaggedPackages(myopts[1:], quiet = equoRequestQuiet)
+
     elif myopts[0] == "orphans":
 	rc = searchOrphans(quiet = equoRequestQuiet)
 
@@ -98,12 +102,15 @@ def searchInstalledPackages(packages, idreturn = False, quiet = False):
         print_info(yellow(" @@ ")+darkgreen("Searching..."))
 
     clientDbconn = openClientDatabase()
-    dataInfo = [] # when idreturn is True
+    dataInfo = set() # when idreturn is True
     
     for package in packages:
 	slot = dep_getslot(package)
+	tag = dep_gettag(package)
 	package = remove_slot(package)
-	result = clientDbconn.searchPackages(package, slot = slot)
+	package = remove_tag(package)
+	
+	result = clientDbconn.searchPackages(package, slot = slot, tag = tag)
 	if (result):
 	    # print info
 	    if (not idreturn) and (not quiet):
@@ -114,7 +121,7 @@ def searchInstalledPackages(packages, idreturn = False, quiet = False):
 		atom = pkg[0]
 		branch = clientDbconn.retrieveBranch(idpackage)
 		if (idreturn):
-		    dataInfo.append(idpackage)
+		    dataInfo.add(idpackage)
 		else:
 		    printPackageInfo(idpackage, clientDbconn, clientSearch = True, quiet = quiet)
 	
@@ -132,7 +139,7 @@ def searchBelongs(files, idreturn = False, quiet = False):
         print_info(yellow(" @@ ")+darkgreen("Belong Search..."))
 
     clientDbconn = openClientDatabase()
-    dataInfo = [] # when idreturn is True
+    dataInfo = set() # when idreturn is True
     
     results = {}
     flatresults = {}
@@ -160,7 +167,7 @@ def searchBelongs(files, idreturn = False, quiet = False):
 	        print_info(blue("     Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
 	    for idpackage in result:
 		if (idreturn):
-		    dataInfo.append(idpackage)
+		    dataInfo.add(idpackage)
 		elif (quiet):
 		    print clientDbconn.retrieveAtom(idpackage)
 		else:
@@ -182,7 +189,7 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
 
     clientDbconn = openClientDatabase()
 
-    dataInfo = [] # when idreturn is True
+    dataInfo = set() # when idreturn is True
     for atom in atoms:
 	result = clientDbconn.atomMatch(atom)
 	matchInRepo = False
@@ -215,7 +222,7 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
 	        print_info(blue("     Found:   ")+bold("\t"+str(len(searchResults)))+red(" entries")+where)
 	    for idpackage in searchResults:
 		if (idreturn):
-		    dataInfo.append(idpackage)
+		    dataInfo.add(idpackage)
 		else:
 		    if (verbose):
 		        printPackageInfo(idpackage, dbconn, clientSearch = True, quiet = quiet)
@@ -239,7 +246,7 @@ def searchNeeded(atoms, idreturn = False, quiet = False):
         print_info(yellow(" @@ ")+darkgreen("Needed Search..."))
 
     clientDbconn = openClientDatabase()
-    dataInfo = [] # when idreturn is True
+    dataInfo = set() # when idreturn is True
     
     for atom in atoms:
 	match = clientDbconn.atomMatch(atom)
@@ -252,7 +259,7 @@ def searchNeeded(atoms, idreturn = False, quiet = False):
 	        print_info(blue("     Found:   ")+bold("\t"+str(len(myneeded)))+red(" libraries"))
 	    for needed in myneeded:
 		if (idreturn):
-		    dataInfo.append(needed)
+		    dataInfo.add(needed)
 		elif (quiet):
 		    print needed
 		else:
@@ -272,7 +279,7 @@ def searchFiles(atoms, idreturn = False, quiet = False):
 
     results = searchInstalledPackages(atoms, idreturn = True)
     clientDbconn = openClientDatabase()
-    dataInfo = [] # when idreturn is True
+    dataInfo = set() # when idreturn is True
     for result in results:
 	if (result != -1):
 	    files = clientDbconn.retrieveContent(result)
@@ -282,7 +289,7 @@ def searchFiles(atoms, idreturn = False, quiet = False):
 	        print_info(blue("     Package: ")+bold("\t"+atom))
 	        print_info(blue("     Found:   ")+bold("\t"+str(len(files)))+red(" files"))
 	    if (idreturn):
-		dataInfo.append([result,files])
+		dataInfo.add((result,files))
 	    else:
 		if quiet:
 		    for file in files:
@@ -463,6 +470,7 @@ def searchInstalled(idreturn = False, verbose = False, quiet = False):
 def searchPackage(packages, idreturn = False):
     
     foundPackages = {}
+    dataInfo = set() # when idreturn is True
     
     if (not idreturn):
         print_info(yellow(" @@ ")+darkgreen("Searching..."))
@@ -477,14 +485,15 @@ def searchPackage(packages, idreturn = False):
 	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 	
 	dbconn = openRepositoryDatabase(repo)
-	dataInfo = [] # when idreturn is True
 	for package in packages:
 	    slot = dep_getslot(package)
+	    tag = dep_gettag(package)
 	    package = remove_slot(package)
-	    result = dbconn.searchPackages(package, slot = slot)
+	    package = remove_tag(package)
+	    result = dbconn.searchPackages(package, slot = slot, tag = tag)
 	    
 	    if (not result): # look for provide
-		provide = dbconn.searchProvide(package, slot = slot)
+		provide = dbconn.searchProvide(package, slot = slot, tag = tag)
 		if (provide):
 		    result = [[provide[0],provide[1]]]
 		
@@ -500,7 +509,7 @@ def searchPackage(packages, idreturn = False):
 		    atom = pkg[0]
 		    branch = dbconn.retrieveBranch(idpackage)
 		    if (idreturn):
-			dataInfo.append([idpackage,repo])
+			dataInfo.add((idpackage,repo))
 		    else:
 		        printPackageInfo(idpackage,dbconn)
 	
@@ -509,12 +518,41 @@ def searchPackage(packages, idreturn = False):
     if (idreturn):
 	return dataInfo
 
-    if searchError:
-	print_warning(yellow(" @@ ")+red("Something bad happened. Please have a look."))
-	return 129
     return 0
 
+def searchTaggedPackages(tags, datareturn = False, quiet = False):
+    
+    foundPackages = {}
+    
+    if (not datareturn) and (not quiet):
+        print_info(yellow(" @@ ")+darkgreen("Tag Search..."))
+    # search inside each available database
+    repoNumber = 0
+    for repo in etpRepositories:
+	foundPackages[repo] = {}
+	repoNumber += 1
+	
+	if (not datareturn) and (not quiet):
+	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
+	
+	dbconn = openRepositoryDatabase(repo)
+	for tag in tags:
+	    results = dbconn.searchTaggedPackages(tag, atoms = True)
+	    if (not datareturn) and (not quiet):
+	        print_info(blue("     Keyword: ")+bold("\t"+tag))
+	        print_info(blue("     Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
+	    for result in results:
+		foundPackages[repo][result[1]] = result[0]
+	        # print info
+		if (not datareturn):
+		    printPackageInfo(result[1],dbconn, quiet = quiet)
+	
+	dbconn.closeDB()
 
+    if (datareturn):
+	return foundPackages
+
+    return 0
 
 def searchDescription(descriptions, idreturn = False, quiet = False):
     
@@ -524,7 +562,6 @@ def searchDescription(descriptions, idreturn = False, quiet = False):
         print_info(yellow(" @@ ")+darkgreen("Description Search..."))
     # search inside each available database
     repoNumber = 0
-    searchError = False
     for repo in etpRepositories:
 	foundPackages[repo] = {}
 	repoNumber += 1
@@ -557,7 +594,4 @@ def searchDescription(descriptions, idreturn = False, quiet = False):
     if (idreturn):
 	return dataInfo
 
-    if searchError:
-	print_warning(yellow(" @@ ")+red("Something bad happened. Please have a look."))
-	return 129
     return 0

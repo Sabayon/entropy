@@ -454,6 +454,7 @@ def pkgsplit(mypkg,silent=1):
     else:
 	return None
 
+# FIXME: deprecated, use remove_tag - will be removed soonly
 def dep_striptag(mydepx):
     mydep = mydepx[:]
     if not (isjustname(mydep)):
@@ -461,12 +462,6 @@ def dep_striptag(mydepx):
 	    tag = mydep.split("-")[len(mydep.split("-"))-1]
 	    mydep = mydep[:len(mydep)-len(tag)-1]
     return mydep
-
-def istagged(mydepx):
-    x = dep_striptag(mydepx)
-    if x != mydepx:
-	return 1
-    return 0
 
 def dep_getkey(mydepx):
     """
@@ -522,7 +517,7 @@ def dep_getcpv(mydep):
 	mydep = mydep[:colon]
     return mydep
 
-def dep_getslot(mydep):
+def dep_getslot(dep):
     """
     Retrieve the slot on a depend.
     
@@ -531,13 +526,14 @@ def dep_getslot(mydep):
 	'3'
     	
     @param mydep: The depstring to retrieve the slot of
-    @type mydep: String
+    @type dep: String
     @rtype: String
     @return: The slot
     """
-    colon = mydep.rfind(":")
+    colon = dep.rfind(":")
     if colon != -1:
-	return mydep[colon+1:]
+	mydep = dep[colon+1:]
+	return remove_tag(mydep)
     return None
 
 def remove_slot(mydep):
@@ -545,6 +541,28 @@ def remove_slot(mydep):
     if colon != -1:
 	mydep = mydep[:colon]
     return mydep
+
+
+def remove_tag(mydep):
+    colon = mydep.rfind("#")
+    if colon != -1:
+	mydep = mydep[:colon]
+    return mydep
+
+def dep_gettag(dep):
+    """
+    Retrieve the slot on a depend.
+    
+    Example usage:
+	>>> dep_gettag('app-misc/test#2.6.23-sabayon-r1')
+	'2.6.23-sabayon-r1'
+    
+    """
+    colon = dep.rfind("#")
+    if colon != -1:
+	mydep = dep[colon+1:]
+	return remove_slot(mydep)
+    return None
 
 def removePackageOperators(atom):
     if atom.startswith(">") or atom.startswith("<"):

@@ -1,12 +1,11 @@
 TODO list:
   CLIENT:
+  - limit items/size in on-disk cache?
   - add external triggerable hooks support
-  - atom|tag ?
 
   - include more triggers
   - optimize database interface
-  - add multithreading support
-  - limit items/size in on-disk cache?
+
 
 Project Status:
 - reagent: complete. Stabilization mode.

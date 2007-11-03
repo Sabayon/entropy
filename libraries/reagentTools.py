@@ -314,6 +314,9 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     print_info(yellow(" * ")+red(info_package+"Getting package name/version..."),back = True)
     tbz2File = package
     package = package.split(".tbz2")[0]
+    package = remove_tag(package)
+    
+    # FIXME: deprecated - will be removed soonly
     if package.split("-")[len(package.split("-"))-1].startswith("t"):
         package = string.join(package.split("-t")[:len(package.split("-t"))-1],"-t")
     
@@ -475,30 +478,28 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 
     # [][][] Kernel dependent packages hook [][][]
     kernelDependentModule = False
+    kernelItself = False
     for file in etpData['content']:
 	if file.find("/lib/modules/") != -1:
 	    kernelDependentModule = True
 	    # get the version of the modules
 	    kmodver = file.split("/lib/modules/")[1]
 	    kmodver = kmodver.split("/")[0]
-	    # substitute "-" with "_"
-	    kmodver = re.subn("-","_", kmodver)
-	    if len(kmodver) >= 2:
-		kmodver = kmodver[0]
 
-	    lp = kmodver.split("_")[len(kmodver.split("_"))-1]
+	    lp = kmodver.split("-")[len(kmodver.split("-"))-1]
 	    if lp.startswith("r"):
-	        kname = kmodver.split("_")[len(kmodver.split("_"))-2]
-	        kver = kmodver.split("_")[0]+"-"+kmodver.split("_")[len(kmodver.split("_"))-1]
+	        kname = kmodver.split("-")[len(kmodver.split("-"))-2]
+	        kver = kmodver.split("-")[0]+"-"+kmodver.split("-")[len(kmodver.split("-"))-1]
 	    else:
-	        kname = kmodver.split("_")[len(kmodver.split("_"))-1]
-	        kver = kmodver.split("_")[0]
+	        kname = kmodver.split("-")[len(kmodver.split("-"))-1]
+	        kver = kmodver.split("-")[0]
 	    break
     # validate the results above
     if (kernelDependentModule):
 	matchatom = "linux-"+kname+"-"+kver
 	if (matchatom == etpData['name']+"-"+etpData['version']):
-	    # discard
+	    # discard, it's the kernel itself, add other deps instead
+	    kernelItself = True
 	    kernelDependentModule = False
 
     # add strict kernel dependency
@@ -507,8 +508,10 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     print_info(yellow(" * ")+red(info_package+"Getting package download URL..."),back = True)
     # Fill download relative URI
     if (kernelDependentModule):
-	etpData['versiontag'] = "t"+kmodver
-	versiontag = "-"+etpData['versiontag']
+	etpData['versiontag'] = kmodver
+	# force slot == tag:
+	etpData['slot'] = kmodver
+	versiontag = "#"+etpData['versiontag']
     else:
 	versiontag = ""
     etpData['download'] = etpConst['binaryurirelativepath']+etpData['branch']+"/"+etpData['name']+"-"+etpData['version']+versiontag+".tbz2"
@@ -726,7 +729,14 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     
     if (kernelDependentModule):
 	# add kname to the dependency
-	etpData['dependencies'].append("sys-kernel/linux-"+kname+"-"+kver)
+	etpData['dependencies'].append("=sys-kernel/linux-"+kname+"-"+kver)
+
+    if (kernelItself):
+	# it's the kernel, add dependency on all tagged packages
+	try:
+	    etpData['dependencies'].append("=sys-kernel/linux-"+kname+"-modules-"+kver)
+	except:
+	    pass
 
     print_info(yellow(" * ")+red(info_package+"Getting System package List..."),back = True)
     # write only if it's a systempackage
