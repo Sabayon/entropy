@@ -310,7 +310,7 @@ def database(options):
 
 	for pkg in pkglist:
 	    atom = dbconn.retrieveAtom(pkg)
-	    print_info(red("\t (*) ")+bold(atom))
+	    print_info(red("  (*) ")+bold(atom))
 
 	rc = entropyTools.askquestion("     Would you like to continue ?")
 	if rc == "No":
@@ -318,7 +318,7 @@ def database(options):
 	
 	# sync packages
 	import activatorTools
-	activatorTools.packages(["sync","--ask"])
+	#activatorTools.packages(["sync","--ask"])
 	
 	print_info(green(" * ")+red("Switching selected packages ..."))
 	import re
@@ -352,16 +352,20 @@ def database(options):
 	    # rename remotely
 	    print_info(green(" * ")+darkred(atom+": ")+red("Moving file remotely..."), back = True)
 	    # change filename remotely
-	    ftp = mirrorTools.handlerFTP(uri)
-	    ftp.setCWD(etpConst['binaryurirelativepath'])
-	    # create directory if it doesn't exist
-	    if (not ftp.isFileAvailable(switchbranch)):
-		ftp.mkdir(switchbranch)
-	    # rename tbz2
-	    ftp.renameFile(currentbranch+"/"+filename,switchbranch+"/"+filename)
-	    # rename md5
-	    ftp.renameFile(currentbranch+"/"+filename+etpConst['packageshashfileext'],switchbranch+"/"+filename+etpConst['packageshashfileext'])
-	    ftp.closeConnection()
+	    for uri in etpConst['activatoruploaduris']:
+		
+		print_info(green(" * ")+darkred(atom+": ")+red("Moving file remotely on: ")+entropyTools.extractFTPHostFromUri(uri), back = True)
+		
+	        ftp = mirrorTools.handlerFTP(uri)
+	        ftp.setCWD(etpConst['binaryurirelativepath'])
+	        # create directory if it doesn't exist
+	        if (not ftp.isFileAvailable(switchbranch)):
+		    ftp.mkdir(switchbranch)
+	        # rename tbz2
+	        ftp.renameFile(currentbranch+"/"+filename,switchbranch+"/"+filename)
+	        # rename md5
+	        ftp.renameFile(currentbranch+"/"+filename+etpConst['packageshashfileext'],switchbranch+"/"+filename+etpConst['packageshashfileext'])
+	        ftp.closeConnection()
 	    
 	dbconn.closeDB()
 	print_info(green(" * ")+red("All the selected packages have been marked as requested. Remember to run activator."))
@@ -3110,7 +3114,7 @@ class etpDatabase:
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"switchBranch: called for ID "+str(idpackage)+" | branch -> "+str(tobranch))
 	
-	mycat = self.retreveCategory(idpackage)
+	mycat = self.retrieveCategory(idpackage)
 	myname = self.retrieveName(idpackage)
 	myslot = self.retrieveSlot(idpackage)
 	mybranch = self.retrieveBranch(idpackage)

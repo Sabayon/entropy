@@ -2421,7 +2421,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	infoDict['removeidpackage'] = idpackage
 	infoDict['removeconfig'] = False # this will force old configuration files to be kept
 	etpRemovalTriggers[infoDict['removeatom']] = clientDbconn.getPackageData(idpackage)
-	etpRemovalTriggers[infoDict['removeatom']]['removecontent'] = infoDict['removecontent'][:]
+	etpRemovalTriggers[infoDict['removeatom']]['removecontent'] = infoDict['removecontent']
 	steps = []
 	steps.append("preremove")
 	steps.append("remove")

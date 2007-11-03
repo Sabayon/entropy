@@ -1,13 +1,8 @@
 TODO list:
-- reagent: complete smartapps section
   CLIENT:
   - add external triggerable hooks support
-  - branch reorganization based on the release:
-    - install only looks inside the configured branch
-    - move branches to version naming (3.5, 3.6, 3.7) instead of using stable, unstable...
   - atom|tag ?
 
-  - add scripts directory that contains pre/post-install-remove scripts that is synced using activator
   - include more triggers
   - optimize database interface
   - add multithreading support
@@ -17,6 +12,6 @@ Project Status:
 - reagent: complete. Stabilization mode.
 - activator: complete. Stabilization mode.
 ============
-- equo (client): 80%
+- equo (client): 85%
 
 - EAPI1+ info: http://www.pkgcore.org/trac/pkgcore/doc/doc/extended-atom-syntax.rst
