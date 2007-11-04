@@ -112,10 +112,6 @@ def searchInstalledPackages(packages, idreturn = False, quiet = False):
 	
 	result = clientDbconn.searchPackages(package, slot = slot, tag = tag)
 	if (result):
-	    # print info
-	    if (not idreturn) and (not quiet):
-	        print_info(blue("     Keyword: ")+bold("\t"+package))
-	        print_info(blue("     Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
 	    for pkg in result:
 		idpackage = pkg[1]
 		atom = pkg[0]
@@ -124,6 +120,10 @@ def searchInstalledPackages(packages, idreturn = False, quiet = False):
 		    dataInfo.add(idpackage)
 		else:
 		    printPackageInfo(idpackage, clientDbconn, clientSearch = True, quiet = quiet)
+	    # print info
+	    if (not idreturn) and (not quiet):
+	        print_info(blue(" Keyword: ")+bold("\t"+package))
+	        print_info(blue(" Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
 	
     clientDbconn.closeDB()
 
@@ -162,9 +162,6 @@ def searchBelongs(files, idreturn = False, quiet = False):
 	    # print info
 	    file = result
 	    result = results[result]
-	    if (not idreturn) and (not quiet):
-	        print_info(blue("     Keyword: ")+bold("\t"+file))
-	        print_info(blue("     Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
 	    for idpackage in result:
 		if (idreturn):
 		    dataInfo.add(idpackage)
@@ -172,6 +169,9 @@ def searchBelongs(files, idreturn = False, quiet = False):
 		    print clientDbconn.retrieveAtom(idpackage)
 		else:
 		    printPackageInfo(idpackage, clientDbconn, clientSearch = True)
+	    if (not idreturn) and (not quiet):
+	        print_info(blue(" Keyword: ")+bold("\t"+file))
+	        print_info(blue(" Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
 	
     clientDbconn.closeDB()
 
@@ -212,14 +212,6 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
 		    # I need to generate dependstable
 		    dbconn.regenerateDependsTable()
 	        searchResults = dbconn.retrieveDepends(result[0])
-	    # print info
-	    if (not idreturn) and (not quiet):
-	        print_info(blue("     Keyword: ")+bold("\t"+atom))
-		if (matchInRepo):
-		    where = " from repository "+str(result[1])
-		else:
-		    where = " from installed packages database"
-	        print_info(blue("     Found:   ")+bold("\t"+str(len(searchResults)))+red(" entries")+where)
 	    for idpackage in searchResults:
 		if (idreturn):
 		    dataInfo.add(idpackage)
@@ -228,6 +220,14 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
 		        printPackageInfo(idpackage, dbconn, clientSearch = True, quiet = quiet)
 		    else:
 		        printPackageInfo(idpackage, dbconn, clientSearch = True, strictOutput = True, quiet = quiet)
+	    # print info
+	    if (not idreturn) and (not quiet):
+	        print_info(blue(" Keyword: ")+bold("\t"+atom))
+		if (matchInRepo):
+		    where = " from repository "+str(result[1])
+		else:
+		    where = " from installed packages database"
+	        print_info(blue(" Found:   ")+bold("\t"+str(len(searchResults)))+red(" entries")+where)
 	else:
 	    continue
 	if (matchInRepo):
@@ -254,9 +254,6 @@ def searchNeeded(atoms, idreturn = False, quiet = False):
 	    # print info
 	    myatom = clientDbconn.retrieveAtom(match[0])
 	    myneeded = clientDbconn.retrieveNeeded(match[0])
-	    if (not idreturn) and (not quiet):
-	        print_info(blue("     Atom: ")+bold("\t"+myatom))
-	        print_info(blue("     Found:   ")+bold("\t"+str(len(myneeded)))+red(" libraries"))
 	    for needed in myneeded:
 		if (idreturn):
 		    dataInfo.add(needed)
@@ -264,6 +261,9 @@ def searchNeeded(atoms, idreturn = False, quiet = False):
 		    print needed
 		else:
 		    print_info(blue("       # ")+red(str(needed)))
+	    if (not idreturn) and (not quiet):
+	        print_info(blue("     Atom: ")+bold("\t"+myatom))
+	        print_info(blue(" Found:   ")+bold("\t"+str(len(myneeded)))+red(" libraries"))
 	
     clientDbconn.closeDB()
 
@@ -285,9 +285,6 @@ def searchFiles(atoms, idreturn = False, quiet = False):
 	    files = clientDbconn.retrieveContent(result)
 	    atom = clientDbconn.retrieveAtom(result)
 	    # print info
-	    if (not idreturn) and (not quiet):
-	        print_info(blue("     Package: ")+bold("\t"+atom))
-	        print_info(blue("     Found:   ")+bold("\t"+str(len(files)))+red(" files"))
 	    if (idreturn):
 		dataInfo.add((result,files))
 	    else:
@@ -297,6 +294,9 @@ def searchFiles(atoms, idreturn = False, quiet = False):
 		else:
 		    for file in files:
 		        print_info(blue(" ### ")+red(str(file)))
+	    if (not idreturn) and (not quiet):
+	        print_info(blue("     Package: ")+bold("\t"+atom))
+	        print_info(blue(" Found:   ")+bold("\t"+str(len(files)))+red(" files"))
 	
     clientDbconn.closeDB()
 
@@ -493,17 +493,11 @@ def searchPackage(packages, idreturn = False):
 	    result = dbconn.searchPackages(package, slot = slot, tag = tag)
 	    
 	    if (not result): # look for provide
-		provide = dbconn.searchProvide(package, slot = slot, tag = tag)
-		if (provide):
-		    result = [[provide[0],provide[1]]]
-		
+		result = dbconn.searchProvide(package, slot = slot, tag = tag)
 	    
 	    if (result):
 		foundPackages[repo][package] = result
 	        # print info
-		if (not idreturn):
-	            print_info(blue("     Keyword: ")+bold("\t"+package))
-	            print_info(blue("     Found:   ")+bold("\t"+str(len(foundPackages[repo][package])))+red(" entries"))
 	        for pkg in foundPackages[repo][package]:
 		    idpackage = pkg[1]
 		    atom = pkg[0]
@@ -512,6 +506,9 @@ def searchPackage(packages, idreturn = False):
 			dataInfo.add((idpackage,repo))
 		    else:
 		        printPackageInfo(idpackage,dbconn)
+		if (not idreturn):
+	            print_info(blue(" Keyword: ")+bold("\t"+package))
+	            print_info(blue(" Found:   ")+bold("\t"+str(len(foundPackages[repo][package])))+red(" entries"))
 	
 	dbconn.closeDB()
 
@@ -538,14 +535,14 @@ def searchTaggedPackages(tags, datareturn = False, quiet = False):
 	dbconn = openRepositoryDatabase(repo)
 	for tag in tags:
 	    results = dbconn.searchTaggedPackages(tag, atoms = True)
-	    if (not datareturn) and (not quiet):
-	        print_info(blue("     Keyword: ")+bold("\t"+tag))
-	        print_info(blue("     Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
 	    for result in results:
 		foundPackages[repo][result[1]] = result[0]
 	        # print info
 		if (not datareturn):
 		    printPackageInfo(result[1],dbconn, quiet = quiet)
+	    if (not datareturn) and (not quiet):
+	        print_info(blue(" Keyword: ")+bold("\t"+tag))
+	        print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
 	
 	dbconn.closeDB()
 
@@ -575,10 +572,6 @@ def searchDescription(descriptions, idreturn = False, quiet = False):
 	    result = dbconn.searchPackagesByDescription(desc)
 	    if (result):
 		foundPackages[repo][desc] = result
-	        # print info
-		if (not idreturn) and (not quiet):
-	            print_info(blue("     Keyword: ")+bold("\t"+desc))
-	            print_info(blue("     Found:   ")+bold("\t"+str(len(foundPackages[repo][desc])))+red(" entries"))
 	        for pkg in foundPackages[repo][desc]:
 		    idpackage = pkg[1]
 		    atom = pkg[0]
@@ -588,6 +581,10 @@ def searchDescription(descriptions, idreturn = False, quiet = False):
 			print dbconn.retrieveAtom(idpackage)
 		    else:
 		        printPackageInfo(idpackage,dbconn)
+	        # print info
+		if (not idreturn) and (not quiet):
+	            print_info(blue(" Keyword: ")+bold("\t"+desc))
+	            print_info(blue(" Found:   ")+bold("\t"+str(len(foundPackages[repo][desc])))+red(" entries"))
 	
 	dbconn.closeDB()
 

@@ -56,10 +56,27 @@ def loadCaches():
 
 def saveCaches():
     dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
+    if os.path.isfile(etpConst['dumpstoragedir']+"/"+etpCache['atomMatch']+".dmp"):
+	if os.stat(etpConst['dumpstoragedir']+"/"+etpCache['atomMatch']+".dmp")[6] > etpCacheSizes['atomMatch']:
+	    # clean cache
+	    dumpTools.dumpobj(etpCache['atomMatch'],{})
     dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
+    if os.path.isfile(etpConst['dumpstoragedir']+"/"+etpCache['generateDependsTree']+".dmp"):
+	if os.stat(etpConst['dumpstoragedir']+"/"+etpCache['generateDependsTree']+".dmp")[6] > etpCacheSizes['generateDependsTree']:
+	    # clean cache
+	    dumpTools.dumpobj(etpCache['generateDependsTree'],{})
     for dbinfo in dbCacheStore:
 	dumpTools.dumpobj(dbinfo,dbCacheStore[dbinfo])
-    #print "saveCaches: "+str(len(atomMatchCache))
+	# check size
+	if os.path.isfile(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp"):
+	    if dbinfo.startswith(etpCache['dbMatch']):
+	        if os.stat(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp")[6] > etpCacheSizes['dbMatch']:
+		    # clean cache
+		    dumpTools.dumpobj(dbinfo,{})
+	    elif dbinfo.startswith(etpCache['dbInfo']):
+	        if os.stat(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp")[6] > etpCacheSizes['dbInfo']:
+		    # clean cache
+		    dumpTools.dumpobj(dbinfo,{})
 
 ########################################################
 ####
@@ -1988,7 +2005,7 @@ def openRepositoryDatabase(repositoryName, xcache = True):
     # initialize CONFIG_PROTECT
     if (not etpRepositories[repositoryName]['configprotect']) or (not etpRepositories[repositoryName]['configprotectmask']):
         etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
-        etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectMaskDirectories()
+        etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectDirectories(mask = True)
 	etpRepositories[repositoryName]['configprotect'] += [x for x in etpConst['configprotect'] if x not in etpRepositories[repositoryName]['configprotect']]
 	etpRepositories[repositoryName]['configprotectmask'] += [x for x in etpConst['configprotectmask'] if x not in etpRepositories[repositoryName]['configprotectmask']]
     return conn
@@ -2003,7 +2020,7 @@ def openClientDatabase(xcache = True):
 	if (not etpConst['dbconfigprotect']):
 	    # config protect not prepared
 	    etpConst['dbconfigprotect'] = conn.listConfigProtectDirectories()
-	    etpConst['dbconfigprotectmask'] = conn.listConfigProtectMaskDirectories()
+	    etpConst['dbconfigprotectmask'] = conn.listConfigProtectDirectories(mask = True)
 	    etpConst['dbconfigprotect'] += [x for x in etpConst['configprotect'] if x not in etpConst['dbconfigprotect']]
 	    etpConst['dbconfigprotectmask'] += [x for x in etpConst['configprotectmask'] if x not in etpConst['dbconfigprotectmask']]
 	return conn
@@ -2027,7 +2044,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     updateList = []
     fineList = set()
     removedList = set()
-    syncRepositories()
+    #syncRepositories()
     
     clientDbconn = openClientDatabase()
     # get all the installed packages
@@ -2069,6 +2086,8 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 		#print red("not match: ")+str(atom)
 	else:
 	    fineList.add(idpackage)
+
+    sys.exit(0)
 
     if (verbose or pretend):
 	print_info(red(" @@ ")+darkgreen("Packages matching update:\t\t")+bold(str(len(updateList))))
@@ -2868,7 +2887,7 @@ def getinfo(dict = False):
     if (conn):
 	# print db info
 	info['Removal internal protected directories'] = clientDbconn.listConfigProtectDirectories()
-	info['Removal internal protected directory masks'] = clientDbconn.listConfigProtectMaskDirectories()
+	info['Removal internal protected directory masks'] = clientDbconn.listConfigProtectDirectories(mask = True)
 	info['Total installed packages'] = len(clientDbconn.listAllIdpackages())
 	clientDbconn.closeDB()
     
@@ -2881,7 +2900,7 @@ def getinfo(dict = False):
 	    dbconn = openRepositoryDatabase(x)
 	    info['Repository databases'][x] = {}
 	    info['Repository databases'][x]['Installation internal protected directories'] = dbconn.listConfigProtectDirectories()
-	    info['Repository databases'][x]['Installation internal protected directory masks'] = dbconn.listConfigProtectMaskDirectories()
+	    info['Repository databases'][x]['Installation internal protected directory masks'] = dbconn.listConfigProtectDirectories(mask = True)
 	    info['Repository databases'][x]['Total available packages'] = len(dbconn.listAllIdpackages())
 	    info['Repository databases'][x]['Database revision'] = getRepositoryRevision(x)
 	    info['Repository databases'][x]['Database hash'] = getRepositoryDbFileHash(x)

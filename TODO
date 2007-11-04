@@ -1,16 +1,12 @@
 TODO list:
   CLIENT:
-  - limit items/size in on-disk cache?
   - add external triggerable hooks support
-
   - include more triggers
-  - optimize database interface
-
 
 Project Status:
 - reagent: complete. Stabilization mode.
 - activator: complete. Stabilization mode.
 ============
-- equo (client): 85%
+- equo (client): 90%
 
 - EAPI1+ info: http://www.pkgcore.org/trac/pkgcore/doc/doc/extended-atom-syntax.rst

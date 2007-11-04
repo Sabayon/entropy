@@ -64,7 +64,8 @@ etpData = {
     'counter': u"", # aka. COUNTER file
     'messages': u"", # elog content from portage
     'eclasses': u"", # eclasses used by the ebuild
-    'needed': u"" # runtime libraries needed by the package
+    'needed': u"", # runtime libraries needed by the package
+    #'hooks': u"", # this will become a dict, containing external triggerable scripts (pre/post/install/remove)
 }
 
 # Entropy database SQL initialization Schema and data structure
@@ -105,6 +106,7 @@ DROP TABLE IF EXISTS eclasses;
 DROP TABLE IF EXISTS eclassesreference;
 DROP TABLE IF EXISTS needed;
 DROP TABLE IF EXISTS neededreference;
+DROP TABLE IF EXISTS hooks;
 """
 
 etpSQLInit = """
@@ -275,8 +277,13 @@ CREATE TABLE neededreference (
     library VARCHAR
 );
 
+CREATE TABLE hooks (
+    idpackage INTEGER PRIMARY KEY,
+    idtype INTEGER,
+    line VARCHAR
+);
+
 """
-# ^^ add dependstable?
 
 # Entropy directories specifications
 # THIS IS THE KEY PART OF ENTROPY BINARY PACKAGES MANAGEMENT
@@ -422,6 +429,14 @@ etpCache = {
     'dbInfo': 'info_', # used by the database controller as prefix to the cache files belonging to etpDatabase class (info retrival)
     'atomMatch': 'atomMatchCache', # used to store info about repository dependencies solving
     'generateDependsTree': 'generateDependsTreeCache', # used to store info about removal dependencies
+}
+
+# byte sizes of disk caches
+etpCacheSizes = {
+    'dbMatch': 3000000, # bytes
+    'dbInfo': 6000000, # bytes
+    'atomMatch': 3000000, # bytes
+    'generateDependsTree': 3000000, # bytes
 }
 
 ### Application disk cache
