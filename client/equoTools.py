@@ -2044,7 +2044,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     updateList = []
     fineList = set()
     removedList = set()
-    #syncRepositories()
+    syncRepositories()
     
     clientDbconn = openClientDatabase()
     # get all the installed packages
@@ -2086,8 +2086,6 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 		#print red("not match: ")+str(atom)
 	else:
 	    fineList.add(idpackage)
-
-    sys.exit(0)
 
     if (verbose or pretend):
 	print_info(red(" @@ ")+darkgreen("Packages matching update:\t\t")+bold(str(len(updateList))))
