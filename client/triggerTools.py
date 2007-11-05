@@ -49,7 +49,7 @@ def postinstall(pkgdata):
 	functions.add("fontconfig")
 
     # opengl configuration
-    if pkgdata['category'] == "x11-drivers":
+    if (pkgdata['category'] == "x11-drivers") and (not pkgdata['name'].startswith("xf86-")):
 	functions.add("openglsetup")
 
     # gcc configuration
@@ -132,7 +132,7 @@ def postremove(pkgdata):
     functions = set()
     
     # opengl configuration
-    if pkgdata['category'] == "x11-drivers":
+    if (pkgdata['category'] == "x11-drivers") and (not pkgdata['name'].startswith("xf86-")):
 	functions.add("openglsetup_xorg")
 
     # kde package ?

@@ -36,7 +36,7 @@ remoteLog = logTools.LogFile(level=etpConst['remoteloglevel'],filename = etpCons
 
 import timeoutsocket
 import urllib2
-timeoutsocket.setDefaultSocketTimeout(60)
+
 
 # Get checksum of a package by running md5sum remotely (using php helpers)
 # @returns hex: if the file exists
@@ -77,6 +77,8 @@ def getRemotePackageChecksum(serverName,filename, branch):
 def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed = True):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadFile: called.")
 
+    timeoutsocket.setDefaultSocketTimeout(60)
+
     import re
     # substitute tagged filenames with URL encoded code
     out = re.subn('#','%23',url)
@@ -97,6 +99,7 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
 	remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"downloadFile: Exception caught for: "+str(url)+" -> "+str(e))
 	if (showSpeed):
 	    speedUpdater.kill()
+	    timeoutsocket.setDefaultSocketTimeout(2)
 	return "-3"
     try:
 	maxsize = remotefile.headers.get("content-length")
@@ -120,7 +123,7 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
 
     if (showSpeed):
 	speedUpdater.kill()
-
+    timeoutsocket.setDefaultSocketTimeout(2)
     return rc
 
 # Get the content of an online page
@@ -129,14 +132,18 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
 def getOnlineContent(url):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getOnlineContent: called. Requested URL -> "+str(url))
 
+    timeoutsocket.setDefaultSocketTimeout(60)
     # now pray the server
     try:
         file = urllib2.urlopen(url)
         result = file.readlines()
 	if (not result):
+            timeoutsocket.setDefaultSocketTimeout(2)
 	    return False
+        timeoutsocket.setDefaultSocketTimeout(2)
         return result
     except:
+        timeoutsocket.setDefaultSocketTimeout(2)
 	return False
 
 # Error reporting function
@@ -145,6 +152,7 @@ def getOnlineContent(url):
 # @returns False: if the file is not found
 def reportApplicationError(errorstring):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"reportApplicationError: called. Requested string -> "+str(errorstring))
+    timeoutsocket.setDefaultSocketTimeout(60)
     outstring = ""
     for char in errorstring:
         if char == " ":
@@ -157,8 +165,10 @@ def reportApplicationError(errorstring):
     try:
         file = urllib2.urlopen(url)
         result = file.readlines()
+	timeoutsocket.setDefaultSocketTimeout(2)
         return result
     except:
+	timeoutsocket.setDefaultSocketTimeout(2)
 	return False
 
 ###################################################

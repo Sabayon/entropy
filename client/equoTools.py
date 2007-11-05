@@ -1264,7 +1264,7 @@ def removePackage(infoDict):
 	file = file.encode(sys.getfilesystemencoding())
 
 	protected = False
-	if (not infoDict['removeconfig']):
+	if (not infoDict['removeconfig']) and (not infoDict['diffremoval']):
 	    try:
 	        # -- CONFIGURATION FILE PROTECTION --
 	        if os.access(file,os.R_OK):
@@ -2508,7 +2508,8 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
 	infoDict['removecontent'] = clientDbconn.retrieveContent(idpackage)
 	infoDict['removeidpackage'] = idpackage
-	infoDict['removeconfig'] = False # this will force old configuration files to be kept
+	infoDict['diffremoval'] = False
+	infoDict['removeconfig'] = True # we need to completely wipe configuration of conflicts
 	etpRemovalTriggers[infoDict['removeatom']] = clientDbconn.getPackageData(idpackage)
 	etpRemovalTriggers[infoDict['removeatom']]['removecontent'] = infoDict['removecontent']
 	steps = []
@@ -2540,6 +2541,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    oldcontent = clientDbconn.retrieveContent(actionQueue[pkgatom]['removeidpackage'])
 	    newcontent = dbconn.retrieveContent(idpackage)
 	    actionQueue[pkgatom]['removecontent'] = [x for x in oldcontent if x not in newcontent]
+	    actionQueue[pkgatom]['diffremoval'] = True
 	    etpRemovalTriggers[pkgatom] = clientDbconn.getPackageData(actionQueue[pkgatom]['removeidpackage'])
 	    etpRemovalTriggers[pkgatom]['removecontent'] = actionQueue[pkgatom]['removecontent'][:]
 
@@ -2724,6 +2726,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
 	infoDict['removeidpackage'] = idpackage
 	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
 	infoDict['removecontent'] = clientDbconn.retrieveContent(idpackage)
+	actionQueue[pkgatom]['diffremoval'] = False
 	infoDict['removeconfig'] = configFiles
 	etpRemovalTriggers[infoDict['removeatom']] = clientDbconn.getPackageData(idpackage)
 	etpRemovalTriggers[infoDict['removeatom']]['removecontent'] = infoDict['removecontent'][:]

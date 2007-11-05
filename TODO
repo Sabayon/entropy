@@ -2,6 +2,7 @@ TODO list:
   CLIENT:
   - add external triggerable hooks support
   - include more triggers
+  - output tools differential print
 
 Project Status:
 - reagent: complete. Stabilization mode.
