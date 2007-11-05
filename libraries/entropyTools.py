@@ -321,7 +321,14 @@ def isjustpkgname(mypkg):
 	    return 0
     return 1
 
+ververifyCache = {}
 def ververify(myverx, silent=1):
+    
+    cached = ververifyCache.get(myverx)
+    if cached != None:
+	return cached
+    
+    ververifyCache[myverx] = 1
     myver = myverx[:]
     if myver.endswith("*"):
 	myver = myver[:len(myver)-1]
@@ -330,8 +337,10 @@ def ververify(myverx, silent=1):
     else:
 	if not silent:
 	    print "!!! syntax error in version: %s" % myver
+	ververifyCache[myverx] = 0
 	return 0
 
+isjustnameCache = {}
 def isjustname(mypkg):
     """
     Checks to see if the depstring is only the package name (no version parts)
@@ -351,9 +360,16 @@ def isjustname(mypkg):
 	1) 0 if the package string is not just the package name
 	2) 1 if it is
     """
+    
+    cached = isjustnameCache.get(mypkg)
+    if cached != None:
+	return cached
+    
+    isjustnameCache[mypkg] = 1
     myparts = mypkg.split('-')
     for x in myparts:
 	if ververify(x):
+	    isjustnameCache[mypkg] = 0
 	    return 0
     return 1
 
@@ -380,6 +396,7 @@ def isspecific(mypkg):
 	return 1
     return 0
 
+catpkgsplitCache = {}
 def catpkgsplit(mydata,silent=1):
     """
     Takes a Category/Package-Version-Rev and returns a list of each.
@@ -396,7 +413,11 @@ def catpkgsplit(mydata,silent=1):
 	4.  If cat is invalid (specified but has incorrect syntax)
  		an InvalidData Exception will be thrown
     """
-	
+    
+    cached = catpkgsplitCache.get(mydata)
+    if cached != None:
+	return cached
+    
     # Categories may contain a-zA-z0-9+_- but cannot start with -
     mysplit=mydata.split("/")
     p_split=None
@@ -407,8 +428,10 @@ def catpkgsplit(mydata,silent=1):
 	retval=[mysplit[0]]
 	p_split=pkgsplit(mysplit[1],silent=silent)
     if not p_split:
+	catpkgsplitCache[mydata] = None
 	return None
     retval.extend(p_split)
+    catpkgsplitCache[mydata] = retval
     return retval
 
 def pkgsplit(mypkg,silent=1):
@@ -455,14 +478,23 @@ def pkgsplit(mypkg,silent=1):
 	return None
 
 # FIXME: deprecated, use remove_tag - will be removed soonly
+dep_striptagCache = {}
 def dep_striptag(mydepx):
+
+    cached = dep_striptagCache.get(mydepx)
+    if cached != None:
+	return cached
+
     mydep = mydepx[:]
     if not (isjustname(mydep)):
 	if mydep.split("-")[len(mydep.split("-"))-1].startswith("t"): # tag -> remove
 	    tag = mydep.split("-")[len(mydep.split("-"))-1]
 	    mydep = mydep[:len(mydep)-len(tag)-1]
+    
+    dep_striptagCache[mydepx] = mydep
     return mydep
 
+dep_getkeyCache = {}
 def dep_getkey(mydepx):
     """
     Return the category/package-name of a depstring.
@@ -476,6 +508,11 @@ def dep_getkey(mydepx):
     @rtype: String
     @return: The package category/package-version
     """
+    
+    cached = dep_getkeyCache.get(mydepx)
+    if cached != None:
+	return cached
+    
     mydep = mydepx[:]
     mydep = dep_striptag(mydep)
     
@@ -483,11 +520,15 @@ def dep_getkey(mydepx):
     if mydep and isspecific(mydep):
 	mysplit = catpkgsplit(mydep)
 	if not mysplit:
+	    dep_getkeyCache[mydepx] = mydep
 	    return mydep
+	dep_getkeyCache[mydepx] = mysplit[0] + "/" + mysplit[1]
 	return mysplit[0] + "/" + mysplit[1]
     else:
+	dep_getkeyCache[mydepx] = mydep
 	return mydep
 
+dep_getcpvCache = {}
 def dep_getcpv(mydep):
     """
     Return the category-package-version with any operators/slot specifications stripped off
@@ -501,6 +542,11 @@ def dep_getcpv(mydep):
     @rtype: String
     @return: The depstring with the operator removed
     """
+    
+    cached = dep_getcpvCache.get(mydep)
+    if cached != None:
+	return cached
+    
     mydep_orig = mydep
     if mydep and mydep[0] == "*":
 	mydep = mydep[1:]
@@ -515,8 +561,11 @@ def dep_getcpv(mydep):
     colon = mydep.rfind(":")
     if colon != -1:
 	mydep = mydep[:colon]
+
+    dep_getcpvCache[mydep] = mydep
     return mydep
 
+dep_getslotCache = {}
 def dep_getslot(dep):
     """
     Retrieve the slot on a depend.
@@ -530,10 +579,19 @@ def dep_getslot(dep):
     @rtype: String
     @return: The slot
     """
+    
+    cached = dep_getslotCache.get(dep)
+    if cached != None:
+	return cached
+    
     colon = dep.rfind(":")
     if colon != -1:
 	mydep = dep[colon+1:]
-	return remove_tag(mydep)
+	rslt = remove_tag(mydep)
+	dep_getslotCache[dep] = rslt
+	return rslt
+    
+    dep_getslotCache[dep] = None
     return None
 
 def remove_slot(mydep):
@@ -549,6 +607,7 @@ def remove_tag(mydep):
 	mydep = mydep[:colon]
     return mydep
 
+dep_gettagCache = {}
 def dep_gettag(dep):
     """
     Retrieve the slot on a depend.
@@ -558,10 +617,18 @@ def dep_gettag(dep):
 	'2.6.23-sabayon-r1'
     
     """
+
+    cached = dep_gettagCache.get(dep)
+    if cached != None:
+	return cached
+
     colon = dep.rfind("#")
     if colon != -1:
 	mydep = dep[colon+1:]
-	return remove_slot(mydep)
+	rslt = remove_slot(mydep)
+	dep_gettagCache[dep] = rslt
+	return rslt
+    dep_gettagCache[dep] = None
     return None
 
 def removePackageOperators(atom):

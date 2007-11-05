@@ -3360,10 +3360,9 @@ class etpDatabase:
 
         # check for direction
         strippedAtom = entropyTools.dep_getcpv(atom)
-        if atom.endswith("*"):
+        if atom[-1] == "*":
 	    strippedAtom += "*"
         direction = atom[0:len(atom)-len(strippedAtom)]
-        #print direction
 	
         justname = entropyTools.isjustname(strippedAtom)
         pkgversion = ''
@@ -3372,8 +3371,8 @@ class etpDatabase:
 	    strippedAtom = entropyTools.remove_tag(strippedAtom)
 	    
 	    # FIXME: deprecated - will be removed soonly
-            if strippedAtom.split("-")[-1].startswith("t"):
-                strippedAtom = string.join(strippedAtom.split("-t")[:len(strippedAtom.split("-t"))-1],"-t")
+            if strippedAtom.split("-")[-1][0] == "t":
+                strippedAtom = string.join(strippedAtom.split("-t")[:-1],"-t")
 	    
 	    # get version
 	    data = entropyTools.catpkgsplit(strippedAtom)
@@ -3382,16 +3381,17 @@ class etpDatabase:
 	    pkgversion = data[2]+"-"+data[3]
 	    
 	    # FIXME: deprecated - will be removed soonly
-	    if not atomTag:
-	        if atom.split("-")[len(atom.split("-"))-1].startswith("t"):
-	            atomTag = atom.split("-")[len(atom.split("-"))-1]
+	    if not matchTag:
+	        if atom.split("-")[-1].startswith("t"):
+	            matchTag = atom.split("-")[-1]
 	
         pkgkey = entropyTools.dep_getkey(strippedAtom)
-        if len(pkgkey.split("/")) == 2:
-            pkgname = pkgkey.split("/")[1]
-            pkgcat = pkgkey.split("/")[0]
+	splitkey = pkgkey.split("/")
+        if (len(splitkey) == 2):
+            pkgname = splitkey[1]
+            pkgcat = splitkey[0]
         else:
-            pkgname = pkgkey.split("/")[0]
+            pkgname = splitkey[0]
 	    pkgcat = "null"
 
         #print dep_getkey(strippedAtom)
@@ -3399,7 +3399,7 @@ class etpDatabase:
 	    myBranchIndex = tuple(matchBranches) # force to tuple for security
 	else:
 	    myBranchIndex = (etpConst['branch'],)
-    
+
         # IDs found in the database that match our search
         foundIDs = []
 	
@@ -3414,12 +3414,10 @@ class etpDatabase:
 	    if mypkgcat == "virtual":
 	        virtuals = self.searchProvide(pkgkey, branch = idx)
 		if (virtuals):
-		    for virtual in virtuals:
-			mypkgname = self.retrieveName(virtual[1])
-			mypkgcat = self.retrieveCategory(virtual[1])
-			break
+		    mypkgname = self.retrieveName(virtuals[0][1])
+		    mypkgcat = self.retrieveCategory(virtuals[0][1])
 		    results = virtuals
-			
+
 	    # now validate
 	    if (not results):
 	        #print "results is empty"
@@ -3430,19 +3428,17 @@ class etpDatabase:
 	        #print "results > 1"
 	        # if it's because category differs, it's a problem
 	        foundCat = ""
-	        cats = []
+	        cats = set()
 	        for result in results:
 		    idpackage = result[1]
 		    cat = self.retrieveCategory(idpackage)
-		    cats.append(cat)
+		    cats.add(cat)
 		    if (cat == mypkgcat):
 		        foundCat = cat
 		        break
-	        # if categories are the same...
-	        if (not foundCat) and (len(cats) > 0):
-		    cats = entropyTools.filterDuplicatedEntries(cats)
-		    if len(cats) == 1:
-		        foundCat = cats[0]
+	        # if I found something at least...
+	        if (not foundCat) and (len(cats) == 1):
+		    foundCat = list(cats)[0]
 	        if (not foundCat) and (mypkgcat == "null"):
 		    # got the issue
 		    # gosh, return and complain
@@ -3463,14 +3459,14 @@ class etpDatabase:
 	            results = self.searchPackagesByNameAndCategory(name = mypkgname, category = mypkgcat, branch = idx, sensitive = caseSensitive)
 	        # validate again
 	        if (not results):
-		    continue  # search into a stabler branch
+		    continue  # search into another branch
 	
 	        # if we get here, we have found the needed IDs
 	        foundIDs = results
 	        break
 
 	    else:
-
+		
 		# check if category matches
 		if mypkgcat != "null":
 		    foundCat = self.retrieveCategory(results[0][1])
@@ -3481,7 +3477,7 @@ class etpDatabase:
 		else:
 	            foundIDs.append(results[0])
 	            break
-
+	
         if (foundIDs):
 	    # now we have to handle direction
 	    if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
@@ -3505,10 +3501,10 @@ class etpDatabase:
 		    #print direction+" direction"
 		    # remove revision (-r0 if none)
 		    if (direction == "="):
-		        if (pkgversion.split("-")[len(pkgversion.split("-"))-1] == "r0"):
-		            pkgversion = string.join(pkgversion.split("-")[:len(pkgversion.split("-"))-1],"-")
+		        if (pkgversion.split("-")[-1] == "r0"):
+		            pkgversion = string.join(pkgversion.split("-")[:-1],"-")
 		    if (direction == "~"):
-		        pkgversion = string.join(pkgversion.split("-")[:len(pkgversion.split("-"))-1],"-")
+		        pkgversion = string.join(pkgversion.split("-")[:-1],"-")
 		
 		    #print pkgversion
 		    dbpkginfo = []
@@ -3520,27 +3516,13 @@ class etpDatabase:
 			        # found
 			        dbpkginfo.append([idpackage,dbver])
 		        else:
-			    dbtag = self.retrieveVersionTag(idpackage)
-			    #print pkgversion
 			    # media-libs/test-1.2* support
-			    if pkgversion.endswith("*"):
-			        testpkgver = pkgversion[:len(pkgversion)-1]
-			        #print testpkgver
-			        combodb = dbver+dbtag
-				if atomTag == None: pkgtag = ''
-				else: pkgtag = atomTag
-			        combopkg = testpkgver+pkgtag
-			        #print combodb
-			        #print combopkg
-			        if combodb.startswith(combopkg):
+			    if pkgversion[-1] == "*":
+			        if dbver.startswith(pkgversion[:-1]):
 				    dbpkginfo.append([idpackage,dbver])
 			    else:
-				if atomTag == None: pkgtag = ''
-				else: pkgtag = atomTag
-		                if (dbver+dbtag == pkgversion+pkgtag):
-			            # found
-			            dbpkginfo.append([idpackage,dbver])
-		
+				dbpkginfo.append([idpackage,dbver])
+
 		    if (not dbpkginfo):
 		        # no version available
 		        if (direction == "~"): # if the atom with the same version (any rev) is not found, fallback to the first available
@@ -3627,9 +3609,9 @@ class etpDatabase:
 		
 		    #print direction+" direction"
 		    # remove revision (-r0 if none)
-		    if pkgversion.split("-")[len(pkgversion.split("-"))-1] == "r0":
+		    if pkgversion.split("-")[-1] == "r0":
 		        # remove
-		        pkgversion = string.join(pkgversion.split("-")[:len(pkgversion.split("-"))-1],"-")
+		        pkgversion = string.join(pkgversion.split("-")[:-1],"-")
 
 		    dbpkginfo = []
 		    for list in foundIDs:
@@ -3665,7 +3647,7 @@ class etpDatabase:
 		        return -1,1
 		
 		    versions = []
-		    multiMatchList = []
+		    multiMatchList = set()
 		    _dbpkginfo = []
 		    for x in dbpkginfo:
 			if (matchSlot != None):
@@ -3676,7 +3658,7 @@ class etpDatabase:
 			    if matchTag != self.retrieveVersionTag(x[0]):
 				continue
 			if (multiMatch):
-			    multiMatchList.append(x[0])
+			    multiMatchList.add(x[0])
 		        versions.append(x[1])
 			_dbpkginfo.append(x)
 		    dbpkginfo = _dbpkginfo
@@ -3754,13 +3736,13 @@ class etpDatabase:
 	        # not set, just get the newer version, matching slot choosen if matchSlot != None
 	        versionIDs = []
 		#print foundIDs
-		multiMatchList = []
+		multiMatchList = set()
 		_foundIDs = []
 	        for list in foundIDs:
 		    if (matchSlot == None) and (matchTag == None):
 		        versionIDs.append(self.retrieveVersion(list[1]))
 			if (multiMatch):
-			    multiMatchList.append(list[1])
+			    multiMatchList.add(list[1])
 		    else:
 			if (matchSlot != None):
 			    foundslot = self.retrieveSlot(list[1])
@@ -3771,7 +3753,7 @@ class etpDatabase:
 				continue
 			versionIDs.append(self.retrieveVersion(list[1]))
 			if (multiMatch):
-			    multiMatchList.append(list[1])
+			    multiMatchList.add(list[1])
 		    _foundIDs.append(list)
 		foundIDs = _foundIDs
 	    
