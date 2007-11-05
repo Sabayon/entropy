@@ -2826,7 +2826,7 @@ def stepExecutor(step,infoDict):
 	# get messages
 	if infoDict['messages']:
 	    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Message from "+infoDict['atom']+" :")
-	for msg in infoDict['messages']: # FIXME: add logging support
+	for msg in infoDict['messages']:
 	    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,msg)
 	    print_warning(brown('   ## ')+msg)
 	if infoDict['messages']:

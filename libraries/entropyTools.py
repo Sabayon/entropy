@@ -191,38 +191,35 @@ def aggregateEntropyDb(tbz2file,dbfile):
     f.flush()
     f.close()
 
-# This function removes entropy database entry from the .tbz2
-# the result is a gentoo compatible package
-def disgregateEntropyDb(oldtbz2,newtbz2):
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"disgregateEntropyDb: called -> "+oldtbz2+" and "+newtbz2)
-    old = open(oldtbz2,"rb")
-    new = open(newtbz2,"wb")
-    dbpath = newtbz2+".db"
+def extractEdb(tbz2file):
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractEdb: called -> "+tbz2file)
+    old = open(tbz2file,"rb")
+    dbpath = tbz2file[:-5]+".db"
     db = open(dbpath,"wb")
-    allowWrite = False # allow write to db file
     
-    byte = old.read(1)
-    while byte:
-        if byte == "|":
-            # investigate
-            currpos = old.tell()
-            chunk = byte+old.read(31)
-            if chunk == etpConst['databasestarttag']:
-                allowWrite = True
-                byte = None
-            else:
-                old.seek(currpos)
-        if (allowWrite):
-            if byte != None:
-                db.write(byte)
-        else:
-            new.write(byte)
-        byte = old.read(1)
+    # position old to the end
+    old.seek(0,2)
+    # read backward until we find
+    bytes = old.tell()
+    counter = bytes
+    dbcontent = []
+    
+    while counter >= 0:
+	old.seek(counter-bytes,2)
+	byte = old.read(1)
+	if byte == "|":
+	    old.seek(counter-bytes-31,2)
+	    chunk = old.read(31)+byte
+	    if chunk == etpConst['databasestarttag']:
+		break
+	dbcontent.append(byte)
+	counter -= 1
+    dbcontent.reverse()
+    for x in dbcontent:
+	db.write(x)
     
     db.flush()
     db.close()
-    new.flush()
-    new.close()
     old.close()
 
 

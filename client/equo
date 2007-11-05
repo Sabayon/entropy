@@ -157,8 +157,10 @@ try:
 		if "--pretend" not in options:
 		    options.append("--pretend")
         rc = equoTools.package(options)
+	print_info(red(" @@ ")+darkblue("Caching equo conf"), back = True)
 	import confTools
 	scandata = confTools.scanfs(quiet = True, dcache = True)
+	print_info(red(" @@ ")+darkblue("Caching complete."))
 	if len(scandata) > 0:
 	    print_warning(darkgreen("There are "+str(len(scandata))+" configuration file(s) that need(s) to be updated."))
 	    print_warning(red("Please run: ")+bold("equo conf update"))
