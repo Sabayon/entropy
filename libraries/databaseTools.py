@@ -643,19 +643,27 @@ class etpDatabase:
 	    broken1 = False
 	    dbinfo = dbCacheStore.get(etpCache['dbInfo']+self.dbname)
 	    if dbinfo == None:
-		dbCacheStore[etpCache['dbInfo']+self.dbname] = dumpTools.loadobj(etpCache['dbInfo']+self.dbname)
-	        if dbCacheStore[etpCache['dbInfo']+self.dbname] == None:
+		try:
+		    dbCacheStore[etpCache['dbInfo']+self.dbname] = dumpTools.loadobj(etpCache['dbInfo']+self.dbname)
+	            if dbCacheStore[etpCache['dbInfo']+self.dbname] == None:
+		        broken1 = True
+		        dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
+		except:
 		    broken1 = True
-		    dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
+		    pass
 
 	    ''' database atom dependencies cache '''
 	    dbmatch = dbCacheStore.get(etpCache['dbMatch']+self.dbname)
 	    broken2 = False
 	    if dbmatch == None:
-	        dbCacheStore[etpCache['dbMatch']+self.dbname] = dumpTools.loadobj(etpCache['dbMatch']+self.dbname)
-	        if dbCacheStore[etpCache['dbMatch']+self.dbname] == None:
+		try:
+	            dbCacheStore[etpCache['dbMatch']+self.dbname] = dumpTools.loadobj(etpCache['dbMatch']+self.dbname)
+	            if dbCacheStore[etpCache['dbMatch']+self.dbname] == None:
+		        broken2 = True
+		        dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
+		except:
 		    broken2 = True
-		    dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
+		    pass
 	
 	    if (broken1 or broken2):
 		# discard both caches
@@ -1549,20 +1557,31 @@ class etpDatabase:
 	# now parse them into useflags table
 	orphanedFlags = idflags.copy()
 	
+	foundflags = set()
 	query = 'WHERE idflag = '
+	counter = 0
+	run = False
 	for idflag in idflags:
+	    run = True
+	    counter += 1
 	    query += str(idflag)+' OR idflag = '
-	query = query[:-13]
+	    if counter > 25:
+		counter = 0
+		query = query[:-13]
+		self.cursor.execute('SELECT idflag FROM useflags '+query)
+		foundflags.update(self.fetchall2set(self.cursor.fetchall()))
+		query = 'WHERE idflag = '
+		run = False
 	
-	self.cursor.execute('SELECT idflag FROM useflags '+query)
-	orphanedFlags.difference_update(self.fetchall2set(self.cursor.fetchall()))
+	if (run):
+	    query = query[:-13]
+	    self.cursor.execute('SELECT idflag FROM useflags '+query)
+	    foundflags.update(self.fetchall2set(self.cursor.fetchall()))
+	orphanedFlags.difference_update(foundflags)
 	
-	query = 'WHERE idflag = '
 	for idflag in orphanedFlags:
-	    query += str(idflag)+' OR idflag = '
-	query = query[:-13]
+	    self.cursor.execute('DELETE FROM useflagsreference WHERE idflag ='+str(idflag))
 	
-	self.cursor.execute('DELETE FROM useflagsreference '+query)
 	# empty cursor
 	x = self.cursor.fetchall()
 
@@ -1572,21 +1591,32 @@ class etpDatabase:
 	idsources = self.fetchall2set(self.cursor.fetchall())
 	# now parse them into useflags table
 	orphanedSources = idsources.copy()
-	
+
+	foundsources = set()
 	query = 'WHERE idsource = '
+	counter = 0
+	run = False
 	for idsource in idsources:
+	    run = True
+	    counter += 1
 	    query += str(idsource)+' OR idsource = '
-	query = query[:-15]
+	    if counter > 25:
+		counter = 0
+		query = query[:-15]
+		self.cursor.execute('SELECT idsource FROM sources '+query)
+		foundsources.update(self.fetchall2set(self.cursor.fetchall()))
+		query = 'WHERE idsource = '
+		run = False
 	
-	self.cursor.execute('SELECT idsource FROM sources '+query)
-	orphanedSources.difference_update(self.fetchall2set(self.cursor.fetchall()))
+	if (run):
+	    query = query[:-15]
+	    self.cursor.execute('SELECT idsource FROM sources '+query)
+	    foundsources.update(self.fetchall2set(self.cursor.fetchall()))
+	orphanedSources.difference_update(foundsources)
 	
-	query = 'WHERE idsource = '
 	for idsource in orphanedSources:
-	    query += str(idsource)+' OR idsource = '
-	query = query[:-15]
+	    self.cursor.execute('DELETE FROM sourcesreference WHERE idsource = '+str(idsource))
 	
-	self.cursor.execute('DELETE FROM sourcesreference '+query)
 	# empty cursor
 	x = self.cursor.fetchall()
 
@@ -1596,21 +1626,32 @@ class etpDatabase:
 	idclasses = self.fetchall2set(self.cursor.fetchall())
 	# now parse them into useflags table
 	orphanedClasses = idclasses.copy()
-	
+
+	foundclasses = set()
 	query = 'WHERE idclass = '
+	counter = 0
+	run = False
 	for idclass in idclasses:
+	    run = True
+	    counter += 1
 	    query += str(idclass)+' OR idclass = '
-	query = query[:-14]
+	    if counter > 25:
+		counter = 0
+		query = query[:-14]
+		self.cursor.execute('SELECT idclass FROM eclasses '+query)
+		foundclasses.update(self.fetchall2set(self.cursor.fetchall()))
+		query = 'WHERE idclass = '
+		run = False
 	
-	self.cursor.execute('SELECT idclass FROM eclasses '+query)
-	orphanedClasses.difference_update(self.fetchall2set(self.cursor.fetchall()))
+	if (run):
+	    query = query[:-14]
+	    self.cursor.execute('SELECT idclass FROM eclasses '+query)
+	    foundclasses.update(self.fetchall2set(self.cursor.fetchall()))
+	orphanedClasses.difference_update(foundclasses)
 	
-	query = 'WHERE idclass = '
 	for idclass in orphanedClasses:
-	    query += str(idclass)+' OR idclass = '
-	query = query[:-14]
+	    self.cursor.execute('DELETE FROM eclassesreference WHERE idclass = '+str(idclass))
 	
-	self.cursor.execute('DELETE FROM eclassesreference '+query)
 	# empty cursor
 	x = self.cursor.fetchall()
 
@@ -1620,21 +1661,31 @@ class etpDatabase:
 	idneededs = self.fetchall2set(self.cursor.fetchall())
 	# now parse them into useflags table
 	orphanedNeededs = idneededs.copy()
-	
+
+	foundneeded = set()
 	query = 'WHERE idneeded = '
+	counter = 0
+	run = False
 	for idneeded in idneededs:
+	    run = True
+	    counter += 1
 	    query += str(idneeded)+' OR idneeded = '
-	query = query[:-15]
+	    if counter > 25:
+		counter = 0
+		query = query[:-15]
+		self.cursor.execute('SELECT idneeded FROM needed '+query)
+		foundneeded.update(self.fetchall2set(self.cursor.fetchall()))
+		query = 'WHERE idneeded = '
+		run = False
 	
-	self.cursor.execute('SELECT idneeded FROM needed '+query)
-	orphanedNeededs.difference_update(self.fetchall2set(self.cursor.fetchall()))
+	if (run):
+	    query = query[:-15]
+	    self.cursor.execute('SELECT idneeded FROM needed '+query)
+	    foundneeded.update(self.fetchall2set(self.cursor.fetchall()))
+	orphanedNeededs.difference_update(foundneeded)
 	
-	query = 'WHERE idneeded = '
 	for idneeded in orphanedNeededs:
-	    query += str(idneeded)+' OR idneeded = '
-	query = query[:-15]
-	
-	self.cursor.execute('DELETE FROM neededreference '+query)
+	    self.cursor.execute('DELETE FROM neededreference WHERE idneeded = '+str(idneeded))
 	# empty cursor
 	x = self.cursor.fetchall()
 
@@ -1644,21 +1695,31 @@ class etpDatabase:
 	iddeps = self.fetchall2set(self.cursor.fetchall())
 	# now parse them into useflags table
 	orphanedDeps = iddeps.copy()
-	
+
+	founddeps = set()
 	query = 'WHERE iddependency = '
+	counter = 0
+	run = False
 	for iddep in iddeps:
+	    run = True
+	    counter += 1
 	    query += str(iddep)+' OR iddependency = '
-	query = query[:-19]
+	    if counter > 25:
+		counter = 0
+		query = query[:-19]
+		self.cursor.execute('SELECT iddependency FROM dependencies '+query)
+		founddeps.update(self.fetchall2set(self.cursor.fetchall()))
+		query = 'WHERE iddependency = '
+		run = False
 	
-	self.cursor.execute('SELECT iddependency FROM dependencies '+query)
-	orphanedDeps.difference_update(self.fetchall2set(self.cursor.fetchall()))
-	
-	query = 'WHERE iddependency = '
+	if (run):
+	    query = query[:-19]
+	    self.cursor.execute('SELECT iddependency FROM dependencies '+query)
+	    founddeps.update(self.fetchall2set(self.cursor.fetchall()))
+	orphanedDeps.difference_update(founddeps)
+
 	for iddep in orphanedDeps:
-	    query += str(iddep)+' OR iddependency = '
-	query = query[:-19]
-	
-	self.cursor.execute('DELETE FROM dependenciesreference '+query)
+	    self.cursor.execute('DELETE FROM dependenciesreference WHERE iddependency = '+str(iddep))
 	# empty cursor
 	x = self.cursor.fetchall()
 
@@ -1788,11 +1849,19 @@ class etpDatabase:
 	return data
 
     def fetchall2set(self, item):
-	return set(sum(tuple(item), ()))
+	content = set()
+	for x in item:
+	    for y in x:
+		content.add(y)
+	return content
 
     def fetchall2list(self, item):
-	return list(sum(tuple(item), ()))
-    
+	content = []
+	for x in item:
+	    for y in x:
+		content.append(y)
+	return content
+
     def fetchone2list(self, item):
 	return list(item)
 
@@ -2559,9 +2628,8 @@ class etpDatabase:
 	if (not sanity):
 	    return -2 # table does not exist or is broken, please regenerate and re-run
 
-	iddeps = []
-	self.cursor.execute('SELECT idpackage FROM dependstable,dependencies WHERE dependstable.idpackage = "'+str(idpackage)+'" and dependstable.iddependency = dependencies.iddependency')
-	result = self.cursor.fetchall()
+	self.cursor.execute('SELECT dependencies.idpackage FROM dependstable,dependencies WHERE dependstable.idpackage = "'+str(idpackage)+'" and dependstable.iddependency = dependencies.iddependency')
+	result = self.fetchall2set(self.cursor.fetchall())
 
 	''' caching '''
 	if (self.xcache):
@@ -2841,12 +2909,33 @@ class etpDatabase:
 	idpkgs = self.fetchall2set(self.cursor.fetchall())
 	if not idpkgs:
 	    return ()
+
+	result = set()
 	query = 'WHERE idpackage = '
-	for idpk in idpkgs:
-	    query += str(idpk)+' OR idpackage = '
-	query = query[:-16]
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo '+query)
-	return self.cursor.fetchall()
+	counter = 0
+	run = False
+	for idpkg in idpkgs:
+	    run = True
+	    counter += 1
+	    query += str(idpkg)+' OR idpackage = '
+	    if counter > 25:
+		counter = 0
+		query = query[:-16]
+		self.cursor.execute('SELECT atom,idpackage FROM baseinfo '+query)
+		qry = self.cursor.fetchall()
+		for x in qry:
+		    result.add(x)
+		query = 'WHERE idpackage = '
+		run = False
+	
+	if (run):
+	    query = query[:-16]
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo '+query)
+	    qry = self.cursor.fetchall()
+	    for x in qry:
+		result.add(x)
+	
+	return result
 
     def searchPackagesByName(self, keyword, sensitive = False, branch = None):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByName: called for "+keyword)
@@ -2946,13 +3035,32 @@ class etpDatabase:
 	if not iddeps:
 	    return ()
 	
+	result = set()
 	query = 'WHERE iddependency = '
+	counter = 0
+	run = False
 	for iddep in iddeps:
+	    run = True
+	    counter += 1
 	    query += str(iddep)+' OR iddependency = '
-	query = query[:-19]
+	    if counter > 25:
+		counter = 0
+		query = query[:-19]
+		self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference '+query)
+		qry = self.cursor.fetchall()
+		for x in qry:
+		    result.add(x)
+		query = 'WHERE iddependency = '
+		run = False
 	
-	self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference '+query)
-	return self.cursor.fetchall()
+	if (run):
+	    query = query[:-19]
+	    self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference '+query)
+	    qry = self.cursor.fetchall()
+	    for x in qry:
+		result.add(x)
+
+	return result
 
     def listBranchPackagesTbz2(self, branch):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listBranchPackagesTbz2: called with "+str(branch))
@@ -2977,7 +3085,8 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllFiles: called.")
 	self.cursor.execute('SELECT file FROM content')
 	if clean:
-	    return self.fetchall2set(self.cursor.fetchall())
+	    x = self.fetchall2set(self.cursor.fetchall())
+	    return x
 	else:
 	    return self.fetchall2list(self.cursor.fetchall())
 
@@ -2997,13 +3106,27 @@ class etpDatabase:
 	if not idprotects:
 	    return ()
 	
+	results = set()
 	query = 'WHERE idprotect = '
+	counter = 0
+	run = False
 	for idprotect in idprotects:
+	    run = True
+	    counter += 1
 	    query += str(idprotect)+' OR idprotect = '
-	query = query[:-16]
+	    if counter > 25:
+		counter = 0
+		query = query[:-16]
+		self.cursor.execute('SELECT protect FROM configprotectreference '+query)
+		results.update(self.fetchall2set(self.cursor.fetchall()))
+		query = 'WHERE idprotect = '
+		run = False
 	
-	self.cursor.execute('SELECT protect FROM configprotectreference '+query)
-	results = self.fetchall2set(self.cursor.fetchall())
+	if (run):
+	    query = query[:-16]
+	    self.cursor.execute('SELECT protect FROM configprotectreference '+query)
+	    results.update(self.fetchall2set(self.cursor.fetchall()))
+	
 	for result in results:
 	    for x in result.split():
 		dirs.add(x)

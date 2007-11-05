@@ -59,11 +59,12 @@ def dumpobj(name,object):
 def loadobj(name):
     dmpfile = etpConst['dumpstoragedir']+"/"+name+".dmp"
     if os.path.isfile(dmpfile):
-	xmldoc = minidom.parse(dmpfile)
-	structure = xmldoc.firstChild
-	data = structure.childNodes[1]
 	try:
+	    xmldoc = minidom.parse(dmpfile)
+	    structure = xmldoc.firstChild
+	    data = structure.childNodes[1]
 	    x = eval(data.firstChild.data.strip())
 	    return x
 	except:
-	    raise SyntaxError,"cannot eval() data"
+	    os.remove(dmpfile)
+	    raise SyntaxError,"cannot load object"

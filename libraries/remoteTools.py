@@ -74,8 +74,13 @@ def getRemotePackageChecksum(serverName,filename, branch):
 # HTTP/FTP equo/download functions
 ###################################################
 
-def downloadData(url,pathToSave, bufferSize = 8192, checksum = True, showSpeed = True):
+def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed = True):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadFile: called.")
+
+    import re
+    # substitute tagged filenames with URL encoded code
+    out = re.subn('#','%23',url)
+    url = out[0]
 
     # start scheduler
     if (showSpeed):

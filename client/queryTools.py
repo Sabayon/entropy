@@ -399,7 +399,7 @@ def searchRemoval(atoms, idreturn = False, quiet = False, deep = False):
     choosenRemovalQueue = []
     if (not quiet):
         print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
-    treeview = generateDependsTree(foundAtoms,clientDbconn, deep = deep)
+    treeview = generateDependsTree(foundAtoms, deep = deep)
     treelength = len(treeview[0])
     if treelength > 1:
 	treeview = treeview[0]

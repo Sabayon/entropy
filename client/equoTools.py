@@ -46,13 +46,23 @@ equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst[
 def loadCaches():
     print_info(darkred(" @@ ")+blue("Loading On-Disk Cache..."))
     # atomMatch
-    mycache = dumpTools.loadobj(etpCache['atomMatch'])
-    if isinstance(mycache, dict):
-	atomMatchCache = mycache.copy()
+    try:
+        mycache = dumpTools.loadobj(etpCache['atomMatch'])
+	if isinstance(mycache, dict):
+	    atomMatchCache = mycache.copy()
+    except:
+	atomMatchCache = {}
+	dumpTools.dumpobj(etpCache['atomMatch'],{})
+
     # removal dependencies
-    mycache3 = dumpTools.loadobj(etpCache['generateDependsTree'])
-    if isinstance(mycache3, dict):
-	generateDependsTreeCache = mycache3.copy()
+    try:
+        mycache3 = dumpTools.loadobj(etpCache['generateDependsTree'])
+	if isinstance(mycache3, dict):
+	    generateDependsTreeCache = mycache3.copy()
+    except:
+	generateDependsTreeCache = {}
+	dumpTools.dumpobj(etpCache['generateDependsTree'],{})
+
 
 def saveCaches():
     dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
@@ -708,12 +718,17 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 
     treecache = {}
     unsatisfiedDeps = getDependencies(atomInfo)
-    unsatisfiedDeps, xxx = filterSatisfiedDependencies(unsatisfiedDeps, deepdeps = deepdeps)
+    if not emptydeps:
+        unsatisfiedDeps, xxx = filterSatisfiedDependencies(unsatisfiedDeps, deepdeps = deepdeps)
     dependenciesNotFound = []
     treeview = []
     tree = {}
     treedepth = 0 # in tree[0] are the conflicts
     tree[0] = []
+    # tree[1] is for the requested atomInfo
+    tree[1] = []
+    treedepth = 1
+    requested = set([atomInfo])
     conflicts = set()
     
     clientDbconn = openClientDatabase()
@@ -733,7 +748,10 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	    # Handling conflicts
 	    if undep[0] == "!":
 		xmatch = clientDbconn.atomMatch(undep[1:])
-		conflicts.add(xmatch[0])
+		if xmatch[0] != -1:
+		    conflicts.add(xmatch[0])
+		    # FIXME: do I have to add its depends?
+		    # depends = generateDependsTree([xmatch[0])
 		continue
 	    
 	    atom = atomMatch(undep)
@@ -809,8 +827,6 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	    newtree[x] = set()
 	    for y in tree[x]:
 		newtree[x].add(atomMatch(y))
-	    if (newtree[x]):
-	        newtree[x] = filterDuplicatedEntries(newtree[x])
 
 	# now filter newtree
 	treelength = len(newtree)
@@ -832,6 +848,8 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	newtree[0] = list(conflicts)
 	newtree[0].sort()
 	#print newtree[0]
+    # add requested
+    newtree[1] = requested
 
     ''' caching '''
     generateDependencyTreeCache[tuple(atomInfo)] = {}
@@ -851,6 +869,65 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False, spinning = False):
     deptree = {}
     depcount = -1
+
+    # order foundAtoms
+    '''
+    if len(foundAtoms) > 1:
+	foundAtoms = list(foundAtoms)
+	rc = False
+	
+	testCache = {}
+	
+        while not rc:
+	    swap = False
+	    for x in range(len(foundAtoms)):
+		pkgA = foundAtoms[x]
+		try:
+		    pkgB = foundAtoms[x+1]
+		except:
+		    continue
+		
+		cached = testCache.get((pkgA,pkgB))
+		if cached:
+		    print "cached"
+		    y,z = cached['result']
+		    if pkgA != y:
+		        foundAtoms[x] = y
+		        foundAtoms[x+1] = z
+			swap = True
+		    continue
+		    
+		
+		testCache[(pkgA,pkgB)] = {}
+		odbconn = openRepositoryDatabase(pkgA[1])
+		odeps = generateDependencyTree(pkgA, emptydeps = True)
+		# FIXME: remove conflict ignorance
+		if odeps[1] != 0:
+		    continue
+		odeps[0][0] = [] # reset conflicts
+		for odep in odeps[0]:
+		    br = False
+		    #print odeps[0][0]
+		    dlist = odeps[0][odep]
+		    #print dlist
+		    for y in dlist:
+			#print y
+			if y == pkgB:
+			    print str(y)+" reverse -> "+str(pkgA)
+			    foundAtoms[x] = pkgB
+			    foundAtoms[x+1] = pkgA
+			    swap = True
+			    br = True
+			    break
+			if br: break
+		    if br: break
+		testCache[(pkgA,pkgB)]['result'] = (foundAtoms[x],foundAtoms[x+1])
+		
+
+		odbconn.closeDB()
+	    if (not swap):
+		rc = True
+    '''
     
     if spinning: atomlen = len(foundAtoms); count = 0
     for atomInfo in foundAtoms:
@@ -917,8 +994,8 @@ def generateDependsTree(idpackages, deep = False):
     treelevel = idpackages[:]
     tree = {}
     treedepth = 0 # I start from level 1 because level 0 is idpackages itself
-    tree[treedepth] = idpackages[:]
-    monotree = set(idpackages[:]) # monodimensional tree
+    tree[treedepth] = set(idpackages)
+    monotree = set(idpackages) # monodimensional tree
     
     # check if dependstable is sane before beginning
     rx = clientDbconn.retrieveDepends(idpackages[0])
@@ -2092,6 +2169,9 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	print_info(red(" @@ ")+darkred("Packages matching not available:\t\t")+bold(str(len(removedList))))
 	print_info(red(" @@ ")+blue("Packages matching already up to date:\t")+bold(str(len(fineList))))
 
+    # disable collisions protection, better
+    etpConst['collisionprotect'] = 0
+
     if (updateList):
         print_info(red(" @@ ")+blue("Calculating queue..."))
         rc = installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch)
@@ -2154,7 +2234,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     foundAtoms = _foundAtoms
     
     # are packages in foundAtoms?
-    if (len(foundAtoms) == 0):
+    if (not foundAtoms):
 	print_error(red("No packages found"))
 	return 127,-1
 
@@ -2254,9 +2334,8 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	elif (result == -1): # no database connection
 	    print_error(red(" @@ ")+blue("Cannot find the Installed Packages Database. It's needed to accomplish dependency resolving. Try to run ")+bold("equo database generate"))
 	    return 200, -1
-	
 	for x in range(len(treepackages))[::-1]:
-	    for z in treepackages[x]:
+	    for z in range(len(treepackages[x]))[::-1]:
 		if z == 0:
 		    # conflicts
 		    for a in treepackages[x][z]:
@@ -2264,13 +2343,6 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 		else:
 		    for a in treepackages[x][z]:
 		        runQueue.append(a)
-    
-    # remove duplicates
-    runQueue = [x for x in runQueue if x not in foundAtoms] # needed?
-    
-    # add our requested packages at the end
-    for atomInfo in foundAtoms:
-	runQueue.append(atomInfo)
 
     downloadSize = 0
     onDiskUsedSize = 0
@@ -2282,21 +2354,9 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     pkgsToRemove = len(removalQueue)
     actionQueue = {}
 
-    if (not runQueue):
+    if (not runQueue) and (not removalQueue):
 	print_error(red("Nothing to do."))
 	return 127,-1
-
-    if (removalQueue):
-	if (ask or pretend or verbose):
-	    print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("removed")+blue(":"))
-	    clientDbconn = openClientDatabase()
-	    for idpackage in removalQueue:
-	        pkgatom = clientDbconn.retrieveAtom(idpackage)
-	        onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idpackage)
-	        installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
-		repoinfo = red("[")+brown("from: ")+bold(installedfrom)+red("] ")
-	        print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
-	    clientDbconn.closeDB()
 
     if (runQueue):
 	if (ask or pretend):
@@ -2401,6 +2461,19 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    print_info(darkred(" ##")+flags+repoinfo+enlightenatom(str(pkgatom))+"/"+str(pkgrev)+oldinfo)
 	    dbconn.closeDB()
 
+    if (removalQueue):
+	if (ask or pretend or verbose):
+	    print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("removed")+blue(":"))
+	    clientDbconn = openClientDatabase()
+	    for idpackage in removalQueue:
+	        pkgatom = clientDbconn.retrieveAtom(idpackage)
+	        onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idpackage)
+	        installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
+		repoinfo = red("[")+brown("from: ")+bold(installedfrom)+red("] ")
+	        print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
+	    clientDbconn.closeDB()
+
+    if (runQueue) or (removalQueue):
 	# show download info
 	print_info(red(" @@ ")+blue("Packages needing install:\t")+red(str(len(runQueue))))
 	print_info(red(" @@ ")+blue("Packages needing removal:\t")+red(str(pkgsToRemove)))

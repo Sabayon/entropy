@@ -402,6 +402,10 @@ def generatedict(filepath):
     if (not mydict['automerge']):
         # is it trivial?
         try:
+	    if os.path.islink(filepath):
+		# if it's broken, skip diff and automerge
+		if not os.path.exists(filepath):
+		    return mydict
 	    result = commands.getoutput('diff -Nua '+filepath+' '+tofilepath+' | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'')
 	    if not result:
 	        mydict['automerge'] = True
@@ -410,6 +414,10 @@ def generatedict(filepath):
 	# another test
 	if (not mydict['automerge']):
 	    try:
+	        if os.path.islink(filepath):
+		    # if it's broken, skip diff and automerge
+		    if not os.path.exists(filepath):
+		        return mydict
 		result = os.system('diff -Bbua '+filepath+' '+tofilepath+' | egrep \'^[+-]\' | egrep -v \'^[+-][\t ]*#|^--- |^\+\+\+ \' | egrep -qv \'^[-+][\t ]*$\'')
 		if result == 1:
 		    mydict['automerge'] = True
