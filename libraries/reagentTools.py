@@ -251,7 +251,7 @@ def update(options):
 	sys.exit(0)
 
     # open db connection
-    dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
+    dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True, xcache = False)
 
     counter = 0
     etpCreated = 0
@@ -270,7 +270,7 @@ def update(options):
 	    
 	    dbpath = etpConst['packagestmpdir']+"/"+"data.db"
 	    # create db
-	    pkgDbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True, dbFile = dbpath, clientDatabase = True)
+	    pkgDbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True, dbFile = dbpath, clientDatabase = True, xcache = False)
 	    pkgDbconn.initializeDatabase()
 	    data = dbconn.getPackageData(idpk)
 	    rev = dbconn.retrieveRevision(idpk)
