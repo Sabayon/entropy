@@ -673,6 +673,7 @@ class etpDatabase:
 		dumpTools.dumpobj(etpCache['dbInfo']+self.dbname,{})
 		
 	else:
+	    self.xcache = False # setting this to be safe
 	    dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
 	    dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
 	
@@ -1985,16 +1986,15 @@ class etpDatabase:
 		    return rslt
 	    else:
 	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
-
 	counter = -1
 	try:
 	    self.cursor.execute('SELECT "counter" FROM counters WHERE idpackage = "'+str(idpackage)+'"')
-	    counter = self.cursor.fetchone()
-	    if counter:
-	        counter = counter[0]
+	    mycounter = self.cursor.fetchone()
+	    if mycounter:
+	        counter = mycounter[0]
 	except:
 	    pass
-
+	
 	''' caching '''
 	if (self.xcache):
 	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveCounter'] = int(counter)
