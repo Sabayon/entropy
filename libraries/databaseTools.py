@@ -638,7 +638,7 @@ class etpDatabase:
 	
 	# caching dictionaries
 	
-	if self.xcache:
+	if (self.xcache) and (dbname != 'etpdb'):
 	    ''' database query cache '''
 	    broken1 = False
 	    dbinfo = dbCacheStore.get(etpCache['dbInfo']+self.dbname)

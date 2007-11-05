@@ -3,6 +3,7 @@ TODO list:
   - add external triggerable hooks support
   - include more triggers
   - output tools differential print
+  - use packages.db.bz2 instead of packages.db.gz?
 
 Project Status:
 - reagent: complete. Stabilization mode.
