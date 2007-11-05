@@ -104,7 +104,7 @@ def update():
 		if not os.path.isfile(scandata[key]['source']):
 		    scandata = removefromcache(scandata,key)
 		    continue
-		print_info(darkred("Configuration file: ")+darkgreen(scandata[key]['source']))
+		print_info(darkred("Configuration file: ")+darkgreen(scandata[key]['destination']))
 		if cmd == -3:
 		    rc = entropyTools.askquestion(">>   Overwrite ?")
 		    if rc == "No":
@@ -121,7 +121,7 @@ def update():
 		if not os.path.isfile(scandata[key]['source']):
 		    scandata = removefromcache(scandata,key)
 		    continue
-		print_info(darkred("Configuration file: ")+darkgreen(scandata[key]['source']))
+		print_info(darkred("Configuration file: ")+darkgreen(scandata[key]['destination']))
 		if cmd == -7:
 		    rc = entropyTools.askquestion(">>   Discard ?")
 		    if rc == "No":

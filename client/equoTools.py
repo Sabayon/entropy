@@ -870,65 +870,6 @@ def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False, spinnin
     deptree = {}
     depcount = -1
 
-    # order foundAtoms
-    '''
-    if len(foundAtoms) > 1:
-	foundAtoms = list(foundAtoms)
-	rc = False
-	
-	testCache = {}
-	
-        while not rc:
-	    swap = False
-	    for x in range(len(foundAtoms)):
-		pkgA = foundAtoms[x]
-		try:
-		    pkgB = foundAtoms[x+1]
-		except:
-		    continue
-		
-		cached = testCache.get((pkgA,pkgB))
-		if cached:
-		    print "cached"
-		    y,z = cached['result']
-		    if pkgA != y:
-		        foundAtoms[x] = y
-		        foundAtoms[x+1] = z
-			swap = True
-		    continue
-		    
-		
-		testCache[(pkgA,pkgB)] = {}
-		odbconn = openRepositoryDatabase(pkgA[1])
-		odeps = generateDependencyTree(pkgA, emptydeps = True)
-		# FIXME: remove conflict ignorance
-		if odeps[1] != 0:
-		    continue
-		odeps[0][0] = [] # reset conflicts
-		for odep in odeps[0]:
-		    br = False
-		    #print odeps[0][0]
-		    dlist = odeps[0][odep]
-		    #print dlist
-		    for y in dlist:
-			#print y
-			if y == pkgB:
-			    print str(y)+" reverse -> "+str(pkgA)
-			    foundAtoms[x] = pkgB
-			    foundAtoms[x+1] = pkgA
-			    swap = True
-			    br = True
-			    break
-			if br: break
-		    if br: break
-		testCache[(pkgA,pkgB)]['result'] = (foundAtoms[x],foundAtoms[x+1])
-		
-
-		odbconn.closeDB()
-	    if (not swap):
-		rc = True
-    '''
-    
     if spinning: atomlen = len(foundAtoms); count = 0
     for atomInfo in foundAtoms:
 	if spinning: count += 1; print_info(":: "+str(round((float(count)/atomlen)*100,1))+"% ::", back = True)
@@ -1304,7 +1245,6 @@ def removePackage(infoDict):
 	        except:
 		    #print "debug: the dir wasn't empty? -> "+str(file)
 		    pass
-
     return 0
 
 
@@ -1525,7 +1465,7 @@ def removePackageFromGentooDatabase(atom):
 	_portage_avail = True
     except:
 	return -1 # no Portage support
-    
+
     if (_portage_avail):
 	portDbDir = _portage_getPortageAppDbPath()
 	removePath = portDbDir+atom
@@ -1535,7 +1475,7 @@ def removePackageFromGentooDatabase(atom):
 	except:
 	    pass
 	key = dep_getkey(atom)
-	othersInstalled = _portage_getInstalledAtoms(key)
+	othersInstalled = _portage_getInstalledAtoms(key) #FIXME: really slow
 	if othersInstalled == None:
 	    # safest way (error free) is to use sed without loading the file
 	    # escape /
@@ -1593,14 +1533,18 @@ def installPackageIntoGentooDatabase(infoDict,packageFile):
 	        #print "removing -> "+removePath
 	
 	### INSTALL NEW
-	extractPath = os.path.dirname(packageFile)
-	extractPath += "/xpak"
+	extractPath = etpConst['entropyunpackdir']+"/"+os.path.basename(packageFile)+"/xpak"
+	if os.path.isdir(extractPath):
+	    shutil.rmtree(extractPath)
+	else:
+	    os.makedirs(extractPath)
 	extractXpak(packageFile,extractPath)
 	if not os.path.isdir(portDbDir+infoDict['category']):
 	    os.makedirs(portDbDir+infoDict['category'])
 	destination = portDbDir+infoDict['category']+"/"+infoDict['name']+"-"+infoDict['version']
 	if os.path.isdir(destination):
 	    shutil.rmtree(destination)
+	
 	os.rename(extractPath,destination)
 
     return 0
@@ -2170,6 +2114,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	print_info(red(" @@ ")+blue("Packages matching already up to date:\t")+bold(str(len(fineList))))
 
     # disable collisions protection, better
+    oldcollprotect = etpConst['collisionprotect']
     etpConst['collisionprotect'] = 0
 
     if (updateList):
@@ -2179,6 +2124,8 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	    return rc
     else:
 	print_info(red(" @@ ")+blue("Nothing to update."))
+
+    etpConst['collisionprotect'] = oldcollprotect
 
     if (removedList):
 	removedList = list(removedList)
@@ -2316,6 +2263,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     if (deps):
         treepackages, result = getRequiredPackages(foundAtoms, emptydeps, deepdeps, spinning = True)
         # add dependencies, explode them
+	
 	if (result == -2):
 	    print_error(red(" @@ ")+blue("Cannot find needed dependencies: ")+str(treepackages))
 	    for atom in treepackages:
@@ -2331,9 +2279,11 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 			    print_error(red("     # ")+" [from:"+repo+"] "+darkred(iatom))
 		    rdbconn.closeDB()
 	    return 130, -1
+	    
 	elif (result == -1): # no database connection
 	    print_error(red(" @@ ")+blue("Cannot find the Installed Packages Database. It's needed to accomplish dependency resolving. Try to run ")+bold("equo database generate"))
 	    return 200, -1
+	
 	for x in range(len(treepackages))[::-1]:
 	    for z in range(len(treepackages[x]))[::-1]:
 		if z == 0:
@@ -2343,6 +2293,10 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 		else:
 		    for a in treepackages[x][z]:
 		        runQueue.append(a)
+	
+    else:
+	for atomInfo in foundAtoms:
+	    runQueue.append(atomInfo)
 
     downloadSize = 0
     onDiskUsedSize = 0
@@ -2540,14 +2494,14 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	if (actionQueue[pkgatom]['removeidpackage'] != -1):
 	    oldcontent = clientDbconn.retrieveContent(actionQueue[pkgatom]['removeidpackage'])
 	    newcontent = dbconn.retrieveContent(idpackage)
-	    actionQueue[pkgatom]['removecontent'] = [x for x in oldcontent if x not in newcontent]
+	    oldcontent.difference_update(newcontent)
+	    actionQueue[pkgatom]['removecontent'] = oldcontent
 	    actionQueue[pkgatom]['diffremoval'] = True
 	    etpRemovalTriggers[pkgatom] = clientDbconn.getPackageData(actionQueue[pkgatom]['removeidpackage'])
-	    etpRemovalTriggers[pkgatom]['removecontent'] = actionQueue[pkgatom]['removecontent'][:]
+	    etpRemovalTriggers[pkgatom]['removecontent'] = actionQueue[pkgatom]['removecontent'].copy()
 
 	# get data for triggerring tool
 	etpInstallTriggers[pkgatom] = dbconn.getPackageData(idpackage)
-
 
 	dbconn.closeDB()
 
@@ -2726,10 +2680,10 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
 	infoDict['removeidpackage'] = idpackage
 	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
 	infoDict['removecontent'] = clientDbconn.retrieveContent(idpackage)
-	actionQueue[pkgatom]['diffremoval'] = False
+	infoDict['diffremoval'] = False
 	infoDict['removeconfig'] = configFiles
 	etpRemovalTriggers[infoDict['removeatom']] = clientDbconn.getPackageData(idpackage)
-	etpRemovalTriggers[infoDict['removeatom']]['removecontent'] = infoDict['removecontent'][:]
+	etpRemovalTriggers[infoDict['removeatom']]['removecontent'] = infoDict['removecontent'].copy()
 	steps = []
 	steps.append("preremove")
 	steps.append("remove")
@@ -2874,7 +2828,7 @@ def stepExecutor(step,infoDict):
 	    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Message from "+infoDict['atom']+" :")
 	for msg in infoDict['messages']: # FIXME: add logging support
 	    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,msg)
-	    print_warning(brown('  ## ')+msg)
+	    print_warning(brown('   ## ')+msg)
 	if infoDict['messages']:
 	    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"End message.")
     
@@ -2896,19 +2850,35 @@ def stepExecutor(step,infoDict):
 
     elif step == "preremove":
 	# analyze atom
-	pkgdata = etpRemovalTriggers.get(infoDict['removeatom'])
-	if pkgdata:
-	    triggers = triggerTools.preremove(pkgdata)
+	remdata = etpRemovalTriggers.get(infoDict['removeatom'])
+	if remdata:
+	    triggers = triggerTools.preremove(remdata)
+
+	    if infoDict['diffremoval']: # diffremoval is true only when the remove action is triggered by installPackages()
+		pkgdata = etpRemovalTriggers.get(infoDict['atom'])
+		if pkgdata:
+	            # preinstall script shouldn't doulbe run on preremove
+		    itriggers = triggerTools.preinstall(pkgdata)
+		    triggers.difference_update(itriggers)
+
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
-		eval("triggerTools."+trigger)(pkgdata)
+		eval("triggerTools."+trigger)(remdata)
 
     elif step == "postremove":
 	# analyze atom
-	pkgdata = etpRemovalTriggers.get(infoDict['removeatom'])
-	if pkgdata:
-	    triggers = triggerTools.postremove(pkgdata)
+	remdata = etpRemovalTriggers.get(infoDict['removeatom'])
+	if remdata:
+	    triggers = triggerTools.postremove(remdata)
+	    
+	    if infoDict['diffremoval']: # diffremoval is true only when the remove action is triggered by installPackages()
+		pkgdata = etpRemovalTriggers.get(infoDict['atom'])
+		if pkgdata:
+	            # postinstall script shouldn't doulbe run on postremove
+		    itriggers = triggerTools.postinstall(pkgdata)
+		    triggers.difference_update(itriggers)
+	    
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
-		eval("triggerTools."+trigger)(pkgdata)
+		eval("triggerTools."+trigger)(remdata)
     
     clientDbconn.closeDB()
     

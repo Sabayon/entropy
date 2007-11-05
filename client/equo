@@ -199,7 +199,7 @@ try:
 except SystemExit:
     pass
 except KeyboardInterrupt:
-    pass
+    sys.exit(0)
 #except Timeout:
 #    pass
 except:

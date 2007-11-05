@@ -603,24 +603,73 @@ def quickpkg(atom,dirpath):
     os.makedirs(tmpdirpath)
     dbdir = "/var/db/pkg/"+pkgcat+"/"+pkgname+"/"
 
-    # crate file list
+    import tarfile
+    import stat
+    tar = tarfile.open(dirpath,"w:bz2")
+
+    # load content
     f = open(dbdir+dbCONTENTS,"r")
     pkgcontent = f.readlines()
     f.close()
-    _pkgcontent = []
+    
+    content = {}
+    id_strings = {}
+    
     for line in pkgcontent:
-	line = line.strip().split()[1]
-	if not ((os.path.isdir(line)) and (os.path.islink(line))):
-	    _pkgcontent.append(line)
-    pkgcontent = _pkgcontent
-    f = open(tmpdirpath+"/"+dbCONTENTS,"w")
-    for i in pkgcontent:
-	f.write(i+"\n")
-    f.flush()
-    f.close()
+	line = line.strip()
+	data = line.split()
+	ftype = data[0]
 
-    # package them into a file
-    rc = entropyTools.spawnCommand("tar cjf "+dirpath+" -C / --files-from='"+tmpdirpath+"/"+dbCONTENTS+"' --no-recursion", redirect = "&>/dev/null")
+	if ftype == "dir":
+	    file = string.join(data[1:]," ")
+	    content[file] = [] # do not use sets!
+	    content[file].append(ftype)
+	elif ftype == "sym":
+	    timestamp = data[-1]
+	    symlink = data[-2]
+	    file = string.join(data[1:-3]," ")
+	    content[file] = []
+	    content[file].append(ftype)
+	    content[file].append(timestamp)
+	    content[file].append(symlink)
+	else: # == "obj"
+	    # add timestamp
+	    timestamp = data[-1]
+	    checksum = data[-2]
+	    file = string.join(data[1:-2]," ")
+	    content[file] = []
+	    content[file].append(ftype)
+	    content[file].append(timestamp)
+	    content[file].append(checksum)
+
+    paths = content.keys()
+    paths.sort()
+    
+    for path in paths:
+	try:
+	    exist = os.lstat(path)
+	except OSError:
+	    continue # skip file
+	ftype = content[path][0]
+	lpath = path
+	arcname = path[1:]
+	if ftype == "dir" and stat.S_ISDIR(exist.st_mode) and os.path.isdir(lpath):
+	    lpath = os.path.realpath(lpath)
+	tarinfo = tar.gettarinfo(lpath, arcname)
+	tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
+	tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
+	
+	if stat.S_ISREG(exist.st_mode):
+	    tarinfo.type = tarfile.REGTYPE
+	    f = open(path)
+	    try:
+		tar.addfile(tarinfo, f)
+	    finally:
+		f.close()
+	else:
+	    tar.addfile(tarinfo)
+
+    tar.close()
     
     # appending xpak informations
     import xpak
