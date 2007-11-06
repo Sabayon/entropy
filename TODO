@@ -4,6 +4,8 @@ TODO list:
   - include more triggers
   - output tools differential print
   - use packages.db.bz2 instead of packages.db.gz?
+  - allow .tbz2 separate install
+  - finalize smartapps tool
 
 Project Status:
 - reagent: complete. Stabilization mode.

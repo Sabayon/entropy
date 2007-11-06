@@ -150,97 +150,20 @@ def database(options):
 	if (not os.path.isfile(etpConst['etpdatabasefilepath'])):
 	    print_error(yellow(" * ")+red("Entropy Datbase does not exist"))
 	    sys.exit(303)
+	
 	# search tool
 	print_info(green(" * ")+red("Searching ..."))
 	# open read only
 	dbconn = etpDatabase(True)
+	from queryTools import printPackageInfo
 	foundCounter = 0
 	for mykeyword in mykeywords:
 	    results = dbconn.searchPackages(mykeyword)
 	    
 	    for result in results:
 		foundCounter += 1
-		print 
-		print_info(green(" * ")+bold(dbconn.retrieveCategory(result[1])+"/"+dbconn.retrieveName(result[1])))   # package atom
-		
-		print_info(red("\t Atom: ")+blue(result[0]))
-		print_info(red("\t Name: ")+blue(dbconn.retrieveName(result[1])))
-		print_info(red("\t Version: ")+blue(dbconn.retrieveVersion(result[1])))
-		tag = dbconn.retrieveVersionTag(result[1])
-		if (tag):
-		    print_info(red("\t Tag: ")+blue(tag))
-		
-		description = dbconn.retrieveDescription(result[1])
-		if (description):
-		    print_info(red("\t Description: ")+description)
-		
-		flags = dbconn.retrieveCompileFlags(result[1])
-		print_info(red("\t CHOST: ")+blue(flags[0]))
-		print_info(red("\t CFLAGS: ")+darkred(flags[1]))
-		print_info(red("\t CXXFLAGS: ")+darkred(flags[2]))
-		
-		website = dbconn.retrieveHomepage(result[1])
-		if (website):
-		    print_info(red("\t Website: ")+website)
-		
-		flags = string.join(dbconn.retrieveUseflags(result[1])," ")
-		if (flags):
-		    print_info(red("\t USE Flags: ")+blue(flags))
-		
-		print_info(red("\t License: ")+bold(dbconn.retrieveLicense(result[1])))
-		keywords = string.join(dbconn.retrieveKeywords(result[1])," ")
-		binkeywords = string.join(dbconn.retrieveBinKeywords(result[1])," ")
-		print_info(red("\t Source keywords: ")+darkblue(keywords))
-		print_info(red("\t Binary keywords: ")+green(binkeywords))
-		print_info(red("\t Package branch: ")+dbconn.retrieveBranch(result[1]))
-		print_info(red("\t Download relative URL: ")+dbconn.retrieveDownloadURL(result[1]))
-		print_info(red("\t Package Checksum: ")+green(dbconn.retrieveDigest(result[1])))
-		
-		sources = dbconn.retrieveSources(result[1])
-		if (sources):
-		    print_info(red("\t Sources"))
-		    for source in sources:
-			print_info(darkred("\t    # Source package: ")+yellow(source))
-		
-		slot = dbconn.retrieveSlot(result[1])
-		if (slot):
-		    print_info(red("\t Slot: ")+yellow(slot))
-		else:
-		    print_info(red("\t Slot: ")+yellow("Not set"))
-		
-		'''
-		mirrornames = []
-		for x in sources:
-		    if x.startswith("mirror://"):
-		        mirrorname = x.split("/")[2]
-		        mirrornames.append(mirrorname)
-		for mirror in mirrornames:
-		    mirrorlinks = dbconn.retrieveMirrorInfo(mirror)
-		    print_info(red("\t mirror://"+mirror+" = ")+str(string.join(mirrorlinks," "))) # I don't need to print mirrorlinks
-		'''
-		
-		dependencies = dbconn.retrieveDependencies(result[1])
-		if (dependencies):
-		    print_info(red("\t Dependencies"))
-		    for dep in dependencies:
-			print_info(darkred("\t    # Depends on: ")+dep)
-		#print_info(red("\t Blah: ")+result[20]) --> it's a dup of [21]
-		
-		conflicts = dbconn.retrieveConflicts(result[1])
-		if (conflicts):
-		    print_info(red("\t Conflicts with"))
-		    for conflict in conflicts:
-			print_info(darkred("\t    # Conflict: ")+conflict)
-		
-		api = dbconn.retrieveApi(result[1])
-		print_info(red("\t Entry API: ")+green(str(api)))
-		
-		date = dbconn.retrieveDateCreation(result[1])
-		print_info(red("\t Package Creation date: ")+str(entropyTools.convertUnixTimeToHumanTime(float(date))))
-		
-		revision = dbconn.retrieveRevision(result[1])
-		print_info(red("\t Entry revision: ")+str(revision))
-		#print result
+		print
+		printPackageInfo(result[1],dbconn, clientSearch = True, extended = True)
 		
 	dbconn.closeDB()
 	if (foundCounter == 0):
@@ -563,6 +486,43 @@ def database(options):
 ############
 # Functions and Classes
 #####################################################################################
+
+'''
+   @description: open the repository database and returns the pointer
+   @input repositoryName: name of the client database
+   @output: database pointer or, -1 if error
+'''
+def openRepositoryDatabase(repositoryName, xcache = True):
+    dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
+    if not os.path.isfile(dbfile):
+	rc = fetchRepositoryIfNotAvailable(repositoryName)
+	if (rc):
+	    raise Exception, "openRepositoryDatabase: cannot sync repository "+repositoryName
+    conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = 'repo_'+repositoryName, xcache = xcache)
+    # initialize CONFIG_PROTECT
+    if (not etpRepositories[repositoryName]['configprotect']) or (not etpRepositories[repositoryName]['configprotectmask']):
+        etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
+        etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectDirectories(mask = True)
+	etpRepositories[repositoryName]['configprotect'] += [x for x in etpConst['configprotect'] if x not in etpRepositories[repositoryName]['configprotect']]
+	etpRepositories[repositoryName]['configprotectmask'] += [x for x in etpConst['configprotectmask'] if x not in etpRepositories[repositoryName]['configprotectmask']]
+    return conn
+
+'''
+   @description: open the installed packages database and returns the pointer
+   @output: database pointer or, -1 if error
+'''
+def openClientDatabase(xcache = True):
+    if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
+        conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = 'client', xcache = xcache)
+	if (not etpConst['dbconfigprotect']):
+	    # config protect not prepared
+	    etpConst['dbconfigprotect'] = conn.listConfigProtectDirectories()
+	    etpConst['dbconfigprotectmask'] = conn.listConfigProtectDirectories(mask = True)
+	    etpConst['dbconfigprotect'] += [x for x in etpConst['configprotect'] if x not in etpConst['dbconfigprotect']]
+	    etpConst['dbconfigprotectmask'] += [x for x in etpConst['configprotectmask'] if x not in etpConst['dbconfigprotectmask']]
+	return conn
+    else:
+	raise Exception,"openClientDatabase: installed packages database not found. At this stage, the only way to have it is to run 'equo database generate'. Please note: don't use Equo on a critical environment !!"
 
 # this class simply describes the current database status
 class databaseStatus:
@@ -949,10 +909,17 @@ class etpDatabase:
 	if (etpData['versiontag']):
 	    versiontag = "#"+etpData['versiontag']
 
+	#FIXME: test if trigger column exists
+	# this will be removed in 1.0
+	try:
+	    self.cursor.execute('SELECT trigger from baseinfo')
+	except:
+	    self.createTriggerColumn()
+
 	# baseinfo
 	self.cursor.execute(
 		'INSERT into baseinfo VALUES '
-		'(NULL,?,?,?,?,?,?,?,?,?,?)'
+		'(NULL,?,?,?,?,?,?,?,?,?,?,?)'
 		, (	etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag,
 			catid,
 			etpData['name'],
@@ -963,6 +930,7 @@ class etpDatabase:
 			etpData['slot'],
 			licid,
 			etpData['etpapi'],
+			etpData['trigger'],
 			)
 	)
 	self.connection.commit()
@@ -1801,6 +1769,7 @@ class etpDatabase:
 	data['sources'] = self.retrieveSources(idpackage)
 	data['counter'] = self.retrieveCounter(idpackage)
 	data['messages'] = self.retrieveMessages(idpackage)
+	data['trigger'] = self.retrieveTrigger(idpackage)
 	
 	if (self.isSystemPackage(idpackage)):
 	    data['systempackage'] = 'xxx'
@@ -1910,6 +1879,33 @@ class etpDatabase:
 	if (self.xcache):
 	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveBranch'] = br
 	return br
+
+    def retrieveTrigger(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveTrigger: retrieving Branch for package ID "+str(idpackage))
+
+	''' caching '''
+	if (self.xcache):
+	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
+	    if cached:
+	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveTrigger',None)
+	        if rslt:
+		    return rslt
+	    else:
+	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	try:
+	    self.cursor.execute('SELECT "trigger" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
+	    trigger = self.cursor.fetchone()[0]
+	except:
+	    # generate trigger column
+	    self.createTriggerColumn()
+	    self.cursor.execute('SELECT "trigger" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
+	    trigger = self.cursor.fetchone()[0]
+	    pass
+	
+	''' caching '''
+	if (self.xcache):
+	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveTrigger'] = trigger
+	return trigger
 
     def retrieveDownloadURL(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDownloadURL: retrieving download URL for package ID "+str(idpackage))
@@ -2178,7 +2174,7 @@ class etpDatabase:
 	self.cursor.execute('SELECT "datecreation" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	date = self.cursor.fetchone()[0]
 	if not date:
-	    date = "N/A" # to be removed?
+	    date = "N/A" #FIXME: to be removed?
 
 	''' caching '''
 	if (self.xcache):
@@ -2879,7 +2875,7 @@ class etpDatabase:
 	if (sensitive):
 	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE atom LIKE "%'+keyword+'%"'+slotstring+tagstring+branchstring)
 	else:
-	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE LOWER(atom) LIKE "%'+string.lower(keyword)+'%"'+slotstring+tagstring+branchstring)
+	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE LOWER(atom) LIKE "%'+keyword.lower()+'%"'+slotstring+tagstring+branchstring)
 	return self.cursor.fetchall()
 
     def searchProvide(self, keyword, slot = None, tag = None, branch = None):
@@ -2905,7 +2901,7 @@ class etpDatabase:
 
     def searchPackagesByDescription(self, keyword):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByDescription: called for "+keyword)
-	self.cursor.execute('SELECT idpackage FROM extrainfo WHERE LOWER(description) LIKE "%'+string.lower(keyword)+'%"')
+	self.cursor.execute('SELECT idpackage FROM extrainfo WHERE LOWER(description) LIKE "%'+keyword.lower()+'%"')
 	idpkgs = self.fetchall2set(self.cursor.fetchall())
 	if not idpkgs:
 	    return ()
@@ -2947,7 +2943,7 @@ class etpDatabase:
 	if (sensitive):
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+keyword+'"'+branchstring)
 	else:
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+string.lower(keyword)+'"'+branchstring)
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+keyword.lower()+'"'+branchstring)
 	return self.cursor.fetchall()
 
     def searchPackagesByNameAndCategory(self, name, category, sensitive = False, branch = None):
@@ -2969,7 +2965,7 @@ class etpDatabase:
 	if (sensitive):
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+name+'" AND idcategory ='+str(idcat)+branchstring)
 	else:
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+string.lower(name)+'" AND idcategory ='+str(idcat)+branchstring)
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+name.lower()+'" AND idcategory ='+str(idcat)+branchstring)
 	return self.cursor.fetchall()
 
     def searchPackagesByNameAndVersionAndCategory(self, name, version, category, branch = None, sensitive = False):
@@ -2990,7 +2986,7 @@ class etpDatabase:
 	if (sensitive):
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+name+'" and version = "'+version+'" and idcategory = '+str(idcat)+branchstring)
 	else:
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+string.lower(name)+'" and version = "'+version+'" and idcategory = '+str(idcat)+branchstring)
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+name.lower()+'" and version = "'+version+'" and idcategory = '+str(idcat)+branchstring)
 	return self.cursor.fetchall()
 
     # this function search packages with the same pkgcat/pkgname
@@ -3002,7 +2998,7 @@ class etpDatabase:
 	name = atom.split("/")[1]
 	# get category id
 	idcategory = self.getIDCategory(category)
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE idcategory = "'+str(idcategory)+'" AND LOWER(name) = "'+string.lower(name)+'" AND branch = "'+branch+'"')
+	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE idcategory = "'+str(idcategory)+'" AND LOWER(name) = "'+name.lower()+'" AND branch = "'+branch+'"')
 	return self.cursor.fetchall()
 
     def listAllPackages(self):
@@ -3251,6 +3247,12 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createSizesTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS sizes;')
 	self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
+	self.commitChanges()
+
+    def createTriggerColumn(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createTriggerColumn: called.")
+	self.cursor.execute('ALTER TABLE baseinfo ADD trigger BOOLEAN;')
+	self.cursor.execute('UPDATE baseinfo SET trigger = 0;')
 	self.commitChanges()
 
     def createEclassesTable(self):

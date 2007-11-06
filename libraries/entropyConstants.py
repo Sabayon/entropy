@@ -65,7 +65,7 @@ etpData = {
     'messages': u"", # elog content from portage
     'eclasses': u"", # eclasses used by the ebuild
     'needed': u"", # runtime libraries needed by the package
-    #'hooks': u"", # this will become a dict, containing external triggerable scripts (pre/post/install/remove)
+    'trigger': u"", # this will become a bool, containing info about external trigger presence
 }
 
 # Entropy database SQL initialization Schema and data structure
@@ -106,7 +106,6 @@ DROP TABLE IF EXISTS eclasses;
 DROP TABLE IF EXISTS eclassesreference;
 DROP TABLE IF EXISTS needed;
 DROP TABLE IF EXISTS neededreference;
-DROP TABLE IF EXISTS hooks;
 """
 
 etpSQLInit = """
@@ -122,7 +121,8 @@ CREATE TABLE baseinfo (
     branch VARCHAR,
     slot VARCHAR,
     idlicense INTEGER,
-    etpapi INTEGER
+    etpapi INTEGER,
+    trigger INTEGER
 );
 
 CREATE TABLE extrainfo (
@@ -277,12 +277,6 @@ CREATE TABLE neededreference (
     library VARCHAR
 );
 
-CREATE TABLE hooks (
-    idpackage INTEGER PRIMARY KEY,
-    idtype INTEGER,
-    line VARCHAR
-);
-
 """
 
 # Entropy directories specifications
@@ -311,6 +305,7 @@ ETP_DBCLIENTFILE = "equo.db"
 ETP_CLIENT_REPO_DIR = "/client"
 ETP_UPLOADDIR = "/upload/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store/"+ETP_ARCH_CONST
+ETP_TRIGGERSDIR = "/triggers/"+ETP_ARCH_CONST
 ETP_SMARTAPPSDIR = "/smartapps/"+ETP_ARCH_CONST
 ETP_XMLDIR = "/xml/"
 ETP_CONF_DIR = "/etc/entropy"
@@ -331,6 +326,7 @@ etpConst = {
     			# by the clients: to query if a package has been already downloaded
 			# by the servers or rsync mirrors: to store already uploaded packages to the main rsync server
     'smartappsdir': ETP_DIR+ETP_SMARTAPPSDIR, # etpConst['smartappsdir'] location where smart apps files are places
+    'triggersdir': ETP_DIR+ETP_TRIGGERSDIR, # etpConst['triggersdir'] location where external triggers are placed
     'packagesstoredir': ETP_DIR+ETP_STOREDIR, # etpConst['packagesstoredir'] --> directory where .tbz2 files are stored waiting for being processed by reagent
     'packagessuploaddir': ETP_DIR+ETP_UPLOADDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
     'portagetreedir': ETP_PORTDIR, # directory where is stored our local portage tree
@@ -363,6 +359,7 @@ etpConst = {
     'etpdatabasefile': ETP_DBFILE, # Entropy sqlite database file ETP_DIR+ETP_DBDIR+"/packages.db"
     'etpdatabasefilegzip': ETP_DBFILE+".gz", # Entropy sqlite database file (gzipped)
     'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
+    'triggername': "trigger", # name of the trigger file that would be executed by equo inside triggerTools
     
     'databaseloglevel': 1, # Database log level (default: 1 - see database.conf for more info)
     'mirrorsloglevel': 1, # Mirrors log level (default: 1 - see mirrors.conf for more info)
@@ -393,8 +390,6 @@ etpConst = {
     'etpapi': ETP_API, # Entropy database API revision
     'currentarch': ETP_ARCH_CONST, # contains the current running architecture
     'supportedarchs': ETP_ARCHS, # Entropy supported Archs
-    'preinstallscript': "preinstall.sh", # used by the client to run some pre-install actions
-    'postinstallscript': "postinstall.sh", # used by the client to run some post-install actions
     
     'branches': ["3.5","2008"], # available branches, this only exists for the server part
     'branch': "3.5", # choosen branch

@@ -29,8 +29,8 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber
-from databaseTools import etpDatabase
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber
+from databaseTools import etpDatabase, openRepositoryDatabase, openClientDatabase
 import triggerTools
 import confTools
 import dumpTools
@@ -1923,123 +1923,6 @@ def database(options):
 	clientDbconn.closeDB()
 	print_info(red("  Depends caching table regenerated successfully."))
 
-
-def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, quiet = False):
-    # now fetch essential info
-    pkgatom = dbconn.retrieveAtom(idpackage)
-    
-    if (quiet):
-	print pkgatom
-	return
-    
-    if (not strictOutput):
-        pkgname = dbconn.retrieveName(idpackage)
-        pkgcat = dbconn.retrieveCategory(idpackage)
-        pkglic = dbconn.retrieveLicense(idpackage)
-        pkgsize = dbconn.retrieveSize(idpackage)
-        pkgbin = dbconn.retrieveDownloadURL(idpackage)
-        pkgflags = dbconn.retrieveCompileFlags(idpackage)
-        pkgkeywords = dbconn.retrieveBinKeywords(idpackage)
-        pkgdigest = dbconn.retrieveDigest(idpackage)
-        pkgcreatedate = convertUnixTimeToHumanTime(float(dbconn.retrieveDateCreation(idpackage)))
-        pkgsize = bytesIntoHuman(pkgsize)
-	pkgdeps = dbconn.retrieveDependencies(idpackage)
-	pkgconflicts = dbconn.retrieveConflicts(idpackage)
-
-    pkghome = dbconn.retrieveHomepage(idpackage)
-    pkgslot = dbconn.retrieveSlot(idpackage)
-    pkgver = dbconn.retrieveVersion(idpackage)
-    pkgtag = dbconn.retrieveVersionTag(idpackage)
-    pkgrev = dbconn.retrieveRevision(idpackage)
-    pkgdesc = dbconn.retrieveDescription(idpackage)
-    pkgbranch = dbconn.retrieveBranch(idpackage)
-    if (not pkgtag):
-        pkgtag = "NoTag"
-
-    if (not clientSearch):
-        # client info
-        installedVer = "Not installed"
-        installedTag = "N/A"
-        installedRev = "N/A"
-        clientDbconn = openClientDatabase()
-        if (clientDbconn != -1):
-            pkginstalled = clientDbconn.atomMatch(dep_getkey(pkgatom), matchSlot = pkgslot)
-            if (pkginstalled[1] == 0):
-		idx = pkginstalled[0]
-	        # found
-		installedVer = clientDbconn.retrieveVersion(idx)
-		installedTag = clientDbconn.retrieveVersionTag(idx)
-		if not installedTag:
-		    installedTag = "NoTag"
-		installedRev = clientDbconn.retrieveRevision(idx)
-	    clientDbconn.closeDB()
-
-
-    print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(pkgbranch))
-    if (not strictOutput):
-        print_info(darkgreen("       Category:\t\t")+blue(pkgcat))
-        print_info(darkgreen("       Name:\t\t\t")+blue(pkgname))
-    print_info(darkgreen("       Available:\t\t")+blue("version: ")+bold(pkgver)+blue(" ~ tag: ")+bold(pkgtag)+blue(" ~ revision: ")+bold(str(pkgrev)))
-    if (not clientSearch):
-        print_info(darkgreen("       Installed:\t\t")+blue("version: ")+bold(installedVer)+blue(" ~ tag: ")+bold(installedTag)+blue(" ~ revision: ")+bold(str(installedRev)))
-    if (not strictOutput):
-        print_info(darkgreen("       Slot:\t\t\t")+blue(str(pkgslot)))
-        print_info(darkgreen("       Size:\t\t\t")+blue(str(pkgsize)))
-        print_info(darkgreen("       Download:\t\t")+brown(str(pkgbin)))
-        print_info(darkgreen("       Checksum:\t\t")+brown(str(pkgdigest)))
-	if (pkgdeps):
-	    print_info(darkred("       ##")+darkgreen(" Dependencies:"))
-	    for pdep in pkgdeps:
-		print_info(darkred("       ## \t\t\t")+brown(pdep))
-	if (pkgconflicts):
-	    print_info(darkred("       ##")+darkgreen(" Conflicts:"))
-	    for conflict in pkgconflicts:
-		print_info(darkred("       ## \t\t\t")+brown(conflict))
-    print_info(darkgreen("       Homepage:\t\t")+red(pkghome))
-    print_info(darkgreen("       Description:\t\t")+pkgdesc)
-    if (not strictOutput):
-	print_info(darkgreen("       Compiled with:\t")+blue(pkgflags[1]))
-        print_info(darkgreen("       Architectures:\t")+blue(string.join(pkgkeywords," ")))
-        print_info(darkgreen("       Created:\t\t")+pkgcreatedate)
-        print_info(darkgreen("       License:\t\t")+red(pkglic))
-
-
-'''
-   @description: open the repository database and returns the pointer
-   @input repositoryName: name of the client database
-   @output: database pointer or, -1 if error
-'''
-def openRepositoryDatabase(repositoryName, xcache = True):
-    dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
-    if not os.path.isfile(dbfile):
-	rc = fetchRepositoryIfNotAvailable(repositoryName)
-	if (rc):
-	    raise Exception, "openRepositoryDatabase: cannot sync repository "+repositoryName
-    conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = 'repo_'+repositoryName, xcache = xcache)
-    # initialize CONFIG_PROTECT
-    if (not etpRepositories[repositoryName]['configprotect']) or (not etpRepositories[repositoryName]['configprotectmask']):
-        etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
-        etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectDirectories(mask = True)
-	etpRepositories[repositoryName]['configprotect'] += [x for x in etpConst['configprotect'] if x not in etpRepositories[repositoryName]['configprotect']]
-	etpRepositories[repositoryName]['configprotectmask'] += [x for x in etpConst['configprotectmask'] if x not in etpRepositories[repositoryName]['configprotectmask']]
-    return conn
-
-'''
-   @description: open the installed packages database and returns the pointer
-   @output: database pointer or, -1 if error
-'''
-def openClientDatabase(xcache = True):
-    if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
-        conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = 'client', xcache = xcache)
-	if (not etpConst['dbconfigprotect']):
-	    # config protect not prepared
-	    etpConst['dbconfigprotect'] = conn.listConfigProtectDirectories()
-	    etpConst['dbconfigprotectmask'] = conn.listConfigProtectDirectories(mask = True)
-	    etpConst['dbconfigprotect'] += [x for x in etpConst['configprotect'] if x not in etpConst['dbconfigprotect']]
-	    etpConst['dbconfigprotectmask'] += [x for x in etpConst['configprotectmask'] if x not in etpConst['dbconfigprotectmask']]
-	return conn
-    else:
-	raise Exception,"openClientDatabase: installed packages database not found. At this stage, the only way to have it is to run 'equo database generate'. Please note: don't use Equo on a critical environment !!"
 
 ########################################################
 ####

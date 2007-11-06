@@ -517,7 +517,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     etpData['download'] = etpConst['binaryurirelativepath']+etpData['branch']+"/"+etpData['name']+"-"+etpData['version']+versiontag+".tbz2"
 
     print_info(yellow(" * ")+red(info_package+"Getting package counter..."),back = True)
-    # Fill category
+    # Fill counter
     f = open(tbz2TmpDir+dbCOUNTER,"r")
     etpData['counter'] = f.readline().strip()
     f.close()
@@ -527,6 +527,11 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     f = open(tbz2TmpDir+dbCATEGORY,"r")
     etpData['category'] = f.readline().strip()
     f.close()
+    
+    etpData['trigger'] = False
+    print_info(yellow(" * ")+red(info_package+"Getting package external trigger availability..."),back = True)
+    if os.path.isfile(etpConst['triggersdir']+"/"+etpData['category']+"/"+etpData['name']+"/"+etpConst['triggername']):
+	etpData['trigger'] = True
 
     print_info(yellow(" * ")+red(info_package+"Getting package CFLAGS..."),back = True)
     # Fill CFLAGS

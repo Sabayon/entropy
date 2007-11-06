@@ -27,6 +27,7 @@ import sys
 import string
 
 sys.path.append('../libraries')
+sys.path.append('../client')
 from outputTools import *
 
 # CONSTANTS

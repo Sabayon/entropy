@@ -1,0 +1,93 @@
+'''
+    Copyright (C) 2007 Fabio Erculiani
+    Released under GPLv2 License
+    
+    - This is a template for external triggers. Only 4 functions will be called by Entropy:
+	@ preinstall(): triggered before injecting data into the database and copying files on the system
+	@ preremove(): triggered before removing files from the system and from the database
+	@ postinstall(): triggered after injecting data into the database and copying files on the system
+	@ postremove(): triggered after removing files from the system and from the database
+    
+    - You are allowed to not specify one or more of them.
+    - Each function must have as input arguments pkgdata = None. Where pkgdata is a python dict containing package information 
+    	>>> databaseTools.etpDatabase.getPackageData(idpackage)
+    - Each function must return 0 in case of success and >0 in case of issues. Entropy will show the error code to the user.
+
+    How it works:
+	- this file will be stored inside the .tbz2 injected entropy database
+	- entropy database will be extracted and placed into the unpack directory
+	- trigger code will be extracted and saved into a file with the name trigger inside the package unpack directory
+	- will be issued:
+	 	stage = 'postinstall' # this can be postinstall, preinstall, postremove, preremove
+		execfile(etpConst['entropyunpackdir']+...+"trigger")
+	- code will have access to all the entropy functions and modules. it will be executed inside triggerTools
+
+    Example of pkgdata:
+	{
+		'config_protect_mask': u'/etc/env.d /etc/env.d/java/ /etc/fonts/fonts.conf /etc/gconf /etc/php/apache2-php5/ext-active/ /etc/php/cgi-php5/ext-active/ /etc/php/cli-php5/ext-active/ /etc/revdep-rebuild /etc/splash /etc/terminfo /etc/texmf/web2c /etc/udev/rules.d',
+		'etpapi': 1, 
+		'config_protect': u'/usr/NX/etc /usr/NX/home /etc /usr/kde/3.5/env /usr/kde/3.5/share/config /usr/kde/3.5/share/config/kdm /usr/kde/3.5/shutdown /usr/share/X11/xkb /usr/share/config',
+		'sources': set([u'http://www.zlib.net/zlib-1.2.3.tar.bz2', u'http://www.gzip.org/zlib/zlib-1.2.3.tar.bz2']),
+		'download': u'packages/amd64/3.5/zlib-1.2.3-r1.tbz2',
+		'digest': u'35c9749fb6f782d76a746cb6c8ec1d82',
+		'description': u'Standard (de)compression library',
+		'category': u'sys-libs',
+		'versiontag': u'',
+		'provide': set([]),
+		'conflicts': set([]),
+		'content': set([u'/usr/share/doc/zlib-1.2.3-r1/txt/algorithm.txt.bz2', u'/lib64/libz.so', u'/usr/include/zlib.h', u'/usr/share/doc/zlib-1.2.3-r1/ChangeLog.bz2', u'/usr/share/doc/zlib-1.2.3-r1/FAQ.bz2', u'/usr/share/doc/zlib-1.2.3-r1/README.bz2', u'/usr/include/zconf.h', u'/usr/lib64/libz.so', u'/usr/share/man/man3/zlib.3.bz2', u'/lib64/libz.so.1.2.3', u'/usr/lib64/libz.a', u'/lib64/libz.so.1']),
+		'needed': set([u'libc.so.6']),
+		'version': u'1.2.3-r1',
+		'cflags': u'-Os -march=x86-64 -pipe',
+		'size': u'154723',
+		'homepage': u'http://www.zlib.net/',
+		'slot': u'0',
+		'datecreation': u'1194274924.0',
+		'branch': u'3.5',
+		'useflags': set([]),
+		'eclasses': set([u'toolchain-funcs', u'multilib', u'portability', u'eutils', u'flag-o-matic']),
+		'binkeywords': set([u'x86', u'amd64']),
+		'mirrorlinks': [],
+		'cxxflags': u'-Os -march=x86-64 -pipe',
+		'dependencies': set([]),
+		'chost': u'x86_64-pc-linux-gnu',
+		'systempackage': 'xxx',
+		'name': u'zlib',
+		'license': u'ZLIB',
+		'counter': 14629,
+		'messages': [],
+		'keywords': set([u'ppc', u's390', u'amd64', u'~x86-fbsd', u'x86', u'ppc64', u'm68k', u'arm', u'sparc', u'sh', u'mips', u'ia64', u'alpha', u'hppa', u'~sparc-fbsd']),
+		'disksize': 434998
+	}
+
+'''
+
+'''
+   space for real triggers
+'''
+def ext_postinstall():
+	print printhello()+" postinstall"
+	return 0
+
+def ext_preinstall():
+	print printhello()+" preinstall"
+	return 0
+
+def ext_postremove():
+	print printhello()+" postremove"
+	return 0
+
+def ext_preremove():
+	print printhello()+" preremove"
+	return 0
+
+'''
+   space for private functions
+'''
+def printhello():
+	return "hello!"
+
+'''
+   run the selected function
+'''
+eval("ext_"+stage)()

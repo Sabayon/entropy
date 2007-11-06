@@ -26,9 +26,8 @@ sys.path.append('../libraries')
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
-from databaseTools import etpDatabase
-from entropyTools import dep_getkey, dep_getslot, remove_slot, dep_gettag, remove_tag
-from equoTools import openClientDatabase, openRepositoryDatabase, printPackageInfo, generateDependsTree, atomMatch # move them away?
+from databaseTools import etpDatabase, openClientDatabase, openRepositoryDatabase
+from entropyTools import dep_getkey, dep_getslot, remove_slot, dep_gettag, remove_tag, convertUnixTimeToHumanTime, bytesIntoHuman
 
 ########################################################
 ####
@@ -184,6 +183,7 @@ def searchBelongs(files, idreturn = False, quiet = False):
 
 def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
     
+    from equoTools import atomMatch
     if (not idreturn) and (not quiet):
         print_info(yellow(" @@ ")+darkgreen("Depends Search..."))
 
@@ -381,6 +381,7 @@ def searchOrphans(quiet = False):
 
 def searchRemoval(atoms, idreturn = False, quiet = False, deep = False):
     
+    from equoTools import generateDependsTree
     if (not idreturn) and (not quiet):
         print_info(yellow(" @@ ")+darkgreen("Removal Search..."))
 
@@ -592,3 +593,103 @@ def searchDescription(descriptions, idreturn = False, quiet = False):
 	return dataInfo
 
     return 0
+
+
+
+'''
+   Internal functions
+'''
+
+def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, quiet = False, extended = False):
+    # now fetch essential info
+    pkgatom = dbconn.retrieveAtom(idpackage)
+    if (quiet):
+	print pkgatom
+	return
+    
+    if (not strictOutput):
+        pkgname = dbconn.retrieveName(idpackage)
+        pkgcat = dbconn.retrieveCategory(idpackage)
+        pkglic = dbconn.retrieveLicense(idpackage)
+        pkgsize = dbconn.retrieveSize(idpackage)
+        pkgbin = dbconn.retrieveDownloadURL(idpackage)
+        pkgflags = dbconn.retrieveCompileFlags(idpackage)
+        pkgkeywords = dbconn.retrieveBinKeywords(idpackage)
+        pkgdigest = dbconn.retrieveDigest(idpackage)
+        pkgcreatedate = convertUnixTimeToHumanTime(float(dbconn.retrieveDateCreation(idpackage)))
+        pkgsize = bytesIntoHuman(pkgsize)
+	pkgdeps = dbconn.retrieveDependencies(idpackage)
+	pkgconflicts = dbconn.retrieveConflicts(idpackage)
+
+    pkghome = dbconn.retrieveHomepage(idpackage)
+    pkgslot = dbconn.retrieveSlot(idpackage)
+    pkgver = dbconn.retrieveVersion(idpackage)
+    pkgtag = dbconn.retrieveVersionTag(idpackage)
+    pkgrev = dbconn.retrieveRevision(idpackage)
+    pkgdesc = dbconn.retrieveDescription(idpackage)
+    pkgbranch = dbconn.retrieveBranch(idpackage)
+    if (not pkgtag):
+        pkgtag = "NoTag"
+
+    if (not clientSearch):
+        # client info
+        installedVer = "Not installed"
+        installedTag = "N/A"
+        installedRev = "N/A"
+        clientDbconn = openClientDatabase()
+        if (clientDbconn != -1):
+            pkginstalled = clientDbconn.atomMatch(dep_getkey(pkgatom), matchSlot = pkgslot)
+            if (pkginstalled[1] == 0):
+		idx = pkginstalled[0]
+	        # found
+		installedVer = clientDbconn.retrieveVersion(idx)
+		installedTag = clientDbconn.retrieveVersionTag(idx)
+		if not installedTag:
+		    installedTag = "NoTag"
+		installedRev = clientDbconn.retrieveRevision(idx)
+	    clientDbconn.closeDB()
+
+
+    print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(pkgbranch))
+    if (not strictOutput):
+        print_info(darkgreen("       Category:\t\t")+blue(pkgcat))
+        print_info(darkgreen("       Name:\t\t\t")+blue(pkgname))
+    print_info(darkgreen("       Available:\t\t")+blue("version: ")+bold(pkgver)+blue(" ~ tag: ")+bold(pkgtag)+blue(" ~ revision: ")+bold(str(pkgrev)))
+    if (not clientSearch):
+        print_info(darkgreen("       Installed:\t\t")+blue("version: ")+bold(installedVer)+blue(" ~ tag: ")+bold(installedTag)+blue(" ~ revision: ")+bold(str(installedRev)))
+    if (not strictOutput):
+        print_info(darkgreen("       Slot:\t\t\t")+blue(str(pkgslot)))
+        print_info(darkgreen("       Size:\t\t\t")+blue(str(pkgsize)))
+        print_info(darkgreen("       Download:\t\t")+brown(str(pkgbin)))
+        print_info(darkgreen("       Checksum:\t\t")+brown(str(pkgdigest)))
+	if (pkgdeps):
+	    print_info(darkred("       ##")+darkgreen(" Dependencies:"))
+	    for pdep in pkgdeps:
+		print_info(darkred("       ## \t\t\t")+brown(pdep))
+	if (pkgconflicts):
+	    print_info(darkred("       ##")+darkgreen(" Conflicts:"))
+	    for conflict in pkgconflicts:
+		print_info(darkred("       ## \t\t\t")+brown(conflict))
+    print_info(darkgreen("       Homepage:\t\t")+red(pkghome))
+    print_info(darkgreen("       Description:\t\t")+pkgdesc)
+    if (not strictOutput):
+	if (extended):
+	    print_info(darkgreen("       CHOST:\t\t")+blue(pkgflags[0]))
+	    print_info(darkgreen("       CFLAGS:\t\t")+red(pkgflags[1]))
+	    print_info(darkgreen("       CXXFLAGS:\t\t")+blue(pkgflags[2]))
+	    skeys = dbconn.retrieveKeywords(idpackage)
+	    bkeys = dbconn.retrieveBinKeywords(idpackage)
+	    sources = dbconn.retrieveSources(idpackage)
+	    etpapi = dbconn.retrieveApi(idpackage)
+	    print_info(darkgreen("       Source keywords:\t")+red(string.join(skeys," ")))
+	    print_info(darkgreen("       Binary keywords:\t")+blue(string.join(bkeys," ")))
+	    if (sources):
+		print_info(darkgreen("       Sources:"))
+		for source in sources:
+		    print_info(darkred("         # Source: ")+blue(source))
+	    print_info(darkgreen("       Entry API:\t\t")+red(str(etpapi)))
+	else:
+	    print_info(darkgreen("       Compiled with:\t")+blue(pkgflags[1]))
+        print_info(darkgreen("       Architectures:\t")+blue(string.join(pkgkeywords," ")))
+        print_info(darkgreen("       Created:\t\t")+pkgcreatedate)
+        print_info(darkgreen("       License:\t\t")+red(pkglic))
