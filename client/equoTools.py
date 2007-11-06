@@ -29,7 +29,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extactDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber
+from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, convertUnixTimeToHumanTime, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber
 from databaseTools import etpDatabase
 import triggerTools
 import confTools
@@ -444,12 +444,10 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 	    newerVersion = getNewerVersion(versions)
 	    newerVersion = newerVersion[0]
 	    # is newerVersion, the duplicated one?
-	    duplicatedEntries = extactDuplicatedEntries(versions)
-	    try:
-		duplicatedEntries.index(newerVersion)
+	    duplicatedEntries = extractDuplicatedEntries(versions)
+	    needFiltering = False
+	    if newerVersion in duplicatedEntries:
 		needFiltering = True
-	    except:
-		needFiltering = False
 	    
 	    if (needFiltering):
 		# we have to decide which one is good
@@ -471,12 +469,10 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 		newerTag = newerTag[0]
 		
 		# is the chosen tag duplicated?
-		duplicatedTags = extactDuplicatedEntries(tags)
-		try:
-		    duplicatedTags.index(newerTag)
+		duplicatedTags = extractDuplicatedEntries(tags)
+		needFiltering = False
+		if newerTag in duplicatedTags:
 		    needFiltering = True
-		except:
-		    needFiltering = False
 		
 		if (needFiltering):
 		    #print "also tags match"
@@ -496,13 +492,10 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 			revisions.append(str(conflictingTags[repo]['revision']))
 		    newerRevision = getNewerVersionTag(revisions)
 		    newerRevision = newerRevision[0]
-		    duplicatedRevisions = extactDuplicatedEntries(revisions)
-		    #print duplicatedRevisions
-		    try:
-			duplicatedRevisions.index(newerRevision)
+		    duplicatedRevisions = extractDuplicatedEntries(revisions)
+		    needFiltering = False
+		    if newerRevision in duplicatedRevisions:
 			needFiltering = True
-		    except:
-			needFiltering = False
 		
 		    if (needFiltering):
 			# ok, we must get the repository with the biggest priority
@@ -600,9 +593,9 @@ def getDependencies(packageInfo):
 	dbconn = openRepositoryDatabase(reponame)
     
     # retrieve dependencies
-    depend = set(dbconn.retrieveDependencies(idpackage))
+    depend = dbconn.retrieveDependencies(idpackage)
     # and conflicts
-    conflicts = set(dbconn.retrieveConflicts(idpackage))
+    conflicts = dbconn.retrieveConflicts(idpackage)
     for x in conflicts:
 	depend.add("!"+x)
     dbconn.closeDB()

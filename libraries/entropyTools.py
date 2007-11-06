@@ -107,8 +107,8 @@ def spinner(rotations, interval, message=''):
 	writechar('\r')
 
 def removeSpaceAtTheEnd(string):
-    if string.endswith(" "):
-        return string[:len(string)-1]
+    if string[-1] == " ":
+        return string[:-1]
     else:
 	return string
 
@@ -124,7 +124,7 @@ def md5sum(filepath):
     
 def unpackGzip(gzipfilepath):
     import gzip
-    filepath = gzipfilepath[:len(gzipfilepath)-3] # remove .gz
+    filepath = gzipfilepath[:-3] # remove .gz
     file = open(filepath,"wb")
     filegz = gzip.GzipFile(gzipfilepath,"rb")
     filecont = filegz.readlines()
@@ -179,7 +179,7 @@ def extractXpak(tbz2File,tmpdir = None):
         pass
     return tmpdir
 
-def aggregateEntropyDb(tbz2file,dbfile):
+def aggregateEdb(tbz2file,dbfile):
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"aggregateEntropyDb: called -> "+tbz2file+" and "+dbfile)
     f = open(tbz2file,"abw")
     g = open(dbfile,"rb")
@@ -223,9 +223,8 @@ def extractEdb(tbz2file):
     old.close()
 
 
-# This function creates the .hash file related to the given package file
+# This function creates the .md5 file related to the given package file
 # @returns the complete hash file path
-# FIXME: add more hashes, SHA1 for example
 def createHashFile(tbz2filepath):
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createHashFile: for "+tbz2filepath)
     md5hash = md5sum(tbz2filepath)
@@ -628,13 +627,22 @@ def dep_gettag(dep):
     dep_gettagCache[dep] = None
     return None
 
+removePackageOperatorsCache = {}
 def removePackageOperators(atom):
-    if atom.startswith(">") or atom.startswith("<"):
+
+    cached = removePackageOperatorsCache.get(atom)
+    if cached != None:
+	return cached
+
+    original = atom
+    if atom[0] == ">" or atom[0] == "<":
 	atom = atom[1:]
-    if atom.startswith("="):
+    if atom[0] == "=":
 	atom = atom[1:]
-    if atom.startswith("~"):
+    if atom[0] == "~":
 	atom = atom[1:]
+    
+    removePackageOperatorsCache[original] = atom
     return atom
 
 # Version compare function taken from portage_versions.py
@@ -644,9 +652,15 @@ ver_regexp = re.compile("^(cvs\\.)?(\\d+)((\\.\\d+)*)([a-z]?)((_(pre|p|beta|alph
 suffix_regexp = re.compile("^(alpha|beta|rc|pre|p)(\\d*)$")
 suffix_value = {"pre": -2, "p": 0, "alpha": -4, "beta": -3, "rc": -1}
 endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
+compareVersionsCache = {}
 def compareVersions(ver1, ver2, silent=1):
 	
+	cached = compareVersionsCache[tuple([ver1,ver2])]
+	if cached != None:
+	    return cached
+	
 	if ver1 == ver2:
+		compareVersionsCache[tuple([ver1,ver2])] = 0
 		return 0
 	mykey=ver1+":"+ver2
 	match1 = ver_regexp.match(ver1)
@@ -688,10 +702,13 @@ def compareVersions(ver1, ver2, silent=1):
 
 	for i in range(0, max(len(list1), len(list2))):
 		if len(list1) <= i:
+			compareVersionsCache[tuple([ver1,ver2])] = -1
 			return -1
 		elif len(list2) <= i:
+			compareVersionsCache[tuple([ver1,ver2])] = 1
 			return 1
 		elif list1[i] != list2[i]:
+			compareVersionsCache[tuple([ver1,ver2])] = list1[i] - list2[i]
 			return list1[i] - list2[i]
 	
 	# main version is equal, so now compare the _suffix part
@@ -708,6 +725,7 @@ def compareVersions(ver1, ver2, silent=1):
 		else:
 			s2 = suffix_regexp.match(list2[i]).groups()
 		if s1[0] != s2[0]:
+			compareVersionsCache[tuple([ver1,ver2])] = suffix_value[s1[0]] - suffix_value[s2[0]]
 			return suffix_value[s1[0]] - suffix_value[s2[0]]
 		if s1[1] != s2[1]:
 			# it's possible that the s(1|2)[1] == ''
@@ -716,6 +734,7 @@ def compareVersions(ver1, ver2, silent=1):
 			except ValueError:	r1 = 0
 			try:			r2 = int(s2[1])
 			except ValueError:	r2 = 0
+			compareVersionsCache[tuple([ver1,ver2])] = r1 - r2
 			return r1 - r2
 	
 	# the suffix part is equal to, so finally check the revision
@@ -727,6 +746,7 @@ def compareVersions(ver1, ver2, silent=1):
 		r2 = int(match2.group(10))
 	else:
 		r2 = 0
+	compareVersionsCache[tuple([ver1,ver2])] = r1 - r2
 	return r1 - r2
 
 '''
@@ -734,7 +754,13 @@ def compareVersions(ver1, ver2, silent=1):
    @input versionlist: a list
    @output: the ordered list
 '''
+getNewerVersionCache = {}
 def getNewerVersion(InputVersionlist):
+
+    cached = getNewerVersionCache[tuple(InputVersionlist)]
+    if cached != None:
+	return cached
+
     rc = False
     versionlist = InputVersionlist[:]
     while not rc:
@@ -754,6 +780,8 @@ def getNewerVersion(InputVersionlist):
 		change = True
 	if (not change):
 	    rc = True
+    
+    getNewerVersionCache[tuple(InputVersionlist)] = versionlist
     return versionlist
 
 '''
@@ -763,8 +791,8 @@ def getNewerVersion(InputVersionlist):
 '''
 def getNewerVersionTag(InputVersionlist):
     versionlist = InputVersionlist[:]
-    versionlist.sort()
-    return versionlist[::-1]
+    versionlist.reverse()
+    return versionlist
 
 def isnumber(x):
     try:
@@ -858,20 +886,16 @@ def unescape_list(*args):
     return tuple(arg_lst)
 
 # this function returns a list of duplicated entries found in the input list
-def extactDuplicatedEntries(inputlist):
-    filteredList = filterDuplicatedEntries(inputlist)
-    if len(inputlist) == len(filteredList):
-	return []
-    else:
-	newinputlist = inputlist[:]
-	for x in inputlist:
-	    try:
-		while 1:
-		    filteredList.remove(x)
-		    newinputlist.remove(x)
-	    except:
-		pass
-	return newinputlist
+def extractDuplicatedEntries(inputlist):
+    mycache = {}
+    newlist = set()
+    for x in inputlist:
+	c = mycache.get(x)
+	if c:
+	    newlist.add(x)
+	    continue
+	mycache[x] = 1
+    return newlist
 	
 
 # Tool to run commands

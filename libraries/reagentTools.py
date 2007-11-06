@@ -278,7 +278,7 @@ def update(options):
 	    pkgDbconn.addPackage(data, revision = rev, wantedBranch = data['branch'])
 	    pkgDbconn.closeDB()
 	    # append the database to the new file
-	    aggregateEntropyDb(tbz2file = etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName, dbfile = dbpath)
+	    aggregateEdb(tbz2file = etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName, dbfile = dbpath)
 	    
 	    digest = md5sum(etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName)
 	    dbconn.setDigest(idpk,digest)
