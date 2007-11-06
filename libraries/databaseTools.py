@@ -67,17 +67,17 @@ def database(options):
         # database file: etpConst['etpdatabasefilepath']
 	revisionsMatch = {}
         if os.path.isfile(etpConst['etpdatabasefilepath']):
-	    try:
-		dbconn = openServerDatabase(readOnly = True, noUpload = True)
-		idpackages = dbconn.listAllIdpackages()
-		for idpackage in idpackages:
+	    dbconn = openServerDatabase(readOnly = True, noUpload = True)
+	    idpackages = dbconn.listAllIdpackages()
+	    for idpackage in idpackages:
+		try:
 		    package = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
 		    branch = dbconn.retrieveBranch(idpackage)
 		    revision = dbconn.retrieveRevision(idpackage)
 		    revisionsMatch[package] = [branch,revision]
-		dbconn.closeDB()
-	    except:
-		pass
+		except:
+		    pass
+	    dbconn.closeDB()
 	    print_info(red(" * ")+bold("WARNING")+red(": database file already exists. Overwriting."))
 	    rc = entropyTools.askquestion("\n     Do you want to continue ?")
 	    if rc == "No":
@@ -529,12 +529,8 @@ def openClientDatabase(xcache = True):
    @output: database pointer or, -1 if error
 '''
 def openServerDatabase(readOnly = True, noUpload = True):
-    
-    if os.path.isfile(etpConst['etpdatabasefilepath']):
-        conn = etpDatabase(readOnly = readOnly, dbFile = etpConst['etpdatabasefilepath'], noUpload = noUpload)
-	return conn
-    else:
-	raise Exception,"openServerDatabase: database not found. You must generate it first."
+    conn = etpDatabase(readOnly = readOnly, dbFile = etpConst['etpdatabasefilepath'], noUpload = noUpload)
+    return conn
 
 # this class simply describes the current database status
 # FIXME: need a rewrite? simply using dicts, perhaps?
@@ -3046,7 +3042,7 @@ class etpDatabase:
 	if branch:
 	    branchstring = ' where branch = "'+branch+'"'
 	self.cursor.execute('SELECT idpackage FROM baseinfo'+branchstring)
-	return self.cursor.fetchall()
+	return self.fetchall2set(self.cursor.fetchall())
 
     def listAllDependencies(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllDependencies: called.")
