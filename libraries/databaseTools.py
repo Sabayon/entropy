@@ -211,7 +211,7 @@ def database(options):
 	dbconn = openServerDatabase(readOnly = False, noUpload = True)
 	# is world?
 	if myatoms[0] == "world":
-	    pkglist = set(dbconn.listAllIdpackages())
+	    pkglist = dbconn.listAllIdpackages()
 	else:
 	    pkglist = set()
 	    for atom in myatoms:
