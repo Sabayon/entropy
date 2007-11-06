@@ -1022,7 +1022,7 @@ def generateDependsTree(idpackages, deep = False):
 
 
 '''
-   @description: compare two lists composed by [version,tag,revision] and [version,tag],revision
+   @description: compare two lists composed by [version,tag,revision] and [version,tag,revision]
    			if listA > listB --> positive number
 			if listA == listB --> 0
 			if listA < listB --> negative number	
@@ -1574,7 +1574,7 @@ def installPackageIntoDatabase(idpackage, repository):
     
     dbconn.closeDB()
     
-    idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = rev, forcedBranch = True)
+    idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = rev)
     del x
     if (not status):
 	clientDbconn.closeDB()
@@ -1952,7 +1952,6 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	tainted = False
 	atom = package[0]
 	idpackage = package[1]
-	branch = package[2]
 	name = clientDbconn.retrieveName(idpackage)
 	category = clientDbconn.retrieveCategory(idpackage)
 	revision = clientDbconn.retrieveRevision(idpackage)

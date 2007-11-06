@@ -68,7 +68,7 @@ def database(options):
 	revisionsMatch = {}
         if os.path.isfile(etpConst['etpdatabasefilepath']):
 	    try:
-		dbconn = etpDatabase(readOnly = True, noUpload = True)
+		dbconn = openServerDatabase(readOnly = True, noUpload = True)
 		idpackages = dbconn.listAllIdpackages()
 		for idpackage in idpackages:
 		    package = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
@@ -85,7 +85,7 @@ def database(options):
 	    os.remove(etpConst['etpdatabasefilepath'])
 
 	# initialize the database
-        dbconn = etpDatabase(readOnly = False, noUpload = True)
+        dbconn = openServerDatabase(readOnly = True, noUpload = True)
 	dbconn.initializeDatabase()
 	
 	# sync packages directory
@@ -129,7 +129,7 @@ def database(options):
 		    if mybranch == revisionAvail[0]:
 			addRevision = revisionAvail[1]
 	        # fill the db entry
-	        idpk, revision, etpDataUpdated, accepted = dbconn.addPackage(etpData, revision = addRevision, wantedBranch = mybranch)
+	        idpk, revision, etpDataUpdated, accepted = dbconn.addPackage(etpData, revision = addRevision)
 		
 		print_info(darkgreen(" [")+red(mybranch)+darkgreen("] ")+green("(")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(". Revision: ")+blue(str(addRevision)))
 	    
@@ -154,7 +154,7 @@ def database(options):
 	# search tool
 	print_info(green(" * ")+red("Searching ..."))
 	# open read only
-	dbconn = etpDatabase(True)
+	dbconn = openServerDatabase(readOnly = True, noUpload = True)
 	from queryTools import printPackageInfo
 	foundCounter = 0
 	for mykeyword in mykeywords:
@@ -208,7 +208,7 @@ def database(options):
 	    print_error(yellow(" * ")+red("Not enough parameters"))
 	    sys.exit(303)
 	
-	dbconn = etpDatabase(readOnly = False, noUpload = True)
+	dbconn = openServerDatabase(readOnly = False, noUpload = True)
 	# is world?
 	if myatoms[0] == "world":
 	    pkglist = set(dbconn.listAllIdpackages())
@@ -313,7 +313,7 @@ def database(options):
 	    sys.exit(303)
 
 	pkglist = set()
-	dbconn = etpDatabase(readOnly = False, noUpload = True)
+	dbconn = openServerDatabase(readOnly = False, noUpload = True)
 	
 	for atom in myopts:
 	    if (branch):
@@ -359,7 +359,7 @@ def database(options):
 	print_info(green(" * ")+red("Integrity verification of the selected packages:"))
 
 	mypackages = options[1:]
-	dbconn = etpDatabase(readOnly = True)
+	dbconn = openServerDatabase(readOnly = True, noUpload = True)
 	
 	# statistic vars
 	pkgMatch = 0
@@ -524,7 +524,20 @@ def openClientDatabase(xcache = True):
     else:
 	raise Exception,"openClientDatabase: installed packages database not found. At this stage, the only way to have it is to run 'equo database generate'. Please note: don't use Equo on a critical environment !!"
 
+'''
+   @description: open the entropy server database and returns the pointer. This function must be used only by reagent or activator
+   @output: database pointer or, -1 if error
+'''
+def openServerDatabase(readOnly = True, noUpload = True):
+    
+    if os.path.isfile(etpConst['etpdatabasefilepath']):
+        conn = etpDatabase(readOnly = readOnly, dbFile = etpConst['etpdatabasefilepath'], noUpload = noUpload)
+	return conn
+    else:
+	raise Exception,"openServerDatabase: database not found. You must generate it first."
+
 # this class simply describes the current database status
+# FIXME: need a rewrite? simply using dicts, perhaps?
 class databaseStatus:
 
     def __init__(self):
@@ -838,60 +851,58 @@ class etpDatabase:
 		self.cursor.execute(sql+";")
 	self.commitChanges()
 
-    # this function manages the submitted package
-    # if it does not exist, it fires up addPackage
-    # otherwise it fires up updatePackage
-    def handlePackage(self, etpData, forcedRevision = -1, forcedBranch = False):
-
+    def checkReadOnly(self):
 	if (self.readOnly):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: Cannot handle this in read only.")
 	    raise Exception, "What are you trying to do?"
 
-        # prepare versiontag
-	versiontag = ""
-	if (etpData['versiontag']):
-	    versiontag = "-"+etpData['versiontag']
+    # this function manages the submitted package
+    # if it does not exist, it fires up addPackage
+    # otherwise it fires up updatePackage
+    def handlePackage(self, etpData, forcedRevision = -1):
+
+	self.checkReadOnly()
+
+	# build atom string
+	versiontag = ''
+	if etpData['versiontag']:
+	    versiontag = '#'+etpData['versiontag']
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: called.")
-	if (not self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag)):
-	    if (forcedRevision < 0):
-		forcedRevision = 0
-	    if (forcedBranch):
-	        idpk, revision, etpDataUpdated, accepted = self.addPackage(etpData, revision = forcedRevision, wantedBranch = etpData['branch'])
-	    else:
-		idpk, revision, etpDataUpdated, accepted = self.addPackage(etpData, revision = forcedRevision)
+	foundid = self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag)
+	if (foundid < 0): # same atom doesn't exist
+	    idpk, revision, etpDataUpdated, accepted = self.addPackage(etpData, revision = forcedRevision)
 	else:
-	    idpk, revision, etpDataUpdated, accepted = self.updatePackage(etpData, forcedRevision) # branch and revision info will be overwritten
+	    idpk, revision, etpDataUpdated, accepted = self.updatePackage(etpData, forcedRevision) # only when the same atom exists
 	return idpk, revision, etpDataUpdated, accepted
 
 
-    def addPackage(self, etpData, revision = 0, wantedBranch = etpConst['branch']):
+    def addPackage(self, etpData, revision = 0):
 
-	if (self.readOnly):
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: Cannot handle this in read only.")
-	    raise Exception, "What are you trying to do?"
+	self.checkReadOnly()
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: called.")
 	
-	# if a similar package, in the same branch exists, mark for removal
-	searchsimilar = self.searchSimilarPackages(etpData['category']+"/"+etpData['name'], branch = wantedBranch)
+	# we need to find other packages with the same key and slot, and remove them
+	if (self.clientDatabase): # client database can't care about branch
+	    searchsimilar = self.searchPackagesByNameAndCategory(name = etpData['name'], category = etpData['category'], sensitive = True)
+	else: # server supports multiple branches inside a db
+	    searchsimilar = self.searchPackagesByNameAndCategory(name = etpData['name'], category = etpData['category'], sensitive = True, branch = etpData['branch'])
+	
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"addPackage: here is the list of similar packages (that will be removed) found for "+etpData['category']+"/"+etpData['name']+": "+str(searchsimilar))
-	removelist = []
+	
+	removelist = set()
 	for oldpkg in searchsimilar:
 	    # get the package slot
 	    idpackage = oldpkg[1]
 	    slot = self.retrieveSlot(idpackage)
 	    if (etpData['slot'] == slot):
 		# remove!
-		removelist.append(idpackage)
+		removelist.add(idpackage)
 	
 	for pkg in removelist:
 	    self.removePackage(pkg)
 	
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: inserting: ")
-	for ln in etpData:
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"\t "+ln+": "+str(etpData[ln]))
-
 	# create new category if it doesn't exist
 	catid = self.isCategoryAvailable(etpData['category'])
 	if (catid == -1):
@@ -926,7 +937,7 @@ class etpDatabase:
 			etpData['version'],
 			etpData['versiontag'],
 			revision,
-			wantedBranch,
+			etpData['branch'],
 			etpData['slot'],
 			licid,
 			etpData['etpapi'],
@@ -1229,32 +1240,26 @@ class etpDatabase:
     # returns False,revision if not
     def updatePackage(self, etpData, forcedRevision = -1):
 
-	if (self.readOnly):
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"updatePackage: Cannot handle this in read only.")
-	    raise Exception, "What are you trying to do?"
+	self.checkReadOnly()
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"updatePackage: called.")
 
-        # prepare versiontag
-	versiontag = ""
-	if (etpData['versiontag']):
-	    versiontag = "#"+etpData['versiontag']
 	# build atom string
+	versiontag = ''
+	if etpData['versiontag']:
+	    versiontag = '#'+etpData['versiontag']
 	pkgatom = etpData['category'] + "/" + etpData['name'] + "-" + etpData['version']+versiontag
 
-	# if client opened the database, before starting the update, remove previous entries - same atom, all branches
+	# for client database - the atom if present, must be overwritten with the new one regardless its branch
 	if (self.clientDatabase):
 	    
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"updatePackage: client request. Removing duplicated entries.")
-	    atomInfos = self.searchPackages(pkgatom)
-	    for atomInfo in atomInfos:
-		idpackage = atomInfo[1]
-		self.removePackage(idpackage)
+	    atomid = self.isPackageAvailable(pkgatom)
+	    if atomid > -1:
+		self.removePackage(atomid)
 	    
-	    if (forcedRevision < 0):
-		forcedRevision = 0 # FIXME: this shouldn't happen
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: removal complete. Now spawning addPackage.")
-	    x,y,z,accepted = self.addPackage(etpData, revision = forcedRevision, wantedBranch = etpData['branch'])
+	    x,y,z,accepted = self.addPackage(etpData, revision = forcedRevision)
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: returned back from addPackage.")
 	    return x,y,z,accepted
 	    
@@ -1279,7 +1284,7 @@ class etpDatabase:
 
 	    # add the new one
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: complete. Now spawning addPackage.")
-	    x,y,z,accepted = self.addPackage(etpData, revision = curRevision, wantedBranch = etpData['branch'])
+	    x,y,z,accepted = self.addPackage(etpData, revision = curRevision)
 	    return x,y,z,accepted
 	
 
@@ -1740,36 +1745,71 @@ class etpDatabase:
 	    break
 	return idpackage
 
-    # FIXME: do a big query?
     def getPackageData(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageData: retrieving etpData for package ID for "+str(idpackage))
 	data = {}
 	
-	data['name'] = self.retrieveName(idpackage)
-	data['version'] = self.retrieveVersion(idpackage)
-	data['versiontag'] = self.retrieveVersionTag(idpackage)
-	data['description'] = self.retrieveDescription(idpackage)
-	data['category'] = self.retrieveCategory(idpackage)
+	sql = """
+		SELECT 
+			baseinfo.name,
+			baseinfo.version,
+			baseinfo.versiontag,
+			extrainfo.description,
+			categories.category,
+			flags.chost,
+			flags.cflags,
+			flags.cxxflags,
+			extrainfo.homepage,
+			licenses.license,
+			baseinfo.branch,
+			extrainfo.download,
+			extrainfo.digest,
+			baseinfo.slot,
+			baseinfo.etpapi,
+			extrainfo.datecreation,
+			extrainfo.size,
+			baseinfo.revision
+		FROM 
+			baseinfo,
+			extrainfo,
+			categories,
+			flags,
+			licenses
+		WHERE 
+			baseinfo.idpackage = '"""+str(idpackage)+"""' 
+			and baseinfo.idpackage = extrainfo.idpackage 
+			and baseinfo.idcategory = categories.idcategory 
+			and extrainfo.idflags = flags.idflags
+			and baseinfo.idlicense = licenses.idlicense
+	"""
 	
-	flags = self.retrieveCompileFlags(idpackage)
-	data['chost'] = flags[0]
-	data['cflags'] = flags[1]
-	data['cxxflags'] = flags[2]
+	self.cursor.execute(sql)
+	mydata = self.cursor.fetchone()
 	
-	data['homepage'] = self.retrieveHomepage(idpackage)
+	data['name'] = mydata[0]
+	data['version'] = mydata[1]
+	data['versiontag'] = mydata[2]
+	data['description'] = mydata[3]
+	data['category'] = mydata[4]
+	
+	data['chost'] = mydata[5]
+	data['cflags'] = mydata[6]
+	data['cxxflags'] = mydata[7]
+	
+	data['homepage'] = mydata[8]
 	data['useflags'] = self.retrieveUseflags(idpackage)
-	data['license'] = self.retrieveLicense(idpackage)
+	data['license'] = mydata[9]
 	
 	data['keywords'] = self.retrieveKeywords(idpackage)
 	data['binkeywords'] = self.retrieveBinKeywords(idpackage)
 	
-	data['branch'] = self.retrieveBranch(idpackage)
-	data['download'] = self.retrieveDownloadURL(idpackage)
-	data['digest'] = self.retrieveDigest(idpackage)
+	data['branch'] = mydata[10]
+	data['download'] = mydata[11]
+	data['digest'] = mydata[12]
 	data['sources'] = self.retrieveSources(idpackage)
-	data['counter'] = self.retrieveCounter(idpackage)
+	data['counter'] = self.retrieveCounter(idpackage) # counters are trivial, cannot insert into the sql above
 	data['messages'] = self.retrieveMessages(idpackage)
-	data['trigger'] = self.retrieveTrigger(idpackage)
+	data['trigger'] = self.retrieveTrigger(idpackage) #FIXME: needed for now because of new column
 	
 	if (self.isSystemPackage(idpackage)):
 	    data['systempackage'] = 'xxx'
@@ -1805,17 +1845,18 @@ class etpDatabase:
 	    mirrorlinks = self.retrieveMirrorInfo(mirror)
 	    data['mirrorlinks'].append([mirror,mirrorlinks])
 	
-	data['slot'] = self.retrieveSlot(idpackage)
+	data['slot'] = mydata[13]
 	data['content'] = self.retrieveContent(idpackage)
 	
 	data['dependencies'] = self.retrieveDependencies(idpackage)
 	data['provide'] = self.retrieveProvide(idpackage)
 	data['conflicts'] = self.retrieveConflicts(idpackage)
 	
-	data['etpapi'] = self.retrieveApi(idpackage)
-	data['datecreation'] = self.retrieveDateCreation(idpackage)
-	data['size'] = self.retrieveSize(idpackage)
-	data['disksize'] = self.retrieveOnDiskSize(idpackage)
+	data['etpapi'] = mydata[14]
+	data['datecreation'] = mydata[15]
+	data['size'] = mydata[16]
+	data['revision'] = mydata[17]
+	data['disksize'] = self.retrieveOnDiskSize(idpackage) # cannot do this too, for backward compat
 	return data
 
     def fetchall2set(self, item):
@@ -2640,11 +2681,11 @@ class etpDatabase:
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
 	self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = "'+pkgkey+'"')
 	result = self.cursor.fetchone()
-	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isPackageAvailable: "+pkgkey+" not available.")
-	    return False
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isPackageAvailable: "+pkgkey+" available.")
-	return True
+	if result:
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isPackageAvailable: "+pkgkey+" available.")
+	    return result[0]
+	dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isPackageAvailable: "+pkgkey+" not available.")
+	return -1
 
     def isIDPackageAvailable(self,idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isIDPackageAvailable: called.")
@@ -2987,18 +3028,6 @@ class etpDatabase:
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+name+'" and version = "'+version+'" and idcategory = '+str(idcat)+branchstring)
 	else:
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+name.lower()+'" and version = "'+version+'" and idcategory = '+str(idcat)+branchstring)
-	return self.cursor.fetchall()
-
-    # this function search packages with the same pkgcat/pkgname
-    # you must provide something like: media-sound/amarok
-    # optionally, you can add version too.
-    def searchSimilarPackages(self, atom, branch = etpConst['branch']):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchSimilarPackages: called for "+atom+" | branch: "+branch)
-	category = atom.split("/")[0]
-	name = atom.split("/")[1]
-	# get category id
-	idcategory = self.getIDCategory(category)
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE idcategory = "'+str(idcategory)+'" AND LOWER(name) = "'+name.lower()+'" AND branch = "'+branch+'"')
 	return self.cursor.fetchall()
 
     def listAllPackages(self):

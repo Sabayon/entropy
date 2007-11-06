@@ -89,7 +89,7 @@ def sync(options, justTidy = False):
         # now it's time to do some tidy
         # collect all the binaries in the database
         import databaseTools
-        dbconn = databaseTools.etpDatabase(readOnly = True)
+        dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
         dbBinaries = dbconn.listBranchPackagesTbz2(mybranch)
         dbconn.closeDB()
     
@@ -331,7 +331,7 @@ def packages(options):
 		    # Why downloading something that will be removed??
 		    # the same thing for the uploadQueue...
 		    import databaseTools
-		    dbconn = databaseTools.etpDatabase(readOnly = True)
+		    dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
 		    dbFiles = dbconn.listBranchPackagesTbz2(mybranch)
     		    dbconn.closeDB()
 		
@@ -1203,7 +1203,7 @@ def downloadPackageFromMirror(uri,pkgfile,branch):
 	    return None
 	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+str(tries)+"/"+str(maxtries)+") checking md5 for -> "+pkgfile)
         # check md5
-	dbconn = databaseTools.etpDatabase(readOnly = True)
+	dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
 	idpackage = dbconn.getIDPackageFromFileInBranch(pkgfile,branch)
 	storedmd5 = dbconn.retrieveDigest(idpackage)
 	dbconn.closeDB()

@@ -57,7 +57,7 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
     etpData = extractPkgData(package, enzymeRequestBranch)
     
     if dbconnection is None:
-	dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
+	dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
     else:
 	dbconn = dbconnection
 
@@ -116,7 +116,7 @@ def update(options):
 
     if (not reagentRequestSeekStore):
 
-        dbconn = databaseTools.etpDatabase(readOnly = True, noUpload = True)
+        dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
 	
 	if (not reagentRequestRepackage):
             print_info(yellow(" * ")+red("Scanning the database for differences..."))
@@ -172,7 +172,7 @@ def update(options):
 	            print_info(yellow("    # ")+red(atom))
 	        rc = askquestion(">>   Would you like to remove them now ?")
 	        if rc == "Yes":
-	            rwdbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
+	            rwdbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
 	            for x in toBeRemoved:
 		        atom = rwdbconn.retrieveAtom(x)
 		        print_info(yellow(" @@ ")+blue("Removing from database: ")+red(atom), back = True)
@@ -251,7 +251,7 @@ def update(options):
 	sys.exit(0)
 
     # open db connection
-    dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True, xcache = False)
+    dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
 
     counter = 0
     etpCreated = 0
@@ -801,7 +801,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 def dependsTableInitialize(dbconn = None, runActivator = True):
     closedb = False
     if dbconn == None:
-	dbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True)
+	dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
 	closedb = True
     dbconn.regenerateDependsTable()
     # now taint
@@ -825,7 +825,7 @@ def dependenciesTest(options):
         print_info(red(" @@ ")+blue("ATTENTION: you need to have equo.conf properly configured only for your running repository !!"))
         print_info(red(" @@ ")+blue("Running dependency test..."))
 
-    dbconn = databaseTools.etpDatabase(readOnly = True)
+    dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
     
     # hey Equo, how are you?
     sys.path.append('../client')
@@ -921,7 +921,7 @@ def smartapps(options):
 	    sys.exit(502)
 	
 	# open db
-	dbconn = databaseTools.etpDatabase(readOnly = True)
+	dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
 	
 	# seek valid apps (in db)
 	validPackages = []
@@ -963,7 +963,7 @@ def smartapps(options):
 def smartgenerator(atomInfo):
     
     reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"smartgenerator: called -> package: "+str(atomInfo))
-    dbconn = databaseTools.etpDatabase(readOnly = True)
+    dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
 
     sys.path.append('../client')
     import equoTools
