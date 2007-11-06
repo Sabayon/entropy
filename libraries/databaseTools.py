@@ -85,7 +85,7 @@ def database(options):
 	    os.remove(etpConst['etpdatabasefilepath'])
 
 	# initialize the database
-        dbconn = openServerDatabase(readOnly = True, noUpload = True)
+        dbconn = openServerDatabase(readOnly = False, noUpload = True)
 	dbconn.initializeDatabase()
 	
 	# sync packages directory
