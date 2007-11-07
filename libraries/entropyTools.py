@@ -670,7 +670,7 @@ endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
 compareVersionsCache = {}
 def compareVersions(ver1, ver2, silent=1):
 	
-	cached = compareVersionsCache[tuple([ver1,ver2])]
+	cached = compareVersionsCache.get(tuple([ver1,ver2]))
 	if cached != None:
 	    return cached
 	
@@ -772,7 +772,7 @@ def compareVersions(ver1, ver2, silent=1):
 getNewerVersionCache = {}
 def getNewerVersion(InputVersionlist):
 
-    cached = getNewerVersionCache[tuple(InputVersionlist)]
+    cached = getNewerVersionCache.get(tuple(InputVersionlist))
     if cached != None:
 	return cached
 
