@@ -142,7 +142,7 @@ def update(options):
 	        if (not match):
 	            # check if the package is in toBeAdded
 	            if (toBeAdded):
-			print x
+			#print x
 	                atomkey = dep_getkey(dbconn.retrieveAtom(x[1]))
 		        atomslot = dbconn.retrieveSlot(x[1])
 		        add = True

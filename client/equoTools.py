@@ -311,9 +311,12 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 
     if (dbupdated):
 	
-	# safely clean caches
+	# safely clean ram caches
 	atomMatchCache.clear()
-	dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
+	dumpTools.dumpobj(etpCache['atomMatch'],{})
+	generateDependsTreeCache.clear()
+	dumpTools.dumpobj(etpCache['generateDependsTree'],{})
+	dbCacheStore.clear()
 	
 	# generate cache
         import cacheTools
@@ -1662,6 +1665,7 @@ def package(options):
     equoRequestQuiet = False
     equoRequestDeep = False
     equoRequestConfigFiles = False
+    equoRequestReplay = False
     rc = 0
     _myopts = []
     for opt in myopts:
@@ -1683,6 +1687,8 @@ def package(options):
 	    equoRequestDeep = True
 	elif (opt == "--configfiles"):
 	    equoRequestConfigFiles = True
+	elif (opt == "--replay"):
+	    equoRequestReplay = True
 	else:
 	    _myopts.append(opt)
     myopts = _myopts
@@ -1701,7 +1707,7 @@ def package(options):
 
     elif (options[0] == "world"):
 	loadCaches()
-	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch)
+	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch, replay = equoRequestReplay)
 
     elif (options[0] == "remove"):
 	if len(myopts) > 0:
@@ -1930,14 +1936,14 @@ def database(options):
 #
 
 
-def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False):
+def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False, replay = False):
 
     # check if I am root
     if (not isRoot()) and (not pretend):
 	print_error(red("You must run this function as superuser."))
 	return 1,-1
 
-    branches = (etpConst['branch'],)
+    branches = (etpConst['branch'],) # FIXME: this will be automatically handled
     updateList = []
     fineList = set()
     removedList = set()
@@ -1945,7 +1951,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     
     clientDbconn = openClientDatabase()
     # get all the installed packages
-
+    counter = 0
     packages = clientDbconn.listAllPackages()
     print_info(red(" @@ ")+blue("Calculating world packages..."))
     for package in packages:
@@ -1965,8 +1971,11 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	else: # not changed, is the revision changed?
 	    adbconn = openRepositoryDatabase(match[1])
 	    arevision = adbconn.retrieveRevision(match[0])
+	    #print atom,"<-->",adbconn.retrieveAtom(match[0])
 	    adbconn.closeDB()
 	    if revision != arevision:
+		tainted = True
+	    elif (replay):
 		tainted = True
 	if (tainted):
 	    # Alice! use the key! ... and the slot

@@ -1878,60 +1878,53 @@ class etpDatabase:
     def fetchone2set(self, item):
 	return set(item)
 
+    def fetchInfoCache(self,idpackage,function):
+	if (self.xcache):
+	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage))
+	    if cached:
+		rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get(function)
+		if rslt:
+		    return rslt
+		else:
+		    return None
+	    else:
+		dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	return None
+
+    def storeInfoCache(self,idpackage,function,data):
+	if (self.xcache):
+	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)][function] = data
+
     def retrieveAtom(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveAtom: retrieving Atom for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveAtom',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveAtom')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "atom" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	atom = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveAtom'] = atom
+	self.storeInfoCache(idpackage,'retrieveAtom',atom)
 	return atom
 
     def retrieveBranch(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBranch: retrieving Branch for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveBranch',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveBranch')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "branch" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	br = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveBranch'] = br
+	self.storeInfoCache(idpackage,'retrieveBranch',br)
 	return br
 
     def retrieveTrigger(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveTrigger: retrieving Branch for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveTrigger',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveTrigger')
+	if cache != None: return cache
+	
 	try:
 	    self.cursor.execute('SELECT "trigger" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	    trigger = self.cursor.fetchone()[0]
@@ -1942,86 +1935,51 @@ class etpDatabase:
 	    trigger = self.cursor.fetchone()[0]
 	    pass
 	
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveTrigger'] = trigger
+	self.storeInfoCache(idpackage,'retrieveTrigger',trigger)
 	return trigger
 
     def retrieveDownloadURL(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDownloadURL: retrieving download URL for package ID "+str(idpackage))
 	
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveDownloadURL',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveDownloadURL')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "download" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	download = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveDownloadURL'] = download
+	self.storeInfoCache(idpackage,'retrieveDownloadURL',download)
 	return download
 
     def retrieveDescription(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDescription: retrieving description for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveDescription',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveDescription')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "description" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	description = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveDescription'] = description
+	self.storeInfoCache(idpackage,'retrieveDescription',description)
 	return description
 
     def retrieveHomepage(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveHomepage: retrieving Homepage for package ID "+str(idpackage))
 	
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveHomepage',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveHomepage')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "homepage" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	home = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveHomepage'] = home
+	self.storeInfoCache(idpackage,'retrieveHomepage',home)
 	return home
 
     def retrieveCounter(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveCounter: retrieving Counter for package ID "+str(idpackage))
 	
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveCounter',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveCounter')
+	if cache != None: return cache
+	
 	counter = -1
 	try:
 	    self.cursor.execute('SELECT "counter" FROM counters WHERE idpackage = "'+str(idpackage)+'"')
@@ -2031,23 +1989,14 @@ class etpDatabase:
 	except:
 	    pass
 	
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveCounter'] = int(counter)
+	self.storeInfoCache(idpackage,'retrieveCounter',int(counter))
 	return int(counter)
 
     def retrieveMessages(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveMessages: retrieving messages for package ID "+str(idpackage))
 	
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveMessages',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveMessages')
+	if cache != None: return cache
 
 	messages = []
 	try:
@@ -2056,46 +2005,28 @@ class etpDatabase:
 	except:
 	    pass
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveMessages'] = messages
+	self.storeInfoCache(idpackage,'retrieveMessages',messages)
 	return messages
 
     # in bytes
     def retrieveSize(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSize: retrieving Size for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveSize',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveSize')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "size" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	size = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveSize'] = size
+	self.storeInfoCache(idpackage,'retrieveSize',size)
 	return size
 
     # in bytes
     def retrieveOnDiskSize(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveOnDiskSize: retrieving On Disk Size for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveOnDiskSize',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveOnDiskSize')
+	if cache != None: return cache
 
 	try:
 	    self.cursor.execute('SELECT size FROM sizes WHERE idpackage = "'+str(idpackage)+'"')
@@ -2109,341 +2040,197 @@ class etpDatabase:
 	else:
 	    size = size[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveOnDiskSize'] = size
+	self.storeInfoCache(idpackage,'retrieveOnDiskSize',size)
 	return size
 
     def retrieveDigest(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDigest: retrieving Digest for package ID "+str(idpackage))
 	
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveDigest',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveDigest')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "digest" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	digest = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveDigest'] = digest
+	self.storeInfoCache(idpackage,'retrieveDigest',digest)
 	return digest
 
     def retrieveName(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveName: retrieving Name for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveName',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveName')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "name" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	name = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveName'] = name
+	self.storeInfoCache(idpackage,'retrieveName',name)
 	return name
 
     def retrieveVersion(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveVersion: retrieving Version for package ID "+str(idpackage))
 	
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveVersion',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveVersion')
+	if cache != None: return cache
 	
 	self.cursor.execute('SELECT "version" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	ver = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveVersion'] = ver
+	self.storeInfoCache(idpackage,'retrieveVersion',ver)
 	return ver
 
     def retrieveRevision(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveRevision: retrieving Revision for package ID "+str(idpackage))
 	
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveRevision',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveRevision')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "revision" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	rev = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveRevision'] = rev
+	self.storeInfoCache(idpackage,'retrieveRevision',rev)
 	return rev
 
     def retrieveDateCreation(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDateCreation: retrieving Creation Date for package ID "+str(idpackage))
 	
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveDateCreation',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveDateCreation')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "datecreation" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	date = self.cursor.fetchone()[0]
 	if not date:
 	    date = "N/A" #FIXME: to be removed?
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveDateCreation'] = date
+	self.storeInfoCache(idpackage,'retrieveDateCreation',date)
 	return date
 
     def retrieveApi(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveApi: retrieving Database API for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveApi',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveApi')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "etpapi" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	api = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveApi'] = api
+	self.storeInfoCache(idpackage,'retrieveApi',api)
 	return api
 
     def retrieveUseflags(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveUseflags: retrieving USE flags for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveUseflags',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveUseflags')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT flagname FROM useflags,useflagsreference WHERE useflags.idpackage = "'+str(idpackage)+'" and useflags.idflag = useflagsreference.idflag')
 	flags = self.fetchall2set(self.cursor.fetchall())
 	
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveUseflags'] = flags
+	self.storeInfoCache(idpackage,'retrieveUseflags',flags)
 	return flags
 
     def retrieveEclasses(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveEclasses: retrieving eclasses for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveEclasses',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveEclasses')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT classname FROM eclasses,eclassesreference WHERE eclasses.idpackage = "'+str(idpackage)+'" and eclasses.idclass = eclassesreference.idclass')
 	classes = self.fetchall2set(self.cursor.fetchall())
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveEclasses'] = classes
+	self.storeInfoCache(idpackage,'retrieveEclasses',classes)
 	return classes
 
     def retrieveNeeded(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveNeeded: retrieving needed libraries for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveNeeded',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveNeeded')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = "'+str(idpackage)+'" and needed.idneeded = neededreference.idneeded')
 	needed = self.fetchall2set(self.cursor.fetchall())
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveNeeded'] = needed
+	self.storeInfoCache(idpackage,'retrieveNeeded',needed)
 	return needed
 
     def retrieveConflicts(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveEclasses: retrieving Conflicts for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveConflicts',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveConflicts')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "conflict" FROM conflicts WHERE idpackage = "'+str(idpackage)+'"')
 	confl = self.fetchall2set(self.cursor.fetchall())
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveConflicts'] = confl
+	self.storeInfoCache(idpackage,'retrieveConflicts',confl)
 	return confl
 
     def retrieveProvide(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProvide: retrieving Provide for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveProvide',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveProvide')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "atom" FROM provide WHERE idpackage = "'+str(idpackage)+'"')
 	provide = self.fetchall2set(self.cursor.fetchall())
 	
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveProvide'] = provide
+	self.storeInfoCache(idpackage,'retrieveProvide',provide)
 	return provide
 
     def retrieveDependencies(self, idpackage):
 	#dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDependencies: retrieving dependency for package ID "+str(idpackage)) # too slow?
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveDependencies',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveDependencies')
+	if cache != None: return cache
 	
 	self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE idpackage = "'+str(idpackage)+'" and dependencies.iddependency = dependenciesreference.iddependency')
 	deps = self.fetchall2set(self.cursor.fetchall())
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveDependencies'] = deps
+	self.storeInfoCache(idpackage,'retrieveDependencies',deps)
 	return deps
 
     def retrieveIdDependencies(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveIdDependencies: retrieving Dependencies for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveIdDependencies',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveIdDependencies')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT iddependency FROM dependencies WHERE idpackage = "'+str(idpackage)+'"')
 	iddeps = self.fetchall2set(self.cursor.fetchall())
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveIdDependencies'] = iddeps
+	self.storeInfoCache(idpackage,'retrieveIdDependencies',iddeps)
 	return iddeps
 
     def retrieveBinKeywords(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBinKeywords: retrieving Binary Keywords for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveBinKeywords',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveBinKeywords')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT keywordname FROM binkeywords,keywordsreference WHERE binkeywords.idpackage = "'+str(idpackage)+'" and binkeywords.idkeyword = keywordsreference.idkeyword')
 	kw = self.fetchall2set(self.cursor.fetchall())
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveBinKeywords'] = kw
+	self.storeInfoCache(idpackage,'retrieveBinKeywords',kw)
 	return kw
 
     def retrieveKeywords(self, idpackage):
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveKeywords',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveKeywords')
+	if cache != None: return cache
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveKeywords: retrieving Keywords for package ID "+str(idpackage))
 	self.cursor.execute('SELECT keywordname FROM keywords,keywordsreference WHERE keywords.idpackage = "'+str(idpackage)+'" and keywords.idkeyword = keywordsreference.idkeyword')
 	kw = self.fetchall2set(self.cursor.fetchall())
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveKeywords'] = kw
+	self.storeInfoCache(idpackage,'retrieveKeywords',kw)
 	return kw
 
     def retrieveProtect(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProtect: retrieving CONFIG_PROTECT for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveProtect',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveProtect')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT protect FROM configprotect,configprotectreference WHERE configprotect.idpackage = "'+str(idpackage)+'" and configprotect.idprotect = configprotectreference.idprotect')
         protect = self.cursor.fetchone()
@@ -2452,23 +2239,14 @@ class etpDatabase:
 	else:
 	    protect = protect[0]
 
-	''' caching '''
-	if (self.xcache):
-	     dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveProtect'] = protect
+	self.storeInfoCache(idpackage,'retrieveProtect',protect)
 	return protect
 
     def retrieveProtectMask(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProtectMask: retrieving CONFIG_PROTECT_MASK for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveProtectMask',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveProtectMask')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT protect FROM configprotectmask,configprotectreference WHERE idpackage = "'+str(idpackage)+'" and configprotectmask.idprotect= configprotectreference.idprotect')
 	protect = self.cursor.fetchone()
@@ -2477,31 +2255,22 @@ class etpDatabase:
 	else:
 	    protect = protect[0]
 	
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveProtectMask'] = protect
+	self.storeInfoCache(idpackage,'retrieveProtectMask',protect)
 	return protect
 
     def retrieveSources(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSources: retrieving Sources for package ID "+str(idpackage))
 
 	''' caching 
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveSources',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveSources')
+	if cache != None: return cache
 	'''
 
 	self.cursor.execute('SELECT sourcesreference.source FROM sources,sourcesreference WHERE idpackage = "'+str(idpackage)+'" and sources.idsource = sourcesreference.idsource')
 	sources = self.fetchall2set(self.cursor.fetchall())
 
 	''' caching
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveSources'] = sources
+	self.storeInfoCache(idpackage,'retrieveSources',sources)
 	'''
 	return sources
 
@@ -2509,65 +2278,40 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveContent: retrieving Content for package ID "+str(idpackage))
 
 	''' caching
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveContent',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveContent')
+	if cache != None: return cache
 	'''
 
 	self.cursor.execute('SELECT "file" FROM content WHERE idpackage = "'+str(idpackage)+'"')
 	fl = self.fetchall2set(self.cursor.fetchall())
 
 	''' caching
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveContent'] = fl
+	self.storeInfoCache(idpackage,'retrieveContent',fl)
 	'''
 	return fl
 
     def retrieveSlot(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSlot: retrieving Slot for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache): 
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveSlot',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveSlot')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "slot" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	ver = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveSlot'] = ver
+	self.storeInfoCache(idpackage,'retrieveSlot',ver)
 	return ver
     
     def retrieveVersionTag(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveVersionTag: retrieving Version TAG for package ID "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveVersionTag',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveVersionTag')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "versiontag" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
 	ver = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveVersionTag'] = ver
+	self.storeInfoCache(idpackage,'retrieveVersionTag',ver)
 	return ver
     
     def retrieveMirrorInfo(self, mirrorname):
@@ -2581,57 +2325,32 @@ class etpDatabase:
     def retrieveCategory(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveCategory: retrieving Category for package ID for "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveCategory',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveCategory')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT category FROM baseinfo,categories WHERE baseinfo.idpackage = "'+str(idpackage)+'" and baseinfo.idcategory = categories.idcategory ')
 	cat = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveCategory'] = cat
+	self.storeInfoCache(idpackage,'retrieveCategory',cat)
 	return cat
 
     def retrieveLicense(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveLicense: retrieving License for package ID for "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveLicense',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveLicense')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT license FROM baseinfo,licenses WHERE baseinfo.idpackage = "'+str(idpackage)+'" and baseinfo.idlicense = licenses.idlicense')
 	licname = self.cursor.fetchone()[0]
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveLicense'] = licname
+	self.storeInfoCache(idpackage,'retrieveLicense',licname)
 	return licname
 
     def retrieveCompileFlags(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveCompileFlags: retrieving CHOST,CFLAGS,CXXFLAGS for package ID for "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('retrieveCompileFlags',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveCompileFlags')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT "idflags" FROM extrainfo WHERE idpackage = "'+str(idpackage)+'"')
 	idflag = self.cursor.fetchone()[0]
@@ -2641,23 +2360,14 @@ class etpDatabase:
         if not flags:
             flags = ("N/A","N/A","N/A")
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['retrieveCompileFlags'] = flags
+	self.storeInfoCache(idpackage,'retrieveCompileFlags',flags)
 	return flags
 
     def retrieveDepends(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDepends: called for idpackage "+str(idpackage))
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('searchDepends',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'retrieveDepends')
+	if cache != None: return cache
 
 	# sanity check on the table
 	sanity = self.isDependsTableSane()
@@ -2667,10 +2377,7 @@ class etpDatabase:
 	self.cursor.execute('SELECT dependencies.idpackage FROM dependstable,dependencies WHERE dependstable.idpackage = "'+str(idpackage)+'" and dependstable.iddependency = dependencies.iddependency')
 	result = self.fetchall2set(self.cursor.fetchall())
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['searchDepends'] = result
-
+	self.storeInfoCache(idpackage,'retrieveDepends',result)
 	return result
 
     # You must provide the full atom to this function
@@ -2813,15 +2520,8 @@ class etpDatabase:
     def isSystemPackage(self,idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSystemPackage: called.")
 
-	''' caching '''
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage), None)
-	    if cached:
-	        rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get('isSystemPackage',None)
-	        if rslt:
-		    return rslt
-	    else:
-	        dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+	cache = self.fetchInfoCache(idpackage,'isSystemPackage')
+	if cache != None: return cache
 
 	self.cursor.execute('SELECT idpackage FROM systempackages WHERE idpackage = "'+str(idpackage)+'"')
 	result = self.cursor.fetchone()
@@ -2831,10 +2531,7 @@ class etpDatabase:
 	    rslt = True
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSystemPackage: package is NOT in system.")
 
-	''' caching '''
-	if (self.xcache):
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)]['isSystemPackage'] = rslt
-	
+	self.storeInfoCache(idpackage,'isSystemPackage',rslt)
 	return rslt
 
     def areCompileFlagsAvailable(self,chost,cflags,cxxflags):
@@ -2978,7 +2675,7 @@ class etpDatabase:
 	
 	branchstring = ''
 	if branch:
-	    branchstring = ' and branch = '+branch
+	    branchstring = ' and branch = "'+branch+'"'
 	
 	if (sensitive):
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+keyword+'"'+branchstring)
@@ -3000,7 +2697,7 @@ class etpDatabase:
 
 	branchstring = ''
 	if branch:
-	    branchstring = ' and branch = '+branch
+	    branchstring = ' and branch = "'+branch+'"'
 
 	if (sensitive):
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+name+'" AND idcategory ='+str(idcat)+branchstring)
@@ -3021,7 +2718,7 @@ class etpDatabase:
 
 	branchstring = ''
 	if branch:
-	    branchstring = ' and branch = '+branch
+	    branchstring = ' and branch = "'+branch+'"'
 
 	if (sensitive):
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+name+'" and version = "'+version+'" and idcategory = '+str(idcat)+branchstring)
@@ -3051,6 +2748,11 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllDependencies: called.")
 	self.cursor.execute('SELECT * FROM dependenciesreference')
 	return self.cursor.fetchall()
+
+    def listAllBranches(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllBranches: called.")
+	self.cursor.execute('SELECT branch FROM baseinfo')
+	return self.fetchall2set(self.cursor.fetchall())
 
     def listIdpackageDependencies(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listIdpackageDependencies: called.")
@@ -3128,7 +2830,7 @@ class etpDatabase:
 	idprotects = self.fetchall2set(self.cursor.fetchall())
 	
 	if not idprotects:
-	    return ()
+	    return []
 	
 	results = set()
 	query = 'WHERE idprotect = '
@@ -3428,7 +3130,11 @@ class etpDatabase:
 	if (matchBranches):
 	    myBranchIndex = tuple(matchBranches) # force to tuple for security
 	else:
-	    myBranchIndex = (etpConst['branch'],)
+	    if (self.dbname == 'client'):
+		# collect all available branches
+		myBranchIndex = tuple(self.listAllBranches())
+	    else:
+	        myBranchIndex = (etpConst['branch'],)
 
         # IDs found in the database that match our search
         foundIDs = []
@@ -3508,6 +3214,7 @@ class etpDatabase:
 	            foundIDs.append(results[0])
 	            break
 	
+	
         if (foundIDs):
 	    # now we have to handle direction
 	    if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
@@ -3534,7 +3241,7 @@ class etpDatabase:
 		        if (pkgversion.split("-")[-1] == "r0"):
 		            pkgversion = string.join(pkgversion.split("-")[:-1],"-")
 		    if (direction == "~"):
-		        pkgversion = string.join(pkgversion.split("-")[:-1],"-")
+		        pkgversion = entropyTools.remove_revision(pkgversion)
 		
 		    #print pkgversion
 		    dbpkginfo = []
@@ -3542,7 +3249,8 @@ class etpDatabase:
 		        idpackage = data[1]
 		        dbver = self.retrieveVersion(idpackage)
 		        if (direction == "~"):
-		            if dbver.startswith(pkgversion):
+			    myver = entropyTools.remove_revision(dbver)
+		            if myver == pkgversion:
 			        # found
 			        dbpkginfo.append([idpackage,dbver])
 		        else:
@@ -3551,7 +3259,9 @@ class etpDatabase:
 			        if dbver.startswith(pkgversion[:-1]):
 				    dbpkginfo.append([idpackage,dbver])
 			    else:
-				dbpkginfo.append([idpackage,dbver])
+				# do versions matches?
+				if pkgversion == dbver:
+				    dbpkginfo.append([idpackage,dbver])
 
 		    if (not dbpkginfo):
 		        # no version available

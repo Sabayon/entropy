@@ -45,6 +45,7 @@ def print_help():
     print_info(" \t\t"+red("--fetch")+"\t\t\t just download packages without doing the install")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
+    print_info(" \t\t"+red("--replay")+"\t\t reinstall all the packages and their dependencies")
     print_info(" \t"+blue("install")+brown("\t\t install one or more packages"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")

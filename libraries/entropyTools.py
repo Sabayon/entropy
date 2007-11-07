@@ -611,6 +611,12 @@ def remove_slot(mydep):
 	mydep = mydep[:colon]
     return mydep
 
+# input must be a valid package version or a full atom
+def remove_revision(ver):
+    myver = ver.split("-")
+    if myver[-1][0] == "r":
+	return string.join(myver[:-1],"-")
+    return ver
 
 def remove_tag(mydep):
     colon = mydep.rfind("#")
