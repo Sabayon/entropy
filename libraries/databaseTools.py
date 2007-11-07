@@ -91,7 +91,7 @@ def database(options):
 	# sync packages directory
 	print "Revisions dump:"
 	print revisionsMatch
-	activatorTools.packages(["sync","--ask"])
+	#activatorTools.packages(["sync","--ask"])
 	
 	# now fill the database
 	pkgbranches = os.listdir(etpConst['packagesbindir'])
@@ -859,9 +859,6 @@ class etpDatabase:
 
 	self.checkReadOnly()
 
-	if forcedRevision == -1: # no revision specified
-	    forcedRevision = 0
-
 	# build atom string
 	versiontag = ''
 	if etpData['versiontag']:
@@ -876,9 +873,12 @@ class etpDatabase:
 	return idpk, revision, etpDataUpdated, accepted
 
 
-    def addPackage(self, etpData, revision = 0):
+    def addPackage(self, etpData, revision = -1):
 
 	self.checkReadOnly()
+	
+	if revision == -1:
+	    revision = etpData['revision']
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: called.")
 	

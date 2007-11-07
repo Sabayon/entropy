@@ -1813,12 +1813,11 @@ def database(options):
 	    dbconn = openRepositoryDatabase(x[1])
 	    atomName = dbconn.retrieveAtom(x[0])
 	    atomInfo = dbconn.getPackageData(x[0])
-	    atomBranch = dbconn.retrieveBranch(x[0])
 	    dbconn.closeDB()
 	    # filling
 	    print_info("  "+bold("(")+darkgreen(str(count))+"/"+blue(total)+bold(")")+red(" Injecting ")+bold(atomName), back = True)
 	    # fill client database
-	    idpk, rev, xx, status = clientDbconn.addPackage(atomInfo, wantedBranch = atomBranch)
+	    idpk, rev, xx, status = clientDbconn.addPackage(atomInfo)
 	    # now add the package to the installed table
 	    clientDbconn.addPackageToInstalledTable(idpk,x[1])
 
