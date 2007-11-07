@@ -3535,8 +3535,8 @@ class etpDatabase:
 		
 		    #print pkgversion
 		    dbpkginfo = []
-		    for list in foundIDs:
-		        idpackage = list[1]
+		    for data in foundIDs:
+		        idpackage = data[1]
 		        dbver = self.retrieveVersion(idpackage)
 		        if (direction == "~"):
 		            if dbver.startswith(pkgversion):
@@ -3553,8 +3553,8 @@ class etpDatabase:
 		    if (not dbpkginfo):
 		        # no version available
 		        if (direction == "~"): # if the atom with the same version (any rev) is not found, fallback to the first available
-			    for list in foundIDs:
-			        idpackage = list[1]
+			    for data in foundIDs:
+			        idpackage = data[1]
 			        dbver = self.retrieveVersion(idpackage)
 			        dbpkginfo.append([idpackage,dbver])
 		
@@ -3641,8 +3641,8 @@ class etpDatabase:
 		        pkgversion = string.join(pkgversion.split("-")[:-1],"-")
 
 		    dbpkginfo = []
-		    for list in foundIDs:
-		        idpackage = list[1]
+		    for data in foundIDs:
+		        idpackage = data[1]
 		        dbver = self.retrieveVersion(idpackage)
 		        cmp = entropyTools.compareVersions(pkgversion,dbver)
 		        if direction == ">": # the --deep mode should really act on this
@@ -3765,23 +3765,23 @@ class etpDatabase:
 		#print foundIDs
 		multiMatchList = set()
 		_foundIDs = []
-	        for list in foundIDs:
+	        for data in foundIDs:
 		    if (matchSlot == None) and (matchTag == None):
-		        versionIDs.append(self.retrieveVersion(list[1]))
+		        versionIDs.append(self.retrieveVersion(data[1]))
 			if (multiMatch):
-			    multiMatchList.add(list[1])
+			    multiMatchList.add(data[1])
 		    else:
 			if (matchSlot != None):
-			    foundslot = self.retrieveSlot(list[1])
+			    foundslot = self.retrieveSlot(data[1])
 			    if (str(foundslot) != str(matchSlot)):
 			        continue
 			if (matchTag != None):
-			    if matchTag != self.retrieveVersionTag(list[1]):
+			    if matchTag != self.retrieveVersionTag(data[1]):
 				continue
-			versionIDs.append(self.retrieveVersion(list[1]))
+			versionIDs.append(self.retrieveVersion(data[1]))
 			if (multiMatch):
-			    multiMatchList.add(list[1])
-		    _foundIDs.append(list)
+			    multiMatchList.add(data[1])
+		    _foundIDs.append(data)
 		foundIDs = _foundIDs
 	    
 		if (multiMatch):
