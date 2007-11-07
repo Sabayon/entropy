@@ -697,6 +697,19 @@ def quickpkg(atom,dirpath):
 		os.chown(tmpdirpath+x,user,group)
 		shutil.copystat(x,tmpdirpath+x)
 	    else:
+		dirname = os.path.realpath(os.path.dirname(x))
+		if not os.path.isdir(tmpdirpath+'/'+dirname):
+		    os.makedirs(tmpdirpath+'/'+dirname)
+		    if os.path.isdir(dirname):
+			user = os.stat(dirname)[4]
+			group = os.stat(dirname)[5]
+			shutil.copystat(dirname,tmpdirpath+dirname)
+		    else:
+			user = 0
+			group = 0
+		    os.chown(tmpdirpath+dirname,user,group)
+		    
+		x = dirname+"/"+os.path.basename(x)
 	        os.system('cp -ax '+x+' '+tmpdirpath+'/'+x)
     
     # create tar
