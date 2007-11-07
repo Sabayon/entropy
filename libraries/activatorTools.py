@@ -347,7 +347,7 @@ def packages(options):
 		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: download queue -> "+str(downloadQueue))
 		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: upload queue -> "+str(uploadQueue))
 
-	            if (len(uploadQueue) == 0) and (len(downloadQueue) == 0) and (len(removalQueue) == 0):
+	            if (not uploadQueue) and (not downloadQueue) and (not removalQueue):
 		        print_info(green(" * ")+red("Nothing to syncronize for ")+bold(extractFTPHostFromUri(uri)+red(". Queue empty.")))
 		        uriSuccessfulSync += 1
 			if (uriSuccessfulSync == len(pkgbranches)):
