@@ -135,39 +135,14 @@ def unpackGzip(gzipfilepath):
     del filecont
     return filepath
 
-def extractXpak(tbz2File,tmpdir = None):
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"unpackTbz2: called -> "+tbz2File)
+def extractXpak(tbz2file,tmpdir = None):
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractXpak: called -> "+tbz2file)
     # extract xpak content
-    xpakpath = etpConst['packagestmpdir']+"/"+os.path.basename(tbz2File).split(".tbz2")[0]+".xpak"
-    xpakfile = open(xpakpath,"wb")
-    allowWrite = False
-    
-    f = open(tbz2File,"rb")
-    byte = f.read(1)
-    while byte:
-	if byte == "X":
-	    # investigate
-	    currpos = f.tell()
-	    chunk = byte+f.read(7)
-	    if chunk == "XPAKPACK":
-		f.seek(currpos)
-		allowWrite = True
-	    elif chunk == "XPAKSTOP":
-		break
-	    else:
-		f.seek(currpos)
-	if (allowWrite):
-	    xpakfile.write(byte)
-	byte = f.read(1)
-    
-    xpakfile.write("XPAKSTOP")
-    xpakfile.flush()
-    xpakfile.close()
-    os.system("cp "+xpakpath+" /tmp/")
+    xpakpath = suckXpak(tbz2file, etpConst['packagestmpdir'])
     
     import xpak
     if tmpdir is None:
-	tmpdir = etpConst['packagestmpdir']+"/"+os.path.basename(tbz2File).split(".tbz2")[0]+"/"
+	tmpdir = etpConst['packagestmpdir']+"/"+os.path.basename(tbz2file)[:-5]+"/"
     if os.path.isdir(tmpdir):
 	spawnCommand("rm -rf "+tmpdir)
     os.makedirs(tmpdir)
@@ -178,6 +153,46 @@ def extractXpak(tbz2File,tmpdir = None):
     except:
         pass
     return tmpdir
+    
+def suckXpak(tbz2file, outputpath):
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"suckXpak: called -> "+tbz2file+" and "+outputpath)
+    
+    xpakpath = outputpath+"/"+os.path.basename(tbz2file)[:-5]+".xpak"
+    old = open(tbz2file,"rb")
+    db = open(xpakpath,"wb")
+    allowWrite = False
+    
+    # position old to the end
+    old.seek(0,2)
+    # read backward until we find
+    bytes = old.tell()
+    counter = bytes
+    dbcontent = []
+    
+    while counter >= 0:
+	old.seek(counter-bytes,2)
+	byte = old.read(1)
+	if byte == "P" or byte == "K":
+	    old.seek(counter-bytes-7,2)
+	    chunk = old.read(7)+byte
+	    if chunk == "XPAKPACK":
+		allowWrite = False
+		dbcontent.append(chunk)
+		break
+	    elif chunk == "XPAKSTOP":
+		allowWrite = True
+		old.seek(counter-bytes,2)
+	if (allowWrite):
+	    dbcontent.append(byte)
+	counter -= 1
+    dbcontent.reverse()
+    for x in dbcontent:
+	db.write(x)
+    
+    db.flush()
+    db.close()
+    old.close()
+    return xpakpath
 
 def aggregateEdb(tbz2file,dbfile):
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"aggregateEntropyDb: called -> "+tbz2file+" and "+dbfile)
