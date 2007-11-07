@@ -74,6 +74,8 @@ def database(options):
 		    package = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
 		    branch = dbconn.retrieveBranch(idpackage)
 		    revision = dbconn.retrieveRevision(idpackage)
+		    if revision < 0: # just to be sure
+			revision = 0
 		    revisionsMatch[package] = [branch,revision]
 		except:
 		    pass
@@ -100,13 +102,8 @@ def database(options):
 	for mybranch in pkgbranches:
 	
 	    pkglist = os.listdir(etpConst['packagesbindir']+"/"+mybranch)
+	    pkglist = [x for x in pkglist if x[-5:] == ".tbz2"]
 	
-	    # filter .md5
-	    _pkglist = []
-	    for i in pkglist:
-	        if not i.endswith(etpConst['packageshashfileext']):
-		    _pkglist.append(i)
-	    pkglist = _pkglist
 	    if (not pkglist):
 		continue
 
@@ -123,9 +120,9 @@ def database(options):
 		
 	        etpData = reagentTools.extractPkgData(etpConst['packagesbindir']+"/"+mybranch+"/"+pkg, mybranch)
 	        # get previous revision
-		revisionAvail = revisionsMatch.get(os.path.basename(etpData['download']),None)
+		revisionAvail = revisionsMatch.get(os.path.basename(etpData['download']))
 		addRevision = 0
-		if (revisionAvail):
+		if (revisionAvail != None):
 		    if mybranch == revisionAvail[0]:
 			addRevision = revisionAvail[1]
 	        # fill the db entry
