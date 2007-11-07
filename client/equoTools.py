@@ -1951,7 +1951,6 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     
     clientDbconn = openClientDatabase()
     # get all the installed packages
-    counter = 0
     packages = clientDbconn.listAllPackages()
     print_info(red(" @@ ")+blue("Calculating world packages..."))
     for package in packages:

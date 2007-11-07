@@ -255,24 +255,7 @@ def packages(options):
 		
 		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: starting packages calculation...")
 		
-	            # if a package is in the packages directory but not online, we have to upload it
-		    # we have localPackagesRepository and remotePackages
-	            for localPackage in localPackagesRepository:
-			if localPackage in remotePackages:
-			    # it's already on the mirror, but... is its size correct??
-			    localSize = int(os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+localPackage)[6])
-			    remoteSize = 0
-			    for file in remotePackagesInfo:
-			        if file.split()[8] == localPackage:
-				    remoteSize = int(file.split()[4])
-			    if (localSize != remoteSize) and (localSize != 0):
-			        # size does not match, adding to the upload queue
-			        uploadQueue.add(localPackage)
-			else:
-		            # this means that the local package does not exist
-		            # so, we need to download it
-		            uploadQueue.add(localPackage)
-		
+		    finePackages = set()
 	            # Fill uploadQueue and if something weird is found, add the packages to downloadQueue
 	            for localPackage in toBeUploaded:
 			if localPackage in remotePackages:
@@ -285,11 +268,32 @@ def packages(options):
 			    if (localSize != remoteSize) and (localSize != 0):
 			        # size does not match, adding to the upload queue
 			        uploadQueue.add(localPackage)
+			    else:
+				finePackages.add(localPackage) # just move from upload to packages
 		        else:
 		            # this means that the local package does not exist
 		            # so, we need to download it
 		            uploadQueue.add(localPackage)
 
+	            # if a package is in the packages directory but not online, we have to upload it
+		    # we have localPackagesRepository and remotePackages
+	            for localPackage in localPackagesRepository:
+			if localPackage in remotePackages:
+			    # it's already on the mirror, but... is its size correct??
+			    localSize = int(os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+localPackage)[6])
+			    remoteSize = 0
+			    for file in remotePackagesInfo:
+			        if file.split()[8] == localPackage:
+				    remoteSize = int(file.split()[4])
+			    if (localSize != remoteSize) and (localSize != 0):
+			        # size does not match, adding to the upload queue
+				if localPackage not in finePackages:
+			            uploadQueue.add(localPackage)
+			else:
+		            # this means that the local package does not exist
+		            # so, we need to download it
+		            uploadQueue.add(localPackage)
+		
 	            # Fill downloadQueue and removalQueue
 	            for remotePackage in remotePackages:
 			if remotePackage in localPackagesRepository:
@@ -302,9 +306,10 @@ def packages(options):
 			    if (localSize != remoteSize) and (localSize != 0):
 			        # size does not match, remove first
 				#print "removal of "+localPackage+" because its size differ"
-			        removalQueue.add(remotePackage) # remotePackage == localPackage # just remove something that differs from the content of the mirror
-			        # then add to the download queue
-			        downloadQueue.add(remotePackage)
+				if remotePackage not in uploadQueue: # do it only if the package has not been added to the uploadQueue
+			            removalQueue.add(remotePackage) # remotePackage == localPackage # just remove something that differs from the content of the mirror
+			            # then add to the download queue
+			            downloadQueue.add(remotePackage)
 		        else:
 		            # this means that the local package does not exist
 		            # so, we need to download it
