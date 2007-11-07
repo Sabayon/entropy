@@ -590,7 +590,7 @@ def compareLibraryLists(pkgBinaryFiles,newPkgBinaryFiles):
 
 # create a .tbz2 file in the specified path
 # old way, buggy with symlinks
-def quickpkg_old(atom,dirpath):
+def quickpkg(atom,dirpath):
 
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg_old: called -> "+atom+" | dirpath: "+dirpath)
 
@@ -662,7 +662,7 @@ def quickpkg_old(atom,dirpath):
 	return False
 
 # create a .tbz2 file in the specified path
-def quickpkg(atom,dirpath):
+def quickpkg_test(atom,dirpath):
 
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+atom+" | dirpath: "+dirpath)
 
@@ -698,7 +698,7 @@ def quickpkg(atom,dirpath):
 		shutil.copystat(x,tmpdirpath+x)
 	    else:
 		dirname = os.path.realpath(os.path.dirname(x))
-		if not os.path.isdir(tmpdirpath+'/'+dirname):
+		if not os.path.isdir(tmpdirpath+'/'+dirname): # in case that realpath is not yet created
 		    os.makedirs(tmpdirpath+'/'+dirname)
 		    if os.path.isdir(dirname):
 			user = os.stat(dirname)[4]
