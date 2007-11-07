@@ -859,6 +859,9 @@ class etpDatabase:
 
 	self.checkReadOnly()
 
+	if forcedRevision == -1: # no revision specified
+	    forcedRevision = 0
+
 	# build atom string
 	versiontag = ''
 	if etpData['versiontag']:

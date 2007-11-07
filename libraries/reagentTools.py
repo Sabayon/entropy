@@ -276,7 +276,7 @@ def update(options):
 	    data = dbconn.getPackageData(idpk)
 	    rev = dbconn.retrieveRevision(idpk)
 	    # inject
-	    pkgDbconn.addPackage(data, revision = rev, wantedBranch = data['branch'])
+	    pkgDbconn.addPackage(data, revision = rev)
 	    pkgDbconn.closeDB()
 	    # append the database to the new file
 	    aggregateEdb(tbz2file = etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName, dbfile = dbpath)
