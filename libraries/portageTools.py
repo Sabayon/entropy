@@ -589,9 +589,10 @@ def compareLibraryLists(pkgBinaryFiles,newPkgBinaryFiles):
 
 
 # create a .tbz2 file in the specified path
-def quickpkg(atom,dirpath):
+# old way, buggy with symlinks
+def quickpkg_old(atom,dirpath):
 
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+atom+" | dirpath: "+dirpath)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg_old: called -> "+atom+" | dirpath: "+dirpath)
 
     # getting package info
     pkgname = atom.split("/")[1]
@@ -605,44 +606,16 @@ def quickpkg(atom,dirpath):
 
     import tarfile
     import stat
+    from portage import dblink
+    trees = portage.db["/"]
+    vartree = trees["vartree"]
+    dblnk = dblink(pkgcat, pkgname, "/", vartree.settings, treetype="vartree", vartree=vartree)
+    dblnk.lockdb()
     tar = tarfile.open(dirpath,"w:bz2")
 
-    # load content
-    f = open(dbdir+dbCONTENTS,"r")
-    pkgcontent = f.readlines()
-    f.close()
-    
-    content = {}
+    contents = dblnk.getcontents()
     id_strings = {}
-    
-    for line in pkgcontent:
-	line = line.strip()
-	data = line.split()
-	ftype = data[0]
-
-	if ftype == "dir":
-	    file = string.join(data[1:]," ")
-	    content[file] = [] # do not use sets!
-	    content[file].append(ftype)
-	elif ftype == "sym":
-	    timestamp = data[-1]
-	    symlink = data[-2]
-	    file = string.join(data[1:-3]," ")
-	    content[file] = []
-	    content[file].append(ftype)
-	    content[file].append(timestamp)
-	    content[file].append(symlink)
-	else: # == "obj"
-	    # add timestamp
-	    timestamp = data[-1]
-	    checksum = data[-2]
-	    file = string.join(data[1:-2]," ")
-	    content[file] = []
-	    content[file].append(ftype)
-	    content[file].append(timestamp)
-	    content[file].append(checksum)
-
-    paths = content.keys()
+    paths = contents.keys()
     paths.sort()
     
     for path in paths:
@@ -650,10 +623,12 @@ def quickpkg(atom,dirpath):
 	    exist = os.lstat(path)
 	except OSError:
 	    continue # skip file
-	ftype = content[path][0]
+	ftype = contents[path][0]
 	lpath = path
 	arcname = path[1:]
-	if ftype == "dir" and stat.S_ISDIR(exist.st_mode) and os.path.isdir(lpath):
+	if 'dir' == ftype and \
+	    not stat.S_ISDIR(exist.st_mode) and \
+	    os.path.isdir(lpath):
 	    lpath = os.path.realpath(lpath)
 	tarinfo = tar.gettarinfo(lpath, arcname)
 	tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
@@ -676,9 +651,65 @@ def quickpkg(atom,dirpath):
     tbz2 = xpak.tbz2(dirpath)
     tbz2.recompose(dbdir)
     
+    dblnk.unlockdb()
+    
     # Remove tmp file
     entropyTools.spawnCommand("rm -rf "+tmpdirpath)
     
+    if os.path.isfile(dirpath):
+	return dirpath
+    else:
+	return False
+
+# create a .tbz2 file in the specified path
+def quickpkg(atom,dirpath):
+
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+atom+" | dirpath: "+dirpath)
+
+    import shutil
+    # getting package info
+    pkgname = atom.split("/")[1]
+    pkgcat = atom.split("/")[0]
+    pkgfile = pkgname+".tbz2"
+    dirpath += "/"+pkgname+".tbz2"
+    dirpath = os.path.realpath(dirpath)
+    tmpdirpath = etpConst['packagestmpdir']+"/"+pkgname+".tbz2"+"-tmpdir"
+    if os.path.isdir(tmpdirpath): shutil.rmtree(tmpdirpath)
+    os.makedirs(tmpdirpath)
+    dbdir = "/var/db/pkg/"+pkgcat+"/"+pkgname+"/"
+    
+    # open file and read contents
+    f = open(dbdir+dbCONTENTS,"r")
+    contents = f.readlines()
+    contents = [x.split()[1] for x in contents]
+    f.close()
+    
+    contents.sort()
+    # copy files to a tmpdir
+    for x in contents:
+	if os.path.lexists(x):
+	    if os.path.isdir(x) and not os.path.islink(x):
+		# true dir
+		x = os.path.realpath(x)
+		os.makedirs(tmpdirpath+x)
+		user = os.stat(x)[4]
+		group = os.stat(x)[5]
+		os.chown(tmpdirpath+x,user,group)
+		shutil.copystat(x,tmpdirpath+x)
+	    else:
+	        os.system('cp -ax '+x+' '+tmpdirpath+'/'+x)
+    
+    # create tar
+    os.system("cd "+tmpdirpath+"; tar cjf "+dirpath+" .")
+
+    # appending xpak informations
+    import xpak
+    tbz2 = xpak.tbz2(dirpath)
+    tbz2.recompose(dbdir)
+    
+    # Remove tmp file
+    entropyTools.spawnCommand("rm -rf "+tmpdirpath)
+
     if os.path.isfile(dirpath):
 	return dirpath
     else:

@@ -1433,6 +1433,7 @@ def installPackage(infoDict):
 
     clientDbconn.closeDB()
 
+
     if (etpConst['gentoo-compat']):
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing new Gentoo database entry: "+str(infoDict['atom']))
 	rc = installPackageIntoGentooDatabase(infoDict,pkgpath)
