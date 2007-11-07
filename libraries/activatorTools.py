@@ -205,22 +205,22 @@ def packages(options):
 	            print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagessuploaddir']+"/"+mybranch)+red(" ..."), back = True)
 		
 	            uploadCounter = 0
-	            toBeUploaded = [] # parse etpConst['packagessuploaddir']
+	            toBeUploaded = set() # parse etpConst['packagessuploaddir']
 	            for tbz2 in os.listdir(etpConst['packagessuploaddir']+"/"+mybranch):
 		        if tbz2.endswith(".tbz2") or tbz2.endswith(etpConst['packageshashfileext']):
-		            toBeUploaded.append(tbz2)
+		            toBeUploaded.add(tbz2)
 			    if tbz2.endswith(".tbz2"):
 		                uploadCounter += 1
 		
 		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: upload directory stats -> files: "+str(uploadCounter)+" | upload packages list: "+str(toBeUploaded))
 		
 	            print_info(green(" * ")+red("Upload directory:\t\t")+bold(str(uploadCounter))+red(" files ready."))
-	            localPackagesRepository = [] # parse etpConst['packagesbindir']
+	            localPackagesRepository = set() # parse etpConst['packagesbindir']
 	            print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagesbindir']+"/"+mybranch)+red(" ..."), back = True)
 	            packageCounter = 0
 	            for tbz2 in os.listdir(etpConst['packagesbindir']+"/"+mybranch):
 		        if tbz2.endswith(".tbz2") or tbz2.endswith(etpConst['packageshashfileext']):
-		            localPackagesRepository.append(tbz2)
+		            localPackagesRepository.add(tbz2)
 			    if tbz2.endswith(".tbz2"):
 		                packageCounter += 1
 		
@@ -249,82 +249,67 @@ def packages(options):
 	            print_info(green(" * ")+red("Remote packages:\t\t")+bold(str(remoteCounter))+red(" files stored."))
 
 	            print_info(green(" * ")+yellow("Calculating..."))
-	            uploadQueue = []
-	            downloadQueue = []
-	            removalQueue = []
+	            uploadQueue = set()
+	            downloadQueue = set()
+	            removalQueue = set()
 		
 		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: starting packages calculation...")
 		
 	            # if a package is in the packages directory but not online, we have to upload it
 		    # we have localPackagesRepository and remotePackages
 	            for localPackage in localPackagesRepository:
-		        pkgfound = False
-		        for remotePackage in remotePackages:
-		            if localPackage == remotePackage:
-			        pkgfound = True
-			        # it's already on the mirror, but... is its size correct??
-			        localSize = int(os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+localPackage)[6])
-			        remoteSize = 0
-			        for file in remotePackagesInfo:
-			            if file.split()[8] == remotePackage:
-				        remoteSize = int(file.split()[4])
-			        if (localSize != remoteSize) and (localSize != 0):
-			            # size does not match, adding to the upload queue
-			            uploadQueue.append(localPackage)
-			        break
-		
-		        if (not pkgfound):
+			if localPackage in remotePackages:
+			    # it's already on the mirror, but... is its size correct??
+			    localSize = int(os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+localPackage)[6])
+			    remoteSize = 0
+			    for file in remotePackagesInfo:
+			        if file.split()[8] == localPackage:
+				    remoteSize = int(file.split()[4])
+			    if (localSize != remoteSize) and (localSize != 0):
+			        # size does not match, adding to the upload queue
+			        uploadQueue.add(localPackage)
+			else:
 		            # this means that the local package does not exist
 		            # so, we need to download it
-		            uploadQueue.append(localPackage)
+		            uploadQueue.add(localPackage)
 		
 	            # Fill uploadQueue and if something weird is found, add the packages to downloadQueue
 	            for localPackage in toBeUploaded:
-		        pkgfound = False
-		        for remotePackage in remotePackages:
-		            if localPackage == remotePackage:
-			        pkgfound = True
-			        # it's already on the mirror, but... is its size correct??
-			        localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+mybranch+"/"+localPackage)[6])
-			        remoteSize = 0
-			        for file in remotePackagesInfo:
-			            if file.split()[8] == remotePackage:
-				        remoteSize = int(file.split()[4])
-			        if (localSize != remoteSize) and (localSize != 0):
-			            # size does not match, adding to the upload queue
-			            uploadQueue.append(localPackage)
-			        break
-		
-		        if (not pkgfound):
+			if localPackage in remotePackages:
+			    # it's already on the mirror, but... is its size correct??
+			    localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+mybranch+"/"+localPackage)[6])
+			    remoteSize = 0
+			    for file in remotePackagesInfo:
+			        if file.split()[8] == localPackage:
+				    remoteSize = int(file.split()[4])
+			    if (localSize != remoteSize) and (localSize != 0):
+			        # size does not match, adding to the upload queue
+			        uploadQueue.add(localPackage)
+		        else:
 		            # this means that the local package does not exist
 		            # so, we need to download it
-		            uploadQueue.append(localPackage)
+		            uploadQueue.add(localPackage)
 
 	            # Fill downloadQueue and removalQueue
 	            for remotePackage in remotePackages:
-		        pkgfound = False
-		        for localPackage in localPackagesRepository:
-		            if localPackage == remotePackage:
-			        pkgfound = True
-			        # it's already on the mirror, but... is its size correct??
-			        localSize = int(os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+localPackage)[6])
-			        remoteSize = 0
-			        for file in remotePackagesInfo:
-			            if file.split()[8] == remotePackage:
-				        remoteSize = int(file.split()[4])
-			        if (localSize != remoteSize) and (localSize != 0):
-			            # size does not match, remove first
-				    #print "removal of "+localPackage+" because its size differ"
-			            removalQueue.append(localPackage) # just remove something that differs from the content of the mirror
-			            # then add to the download queue
-			            downloadQueue.append(remotePackage)
-			        break
-		
-		        if (not pkgfound):
+			if remotePackage in localPackagesRepository:
+			    # it's already on the mirror, but... is its size correct??
+			    localSize = int(os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+remotePackage)[6])
+			    remoteSize = 0
+			    for file in remotePackagesInfo:
+			        if file.split()[8] == remotePackage:
+				    remoteSize = int(file.split()[4])
+			    if (localSize != remoteSize) and (localSize != 0):
+			        # size does not match, remove first
+				#print "removal of "+localPackage+" because its size differ"
+			        removalQueue.add(remotePackage) # remotePackage == localPackage # just remove something that differs from the content of the mirror
+			        # then add to the download queue
+			        downloadQueue.add(remotePackage)
+		        else:
 		            # this means that the local package does not exist
 		            # so, we need to download it
 			    if not remotePackage.endswith(".tmp"): # ignore .tmp files
-			        downloadQueue.append(remotePackage)
+			        downloadQueue.add(remotePackage)
 
 		    # Collect packages that don't exist anymore in the database
 		    # so we can filter them out from the download queue
@@ -335,75 +320,28 @@ def packages(options):
 		    dbFiles = dbconn.listBranchPackagesTbz2(mybranch)
     		    dbconn.closeDB()
 		
-		    dlExcludeList = []
+		    exclude = set()
 		    for dlFile in downloadQueue:
 		        if dlFile.endswith(".tbz2"):
-		            dlFound = False
-		            for dbFile in dbFiles:
-			        if dbFile == dlFile:
-			            dlFound = True
-			            break
-		            if (not dlFound):
-			        dlExcludeList.append(dlFile)
+			    if dlFile not in dbFiles:
+				exclude.add(dlFile)
+		    downloadQueue.difference_update(exclude)
 
-		    upExcludeList = []
+		    exclude = set()
 		    for upFile in uploadQueue:
 		        if upFile.endswith(".tbz2"):
-		            upFound = False
-		            for dbFile in dbFiles:
-			        if dbFile == upFile:
-			            upFound = True
-			            break
-		            if (not upFound):
-			        upExcludeList.append(upFile)
+			    if upFile not in dbFiles:
+				exclude.add(upFile)
+		    uploadQueue.difference_update(exclude)
 		
-		    # now clean downloadQueue
-		    if (dlExcludeList != []):
-		        _downloadQueue = []
-		        for dlFile in downloadQueue:
-			    exclusionFound = False
-			    for exclFile in dlExcludeList:
-			        if dlFile.startswith(exclFile):
-				    exclusionFound = True
-				    break
-			    if (not exclusionFound):
-			        _downloadQueue.append(dlFile)
-		        downloadQueue = _downloadQueue
-
-		    # now clean uploadQueue
-		    if (upExcludeList != []):
-		        _uploadQueue = []
-		        for upFile in uploadQueue:
-			    exclusionFound = False
-			    for exclFile in upExcludeList:
-			        if upFile.startswith(exclFile):
-				    exclusionFound = True
-				    break
-			    if (not exclusionFound):
-			        _uploadQueue.append(upFile)
-		        uploadQueue = _uploadQueue
-
-	            # filter duplicates - filterDuplicatedEntries
-		
-	            removalQueue = filterDuplicatedEntries(removalQueue)
-	            downloadQueue = filterDuplicatedEntries(downloadQueue)
-	            uploadQueue = filterDuplicatedEntries(uploadQueue)
-
-		
-
 		    # now filter things
 		    # packages in uploadQueue should be removed, if found, from downloadQueue
-		    _downloadQueue = []
+		    exclude = set()
 		    for p in downloadQueue:
 		        # search inside uploadQueue
-		        found = False
-		        for subp in uploadQueue:
-			    if (p == subp):
-			        found = True
-			        break
-		        if (not found):
-			    _downloadQueue.append(p)
-		    downloadQueue = _downloadQueue
+			if p in uploadQueue:
+			    exclude.add(p)
+		    downloadQueue.difference_update(exclude)
 
 		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: removal queue -> "+str(removalQueue))
 		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: download queue -> "+str(downloadQueue))

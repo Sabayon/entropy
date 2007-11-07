@@ -6,6 +6,7 @@ TODO list:
   - use packages.db.bz2 instead of packages.db.gz?
   - allow .tbz2 separate install
   - finalize smartapps tool
+  - gentoo compat: update COUNTER
 
 Project Status:
 - reagent: complete. Stabilization mode.
