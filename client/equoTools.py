@@ -808,6 +808,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
 	
 	if (not tree[treedepth]):
 	    #print darkgreen("satisfied: ")+str(tree[treedepth])
+	    del tree[treedepth]
 	    break
 	else:
 	    #print red("not satisfied: ")+str(tree[treedepth])
@@ -832,30 +833,19 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
 
     newtree = {} # tree list
     if (tree):
-	for x in tree:
+	mymatchfilter = set()
+	for x in range(len(tree))[::-1]:
 	    newtree[x] = set()
 	    for y in tree[x]:
-		newtree[x].add(atomMatch(y))
-
-	# now filter newtree
-	treelength = len(newtree)
-	for count in range(treelength)[::-1]:
-	    x = 0
-	    while x < count:
-		# remove dups in this list
-		for z in newtree[count]:
-		    try:
-			while 1:
-			    newtree[x].remove(z)
-			    #print "removing "+str(z)
-		    except:
-			pass
-		x += 1
+		mymatch = atomMatch(y)
+		if mymatch not in mymatchfilter:
+		    newtree[x].add(mymatch)
+		    mymatchfilter.add(mymatch)
+	del mymatchfilter
     del tree
     
     if (conflicts):
-	newtree[0] = list(conflicts)
-	newtree[0].sort()
+	newtree[0] = conflicts
 	#print newtree[0]
     # add requested
     newtree[1] = requested
@@ -895,6 +885,36 @@ def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False, spinnin
 
     matchFilter.clear()
     
+    # join trees - flatten
+    newdeptree = {}
+    if (deptree):
+	treelen = len(deptree)
+	if spinning: treeround = treelen; count = 0
+	for x in range(treelen):
+	    if spinning: count += 1; print_info(":: "+str(round((float(count)/treeround)*100,1))+"% ::", back = True)
+	    for y in range(len(deptree[x])):
+		create = newdeptree.get(y)
+		if create == None:
+		    newdeptree[y] = set()
+		newdeptree[y].update(deptree[x][y])
+    del deptree
+    
+    # filter dups
+    mymatchfilter = set()
+    if (newdeptree):
+	treelen = len(newdeptree)
+	if spinning: treeround = treelen; count = 0
+        for x in range(len(newdeptree)):
+	    if spinning: count += 1; print_info(":: "+str(round((float(count)/treeround)*100,1))+"% ::", back = True)
+	    if x != 0: # skip conflicts
+		testtree = list(newdeptree[x])
+	        for y in range(len(testtree)):
+		    if testtree[y] not in mymatchfilter:
+			mymatchfilter.add(testtree[y])
+		    else:
+			# remove
+			newdeptree[x].remove(testtree[y])
+
     '''
     newdeptree = deptree.copy() # tree list
     if (deptree):
@@ -925,7 +945,7 @@ def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False, spinnin
     del deptree
     '''
     
-    return deptree,0
+    return newdeptree,0
 
 
 '''
@@ -1133,6 +1153,9 @@ def fetchFileOnMirrors(repository, filename, digest = False):
 		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - wrong checksum.")
 	    elif rc == -3:
 		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - not found.")
+	    elif rc == -4:
+		print_info(red("   ## ")+mirrorCountText+blue("Discarded download."))
+		return -1
 	    else:
 		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - unknown reason.")
 	    try:
@@ -1155,9 +1178,11 @@ def fetchFile(url, digest = False):
     # now fetch the new one
     try:
         fetchChecksum = downloadData(url,filepath)
+    except KeyboardInterrupt:
+	return -4
     except:
 	return -1
-    if fetchChecksum == -3:
+    if fetchChecksum == "-3":
 	return -3
     if (digest != False):
 	#print digest+" <--> "+fetchChecksum
@@ -1168,6 +1193,27 @@ def fetchFile(url, digest = False):
 	    return 0
     return 0
 
+def matchChecksum(infoDict):
+    dlcount = 0
+    match = False
+    while dlcount <= 5:
+	print_info(red("   ## ")+blue("Checking package checksum..."), back = True)
+	dlcheck = checkNeededDownload(infoDict['download'], checksum = infoDict['checksum'])
+	if dlcheck == 0:
+	    print_info(red("   ## ")+blue("Package checksum matches."))
+	    match = True
+	    break # file downloaded successfully
+	else:
+	    dlcount += 1
+	    print_info(red("   ## ")+blue("Package checksum does not match. Redownloading... attempt #"+str(dlcount)), back = True)
+	    fetch = fetchFileOnMirrors(infoDict['repository'],infoDict['download'],infoDict['checksum'])
+	    if fetch != 0:
+		print_info(red("   ## ")+blue("Cannot properly fetch package! Quitting."))
+		return 1
+    if (not match):
+	print_info(red("   ## ")+blue("Cannot properly fetch package or checksum does not match. Try running again '")+bold("equo update")+blue("'"))
+	return 1
+    return 0
 
 def removePackage(infoDict):
     
@@ -1286,13 +1332,8 @@ def installPackage(infoDict):
 	    for x in xlist:
 		contentCache[x] = 1
 
-    pkgpath = etpConst['entropyworkdir']+"/"+package
-    if not os.path.isfile(pkgpath):
-	# try to fetch, added for safety
-	fetch = fetchFileOnMirrors(infoDict['repository'],infoDict['download'],infoDict['checksum'])
-	if fetch != 0:
-	    return 1
     # unpack and install
+    pkgpath = etpConst['entropyworkdir']+"/"+package
     unpackDir = etpConst['entropyunpackdir']+"/"+package
     if os.path.isdir(unpackDir):
 	os.system("rm -rf "+unpackDir)
@@ -2020,7 +2061,6 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     etpConst['collisionprotect'] = 0
 
     if (updateList):
-        print_info(red(" @@ ")+blue("Calculating queue..."))
         rc = installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch)
 	if rc[0] != 0:
 	    return rc
@@ -2160,7 +2200,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     runQueue = []
     removalQueue = [] # aka, conflicts
     
-    print_info(red(" @@ ")+blue("Calculating... "))
+    print_info(red(" @@ ")+blue("Calculating dependencies..."))
 
     if (deps):
         treepackages, result = getRequiredPackages(foundAtoms, emptydeps, deepdeps, spinning = True)
@@ -2187,14 +2227,13 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    return 200, -1
 	
 	for x in range(len(treepackages))[::-1]:
-	    for z in range(len(treepackages[x]))[::-1]:
-		if z == 0:
-		    # conflicts
-		    for a in treepackages[x][z]:
-			removalQueue.append(a)
-		else:
-		    for a in treepackages[x][z]:
-		        runQueue.append(a)
+	    if x == 0:
+		# conflicts
+		for a in treepackages[x]:
+		    removalQueue.append(a)
+	    else:
+		for a in treepackages[x]:
+		    runQueue.append(a)
 	
     else:
 	for atomInfo in foundAtoms:
@@ -2217,24 +2256,24 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     if (runQueue):
 	if (ask or pretend):
 	    print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("merged:"))
+	
+	if not (ask or pretend): count = 0
+	atomlen = len(runQueue)
 	for packageInfo in runQueue:
-	    try:
-	        dbconn = openRepositoryDatabase(packageInfo[1])
-	    except:
-		import pdb
-		pdb.set_trace()
-	    
-	    pkgatom = dbconn.retrieveAtom(packageInfo[0])
-	    pkgver = dbconn.retrieveVersion(packageInfo[0])
-	    pkgtag = dbconn.retrieveVersionTag(packageInfo[0])
-	    pkgrev = dbconn.retrieveRevision(packageInfo[0])
-	    pkgslot = dbconn.retrieveSlot(packageInfo[0])
-	    pkgdigest = dbconn.retrieveDigest(packageInfo[0])
-	    pkgfile = dbconn.retrieveDownloadURL(packageInfo[0])
-	    pkgcat = dbconn.retrieveCategory(packageInfo[0])
-	    pkgname = dbconn.retrieveName(packageInfo[0])
-	    pkgmessages = dbconn.retrieveMessages(packageInfo[0])
-	    onDiskUsedSize += dbconn.retrieveOnDiskSize(packageInfo[0])
+	    if not (ask or pretend): count += 1; print_info(":: Collecting data: "+str(round((float(count)/atomlen)*100,1))+"% ::", back = True)
+	    dbconn = openRepositoryDatabase(packageInfo[1])
+	    mydata = dbconn.getBaseData(packageInfo[0])
+	    pkgatom = mydata[0]
+	    pkgver = mydata[2]
+	    pkgtag = mydata[3]
+	    pkgrev = mydata[18]
+	    pkgslot = mydata[14]
+	    pkgdigest = mydata[13]
+	    pkgfile = mydata[12]
+	    pkgcat = mydata[5]
+	    pkgname = mydata[1]
+	    pkgmessages = dbconn.retrieveMessages(packageInfo[0]) # still new
+	    onDiskUsedSize += dbconn.retrieveOnDiskSize(packageInfo[0]) # still new
 	    
 	    # fill action queue
 	    actionQueue[pkgatom] = {}
@@ -2250,7 +2289,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    actionQueue[pkgatom]['checksum'] = pkgdigest
 	    actionQueue[pkgatom]['messages'] = pkgmessages
 	    actionQueue[pkgatom]['removeconfig'] = configFiles
-	    dl = checkNeededDownload(pkgfile, pkgdigest)
+	    dl = checkNeededDownload(pkgfile, None) # we'll do a good check during installPackage
 	    actionQueue[pkgatom]['fetch'] = dl
 	    if dl < 0:
 		pkgsize = dbconn.retrieveSize(packageInfo[0])
@@ -2386,11 +2425,11 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	dbconn = openRepositoryDatabase(repository)
 	pkgatom = dbconn.retrieveAtom(idpackage)
 
-	# fill steps
-	steps = [] # fetch, remove, (preinstall, install postinstall), database, gentoo-sync, cleanup
+	steps = []
 	# download
 	if (actionQueue[pkgatom]['fetch'] < 0):
 	    steps.append("fetch")
+	steps.append("checksum")
 	
 	# differential remove list
 	if (actionQueue[pkgatom]['removeidpackage'] != -1):
@@ -2700,6 +2739,9 @@ def stepExecutor(step,infoDict):
 	output = fetchFileOnMirrors(infoDict['repository'],infoDict['download'],infoDict['checksum'])
 	if output < 0:
 	    print_error(red("Package cannot be fetched. Try to run: '")+bold("equo update")+red("' and this command again. Error "+str(output)))
+    
+    elif step == "checksum":
+	output = matchChecksum(infoDict)
     
     elif step == "install":
 	if (etpConst['gentoo-compat']):

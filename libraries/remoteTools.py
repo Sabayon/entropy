@@ -90,12 +90,18 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
 	etpFileTransfer['oldgather'] = 0
 	etpFileTransfer['gather'] = 0
 	speedUpdater = entropyTools.TimeScheduled(__updateSpeedInfo,etpFileTransfer['transferpollingtime'])
+	speedUpdater.setName("download")
 	speedUpdater.start()
     
     rc = "-1"
     try:
         remotefile = urllib2.urlopen(url)
-    except Exception, e:
+    except KeyboardInterrupt:
+        if (showSpeed):
+	    speedUpdater.kill()
+        timeoutsocket.setDefaultSocketTimeout(2)
+	raise KeyboardInterrupt
+    except:
 	remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"downloadFile: Exception caught for: "+str(url)+" -> "+str(e))
 	if (showSpeed):
 	    speedUpdater.kill()

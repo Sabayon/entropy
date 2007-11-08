@@ -985,10 +985,8 @@ def smartgenerator(atomInfo):
     if (result == 0):
 	for x in range(len(pkgdependencies))[::-1]:
 	    #print x
-	    for z in pkgdependencies[x]:
-		#print treepackages[x][z]
-		for a in pkgdependencies[x][z]:
-		    pkgs.append(a)
+	    for a in pkgdependencies[x]:
+		pkgs.append(a)
     elif (result == -2):
 	print_error(green(" * ")+red("Missing dependencies: ")+str(pkgdependencies))
 	sys.exit(505)

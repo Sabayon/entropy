@@ -136,7 +136,6 @@ try:
         if options[0] == "update":
             entropyTools.applicationLockCheck("update")
         rc = equoTools.repositories(options)
-        sys.exit(rc)
 
     elif (options[0] == "install") or (options[0] == "remove") or (options[0] == "deptest") or (options[0] == "world"):
         if options[0] == "install":
@@ -167,38 +166,39 @@ try:
 	    print_warning(red("Please run: ")+bold("equo conf update"))
 	# save caches
 	equoTools.saveCaches()
-        sys.exit(rc)
 
     elif (options[0] == "query"):
 	import queryTools
         rc = queryTools.query(options[1:])
-        sys.exit(rc)
 
     elif (options[0] == "conf"):
 	import confTools
         rc = confTools.configurator(options[1:])
-        sys.exit(rc)
 
     elif (options[0] == "cache"):
 	import cacheTools
         rc = cacheTools.cache(options[1:])
-        sys.exit(rc)
 
     elif (options[0] == "search"):
+	rc = 0
 	if len(options) > 1:
 	    import queryTools
             rc = queryTools.searchPackage(options[1:])
-            sys.exit(rc)
 
     elif (options[0] == "database"):
         entropyTools.applicationLockCheck("database")
         rc = equoTools.database(options[1:])
-        sys.exit(rc)
 
     elif (options[0] == "cleanup"):
         entropyTools.applicationLockCheck("cleanup")
         entropyTools.cleanup([ etpConst['packagestmpdir'], etpConst['logdir'], etpConst['entropyunpackdir'], etpConst['packagesbindir'] ])
-        sys.exit(0)
+        rc = 0
+    # kill threads
+    #threads = entropyTools.threading.enumerate()
+    #for thread in threads:
+    #    if thread.getName() == "download": # equo current download speed thread
+    #        thread.kill()
+    sys.exit(rc)
 except SystemExit:
     pass
 except KeyboardInterrupt:

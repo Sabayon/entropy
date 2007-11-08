@@ -1741,12 +1741,10 @@ class etpDatabase:
 	    break
 	return idpackage
 
-    def getPackageData(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageData: retrieving etpData for package ID for "+str(idpackage))
-	data = {}
-	
+    def getBaseData(self,idpackage):
 	sql = """
 		SELECT 
+			baseinfo.atom,
 			baseinfo.name,
 			baseinfo.version,
 			baseinfo.versiontag,
@@ -1778,30 +1776,36 @@ class etpDatabase:
 			and extrainfo.idflags = flags.idflags
 			and baseinfo.idlicense = licenses.idlicense
 	"""
-	
 	self.cursor.execute(sql)
-	mydata = self.cursor.fetchone()
+	return self.cursor.fetchone()
 	
-	data['name'] = mydata[0]
-	data['version'] = mydata[1]
-	data['versiontag'] = mydata[2]
-	data['description'] = mydata[3]
-	data['category'] = mydata[4]
+
+    def getPackageData(self, idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageData: retrieving etpData for package ID for "+str(idpackage))
+	data = {}
+
+	mydata = self.getBaseData(idpackage)
 	
-	data['chost'] = mydata[5]
-	data['cflags'] = mydata[6]
-	data['cxxflags'] = mydata[7]
+	data['name'] = mydata[1]
+	data['version'] = mydata[2]
+	data['versiontag'] = mydata[3]
+	data['description'] = mydata[4]
+	data['category'] = mydata[5]
 	
-	data['homepage'] = mydata[8]
+	data['chost'] = mydata[6]
+	data['cflags'] = mydata[7]
+	data['cxxflags'] = mydata[8]
+	
+	data['homepage'] = mydata[9]
 	data['useflags'] = self.retrieveUseflags(idpackage)
-	data['license'] = mydata[9]
+	data['license'] = mydata[10]
 	
 	data['keywords'] = self.retrieveKeywords(idpackage)
 	data['binkeywords'] = self.retrieveBinKeywords(idpackage)
 	
-	data['branch'] = mydata[10]
-	data['download'] = mydata[11]
-	data['digest'] = mydata[12]
+	data['branch'] = mydata[11]
+	data['download'] = mydata[12]
+	data['digest'] = mydata[13]
 	data['sources'] = self.retrieveSources(idpackage)
 	data['counter'] = self.retrieveCounter(idpackage) # counters are trivial, cannot insert into the sql above
 	data['messages'] = self.retrieveMessages(idpackage)
@@ -1841,17 +1845,17 @@ class etpDatabase:
 	    mirrorlinks = self.retrieveMirrorInfo(mirror)
 	    data['mirrorlinks'].append([mirror,mirrorlinks])
 	
-	data['slot'] = mydata[13]
+	data['slot'] = mydata[14]
 	data['content'] = self.retrieveContent(idpackage)
 	
 	data['dependencies'] = self.retrieveDependencies(idpackage)
 	data['provide'] = self.retrieveProvide(idpackage)
 	data['conflicts'] = self.retrieveConflicts(idpackage)
 	
-	data['etpapi'] = mydata[14]
-	data['datecreation'] = mydata[15]
-	data['size'] = mydata[16]
-	data['revision'] = mydata[17]
+	data['etpapi'] = mydata[15]
+	data['datecreation'] = mydata[16]
+	data['size'] = mydata[17]
+	data['revision'] = mydata[18]
 	data['disksize'] = self.retrieveOnDiskSize(idpackage) # cannot do this too, for backward compat
 	return data
 
