@@ -2115,6 +2115,13 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	print_error(red("You must run this function as superuser."))
 	return 1,-1
     
+    dirsCleanup = set()
+    def dirscleanup():
+	for x in dirsCleanup:
+	    try:
+	        if os.path.isdir(x): shutil.rmtree(x)
+	    except:
+		pass
     if (atomsdata):
 	foundAtoms = atomsdata
     else:
@@ -2129,6 +2136,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 		    shutil.rmtree(etpConst['entropyunpackdir']+"/"+basefile[:-5])
 	        os.makedirs(etpConst['entropyunpackdir']+"/"+basefile[:-5])
 	        dbfile = extractEdb(pkg,dbpath = etpConst['entropyunpackdir']+"/"+basefile[:-5]+"/packages.db")
+		dirsCleanup.add(os.path.dirname(dbfile))
 	        # add dbfile
 	        etpRepositories[basefile] = {}
 	        etpRepositories[basefile]['description'] = "Dynamic database from "+basefile
@@ -2158,6 +2166,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     # are packages in foundAtoms?
     if (not foundAtoms):
 	print_error(red("No packages found"))
+        dirscleanup()
 	return 127,-1
 
     if (ask or pretend or verbose):
@@ -2228,6 +2237,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
             if (ask):
                 rc = askquestion("     Would you like to continue with dependencies calculation ?")
                 if rc == "No":
+                    dirscleanup()
 	            return 0,0
 
     runQueue = []
@@ -2253,10 +2263,12 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 			    iatom = rdbconn.retrieveAtom(i)
 			    print_error(red("     # ")+" [from:"+repo+"] "+darkred(iatom))
 		    rdbconn.closeDB()
+            dirscleanup()
 	    return 130, -1
 	    
 	elif (result == -1): # no database connection
 	    print_error(red(" @@ ")+blue("Cannot find the Installed Packages Database. It's needed to accomplish dependency resolving. Try to run ")+bold("equo database generate"))
+            dirscleanup()
 	    return 200, -1
 	
 	for x in range(len(treepackages))[::-1]:
@@ -2284,6 +2296,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 
     if (not runQueue) and (not removalQueue):
 	print_error(red("Nothing to do."))
+        dirscleanup()
 	return 127,-1
 
     if (runQueue):
@@ -2421,8 +2434,10 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     if (ask):
         rc = askquestion("     Would you like to run the queue ?")
         if rc == "No":
+            dirscleanup()
 	    return 0,0
     if (pretend):
+        dirscleanup()
 	return 0,0
     
     # running tasks
@@ -2448,6 +2463,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    rc = stepExecutor(step,infoDict)
 	    if (rc != 0):
 		clientDbconn.closeDB()
+                dirscleanup()
 		return -1,rc
     
     for packageInfo in runQueue:
@@ -2498,6 +2514,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    rc = stepExecutor(step,actionQueue[pkgatom])
 	    if (rc != 0):
 		clientDbconn.closeDB()
+                dirscleanup()
 		return -1,rc
 
     if (onlyfetch):
@@ -2507,6 +2524,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 
     clientDbconn.closeDB()
 
+    dirscleanup()
     return 0,0
 
 
