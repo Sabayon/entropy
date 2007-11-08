@@ -2,8 +2,9 @@ TODO list:
   CLIENT:
   - add external triggerable hooks support
   - include more triggers
-  - allow .tbz2 separate install
   - finalize smartapps tool
+  - use depgraph generation function to generate dependencies
+  - installPackages should pull conflicts depends too
 
 
 Project Status:

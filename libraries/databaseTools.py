@@ -523,10 +523,18 @@ def openClientDatabase(xcache = True):
 
 '''
    @description: open the entropy server database and returns the pointer. This function must be used only by reagent or activator
-   @output: database pointer or, -1 if error
+   @output: database pointer
 '''
 def openServerDatabase(readOnly = True, noUpload = True):
     conn = etpDatabase(readOnly = readOnly, dbFile = etpConst['etpdatabasefilepath'], noUpload = noUpload)
+    return conn
+
+'''
+   @description: open a generic client database and returns the pointer.
+   @output: database pointer
+'''
+def openGenericDatabase(dbfile):
+    conn = etpDatabase(readOnly = False, dbFile = dbfile, clientDatabase = True, dbname = "generic", xcache = False)
     return conn
 
 # this class simply describes the current database status
@@ -2781,11 +2789,10 @@ class etpDatabase:
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+name+'" and version = "'+version+'" and idcategory = '+str(idcat)+branchstring)
 	else:
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+name.lower()+'" and version = "'+version+'" and idcategory = '+str(idcat)+branchstring)
-	
-	if (self.xcache):
-	    self.storeSearchCache((name,version,category,branch,sensitive),'searchPackagesByNameAndVersionAndCategory',results)
+
 	results = self.cursor.fetchall()
-	
+	if (self.xcache):
+	    self.storeSearchCache((name,version,category,branch,sensitive),'searchPackagesByNameAndVersionAndCategory',results)	
 	return results
 
     def listAllPackages(self):

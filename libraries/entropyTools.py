@@ -211,10 +211,11 @@ def aggregateEdb(tbz2file,dbfile):
     f.flush()
     f.close()
 
-def extractEdb(tbz2file):
+def extractEdb(tbz2file, dbpath = None):
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractEdb: called -> "+tbz2file)
     old = open(tbz2file,"rb")
-    dbpath = tbz2file[:-5]+".db"
+    if not dbpath:
+        dbpath = tbz2file[:-5]+".db"
     db = open(dbpath,"wb")
     
     # position old to the end
@@ -241,6 +242,7 @@ def extractEdb(tbz2file):
     db.flush()
     db.close()
     old.close()
+    return dbpath
 
 
 # This function creates the .md5 file related to the given package file

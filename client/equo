@@ -40,13 +40,15 @@ def print_help():
     print_info(" \t"+blue("status")+brown("\t\t show respositories status"))
     
     print_info(" \t"+blue("search")+brown("\t\t search a package trough repositories"))
+    
     print_info(" \t"+blue("world")+brown("\t\t update system with the latest available packages"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t"+red("--fetch")+"\t\t\t just download packages without doing the install")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
     print_info(" \t\t"+red("--replay")+"\t\t reinstall all the packages and their dependencies")
-    print_info(" \t"+blue("install")+brown("\t\t install one or more packages"))
+    
+    print_info(" \t"+blue("install")+brown("\t\t install one or more packages or .tbz2"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
     print_info(" \t\t"+red("--fetch")+"\t\t\t just download packages without doing the install")
@@ -55,6 +57,7 @@ def print_help():
     print_info(" \t\t"+red("--deep")+"\t\t\t analyze dependencies deeply")
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
     print_info(" \t\t"+red("--configfiles")+"\t\t also remove old configuration files [use with care]")
+    
     print_info(" \t"+blue("remove")+brown("\t\t remove one or more packages"))
     print_info(" \t\t"+red("--deep")+"\t\t\t also pull unused dependencies where depends list is empty")
     print_info(" \t\t"+red("--configfiles")+"\t\t also remove configuration files")

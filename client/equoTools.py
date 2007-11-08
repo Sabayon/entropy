@@ -29,8 +29,8 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, unpackBzip2, compareMd5, bytesIntoHuman, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber
-from databaseTools import etpDatabase, openRepositoryDatabase, openClientDatabase
+from entropyTools import unpackGzip, unpackBzip2, compareMd5, bytesIntoHuman, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb
+from databaseTools import etpDatabase, openRepositoryDatabase, openClientDatabase, openGenericDatabase
 import triggerTools
 import confTools
 import dumpTools
@@ -373,7 +373,7 @@ def fetchRepositoryIfNotAvailable(reponame):
    @ exit errors:
 	    -1 => repository cannot be fetched online
 '''
-def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), xcache = True): # no one seems to use matchBranches :D
+def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), xcache = True):
 
     if xcache:
         cached = atomMatchCache.get(atom)
@@ -1314,7 +1314,10 @@ def installPackage(infoDict):
 		contentCache[x] = 1
 
     # unpack and install
-    pkgpath = etpConst['entropyworkdir']+"/"+package
+    if infoDict['repository'].endswith(".tbz2"):
+        pkgpath = etpRepositories[infoDict['repository']]['pkgpath']
+    else:
+        pkgpath = etpConst['entropyworkdir']+"/"+package
     unpackDir = etpConst['entropyunpackdir']+"/"+package
     if os.path.isdir(unpackDir):
 	os.system("rm -rf "+unpackDir)
@@ -1732,6 +1735,7 @@ def package(options):
     equoRequestReplay = False
     rc = 0
     _myopts = []
+    mytbz2paths = []
     for opt in myopts:
 	if (opt == "--ask"):
 	    equoRequestAsk = True
@@ -1754,7 +1758,10 @@ def package(options):
 	elif (opt == "--replay"):
 	    equoRequestReplay = True
 	else:
-	    _myopts.append(opt)
+	    if opt[-5:] == ".tbz2" and os.access(opt,os.R_OK):
+		mytbz2paths.append(opt)
+	    else:
+	        _myopts.append(opt)
     myopts = _myopts
 
     if (options[0] == "deptest"):
@@ -1762,9 +1769,9 @@ def package(options):
 	rc, garbage = dependenciesTest(quiet = equoRequestQuiet, ask = equoRequestAsk, pretend = equoRequestPretend)
 
     elif (options[0] == "install"):
-	if len(myopts) > 0:
+	if (myopts) or (mytbz2paths):
 	    loadCaches()
-	    rc, status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep, configFiles = equoRequestConfigFiles)
+	    rc, status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep, configFiles = equoRequestConfigFiles, tbz2 = mytbz2paths)
 	else:
 	    print_error(red(" Nothing to do."))
 	    rc = 127
@@ -2101,7 +2108,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     clientDbconn.closeDB()
     return 0,0
 
-def installPackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False):
+def installPackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = []):
 
     # check if I am root
     if (not isRoot()) and (not pretend):
@@ -2114,6 +2121,28 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
         foundAtoms = []
         for package in packages:
 	    foundAtoms.append([package,atomMatch(package)])
+	if tbz2:
+	    for pkg in tbz2:
+	        # create a repository for each database
+	        basefile = os.path.basename(pkg)
+	        if os.path.isdir(etpConst['entropyunpackdir']+"/"+basefile[:-5]):
+		    shutil.rmtree(etpConst['entropyunpackdir']+"/"+basefile[:-5])
+	        os.makedirs(etpConst['entropyunpackdir']+"/"+basefile[:-5])
+	        dbfile = extractEdb(pkg,dbpath = etpConst['entropyunpackdir']+"/"+basefile[:-5]+"/packages.db")
+	        # add dbfile
+	        etpRepositories[basefile] = {}
+	        etpRepositories[basefile]['description'] = "Dynamic database from "+basefile
+	        etpRepositories[basefile]['packages'] = []
+	        etpRepositories[basefile]['dbpath'] = os.path.dirname(dbfile)
+	        etpRepositories[basefile]['pkgpath'] = os.path.realpath(pkg) # extra info added
+	        etpRepositories[basefile]['configprotect'] = set()
+	        etpRepositories[basefile]['configprotectmask'] = set()
+	        mydbconn = openGenericDatabase(dbfile)
+	        # read all idpackages
+	        myidpackages = mydbconn.listAllIdpackages() # all branches admitted from external files
+	        for myidpackage in myidpackages:
+                    foundAtoms.append([pkg,(int(myidpackage),basefile)])
+                mydbconn.closeDB()
 
     # filter packages not found
     _foundAtoms = []
@@ -2431,9 +2460,10 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 
 	steps = []
 	# download
-	if (actionQueue[pkgatom]['fetch'] < 0):
-	    steps.append("fetch")
-	steps.append("checksum")
+	if not repository.endswith(".tbz2"):
+	    if (actionQueue[pkgatom]['fetch'] < 0):
+	        steps.append("fetch")
+	    steps.append("checksum")
 	
 	# differential remove list
 	if (actionQueue[pkgatom]['removeidpackage'] != -1):
