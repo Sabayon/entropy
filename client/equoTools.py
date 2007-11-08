@@ -24,18 +24,16 @@ import sys
 import os
 import re
 import shutil
-sys.path.append('../libraries')
+sys.path.append('/usr/lib/entropy/libraries')
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, compareMd5, bytesIntoHuman, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber
+from entropyTools import unpackGzip, unpackBzip2, compareMd5, bytesIntoHuman, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber
 from databaseTools import etpDatabase, openRepositoryDatabase, openClientDatabase
 import triggerTools
 import confTools
 import dumpTools
-import xpak
-import time
 
 # Logging initialization
 import logTools
@@ -85,6 +83,10 @@ def saveCaches():
 		    dumpTools.dumpobj(dbinfo,{})
 	    elif dbinfo.startswith(etpCache['dbInfo']):
 	        if os.stat(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp")[6] > etpCacheSizes['dbInfo']:
+		    # clean cache
+		    dumpTools.dumpobj(dbinfo,{})
+	    elif dbinfo.startswith(etpCache['dbSearch']):
+	        if os.stat(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp")[6] > etpCacheSizes['dbSearch']:
 		    # clean cache
 		    dumpTools.dumpobj(dbinfo,{})
 
@@ -221,6 +223,12 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
     
     dbupdated = False
     
+    # Test network connectivity
+    conntest = getOnlineContent("http://svn.sabayonlinux.org")
+    if conntest == False:
+	print_info(darkred(" @@ ")+darkgreen("You are not connected to the Internet. You should do it."))
+	return 2
+    
     for repo in reponames:
 	
 	repoNumber += 1
@@ -252,20 +260,23 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	# clear database interface cache belonging to this repository
 	dumpTools.dumpobj(etpCache['dbInfo']+repo,{})
 	
+	cmethod = etpConst['etpdatabasecompressclasses'].get(etpRepositories[repo]['dbcformat'])
+	if cmethod == None: raise Exception
+	
 	# starting to download
 	if (not quiet):
-	    print_info(red("\tDownloading database ")+darkgreen(etpConst['etpdatabasefilegzip'])+red(" ..."))
+	    print_info(red("\tDownloading database ")+darkgreen(etpConst[cmethod[2]])+red(" ..."))
 	# create dir if it doesn't exist
 	if not os.path.isdir(etpRepositories[repo]['dbpath']):
 	    if (not quiet):
 	        print_info(red("\t\tCreating database directory..."))
 	    os.makedirs(etpRepositories[repo]['dbpath'])
 	# download
-	downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabasefilegzip'],etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefilegzip'])
+	downloadData(etpRepositories[repo]['database']+"/"+etpConst[cmethod[2]],etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
 	
 	if (not quiet):
 	    print_info(red("\tUnpacking database to ")+darkgreen(etpConst['etpdatabasefile'])+red(" ..."))
-	unpackGzip(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefilegzip'])
+	eval(cmethod[1])(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
 	# download etpdatabasehashfile
 	if (not quiet):
 	    print_info(red("\tDownloading checksum ")+darkgreen(etpConst['etpdatabasehashfile'])+red(" ..."))
@@ -288,8 +299,8 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	    # delete all
 	    if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile']):
 		os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'])
-	    if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefilegzip']):
-		os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefilegzip'])
+	    if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]]):
+		os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
 	    if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']):
 		os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'])
 	    syncErrors = True
@@ -797,7 +808,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
 					    tree[treedepth].add(mynewatom)
 					    treecache.add(mynewatom)
 				    else:
-					#FIXME: we bastardly ignore the missing library for now
+					# we bastardly ignore the missing library for now
 					continue
 				# retrieve packages that need it, in the right branch!
 	    
@@ -914,36 +925,6 @@ def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False, spinnin
 		    else:
 			# remove
 			newdeptree[x].remove(testtree[y])
-
-    '''
-    newdeptree = deptree.copy() # tree list
-    if (deptree):
-	# now filter newtree
-	treelength = len(newdeptree)
-	for count in range(treelength)[::-1]:
-	    pkglist = set()
-	    #print count
-	    for x in newdeptree[count]:
-		for y in newdeptree[count][x]:
-		    pkglist.add(y)
-	    #print len(pkglist)
-	    # remove dups in the other lists
-	    for pkg in pkglist:
-		x = 0
-		while x < count:
-		    #print x
-		    for z in newdeptree[x]:
-		        try:
-		            while 1:
-				#print newdeptree[x][z]
-			        newdeptree[x][z].remove(pkg)
-			        #print "removing "+str(pkg)
-		        except:
-			    pass
-			    
-		    x += 1
-    del deptree
-    '''
     
     return newdeptree,0
 
@@ -1370,6 +1351,7 @@ def installPackage(infoDict):
 		elif os.path.isfile(rootdir): # weird
     		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+str(rootdir)+" is a file when it should be a directory !! Removing in 10 seconds...")
 		    print_warning(red(" *** ")+bold(rootdir)+red(" is a file when it should be a directory !! Removing in 10 seconds..."))
+		    import time
 		    time.sleep(10)
 		    os.remove(rootdir)
 	        if (not os.path.isdir(rootdir)) and (not os.access(rootdir,os.R_OK)):
@@ -1603,6 +1585,27 @@ def installPackageIntoGentooDatabase(infoDict,packageFile):
 	    shutil.rmtree(destination)
 	
 	os.rename(extractPath,destination)
+	
+	# update counter
+	if os.path.isfile("/var/cache/edb/counter"):
+	    # fetch number
+	    try:
+	        f = open("/var/cache/edb/counter","r")
+		counter = int(f.readline().strip())
+		f.close()
+		# write new counter to file
+		if os.path.isfile(destination+"/"+dbCOUNTER):
+		    f = open(destination+"/"+dbCOUNTER,"w")
+		    f.write(str(counter)+"\n")
+		    f.flush()
+		    f.close()
+		    counter += 1
+		    f = open("/var/cache/edb/counter","w")
+		    f.write(str(counter)+"\n")
+		    f.flush()
+		    f.close()
+	    except:
+		pass
 
     return 0
 
@@ -2084,6 +2087,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	    else:
 		print_info(red(" @@ ")+blue("Running query in ")+red("5 seconds")+blue("..."))
 		print_info(red(" @@ ")+blue(":: Hit CTRL+C to stop"))
+		import time
 	        time.sleep(5)
 	
 	    # run removePackages with --nodeps
@@ -2707,6 +2711,7 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
 	        return 0,packagesNeeded
 	else:
 	    print_info(red(" @@ ")+blue("Installing dependencies in ")+red("10 seconds")+blue("..."))
+	    import time
 	    time.sleep(10)
 	# install them
 	packages = []

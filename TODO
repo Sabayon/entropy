@@ -2,11 +2,9 @@ TODO list:
   CLIENT:
   - add external triggerable hooks support
   - include more triggers
-  - use packages.db.bz2 instead of packages.db.gz?
   - allow .tbz2 separate install
   - finalize smartapps tool
-  - gentoo compat: update COUNTER
-  - add caching to database search functions
+
 
 Project Status:
 - reagent: complete. Stabilization mode.

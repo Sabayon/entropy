@@ -358,6 +358,13 @@ etpConst = {
     'etpdatabasetaintfile': ETP_DBFILE+".tainted", # when this file exists, the database is not synced anymore with the online one
     'etpdatabasefile': ETP_DBFILE, # Entropy sqlite database file ETP_DIR+ETP_DBDIR+"/packages.db"
     'etpdatabasefilegzip': ETP_DBFILE+".gz", # Entropy sqlite database file (gzipped)
+    'etpdatabasefilebzip2': ETP_DBFILE+".bz2", # Entropy sqlite database file (bzipped2)
+    'etpdatabasefileformat': "bz2", # Entropy default compressed database format
+    'etpdatabasesupportedcformats': ["bz2","gz"], # Entropy compressed databases format support
+    'etpdatabasecompressclasses': {
+    					"bz2": ("bz2.BZ2File","unpackBzip2","etpdatabasefilebzip2",),
+					"gz": ("gzip.GzipFile","unpackGzip","etpdatabasefilegzip",)
+    },
     'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
     'triggername': "trigger", # name of the trigger file that would be executed by equo inside triggerTools
     
@@ -421,6 +428,7 @@ etpConst = {
 etpCache = {
     'configfiles': 'scanfs', # used to store information about files that should be merged using "equo conf merge"
     'dbMatch': 'cache_', # used by the database controller as prefix to the cache files belonging to etpDatabase class (dep solving)
+    'dbSearch': 'search_', # used by the database controller as prefix to the cache files belonging to etpDatabase class (searches)
     'dbInfo': 'info_', # used by the database controller as prefix to the cache files belonging to etpDatabase class (info retrival)
     'atomMatch': 'atomMatchCache', # used to store info about repository dependencies solving
     'generateDependsTree': 'generateDependsTreeCache', # used to store info about removal dependencies
@@ -430,6 +438,7 @@ etpCache = {
 etpCacheSizes = {
     'dbMatch': 3000000, # bytes
     'dbInfo': 6000000, # bytes
+    'dbSearch': 2000000, # bytes
     'atomMatch': 3000000, # bytes
     'generateDependsTree': 3000000, # bytes
 }
@@ -588,6 +597,15 @@ if os.path.isfile(etpConst['repositoriesconf']):
 	    repodesc = line.split("|")[2]
 	    repopackages = line.split("|")[3]
 	    repodatabase = line.split("|")[4]
+	    dbformat = etpConst['etpdatabasefileformat']
+	    dbformatcolon = repodatabase.rfind("#")
+	    if dbformatcolon != -1:
+		if dbformat in etpConst['etpdatabasesupportedcformats']:
+		    try:
+		        dbformat = repodatabase[dbformatcolon+1:]
+		    except:
+			pass
+		repodatabase = repodatabase[:dbformatcolon]
 	    if (repopackages.startswith("http://") or repopackages.startswith("ftp://")) and (repodatabase.startswith("http://") or repodatabase.startswith("ftp://")):
 		etpRepositories[reponame] = {}
 		etpRepositoriesOrder.append(reponame)
@@ -595,8 +613,9 @@ if os.path.isfile(etpConst['repositoriesconf']):
 		etpRepositories[reponame]['packages'] = []
 		for x in repopackages.split():
 		    etpRepositories[reponame]['packages'].append(x)
-		etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['currentarch']
 		etpRepositories[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['currentarch']
+		etpRepositories[reponame]['dbcformat'] = dbformat
+		etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['currentarch']
 		# initialize CONFIG_PROTECT - will be filled the first time the db will be opened
 		etpRepositories[reponame]['configprotect'] = set()
 		etpRepositories[reponame]['configprotectmask'] = set()

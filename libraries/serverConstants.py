@@ -53,6 +53,10 @@ else:
 	    if uri.endswith("/"):
 		uri = uri[:len(uri)-1]
 	    etpConst['activatordownloaduris'].append(uri)
+	if line.startswith("database-format|") and (len(line.split("database-format|")) == 2):
+	    format = line.split("database-format|")[1]
+	    if format in etpConst['etpdatabasesupportedcformats']:
+		etpConst['etpdatabasefileformat'] = format
 	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
 	    loglevel = line.split("loglevel|")[1]
 	    try:

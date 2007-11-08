@@ -949,8 +949,8 @@ def uploadDatabase(uris):
 
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"uploadDatabase: called.")
 
-    # our fancy compressor :-)
     import gzip
+    import bz2
     
     for uri in uris:
 	downloadLockDatabases(True,[uri])
@@ -963,27 +963,29 @@ def uploadDatabase(uris):
 	print_info(green(" * ")+red("Changing directory to ")+bold(etpConst['etpurirelativepath'])+red(" ..."), back = True)
 	ftp.setCWD(etpConst['etpurirelativepath'])
 	
-	print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasefilegzip'])+red(" ..."), back = True)
+	cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
+	if cmethod == None: raise Exception
+	print_info(green(" * ")+red("Uploading file ")+bold(etpConst[cmethod[2]])+red(" ..."), back = True)
 	
+	dbfilec = eval(cmethod[0])(etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[2]], "wb")
 	# compress the database file first
 	dbfile = open(etpConst['etpdatabasefilepath'],"rb")
 	dbcont = dbfile.readlines()
 	dbfile.close()
-	dbfilegz = gzip.GzipFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip'],"wb")
 	for i in dbcont:
-	    dbfilegz.write(i)
-	dbfilegz.close()
+	    dbfilec.write(i)
+	dbfilec.close()
 	del dbcont
 	
 	# uploading database file
-	rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip'])
+	rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[2]])
 	if (rc == True):
-	    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasefilegzip'])+red(" completed."))
+	    print_info(green(" * ")+red("Upload of ")+bold(etpConst[cmethod[2]])+red(" completed."))
 	else:
 	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 	
-	# remove the gzip
-	os.remove(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip'])
+	# remove the compressed file
+	os.remove(etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[2]])
 	
 	# generate digest
 	hexdigest = md5sum(etpConst['etpdatabasefilepath'])
@@ -1017,9 +1019,10 @@ def uploadDatabase(uris):
 
 def downloadDatabase(uri):
     
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: called.")
-    
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: downloading from -> "+extractFTPHostFromUri(uri))
+    
+    import gzip
+    import bz2
     
     print_info(green(" * ")+red("Downloading database from ")+bold(extractFTPHostFromUri(uri))+red(" ..."))
     print_info(green(" * ")+red("Connecting to ")+bold(extractFTPHostFromUri(uri))+red(" ..."), back = True)
@@ -1027,21 +1030,26 @@ def downloadDatabase(uri):
     print_info(green(" * ")+red("Changing directory to ")+bold(etpConst['etpurirelativepath'])+red(" ..."), back = True)
     ftp.setCWD(etpConst['etpurirelativepath'])
     
+    cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
+    if cmethod == None: raise Exception
+    
+    unpackFunction = cmethod[1]
+    dbfilename = etpConst[cmethod[2]]
     
     # downloading database file
-    print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['etpdatabasefilegzip'])+red(" ..."), back = True)
-    rc = ftp.downloadFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip'],os.path.dirname(etpConst['etpdatabasefilepath']))
+    print_info(green(" * ")+red("Downloading file to ")+bold(dbfilename)+red(" ..."), back = True)
+    rc = ftp.downloadFile(etpConst['etpdatabasedir'] + "/" + dbfilename,os.path.dirname(etpConst['etpdatabasefilepath']))
     if (rc == True):
-	print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabasefilegzip'])+red(" completed."))
+	print_info(green(" * ")+red("Download of ")+bold(dbfilename)+red(" completed."))
     else:
 	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 
     # On the fly decompression
-    print_info(green(" * ")+red("Decompressing ")+bold(etpConst['etpdatabasefilegzip'])+red(" ..."), back = True)
+    print_info(green(" * ")+red("Decompressing ")+bold(dbfilename)+red(" ..."), back = True)
     
-    unpackGzip(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip'])
+    eval(unpackFunction)(etpConst['etpdatabasedir'] + "/" + dbfilename)
     
-    print_info(green(" * ")+red("Decompression of ")+bold(etpConst['etpdatabasefilegzip'])+red(" completed."))
+    print_info(green(" * ")+red("Decompression of ")+bold(dbfilename)+red(" completed."))
     
     # downloading revision file
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: downloading revision file for "+extractFTPHostFromUri(uri))
@@ -1063,7 +1071,7 @@ def downloadDatabase(uri):
 	print_warning(yellow(" * ")+red("Cannot properly download from ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: do some tidy.")
-    spawnCommand("rm -f " + etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasefilegzip'], "&> /dev/null")
+    spawnCommand("rm -f " + etpConst['etpdatabasedir'] + "/" + dbfilename, "&> /dev/null")
     # close connection
     ftp.closeConnection()
 
@@ -1099,7 +1107,10 @@ def getEtpRemoteDatabaseStatus():
     for uri in etpConst['activatoruploaduris']:
 	ftp = mirrorTools.handlerFTP(uri)
 	ftp.setCWD(etpConst['etpurirelativepath'])
-	rc = ftp.isFileAvailable(etpConst['etpdatabasefilegzip'])
+	cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
+	if cmethod == None: raise Exception
+	compressedfile = etpConst[cmethod[2]]
+	rc = ftp.isFileAvailable(compressedfile)
 	if (rc):
 	    # then get the file revision, if exists
 	    rc = ftp.isFileAvailable(etpConst['etpdatabaserevisionfile'])
@@ -1115,7 +1126,7 @@ def getEtpRemoteDatabaseStatus():
 	else:
 	    # then set mtime to 0 and quit
 	    revision = 0
-	info = [uri+"/"+etpConst['etpurirelativepath']+etpConst['etpdatabasefilegzip'],revision]
+	info = [uri+"/"+etpConst['etpurirelativepath']+compressedfile,revision]
 	uriDbInfo.append(info)
 	ftp.closeConnection()
 

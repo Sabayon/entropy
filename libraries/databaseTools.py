@@ -605,6 +605,7 @@ class etpDatabase:
 	# caching dictionaries
 	
 	if (self.xcache) and (dbname != 'etpdb'):
+	    
 	    ''' database query cache '''
 	    broken1 = False
 	    dbinfo = dbCacheStore.get(etpCache['dbInfo']+self.dbname)
@@ -630,18 +631,34 @@ class etpDatabase:
 		except:
 		    broken2 = True
 		    pass
-	
-	    if (broken1 or broken2):
+
+	    ''' database search cache '''
+	    dbmatch = dbCacheStore.get(etpCache['dbSearch']+self.dbname)
+	    broken3 = False
+	    if dbmatch == None:
+		try:
+	            dbCacheStore[etpCache['dbSearch']+self.dbname] = dumpTools.loadobj(etpCache['dbSearch']+self.dbname)
+	            if dbCacheStore[etpCache['dbSearch']+self.dbname] == None:
+		        broken3 = True
+		        dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
+		except:
+		    broken3 = True
+		    pass
+
+	    if (broken1 or broken2 or broken3):
 		# discard both caches
 		dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
 		dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
+		dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
 		dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
 		dumpTools.dumpobj(etpCache['dbInfo']+self.dbname,{})
+		dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
 		
 	else:
 	    self.xcache = False # setting this to be safe
 	    dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
 	    dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
+	    dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
 	
 	if (self.clientDatabase):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened by Entropy client, file: "+str(dbFile))
@@ -1222,9 +1239,11 @@ class etpDatabase:
 	# clear caches
 	dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
 	dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
+	dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
 	# dump to be sure
 	dumpTools.dumpobj(etpCache['dbInfo']+self.dbname,{})
 	dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
+	dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
 
 	self.packagesAdded = True
 	self.commitChanges()
@@ -1362,9 +1381,11 @@ class etpDatabase:
 	# clear caches
 	dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
 	dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
+	dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
 	# dump to be sure
 	dumpTools.dumpobj(etpCache['dbInfo']+self.dbname,{})
 	dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
+	dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
 
 	self.commitChanges()
 
@@ -1882,19 +1903,32 @@ class etpDatabase:
     def fetchInfoCache(self,idpackage,function):
 	if (self.xcache):
 	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage))
-	    if cached:
-		rslt = dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)].get(function)
-		if rslt:
+	    if cached != None:
+		rslt = cached.get(function)
+		if rslt != None:
 		    return rslt
-		else:
-		    return None
-	    else:
-		dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
 	return None
 
     def storeInfoCache(self,idpackage,function,data):
 	if (self.xcache):
+	    cache = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage))
+	    if cache == None: dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
 	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)][function] = data
+
+    def fetchSearchCache(self,searchdata,function):
+	if (self.xcache):
+	    cached = dbCacheStore[etpCache['dbSearch']+self.dbname].get(function)
+	    if cached != None:
+		rslt = cached.get(searchdata)
+		if rslt != None:
+		    return rslt
+	return None
+
+    def storeSearchCache(self,searchdata,function,data):
+	if (self.xcache):
+	    cache = dbCacheStore[etpCache['dbSearch']+self.dbname].get(function)
+	    if cache == None: dbCacheStore[etpCache['dbSearch']+self.dbname][function] = {}
+	    dbCacheStore[etpCache['dbSearch']+self.dbname][function][searchdata] = data
 
     def retrieveAtom(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveAtom: retrieving Atom for package ID "+str(idpackage))
@@ -2674,6 +2708,10 @@ class etpDatabase:
     def searchPackagesByName(self, keyword, sensitive = False, branch = None):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByName: called for "+keyword)
 	
+	if (self.xcache):
+	    cached = self.fetchSearchCache((keyword,sensitive,branch),'searchPackagesByName')
+	    if cached != None: return cached
+	
 	branchstring = ''
 	if branch:
 	    branchstring = ' and branch = "'+branch+'"'
@@ -2682,10 +2720,19 @@ class etpDatabase:
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+keyword+'"'+branchstring)
 	else:
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+keyword.lower()+'"'+branchstring)
-	return self.cursor.fetchall()
+	
+	results = self.cursor.fetchall()
+	if (self.xcache):
+	    self.storeSearchCache((keyword,sensitive,branch),'searchPackagesByName',results)
+	return results
 
     def searchPackagesByNameAndCategory(self, name, category, sensitive = False, branch = None):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByNameAndCategory: called for name: "+name+" and category: "+category)
+	
+	if (self.xcache):
+	    cached = self.fetchSearchCache((name,category,sensitive,branch),'searchPackagesByNameAndCategory')
+	    if cached != None: return cached
+	
 	# get category id
 	idcat = -1
 	self.cursor.execute('SELECT idcategory FROM categories WHERE category = "'+category+'"')
@@ -2704,10 +2751,19 @@ class etpDatabase:
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+name+'" AND idcategory ='+str(idcat)+branchstring)
 	else:
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+name.lower()+'" AND idcategory ='+str(idcat)+branchstring)
-	return self.cursor.fetchall()
+	
+	results = self.cursor.fetchall()
+	if (self.xcache):
+	    self.storeSearchCache((name,category,sensitive,branch),'searchPackagesByNameAndCategory',results)
+	return results
 
     def searchPackagesByNameAndVersionAndCategory(self, name, version, category, branch = None, sensitive = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByNameAndVersionAndCategory: called for "+name+" and version "+version+" and category "+category+" | branch "+branch)
+	
+	if (self.xcache):
+	    cached = self.fetchSearchCache((name,version,category,branch,sensitive),'searchPackagesByNameAndVersionAndCategory')
+	    if cached != None: return cached
+	
 	# get category id
 	self.cursor.execute('SELECT idcategory FROM categories WHERE category = "'+category+'"')
 	idcat = self.cursor.fetchone()
@@ -2725,7 +2781,12 @@ class etpDatabase:
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = "'+name+'" and version = "'+version+'" and idcategory = '+str(idcat)+branchstring)
 	else:
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = "'+name.lower()+'" and version = "'+version+'" and idcategory = '+str(idcat)+branchstring)
-	return self.cursor.fetchall()
+	
+	if (self.xcache):
+	    self.storeSearchCache((name,version,category,branch,sensitive),'searchPackagesByNameAndVersionAndCategory',results)
+	results = self.cursor.fetchall()
+	
+	return results
 
     def listAllPackages(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllPackages: called.")

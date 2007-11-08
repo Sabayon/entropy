@@ -26,9 +26,6 @@ from entropyConstants import *
 import os
 import re
 import sys
-import random
-import commands
-import urlparse
 import threading, time
 import string
 
@@ -85,6 +82,7 @@ def applicationLockCheck(option = None, gentle = False):
     return False
 
 def getRandomNumber():
+    import random
     return int(str(random.random())[2:7])
 
 def countdown(secs=5,what="Counting...", back = False):
@@ -106,12 +104,6 @@ def spinner(rotations, interval, message=''):
 	for i in xrange(len(message)): print ' ',
 	writechar('\r')
 
-def removeSpaceAtTheEnd(string):
-    if string[-1] == " ":
-        return string[:-1]
-    else:
-	return string
-
 def md5sum(filepath):
     import md5
     m = md5.new()
@@ -129,6 +121,19 @@ def unpackGzip(gzipfilepath):
     filegz = gzip.GzipFile(gzipfilepath,"rb")
     filecont = filegz.readlines()
     filegz.close()
+    file.writelines(filecont)
+    file.flush()
+    file.close()
+    del filecont
+    return filepath
+
+def unpackBzip2(bzip2filepath):
+    import bz2
+    filepath = bzip2filepath[:-4] # remove .gz
+    file = open(filepath,"wb")
+    filebz2 = bz2.BZ2File(bzip2filepath,"rb")
+    filecont = filebz2.readlines()
+    filebz2.close()
     file.writelines(filecont)
     file.flush()
     file.close()
@@ -934,6 +939,7 @@ def extractFTPHostFromUri(uri):
     return myuri
 
 def spliturl(url):
+    import urlparse
     return urlparse.urlsplit(url)
 
 # tar.bz2 compress function...

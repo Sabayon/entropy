@@ -101,7 +101,7 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
 	    speedUpdater.kill()
         timeoutsocket.setDefaultSocketTimeout(2)
 	raise KeyboardInterrupt
-    except:
+    except Exception, e:
 	remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"downloadFile: Exception caught for: "+str(url)+" -> "+str(e))
 	if (showSpeed):
 	    speedUpdater.kill()
