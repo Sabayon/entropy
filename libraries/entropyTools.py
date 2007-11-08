@@ -235,6 +235,14 @@ def extractEdb(tbz2file, dbpath = None):
 		break
 	dbcontent.append(byte)
 	counter -= 1
+    if not dbcontent:
+        old.close()
+        db.close()
+        try:
+            os.remove(dbpath)
+        except:
+            pass
+        return None
     dbcontent.reverse()
     for x in dbcontent:
 	db.write(x)

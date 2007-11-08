@@ -2136,6 +2136,9 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 		    shutil.rmtree(etpConst['entropyunpackdir']+"/"+basefile[:-5])
 	        os.makedirs(etpConst['entropyunpackdir']+"/"+basefile[:-5])
 	        dbfile = extractEdb(pkg,dbpath = etpConst['entropyunpackdir']+"/"+basefile[:-5]+"/packages.db")
+                if dbfile == None:
+                    print_warning(red("## ATTENTION:")+bold(" "+basefile+" ")+red(" is not a valid Entropy package. Skipping..."))
+                    continue
 		dirsCleanup.add(os.path.dirname(dbfile))
 	        # add dbfile
 	        etpRepositories[basefile] = {}
