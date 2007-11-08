@@ -704,20 +704,25 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
    @output: dependency tree dictionary, plus status code
 '''
 generateDependencyTreeCache = {}
-def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
+matchFilter = set()
+def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefilter = False):
+
+    if (not usefilter):
+	matchFilter.clear()
 
     ''' caching '''
     cached = generateDependencyTreeCache.get(tuple(atomInfo))
     if cached:
-	if (cached['emptydeps'] == emptydeps) and (cached['deepdeps'] == deepdeps):
+	if (cached['emptydeps'] == emptydeps) and \
+	    (cached['deepdeps'] == deepdeps) and \
+	    (cached['usefilter'] == usefilter):
 	    return cached['result']
 
-    treecache = {}
+    treecache = set()
     unsatisfiedDeps = getDependencies(atomInfo)
     if not emptydeps:
         unsatisfiedDeps, xxx = filterSatisfiedDependencies(unsatisfiedDeps, deepdeps = deepdeps)
-    dependenciesNotFound = []
-    treeview = []
+    dependenciesNotFound = set()
     tree = {}
     treedepth = 0 # in tree[0] are the conflicts
     tree[0] = []
@@ -737,9 +742,11 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	
 	for undep in unsatisfiedDeps:
 
-            passed = treecache.get(undep,None) # already analyzed
-            if passed:
+            if undep in treecache: # already analyzed in this call
                 continue
+	    
+	    if (undep in matchFilter) and (usefilter): # already analyzed from the calling function
+		continue
 
 	    # Handling conflicts
 	    if undep[0] == "!":
@@ -748,13 +755,17 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 		    conflicts.add(xmatch[0])
 		    # FIXME: do I have to add its depends?
 		    # depends = generateDependsTree([xmatch[0])
+		treecache.add(undep)
+		if usefilter: matchFilter.add(undep)
 		continue
 	    
 	    atom = atomMatch(undep)
 	    
 	    # handle dependencies not found
 	    if atom[0] == -1:
-		dependenciesNotFound.append(undep)
+		dependenciesNotFound.add(undep)
+		treecache.add(undep)
+		if usefilter: matchFilter.add(undep)
 		continue
 	    
 	    # handle possible library breakage
@@ -782,9 +793,9 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 					mydbconn = openRepositoryDatabase(mymatch[1])
 					mynewatom = mydbconn.retrieveAtom(mymatch[0])
 					mydbconn.closeDB()
-					if not treecache.get(mynewatom):
+					if not mynewatom in treecache:
 					    tree[treedepth].add(mynewatom)
-					    treecache[mynewatom] = True
+					    treecache.add(mynewatom)
 				    else:
 					#FIXME: we bastardly ignore the missing library for now
 					continue
@@ -792,7 +803,8 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	    
 	    # add to the tree level
 	    tree[treedepth].add(undep)
-	    treecache[undep] = True
+	    treecache.add(undep)
+	    if usefilter: matchFilter.add(undep)
 	
 	if (not tree[treedepth]):
 	    #print darkgreen("satisfied: ")+str(tree[treedepth])
@@ -811,10 +823,11 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
 	#tree[treedepth] = list(tree[treedepth])
 	
     clientDbconn.closeDB()
+    treecache.clear()
 
     if (dependenciesNotFound):
 	# Houston, we've got a problem
-	flatview = dependenciesNotFound
+	flatview = list(dependenciesNotFound)
 	return flatview,-2
 
     newtree = {} # tree list
@@ -852,6 +865,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False):
     generateDependencyTreeCache[tuple(atomInfo)]['result'] = newtree,0
     generateDependencyTreeCache[tuple(atomInfo)]['emptydeps'] = emptydeps
     generateDependencyTreeCache[tuple(atomInfo)]['deepdeps'] = deepdeps
+    generateDependencyTreeCache[tuple(atomInfo)]['usefilter'] = usefilter
     return newtree,0 # note: newtree[0] contains possible conflicts
 
 
@@ -867,17 +881,21 @@ def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False, spinnin
     depcount = -1
 
     if spinning: atomlen = len(foundAtoms); count = 0
+    matchFilter.clear() # clear generateDependencyTree global filter
     for atomInfo in foundAtoms:
 	if spinning: count += 1; print_info(":: "+str(round((float(count)/atomlen)*100,1))+"% ::", back = True)
 	depcount += 1
 	#print depcount
-	newtree, result = generateDependencyTree(atomInfo, emptydeps, deepdeps)
+	newtree, result = generateDependencyTree(atomInfo, emptydeps, deepdeps, usefilter = True)
 	if (result != 0):
 	    return newtree, result
 	if (newtree):
 	    deptree[depcount] = newtree.copy()
 	    #print deptree[depcount]
 
+    matchFilter.clear()
+    
+    '''
     newdeptree = deptree.copy() # tree list
     if (deptree):
 	# now filter newtree
@@ -905,8 +923,9 @@ def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False, spinnin
 			    
 		    x += 1
     del deptree
-
-    return newdeptree,0
+    '''
+    
+    return deptree,0
 
 
 '''
