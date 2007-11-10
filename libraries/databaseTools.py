@@ -504,6 +504,18 @@ def openRepositoryDatabase(repositoryName, xcache = True):
 	etpRepositories[repositoryName]['configprotectmask'] += [x for x in etpConst['configprotectmask'] if x not in etpRepositories[repositoryName]['configprotectmask']]
     return conn
 
+def fetchRepositoryIfNotAvailable(reponame):
+    # open database
+    rc = 0
+    dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
+    if not os.path.isfile(dbfile):
+	# sync
+	rc = syncRepositories([reponame])
+    if not os.path.isfile(dbfile):
+	# so quit
+	print_error(red("Database file for '"+bold(etpRepositories[reponame]['description'])+red("' does not exist. Cannot search.")))
+    return rc
+
 '''
    @description: open the installed packages database and returns the pointer
    @output: database pointer or, -1 if error
@@ -533,8 +545,9 @@ def openServerDatabase(readOnly = True, noUpload = True):
    @description: open a generic client database and returns the pointer.
    @output: database pointer
 '''
-def openGenericDatabase(dbfile):
-    conn = etpDatabase(readOnly = False, dbFile = dbfile, clientDatabase = True, dbname = "generic", xcache = False)
+def openGenericDatabase(dbfile, dbname = None):
+    if dbname == None: dbname = "generic"
+    conn = etpDatabase(readOnly = False, dbFile = dbfile, clientDatabase = True, dbname = dbname, xcache = False)
     return conn
 
 # this class simply describes the current database status
@@ -598,7 +611,7 @@ class databaseStatus:
 
 class etpDatabase:
 
-    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = True, dbname = 'etpdb'):
+    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = 'etpdb'):
 	
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase.__init__ called.")
 	
@@ -611,10 +624,9 @@ class etpDatabase:
 	self.dbname = dbname
 	
 	# caching dictionaries
-	
 	if (self.xcache) and (dbname != 'etpdb'):
 	    
-	    ''' database query cache '''
+            ''' database query cache '''
 	    broken1 = False
 	    dbinfo = dbCacheStore.get(etpCache['dbInfo']+self.dbname)
 	    if dbinfo == None:

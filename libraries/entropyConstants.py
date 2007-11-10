@@ -307,6 +307,7 @@ ETP_UPLOADDIR = "/upload/"+ETP_ARCH_CONST
 ETP_STOREDIR = "/store/"+ETP_ARCH_CONST
 ETP_TRIGGERSDIR = "/triggers/"+ETP_ARCH_CONST
 ETP_SMARTAPPSDIR = "/smartapps/"+ETP_ARCH_CONST
+ETP_SMARTPACKAGESDIR = "/smartpackages/"+ETP_ARCH_CONST
 ETP_XMLDIR = "/xml/"
 ETP_CONF_DIR = "/etc/entropy"
 ETP_ROOT_DIR = "/"
@@ -326,6 +327,7 @@ etpConst = {
     			# by the clients: to query if a package has been already downloaded
 			# by the servers or rsync mirrors: to store already uploaded packages to the main rsync server
     'smartappsdir': ETP_DIR+ETP_SMARTAPPSDIR, # etpConst['smartappsdir'] location where smart apps files are places
+    'smartpackagesdir': ETP_DIR+ETP_SMARTPACKAGESDIR, # etpConst['smartpackagesdir'] location where smart packages files are places
     'triggersdir': ETP_DIR+ETP_TRIGGERSDIR, # etpConst['triggersdir'] location where external triggers are placed
     'packagesstoredir': ETP_DIR+ETP_STOREDIR, # etpConst['packagesstoredir'] --> directory where .tbz2 files are stored waiting for being processed by reagent
     'packagessuploaddir': ETP_DIR+ETP_UPLOADDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror

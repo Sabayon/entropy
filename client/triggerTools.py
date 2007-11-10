@@ -23,7 +23,6 @@
 import sys
 import os
 import commands
-sys.path.append('../libraries')
 from outputTools import *
 from entropyConstants import *
 import entropyTools
@@ -49,7 +48,7 @@ def postinstall(pkgdata):
 	functions.add("fontconfig")
 
     # opengl configuration
-    if (pkgdata['category'] == "x11-drivers") and (not pkgdata['name'].startswith("xf86-")):
+    if (pkgdata['category'] == "x11-drivers") and (pkgdata['name'].startswith("nvidia-") or pkgdata['name'].startswith("ati-")):
 	functions.add("openglsetup")
 
     # gcc configuration
@@ -70,6 +69,10 @@ def postinstall(pkgdata):
     # kde package ?
     if "kde" in pkgdata['eclasses']:
 	functions.add("kbuildsycoca")
+
+    # kde package ?
+    if pkgdata['category']+"/"+pkgdata['name'] == "sys-apps/shadow":
+	functions.add("susetuid")
 
     # update mime
     if "fdo-mime" in pkgdata['eclasses']:
@@ -134,7 +137,7 @@ def postremove(pkgdata):
     functions = set()
     
     # opengl configuration
-    if (pkgdata['category'] == "x11-drivers") and (not pkgdata['name'].startswith("xf86-")):
+    if (pkgdata['category'] == "x11-drivers") and (pkgdata['name'].startswith("nvidia-") or pkgdata['name'].startswith("ati-")):
 	functions.add("openglsetup_xorg")
 
     # kde package ?
@@ -210,14 +213,14 @@ def fontconfig(pkgdata):
 		        fontdirs.add(xdir[:16]+"/"+origdir)
     if (fontdirs):
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring fonts directory...")
-	print_info(red("   ##")+brown(" [POST] Configuring fonts directory..."))
+	print_info(red("   ##")+brown(" Configuring fonts directory..."))
     for fontdir in fontdirs:
 	setup_font_dir(fontdir)
 	setup_font_cache(fontdir)
 
 def gccswitch(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GCC Profile...")
-    print_info(red("   ##")+brown(" [POST] Configuring GCC Profile..."))
+    print_info(red("   ##")+brown(" Configuring GCC Profile..."))
     # get gcc profile
     pkgsplit = entropyTools.catpkgsplit(pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version'])
     profile = pkgdata['chost']+"-"+pkgsplit[2]
@@ -225,7 +228,7 @@ def gccswitch(pkgdata):
 
 def iconscache(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating icons cache...")
-    print_info(red("   ##")+brown(" [POST] Updating icons cache..."))
+    print_info(red("   ##")+brown(" Updating icons cache..."))
     mycnt = set(pkgdata['content'])
     for file in mycnt:
 	if file.startswith("/usr/share/icons") and file.endswith("index.theme"):
@@ -234,27 +237,27 @@ def iconscache(pkgdata):
 
 def mimeupdate(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating shared mime info database...")
-    print_info(red("   ##")+brown(" [POST] Updating shared mime info database..."))
+    print_info(red("   ##")+brown(" Updating shared mime info database..."))
     update_mime_db()
 
 def mimedesktopupdate(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating desktop mime database...")
-    print_info(red("   ##")+brown(" [POST] Updating desktop mime database..."))
+    print_info(red("   ##")+brown(" Updating desktop mime database..."))
     update_mime_desktop_db()
 
 def scrollkeeper(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating scrollkeeper database...")
-    print_info(red("   ##")+brown(" [POST] Updating scrollkeeper database..."))
+    print_info(red("   ##")+brown(" Updating scrollkeeper database..."))
     update_scrollkeeper_db()
 
 def gconfreload(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reloading GConf2 database...")
-    print_info(red("   ##")+brown(" [POST] Reloading GConf2 database..."))
+    print_info(red("   ##")+brown(" Reloading GConf2 database..."))
     reload_gconf_db()
 
 def binutilsswitch(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Binutils Profile...")
-    print_info(red("   ##")+brown(" [POST] Configuring Binutils Profile..."))
+    print_info(red("   ##")+brown(" Configuring Binutils Profile..."))
     # get binutils profile
     pkgsplit = entropyTools.catpkgsplit(pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version'])
     profile = pkgdata['chost']+"-"+pkgsplit[2]
@@ -263,20 +266,20 @@ def binutilsswitch(pkgdata):
 def kernelmod(pkgdata):
     if pkgdata['category'] != "sys-kernel":
         equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating moduledb...")
-        print_info(red("   ##")+brown(" [POST] Updating moduledb..."))
+        print_info(red("   ##")+brown(" Updating moduledb..."))
         item = 'a:1:'+pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
         update_moduledb(item)
-    print_info(red("   ##")+brown(" [POST] Running depmod..."))
+    print_info(red("   ##")+brown(" Running depmod..."))
     run_depmod()
 
 def pythoninst(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Python...")
-    print_info(red("   ##")+brown(" [POST] Configuring Python..."))
+    print_info(red("   ##")+brown(" Configuring Python..."))
     python_update_symlink()
 
 def sqliteinst(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring SQLite...")
-    print_info(red("   ##")+brown(" [POST] Configuring SQLite..."))
+    print_info(red("   ##")+brown(" Configuring SQLite..."))
     sqlite_update_symlink()
 
 def initdisable(pkgdata):
@@ -293,14 +296,14 @@ def initinform(pkgdata):
     for file in mycnt:
 	if file.startswith("/etc/init.d/") and not os.path.isfile(file):
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+file)
-	    print_info(red("   ##")+brown(" [PRE] A new service will be installed: ")+file)
+	    print_info(red("   ##")+brown(" A new service will be installed: ")+file)
 
 def removeinit(pkgdata):
-    mycnt = set(pkgdata['content'])
+    mycnt = set(pkgdata['removecontent'])
     for file in mycnt:
 	if file.startswith("/etc/init.d/") and os.path.isfile(file):
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Removing boot service: "+os.path.basename(file))
-	    print_info(red("   ##")+brown(" [POST] Removing boot service: ")+os.path.basename(file))
+	    print_info(red("   ##")+brown(" Removing boot service: ")+os.path.basename(file))
 	    try:
 		os.system('rc-update del '+os.path.basename(file)+' &> /dev/null')
 	    except:
@@ -316,21 +319,21 @@ def openglsetup(pkgdata):
     eselect = os.system("eselect opengl &> /dev/null")
     if eselect == 0:
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to "+opengl+" ...")
-	print_info(red("   ##")+brown(" [POST] Reconfiguring OpenGL..."))
+	print_info(red("   ##")+brown(" Reconfiguring OpenGL..."))
 	os.system("eselect opengl set --use-old "+opengl)
     else:
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
-	print_info(red("   ##")+brown(" [POST] Eselect NOT found, cannot run OpenGL trigger"))
+	print_info(red("   ##")+brown(" Eselect NOT found, cannot run OpenGL trigger"))
 
 def openglsetup_xorg(pkgdata):
     eselect = os.system("eselect opengl &> /dev/null")
     if eselect == 0:
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to fallback xorg-x11 ...")
-	print_info(red("   ##")+brown(" [POST] Reconfiguring OpenGL..."))
+	print_info(red("   ##")+brown(" Reconfiguring OpenGL..."))
 	os.system("eselect opengl set xorg-x11")
     else:
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
-	print_info(red("   ##")+brown(" [POST] Eselect NOT found, cannot run OpenGL trigger"))
+	print_info(red("   ##")+brown(" Eselect NOT found, cannot run OpenGL trigger"))
 
 # FIXME: this only supports grub (no lilo support)
 def addbootablekernel(pkgdata):
@@ -341,7 +344,7 @@ def addbootablekernel(pkgdata):
 	    initramfs = ''
 	# configure GRUB
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Adding the new kernel...")
-	print_info(red("   ##")+brown(" [POST] Configuring GRUB bootloader. Adding the new kernel..."))
+	print_info(red("   ##")+brown(" Configuring GRUB bootloader. Adding the new kernel..."))
 	configure_boot_grub(kernel,initramfs)
 	
 
@@ -354,7 +357,7 @@ def removebootablekernel(pkgdata):
 	    initramfs = ''
 	# configure GRUB
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Removing the selected kernel...")
-	print_info(red("   ##")+brown(" [POST] Configuring GRUB bootloader. Removing the selected kernel..."))
+	print_info(red("   ##")+brown(" Configuring GRUB bootloader. Removing the selected kernel..."))
 	remove_boot_grub(kernel,initramfs)
 
 def mountboot(pkgdata):
@@ -371,10 +374,10 @@ def mountboot(pkgdata):
 		    rc = os.system("mount /boot &> /dev/null")
 		    if rc == 0:
 			equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Mounted /boot successfully")
-			print_info(red("   ##")+brown(" [PRE] Mounted /boot successfully"))
+			print_info(red("   ##")+brown(" Mounted /boot successfully"))
 		    elif rc != 8192: # already mounted
 			equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Cannot mount /boot automatically !!")
-			print_info(red("   ##")+brown(" [PRE] Cannot mount /boot automatically !!"))
+			print_info(red("   ##")+brown(" Cannot mount /boot automatically !!"))
 		    break
 
 def kbuildsycoca(pkgdata):
@@ -392,14 +395,14 @@ def kbuildsycoca(pkgdata):
 		os.chown("/usr/share/services",0,0)
 		os.chmod("/usr/share/services",0755)
 		equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca to build global KDE database")
-		print_info(red("   ##")+brown(" [POST] Running kbuildsycoca to build global KDE database"))
+		print_info(red("   ##")+brown(" Running kbuildsycoca to build global KDE database"))
 		os.system(builddir+"/bin/kbuildsycoca --global --noincremental &> /dev/null")
 
 def gconfinstallschemas(pkgdata):
     gtest = os.system("which gconftool-2 &> /dev/null")
     if gtest == 0:
 	schemas = [x for x in pkgdata['content'] if x.startswith("/etc/gconf/schemas") and x.endswith(".schemas")]
-	print_info(red("   ##")+brown(" [POST] Installing GConf2 schemas..."))
+	print_info(red("   ##")+brown(" Installing GConf2 schemas..."))
 	for schema in schemas:
 	    os.system("""
 	    unset GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL
@@ -419,6 +422,10 @@ def pygtkremove(pkgdata):
 	if os.path.isfile(file[:-4]):
 	    os.remove(file[:-4])
 
+def susetuid(pkgdata):
+    if os.path.isfile("/bin/su"):
+        os.chown("/bin/su",0,0)
+        os.chmod("/bin/su",4755)
 ########################################################
 ####
 ##   Internal functions
@@ -634,15 +641,16 @@ def remove_boot_grub(kernel,initramfs):
 	grub_conf = f.readlines()
 	kernelname = os.path.basename(kernel)
 	new_conf = []
-	skip = False
-	for line in grub_conf:
-	    if (line.find(kernelname) != -1) or (line.find(initramfs) != -1):
-		skip = True
-		continue
-	    if (skip) and (line.find("root ") != -1):
-		skip = False
-		continue
-	    new_conf.append(line)
+        myconf = ""
+        for x in grub_conf: myconf += x
+        myconf = myconf.split("title")
+        for chunk in myconf:
+            if (chunk.find(kernelname) != -1) or (chunk.find(initramfs) != -1):
+                continue
+            if chunk.strip().startswith("="):
+                new_conf.append("title"+chunk)
+            else:
+                new_conf.append(chunk)
 	f = open("/boot/grub/grub.conf","w")
 	f.writelines(new_conf)
 	f.flush()

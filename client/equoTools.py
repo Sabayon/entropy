@@ -29,8 +29,8 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, unpackBzip2, compareMd5, bytesIntoHuman, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb
-from databaseTools import etpDatabase, openRepositoryDatabase, openClientDatabase, openGenericDatabase
+from entropyTools import unpackGzip, unpackBzip2, compareMd5, bytesIntoHuman, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag
+from databaseTools import etpDatabase, openRepositoryDatabase, openClientDatabase, openGenericDatabase, fetchRepositoryIfNotAvailable
 import triggerTools
 import confTools
 import dumpTools
@@ -347,18 +347,6 @@ def backupClientDatabase():
 	shutil.copystat(source,dest)
 	return dest
     return ""
-
-def fetchRepositoryIfNotAvailable(reponame):
-    # open database
-    rc = 0
-    dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
-    if not os.path.isfile(dbfile):
-	# sync
-	rc = syncRepositories([reponame])
-    if not os.path.isfile(dbfile):
-	# so quit
-	print_error(red("Database file for '"+bold(etpRepositories[reponame]['description'])+red("' does not exist. Cannot search.")))
-    return rc
 
 
 ########################################################
@@ -1487,7 +1475,7 @@ def installPackage(infoDict):
 	    return rc
     
     # remove unpack dir
-    shutil.rmtree(imageDir,True)
+    shutil.rmtree(unpackDir,True)
     return 0
 
 '''
@@ -1580,35 +1568,36 @@ def installPackageIntoGentooDatabase(infoDict,packageFile):
 	    shutil.rmtree(extractPath)
 	else:
 	    os.makedirs(extractPath)
-	extractXpak(packageFile,extractPath)
-	if not os.path.isdir(portDbDir+infoDict['category']):
-	    os.makedirs(portDbDir+infoDict['category'])
-	destination = portDbDir+infoDict['category']+"/"+infoDict['name']+"-"+infoDict['version']
-	if os.path.isdir(destination):
-	    shutil.rmtree(destination)
-	
-	os.rename(extractPath,destination)
-	
-	# update counter
-	if os.path.isfile("/var/cache/edb/counter"):
-	    # fetch number
-	    try:
-	        f = open("/var/cache/edb/counter","r")
-		counter = int(f.readline().strip())
-		f.close()
-		# write new counter to file
-		if os.path.isfile(destination+"/"+dbCOUNTER):
-		    f = open(destination+"/"+dbCOUNTER,"w")
-		    f.write(str(counter)+"\n")
-		    f.flush()
-		    f.close()
-		    counter += 1
-		    f = open("/var/cache/edb/counter","w")
-		    f.write(str(counter)+"\n")
-		    f.flush()
-		    f.close()
-	    except:
-		pass
+	xpakstatus = extractXpak(packageFile,extractPath)
+        if extractXpak != None:
+            if not os.path.isdir(portDbDir+infoDict['category']):
+                os.makedirs(portDbDir+infoDict['category'])
+            destination = portDbDir+infoDict['category']+"/"+infoDict['name']+"-"+infoDict['version']
+            if os.path.isdir(destination):
+                shutil.rmtree(destination)
+            
+            os.rename(extractPath,destination)
+            
+            # update counter
+            if os.path.isfile("/var/cache/edb/counter"):
+                # fetch number
+                try:
+                    f = open("/var/cache/edb/counter","r")
+                    counter = int(f.readline().strip())
+                    f.close()
+                    # write new counter to file
+                    if os.path.isfile(destination+"/"+dbCOUNTER):
+                        f = open(destination+"/"+dbCOUNTER,"w")
+                        f.write(str(counter)+"\n")
+                        f.flush()
+                        f.close()
+                        counter += 1
+                        f = open("/var/cache/edb/counter","w")
+                        f.write(str(counter)+"\n")
+                        f.flush()
+                        f.close()
+                except:
+                    pass
 
     return 0
 
@@ -2098,7 +2087,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	        time.sleep(5)
 	
 	    # run removePackages with --nodeps
-	    removePackages(atomsdata = removedList, ask = ask, verbose = verbose, deps = False)
+	    removePackages(atomsdata = removedList, ask = ask, verbose = verbose, deps = False, systemPackagesCheck = False)
 	else:
 	    print_info(red(" @@ ")+blue("Calculation complete."))
 
@@ -2486,13 +2475,17 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	
 	# differential remove list
 	if (actionQueue[pkgatom]['removeidpackage'] != -1):
-	    oldcontent = clientDbconn.retrieveContent(actionQueue[pkgatom]['removeidpackage'])
-	    newcontent = dbconn.retrieveContent(idpackage)
-	    oldcontent.difference_update(newcontent)
-	    actionQueue[pkgatom]['removecontent'] = oldcontent
-	    actionQueue[pkgatom]['diffremoval'] = True
-	    etpRemovalTriggers[pkgatom] = clientDbconn.getPackageData(actionQueue[pkgatom]['removeidpackage'])
-	    etpRemovalTriggers[pkgatom]['removecontent'] = actionQueue[pkgatom]['removecontent'].copy()
+            # is it still available?
+            if clientDbconn.isIDPackageAvailable(actionQueue[pkgatom]['removeidpackage']):
+                oldcontent = clientDbconn.retrieveContent(actionQueue[pkgatom]['removeidpackage'])
+                newcontent = dbconn.retrieveContent(idpackage)
+                oldcontent.difference_update(newcontent)
+                actionQueue[pkgatom]['removecontent'] = oldcontent
+                actionQueue[pkgatom]['diffremoval'] = True
+                etpRemovalTriggers[pkgatom] = clientDbconn.getPackageData(actionQueue[pkgatom]['removeidpackage'])
+                etpRemovalTriggers[pkgatom]['removecontent'] = actionQueue[pkgatom]['removecontent'].copy()
+            else:
+                actionQueue[pkgatom]['removeidpackage'] = -1
 
 	# get data for triggerring tool
 	etpInstallTriggers[pkgatom] = dbconn.getPackageData(idpackage)

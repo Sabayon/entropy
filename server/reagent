@@ -57,8 +57,6 @@ def print_help():
     print_info(" \t"+green("deptest")+yellow("\t\t Look for unsatisfied dependencies inside database"))
     print_info(" \t"+green("depends")+yellow("\t\t Regenerate depends table (plus database lock and bump)"))
     print_info(" \t\t"+red("--quiet")+"\t\t\t\t just print the dependencies list")
-    print_info(" \t"+green("smartapps")+yellow("\t Entropy application tool to create self-dependant applications [EXPERIMENTAL]"))
-    print_info(" \t\t"+green("create")+"\t\t\t\t Create a smartapp package using the package names provided")
     print_info(" \t"+green("cleanup")+yellow("\t\t to clean temporary files"))
 
 options = sys.argv[1:]
@@ -109,11 +107,6 @@ elif (options[0] == "update"):
 # database tool
 elif (options[0] == "database"):
     databaseTools.database(options[1:])
-    sys.exit(0)
-
-# smartapps tool
-elif (options[0] == "smartapps"):
-    reagentTools.smartapps(options[1:])
     sys.exit(0)
 
 # deptest tool

@@ -53,7 +53,7 @@ def print_help():
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
     print_info(" \t\t"+red("--fetch")+"\t\t\t just download packages without doing the install")
     print_info(" \t\t"+red("--nodeps")+"\t\t do not manage any dependency")
-    print_info(" \t\t"+red("--empty")+"\t\t\t also include already installed packages")
+    print_info(" \t\t"+red("--empty")+"\t\t\t set all dependencies as unsatisfied")
     print_info(" \t\t"+red("--deep")+"\t\t\t analyze dependencies deeply")
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
     print_info(" \t\t"+red("--configfiles")+"\t\t also remove old configuration files [use with care]")
@@ -85,6 +85,13 @@ def print_help():
     print_info(" \t\t"+darkgreen("description")+red("\t\t search a package description"))
     print_info(" \t\t"+red("--verbose")+"\t\t show more details")
     print_info(" \t\t"+red("--quiet")+"\t\t\t print results in a scriptable way")
+
+    print_info(" \t"+blue("smart")+brown("\t\t handle extended functionalities"))
+    print_info(" \t\tUnpack and run applications")
+    print_info(" \t\t"+darkgreen("application")+red("\t\t generate a smart application for the provided atoms (experimental)"))
+    print_info(" \t\t\t"+red("--empty")+"\t\t set all dependencies as unsatisfied")
+    print_info(" \t\tA .tbz2 package that can contain multiple packages  (breaks Gentoo compatibility)")
+    print_info(" \t\t"+darkgreen("package")+red("\t\t generate a smart package for the provided atoms"))
 
     print_info(" \t"+blue("database")+brown("\t handle installed packages database"))
     print_info(" \t\t"+darkgreen("generate")+red("\t\t generate installed packages database"))
@@ -160,10 +167,10 @@ try:
 		if "--pretend" not in options:
 		    options.append("--pretend")
         rc = equoTools.package(options)
-	print_info(red(" @@ ")+darkblue("Caching equo conf"), back = True)
+	print_info(red(" @@ ")+blue("Caching equo conf"), back = True)
 	import confTools
 	scandata = confTools.scanfs(quiet = True, dcache = True)
-	print_info(red(" @@ ")+darkblue("Caching complete."))
+	print_info(red(" @@ ")+blue("Caching complete."))
 	if len(scandata) > 0:
 	    print_warning(darkgreen("There are "+str(len(scandata))+" configuration file(s) that need(s) to be updated."))
 	    print_warning(red("Please run: ")+bold("equo conf update"))
@@ -173,6 +180,13 @@ try:
     elif (options[0] == "query"):
 	import queryTools
         rc = queryTools.query(options[1:])
+
+    # smartapps tool
+    elif (options[0] == "smart"):
+        rc = 0
+        if len(options) > 1:
+            import smartTools
+            rc = smartTools.smart(options[1:])
 
     elif (options[0] == "conf"):
 	import confTools
@@ -197,10 +211,10 @@ try:
         entropyTools.cleanup([ etpConst['packagestmpdir'], etpConst['logdir'], etpConst['entropyunpackdir'], etpConst['packagesbindir'] ])
         rc = 0
     # kill threads
-    #threads = entropyTools.threading.enumerate()
-    #for thread in threads:
-    #    if thread.getName() == "download": # equo current download speed thread
-    #        thread.kill()
+    threads = entropyTools.threading.enumerate()
+    for thread in threads:
+        if thread.getName() == "download": # equo current download speed thread
+            thread.kill()
     sys.exit(rc)
 except SystemExit:
     pass

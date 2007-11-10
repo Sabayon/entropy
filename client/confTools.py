@@ -23,7 +23,6 @@
 import sys
 import commands
 import string
-sys.path.append('../libraries')
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *

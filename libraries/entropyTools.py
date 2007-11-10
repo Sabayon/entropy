@@ -145,19 +145,22 @@ def extractXpak(tbz2file,tmpdir = None):
     # extract xpak content
     xpakpath = suckXpak(tbz2file, etpConst['packagestmpdir'])
     
-    import xpak
-    if tmpdir is None:
-	tmpdir = etpConst['packagestmpdir']+"/"+os.path.basename(tbz2file)[:-5]+"/"
-    if os.path.isdir(tmpdir):
-	spawnCommand("rm -rf "+tmpdir)
-    os.makedirs(tmpdir)
-    xpakdata = xpak.getboth(xpakpath)
-    xpak.xpand(xpakdata,tmpdir)
     try:
-	os.remove(xpakpath)
+        import xpak
+        if tmpdir is None:
+	    tmpdir = etpConst['packagestmpdir']+"/"+os.path.basename(tbz2file)[:-5]+"/"
+        if os.path.isdir(tmpdir):
+	    spawnCommand("rm -rf "+tmpdir)
+        os.makedirs(tmpdir)
+        xpakdata = xpak.getboth(xpakpath)
+        xpak.xpand(xpakdata,tmpdir)
+        try:
+            os.remove(xpakpath)
+        except:
+            pass
+        return tmpdir
     except:
-        pass
-    return tmpdir
+        return None
     
 def suckXpak(tbz2file, outputpath):
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"suckXpak: called -> "+tbz2file+" and "+outputpath)
@@ -956,10 +959,7 @@ def spliturl(url):
 def compressTarBz2(storepath,pathtocompress):
     
     cmd = "tar cjf "+storepath+" ."
-    rc = spawnCommand(
-    		"cd "+pathtocompress+";"
-    		""+cmd, "&> /dev/null"
-		)
+    rc = spawnCommand("cd "+pathtocompress+" && "+cmd, "&> /dev/null")
     return rc
 
 # tar.bz2 uncompress function...
