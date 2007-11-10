@@ -521,17 +521,22 @@ def fetchRepositoryIfNotAvailable(reponame):
    @output: database pointer or, -1 if error
 '''
 def openClientDatabase(xcache = True, generate = False):
-    if os.path.isfile(etpConst['etpdatabaseclientfilepath']) and (not generate):
+    if (not generate) and (not os.path.isfile(etpConst['etpdatabaseclientfilepath'])):
+	raise Exception,"openClientDatabase: installed packages database not found. At this stage, the only way to have it is to run 'equo database generate'. Please note: don't use Equo on a critical environment !!"
+    else:
         conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = 'client', xcache = xcache)
 	if (not etpConst['dbconfigprotect']):
 	    # config protect not prepared
-	    etpConst['dbconfigprotect'] = conn.listConfigProtectDirectories()
-	    etpConst['dbconfigprotectmask'] = conn.listConfigProtectDirectories(mask = True)
-	    etpConst['dbconfigprotect'] += [x for x in etpConst['configprotect'] if x not in etpConst['dbconfigprotect']]
-	    etpConst['dbconfigprotectmask'] += [x for x in etpConst['configprotectmask'] if x not in etpConst['dbconfigprotectmask']]
+            if (not generate):
+                etpConst['dbconfigprotect'] = conn.listConfigProtectDirectories()
+                etpConst['dbconfigprotectmask'] = conn.listConfigProtectDirectories(mask = True)
+                etpConst['dbconfigprotect'] += [x for x in etpConst['configprotect'] if x not in etpConst['dbconfigprotect']]
+                etpConst['dbconfigprotectmask'] += [x for x in etpConst['configprotectmask'] if x not in etpConst['dbconfigprotectmask']]
 	return conn
+    elif (generate):
+        
     else:
-	raise Exception,"openClientDatabase: installed packages database not found. At this stage, the only way to have it is to run 'equo database generate'. Please note: don't use Equo on a critical environment !!"
+
 
 '''
    @description: open the entropy server database and returns the pointer. This function must be used only by reagent or activator
@@ -796,7 +801,6 @@ class etpDatabase:
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in read/write.")
 	
-	# FIXME verify all this shit, for now it works...
 	if (entropyTools.dbStatus.isDatabaseAlreadyTainted()) and (not entropyTools.dbStatus.isDatabaseAlreadyBumped()):
 	    # bump revision, setting DatabaseBump causes the session to just bump once
 	    entropyTools.dbStatus.setDatabaseBump(True)

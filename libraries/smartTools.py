@@ -56,14 +56,14 @@ def smartPackagesHanlder(mypackages):
         print_error(darkred(" * ")+red("No packages specified."))
         return 1
     
-    packages = set()
+    packages = []
     for opt in mypackages:
         match = equoTools.atomMatch(opt)
         if match[0] != -1:
-            packages.add(match)
+            packages.append(match)
         else:
             print_warning(darkred(" * ")+red("Cannot find: ")+bold(opt))
-
+    packages = entropyTools.filterDuplicatedEntries(packages)
     if (not packages):
         print_error(darkred(" * ")+red("No valid packages specified."))
         return 2
