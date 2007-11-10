@@ -258,6 +258,7 @@ def packages(options):
 		    finePackages = set()
 	            # Fill uploadQueue and if something weird is found, add the packages to downloadQueue
 	            for localPackage in toBeUploaded:
+                        '''
 			if localPackage in remotePackages:
 			    # it's already on the mirror, but... is its size correct??
 			    localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+mybranch+"/"+localPackage)[6])
@@ -267,13 +268,14 @@ def packages(options):
 				    remoteSize = int(file.split()[4])
 			    if (localSize != remoteSize) and (localSize != 0):
 			        # size does not match, adding to the upload queue
+                                print localPackage
 			        uploadQueue.add(localPackage)
 			    else:
 				finePackages.add(localPackage) # just move from upload to packages
 		        else:
-		            # this means that the local package does not exist
-		            # so, we need to download it
-		            uploadQueue.add(localPackage)
+                        '''
+		        # always force upload of packages in uploaddir
+		        uploadQueue.add(localPackage)
 
 	            # if a package is in the packages directory but not online, we have to upload it
 		    # we have localPackagesRepository and remotePackages
