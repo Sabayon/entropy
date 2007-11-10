@@ -1844,7 +1844,7 @@ def database(options):
 	
 	# Now reinitialize it
 	print_info(darkred("  Initializing the new database at "+bold(etpConst['etpdatabaseclientfilepath'])), back = True)
-	clientDbconn = openClientDatabase()
+	clientDbconn = openClientDatabase(generate = True)
 	clientDbconn.initializeDatabase()
 	print_info(darkgreen("  Database reinitialized correctly at "+bold(etpConst['etpdatabaseclientfilepath'])))
 	

@@ -529,10 +529,15 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     etpData['category'] = f.readline().strip()
     f.close()
     
-    etpData['trigger'] = False
+    etpData['trigger'] = ""
     print_info(yellow(" * ")+red(info_package+"Getting package external trigger availability..."),back = True)
     if os.path.isfile(etpConst['triggersdir']+"/"+etpData['category']+"/"+etpData['name']+"/"+etpConst['triggername']):
-	etpData['trigger'] = True
+        f = open(etpConst['triggersdir']+"/"+etpData['category']+"/"+etpData['name']+"/"+etpConst['triggername'],"rb")
+        f.seek(0,2)
+        size = f.tell()
+        f.seek(0)
+	etpData['trigger'] = f.read(size)
+        f.close()
 
     print_info(yellow(" * ")+red(info_package+"Getting package CFLAGS..."),back = True)
     # Fill CFLAGS

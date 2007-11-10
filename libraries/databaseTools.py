@@ -520,8 +520,8 @@ def fetchRepositoryIfNotAvailable(reponame):
    @description: open the installed packages database and returns the pointer
    @output: database pointer or, -1 if error
 '''
-def openClientDatabase(xcache = True):
-    if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
+def openClientDatabase(xcache = True, generate = False):
+    if os.path.isfile(etpConst['etpdatabaseclientfilepath']) and (not generate):
         conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = 'client', xcache = xcache)
 	if (not etpConst['dbconfigprotect']):
 	    # config protect not prepared
@@ -952,31 +952,28 @@ class etpDatabase:
 	versiontag = ""
 	if (etpData['versiontag']):
 	    versiontag = "#"+etpData['versiontag']
-
-	#FIXME: test if trigger column exists
-	# this will be removed in 1.0
-	try:
-	    self.cursor.execute('SELECT trigger from baseinfo')
-	except:
-	    self.createTriggerColumn()
-
+        
+        trigger = 0
+        if etpData['trigger']:
+            trigger = 1
+        
 	# baseinfo
-	self.cursor.execute(
-		'INSERT into baseinfo VALUES '
-		'(NULL,?,?,?,?,?,?,?,?,?,?,?)'
-		, (	etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag,
-			catid,
-			etpData['name'],
-			etpData['version'],
-			etpData['versiontag'],
-			revision,
-			etpData['branch'],
-			etpData['slot'],
-			licid,
-			etpData['etpapi'],
-			etpData['trigger'],
-			)
-	)
+        self.cursor.execute(
+                'INSERT into baseinfo VALUES '
+                '(NULL,?,?,?,?,?,?,?,?,?,?,?)'
+                , (	etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag,
+                        catid,
+                        etpData['name'],
+                        etpData['version'],
+                        etpData['versiontag'],
+                        revision,
+                        etpData['branch'],
+                        etpData['slot'],
+                        licid,
+                        etpData['etpapi'],
+                        trigger,
+                        )
+        )
 	self.connection.commit()
 	idpackage = self.cursor.lastrowid
 
@@ -1043,6 +1040,24 @@ class etpDatabase:
 		etpData['disksize'],
 		)
 	    )
+
+        # trigger blob
+        try:
+	    self.cursor.execute(
+	    'INSERT into triggers VALUES '
+	    '(?,?)'
+	    , (	idpackage,
+		buffer(etpData['trigger']),
+	    ))
+        except:
+	    # create trigggers table, temp hack
+	    self.createTriggerTable()
+	    self.cursor.execute(
+	    'INSERT into triggers VALUES '
+	    '(?,?)'
+	    , (	idpackage,
+		buffer(etpData['trigger']),
+	    ))
 
 	# eclasses table
 	for var in etpData['eclasses']:
@@ -1388,6 +1403,11 @@ class etpDatabase:
 	try:
 	    # needed
 	    self.cursor.execute('DELETE FROM needed WHERE idpackage = '+idpackage)
+	except:
+	    pass
+	try:
+	    # triggers
+	    self.cursor.execute('DELETE FROM triggers WHERE idpackage = '+idpackage)
 	except:
 	    pass
 	
@@ -1977,20 +1997,23 @@ class etpDatabase:
     def retrieveTrigger(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveTrigger: retrieving Branch for package ID "+str(idpackage))
 
-	cache = self.fetchInfoCache(idpackage,'retrieveTrigger')
-	if cache != None: return cache
+	#cache = self.fetchInfoCache(idpackage,'retrieveTrigger')
+	#if cache != None: return cache
 	
 	try:
-	    self.cursor.execute('SELECT "trigger" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
-	    trigger = self.cursor.fetchone()[0]
+	    self.cursor.execute('SELECT "data" FROM triggers WHERE idpackage = "'+str(idpackage)+'"')
+	    trigger = self.cursor.fetchone()
+            if trigger:
+                trigger = trigger[0]
+            else:
+                trigger = ''
 	except:
 	    # generate trigger column
-	    self.createTriggerColumn()
-	    self.cursor.execute('SELECT "trigger" FROM baseinfo WHERE idpackage = "'+str(idpackage)+'"')
-	    trigger = self.cursor.fetchone()[0]
+	    self.createTriggerTable()
+	    trigger = ''
 	    pass
 	
-	self.storeInfoCache(idpackage,'retrieveTrigger',trigger)
+	#self.storeInfoCache(idpackage,'retrieveTrigger',trigger)
 	return trigger
 
     def retrieveDownloadURL(self, idpackage):
@@ -3085,10 +3108,9 @@ class etpDatabase:
 	self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
 	self.commitChanges()
 
-    def createTriggerColumn(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createTriggerColumn: called.")
-	self.cursor.execute('ALTER TABLE baseinfo ADD trigger BOOLEAN;')
-	self.cursor.execute('UPDATE baseinfo SET trigger = 0;')
+    def createTriggerTable(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createTriggerTable: called.")
+	self.cursor.execute('CREATE TABLE triggers ( idpackage INTEGER PRIMARY KEY, data BLOB );')
 	self.commitChanges()
 
     def createEclassesTable(self):

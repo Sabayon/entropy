@@ -106,6 +106,7 @@ DROP TABLE IF EXISTS eclasses;
 DROP TABLE IF EXISTS eclassesreference;
 DROP TABLE IF EXISTS needed;
 DROP TABLE IF EXISTS neededreference;
+DROP TABLE IF EXISTS triggers;
 """
 
 etpSQLInit = """
