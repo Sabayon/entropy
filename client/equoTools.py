@@ -2060,7 +2060,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 		mdbconn = openRepositoryDatabase(matchresults[1])
 		matchatom = mdbconn.retrieveAtom(matchresults[0])
 		mdbconn.closeDB()
-		updateList.add([matchatom,matchresults])
+		updateList.add((matchatom,matchresults))
 	    else:
 		removedList.add(idpackage)
                 # look for packages that would match key with any slot (for eg, gcc updates), slot changes handling
@@ -2069,7 +2069,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
                     mdbconn = openRepositoryDatabase(matchresults[1])
                     matchatom = mdbconn.retrieveAtom(matchresults[0])
                     mdbconn.closeDB()
-                    updateList.add([matchatom,matchresults])
+                    updateList.add((matchatom,matchresults))
 	else:
 	    fineList.add(idpackage)
 
@@ -2336,6 +2336,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    pkgfile = mydata[12]
 	    pkgcat = mydata[5]
 	    pkgname = mydata[1]
+            pkgtrigger = dbconn.retrieveTrigger(packageInfo[0])
 	    pkgmessages = dbconn.retrieveMessages(packageInfo[0]) # still new
 	    onDiskUsedSize += dbconn.retrieveOnDiskSize(packageInfo[0]) # still new
 	    
@@ -2472,7 +2473,8 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	infoDict['diffremoval'] = False
 	infoDict['removeconfig'] = True # we need to completely wipe configuration of conflicts
 	etpRemovalTriggers[infoDict['removeatom']] = clientDbconn.getPackageData(idpackage)
-	etpRemovalTriggers[infoDict['removeatom']]['removecontent'] = infoDict['removecontent']
+	etpRemovalTriggers[infoDict['removeatom']]['removecontent'] = infoDict['removecontent'].copy()
+	etpRemovalTriggers[infoDict['removeatom']]['trigger'] = clientDbconn.retrieveTrigger(idpackage)
 	steps = []
 	steps.append("preremove")
 	steps.append("remove")
@@ -2510,11 +2512,13 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                 actionQueue[pkgatom]['diffremoval'] = True
                 etpRemovalTriggers[pkgatom] = clientDbconn.getPackageData(actionQueue[pkgatom]['removeidpackage'])
                 etpRemovalTriggers[pkgatom]['removecontent'] = actionQueue[pkgatom]['removecontent'].copy()
+                etpRemovalTriggers[pkgatom]['trigger'] = clientDbconn.retrieveTrigger(actionQueue[pkgatom]['removeidpackage'])
             else:
                 actionQueue[pkgatom]['removeidpackage'] = -1
 
 	# get data for triggerring tool
 	etpInstallTriggers[pkgatom] = dbconn.getPackageData(idpackage)
+        etpInstallTriggers[pkgatom]['trigger'] = dbconn.retrieveTrigger(idpackage)
 
 	dbconn.closeDB()
 
@@ -2699,6 +2703,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
 	infoDict['removeconfig'] = configFiles
 	etpRemovalTriggers[infoDict['removeatom']] = clientDbconn.getPackageData(idpackage)
 	etpRemovalTriggers[infoDict['removeatom']]['removecontent'] = infoDict['removecontent'].copy()
+	etpRemovalTriggers[infoDict['removeatom']]['trigger'] = clientDbconn.retrieveTrigger(idpackage)
 	steps = []
 	steps.append("preremove")
 	steps.append("remove")
