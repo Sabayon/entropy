@@ -533,10 +533,6 @@ def openClientDatabase(xcache = True, generate = False):
                 etpConst['dbconfigprotect'] += [x for x in etpConst['configprotect'] if x not in etpConst['dbconfigprotect']]
                 etpConst['dbconfigprotectmask'] += [x for x in etpConst['configprotectmask'] if x not in etpConst['dbconfigprotectmask']]
 	return conn
-    elif (generate):
-        
-    else:
-
 
 '''
    @description: open the entropy server database and returns the pointer. This function must be used only by reagent or activator
