@@ -144,23 +144,37 @@ def extractXpak(tbz2file,tmpdir = None):
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractXpak: called -> "+tbz2file)
     # extract xpak content
     xpakpath = suckXpak(tbz2file, etpConst['packagestmpdir'])
-    
+    return unpackXpak(xpakpath,tmpdir)
+
+def readXpak(tbz2file):
+    xpakpath = suckXpak(tbz2file, etpConst['entropyunpackdir'])
+    f = open(xpakpath,"rb")
+    f.seek(0,2)
+    size = f.tell()
+    f.seek(0)
+    data = f.read(size)
+    f.close()
+    os.remove(xpakpath)
+    return data
+
+def unpackXpak(xpakfile, tmpdir = None):
     try:
         import xpak
+        import shutil
         if tmpdir is None:
-	    tmpdir = etpConst['packagestmpdir']+"/"+os.path.basename(tbz2file)[:-5]+"/"
+            tmpdir = etpConst['packagestmpdir']+"/"+os.path.basename(xpakfile)[:-5]+"/"
         if os.path.isdir(tmpdir):
-	    spawnCommand("rm -rf "+tmpdir)
+            shutil.rmtree(tmpdir,True)
         os.makedirs(tmpdir)
-        xpakdata = xpak.getboth(xpakpath)
+        xpakdata = xpak.getboth(xpakfile)
         xpak.xpand(xpakdata,tmpdir)
         try:
-            os.remove(xpakpath)
+            os.remove(xpakfile)
         except:
             pass
-        return tmpdir
     except:
         return None
+    return tmpdir
     
 def suckXpak(tbz2file, outputpath):
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"suckXpak: called -> "+tbz2file+" and "+outputpath)

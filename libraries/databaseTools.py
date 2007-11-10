@@ -3050,6 +3050,31 @@ class etpDatabase:
 	    break
 	return sane
 
+    def createXpakTable(self):
+        self.cursor.execute('CREATE TABLE xpakdata ( idpackage INTEGER PRIMARY KEY, data BLOB );')
+        self.commitChanges()
+
+    def storeXpakMetadata(self, idpackage, blob):
+        dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"storeXpakMetadata: called.")
+	self.cursor.execute(
+		'INSERT into xpakdata VALUES '
+		'(?,?)', ( int(idpackage), buffer(blob), )
+        )
+        self.commitChanges()
+
+    def retrieveXpakMetadata(self, idpackage):
+        dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveXpakMetadata: called.")
+        try:
+            self.cursor.execute('SELECT data from xpakdata where idpackage = "'+str(idpackage)+'"')
+            mydata = self.cursor.fetchone()
+            if not mydata:
+                return ""
+            else:
+                return mydata[0]
+        except:
+            return ""
+            pass
+
     #
     # FIXME: remove these when 1.0 will be out
     #

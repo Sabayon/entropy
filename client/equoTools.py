@@ -29,7 +29,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, unpackBzip2, compareMd5, bytesIntoHuman, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag
+from entropyTools import unpackGzip, unpackBzip2, compareMd5, bytesIntoHuman, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag, unpackXpak
 from databaseTools import etpDatabase, openRepositoryDatabase, openClientDatabase, openGenericDatabase, fetchRepositoryIfNotAvailable
 import triggerTools
 import confTools
@@ -1568,8 +1568,28 @@ def installPackageIntoGentooDatabase(infoDict,packageFile):
 	    shutil.rmtree(extractPath)
 	else:
 	    os.makedirs(extractPath)
-	xpakstatus = extractXpak(packageFile,extractPath)
-        if extractXpak != None:
+        
+        smartpackage = False
+        if infoDict['repository'].endswith(".tbz2"):
+            smartpackage = etpRepositories[infoDict['repository']]['smartpackage']
+        
+        if (smartpackage):
+            # we need to get the .xpak from database
+            xdbconn = openRepositoryDatabase(infoDict['repository'])
+            xpakdata = xdbconn.retrieveXpakMetadata(infoDict['idpackage'])
+            if xpakdata:
+                # save into a file
+                f = open(extractPath+".xpak","wb")
+                f.write(xpakdata)
+                f.flush()
+                f.close()
+                xpakstatus = unpackXpak(extractPath+".xpak",extractPath)
+            else:
+                xpakstatus = None
+            xdbconn.closeDB()
+        else:
+            xpakstatus = extractXpak(packageFile,extractPath)
+        if xpakstatus != None:
             if not os.path.isdir(portDbDir+infoDict['category']):
                 os.makedirs(portDbDir+infoDict['category'])
             destination = portDbDir+infoDict['category']+"/"+infoDict['name']+"-"+infoDict['version']
@@ -2003,7 +2023,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	return 1,-1
 
     branches = (etpConst['branch'],) # FIXME: this will be automatically handled
-    updateList = []
+    updateList = set()
     fineList = set()
     removedList = set()
     syncRepositories()
@@ -2022,14 +2042,12 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	slot = clientDbconn.retrieveSlot(idpackage)
 	atomkey = category+"/"+name
 	# search in the packages
-	# FIXME: is it useful to do two atomMatch ??
 	match = atomMatch(atom)
 	if match[0] == -1: # atom has been changed, or removed?
 	    tainted = True
 	else: # not changed, is the revision changed?
 	    adbconn = openRepositoryDatabase(match[1])
 	    arevision = adbconn.retrieveRevision(match[0])
-	    #print atom,"<-->",adbconn.retrieveAtom(match[0])
 	    adbconn.closeDB()
 	    if revision != arevision:
 		tainted = True
@@ -2042,11 +2060,16 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 		mdbconn = openRepositoryDatabase(matchresults[1])
 		matchatom = mdbconn.retrieveAtom(matchresults[0])
 		mdbconn.closeDB()
-		#print green("match: ")+str(matchresults[0])
-		updateList.append([matchatom,matchresults])
+		updateList.add([matchatom,matchresults])
 	    else:
 		removedList.add(idpackage)
-		#print red("not match: ")+str(atom)
+                # look for packages that would match key with any slot (for eg, gcc updates), slot changes handling
+                matchresults = atomMatch(atomkey, matchBranches = branches)
+                if matchresults[0] != -1:
+                    mdbconn = openRepositoryDatabase(matchresults[1])
+                    matchatom = mdbconn.retrieveAtom(matchresults[0])
+                    mdbconn.closeDB()
+                    updateList.add([matchatom,matchresults])
 	else:
 	    fineList.add(idpackage)
 
@@ -2137,9 +2160,12 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	        etpRepositories[basefile]['pkgpath'] = os.path.realpath(pkg) # extra info added
 	        etpRepositories[basefile]['configprotect'] = set()
 	        etpRepositories[basefile]['configprotectmask'] = set()
+                etpRepositories[basefile]['smartpackage'] = False # extra info added
 	        mydbconn = openGenericDatabase(dbfile)
 	        # read all idpackages
 	        myidpackages = mydbconn.listAllIdpackages() # all branches admitted from external files
+                if len(myidpackages) > 1:
+                    etpRepositories[basefile]['smartpackage'] = True
 	        for myidpackage in myidpackages:
                     foundAtoms.append([pkg,(int(myidpackage),basefile)])
                 mydbconn.closeDB()

@@ -124,6 +124,7 @@ def smartpackagegenerator(matchedPackages):
     dbfile = unpackdir+"/db/merged.db"
     mergeDbconn = openGenericDatabase(dbfile, dbname = "client")
     mergeDbconn.initializeDatabase()
+    mergeDbconn.createXpakTable()
     tmpdbfile = dbfile+"--readingdata"
     for package in matchedPackages:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red("collecting Entropy metadata"))
@@ -131,10 +132,18 @@ def smartpackagegenerator(matchedPackages):
         # read db and add data to mergeDbconn
         mydbconn = openGenericDatabase(tmpdbfile)
         idpackages = mydbconn.listAllIdpackages()
+        
         for myidpackage in idpackages:
             data = mydbconn.getPackageData(myidpackage)
+            if len(idpackages) == 1:
+                # just a plain package that would like to become smart
+                xpakdata = entropyTools.readXpak(etpConst['entropyworkdir']+"/"+matchedAtoms[package]['download'])
+            else:
+                xpakdata = mydbconn.retrieveXpakMetadata(myidpackage) # already a smart package
             # add
-            mergeDbconn.handlePackage(etpData = data, forcedRevision = matchedAtoms[package]['revision']) # get the original rev
+            idpk, rev, y, status = mergeDbconn.handlePackage(etpData = data, forcedRevision = matchedAtoms[package]['revision']) # get the original rev
+            del y
+            mergeDbconn.storeXpakMetadata(idpk,xpakdata)
         mydbconn.closeDB()
         os.remove(tmpdbfile)
     
