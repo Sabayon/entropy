@@ -1246,11 +1246,14 @@ def database(options):
 	    # catch the names
 	    pkgs2check = []
 	    for pkg in mypackages:
-		result = dbconn.atomMatch(pkg)
-                if result[0] != -1:
-                    iatom = dbconn.retrieveAtom(result[0])
-                    ibranch = dbconn.retrieveBranch(result[0])
-                    pkgs2check.append((iatom,result[0],ibranch))
+		result = dbconn.atomMatch(pkg, multiMatch = True, matchBranches = etpConst['branches'])
+                if result[1] == 0:
+                    for idresult in result[0]:
+                        iatom = dbconn.retrieveAtom(idresult)
+                        ibranch = dbconn.retrieveBranch(idresult)
+                        pkgs2check.append((iatom,idresult,ibranch))
+                else:
+                    print_warning(red("ATTENTION: ")+blue("cannot match: ")+bold(pkg))
 
 	if (not worldSelected):
 	    print_info(red("   This is the list of the packages that would be checked:"))
@@ -1372,9 +1375,10 @@ def database(options):
 	    # catch the names
 	    pkgs2check = []
 	    for pkg in mypackages:
-		result = dbconn.atomMatch(pkg)
-                if result[0] != -1:
-                    pkgs2check.append(result[0])
+		result = dbconn.atomMatch(pkg, multiMatch = True, matchBranches = etpConst['branches'])
+                if result[1] == 0:
+                    for idresult in result[0]:
+                        pkgs2check.append(idresult)
                 else:
                     print_warning(red("ATTENTION: ")+blue("cannot match: ")+bold(pkg))
 
@@ -1422,6 +1426,8 @@ def database(options):
                     print_warning("    "+red("   -> Digest verification of ")+green(pkgfilename)+bold(" not supported"))
                 elif len(ck) == 32:
                     ckOk = True
+                else:
+                    print_warning("    "+red("   -> Digest verification of ")+green(pkgfilename)+bold(" failed for unknown reasons"))
 
                 if (ckOk):
                     pkgMatch += 1
