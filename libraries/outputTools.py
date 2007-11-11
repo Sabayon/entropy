@@ -161,13 +161,11 @@ def xtermTitle(mystr, raw=False):
 	if dotitles and "TERM" in os.environ and sys.stderr.isatty():
 		myt=os.environ["TERM"]
 		legal_terms = ["xterm","Eterm","aterm","rxvt","screen","kterm","rxvt-unicode","gnome"]
-		for term in legal_terms:
-			if myt.startswith(term):
-				if not raw:
-					mystr = "\x1b]0;%s\x07" % mystr
-				sys.stderr.write(mystr)
-				sys.stderr.flush()
-				break
+                if myt in legal_terms:
+			if not raw:
+				mystr = "\x1b]0;%s\x07" % mystr
+			sys.stderr.write(mystr)
+			sys.stderr.flush()
 
 default_xterm_title = None
 
@@ -264,9 +262,7 @@ def print_generic(msg): # here we'll wrap any nice formatting
 def writechar(char):
 	sys.stdout.write(char); sys.stdout.flush()
 
-# function that reads user input printing a request like this:
-# Your name: <user input> <ENTER> where "Your name:" is request
-# the user input is returned
 def readtext(request):
+    xtermTitle("Entropy needs your attention")
     text = raw_input(request)
     return text

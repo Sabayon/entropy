@@ -1109,6 +1109,7 @@ def umountProc():
 	return True
 
 def askquestion(prompt):
+    xtermTitle("Entropy got a question for you")
     responses, colours = ["Yes", "No"], [green, red]
     print darkgreen(prompt),
     try:

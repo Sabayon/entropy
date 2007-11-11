@@ -1149,14 +1149,26 @@ class etpDatabase:
 			)
 	        )
 	
-	# is it a system package?
-	if etpData['systempackage']:
-	    self.cursor.execute(
-		'INSERT into systempackages VALUES '
-		'(?)'
-		, (	idpackage,
-			)
-	    )
+        try:
+            # is it a system package?
+            if etpData['systempackage']:
+                self.cursor.execute(
+                    'INSERT into systempackages VALUES '
+                    '(?)'
+                    , (	idpackage,
+                            )
+                )
+        except:
+            # FIXME: temp workaround, create systempackages table
+            self.createSystemPackagesTable()
+            # is it a system package?
+            if etpData['systempackage']:
+                self.cursor.execute(
+                    'INSERT into systempackages VALUES '
+                    '(?)'
+                    , (	idpackage,
+                            )
+                )
 
 	# create new protect if it doesn't exist
 	try:
@@ -1383,8 +1395,11 @@ class etpDatabase:
 	    self.cursor.execute('DELETE FROM messages WHERE idpackage = '+idpackage)
 	except:
 	    pass
-	# systempackage
-	self.cursor.execute('DELETE FROM systempackages WHERE idpackage = '+idpackage)
+        try:
+	    # systempackage
+	    self.cursor.execute('DELETE FROM systempackages WHERE idpackage = '+idpackage)
+        except:
+            pass
 	try:
 	    # counter
 	    self.cursor.execute('DELETE FROM counters WHERE idpackage = '+idpackage)
@@ -2601,7 +2616,12 @@ class etpDatabase:
 	cache = self.fetchInfoCache(idpackage,'isSystemPackage')
 	if cache != None: return cache
 
-	self.cursor.execute('SELECT idpackage FROM systempackages WHERE idpackage = "'+str(idpackage)+'"')
+        try:
+	    self.cursor.execute('SELECT idpackage FROM systempackages WHERE idpackage = "'+str(idpackage)+'"')
+        except: # FIXME: remove this for 1.0
+            self.createSystemPackagesTable()
+            self.cursor.execute('SELECT idpackage FROM systempackages WHERE idpackage = "'+str(idpackage)+'"')
+        
 	result = self.cursor.fetchone()
 	rslt = False
 	if result:
@@ -3128,7 +3148,12 @@ class etpDatabase:
 	self.cursor.execute('CREATE TABLE needed ( idpackage INTEGER, idneeded INTEGER );')
 	self.cursor.execute('CREATE TABLE neededreference ( idneeded INTEGER PRIMARY KEY, library VARCHAR );')
 	self.commitChanges()
-
+    
+    def createSystemPackagesTable(self):
+        dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createSystemPackagesTable: called.")
+        self.cursor.execute('CREATE TABLE systempackages ( idpackage INTEGER );')
+	self.commitChanges()
+    
     def createProtectTable(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createProtectTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS configprotect;')

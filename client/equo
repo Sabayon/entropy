@@ -141,6 +141,7 @@ elif (options[0] == "--info"):
     sys.exit(0)
 
 try:
+    rc = 0
     # sync mirrors tool
     if (options[0] == "update") or (options[0] == "repoinfo") or (options[0] == "status"):
         if options[0] == "update":

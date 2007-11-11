@@ -2069,7 +2069,10 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
                     mdbconn = openRepositoryDatabase(matchresults[1])
                     matchatom = mdbconn.retrieveAtom(matchresults[0])
                     mdbconn.closeDB()
-                    updateList.add((matchatom,matchresults))
+                    # compare versions
+                    unsatisfied, satisfied = filterSatisfiedDependencies((matchatom,))
+                    if unsatisfied:
+                        updateList.add((matchatom,matchresults))
 	else:
 	    fineList.add(idpackage)
 
@@ -2110,7 +2113,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	        time.sleep(5)
 	
 	    # run removePackages with --nodeps
-	    removePackages(atomsdata = removedList, ask = ask, verbose = verbose, deps = False, systemPackagesCheck = False)
+	    removePackages(atomsdata = removedList, ask = ask, verbose = verbose, deps = False, systemPackagesCheck = False, configFiles = True)
 	else:
 	    print_info(red(" @@ ")+blue("Calculation complete."))
 
@@ -2461,11 +2464,13 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     
     # running tasks
     totalqueue = str(len(runQueue))
+    totalremovalqueue = str(len(removalQueue))
     currentqueue = 0
     currentremovalqueue = 0
     clientDbconn = openClientDatabase()
     
     for idpackage in removalQueue:
+        currentremovalqueue += 1
 	infoDict = {}
 	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
 	infoDict['removecontent'] = clientDbconn.retrieveContent(idpackage)
@@ -2480,7 +2485,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	steps.append("remove")
 	steps.append("postremove")
 	for step in steps:
-	    rc = stepExecutor(step,infoDict)
+	    rc = stepExecutor(step,infoDict,str(currentremovalqueue)+"/"+totalremovalqueue)
 	    if (rc != 0):
 		clientDbconn.closeDB()
                 dirscleanup()
@@ -2534,10 +2539,11 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    steps.append("showmessages")
 	
 	#print "steps for "+pkgatom+" -> "+str(steps)
+        
 	print_info(red(" @@ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
 	
 	for step in steps:
-	    rc = stepExecutor(step,actionQueue[pkgatom])
+	    rc = stepExecutor(step,actionQueue[pkgatom],str(currentqueue)+"/"+totalqueue)
 	    if (rc != 0):
 		clientDbconn.closeDB()
                 dirscleanup()
@@ -2694,7 +2700,9 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
     for idpackage in plainRemovalQueue:
 	removalQueue.append(idpackage)
     
+    currentqueue = 0
     for idpackage in removalQueue:
+        currentqueue += 1
 	infoDict = {}
 	infoDict['removeidpackage'] = idpackage
 	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
@@ -2709,7 +2717,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
 	steps.append("remove")
 	steps.append("postremove")
 	for step in steps:
-	    rc = stepExecutor(step,infoDict)
+	    rc = stepExecutor(step,infoDict,str(currentqueue)+"/"+str(len(removalQueue)))
 	    if (rc != 0):
 		clientDbconn.closeDB()
 		return -1,rc
@@ -2807,15 +2815,17 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
     @description: execute the requested step (it is only used by the CLI client)
     @input: 	step -> name of the step to execute
     		infoDict -> dictionary containing all the needed information collected by installPackages() -> actionQueue[pkgatom]
+                loopString -> used to print to xterm title bar something like "10/900 - equo"
     @output:	-1,"description" for error ; 0,True for no errors
 '''
-def stepExecutor(step,infoDict):
+def stepExecutor(step,infoDict, loopString = None):
 
     clientDbconn = openClientDatabase()
     output = 0
     
     if step == "fetch":
-	print_info(red("   ## ")+blue("Fetching package: ")+red(os.path.basename(infoDict['download'])))
+	print_info(red("   ## ")+blue("Fetching archive: ")+red(os.path.basename(infoDict['download'])))
+        xtermTitle(loopString+' Fetching archive: '+os.path.basename(infoDict['download']))
 	output = fetchFileOnMirrors(infoDict['repository'],infoDict['download'],infoDict['checksum'])
 	if output < 0:
 	    print_error(red("Package cannot be fetched. Try to run: '")+bold("equo update")+red("' and this command again. Error "+str(output)))
@@ -2824,10 +2834,11 @@ def stepExecutor(step,infoDict):
 	output = matchChecksum(infoDict)
     
     elif step == "install":
+        compatstring = ''
 	if (etpConst['gentoo-compat']):
-	    print_info(red("   ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download']))+" ## w/Gentoo compatibility")
-	else:
-	    print_info(red("   ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['download'])))
+            compatstring = " ## w/Gentoo compatibility"
+	print_info(red("   ## ")+blue("Installing package: ")+red(os.path.basename(infoDict['atom']))+compatstring)
+        xtermTitle(loopString+' Installing package: '+os.path.basename(infoDict['atom'])+compatstring)
 	output = installPackage(infoDict)
 	if output != 0:
 	    if output == 512:
@@ -2841,6 +2852,7 @@ def stepExecutor(step,infoDict):
 	if (etpConst['gentoo-compat']):
 	    gcompat = " ## w/Gentoo compatibility"
 	print_info(red("   ## ")+blue("Removing installed package: ")+red(infoDict['removeatom'])+gcompat)
+        xtermTitle(loopString+' Removing installed package: '+os.path.basename(infoDict['removeatom'])+gcompat)
 	output = removePackage(infoDict)
 	if output != 0:
 	    errormsg = red("An error occured while trying to remove the package. Check if you have enough disk space on your hard disk. Error "+str(output))

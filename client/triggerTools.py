@@ -42,7 +42,10 @@ INITSERVICES_DIR="/var/lib/init.d/"
 def postinstall(pkgdata):
     
     functions = set()
-    
+
+    if pkgdata['trigger']:
+        functions.add('call_ext_postinstall')
+
     # fonts configuration
     if pkgdata['category'] == "media-fonts":
 	functions.add("fontconfig")
@@ -118,6 +121,9 @@ def preinstall(pkgdata):
     
     functions = set()
     
+    if pkgdata['trigger']:
+        functions.add('call_ext_preinstall')
+    
     # prepare content
     mycnt = set(pkgdata['content'])
     
@@ -135,7 +141,10 @@ def preinstall(pkgdata):
 def postremove(pkgdata):
     
     functions = set()
-    
+
+    if pkgdata['trigger']:
+        functions.add('call_ext_postremove')
+
     # opengl configuration
     if (pkgdata['category'] == "x11-drivers") and (pkgdata['name'].startswith("nvidia-") or pkgdata['name'].startswith("ati-")):
 	functions.add("openglsetup_xorg")
@@ -185,6 +194,10 @@ def postremove(pkgdata):
 def preremove(pkgdata):
     
     functions = set()
+
+    if pkgdata['trigger']:
+        functions.add('call_ext_preremove')
+
     # prepare content
     mycnt = set(pkgdata['removecontent'])
     
@@ -195,6 +208,42 @@ def preremove(pkgdata):
 	    functions.add('mountboot')
 
     return functions
+
+########################################################
+####
+##   External triggers support functions
+#
+
+def call_ext_preinstall(pkgdata):
+    rc = call_ext_generic(pkgdata,'preinstall')
+    return rc
+
+def call_ext_postinstall(pkgdata):
+    rc = call_ext_generic(pkgdata,'postinstall')
+    return rc
+
+def call_ext_preremove(pkgdata):
+    rc = call_ext_generic(pkgdata,'preremove')
+    return rc
+
+def call_ext_postremove(pkgdata):
+    rc = call_ext_generic(pkgdata,'postremove')
+    return rc
+
+def call_ext_generic(pkgdata, stage):
+
+    triggerfile = etpConst['entropyunpackdir']+"/trigger-"+str(entropyTools.getRandomNumber())
+    while os.path.isfile(tmptriggerfile):
+        triggerfile = etpConst['entropyunpackdir']+"/trigger-"+str(entropyTools.getRandomNumber())
+    f = open(triggerfile,"w")
+    for x in pkgdata['trigger']:
+        f.write(x)
+    f.close()
+    
+    execfile(triggerfile)
+    
+    os.remove(triggerfile)
+    return my_ext_status
 
 ########################################################
 ####

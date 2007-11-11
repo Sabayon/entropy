@@ -8,19 +8,16 @@
 	@ postinstall(): triggered after injecting data into the database and copying files on the system
 	@ postremove(): triggered after removing files from the system and from the database
     
-    - You are allowed to not specify one or more of them.
-    - Each function must have as input arguments pkgdata = None. Where pkgdata is a python dict containing package information 
-    	>>> databaseTools.etpDatabase.getPackageData(idpackage)
-    - Each function must return 0 in case of success and >0 in case of issues. Entropy will show the error code to the user.
+    - You must always specify them.
+    - Each function can only print errors and ONLY in case of critical ones, return != 0 that will be grabbed by the trigger (setting ext_status)
 
     How it works:
-	- this file will be stored inside the .tbz2 injected entropy database
-	- entropy database will be extracted and placed into the unpack directory
+	- this file will be stored inside the entropy database
 	- trigger code will be extracted and saved into a file with the name trigger inside the package unpack directory
 	- will be issued:
 	 	stage = 'postinstall' # this can be postinstall, preinstall, postremove, preremove
 		execfile(etpConst['entropyunpackdir']+...+"trigger")
-	- code will have access to all the entropy functions and modules. it will be executed inside triggerTools
+	- code will have access to the entropy package dictionary and will be executed inside triggerTools (postinstall(),preinstall(),postremove(),preremove())
 
     Example of pkgdata:
 	{
@@ -65,29 +62,32 @@
 '''
    space for real triggers
 '''
-def ext_postinstall():
-	print printhello()+" postinstall"
+def ext_postinstall(pkgdata):
+	print my_ext_printhello()+" postinstall"
 	return 0
 
-def ext_preinstall():
-	print printhello()+" preinstall"
+def ext_preinstall(pkgdata):
+	print my_ext_printhello()+" preinstall"
 	return 0
 
-def ext_postremove():
-	print printhello()+" postremove"
+def ext_postremove(pkgdata):
+	print my_ext_printhello()+" postremove"
 	return 0
 
-def ext_preremove():
-	print printhello()+" preremove"
+def ext_preremove(pkgdata):
+	print my_ext_printhello()+" preremove"
 	return 0
 
 '''
    space for private functions
+   Important: function must be declared globally and have suffix my_ext_
 '''
-def printhello():
+global my_ext_printhello
+def my_ext_printhello():
 	return "hello!"
 
 '''
    run the selected function
 '''
-eval("ext_"+stage)()
+global my_ext_status
+my_ext_status = eval("ext_"+stage)(pkgdata)
