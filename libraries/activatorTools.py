@@ -70,8 +70,8 @@ def sync(options, justTidy = False):
             # if packages are ok, we can sync the database
 	    database(["sync"])
 	    # now check packages checksum
-	    import databaseTools
-	    databaseTools.database(['md5check','--noask'])
+	    import reagentTools
+	    reagentTools.database(['md5check','--noask'])
 	    time.sleep(2)
 	    if (not activatorRequestNoAsk):
 	        # ask question
@@ -670,8 +670,8 @@ def packages(options):
 
     # Now we should start to check all the packages in the packages directory
     if (activatorRequestPackagesCheck):
-	import databaseTools
-	databaseTools.database(['md5check'])
+	import reagentTools
+	reagentTools.database(['md5check'])
 	
 
 def database(options):

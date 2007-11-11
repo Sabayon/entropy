@@ -263,5 +263,5 @@ def writechar(char):
 
 def readtext(request):
     xtermTitle("Entropy needs your attention")
-    text = raw_input(request)
+    text = raw_input(request) # using readline module
     return text

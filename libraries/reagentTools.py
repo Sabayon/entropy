@@ -949,7 +949,7 @@ def database(options):
 		    pass
 	    dbconn.closeDB()
 	    print_info(red(" * ")+bold("WARNING")+red(": database file already exists. Overwriting."))
-	    rc = entropyTools.askquestion("\n     Do you want to continue ?")
+	    rc = askquestion("\n     Do you want to continue ?")
 	    if rc == "No":
 	        exit(0)
 	    os.remove(etpConst['etpdatabasefilepath'])
@@ -1099,7 +1099,7 @@ def database(options):
 	    atom = dbconn.retrieveAtom(pkg)
 	    print_info(red("  (*) ")+bold(atom))
 
-	rc = entropyTools.askquestion("     Would you like to continue ?")
+	rc = askquestion("     Would you like to continue ?")
 	if rc == "No":
 	    exit(0)
 	
@@ -1141,7 +1141,7 @@ def database(options):
 	    # change filename remotely
 	    for uri in etpConst['activatoruploaduris']:
 		
-		print_info(green(" * ")+darkred(atom+": ")+red("Moving file remotely on: ")+entropyTools.extractFTPHostFromUri(uri), back = True)
+		print_info(green(" * ")+darkred(atom+": ")+red("Moving file remotely on: ")+extractFTPHostFromUri(uri), back = True)
 		
 	        ftp = mirrorTools.handlerFTP(uri)
 	        ftp.setCWD(etpConst['binaryurirelativepath'])
@@ -1202,7 +1202,7 @@ def database(options):
 	    print_info(red("\t (*) ")+bold(pkgatom)+blue(" [")+red(branch)+blue("]"))
 
 	# ask to continue
-	rc = entropyTools.askquestion("     Would you like to continue ?")
+	rc = askquestion("     Would you like to continue ?")
 	if rc == "No":
 	    exit(0)
 	
@@ -1246,9 +1246,11 @@ def database(options):
 	    # catch the names
 	    pkgs2check = []
 	    for pkg in mypackages:
-		results = dbconn.searchPackages(pkg)
-		for i in results:
-		    pkgs2check.append(i)
+		result = dbconn.atomMatch(pkg)
+                if result[0] != -1:
+                    iatom = dbconn.retrieveAtom(result[0])
+                    ibranch = dbconn.retrieveBranch(result[0])
+                    pkgs2check.append((iatom,result[0],ibranch))
 
 	if (not worldSelected):
 	    print_info(red("   This is the list of the packages that would be checked:"))
@@ -1274,7 +1276,7 @@ def database(options):
 		toBeDownloaded.append([idpackage,pkgfile,pkgbranch])
 	
 	if (not databaseRequestNoAsk):
-	    rc = entropyTools.askquestion("     Would you like to continue ?")
+	    rc = askquestion("     Would you like to continue ?")
 	    if rc == "No":
 	        exit(0)
 
@@ -1319,7 +1321,7 @@ def database(options):
 	    pkgfile = os.path.basename(pkgfile)
 	    print_info("  ("+red(str(currentcounter))+"/"+blue(totalcounter)+") "+red("Checking hash of ")+yellow(pkgfile)+red(" in branch: ")+blue(pkgbranch)+red(" ..."), back = True)
 	    storedmd5 = dbconn.retrieveDigest(pkg)
-	    result = entropyTools.compareMd5(etpConst['packagesbindir']+"/"+pkgbranch+"/"+pkgfile,storedmd5)
+	    result = compareMd5(etpConst['packagesbindir']+"/"+pkgbranch+"/"+pkgfile,storedmd5)
 	    if (result):
 		# match !
 		pkgMatch += 1
@@ -1346,3 +1348,97 @@ def database(options):
 	    print_info(green("     Number of happy downloads:\t\t")+str(pkgDownloadedSuccessfully))
 	    print_info(red("     Number of failed downloads:\t\t")+str(pkgDownloadedError))
 
+
+    # used by reagent
+    elif (options[0] == "md5remote"):
+
+	print_info(green(" * ")+red("Integrity verification of the selected packages:"))
+
+	mypackages = options[1:]
+	dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+	worldSelected = False
+	
+	if (len(mypackages) == 0):
+	    # check world
+	    # create packages list
+	    worldSelected = True
+	    pkgs2check = dbconn.listAllIdpackages()
+	elif (mypackages[0] == "world"):
+	    # check world
+	    # create packages list
+	    worldSelected = True
+	    pkgs2check = dbconn.listAllIdpackages()
+	else:
+	    # catch the names
+	    pkgs2check = []
+	    for pkg in mypackages:
+		result = dbconn.atomMatch(pkg)
+                if result[0] != -1:
+                    pkgs2check.append(result[0])
+                else:
+                    print_warning(red("ATTENTION: ")+blue("cannot match: ")+bold(pkg))
+
+	if (not worldSelected):
+	    print_info(red("   This is the list of the packages that would be checked:"))
+	else:
+	    print_info(red("   All the packages in the Entropy Packages repository will be checked."))
+	
+	
+        if (not worldSelected):
+	    for idpackage in pkgs2check:
+	        pkgatom = dbconn.retrieveAtom(idpackage)
+                pkgbranch = dbconn.retrieveBranch(idpackage)
+                pkgfile = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
+                print_info(green("   - ")+red(pkgatom)+" -> "+bold(str(pkgbranch)+"/"+pkgfile))
+	
+	if (not databaseRequestNoAsk):
+	    rc = askquestion("     Would you like to continue ?")
+	    if rc == "No":
+	        exit(0)
+
+        import remoteTools
+        for uri in etpConst['activatoruploaduris']:
+
+            # statistic vars
+            pkgMatch = 0
+            pkgNotMatch = 0
+            currentcounter = 0
+            print_info(green(" * ")+yellow("Working on ")+bold(extractFTPHostFromUri(uri)+red(" mirror.")))
+            brokenPkgsList = []
+            totalcounter = str(len(pkgs2check))
+
+
+            for idpackage in pkgs2check:
+
+                currentcounter += 1
+                pkgfile = dbconn.retrieveDownloadURL(idpackage)
+                pkgbranch = dbconn.retrieveBranch(idpackage)
+                pkgfilename = os.path.basename(pkgfile)
+
+                print_info("  ("+red(str(currentcounter))+"/"+blue(totalcounter)+") "+red("Checking hash of ")+blue(pkgbranch+"/"+pkgfilename), back = True)
+                ckOk = False
+                ck = remoteTools.getRemotePackageChecksum(extractFTPHostFromUri(uri),pkgfilename, pkgbranch)
+                if ck == None:
+                    print_warning("    "+red("   -> Digest verification of ")+green(pkgfilename)+bold(" not supported"))
+                elif len(ck) == 32:
+                    ckOk = True
+
+                if (ckOk):
+                    pkgMatch += 1
+                else:
+                    pkgNotMatch += 1
+                    print_error(red("   Package ")+blue(pkgbranch+"/"+pkgfilename)+red(" is NOT healthy."))
+                    brokenPkgsList.append(pkgbranch+"/"+pkgfilename)
+
+            if (brokenPkgsList):
+                print_info(blue(" *  This is the list of broken packages: "))
+                for bp in brokenPkgsList:
+                    print_info(red("    * Package: ")+bold(bp))
+
+            # print stats
+            print_info(blue(" *  Statistics for "+extractFTPHostFromUri(uri)+":"))
+            print_info(yellow("     Number of checked packages:\t\t")+str(pkgMatch+pkgNotMatch))
+            print_info(green("     Number of healthy packages:\t\t")+str(pkgMatch))
+            print_info(red("     Number of broken packages:\t\t")+str(pkgNotMatch))
+
+        dbconn.closeDB()
