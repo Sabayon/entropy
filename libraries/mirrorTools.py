@@ -40,13 +40,7 @@ mirrorLog = logTools.LogFile(level=etpConst['mirrorsloglevel'],filename = etpCon
 class handlerFTP:
 
     # this must be run before calling the other functions
-    def __init__(self, ftpuri, debug = None):
-
-	# ftp debugging
-	if entropyTools.getDebug():
-	    debug = True
-	else:
-	    debug = False
+    def __init__(self, ftpuri):
 
         # import FTP modules
         socket.setdefaulttimeout(60)
@@ -89,9 +83,9 @@ class handlerFTP:
 
 	self.ftpconn = ftplib.FTP(self.ftphost)
 	# enable debug?
-	if debug:
-	    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.__init__: DEBUG enabled.")
-	    self.ftpconn.set_debuglevel(2)
+	#if debug:
+	#    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.__init__: DEBUG enabled.")
+	#    self.ftpconn.set_debuglevel(2)
 	
 	self.ftpconn.login(self.ftpuser,self.ftppassword)
 	# change to our dir

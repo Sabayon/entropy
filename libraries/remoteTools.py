@@ -98,7 +98,7 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
 	remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"downloadFile: Exception caught for: "+str(url)+" -> "+str(e))
 	if (showSpeed):
 	    speedUpdater.kill()
-	        socket.setdefaulttimeout(2)
+	    socket.setdefaulttimeout(2)
 	return "-3"
     try:
 	maxsize = remotefile.headers.get("content-length")
