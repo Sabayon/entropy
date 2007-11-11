@@ -20,9 +20,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import sys
 import os
-import commands
+from commands import getoutput
 from outputTools import *
 from entropyConstants import *
 import entropyTools
@@ -566,7 +565,7 @@ def update_scrollkeeper_db():
 def reload_gconf_db():
     rc = os.system('pgrep -x gconfd-2')
     if (rc == 0):
-	pids = commands.getoutput('pgrep -x gconfd-2').split("\n")
+	pids = getoutput('pgrep -x gconfd-2').split("\n")
 	pidsstr = ''
 	for pid in pids:
 	    if pid:
@@ -716,7 +715,7 @@ def get_grub_boot_dev():
 	print "DEBUG: cannot find grub!! Cannot properly configure kernel! Defaulting to (hd0,0)"
 	return "(hd0,0)"
     
-    gboot = commands.getoutput("df /boot").split("\n")[-1].split()[0]
+    gboot = getoutput("df /boot").split("\n")[-1].split()[0]
     if gboot.startswith("/dev/"):
 	# it's ok - handle /dev/md
 	if gboot.startswith("/dev/md"):

@@ -20,9 +20,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import sys
-import commands
-sys.path.append('../libraries')
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *

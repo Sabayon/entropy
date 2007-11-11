@@ -20,11 +20,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import sys
+from sys import path, getfilesystemencoding
 import os
-import re
 import shutil
-sys.path.append('/usr/lib/entropy/libraries')
+path.append('/usr/lib/entropy/libraries')
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
@@ -1225,14 +1224,14 @@ def removePackage(infoDict):
 	# collision check
 	if etpConst['collisionprotect'] > 0:
 	    if file in contentCache:
-		print_warning(darkred("   ## ")+red("Collision found during remove for ")+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
-        	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove for "+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
+		print_warning(darkred("   ## ")+red("Collision found during remove for ")+file.encode(getfilesystemencoding())+" - cannot overwrite")
+        	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove for "+file.encode(getfilesystemencoding())+" - cannot overwrite")
 		continue
 	    try:
 	        del contentCache[file]
 	    except:
 	        pass
-	file = file.encode(sys.getfilesystemencoding())
+	file = file.encode(getfilesystemencoding())
 
 	protected = False
 	if (not infoDict['removeconfig']) and (not infoDict['diffremoval']):
@@ -1324,7 +1323,7 @@ def installPackage(infoDict):
     
     packageContent = []
     # setup imageDir properly
-    imageDir = imageDir.encode(sys.getfilesystemencoding())
+    imageDir = imageDir.encode(getfilesystemencoding())
     # merge data into system
     for currentdir,subdirs,files in os.walk(imageDir):
 	# create subdirs
@@ -1359,8 +1358,8 @@ def installPackage(infoDict):
 	    
 	    if etpConst['collisionprotect'] > 1:
 		if tofile in contentCache:
-		    print_warning(darkred("   ## ")+red("Collision found during install for ")+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
-    		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! Collision found during install for "+file.encode(sys.getfilesystemencoding())+" - cannot overwrite")
+		    print_warning(darkred("   ## ")+red("Collision found during install for ")+file.encode(getfilesystemencoding())+" - cannot overwrite")
+    		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! Collision found during install for "+file.encode(getfilesystemencoding())+" - cannot overwrite")
     		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[collision] Protecting config file: "+str(tofile))
 		    print_warning(darkred("   ## ")+red("[collision] Protecting config file: ")+str(tofile))
 		    continue
@@ -1822,13 +1821,13 @@ def database(options):
 	print_warning(bold("####### ATTENTION -> ")+red("Please use this function ONLY if you are using an Entropy-enabled Sabayon distribution."))
 	rc = askquestion("     Can I continue ?")
 	if rc == "No":
-	    sys.exit(0)
+	    return 0
 	rc = askquestion("     Are you REALLY sure ?")
 	if rc == "No":
-	    sys.exit(0)
+	    return 0
 	rc = askquestion("     Do you even know what you're doing ?")
 	if rc == "No":
-	    sys.exit(0)
+	    return 0
 
 	# clean caches
 	import cacheTools
@@ -1912,13 +1911,13 @@ def database(options):
 	print_warning(bold("####### ATTENTION -> ")+red("Please use this function ONLY if you are using an Entropy-enabled Sabayon distribution."))
 	rc = askquestion("     Can I continue ?")
 	if rc == "No":
-	    sys.exit(0)
+	    return 0
 	rc = askquestion("     Are you REALLY sure ?")
 	if rc == "No":
-	    sys.exit(0)
+	    return 0
 	rc = askquestion("     Do you even know what you're doing ?")
 	if rc == "No":
-	    sys.exit(0)
+	    return 0
 	
 	# clean caches
 	import cacheTools

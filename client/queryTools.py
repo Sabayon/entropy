@@ -20,9 +20,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import sys
 import os
-sys.path.append('../libraries')
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
@@ -329,8 +327,8 @@ def searchOrphans(quiet = False):
 	            foundFiles.add(file)
     totalfiles = len(foundFiles)
     if (not quiet):
-	print_info(red(" @@ ")+blue("Analyzed directories: ")+string.join(etpConst['filesystemdirs']," "))
-	print_info(red(" @@ ")+blue("Masked directories: ")+string.join(etpConst['filesystemdirsmask']," "))
+	print_info(red(" @@ ")+blue("Analyzed directories: ")+' '.join(etpConst['filesystemdirs']))
+	print_info(red(" @@ ")+blue("Masked directories: ")+' '.join(etpConst['filesystemdirsmask']))
         print_info(red(" @@ ")+blue("Number of files collected on the filesystem: ")+bold(str(totalfiles)))
         print_info(red(" @@ ")+blue("Now looking into Installed Packages database..."))
 
@@ -681,8 +679,8 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
 	    bkeys = dbconn.retrieveBinKeywords(idpackage)
 	    sources = dbconn.retrieveSources(idpackage)
 	    etpapi = dbconn.retrieveApi(idpackage)
-	    print_info(darkgreen("       Source keywords:\t")+red(string.join(skeys," ")))
-	    print_info(darkgreen("       Binary keywords:\t")+blue(string.join(bkeys," ")))
+	    print_info(darkgreen("       Source keywords:\t")+red(' '.join(skeys)))
+	    print_info(darkgreen("       Binary keywords:\t")+blue(' '.join(bkeys)))
 	    if (sources):
 		print_info(darkgreen("       Sources:"))
 		for source in sources:
@@ -690,6 +688,6 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
 	    print_info(darkgreen("       Entry API:\t\t")+red(str(etpapi)))
 	else:
 	    print_info(darkgreen("       Compiled with:\t")+blue(pkgflags[1]))
-        print_info(darkgreen("       Architectures:\t")+blue(string.join(pkgkeywords," ")))
+        print_info(darkgreen("       Architectures:\t")+blue(' '.join(pkgkeywords)))
         print_info(darkgreen("       Created:\t\t")+pkgcreatedate)
         print_info(darkgreen("       License:\t\t")+red(pkglic))

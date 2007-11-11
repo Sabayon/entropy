@@ -27,9 +27,7 @@ from entropyConstants import *
 from serverConstants import *
 from outputTools import *
 import entropyTools
-import string
 import os
-import time
 
 # Logging initialization
 import logTools
@@ -67,7 +65,7 @@ class handlerFTP:
 	    self.ftppassword = ftpuri.split("@")[:len(ftpuri.split("@"))-1]
 	    if len(self.ftppassword) > 1:
 		import string
-		self.ftppassword = string.join(self.ftppassword,"@")
+		self.ftppassword = '@'.join(self.ftppassword)
 		self.ftppassword = self.ftppassword.split(":")[len(self.ftppassword.split(":"))-1]
 		if (self.ftppassword == ""):
 		    self.ftppassword = "anonymous"

@@ -28,47 +28,26 @@
 # Portage initialization
 #####################################################################################
 
-'''
-def initializePortageTree():
-    portage.settings.unlock()
-    portage.settings['PORTDIR'] = etpConst['portagetreedir']
-    portage.settings['DISTDIR'] = etpConst['distfilesdir']
-    portage.settings['PORTDIR_OVERLAY'] = etpConst['overlays']
-    portage.settings.lock()
-    portage.portdb.__init__(etpConst['portagetreedir'])
-'''
-
-# Fix for wrong cache entries - DO NOT REMOVE
 import os
 from entropyConstants import *
-#os.environ['PORTDIR'] = etpConst['portagetreedir']
-#os.environ['PORTDIR_OVERLAY'] = etpConst['overlays']
-#os.environ['DISTDIR'] = etpConst['distfilesdir']
 import portage
 import portage_const
 from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv #FIXME: Use the ones from entropyTools
 from portage_util import grabdict_package
 from portage_const import USER_CONFIG_PATH
-#from serverConstants import *
-#initializePortageTree()
 
 # colours support
 from outputTools import *
 # misc modules
-import string
-import re
 import sys
 import os
 import commands
 import entropyTools
 
 # Logging initialization
-try:
-    import logTools
-    portageLog = logTools.LogFile(level=etpConst['spmbackendloglevel'],filename = etpConst['spmbackendlogfile'], header = "[Portage]")
-    # portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFunction: example. ")
-except:
-    pass
+import logTools
+portageLog = logTools.LogFile(level=etpConst['spmbackendloglevel'],filename = etpConst['spmbackendlogfile'], header = "[Portage]")
+# portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFunction: example. ")
 
 ############
 # Functions and Classes
@@ -119,7 +98,7 @@ def getConfigProtectAndMask():
 	if x.startswith("$"): #FIXME: small hack
 	    x = commands.getoutput("echo "+x).split("\n")[0]
 	mask.append(x)
-    return string.join(protect," "),string.join(mask," ")
+    return ' '.join(protect),' '.join(mask)
 
 # resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1
@@ -143,179 +122,6 @@ def getBestMaskedAtom(atom):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getBestAtom: result -> "+str(rc))
     return rc
 
-# I need a valid complete atom...
-def calculateFullAtomsDependencies(atoms, deep = False, extraopts = ""):
-
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"calculateFullAtomsDependencies: called -> "+str(atoms)+" | extra options: "+extraopts)
-
-    # in order... thanks emerge :-)
-    deepOpt = ""
-    if (deep):
-	deepOpt = "-Du"
-    deplist = []
-    blocklist = []
-    
-    # FIXME: rewrite this
-    cmd = cdbRunEmerge+" --pretend --color=n --quiet "+deepOpt+" "+extraopts+" "+atoms
-    result = commands.getoutput(cmd).split("\n")
-    for line in result:
-	if line.startswith("[ebuild"):
-	    line = line.split("] ")[1].split(" [")[0].split()[0].strip()
-	    deplist.append(line)
-	if line.startswith("[blocks"):
-	    line = line.split("] ")[1].split()[0].strip()
-	    blocklist.append(line)
-
-    # filter garbage
-    _deplist = []
-    for i in deplist:
-	if (i != "") and (i != " "):
-	    _deplist.append(i)
-    deplist = _deplist
-    _blocklist = []
-    for i in blocklist:
-	if (i != "") and (i != " "):
-	    _blocklist.append(i)
-    blocklist = _blocklist
-
-    if deplist != []:
-	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"calculateFullAtomsDependencies: deplist -> "+str(len(deplist))+" | blocklist -> "+str(len(blocklist)))
-        return deplist, blocklist
-    else:
-	portageLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"calculateFullAtomsDependencies: deplist empty. Giving up.")
-	rc = entropyTools.spawnCommand(cmd)
-	sys.exit(100)
-
-
-def calculateAtomUSEFlags(atom, format = True):
-    
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"calculateAtomUSEFlags: called -> "+str(atom))
-
-    
-    uses = getUSEFlags()
-    uses = uses.split()
-    iuses = getPackageIUSE(atom)
-    iuses = iuses.split()
-    olduses = getInstalledPackageVar(atom,'USE')
-    olduses = olduses.split()
-    useforce = getUSEForce()
-    usemask = getUSEMask()
-    
-    # package.use FIXME: this should also handle package.use.mask and use.mask
-    etc_use = get_user_config('package.use',ebuild = atom)
-    for x in etc_use:
-	if x not in uses:
-	    uses.append(x)
-    
-    iuses.sort()
-    
-    useparm = []
-    for iuse in iuses:
-	if iuse in uses:
-	    if iuse in olduses:
-		useparm.append(iuse)
-	    else:
-		useparm.append(iuse+"*")
-	else:
-	    if iuse in olduses:
-		useparm.append("-"+iuse+"*")
-	    elif iuse in useforce:
-		useparm.append("("+iuse+")")
-	    else:
-	        if iuse in usemask:
-		    useparm.append("(-"+iuse+")")
-	        else:
-		    useparm.append("-"+iuse)
-    
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"calculateAtomUSEFlags: USE flags -> "+str(useparm))
-    
-    # pack properly
-    enabled = []
-    new = []
-    disabled = []
-    disabled_new = []
-    impossible = []
-
-    for x in useparm:
-	if x.startswith("("):
-	    impossible.append(x)
-	elif x.startswith("-") and not x.endswith("*"):
-	    disabled.append(x)
-	elif x.startswith("-") and x.endswith("*"):
-            disabled_new.append(x)
-	elif x.endswith("*"):
-	    new.append(x)
-	else:
-	    enabled.append(x)
-
-    useparm = []
-    useparm = enabled
-    if (new):
-        useparm += new
-    if (disabled_new):
-        useparm += disabled_new
-    if (disabled):
-        useparm += disabled
-    if (impossible):
-        useparm += impossible
-    
-
-    expanded = {}
-    if (format):
-	use_expand = portage.settings['USE_EXPAND'] # FIXME add support for USE_EXPAND_MASK ?
-	use_expand_low = use_expand.lower()
-	use_expand_low = use_expand_low.split()
-	for expand in use_expand_low:
-	    myexp = []
-	    myexp = [x for x in useparm if x.startswith(expand+"_") or x.startswith("-"+expand+"_") or x.startswith("(-"+expand+"_") or x.startswith("("+expand+"_")]
-	    if (myexp):
-		useparm = [x for x in useparm if not x.startswith(expand+"_") and not x.startswith("-"+expand+"_") and not x.startswith("(-"+expand+"_") and not x.startswith("("+expand+"_")]
-		expand_en = [x[len(expand)+1:] for x in myexp if not x.startswith("-") and not x.startswith("(")]
-		expand_dis = ["-"+x[len(expand)+2:] for x in myexp if x.startswith("-")]
-		expand_impossible_en = ["("+x[len(expand)+2:] for x in myexp if x.startswith("(") and not x.startswith("(-")]
-		expand_impossible_dis = ["(-"+x[len(expand)+3:] for x in myexp if x.startswith("(-")]
-		myexp = expand_en
-		myexp += expand_en
-		myexp += expand_impossible_en
-		myexp += expand_impossible_dis
-		myexp = list(set(myexp))
-		myexp.sort()
-		expanded[expand.upper()] = string.join(myexp," ")
-
-    useparm = string.join(useparm," ")
-    useparm = colorizeUseflags(useparm)
-    if (format):
-	if (expanded):
-	    for key in expanded:
-		if expanded[key]:
-		    content = colorizeUseflags(expanded[key])
-		    content = bold(" "+key+"=( ")+content+bold(" )")
-		    useparm += content
-    
-    return useparm
-
-
-def colorizeUseflags(usestring):
-    out = []
-    for use in usestring.split():
-	# -cups
-	if use.startswith("-") and (not use.endswith("*")):
-	    use = darkblue(use)
-	# -cups*
-	elif use.startswith("-") and (use.endswith("*")):
-	    use = yellow(use)
-	# use flag not available
-	elif use.startswith("("):
-	    use = blue(use)
-	# cups*
-	elif use.endswith("*"):
-	    use = green(use)
-	else:
-	    use = darkred(use)
-	out.append(use)
-    return string.join(out," ")
-
-
 # should be only used when a pkgcat/pkgname <-- is not specified (example: db, amarok, AND NOT media-sound/amarok)
 def getAtomCategory(atom):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getAtomCategory: called. ")
@@ -325,19 +131,6 @@ def getAtomCategory(atom):
     except:
 	portageLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"getAtomCategory: error, can't extract category !")
 	return None
-
-# This function compare the version number of two atoms
-# This function needs a complete atom, pkgcat (not mandatory) - pkgname - pkgver
-# if atom1 < atom2 --> returns a NEGATIVE number
-# if atom1 > atom2 --> returns a POSITIVE number
-# if atom1 == atom2 --> returns 0
-def compareAtoms(atom1,atom2):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"compareAtoms: called -> "+atom1+" && "+atom2)
-    # filter pkgver
-    x, atom1 = extractPkgNameVer(atom1)
-    x, atom2 = extractPkgNameVer(atom2)
-    from portage_versions import vercmp
-    return vercmp(atom1,atom2)
 
 # please always force =pkgcat/pkgname-ver if possible
 def getInstalledAtom(atom):
@@ -363,28 +156,6 @@ def getPackageSlot(atom):
 	portageLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: slot not found -> "+str(atom))
 	return None
 
-# you must provide a complete atom
-def collectBinaryFilesForInstalledPackage(atom):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"collectBinaryFilesForInstalledPackage: called. ")
-    if atom.startswith("="):
-	atom = atom[1:]
-    pkgcat = atom.split("/")[0]
-    pkgnamever = atom.split("/")[1]
-    dbentrypath = "/var/db/pkg/"+pkgcat+"/"+pkgnamever+"/CONTENTS"
-    binarylibs = []
-    if os.path.isfile(dbentrypath):
-	f = open(dbentrypath,"r")
-	contents = f.readlines()
-	f.close()
-	for i in contents:
-	    file = i.split()[1]
-	    if i.startswith("obj") and (file.find("lib") != -1) and (file.find(".so") != -1) and (not file.endswith(".la")):
-		# FIXME: rough way
-		binarylibs.append(i.split()[1].split("/")[len(i.split()[1].split("/"))-1])
-        return binarylibs
-    else:
-	return binarylibs
-
 def getEbuildDbPath(atom):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getEbuildDbPath: called -> "+atom)
     return portage.db['/']['vartree'].getebuildpath(atom)
@@ -399,32 +170,6 @@ def getEbuildTreePath(atom):
     else:
 	return None
 
-def getPackageDownloadSize(atom):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageDownloadSize: called -> "+atom)
-    if atom.startswith("="):
-	atom = atom[1:]
-
-    ebuild = getEbuildTreePath(atom)
-    if (ebuild is not None):
-	import portage_manifest
-	dirname = os.path.dirname(ebuild)
-	manifest = portage_manifest.Manifest(dirname, portage.settings["DISTDIR"])
-	fetchlist = portage.portdb.getfetchlist(atom, portage.settings, all=True)[1]
-	summary = [0,0]
-	try:
-	    summary[0] = manifest.getDistfilesSize(fetchlist)
-	    counter = str(summary[0]/1024)
-	    filler=len(counter)
-	    while (filler > 3):
-		filler-=3
-		counter=counter[:filler]+","+counter[filler:]
-	    summary[0]=counter+" kB"
-	except KeyError, e:
-	    return "N/A"
-	return summary[0]
-    else:
-	return "N/A"
-
 def getInstalledAtoms(atom):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtoms: called -> "+atom)
     rc = portage.db['/']['vartree'].dep_match(str(atom))
@@ -432,79 +177,6 @@ def getInstalledAtoms(atom):
         return rc
     else:
         return None
-
-
-
-# YOU MUST PROVIDE A COMPLETE ATOM with a pkgcat !
-def unmerge(atom):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"umerge: called -> "+atom)
-    if isjustname(atom) or (not isvalidatom(atom)) or (atom.find("/") == -1):
-	return 1
-    else:
-	pkgcat = atom.split("/")[0]
-	pkgnamever = atom.split("/")[1]
-	portage.settings.unlock()
-	rc = portage.unmerge(pkgcat, pkgnamever, ETP_ROOT_DIR, portage.settings, 1)
-	portage.settings.lock()
-	return rc
-
-# TO THIS FUNCTION:
-# must be provided a valid and complete atom
-def extractPkgNameVer(atom):
-    import enzymeTools
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractPkgNameVer: called -> "+atom)
-    package = dep_getcpv(atom)
-    package = atom.split("/")[len(atom.split("/"))-1]
-    package = package.split("-")
-    pkgname = ""
-    pkglen = len(package)
-    if package[pkglen-1].startswith("r"):
-        pkgver = package[pkglen-2]+"-"+package[pkglen-1]
-	pkglen -= 2
-    else:
-	pkgver = package[len(package)-1]
-	pkglen -= 1
-    for i in range(pkglen):
-	if i == pkglen-1:
-	    pkgname += package[i]
-	else:
-	    pkgname += package[i]+"-"
-    return pkgname,pkgver
-
-def emerge(atom, options, outfile = None, redirect = "&>", simulate = False):
-    import enzymeTools
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"emerge: called -> "+atom+" | options: "+str(options)+" | redirect: "+str(redirect)+" | outfile: "+str(outfile)+" | simulate: "+str(simulate))
-    if (simulate):
-	return 0,"" # simulation enabled
-    if (outfile is None) and (redirect == "&>"):
-	outfile = etpConst['packagestmpdir']+"/.emerge-"+str(getRandomNumber())
-    elif (redirect is None):
-	outfile = ""
-	redirect = ""
-    if os.path.isfile(outfile):
-	try:
-	    os.remove(outfile)
-	except:
-	    entropyTools.spawnCommand("rm -rf "+outfile)    
-    # elog configuration
-    elogopts = dbPORTAGE_ELOG_OPTS+" "
-    # clean elog shit
-    elogfile = atom.split("=")[len(atom.split("="))-1]
-    elogfile = elogfile.split(">")[len(atom.split(">"))-1]
-    elogfile = elogfile.split("<")[len(atom.split("<"))-1]
-    elogfile = elogfile.split("/")[len(atom.split("/"))-1]
-    elogfile = etpConst['logdir']+"/elog/*"+elogfile+"*"
-    entropyTools.spawnCommand("rm -rf "+elogfile)
-    
-    distccopts = ""
-    if (enzymeTools.getDistCCStatus()):
-	# FIXME: add MAKEOPTS too
-	distccopts += 'FEATURES="distcc" '
-	distccjobs = str(len(enzymeTools.getDistCCHosts())+3)
-	distccopts += 'MAKEOPTS="-j'+distccjobs+'" '
-	#distccopts += 'MAKEOPTS="-j4" '
-    rc = entropyTools.spawnCommand(distccopts+elogopts+cdbRunEmerge+" "+options+" "+atom, redirect+outfile)
-    return rc, outfile
 
 def parseElogFile(atom):
 
@@ -545,48 +217,6 @@ def parseElogFile(atom):
 	return logoutput
     else:
 	return []
-
-def compareLibraryLists(pkgBinaryFiles,newPkgBinaryFiles):
-    
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"compareLibraryLists: called. ")
-    
-    brokenBinariesList = []
-    # check if there has been a API breakage
-    if pkgBinaryFiles != newPkgBinaryFiles:
-	_pkgBinaryFiles = []
-	_newPkgBinaryFiles = []
-	# extract only similar packages
-	for pkg in pkgBinaryFiles:
-	    if (pkg.find(".so") == -1):
-		continue
-	    _pkg = pkg.split(".so")[0]
-	    for newpkg in newPkgBinaryFiles:
-		if (pkg.find(".so") == -1):
-		    continue
-		_newpkg = newpkg.split(".so")[0]
-		if (_newpkg == _pkg):
-		    _pkgBinaryFiles.append(pkg)
-		    _newPkgBinaryFiles.append(newpkg)
-	pkgBinaryFiles = _pkgBinaryFiles
-	newPkgBinaryFiles = _newPkgBinaryFiles
-	
-	#print "DEBUG:"
-	#print pkgBinaryFiles
-	#print newPkgBinaryFiles
-	
-	# check for version bumps
-	for pkg in pkgBinaryFiles:
-	    _pkgver = pkg.split(".so")[len(pkg.split(".so"))-1]
-	    _pkg = pkg.split(".so")[0]
-	    for newpkg in newPkgBinaryFiles:
-		_newpkgver = newpkg.split(".so")[len(newpkg.split(".so"))-1]
-		_newpkg = newpkg.split(".so")[0]
-		if (_newpkg == _pkg):
-		    # check version
-		    if (_pkgver != _newpkgver):
-			brokenBinariesList.append([ pkg, newpkg ])
-    return brokenBinariesList
-
 
 # create a .tbz2 file in the specified path
 # old way, buggy with symlinks
@@ -728,59 +358,6 @@ def quickpkg_test(atom,dirpath):
     else:
 	return False
 
-# NOTE: atom must be a COMPLETE atom, with version!
-def isTbz2PackageAvailable(atom, verbose = False, stable = False, unstable = True):
-
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isTbz2PackageAvailable: called -> "+atom)
-
-    # check if the package have been already merged
-    atomName = atom.split("/")[len(atom.split("/"))-1]
-    tbz2Available = False
-    
-    paths = []
-    if (unstable):
-	paths.append(etpConst['packagessuploaddir']+"/"+atomName+"-unstable.tbz2")
-	paths.append(etpConst['packagesstoredir']+"/"+atomName+"-unstable.tbz2")
-	paths.append(etpConst['packagesbindir']+"/"+atomName+"-unstable.tbz2")
-    if (stable):
-	paths.append(etpConst['packagessuploaddir']+"/"+atomName+"-stable.tbz2")
-	paths.append(etpConst['packagesstoredir']+"/"+atomName+"-stable.tbz2")
-	paths.append(etpConst['packagesbindir']+"/"+atomName+"-stable.tbz2")
-
-    for path in paths:
-	if (verbose): print_info("testing in directory: "+path)
-	if os.path.isfile(path):
-	    tbz2Available = path
-	    if (verbose): print_info("found here: "+str(path))
-	    break
-
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isTbz2PackageAvailable: result -> "+str(tbz2Available))
-    return tbz2Available
-
-def checkAtom(atom):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"checkAtom: called -> "+str(atom))
-    bestAtom = getBestAtom(atom)
-    if bestAtom == "!!conflicts":
-	bestAtom = ""
-    if (isvalidatom(atom) == 1) or ( bestAtom != ""):
-        return True
-    return False
-
-
-def getPackageDependencyList(atom):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageDependencyList: called -> "+str(atom))
-    pkgSplittedDeps = []
-    tmp = portage.portdb.aux_get(atom, ["DEPEND"])[0].split()
-    for i in tmp:
-	pkgSplittedDeps.append(i)
-    tmp = portage.portdb.aux_get(atom, ["RDEPEND"])[0].split()
-    for i in tmp:
-	pkgSplittedDeps.append(i)
-    tmp = portage.portdb.aux_get(atom, ["PDEPEND"])[0].split()
-    for i in tmp:
-	pkgSplittedDeps.append(i)
-    return pkgSplittedDeps
-
 def getUSEFlags():
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getUSEFlags: called.")
     return portage.settings['USE']
@@ -809,16 +386,6 @@ def getLDFLAGS():
 def getPackageIUSE(atom):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageIUSE: called.")
     return getPackageVar(atom,"IUSE")
-
-def getInstalledPackageVar(atom, var):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackageVar: called.")
-    try:
-        if atom.startswith("="):
-	    return portage.db['/']['vartree'].dbapi.aux_get(atom[1:], [var])[0]
-        else:
-	    return portage.db['/']['vartree'].dbapi.aux_get(atom, [var])[0]
-    except:
-	return ''
 
 def getPackageVar(atom,var):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageVar: called -> "+atom+" | var: "+var)
@@ -950,7 +517,7 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
     for i in tmpConflicts:
 	i = i[1:] # remove "!"
 	tmpData.append(i)
-    conflicts = string.join(tmpData," ")
+    conflicts = ' '.join(tmpData)
 
     tmpData = []
     tmpDeps = list(set(dependencies.split()))
@@ -990,7 +557,7 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 	else:
 	    _tmpData.append(dep)
 
-    dependencies = string.join(_tmpData," ")
+    dependencies = ' '.join(_tmpData)
 
     return dependencies, conflicts
 
@@ -1035,109 +602,3 @@ def getInstalledPackagesCounters():
 		f.close()
 	        installedAtoms.append([pkgatom,int(counter)])
     return installedAtoms, len(installedAtoms)
-
-def packageSearch(keyword):
-
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packageSearch: called. ")
-
-    SearchDirs = []
-    # search in etpConst['portagetreedir']
-    # and in overlays after etpConst['overlays']
-    # fill the list
-    portageRootDir = etpConst['portagetreedir']
-    if not portageRootDir.endswith("/"):
-	portageRootDir = portageRootDir+"/"
-    ScanningDirectories = []
-    ScanningDirectories.append(portageRootDir)
-    for dir in etpConst['overlays'].split():
-	if (not dir.endswith("/")):
-	    dir = dir+"/"
-	if os.path.isdir(dir):
-	    ScanningDirectories.append(dir)
-
-    for directoryTree in ScanningDirectories:
-	treeList = os.listdir(directoryTree)
-	_treeList = []
-	# filter unwanted dirs
-	for dir in treeList:
-	    if (dir.find("-") != -1) and os.path.isdir(directoryTree+dir):
-		_treeList.append(directoryTree+dir)
-	treeList = _treeList
-
-	for dir in treeList:
-	    subdirs = os.listdir(dir)
-	    for sub in subdirs:
-		if (not sub.startswith(".")) and (sub.find(keyword) != -1):
-		    if os.path.isdir(dir+"/"+sub):
-			reldir = re.subn(directoryTree,"", dir+"/"+sub)[0]
-			SearchDirs.append(reldir)
-    
-    # filter dupies
-    SearchDirs = list(set(SearchDirs))
-    return SearchDirs
-
-
-'''
-    Imported from portagelib.py of Porthole, thanks!
-'''
-def get_user_config(file, name=None, ebuild=None):
-    """
-    Function for parsing package.use, package.mask, package.unmask
-    and package.keywords.
-    
-    Returns /etc/portage/<file> as a dictionary of ebuilds, with
-    dict[ebuild] = list of flags.
-    If name is given, it will be parsed for ebuilds with xmatch('match-all'),
-    and only those ebuilds will be returned in dict.
-    
-    If <ebuild> is given, it will be matched against each line in <file>.
-    For package.use/keywords, a list of applicable flags is returned.
-    For package.mask/unmask, a list containing the matching lines is returned.
-    """
-    #print_info("PORTAGELIB: get_user_config('%s')" % file)
-    maskfiles = ['package.mask', 'package.unmask']
-    otherfiles = ['package.use', 'package.keywords']
-    package_files = otherfiles + maskfiles
-    if file not in package_files:
-        print_info(" * PORTAGELIB: get_user_config(): unsupported config file '%s'" % file)
-        return None
-    filename = '/'.join([portage_const.USER_CONFIG_PATH, file])
-    if not os.access(filename, os.R_OK):
-        print_info(" * PORTAGELIB: get_user_config(): no read access on '%s'?" % file)
-        return {}
-    configfile = open(filename, 'r')
-    configlines = configfile.readlines()
-    configfile.close()
-    config = [line.split() for line in configlines]
-    # e.g. [['media-video/mplayer', 'real', '-v4l'], [app-portage/porthole', 'sudo']]
-    dict = {}
-    if ebuild is not None:
-        result = []
-        for line in config:
-            if line and line[0]:
-                if line[0].startswith('#'):
-                    continue
-                match = portage.portdb.xmatch('match-list', line[0], mylist=[ebuild])
-                if match:
-                    if file in maskfiles: result.extend(line[0]) # package.mask/unmask
-                    else: result.extend(line[1:]) # package.use/keywords
-        return result
-    if name:
-        target = portage.portdb.xmatch('match-all', name)
-        for line in config:
-            if line and line[0]:
-                if line[0].startswith('#'):
-                    continue
-                ebuilds = portage.portdb.xmatch('match-all', line[0])
-                for ebuild in ebuilds:
-                    if ebuild in target:
-                        dict[ebuild] = line[1:]
-    else:
-        for line in config:
-            if line and line[0]:
-                if line[0].startswith('#'):
-                    continue
-                ebuilds = portage.portdb.xmatch('match-all', line[0])
-                for ebuild in ebuilds:
-                    dict[ebuild] = line[1:]
-    return dict

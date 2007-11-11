@@ -25,9 +25,8 @@ from outputTools import *
 from entropyConstants import *
 import os
 import re
-import sys
+from sys import exit, stdout
 import threading, time
-import string
 
 # Instantiate the databaseStatus:
 import databaseTools
@@ -76,7 +75,7 @@ def applicationLockCheck(option = None, gentle = False):
 	print_error(red("Another instance of Equo is running. Action: ")+bold(str(option))+red(" denied."))
 	print_error(red("If I am lying (maybe). Please remove ")+bold(etpConst['pidfile']))
 	if (not gentle):
-	    sys.exit(10)
+	    exit(10)
 	else:
 	    return True
     return False
@@ -88,12 +87,12 @@ def getRandomNumber():
 def countdown(secs=5,what="Counting...", back = False):
     if secs:
 	if back:
-	    sys.stdout.write(what)
+	    stdout.write(what)
 	else:
 	    print what
         for i in range(secs)[::-1]:
-            sys.stdout.write(red(str(i+1)+" "))
-            sys.stdout.flush()
+            stdout.write(red(str(i+1)+" "))
+            stdout.flush()
 	    time.sleep(1)
 
 def spinner(rotations, interval, message=''):
@@ -647,7 +646,7 @@ def remove_slot(mydep):
 def remove_revision(ver):
     myver = ver.split("-")
     if myver[-1][0] == "r":
-	return string.join(myver[:-1],"-")
+	return '-'.join(myver[:-1])
     return ver
 
 def remove_tag(mydep):
@@ -855,13 +854,14 @@ def isnumber(x):
 	return False
 
 
-text_characters = "".join(map(chr, range(32, 127)) + list("\n\r\t\b"))
-_null_trans = string.maketrans("", "")
-
 def istextfile(filename, blocksize = 512):
     return istext(open(filename).read(blocksize))
 
 def istext(s):
+    import string
+    _null_trans = string.maketrans("", "")
+    text_characters = "".join(map(chr, range(32, 127)) + list("\n\r\t\b"))
+    
     if "\0" in s:
         return False
     
@@ -926,7 +926,7 @@ def unescape(val):
     if type(val)==type(""):
         tmpstr=''
         for key,item in mappings.items():
-            val=string.replace(val,item,key)
+            val=val.replace(item,key)
         tmpstr = val
     else:
         tmpstr=val
@@ -1001,7 +1001,7 @@ def hideFTPpassword(uri):
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"hideFTPpassword: called. ")
     ftppassword = uri.split("@")[:len(uri.split("@"))-1]
     if len(ftppassword) > 1:
-	ftppassword = string.join(ftppassword,"@")
+	ftppassword = '@'.join(ftppassword)
 	ftppassword = ftppassword.split(":")[len(ftppassword.split(":"))-1]
 	if (ftppassword == ""):
 	    return uri
@@ -1118,8 +1118,10 @@ def askquestion(prompt):
 	    for key in responses:
 		# An empty response will match the first value in responses.
 		if response.upper()==key[:len(response)].upper():
+                    xtermTitleReset()
 		    return key
 		    print "I cannot understand '%s'" % response,
     except (EOFError, KeyboardInterrupt):
 	print "Interrupted."
-	sys.exit(100)
+        xtermTitleReset()
+	exit(100)

@@ -21,7 +21,6 @@
 '''
 import os
 import shutil
-import string
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
@@ -164,7 +163,7 @@ def smartpackagegenerator(matchedPackages):
     atoms = []
     for x in matchedAtoms:
         atoms.append(matchedAtoms[x]['atom'].split("/")[1])
-    atoms = string.join(atoms,"+")
+    atoms = '+'.join(atoms)
     rc = entropyTools.compressTarBz2(etpConst['smartpackagesdir']+"/"+atoms+".tbz2",unpackdir+"/content")
     if rc != 0:
         print_error(darkred(" * ")+red("Compress failed due to unknown reasons."))

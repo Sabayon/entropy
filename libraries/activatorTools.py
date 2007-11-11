@@ -29,7 +29,7 @@ from entropyTools import *
 from outputTools import *
 import mirrorTools
 
-import sys
+from sys import exit
 import os
 import commands
 import string
@@ -65,7 +65,7 @@ def sync(options, justTidy = False):
 	    rc = packages([ "sync" , "--ask" ])
         # then sync the database, if the packages sync completed successfully
         if (rc == False):
-	    sys.exit(401)
+	    exit(401)
 	else:
             # if packages are ok, we can sync the database
 	    database(["sync"])
@@ -77,7 +77,7 @@ def sync(options, justTidy = False):
 	        # ask question
 	        rc = askquestion("     Should I continue with the tidy procedure ?")
 	        if rc == "No":
-		    sys.exit(0)
+		    exit(0)
     
     print_info(green(" * ")+red("Starting to collect packages that would be removed from the repository ..."), back = True)
     
@@ -117,7 +117,7 @@ def sync(options, justTidy = False):
         if (not activatorRequestNoAsk):
             rc = askquestion("     Would you like to continue ?")
             if rc == "No":
-	        sys.exit(0)
+	        exit(0)
 
         # remove them!
         activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: starting to remove packages from mirrors.")
@@ -623,7 +623,7 @@ def packages(options):
 		
 		# trap CTRL+C
 		if (str(e) == "100"):
-		    sys.exit(471)
+		    exit(471)
 		
 		activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: Exception caught: "+str(e)+" . Trying to continue if possible.")
 		activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: cannot properly syncronize "+extractFTPHostFromUri(uri)+". Trying to continue if possible.")
@@ -666,7 +666,7 @@ def packages(options):
 		    shutil.move(source,dest)
 	    return True
 	else:
-	    sys.exit(470)
+	    exit(470)
 
     # Now we should start to check all the packages in the packages directory
     if (activatorRequestPackagesCheck):
@@ -776,13 +776,13 @@ def database(options):
 		print
 		activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database (sync inside activatorTools): At the moment, mirrors are locked, someone is working on their databases, try again later...")
 		print_error(green(" * ")+red("At the moment, mirrors are locked, someone is working on their databases, try again later..."))
-		sys.exit(422)
+		exit(422)
 	
 	else:
 	    if (dbLockFile):
 		activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database (sync inside activatorTools): Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
 		print_info(green(" * ")+red("Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']))
-		sys.exit(423)
+		exit(423)
 	    else:
 		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database (sync inside activatorTools): Mirrors are not locked. Fetching data...")
 		print_info(green(" * ")+red("Mirrors are not locked. Fetching data..."))
@@ -791,7 +791,7 @@ def database(options):
 
     else:
 	print_error(red(" * ")+green("No valid tool specified."))
-	sys.exit(400)
+	exit(400)
 
 
 ########################################################

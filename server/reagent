@@ -24,11 +24,10 @@
 # Never do "import portage" here, please use entropyTools binding
 
 import os
-import sys
-import string
+from sys import path, exit, argv
 
-sys.path.append('../libraries')
-sys.path.append('../client')
+path.append('../libraries')
+path.append('../client')
 from outputTools import *
 
 # CONSTANTS
@@ -59,19 +58,19 @@ def print_help():
     print_info(" \t\t"+red("--quiet")+"\t\t\t\t just print the dependencies list")
     print_info(" \t"+green("cleanup")+yellow("\t\t to clean temporary files"))
 
-options = sys.argv[1:]
+options = argv[1:]
 
 # print version
-if (string.join(options).find("--version") != -1) or (string.join(options).find(" -V") != -1):
+if (' '.join(options).find("--version") != -1) or (' '.join(options).find(" -V") != -1):
     print_generic(APPNAME+": "+APPVERSION)
-    sys.exit(0)
+    exit(0)
 
 # print help
-if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(options).find(" -h") != -1:
+if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(options).find(" -h") != -1:
     print_help()
     if len(options) < 1:
 	print_error("not enough parameters")
-    sys.exit(1)
+    exit(1)
 
 import entropyTools
 import reagentTools
@@ -98,28 +97,28 @@ if (not entropyTools.isRoot()):
 
 elif (options[0] == "generator"):
     reagentTools.generator(options[1:])
-    sys.exit(0)
+    exit(0)
 
 elif (options[0] == "update"):
     reagentTools.update(options[1:])
-    sys.exit(0)
+    exit(0)
 
 # database tool
 elif (options[0] == "database"):
-    databaseTools.database(options[1:])
-    sys.exit(0)
+    reagentTools.database(options[1:])
+    exit(0)
 
 # deptest tool
 elif (options[0] == "deptest"):
     reagentTools.dependenciesTest(options[1:])
-    sys.exit(0)
+    exit(0)
 
 # deptest tool
 elif (options[0] == "depends"):
     reagentTools.dependsTableInitialize()
-    sys.exit(0)
+    exit(0)
 
 # cleanup
 if (options[0] == "cleanup"):
     entropyTools.cleanup()
-    sys.exit(0)
+    exit(0)

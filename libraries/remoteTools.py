@@ -27,7 +27,6 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 import entropyTools
-import string
 
 # Logging initialization
 import logTools
@@ -165,7 +164,7 @@ def reportApplicationError(errorstring):
 	    char = "%20"
 	outstring += char
     outstring = outstring.split("\n")
-    outstring = string.join(outstring,"<br>")
+    outstring = '<br>'.join(outstring,"<br>")
     url = etpHandlers['errorsend']+outstring
     # now pray the server
     try:

@@ -25,8 +25,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import sys
-import time
+from sys import stderr
+from time import strftime
 
 class LogFile:
     def __init__ (self, level = 0, filename = None, header = "[LOG]"):
@@ -51,7 +51,7 @@ class LogFile:
 	elif file:
 	    self.logFile = file
 	else:
-            self.logFile = sys.stderr
+            self.logFile = stderr
         
     def getFile (self):
         return self.logFile.fileno ()
@@ -71,7 +71,7 @@ class LogFile:
             self.handler(self.getTimeDateHeader()+messagetype+' '+self.header+' '+message)
 
     def getTimeDateHeader(self):
-	return time.strftime('[%X %x %Z] ')
+	return strftime('[%X %x %Z] ')
 
     def ladd(self, level, file, message):
         if self.level >= level:

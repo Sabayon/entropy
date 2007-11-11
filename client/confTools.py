@@ -20,9 +20,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import sys
-import commands
-import string
+from commands import getoutput
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
@@ -259,7 +257,7 @@ def selaction():
 def showdiff(fromfile,tofile):
     # run diff
     diffcmd = "diff -Nu "+fromfile+" "+tofile #+" | less --no-init --QUIT-AT-EOF"
-    output = commands.getoutput(diffcmd).split("\n")
+    output = getoutput(diffcmd).split("\n")
     coloured = []
     for line in output:
 	if line.startswith("---"):
@@ -405,7 +403,7 @@ def generatedict(filepath):
 		# if it's broken, skip diff and automerge
 		if not os.path.exists(filepath):
 		    return mydict
-	    result = commands.getoutput('diff -Nua '+filepath+' '+tofilepath+' | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'')
+	    result = getoutput('diff -Nua '+filepath+' '+tofilepath+' | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'')
 	    if not result:
 	        mydict['automerge'] = True
         except:

@@ -20,9 +20,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import sys
-import string
-sys.path.append('../libraries')
+from sys import exit, argv, path
+path.append('../libraries')
 from outputTools import *
 
 # CONSTANTS
@@ -106,14 +105,14 @@ def print_help():
     print_info(" \t"+blue("--info")+brown("\t\t show system information"))
     
 
-options = sys.argv[1:]
+options = argv[1:]
 
 # print help
-if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(options).find(" -h") != -1:
+if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(options).find(" -h") != -1:
     print_help()
     if len(options) < 1:
 	print_error("not enough parameters")
-    sys.exit(1)
+    exit(1)
 
 
 import equoTools
@@ -135,10 +134,10 @@ options = _options
 # print version
 if (options[0] == "--version"):
     print_generic(APPNAME+": v"+etpConst['entropyversion'])
-    sys.exit(0)
+    exit(0)
 elif (options[0] == "--info"):
     equoTools.getinfo()
-    sys.exit(0)
+    exit(0)
 
 try:
     rc = 0
@@ -216,11 +215,11 @@ try:
     for thread in threads:
         if thread.getName() == "download": # equo current download speed thread
             thread.kill()
-    sys.exit(rc)
+    exit(rc)
 except SystemExit:
     pass
 except KeyboardInterrupt:
-    sys.exit(0)
+    exit(0)
 #except Timeout:
 #    pass
 except:
@@ -244,11 +243,11 @@ except:
 	f = open("/tmp/equoerror.txt","r")
 	errorText = f.readlines()
 	f.close()
-	errorText = string.join(errorText," ")
+	errorText = ' '.join(errorText)
     except:
 	print
 	print_error(darkred("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org."))
-	sys.exit(1)
+	exit(1)
     print
     print_error(darkred("!!! If the error is about missing tables in the database, just run 'equo database generate' again !!!"))
     print_error(blue("Ok, back here. Let me see if you are connected to the Internet. Yes, I am blue now, so?"))
@@ -258,10 +257,10 @@ except:
 	rc = askquestion("   Erm... Can I send the error to my creators so they can fix me?")
 	if rc == "No":
 	    print_error(darkgreen("Ok, ok ok ok... Sorry!"))
-	    sys.exit(2)
+	    exit(2)
     else:
 	print_error(darkgreen("Gosh, you aren't! Well, I wrote the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
-	sys.exit(3)
+	exit(3)
 
     print_error(darkgreen("If you want to be contacted back (and actively supported), also answer the questions below:"))
     fullname = readtext("Your Full name: ")
@@ -276,5 +275,5 @@ except:
 	print_error(darkgreen("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible."))
     else:
 	print_error(darkred("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
-	sys.exit(4)
+	exit(4)
     

@@ -24,8 +24,10 @@
 
 __docformat__ = "epytext"
 
-import commands,errno,os,re,shlex,sys
+from sys import stderr, stdout, modules
+from os import environ, getenv
 import curses
+import readline
 curses.setupterm()
 _cols = curses.tigetnum('cols')
 _cleanline = ''
@@ -153,37 +155,34 @@ codes["INFORM"] = codes["darkgreen"]
 codes["UNMERGE_WARN"] = codes["red"]
 codes["MERGE_LIST_PROGRESS"] = codes["yellow"]
 
-def nc_len(mystr):
-	tmp = re.sub(esc_seq + "^m]+m", "", mystr);
-	return len(tmp)
-
 def xtermTitle(mystr, raw=False):
-	if dotitles and "TERM" in os.environ and sys.stderr.isatty():
-		myt=os.environ["TERM"]
+	if dotitles and "TERM" in environ and stderr.isatty():
+		myt=environ["TERM"]
 		legal_terms = ["xterm","Eterm","aterm","rxvt","screen","kterm","rxvt-unicode","gnome"]
                 if myt in legal_terms:
 			if not raw:
 				mystr = "\x1b]0;%s\x07" % mystr
-			sys.stderr.write(mystr)
-			sys.stderr.flush()
+			stderr.write(mystr)
+			stderr.flush()
 
 default_xterm_title = None
 
 def xtermTitleReset():
 	global default_xterm_title
 	if default_xterm_title is None:
-		prompt_command = os.getenv('PROMPT_COMMAND')
+		prompt_command = getenv('PROMPT_COMMAND')
 		if prompt_command == "":
 			default_xterm_title = ""
 		elif prompt_command is not None:
+                        import commands
 			default_xterm_title = commands.getoutput(prompt_command)
 		else:
-			pwd = os.getenv('PWD','')
-			home = os.getenv('HOME', '')
+			pwd = getenv('PWD','')
+			home = getenv('HOME', '')
 			if home != '' and pwd.startswith(home):
 				pwd = '~' + pwd[len(home):]
 			default_xterm_title = '\x1b]0;%s@%s:%s\x07' % (
-				os.getenv('LOGNAME', ''), os.getenv('HOSTNAME', '').split('.', 1)[0], pwd)
+				getenv('LOGNAME', ''), getenv('HOSTNAME', '').split('.', 1)[0], pwd)
 	xtermTitle(default_xterm_title, raw=True)
 
 def notitles():
@@ -217,7 +216,7 @@ def create_color_func(color_key):
 	return derived_func
 
 for c in compat_functions_colors:
-	setattr(sys.modules[__name__], c, create_color_func(c))
+	setattr(modules[__name__], c, create_color_func(c))
 
 _lastline = _cleanline
 #_linelength = [' ' for x in _cleanline]
@@ -260,7 +259,7 @@ def print_generic(msg): # here we'll wrap any nice formatting
     print msg
 
 def writechar(char):
-	sys.stdout.write(char); sys.stdout.flush()
+	stdout.write(char); stdout.flush()
 
 def readtext(request):
     xtermTitle("Entropy needs your attention")

@@ -22,9 +22,8 @@
 
 import os
 import commands
-import string
 import random
-import sys
+from sys import exit
 
 
 # Specifications of the content of etpData
@@ -478,7 +477,7 @@ if not os.path.exists(piddir):
 	os.makedirs(piddir)
     else:
         print "you need to run this as root at least once."
-        sys.exit(100)
+        exit(100)
 # PID creation
 pid = os.getpid()
 if os.path.exists(etpConst['pidfile']):
@@ -508,7 +507,7 @@ else:
         f.close()
     else:
         print "you need to run this as root at least once."
-        sys.exit(100)
+        exit(100)
 
 # Handlers used by entropy to run and retrieve data remotely, using php helpers
 etpHandlers = {
@@ -550,7 +549,7 @@ if not os.path.isdir(etpConst['entropyworkdir']):
 			pass
     else:
         print "you need to run this as root at least once."
-        sys.exit(100)
+        exit(100)
 
 
 # check for packages and upload directories
@@ -564,7 +563,7 @@ if os.getuid() == 0:
 # entropy section
 if (not os.path.isfile(etpConst['entropyconf'])):
     print "ERROR: "+etpConst['entropyconf']+" does not exist"
-    sys.exit(50)
+    exit(50)
 else:
     f = open(etpConst['entropyconf'],"r")
     entropyconf = f.readlines()
@@ -576,7 +575,7 @@ else:
 		loglevel = int(loglevel)
 	    except:
 		print "ERROR: invalid loglevel in: "+etpConst['entropyconf']
-		sys.exit(51)
+		exit(51)
 	    if (loglevel > -1) and (loglevel < 3):
 	        etpConst['entropyloglevel'] = loglevel
 	    else:
@@ -632,12 +631,12 @@ if os.path.isfile(etpConst['repositoriesconf']):
 			os.makedirs(etpConst['packagesbindir']+"/"+branch)
 		    else:
 			print "ERROR: please run equo as root at least once or create: "+str(etpConst['packagesbindir']+"/"+branch)
-			sys.exit(49)
+			exit(49)
 
 # database section
 if (not os.path.isfile(etpConst['databaseconf'])):
     print "ERROR: "+etpConst['databaseconf']+" does not exist"
-    sys.exit(50)
+    exit(50)
 else:
     f = open(etpConst['databaseconf'],"r")
     databaseconf = f.readlines()
@@ -649,7 +648,7 @@ else:
 		loglevel = int(loglevel)
 	    except:
 		print "ERROR: invalid loglevel in: "+etpConst['databaseconf']
-		sys.exit(51)
+		exit(51)
 	    if (loglevel > -1) and (loglevel < 3):
 	        etpConst['databaseloglevel'] = loglevel
 	    else:
@@ -661,7 +660,7 @@ else:
 etpRemoteSupport = {}
 if (not os.path.isfile(etpConst['remoteconf'])):
     print "ERROR: "+etpConst['remoteconf']+" does not exist"
-    sys.exit(50)
+    exit(50)
 else:
     f = open(etpConst['remoteconf'],"r")
     databaseconf = f.readlines()
@@ -673,7 +672,7 @@ else:
 		loglevel = int(loglevel)
 	    except:
 		print "ERROR: invalid loglevel in: "+etpConst['remoteconf']
-		sys.exit(51)
+		exit(51)
 	    if (loglevel > -1) and (loglevel < 3):
 	        etpConst['remoteloglevel'] = loglevel
 	    else:
@@ -695,7 +694,7 @@ if os.path.isdir(etpConst['overlaysdir']):
     for i in ovlst:
         if os.path.isdir(etpConst['overlaysdir']+"/"+i):
 	    _ovlst.append(etpConst['overlaysdir']+"/"+i)
-    etpConst['overlays'] = string.join(_ovlst," ")
+    etpConst['overlays'] = ' '.join(_ovlst)
 
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things

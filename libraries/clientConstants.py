@@ -21,9 +21,6 @@
 '''
 
 import os
-import commands
-import string
-import random
 import sys
 from entropyConstants import *
 
