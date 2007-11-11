@@ -33,7 +33,7 @@ import logTools
 remoteLog = logTools.LogFile(level=etpConst['remoteloglevel'],filename = etpConst['remotelogfile'], header = "[REMOTE/HTTP]")
 # example: mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFuncton: called.")
 
-import timeoutsocket
+import socket
 import urllib2
 
 
@@ -52,13 +52,9 @@ def getRemotePackageChecksum(serverName,filename, branch):
 	return None
     
     # does the package has "#" (== tag) ? hackish thing that works
-    tag = entropyTools.dep_gettag(filename)
-    tagstring = ''
-    if tag:
-	filename = entropyTools.remove_tag(filename)
-	tagstring = "&tag="+tag
+    filename = filename.replace("#","%23")
     
-    request = url+etpHandlers['md5sum']+filename+"&branch="+branch+tagstring
+    request = url+etpHandlers['md5sum']+filename+"&branch="+branch
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getRemotePackageChecksum: requested url -> "+request)
     
     # now pray the server
@@ -76,12 +72,10 @@ def getRemotePackageChecksum(serverName,filename, branch):
 def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed = True):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadFile: called.")
 
-    timeoutsocket.setDefaultSocketTimeout(60)
+    socket.setdefaulttimeout(60)
 
-    import re
     # substitute tagged filenames with URL encoded code
-    out = re.subn('#','%23',url)
-    url = out[0]
+    url = url.replace("#","%23")
 
     # start scheduler
     if (showSpeed):
@@ -98,13 +92,13 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
     except KeyboardInterrupt:
         if (showSpeed):
 	    speedUpdater.kill()
-        timeoutsocket.setDefaultSocketTimeout(2)
+            socket.setdefaulttimeout(2)
 	raise KeyboardInterrupt
     except Exception, e:
 	remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"downloadFile: Exception caught for: "+str(url)+" -> "+str(e))
 	if (showSpeed):
 	    speedUpdater.kill()
-	    timeoutsocket.setDefaultSocketTimeout(2)
+	        socket.setdefaulttimeout(2)
 	return "-3"
     try:
 	maxsize = remotefile.headers.get("content-length")
@@ -128,7 +122,7 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
 
     if (showSpeed):
 	speedUpdater.kill()
-    timeoutsocket.setDefaultSocketTimeout(2)
+        socket.setdefaulttimeout(2)
     return rc
 
 # Get the content of an online page
@@ -137,18 +131,18 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
 def getOnlineContent(url):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getOnlineContent: called. Requested URL -> "+str(url))
 
-    timeoutsocket.setDefaultSocketTimeout(60)
+    socket.setdefaulttimeout(60)
     # now pray the server
     try:
         file = urllib2.urlopen(url)
         result = file.readlines()
 	if (not result):
-            timeoutsocket.setDefaultSocketTimeout(2)
+            socket.setdefaulttimeout(2)
 	    return False
-        timeoutsocket.setDefaultSocketTimeout(2)
+        socket.setdefaulttimeout(2)
         return result
     except:
-        timeoutsocket.setDefaultSocketTimeout(2)
+        socket.setdefaulttimeout(2)
 	return False
 
 # Error reporting function
@@ -157,7 +151,7 @@ def getOnlineContent(url):
 # @returns False: if the file is not found
 def reportApplicationError(errorstring):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"reportApplicationError: called. Requested string -> "+str(errorstring))
-    timeoutsocket.setDefaultSocketTimeout(60)
+    socket.setdefaulttimeout(60)
     outstring = ""
     for char in errorstring:
         if char == " ":
@@ -170,10 +164,10 @@ def reportApplicationError(errorstring):
     try:
         file = urllib2.urlopen(url)
         result = file.readlines()
-	timeoutsocket.setDefaultSocketTimeout(2)
+	socket.setdefaulttimeout(2)
         return result
     except:
-	timeoutsocket.setDefaultSocketTimeout(2)
+	socket.setdefaulttimeout(2)
 	return False
 
 ###################################################

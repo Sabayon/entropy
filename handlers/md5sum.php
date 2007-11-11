@@ -13,9 +13,7 @@
 		sqlite_query($db, $sql);
 	}
 
-        $pkgfile = urlencode($_GET['package']);
-        $pkgtag = $_GET['tag'];
-        if ($pkgtag) $pkgfile .= "#".$pkgtag;
+        $pkgfile = urldecode($_GET['package']);
 
 	$pkgarch = $_GET['arch'];
 	$pkgpath = "../packages/" . $pkgarch . "/" . $pkgfile;

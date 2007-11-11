@@ -28,6 +28,8 @@ from serverConstants import *
 from outputTools import *
 import entropyTools
 import os
+import socket
+import ftplib
 
 # Logging initialization
 import logTools
@@ -47,9 +49,7 @@ class handlerFTP:
 	    debug = False
 
         # import FTP modules
-        import timeoutsocket
-        import ftplib
-        timeoutsocket.setDefaultSocketTimeout(60)
+        socket.setdefaulttimeout(60)
 
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.__init__: called.")
 
@@ -102,9 +102,7 @@ class handlerFTP:
     def reconnectHost(self):
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.reconnectHost: called.")
         # import FTP modules
-        import timeoutsocket
-        import ftplib
-        timeoutsocket.setDefaultSocketTimeout(60)
+        socket.setdefaulttimeout(60)
 	self.ftpconn = ftplib.FTP(self.ftphost)
 	self.ftpconn.login(self.ftpuser,self.ftppassword)
 	# save curr dir
