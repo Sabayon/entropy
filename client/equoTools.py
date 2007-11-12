@@ -28,7 +28,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, unpackBzip2, compareMd5, bytesIntoHuman, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag, unpackXpak, lifobuffer
+from entropyTools import unpackGzip, unpackBzip2, compareMd5, bytesIntoHuman, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag, unpackXpak, lifobuffer, writeNewBranch
 from databaseTools import etpDatabase, openRepositoryDatabase, openClientDatabase, openGenericDatabase, fetchRepositoryIfNotAvailable
 import triggerTools
 import confTools
@@ -201,8 +201,7 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 
     # check if I am root
     if (not isRoot()):
-	if (not quiet):
-	    print_error(red("\t You must run this application as root."))
+	print_error(red("\t You must run this application as root."))
 	return 1
 
     # check etpRepositories
@@ -572,6 +571,13 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 	    atomMatchCache[atom]['matchBranches'] = matchBranches
 	    return repoResults[reponame],reponame
 
+def listAllAvailableBranches():
+    branches = set()
+    for repo in etpRepositories:
+        dbconn = openRepositoryDatabase(repo)
+        branches.update(dbconn.listAllBranches())
+        dbconn.closeDB()
+    return branches
 
 '''
    @description: generates the dependencies of a [id,repository name] combo.
@@ -1723,6 +1729,8 @@ def package(options):
     equoRequestDeep = False
     equoRequestConfigFiles = False
     equoRequestReplay = False
+    equoRequestUpgrade = False
+    equoRequestUpgradeTo = ''
     rc = 0
     _myopts = []
     mytbz2paths = []
@@ -1747,8 +1755,12 @@ def package(options):
 	    equoRequestConfigFiles = True
 	elif (opt == "--replay"):
 	    equoRequestReplay = True
+	elif (opt == "--upgrade"):
+	    equoRequestUpgrade = True
 	else:
-	    if opt[-5:] == ".tbz2" and os.access(opt,os.R_OK):
+            if (equoRequestUpgrade):
+                equoRequestUpgradeTo = opt
+	    elif opt.endswith(".tbz2") and os.access(opt,os.R_OK):
 		mytbz2paths.append(opt)
 	    else:
 	        _myopts.append(opt)
@@ -1768,7 +1780,7 @@ def package(options):
 
     elif (options[0] == "world"):
 	loadCaches()
-	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch, replay = (equoRequestReplay or equoRequestEmptyDeps))
+	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch, replay = (equoRequestReplay or equoRequestEmptyDeps), upgradeTo = equoRequestUpgradeTo)
 
     elif (options[0] == "remove"):
 	if len(myopts) > 0:
@@ -1996,22 +2008,38 @@ def database(options):
 #
 
 
-def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False, replay = False):
+def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False, replay = False, upgradeTo = ''):
 
     # check if I am root
-    if (not isRoot()) and (not pretend):
-	print_error(red("You must run this function as superuser."))
-	return 1,-1
+    if (not isRoot()):
+        print_warning(red("Running with ")+bold("--pretend")+red("..."))
+	pretend = True
 
-    branches = (etpConst['branch'],) # FIXME: this will be automatically handled
+    if not pretend:
+        syncRepositories()
+
+    # verify selected release (branch)
+    if (upgradeTo):
+        availbranches = listAllAvailableBranches()
+        if upgradeTo not in availbranches:
+            print_error(red("Selected release: ")+bold(upgradeTo)+red(" is not available."))
+            return 1,-2
+        else:
+            branches = (upgradeTo,)
+    else:
+        branches = (etpConst['branch'],)
+    
+    if (not pretend) and (upgradeTo):
+        # update configuration
+        writeNewBranch(upgradeTo)
+    
     updateList = set()
     fineList = set()
     removedList = set()
-    syncRepositories()
-    
     clientDbconn = openClientDatabase()
     # get all the installed packages
     packages = clientDbconn.listAllPackages()
+    
     print_info(red(" @@ ")+blue("Calculating world packages..."))
     for package in packages:
 	tainted = False
@@ -2073,6 +2101,8 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     else:
 	print_info(red(" @@ ")+blue("Nothing to update."))
 
+    
+
     etpConst['collisionprotect'] = oldcollprotect
 
     if (removedList):
@@ -2107,9 +2137,9 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 def installPackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = []):
 
     # check if I am root
-    if (not isRoot()) and (not pretend):
-	print_error(red("You must run this function as superuser."))
-	return 1,-1
+    if (not isRoot()):
+        print_warning(red("Running with ")+bold("--pretend")+red("..."))
+	pretend = True
     
     dirsCleanup = set()
     def dirscleanup():
@@ -2568,9 +2598,9 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, deep = False, systemPackagesCheck = True, configFiles = False):
     
     # check if I am root
-    if (not isRoot()) and (not pretend):
-	print_error(red("You must run this function as superuser."))
-	return 1,-1
+    if (not isRoot()):
+        print_warning(red("Running with ")+bold("--pretend")+red("..."))
+	pretend = True
 
     clientDbconn = openClientDatabase()
 

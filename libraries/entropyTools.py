@@ -1141,3 +1141,22 @@ class lifobuffer:
             return None
         self.counter -= 1
         return self.buf[self.counter+1]
+
+def writeNewBranch(branch):
+    if os.path.isfile(etpConst['repositoriesconf']):
+        f = open(etpConst['repositoriesconf'])
+        content = f.readlines()
+        branchline = [x for x in content if x.startswith("branch|")]
+        if branchline:
+            # update
+            f = open(etpConst['repositoriesconf'],"w")
+            for line in content:
+                if line.startswith("branch|"):
+                    line = "branch|"+str(branch)+"\n"
+                f.write(line)
+        else:
+            # append
+            f.seek(0,2)
+            f.write("\nbranch|"+str(branch)+"\n")
+        f.flush()
+        f.close()

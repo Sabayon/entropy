@@ -23,6 +23,7 @@
 from sys import exit, argv, path
 path.append('../libraries')
 from outputTools import *
+from entropyConstants import *
 
 # CONSTANTS
 APPNAME = "Equo"
@@ -34,7 +35,7 @@ def print_help():
     print_info("  --nocolor\t\tdisable colorized output")
     print_info(red("Tools available: "))
     print_info(" \t"+blue("update")+brown("\t\t update repositories (download new data)"))
-    print_info(" \t\t"+red("--force")+"\t\t\t force the sync even if the database is already up to date")
+    print_info(" \t\t"+red("--force")+"\t\t\t force sync regardless repositories status")
     print_info(" \t"+blue("repoinfo")+brown("\t show enabled repositories"))
     print_info(" \t"+blue("status")+brown("\t\t show respositories status"))
     
@@ -46,7 +47,8 @@ def print_help():
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
     print_info(" \t\t"+red("--replay")+"\t\t reinstall all the packages and their dependencies")
-    print_info(" \t\t"+red("--empty")+"\t\t same as --replay")
+    print_info(" \t\t"+red("--empty")+"\t\t\t same as --replay")
+    print_info(" \t\t"+red("--upgrade")+"\t\t upgrade "+etpConst['systemname']+" to the specified release (3.5,3.6...)")
     
     print_info(" \t"+blue("install")+brown("\t\t install one or more packages or .tbz2"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
@@ -118,7 +120,6 @@ if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(option
 
 import equoTools
 import entropyTools
-from entropyConstants import *
 from clientConstants import *
 
 # preliminary options parsing
