@@ -1125,3 +1125,19 @@ def askquestion(prompt):
 	print "Interrupted."
         xtermTitleReset()
 	exit(100)
+
+class lifobuffer:
+    
+    def __init__(self):
+        self.counter = -1
+        self.buf = {}
+    
+    def push(self,item):
+        self.counter += 1
+        self.buf[self.counter] = item
+    
+    def pop(self):
+        if self.counter == -1:
+            return None
+        self.counter -= 1
+        return self.buf[self.counter+1]

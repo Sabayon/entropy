@@ -28,7 +28,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData, getOnlineContent
-from entropyTools import unpackGzip, unpackBzip2, compareMd5, bytesIntoHuman, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag, unpackXpak
+from entropyTools import unpackGzip, unpackBzip2, compareMd5, bytesIntoHuman, askquestion, getRandomNumber, isjustname, dep_getkey, compareVersions as entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag, unpackXpak, lifobuffer
 from databaseTools import etpDatabase, openRepositoryDatabase, openClientDatabase, openGenericDatabase, fetchRepositoryIfNotAvailable
 import triggerTools
 import confTools
@@ -716,12 +716,6 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
 	    (cached['usefilter'] == usefilter):
 	    return cached['result']
 
-    def mypopitem(item):
-        try:
-            return item.pop()
-        except IndexError:
-            return None
-
     #print atomInfo
     mydbconn = openRepositoryDatabase(atomInfo[1])
     myatom = mydbconn.retrieveAtom(atomInfo[0])
@@ -735,19 +729,21 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
     conflicts = set()
 
     mydep = (1,myatom)
-    mytree = []
+    #mytree = []
+    mybuffer = lifobuffer()
     deptree = set()
     if not ((atomInfo in matchFilter) and (usefilter)):
-        mytree.append((1,myatom))
+        mybuffer.push((1,myatom))
+        #mytree.append((1,myatom))
         deptree.add((1,atomInfo))
     clientDbconn = openClientDatabase()
+
     
-    while 1:
+    while mydep != None:
 
         # already analyzed in this call
         if mydep[1] in treecache:
-            mydep = mypopitem(mytree)
-            if mydep == None: break
+            mydep = mybuffer.pop()
             continue
         treecache.add(mydep[1])
 
@@ -756,29 +752,25 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
             xmatch = clientDbconn.atomMatch(mydep[1][1:])
             if xmatch[0] != -1:
                 conflicts.add(xmatch[0])
-            mydep = mypopitem(mytree)
-            if mydep == None: break
+            mydep = mybuffer.pop()
             continue
 
         # atom found?
         match = atomMatch(mydep[1])
         if match[0] == -1:
             dependenciesNotFound.add(mydep[1])
-            mydep = mypopitem(mytree)
-            if mydep == None: break
+            mydep = mybuffer.pop()
             continue
 
         # already analyzed by the calling function
         if (match in matchFilter) and (usefilter):
-            mydep = mypopitem(mytree)
-            if mydep == None: break
+            mydep = mybuffer.pop()
             continue
         if usefilter: matchFilter.add(match)
 
         # result already analyzed?
         if match in matchcache:
-            mydep = mypopitem(mytree)
-            if mydep == None: break
+            mydep = mybuffer.pop()
             continue
 
         treedepth = mydep[0]+1
@@ -809,7 +801,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
                                     mynewatom = mydbconn.retrieveAtom(mymatch[0])
                                     mydbconn.closeDB()
                                     if (mymatch not in matchcache) and (mynewatom not in treecache):
-                                        mytree.append((treedepth,mynewatom))
+                                        mybuffer.push((treedepth,mynewatom))
                                 else:
                                     # we bastardly ignore the missing library for now
                                     continue
@@ -825,12 +817,9 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
         if (not emptydeps):
             myundeps = mytestdeps
         for x in myundeps:
-            mytree.append((treedepth,x))
+            mybuffer.push((treedepth,x))
         
-        mydep = mypopitem(mytree)
-        if mydep == None: break
-        continue
-
+        mydep = mybuffer.pop()
 
     newdeptree = {}
     for x in deptree:
@@ -1779,7 +1768,7 @@ def package(options):
 
     elif (options[0] == "world"):
 	loadCaches()
-	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch, replay = equoRequestReplay)
+	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch, replay = (equoRequestReplay or equoRequestEmptyDeps))
 
     elif (options[0] == "remove"):
 	if len(myopts) > 0:
@@ -2417,17 +2406,41 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    dbconn.closeDB()
 
     if (removalQueue):
+        
+        # add depends to removalQueue that are not in runQueue
+        clientDbconn = openClientDatabase()
+        dependQueue = set()
+        for idpackage in removalQueue:
+            depends = clientDbconn.retrieveDepends(idpackage)
+            if depends == -2:
+                clientDbconn.regenerateDependsTable(output = False)
+                depends = clientDbconn.retrieveDepends(idpackage)
+            for depend in depends:
+                dependkey = clientDbconn.retrieveCategory(depend)+"/"+clientDbconn.retrieveName(depend)
+                dependslot = clientDbconn.retrieveSlot(depend)
+                # match in repositories
+                match = atomMatch(dependkey, matchSlot = dependslot)
+                if match[0] != -1:
+                    matchdbconn = openRepositoryDatabase(match[1])
+                    matchatom = matchdbconn.retrieveAtom(match[0])
+                    matchdbconn.closeDB()
+                    if (matchatom not in actionQueue) and (depend not in removalQueue): # if the atom hasn't been pulled in, we need to remove depend
+                        dependQueue.add(depend)
+        for depend in dependQueue:
+            removalQueue.append(depend)
+        
 	if (ask or pretend or verbose):
-	    print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("removed")+blue(":"))
-	    clientDbconn = openClientDatabase()
+	    print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("removed")+blue(" (substituted):"))
+
 	    for idpackage in removalQueue:
 	        pkgatom = clientDbconn.retrieveAtom(idpackage)
 	        onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idpackage)
 	        installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
 		repoinfo = red("[")+brown("from: ")+bold(installedfrom)+red("] ")
 	        print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
-	    clientDbconn.closeDB()
 
+	clientDbconn.closeDB()
+    
     if (runQueue) or (removalQueue):
 	# show download info
 	print_info(red(" @@ ")+blue("Packages needing install:\t")+red(str(len(runQueue))))
