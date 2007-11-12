@@ -232,7 +232,7 @@ def call_ext_postremove(pkgdata):
 def call_ext_generic(pkgdata, stage):
 
     triggerfile = etpConst['entropyunpackdir']+"/trigger-"+str(entropyTools.getRandomNumber())
-    while os.path.isfile(tmptriggerfile):
+    while os.path.isfile(triggerfile):
         triggerfile = etpConst['entropyunpackdir']+"/trigger-"+str(entropyTools.getRandomNumber())
     f = open(triggerfile,"w")
     for x in pkgdata['trigger']:

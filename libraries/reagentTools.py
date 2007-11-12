@@ -826,89 +826,13 @@ def dependenciesTest(options):
 	if opt.startswith("--quiet"):
 	    reagentRequestQuiet = True
 
-    if (not reagentRequestQuiet):
-        print_info(red(" @@ ")+blue("ATTENTION: you need to have equo.conf properly configured only for your running repository !!"))
-        print_info(red(" @@ ")+blue("Running dependency test..."))
-
-    dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
-    
-    # hey Equo, how are you?
     path.append('../client')
-    import equoTools
-    equoTools.syncRepositories(quiet = reagentRequestQuiet)
-
-    # get all the installed packages
-    installedPackages = dbconn.listAllIdpackages()
+    import uiTools
     
-    depsNotFound = {}
-    depsNotSatisfied = {}
-    # now look
-    length = str((len(installedPackages)))
-    count = 0
-    for xidpackage in installedPackages:
-	count += 1
-	atom = dbconn.retrieveAtom(xidpackage)
-	if (not reagentRequestQuiet):
-	    print_info(darkred(" @@ ")+bold("(")+blue(str(count))+"/"+red(length)+bold(")")+darkgreen(" Checking ")+bold(atom), back = True)
-	deptree, status = equoTools.generateDependencyTree((xidpackage,0))
-	
-	if (status == -2): # dependencies not found
-	    depsNotFound[xidpackage] = []
-	    if (deptree):
-	        for x in deptree:
-	            depsNotFound[xidpackage].append(x)
+    dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+    rc = uiTools.dependenciesTest(quiet = reagentRequestQuiet, clientDbconn = dbconn, reagent = True)
 
-	elif (status == 0):
-
-	    # FIXME: add conflicts handling (aka, show up something!)
-	    conflicts = deptree.get(0,None)
-	    if (conflicts):
-		print conflicts
-	        deptree[0] = []
-
-	    depsNotSatisfied[xidpackage] = []
-	    for x in deptree:
-                for z in deptree[x]:
-                    depsNotSatisfied[xidpackage].append(z)
-	    if (not depsNotSatisfied[xidpackage]):
-		del depsNotSatisfied[xidpackage]
-	
-    packagesNeeded = []
-    if (depsNotSatisfied):
-	if (not reagentRequestQuiet):
-            print_info(red(" @@ ")+blue("These are the packages that lack dependencies: "))
-	for dict in depsNotSatisfied:
-	    pkgatom = dbconn.retrieveAtom(dict)
-	    if (not reagentRequestQuiet):
-	        print_info(darkred("   ### ")+blue(pkgatom))
-	    for dep in depsNotSatisfied[dict]:
-		depatom = dbconn.retrieveAtom(dep)
-		if (not reagentRequestQuiet):
-		    print_info(bold("       :: ")+red(depatom))
-		packagesNeeded.append([depatom,dep])
-
-    packagesNotFound = []
-    if (depsNotFound):
-	if (not reagentRequestQuiet):
-            print_info(red(" @@ ")+blue("These are the packages not found, that respective packages in repository need:"))
-	for dict in depsNotFound:
-	    pkgatom = dbconn.retrieveAtom(dict)
-	    if (not reagentRequestQuiet):
-	        print_info(darkred("   ### ")+blue(pkgatom))
-	    for pkg in depsNotFound[dict]:
-		if (not reagentRequestQuiet):
-	            print_info(bold("       :: ")+red(pkg))
-	        packagesNotFound.append(pkg)
-
-    packagesNotFound = filterDuplicatedEntries(packagesNotFound)
-
-    if (reagentRequestQuiet):
-	for x in packagesNotFound:
-	    print x
-
-    dbconn.closeDB()
-    return 0,packagesNeeded,packagesNotFound
-
+    return rc
 
 def database(options):
 

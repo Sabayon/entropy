@@ -802,6 +802,36 @@ def compareVersions(ver1, ver2, silent=1):
 	return r1 - r2
 
 '''
+   @description: compare two lists composed by [version,tag,revision] and [version,tag,revision]
+   			if listA > listB --> positive number
+			if listA == listB --> 0
+			if listA < listB --> negative number	
+   @input package: listA[version,tag,rev] and listB[version,tag,rev]
+   @output: integer number
+'''
+def entropyCompareVersions(listA,listB):
+    if len(listA) != 3 or len(listB) != 3:
+	raise Exception, "compareVersions: listA and/or listB must be long 3"
+    # start with version
+    rc = compareVersions(listA[0],listB[0])
+    
+    if (rc == 0):
+	# check tag
+	if listA[1] > listB[1]:
+	    return 1
+	elif listA[1] < listB[1]:
+	    return -1
+	else:
+	    # check rev
+	    if listA[2] > listB[2]:
+		return 1
+	    elif listA[2] < listB[2]:
+		return -1
+	    else:
+		return 0
+    return rc
+
+'''
    @description: reorder a version list
    @input versionlist: a list
    @output: the ordered list

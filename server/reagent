@@ -41,11 +41,11 @@ def print_help():
     print_info(" --version\t\tprint version")
     print_info(" --nocolor\t\tdisable colorized output")
     print_info(blue("Tools available: "))
-    print_info(" \t"+green("update")+yellow("\t\t Update Entropy Database analyzing the system for new installed packages"))
+    print_info(" \t"+green("update")+brown("\t\t Update Entropy Database analyzing the system for new installed packages"))
     print_info(" \t\t"+red("--branch=<branch name>")+"\t\t Choose which branch assign to the packages")
     print_info(" \t\t"+red("--seekstore")+"\t\t\t Skip differential COUNTERS scanning and analyze STORE directory")
     print_info(" \t\t"+red("--repackage")+"\t\t\t Repackage specified atoms")
-    print_info(" \t"+green("database")+yellow("\t Entropy database tool manager"))
+    print_info(" \t"+green("database")+brown("\t Entropy database tool manager"))
     print_info(" \t\t"+red("--initialize")+"\t\t\t (Re)Initialize the Entropy packages database [DO NOT USE THIS]")
     print_info(" \t\t"+green("search")+"\t\t\t\t Search a package inside the Entropy packages database")
     print_info(" \t\t"+green("remove")+"\t\t\t\t Remove a package or a list of packages")
@@ -54,10 +54,10 @@ def print_help():
     print_info(" \t\t"+green("switchbranch")+"\t\t\t Switch to the specified branch, a package, a list of packages, world")
     print_info(" \t\t"+green("md5check")+"\t\t\t Check digest of a package, a list of packages, world")
     print_info(" \t\t"+green("md5remote")+"\t\t\t Compare digest of a package between database and mirrors")
-    print_info(" \t"+green("deptest")+yellow("\t\t Look for unsatisfied dependencies inside database"))
-    print_info(" \t"+green("depends")+yellow("\t\t Regenerate depends table (plus database lock and bump)"))
+    print_info(" \t"+green("deptest")+brown("\t\t Look for unsatisfied dependencies inside database"))
+    print_info(" \t"+green("depends")+brown("\t\t Regenerate depends table (plus database lock and bump)"))
     print_info(" \t\t"+red("--quiet")+"\t\t\t\t just print the dependencies list")
-    print_info(" \t"+green("cleanup")+yellow("\t\t to clean temporary files"))
+    print_info(" \t"+green("cleanup")+brown("\t\t to clean temporary files"))
 
 options = argv[1:]
 

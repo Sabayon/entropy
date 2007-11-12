@@ -1,7 +1,7 @@
 #!/usr/bin/python
 '''
     # DESCRIPTION:
-    # Equo general purpose triggering scripts for pre/post install and remove 
+    # Entropy smart functionalities library
 
     Copyright (C) 2007 Fabio Erculiani
 

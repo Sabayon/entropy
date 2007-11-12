@@ -110,6 +110,28 @@ def openGenericDatabase(dbfile, dbname = None):
     conn = etpDatabase(readOnly = False, dbFile = dbfile, clientDatabase = True, dbname = dbname, xcache = False)
     return conn
 
+def backupClientDatabase():
+    import shutil
+    if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
+	rnd = entropyTools.getRandomNumber()
+	source = etpConst['etpdatabaseclientfilepath']
+	dest = etpConst['etpdatabaseclientfilepath']+".backup."+str(rnd)
+	shutil.copy2(source,dest)
+	user = os.stat(source)[4]
+	group = os.stat(source)[5]
+	os.chown(dest,user,group)
+	shutil.copystat(source,dest)
+	return dest
+    return ""
+
+def listAllAvailableBranches():
+    branches = set()
+    for repo in etpRepositories:
+        dbconn = openRepositoryDatabase(repo)
+        branches.update(dbconn.listAllBranches())
+        dbconn.closeDB()
+    return branches
+
 # this class simply describes the current database status
 # FIXME: need a rewrite? simply using dicts, perhaps?
 class databaseStatus:

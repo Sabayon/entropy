@@ -138,7 +138,8 @@ if (options[0] == "--version"):
     print_generic(APPNAME+": v"+etpConst['entropyversion'])
     exit(0)
 elif (options[0] == "--info"):
-    equoTools.getinfo()
+    import rescueTools
+    rescueTools.getinfo()
     exit(0)
 
 try:
@@ -147,9 +148,11 @@ try:
     if (options[0] == "update") or (options[0] == "repoinfo") or (options[0] == "status"):
         if options[0] == "update":
             entropyTools.applicationLockCheck("update")
-        rc = equoTools.repositories(options)
+        import repositoriesTools
+        rc = repositoriesTools.repositories(options)
 
     elif (options[0] == "install") or (options[0] == "remove") or (options[0] == "deptest") or (options[0] == "world"):
+        import uiTools
         if options[0] == "install":
             cr = entropyTools.applicationLockCheck("install", gentle = True)
 	    if (cr):
@@ -168,7 +171,7 @@ try:
 		print_warning(red("Running with ")+bold("--pretend")+red("..."))
 		if "--pretend" not in options:
 		    options.append("--pretend")
-        rc = equoTools.package(options)
+        rc = uiTools.package(options)
 	print_info(red(" @@ ")+blue("Caching equo conf"), back = True)
 	import confTools
 	scandata = confTools.scanfs(quiet = True, dcache = True)
@@ -206,7 +209,8 @@ try:
 
     elif (options[0] == "database"):
         entropyTools.applicationLockCheck("database")
-        rc = equoTools.database(options[1:])
+        import rescueTools
+        rc = rescueTools.database(options[1:])
 
     elif (options[0] == "cleanup"):
         entropyTools.applicationLockCheck("cleanup")
