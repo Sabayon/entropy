@@ -867,9 +867,9 @@ def dependenciesTest(options):
 	        deptree[0] = []
 
 	    depsNotSatisfied[xidpackage] = []
-	    for x in range(len(deptree))[::-1]:
-	        for z in deptree[x]:
-		    depsNotSatisfied[xidpackage].append(z)
+	    for x in deptree:
+                for z in deptree[x]:
+                    depsNotSatisfied[xidpackage].append(z)
 	    if (not depsNotSatisfied[xidpackage]):
 		del depsNotSatisfied[xidpackage]
 	

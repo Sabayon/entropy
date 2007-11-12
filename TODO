@@ -1,6 +1,5 @@
 TODO list:
   CLIENT:
-  - use depgraph generation function to generate dependencies
   - installPackages should pull conflicts depends too
   - find a way to better handle real smartapps deps
   - equo world, user should specify which branch to switch to (or without params: detect latest automatically, at the end write branch| to equo conf files)

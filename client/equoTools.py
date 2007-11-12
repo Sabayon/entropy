@@ -716,145 +716,153 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
 	    (cached['usefilter'] == usefilter):
 	    return cached['result']
 
+    def mypopitem(item):
+        try:
+            return item.pop()
+        except IndexError:
+            return None
+
+    #print atomInfo
+    mydbconn = openRepositoryDatabase(atomInfo[1])
+    myatom = mydbconn.retrieveAtom(atomInfo[0])
+    mydbconn.closeDB()
+
+    # caches
     treecache = set()
-    unsatisfiedDeps = getDependencies(atomInfo)
-    if not emptydeps:
-        unsatisfiedDeps, xxx = filterSatisfiedDependencies(unsatisfiedDeps, deepdeps = deepdeps)
+    matchcache = set()
+    # special events
     dependenciesNotFound = set()
-    tree = {}
-    treedepth = 0 # in tree[0] are the conflicts
-    tree[0] = []
-    # tree[1] is for the requested atomInfo
-    tree[1] = []
-    treedepth = 1
-    requested = set([atomInfo])
     conflicts = set()
-    
+
+    mydep = (1,myatom)
+    mytree = []
+    deptree = set()
+    if not ((atomInfo in matchFilter) and (usefilter)):
+        mytree.append((1,myatom))
+        deptree.add((1,atomInfo))
     clientDbconn = openClientDatabase()
-    if (clientDbconn == -1):
-	return [],-1
     
     while 1:
-	treedepth += 1
-	tree[treedepth] = set()
-	
-	for undep in unsatisfiedDeps:
 
-            if undep in treecache: # already analyzed in this call
-                continue
-	    
-	    if (undep in matchFilter) and (usefilter): # already analyzed from the calling function
-		continue
+        # already analyzed in this call
+        if mydep[1] in treecache:
+            mydep = mypopitem(mytree)
+            if mydep == None: break
+            continue
+        treecache.add(mydep[1])
 
-	    # Handling conflicts
-	    if undep[0] == "!":
-		xmatch = clientDbconn.atomMatch(undep[1:])
-		if xmatch[0] != -1:
-		    conflicts.add(xmatch[0])
-		    # FIXME: do I have to add its depends?
-		    # depends = generateDependsTree([xmatch[0])
-		treecache.add(undep)
-		if usefilter: matchFilter.add(undep)
-		continue
-	    
-	    atom = atomMatch(undep)
-	    
-	    # handle dependencies not found
-	    if atom[0] == -1:
-		dependenciesNotFound.add(undep)
-		treecache.add(undep)
-		if usefilter: matchFilter.add(undep)
-		continue
-	    
-	    # handle possible library breakage
-	    action = filterSatisfiedDependenciesCmpResults.get(undep)
-	    if action and ((action < 0) or (action > 0)): # do not use != 0 since action can be "None"
-		i = clientDbconn.atomMatch(undep)
-		if i[0] != -1:
-		    oldneeded = clientDbconn.retrieveNeeded(i[0])
-		    if oldneeded: # if there are needed
-		        ndbconn = openRepositoryDatabase(atom[1])
-		        needed = ndbconn.retrieveNeeded(atom[0])
-		        ndbconn.closeDB()
-		        oldneeded.difference_update(needed)
-			if oldneeded:
-			    # reverse lookup to find belonging package
-			    for need in oldneeded:
-				myidpackages = clientDbconn.searchNeeded(need)
-				for myidpackage in myidpackages:
-				    myname = clientDbconn.retrieveName(myidpackage)
-				    mycategory = clientDbconn.retrieveCategory(myidpackage)
-				    myslot = clientDbconn.retrieveSlot(myidpackage)
-				    mykey = mycategory+"/"+myname
-				    mymatch = atomMatch(mykey, matchSlot = myslot) # search in our repo
-				    if mymatch[0] != -1:
-					mydbconn = openRepositoryDatabase(mymatch[1])
-					mynewatom = mydbconn.retrieveAtom(mymatch[0])
-					mydbconn.closeDB()
-					if not mynewatom in treecache:
-					    tree[treedepth].add(mynewatom)
-					    treecache.add(mynewatom)
-				    else:
-					# we bastardly ignore the missing library for now
-					continue
-				# retrieve packages that need it, in the right branch!
-	    
-	    # add to the tree level
-	    tree[treedepth].add(undep)
-	    treecache.add(undep)
-	    if usefilter: matchFilter.add(undep)
-	
-	if (not tree[treedepth]):
-	    #print darkgreen("satisfied: ")+str(tree[treedepth])
-	    del tree[treedepth]
-	    break
-	else:
-	    #print red("not satisfied: ")+str(tree[treedepth])
-	    # cycle again, load unsatisfiedDeps
-	    unsatisfiedDeps = set()
-	    for dep in tree[treedepth]:
-		atom = atomMatch(dep)
-		deps = getDependencies(atom)
-		if (not emptydeps):
-		    deps, xxx = filterSatisfiedDependencies(deps, deepdeps = deepdeps)
-		for x in deps:
-		    unsatisfiedDeps.add(x)
-	#tree[treedepth] = list(tree[treedepth])
-	
+        # conflicts
+        if mydep[1][0] == "!":
+            xmatch = clientDbconn.atomMatch(mydep[1][1:])
+            if xmatch[0] != -1:
+                conflicts.add(xmatch[0])
+            mydep = mypopitem(mytree)
+            if mydep == None: break
+            continue
+
+        # atom found?
+        match = atomMatch(mydep[1])
+        if match[0] == -1:
+            dependenciesNotFound.add(mydep[1])
+            mydep = mypopitem(mytree)
+            if mydep == None: break
+            continue
+
+        # already analyzed by the calling function
+        if (match in matchFilter) and (usefilter):
+            mydep = mypopitem(mytree)
+            if mydep == None: break
+            continue
+        if usefilter: matchFilter.add(match)
+
+        # result already analyzed?
+        if match in matchcache:
+            mydep = mypopitem(mytree)
+            if mydep == None: break
+            continue
+
+        treedepth = mydep[0]+1
+
+        # handle possible library breakage
+        action = filterSatisfiedDependenciesCmpResults.get(mydep)
+        if action and ((action < 0) or (action > 0)): # do not use != 0 since action can be "None"
+            i = clientDbconn.atomMatch(mydep)
+            if i[0] != -1:
+                oldneeded = clientDbconn.retrieveNeeded(i[0])
+                if oldneeded: # if there are needed
+                    ndbconn = openRepositoryDatabase(atom[1])
+                    needed = ndbconn.retrieveNeeded(atom[0])
+                    ndbconn.closeDB()
+                    oldneeded.difference_update(needed)
+                    if oldneeded:
+                        # reverse lookup to find belonging package
+                        for need in oldneeded:
+                            myidpackages = clientDbconn.searchNeeded(need)
+                            for myidpackage in myidpackages:
+                                myname = clientDbconn.retrieveName(myidpackage)
+                                mycategory = clientDbconn.retrieveCategory(myidpackage)
+                                myslot = clientDbconn.retrieveSlot(myidpackage)
+                                mykey = mycategory+"/"+myname
+                                mymatch = atomMatch(mykey, matchSlot = myslot) # search in our repo
+                                if mymatch[0] != -1:
+                                    mydbconn = openRepositoryDatabase(mymatch[1])
+                                    mynewatom = mydbconn.retrieveAtom(mymatch[0])
+                                    mydbconn.closeDB()
+                                    if (mymatch not in matchcache) and (mynewatom not in treecache):
+                                        mytree.append((treedepth,mynewatom))
+                                else:
+                                    # we bastardly ignore the missing library for now
+                                    continue
+
+        
+        # all checks passed, well done
+        matchcache.add(match)
+        deptree.add((mydep[0],match)) # add match
+
+        myundeps = getDependencies(match)
+        # in this way filterSatisfiedDependenciesCmpResults is alway consistent
+        mytestdeps, xxx = filterSatisfiedDependencies(myundeps, deepdeps = deepdeps)
+        if (not emptydeps):
+            myundeps = mytestdeps
+        for x in myundeps:
+            mytree.append((treedepth,x))
+        
+        mydep = mypopitem(mytree)
+        if mydep == None: break
+        continue
+
+
+    newdeptree = {}
+    for x in deptree:
+        key = x[0]
+        item = x[1]
+        try:
+            newdeptree[key].add(item)
+        except:
+            newdeptree[key] = set()
+            newdeptree[key].add(item)
+    del deptree
+    
     clientDbconn.closeDB()
-    treecache.clear()
-
+    
     if (dependenciesNotFound):
 	# Houston, we've got a problem
 	flatview = list(dependenciesNotFound)
 	return flatview,-2
 
-    newtree = {} # tree list
-    if (tree):
-	mymatchfilter = set()
-	for x in range(len(tree))[::-1]:
-	    newtree[x] = set()
-	    for y in tree[x]:
-		mymatch = atomMatch(y)
-		if mymatch not in mymatchfilter:
-		    newtree[x].add(mymatch)
-		    mymatchfilter.add(mymatch)
-	del mymatchfilter
-    del tree
-    
-    if (conflicts):
-	newtree[0] = conflicts
-	#print newtree[0]
-    # add requested
-    newtree[1] = requested
+    # conflicts
+    newdeptree[0] = conflicts
 
     ''' caching '''
     generateDependencyTreeCache[tuple(atomInfo)] = {}
-    generateDependencyTreeCache[tuple(atomInfo)]['result'] = newtree,0
+    generateDependencyTreeCache[tuple(atomInfo)]['result'] = newdeptree,0
     generateDependencyTreeCache[tuple(atomInfo)]['emptydeps'] = emptydeps
     generateDependencyTreeCache[tuple(atomInfo)]['deepdeps'] = deepdeps
     generateDependencyTreeCache[tuple(atomInfo)]['usefilter'] = usefilter
-    return newtree,0 # note: newtree[0] contains possible conflicts
+    treecache.clear()
+    matchcache.clear()
+    
+    return newdeptree,0 # note: newtree[0] contains possible conflicts
 
 
 '''
@@ -866,54 +874,39 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
 '''
 def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False, spinning = False):
     deptree = {}
-    depcount = -1
-
+    deptree[0] = set()
+    
     if spinning: atomlen = len(foundAtoms); count = 0
     matchFilter.clear() # clear generateDependencyTree global filter
     for atomInfo in foundAtoms:
 	if spinning: count += 1; print_info(":: "+str(round((float(count)/atomlen)*100,1))+"% ::", back = True)
-	depcount += 1
 	#print depcount
 	newtree, result = generateDependencyTree(atomInfo, emptydeps, deepdeps, usefilter = True)
 	if (result != 0):
 	    return newtree, result
-	if (newtree):
-	    deptree[depcount] = newtree.copy()
-	    #print deptree[depcount]
+	elif (newtree):
+            parent_keys = deptree.keys()
+            # add conflicts
+            max_parent_key = parent_keys[-1]
+            deptree[0].update(newtree[0])
+            
+            # reverse dict
+            levelcount = 0
+            reversetree = {}
+            for key in newtree.keys()[::-1]:
+                if key == 0:
+                    continue
+                levelcount += 1
+                reversetree[levelcount] = newtree[key]
+            del newtree
+            
+            for mylevel in reversetree.keys():
+                deptree[max_parent_key+mylevel] = reversetree[mylevel].copy()
+            del reversetree
 
     matchFilter.clear()
     
-    # join trees - flatten
-    newdeptree = {}
-    if (deptree):
-	treelen = len(deptree)
-	if spinning: treeround = treelen; count = 0
-	for x in range(treelen):
-	    if spinning: count += 1; print_info(":: "+str(round((float(count)/treeround)*100,1))+"% ::", back = True)
-	    for y in range(len(deptree[x])):
-		create = newdeptree.get(y)
-		if create == None:
-		    newdeptree[y] = set()
-		newdeptree[y].update(deptree[x][y])
-    del deptree
-    
-    # filter dups
-    mymatchfilter = set()
-    if (newdeptree):
-	treelen = len(newdeptree)
-	if spinning: treeround = treelen; count = 0
-        for x in range(len(newdeptree)):
-	    if spinning: count += 1; print_info(":: "+str(round((float(count)/treeround)*100,1))+"% ::", back = True)
-	    if x != 0: # skip conflicts
-		testtree = list(newdeptree[x])
-	        for y in range(len(testtree)):
-		    if testtree[y] not in mymatchfilter:
-			mymatchfilter.add(testtree[y])
-		    else:
-			# remove
-			newdeptree[x].remove(testtree[y])
-    
-    return newdeptree,0
+    return deptree,0
 
 
 '''
@@ -2291,7 +2284,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
             dirscleanup()
 	    return 200, -1
 	
-	for x in range(len(treepackages))[::-1]:
+	for x in range(len(treepackages)):
 	    if x == 0:
 		# conflicts
 		for a in treepackages[x]:
@@ -2755,7 +2748,7 @@ def dependenciesTest(quiet = False, ask = False, pretend = False):
 	        deptree[0] = []
 
 	    depsNotSatisfied[xidpackage] = []
-	    for x in range(len(deptree))[::-1]:
+	    for x in deptree:
 	        for z in deptree[x]:
 		    depsNotSatisfied[xidpackage].append(z)
 	    if (not depsNotSatisfied[xidpackage]):

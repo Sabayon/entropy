@@ -242,7 +242,7 @@ def smartgenerator(atomInfo, emptydeps = False):
     # flatten them
     pkgs = []
     if (result == 0):
-	for x in range(len(pkgdependencies))[::-1]:
+	for x in range(len(pkgdependencies)):
 	    #print x
 	    for a in pkgdependencies[x]:
 		pkgs.append(a)
