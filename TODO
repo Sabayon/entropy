@@ -1,6 +1,7 @@
 TODO list:
   CLIENT:
-  - quickpkg tool that recreates .tbz2 from the system (needs updated content table?)
+  - get tracks of portage counters to try to automatically keep in sync entropy db?
+  - if chosen command doesn't exist, return error
   - find a way to better handle real smartapps deps
 
 

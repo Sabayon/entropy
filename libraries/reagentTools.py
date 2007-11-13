@@ -31,6 +31,7 @@ import commands
 import re
 from sys import exit,getfilesystemencoding,path
 import os
+import shutil
 from portageTools import synthetizeRoughDependencies, getThirdPartyMirrors, getPackagesInSystem, getConfigProtectAndMask
 
 # Logging initialization
@@ -210,7 +211,6 @@ def update(options):
 		    if os.path.isdir(appdb+"/"+cat+"/"+name+"-"+version):
 		        packages.append([cat+"/"+name+"-"+version,0])
 	    
-	    # FIXME: complete this
 	    if not packages:
 	        print_info(yellow(" * ")+red("Nothing to do, check later."))
 	        # then exit gracefully
@@ -267,10 +267,12 @@ def update(options):
 	    # move the file with its new name
 	    spawnCommand("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName+" -f")
 	    print_info(yellow(" * ")+red("Injecting database information into ")+bold(newFileName)+red(", please wait..."), back = True)
-	    
-	    dbpath = etpConst['packagestmpdir']+"/"+"data.db"
+            
+            dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
+            while os.path.isfile(dbpath):
+                dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
 	    # create db
-	    pkgDbconn = databaseTools.etpDatabase(readOnly = False, noUpload = True, dbFile = dbpath, clientDatabase = True, xcache = False)
+            pkgDbconn = databaseTools.openGenericDatabase(dbpath)
 	    pkgDbconn.initializeDatabase()
 	    data = dbconn.getPackageData(idpk)
 	    rev = dbconn.retrieveRevision(idpk)
@@ -284,7 +286,7 @@ def update(options):
 	    dbconn.setDigest(idpk,digest)
 	    hashFilePath = createHashFile(etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName)
 	    # remove garbage
-	    spawnCommand("rm -rf "+dbpath)
+	    os.remove(dbpath)
 	    print_info(yellow(" * ")+red("Database injection complete for ")+newFileName)
 	    
 	else:

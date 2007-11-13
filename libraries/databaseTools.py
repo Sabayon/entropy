@@ -2174,12 +2174,13 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCounterAvailable: called.")
 	result = False
 	self.cursor.execute('SELECT counter FROM counters WHERE counter = "'+str(counter)+'"')
-	for row in self.cursor:
+        result = self.cursor.fetchone()
+        if result:
 	    result = True
 	if (result):
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isCounterAvailable: "+str(counter)+" not available.")
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isCounterAvailable: "+str(counter)+" available.")
 	else:
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCounterAvailable: "+str(counter)+" available.")
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCounterAvailable: "+str(counter)+" not available.")
 	return result
 
     def isLicenseAvailable(self,license):

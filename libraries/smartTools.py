@@ -45,12 +45,61 @@ def smart(options):
     if (options[0] == "application"):
         rc = smartappsHandler(options[1:], emptydeps = smartRequestEmpty)
     elif (options[0] == "package"):
-        rc = smartPackagesHanlder(options[1:])
+        rc = smartPackagesHandler(options[1:])
+    elif (options[0] == "quickpkg"):
+        rc = QuickpkgHandler(options[1:])
+    else:
+        rc = -10
 
     return rc
 
 
-def smartPackagesHanlder(mypackages):
+def QuickpkgHandler(mypackages):
+    
+    if (not mypackages):
+        print_error(darkred(" * ")+red("No packages specified."))
+        return 1
+    
+    clientDbconn = openClientDatabase()
+    packages = []
+    for opt in mypackages:
+        match = clientDbconn.atomMatch(opt)
+        if match[0] != -1:
+            packages.append(match)
+        else:
+            print_warning(darkred(" * ")+red("Cannot find: ")+bold(opt))
+    packages = entropyTools.filterDuplicatedEntries(packages)
+    if (not packages):
+        print_error(darkred(" * ")+red("No valid packages specified."))
+        return 2
+
+    # print the list
+    print_info(darkgreen(" * ")+red("This is the list of the packages that would be quickpkg'd:"))
+    pkgInfo = {}
+    pkgData = {}
+    for pkg in packages:
+        atom = clientDbconn.retrieveAtom(pkg[0])
+        pkgInfo[pkg] = atom
+        pkgData[pkg] = clientDbconn.getPackageData(pkg[0])
+        print_info(brown("\t[")+red("from:")+bold("installed")+brown("]")+" - "+atom)
+
+    rc = entropyTools.askquestion(">>   Would you like to recompose the selected packages ?")
+    if rc == "No":
+        return 0
+
+    clientDbconn.closeDB()
+
+    for pkg in packages:
+        print_info(brown(" * ")+red("Compressing: ")+darkgreen(pkgInfo[pkg]))
+        resultfile = entropyTools.quickpkg(pkgdata = pkgData[pkg], dirpath = etpConst['packagestmpdir'])
+        if resultfile == None:
+            print_error(darkred(" * ")+red("Error creating package for: ")+bold(pkgInfo[pkg])+darkred(". Cannot continue."))
+            return 1
+        print_info(darkgreen("  * ")+red("Saved in: ")+resultfile)
+    return 0
+
+
+def smartPackagesHandler(mypackages):
     
     if (not mypackages):
         print_error(darkred(" * ")+red("No packages specified."))

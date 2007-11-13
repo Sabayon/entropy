@@ -73,7 +73,6 @@ DROP TABLE IF EXISTS etpData;
 DROP TABLE IF EXISTS baseinfo;
 DROP TABLE IF EXISTS extrainfo;
 DROP TABLE IF EXISTS content;
-DROP TABLE IF EXISTS contenttypes;
 DROP TABLE IF EXISTS dependencies;
 DROP TABLE IF EXISTS rundependencies;
 DROP TABLE IF EXISTS rundependenciesxt;
@@ -140,11 +139,6 @@ CREATE TABLE extrainfo (
 CREATE TABLE content (
     idpackage INTEGER,
     file VARCHAR
-);
-
-CREATE TABLE contenttypes (
-    idtype INTEGER PRIMARY KEY,
-    type VARCHAR
 );
 
 CREATE TABLE provide (
@@ -284,8 +278,6 @@ CREATE TABLE neededreference (
 );
 
 """
-
-#     idtype INTEGER
 
 # Entropy directories specifications
 # THIS IS THE KEY PART OF ENTROPY BINARY PACKAGES MANAGEMENT

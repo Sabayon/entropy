@@ -93,7 +93,8 @@ def print_help():
     print_info(" \t\t"+darkgreen("application")+red("\t\t generate a smart application for the provided atoms (experimental)"))
     print_info(" \t\t\t"+red("--empty")+"\t\t set all dependencies as unsatisfied")
     print_info(" \t\tA .tbz2 package that can contain multiple packages  (Gentoo compatible)")
-    print_info(" \t\t"+darkgreen("package")+red("\t\t generate a smart package for the provided atoms"))
+    print_info(" \t\t"+darkgreen("package")+red("\t\t\t generate a smart package for the provided atoms"))
+    print_info(" \t\t"+darkgreen("quickpkg")+red("\t\t repackage files belonging to the provided atoms"))
 
     print_info(" \t"+blue("database")+brown("\t handle installed packages database"))
     print_info(" \t\t"+darkgreen("generate")+red("\t\t generate installed packages database"))

@@ -1190,3 +1190,79 @@ def writeNewBranch(branch):
             f.write("\nbranch|"+str(branch)+"\n")
         f.flush()
         f.close()
+
+# @pkgdata: etpData mapping dictionary (retrieved from db using getPackageData())
+# @dirpath: directory to save .tbz2
+def quickpkg(pkgdata,dirpath):
+
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+str(pkgdata)+" | dirpath: "+dirpath)
+    import tarfile
+    import stat
+    import databaseTools
+
+    # getting package info
+    pkgtag = ''
+    if pkgdata['versiontag']: pkgtag = "#"+pkgdata['versiontag']
+    pkgname = pkgdata['name']+"-"+pkgdata['version']+pkgtag # + version + tag
+    pkgcat = pkgdata['category']
+    pkgfile = pkgname+".tbz2"
+    dirpath += "/"+pkgname+".tbz2"
+    if os.path.isfile(dirpath):
+        os.remove(dirpath)
+    tar = tarfile.open(dirpath,"w:bz2")
+
+    contents = list(pkgdata['content'])
+    id_strings = {}
+    contents.sort()
+
+    # collect files
+    for path in contents:
+	try:
+	    exist = os.lstat(path)
+	except OSError:
+	    continue # skip file
+	lpath = path
+	arcname = path[1:] # remove trailing /
+	if (not stat.S_ISDIR(exist.st_mode)) and os.path.isdir(lpath): # directory symlink
+	    lpath = os.path.realpath(lpath)
+        
+	tarinfo = tar.gettarinfo(lpath, str(arcname))
+	tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
+	tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
+	
+	if stat.S_ISREG(exist.st_mode):
+	    tarinfo.type = tarfile.REGTYPE
+	    f = open(path)
+	    try:
+		tar.addfile(tarinfo, f)
+	    finally:
+		f.close()
+	else:
+	    tar.addfile(tarinfo)
+
+    tar.close()
+    
+    # appending xpak metadata
+    if etpConst['gentoo-compat']:
+        import xpak
+        from portageTools import getPortageAppDbPath
+        dbdir = getPortageAppDbPath()+"/"+pkgcat+"/"+pkgname+"/"
+        if os.path.isdir(dbdir):
+            tbz2 = xpak.tbz2(dirpath)
+            tbz2.recompose(dbdir)
+
+    # appending entropy metadata
+    dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
+    while os.path.isfile(dbpath):
+        dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
+    # create db
+    mydbconn = databaseTools.openGenericDatabase(dbpath)
+    mydbconn.initializeDatabase()
+    mydbconn.addPackage(pkgdata, revision = pkgdata['revision'])
+    mydbconn.closeDB()
+    aggregateEdb(tbz2file = dirpath, dbfile = dbpath)
+
+    if os.path.isfile(dirpath):
+	return dirpath
+    else:
+	return None

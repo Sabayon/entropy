@@ -219,7 +219,6 @@ def parseElogFile(atom):
 	return []
 
 # create a .tbz2 file in the specified path
-# old way, buggy with symlinks
 def quickpkg(atom,dirpath):
 
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+atom+" | dirpath: "+dirpath)
@@ -229,10 +228,7 @@ def quickpkg(atom,dirpath):
     pkgcat = atom.split("/")[0]
     pkgfile = pkgname+".tbz2"
     dirpath += "/"+pkgname+".tbz2"
-    tmpdirpath = etpConst['packagestmpdir']+"/"+pkgname+".tbz2"+"-tmpdir"
-    if os.path.isdir(tmpdirpath): entropyTools.spawnCommand("rm -rf "+tmpdirpath)
-    os.makedirs(tmpdirpath)
-    dbdir = "/var/db/pkg/"+pkgcat+"/"+pkgname+"/"
+    dbdir = getPortageAppDbPath()+"/"+pkgcat+"/"+pkgname+"/"
 
     import tarfile
     import stat
@@ -283,76 +279,6 @@ def quickpkg(atom,dirpath):
     
     dblnk.unlockdb()
     
-    # Remove tmp file
-    entropyTools.spawnCommand("rm -rf "+tmpdirpath)
-    
-    if os.path.isfile(dirpath):
-	return dirpath
-    else:
-	return False
-
-# create a .tbz2 file in the specified path
-def quickpkg_test(atom,dirpath):
-
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+atom+" | dirpath: "+dirpath)
-
-    import shutil
-    # getting package info
-    pkgname = atom.split("/")[1]
-    pkgcat = atom.split("/")[0]
-    pkgfile = pkgname+".tbz2"
-    dirpath += "/"+pkgname+".tbz2"
-    dirpath = os.path.realpath(dirpath)
-    tmpdirpath = etpConst['packagestmpdir']+"/"+pkgname+".tbz2"+"-tmpdir"
-    if os.path.isdir(tmpdirpath): shutil.rmtree(tmpdirpath)
-    os.makedirs(tmpdirpath)
-    dbdir = "/var/db/pkg/"+pkgcat+"/"+pkgname+"/"
-    
-    # open file and read contents
-    f = open(dbdir+dbCONTENTS,"r")
-    contents = f.readlines()
-    contents = [x.split()[1] for x in contents]
-    f.close()
-    
-    contents.sort()
-    # copy files to a tmpdir
-    for x in contents:
-	if os.path.lexists(x):
-	    if os.path.isdir(x) and not os.path.islink(x):
-		# true dir
-		x = os.path.realpath(x)
-		os.makedirs(tmpdirpath+x)
-		user = os.stat(x)[4]
-		group = os.stat(x)[5]
-		os.chown(tmpdirpath+x,user,group)
-		shutil.copystat(x,tmpdirpath+x)
-	    else:
-		dirname = os.path.realpath(os.path.dirname(x))
-		if not os.path.isdir(tmpdirpath+'/'+dirname): # in case that realpath is not yet created
-		    os.makedirs(tmpdirpath+'/'+dirname)
-		    if os.path.isdir(dirname):
-			user = os.stat(dirname)[4]
-			group = os.stat(dirname)[5]
-			shutil.copystat(dirname,tmpdirpath+dirname)
-		    else:
-			user = 0
-			group = 0
-		    os.chown(tmpdirpath+dirname,user,group)
-		    
-		x = dirname+"/"+os.path.basename(x)
-	        os.system('cp -ax '+x+' '+tmpdirpath+'/'+x)
-    
-    # create tar
-    os.system("cd "+tmpdirpath+"; tar cjf "+dirpath+" .")
-
-    # appending xpak informations
-    import xpak
-    tbz2 = xpak.tbz2(dirpath)
-    tbz2.recompose(dbdir)
-    
-    # Remove tmp file
-    entropyTools.spawnCommand("rm -rf "+tmpdirpath)
-
     if os.path.isfile(dirpath):
 	return dirpath
     else:
