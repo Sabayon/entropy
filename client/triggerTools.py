@@ -87,7 +87,7 @@ def postinstall(pkgdata):
 	functions.add('gconfinstallschemas')
 	functions.add('gconfreload')
 
-    if pkgdata['name'] == "pygtk":
+    if pkgdata['name'] == "pygobject":
 	functions.add('pygtksetup')
 
     # prepare content
@@ -184,6 +184,8 @@ def postremove(pkgdata):
 	    functions.add('removebootablekernel')
 	if x.startswith('/etc/init.d/'):
 	    functions.add('removeinit')
+        if x.endswith('.py'):
+            functions.add('cleanpy')
 
     return functions
 
@@ -459,7 +461,8 @@ def gconfinstallschemas(pkgdata):
 	    """)
 
 def pygtksetup(pkgdata):
-    python_sym_files = [x for x in pkgdata['content'] if x.startswith("/usr/lib/python") and (x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0"))]
+    python_sym_files = [x for x in pkgdata['content'] if x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0")]
+    print python_sym_files
     for file in python_sym_files:
 	if os.path.isfile(file):
 	    os.symlink(file,file[:-4])
@@ -474,6 +477,19 @@ def susetuid(pkgdata):
     if os.path.isfile("/bin/su"):
         os.chown("/bin/su",0,0)
         os.chmod("/bin/su",4755)
+
+def cleanpy(pkgdata):
+    pyfiles = [x for x in pkgdata['content'] if x.endswith(".py")]
+    for file in pyfiles:
+        if os.path.isfile(file+"o"):
+            try: os.remove(file+"o")
+            except OSError: pass
+        if os.path.isfile(file+"c"):
+            try: os.remove(file+"c")
+            except OSError: pass
+
+
+
 ########################################################
 ####
 ##   Internal functions
