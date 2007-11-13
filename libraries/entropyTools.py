@@ -1214,7 +1214,7 @@ def quickpkg(pkgdata,dirpath):
     contents = list(pkgdata['content'])
     id_strings = {}
     contents.sort()
-
+    
     # collect files
     for path in contents:
 	try:
@@ -1226,7 +1226,7 @@ def quickpkg(pkgdata,dirpath):
 	if (not stat.S_ISDIR(exist.st_mode)) and os.path.isdir(lpath): # directory symlink
 	    lpath = os.path.realpath(lpath)
         
-	tarinfo = tar.gettarinfo(lpath, str(arcname))
+	tarinfo = tar.gettarinfo(lpath, str(arcname)) # FIXME: casting to str() cause of python <2.5.1 bug
 	tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
 	tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
 	

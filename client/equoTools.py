@@ -816,7 +816,7 @@ def fetchFileOnMirrors(repository, filename, digest = False):
 	print_info(red("   ## ")+mirrorCountText+blue("Downloading from: ")+red(spliturl(url)[1]))
 	rc = fetchFile(url, digest)
 	if rc == 0:
-	    print_info(red("   ## ")+mirrorCountText+blue("Successfully downloaded from: ")+red(spliturl(url)[1]))
+	    print_info(red("   ## ")+mirrorCountText+blue("Successfully downloaded from: ")+red(spliturl(url)[1])+blue(" at "+str(bytesIntoHuman(etpFileTransfer['datatransfer']))+"/sec"))
 	    return 0
 	else:
 	    # something bad happened
@@ -1012,7 +1012,7 @@ def installPackage(infoDict):
         pkgpath = etpConst['entropyworkdir']+"/"+package
     unpackDir = etpConst['entropyunpackdir']+"/"+package
     if os.path.isdir(unpackDir):
-	os.system("rm -rf "+unpackDir)
+	shutil.rmtree(unpackDir)
     imageDir = unpackDir+"/image"
     os.makedirs(imageDir)
     
@@ -1124,12 +1124,6 @@ def installPackage(infoDict):
 	    try:
 		# this also handles symlinks
 		shutil.move(fromfile,tofile)
-		try:
-		    packageContent.append(tofile.encode("utf-8"))
-		except:
-		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Cannot convert filename into UTF-8, skipping: "+str(tofile))
-		    print_warning(darkred("   ## ")+red("Cannot convert filename into UTF-8, skipping ")+str(tofile))
-		    pass
 	    except IOError,(errno,strerror):
 		if errno == 2:
 		    # better to pass away, sometimes gentoo packages are fucked up and contain broken things

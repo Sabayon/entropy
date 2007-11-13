@@ -894,9 +894,16 @@ def database(options):
 	dbconn.initializeDatabase()
 	
 	# sync packages directory
-	print "Revisions dump:"
-	print revisionsMatch
-	#activatorTools.packages(["sync","--ask"])
+        if revisionsMatch:
+            print_info(green(" * ")+red("Dumping current revisions to file ")+"/entropy-revisions-dump.txt")
+            f = open("/entropy-revisions-dump.txt","w")
+            f.write(str(revisionsMatch)+"\n")
+            f.flush()
+            f.close()
+
+	rc = askquestion("     Would you like to sync packages first (important if you don't have them synced) ?")
+        if rc == "Yes":
+            activatorTools.packages(["sync","--ask"])
 	
 	# now fill the database
 	pkgbranches = os.listdir(etpConst['packagesbindir'])

@@ -520,6 +520,7 @@ etpFileTransfer = {
     'datatransfer': 0,
     'oldgather': 0,
     'gather': 0,
+    'elapsed': 0.0,
     'transferpollingtime': float(1)/4 # 0.25secs = 4Hz
 }
 

@@ -80,8 +80,8 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
     # start scheduler
     if (showSpeed):
 	etpFileTransfer['datatransfer'] = 0
-	etpFileTransfer['oldgather'] = 0
 	etpFileTransfer['gather'] = 0
+        etpFileTransfer['elapsed'] = 0.0
 	speedUpdater = entropyTools.TimeScheduled(__updateSpeedInfo,etpFileTransfer['transferpollingtime'])
 	speedUpdater.setName("download")
 	speedUpdater.start()
@@ -213,7 +213,6 @@ def __downloadFileCommitData(f, buf, output = True, maxsize = 0, showSpeed = Tru
 
 
 def __updateSpeedInfo():
-    diff = etpFileTransfer['gather'] - etpFileTransfer['oldgather']
+    etpFileTransfer['elapsed'] += etpFileTransfer['transferpollingtime']
     # we have the diff size
-    etpFileTransfer['datatransfer'] = diff / etpFileTransfer['transferpollingtime']
-    etpFileTransfer['oldgather'] = etpFileTransfer['gather']
+    etpFileTransfer['datatransfer'] = etpFileTransfer['gather'] / etpFileTransfer['elapsed']
