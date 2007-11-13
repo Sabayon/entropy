@@ -26,6 +26,7 @@ from clientConstants import *
 from outputTools import *
 import entropyTools
 import equoTools
+import uiTools
 from databaseTools import openClientDatabase, openRepositoryDatabase, openGenericDatabase
 
 def smart(options):
@@ -106,7 +107,7 @@ def smartpackagegenerator(matchedPackages):
         fetchdata.append([xatom,x])
         xdbconn.closeDB()
     # run installPackages with onlyfetch
-    rc = equoTools.installPackages(atomsdata = fetchdata, deps = False, onlyfetch = True)
+    rc = uiTools.installPackages(atomsdata = fetchdata, deps = False, onlyfetch = True)
     if rc[1] != 0:
         return rc[0]
 
@@ -269,7 +270,7 @@ def smartgenerator(atomInfo, emptydeps = False):
         fetchdata.append([xatom,x])
         xdbconn.closeDB()
     # run installPackages with onlyfetch
-    rc = equoTools.installPackages(atomsdata = fetchdata, deps = False, onlyfetch = True)
+    rc = uiTools.installPackages(atomsdata = fetchdata, deps = False, onlyfetch = True)
     if rc[1] != 0:
         return rc[0]
 

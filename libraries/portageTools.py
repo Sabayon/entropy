@@ -222,7 +222,7 @@ def parseElogFile(atom):
 # old way, buggy with symlinks
 def quickpkg(atom,dirpath):
 
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg_old: called -> "+atom+" | dirpath: "+dirpath)
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+atom+" | dirpath: "+dirpath)
 
     # getting package info
     pkgname = atom.split("/")[1]

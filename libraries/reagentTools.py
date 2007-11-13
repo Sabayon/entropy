@@ -428,38 +428,47 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 
     print_info(yellow(" * ")+red(info_package+"Getting package content..."),back = True)
     # dbCONTENTS
-    etpData['content'] = []
+    etpData['content'] = {}
     try:
         f = open(tbz2TmpDir+dbCONTENTS,"r")
         content = f.readlines()
         f.close()
-	outcontent = []
+	outcontent = set()
 	for line in content:
 	    line = line.strip().split()
-	    if (line[0] == "obj") or (line[0] == "sym"):
-		# remove first object (obj or sym)
-		datafile = line[1:]
-		# remove checksum and mtime - obj and sym have it
-		try:
-		    if line[0] == "obj":
-		        datafile = datafile[:len(datafile)-2]
-		    else:
-			datafile = datafile[:len(datafile)-3]
+            try:
+                datatype = line[0]
+                datafile = line[1:]
+                if datatype == 'obj':
+                    datafile = datafile[:-2]
                     datafile = ' '.join(datafile)
-		except:
-		    datafile = datafile[0] # FIXME: handle shit better
-		outcontent.append(datafile)
-	# filter bad utf-8 chars
-	_outcontent = []
+                elif datatype == 'dir':
+                    datafile = ' '.join(datafile)
+                elif datatype == 'sym':
+                    datafile = datafile[:-3]
+                    datafile = ' '.join(datafile)
+                else:
+                    print "unhandled",datafile
+                    datafile = datafile[0]
+                outcontent.add((datafile,datatype))
+            except:
+                pass
+	
+        # filter bad utf-8 chars
+	_outcontent = set()
 	for i in outcontent:
 	    try:
-		i = i.encode(getfilesystemencoding())
-		_outcontent.append(i)
+                datatype = i[1]
+                datafile = i[0]
+		datafile = datafile.encode(getfilesystemencoding())
+		_outcontent.add(i)
 	    except:
 		pass
 	outcontent = _outcontent
+        outcontent = list(outcontent)
+        outcontent.sort()
 	for i in outcontent:
-	    etpData['content'].append(i.encode("utf-8"))
+            etpData['content'][i[0].encode(getfilesystemencoding())] = i[1]
 	
     except IOError:
         pass

@@ -245,15 +245,17 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 			# ok, we must get the repository with the biggest priority
 			#print "d'oh"
 		        # I'm pissed off, now I get the repository name and quit
-			for repository in etpRepositoriesOrder:
+                        myrepoorder = list(etpRepositoriesOrder)
+                        myrepoorder.sort()
+			for repository in myrepoorder:
 			    for repo in conflictingTags:
-				if repository == repo:
+				if repository[1] == repo:
 				    # found it, WE ARE DOOONE!
 				    atomMatchCache[atom] = {}
 				    atomMatchCache[atom]['result'] = repoResults[repo],repo
 				    atomMatchCache[atom]['matchSlot'] = matchSlot
 				    atomMatchCache[atom]['matchBranches'] = matchBranches
-				    return [repoResults[repo],repo]
+				    return repoResults[repo],repo
 		    
 		    else:
 			# we are done!!!
@@ -472,7 +474,6 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
     conflicts = set()
 
     mydep = (1,myatom)
-    #mytree = []
     mybuffer = lifobuffer()
     deptree = set()
     if not ((atomInfo in matchFilter) and (usefilter)):
@@ -504,6 +505,16 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
             dependenciesNotFound.add(mydep[1])
             mydep = mybuffer.pop()
             continue
+
+        # check if atom has been already pulled in
+        matchdb = openRepositoryDatabase(match[1])
+        matchatom = matchdb.retrieveAtom(match[0])
+        matchdb.closeDB()
+        if matchatom in treecache:
+            mydep = mybuffer.pop()
+            continue
+        else:
+            treecache.add(matchatom)
 
         # already analyzed by the calling function
         if (match in matchFilter) and (usefilter):

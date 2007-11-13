@@ -32,6 +32,7 @@ import equoTools
 import repositoriesTools
 from databaseTools import openRepositoryDatabase, openClientDatabase, openGenericDatabase, listAllAvailableBranches
 import entropyTools
+import shutil
 
 import logTools
 equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[Equo]")
@@ -271,7 +272,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	        if os.path.isdir(etpConst['entropyunpackdir']+"/"+basefile[:-5]):
 		    shutil.rmtree(etpConst['entropyunpackdir']+"/"+basefile[:-5])
 	        os.makedirs(etpConst['entropyunpackdir']+"/"+basefile[:-5])
-	        dbfile = extractEdb(pkg,dbpath = etpConst['entropyunpackdir']+"/"+basefile[:-5]+"/packages.db")
+	        dbfile = entropyTools.extractEdb(pkg,dbpath = etpConst['entropyunpackdir']+"/"+basefile[:-5]+"/packages.db")
                 if dbfile == None:
                     print_warning(red("## ATTENTION:")+bold(" "+basefile+" ")+red(" is not a valid Entropy package. Skipping..."))
                     continue
@@ -285,6 +286,10 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	        etpRepositories[basefile]['configprotect'] = set()
 	        etpRepositories[basefile]['configprotectmask'] = set()
                 etpRepositories[basefile]['smartpackage'] = False # extra info added
+                # get max count
+                repoordercount = [x[0] for x in etpRepositoriesOrder]
+                repoordercount.sort()
+                etpRepositoriesOrder.add((repoordercount[-1]+1,basefile))
 	        mydbconn = openGenericDatabase(dbfile)
 	        # read all idpackages
 	        myidpackages = mydbconn.listAllIdpackages() # all branches admitted from external files

@@ -1,5 +1,6 @@
 TODO list:
   CLIENT:
+  - quickpkg tool that recreates .tbz2 from the system (needs updated content table?)
   - find a way to better handle real smartapps deps
 
 
