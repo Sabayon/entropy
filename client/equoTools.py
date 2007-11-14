@@ -806,7 +806,7 @@ def fetchFileOnMirrors(repository, filename, digest = False):
     mirrorcount = 0
     for uri in uris:
 	
-	if len(remaining) == 0:
+	if not remaining:
 	    # tried all the mirrors, quitting for error
 	    return -3
 	mirrorcount += 1
@@ -831,10 +831,7 @@ def fetchFileOnMirrors(repository, filename, digest = False):
 		return -1
 	    else:
 		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - unknown reason.")
-	    try:
-	        remaining.remove(uri)
-	    except:
-		pass
+	    remaining.remove(uri)
 
 '''
    @description: download a package into etpConst['packagesbindir'] and check for digest if digest is not False

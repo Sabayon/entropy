@@ -503,8 +503,6 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 		    installedTag = clientDbconn.retrieveVersionTag(idx)
 		    installedRev = clientDbconn.retrieveRevision(idx)
 		    actionQueue[pkgatom]['removeidpackage'] = idx
-		    actionQueue[pkgatom]['removeatom'] = clientDbconn.retrieveAtom(idx)
-		    actionQueue[pkgatom]['removecontent'] = clientDbconn.retrieveAtom(idx)
 		    onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idx)
 	        clientDbconn.closeDB()
 
@@ -665,6 +663,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                 oldcontent.difference_update(newcontent)
                 actionQueue[pkgatom]['removecontent'] = oldcontent
                 actionQueue[pkgatom]['diffremoval'] = True
+                actionQueue[pkgatom]['removeatom'] = clientDbconn.retrieveAtom(actionQueue[pkgatom]['removeidpackage'])
                 etpRemovalTriggers[pkgatom] = clientDbconn.getPackageData(actionQueue[pkgatom]['removeidpackage'])
                 etpRemovalTriggers[pkgatom]['removecontent'] = actionQueue[pkgatom]['removecontent'].copy()
                 etpRemovalTriggers[pkgatom]['trigger'] = clientDbconn.retrieveTrigger(actionQueue[pkgatom]['removeidpackage'])
