@@ -129,7 +129,7 @@ def CommonFlate(mytbz2s, action, savedir = None):
         savedir = etpConst['packagestmpdir']
 
     for tbz2 in mytbz2s:
-        print_info(brown(" * ")+darkred("Analyzing: ")+tbz2)
+        #print_info(brown(" * ")+darkred("Analyzing: ")+tbz2)
         if not (os.path.isfile(tbz2) and tbz2.endswith(".tbz2")):
             print_error(darkred(" * ")+bold(tbz2)+red(" is not a valid tbz2"))
             return 1
@@ -178,7 +178,11 @@ def DeflateHandler(mytbz2s, savedir):
     # analyze files
     for tbz2 in mytbz2s:
         print_info(darkgreen(" * ")+darkred("Deflating: ")+tbz2, back = True)
-        newtbz2 = entropyTools.removeEdb(tbz2,savedir)
+        mytbz2 = entropyTools.removeEdb(tbz2,savedir)
+        tbz2name = os.path.basename(mytbz2)[:-5] # remove .tbz2
+        tbz2name = entropyTools.remove_tag(tbz2name)+".tbz2"
+        oldtbz2 = mytbz2
+        newtbz2 = os.path.dirname(mytbz2)+"/"+tbz2name
         print_info(darkgreen(" * ")+darkred("Deflated package: ")+newtbz2)
 
     return 0
