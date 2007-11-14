@@ -1211,7 +1211,7 @@ def quickpkg(pkgdata,dirpath):
         os.remove(dirpath)
     tar = tarfile.open(dirpath,"w:bz2")
 
-    contents = list(pkgdata['content'])
+    contents = [x for x in pkgdata['content']]
     id_strings = {}
     contents.sort()
     
@@ -1223,7 +1223,11 @@ def quickpkg(pkgdata,dirpath):
 	    continue # skip file
 	lpath = path
 	arcname = path[1:] # remove trailing /
-	if (not stat.S_ISDIR(exist.st_mode)) and os.path.isdir(lpath): # directory symlink
+        ftype = pkgdata['content'][path]
+        if ftype == '0': ftype = 'dir' # force match below, '0' means databases without ftype
+        if 'dir' == ftype and \
+	    not stat.S_ISDIR(exist.st_mode) and \
+	    os.path.isdir(lpath): # workaround for directory symlink issues
 	    lpath = os.path.realpath(lpath)
         
 	tarinfo = tar.gettarinfo(lpath, str(arcname)) # FIXME: casting to str() cause of python <2.5.1 bug
