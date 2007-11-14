@@ -149,6 +149,25 @@ elif (options[0] == "--info"):
     rescueTools.getinfo()
     exit(0)
 
+def readerrorstatus():
+    try:
+        f = open(etpConst['errorstatus'],"r")
+        status = int(f.readline().strip())
+        f.close()
+        return status
+    except:
+        writeerrorstatus(0)
+        return 0
+
+def writeerrorstatus(status):
+    try:
+        f = open(etpConst['errorstatus'],"w")
+        f.write(str(status))
+        f.flush()
+        f.close()
+    except:
+        pass
+
 try:
     rc = 0
     # sync mirrors tool
@@ -229,7 +248,13 @@ try:
         rc = -10
 
     if rc == -10:
-        print_error(darkred("Wrong parameters."))
+        status = readerrorstatus()
+        print_error(darkred(etpExitMessages[status]))
+        # increment
+        if status < len(etpExitMessages)-1:
+            writeerrorstatus(status+1)
+    else:
+        writeerrorstatus(0)
     # kill threads
     threads = entropyTools.threading.enumerate()
     for thread in threads:
@@ -296,4 +321,3 @@ except:
     else:
 	print_error(darkred("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
 	exit(4)
-    

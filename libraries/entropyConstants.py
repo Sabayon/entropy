@@ -424,6 +424,7 @@ etpConst = {
     'configprotectcounter': 0, # this will be used to show the number of updated files at the end of the processes
     'entropyversion': "1.0", # default Entropy release version
     'systemname': "Sabayon Linux", # default system name
+    'errorstatus': ETP_CONF_DIR+"/code",
     
     'dumpstoragedir': ETP_DIR+ETP_XMLDIR, # data storage directory, useful to speed up equo across multiple issued commands
 
@@ -446,6 +447,18 @@ etpCacheSizes = {
     'dbSearch': 2000000, # bytes
     'atomMatch': 3000000, # bytes
     'generateDependsTree': 3000000, # bytes
+}
+
+# ahahaha
+etpExitMessages = {
+    0: "You should run equo --help",
+    1: "You didn't run equo --help, did you?",
+    2: "Did you even read equo --help??",
+    3: "I give up. Run that equo --help !!!!!!!",
+    4: "OH MY GOD. RUN equo --heeeeeeeeeeeeeelp",
+    5: "Illiteracy is a huge problem in this world",
+    6: "Ok i give up, you are hopeless",
+    7: "Go to hell."
 }
 
 ### Application disk cache
