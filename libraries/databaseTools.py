@@ -1973,11 +1973,11 @@ class etpDatabase:
             extstring = ",type"
 
         try:
-            self.cursor.execute('SELECT "file'+extstring+'" FROM content WHERE idpackage = "'+str(idpackage)+'"')
+            self.cursor.execute('SELECT file'+extstring+' FROM content WHERE idpackage = "'+str(idpackage)+'"')
         except:
             if extended:
                 self.createContentTypeColumn()
-                self.cursor.execute('SELECT "file'+extstring+'" FROM content WHERE idpackage = "'+str(idpackage)+'"')
+                self.cursor.execute('SELECT file'+extstring+' FROM content WHERE idpackage = "'+str(idpackage)+'"')
             else:
                 raise
         if extended:
