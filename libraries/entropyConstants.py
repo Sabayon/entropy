@@ -73,6 +73,8 @@ DROP TABLE IF EXISTS etpData;
 DROP TABLE IF EXISTS baseinfo;
 DROP TABLE IF EXISTS extrainfo;
 DROP TABLE IF EXISTS content;
+DROP TABLE IF EXISTS contentreference;
+DROP TABLE IF EXISTS contenttypes;
 DROP TABLE IF EXISTS dependencies;
 DROP TABLE IF EXISTS rundependencies;
 DROP TABLE IF EXISTS rundependenciesxt;
@@ -138,7 +140,8 @@ CREATE TABLE extrainfo (
 
 CREATE TABLE content (
     idpackage INTEGER,
-    file VARCHAR
+    file VARCHAR,
+    type VARCHAR
 );
 
 CREATE TABLE provide (

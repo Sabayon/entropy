@@ -450,27 +450,23 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
                     datafile = datafile[:-3]
                     datafile = ' '.join(datafile)
                 else:
-                    print "unhandled",datafile
-                    datafile = datafile[0]
+                    print "unhandled !!!!!!!",datafile
+                    raise Exception
                 outcontent.add((datafile,datatype))
             except:
                 pass
 	
-        # filter bad utf-8 chars
+        # convert to plain str() since it's that's used by portage
+        # when portage will use utf, test utf-8 encoding
 	_outcontent = set()
 	for i in outcontent:
-	    try:
-                datatype = i[1]
-                datafile = i[0]
-		datafile = datafile.encode(getfilesystemencoding())
-		_outcontent.add(i)
-	    except:
-		pass
-	outcontent = _outcontent
-        outcontent = list(outcontent)
+            datatype = i[1]
+            datafile = str(i[0])
+            _outcontent.add((i[0],i[1]))
+        outcontent = list(_outcontent)
         outcontent.sort()
 	for i in outcontent:
-            etpData['content'][i[0].encode(getfilesystemencoding())] = i[1]
+            etpData['content'][str(i[0])] = i[1]
 	
     except IOError:
         pass
@@ -892,7 +888,7 @@ def database(options):
 	# initialize the database
         dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
 	dbconn.initializeDatabase()
-	
+
 	# sync packages directory
         if revisionsMatch:
             print_info(green(" * ")+red("Dumping current revisions to file ")+"/entropy-revisions-dump.txt")

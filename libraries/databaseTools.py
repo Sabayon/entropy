@@ -582,13 +582,26 @@ class etpDatabase:
 
 	# content, a list
 	for file in etpData['content']:
-	    self.cursor.execute(
-		'INSERT into content VALUES '
-		'(?,?)'
-		, (	idpackage,
-			file,
-			)
-	    )
+            contenttype = etpData['content'][file]
+            try:
+                self.cursor.execute(
+                    'INSERT into content VALUES '
+                    '(?,?,?)'
+                    , (	idpackage,
+                            file,
+                            contenttype,
+                            )
+                )
+            except:
+                self.createContentTypeColumn()
+                self.cursor.execute(
+                    'INSERT into content VALUES '
+                    '(?,?,?)'
+                    , (	idpackage,
+                            file,
+                            contenttype,
+                            )
+                )
 	
 	# counter, if != -1
 	try:
@@ -1504,7 +1517,10 @@ class etpDatabase:
 	    data['mirrorlinks'].append([mirror,mirrorlinks])
 	
 	data['slot'] = mydata[14]
-	data['content'] = self.retrieveContent(idpackage)
+        mycontent = self.retrieveContent(idpackage, extended = True)
+        data['content'] = {}
+        for cdata in mycontent:
+            data['content'][cdata[0]] = cdata[1]
 	
 	data['dependencies'] = self.retrieveDependencies(idpackage)
 	data['provide'] = self.retrieveProvide(idpackage)
@@ -1949,20 +1965,26 @@ class etpDatabase:
 	'''
 	return sources
 
-    def retrieveContent(self, idpackage):
+    def retrieveContent(self, idpackage, extended = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveContent: retrieving Content for package ID "+str(idpackage))
 
-	''' caching
-	cache = self.fetchInfoCache(idpackage,'retrieveContent')
-	if cache != None: return cache
-	'''
+        extstring = ''
+        if extended:
+            extstring = ",type"
 
-	self.cursor.execute('SELECT "file" FROM content WHERE idpackage = "'+str(idpackage)+'"')
-	fl = self.fetchall2set(self.cursor.fetchall())
+        try:
+            self.cursor.execute('SELECT "file'+extstring+'" FROM content WHERE idpackage = "'+str(idpackage)+'"')
+        except:
+            if extended:
+                self.createContentTypeColumn()
+                self.cursor.execute('SELECT "file'+extstring+'" FROM content WHERE idpackage = "'+str(idpackage)+'"')
+            else:
+                raise
+        if extended:
+            fl = self.cursor.fetchall()
+        else:
+            fl = self.fetchall2set(self.cursor.fetchall())
 
-	''' caching
-	self.storeInfoCache(idpackage,'retrieveContent',fl)
-	'''
 	return fl
 
     def retrieveSlot(self, idpackage):
@@ -2709,6 +2731,12 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createSizesTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS sizes;')
 	self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
+	self.commitChanges()
+
+    def createContentTypeColumn(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createContentTypeColumn: called.")
+	self.cursor.execute('ALTER TABLE content ADD COLUMN type VARCHAR;')
+	self.cursor.execute('UPDATE content SET type = "0"')
 	self.commitChanges()
 
     def createTriggerTable(self):

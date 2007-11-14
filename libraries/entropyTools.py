@@ -1224,7 +1224,7 @@ def quickpkg(pkgdata,dirpath):
 	lpath = path
 	arcname = path[1:] # remove trailing /
         ftype = pkgdata['content'][path]
-        if ftype == '0': ftype = 'dir' # force match below, '0' means databases without ftype
+        if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
         if 'dir' == ftype and \
 	    not stat.S_ISDIR(exist.st_mode) and \
 	    os.path.isdir(lpath): # workaround for directory symlink issues
