@@ -1026,35 +1026,44 @@ def installPackage(infoDict):
     packageContent = []
     # setup imageDir properly
     imageDir = imageDir.encode(getfilesystemencoding())
+    
     # merge data into system
     for currentdir,subdirs,files in os.walk(imageDir):
 	# create subdirs
         for dir in subdirs:
-	    #dirpath += "/"+dir
-	    imagepathDir = currentdir + "/" + dir
+	    
+            imagepathDir = currentdir + "/" + dir
 	    rootdir = imagepathDir[len(imageDir):]
-	    # get info
-	    if (rootdir):
-		if os.path.islink(rootdir):
-		    if not os.path.exists(rootdir): # broken symlink
-			#print "I want to remove "+rootdir
-			#print os.readlink(rootdir)
-		        os.remove(rootdir)
-		elif os.path.isfile(rootdir): # weird
-    		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+str(rootdir)+" is a file when it should be a directory !! Removing in 10 seconds...")
-		    print_warning(red(" *** ")+bold(rootdir)+red(" is a file when it should be a directory !! Removing in 10 seconds..."))
-		    import time
-		    time.sleep(10)
-		    os.remove(rootdir)
-	        if (not os.path.isdir(rootdir)) and (not os.access(rootdir,os.R_OK)):
-		    #print "creating dir "+rootdir
-		    os.makedirs(rootdir)
-	    user = os.stat(imagepathDir)[4]
-	    group = os.stat(imagepathDir)[5]
-	    os.chown(rootdir,user,group)
-	    shutil.copystat(imagepathDir,rootdir)
-	#dirpath = ''
-	for file in files:
+	    
+            # handle broken symlinks
+            if os.path.islink(rootdir) and not os.path.exists(rootdir):# broken symlink
+                os.remove(rootdir)
+            
+            # if our directory is a file on the live system
+            elif os.path.isfile(rootdir): # really weird...!
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+str(rootdir)+" is a file when it should be a directory !! Removing in 10 seconds...")
+                print_warning(red(" *** ")+bold(rootdir)+red(" is a file when it should be a directory !! Removing in 10 seconds..."))
+                import time
+                time.sleep(10)
+                os.remove(rootdir)
+            
+            # if our directory is a symlink instead, then copy the symlink
+            if os.path.islink(imagepathDir) and not os.path.isdir(rootdir): # for security we skip live items that are dirs
+                tolink = os.readlink(imagepathDir)
+                if os.path.islink(rootdir):
+                    os.remove(rootdir)
+                os.symlink(tolink,rootdir)
+            elif (not os.path.isdir(rootdir)) and (not os.access(rootdir,os.R_OK)):
+                #print "creating dir "+rootdir
+                os.makedirs(rootdir)
+            
+            if not os.path.islink(rootdir): # symlink don't need permissions, also until os.walk ends they might be broken
+                user = os.stat(imagepathDir)[4]
+                group = os.stat(imagepathDir)[5]
+                os.chown(rootdir,user,group)
+                shutil.copystat(imagepathDir,rootdir)
+	
+        for file in files:
 	    fromfile = currentdir+"/"+file
 	    tofile = fromfile[len(imageDir):]
 	    

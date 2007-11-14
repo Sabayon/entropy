@@ -95,6 +95,10 @@ def print_help():
     print_info(" \t\tA .tbz2 package that can contain multiple packages  (Gentoo compatible)")
     print_info(" \t\t"+darkgreen("package")+red("\t\t\t generate a smart package for the provided atoms"))
     print_info(" \t\t"+darkgreen("quickpkg")+red("\t\t repackage installed files belonging to the provided atoms"))
+    print_info(" \t\t"+darkgreen("inflate")+red("\t\t\t transform provided Gentoo .tbz2 packages into an Entropy one (Portage needed)"))
+    print_info(" \t\t\t"+red("--savedir")+"\t save new packages to the specified directory")
+    print_info(" \t\t"+darkgreen("deflate")+red("\t\t\t transform provided Entropy .tbz2 packages into an Gentoo ones (Portage needed)"))
+    print_info(" \t\t\t"+red("--savedir")+"\t save new packages to the specified directory")
 
     print_info(" \t"+blue("database")+brown("\t handle installed packages database"))
     print_info(" \t\t"+darkgreen("generate")+red("\t\t generate installed packages database"))
@@ -207,6 +211,8 @@ try:
 	if len(options) > 1:
 	    import queryTools
             rc = queryTools.searchPackage(options[1:])
+        else:
+            rc = -10
 
     elif (options[0] == "database"):
         entropyTools.applicationLockCheck("database")
@@ -217,6 +223,11 @@ try:
         entropyTools.applicationLockCheck("cleanup")
         entropyTools.cleanup([ etpConst['packagestmpdir'], etpConst['logdir'], etpConst['entropyunpackdir'], etpConst['packagesbindir'] ])
         rc = 0
+    else:
+        rc = -10
+
+    if rc == -10:
+        print_error(darkred("Wrong parameters."))
     # kill threads
     threads = entropyTools.threading.enumerate()
     for thread in threads:

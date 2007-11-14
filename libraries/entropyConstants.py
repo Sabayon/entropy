@@ -27,8 +27,7 @@ from sys import exit
 
 
 # Specifications of the content of etpData
-# THIS IS THE KEY PART OF ENTROPY BINARY PACKAGES MANAGEMENT
-# DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU'RE DOING !!
+'''
 etpData = {
     'name': u"", # the Package Name
     'version': u"", # the Package version
@@ -66,6 +65,7 @@ etpData = {
     'needed': u"", # runtime libraries needed by the package
     'trigger': u"", # this will become a bool, containing info about external trigger presence
 }
+'''
 
 # Entropy database SQL initialization Schema and data structure
 etpSQLInitDestroyAll = """

@@ -33,12 +33,20 @@ def smart(options):
 
     # Options available for all the packages submodules
     smartRequestEmpty = False
+    smartRequestSavedir = None
+    savedir = False
     newopts = []
     for opt in options:
 	if (opt == "--empty"):
 	    smartRequestEmpty = True
+	elif (opt == "--savedir"):
+	    savedir = True
         else:
-            newopts.append(opt)
+            if savedir:
+                smartRequestSavedir = opt
+                savedir = False
+            else:
+                newopts.append(opt)
     options = newopts
 
     rc = 0
@@ -48,6 +56,8 @@ def smart(options):
         rc = smartPackagesHandler(options[1:])
     elif (options[0] == "quickpkg"):
         rc = QuickpkgHandler(options[1:])
+    elif (options[0] == "inflate") or (options[0] == "deflate"):
+        rc = CommonFlate(options[1:], action = options[0], savedir = smartRequestSavedir)
     else:
         rc = -10
 
@@ -98,6 +108,78 @@ def QuickpkgHandler(mypackages):
         print_info(darkgreen("  * ")+red("Saved in: ")+resultfile)
     return 0
 
+def CommonFlate(mytbz2s, action, savedir = None):
+
+    if (not mytbz2s):
+        print_error(darkred(" * ")+red("No packages specified."))
+        return 1
+
+    # test if portage is available
+    try:
+        import portageTools
+    except:
+        print_error(darkred(" * ")+bold("Portage")+red(" is not available."))
+        return 1
+    
+    if savedir:
+        if not os.path.isdir(savedir):
+            print_error(darkred(" * ")+bold("--savedir")+red(" specified does not exist."))
+            return 1
+    else:
+        savedir = etpConst['packagestmpdir']
+
+    for tbz2 in mytbz2s:
+        print_info(brown(" * ")+darkred("Analyzing: ")+tbz2)
+        if not (os.path.isfile(tbz2) and tbz2.endswith(".tbz2")):
+            print_error(darkred(" * ")+bold(tbz2)+red(" is not a valid tbz2"))
+            return 1
+    
+    if action == "inflate":
+        rc = InflateHandler(mytbz2s, savedir)
+    elif action == "deflate":
+        rc = DeflateHandler(mytbz2s, savedir)
+    else:
+        rc = -10
+    return rc
+
+
+def InflateHandler(mytbz2s, savedir = None):
+
+    print_info(brown(" Using branch: ")+bold(etpConst['branch']))
+
+    # analyze files
+    for tbz2 in mytbz2s:
+        print_info(darkgreen(" * ")+darkred("Inflating: ")+tbz2, back = True)
+        etptbz2path = savedir+"/"+os.path.basename(tbz2)
+        if os.path.realpath(tbz2) != os.path.realpath(etptbz2path): # can convert a file without copying
+            shutil.copy2(tbz2,etptbz2path)
+        mydata = entropyTools.extractPkgData(etptbz2path)
+        # append arbitrary revision
+        mydata['revision'] = 9999
+        # create temp database
+        dbpath = etpConst['packagestmpdir']+"/"+str(entropyTools.getRandomNumber())
+        while os.path.isfile(dbpath):
+            dbpath = etpConst['packagestmpdir']+"/"+str(entropyTools.getRandomNumber())
+        # create
+        mydbconn = openGenericDatabase(dbpath)
+        mydbconn.initializeDatabase()
+        mydbconn.addPackage(mydata, revision = mydata['revision'])
+        mydbconn.closeDB()
+        entropyTools.aggregateEdb(tbz2file = etptbz2path, dbfile = dbpath)
+        os.remove(dbpath)
+        print_info(darkgreen(" * ")+darkred("Inflated package: ")+etptbz2path)
+
+    return 0
+
+def DeflateHandler(mytbz2s, savedir = None):
+
+    # analyze files
+    for tbz2 in mytbz2s:
+        print_info(darkgreen(" * ")+darkred("Deflating: ")+tbz2, back = True)
+        newtbz2 = entropyTools.removeEdb(tbz2,savedir)
+        print_info(darkgreen(" * ")+darkred("Deflated package: ")+newtbz2)
+
+    return 0
 
 def smartPackagesHandler(mypackages):
     

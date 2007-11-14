@@ -136,8 +136,8 @@ def database(options):
 	print_info(red("  Now generating depends caching table..."))
 	clientDbconn.regenerateDependsTable()
 	print_info(red("  Database reinitialized successfully."))
-
 	clientDbconn.closeDB()
+        return 0
 
     elif (options[0] == "resurrect"):
 
@@ -233,6 +233,7 @@ def database(options):
 
 	print_info(red("  Database resurrected successfully."))
 	print_warning(red("  Keep in mind that virtual/meta packages couldn't be matched. They don't own any files."))
+        return 0
 
     elif (options[0] == "depends"):
 	print_info(red("  Regenerating depends caching table..."))
@@ -240,6 +241,10 @@ def database(options):
 	clientDbconn.regenerateDependsTable()
 	clientDbconn.closeDB()
 	print_info(red("  Depends caching table regenerated successfully."))
+        return 0
+    
+    else:
+        return -10
 
 
 '''

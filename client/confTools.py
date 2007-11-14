@@ -42,7 +42,7 @@ def configurator(options):
 
     rc = 0
     if len(options) < 1:
-	return rc
+	return -10
 
     equoRequestVerbose = False
     equoRequestQuiet = False
@@ -58,9 +58,10 @@ def configurator(options):
 
     if myopts[0] == "info":
 	rc = confinfo()
-
     elif myopts[0] == "update":
 	rc = update()
+    else:
+        rc = -10
 
     return rc
 

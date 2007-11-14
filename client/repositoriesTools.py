@@ -52,13 +52,13 @@ def repositories(options):
 
     if (options[0] == "update"):
 	rc = syncRepositories(forceUpdate = equoRequestForceUpdate)
-
-    if (options[0] == "status"):
+    elif (options[0] == "status"):
 	for repo in etpRepositories:
 	    showRepositoryInfo(repo)
-
-    if (options[0] == "repoinfo"):
+    elif (options[0] == "repoinfo"):
 	showRepositories()
+    else:
+        rc = -10
     return rc
 
 # this function shows a list of enabled repositories

@@ -32,7 +32,7 @@ import os
 from entropyConstants import *
 import portage
 import portage_const
-from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv #FIXME: Use the ones from entropyTools
+from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv
 from portage_util import grabdict_package
 from portage_const import USER_CONFIG_PATH
 

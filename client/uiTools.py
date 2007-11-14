@@ -115,6 +115,8 @@ def package(options):
 	else:
 	    print_error(red(" Nothing to do."))
 	    rc = 127
+    else:
+        rc = -10
 
     return rc
 

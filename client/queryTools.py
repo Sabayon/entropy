@@ -37,7 +37,7 @@ def query(options):
     rc = 0
 
     if len(options) < 1:
-	return rc
+	return -10
 
     equoRequestVerbose = False
     equoRequestQuiet = False
@@ -84,10 +84,10 @@ def query(options):
 	if len(mylistopts) > 0:
 	    if mylistopts[0] == "installed":
 	        rc = searchInstalled(verbose = equoRequestVerbose, quiet = equoRequestQuiet)
-	    # add more here
-
     elif myopts[0] == "description":
 	rc = searchDescription(myopts[1:], quiet = equoRequestQuiet)
+    else:
+        rc = -10
 
     return rc
 
