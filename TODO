@@ -1,6 +1,7 @@
 TODO list:
   CLIENT:
   - get tracks of portage counters to try to automatically keep in sync entropy db?
+  - tool to create arbitrary .tbz2 (like debs?)
   - if chosen command doesn't exist, return error
   - find a way to better handle real smartapps deps
 
