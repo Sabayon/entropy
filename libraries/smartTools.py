@@ -56,7 +56,7 @@ def smart(options):
         rc = smartPackagesHandler(options[1:])
     elif (options[0] == "quickpkg"):
         rc = QuickpkgHandler(options[1:])
-    elif (options[0] == "inflate") or (options[0] == "deflate"):
+    elif (options[0] == "inflate") or (options[0] == "deflate") or (options[0] == "extract"):
         rc = CommonFlate(options[1:], action = options[0], savedir = smartRequestSavedir)
     else:
         rc = -10
@@ -138,12 +138,14 @@ def CommonFlate(mytbz2s, action, savedir = None):
         rc = InflateHandler(mytbz2s, savedir)
     elif action == "deflate":
         rc = DeflateHandler(mytbz2s, savedir)
+    elif action == "extract":
+        rc = ExtractHandler(mytbz2s,savedir)
     else:
         rc = -10
     return rc
 
 
-def InflateHandler(mytbz2s, savedir = None):
+def InflateHandler(mytbz2s, savedir):
 
     print_info(brown(" Using branch: ")+bold(etpConst['branch']))
 
@@ -171,13 +173,27 @@ def InflateHandler(mytbz2s, savedir = None):
 
     return 0
 
-def DeflateHandler(mytbz2s, savedir = None):
+def DeflateHandler(mytbz2s, savedir):
 
     # analyze files
     for tbz2 in mytbz2s:
         print_info(darkgreen(" * ")+darkred("Deflating: ")+tbz2, back = True)
         newtbz2 = entropyTools.removeEdb(tbz2,savedir)
         print_info(darkgreen(" * ")+darkred("Deflated package: ")+newtbz2)
+
+    return 0
+
+def ExtractHandler(mytbz2s, savedir):
+
+    # analyze files
+    for tbz2 in mytbz2s:
+        print_info(darkgreen(" * ")+darkred("Extracting Entropy metadata from: ")+tbz2, back = True)
+        dbpath = savedir+"/"+os.path.basename(tbz2)[:-4]+"db"
+        if os.path.isfile(dbpath):
+            os.remove(dbpath)
+        # extract
+        out = entropyTools.extractEdb(tbz2,dbpath = dbpath)
+        print_info(darkgreen(" * ")+darkred("Extracted Entropy metadata from: ")+out)
 
     return 0
 

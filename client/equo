@@ -99,6 +99,8 @@ def print_help():
     print_info(" \t\t\t"+red("--savedir")+"\t save new packages to the specified directory")
     print_info(" \t\t"+darkgreen("deflate")+red("\t\t\t transform provided Entropy .tbz2 packages into an Gentoo ones (Portage needed)"))
     print_info(" \t\t\t"+red("--savedir")+"\t save new packages to the specified directory")
+    print_info(" \t\t"+darkgreen("extract")+red("\t\t\t extract Entropy metadata from provided .tbz2 packages"))
+    print_info(" \t\t\t"+red("--savedir")+"\t save new metadata to the specified directory")
 
     print_info(" \t"+blue("database")+brown("\t handle installed packages database"))
     print_info(" \t\t"+darkgreen("generate")+red("\t\t generate installed packages database"))
