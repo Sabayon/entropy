@@ -170,6 +170,8 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	else: # not changed, is the revision changed?
 	    adbconn = openRepositoryDatabase(match[1])
 	    arevision = adbconn.retrieveRevision(match[0])
+            # if revision is 9999, then any revision is fine
+            if revision == 9999: arevision = 9999
 	    adbconn.closeDB()
 	    if revision != arevision:
 		tainted = True

@@ -95,6 +95,7 @@ def print_help():
     print_info(" \t\tA .tbz2 package that can contain multiple packages  (Gentoo compatible)")
     print_info(" \t\t"+darkgreen("package")+red("\t\t\t generate a smart package for the provided atoms"))
     print_info(" \t\t"+darkgreen("quickpkg")+red("\t\t repackage installed files belonging to the provided atoms"))
+    print_info(" \t\t\t"+red("--savedir")+"\t save new packages to the specified directory")
     print_info(" \t\t"+darkgreen("inflate")+red("\t\t\t convert provided Gentoo .tbz2 into Entropy ones (Portage needed)"))
     print_info(" \t\t\t"+red("--savedir")+"\t save new packages to the specified directory")
     print_info(" \t\t"+darkgreen("deflate")+red("\t\t\t convert provided Entropy .tbz2 into Gentoo ones (Portage needed)"))

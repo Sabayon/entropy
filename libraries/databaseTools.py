@@ -614,6 +614,8 @@ class etpDatabase:
 		    )
 	        )
 	except:
+            if self.dbname == "client":
+                self.createCountersTable()
 	    pass # FIXME: temp woraround, add check for clientDbconn
 	
 	# on disk size
@@ -2751,6 +2753,15 @@ class etpDatabase:
 	self.cursor.execute('CREATE TABLE eclasses ( idpackage INTEGER, idclass INTEGER );')
 	self.cursor.execute('CREATE TABLE eclassesreference ( idclass INTEGER PRIMARY KEY, classname VARCHAR );')
 	self.commitChanges()
+
+    def createCountersTable(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createCountersTable: called.")
+	self.cursor.execute('DROP TABLE IF EXISTS counters;')
+	self.cursor.execute('CREATE TABLE counters ( counter INTEGER PRIMARY KEY, idpackage INTEGER );')
+	self.commitChanges()
+        if etpConst['gentoo-compat']:
+            # assign a counter to an idpackage
+            myids = self.listAllIdpackages()
 
     def createNeededTable(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createNeededTable: called.")

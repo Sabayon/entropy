@@ -409,6 +409,8 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
 		installedVer = clientDbconn.retrieveVersion(clientMatch[0])
 		installedTag = clientDbconn.retrieveVersionTag(clientMatch[0])
 		installedRev = clientDbconn.retrieveRevision(clientMatch[0])
+                if installedRev == 9999: # any revision is fine
+                    repo_pkgrev = 9999
 		
 		if (deepdeps):
 		    cmp = entropyCompareVersions((repo_pkgver,repo_pkgtag,repo_pkgrev),(installedVer,installedTag,installedRev))
