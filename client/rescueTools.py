@@ -404,6 +404,8 @@ def database(options):
                 clientDbconn.removePackageFromInstalledTable(idpk)
                 clientDbconn.addPackageToInstalledTable(idpk,"gentoo-db")
                 os.remove(temptbz2)
+            
+            print_info(brown(" @@ ")+blue("Database update completed."))
 
         return 0
 
