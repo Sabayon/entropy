@@ -1265,6 +1265,8 @@ def installPackageIntoGentooDatabase(infoDict,packageFile):
 	
 	### INSTALL NEW
 	extractPath = etpConst['entropyunpackdir']+"/"+os.path.basename(packageFile)+"/xpak"
+        if os.path.isfile(etpConst['entropyunpackdir']+"/"+os.path.basename(packageFile)):
+            os.remove(etpConst['entropyunpackdir']+"/"+os.path.basename(packageFile))
 	if os.path.isdir(extractPath):
 	    shutil.rmtree(extractPath)
 	else:

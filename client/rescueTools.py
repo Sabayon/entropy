@@ -100,7 +100,7 @@ def database(options):
         count = 0
         for portagePackage in portagePackages:
             count += 1
-	    print_info(blue("(")+darkgreen(str(count))+"/"+darkred(maxcount)+blue(")")+red(" atom: ")+brown(portagePackage))
+	    print_info(blue("(")+darkgreen(str(count))+"/"+darkred(maxcount)+blue(")")+red(" atom: ")+brown(portagePackage), back = True)
             temptbz2 = etpConst['entropyunpackdir']+"/"+portagePackage.split("/")[1]+".tbz2"
             if os.path.lexists(temptbz2):
                 shutil.rmtree(temptbz2)
@@ -110,7 +110,11 @@ def database(options):
             f.close()
             entropyTools.appendXpak(temptbz2,portagePackage)
             # now extract info
-            mydata = entropyTools.extractPkgData(temptbz2)
+            try:
+                mydata = entropyTools.extractPkgData(temptbz2, silent = True)
+            except:
+                print_warning(red("!!! An error occured while analyzing: ")+blue(portagePackage))
+                continue
             mydata['revision'] = 9999
             # FIXME also add counter?
             idpk, rev, xx, status = clientDbconn.addPackage(etpData = mydata, revision = mydata['revision'])

@@ -25,7 +25,7 @@ from outputTools import *
 from entropyConstants import *
 import os
 import re
-from sys import exit, stdout
+from sys import exit, stdout, getfilesystemencoding
 import threading, time
 
 # Instantiate the databaseStatus:
@@ -1314,7 +1314,7 @@ def appendXpak(tbz2file, atom):
     return tbz2file
 
 # This function extracts all the info from a .tbz2 file and returns them
-def extractPkgData(package, etpBranch = etpConst['branch']):
+def extractPkgData(package, etpBranch = etpConst['branch'], silent = False):
 
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractPkgData: called -> package: "+str(package))
     data = {}
@@ -1323,7 +1323,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 
     info_package = bold(os.path.basename(package))+": "
 
-    print_info(yellow(" * ")+red(info_package+"Getting package name/version..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package name/version..."),back = True)
     tbz2File = package
     package = package.split(".tbz2")[0]
     package = remove_tag(package)
@@ -1352,33 +1352,33 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     data['name'] = pkgname
     data['version'] = pkgver
 
-    print_info(yellow(" * ")+red(info_package+"Getting package md5..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package md5..."),back = True)
     # .tbz2 md5
     data['digest'] = md5sum(tbz2File)
 
-    print_info(yellow(" * ")+red(info_package+"Getting package mtime..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package mtime..."),back = True)
     # .tbz2 md5
     data['datecreation'] = str(getFileUnixMtime(tbz2File))
     
-    print_info(yellow(" * ")+red(info_package+"Getting package size..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package size..."),back = True)
     # .tbz2 byte size
     data['size'] = str(os.stat(tbz2File)[6])
     
-    print_info(yellow(" * ")+red(info_package+"Unpacking package data..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Unpacking package data..."),back = True)
     # unpack file
     tbz2TmpDir = etpConst['packagestmpdir']+"/"+data['name']+"-"+data['version']+"/"
     extractXpak(tbz2File,tbz2TmpDir)
 
-    print_info(yellow(" * ")+red(info_package+"Getting package CHOST..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package CHOST..."),back = True)
     # Fill chost
     f = open(tbz2TmpDir+dbCHOST,"r")
     data['chost'] = f.readline().strip()
     f.close()
 
-    print_info(yellow(" * ")+red(info_package+"Setting package branch..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Setting package branch..."),back = True)
     data['branch'] = etpBranch
 
-    print_info(yellow(" * ")+red(info_package+"Getting package description..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package description..."),back = True)
     # Fill description
     data['description'] = ""
     try:
@@ -1388,7 +1388,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     except IOError:
         pass
 
-    print_info(yellow(" * ")+red(info_package+"Getting package homepage..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package homepage..."),back = True)
     # Fill homepage
     data['homepage'] = ""
     try:
@@ -1398,7 +1398,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     except IOError:
         pass
 
-    print_info(yellow(" * ")+red(info_package+"Getting package slot information..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package slot information..."),back = True)
     # fill slot, if it is
     data['slot'] = ""
     try:
@@ -1408,7 +1408,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     except IOError:
         pass
 
-    print_info(yellow(" * ")+red(info_package+"Getting package eclasses information..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package eclasses information..."),back = True)
     # fill eclasses list
     data['eclasses'] = []
     try:
@@ -1418,7 +1418,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     except IOError:
         pass
 
-    print_info(yellow(" * ")+red(info_package+"Getting package needed libraries information..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package needed libraries information..."),back = True)
     # fill needed list
     data['needed'] = set()
     try:
@@ -1438,7 +1438,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
         pass
     data['needed'] = list(data['needed'])
 
-    print_info(yellow(" * ")+red(info_package+"Getting package content..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package content..."),back = True)
     # dbCONTENTS
     data['content'] = {}
     try:
@@ -1471,7 +1471,10 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 	_outcontent = set()
 	for i in outcontent:
             datatype = i[1]
-            datafile = str(i[0])
+            try:
+                i[0] = i[0].encode(getfilesystemencoding())
+            except:
+                continue
             _outcontent.add((i[0],i[1]))
         outcontent = list(_outcontent)
         outcontent.sort()
@@ -1523,7 +1526,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     # add strict kernel dependency
     # done below
     
-    print_info(yellow(" * ")+red(info_package+"Getting package download URL..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package download URL..."),back = True)
     # Fill download relative URI
     if (kernelDependentModule):
 	data['versiontag'] = kmodver
@@ -1534,20 +1537,20 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 	versiontag = ""
     data['download'] = etpConst['binaryurirelativepath']+data['branch']+"/"+data['name']+"-"+data['version']+versiontag+".tbz2"
 
-    print_info(yellow(" * ")+red(info_package+"Getting package counter..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package counter..."),back = True)
     # Fill counter
     f = open(tbz2TmpDir+dbCOUNTER,"r")
     data['counter'] = f.readline().strip()
     f.close()
 
-    print_info(yellow(" * ")+red(info_package+"Getting package category..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package category..."),back = True)
     # Fill category
     f = open(tbz2TmpDir+dbCATEGORY,"r")
     data['category'] = f.readline().strip()
     f.close()
     
     data['trigger'] = ""
-    print_info(yellow(" * ")+red(info_package+"Getting package external trigger availability..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package external trigger availability..."),back = True)
     if os.path.isfile(etpConst['triggersdir']+"/"+data['category']+"/"+data['name']+"/"+etpConst['triggername']):
         f = open(etpConst['triggersdir']+"/"+data['category']+"/"+data['name']+"/"+etpConst['triggername'],"rb")
         f.seek(0,2)
@@ -1556,7 +1559,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 	data['trigger'] = f.read(size)
         f.close()
 
-    print_info(yellow(" * ")+red(info_package+"Getting package CFLAGS..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package CFLAGS..."),back = True)
     # Fill CFLAGS
     data['cflags'] = ""
     try:
@@ -1566,7 +1569,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     except IOError:
         pass
 
-    print_info(yellow(" * ")+red(info_package+"Getting package CXXFLAGS..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package CXXFLAGS..."),back = True)
     # Fill CXXFLAGS
     data['cxxflags'] = ""
     try:
@@ -1576,7 +1579,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     except IOError:
         pass
 
-    print_info(yellow(" * ")+red(info_package+"Getting package License information..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package License information..."),back = True)
     # Fill license
     data['license'] = []
     try:
@@ -1593,7 +1596,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 	data['license'] = ""
         pass
 
-    print_info(yellow(" * ")+red(info_package+"Getting package USE flags..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package USE flags..."),back = True)
     # Fill USE
     data['useflags'] = []
     f = open(tbz2TmpDir+dbUSE,"r")
@@ -1619,7 +1622,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 	except:
 	    data['useflags'].append("-"+i)
 
-    print_info(yellow(" * ")+red(info_package+"Getting package provide content..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package provide content..."),back = True)
     # Fill Provide
     data['provide'] = []
     try:
@@ -1633,7 +1636,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     except:
         pass
 
-    print_info(yellow(" * ")+red(info_package+"Getting package sources information..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package sources information..."),back = True)
     # Fill sources
     data['sources'] = []
     try:
@@ -1687,7 +1690,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     except IOError:
 	pass
 
-    print_info(yellow(" * ")+red(info_package+"Getting package mirrors list..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package mirrors list..."),back = True)
     # manage data['sources'] to create data['mirrorlinks']
     # =mirror://openoffice|link1|link2|link3
     data['mirrorlinks'] = []
@@ -1699,7 +1702,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
             data['mirrorlinks'].append([mirrorURI,mirrorlist]) # mirrorURI = openoffice and mirrorlist = [link1, link2, link3]
 
 
-    print_info(yellow(" * ")+red(info_package+"Getting source package supported ARCHs..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting source package supported ARCHs..."),back = True)
     # fill KEYWORDS
     data['keywords'] = []
     try:
@@ -1712,7 +1715,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
     except IOError:
 	pass
 
-    print_info(yellow(" * ")+red(info_package+"Getting package supported ARCHs..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package supported ARCHs..."),back = True)
     
     # fill ARCHs
     kwords = data['keywords']
@@ -1729,7 +1732,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 	except:
 	    pass
 
-    print_info(yellow(" * ")+red(info_package+"Getting package dependencies..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package dependencies..."),back = True)
     # Fill dependencies
     # to fill dependencies we use *DEPEND files
     f = open(tbz2TmpDir+dbRDEPEND,"r")
@@ -1767,7 +1770,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 	except:
 	    pass
 
-    print_info(yellow(" * ")+red(info_package+"Getting System package List..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting System package List..."),back = True)
     # write only if it's a systempackage
     data['systempackage'] = ''
     systemPackages = getPackagesInSystem()
@@ -1779,7 +1782,7 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 	    data['systempackage'] = "xxx"
 	    break
 
-    print_info(yellow(" * ")+red(info_package+"Getting CONFIG_PROTECT/CONFIG_PROTECT_MASK List..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting CONFIG_PROTECT/CONFIG_PROTECT_MASK List..."),back = True)
     # write only if it's a systempackage
     protect, mask = getConfigProtectAndMask()
     data['config_protect'] = protect
@@ -1812,14 +1815,14 @@ def extractPkgData(package, etpBranch = etpConst['branch']):
 		message = out[0]
 		data['messages'].append(message)
     else:
-	print_warning(red(etpConst['logdir']+"/elog")+" not set, have you configured make.conf properly?")
+	if not silent: print_warning(red(etpConst['logdir']+"/elog")+" not set, have you configured make.conf properly?")
 
-    print_info(yellow(" * ")+red(info_package+"Getting Entropy API version..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting Entropy API version..."),back = True)
     # write API info
     data['etpapi'] = etpConst['etpapi']
     
     # removing temporary directory
     os.system("rm -rf "+tbz2TmpDir)
 
-    print_info(yellow(" * ")+red(info_package+"Done"),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Done"),back = True)
     return data
