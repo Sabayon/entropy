@@ -31,6 +31,11 @@ from databaseTools import openClientDatabase, openRepositoryDatabase, openGeneri
 
 def smart(options):
 
+    # check if I am root
+    if (not entropyTools.isRoot()):
+        print_error(red("You are not ")+bold("root")+red("."))
+	return 1
+
     # Options available for all the packages submodules
     smartRequestEmpty = False
     smartRequestAsk = False

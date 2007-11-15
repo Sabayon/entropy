@@ -602,21 +602,34 @@ class etpDatabase:
                             contenttype,
                             )
                 )
-	
+
 	# counter, if != -1
-	try:
-	    if etpData['counter'] != -1:
-	        self.cursor.execute(
-	        'INSERT into counters VALUES '
-	        '(?,?)'
-	        , (	etpData['counter'],
-		    idpackage,
-		    )
-	        )
-	except:
-            if self.dbname == "client":
-                self.createCountersTable()
-	    pass # FIXME: temp woraround, add check for clientDbconn
+	if etpData['counter'] != -1:
+            try:
+                # check if counterstable is ok
+                regenerated = False
+                if self.dbname == "client":
+                    testcounter = self.getLatestCounter()
+                    try:
+                        int(testcounter)
+                    except:
+                        # counters tables (counterstable and counters)
+                        self.regenerateCountersTable()
+                        regenerated = True
+
+                if not regenerated:
+                    self.cursor.execute(
+                    'INSERT into counters VALUES '
+                    '(?,?)'
+                    , ( etpData['counter'],
+                        idpackage,
+                        )
+                    )
+            except:
+                if self.dbname == "client": # force only for client database
+                    self.commitChanges()
+                    self.regenerateCountersTable()
+                    # no need to do insert then, regenerateCountersTable does it already
 	
 	# on disk size
 	try:
@@ -1001,7 +1014,9 @@ class etpDatabase:
 	    # counter
 	    self.cursor.execute('DELETE FROM counters WHERE idpackage = '+idpackage)
 	except:
-	    pass
+            if self.dbname == "client":
+                self.commitChanges()
+                self.regenerateCountersTable()
 	try:
 	    # on disk sizes
 	    self.cursor.execute('DELETE FROM sizes WHERE idpackage = '+idpackage)
@@ -1190,8 +1205,16 @@ class etpDatabase:
 	raise Exception, "I tried to insert a flag tuple but then, fetching it returned -1. There's something broken."
 
     def setDigest(self, idpackage, digest):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setChecksum: setting new digest for idpackage: "+str(idpackage)+" -> "+str(digest))
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setDigest: setting new digest for idpackage: "+str(idpackage)+" -> "+str(digest))
 	self.cursor.execute('UPDATE extrainfo SET digest = "'+str(digest)+'" WHERE idpackage = "'+str(idpackage)+'"')
+
+    def setCounter(self, idpackage, counter):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setCounter: setting new counter for idpackage: "+str(idpackage)+" -> "+str(counter))
+        try:
+            self.cursor.execute('UPDATE counters SET counter = "'+str(counter)+'" WHERE idpackage = "'+str(idpackage)+'"')
+        except:
+            if self.dbname == "client":
+                self.regenerateCountersTable()
 
     def cleanupUseflags(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupUseflags: called.")
@@ -1366,13 +1389,15 @@ class etpDatabase:
 	# empty cursor
 	x = self.cursor.fetchall()
 
-    def getIDPackage(self, atom, branch = "unstable"):
+    def getIDPackage(self, atom, branch = etpConst['branch']):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackage: retrieving package ID for "+atom+" | branch: "+branch)
 	self.cursor.execute('SELECT "IDPACKAGE" FROM baseinfo WHERE atom = "'+atom+'" AND branch = "'+branch+'"')
 	idpackage = -1
-	for row in self.cursor:
-	    idpackage = int(row[0])
-	    break
+        idpackage = self.cursor.fetchone()
+        if idpackage:
+            idpackage = idpackage[0]
+        else:
+            idpackage = -1
 	return idpackage
 
     def getIDPackageFromFileInBranch(self, file, branch = "unstable"):
@@ -1480,7 +1505,7 @@ class etpDatabase:
 	data['download'] = mydata[12]
 	data['digest'] = mydata[13]
 	data['sources'] = self.retrieveSources(idpackage)
-	data['counter'] = self.retrieveCounter(idpackage) # counters are trivial, cannot insert into the sql above
+	data['counter'] = self.retrieveCounter(idpackage) # cannot insert into the sql above
 	data['messages'] = self.retrieveMessages(idpackage)
 	data['trigger'] = self.retrieveTrigger(idpackage) #FIXME: needed for now because of new column
 	
@@ -1680,7 +1705,9 @@ class etpDatabase:
 	    if mycounter:
 	        counter = mycounter[0]
 	except:
-	    pass
+            if self.dbname == "client":
+                self.regenerateCountersTable()
+                counter = self.retrieveCounter(idpackage)
 	
 	self.storeInfoCache(idpackage,'retrieveCounter',int(counter))
 	return int(counter)
@@ -2725,6 +2752,76 @@ class etpDatabase:
             return ""
             pass
 
+    def createCountersTable(self):
+        dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createCountersTable: called.")
+        self.cursor.execute('DROP TABLE IF EXISTS counters;')
+        self.cursor.execute('CREATE TABLE counters ( counter INTEGER PRIMARY KEY, idpackage INTEGER );')
+        self.createCountersDataTable()
+        self.commitChanges()
+
+    def createCountersDataTable(self):
+        self.cursor.execute('DROP TABLE IF EXISTS countersdata;')
+        self.cursor.execute('CREATE TABLE countersdata ( maxcounter INTEGER );')
+
+    def getLatestCounter(self): # if == -1, databases (gentoo and entropy) won't be scanned for difference
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllCounters: called.")
+        try:
+            self.cursor.execute('SELECT maxcounter FROM countersdata')
+        except:
+            self.regenerateCountersTable()
+            self.cursor.execute('SELECT maxcounter FROM countersdata')
+	return self.cursor.fetchone()[0]
+
+    def setLatestCounter(self, counter):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllCounters: called.")
+        try:
+            self.cursor.execute('UPDATE countersdata SET maxcounter = "'+str(counter)+'"')
+        except:
+            if self.dbname == "client":
+                self.regenerateCountersTable()
+            elif self.dbname == "etpdb": # server database open
+                self.createCountersDataTable()
+                self.cursor.execute('UPDATE countersdata SET maxcounter = "'+str(counter)+'"')
+
+    def regenerateCountersTable(self, output = False):
+        self.createCountersTable()
+        # assign a counter to an idpackage
+        try:
+            from portageTools import getPortageAppDbPath # only if Portage is found
+        except:
+            return
+        appdbpath = getPortageAppDbPath()
+        myids = self.listAllIdpackages()
+        for myid in myids:
+            # get atom
+            myatom = self.retrieveAtom(myid)
+            myatom = entropyTools.remove_tag(myatom)
+            myatomcounterpath = appdbpath+myatom+"/"+dbCOUNTER
+            if os.path.isfile(myatomcounterpath):
+                try:
+                    f = open(myatomcounterpath,"r")
+                    counter = int(f.readline().strip())
+                    f.close()
+                except:
+                    if output: print "Attention: Cannot open Gentoo counter file for: "+myatom
+                    continue
+                # insert id+counter
+                try:
+                    self.cursor.execute(
+                            'INSERT into counters VALUES '
+                            '(?,?)', ( counter, myid, )
+                    )
+                except:
+                    if output: print "Attention: counter for atom "+str(myatom)+" is duplicated. Ignoring."
+                    continue # don't trust counters, they might not be unique
+            try:
+                f = open(edbCOUNTER,"r")
+                counter = int(f.readline.strip())
+                f.close()
+            except:
+                counter = -1
+            self.setLatestCounter(counter)
+
     #
     # FIXME: remove these when 1.0 will be out
     #
@@ -2753,15 +2850,6 @@ class etpDatabase:
 	self.cursor.execute('CREATE TABLE eclasses ( idpackage INTEGER, idclass INTEGER );')
 	self.cursor.execute('CREATE TABLE eclassesreference ( idclass INTEGER PRIMARY KEY, classname VARCHAR );')
 	self.commitChanges()
-
-    def createCountersTable(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createCountersTable: called.")
-	self.cursor.execute('DROP TABLE IF EXISTS counters;')
-	self.cursor.execute('CREATE TABLE counters ( counter INTEGER PRIMARY KEY, idpackage INTEGER );')
-	self.commitChanges()
-        if etpConst['gentoo-compat']:
-            # assign a counter to an idpackage
-            myids = self.listAllIdpackages()
 
     def createNeededTable(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createNeededTable: called.")

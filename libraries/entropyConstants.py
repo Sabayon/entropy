@@ -108,6 +108,7 @@ DROP TABLE IF EXISTS eclassesreference;
 DROP TABLE IF EXISTS needed;
 DROP TABLE IF EXISTS neededreference;
 DROP TABLE IF EXISTS triggers;
+DROP TABLE IF EXISTS countersdata;
 """
 
 etpSQLInit = """
@@ -278,6 +279,10 @@ CREATE TABLE needed (
 CREATE TABLE neededreference (
     idneeded INTEGER PRIMARY KEY,
     library VARCHAR
+);
+
+CREATE TABLE countersdata (
+    maxcounter INTEGER
 );
 
 """
@@ -738,6 +743,7 @@ dbOR = "|or|"
 dbKEYWORDS = "KEYWORDS"
 dbCONTENTS = "CONTENTS"
 dbCOUNTER = "COUNTER"
+edbCOUNTER = "/var/cache/edb/counter"
 
 # Portage variables reference
 # vdbVARIABLE --> $VARIABLE

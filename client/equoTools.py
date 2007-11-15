@@ -1156,7 +1156,7 @@ def installPackage(infoDict):
     # inject into database
     print_info(red("   ## ")+blue("Updating database with: ")+red(infoDict['atom']))
 
-    installPackageIntoDatabase(infoDict['idpackage'], infoDict['repository'])
+    newidpackage = installPackageIntoDatabase(infoDict['idpackage'], infoDict['repository'])
 
     # remove old files and gentoo stuff
     if (infoDict['removeidpackage'] != -1):
@@ -1175,7 +1175,7 @@ def installPackage(infoDict):
 
     if (etpConst['gentoo-compat']):
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing new Gentoo database entry: "+str(infoDict['atom']))
-	rc = installPackageIntoGentooDatabase(infoDict,pkgpath)
+	rc = installPackageIntoGentooDatabase(infoDict,pkgpath, newidpackage = newidpackage)
 	if (rc >= 0):
 	    shutil.rmtree(unpackDir,True)
 	    return rc
@@ -1226,7 +1226,7 @@ def removePackageFromGentooDatabase(atom):
    @input package: dictionary containing information collected by installPackages (important are atom, slot, category, name, version)
    @output: 0 = all fine, >0 = error!
 '''
-def installPackageIntoGentooDatabase(infoDict,packageFile):
+def installPackageIntoGentooDatabase(infoDict,packageFile, newidpackage = -1):
     
     # handle gentoo-compat
     _portage_avail = False
@@ -1321,6 +1321,11 @@ def installPackageIntoGentooDatabase(infoDict,packageFile):
                         f.write(str(counter)+"\n")
                         f.flush()
                         f.close()
+                        # update counter inside clientDatabase
+                        if newidpackage != -1:
+                            clientDbconn = openClientDatabase()
+                            clientDbconn.setCounter(newidpackage,counter)
+                            clientDbconn.closeDB()
                 except:
                     pass
 
@@ -1342,7 +1347,6 @@ def installPackageIntoDatabase(idpackage, repository):
     branch = dbconn.retrieveBranch(idpackage)
     newcontent = dbconn.retrieveContent(idpackage)
     
-    exitstatus = 0
     clientDbconn = openClientDatabase()
 
     # load content cache
@@ -1363,7 +1367,7 @@ def installPackageIntoDatabase(idpackage, repository):
     if (not status):
 	clientDbconn.closeDB()
 	print "DEBUG!!! THIS SHOULD NOT NEVER HAPPEN. Package "+str(idpk)+" has not been inserted, status: "+str(status)
-	exitstatus = 1 # it hasn't been insterted ? why??
+	idpk = -1 # it hasn't been insterted ? why??
     else: # all fine
 
 	# regenerate contentCache
@@ -1391,7 +1395,7 @@ def installPackageIntoDatabase(idpackage, repository):
 	    clientDbconn.regenerateDependsTable()
 
     clientDbconn.closeDB()
-    return exitstatus
+    return idpk
 
 '''
    @description: remove the package from the installed packages database..

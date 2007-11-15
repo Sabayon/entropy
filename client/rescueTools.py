@@ -45,7 +45,7 @@ def database(options):
     options = _options
 
     if len(options) < 1:
-	return 0
+	return -10
 
     if (options[0] == "generate"):
 
@@ -74,6 +74,19 @@ def database(options):
 	const_resetCache()
         import shutil
 	
+        # try to collect current installed revisions if possible
+        revisionsMatch = {}
+        try:
+            clientDbconn = openClientDatabase()
+            myids = clientDbconn.listAllIdpackages()
+            for myid in myids:
+                myatom = clientDbconn.retrieveAtom(myid)
+                myrevision = clientDbconn.retrieveRevision(myid)
+                revisionsMatch[myatom] = myrevision
+            clientDbconn.closeDB()
+        except:
+            pass
+        
 	# ok, he/she knows it... hopefully
 	# if exist, copy old database
 	print_info(red(" @@ ")+blue("Creating backup of the previous database, if exists.")+red(" @@"))
@@ -102,7 +115,9 @@ def database(options):
             count += 1
 	    print_info(blue("(")+darkgreen(str(count))+"/"+darkred(maxcount)+blue(")")+red(" atom: ")+brown(portagePackage), back = True)
             temptbz2 = etpConst['entropyunpackdir']+"/"+portagePackage.split("/")[1]+".tbz2"
-            if os.path.lexists(temptbz2):
+            if os.path.isfile(temptbz2):
+                os.remove(temptbz2)
+            elif os.path.isdir(temptbz2):
                 shutil.rmtree(temptbz2)
             f = open(temptbz2,"wb")
             f.write("this is a fake ")
@@ -115,8 +130,22 @@ def database(options):
             except:
                 print_warning(red("!!! An error occured while analyzing: ")+blue(portagePackage))
                 continue
+            
+            # Try to see if it's possible to use the revision of a possible old db
             mydata['revision'] = 9999
-            # FIXME also add counter?
+            # create atom string
+            myatom = mydata['category']+"/"+mydata['name']+"-"+mydata['version']
+            if mydata['versiontag']:
+                myatom += "#"+mydata['versiontag']
+            # now see if a revision is available
+            savedRevision = revisionsMatch.get(myatom)
+            if savedRevision != None:
+                try:
+                    savedRevision = int(savedRevision) # cast to int for security
+                    mydata['revision'] = savedRevision
+                except:
+                    pass
+            
             idpk, rev, xx, status = clientDbconn.addPackage(etpData = mydata, revision = mydata['revision'])
             clientDbconn.addPackageToInstalledTable(idpk,"gentoo-db")
             os.remove(temptbz2)
@@ -232,7 +261,152 @@ def database(options):
 	clientDbconn.closeDB()
 	print_info(red("  Depends caching table regenerated successfully."))
         return 0
-    
+
+    elif (options[0] == "counters"):
+        
+        try:
+            import portageTools
+        except:
+            print_error(darkred(" * ")+bold("Portage")+red(" is not available."))
+            return 1
+        
+	print_info(red("  Regenerating counters table. Please wait..."))
+	clientDbconn = openClientDatabase()
+	clientDbconn.regenerateCountersTable(output = True)
+	clientDbconn.closeDB()
+	print_info(red("  Counters table regenerated. Check above for errors."))
+        return 0
+
+    elif (options[0] == "gentoosync"): # FIXME: add --ask
+        
+        try:
+            import portageTools
+        except:
+            print_error(darkred(" * ")+bold("Portage")+red(" is not available."))
+            return 1
+        
+	print_info(red(" Scanning Portage and Entropy databases for differences..."))
+
+        clientDbconn = openClientDatabase()
+
+        # test if counters table exists, because if not, it's useless to run the diff scan
+        try:
+            clientDbconn.isCounterAvailable(1)
+        except:
+            clientDbconn.closeDB()
+            print_error(darkred(" * ")+bold("Entropy database")+red(" has never been in sync with Portage one. So, you can't run this unless you run '")+bold("equo database generate")+red("' first. Sorry."))
+            return 1
+
+        import shutil
+        from portageTools import getInstalledPackagesCounters, getPackageSlot
+        print_info(red(" Collecting Portage counters..."), back = True)
+        installedPackages = getInstalledPackagesCounters()
+        print_info(red(" Collecting Entropy packages..."), back = True)
+        installedCounters = set()
+        databasePackages = clientDbconn.listAllPackages()
+        toBeAdded = set()
+        toBeRemoved = set()
+
+        print_info(red(" Differential Scan..."), back = True)
+        # packages to be added/updated (handle add/update later)
+        for x in installedPackages[0]:
+            installedCounters.add(x[1])
+            counter = clientDbconn.isCounterAvailable(x[1])
+            if (not counter):
+                toBeAdded.add(tuple(x))
+
+        # packages to be removed from the database
+        databaseCounters = clientDbconn.listAllCounters()
+        for x in databaseCounters:
+            if x[0] not in installedCounters:
+                # check if the package is in toBeAdded
+                if (toBeAdded):
+                    atomkey = entropyTools.dep_getkey(clientDbconn.retrieveAtom(x[1]))
+                    atomslot = clientDbconn.retrieveSlot(x[1])
+                    add = True
+                    for pkgdata in toBeAdded:
+                        addslot = getPackageSlot(pkgdata[0])
+                        addkey = entropyTools.dep_getkey(pkgdata[0])
+                        # workaround for ebuilds not having slot
+                        if addslot == None:
+                            addslot = '0'
+                        if (atomkey == addkey) and (str(atomslot) == str(addslot)):
+                            # do not add to toBeRemoved
+                            add = False
+                            break
+                    if add:
+                        toBeRemoved.add(x[1])
+                else:
+                    toBeRemoved.add(x[1])
+
+        if (not toBeRemoved) and (not toBeAdded):
+            print_info(red(" Databases already synced."))
+            # then exit gracefully
+            clientDbconn.closeDB()
+            return 0
+        
+        if (toBeRemoved):
+            print_info(brown(" @@ ")+blue("Someone removed these packages. Would be removed from the Entropy database:"))
+            for x in toBeRemoved:
+                atom = clientDbconn.retrieveAtom(x)
+                print_info(brown("    # ")+red(atom))
+            rc = entropyTools.askquestion(">>   Continue with removal?")
+            if rc == "Yes":
+                for x in toBeRemoved:
+                    atom = clientDbconn.retrieveAtom(x)
+                    print_info(brown(" @@ ")+blue("Removing from database: ")+red(atom), back = True)
+                    clientDbconn.removePackage(x)
+                clientDbconn.closeDB()
+                print_info(brown(" @@ ")+blue("Database removal complete."))
+
+        if (toBeAdded):
+            print_info(brown(" @@ ")+blue("Someone added these packages. Would be added/updated into the Entropy database:"))
+            for x in toBeAdded:
+                print_info(yellow("   # ")+red(x[0]))
+            rc = entropyTools.askquestion(">>   Continue with adding?")
+            if rc == "No":
+                return 0
+            # now analyze
+
+            for item in toBeAdded:
+                counter = item[1]
+                atom = item[0]
+                temptbz2 = etpConst['entropyunpackdir']+"/"+atom.split("/")[1]+".tbz2"
+                if os.path.isfile(temptbz2):
+                    os.remove(temptbz2)
+                elif os.path.isdir(temptbz2):
+                    shutil.rmtree(temptbz2)
+                f = open(temptbz2,"wb")
+                f.write("this is a fake ")
+                f.flush()
+                f.close()
+                entropyTools.appendXpak(temptbz2,atom)
+                # now extract info
+                try:
+                    mydata = entropyTools.extractPkgData(temptbz2, silent = True)
+                except:
+                    print_warning(red("!!! An error occured while analyzing: ")+blue(atom))
+                    continue
+
+                # create atom string
+                myatom = mydata['category']+"/"+mydata['name']+"-"+mydata['version']
+                if mydata['versiontag']:
+                    myatom += "#"+mydata['versiontag']
+
+                # look for atom in client database
+                oldidpackage = clientDbconn.getIDPackage(myatom)
+                if oldidpackage != -1:
+                    mydata['revision'] = clientDbconn.retrieveRevision(oldidpackage)
+                else:
+                    mydata['revision'] = 9999 # can't do much more
+
+                idpk, rev, xx, status = clientDbconn.handlePackage(etpData = mydata, forcedRevision = mydata['revision'])
+                clientDbconn.removePackageFromInstalledTable(idpk)
+                clientDbconn.addPackageToInstalledTable(idpk,"gentoo-db")
+                os.remove(temptbz2)
+
+        return 0
+
     else:
         return -10
 

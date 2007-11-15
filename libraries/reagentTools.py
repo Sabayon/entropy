@@ -62,6 +62,12 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
 
     idpk, revision, etpDataUpdated, accepted = dbconn.handlePackage(mydata)
     
+    # update latest counter
+    f = open(edbCOUNTER,"r")
+    counter = int(f.readline.strip())
+    f.close()
+    dbconn.setLatestCounter(counter)
+    
     # add package info to our official repository etpConst['officialrepositoryname']
     if (accepted):
         dbconn.removePackageFromInstalledTable(idpk)
@@ -118,27 +124,25 @@ def update(options):
         dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
 	
 	if (not reagentRequestRepackage):
-            print_info(yellow(" * ")+red("Scanning the database for differences..."))
+            print_info(yellow(" * ")+red("Scanning database for differences..."))
             from portageTools import getInstalledPackagesCounters, quickpkg, getPackageSlot
             installedPackages = getInstalledPackagesCounters()
-            installedCounters = {}
+            installedCounters = set()
             databasePackages = dbconn.listAllPackages()
-            toBeAdded = []
-            toBeRemoved = []
+            toBeAdded = set()
+            toBeRemoved = set()
 	    
             # packages to be added
             for x in installedPackages[0]:
-	        installedCounters[x[1]] = 1
+	        installedCounters.add(x[1])
 	        counter = dbconn.isCounterAvailable(x[1])
 	        if (not counter):
-	            toBeAdded.append(x)
+	            toBeAdded.add(tuple(x))
 
             # packages to be removed from the database
             databaseCounters = dbconn.listAllCounters()
             for x in databaseCounters:
-	        match = installedCounters.get(x[0], None)
-	        #print match
-	        if (not match):
+                if x[0] not in installedCounters:
 	            # check if the package is in toBeAdded
 	            if (toBeAdded):
 			#print x
@@ -150,15 +154,15 @@ def update(options):
 		            addkey = dep_getkey(pkgdata[0])
 		            # workaround for ebuilds not having slot
 		            if addslot == None:
-			        addslot = ''
-		            if (atomkey == addkey) and (atomslot == addslot):
+			        addslot = '0'
+		            if (atomkey == addkey) and (str(atomslot) == str(addslot)):
 			        # do not add to toBeRemoved
 			        add = False
 			        break
 		        if add:
-		            toBeRemoved.append(x[1])
+		            toBeRemoved.add(x[1])
 	            else:
-	                toBeRemoved.append(x[1])
+	                toBeRemoved.add(x[1])
 
             if (not toBeRemoved) and (not toBeAdded):
 	        print_info(yellow(" * ")+red("Nothing to do, check later."))

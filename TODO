@@ -1,7 +1,5 @@
 TODO list:
   CLIENT:
-  - get tracks of portage counters to try to automatically keep in sync entropy db?
-  - better database autogeneration?
   - find a way to better handle real smartapps deps
   - add support for database revisions log
   - add external trigger for splashutils
@@ -11,6 +9,6 @@ Project Status:
 - reagent: complete. Stabilization mode.
 - activator: complete. Stabilization mode.
 ============
-- equo (client): 98%
+- equo (client): 95%
 
 - EAPI1+ info: http://www.pkgcore.org/trac/pkgcore/doc/doc/extended-atom-syntax.rst
