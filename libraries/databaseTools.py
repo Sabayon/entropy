@@ -610,18 +610,16 @@ class etpDatabase:
 	# counter, if != -1
 	if etpData['counter'] != -1:
             try:
-                # check if counterstable is ok
-                regenerated = False
-                if self.dbname == "client":
-                    testcounter = self.getLatestCounter()
-                    try:
-                        int(testcounter)
-                    except:
-                        # counters tables (counterstable and counters)
-                        self.regenerateCountersTable()
-                        regenerated = True
-
-                if not regenerated:
+                self.cursor.execute(
+                'INSERT into counters VALUES '
+                '(?,?)'
+                , ( etpData['counter'],
+                    idpackage,
+                    )
+                )
+            except:
+                if self.dbname == "client": # force only for client database
+                    self.createCountersTable()
                     self.cursor.execute(
                     'INSERT into counters VALUES '
                     '(?,?)'
@@ -629,11 +627,8 @@ class etpDatabase:
                         idpackage,
                         )
                     )
-            except:
-                if self.dbname == "client": # force only for client database
-                    self.commitChanges()
-                    self.regenerateCountersTable()
-                    # no need to do insert then, regenerateCountersTable does it already
+                elif self.dbname == "etpdb":
+                    raise
 	
 	# on disk size
 	try:
@@ -1019,8 +1014,7 @@ class etpDatabase:
 	    self.cursor.execute('DELETE FROM counters WHERE idpackage = '+idpackage)
 	except:
             if self.dbname == "client":
-                self.commitChanges()
-                self.regenerateCountersTable()
+                self.createCountersTable()
 	try:
 	    # on disk sizes
 	    self.cursor.execute('DELETE FROM sizes WHERE idpackage = '+idpackage)
@@ -1218,7 +1212,11 @@ class etpDatabase:
             self.cursor.execute('UPDATE counters SET counter = "'+str(counter)+'" WHERE idpackage = "'+str(idpackage)+'"')
         except:
             if self.dbname == "client":
-                self.regenerateCountersTable()
+                self.createCountersTable()
+                self.cursor.execute(
+                    'INSERT into counters VALUES '
+                    '(?,?)', (counter,idpackage,)
+                )
 
     def cleanupUseflags(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupUseflags: called.")
@@ -1710,7 +1708,7 @@ class etpDatabase:
 	        counter = mycounter[0]
 	except:
             if self.dbname == "client":
-                self.regenerateCountersTable()
+                self.createCountersTable()
                 counter = self.retrieveCounter(idpackage)
 	
 	self.storeInfoCache(idpackage,'retrieveCounter',int(counter))
@@ -2760,32 +2758,7 @@ class etpDatabase:
         dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createCountersTable: called.")
         self.cursor.execute('DROP TABLE IF EXISTS counters;')
         self.cursor.execute('CREATE TABLE counters ( counter INTEGER PRIMARY KEY, idpackage INTEGER );')
-        self.createCountersDataTable()
         self.commitChanges()
-
-    def createCountersDataTable(self):
-        self.cursor.execute('DROP TABLE IF EXISTS countersdata;')
-        self.cursor.execute('CREATE TABLE countersdata ( maxcounter INTEGER );')
-
-    def getLatestCounter(self): # if == -1, databases (gentoo and entropy) won't be scanned for difference
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllCounters: called.")
-        try:
-            self.cursor.execute('SELECT maxcounter FROM countersdata')
-        except:
-            self.regenerateCountersTable()
-            self.cursor.execute('SELECT maxcounter FROM countersdata')
-	return self.cursor.fetchone()[0]
-
-    def setLatestCounter(self, counter):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllCounters: called.")
-        try:
-            self.cursor.execute('UPDATE countersdata SET maxcounter = "'+str(counter)+'"')
-        except:
-            if self.dbname == "client":
-                self.regenerateCountersTable()
-            elif self.dbname == "etpdb": # server database open
-                self.createCountersDataTable()
-                self.cursor.execute('UPDATE countersdata SET maxcounter = "'+str(counter)+'"')
 
     def regenerateCountersTable(self, output = False):
         self.createCountersTable()
@@ -2818,13 +2791,6 @@ class etpDatabase:
                 except:
                     if output: print "Attention: counter for atom "+str(myatom)+" is duplicated. Ignoring."
                     continue # don't trust counters, they might not be unique
-            try:
-                f = open(edbCOUNTER,"r")
-                counter = int(f.readline.strip())
-                f.close()
-            except:
-                counter = -1
-            self.setLatestCounter(counter)
 
     #
     # FIXME: remove these when 1.0 will be out

@@ -281,10 +281,6 @@ CREATE TABLE neededreference (
     library VARCHAR
 );
 
-CREATE TABLE countersdata (
-    maxcounter INTEGER
-);
-
 """
 
 # Entropy directories specifications
@@ -299,7 +295,6 @@ if os.uname()[4] == "x86_64":
 else:
     ETP_ARCH_CONST = "x86"
 
-ETP_REVISION_CONST = "%ETPREV%"
 ETP_DIR = "/var/lib/entropy"
 ETP_TMPDIR = "/tmp"
 ETP_RANDOM = str(random.random())[2:7]

@@ -62,12 +62,6 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
 
     idpk, revision, etpDataUpdated, accepted = dbconn.handlePackage(mydata)
     
-    # update latest counter
-    f = open(edbCOUNTER,"r")
-    counter = int(f.readline().strip())
-    f.close()
-    dbconn.setLatestCounter(counter)
-    
     # add package info to our official repository etpConst['officialrepositoryname']
     if (accepted):
         dbconn.removePackageFromInstalledTable(idpk)
