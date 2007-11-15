@@ -1304,6 +1304,15 @@ def quickpkg(pkgdata,dirpath):
     else:
 	return None
 
+def appendXpak(tbz2file, atom):
+    import xpak
+    from portageTools import getPortageAppDbPath
+    dbdir = getPortageAppDbPath()+"/"+atom+"/"
+    if os.path.isdir(dbdir):
+        tbz2 = xpak.tbz2(tbz2file)
+        tbz2.recompose(dbdir)
+    return tbz2file
+
 # This function extracts all the info from a .tbz2 file and returns them
 def extractPkgData(package, etpBranch = etpConst['branch']):
 

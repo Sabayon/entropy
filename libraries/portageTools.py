@@ -511,7 +511,7 @@ def getInstalledPackages():
     return installedAtoms, len(installedAtoms)
 
 def getInstalledPackagesCounters():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackages: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackagesCounters: called. ")
     import os
     appDbDir = getPortageAppDbPath()
     dbDirs = os.listdir(appDbDir)

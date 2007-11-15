@@ -48,18 +48,23 @@ def database(options):
 	return 0
 
     if (options[0] == "generate"):
-	
-	print_warning(bold("####### ATTENTION -> ")+red("The installed package database will be regenerated."))
-	print_warning(bold("####### ATTENTION -> ")+red("Sabayon Linux Officially Repository MUST be on top of the repositories list in ")+etpConst['repositoriesconf'])
-	print_warning(bold("####### ATTENTION -> ")+red("This method is only used for testing at the moment and you need Portage installed. Don't worry about Portage warnings."))
-	print_warning(bold("####### ATTENTION -> ")+red("Please use this function ONLY if you are using an Entropy-enabled Sabayon distribution."))
-	rc = entropyTools.askquestion("     Can I continue ?")
+
+        # test if portage is available
+        try:
+            import portageTools
+        except:
+            print_error(darkred(" * ")+bold("Portage")+red(" is not available."))
+            return 1
+
+	print_warning(bold("ATTENTION: ")+red("The installed package database will be generated again using Gentoo one."))
+	print_warning(red("If you dont know what you're doing just, don't do this. Really. I'm not joking."))
+	rc = entropyTools.askquestion("  Understood?")
 	if rc == "No":
 	    return 0
-	rc = entropyTools.askquestion("     Are you REALLY sure ?")
+	rc = entropyTools.askquestion("  Really?")
 	if rc == "No":
 	    return 0
-	rc = entropyTools.askquestion("     Do you even know what you're doing ?")
+	rc = entropyTools.askquestion("  This is your last chance. Ok?")
 	if rc == "No":
 	    return 0
 
@@ -67,6 +72,7 @@ def database(options):
 	import cacheTools
 	cacheTools.cleanCache(quiet = True)
 	const_resetCache()
+        import shutil
 	
 	# ok, he/she knows it... hopefully
 	# if exist, copy old database
@@ -82,56 +88,36 @@ def database(options):
 	print_info(darkgreen("  Database reinitialized correctly at "+bold(etpConst['etpdatabaseclientfilepath'])))
 	
 	# now collect packages in the system
-	from portageTools import getInstalledPackages as _portage_getInstalledPackages
-	print_info(red("  Collecting installed packages..."))
+	print_info(red("  Transductingactioningintactering databases..."))
 	
-	portagePackages = _portage_getInstalledPackages()
+	portagePackages = portageTools.getInstalledPackages()
 	portagePackages = portagePackages[0]
-	
-	print_info(red("  Now analyzing database content..."))
 
-	foundPackages = []
+        appdb = portageTools.getPortageAppDbPath()
 
 	# do for each database
-	missingPackages = portagePackages[:]
-	for portagePackage in portagePackages: # for portagePackage in remainingPackages
-	    print_info(red("  Analyzing ")+bold(portagePackage), back = True)
-	    data = equoTools.atomMatch("="+portagePackage)
-	    if (data[0] != -1):
-	        foundPackages.append(data)
-		missingPackages.remove(portagePackage)
+	maxcount = str(len(portagePackages))
+        count = 0
+        for portagePackage in portagePackages:
+            count += 1
+	    print_info(blue("(")+darkgreen(str(count))+"/"+darkred(maxcount)+blue(")")+red(" atom: ")+brown(portagePackage))
+            temptbz2 = etpConst['entropyunpackdir']+"/"+portagePackage.split("/")[1]+".tbz2"
+            if os.path.lexists(temptbz2):
+                shutil.rmtree(temptbz2)
+            f = open(temptbz2,"wb")
+            f.write("this is a fake ")
+            f.flush()
+            f.close()
+            entropyTools.appendXpak(temptbz2,portagePackage)
+            # now extract info
+            mydata = entropyTools.extractPkgData(temptbz2)
+            mydata['revision'] = 9999
+            # FIXME also add counter?
+            idpk, rev, xx, status = clientDbconn.addPackage(etpData = mydata, revision = mydata['revision'])
+            clientDbconn.addPackageToInstalledTable(idpk,"gentoo-db")
+            os.remove(temptbz2)
 	
-	notmatchingstatus = ''
-	if len(missingPackages) > 0:
-	    f = open("/tmp/equo-not-matching.txt","w")
-	    for x in missingPackages:
-		f.write(x+"\n")
-	    f.flush()
-	    f.close()
-	    notmatchingstatus = " [wrote: /tmp/equo-not-matching.txt]"
-	    
-	
-	print_info(red("  ### Packages matching: ")+bold(str(len(foundPackages))))
-	print_info(red("  ### Packages not matching: ")+bold(str(len(missingPackages)))+notmatchingstatus)
-	
-	print_info(red("  Now filling the new database..."))
-	
-	count = 0
-	total = str(len(foundPackages))
-	
-	for x in foundPackages:
-	    # open its database
-	    count += 1
-	    dbconn = openRepositoryDatabase(x[1])
-	    atomName = dbconn.retrieveAtom(x[0])
-	    atomInfo = dbconn.getPackageData(x[0])
-	    dbconn.closeDB()
-	    # filling
-	    print_info("  "+bold("(")+darkgreen(str(count))+"/"+blue(total)+bold(")")+red(" Injecting ")+bold(atomName), back = True)
-	    # fill client database
-	    idpk, rev, xx, status = clientDbconn.addPackage(atomInfo)
-	    # now add the package to the installed table
-	    clientDbconn.addPackageToInstalledTable(idpk,x[1])
+	print_info(red("  All the Gentoo packages have been injected into Entropy database."))
 
 	print_info(red("  Now generating depends caching table..."))
 	clientDbconn.regenerateDependsTable()
