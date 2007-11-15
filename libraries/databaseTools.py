@@ -494,7 +494,11 @@ class etpDatabase:
 	self.checkReadOnly()
 	
 	if revision == -1:
-	    revision = etpData['revision']
+            try:
+	       revision = etpData['revision']
+            except:
+                etpData['revision'] = 0 # revision not specified
+                revision = 0
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: called.")
 	

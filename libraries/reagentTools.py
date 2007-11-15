@@ -64,7 +64,7 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
     
     # update latest counter
     f = open(edbCOUNTER,"r")
-    counter = int(f.readline.strip())
+    counter = int(f.readline().strip())
     f.close()
     dbconn.setLatestCounter(counter)
     
