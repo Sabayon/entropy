@@ -1470,11 +1470,17 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False):
         # when portage will use utf, test utf-8 encoding
 	_outcontent = set()
 	for i in outcontent:
+            i = list(i)
             datatype = i[1]
             try:
                 i[0] = i[0].encode(getfilesystemencoding())
-            except:
-                continue
+            except:  # default encoding failed
+                try:
+                    i[0] = i[0].decode("latin1") # try to convert to latin1 and then back to sys.getfilesystemencoding()
+                    i[0] = i[0].encode(getfilesystemencoding())
+                except:
+                    print "DEBUG: cannot encode into filesystem encoding -> "+str(i[0])
+                    continue
             _outcontent.add((i[0],i[1]))
         outcontent = list(_outcontent)
         outcontent.sort()
