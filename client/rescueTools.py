@@ -356,7 +356,6 @@ def database(options):
                     atom = clientDbconn.retrieveAtom(x)
                     print_info(brown(" @@ ")+blue("Removing from database: ")+red(atom), back = True)
                     clientDbconn.removePackage(x)
-                clientDbconn.closeDB()
                 print_info(brown(" @@ ")+blue("Database removal complete."))
 
         if (toBeAdded):
@@ -371,6 +370,8 @@ def database(options):
             for item in toBeAdded:
                 counter = item[1]
                 atom = item[0]
+                if not os.path.isdir(etpConst['entropyunpackdir']):
+                    os.makedirs(etpConst['entropyunpackdir'])
                 temptbz2 = etpConst['entropyunpackdir']+"/"+atom.split("/")[1]+".tbz2"
                 if os.path.isfile(temptbz2):
                     os.remove(temptbz2)
@@ -406,7 +407,8 @@ def database(options):
                 os.remove(temptbz2)
             
             print_info(brown(" @@ ")+blue("Database update completed."))
-
+        
+        clientDbconn.closeDB()
         return 0
 
     else:
