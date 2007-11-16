@@ -25,7 +25,8 @@
 
 import os
 from sys import path, exit, argv
-
+path.append('/usr/lib/entropy/client')
+path.append('/usr/lib/entropy/libraries')
 path.append('../libraries')
 path.append('../client')
 from outputTools import *
@@ -45,6 +46,7 @@ def print_help():
     print_info(" \t\t"+red("--branch=<branch name>")+"\t\t Choose which branch assign to the packages")
     print_info(" \t\t"+red("--seekstore")+"\t\t\t Skip differential COUNTERS scanning and analyze STORE directory")
     print_info(" \t\t"+red("--repackage")+"\t\t\t Repackage specified atoms")
+    print_info(" \t\t"+red("--noask")+"\t\t\t\t Automatically handle things without questioning")
     print_info(" \t"+green("database")+brown("\t Entropy database tool manager"))
     print_info(" \t\t"+red("--initialize")+"\t\t\t (Re)Initialize the Entropy packages database [DO NOT USE THIS]")
     print_info(" \t\t"+green("search")+"\t\t\t\t Search a package inside the Entropy packages database")
@@ -95,14 +97,9 @@ options = _options
 if (not entropyTools.isRoot()):
     print_error("you must be root in order to run "+APPNAME)
 
-
-elif (options[0] == "generator"):
-    reagentTools.generator(options[1:])
-    exit(0)
-
 elif (options[0] == "update"):
-    reagentTools.update(options[1:])
-    exit(0)
+    rc = reagentTools.update(options[1:])
+    exit(rc)
 
 # database tool
 elif (options[0] == "database"):
@@ -111,15 +108,15 @@ elif (options[0] == "database"):
 
 # deptest tool
 elif (options[0] == "deptest"):
-    reagentTools.dependenciesTest(options[1:])
-    exit(0)
+    rc = reagentTools.dependenciesTest(options[1:])
+    exit(rc)
 
 # deptest tool
 elif (options[0] == "depends"):
-    reagentTools.dependsTableInitialize()
-    exit(0)
+    rc = reagentTools.dependsTableInitialize()
+    exit(rc)
 
 # cleanup
-if (options[0] == "cleanup"):
-    entropyTools.cleanup()
-    exit(0)
+elif (options[0] == "cleanup"):
+    rc = entropyTools.cleanup()
+    exit(rc)

@@ -1150,6 +1150,7 @@ def cleanup(toCleanDirs = []):
 		    counter += 1
 
     print_info(green(" * ")+"Cleaned: "+str(counter)+" files and directories")
+    return 0
 
 def mountProc():
     # check if it's already mounted

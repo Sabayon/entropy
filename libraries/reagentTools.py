@@ -27,11 +27,7 @@
 from entropyConstants import *
 from serverConstants import *
 from entropyTools import *
-import commands
-import re
-from sys import exit,getfilesystemencoding,path
 import os
-import shutil
 
 # Logging initialization
 import logTools
@@ -98,6 +94,7 @@ def update(options):
     
     reagentRequestSeekStore = False
     reagentRequestRepackage = False
+    reagentRequestAsk = True
     repackageItems = []
     _options = []
     for opt in options:
@@ -105,6 +102,8 @@ def update(options):
 	    reagentRequestSeekStore = True
 	elif opt.startswith("--repackage"):
 	    reagentRequestRepackage = True
+	elif opt.startswith("--noask"):
+	    reagentRequestAsk = False
 	else:
 	    if (reagentRequestRepackage) and (not opt.startswith("--")):
 		if not opt in repackageItems:
@@ -161,14 +160,17 @@ def update(options):
             if (not toBeRemoved) and (not toBeAdded):
 	        print_info(yellow(" * ")+red("Nothing to do, check later."))
 	        # then exit gracefully
-	        exit(0)
+	        return 0
 
             if (toBeRemoved):
 	        print_info(yellow(" @@ ")+blue("These are the packages that would be removed from the database:"))
 	        for x in toBeRemoved:
 	            atom = dbconn.retrieveAtom(x)
 	            print_info(yellow("    # ")+red(atom))
-	        rc = askquestion(">>   Would you like to remove them now ?")
+                if reagentRequestAsk:
+                    rc = askquestion(">>   Would you like to remove them now ?")
+                else:
+                    rc = "Yes"
 	        if rc == "Yes":
 	            rwdbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
 	            for x in toBeRemoved:
@@ -182,15 +184,16 @@ def update(options):
 	        print_info(yellow(" @@ ")+blue("These are the packages that would be added/updated to the add list:"))
 	        for x in toBeAdded:
 	            print_info(yellow("    # ")+red(x[0]))
-	        rc = askquestion(">>   Would you like to packetize them now ?")
-	        if rc == "No":
-	            exit(0)
+                if reagentRequestAsk:
+	            rc = askquestion(">>   Would you like to packetize them now ?")
+                    if rc == "No":
+                        return 0
 
 	else:
 	    if not repackageItems:
 	        print_info(yellow(" * ")+red("Nothing to do, check later."))
 	        # then exit gracefully
-	        exit(0)
+	        return 0
 	    
 	    from portageTools import getPortageAppDbPath,quickpkg
 	    appdb = getPortageAppDbPath()
@@ -211,7 +214,7 @@ def update(options):
 	    if not packages:
 	        print_info(yellow(" * ")+red("Nothing to do, check later."))
 	        # then exit gracefully
-	        exit(0)
+	        return 0
 	    
 	    toBeAdded = packages
 
@@ -224,7 +227,7 @@ def update(options):
 	        reagentLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"update: "+str(dep)+" -> quickpkg error. Cannot continue.")
 	        print_error(red("      *")+" quickpkg error for "+red(dep))
 	        print_error(red("  ***")+" Fatal error, cannot continue")
-	        exit(251)
+	        return 251
 
         dbconn.closeDB()
 
@@ -245,7 +248,7 @@ def update(options):
     if (totalCounter == 0):
 	print_info(yellow(" * ")+red("Nothing to do, check later."))
 	# then exit gracefully
-	exit(0)
+	return 0
 
     # open db connection
     dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
@@ -299,6 +302,7 @@ def update(options):
     dbconn.closeDB()
 
     print_info(green(" * ")+red("Statistics: ")+blue("Entries created/updated: ")+bold(str(etpCreated))+yellow(" - ")+darkblue("Entries discarded: ")+bold(str(etpNotCreated)))
+    return 0
 
 
 def dependsTableInitialize(dbconn = None, runActivator = True):
@@ -315,7 +319,7 @@ def dependsTableInitialize(dbconn = None, runActivator = True):
     if (runActivator):
 	import activatorTools
 	activatorTools.database(['sync'])
-
+    return 0
 
 def dependenciesTest(options):
 
@@ -324,7 +328,6 @@ def dependenciesTest(options):
 	if opt.startswith("--quiet"):
 	    reagentRequestQuiet = True
 
-    path.append('../client')
     import uiTools
     
     dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
@@ -348,7 +351,7 @@ def database(options):
 
     if len(options) == 0:
 	print_error(yellow(" * ")+red("Not enough parameters"))
-	exit(301)
+	return 1
 
     if (options[0] == "--initialize"):
 	
@@ -373,7 +376,7 @@ def database(options):
 	    print_info(red(" * ")+bold("WARNING")+red(": database file already exists. Overwriting."))
 	    rc = askquestion("\n     Do you want to continue ?")
 	    if rc == "No":
-	        exit(0)
+	        return 0
 	    os.remove(etpConst['etpdatabasefilepath'])
 
 	# initialize the database
@@ -433,16 +436,17 @@ def database(options):
 	
 	dbconn.closeDB()
 	print_info(green(" * ")+red("Entropy database has been reinitialized using binary packages available"))
+        return 0
 
     # used by reagent
     elif (options[0] == "search"):
 	mykeywords = options[1:]
 	if (len(mykeywords) == 0):
 	    print_error(yellow(" * ")+red("Not enough parameters"))
-	    exit(302)
+	    return 2
 	if (not os.path.isfile(etpConst['etpdatabasefilepath'])):
 	    print_error(yellow(" * ")+red("Entropy Datbase does not exist"))
-	    exit(303)
+	    return 3
 	
 	# search tool
 	print_info(green(" * ")+red("Searching ..."))
@@ -463,15 +467,17 @@ def database(options):
 	    print_warning(red(" * ")+red("Nothing found."))
 	else:
 	    print
+        return 0
 
     elif (options[0] == "create-empty-database"):
+        
 	mypath = options[1:]
 	if len(mypath) == 0:
 	    print_error(yellow(" * ")+red("Not enough parameters"))
-	    exit(303)
+	    return 4
 	if (os.path.dirname(mypath[0]) != '') and (not os.path.isdir(os.path.dirname(mypath[0]))):
 	    print_error(green(" * ")+red("Supplied directory does not exist."))
-	    exit(304)
+	    return 5
 	print_info(green(" * ")+red("Initializing an empty database file with Entropy structure ..."),back = True)
 	connection = sqlite.connect(mypath[0])
 	cursor = connection.cursor()
@@ -486,12 +492,13 @@ def database(options):
 	cursor.close()
 	connection.close()
 	print_info(green(" * ")+red("Entropy database file ")+bold(mypath[0])+red(" successfully initialized."))
+        return 0
 
     elif (options[0] == "switchbranch"):
 	
 	if (len(options) < 2):
 	    print_error(yellow(" * ")+red("Not enough parameters"))
-	    exit(302)
+	    return 6
 
 	switchbranch = options[1]
 	print_info(green(" * ")+red("Collecting packages that would be marked '"+switchbranch+"' ..."), back = True)
@@ -499,7 +506,7 @@ def database(options):
 	myatoms = options[2:]
 	if not myatoms:
 	    print_error(yellow(" * ")+red("Not enough parameters"))
-	    exit(303)
+	    return 7
 	
 	dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
 	# is world?
@@ -519,7 +526,7 @@ def database(options):
 	if not pkglist:
 	    print
 	    print_error(yellow(" * ")+red("No packages found."))
-	    exit(303)
+	    return 8
 	
 	# show what would be done
 	print_info(green(" * ")+red("These are the packages that would be marked '"+switchbranch+"':"))
@@ -530,7 +537,7 @@ def database(options):
 
 	rc = askquestion("     Would you like to continue ?")
 	if rc == "No":
-	    exit(0)
+	    return 9
 	
 	# sync packages
 	import activatorTools
@@ -585,6 +592,7 @@ def database(options):
 	    
 	dbconn.closeDB()
 	print_info(green(" * ")+red("All the selected packages have been marked as requested. Remember to run activator."))
+        return 0
 
 
     elif (options[0] == "remove"):
@@ -603,7 +611,7 @@ def database(options):
 	
 	if len(myopts) == 0:
 	    print_error(yellow(" * ")+red("Not enough parameters"))
-	    exit(303)
+	    return 10
 
 	pkglist = set()
 	dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
@@ -621,7 +629,7 @@ def database(options):
 	    print
 	    dbconn.closeDB()
 	    print_error(yellow(" * ")+red("No packages found."))
-	    exit(303)
+	    return 11
 	
 	print_info(green(" * ")+red("These are the packages that would be removed from the database:"))
 
@@ -633,7 +641,7 @@ def database(options):
 	# ask to continue
 	rc = askquestion("     Would you like to continue ?")
 	if rc == "No":
-	    exit(0)
+	    return 0
 	
 	# now mark them as stable
 	print_info(green(" * ")+red("Removing selected packages ..."))
@@ -645,6 +653,7 @@ def database(options):
 	    dbconn.removePackage(pkg)
 	print_info(green(" * ")+red("All the selected packages have been removed as requested. To remove online binary packages, just run Activator."))
 	dbconn.closeDB()
+        return 0
 
     # used by reagent
     elif (options[0] == "md5check"):
@@ -710,7 +719,7 @@ def database(options):
 	if (not databaseRequestNoAsk):
 	    rc = askquestion("     Would you like to continue ?")
 	    if rc == "No":
-	        exit(0)
+	        return 0
 
 	notDownloadedPackages = []
 	if (toBeDownloaded != []):
@@ -778,7 +787,7 @@ def database(options):
 	if (pkgDownloadedSuccessfully > 0) or (pkgDownloadedError > 0):
 	    print_info(green("     Number of downloaded packages:\t\t")+str(pkgDownloadedSuccessfully+pkgDownloadedError))
 	    print_info(green("     Number of happy downloads:\t\t")+str(pkgDownloadedSuccessfully))
-	    print_info(red("     Number of failed downloads:\t\t")+str(pkgDownloadedError))
+        return 0
 
 
     # used by reagent
@@ -827,7 +836,7 @@ def database(options):
 	if (not databaseRequestNoAsk):
 	    rc = askquestion("     Would you like to continue ?")
 	    if rc == "No":
-	        exit(0)
+	        return 0
 
         import remoteTools
         for uri in etpConst['activatoruploaduris']:
@@ -877,3 +886,4 @@ def database(options):
             print_info(red("     Number of broken packages:\t\t")+str(pkgNotMatch))
 
         dbconn.closeDB()
+        return 0
