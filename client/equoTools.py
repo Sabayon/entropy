@@ -960,8 +960,8 @@ def removePackage(infoDict):
 		pass # some filenames are buggy encoded
 	
 	if (protected):
-            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file:  "+str(file))
-	    print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+str(file))
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file:  "+file)
+	    print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+file)
 	else:
 	    try:
 	        os.remove(file)
@@ -1043,7 +1043,7 @@ def installPackage(infoDict):
             
             # if our directory is a file on the live system
             elif os.path.isfile(rootdir): # really weird...!
-                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+str(rootdir)+" is a file when it should be a directory !! Removing in 10 seconds...")
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+rootdir+" is a file when it should be a directory !! Removing in 10 seconds...")
                 print_warning(red(" *** ")+bold(rootdir)+red(" is a file when it should be a directory !! Removing in 10 seconds..."))
                 import time
                 time.sleep(10)
@@ -1073,8 +1073,8 @@ def installPackage(infoDict):
 		if tofile in contentCache:
 		    print_warning(darkred("   ## ")+red("Collision found during install for ")+file.encode(getfilesystemencoding())+" - cannot overwrite")
     		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! Collision found during install for "+file.encode(getfilesystemencoding())+" - cannot overwrite")
-    		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[collision] Protecting config file: "+str(tofile))
-		    print_warning(darkred("   ## ")+red("[collision] Protecting config file: ")+str(tofile))
+    		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[collision] Protecting config file: "+tofile)
+		    print_warning(darkred("   ## ")+red("[collision] Protecting config file: ")+tofile)
 		    continue
 
 	    # -- CONFIGURATION FILE PROTECTION --
@@ -1119,8 +1119,8 @@ def installPackage(infoDict):
 
 	        # request new tofile then
 	        if (protected):
-		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Protecting config file: "+str(tofile))
-		    print_warning(darkred("   ## ")+red("Protecting config file: ")+str(tofile))
+		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Protecting config file: "+tofile)
+		    print_warning(darkred("   ## ")+red("Protecting config file: ")+tofile)
 		    tofile = allocateMaskedFile(tofile)
 		    
 	    

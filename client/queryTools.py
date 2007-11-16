@@ -282,6 +282,8 @@ def searchFiles(atoms, idreturn = False, quiet = False):
 	if (result != -1):
 	    files = clientDbconn.retrieveContent(result)
 	    atom = clientDbconn.retrieveAtom(result)
+            files = list(files)
+            files.sort()
 	    # print info
 	    if (idreturn):
 		dataInfo.add((result,files))
@@ -291,9 +293,9 @@ def searchFiles(atoms, idreturn = False, quiet = False):
 			print file
 		else:
 		    for file in files:
-		        print_info(blue(" ### ")+red(str(file)))
+		        print_info(blue(" ### ")+red(file))
 	    if (not idreturn) and (not quiet):
-	        print_info(blue("     Package: ")+bold("\t"+atom))
+	        print_info(blue(" Package: ")+bold("\t"+atom))
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(files)))+red(" files"))
 	
     clientDbconn.closeDB()

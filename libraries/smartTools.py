@@ -84,7 +84,7 @@ def QuickpkgHandler(mypackages, quiet = False, ask = True, savedir = None):
             os.makedirs(etpConst['packagestmpdir'])
     else:
         if not os.path.isdir(savedir):
-            print_error(darkred(" * ")+red("--savedir ")+str(savedir)+red(" does not exist."))
+            print_error(darkred(" * ")+red("--savedir ")+savedir+red(" does not exist."))
             return 4
     
     clientDbconn = openClientDatabase()
@@ -419,7 +419,7 @@ def smartgenerator(atomInfo, emptydeps = False):
     else:
 	print_error(darkgreen(" * ")+red("Missing dependencies: "))
         for x in pkgdependencies:
-            print_error(darkgreen("   ## ")+str(x))
+            print_error(darkgreen("   ## ")+x)
 	return 1
 
     pkgs = [x for x in pkgs if x != atomInfo]
