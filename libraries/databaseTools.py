@@ -2910,8 +2910,6 @@ class etpDatabase:
 			and (matchBranches == cached['matchBranches']):
 	            return cached['result']
 	
-        print atom
-        
 	# check if tag is provided -> app-foo/foo-1.2.3:SLOT|TAG or app-foo/foo-1.2.3|TAG
 	atomTag = entropyTools.dep_gettag(atom)
 	atomSlot = entropyTools.dep_getslot(atom)
