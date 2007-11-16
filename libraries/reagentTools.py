@@ -416,7 +416,7 @@ def database(options):
 		
 	        mydata = extractPkgData(etpConst['packagesbindir']+"/"+mybranch+"/"+pkg, mybranch)
 	        # get previous revision
-		revisionAvail = revisionsMatch.get(os.path.basename(etpData['download']))
+		revisionAvail = revisionsMatch.get(os.path.basename(mydata['download']))
 		addRevision = 0
 		if (revisionAvail != None):
 		    if mybranch == revisionAvail[0]:
