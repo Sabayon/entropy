@@ -495,7 +495,7 @@ def getPortageAppDbPath():
 
 # Collect installed packages
 def getInstalledPackages():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackages: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackages: called.")
     import os
     appDbDir = getPortageAppDbPath()
     dbDirs = os.listdir(appDbDir)
@@ -511,7 +511,7 @@ def getInstalledPackages():
     return installedAtoms, len(installedAtoms)
 
 def getInstalledPackagesCounters():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackagesCounters: called. ")
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackagesCounters: called.")
     import os
     appDbDir = getPortageAppDbPath()
     dbDirs = os.listdir(appDbDir)
@@ -528,3 +528,35 @@ def getInstalledPackagesCounters():
 		f.close()
 	        installedAtoms.append([pkgatom,int(counter)])
     return installedAtoms, len(installedAtoms)
+
+def refillCounter():
+    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"refillCounter: called.")
+    import os
+    appDbDir = getPortageAppDbPath()
+    counters = set()
+    for catdir in os.listdir(appDbDir):
+        catdir = appDbDir+catdir
+        if not os.path.isdir(catdir):
+            continue
+        for pkgdir in os.listdir(catdir):
+            pkgdir = catdir+"/"+pkgdir
+            if not os.path.isdir(pkgdir):
+                continue
+            counterfile = pkgdir+"/"+dbCOUNTER
+            if not os.path.isfile(pkgdir+"/"+dbCOUNTER):
+                continue
+            try:
+                f = open(counterfile,"r")
+                counter = int(f.readline().strip())
+                counters.add(counter)
+            except:
+                continue
+    newcounter = max(counters)
+    if not os.path.isdir(os.path.dirname(edbCOUNTER)):
+        os.makedirs(os.path.dirname(edbCOUNTER))
+    f = open(edbCOUNTER,"w")
+    f.write(str(newcounter))
+    f.flush()
+    f.close()
+    return newcounter
+

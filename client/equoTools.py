@@ -1231,7 +1231,7 @@ def installPackageIntoGentooDatabase(infoDict,packageFile, newidpackage = -1):
     # handle gentoo-compat
     _portage_avail = False
     try:
-	from portageTools import getPackageSlot as _portage_getPackageSlot, getPortageAppDbPath as _portage_getPortageAppDbPath
+	from portageTools import getPackageSlot as _portage_getPackageSlot, getPortageAppDbPath as _portage_getPortageAppDbPath, refillCounter as _portage_refillCounter
 	_portage_avail = True
     except:
 	return -1 # no Portage support
@@ -1303,31 +1303,35 @@ def installPackageIntoGentooDatabase(infoDict,packageFile, newidpackage = -1):
             
             os.rename(extractPath,destination)
             
-            # update counter
-            if os.path.isfile("/var/cache/edb/counter"):
-                # fetch number
+            # test if /var/cache/edb/counter is fine
+            if os.path.isfile(edbCOUNTER):
                 try:
-                    f = open("/var/cache/edb/counter","r")
+                    f = open(edbCOUNTER,"r")
                     counter = int(f.readline().strip())
                     f.close()
-                    # write new counter to file
-                    if os.path.isfile(destination+"/"+dbCOUNTER):
-                        f = open(destination+"/"+dbCOUNTER,"w")
-                        f.write(str(counter)+"\n")
-                        f.flush()
-                        f.close()
-                        counter += 1
-                        f = open("/var/cache/edb/counter","w")
-                        f.write(str(counter)+"\n")
-                        f.flush()
-                        f.close()
-                        # update counter inside clientDatabase
-                        if newidpackage != -1:
-                            clientDbconn = openClientDatabase()
-                            clientDbconn.setCounter(newidpackage,counter)
-                            clientDbconn.closeDB()
                 except:
-                    pass
+                    # need file recreation, parse gentoo tree
+                    counter = _portage_refillCounter()
+            else:
+                counter = _portage_refillCounter()
+            
+            # write new counter to file
+            if os.path.isdir(destination):
+                f = open(destination+"/"+dbCOUNTER,"w")
+                f.write(str(counter)+"\n")
+                f.flush()
+                f.close()
+                counter += 1
+                f = open(edbCOUNTER,"w")
+                f.write(str(counter))
+                f.flush()
+                f.close()
+                # update counter inside clientDatabase
+                clientDbconn = openClientDatabase()
+                clientDbconn.setCounter(newidpackage,counter)
+                clientDbconn.closeDB()
+            else:
+                print "DEBUG: WARNING!! "+destination+" DOES NOT EXIST, CANNOT UPDATE COUNTER!!"
 
     return 0
 
