@@ -24,6 +24,7 @@ from sys import path, getfilesystemencoding
 path.append('/usr/lib/entropy/libraries')
 import os
 import shutil
+import stat
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
@@ -964,17 +965,20 @@ def removePackage(infoDict):
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file:  "+file)
 	    print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+file)
 	else:
-            if not os.path.lexists(file):
-                continue # file does not exist
-            if os.path.isdir(file) and os.path.islink(file):
-                # directory symlink
+            try:
+                exist = os.lstat(file)
+            except OSError:
+                continue # skip file, does not exist
+            
+            if stat.S_ISDIR(exist.st_mode) and stat.S_ISLNK(exist.st_mode):
+                # valid directory symlink
                 mylist = os.listdir(file)
                 if not mylist:
                     try:
                         os.remove(file)
                     except OSError:
                         pass
-            elif os.path.isdir(file):
+            elif stat.S_ISDIR(exist.st_mode):
                 # plain directory
                 mylist = os.listdir(file)
                 if not mylist:
