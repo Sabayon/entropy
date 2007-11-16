@@ -711,7 +711,7 @@ def generateDependsTree(idpackages, deep = False):
 			tree[treedepth].add(x)
 			monotree.add(x)
 		        treeview.add(x)
-	    elif deep: # if no depends found, grab its dependencies and check
+	    elif deep: # if deep, grab its dependencies and check
 		
 	        mydeps = set(clientDbconn.retrieveDependencies(idpackage))
 		_mydeps = set()

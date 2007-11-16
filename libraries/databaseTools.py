@@ -2977,9 +2977,9 @@ class etpDatabase:
 	    
 	    mypkgcat = pkgcat
 	    mypkgname = pkgname
-	    
+
 	    # if it's a PROVIDE, search with searchProvide
-	    if mypkgcat == "virtual":
+	    if (not results) and (mypkgcat == "virtual"):
 	        virtuals = self.searchProvide(pkgkey, branch = idx)
 		if (virtuals):
 		    mypkgname = self.retrieveName(virtuals[0][1])
