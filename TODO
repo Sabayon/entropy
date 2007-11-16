@@ -1,5 +1,6 @@
 TODO list:
   CLIENT:
+  - give removal depends calculation a bit of love
   - find a way to better handle real smartapps deps
   - add support for database revisions log
   - add external trigger for splashutils

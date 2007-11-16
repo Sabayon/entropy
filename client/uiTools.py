@@ -791,6 +791,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
     if (ask):
         rc = entropyTools.askquestion(question)
         if rc == "No":
+            lookForOrphanedPackages = False
 	    if (not deps):
 	        clientDbconn.closeDB()
 		return 0,0
@@ -813,7 +814,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
 		    choosenRemovalQueue.append(y)
 	
 	    if (choosenRemovalQueue):
-	        print_info(red(" @@ ")+blue("These are the packages that would added to the removal queue:"))
+	        print_info(red(" @@ ")+blue("These are the packages that would be added to the removal queue:"))
 	        totalatoms = str(len(choosenRemovalQueue))
 	        atomscounter = 0
 	    

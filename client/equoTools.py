@@ -684,6 +684,7 @@ def generateDependsTree(idpackages, deep = False):
     if rx == -2:
 	# generation needed
 	clientDbconn.regenerateDependsTable(output = False)
+        rx = clientDbconn.retrieveDepends(idpackages[0])
     
     while (not dependsOk):
 	treedepth += 1
@@ -963,21 +964,35 @@ def removePackage(infoDict):
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file:  "+file)
 	    print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+file)
 	else:
-	    try:
-	        os.remove(file)
-	        #print file
-	        # is now empty?
-	        filedir = os.path.dirname(file)
-	        dirlist = os.listdir(filedir)
-	        if (not dirlist):
-		    os.removedirs(filedir)
-	    except OSError:
-	        try:
-		    os.removedirs(file) # is it a dir?, empty?
-	            #print "debug: was a dir"
-	        except:
-		    #print "debug: the dir wasn't empty? -> "+str(file)
-		    pass
+            if not os.path.lexists(file):
+                continue # file does not exist
+            if os.path.isdir(file) and os.path.islink(file):
+                # directory symlink
+                mylist = os.listdir(file)
+                if not mylist:
+                    try:
+                        os.remove(file)
+                    except OSError:
+                        pass
+            elif os.path.isdir(file):
+                # plain directory
+                mylist = os.listdir(file)
+                if not mylist:
+                    try:
+                        os.removedirs(file)
+                    except OSError:
+                        pass
+            else: # files, symlinks or not
+                # just a file or something like that
+                try:
+                    os.remove(file)
+                    # is directory of the file now empty?
+                    filedir = os.path.dirname(file)
+                    dirlist = os.listdir(filedir)
+                    if (not dirlist):
+                        os.removedirs(filedir)
+                except OSError:
+                    pass
     return 0
 
 
