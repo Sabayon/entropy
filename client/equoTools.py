@@ -1317,11 +1317,11 @@ def installPackageIntoGentooDatabase(infoDict,packageFile, newidpackage = -1):
             
             # write new counter to file
             if os.path.isdir(destination):
+                counter += 1
                 f = open(destination+"/"+dbCOUNTER,"w")
                 f.write(str(counter)+"\n")
                 f.flush()
                 f.close()
-                counter += 1
                 f = open(edbCOUNTER,"w")
                 f.write(str(counter))
                 f.flush()
