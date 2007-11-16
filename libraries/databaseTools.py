@@ -2910,6 +2910,8 @@ class etpDatabase:
 			and (matchBranches == cached['matchBranches']):
 	            return cached['result']
 	
+        print atom
+        
 	# check if tag is provided -> app-foo/foo-1.2.3:SLOT|TAG or app-foo/foo-1.2.3|TAG
 	atomTag = entropyTools.dep_gettag(atom)
 	atomSlot = entropyTools.dep_getslot(atom)
@@ -2971,9 +2973,8 @@ class etpDatabase:
 
         # IDs found in the database that match our search
         foundIDs = []
-	
-        for idx in myBranchIndex: # myBranchIndex is ordered by importance
-	    # search into the less stable, if found, break, otherwise continue
+        
+        for idx in myBranchIndex:
 	    results = self.searchPackagesByName(pkgname, sensitive = caseSensitive, branch = idx)
 	    
 	    mypkgcat = pkgcat
@@ -3046,8 +3047,7 @@ class etpDatabase:
 		else:
 	            foundIDs.append(results[0])
 	            break
-	
-	
+
         if (foundIDs):
 	    # now we have to handle direction
 	    if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
@@ -3083,7 +3083,7 @@ class etpDatabase:
 		        dbver = self.retrieveVersion(idpackage)
 		        if (direction == "~"):
 			    myver = entropyTools.remove_revision(dbver)
-		            if myver == pkgversion:
+                            if myver == pkgversion:
 			        # found
 			        dbpkginfo.append([idpackage,dbver])
 		        else:
@@ -3096,14 +3096,6 @@ class etpDatabase:
 				if pkgversion == dbver:
 				    dbpkginfo.append([idpackage,dbver])
 
-		    if (not dbpkginfo):
-		        # no version available
-		        if (direction == "~"): # if the atom with the same version (any rev) is not found, fallback to the first available
-			    for data in foundIDs:
-			        idpackage = data[1]
-			        dbver = self.retrieveVersion(idpackage)
-			        dbpkginfo.append([idpackage,dbver])
-		
 		    if (not dbpkginfo):
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
 		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
