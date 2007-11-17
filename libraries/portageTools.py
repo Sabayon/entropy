@@ -79,6 +79,8 @@ def getPackagesInSystem():
     sysoutput.append("dev-db/sqlite") # our interface
     sysoutput.append("dev-python/pysqlite") # our python interface to our interface (lol)
     sysoutput.append("virtual/cron") # our cron service
+    sysoutput.append("app-admin/equo") # our package manager (client)
+    sysoutput.append("sys-apps/entropy") # our package manager (server+client)
     return sysoutput
 
 def getConfigProtectAndMask():

@@ -264,9 +264,11 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	dumpTools.dumpobj(etpCache['atomMatch'],{})
 	generateDependsTreeCache.clear()
 	dumpTools.dumpobj(etpCache['generateDependsTree'],{})
-	dbCacheStore.clear()
+        for dbinfo in dbCacheStore:
+            dbCacheStore[dbinfo].clear()
+            dumpTools.dumpobj(dbinfo,{})
 	
-	# generate cache
+	# clean caches
         import cacheTools
         cacheTools.generateCache(quiet = quiet, depcache = True, configcache = False)
 

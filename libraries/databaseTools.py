@@ -2320,9 +2320,11 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchDependency: called for "+dep)
 	self.cursor.execute('SELECT iddependency FROM dependenciesreference WHERE dependency = "'+dep+'"')
 	iddep = self.cursor.fetchone()
-        if not iddep:
+	if iddep:
+	    iddep = iddep[0]
+	else:
             iddep = -1
-	return iddep[0]
+	return iddep
 
     ''' search iddependency inside dependencies table and retrieve idpackages '''
     def searchIdpackageFromIddependency(self, iddep):
