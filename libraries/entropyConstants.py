@@ -524,12 +524,6 @@ else:
         print "you need to run this as root at least once."
         exit(100)
 
-# Handlers used by entropy to run and retrieve data remotely, using php helpers
-etpHandlers = {
-    'md5sum': "md5sum.php?arch="+ETP_ARCH_CONST+"&package=", # md5sum handler
-    'errorsend': "http://svn.sabayonlinux.org/entropy/handlers/error_report.php?arch="+ETP_ARCH_CONST+"&stacktrace=",
-}
-
 ### file transfer settings
 etpFileTransfer = {
     'datatransfer': 0,
@@ -652,7 +646,6 @@ if os.path.isfile(etpConst['repositoriesconf']):
 etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['binaryurirelativepath']
 etpConst['etpurirelativepath'] = etpConst['product']+"/"+etpConst['etpurirelativepath']
 
-
 # check for packages and upload directories
 if os.getuid() == 0:
     for x in etpConst['branches']:
@@ -684,35 +677,36 @@ else:
 		import time
 		time.sleep(5)
 
+# Handlers used by entropy to run and retrieve data remotely, using php helpers
+etpHandlers = {
+    'md5sum': "md5sum.php?arch="+ETP_ARCH_CONST+"&package=", # md5sum handler
+    'errorsend': "http://svn.sabayonlinux.org/entropy/"+etpConst['product']+"/handlers/error_report.php?arch="+ETP_ARCH_CONST+"&stacktrace=",
+}
+
 # remote section
 etpRemoteSupport = {}
-if (not os.path.isfile(etpConst['remoteconf'])):
-    print "ERROR: "+etpConst['remoteconf']+" does not exist"
-    exit(50)
-else:
+if (os.path.isfile(etpConst['remoteconf'])):
     f = open(etpConst['remoteconf'],"r")
-    databaseconf = f.readlines()
+    remoteconf = f.readlines()
     f.close()
-    for line in databaseconf:
+    for line in remoteconf:
 	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
 	    loglevel = line.split("loglevel|")[1]
 	    try:
 		loglevel = int(loglevel)
 	    except:
-		print "ERROR: invalid loglevel in: "+etpConst['remoteconf']
-		exit(51)
+		print "WARNING: invalid loglevel in: "+etpConst['remoteconf']
 	    if (loglevel > -1) and (loglevel < 3):
 	        etpConst['remoteloglevel'] = loglevel
 	    else:
 		print "WARNING: invalid loglevel in: "+etpConst['remoteconf']
-		import time
-		time.sleep(5)
 
-	if line.startswith("httphandler|") and (len(line.split("|")) > 2):
+	if line.startswith("handler|") and (len(line.split("|")) > 2):
 	    servername = line.split("|")[1].strip()
 	    url = line.split("|")[2].strip()
 	    if not url.endswith("/"):
 		url = url+"/"
+            url += etpConst['product']+"/handlers/"
 	    etpRemoteSupport[servername] = url
 
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
