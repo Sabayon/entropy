@@ -63,6 +63,9 @@ def print_help():
 
 options = argv[1:]
 
+from entropyConstants import *
+from serverConstants import *
+
 # print version
 if (' '.join(options).find("--version") != -1) or (' '.join(options).find(" -V") != -1):
     print_generic(APPNAME+": "+APPVERSION)
@@ -78,8 +81,7 @@ if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(option
 import entropyTools
 import reagentTools
 import databaseTools
-from entropyConstants import *
-from serverConstants import *
+
 
 # preliminary options parsing
 _options = []
