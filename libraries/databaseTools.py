@@ -302,7 +302,10 @@ class etpDatabase:
                     for mydir in etpConst['etpurirelativepath'].split("/"):
                         if mydir:
                             completedir = mydir+"/"
-                            ftp.mkdir(completedir)
+                            try:
+                                ftp.mkdir(completedir)
+                            except:
+                                pass
                     ftp.mkdir(etpConst['etpurirelativepath'])
                     ftp.setCWD(etpConst['etpurirelativepath'])
 	        if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
