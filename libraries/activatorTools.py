@@ -405,8 +405,8 @@ def packages(options):
 		        else: # otherwise it is in the packages dir
 			    fileSize = os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+item)[6]
 		        if not item.endswith(etpConst['packageshashfileext']): # do not show .md5 to upload
-		            totalUploadSize += int(fileSize)
 		            print_info(bold("\t[") + red("REMOTE UPLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
+		            totalUploadSize += int(fileSize)
 		            detailedUploadQueue.append([item,fileSize])
 
 		    # queue length info

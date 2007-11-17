@@ -336,7 +336,6 @@ etpConst = {
     'packagessuploaddir': ETP_DIR+ETP_UPLOADDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
     'portagetreedir': ETP_PORTDIR, # directory where is stored our local portage tree
     'distfilesdir': ETP_PORTDIR+ETP_DISTFILESDIR, # directory where our sources are downloaded
-    'overlaysdir': ETP_PORTDIR+"/local/layman", # directory where overlays are stored
     'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
     'entropyconf': ETP_CONF_DIR+"/entropy.conf", # entropy.conf file
     'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
@@ -350,8 +349,7 @@ etpConst = {
     'activatoruploaduris': [], # list of URIs that activator can use to upload files (parsed from activator.conf)
     'activatordownloaduris': [], # list of URIs that activator can use to fetch data
     'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
-    'etpurirelativepath': "database/"+ETP_ARCH_CONST+"/", # Relative remote path for the .etp repository.
-    							  # TO BE REMOVED? CHECK
+    'etpurirelativepath': "database/"+ETP_ARCH_CONST+"/", # database relative path
 
     'entropyworkdir': ETP_DIR, # Entropy workdir
     'entropyunpackdir': ETP_VAR_DIR, # Entropy unpack directory
@@ -424,6 +422,7 @@ etpConst = {
     'configprotectcounter': 0, # this will be used to show the number of updated files at the end of the processes
     'entropyversion': "1.0", # default Entropy release version
     'systemname': "Sabayon Linux", # default system name
+    'product': "standard", # Product identificator (standard, professional...)
     'errorstatus': ETP_CONF_DIR+"/code",
     
     'dumpstoragedir': ETP_DIR+ETP_XMLDIR, # data storage directory, useful to speed up equo across multiple issued commands
@@ -569,14 +568,6 @@ if not os.path.isdir(etpConst['entropyworkdir']):
         exit(100)
 
 
-# check for packages and upload directories
-if os.getuid() == 0:
-    for x in etpConst['branches']:
-        if not os.path.isdir(etpConst['packagesbindir']+"/"+x):
-	    os.makedirs(etpConst['packagesbindir']+"/"+x)
-        if not os.path.isdir(etpConst['packagessuploaddir']+"/"+x):
-	    os.makedirs(etpConst['packagessuploaddir']+"/"+x)
-
 # entropy section
 if (not os.path.isfile(etpConst['entropyconf'])):
     print "ERROR: "+etpConst['entropyconf']+" does not exist"
@@ -609,6 +600,11 @@ if os.path.isfile(etpConst['repositoriesconf']):
     repositoriesconf = f.readlines()
     f.close()
     
+    # setup product first
+    for line in repositoriesconf:
+	if (line.strip().find("product|") != -1) and (not line.strip().startswith("#")) and (len(line.strip().split("|")) == 2):
+	    etpConst['product'] = line.strip().split("|")[1]
+    
     for line in repositoriesconf:
 	line = line.strip()
         # populate etpRepositories
@@ -633,10 +629,10 @@ if os.path.isfile(etpConst['repositoriesconf']):
 		etpRepositories[reponame]['description'] = repodesc
 		etpRepositories[reponame]['packages'] = []
 		for x in repopackages.split():
-		    etpRepositories[reponame]['packages'].append(x)
-		etpRepositories[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['currentarch']
+		    etpRepositories[reponame]['packages'].append(x+"/"+etpConst['product'])
+		etpRepositories[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['product']+"/"+etpConst['currentarch']
 		etpRepositories[reponame]['dbcformat'] = dbformat
-		etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['currentarch']
+		etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['product']+"/database/"+etpConst['currentarch']
 		# initialize CONFIG_PROTECT - will be filled the first time the db will be opened
 		etpRepositories[reponame]['configprotect'] = set()
 		etpRepositories[reponame]['configprotectmask'] = set()
@@ -651,6 +647,19 @@ if os.path.isfile(etpConst['repositoriesconf']):
 		    else:
 			print "ERROR: please run equo as root at least once or create: "+str(etpConst['packagesbindir']+"/"+branch)
 			exit(49)
+
+# align etpConst['binaryurirelativepath'] and etpConst['etpurirelativepath'] with etpConst['product']
+etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['binaryurirelativepath']
+etpConst['etpurirelativepath'] = etpConst['product']+"/"+etpConst['etpurirelativepath']
+
+
+# check for packages and upload directories
+if os.getuid() == 0:
+    for x in etpConst['branches']:
+        if not os.path.isdir(etpConst['packagesbindir']+"/"+x):
+	    os.makedirs(etpConst['packagesbindir']+"/"+x)
+        if not os.path.isdir(etpConst['packagessuploaddir']+"/"+x):
+	    os.makedirs(etpConst['packagessuploaddir']+"/"+x)
 
 # database section
 if (not os.path.isfile(etpConst['databaseconf'])):
@@ -705,15 +714,6 @@ else:
 	    if not url.endswith("/"):
 		url = url+"/"
 	    etpRemoteSupport[servername] = url
-
-# fill etpConst['overlays']
-if os.path.isdir(etpConst['overlaysdir']):
-    ovlst = os.listdir(etpConst['overlaysdir'])
-    _ovlst = []
-    for i in ovlst:
-        if os.path.isdir(etpConst['overlaysdir']+"/"+i):
-	    _ovlst.append(etpConst['overlaysdir']+"/"+i)
-    etpConst['overlays'] = ' '.join(_ovlst)
 
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things

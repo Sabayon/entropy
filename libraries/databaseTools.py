@@ -69,7 +69,8 @@ def fetchRepositoryIfNotAvailable(reponame):
     dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
     if not os.path.isfile(dbfile):
 	# sync
-	rc = syncRepositories([reponame])
+        import repositoriesTools
+	rc = repositoriesTools.syncRepositories([reponame])
     if not os.path.isfile(dbfile):
 	# so quit
 	print_error(red("Database file for '"+bold(etpRepositories[reponame]['description'])+red("' does not exist. Cannot search.")))
