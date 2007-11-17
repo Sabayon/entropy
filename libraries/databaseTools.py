@@ -295,19 +295,7 @@ class etpDatabase:
 	    for uri in etpConst['activatoruploaduris']:
 		dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: connecting to "+uri)
 	        ftp = mirrorTools.handlerFTP(uri)
-                try:
-                    ftp.setCWD(etpConst['etpurirelativepath'])
-                except:
-                    completedir = ""
-                    for mydir in etpConst['etpurirelativepath'].split("/"):
-                        if mydir:
-                            completedir = mydir+"/"
-                            try:
-                                ftp.mkdir(completedir)
-                            except:
-                                pass
-                    ftp.mkdir(etpConst['etpurirelativepath'])
-                    ftp.setCWD(etpConst['etpurirelativepath'])
+                ftp.setCWD(etpConst['etpurirelativepath'])
 	        if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
 		    import time
 		    print_info(red(" * ")+bold("WARNING")+red(": online database is already locked. Waiting up to 2 minutes..."), back = True)
