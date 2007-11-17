@@ -106,6 +106,8 @@ def postinstall(pkgdata):
 	    functions.add('kernelmod')
 	if x.startswith('/boot/kernel-'):
 	    functions.add('addbootablekernel')
+	if x.startswith('/usr/src/'):
+	    functions.add('createkernelsym')
 	#if x.startswith("/etc/init.d/"): do it externally
 	#    functions.add('initadd')
 
@@ -473,7 +475,22 @@ def cleanpy(pkgdata):
             try: os.remove(file+"c")
             except OSError: pass
 
-
+def createkernelsym(pkgdata):
+    for file in pkgdata['content']:
+        if file.startswith("/usr/src/"):
+            # extract directory
+            try:
+                todir = file.split("/")[3]
+            except:
+                continue
+            if os.path.isdir("/usr/src/"+todir):
+                # link to /usr/src/linux
+		equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Creating kernel symlink /usr/src/linux for /usr/src/"+todir)
+		print_info(red("   ##")+brown(" Creating kernel symlink /usr/src/linux for /usr/src/"+todir))
+                if os.path.isfile("/usr/src/linux") or os.path.islink("/usr/src/linux"):
+                    os.remove("/usr/src/linux")
+                os.symlink(todir,"/usr/src/linux")
+                break
 
 ########################################################
 ####

@@ -25,10 +25,10 @@
 
 import os
 from sys import path, exit, argv
-path.append('/usr/lib/entropy/client')
-path.append('/usr/lib/entropy/libraries')
 path.append('../libraries')
 path.append('../client')
+path.append('/usr/lib/entropy/client')
+path.append('/usr/lib/entropy/libraries')
 from outputTools import *
 
 # CONSTANTS
