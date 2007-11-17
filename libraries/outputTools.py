@@ -236,7 +236,7 @@ def print_error(msg, back = False):
 	writechar("\r"+red(">>")+" "+msg)
 	return
     writechar("\r"+_cleanline+"\r")
-    print red(">>")+" "+msg
+    print darkred(">>")+" "+msg
 
 def print_info(msg, back = False):
     global _lastline
@@ -253,7 +253,7 @@ def print_info(msg, back = False):
 
 def print_warning(msg):
     writechar("\r"+_cleanline+"\r")
-    print yellow(">>")+" "+msg
+    print red(">>")+" "+msg
 
 def print_generic(msg): # here we'll wrap any nice formatting
     print msg
