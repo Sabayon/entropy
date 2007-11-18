@@ -158,7 +158,7 @@ def reportApplicationError(errorstring):
 	    char = "%20"
 	outstring += char
     outstring = outstring.split("\n")
-    outstring = '<br>'.join(outstring,"<br>")
+    outstring = '<br>'.join(outstring)
     url = etpHandlers['errorsend']+outstring
     # now pray the server
     try:

@@ -486,7 +486,12 @@ def pygtksetup(pkgdata):
     print python_sym_files
     for file in python_sym_files:
 	if os.path.isfile(file):
-	    os.symlink(file,file[:-4])
+            try:
+                if os.path.isfile(file[:-4]):
+                    os.remove(file[:-4])
+                os.symlink(file,file[:-4])
+            except OSError:
+                pass
 
 def pygtkremove(pkgdata):
     python_sym_files = [x for x in pkgdata['content'] if x.startswith("/usr/lib/python") and (x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0"))]
