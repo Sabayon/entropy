@@ -90,6 +90,19 @@ def postinstall(pkgdata):
     if pkgdata['name'] == "pygobject":
 	functions.add('pygtksetup')
 
+    # load linker paths
+    ldpaths = set()
+    try:
+        f = open("/etc/ld.so.conf","r")
+        paths = f.readlines()
+        for path in paths:
+            if path.strip():
+                if path[0] == "/":
+                    ldpaths.add(os.path.normpath(path.strip()))
+        f.close()
+    except:
+        pass
+
     # prepare content
     for x in pkgdata['content']:
 	if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
@@ -108,6 +121,11 @@ def postinstall(pkgdata):
 	    functions.add('addbootablekernel')
 	if x.startswith('/usr/src/'):
 	    functions.add('createkernelsym')
+	if x.endswith('/usr/lib'):
+	    functions.add('createkernelsym')
+        for path in ldpaths:
+            if x.startswith(path) and (x.find(".so") != -1):
+	        functions.add('ldconfig')
 	#if x.startswith("/etc/init.d/"): do it externally
 	#    functions.add('initadd')
 
@@ -163,6 +181,19 @@ def postremove(pkgdata):
     if pkgdata['category'] == "media-fonts":
 	functions.add("fontconfig")
 
+    # load linker paths
+    ldpaths = set()
+    try:
+        f = open("/etc/ld.so.conf","r")
+        paths = f.readlines()
+        for path in paths:
+            if path.strip():
+                if path[0] == "/":
+                    ldpaths.add(os.path.normpath(path.strip()))
+        f.close()
+    except:
+        pass
+
     for x in pkgdata['removecontent']:
 	if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
 	    functions.add('iconscache')
@@ -180,6 +211,9 @@ def postremove(pkgdata):
 	    functions.add('removeinit')
         if x.endswith('.py'):
             functions.add('cleanpy')
+        for path in ldpaths:
+            if x.startswith(path) and (x.find(".so") != -1):
+	        functions.add('ldconfig')
 
     return functions
 
@@ -491,6 +525,11 @@ def createkernelsym(pkgdata):
                     os.remove("/usr/src/linux")
                 os.symlink(todir,"/usr/src/linux")
                 break
+
+def ldconfig(pkgdata):
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running ldconfig")
+    print_info(red("   ##")+brown(" Regenerating /etc/ld.so.cache"))
+    os.system("ldconfig &> /dev/null")
 
 ########################################################
 ####

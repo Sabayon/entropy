@@ -965,7 +965,7 @@ def dependenciesTest(quiet = False, ask = False, pretend = False, clientDbconn =
         # organize
         packages = set([x[0] for x in packagesNeeded])
 	
-	applicationLockCheck("install")
+	entropyTools.applicationLockCheck("install")
 	installPackages(packages, deps = False, ask = ask)
 
     print_info(red(" @@ ")+blue("All done."))
