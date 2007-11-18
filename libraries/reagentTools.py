@@ -185,7 +185,7 @@ def update(options):
 	        for x in toBeAdded:
 	            print_info(yellow("    # ")+red(x[0]))
                 if reagentRequestAsk:
-	            rc = askquestion(">>   Would you like to packetize them now ?")
+	            rc = askquestion(">>   Would you like to package them now ?")
                     if rc == "No":
                         return 0
 

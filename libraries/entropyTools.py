@@ -87,7 +87,7 @@ def getRandomNumber():
 def countdown(secs=5,what="Counting...", back = False):
     if secs:
 	if back:
-	    stdout.write(what)
+	    stdout.write(red(">> ")+what)
 	else:
 	    print what
         for i in range(secs)[::-1]:

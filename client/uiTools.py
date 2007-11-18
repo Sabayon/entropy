@@ -804,7 +804,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
     
     if (lookForOrphanedPackages):
 	choosenRemovalQueue = []
-	print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."))
+	print_info(red(" @@ ")+blue("Calculating..."))
 	treeview = equoTools.generateDependsTree(plainRemovalQueue, deep = deep)
 	treelength = len(treeview[0])
 	if treelength > 1:
@@ -838,11 +838,9 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
 	            for x in choosenRemovalQueue:
 			removalQueue.append(x)
 	    else:
-		print
-
+		writechar("\n")
     if (ask):
 	if (deps):
-	    print
             rc = entropyTools.askquestion("     I am going to start the removal. Are you sure?")
             if rc == "No":
 	        clientDbconn.closeDB()

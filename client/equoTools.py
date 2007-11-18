@@ -21,6 +21,8 @@
 '''
 
 from sys import path, getfilesystemencoding
+path.append('../libraries')
+path.append('../client')
 path.append('/usr/lib/entropy/libraries')
 import os
 import shutil
@@ -924,79 +926,109 @@ def removePackage(infoDict):
     # load CONFIG_PROTECT and its mask - client database at this point has been surely opened, so our dicts are already filled
     protect = etpConst['dbconfigprotect']
     mask = etpConst['dbconfigprotectmask']
-
-    # merge data into system
+    
+    # remove files from system
+    directories = set()
     for file in content:
-	# collision check
-	if etpConst['collisionprotect'] > 0:
-	    if file in contentCache:
-		print_warning(darkred("   ## ")+red("Collision found during remove for ")+file.encode(getfilesystemencoding())+" - cannot overwrite")
-        	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove for "+file.encode(getfilesystemencoding())+" - cannot overwrite")
-		continue
-	    try:
-	        del contentCache[file]
-	    except:
-	        pass
-	file = file.encode(getfilesystemencoding())
-
-	protected = False
-	if (not infoDict['removeconfig']) and (not infoDict['diffremoval']):
-	    try:
-	        # -- CONFIGURATION FILE PROTECTION --
-	        if os.access(file,os.R_OK):
-	            for x in protect:
-		        if file.startswith(x):
-		            protected = True
-		            break
-	            if (protected):
-		        for x in mask:
-		            if file.startswith(x):
-			        protected = False
-			        break
-	            if (protected) and os.path.isfile(file):
-		        protected = istextfile(file)
-		    else:
-		        protected = False # it's not a file
-	        # -- CONFIGURATION FILE PROTECTION --
-	    except:
-		pass # some filenames are buggy encoded
-	
-	if (protected):
-            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file:  "+file)
-	    print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+file)
-	else:
+        # collision check
+        if etpConst['collisionprotect'] > 0:
+            if file in contentCache:
+                print_warning(darkred("   ## ")+red("Collision found during remove for ")+file+red(" - cannot overwrite"))
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove for "+file+" - cannot overwrite")
+                content.remove(file)
+                continue
             try:
-                exist = os.lstat(file)
+                del contentCache[file]
+            except:
+                pass
+    
+        protected = False
+        if (not infoDict['removeconfig']) and (not infoDict['diffremoval']):
+            try:
+                # -- CONFIGURATION FILE PROTECTION --
+                if os.access(file,os.R_OK):
+                    for x in protect:
+                        if file.startswith(x):
+                            protected = True
+                            break
+                    if (protected):
+                        for x in mask:
+                            if file.startswith(x):
+                                protected = False
+                                break
+                    if (protected) and os.path.isfile(file):
+                        protected = istextfile(file)
+                    else:
+                        protected = False # it's not a file
+                # -- CONFIGURATION FILE PROTECTION --
+            except:
+                pass # some filenames are buggy encoded
+        
+        if (protected):
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file:  "+file)
+            print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+file)
+        else:
+            try:
+                os.lstat(file)
             except OSError:
                 continue # skip file, does not exist
             
-            if stat.S_ISDIR(exist.st_mode) and stat.S_ISLNK(exist.st_mode):
+            if os.path.isdir(file) and os.path.islink(file): # S_ISDIR returns False for directory symlinks, so using os.path.isdir
                 # valid directory symlink
-                mylist = os.listdir(file)
-                if not mylist:
-                    try:
-                        os.remove(file)
-                    except OSError:
-                        pass
-            elif stat.S_ISDIR(exist.st_mode):
+                #print "symlink dir",file
+                directories.add((file,"link"))
+            elif os.path.isdir(file):
                 # plain directory
-                mylist = os.listdir(file)
-                if not mylist:
-                    try:
-                        os.removedirs(file)
-                    except OSError:
-                        pass
+                #print "plain dir",file
+                directories.add((file,"dir"))
             else: # files, symlinks or not
-                # just a file or something like that
+                # just a file or symlink or broken directory symlink (remove now)
                 try:
+                    #print "plain file",file
                     os.remove(file)
-                    # is directory of the file now empty?
-                    filedir = os.path.dirname(file)
-                    dirlist = os.listdir(filedir)
-                    if (not dirlist):
-                        os.removedirs(filedir)
+                    # add its parent directory
+                    dirfile = os.path.dirname(file)
+                    if os.path.isdir(dirfile) and os.path.islink(dirfile):
+                        #print "symlink dir2",dirfile
+                        directories.add((dirfile,"link"))
+                    elif os.path.isdir(dirfile):
+                        #print "plain dir2",dirfile
+                        directories.add((dirfile,"dir"))
                 except OSError:
                     pass
+
+    # now handle directories
+    directories = list(directories)
+    directories.reverse()
+    while 1:
+        taint = False
+        for directory in directories:
+            if directory[1] == "link":
+                try:
+                    mylist = os.listdir(directory[0])
+                    if not mylist:
+                        try:
+                            os.remove(directory[0])
+                            taint = True
+                        except OSError:
+                            pass
+                except OSError:
+                    pass
+            elif directory[1] == "dir":
+                try:
+                    mylist = os.listdir(directory[0])
+                    if not mylist:
+                        try:
+                            os.rmdir(directory[0])
+                            taint = True
+                        except OSError:
+                            pass
+                except OSError:
+                    pass
+
+        if not taint:
+            break
+
     return 0
 
 
