@@ -144,7 +144,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     
     if (not pretend) and (upgradeTo):
         # update configuration
-        writeNewBranch(upgradeTo)
+        entropyTools.writeNewBranch(upgradeTo)
     
     updateList = set()
     fineList = set()
