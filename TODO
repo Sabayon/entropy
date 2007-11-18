@@ -4,6 +4,9 @@ TODO list:
   - find a way to better handle real smartapps deps
   - add support for database revisions log
   - add external trigger for splashutils
+  - env-update source /etc/profile after install?
+  - implement --resume and --skipfirst for world and install
+  - keep outdated packages on the server for a week
 
 
 Project Status:

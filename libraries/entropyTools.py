@@ -1542,7 +1542,9 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False):
 	versiontag = "#"+data['versiontag']
     else:
 	versiontag = ""
-    data['download'] = etpConst['binaryurirelativepath']+data['branch']+"/"+data['name']+"-"+data['version']+versiontag+".tbz2"
+    # remove etpConst['product'] from etpConst['binaryurirelativepath']
+    downloadrelative = etpConst['binaryurirelativepath'][len(etpConst['product'])+1:]
+    data['download'] = downloadrelative+data['branch']+"/"+data['name']+"-"+data['version']+versiontag+".tbz2"
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package counter..."),back = True)
     # Fill counter
