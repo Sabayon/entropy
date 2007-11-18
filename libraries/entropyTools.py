@@ -25,9 +25,8 @@ from outputTools import *
 from entropyConstants import *
 import os
 import re
-import sys
+from sys import exit, stdout, getfilesystemencoding
 import threading, time
-import string
 
 # Instantiate the databaseStatus:
 import databaseTools
@@ -76,7 +75,7 @@ def applicationLockCheck(option = None, gentle = False):
 	print_error(red("Another instance of Equo is running. Action: ")+bold(str(option))+red(" denied."))
 	print_error(red("If I am lying (maybe). Please remove ")+bold(etpConst['pidfile']))
 	if (not gentle):
-	    sys.exit(10)
+	    exit(10)
 	else:
 	    return True
     return False
@@ -88,12 +87,12 @@ def getRandomNumber():
 def countdown(secs=5,what="Counting...", back = False):
     if secs:
 	if back:
-	    sys.stdout.write(what)
+	    stdout.write(red(">> ")+what)
 	else:
 	    print what
         for i in range(secs)[::-1]:
-            sys.stdout.write(red(str(i+1)+" "))
-            sys.stdout.flush()
+            stdout.write(red(str(i+1)+" "))
+            stdout.flush()
 	    time.sleep(1)
 
 def spinner(rotations, interval, message=''):
@@ -269,6 +268,39 @@ def extractEdb(tbz2file, dbpath = None):
     old.close()
     return dbpath
 
+def removeEdb(tbz2file, savedir):
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removeEdb: called -> "+tbz2file)
+    old = open(tbz2file,"rb")
+    new = open(savedir+"/"+os.path.basename(tbz2file),"wb")
+    
+    # position old to the end
+    old.seek(0,2)
+    # read backward until we find
+    bytes = old.tell()
+    counter = bytes
+    
+    while counter >= 0:
+	old.seek(counter-bytes,2)
+	byte = old.read(1)
+	if byte == "|":
+	    old.seek(counter-bytes-31,2) # wth I can't use len(etpConst['databasestarttag']) ???
+	    chunk = old.read(31)+byte
+	    if chunk == etpConst['databasestarttag']:
+                old.seek(counter-bytes-32,2)
+                break
+	counter -= 1
+
+    endingbyte = old.tell()
+    old.seek(0)
+    while old.tell() <= endingbyte:
+        byte = old.read(1)
+        new.write(byte)
+        counter += 1
+    
+    new.flush()
+    new.close()
+    old.close()
+    return savedir+"/"+os.path.basename(tbz2file)
 
 # This function creates the .md5 file related to the given package file
 # @returns the complete hash file path
@@ -647,7 +679,7 @@ def remove_slot(mydep):
 def remove_revision(ver):
     myver = ver.split("-")
     if myver[-1][0] == "r":
-	return string.join(myver[:-1],"-")
+	return '-'.join(myver[:-1])
     return ver
 
 def remove_tag(mydep):
@@ -803,6 +835,36 @@ def compareVersions(ver1, ver2, silent=1):
 	return r1 - r2
 
 '''
+   @description: compare two lists composed by [version,tag,revision] and [version,tag,revision]
+   			if listA > listB --> positive number
+			if listA == listB --> 0
+			if listA < listB --> negative number	
+   @input package: listA[version,tag,rev] and listB[version,tag,rev]
+   @output: integer number
+'''
+def entropyCompareVersions(listA,listB):
+    if len(listA) != 3 or len(listB) != 3:
+	raise Exception, "compareVersions: listA and/or listB must be long 3"
+    # start with version
+    rc = compareVersions(listA[0],listB[0])
+    
+    if (rc == 0):
+	# check tag
+	if listA[1] > listB[1]:
+	    return 1
+	elif listA[1] < listB[1]:
+	    return -1
+	else:
+	    # check rev
+	    if listA[2] > listB[2]:
+		return 1
+	    elif listA[2] < listB[2]:
+		return -1
+	    else:
+		return 0
+    return rc
+
+'''
    @description: reorder a version list
    @input versionlist: a list
    @output: the ordered list
@@ -855,13 +917,14 @@ def isnumber(x):
 	return False
 
 
-text_characters = "".join(map(chr, range(32, 127)) + list("\n\r\t\b"))
-_null_trans = string.maketrans("", "")
-
 def istextfile(filename, blocksize = 512):
     return istext(open(filename).read(blocksize))
 
 def istext(s):
+    import string
+    _null_trans = string.maketrans("", "")
+    text_characters = "".join(map(chr, range(32, 127)) + list("\n\r\t\b"))
+    
     if "\0" in s:
         return False
     
@@ -926,7 +989,7 @@ def unescape(val):
     if type(val)==type(""):
         tmpstr=''
         for key,item in mappings.items():
-            val=string.replace(val,item,key)
+            val=val.replace(item,key)
         tmpstr = val
     else:
         tmpstr=val
@@ -1001,7 +1064,7 @@ def hideFTPpassword(uri):
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"hideFTPpassword: called. ")
     ftppassword = uri.split("@")[:len(uri.split("@"))-1]
     if len(ftppassword) > 1:
-	ftppassword = string.join(ftppassword,"@")
+	ftppassword = '@'.join(ftppassword)
 	ftppassword = ftppassword.split(":")[len(ftppassword.split(":"))-1]
 	if (ftppassword == ""):
 	    return uri
@@ -1087,6 +1150,7 @@ def cleanup(toCleanDirs = []):
 		    counter += 1
 
     print_info(green(" * ")+"Cleaned: "+str(counter)+" files and directories")
+    return 0
 
 def mountProc():
     # check if it's already mounted
@@ -1109,6 +1173,7 @@ def umountProc():
 	return True
 
 def askquestion(prompt):
+    xtermTitle("Entropy got a question for you")
     responses, colours = ["Yes", "No"], [green, red]
     print darkgreen(prompt),
     try:
@@ -1117,8 +1182,654 @@ def askquestion(prompt):
 	    for key in responses:
 		# An empty response will match the first value in responses.
 		if response.upper()==key[:len(response)].upper():
+                    xtermTitleReset()
 		    return key
 		    print "I cannot understand '%s'" % response,
     except (EOFError, KeyboardInterrupt):
 	print "Interrupted."
-	sys.exit(100)
+        xtermTitleReset()
+	exit(100)
+
+class lifobuffer:
+    
+    def __init__(self):
+        self.counter = -1
+        self.buf = {}
+    
+    def push(self,item):
+        self.counter += 1
+        self.buf[self.counter] = item
+    
+    def pop(self):
+        if self.counter == -1:
+            return None
+        self.counter -= 1
+        return self.buf[self.counter+1]
+
+def writeNewBranch(branch):
+    if os.path.isfile(etpConst['repositoriesconf']):
+        f = open(etpConst['repositoriesconf'])
+        content = f.readlines()
+        branchline = [x for x in content if x.startswith("branch|")]
+        if branchline:
+            # update
+            f = open(etpConst['repositoriesconf'],"w")
+            for line in content:
+                if line.startswith("branch|"):
+                    line = "branch|"+str(branch)+"\n"
+                f.write(line)
+        else:
+            # append
+            f.seek(0,2)
+            f.write("\nbranch|"+str(branch)+"\n")
+        f.flush()
+        f.close()
+
+# @pkgdata: etpData mapping dictionary (retrieved from db using getPackageData())
+# @dirpath: directory to save .tbz2
+def quickpkg(pkgdata,dirpath):
+
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+str(pkgdata)+" | dirpath: "+dirpath)
+    import tarfile
+    import stat
+    import databaseTools
+
+    # getting package info
+    pkgtag = ''
+    if pkgdata['versiontag']: pkgtag = "#"+pkgdata['versiontag']
+    pkgname = pkgdata['name']+"-"+pkgdata['version']+pkgtag # + version + tag
+    pkgcat = pkgdata['category']
+    pkgfile = pkgname+".tbz2"
+    dirpath += "/"+pkgname+".tbz2"
+    if os.path.isfile(dirpath):
+        os.remove(dirpath)
+    tar = tarfile.open(dirpath,"w:bz2")
+
+    contents = [x for x in pkgdata['content']]
+    id_strings = {}
+    contents.sort()
+    
+    # collect files
+    for path in contents:
+	try:
+	    exist = os.lstat(path)
+	except OSError:
+	    continue # skip file
+	lpath = path
+	arcname = path[1:] # remove trailing /
+        ftype = pkgdata['content'][path]
+        if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
+        if 'dir' == ftype and \
+	    not stat.S_ISDIR(exist.st_mode) and \
+	    os.path.isdir(lpath): # workaround for directory symlink issues
+	    lpath = os.path.realpath(lpath)
+        
+	tarinfo = tar.gettarinfo(lpath, str(arcname)) # FIXME: casting to str() cause of python <2.5.1 bug
+	tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
+	tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
+	
+	if stat.S_ISREG(exist.st_mode):
+	    tarinfo.type = tarfile.REGTYPE
+	    f = open(path)
+	    try:
+		tar.addfile(tarinfo, f)
+	    finally:
+		f.close()
+	else:
+	    tar.addfile(tarinfo)
+
+    tar.close()
+    
+    # appending xpak metadata
+    if etpConst['gentoo-compat']:
+        import xpak
+        from portageTools import getPortageAppDbPath
+        dbdir = getPortageAppDbPath()+"/"+pkgcat+"/"+pkgname+"/"
+        if os.path.isdir(dbdir):
+            tbz2 = xpak.tbz2(dirpath)
+            tbz2.recompose(dbdir)
+
+    # appending entropy metadata
+    dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
+    while os.path.isfile(dbpath):
+        dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
+    # create db
+    mydbconn = databaseTools.openGenericDatabase(dbpath)
+    mydbconn.initializeDatabase()
+    mydbconn.addPackage(pkgdata, revision = pkgdata['revision'])
+    mydbconn.closeDB()
+    aggregateEdb(tbz2file = dirpath, dbfile = dbpath)
+
+    if os.path.isfile(dirpath):
+	return dirpath
+    else:
+	return None
+
+def appendXpak(tbz2file, atom):
+    import xpak
+    from portageTools import getPortageAppDbPath
+    dbdir = getPortageAppDbPath()+"/"+atom+"/"
+    if os.path.isdir(dbdir):
+        tbz2 = xpak.tbz2(tbz2file)
+        tbz2.recompose(dbdir)
+    return tbz2file
+
+# This function extracts all the info from a .tbz2 file and returns them
+def extractPkgData(package, etpBranch = etpConst['branch'], silent = False):
+
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractPkgData: called -> package: "+str(package))
+    data = {}
+
+    from portageTools import synthetizeRoughDependencies, getPackagesInSystem, getConfigProtectAndMask, getThirdPartyMirrors
+
+    info_package = bold(os.path.basename(package))+": "
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package name/version..."),back = True)
+    tbz2File = package
+    package = package.split(".tbz2")[0]
+    package = remove_tag(package)
+    
+    # FIXME: deprecated - will be removed soonly
+    if package.split("-")[len(package.split("-"))-1].startswith("t"):
+        package = '-t'.join(package.split("-t")[:-1])
+    
+    package = package.split("-")
+    pkgname = ""
+    pkglen = len(package)
+    if package[pkglen-1].startswith("r"):
+        pkgver = package[pkglen-2]+"-"+package[pkglen-1]
+	pkglen -= 2
+    else:
+	pkgver = package[len(package)-1]
+	pkglen -= 1
+    for i in range(pkglen):
+	if i == pkglen-1:
+	    pkgname += package[i]
+	else:
+	    pkgname += package[i]+"-"
+    pkgname = pkgname.split("/")[len(pkgname.split("/"))-1]
+
+    # Fill Package name and version
+    data['name'] = pkgname
+    data['version'] = pkgver
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package md5..."),back = True)
+    # .tbz2 md5
+    data['digest'] = md5sum(tbz2File)
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package mtime..."),back = True)
+    # .tbz2 md5
+    data['datecreation'] = str(getFileUnixMtime(tbz2File))
+    
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package size..."),back = True)
+    # .tbz2 byte size
+    data['size'] = str(os.stat(tbz2File)[6])
+    
+    if not silent: print_info(yellow(" * ")+red(info_package+"Unpacking package data..."),back = True)
+    # unpack file
+    tbz2TmpDir = etpConst['packagestmpdir']+"/"+data['name']+"-"+data['version']+"/"
+    extractXpak(tbz2File,tbz2TmpDir)
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package CHOST..."),back = True)
+    # Fill chost
+    f = open(tbz2TmpDir+dbCHOST,"r")
+    data['chost'] = f.readline().strip()
+    f.close()
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Setting package branch..."),back = True)
+    data['branch'] = etpBranch
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package description..."),back = True)
+    # Fill description
+    data['description'] = ""
+    try:
+        f = open(tbz2TmpDir+dbDESCRIPTION,"r")
+        data['description'] = f.readline().strip()
+        f.close()
+    except IOError:
+        pass
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package homepage..."),back = True)
+    # Fill homepage
+    data['homepage'] = ""
+    try:
+        f = open(tbz2TmpDir+dbHOMEPAGE,"r")
+        data['homepage'] = f.readline().strip()
+        f.close()
+    except IOError:
+        pass
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package slot information..."),back = True)
+    # fill slot, if it is
+    data['slot'] = ""
+    try:
+        f = open(tbz2TmpDir+dbSLOT,"r")
+        data['slot'] = f.readline().strip()
+        f.close()
+    except IOError:
+        pass
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package eclasses information..."),back = True)
+    # fill eclasses list
+    data['eclasses'] = []
+    try:
+        f = open(tbz2TmpDir+dbINHERITED,"r")
+        data['eclasses'] = f.readline().strip().split()
+        f.close()
+    except IOError:
+        pass
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package needed libraries information..."),back = True)
+    # fill needed list
+    data['needed'] = set()
+    try:
+        f = open(tbz2TmpDir+dbNEEDED,"r")
+	lines = f.readlines()
+	f.close()
+	for line in lines:
+	    line = line.strip()
+	    if line:
+	        needed = line.split()
+		if len(needed) == 2:
+		    libs = needed[1].split(",")
+		    for lib in libs:
+			if (lib.find(".so") != -1):
+			    data['needed'].add(lib)
+    except IOError:
+        pass
+    data['needed'] = list(data['needed'])
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package content..."),back = True)
+    # dbCONTENTS
+    data['content'] = {}
+    try:
+        f = open(tbz2TmpDir+dbCONTENTS,"r")
+        content = f.readlines()
+        f.close()
+	outcontent = set()
+	for line in content:
+	    line = line.strip().split()
+            try:
+                datatype = line[0]
+                datafile = line[1:]
+                if datatype == 'obj':
+                    datafile = datafile[:-2]
+                    datafile = ' '.join(datafile)
+                elif datatype == 'dir':
+                    datafile = ' '.join(datafile)
+                elif datatype == 'sym':
+                    datafile = datafile[:-3]
+                    datafile = ' '.join(datafile)
+                else:
+                    print "unhandled !!!!!!!",datafile
+                    raise Exception
+                outcontent.add((datafile,datatype))
+            except:
+                pass
+	
+        # convert to plain str() since it's that's used by portage
+        # when portage will use utf, test utf-8 encoding
+	_outcontent = set()
+	for i in outcontent:
+            i = list(i)
+            datatype = i[1]
+            try:
+                i[0] = i[0].encode(getfilesystemencoding())
+            except:  # default encoding failed
+                try:
+                    i[0] = i[0].decode("latin1") # try to convert to latin1 and then back to sys.getfilesystemencoding()
+                    i[0] = i[0].encode(getfilesystemencoding())
+                except:
+                    print "DEBUG: cannot encode into filesystem encoding -> "+str(i[0])
+                    continue
+            _outcontent.add((i[0],i[1]))
+        outcontent = list(_outcontent)
+        outcontent.sort()
+	for i in outcontent:
+            data['content'][str(i[0])] = i[1]
+	
+    except IOError:
+        pass
+
+    # files size on disk
+    if (data['content']):
+	data['disksize'] = 0
+	for file in data['content']:
+	    try:
+		size = os.stat(file)[6]
+		data['disksize'] += size
+	    except:
+		pass
+    else:
+	data['disksize'] = 0
+
+    # [][][] Kernel dependent packages hook [][][]
+    data['versiontag'] = ''
+    kernelDependentModule = False
+    kernelItself = False
+    for file in data['content']:
+	if file.find("/lib/modules/") != -1:
+	    kernelDependentModule = True
+	    # get the version of the modules
+	    kmodver = file.split("/lib/modules/")[1]
+	    kmodver = kmodver.split("/")[0]
+
+	    lp = kmodver.split("-")[len(kmodver.split("-"))-1]
+	    if lp.startswith("r"):
+	        kname = kmodver.split("-")[len(kmodver.split("-"))-2]
+	        kver = kmodver.split("-")[0]+"-"+kmodver.split("-")[len(kmodver.split("-"))-1]
+	    else:
+	        kname = kmodver.split("-")[len(kmodver.split("-"))-1]
+	        kver = kmodver.split("-")[0]
+	    break
+    # validate the results above
+    if (kernelDependentModule):
+	matchatom = "linux-"+kname+"-"+kver
+	if (matchatom == data['name']+"-"+data['version']):
+	    # discard, it's the kernel itself, add other deps instead
+	    kernelItself = True
+	    kernelDependentModule = False
+
+    # add strict kernel dependency
+    # done below
+    
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package download URL..."),back = True)
+    # Fill download relative URI
+    if (kernelDependentModule):
+	data['versiontag'] = kmodver
+	# force slot == tag:
+	data['slot'] = kmodver
+	versiontag = "#"+data['versiontag']
+    else:
+	versiontag = ""
+    data['download'] = etpConst['binaryurirelativepath']+data['branch']+"/"+data['name']+"-"+data['version']+versiontag+".tbz2"
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package counter..."),back = True)
+    # Fill counter
+    f = open(tbz2TmpDir+dbCOUNTER,"r")
+    data['counter'] = f.readline().strip()
+    f.close()
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package category..."),back = True)
+    # Fill category
+    f = open(tbz2TmpDir+dbCATEGORY,"r")
+    data['category'] = f.readline().strip()
+    f.close()
+    
+    data['trigger'] = ""
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package external trigger availability..."),back = True)
+    if os.path.isfile(etpConst['triggersdir']+"/"+data['category']+"/"+data['name']+"/"+etpConst['triggername']):
+        f = open(etpConst['triggersdir']+"/"+data['category']+"/"+data['name']+"/"+etpConst['triggername'],"rb")
+        f.seek(0,2)
+        size = f.tell()
+        f.seek(0)
+	data['trigger'] = f.read(size)
+        f.close()
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package CFLAGS..."),back = True)
+    # Fill CFLAGS
+    data['cflags'] = ""
+    try:
+        f = open(tbz2TmpDir+dbCFLAGS,"r")
+        data['cflags'] = f.readline().strip()
+        f.close()
+    except IOError:
+        pass
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package CXXFLAGS..."),back = True)
+    # Fill CXXFLAGS
+    data['cxxflags'] = ""
+    try:
+        f = open(tbz2TmpDir+dbCXXFLAGS,"r")
+        data['cxxflags'] = f.readline().strip()
+        f.close()
+    except IOError:
+        pass
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package License information..."),back = True)
+    # Fill license
+    data['license'] = []
+    try:
+        f = open(tbz2TmpDir+dbLICENSE,"r")
+	# strip away || ( )
+	tmpLic = f.readline().strip().split()
+	f.close()
+	for x in tmpLic:
+	    if x:
+		if (not x.startswith("|")) and (not x.startswith("(")) and (not x.startswith(")")):
+		    data['license'].append(x)
+	data['license'] = ' '.join(data['license'])
+    except IOError:
+	data['license'] = ""
+        pass
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package USE flags..."),back = True)
+    # Fill USE
+    data['useflags'] = []
+    f = open(tbz2TmpDir+dbUSE,"r")
+    tmpUSE = f.readline().strip()
+    f.close()
+
+    try:
+        f = open(tbz2TmpDir+dbIUSE,"r")
+        tmpIUSE = f.readline().strip().split()
+        f.close()
+    except IOError:
+        tmpIUSE = []
+
+    PackageFlags = []
+    for x in tmpUSE.split():
+	if (x):
+	    PackageFlags.append(x)
+
+    for i in tmpIUSE:
+	try:
+	    PackageFlags.index(i)
+	    data['useflags'].append(i)
+	except:
+	    data['useflags'].append("-"+i)
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package provide content..."),back = True)
+    # Fill Provide
+    data['provide'] = []
+    try:
+        f = open(tbz2TmpDir+dbPROVIDE,"r")
+        provide = f.readline().strip()
+        f.close()
+	if (provide):
+	    provide = provide.split()
+	    for x in provide:
+		data['provide'].append(x)
+    except:
+        pass
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package sources information..."),back = True)
+    # Fill sources
+    data['sources'] = []
+    try:
+        f = open(tbz2TmpDir+dbSRC_URI,"r")
+	sources = f.readline().strip().split()
+        f.close()
+	tmpData = []
+	cnt = -1
+	skip = False
+	data['sources'] = []
+	
+	for source in sources:
+	    cnt += +1
+	    if source.endswith("?"):
+		# it's an use flag
+		source = source[:len(source)-1]
+		direction = True
+		if source.startswith("!"):
+		    direction = False
+		    source = source[1:]
+		# now get the useflag
+		useflag = False
+		try:
+		    data['useflags'].index(source)
+		    useflag = True
+		except:
+		    pass
+		
+		
+		if (useflag) and (direction): # useflag is enabled and it's asking for sources or useflag is not enabled and it's not not (= True) asking for sources
+		    # ack parsing from ( to )
+		    skip = False
+		elif (useflag) and (not direction):
+		    # deny parsing from ( to )
+		    skip = True
+		elif (not useflag) and (direction):
+		    # deny parsing from ( to )
+		    skip = True
+		else:
+		    # ack parsing from ( to )
+		    skip = False
+
+	    elif source.startswith(")"):
+		# reset skip
+		skip = False
+
+	    elif (not source.startswith("(")):
+		if (not skip):
+		    data['sources'].append(source)
+    
+    except IOError:
+	pass
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package mirrors list..."),back = True)
+    # manage data['sources'] to create data['mirrorlinks']
+    # =mirror://openoffice|link1|link2|link3
+    data['mirrorlinks'] = []
+    for i in data['sources']:
+        if i.startswith("mirror://"):
+            # parse what mirror I need
+            mirrorURI = i.split("/")[2]
+            mirrorlist = getThirdPartyMirrors(mirrorURI)
+            data['mirrorlinks'].append([mirrorURI,mirrorlist]) # mirrorURI = openoffice and mirrorlist = [link1, link2, link3]
+
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting source package supported ARCHs..."),back = True)
+    # fill KEYWORDS
+    data['keywords'] = []
+    try:
+        f = open(tbz2TmpDir+dbKEYWORDS,"r")
+        cnt = f.readline().strip().split()
+	for i in cnt:
+	    if i:
+		data['keywords'].append(i)
+        f.close()
+    except IOError:
+	pass
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package supported ARCHs..."),back = True)
+    
+    # fill ARCHs
+    kwords = data['keywords']
+    _kwords = []
+    for i in kwords:
+	if i.startswith("~"):
+	    i = i[1:]
+	_kwords.append(i)
+    data['binkeywords'] = []
+    for i in etpConst['supportedarchs']:
+	try:
+	    x = _kwords.index(i)
+	    data['binkeywords'].append(i)
+	except:
+	    pass
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package dependencies..."),back = True)
+    # Fill dependencies
+    # to fill dependencies we use *DEPEND files
+    f = open(tbz2TmpDir+dbRDEPEND,"r")
+    roughDependencies = f.readline().strip()
+    f.close()
+    if (not roughDependencies):
+        f = open(tbz2TmpDir+dbDEPEND,"r")
+        roughDependencies = f.readline().strip()
+        f.close()
+    f = open(tbz2TmpDir+dbPDEPEND,"r")
+    roughDependencies += " "+f.readline().strip()
+    f.close()
+    roughDependencies = roughDependencies.split()
+    
+    # variables filled
+    # data['dependencies'], data['conflicts']
+    deps,conflicts = synthetizeRoughDependencies(roughDependencies,' '.join(PackageFlags))
+    data['dependencies'] = []
+    for i in deps.split():
+	data['dependencies'].append(i)
+    data['conflicts'] = []
+    for i in conflicts.split():
+	# check if i == PROVIDE
+	if i not in data['provide']: # we handle these conflicts using emerge, so we can just filter them out
+	    data['conflicts'].append(i)
+    
+    if (kernelDependentModule):
+	# add kname to the dependency
+	data['dependencies'].append("=sys-kernel/linux-"+kname+"-"+kver)
+
+    if (kernelItself):
+	# it's the kernel, add dependency on all tagged packages
+	try:
+	    data['dependencies'].append("=sys-kernel/linux-"+kname+"-modules-"+kver)
+	except:
+	    pass
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting System package List..."),back = True)
+    # write only if it's a systempackage
+    data['systempackage'] = ''
+    systemPackages = getPackagesInSystem()
+    for x in systemPackages:
+	x = dep_getkey(x)
+	y = data['category']+"/"+data['name']
+	if x == y:
+	    # found
+	    data['systempackage'] = "xxx"
+	    break
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting CONFIG_PROTECT/CONFIG_PROTECT_MASK List..."),back = True)
+    # write only if it's a systempackage
+    protect, mask = getConfigProtectAndMask()
+    data['config_protect'] = protect
+    data['config_protect_mask'] = mask
+    
+    # fill data['messages']
+    # etpConst['logdir']+"/elog"
+    if not os.path.isdir(etpConst['logdir']+"/elog"):
+        os.makedirs(etpConst['logdir']+"/elog")
+    data['messages'] = []
+    if os.path.isdir(etpConst['logdir']+"/elog"):
+        elogfiles = os.listdir(etpConst['logdir']+"/elog")
+	myelogfile = data['category']+":"+data['name']+"-"+data['version']
+	foundfiles = []
+	for file in elogfiles:
+	    if file.startswith(myelogfile):
+		foundfiles.append(file)
+	if foundfiles:
+	    elogfile = foundfiles[0]
+	    if len(foundfiles) > 1:
+		# get the latest
+		mtimes = []
+		for file in foundfiles:
+		    mtimes.append((getFileUnixMtime(etpConst['logdir']+"/elog/"+file),file))
+		mtimes.sort()
+		elogfile = mtimes[len(mtimes)-1][1]
+	    messages = extractElog(etpConst['logdir']+"/elog/"+elogfile)
+	    for message in messages:
+		out = re.subn("emerge","equo install",message)
+		message = out[0]
+		data['messages'].append(message)
+    else:
+	if not silent: print_warning(red(etpConst['logdir']+"/elog")+" not set, have you configured make.conf properly?")
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting Entropy API version..."),back = True)
+    # write API info
+    data['etpapi'] = etpConst['etpapi']
+    
+    # removing temporary directory
+    os.system("rm -rf "+tbz2TmpDir)
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Done"),back = True)
+    return data

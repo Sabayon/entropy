@@ -1,17 +1,15 @@
 TODO list:
   CLIENT:
-  - add external triggerable hooks support
-  - include more triggers
-  - use depgraph generation function to generate dependencies
-  - installPackages should pull conflicts depends too
+  - give removal depends calculation a bit of love
   - find a way to better handle real smartapps deps
-  - equo world, user should specify which branch to switch to
+  - add support for database revisions log
+  - add external trigger for splashutils
 
 
 Project Status:
 - reagent: complete. Stabilization mode.
 - activator: complete. Stabilization mode.
 ============
-- equo (client): 92%
+- equo (client): 95%
 
 - EAPI1+ info: http://www.pkgcore.org/trac/pkgcore/doc/doc/extended-atom-syntax.rst

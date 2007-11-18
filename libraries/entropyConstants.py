@@ -22,14 +22,12 @@
 
 import os
 import commands
-import string
 import random
-import sys
+from sys import exit
 
 
 # Specifications of the content of etpData
-# THIS IS THE KEY PART OF ENTROPY BINARY PACKAGES MANAGEMENT
-# DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU'RE DOING !!
+'''
 etpData = {
     'name': u"", # the Package Name
     'version': u"", # the Package version
@@ -67,6 +65,7 @@ etpData = {
     'needed': u"", # runtime libraries needed by the package
     'trigger': u"", # this will become a bool, containing info about external trigger presence
 }
+'''
 
 # Entropy database SQL initialization Schema and data structure
 etpSQLInitDestroyAll = """
@@ -74,6 +73,8 @@ DROP TABLE IF EXISTS etpData;
 DROP TABLE IF EXISTS baseinfo;
 DROP TABLE IF EXISTS extrainfo;
 DROP TABLE IF EXISTS content;
+DROP TABLE IF EXISTS contentreference;
+DROP TABLE IF EXISTS contenttypes;
 DROP TABLE IF EXISTS dependencies;
 DROP TABLE IF EXISTS rundependencies;
 DROP TABLE IF EXISTS rundependenciesxt;
@@ -107,6 +108,7 @@ DROP TABLE IF EXISTS eclassesreference;
 DROP TABLE IF EXISTS needed;
 DROP TABLE IF EXISTS neededreference;
 DROP TABLE IF EXISTS triggers;
+DROP TABLE IF EXISTS countersdata;
 """
 
 etpSQLInit = """
@@ -139,7 +141,8 @@ CREATE TABLE extrainfo (
 
 CREATE TABLE content (
     idpackage INTEGER,
-    file VARCHAR
+    file VARCHAR,
+    type VARCHAR
 );
 
 CREATE TABLE provide (
@@ -292,7 +295,6 @@ if os.uname()[4] == "x86_64":
 else:
     ETP_ARCH_CONST = "x86"
 
-ETP_REVISION_CONST = "%ETPREV%"
 ETP_DIR = "/var/lib/entropy"
 ETP_TMPDIR = "/tmp"
 ETP_RANDOM = str(random.random())[2:7]
@@ -334,7 +336,6 @@ etpConst = {
     'packagessuploaddir': ETP_DIR+ETP_UPLOADDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
     'portagetreedir': ETP_PORTDIR, # directory where is stored our local portage tree
     'distfilesdir': ETP_PORTDIR+ETP_DISTFILESDIR, # directory where our sources are downloaded
-    'overlaysdir': ETP_PORTDIR+"/local/layman", # directory where overlays are stored
     'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
     'entropyconf': ETP_CONF_DIR+"/entropy.conf", # entropy.conf file
     'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
@@ -348,8 +349,7 @@ etpConst = {
     'activatoruploaduris': [], # list of URIs that activator can use to upload files (parsed from activator.conf)
     'activatordownloaduris': [], # list of URIs that activator can use to fetch data
     'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
-    'etpurirelativepath': "database/"+ETP_ARCH_CONST+"/", # Relative remote path for the .etp repository.
-    							  # TO BE REMOVED? CHECK
+    'etpurirelativepath': "database/"+ETP_ARCH_CONST+"/", # database relative path
 
     'entropyworkdir': ETP_DIR, # Entropy workdir
     'entropyunpackdir': ETP_VAR_DIR, # Entropy unpack directory
@@ -422,6 +422,8 @@ etpConst = {
     'configprotectcounter': 0, # this will be used to show the number of updated files at the end of the processes
     'entropyversion': "1.0", # default Entropy release version
     'systemname': "Sabayon Linux", # default system name
+    'product': "standard", # Product identificator (standard, professional...)
+    'errorstatus': ETP_CONF_DIR+"/code",
     
     'dumpstoragedir': ETP_DIR+ETP_XMLDIR, # data storage directory, useful to speed up equo across multiple issued commands
 
@@ -444,6 +446,18 @@ etpCacheSizes = {
     'dbSearch': 2000000, # bytes
     'atomMatch': 3000000, # bytes
     'generateDependsTree': 3000000, # bytes
+}
+
+# ahahaha
+etpExitMessages = {
+    0: "You should run equo --help",
+    1: "You didn't run equo --help, did you?",
+    2: "Did you even read equo --help??",
+    3: "I give up. Run that equo --help !!!!!!!",
+    4: "OH MY GOD. RUN equo --heeeeeeeeeeeeeelp",
+    5: "Illiteracy is a huge problem in this world",
+    6: "Ok i give up, you are hopeless",
+    7: "Go to hell."
 }
 
 ### Application disk cache
@@ -478,7 +492,7 @@ if not os.path.exists(piddir):
 	os.makedirs(piddir)
     else:
         print "you need to run this as root at least once."
-        sys.exit(100)
+        exit(100)
 # PID creation
 pid = os.getpid()
 if os.path.exists(etpConst['pidfile']):
@@ -508,19 +522,14 @@ else:
         f.close()
     else:
         print "you need to run this as root at least once."
-        sys.exit(100)
-
-# Handlers used by entropy to run and retrieve data remotely, using php helpers
-etpHandlers = {
-    'md5sum': "md5sum.php?arch="+ETP_ARCH_CONST+"&package=", # md5sum handler
-    'errorsend': "http://svn.sabayonlinux.org/entropy/handlers/error_report.php?arch="+ETP_ARCH_CONST+"&stacktrace=",
-}
+        exit(100)
 
 ### file transfer settings
 etpFileTransfer = {
     'datatransfer': 0,
     'oldgather': 0,
     'gather': 0,
+    'elapsed': 0.0,
     'transferpollingtime': float(1)/4 # 0.25secs = 4Hz
 }
 
@@ -550,21 +559,13 @@ if not os.path.isdir(etpConst['entropyworkdir']):
 			pass
     else:
         print "you need to run this as root at least once."
-        sys.exit(100)
+        exit(100)
 
-
-# check for packages and upload directories
-if os.getuid() == 0:
-    for x in etpConst['branches']:
-        if not os.path.isdir(etpConst['packagesbindir']+"/"+x):
-	    os.makedirs(etpConst['packagesbindir']+"/"+x)
-        if not os.path.isdir(etpConst['packagessuploaddir']+"/"+x):
-	    os.makedirs(etpConst['packagessuploaddir']+"/"+x)
 
 # entropy section
 if (not os.path.isfile(etpConst['entropyconf'])):
     print "ERROR: "+etpConst['entropyconf']+" does not exist"
-    sys.exit(50)
+    exit(50)
 else:
     f = open(etpConst['entropyconf'],"r")
     entropyconf = f.readlines()
@@ -576,7 +577,7 @@ else:
 		loglevel = int(loglevel)
 	    except:
 		print "ERROR: invalid loglevel in: "+etpConst['entropyconf']
-		sys.exit(51)
+		exit(51)
 	    if (loglevel > -1) and (loglevel < 3):
 	        etpConst['entropyloglevel'] = loglevel
 	    else:
@@ -586,11 +587,17 @@ else:
 
 # Client packages/database repositories
 etpRepositories = {}
-etpRepositoriesOrder = []
+etpRepositoriesOrder = set()
+ordercount = 0
 if os.path.isfile(etpConst['repositoriesconf']):
     f = open(etpConst['repositoriesconf'],"r")
     repositoriesconf = f.readlines()
     f.close()
+    
+    # setup product first
+    for line in repositoriesconf:
+	if (line.strip().find("product|") != -1) and (not line.strip().startswith("#")) and (len(line.strip().split("|")) == 2):
+	    etpConst['product'] = line.strip().split("|")[1]
     
     for line in repositoriesconf:
 	line = line.strip()
@@ -611,14 +618,15 @@ if os.path.isfile(etpConst['repositoriesconf']):
 		repodatabase = repodatabase[:dbformatcolon]
 	    if (repopackages.startswith("http://") or repopackages.startswith("ftp://")) and (repodatabase.startswith("http://") or repodatabase.startswith("ftp://")):
 		etpRepositories[reponame] = {}
-		etpRepositoriesOrder.append(reponame)
+                ordercount += 1
+		etpRepositoriesOrder.add((ordercount,reponame))
 		etpRepositories[reponame]['description'] = repodesc
 		etpRepositories[reponame]['packages'] = []
 		for x in repopackages.split():
-		    etpRepositories[reponame]['packages'].append(x)
-		etpRepositories[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['currentarch']
+		    etpRepositories[reponame]['packages'].append(x+"/"+etpConst['product'])
+		etpRepositories[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['product']+"/"+etpConst['currentarch']
 		etpRepositories[reponame]['dbcformat'] = dbformat
-		etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['currentarch']
+		etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['product']+"/database/"+etpConst['currentarch']
 		# initialize CONFIG_PROTECT - will be filled the first time the db will be opened
 		etpRepositories[reponame]['configprotect'] = set()
 		etpRepositories[reponame]['configprotectmask'] = set()
@@ -632,12 +640,24 @@ if os.path.isfile(etpConst['repositoriesconf']):
 			os.makedirs(etpConst['packagesbindir']+"/"+branch)
 		    else:
 			print "ERROR: please run equo as root at least once or create: "+str(etpConst['packagesbindir']+"/"+branch)
-			sys.exit(49)
+			exit(49)
+
+# align etpConst['binaryurirelativepath'] and etpConst['etpurirelativepath'] with etpConst['product']
+etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['binaryurirelativepath']
+etpConst['etpurirelativepath'] = etpConst['product']+"/"+etpConst['etpurirelativepath']
+
+# check for packages and upload directories
+if os.getuid() == 0:
+    for x in etpConst['branches']:
+        if not os.path.isdir(etpConst['packagesbindir']+"/"+x):
+	    os.makedirs(etpConst['packagesbindir']+"/"+x)
+        if not os.path.isdir(etpConst['packagessuploaddir']+"/"+x):
+	    os.makedirs(etpConst['packagessuploaddir']+"/"+x)
 
 # database section
 if (not os.path.isfile(etpConst['databaseconf'])):
     print "ERROR: "+etpConst['databaseconf']+" does not exist"
-    sys.exit(50)
+    exit(50)
 else:
     f = open(etpConst['databaseconf'],"r")
     databaseconf = f.readlines()
@@ -649,7 +669,7 @@ else:
 		loglevel = int(loglevel)
 	    except:
 		print "ERROR: invalid loglevel in: "+etpConst['databaseconf']
-		sys.exit(51)
+		exit(51)
 	    if (loglevel > -1) and (loglevel < 3):
 	        etpConst['databaseloglevel'] = loglevel
 	    else:
@@ -657,45 +677,37 @@ else:
 		import time
 		time.sleep(5)
 
+# Handlers used by entropy to run and retrieve data remotely, using php helpers
+etpHandlers = {
+    'md5sum': "md5sum.php?arch="+ETP_ARCH_CONST+"&package=", # md5sum handler
+    'errorsend': "http://svn.sabayonlinux.org/entropy/"+etpConst['product']+"/handlers/error_report.php?arch="+ETP_ARCH_CONST+"&stacktrace=",
+}
+
 # remote section
 etpRemoteSupport = {}
-if (not os.path.isfile(etpConst['remoteconf'])):
-    print "ERROR: "+etpConst['remoteconf']+" does not exist"
-    sys.exit(50)
-else:
+if (os.path.isfile(etpConst['remoteconf'])):
     f = open(etpConst['remoteconf'],"r")
-    databaseconf = f.readlines()
+    remoteconf = f.readlines()
     f.close()
-    for line in databaseconf:
+    for line in remoteconf:
 	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
 	    loglevel = line.split("loglevel|")[1]
 	    try:
 		loglevel = int(loglevel)
 	    except:
-		print "ERROR: invalid loglevel in: "+etpConst['remoteconf']
-		sys.exit(51)
+		print "WARNING: invalid loglevel in: "+etpConst['remoteconf']
 	    if (loglevel > -1) and (loglevel < 3):
 	        etpConst['remoteloglevel'] = loglevel
 	    else:
 		print "WARNING: invalid loglevel in: "+etpConst['remoteconf']
-		import time
-		time.sleep(5)
 
-	if line.startswith("httphandler|") and (len(line.split("|")) > 2):
+	if line.startswith("handler|") and (len(line.split("|")) > 2):
 	    servername = line.split("|")[1].strip()
 	    url = line.split("|")[2].strip()
 	    if not url.endswith("/"):
 		url = url+"/"
+            url += etpConst['product']+"/handlers/"
 	    etpRemoteSupport[servername] = url
-
-# fill etpConst['overlays']
-if os.path.isdir(etpConst['overlaysdir']):
-    ovlst = os.listdir(etpConst['overlaysdir'])
-    _ovlst = []
-    for i in ovlst:
-        if os.path.isdir(etpConst['overlaysdir']+"/"+i):
-	    _ovlst.append(etpConst['overlaysdir']+"/"+i)
-    etpConst['overlays'] = string.join(_ovlst," ")
 
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things
@@ -720,6 +732,7 @@ dbOR = "|or|"
 dbKEYWORDS = "KEYWORDS"
 dbCONTENTS = "CONTENTS"
 dbCOUNTER = "COUNTER"
+edbCOUNTER = "/var/cache/edb/counter"
 
 # Portage variables reference
 # vdbVARIABLE --> $VARIABLE

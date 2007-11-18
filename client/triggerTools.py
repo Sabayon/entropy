@@ -20,9 +20,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import sys
 import os
-import commands
+from commands import getoutput
 from outputTools import *
 from entropyConstants import *
 import entropyTools
@@ -42,7 +41,10 @@ INITSERVICES_DIR="/var/lib/init.d/"
 def postinstall(pkgdata):
     
     functions = set()
-    
+
+    if pkgdata['trigger']:
+        functions.add('call_ext_postinstall')
+
     # fonts configuration
     if pkgdata['category'] == "media-fonts":
 	functions.add("fontconfig")
@@ -85,13 +87,24 @@ def postinstall(pkgdata):
 	functions.add('gconfinstallschemas')
 	functions.add('gconfreload')
 
-    if pkgdata['name'] == "pygtk":
+    if pkgdata['name'] == "pygobject":
 	functions.add('pygtksetup')
 
+    # load linker paths
+    ldpaths = set()
+    try:
+        f = open("/etc/ld.so.conf","r")
+        paths = f.readlines()
+        for path in paths:
+            if path.strip():
+                if path[0] == "/":
+                    ldpaths.add(os.path.normpath(path.strip()))
+        f.close()
+    except:
+        pass
+
     # prepare content
-    mycnt = set(pkgdata['content'])
-    
-    for x in mycnt:
+    for x in pkgdata['content']:
 	if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
 	    functions.add('iconscache')
 	if x.startswith("/usr/share/mime"):
@@ -106,6 +119,13 @@ def postinstall(pkgdata):
 	    functions.add('kernelmod')
 	if x.startswith('/boot/kernel-'):
 	    functions.add('addbootablekernel')
+	if x.startswith('/usr/src/'):
+	    functions.add('createkernelsym')
+	if x.endswith('/usr/lib'):
+	    functions.add('createkernelsym')
+        for path in ldpaths:
+            if x.startswith(path) and (x.find(".so") != -1):
+	        functions.add('ldconfig')
 	#if x.startswith("/etc/init.d/"): do it externally
 	#    functions.add('initadd')
 
@@ -118,10 +138,10 @@ def preinstall(pkgdata):
     
     functions = set()
     
-    # prepare content
-    mycnt = set(pkgdata['content'])
+    if pkgdata['trigger']:
+        functions.add('call_ext_preinstall')
     
-    for x in mycnt:
+    for x in pkgdata['content']:
 	if x.startswith("/etc/init.d/"):
 	    functions.add('initinform')
 	if x.startswith("/boot"):
@@ -135,7 +155,10 @@ def preinstall(pkgdata):
 def postremove(pkgdata):
     
     functions = set()
-    
+
+    if pkgdata['trigger']:
+        functions.add('call_ext_postremove')
+
     # opengl configuration
     if (pkgdata['category'] == "x11-drivers") and (pkgdata['name'].startswith("nvidia-") or pkgdata['name'].startswith("ati-")):
 	functions.add("openglsetup_xorg")
@@ -158,10 +181,20 @@ def postremove(pkgdata):
     if pkgdata['category'] == "media-fonts":
 	functions.add("fontconfig")
 
-    # prepare content
-    mycnt = set(pkgdata['removecontent'])
-    
-    for x in mycnt:
+    # load linker paths
+    ldpaths = set()
+    try:
+        f = open("/etc/ld.so.conf","r")
+        paths = f.readlines()
+        for path in paths:
+            if path.strip():
+                if path[0] == "/":
+                    ldpaths.add(os.path.normpath(path.strip()))
+        f.close()
+    except:
+        pass
+
+    for x in pkgdata['removecontent']:
 	if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
 	    functions.add('iconscache')
 	if x.startswith("/usr/share/mime"):
@@ -176,6 +209,11 @@ def postremove(pkgdata):
 	    functions.add('removebootablekernel')
 	if x.startswith('/etc/init.d/'):
 	    functions.add('removeinit')
+        if x.endswith('.py'):
+            functions.add('cleanpy')
+        for path in ldpaths:
+            if x.startswith(path) and (x.find(".so") != -1):
+	        functions.add('ldconfig')
 
     return functions
 
@@ -185,16 +223,53 @@ def postremove(pkgdata):
 def preremove(pkgdata):
     
     functions = set()
-    # prepare content
-    mycnt = set(pkgdata['removecontent'])
-    
-    for x in mycnt:
+
+    if pkgdata['trigger']:
+        functions.add('call_ext_preremove')
+
+    for x in pkgdata['removecontent']:
 	if x.startswith("/etc/init.d/"):
 	    functions.add('initdisable')
 	if x.startswith("/boot"):
 	    functions.add('mountboot')
 
     return functions
+
+########################################################
+####
+##   External triggers support functions
+#
+
+def call_ext_preinstall(pkgdata):
+    rc = call_ext_generic(pkgdata,'preinstall')
+    return rc
+
+def call_ext_postinstall(pkgdata):
+    rc = call_ext_generic(pkgdata,'postinstall')
+    return rc
+
+def call_ext_preremove(pkgdata):
+    rc = call_ext_generic(pkgdata,'preremove')
+    return rc
+
+def call_ext_postremove(pkgdata):
+    rc = call_ext_generic(pkgdata,'postremove')
+    return rc
+
+def call_ext_generic(pkgdata, stage):
+
+    triggerfile = etpConst['entropyunpackdir']+"/trigger-"+str(entropyTools.getRandomNumber())
+    while os.path.isfile(triggerfile):
+        triggerfile = etpConst['entropyunpackdir']+"/trigger-"+str(entropyTools.getRandomNumber())
+    f = open(triggerfile,"w")
+    for x in pkgdata['trigger']:
+        f.write(x)
+    f.close()
+    
+    execfile(triggerfile)
+    
+    os.remove(triggerfile)
+    return my_ext_status
 
 ########################################################
 ####
@@ -229,8 +304,7 @@ def gccswitch(pkgdata):
 def iconscache(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating icons cache...")
     print_info(red("   ##")+brown(" Updating icons cache..."))
-    mycnt = set(pkgdata['content'])
-    for file in mycnt:
+    for file in pkgdata['content']:
 	if file.startswith("/usr/share/icons") and file.endswith("index.theme"):
 	    cachedir = os.path.dirname(file)
 	    generate_icons_cache(cachedir)
@@ -283,8 +357,7 @@ def sqliteinst(pkgdata):
     sqlite_update_symlink()
 
 def initdisable(pkgdata):
-    mycnt = set(pkgdata['removecontent'])
-    for file in mycnt:
+    for file in pkgdata['removecontent']:
 	if file.startswith("/etc/init.d/") and os.path.isfile(file):
 	    # running?
 	    running = os.path.isfile(INITSERVICES_DIR+'/started/'+os.path.basename(file))
@@ -292,15 +365,13 @@ def initdisable(pkgdata):
 	    initdeactivate(file, running, scheduled)
 
 def initinform(pkgdata):
-    mycnt = set(pkgdata['content'])
-    for file in mycnt:
+    for file in pkgdata['content']:
 	if file.startswith("/etc/init.d/") and not os.path.isfile(file):
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+file)
 	    print_info(red("   ##")+brown(" A new service will be installed: ")+file)
 
 def removeinit(pkgdata):
-    mycnt = set(pkgdata['removecontent'])
-    for file in mycnt:
+    for file in pkgdata['removecontent']:
 	if file.startswith("/etc/init.d/") and os.path.isfile(file):
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Removing boot service: "+os.path.basename(file))
 	    print_info(red("   ##")+brown(" Removing boot service: ")+os.path.basename(file))
@@ -411,7 +482,8 @@ def gconfinstallschemas(pkgdata):
 	    """)
 
 def pygtksetup(pkgdata):
-    python_sym_files = [x for x in pkgdata['content'] if x.startswith("/usr/lib/python") and (x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0"))]
+    python_sym_files = [x for x in pkgdata['content'] if x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0")]
+    print python_sym_files
     for file in python_sym_files:
 	if os.path.isfile(file):
 	    os.symlink(file,file[:-4])
@@ -426,6 +498,39 @@ def susetuid(pkgdata):
     if os.path.isfile("/bin/su"):
         os.chown("/bin/su",0,0)
         os.chmod("/bin/su",4755)
+
+def cleanpy(pkgdata):
+    pyfiles = [x for x in pkgdata['content'] if x.endswith(".py")]
+    for file in pyfiles:
+        if os.path.isfile(file+"o"):
+            try: os.remove(file+"o")
+            except OSError: pass
+        if os.path.isfile(file+"c"):
+            try: os.remove(file+"c")
+            except OSError: pass
+
+def createkernelsym(pkgdata):
+    for file in pkgdata['content']:
+        if file.startswith("/usr/src/"):
+            # extract directory
+            try:
+                todir = file.split("/")[3]
+            except:
+                continue
+            if os.path.isdir("/usr/src/"+todir):
+                # link to /usr/src/linux
+		equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Creating kernel symlink /usr/src/linux for /usr/src/"+todir)
+		print_info(red("   ##")+brown(" Creating kernel symlink /usr/src/linux for /usr/src/"+todir))
+                if os.path.isfile("/usr/src/linux") or os.path.islink("/usr/src/linux"):
+                    os.remove("/usr/src/linux")
+                os.symlink(todir,"/usr/src/linux")
+                break
+
+def ldconfig(pkgdata):
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running ldconfig")
+    print_info(red("   ##")+brown(" Regenerating /etc/ld.so.cache"))
+    os.system("ldconfig &> /dev/null")
+
 ########################################################
 ####
 ##   Internal functions
@@ -517,7 +622,7 @@ def update_scrollkeeper_db():
 def reload_gconf_db():
     rc = os.system('pgrep -x gconfd-2')
     if (rc == 0):
-	pids = commands.getoutput('pgrep -x gconfd-2').split("\n")
+	pids = getoutput('pgrep -x gconfd-2').split("\n")
 	pidsstr = ''
 	for pid in pids:
 	    if pid:
@@ -667,7 +772,7 @@ def get_grub_boot_dev():
 	print "DEBUG: cannot find grub!! Cannot properly configure kernel! Defaulting to (hd0,0)"
 	return "(hd0,0)"
     
-    gboot = commands.getoutput("df /boot").split("\n")[-1].split()[0]
+    gboot = getoutput("df /boot").split("\n")[-1].split()[0]
     if gboot.startswith("/dev/"):
 	# it's ok - handle /dev/md
 	if gboot.startswith("/dev/md"):

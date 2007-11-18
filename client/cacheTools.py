@@ -20,9 +20,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import sys
-import commands
-sys.path.append('../libraries')
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
@@ -34,7 +31,7 @@ import confTools
 def cache(options):
     rc = 0
     if len(options) < 1:
-	return rc
+	return -10
 
     equoRequestVerbose = False
     equoRequestQuiet = False
@@ -49,9 +46,10 @@ def cache(options):
 
     if myopts[0] == "clean":
 	rc = cleanCache()
-
-    if myopts[0] == "generate":
+    elif myopts[0] == "generate":
 	rc = generateCache(quiet = equoRequestQuiet, verbose = equoRequestVerbose)
+    else:
+        rc = -10
 
     return rc
     

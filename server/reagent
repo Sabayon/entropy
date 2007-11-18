@@ -24,11 +24,11 @@
 # Never do "import portage" here, please use entropyTools binding
 
 import os
-import sys
-import string
-
-sys.path.append('../libraries')
-sys.path.append('../client')
+from sys import path, exit, argv
+path.append('../libraries')
+path.append('../client')
+path.append('/usr/lib/entropy/client')
+path.append('/usr/lib/entropy/libraries')
 from outputTools import *
 
 # CONSTANTS
@@ -42,11 +42,12 @@ def print_help():
     print_info(" --version\t\tprint version")
     print_info(" --nocolor\t\tdisable colorized output")
     print_info(blue("Tools available: "))
-    print_info(" \t"+green("update")+yellow("\t\t Update Entropy Database analyzing the system for new installed packages"))
+    print_info(" \t"+green("update")+brown("\t\t Update Entropy Database analyzing the system for new installed packages"))
     print_info(" \t\t"+red("--branch=<branch name>")+"\t\t Choose which branch assign to the packages")
     print_info(" \t\t"+red("--seekstore")+"\t\t\t Skip differential COUNTERS scanning and analyze STORE directory")
     print_info(" \t\t"+red("--repackage")+"\t\t\t Repackage specified atoms")
-    print_info(" \t"+green("database")+yellow("\t Entropy database tool manager"))
+    print_info(" \t\t"+red("--noask")+"\t\t\t\t Automatically handle things without questioning")
+    print_info(" \t"+green("database")+brown("\t Entropy database tool manager"))
     print_info(" \t\t"+red("--initialize")+"\t\t\t (Re)Initialize the Entropy packages database [DO NOT USE THIS]")
     print_info(" \t\t"+green("search")+"\t\t\t\t Search a package inside the Entropy packages database")
     print_info(" \t\t"+green("remove")+"\t\t\t\t Remove a package or a list of packages")
@@ -54,30 +55,33 @@ def print_help():
     print_info(" \t\t"+green("create-empty-database")+"\t\t Create an empty Entropy database file in the specified <path>")
     print_info(" \t\t"+green("switchbranch")+"\t\t\t Switch to the specified branch, a package, a list of packages, world")
     print_info(" \t\t"+green("md5check")+"\t\t\t Check digest of a package, a list of packages, world")
-    print_info(" \t"+green("deptest")+yellow("\t\t Look for unsatisfied dependencies inside database"))
-    print_info(" \t"+green("depends")+yellow("\t\t Regenerate depends table (plus database lock and bump)"))
+    print_info(" \t\t"+green("md5remote")+"\t\t\t Compare digest of a package between database and mirrors")
+    print_info(" \t"+green("deptest")+brown("\t\t Look for unsatisfied dependencies inside database"))
+    print_info(" \t"+green("depends")+brown("\t\t Regenerate depends table (plus database lock and bump)"))
     print_info(" \t\t"+red("--quiet")+"\t\t\t\t just print the dependencies list")
-    print_info(" \t"+green("cleanup")+yellow("\t\t to clean temporary files"))
+    print_info(" \t"+green("cleanup")+brown("\t\t to clean temporary files"))
 
-options = sys.argv[1:]
+options = argv[1:]
+
+from entropyConstants import *
+from serverConstants import *
 
 # print version
-if (string.join(options).find("--version") != -1) or (string.join(options).find(" -V") != -1):
+if (' '.join(options).find("--version") != -1) or (' '.join(options).find(" -V") != -1):
     print_generic(APPNAME+": "+APPVERSION)
-    sys.exit(0)
+    exit(0)
 
 # print help
-if len(options) < 1 or string.join(options).find("--help") != -1 or string.join(options).find(" -h") != -1:
+if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(options).find(" -h") != -1:
     print_help()
     if len(options) < 1:
 	print_error("not enough parameters")
-    sys.exit(1)
+    exit(1)
 
 import entropyTools
 import reagentTools
 import databaseTools
-from entropyConstants import *
-from serverConstants import *
+
 
 # preliminary options parsing
 _options = []
@@ -95,31 +99,26 @@ options = _options
 if (not entropyTools.isRoot()):
     print_error("you must be root in order to run "+APPNAME)
 
-
-elif (options[0] == "generator"):
-    reagentTools.generator(options[1:])
-    sys.exit(0)
-
 elif (options[0] == "update"):
-    reagentTools.update(options[1:])
-    sys.exit(0)
+    rc = reagentTools.update(options[1:])
+    exit(rc)
 
 # database tool
 elif (options[0] == "database"):
-    databaseTools.database(options[1:])
-    sys.exit(0)
+    reagentTools.database(options[1:])
+    exit(0)
 
 # deptest tool
 elif (options[0] == "deptest"):
-    reagentTools.dependenciesTest(options[1:])
-    sys.exit(0)
+    rc = reagentTools.dependenciesTest(options[1:])
+    exit(rc)
 
 # deptest tool
 elif (options[0] == "depends"):
-    reagentTools.dependsTableInitialize()
-    sys.exit(0)
+    rc = reagentTools.dependsTableInitialize()
+    exit(rc)
 
 # cleanup
-if (options[0] == "cleanup"):
-    entropyTools.cleanup()
-    sys.exit(0)
+elif (options[0] == "cleanup"):
+    rc = entropyTools.cleanup()
+    exit(rc)

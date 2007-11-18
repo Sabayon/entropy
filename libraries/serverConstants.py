@@ -21,10 +21,7 @@
 '''
 
 import os
-import commands
-import string
-import random
-import sys
+from sys import exit
 from entropyConstants import *
 
 # activator section
@@ -36,7 +33,7 @@ else:
 	    os.chmod(etpConst['activatorconf'],0600)
     except:
 	print "ERROR: cannot chmod 0600 file: "+etpConst['activatorconf']
-	sys.exit(50)
+	exit(50)
     # fill etpConst['activatoruploaduris'] and etpConst['activatordownloaduris']
     f = open(etpConst['activatorconf'],"r")
     actconffile = f.readlines()
@@ -63,7 +60,7 @@ else:
 		loglevel = int(loglevel)
 	    except:
 		print "ERROR: invalid loglevel in: "+etpConst['activatorconf']
-		sys.exit(51)
+		exit(51)
 	    if (loglevel > -1) and (loglevel < 3):
 	        etpConst['activatorloglevel'] = loglevel
 	    else:
@@ -85,7 +82,7 @@ else:
 		loglevel = int(loglevel)
 	    except:
 		print "ERROR: invalid loglevel in: "+etpConst['reagentconf']
-		sys.exit(51)
+		exit(51)
 	    if (loglevel > -1) and (loglevel < 3):
 	        etpConst['reagentloglevel'] = loglevel
 	    else:
@@ -107,7 +104,7 @@ else:
 		loglevel = int(loglevel)
 	    except:
 		print "ERROR: invalid loglevel in: "+etpConst['mirrorsconf']
-		sys.exit(51)
+		exit(51)
 	    if (loglevel > -1) and (loglevel < 3):
 	        etpConst['mirrorsloglevel'] = loglevel
 	    else:
@@ -130,7 +127,7 @@ else:
 		loglevel = int(loglevel)
 	    except:
 		print "ERROR: invalid loglevel in: "+etpConst['spmbackendconf']
-		sys.exit(51)
+		exit(51)
 	    if (loglevel > -1) and (loglevel < 3):
 	        etpConst['spmbackendloglevel'] = loglevel
 	    else:

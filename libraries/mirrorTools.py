@@ -27,9 +27,9 @@ from entropyConstants import *
 from serverConstants import *
 from outputTools import *
 import entropyTools
-import string
 import os
-import time
+import socket
+import ftplib
 
 # Logging initialization
 import logTools
@@ -40,18 +40,10 @@ mirrorLog = logTools.LogFile(level=etpConst['mirrorsloglevel'],filename = etpCon
 class handlerFTP:
 
     # this must be run before calling the other functions
-    def __init__(self, ftpuri, debug = None):
-
-	# ftp debugging
-	if entropyTools.getDebug():
-	    debug = True
-	else:
-	    debug = False
+    def __init__(self, ftpuri):
 
         # import FTP modules
-        import timeoutsocket
-        import ftplib
-        timeoutsocket.setDefaultSocketTimeout(60)
+        socket.setdefaulttimeout(60)
 
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.__init__: called.")
 
@@ -67,7 +59,7 @@ class handlerFTP:
 	    self.ftppassword = ftpuri.split("@")[:len(ftpuri.split("@"))-1]
 	    if len(self.ftppassword) > 1:
 		import string
-		self.ftppassword = string.join(self.ftppassword,"@")
+		self.ftppassword = '@'.join(self.ftppassword)
 		self.ftppassword = self.ftppassword.split(":")[len(self.ftppassword.split(":"))-1]
 		if (self.ftppassword == ""):
 		    self.ftppassword = "anonymous"
@@ -91,9 +83,9 @@ class handlerFTP:
 
 	self.ftpconn = ftplib.FTP(self.ftphost)
 	# enable debug?
-	if debug:
-	    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.__init__: DEBUG enabled.")
-	    self.ftpconn.set_debuglevel(2)
+	#if debug:
+	#    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.__init__: DEBUG enabled.")
+	#    self.ftpconn.set_debuglevel(2)
 	
 	self.ftpconn.login(self.ftpuser,self.ftppassword)
 	# change to our dir
@@ -104,9 +96,7 @@ class handlerFTP:
     def reconnectHost(self):
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.reconnectHost: called.")
         # import FTP modules
-        import timeoutsocket
-        import ftplib
-        timeoutsocket.setDefaultSocketTimeout(60)
+        socket.setdefaulttimeout(60)
 	self.ftpconn = ftplib.FTP(self.ftphost)
 	self.ftpconn.login(self.ftpuser,self.ftppassword)
 	# save curr dir
