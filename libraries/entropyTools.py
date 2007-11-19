@@ -1901,3 +1901,17 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False):
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Done"),back = True)
     return data
+
+def collectLinkerPaths():
+    ldpaths = set()
+    try:
+        f = open("/etc/ld.so.conf","r")
+        paths = f.readlines()
+        for path in paths:
+            if path.strip():
+                if path[0] == "/":
+                    ldpaths.add(os.path.normpath(path.strip()))
+        f.close()
+    except:
+        pass
+    return ldpaths

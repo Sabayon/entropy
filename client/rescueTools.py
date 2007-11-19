@@ -245,7 +245,7 @@ def database(options):
 	print_info(red("  Found "+str(len(pkgsfound))+" packages. Filling database..."))
 	count = str(len(pkgsfound))
 	cnt = 0
-	#XXXos.remove(etpConst['packagestmpfile'])
+	os.remove(etpConst['packagestmpfile'])
 	
 	for pkgfound in pkgsfound:
 	    cnt += 1

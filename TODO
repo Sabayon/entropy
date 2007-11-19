@@ -1,6 +1,5 @@
 TODO list:
   CLIENT:
-  - add library test tool (like revdep-rebuild)
   - keep outdated packages on the server for a week
   - find a way to better handle real smartapps deps
   - add support for database revisions log

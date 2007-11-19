@@ -75,6 +75,10 @@ def print_help():
     print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
+    print_info(" \t"+blue("libtest")+brown("\t\t look for missing libraries"))
+    print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
+    print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
+    print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
 
     print_info(" \t"+blue("conf")+brown("\t\t configuration files update tool"))
     print_info(" \t\t"+darkgreen("info")+red("\t\t\t show info about configuration files that should be updated"))
@@ -140,6 +144,7 @@ import equoTools
 import entropyTools
 from clientConstants import *
 
+equoRequestQuiet = False
 # preliminary options parsing
 _options = []
 for opt in options:
@@ -148,6 +153,8 @@ for opt in options:
     elif (opt == "--debug"):
 	entropyTools.enableDebug()
     else:
+        if (opt == "--quiet"):
+            equoRequestQuiet = True
 	_options.append(opt)
 options = _options
 
@@ -180,13 +187,14 @@ def writeerrorstatus(status):
         pass
 
 def loadconfcache():
-    print_info(red(" @@ ")+blue("Caching equo conf"), back = True)
+    if not equoRequestQuiet: print_info(red(" @@ ")+blue("Caching equo conf"), back = True)
     import confTools
     scandata = confTools.scanfs(quiet = True, dcache = True)
-    print_info(red(" @@ ")+blue("Caching complete."))
+    if not equoRequestQuiet: print_info(red(" @@ ")+blue("Caching complete."))
     if len(scandata) > 0:
-        print_warning(darkgreen("There are "+str(len(scandata))+" configuration file(s) that need(s) to be updated."))
-        print_warning(red("Please run: ")+bold("equo conf update"))
+        if not equoRequestQuiet:
+            print_warning(darkgreen("There are "+str(len(scandata))+" configuration file(s) that need(s) to be updated."))
+            print_warning(red("Please run: ")+bold("equo conf update"))
 
 try:
     rc = 0
@@ -197,7 +205,7 @@ try:
         import repositoriesTools
         rc = repositoriesTools.repositories(options)
 
-    elif (options[0] == "install") or (options[0] == "remove") or (options[0] == "deptest") or (options[0] == "world"):
+    elif options[0] in ["install","remove","world","deptest","libtest"]:
         import uiTools
         if options[0] == "install":
             cr = entropyTools.applicationLockCheck("install", gentle = True)

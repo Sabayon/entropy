@@ -91,17 +91,7 @@ def postinstall(pkgdata):
 	functions.add('pygtksetup')
 
     # load linker paths
-    ldpaths = set()
-    try:
-        f = open("/etc/ld.so.conf","r")
-        paths = f.readlines()
-        for path in paths:
-            if path.strip():
-                if path[0] == "/":
-                    ldpaths.add(os.path.normpath(path.strip()))
-        f.close()
-    except:
-        pass
+    ldpaths = entropyTools.collectLinkerPaths()
 
     # prepare content
     for x in pkgdata['content']:
@@ -182,17 +172,7 @@ def postremove(pkgdata):
 	functions.add("fontconfig")
 
     # load linker paths
-    ldpaths = set()
-    try:
-        f = open("/etc/ld.so.conf","r")
-        paths = f.readlines()
-        for path in paths:
-            if path.strip():
-                if path[0] == "/":
-                    ldpaths.add(os.path.normpath(path.strip()))
-        f.close()
-    except:
-        pass
+    ldpaths = entropyTools.collectLinkerPaths()
 
     for x in pkgdata['removecontent']:
 	if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
@@ -344,7 +324,13 @@ def kernelmod(pkgdata):
         item = 'a:1:'+pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
         update_moduledb(item)
     print_info(red("   ##")+brown(" Running depmod..."))
-    run_depmod()
+    # get kernel modules dir name
+    name = ''
+    for file in pkgdata['content']:
+        if file.startswith("/lib/modules/"):
+            name = file.split("/")[3]
+            break
+    run_depmod(name)
 
 def pythoninst(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Python...")
@@ -441,15 +427,16 @@ def mountboot(pkgdata):
 	    fsline = line.split()
 	    if len(fsline) > 1:
 		if fsline[1] == "/boot":
-		    # trigger mount /boot
-		    rc = os.system("mount /boot &> /dev/null")
-		    if rc == 0:
-			equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Mounted /boot successfully")
-			print_info(red("   ##")+brown(" Mounted /boot successfully"))
-		    elif rc != 8192: # already mounted
-			equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Cannot mount /boot automatically !!")
-			print_info(red("   ##")+brown(" Cannot mount /boot automatically !!"))
-		    break
+                    if not os.path.ismount("/boot"):
+                        # trigger mount /boot
+                        rc = os.system("mount /boot &> /dev/null")
+                        if rc == 0:
+                            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Mounted /boot successfully")
+                            print_info(red("   ##")+brown(" Mounted /boot successfully"))
+                        elif rc != 8192: # already mounted
+                            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Cannot mount /boot automatically !!")
+                            print_info(red("   ##")+brown(" Cannot mount /boot automatically !!"))
+                        break
 
 def kbuildsycoca(pkgdata):
     kdedirs = ''
@@ -659,9 +646,9 @@ def update_moduledb(item):
    @description: insert kernel object into kernel modules db
    @output: returns int() as exit status
 '''
-def run_depmod():
+def run_depmod(name):
     if os.access('/sbin/depmod',os.X_OK):
-	os.system('/sbin/depmod -a &> /dev/null')
+	os.system('/sbin/depmod -a -b / -r '+name+' &> /dev/null')
     return 0
 
 '''

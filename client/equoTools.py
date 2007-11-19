@@ -40,8 +40,8 @@ equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst[
 
 ### Caching functions
 
-def loadCaches():
-    print_info(darkred(" @@ ")+blue("Loading On-Disk Cache..."))
+def loadCaches(quiet = False):
+    if not quiet: print_info(darkred(" @@ ")+blue("Loading On-Disk Cache..."))
     # atomMatch
     try:
         mycache = dumpTools.loadobj(etpCache['atomMatch'])
@@ -487,7 +487,6 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
         if mydep[1] in treecache:
             mydep = mybuffer.pop()
             continue
-        treecache.add(mydep[1])
 
         # conflicts
         if mydep[1][0] == "!":
@@ -513,6 +512,8 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
             continue
         else:
             treecache.add(matchatom)
+
+        treecache.add(mydep[1])
 
         # already analyzed by the calling function
         if (match in matchFilter) and (usefilter):

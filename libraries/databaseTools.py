@@ -2993,26 +2993,26 @@ class etpDatabase:
         
         for idx in myBranchIndex:
 	    results = self.searchPackagesByName(pkgname, sensitive = caseSensitive, branch = idx)
-	    
 	    mypkgcat = pkgcat
 	    mypkgname = pkgname
-
+            
+            virtual = False
 	    # if it's a PROVIDE, search with searchProvide
+            # there's no package with that name
 	    if (not results) and (mypkgcat == "virtual"):
 	        virtuals = self.searchProvide(pkgkey, branch = idx)
 		if (virtuals):
+                    virtual = True
 		    mypkgname = self.retrieveName(virtuals[0][1])
 		    mypkgcat = self.retrieveCategory(virtuals[0][1])
 		    results = virtuals
 
 	    # now validate
 	    if (not results):
-	        #print "results is empty"
 	        continue # search into a stabler branch
 	
 	    elif (len(results) > 1):
-	
-	        #print "results > 1"
+
 	        # if it's because category differs, it's a problem
 	        foundCat = ""
 	        cats = set()
@@ -3020,7 +3020,7 @@ class etpDatabase:
 		    idpackage = result[1]
 		    cat = self.retrieveCategory(idpackage)
 		    cats.add(cat)
-		    if (cat == mypkgcat):
+		    if (cat == mypkgcat) or ((not virtual) and (mypkgcat == "virtual")): # in case of virtual packages only (that they're not stored as provide)
 		        foundCat = cat
 		        break
 	        # if I found something at least...
@@ -3053,7 +3053,11 @@ class etpDatabase:
 	        break
 
 	    else:
-		
+                
+                # if mypkgcat is virtual, we can force
+                if (mypkgcat == "virtual") and (not virtual): # in case of virtual packages only (that they're not stored as provide)
+                    mypkgcat = entropyTools.dep_getkey(results[0][0]).split("/")[0]
+                
 		# check if category matches
 		if mypkgcat != "null":
 		    foundCat = self.retrieveCategory(results[0][1])

@@ -100,24 +100,28 @@ def package(options):
     myopts = _myopts
 
     if (options[0] == "deptest"):
-	equoTools.loadCaches()
+	equoTools.loadCaches(quiet = equoRequestQuiet)
 	rc, garbage = dependenciesTest(quiet = equoRequestQuiet, ask = equoRequestAsk, pretend = equoRequestPretend)
+
+    elif (options[0] == "libtest"):
+	equoTools.loadCaches(quiet = equoRequestQuiet)
+	rc, garbage = librariesTest(quiet = equoRequestQuiet, ask = equoRequestAsk, pretend = equoRequestPretend)
 
     elif (options[0] == "install"):
 	if (myopts) or (mytbz2paths) or (equoRequestResume):
-	    equoTools.loadCaches()
+	    equoTools.loadCaches(quiet = equoRequestQuiet)
 	    rc, status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep, configFiles = equoRequestConfigFiles, tbz2 = mytbz2paths, resume = equoRequestResume, skipfirst = equoRequestSkipfirst)
 	else:
 	    print_error(red(" Nothing to do."))
 	    rc = 127
 
     elif (options[0] == "world"):
-	equoTools.loadCaches()
+	equoTools.loadCaches(quiet = equoRequestQuiet)
 	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch, replay = (equoRequestReplay or equoRequestEmptyDeps), upgradeTo = equoRequestUpgradeTo, resume = equoRequestResume, skipfirst = equoRequestSkipfirst)
 
     elif (options[0] == "remove"):
 	if myopts or equoRequestResume:
-	    equoTools.loadCaches()
+	    equoTools.loadCaches(quiet = equoRequestQuiet)
 	    rc, status = removePackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, deep = equoRequestDeep, configFiles = equoRequestConfigFiles, resume = equoRequestResume)
 	else:
 	    print_error(red(" Nothing to do."))
@@ -1101,7 +1105,156 @@ def dependenciesTest(quiet = False, ask = False, pretend = False, clientDbconn =
 	entropyTools.applicationLockCheck("install")
 	installPackages(packages, deps = False, ask = ask)
 
-    print_info(red(" @@ ")+blue("All done."))
+    if not quiet: print_info(red(" @@ ")+blue("All done."))
     if closedb:
         clientDbconn.closeDB()
     return 0,packagesNeeded
+
+def librariesTest(quiet = False, ask = False, pretend = False, clientDbconn = None, reagent = False):
+    
+    import sys
+    if (not quiet):
+        print_info(red(" @@ ")+blue("Running libraries test..."))
+    
+    closedb = True
+    if clientDbconn == None:
+        closedb = False
+        clientDbconn = openClientDatabase()
+
+    if (not quiet):
+        print_info(red(" @@ ")+blue("Collecting linker paths..."))
+    
+    # run ldconfig first
+    os.system("ldconfig &> /dev/null")
+    # open /etc/ld.so.conf
+    if not os.path.isfile("/etc/ld.so.conf"):
+        if not quiet:
+            print_error(red(" @@ ")+blue("Cannot find ")+red("/etc/ld.so.conf"))
+        return 1,-1
+    
+    ldpaths = entropyTools.collectLinkerPaths()
+
+    if (not quiet):
+        print_info(red(" @@ ")+blue("Collecting executables files..."))
+
+    executables = set()
+    total = len(ldpaths)
+    count = 0
+    for ldpath in ldpaths:
+        count += 1
+        if not quiet: print_info("  ["+str((round(float(count)/total*100,1)))+"%] "+blue("Tree: ")+red(ldpath), back = True)
+        ldpath = ldpath.encode(sys.getfilesystemencoding())
+        for currentdir,subdirs,files in os.walk(ldpath):
+            for file in files:
+                filepath = currentdir+"/"+file
+                if os.access(filepath,os.X_OK):
+                    executables.add(filepath)
+
+    if (not quiet):
+        print_info(red(" @@ ")+blue("Collecting broken executables..."))
+        print_info(red(" @@ Attention: ")+blue("don't worry about libraries that are shown here but not later."))
+
+    brokenlibs = set()
+    total = len(executables)
+    count = 0
+    for executable in executables:
+        count += 1
+        if not quiet: print_info("  ["+str((round(float(count)/total*100,1)))+"%] "+red(executable), back = True)
+        stdin, stdouterr = os.popen4("ldd "+executable)
+        output = stdouterr.readlines()
+        if '\n'.join(output).find("not found") != -1:
+            # investigate
+            mylibs = set()
+            for row in output:
+                if row.find("not found") != -1:
+                    try:
+                        row = row.strip().split("=>")[0].strip()
+                        mylibs.add(row)
+                    except:
+                        continue
+            if not quiet:
+                if mylibs:
+                    alllibs = blue(' :: ').join(list(mylibs))
+                    print_info("  ["+str((round(float(count)/total*100,1)))+"%] "+red(executable)+" [ "+alllibs+" ]")
+            brokenlibs.update(mylibs)
+    del executables
+    
+    if (not quiet):
+        print_info(red(" @@ ")+blue("Trying to match packages..."))
+
+    packagesMatched = set()
+    # now search packages that contain the found libs
+    orderedRepos = list(etpRepositoriesOrder)
+    orderedRepos.sort()
+    for repodata in orderedRepos:
+        if not quiet: print_info(red(" @@ ")+blue("Repository: ")+darkgreen(etpRepositories[repodata[1]]['description'])+" ["+red(repodata[1])+"]")
+        dbconn = openRepositoryDatabase(repodata[1])
+        libsfound = set()
+        for lib in brokenlibs:
+            packages = dbconn.searchBelongs(file = "%"+lib, like = True, branch = etpConst['branch'])
+            if packages:
+                for idpackage in packages:
+                    # retrieve content and really look if library is in ldpath
+                    mycontent = dbconn.retrieveContent(idpackage)
+                    matching_libs = [x for x in mycontent if x.endswith(lib) and (os.path.dirname(x) in ldpaths)]
+                    libsfound.add(lib)
+                    if matching_libs:
+                        packagesMatched.add((idpackage,repodata[1],lib))
+        brokenlibs.difference_update(libsfound)
+        dbconn.closeDB()
+
+    if (not brokenlibs) and (not packagesMatched):
+        if not quiet: print_info(red(" @@ ")+blue("System is healthy."))
+        return 0,0
+
+    atomsdata = set()
+    if (not quiet):
+        print_info(red(" @@ ")+blue("Libraries statistics:"))
+        if brokenlibs:
+            print_info(brown(" ## ")+red("Not matched:"))
+            for lib in brokenlibs:
+                print_info(darkred("    => ")+red(lib))
+        print_info(darkgreen(" ## ")+red("Matched:"))
+        for packagedata in packagesMatched:
+            dbconn = openRepositoryDatabase(packagedata[1])
+            myatom = dbconn.retrieveAtom(packagedata[0])
+            atomsdata.add((myatom,(packagedata[0],packagedata[1])))
+            print_info("   "+red(packagedata[2])+" => "+brown(myatom)+" ["+red(packagedata[1])+"]")
+            dbconn.closeDB()
+    else:
+        for packagedata in packagesMatched:
+            dbconn = openRepositoryDatabase(packagedata[1])
+            myatom = dbconn.retrieveAtom(packagedata[0])
+            atomsdata.add((myatom,(packagedata[0],packagedata[1])))
+            print myatom
+            dbconn.closeDB()
+        clientDbconn.closeDB()
+        return 0,atomsdata
+
+    if (pretend):
+	clientDbconn.closeDB()
+	return 0, atomsdata
+
+    if (atomsdata) and (not reagent):
+        if (ask):
+            rc = entropyTools.askquestion("     Would you like to install them?")
+            if rc == "No":
+		clientDbconn.closeDB()
+	        return 0,atomsdata
+	else:
+	    print_info(red(" @@ ")+blue("Installing found packages in ")+red("10 seconds")+blue("..."))
+	    import time
+	    time.sleep(10)
+        
+	entropyTools.applicationLockCheck("install")
+        rc = installPackages(atomsdata = list(atomsdata), ask = ask)
+        if closedb:
+            clientDbconn.closeDB()
+        if rc[0] == 0:
+            return 0,atomsdata
+        else:
+            return rc[0],atomsdata
+
+    if closedb:
+        clientDbconn.closeDB()
+    return 0,atomsdata
