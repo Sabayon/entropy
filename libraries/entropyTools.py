@@ -1083,7 +1083,15 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
                 pass
             directories.append(tarinfo)
         else:
-            tar.extract(tarinfo, extractPath)
+            try:
+                tarinfo.name = tarinfo.name.encode(getfilesystemencoding())
+            except:  # default encoding failed
+                try:
+                    tarinfo.name = tarinfo.name.decode("latin1") # try to convert to latin1 and then back to sys.getfilesystemencoding()
+                    tarinfo.name = tarinfo.name.encode(getfilesystemencoding())
+                except:
+                    raise
+            tar.extract(tarinfo, extractPath.encode(getfilesystemencoding()))
 
     # Reverse sort directories.
     directories.sort(lambda a, b: cmp(a.name, b.name))

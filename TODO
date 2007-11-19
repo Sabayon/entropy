@@ -7,9 +7,6 @@ TODO list:
   - add external trigger for splashutils
   - env-update source /etc/profile after install?
 
-
-
-
 Project Status:
 - reagent: complete. Stabilization mode.
 - activator: complete. Stabilization mode.

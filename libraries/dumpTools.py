@@ -23,16 +23,13 @@ import sys
 from xml.dom import minidom
 from entropyConstants import *
 
-curname = ''
-
 '''
    @description: dump object to file
    @input: name of the object, object
    @output: status code
 '''
 def dumpobj(name,object):
-    curname = name
-    try:
+    while 1: # trap ctrl+C
         doc = minidom.Document()
         structure = doc.createElement("structure")
         doc.appendChild(structure)
@@ -50,22 +47,8 @@ def dumpobj(name,object):
             f.close()
         except:
             raise IOError,"can't write to file "+name
-    except KeyboardInterrupt:
-        import signal
-        signal.signal(signal.SIGTERM, removeobj)
-        signal.signal(signal.SIGQUIT, removeobj)
-        signal.signal(signal.SIGINT, removeobj)
-        signal.signal(signal.SIGHUP, removeobj)
-        dumpobj(name,object)
-        sys.exit(1)
+        break
 
-
-def removeobj():
-    if curname:
-        try:
-            os.remove(etpConst['dumpstoragedir']+"/"+curname+".dmp")
-        except:
-            pass
 
 '''
    @description: load object from a file
