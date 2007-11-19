@@ -1058,11 +1058,19 @@ def compressTarBz2(storepath,pathtocompress):
     return rc
 
 # tar.bz2 uncompress function...
-def uncompressTarBz2(filepath, extractPath = None):
+def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"uncompressTarBz2: called.")
     if extractPath is None:
 	extractPath = os.path.dirname(filepath)
-    tar = tarfile.open(filepath,"r:bz2")
+    if not os.path.isfile(filepath):
+        raise OSError
+    try:
+        tar = tarfile.open(filepath,"r:bz2")
+    except tarfile.ReadError:
+        if catchEmpty:
+            return 0
+        else:
+            raise
 
     directories = []
     for tarinfo in tar:

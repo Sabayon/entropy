@@ -955,14 +955,15 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
                 print_error(red("Resume cache corrupted."))
                 dumpTools.dumpobj(etpCache['remove'],{})
                 return 128,-1
-        # validate removalQueue
-        invalid = []
-        for idpackage in removalQueue:
-            try:
-                clientDbconn.retrieveAtom(idpackage)
-            except TypeError:
-                invalid.append(idpackage)
-        removalQueue = [x for x in removalQueue if x not in invalid]
+
+    # validate removalQueue
+    invalid = set()
+    for idpackage in removalQueue:
+        try:
+            clientDbconn.retrieveAtom(idpackage)
+        except TypeError:
+            invalid.add(idpackage)
+    removalQueue = [x for x in removalQueue if x not in invalid]
 
     currentqueue = 0
     for idpackage in removalQueue:

@@ -1045,7 +1045,7 @@ def installPackage(infoDict):
     imageDir = unpackDir+"/image"
     os.makedirs(imageDir)
 
-    rc = uncompressTarBz2(pkgpath,imageDir)
+    rc = uncompressTarBz2(pkgpath,imageDir, catchEmpty = True)
     if (rc != 0):
 	return rc
     if not os.path.isdir(imageDir):
