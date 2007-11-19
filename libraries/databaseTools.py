@@ -2776,7 +2776,7 @@ class etpDatabase:
         self.commitChanges()
 
     def createContentIndex(self):
-        if self.name != "etpdb":
+        if self.dbname != "etpdb":
             self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex ON content ( file )')
 
     def regenerateCountersTable(self, output = False):
