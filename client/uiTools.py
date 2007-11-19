@@ -100,11 +100,9 @@ def package(options):
     myopts = _myopts
 
     if (options[0] == "deptest"):
-	equoTools.loadCaches(quiet = equoRequestQuiet)
 	rc, garbage = dependenciesTest(quiet = equoRequestQuiet, ask = equoRequestAsk, pretend = equoRequestPretend)
 
     elif (options[0] == "libtest"):
-	equoTools.loadCaches(quiet = equoRequestQuiet)
 	rc, garbage = librariesTest(quiet = equoRequestQuiet, ask = equoRequestAsk, pretend = equoRequestPretend)
 
     elif (options[0] == "install"):
