@@ -58,6 +58,7 @@ def package(options):
     equoRequestReplay = False
     equoRequestUpgrade = False
     equoRequestResume = False
+    equoRequestSkipfirst = False
     equoRequestUpgradeTo = ''
     rc = 0
     _myopts = []
@@ -87,6 +88,8 @@ def package(options):
 	    equoRequestUpgrade = True
 	elif (opt == "--resume"):
 	    equoRequestResume = True
+	elif (opt == "--skipfirst"):
+	    equoRequestSkipfirst = True
 	else:
             if (equoRequestUpgrade):
                 equoRequestUpgradeTo = opt
@@ -103,14 +106,14 @@ def package(options):
     elif (options[0] == "install"):
 	if (myopts) or (mytbz2paths) or (equoRequestResume):
 	    equoTools.loadCaches()
-	    rc, status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep, configFiles = equoRequestConfigFiles, tbz2 = mytbz2paths, resume = equoRequestResume)
+	    rc, status = installPackages(myopts, ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep, configFiles = equoRequestConfigFiles, tbz2 = mytbz2paths, resume = equoRequestResume, skipfirst = equoRequestSkipfirst)
 	else:
 	    print_error(red(" Nothing to do."))
 	    rc = 127
 
     elif (options[0] == "world"):
 	equoTools.loadCaches()
-	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch, replay = (equoRequestReplay or equoRequestEmptyDeps), upgradeTo = equoRequestUpgradeTo, resume = equoRequestResume)
+	rc, status = worldUpdate(ask = equoRequestAsk, pretend = equoRequestPretend, verbose = equoRequestVerbose, onlyfetch = equoRequestOnlyFetch, replay = (equoRequestReplay or equoRequestEmptyDeps), upgradeTo = equoRequestUpgradeTo, resume = equoRequestResume, skipfirst = equoRequestSkipfirst)
 
     elif (options[0] == "remove"):
 	if myopts or equoRequestResume:
@@ -125,7 +128,7 @@ def package(options):
     return rc
 
 
-def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False, replay = False, upgradeTo = '', resume = False):
+def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False, replay = False, upgradeTo = '', resume = False, skipfirst = False):
 
     # check if I am root
     if (not entropyTools.isRoot()):
@@ -134,9 +137,6 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 
     if not resume:
 
-        if not pretend:
-            repositoriesTools.syncRepositories()
-    
         # verify selected release (branch)
         if (upgradeTo):
             availbranches = listAllAvailableBranches()
@@ -252,7 +252,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     etpConst['collisionprotect'] = 0
 
     if (updateList) or (resume):
-        rc = installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch, resume = resume)
+        rc = installPackages(atomsdata = updateList, ask = ask, pretend = pretend, verbose = verbose, onlyfetch = onlyfetch, resume = resume, skipfirst = skipfirst)
 	if rc[0] != 0:
 	    return rc
     else:
@@ -288,7 +288,7 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     clientDbconn.closeDB()
     return 0,0
 
-def installPackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = [], resume = False):
+def installPackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = [], resume = False, skipfirst = False):
 
     # check if I am root
     if (not entropyTools.isRoot()):
@@ -302,6 +302,8 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                 if os.path.isdir(x): shutil.rmtree(x)
             except:
                 pass
+
+    clientDbconn = openClientDatabase()
 
     if not resume:
         
@@ -387,18 +389,15 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                 installedVer = "Not installed"
                 installedTag = "NoTag"
                 installedRev = "NoRev"
-                clientDbconn = openClientDatabase()
-                if (clientDbconn != -1):
-                    pkginstalled = clientDbconn.atomMatch(entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
-                    if (pkginstalled[1] == 0):
-                        # found
-                        idx = pkginstalled[0]
-                        installedVer = clientDbconn.retrieveVersion(idx)
-                        installedTag = clientDbconn.retrieveVersionTag(idx)
-                        if not installedTag:
-                            installedTag = "NoTag"
-                        installedRev = clientDbconn.retrieveRevision(idx)
-                    clientDbconn.closeDB()
+                pkginstalled = clientDbconn.atomMatch(entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
+                if (pkginstalled[1] == 0):
+                    # found
+                    idx = pkginstalled[0]
+                    installedVer = clientDbconn.retrieveVersion(idx)
+                    installedTag = clientDbconn.retrieveVersionTag(idx)
+                    if not installedTag:
+                        installedTag = "NoTag"
+                    installedRev = clientDbconn.retrieveRevision(idx)
     
                 print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
                 print_info("\t"+red("Versioning:\t")+" "+blue(installedVer)+" / "+blue(installedTag)+" / "+blue(str(installedRev))+bold(" ===> ")+darkgreen(pkgver)+" / "+darkgreen(pkgtag)+" / "+darkgreen(str(pkgrev)))
@@ -436,7 +435,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
         runQueue = []
         removalQueue = [] # aka, conflicts
         print_info(red(" @@ ")+blue("Calculating dependencies..."))
-    
+
         if (deps):
             treepackages, result = equoTools.getRequiredPackages(foundAtoms, emptydeps, deepdeps, spinning = True)
             # add dependencies, explode them
@@ -485,20 +484,22 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
         pkgsToDowngrade = 0
         pkgsToRemove = len(removalQueue)
         actionQueue = {}
-    
-        if (not runQueue) and (not removalQueue):
+
+        if ((not runQueue) and (not removalQueue)):
             print_error(red("Nothing to do."))
             dirscleanup()
             return 127,-1
-    
+
         if (runQueue):
             if (ask or pretend):
                 print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("merged:"))
             
-            if not (ask or pretend): count = 0
+            count = 0
             atomlen = len(runQueue)
             for packageInfo in runQueue:
-                if not (ask or pretend): count += 1; print_info(":: Collecting data: "+str(round((float(count)/atomlen)*100,1))+"% ::", back = True)
+                count += 1
+                
+                if not (ask or pretend): print_info(":: Collecting data: "+str(round((float(count)/atomlen)*100,1))+"% ::", back = True)
                 dbconn = openRepositoryDatabase(packageInfo[1])
                 mydata = dbconn.getBaseData(packageInfo[0])
                 pkgatom = mydata[0]
@@ -534,18 +535,15 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                 installedVer = '0'
                 installedTag = ''
                 installedRev = 0
-                clientDbconn = openClientDatabase()
-                if (clientDbconn != -1):
-                    pkginstalled = clientDbconn.atomMatch(entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
-                    if (pkginstalled[1] == 0):
-                        # found
-                        idx = pkginstalled[0]
-                        installedVer = clientDbconn.retrieveVersion(idx)
-                        installedTag = clientDbconn.retrieveVersionTag(idx)
-                        installedRev = clientDbconn.retrieveRevision(idx)
-                        actionQueue[pkgatom]['removeidpackage'] = idx
-                        onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idx)
-                    clientDbconn.closeDB()
+                pkginstalled = clientDbconn.atomMatch(entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
+                if (pkginstalled[1] == 0):
+                    # found
+                    idx = pkginstalled[0]
+                    installedVer = clientDbconn.retrieveVersion(idx)
+                    installedTag = clientDbconn.retrieveVersionTag(idx)
+                    installedRev = clientDbconn.retrieveRevision(idx)
+                    actionQueue[pkgatom]['removeidpackage'] = idx
+                    onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idx)
     
                 if not (ask or pretend or verbose):
                     continue
@@ -592,7 +590,6 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
         if (removalQueue):
             
             # add depends to removalQueue that are not in runQueue
-            clientDbconn = openClientDatabase()
             dependQueue = set()
             for idpackage in removalQueue:
                 depends = clientDbconn.retrieveDepends(idpackage)
@@ -623,8 +620,6 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                     repoinfo = red("[")+brown("from: ")+bold(installedfrom)+red("] ")
                     print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
     
-            clientDbconn.closeDB()
-        
         if (runQueue) or (removalQueue):
             # show download info
             print_info(red(" @@ ")+blue("Packages needing install:\t")+red(str(len(runQueue))))
@@ -679,13 +674,34 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                 print_error(red("Resume cache corrupted."))
                 dumpTools.dumpobj(etpCache['install'],{})
                 return 128,-1
+            if skipfirst:
+                if runQueue:
+                    # regenerate removalQueue
+                    runQueue = runQueue[1:]
+                    rconflicts_match = set()
+                    # now look for the rest
+                    for item in runQueue:
+                        rdbconn = openRepositoryDatabase(item[1])
+                        rconflicts = rdbconn.retrieveConflicts(item[0])
+                        rdbconn.closeDB()
+                        for rconflict in rconflicts:
+                            rmatch = clientDbconn.atomMatch(rconflict)
+                            if rmatch[0] != -1:
+                                rconflicts_match.add(rmatch[0])
+                    removalQueue = [x for x in rconflicts_match]
+                    del rconflicts_match
+                    # save new queues
+                    resume_cache['runQueue'] = runQueue[:]
+                    resume_cache['removalQueue'] = removalQueue[:]
+                    dumpTools.dumpobj(etpCache['install'],resume_cache)
+                    
+
 
     # running tasks
     totalqueue = str(len(runQueue))
     totalremovalqueue = str(len(removalQueue))
     currentqueue = 0
     currentremovalqueue = 0
-    clientDbconn = openClientDatabase()
     
     for idpackage in removalQueue:
         currentremovalqueue += 1

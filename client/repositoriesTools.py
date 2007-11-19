@@ -267,9 +267,14 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
         for dbinfo in dbCacheStore:
             dbCacheStore[dbinfo].clear()
             dumpTools.dumpobj(dbinfo,{})
-	
+        
 	# clean caches
         import cacheTools
         cacheTools.generateCache(quiet = quiet, depcache = True, configcache = False)
+        
+        # clean resume caches
+        dumpTools.dumpobj(etpCache['install'],{})
+        dumpTools.dumpobj(etpCache['world'],{})
+        dumpTools.dumpobj(etpCache['remove'],[])
 
     return 0

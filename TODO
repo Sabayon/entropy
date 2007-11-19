@@ -1,7 +1,6 @@
 TODO list:
   CLIENT:
-  - better implement --deep (for install)
-  - implement --skipfirst for world and install/remove
+  - add library test tool (like revdep-rebuild)
   - keep outdated packages on the server for a week
   - find a way to better handle real smartapps deps
   - add support for database revisions log
@@ -15,6 +14,6 @@ Project Status:
 - reagent: complete. Stabilization mode.
 - activator: complete. Stabilization mode.
 ============
-- equo (client): 95%
+- equo - out of alpha status: 90%
 
 - EAPI1+ info: http://www.pkgcore.org/trac/pkgcore/doc/doc/extended-atom-syntax.rst

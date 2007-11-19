@@ -52,6 +52,7 @@ def print_help():
     print_info(" \t\t"+red("--replay")+"\t\t reinstall all the packages and their dependencies")
     print_info(" \t\t"+red("--empty")+"\t\t\t same as --replay")
     print_info(" \t\t"+red("--resume")+"\t\t resume previously interrupted operations")
+    print_info(" \t\t"+red("--skipfirst")+"\t\t used with --resume, first package in queue will be skipped")
     print_info(" \t\t"+red("--upgrade")+"\t\t upgrade "+etpConst['systemname']+" to the specified release (3.5,3.6...)")
     
     print_info(" \t"+blue("install")+brown("\t\t install one or more packages or .tbz2"))
@@ -60,6 +61,7 @@ def print_help():
     print_info(" \t\t"+red("--fetch")+"\t\t\t just download packages without doing the install")
     print_info(" \t\t"+red("--nodeps")+"\t\t do not manage any dependency")
     print_info(" \t\t"+red("--resume")+"\t\t resume previously interrupted operations")
+    print_info(" \t\t"+red("--skipfirst")+"\t\t used with --resume, first package in queue will be skipped")
     print_info(" \t\t"+red("--empty")+"\t\t\t set all dependencies as unsatisfied")
     print_info(" \t\t"+red("--deep")+"\t\t\t analyze dependencies deeply")
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
@@ -177,6 +179,15 @@ def writeerrorstatus(status):
     except:
         pass
 
+def loadconfcache():
+    print_info(red(" @@ ")+blue("Caching equo conf"), back = True)
+    import confTools
+    scandata = confTools.scanfs(quiet = True, dcache = True)
+    print_info(red(" @@ ")+blue("Caching complete."))
+    if len(scandata) > 0:
+        print_warning(darkgreen("There are "+str(len(scandata))+" configuration file(s) that need(s) to be updated."))
+        print_warning(red("Please run: ")+bold("equo conf update"))
+
 try:
     rc = 0
     # sync mirrors tool
@@ -207,13 +218,7 @@ try:
 		if "--pretend" not in options:
 		    options.append("--pretend")
         rc = uiTools.package(options)
-	print_info(red(" @@ ")+blue("Caching equo conf"), back = True)
-	import confTools
-	scandata = confTools.scanfs(quiet = True, dcache = True)
-	print_info(red(" @@ ")+blue("Caching complete."))
-	if len(scandata) > 0:
-	    print_warning(darkgreen("There are "+str(len(scandata))+" configuration file(s) that need(s) to be updated."))
-	    print_warning(red("Please run: ")+bold("equo conf update"))
+        loadconfcache()
 	# save caches
 	equoTools.saveCaches()
 
@@ -301,6 +306,7 @@ except:
     except:
 	print
 	print_error(darkred("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org."))
+        loadconfcache()
 	exit(1)
     print
     print_error(darkred("!!! If the error is about missing tables in the database, just run 'equo database generate' again !!!"))
@@ -311,9 +317,11 @@ except:
 	rc = askquestion("   Erm... Can I send the error to my creators so they can fix me?")
 	if rc == "No":
 	    print_error(darkgreen("Ok, ok ok ok... Sorry!"))
+            loadconfcache()
 	    exit(2)
     else:
 	print_error(darkgreen("Gosh, you aren't! Well, I wrote the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
+        loadconfcache()
 	exit(3)
 
     print_error(darkgreen("If you want to be contacted back (and actively supported), also answer the questions below:"))
@@ -321,7 +329,6 @@ except:
     mail = readtext("Your E-Mail address: ")
     errorText += "\n\nFull name: "+str(fullname)+"\n"
     errorText += "E-mail: "+str(mail)+"\n"
-    
 
     # ok, come on!
     result = reportApplicationError(errorText)
@@ -329,4 +336,6 @@ except:
 	print_error(darkgreen("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible."))
     else:
 	print_error(darkred("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
+        loadconfcache()
 	exit(4)
+    loadconfcache()

@@ -412,19 +412,16 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
                     repo_pkgrev = 9999
 		
 		if (deepdeps):
-		    cmp = entropyCompareVersions((repo_pkgver,repo_pkgtag,repo_pkgrev),(installedVer,installedTag,installedRev))
-		    #print repo_pkgver+"<-->"+installedVer
-		    #print cmp
-		    if cmp != 0:
-		        #print dependency
-			filterSatisfiedDependenciesCmpResults[dependency] = cmp
+		    vcmp = entropyCompareVersions((repo_pkgver,repo_pkgtag,repo_pkgrev),(installedVer,installedTag,installedRev))
+		    if vcmp != 0:
+			filterSatisfiedDependenciesCmpResults[dependency] = vcmp
 	                depunsatisfied.add(dependency)
 		    else:
 		        depsatisfied.add(dependency)
 		else:
 		    depsatisfied.add(dependency)
 	    else:
-		#print " ----> "+dependency+" NOT installed."
+		# not installed
 		filterSatisfiedDependenciesCmpResults[dependency] = 0
 		depunsatisfied.add(dependency)
 	
@@ -530,6 +527,18 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
 
         treedepth = mydep[0]+1
 
+        # all checks passed, well done
+        matchcache.add(match)
+        deptree.add((mydep[0],match)) # add match
+
+        myundeps = getDependencies(match)
+        # in this way filterSatisfiedDependenciesCmpResults is alway consistent
+        mytestdeps, xxx = filterSatisfiedDependencies(myundeps, deepdeps = deepdeps)
+        if (not emptydeps):
+            myundeps = mytestdeps
+        for x in myundeps:
+            mybuffer.push((treedepth,x))
+
         # handle possible library breakage
         action = filterSatisfiedDependenciesCmpResults.get(mydep)
         if action and ((action < 0) or (action > 0)): # do not use != 0 since action can be "None"
@@ -561,19 +570,6 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
                                     # we bastardly ignore the missing library for now
                                     continue
 
-        
-        # all checks passed, well done
-        matchcache.add(match)
-        deptree.add((mydep[0],match)) # add match
-
-        myundeps = getDependencies(match)
-        # in this way filterSatisfiedDependenciesCmpResults is alway consistent
-        mytestdeps, xxx = filterSatisfiedDependencies(myundeps, deepdeps = deepdeps)
-        if (not emptydeps):
-            myundeps = mytestdeps
-        for x in myundeps:
-            mybuffer.push((treedepth,x))
-        
         mydep = mybuffer.pop()
 
     newdeptree = {}

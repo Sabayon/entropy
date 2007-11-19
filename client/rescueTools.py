@@ -115,6 +115,8 @@ def database(options):
             count += 1
 	    print_info(blue("(")+darkgreen(str(count))+"/"+darkred(maxcount)+blue(")")+red(" atom: ")+brown(portagePackage), back = True)
             temptbz2 = etpConst['entropyunpackdir']+"/"+portagePackage.split("/")[1]+".tbz2"
+            if not os.path.isdir(etpConst['entropyunpackdir']):
+                os.makedirs(etpConst['entropyunpackdir'])
             if os.path.isfile(temptbz2):
                 os.remove(temptbz2)
             elif os.path.isdir(temptbz2):
