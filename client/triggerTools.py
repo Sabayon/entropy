@@ -743,11 +743,8 @@ def remove_boot_grub(kernel,initramfs):
         myconf = myconf.split("title")
         for chunk in myconf:
             if (chunk.find(kernelname) != -1) or (chunk.find(initramfs) != -1):
-                continue
-            if chunk.strip().startswith("="):
-                new_conf.append("title"+chunk)
-            else:
-                new_conf.append(chunk)
+                continue # skip this chunk == remove requested entry
+            new_conf.append("title"+chunk)
 	f = open("/boot/grub/grub.conf","w")
 	f.writelines(new_conf)
 	f.flush()

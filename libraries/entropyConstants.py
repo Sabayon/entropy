@@ -281,8 +281,6 @@ CREATE TABLE neededreference (
     library VARCHAR
 );
 
-CREATE INDEX contentindex ON content ( file );
-
 """
 
 # Entropy directories specifications
