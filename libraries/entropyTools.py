@@ -26,7 +26,7 @@ from entropyConstants import *
 import os
 import re
 from sys import exit, stdout, getfilesystemencoding
-import threading, time
+import threading, time, tarfile
 
 # Instantiate the databaseStatus:
 import databaseTools
@@ -333,10 +333,19 @@ def md5string(string):
     return m.hexdigest()
 
 # used by equo, this function retrieves the new safe Gentoo-aware file path
-def allocateMaskedFile(file):
+def allocateMaskedFile(file, fromfile): 
+
+    # check if file and tofile are equal
+    if os.path.isfile(file) and os.path.isfile(fromfile):
+        old = md5sum(fromfile)
+        new = md5sum(file)
+        if old == new:
+            return file, False
+
     counter = -1
     newfile = ""
     previousfile = ""
+
     while 1:
 	counter += 1
 	txtcounter = str(counter)
@@ -354,13 +363,22 @@ def allocateMaskedFile(file):
     if not newfile:
 	newfile = os.path.dirname(file)+"/"+"._cfg0000_"+os.path.basename(file)
     else:
-	if os.path.exists(previousfile):
+	
+        if os.path.exists(previousfile):
+            
+            # compare fromfile with previousfile
+            new = md5sum(fromfile)
+            old = md5sum(previousfile)
+            if new == old:
+                return previousfile, False
+            
 	    # compare old and new, if they match, suggest previousfile directly
 	    new = md5sum(file)
 	    old = md5sum(previousfile)
 	    if (new == old):
-		newfile = previousfile
-    return newfile
+		return previousfile, False
+            
+    return newfile, True
 
 def extractElog(file):
 
@@ -1041,12 +1059,45 @@ def compressTarBz2(storepath,pathtocompress):
 
 # tar.bz2 uncompress function...
 def uncompressTarBz2(filepath, extractPath = None):
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"uncompressTarBz2: called. ")
+    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"uncompressTarBz2: called.")
     if extractPath is None:
 	extractPath = os.path.dirname(filepath)
-    cmd = "tar xjf "+filepath+" -C "+extractPath
-    rc = spawnCommand(cmd, "&> /dev/null")
-    return rc
+    tar = tarfile.open(filepath,"r:bz2")
+
+    directories = []
+    for tarinfo in tar:
+        if tarinfo.isdir():
+            # Extract directory with a safe mode, so that
+            # all files below can be extracted as well.
+            try:
+                os.makedirs(os.path.join(extractPath, tarinfo.name), 0777)
+            except EnvironmentError:
+                pass
+            directories.append(tarinfo)
+        else:
+            tar.extract(tarinfo, extractPath)
+
+    # Reverse sort directories.
+    directories.sort(lambda a, b: cmp(a.name, b.name))
+    directories.reverse()
+
+    origpath = extractPath
+    # Set correct owner, mtime and filemode on directories.
+    for tarinfo in directories:
+        extractPath = os.path.join(extractPath, tarinfo.name)
+        try:
+            tar.chown(tarinfo, extractPath)
+            tar.utime(tarinfo, extractPath)
+            tar.chmod(tarinfo, extractPath)
+        except tarfile.ExtractError, e:
+            if tar.errorlevel > 1:
+                raise
+
+    tar.close()
+    if os.listdir(origpath):
+        return 0
+    else:
+        return -1
 
 def bytesIntoHuman(bytes):
     size = str(round(float(bytes)/1024,1))
@@ -1230,7 +1281,6 @@ def writeNewBranch(branch):
 def quickpkg(pkgdata,dirpath):
 
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+str(pkgdata)+" | dirpath: "+dirpath)
-    import tarfile
     import stat
     import databaseTools
 

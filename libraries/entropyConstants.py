@@ -281,6 +281,8 @@ CREATE TABLE neededreference (
     library VARCHAR
 );
 
+CREATE INDEX contentindex ON content ( file );
+
 """
 
 # Entropy directories specifications
@@ -437,6 +439,9 @@ etpCache = {
     'dbInfo': 'info_', # used by the database controller as prefix to the cache files belonging to etpDatabase class (info retrival)
     'atomMatch': 'atomMatchCache', # used to store info about repository dependencies solving
     'generateDependsTree': 'generateDependsTreeCache', # used to store info about removal dependencies
+    'install': 'resume_install', # resume cache (install)
+    'remove': 'resume_remove', # resume cache (remove)
+    'world': 'resume_world', # resume cache (world)
 }
 
 # byte sizes of disk caches
@@ -467,15 +472,12 @@ global atomMatchCache
 atomMatchCache = {}
 global atomClientMatchCache
 atomClientMatchCache = {}
-global contentCache
-contentCache = {}
 global generateDependsTreeCache
 generateDependsTreeCache = {}
 def const_resetCache():
     dbCacheStore.clear()
     atomMatchCache.clear()
     atomClientMatchCache.clear()
-    contentCache.clear()
     generateDependsTreeCache.clear()
 
 # handle Entropy Version
@@ -628,8 +630,8 @@ if os.path.isfile(etpConst['repositoriesconf']):
 		etpRepositories[reponame]['dbcformat'] = dbformat
 		etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['product']+"/database/"+etpConst['currentarch']
 		# initialize CONFIG_PROTECT - will be filled the first time the db will be opened
-		etpRepositories[reponame]['configprotect'] = set()
-		etpRepositories[reponame]['configprotectmask'] = set()
+		etpRepositories[reponame]['configprotect'] = None
+		etpRepositories[reponame]['configprotectmask'] = None
 	elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
 	    branch = line.split("|")[1]
 	    etpConst['branch'] = branch

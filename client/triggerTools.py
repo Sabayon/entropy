@@ -125,7 +125,7 @@ def postinstall(pkgdata):
 	    functions.add('createkernelsym')
         for path in ldpaths:
             if x.startswith(path) and (x.find(".so") != -1):
-	        functions.add('ldconfig')
+	        functions.add('run_ldconfig')
 	#if x.startswith("/etc/init.d/"): do it externally
 	#    functions.add('initadd')
 
@@ -213,7 +213,7 @@ def postremove(pkgdata):
             functions.add('cleanpy')
         for path in ldpaths:
             if x.startswith(path) and (x.find(".so") != -1):
-	        functions.add('ldconfig')
+	        functions.add('run_ldconfig')
 
     return functions
 
@@ -531,7 +531,7 @@ def createkernelsym(pkgdata):
                 os.symlink(todir,"/usr/src/linux")
                 break
 
-def ldconfig(pkgdata):
+def run_ldconfig(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running ldconfig")
     print_info(red("   ##")+brown(" Regenerating /etc/ld.so.cache"))
     os.system("ldconfig &> /dev/null")

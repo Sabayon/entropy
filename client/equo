@@ -51,6 +51,7 @@ def print_help():
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
     print_info(" \t\t"+red("--replay")+"\t\t reinstall all the packages and their dependencies")
     print_info(" \t\t"+red("--empty")+"\t\t\t same as --replay")
+    print_info(" \t\t"+red("--resume")+"\t\t resume previously interrupted operations")
     print_info(" \t\t"+red("--upgrade")+"\t\t upgrade "+etpConst['systemname']+" to the specified release (3.5,3.6...)")
     
     print_info(" \t"+blue("install")+brown("\t\t install one or more packages or .tbz2"))
@@ -58,6 +59,7 @@ def print_help():
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
     print_info(" \t\t"+red("--fetch")+"\t\t\t just download packages without doing the install")
     print_info(" \t\t"+red("--nodeps")+"\t\t do not manage any dependency")
+    print_info(" \t\t"+red("--resume")+"\t\t resume previously interrupted operations")
     print_info(" \t\t"+red("--empty")+"\t\t\t set all dependencies as unsatisfied")
     print_info(" \t\t"+red("--deep")+"\t\t\t analyze dependencies deeply")
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
@@ -66,6 +68,7 @@ def print_help():
     print_info(" \t"+blue("remove")+brown("\t\t remove one or more packages"))
     print_info(" \t\t"+red("--deep")+"\t\t\t also pull unused dependencies where depends list is empty")
     print_info(" \t\t"+red("--configfiles")+"\t\t also remove configuration files")
+    print_info(" \t\t"+red("--resume")+"\t\t resume previously interrupted operations")
     print_info(" \t"+blue("deptest")+brown("\t\t look for unsatisfied dependencies"))
     print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")

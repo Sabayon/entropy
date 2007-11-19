@@ -21,17 +21,13 @@
 '''
 
 from sys import path, getfilesystemencoding
-path.append('../libraries')
-path.append('../client')
-path.append('/usr/lib/entropy/libraries')
 import os
 import shutil
-import stat
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 from remoteTools import downloadData
-from entropyTools import compareMd5, bytesIntoHuman, askquestion, getRandomNumber, dep_getkey, entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag, unpackXpak, lifobuffer, writeNewBranch
+from entropyTools import compareMd5, bytesIntoHuman, askquestion, getRandomNumber, dep_getkey, entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag, unpackXpak, lifobuffer
 from databaseTools import openRepositoryDatabase, openClientDatabase, openGenericDatabase, fetchRepositoryIfNotAvailable, listAllAvailableBranches
 import triggerTools
 import confTools
@@ -896,21 +892,13 @@ def removePackage(infoDict):
     atom = infoDict['removeatom']
     content = infoDict['removecontent']
     removeidpackage = infoDict['removeidpackage']
+    clientDbconn = openClientDatabase()
 
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package: "+str(atom))
 
     # clear on-disk cache
     generateDependsTreeCache.clear()
     dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
-
-    # load content cache if found empty
-    if etpConst['collisionprotect'] > 0:
-        if (not contentCache):
-	    clientDbconn = openClientDatabase()
-	    xlist = clientDbconn.listAllFiles(clean = True)
-	    for x in xlist:
-		contentCache[x] = 1
-	    clientDbconn.closeDB()
 
     # remove from database
     if removeidpackage != -1:
@@ -927,20 +915,17 @@ def removePackage(infoDict):
     protect = etpConst['dbconfigprotect']
     mask = etpConst['dbconfigprotectmask']
     
+    
     # remove files from system
     directories = set()
     for file in content:
         # collision check
         if etpConst['collisionprotect'] > 0:
-            if file in contentCache:
+            
+            if clientDbconn.isFileAvailable(file) and os.path.isfile(file): # in this way we filter out directories
                 print_warning(darkred("   ## ")+red("Collision found during remove for ")+file+red(" - cannot overwrite"))
                 equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove for "+file+" - cannot overwrite")
-                content.remove(file)
                 continue
-            try:
-                del contentCache[file]
-            except:
-                pass
     
         protected = False
         if (not infoDict['removeconfig']) and (not infoDict['diffremoval']):
@@ -965,7 +950,7 @@ def removePackage(infoDict):
                 pass # some filenames are buggy encoded
         
         if (protected):
-            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file:  "+file)
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file: "+file)
             print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+file)
         else:
             try:
@@ -1029,6 +1014,7 @@ def removePackage(infoDict):
         if not taint:
             break
 
+    clientDbconn.closeDB()
     return 0
 
 
@@ -1038,7 +1024,7 @@ def removePackage(infoDict):
    @output: 0 = all fine, >0 = error!
 '''
 def installPackage(infoDict):
-
+    
     clientDbconn = openClientDatabase()
     package = infoDict['download']
 
@@ -1047,13 +1033,6 @@ def installPackage(infoDict):
     dumpTools.dumpobj(etpCache['generateDependsTree'],{})
 
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing package: "+str(infoDict['atom']))
-
-    # load content cache if found empty
-    if etpConst['collisionprotect'] > 0:
-        if (not contentCache):
-	    xlist = clientDbconn.listAllFiles(clean = True)
-	    for x in xlist:
-		contentCache[x] = 1
 
     # unpack and install
     if infoDict['repository'].endswith(".tbz2"):
@@ -1065,17 +1044,17 @@ def installPackage(infoDict):
 	shutil.rmtree(unpackDir)
     imageDir = unpackDir+"/image"
     os.makedirs(imageDir)
-    
+
     rc = uncompressTarBz2(pkgpath,imageDir)
     if (rc != 0):
 	return rc
     if not os.path.isdir(imageDir):
 	return 2
-    
+
     # load CONFIG_PROTECT and its mask
     protect = etpRepositories[infoDict['repository']]['configprotect']
     mask = etpRepositories[infoDict['repository']]['configprotectmask']
-    
+
     packageContent = []
     # setup imageDir properly
     imageDir = imageDir.encode(getfilesystemencoding())
@@ -1121,9 +1100,9 @@ def installPackage(infoDict):
 	    tofile = fromfile[len(imageDir):]
 	    
 	    if etpConst['collisionprotect'] > 1:
-		if tofile in contentCache:
-		    print_warning(darkred("   ## ")+red("Collision found during install for ")+file.encode(getfilesystemencoding())+" - cannot overwrite")
-    		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! Collision found during install for "+file.encode(getfilesystemencoding())+" - cannot overwrite")
+		if clientDbconn.isFileAvailable(tofile):
+		    print_warning(darkred("   ## ")+red("Collision found during install for ")+tofile+" - cannot overwrite")
+    		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! Collision found during install for "+tofile+" - cannot overwrite")
     		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[collision] Protecting config file: "+tofile)
 		    print_warning(darkred("   ## ")+red("[collision] Protecting config file: ")+tofile)
 		    continue
@@ -1142,15 +1121,7 @@ def installPackage(infoDict):
 			    protected = False
 			    break
 	    
-	        if os.access(tofile,os.F_OK):
-		    try:
-		        if not protected: os.remove(tofile)
-		    except:
-		        if not protected:
-		            rc = os.system("rm -f "+tofile)
-		            if (rc != 0):
-			        return 3
-	        else:
+	        if not os.path.lexists(tofile):
 		    protected = False # file doesn't exist
 
 	        # check if it's a text file
@@ -1159,21 +1130,14 @@ def installPackage(infoDict):
 	        else:
 		    protected = False # it's not a file
 
-	        # check md5
-	        if (protected) and os.path.isfile(tofile) and os.path.isfile(fromfile):
-		    mymd5 = md5sum(fromfile)
-		    sysmd5 = md5sum(tofile)
-		    if mymd5 == sysmd5:
-		        protected = False # files are the same
-	        else:
-		    protected = False # a broken symlink inside our image dir
-
 	        # request new tofile then
 	        if (protected):
-		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Protecting config file: "+tofile)
-		    print_warning(darkred("   ## ")+red("Protecting config file: ")+tofile)
-		    tofile = allocateMaskedFile(tofile)
-		    
+		    tofile, prot_status = allocateMaskedFile(tofile, fromfile)
+                    if not prot_status:
+                        protected = False
+                    else:
+                        equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Protecting config file: "+tofile)
+                        print_warning(darkred("   ## ")+red("Protecting config file: ")+tofile)
 	    
 	        # -- CONFIGURATION FILE PROTECTION --
 	
@@ -1223,17 +1187,14 @@ def installPackage(infoDict):
 
     clientDbconn.closeDB()
 
-
+    rc = 0
     if (etpConst['gentoo-compat']):
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing new Gentoo database entry: "+str(infoDict['atom']))
 	rc = installPackageIntoGentooDatabase(infoDict,pkgpath, newidpackage = newidpackage)
-	if (rc >= 0):
-	    shutil.rmtree(unpackDir,True)
-	    return rc
     
     # remove unpack dir
     shutil.rmtree(unpackDir,True)
-    return 0
+    return rc
 
 '''
    @description: remove package entry from Gentoo database
@@ -1397,40 +1358,17 @@ def installPackageIntoDatabase(idpackage, repository):
     # fetch info
     dbconn = openRepositoryDatabase(repository)
     data = dbconn.getPackageData(idpackage)
-    # get current revision
-    rev = dbconn.retrieveRevision(idpackage)
-    branch = dbconn.retrieveBranch(idpackage)
-    newcontent = dbconn.retrieveContent(idpackage)
-    
+    dbconn.closeDB()
+    # open client db
     clientDbconn = openClientDatabase()
 
-    # load content cache
-    if etpConst['collisionprotect'] > 0:
-        if (not contentCache):
-	    xlist = clientDbconn.listAllFiles(clean = True)
-	    for x in xlist:
-		contentCache[x] = 1
-
-        # sync contentCache before install
-        for x in newcontent:
-	    contentCache[x] = 1
-    
-    dbconn.closeDB()
-    
-    idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = rev)
+    idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = data['revision'])
     del x
+    
     if (not status):
-	clientDbconn.closeDB()
 	print "DEBUG!!! THIS SHOULD NOT NEVER HAPPEN. Package "+str(idpk)+" has not been inserted, status: "+str(status)
 	idpk = -1 # it hasn't been insterted ? why??
     else: # all fine
-
-	# regenerate contentCache
-        if etpConst['collisionprotect'] > 0:
-	    xlist = clientDbconn.listAllFiles(clean = True)
-	    contentCache.clear()
-	    for x in xlist:
-		contentCache[x] = 1
 
         # add idpk to the installedtable
         clientDbconn.removePackageFromInstalledTable(idpk)
@@ -1461,22 +1399,7 @@ def installPackageIntoDatabase(idpackage, repository):
 def removePackageFromDatabase(idpackage):
     
     clientDbconn = openClientDatabase()
-    # load content cache
-    if etpConst['collisionprotect'] > 0:
-        if (not contentCache):
-	    xlist = clientDbconn.listAllFiles(clean = True)
-	    for x in xlist:
-		contentCache[x] = 1
-        # sync contentCache before removal
-        content = clientDbconn.retrieveContent(idpackage)
-        for x in content:
-	    try:
-	        del contentCache[x]
-	    except:
-	        pass
-    
     clientDbconn.removePackage(idpackage)
-    
     clientDbconn.closeDB()
     return 0
 

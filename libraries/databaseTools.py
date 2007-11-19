@@ -56,7 +56,7 @@ def openRepositoryDatabase(repositoryName, xcache = True):
 	    raise Exception, "openRepositoryDatabase: cannot sync repository "+repositoryName
     conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = 'repo_'+repositoryName, xcache = xcache)
     # initialize CONFIG_PROTECT
-    if (not etpRepositories[repositoryName]['configprotect']) or (not etpRepositories[repositoryName]['configprotectmask']):
+    if (etpRepositories[repositoryName]['configprotect'] == None) or (etpRepositories[repositoryName]['configprotectmask'] == None):
         etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
         etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectDirectories(mask = True)
 	etpRepositories[repositoryName]['configprotect'] += [x for x in etpConst['configprotect'] if x not in etpRepositories[repositoryName]['configprotect']]
@@ -1564,11 +1564,11 @@ class etpDatabase:
 	return data
 
     def fetchall2set(self, item):
-	content = set()
+	mycontent = set()
 	for x in item:
 	    for y in x:
-		content.add(y)
-	return content
+		mycontent.add(y)
+	return mycontent
 
     def fetchall2list(self, item):
 	content = []
@@ -2000,6 +2000,8 @@ class etpDatabase:
     def retrieveContent(self, idpackage, extended = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveContent: retrieving Content for package ID "+str(idpackage))
 
+        self.createContentIndex() # FIXME: remove this with 1.0
+
         extstring = ''
         if extended:
             extstring = ",type"
@@ -2163,6 +2165,17 @@ class etpDatabase:
 	    return -1
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isProtectAvailable: "+protect+" available.")
 	return result[0]
+
+    def isFileAvailable(self,file):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isFileAvailable: called.")
+        self.createContentIndex() # FIXME: remove this with 1.0
+	self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
+	result = self.cursor.fetchone()
+	if not result:
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isFileAvailable: "+file+" not available.")
+	    return False
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isFileAvailable: "+file+" available.")
+	return True
 
     def isSourceAvailable(self,source):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSourceAvailable: called.")
@@ -2574,8 +2587,7 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllFiles: called.")
 	self.cursor.execute('SELECT file FROM content')
 	if clean:
-	    x = self.fetchall2set(self.cursor.fetchall())
-	    return x
+	    return self.fetchall2set(self.cursor.fetchall())
 	else:
 	    return self.fetchall2list(self.cursor.fetchall())
 
@@ -2762,6 +2774,9 @@ class etpDatabase:
         self.cursor.execute('DROP TABLE IF EXISTS counters;')
         self.cursor.execute('CREATE TABLE counters ( counter INTEGER PRIMARY KEY, idpackage INTEGER );')
         self.commitChanges()
+
+    def createContentIndex(self):
+        self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex ON content ( file )')
 
     def regenerateCountersTable(self, output = False):
         self.createCountersTable()

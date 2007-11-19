@@ -19,12 +19,11 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
-
 import sys
-import commands
-sys.path.append('../libraries')
 from xml.dom import minidom
 from entropyConstants import *
+
+curname = ''
 
 '''
    @description: dump object to file
@@ -32,24 +31,41 @@ from entropyConstants import *
    @output: status code
 '''
 def dumpobj(name,object):
-    doc = minidom.Document()
-    structure = doc.createElement("structure")
-    doc.appendChild(structure)
-    data = doc.createElement("data")
-    structure.appendChild(data)
-    text = doc.createTextNode(unicode(object))
-    data.appendChild(text)
-    # etpConst['dumpstoragedir']
+    curname = name
     try:
-	if not os.path.isdir(etpConst['dumpstoragedir']):
-	    os.makedirs(etpConst['dumpstoragedir'])
-        f = open(etpConst['dumpstoragedir']+"/"+name+".dmp","w") #FIXME add check
-        f.writelines(doc.toprettyxml(indent="  "))
-        f.flush()
-        f.close()
-    except:
-        raise IOError,"can't write to file"
+        doc = minidom.Document()
+        structure = doc.createElement("structure")
+        doc.appendChild(structure)
+        data = doc.createElement("data")
+        structure.appendChild(data)
+        text = doc.createTextNode(unicode(object))
+        data.appendChild(text)
+        # etpConst['dumpstoragedir']
+        try:
+            if not os.path.isdir(etpConst['dumpstoragedir']):
+                os.makedirs(etpConst['dumpstoragedir'])
+            f = open(etpConst['dumpstoragedir']+"/"+name+".dmp","w") #FIXME add check
+            f.writelines(doc.toprettyxml(indent="  "))
+            f.flush()
+            f.close()
+        except:
+            raise IOError,"can't write to file "+name
+    except KeyboardInterrupt:
+        import signal
+        signal.signal(signal.SIGTERM, removeobj)
+        signal.signal(signal.SIGQUIT, removeobj)
+        signal.signal(signal.SIGINT, removeobj)
+        signal.signal(signal.SIGHUP, removeobj)
+        dumpobj(name,object)
+        sys.exit(1)
 
+
+def removeobj():
+    if curname:
+        try:
+            os.remove(etpConst['dumpstoragedir']+"/"+curname+".dmp")
+        except:
+            pass
 
 '''
    @description: load object from a file

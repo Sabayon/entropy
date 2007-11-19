@@ -1,12 +1,14 @@
 TODO list:
   CLIENT:
-  - give removal depends calculation a bit of love
+  - better implement --deep (for install)
+  - implement --skipfirst for world and install/remove
+  - keep outdated packages on the server for a week
   - find a way to better handle real smartapps deps
   - add support for database revisions log
   - add external trigger for splashutils
   - env-update source /etc/profile after install?
-  - implement --resume and --skipfirst for world and install
-  - keep outdated packages on the server for a week
+
+
 
 
 Project Status:
