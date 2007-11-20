@@ -76,7 +76,7 @@ def update():
 	scandata = scanfs(quiet = False, dcache = cache_status)
 	if (cache_status):
 	    for x in scandata:
-		print_info("("+blue(str(x))+") "+red(" file: ")+scandata[x]['source'])
+		print_info("("+blue(str(x))+") "+red(" file: ")+scandata[x]['destination'])
 	cache_status = True
 	
 	if (not scandata):

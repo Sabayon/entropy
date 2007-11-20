@@ -608,6 +608,7 @@ def dep_getkey(mydepx):
     
     mydep = mydepx[:]
     mydep = dep_striptag(mydep)
+    mydep = remove_tag(mydep)
     
     mydep = dep_getcpv(mydep)
     if mydep and isspecific(mydep):
@@ -1604,7 +1605,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False):
     if (kernelDependentModule):
 	data['versiontag'] = kmodver
 	# force slot == tag:
-	data['slot'] = kmodver
+	data['slot'] = kmodver # if you change this behaviour, you must change "reagent update" and "equo database gentoosync" consequentially
 	versiontag = "#"+data['versiontag']
     else:
 	versiontag = ""

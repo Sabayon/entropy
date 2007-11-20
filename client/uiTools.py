@@ -137,6 +137,8 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
         print_warning(red("Running with ")+bold("--pretend")+red("..."))
 	pretend = True
 
+    clientDbconn = openClientDatabase()
+
     if not resume:
 
         # verify selected release (branch)
@@ -157,7 +159,6 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
         updateList = set()
         fineList = set()
         removedList = set()
-        clientDbconn = openClientDatabase()
         # get all the installed packages
         packages = clientDbconn.listAllPackages()
         

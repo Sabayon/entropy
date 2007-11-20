@@ -139,16 +139,19 @@ def update(options):
 	            # check if the package is in toBeAdded
 	            if (toBeAdded):
 			#print x
-	                atomkey = dep_getkey(dbconn.retrieveAtom(x[1]))
+                        atom = dbconn.retrieveAtom(x[1])
+	                atomkey = dep_getkey(atom)
+                        atomtag = dep_gettag(atom)
 		        atomslot = dbconn.retrieveSlot(x[1])
+ 
 		        add = True
 		        for pkgdata in toBeAdded:
 		            addslot = getPackageSlot(pkgdata[0])
 		            addkey = dep_getkey(pkgdata[0])
 		            # workaround for ebuilds not having slot
 		            if addslot == None:
-			        addslot = '0'
-		            if (atomkey == addkey) and (str(atomslot) == str(addslot)):
+			        addslot = '0'                                              # handle tagged packages correctly
+		            if (atomkey == addkey) and ((str(atomslot) == str(addslot)) or (atomtag != None)):
 			        # do not add to toBeRemoved
 			        add = False
 			        break

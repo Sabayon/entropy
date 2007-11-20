@@ -96,7 +96,7 @@ def query(options):
 def searchInstalledPackages(packages, idreturn = False, quiet = False):
     
     if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Searching..."))
+        print_info(brown(" @@ ")+darkgreen("Searching..."))
 
     clientDbconn = openClientDatabase()
     dataInfo = set() # when idreturn is True

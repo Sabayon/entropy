@@ -316,6 +316,7 @@ except:
 	print_error(darkred("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org."))
         loadconfcache()
 	exit(1)
+
     print
     print_error(darkred("!!! If the error is about missing tables in the database, just run 'equo database generate' again !!!"))
     print_error(blue("Ok, back here. Let me see if you are connected to the Internet. Yes, I am blue now, so?"))
