@@ -5,6 +5,7 @@ TODO list:
   - add support for database revisions log
   - add external trigger for splashutils
   - env-update source /etc/profile after install?
+  - avoid the removal of all the kernels
 
 Project Status:
 - reagent: complete. Stabilization mode.

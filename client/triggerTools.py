@@ -738,13 +738,29 @@ def remove_boot_grub(kernel,initramfs):
 	grub_conf = f.readlines()
 	kernelname = os.path.basename(kernel)
 	new_conf = []
-        myconf = ""
-        for x in grub_conf: myconf += x
-        myconf = myconf.split("title")
-        for chunk in myconf:
-            if (chunk.find(kernelname) != -1) or (chunk.find(initramfs) != -1):
-                continue # skip this chunk == remove requested entry
-            new_conf.append("title"+chunk)
+        found = False
+        for count in range(len(grub_conf)):
+            line = grub_conf[count].strip()
+            if (line.find(kernelname) != -1) or (line.find(kernelname) != -1):
+                found = True
+                # remove previous content up to title
+                rlines = 0
+                for x in range(len(new_conf))[::-1]:
+                    rlines += 1
+                    if new_conf[x].strip().startswith("title"):
+                        break
+                new_conf = new_conf[::-1][rlines:][::-1]
+            if (found):
+                # check if the parameter belongs to title or it is something else
+                line = grub_conf[count].strip().split()[0]
+                if line: # skip empty lines
+                    if line in ["root","kernel","initrd","hide","unhide","chainloader","makeactive","rootnoverify"]:
+                        # skip write
+                        continue
+                    else:
+                        # skip completed
+                        found = False
+            new_conf.append(grub_conf[count])
 	f = open("/boot/grub/grub.conf","w")
 	f.writelines(new_conf)
 	f.flush()
