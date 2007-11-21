@@ -704,7 +704,15 @@ def remove_revision(ver):
 def remove_tag(mydep):
     colon = mydep.rfind("#")
     if colon != -1:
-	mydep = mydep[:colon]
+	mystring = mydep[:colon]
+        return mystring
+    return mydep
+
+def remove_entropy_revision(mydep):
+    colon = mydep.rfind("~")
+    if colon != -1:
+	mystring = mydep[:colon]
+        return mystring
     return mydep
 
 dep_gettagCache = {}
@@ -1394,6 +1402,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False):
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package name/version..."),back = True)
     tbz2File = package
     package = package.split(".tbz2")[0]
+    package = remove_entropy_revision(package)
     package = remove_tag(package)
     
     # FIXME: deprecated - will be removed soonly

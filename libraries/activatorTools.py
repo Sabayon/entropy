@@ -101,8 +101,14 @@ def sync(options, justTidy = False):
         for repoBin in repoBinaries:
 	    if (not repoBin.endswith(etpConst['packageshashfileext'])):
 	        if repoBin not in dbBinaries:
-		    removeList.append(repoBin)
-    
+                    # check if it's expired
+                    filepath = etpConst['packagesbindir']+"/"+mybranch+"/"+repoBin
+                    mtime = getFileUnixMtime(filepath)
+                    delta = int(etpConst['packagesexpirationdays'])*24*3600
+                    currmtime = time.time()
+                    if currmtime - mtime > delta: # if it's expired
+                        removeList.append(repoBin)
+
         if (not removeList):
 	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: no packages to remove from the lirrors.")
 	    print_info(green(" * ")+red("No packages to remove from the mirrors."))
@@ -615,7 +621,7 @@ def packages(options):
 		        totalSuccessfulUri += 1
 
 	    # trap exceptions, failed to upload/download someting?
-	    except Exception, e:
+	    except Exception, e: # FIXME: only trap proper ftp exceptions
 		
 		print_error(yellow(" * ")+red("packages: Exception caught: ")+str(e)+red(" . Showing traceback:"))
 		import traceback

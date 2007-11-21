@@ -28,6 +28,7 @@ from entropyConstants import *
 from serverConstants import *
 from entropyTools import *
 import os
+import shutil
 
 # Logging initialization
 import logTools
@@ -47,7 +48,6 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
 	print_warning(package+" does not exist !")
 
     packagename = os.path.basename(package)
-
     print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
     mydata = extractPkgData(package, enzymeRequestBranch)
     
@@ -55,7 +55,7 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
 	dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
     else:
 	dbconn = dbconnection
-
+    
     idpk, revision, etpDataUpdated, accepted = dbconn.handlePackage(mydata)
     
     # add package info to our official repository etpConst['officialrepositoryname']
@@ -63,25 +63,24 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
         dbconn.removePackageFromInstalledTable(idpk)
 	dbconn.addPackageToInstalledTable(idpk,etpConst['officialrepositoryname'])
     
-    # return back also the new possible package filename, so that we can make decisions on that
-    newFileName = os.path.basename(etpDataUpdated['download'])
-    
     if dbconnection is None:
 	dbconn.commitChanges()
 	dbconn.closeDB()
 
+    packagename = packagename[:-5]+"~"+str(revision)+".tbz2"
+
     if (accepted) and (revision != 0):
 	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" has been updated to revision: "+str(revision))
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry has been updated. Revision: ")+bold(str(revision)))
-	return True, newFileName, idpk
+	return True, idpk
     elif (accepted) and (revision == 0):
 	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" newly created or version bumped.")
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry newly created."))
-	return True, newFileName, idpk
+	return True, idpk
     else:
 	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" kept intact, no updates needed.")
 	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
-	return False, newFileName, idpk
+	return False, idpk
 
 
 # This tool is used by Entropy after enzyme, it simply parses the content of etpConst['packagesstoredir']
@@ -261,15 +260,26 @@ def update(options):
     etpNotCreated = 0
     for tbz2 in tbz2files:
 	counter += 1
-	tbz2name = tbz2.split("/")[len(tbz2.split("/"))-1]
+	tbz2name = tbz2.split("/")[-1]
 	print_info(" ("+str(counter)+"/"+str(totalCounter)+") Processing "+tbz2name)
 	tbz2path = etpConst['packagesstoredir']+"/"+tbz2
-	rc, newFileName, idpk = generator(tbz2path, dbconn, enzymeRequestBranch)
+	rc, idpk = generator(tbz2path, dbconn, enzymeRequestBranch)
 	if (rc):
 	    etpCreated += 1
-	    # move the file with its new name
-	    spawnCommand("mv "+tbz2path+" "+etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName+" -f")
-	    print_info(yellow(" * ")+red("Injecting database information into ")+bold(newFileName)+red(", please wait..."), back = True)
+            
+            # add revision to package file
+            downloadurl = dbconn.retrieveDownloadURL(idpk)
+            packagerev = dbconn.retrieveRevision(idpk)
+            downloaddir = os.path.dirname(downloadurl)
+            downloadfile = os.path.basename(downloadurl)
+            # remove tbz2 and add revision
+            downloadfile = downloadfile[:-5]+"~"+str(packagerev)+".tbz2"
+            downloadurl = downloaddir+"/"+downloadfile
+            # update url
+            dbconn.setDownloadURL(idpk,downloadurl)
+            
+            shutil.move(tbz2path,etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+downloadfile)
+	    print_info(yellow(" * ")+red("Injecting database information into ")+bold(downloadfile)+red(", please wait..."), back = True)
             
             dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
             while os.path.isfile(dbpath):
@@ -283,14 +293,14 @@ def update(options):
 	    pkgDbconn.addPackage(data, revision = rev)
 	    pkgDbconn.closeDB()
 	    # append the database to the new file
-	    aggregateEdb(tbz2file = etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName, dbfile = dbpath)
+	    aggregateEdb(tbz2file = etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+downloadfile, dbfile = dbpath)
 	    
-	    digest = md5sum(etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName)
+	    digest = md5sum(etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+downloadfile)
 	    dbconn.setDigest(idpk,digest)
-	    hashFilePath = createHashFile(etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+newFileName)
+	    hashFilePath = createHashFile(etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+downloadfile)
 	    # remove garbage
 	    os.remove(dbpath)
-	    print_info(yellow(" * ")+red("Database injection complete for ")+newFileName)
+	    print_info(yellow(" * ")+red("Database injection complete for ")+downloadfile)
 	    
 	else:
 	    etpNotCreated += 1

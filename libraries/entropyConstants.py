@@ -369,6 +369,7 @@ etpConst = {
 					"gz": ("gzip.GzipFile","unpackGzip","etpdatabasefilegzip",)
     },
     'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
+    'packagesexpirationdays': 15, # number of days after a package will be removed from mirrors
     'triggername': "trigger", # name of the trigger file that would be executed by equo inside triggerTools
     
     'databaseloglevel': 1, # Database log level (default: 1 - see database.conf for more info)
@@ -411,7 +412,7 @@ etpConst = {
 				'/lib/modules', '/etc/env.d', '/etc/gconf', '/etc/runlevels', '/lib/splash/cache', '/usr/share/mime', '/etc/portage'
     ],
     'officialrepositoryname': "sabayonlinux.org", # our official repository name
-    'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|", # tag to append to .tbz2 file before entropy database
+    'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|", # tag to append to .tbz2 file before entropy database (must be 32bytes)
     'pidfile': "/var/run/equo.pid",
     'applicationlock': False,
     'collisionprotect': 1, # collision protection option, read equo.conf for more info

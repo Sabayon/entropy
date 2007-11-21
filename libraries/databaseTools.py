@@ -1207,6 +1207,10 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setDigest: setting new digest for idpackage: "+str(idpackage)+" -> "+str(digest))
 	self.cursor.execute('UPDATE extrainfo SET digest = "'+str(digest)+'" WHERE idpackage = "'+str(idpackage)+'"')
 
+    def setDownloadURL(self, idpackage, url):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setDownloadURL: setting new download for idpackage: "+str(idpackage)+" -> "+url)
+	self.cursor.execute('UPDATE extrainfo SET download = "'+url+'" WHERE idpackage = "'+str(idpackage)+'"')
+
     def setCounter(self, idpackage, counter):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setCounter: setting new counter for idpackage: "+str(idpackage)+" -> "+str(counter))
         try:
