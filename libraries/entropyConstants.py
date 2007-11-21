@@ -565,10 +565,7 @@ if not os.path.isdir(etpConst['entropyworkdir']):
 
 
 # entropy section
-if (not os.path.isfile(etpConst['entropyconf'])):
-    print "ERROR: "+etpConst['entropyconf']+" does not exist"
-    exit(50)
-else:
+if os.path.isfile(etpConst['entropyconf']):
     f = open(etpConst['entropyconf'],"r")
     entropyconf = f.readlines()
     f.close()
@@ -657,10 +654,7 @@ if os.getuid() == 0:
 	    os.makedirs(etpConst['packagessuploaddir']+"/"+x)
 
 # database section
-if (not os.path.isfile(etpConst['databaseconf'])):
-    print "ERROR: "+etpConst['databaseconf']+" does not exist"
-    exit(50)
-else:
+if os.path.isfile(etpConst['databaseconf']):
     f = open(etpConst['databaseconf'],"r")
     databaseconf = f.readlines()
     f.close()
