@@ -73,3 +73,13 @@ else:
 	    configprotect = line.split("|")[1].strip()
 	    for x in configprotect.split():
 		etpConst['configprotect'].append(x)
+
+	if line.startswith("configprotectmask|") and (len(line.split("|")) == 2):
+	    configprotect = line.split("|")[1].strip()
+	    for x in configprotect.split():
+		etpConst['configprotectmask'].append(x)
+
+	if line.startswith("configprotectskip|") and (len(line.split("|")) == 2):
+	    configprotect = line.split("|")[1].strip()
+	    for x in configprotect.split():
+		etpConst['configprotectskip'].append(x)

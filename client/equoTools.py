@@ -912,7 +912,6 @@ def removePackage(infoDict):
     protect = etpConst['dbconfigprotect']
     mask = etpConst['dbconfigprotectmask']
     
-    
     # remove files from system
     directories = set()
     for file in content:
@@ -945,6 +944,7 @@ def removePackage(infoDict):
                 # -- CONFIGURATION FILE PROTECTION --
             except:
                 pass # some filenames are buggy encoded
+        
         
         if (protected):
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file: "+file)
@@ -1129,12 +1129,17 @@ def installPackage(infoDict):
 
 	        # request new tofile then
 	        if (protected):
-		    tofile, prot_status = allocateMaskedFile(tofile, fromfile)
-                    if not prot_status:
-                        protected = False
+                    if tofile not in etpConst['configprotectskip']:
+                        tofile, prot_status = allocateMaskedFile(tofile, fromfile)
+                        if not prot_status:
+                            protected = False
+                        else:
+                            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Protecting config file: "+tofile)
+                            print_warning(darkred("   ## ")+red("Protecting config file: ")+tofile)
                     else:
-                        equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Protecting config file: "+tofile)
-                        print_warning(darkred("   ## ")+red("Protecting config file: ")+tofile)
+                        equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Skipping config file installation, as stated in equo.conf: "+tofile)
+                        print_warning(darkred("   ## ")+red("Skipping file installation: ")+tofile)
+                        continue
 	    
 	        # -- CONFIGURATION FILE PROTECTION --
 	

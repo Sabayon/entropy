@@ -1916,3 +1916,15 @@ def collectLinkerPaths():
     except:
         pass
     return ldpaths
+
+def listToUtf8(mylist):
+    mynewlist = []
+    for item in mylist:
+        try:
+            mynewlist.append(item.decode("utf8"))
+        except UnicodeDecodeError:
+            try:
+                mynewlist.append(item.decode("latin1").encode("utf8"))
+            except:
+                raise
+    return mynewlist

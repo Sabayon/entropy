@@ -680,9 +680,11 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
 	    skeys = dbconn.retrieveKeywords(idpackage)
 	    bkeys = dbconn.retrieveBinKeywords(idpackage)
 	    sources = dbconn.retrieveSources(idpackage)
+            eclasses = dbconn.retrieveEclasses(idpackage)
 	    etpapi = dbconn.retrieveApi(idpackage)
 	    print_info(darkgreen("       Source keywords:\t")+red(' '.join(skeys)))
 	    print_info(darkgreen("       Binary keywords:\t")+blue(' '.join(bkeys)))
+            print_info(darkgreen("       Gentoo eclasses:\t")+red(' '.join(eclasses)))
 	    if (sources):
 		print_info(darkgreen("       Sources:"))
 		for source in sources:

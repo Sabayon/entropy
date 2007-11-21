@@ -111,8 +111,8 @@ def postinstall(pkgdata):
 	    functions.add('addbootablekernel')
 	if x.startswith('/usr/src/'):
 	    functions.add('createkernelsym')
-	if x.endswith('/usr/lib'):
-	    functions.add('createkernelsym')
+	if x.startswith('/usr/share/java-config-2/vm/'):
+	    functions.add('add_java_config_2')
         for path in ldpaths:
             if x.startswith(path) and (x.find(".so") != -1):
 	        functions.add('run_ldconfig')
@@ -422,6 +422,7 @@ def mountboot(pkgdata):
     if os.path.isfile("/etc/fstab"):
         f = open("/etc/fstab","r")
 	fstab = f.readlines()
+        fstab = entropyTools.listToUtf8(fstab)
 	f.close()
 	for line in fstab:
 	    fsline = line.split()
@@ -522,6 +523,27 @@ def run_ldconfig(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running ldconfig")
     print_info(red("   ##")+brown(" Regenerating /etc/ld.so.cache"))
     os.system("ldconfig &> /dev/null")
+
+def add_java_config_2(pkgdata):
+    vms = set()
+    for vm in pkgdata['content']:
+        if vm.startswith("/usr/share/java-config-2/vm/") and os.path.isfile(vm):
+            vms.add(vm)
+    # sort and get the latter
+    if vms:
+        vms = list(vms)
+        vms.reverse()
+        myvm = vms[0].split("/")[-1]
+        if myvm:
+            if os.access("/usr/bin/java-config",os.X_OK):
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring JAVA using java-config with VM: "+myvm)
+                # set
+                print_info(red("   ##")+brown(" Setting system VM to ")+bold(myvm)+brown("..."))
+                os.system("java-config -S "+myvm)
+            else:
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION /usr/bin/java-config does not exist. I was about to set JAVA VM: "+myvm)
+                print_info(red("   ##")+bold(" Attention: ")+brown("/usr/bin/java-config does not exist. Cannot set JAVA VM."))
+    del vms
 
 ########################################################
 ####
@@ -633,6 +655,7 @@ def update_moduledb(item):
 	if os.path.isfile(MODULEDB_DIR+'moduledb'):
 	    f = open(MODULEDB_DIR+'moduledb',"r")
 	    moduledb = f.readlines()
+            moduledb = entropyTools.listToUtf8(moduledb)
 	    f.close()
 	    avail = [x for x in moduledb if x.strip() == item]
 	    if (not avail):
@@ -702,6 +725,7 @@ def configure_boot_grub(kernel,initramfs):
 	# test if entry has been already added
 	grubtest = open("/boot/grub/grub.conf","r")
 	content = grubtest.readlines()
+        content = entropyTools.listToUtf8(content)
 	if "title="+etpConst['systemname']+" ("+os.path.basename(kernel)+")\n" in content:
 	    grubtest.close()
 	    return
@@ -736,6 +760,7 @@ def remove_boot_grub(kernel,initramfs):
     if os.path.isdir("/boot/grub") and os.path.isfile("/boot/grub/grub.conf"):
 	f = open("/boot/grub/grub.conf","r")
 	grub_conf = f.readlines()
+        grub_conf = entropyTools.listToUtf8(grub_conf)
 	kernelname = os.path.basename(kernel)
 	new_conf = []
         found = False

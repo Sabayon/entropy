@@ -417,6 +417,7 @@ etpConst = {
     'collisionprotect': 1, # collision protection option, read equo.conf for more info
     'configprotect': [], # list of user specified CONFIG_PROTECT directories (see Gentoo manual to understand the meaining of this parameter)
     'configprotectmask': [], # list of user specified CONFIG_PROTECT_MASK directories
+    'configprotectskip': [], # list of user specified configuration files that should be ignored and kept as they are
     'dbconfigprotect': [], # installed database CONFIG_PROTECT directories
     'dbconfigprotectmask': [], # installed database CONFIG_PROTECT_MASK directories
     'configprotectcounter': 0, # this will be used to show the number of updated files at the end of the processes
