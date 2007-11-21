@@ -28,12 +28,15 @@ from sys import stderr, stdout, modules
 from os import environ, getenv
 import curses
 import readline
-curses.setupterm()
-_cols = curses.tigetnum('cols')
 _cleanline = ''
+_cols = 30
+try:
+    curses.setupterm()
+    _cols = curses.tigetnum('cols')
+except:
+    pass
 for x in range(_cols):
     _cleanline += ' '
-#_lines = curses.tigetnum('lines')
 
 havecolor=1
 dotitles=1
