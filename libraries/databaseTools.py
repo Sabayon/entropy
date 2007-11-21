@@ -1447,6 +1447,10 @@ class etpDatabase:
 	return idpackage
 
     def getBaseData(self,idpackage):
+        
+        self.createBaseinfoIndex()
+        self.createExtrainfoIndex()
+        
 	sql = """
 		SELECT 
 			baseinfo.atom,
@@ -1910,6 +1914,8 @@ class etpDatabase:
 
 	cache = self.fetchInfoCache(idpackage,'retrieveDependencies')
 	if cache != None: return cache
+        
+        self.createDependenciesIndex()
 	
 	self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE idpackage = "'+str(idpackage)+'" and dependencies.iddependency = dependenciesreference.iddependency')
 	deps = self.fetchall2set(self.cursor.fetchall())
@@ -2782,6 +2788,19 @@ class etpDatabase:
     def createContentIndex(self):
         if self.dbname != "etpdb":
             self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex ON content ( file )')
+
+    def createBaseinfoIndex(self):
+        if self.dbname != "etpdb":
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex ON baseinfo ( idpackage, atom, name, version, slot, branch, revision )')
+
+    def createDependenciesIndex(self):
+        if self.dbname != "etpdb":
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex ON dependencies ( idpackage, iddependency )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesreferenceindex ON dependenciesreference ( iddependency, dependency )')
+
+    def createExtrainfoIndex(self):
+        if self.dbname != "etpdb":
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( idpackage, description, homepage, download, digest, datecreation, size )')
 
     def regenerateCountersTable(self, output = False):
         self.createCountersTable()
