@@ -28,14 +28,70 @@ import re
 from sys import exit, stdout, getfilesystemencoding
 import threading, time, tarfile
 
-# Instantiate the databaseStatus:
-import databaseTools
-dbStatus = databaseTools.databaseStatus()
-
 # Logging initialization
 import logTools
 entropyLog = logTools.LogFile(level=etpConst['entropyloglevel'],filename = etpConst['entropylogfile'], header = "[Entropy]")
 # example: entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFuncton: called.")
+
+class databaseStatus:
+
+    def __init__(self):
+	
+	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus.__init__ called.")
+	
+	self.databaseBumped = False
+	self.databaseInfoCached = False
+	self.databaseLock = False
+	#self.database
+	self.databaseDownloadLock = False
+	self.databaseAlreadyTainted = False
+	
+	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
+	    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: database tainted.")
+	    self.databaseAlreadyTainted = True
+
+    def isDatabaseAlreadyBumped(self):
+	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: already bumped? "+str(self.databaseBumped))
+	return self.databaseBumped
+
+    def isDatabaseAlreadyTainted(self):
+	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: tainted? "+str(self.databaseAlreadyTainted))
+	return self.databaseAlreadyTainted
+
+    def setDatabaseTaint(self,bool):
+	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: setting database taint to: "+str(bool))
+	self.databaseAlreadyTainted = bool
+
+    def setDatabaseBump(self,bool):
+	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: setting database bump to: "+str(bool))
+	self.databaseBumped = bool
+
+    def setDatabaseLock(self):
+	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: Locking database (upload)")
+	self.databaseLock = True
+
+    def unsetDatabaseLock(self):
+	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: Unlocking database (upload)")
+	self.databaseLock = False
+
+    def getDatabaseLock(self):
+	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: getting database lock info (upload), status: "+str(self.databaseLock))
+	return self.databaseLock
+
+    def setDatabaseDownloadLock(self):
+	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: Locking database (download)")
+	self.databaseDownloadLock = True
+
+    def unsetDatabaseDownloadLock(self):
+	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: Unlocking database (download)")
+	self.databaseDownloadLock = False
+
+    def getDatabaseDownloadLock(self):
+	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: getting database lock info (download), status: "+str(self.databaseDownloadLock))
+	return self.databaseDownloadLock
+
+# Instantiate the databaseStatus:
+dbStatus = databaseStatus()
 
 # EXIT STATUSES: 100-199
 

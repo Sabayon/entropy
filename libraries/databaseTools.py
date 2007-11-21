@@ -133,65 +133,6 @@ def listAllAvailableBranches():
         dbconn.closeDB()
     return branches
 
-# this class simply describes the current database status
-# FIXME: need a rewrite? simply using dicts, perhaps?
-class databaseStatus:
-
-    def __init__(self):
-	
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus.__init__ called.")
-	
-	self.databaseBumped = False
-	self.databaseInfoCached = False
-	self.databaseLock = False
-	#self.database
-	self.databaseDownloadLock = False
-	self.databaseAlreadyTainted = False
-	
-	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: database tainted.")
-	    self.databaseAlreadyTainted = True
-
-    def isDatabaseAlreadyBumped(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: already bumped? "+str(self.databaseBumped))
-	return self.databaseBumped
-
-    def isDatabaseAlreadyTainted(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: tainted? "+str(self.databaseAlreadyTainted))
-	return self.databaseAlreadyTainted
-
-    def setDatabaseTaint(self,bool):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: setting database taint to: "+str(bool))
-	self.databaseAlreadyTainted = bool
-
-    def setDatabaseBump(self,bool):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: setting database bump to: "+str(bool))
-	self.databaseBumped = bool
-
-    def setDatabaseLock(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: Locking database (upload)")
-	self.databaseLock = True
-
-    def unsetDatabaseLock(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: Unlocking database (upload)")
-	self.databaseLock = False
-
-    def getDatabaseLock(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: getting database lock info (upload), status: "+str(self.databaseLock))
-	return self.databaseLock
-
-    def setDatabaseDownloadLock(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: Locking database (download)")
-	self.databaseDownloadLock = True
-
-    def unsetDatabaseDownloadLock(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: Unlocking database (download)")
-	self.databaseDownloadLock = False
-
-    def getDatabaseDownloadLock(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"DatabaseStatus: getting database lock info (download), status: "+str(self.databaseDownloadLock))
-	return self.databaseDownloadLock
-
 class etpDatabase:
 
     def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = 'etpdb'):

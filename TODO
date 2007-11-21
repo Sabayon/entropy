@@ -1,10 +1,11 @@
 TODO list:
-  CLIENT:
-  - find a way to better handle real smartapps deps
-  - add support for database revisions log
+  - before downloading each file, remotely check the package
   - add external trigger for splashutils
   - env-update source /etc/profile after install?
   - avoid the removal of all the kernels
+  - find a way to better handle real smartapps deps
+  - add support for database revisions log
+
 
 Project Status:
 - reagent: complete. Stabilization mode.
