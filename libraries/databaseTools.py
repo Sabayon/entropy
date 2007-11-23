@@ -2576,6 +2576,11 @@ class etpDatabase:
 	else:
 	    return self.fetchall2list(self.cursor.fetchall())
 
+    def listAllCategories(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllCategories: called.")
+	self.cursor.execute('SELECT categories.category FROM baseinfo,categories WHERE baseinfo.idcategory = categories.idcategory')
+	return self.fetchall2set(self.cursor.fetchall())
+
     def listConfigProtectDirectories(self, mask = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listConfigProtectDirectories: called.")
 	dirs = set()

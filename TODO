@@ -3,7 +3,6 @@ TODO list:
     - enable/disable it
     - purge function
   - add external trigger for splashutils
-  - avoid the removal of all the kernels
   - find a way to better handle real smartapps deps
   - add support for database revisions log
 
