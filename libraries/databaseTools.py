@@ -488,22 +488,42 @@ class etpDatabase:
             trigger = 1
         
 	# baseinfo
-        self.cursor.execute(
-                'INSERT into baseinfo VALUES '
-                '(NULL,?,?,?,?,?,?,?,?,?,?,?)'
-                , (	etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag,
-                        catid,
-                        etpData['name'],
-                        etpData['version'],
-                        etpData['versiontag'],
-                        revision,
-                        etpData['branch'],
-                        etpData['slot'],
-                        licid,
-                        etpData['etpapi'],
-                        trigger,
-                        )
-        )
+        try:
+            self.cursor.execute(
+                    'INSERT into baseinfo VALUES '
+                    '(NULL,?,?,?,?,?,?,?,?,?,?,?)'
+                    , (	etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag,
+                            catid,
+                            etpData['name'],
+                            etpData['version'],
+                            etpData['versiontag'],
+                            revision,
+                            etpData['branch'],
+                            etpData['slot'],
+                            licid,
+                            etpData['etpapi'],
+                            trigger,
+                            )
+            )
+        except OperationalError: # workaround for old tables
+            self.createTriggerColumn() # FIXME: will be removed before 1.0
+            self.cursor.execute(
+                    'INSERT into baseinfo VALUES '
+                    '(NULL,?,?,?,?,?,?,?,?,?,?,?)'
+                    , (	etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag,
+                            catid,
+                            etpData['name'],
+                            etpData['version'],
+                            etpData['versiontag'],
+                            revision,
+                            etpData['branch'],
+                            etpData['slot'],
+                            licid,
+                            etpData['etpapi'],
+                            trigger,
+                            )
+            )
+        
 	self.connection.commit()
 	idpackage = self.cursor.lastrowid
 
@@ -2808,6 +2828,12 @@ class etpDatabase:
     def createTriggerTable(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createTriggerTable: called.")
 	self.cursor.execute('CREATE TABLE triggers ( idpackage INTEGER PRIMARY KEY, data BLOB );')
+	self.commitChanges()
+
+    def createTriggerColumn(self):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createTriggerColumn: called.")
+	self.cursor.execute('ALTER TABLE baseinfo ADD COLUMN trigger INTEGER;')
+	self.cursor.execute('UPDATE baseinfo SET trigger = 0')
 	self.commitChanges()
 
     def createEclassesTable(self):
