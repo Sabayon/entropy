@@ -961,8 +961,8 @@ def removePackage(infoDict):
         if etpConst['collisionprotect'] > 0:
             
             if clientDbconn.isFileAvailable(file) and os.path.isfile(file): # in this way we filter out directories
-                print_warning(darkred("   ## ")+red("Collision found during remove for ")+file+red(" - cannot overwrite"))
-                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove for "+file+" - cannot overwrite")
+                print_warning(darkred("   ## ")+red("Collision found during remove of ")+file+red(" - cannot overwrite"))
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove of "+file+" - cannot overwrite")
                 continue
     
         protected = False
@@ -1172,12 +1172,13 @@ def installPackage(infoDict):
 	        # request new tofile then
 	        if (protected):
                     if tofile not in etpConst['configprotectskip']:
+                        oldtofile = tofile
                         tofile, prot_status = allocateMaskedFile(tofile, fromfile)
                         if not prot_status:
                             protected = False
                         else:
-                            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Protecting config file: "+tofile)
-                            print_warning(darkred("   ## ")+red("Protecting config file: ")+tofile)
+                            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Protecting config file: "+oldtofile)
+                            print_warning(darkred("   ## ")+red("Protecting config file: ")+oldtofile)
                     else:
                         equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Skipping config file installation, as stated in equo.conf: "+tofile)
                         print_warning(darkred("   ## ")+red("Skipping file installation: ")+tofile)

@@ -914,7 +914,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
                         choosenRemovalQueue.append(y)
             
                 if (choosenRemovalQueue):
-                    print_info(red(" @@ ")+blue("These are the packages that would be added to the removal queue:"))
+                    print_info(red(" @@ ")+blue("This is the new removal queue:"))
                     totalatoms = str(len(choosenRemovalQueue))
                     atomscounter = 0
                 
@@ -927,30 +927,23 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
                         while len(stratomscounter) < len(totalatoms):
                             stratomscounter = " "+stratomscounter
                         print_info("   # "+red("(")+bold(stratomscounter)+"/"+blue(str(totalatoms))+red(")")+repositoryInfo+" "+blue(rematom))
-                
-                    if (ask):
-                        rc = entropyTools.askquestion("     Would you like to add these packages to the removal queue?")
-                        if rc != "No":
-                            print_info(red(" @@ ")+blue("Removal Queue updated."))
-                            for x in choosenRemovalQueue:
-                                removalQueue.append(x)
-                    else:
-                        for x in choosenRemovalQueue:
-                            removalQueue.append(x)
+
+                    for x in choosenRemovalQueue:
+                        removalQueue.append(x)
+
                 else:
                     writechar("\n")
         if (ask):
-            if (deps):
-                rc = entropyTools.askquestion("     I am going to start the removal. Are you sure?")
-                if rc == "No":
-                    clientDbconn.closeDB()
-                    return 0,0
-        else:
-            if (deps):
-                entropyTools.countdown(what = red(" @@ ")+blue("Starting removal in "),back = True)
-    
-        for idpackage in plainRemovalQueue:
-            removalQueue.append(idpackage)
+            rc = entropyTools.askquestion("     Would you like to proceed?")
+            if rc == "No":
+                clientDbconn.closeDB()
+                return 0,0
+        elif (deps):
+            entropyTools.countdown(what = red(" @@ ")+blue("Starting removal in "),back = True)
+
+        for idpackage in plainRemovalQueue: # append at the end requested packages if not in queue
+            if idpackage not in removalQueue:
+                removalQueue.append(idpackage)
 
         # clear old resume information
         dumpTools.dumpobj(etpCache['remove'],{})
