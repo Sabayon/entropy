@@ -113,6 +113,8 @@ def postinstall(pkgdata):
 	    functions.add('createkernelsym')
 	if x.startswith('/usr/share/java-config-2/vm/'):
 	    functions.add('add_java_config_2')
+        if x.startswith('/etc/env.d/'):
+            functions.add('env_update')
         for path in ldpaths:
             if x.startswith(path) and (x.find(".so") != -1):
 	        functions.add('run_ldconfig')
@@ -191,6 +193,8 @@ def postremove(pkgdata):
 	    functions.add('removeinit')
         if x.endswith('.py'):
             functions.add('cleanpy')
+        if x.startswith('/etc/env.d/'):
+            functions.add('env_update')
         for path in ldpaths:
             if x.startswith(path) and (x.find(".so") != -1):
 	        functions.add('run_ldconfig')
@@ -523,6 +527,12 @@ def run_ldconfig(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running ldconfig")
     print_info(red("   ##")+brown(" Regenerating /etc/ld.so.cache"))
     os.system("ldconfig &> /dev/null")
+
+def env_update(pkgdata):
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running env-update")
+    if os.access("/usr/sbin/env-update",os.X_OK):
+        print_info(red("   ##")+brown(" Updating environment using env-update"))
+        os.system("env-update &> /dev/null")
 
 def add_java_config_2(pkgdata):
     vms = set()

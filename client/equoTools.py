@@ -26,7 +26,7 @@ import shutil
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
-from remoteTools import downloadData
+import remoteTools
 from entropyTools import compareMd5, bytesIntoHuman, askquestion, getRandomNumber, dep_getkey, entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag, unpackXpak, lifobuffer
 from databaseTools import openRepositoryDatabase, openClientDatabase, openGenericDatabase, fetchRepositoryIfNotAvailable, listAllAvailableBranches
 import triggerTools
@@ -792,6 +792,21 @@ def checkNeededDownload(filepath,checksum = None):
 	return -1
 
 
+def addFailingMirror(mirrorname,increment = 1):
+    item = etpRemoteFailures.get(mirrorname)
+    if item == None:
+        etpRemoteFailures[mirrorname] = increment
+    else:
+        etpRemoteFailures[mirrorname] += increment # add a failure
+    return etpRemoteFailures[mirrorname]
+
+def getFailingMirrorStatus(mirrorname):
+    item = etpRemoteFailures.get(mirrorname)
+    if item == None:
+        return 0
+    else:
+        return item
+
 '''
    @description: download a package into etpConst['packagesbindir'] passing all the available mirrors
    @input package: repository -> name of the repository, filename -> name of the file to download, digest -> md5 hash of the file
@@ -808,10 +823,30 @@ def fetchFileOnMirrors(repository, filename, digest = False):
 	if not remaining:
 	    # tried all the mirrors, quitting for error
 	    return -3
+
 	mirrorcount += 1
 	mirrorCountText = "( mirror #"+str(mirrorcount)+" ) "
-        # now fetch the new one
 	url = uri+"/"+filename
+
+        # check if uri is sane
+        if getFailingMirrorStatus(uri) >= 30:
+            # ohohoh!
+            etpRemoteFailures[mirrorname] = 30 # set to 30 for convenience
+            print_warning(red("   ## ")+mirrorCountText+blue(" Mirror: ")+red(spliturl(url)[1])+" - maximum failure threshold reached.")
+            if getFailingMirrorStatus(uri) == 30:
+                addFailingMirror(uri,45) # put to 75 then decrement by 4 so we won't reach 30 anytime soon ahahaha
+            else:
+                # now decrement each time this point is reached, if will be back < 30, then equo will try to use it again
+                if getFailingMirrorStatus(uri) > 31:
+                    addFailingMirror(uri,-4)
+                else:
+                    # put to 0 - reenable mirror, welcome back uri!
+                    etpRemoteFailures[mirrorname] = 0
+            
+            remaining.remove(uri)
+            continue
+        
+        # now fetch the new one
 	print_info(red("   ## ")+mirrorCountText+blue("Downloading from: ")+red(spliturl(url)[1]))
 	rc = fetchFile(url, digest)
 	if rc == 0:
@@ -820,16 +855,19 @@ def fetchFileOnMirrors(repository, filename, digest = False):
 	else:
 	    # something bad happened
 	    if rc == -1:
-		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - file not available on this mirror.")
+		print_warning(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - file not available on this mirror.")
 	    elif rc == -2:
-		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - wrong checksum.")
+                addFailingMirror(uri,1)
+		print_warning(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - wrong checksum.")
 	    elif rc == -3:
-		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - not found.")
+                addFailingMirror(uri,2)
+		print_warning(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - not found.")
 	    elif rc == -4:
-		print_info(red("   ## ")+mirrorCountText+blue("Discarded download."))
+		print_warning(red("   ## ")+mirrorCountText+blue("Discarded download."))
 		return -1
 	    else:
-		print_info(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - unknown reason.")
+                addFailingMirror(uri, 5)
+		print_warning(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - unknown reason.")
 	    remaining.remove(uri)
 
 '''
@@ -844,9 +882,13 @@ def fetchFile(url, digest = False):
     if os.path.exists(filepath):
 	os.remove(filepath)
 
+    # check if file has the right checksum, otherwise skip
+    # XXX: problem is that mirrors don't support this (some because don't support php itself)
+    #print remoteTools.getRemotePackageChecksum(spliturl(url)[1],filename,etpConst['branch']) 
+
     # now fetch the new one
     try:
-        fetchChecksum = downloadData(url,filepath)
+        fetchChecksum = remoteTools.downloadData(url,filepath)
     except KeyboardInterrupt:
 	return -4
     except:

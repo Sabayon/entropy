@@ -691,6 +691,7 @@ etpHandlers = {
 
 # remote section
 etpRemoteSupport = {}
+etpRemoteFailures = {} # dict of excluded mirrors due to failures, it contains mirror name and failure count | > 5 == ignore mirror
 if (os.path.isfile(etpConst['remoteconf'])):
     f = open(etpConst['remoteconf'],"r")
     remoteconf = f.readlines()

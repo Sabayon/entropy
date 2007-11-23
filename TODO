@@ -1,7 +1,6 @@
 TODO list:
-  - before downloading each file, remotely check the package
+  - server: handle multiple packages for each scope?
   - add external trigger for splashutils
-  - env-update source /etc/profile after install?
   - avoid the removal of all the kernels
   - find a way to better handle real smartapps deps
   - add support for database revisions log
