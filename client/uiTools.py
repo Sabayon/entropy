@@ -761,9 +761,9 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                 actionQueue[pkgatom]['removecontent'] = oldcontent
                 actionQueue[pkgatom]['diffremoval'] = True
                 actionQueue[pkgatom]['removeatom'] = clientDbconn.retrieveAtom(actionQueue[pkgatom]['removeidpackage'])
-                etpRemovalTriggers[pkgatom] = clientDbconn.getPackageData(actionQueue[pkgatom]['removeidpackage'])
-                etpRemovalTriggers[pkgatom]['removecontent'] = actionQueue[pkgatom]['removecontent'].copy()
-                etpRemovalTriggers[pkgatom]['trigger'] = clientDbconn.retrieveTrigger(actionQueue[pkgatom]['removeidpackage'])
+                etpRemovalTriggers[actionQueue[pkgatom]['removeatom']] = clientDbconn.getPackageData(actionQueue[pkgatom]['removeidpackage'])
+                etpRemovalTriggers[actionQueue[pkgatom]['removeatom']]['removecontent'] = actionQueue[pkgatom]['removecontent'].copy()
+                etpRemovalTriggers[actionQueue[pkgatom]['removeatom']]['trigger'] = clientDbconn.retrieveTrigger(actionQueue[pkgatom]['removeidpackage'])
             else:
                 actionQueue[pkgatom]['removeidpackage'] = -1
 
