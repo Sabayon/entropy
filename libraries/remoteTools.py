@@ -59,6 +59,10 @@ def getRemotePackageChecksum(serverName,filename, branch):
     
     # now pray the server
     try:
+        if etpConst['proxy']:
+            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+            opener = urllib2.build_opener(proxy_support)
+            urllib2.install_opener(opener)
         file = urllib2.urlopen(request)
         result = file.readline().strip()
         return result
@@ -88,6 +92,10 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
     
     rc = "-1"
     try:
+        if etpConst['proxy']:
+            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+            opener = urllib2.build_opener(proxy_support)
+            urllib2.install_opener(opener)
         remotefile = urllib2.urlopen(url)
     except KeyboardInterrupt:
         if (showSpeed):
@@ -134,6 +142,10 @@ def getOnlineContent(url):
     socket.setdefaulttimeout(60)
     # now pray the server
     try:
+        if etpConst['proxy']:
+            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+            opener = urllib2.build_opener(proxy_support)
+            urllib2.install_opener(opener)
         file = urllib2.urlopen(url)
         result = file.readlines()
 	if (not result):
@@ -162,6 +174,10 @@ def reportApplicationError(errorstring):
     url = etpHandlers['errorsend']+outstring
     # now pray the server
     try:
+        if etpConst['proxy']:
+            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+            opener = urllib2.build_opener(proxy_support)
+            urllib2.install_opener(opener)
         file = urllib2.urlopen(url)
         result = file.readlines()
 	socket.setdefaulttimeout(2)

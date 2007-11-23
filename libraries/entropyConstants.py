@@ -371,6 +371,7 @@ etpConst = {
     'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
     'packagesexpirationdays': 15, # number of days after a package will be removed from mirrors
     'triggername': "trigger", # name of the trigger file that would be executed by equo inside triggerTools
+    'proxy': {}, # proxy configuration information, used system wide
     
     'databaseloglevel': 1, # Database log level (default: 1 - see database.conf for more info)
     'mirrorsloglevel': 1, # Mirrors log level (default: 1 - see mirrors.conf for more info)
@@ -392,7 +393,7 @@ etpConst = {
     'entropylogfile': ETP_SYSLOG_DIR+"/entropy.log", # Activator operations log file
     'equologfile': ETP_SYSLOG_DIR+"/equo.log", # Activator operations log file
     
-    'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file
+    'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file FIXME: remove this?
     'etpdatabasedir': ETP_DIR+ETP_DBDIR,
     'etpdatabasefilepath': ETP_DIR+ETP_DBDIR+"/"+ETP_DBFILE,
     'etpdatabaseclientdir': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR,
@@ -583,6 +584,15 @@ if os.path.isfile(etpConst['entropyconf']):
 		print "WARNING: invalid loglevel in: "+etpConst['entropyconf']
 		import time
 		time.sleep(5)
+        
+	if line.startswith("ftp-proxy|") and (len(line.split("|")) == 2):
+	    ftpproxy = line.split("|")[1].strip()
+	    for x in ftpproxy.split():
+		etpConst['proxy']['ftp'] = ftpproxy
+	if line.startswith("http-proxy|") and (len(line.split("|")) == 2):
+	    httpproxy = line.split("|")[1].strip()
+	    for x in httpproxy.split():
+		etpConst['proxy']['http'] = httpproxy
 
 # Client packages/database repositories
 etpRepositories = {}

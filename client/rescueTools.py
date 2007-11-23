@@ -35,17 +35,13 @@ import equoTools
 
 def database(options):
 
-    databaseExactMatch = False
-    _options = []
-    for opt in options:
-	if opt == "--exact": # removed
-	    databaseExactMatch = True
-	else:
-	    _options.append(opt)
-    options = _options
-
     if len(options) < 1:
 	return -10
+
+    # check if I am root
+    if (not entropyTools.isRoot()):
+        print_error(red("You are not ")+bold("root")+red("."))
+	return 1
 
     if (options[0] == "generate"):
 
@@ -161,7 +157,7 @@ def database(options):
         return 0
 
     elif (options[0] == "resurrect"):
-
+        
 	print_warning(bold("####### ATTENTION -> ")+red("The installed package database will be resurrected, this will take a LOT of time."))
 	print_warning(bold("####### ATTENTION -> ")+red("Please use this function ONLY if you are using an Entropy-enabled Sabayon distribution."))
 	rc = entropyTools.askquestion("     Can I continue ?")

@@ -295,7 +295,8 @@ except:
     import string
     print_error(darkred("Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. Well, you know, shit happens."))
     print_error(darkred("But there's something you could do to help Equo to be a better application."))
-    print_error(darkgreen("Now I am showing you what happened. Don't panic, I'm here to help you. Suddenly happened:"))
+    print_error(darkred("-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"))
+    print_error(darkgreen("Now I am showing you what happened. Don't panic, I'm here to help you."))
     print
     import traceback
     traceback.print_exc()

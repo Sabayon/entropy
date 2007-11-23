@@ -726,9 +726,13 @@ def configure_boot_grub(kernel,initramfs):
 	grubtest = open("/boot/grub/grub.conf","r")
 	content = grubtest.readlines()
         content = entropyTools.listToUtf8(content)
-	if "title="+etpConst['systemname']+" ("+os.path.basename(kernel)+")\n" in content:
-	    grubtest.close()
-	    return
+        for line in content:
+            try: # handle stupidly encoded text
+                if line.find("title="+etpConst['systemname']+" ("+os.path.basename(kernel)+")\n") != -1:
+                    grubtest.close()
+                    return
+            except UnicodeDecodeError:
+                continue
     else:
 	# create
 	boot_dev = "(hd0,0)"

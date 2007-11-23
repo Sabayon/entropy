@@ -989,7 +989,20 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
         currentqueue += 1
 	infoDict = {}
 	infoDict['removeidpackage'] = idpackage
-	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
+        try:
+            infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
+        except TypeError: # resume cache issues?
+            try:
+                # force database removal and forget about the rest
+                print "DEBUG: attention! entry broken probably due to a resume cache issue, forcing removal from database"
+                clientDbconn.removePackage(idpackage)
+                clientDbconn.removePackageFromInstalledTable(idpackage)
+            except:
+                pass
+            # update resume cache
+            resume_cache['removalQueue'].remove(idpackage)
+            dumpTools.dumpobj(etpCache['remove'],resume_cache)
+            continue
 	infoDict['removecontent'] = clientDbconn.retrieveContent(idpackage)
 	infoDict['diffremoval'] = False
 	infoDict['removeconfig'] = configFiles

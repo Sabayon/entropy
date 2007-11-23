@@ -192,17 +192,19 @@ class etpDatabase:
 	    if (broken1 or broken2 or broken3):
 		# discard both caches
 		dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
-		dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
 		dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
 		dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
-		dumpTools.dumpobj(etpCache['dbInfo']+self.dbname,{})
 		dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
+                self.clearInfoCache()
 		
 	else:
 	    self.xcache = False # setting this to be safe
 	    dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
-	    dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
-	    dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
+            try:
+                self.clearInfoCache()
+            except: # if it's not possible to write cache
+                pass
+            dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
 	
 	if (self.clientDatabase):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened by Entropy client, file: "+str(dbFile))
@@ -543,7 +545,7 @@ class etpDatabase:
                 self.cursor.execute(
                     'INSERT into content VALUES '
                     '(?,?,?)'
-                    , (	idpackage,
+                    , ( idpackage,
                             file,
                             contenttype,
                             )
@@ -835,13 +837,12 @@ class etpDatabase:
 	    )
 
 	# clear caches
-	dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
 	dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
 	dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
 	# dump to be sure
-	dumpTools.dumpobj(etpCache['dbInfo']+self.dbname,{})
 	dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
 	dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
+        self.clearInfoCache()
 
 	self.packagesAdded = True
 	self.commitChanges()
@@ -986,13 +987,12 @@ class etpDatabase:
 	self.packagesRemoved = True
 
 	# clear caches
-	dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
 	dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
 	dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
 	# dump to be sure
-	dumpTools.dumpobj(etpCache['dbInfo']+self.dbname,{})
 	dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
 	dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
+        self.clearInfoCache()
 
 	self.commitChanges()
 
@@ -1532,9 +1532,19 @@ class etpDatabase:
     def fetchone2set(self, item):
 	return set(item)
 
+    def clearInfoCache(self):
+        # clear caches
+        dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
+        # dump to be sure
+        dumpTools.dumpobj(etpCache['dbInfo']+self.dbname,{})
+
     def fetchInfoCache(self,idpackage,function):
 	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage))
+            try:
+                cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage))
+            except KeyError: # dict does not exist?
+                self.clearInfoCache()
+                return None
 	    if cached != None:
 		rslt = cached.get(function)
 		if rslt != None:
@@ -1543,7 +1553,11 @@ class etpDatabase:
 
     def storeInfoCache(self,idpackage,function,data):
 	if (self.xcache):
-	    cache = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage))
+            try:
+                cache = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage))
+            except KeyError: # something bad happened even here, reset cache
+                self.clearInfoCache()
+                cache = None
 	    if cache == None: dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
 	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)][function] = data
 

@@ -1315,7 +1315,7 @@ def installPackageIntoGentooDatabase(infoDict,packageFile, newidpackage = -1):
             if os.path.isdir(destination):
                 shutil.rmtree(destination)
             
-            os.rename(extractPath,destination)
+            shutil.move(extractPath,destination)
             
             # test if /var/cache/edb/counter is fine
             if os.path.isfile(edbCOUNTER):
