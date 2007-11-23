@@ -2578,7 +2578,7 @@ class etpDatabase:
 
     def listAllCategories(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllCategories: called.")
-	self.cursor.execute('SELECT categories.idcategory,categories.category FROM baseinfo,categories WHERE baseinfo.idcategory = categories.idcategory')
+	self.cursor.execute('SELECT idcategory,category FROM categories')
 	return self.cursor.fetchall()
 
     def listConfigProtectDirectories(self, mask = False):
