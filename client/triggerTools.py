@@ -72,10 +72,6 @@ def postinstall(pkgdata):
     if "kde" in pkgdata['eclasses']:
 	functions.add("kbuildsycoca")
 
-    # kde package ?
-    if pkgdata['category']+"/"+pkgdata['name'] == "sys-apps/shadow":
-	functions.add("susetuid")
-
     # update mime
     if "fdo-mime" in pkgdata['eclasses']:
 	functions.add('mimeupdate')
@@ -115,6 +111,8 @@ def postinstall(pkgdata):
 	    functions.add('add_java_config_2')
         if x.startswith('/etc/env.d/'):
             functions.add('env_update')
+        if x == '/bin/su':
+            functions.add("susetuid")
         for path in ldpaths:
             if x.startswith(path) and (x.find(".so") != -1):
 	        functions.add('run_ldconfig')
@@ -493,6 +491,7 @@ def pygtkremove(pkgdata):
 
 def susetuid(pkgdata):
     if os.path.isfile("/bin/su"):
+        print_info(red("   ##")+brown(" Configuring '/bin/su' executable SETUID"))
         os.chown("/bin/su",0,0)
         os.chmod("/bin/su",4755)
 

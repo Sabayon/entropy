@@ -2515,6 +2515,11 @@ class etpDatabase:
 	self.cursor.execute('SELECT branch FROM baseinfo')
 	return self.fetchall2set(self.cursor.fetchall())
 
+    def listIdPackagesInIdcategory(self,idcategory):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listIdPackagesInIdcategory: called.")
+	self.cursor.execute('SELECT idpackage FROM baseinfo where idcategory = "'+str(idcategory)+'"')
+	return self.fetchall2set(self.cursor.fetchall())
+
     def listIdpackageDependencies(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listIdpackageDependencies: called.")
 	self.cursor.execute('SELECT iddependency FROM dependencies where idpackage = "'+str(idpackage)+'"')
