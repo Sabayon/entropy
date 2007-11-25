@@ -262,6 +262,10 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
 	print_info(red(" @@ ")+blue("Nothing to update."))
 
     etpConst['collisionprotect'] = oldcollprotect
+    
+    # verify that client database idpackage still exist, validate here before passing removePackage() wrong info
+    removedList = [x for x in removedList if clientDbconn.isIDPackageAvailable(x)]
+    
     if (removedList):
 	removedList = list(removedList)
 	removedList.sort()
