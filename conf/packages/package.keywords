@@ -1,0 +1,46 @@
+# package.keywords example file
+#
+# Keywords mean architectures whose mean which ones are available to entropy to try solving package dependencies.
+# System keywords are stored internally and are the ones releated to the running architecture.
+# For example, if you are running 64bit Sabayon, you'll have by default: amd64 and ~amd64.
+# Experimental packages are usually tagged with "-*" and/or "" (**) keywords.
+# There are multiple ways to "unmask" these packages and will be explained below.
+
+# LINE CONSTRUCTION:
+# <keyword> <atom||repo=repository id> <atom||repo=repository id>
+# See examples below
+
+# UNIVERSAL UNMASKING:
+# Unmasking all packages with -* keyword means writing a like like this (without the # marker):
+# -*
+# or unmasking all packages with no keywords ("" specified here as "**"):
+# **
+
+# REPOSITORY UNMASKING:
+# Unmasking all packages in a specific repository id called for example "sabayonlinux.org"
+# with -* keyword means writing a like like this (without the # marker):
+# -* repo=sabayonlinux.org
+# or with no keywords ("" specified here as "**"):
+# ** repo=sabayonlinux.org
+
+# PACKAGES UNMASKING:
+# Unmasking specified packages (one per line, keyworded or full) with -* keyword means writing a like like this (without the # marker):
+# -* >=media-libs/foo-1.2.3
+# -* media-libs/foo
+# -* <media-libs/foo-1.2.3
+# -* =media-libs/foo-1.2*
+# or with no keywords ("" specified here as "**"):
+# ** >=media-libs/foo-1.2.3
+# ** media-libs/foo
+# ** <media-libs/foo-1.2.3
+# ** =media-libs/foo-1.2*
+
+# PACKAGES IN REPOSITORY UNMASKING:
+# Unmasking specified packages (one per line, keyworded or full) in a specific repository id called for example
+# "sabayonlinux.org" with -* keyword means writing a like like this (without the # marker):
+# -* >=media-libs/foo-1.2.3 repo=sabayonlinux.org
+# -* media-libs/foo repo=sabayonlinux.org
+# -* <media-libs/foo-1.2.3 repo=sabayonlinux.org
+# -* =media-libs/foo-1.2* repo=sabayonlinux.org
+# Same thing for ** as above.
+# You can swap atom and repo=, Entropy doesn't care but the first item must be a KEYWORD!

@@ -33,6 +33,7 @@ except ImportError: # fallback to embedded pysqlite
     from pysqlite2 import dbapi2 as sqlite
 import dumpTools
 import os
+import types
 
 # Logging initialization
 import logTools
@@ -1568,10 +1569,15 @@ class etpDatabase:
 	    if cached != None:
 		rslt = cached.get(function)
 		if rslt != None:
-		    return rslt
+                    if (type(rslt) is dict) or (type(rslt) is set): # needed ?
+                        return rslt.copy()
+                    elif (type(rslt) is list):
+                        return rslt[:]
+                    else:
+                        return rslt
 	return None
 
-    def storeInfoCache(self,idpackage,function,data):
+    def storeInfoCache(self,idpackage,function,info_cache_data):
 	if (self.xcache):
             try:
                 cache = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage))
@@ -1579,7 +1585,12 @@ class etpDatabase:
                 self.clearInfoCache()
                 cache = None
 	    if cache == None: dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
-	    dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)][function] = data
+            if (type(info_cache_data) is set) or (type(info_cache_data) is dict):
+                dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)][function] = info_cache_data.copy()
+            elif (type(info_cache_data) is list):
+                dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)][function] = info_cache_data[:]
+            else:
+                dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)][function] = info_cache_data
 
     def fetchSearchCache(self,searchdata,function):
 	if (self.xcache):
@@ -1587,14 +1598,22 @@ class etpDatabase:
 	    if cached != None:
 		rslt = cached.get(searchdata)
 		if rslt != None:
-		    return rslt
+                    if (type(rslt) is dict) or (type(rslt) is set): # needed ?
+                        return rslt.copy()
+                    elif (type(rslt) is list):
+                        return rslt[:]
+                    else:
+                        return rslt
 	return None
 
     def storeSearchCache(self,searchdata,function,data):
 	if (self.xcache):
 	    cache = dbCacheStore[etpCache['dbSearch']+self.dbname].get(function)
 	    if cache == None: dbCacheStore[etpCache['dbSearch']+self.dbname][function] = {}
-	    dbCacheStore[etpCache['dbSearch']+self.dbname][function][searchdata] = data
+            if (type(data) is set) or (type(data) is dict):
+	        dbCacheStore[etpCache['dbSearch']+self.dbname][function][searchdata] = data.copy()
+            else:
+	        dbCacheStore[etpCache['dbSearch']+self.dbname][function][searchdata] = data
 
     def retrieveAtom(self, idpackage):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveAtom: retrieving Atom for package ID "+str(idpackage))
@@ -1892,7 +1911,8 @@ class etpDatabase:
         
         self.createDependenciesIndex()
 	
-	self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE idpackage = "'+str(idpackage)+'" and dependencies.iddependency = dependenciesreference.iddependency')
+	self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE dependencies.idpackage = "'+str(idpackage)+'" and dependencies.iddependency = dependenciesreference.iddependency')
+        
 	deps = self.fetchall2set(self.cursor.fetchall())
 
 	self.storeInfoCache(idpackage,'retrieveDependencies',deps)
@@ -2923,25 +2943,61 @@ class etpDatabase:
 ##   Dependency handling functions
 #
 
+    def atomMatchFetchCache(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording):
+        if (self.xcache):
+            try:
+                cached = dbCacheStore[etpCache['dbMatch']+self.dbname].get(atom)
+                if cached:
+                    if (matchSlot == cached['matchSlot']) \
+                            and (multiMatch == cached['multiMatch']) \
+                            and (caseSensitive == cached['caseSensitive']) \
+                            and (matchTag == cached['matchTag']) \
+                            and (keywording == cached['keywording']) \
+                            and (matchBranches == cached['matchBranches']):
+                        return cached['result']
+                    else:
+                        return None
+                else:
+                    #print atom
+                    #print self.dbname
+                    #print "not in cache"
+                    return None
+            except KeyError: # issues with dictionaries?
+                return None
+        else:
+            return None
+
+    def atomMatchStoreCache(self, result, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording):
+        try:
+            dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
+            dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
+            dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
+            dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
+            dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
+            dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
+            dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['keywording'] = keywording
+            dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = result
+        except KeyError: # againnn, issues with dicts??
+            pass
+
+    def keywordsFilter(self,results):
+        #print results
+        return results,0
+
     '''
        @description: matches the user chosen package name+ver, if possibile, in a single repository
        @input atom: string, atom to match
        @input caseSensitive: bool, should the atom be parsed case sensitive?
        @input matchSlot: string, match atoms with the provided slot
        @input multiMatch: bool, return all the available atoms
+       @input keywording: enable/disable keywords filter
        @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = not found, 2 = need more info, 3 = cannot use direction without specifying version
     '''
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = (), matchTag = None):
-        if (self.xcache):
-            cached = dbCacheStore[etpCache['dbMatch']+self.dbname].get(atom)
-            if cached:
-		# check if matchSlot and multiMatch were the same
-		if (matchSlot == cached['matchSlot']) \
-			and (multiMatch == cached['multiMatch']) \
-			and (caseSensitive == cached['caseSensitive']) \
-			and (matchTag == cached['matchTag']) \
-			and (matchBranches == cached['matchBranches']):
-	            return cached['result']
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = (), matchTag = None, keywording = True):
+
+        cached = self.atomMatchFetchCache(atom,caseSensitive,matchSlot,multiMatch,matchBranches,matchTag,keywording)
+        if cached != None:
+            return cached
 	
 	# check if tag is provided -> app-foo/foo-1.2.3:SLOT|TAG or app-foo/foo-1.2.3|TAG
 	atomTag = entropyTools.dep_gettag(atom)
@@ -3043,13 +3099,7 @@ class etpDatabase:
 	        if (not foundCat) and (mypkgcat == "null"):
 		    # got the issue
 		    # gosh, return and complain
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = -1,2
+                    self.atomMatchStoreCache((-1,2), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
 		    return -1,2
 	
 	        # I can use foundCat
@@ -3089,13 +3139,7 @@ class etpDatabase:
 	        # check if direction is used with justname, in this case, return an error
 	        if (justname):
 		    #print "justname"
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = -1,3
+                    self.atomMatchStoreCache((-1,3), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
 		    return -1,3 # error, cannot use directions when not specifying version
 	    
 	        if (direction == "~") or (direction == "=") or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")): # any revision within the version specified OR the specified version
@@ -3132,13 +3176,7 @@ class etpDatabase:
 				    dbpkginfo.append([idpackage,dbver])
 
 		    if (not dbpkginfo):
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
-			dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = -1,1
+                        self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
 		        return -1,1
 		
 		    versions = []
@@ -3153,13 +3191,7 @@ class etpDatabase:
 		        versions.append(x[1])
 		
 		    if (not versions):
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
-			dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = -1,1
+                        self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
 			return -1,1
 		
 		    # who is newer ?
@@ -3174,14 +3206,12 @@ class etpDatabase:
 	            similarPackages = self.searchPackagesByNameAndVersionAndCategory(name = newerPkgName, version = newerPkgVersion, category = newerPkgCategory, branch = newerPkgBranch)
 		    
 		    if (multiMatch):
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = similarPackages,0
-			return similarPackages,0
+                        # filter only valid keywords
+                        statuscode = 0
+                        if keywording:
+                            similarPackages, statuscode = self.keywordsFilter(similarPackages)
+                        self.atomMatchStoreCache((similarPackages,statuscode), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
+			return similarPackages,statuscode
 		    
 		    #print newerPackage
 		    #print similarPackages
@@ -3194,17 +3224,14 @@ class etpDatabase:
 			versiontaglist = entropyTools.getNewerVersionTag(versionTags)
 		        newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
 		
-		    #print newerPackage
-		    #print newerPackage[1]
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = newerPackage[0],0
-		    return newerPackage[0],0
-	
+                    # filter only valid keywords
+                    statuscode = 0
+                    choosenid = newerPackage[0]
+                    if keywording:
+                        choosenid,statuscode = self.keywordsFilter(choosenid)
+                    self.atomMatchStoreCache((choosenid,statuscode), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
+		    return choosenid,0
+
 	        elif (direction.find(">") != -1) or (direction.find("<") != -1):
 		
 		    #print direction+" direction"
@@ -3237,13 +3264,7 @@ class etpDatabase:
 		
 		    if (not dbpkginfo):
 		        # this version is not available
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
-			dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = -1,1
+                        self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
 		        return -1,1
 		
 		    versions = []
@@ -3264,16 +3285,15 @@ class etpDatabase:
 		    dbpkginfo = _dbpkginfo
 		    
 		    if (multiMatch):
-			return multiMatchList,0
+                        # filter only valid keywords
+                        statuscode = 0
+                        if keywording:
+                            multiMatchList, statuscode = self.keywordsFilter(multiMatchList)
+                        self.atomMatchStoreCache((multiMatchList,statuscode), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
+			return multiMatchList,statuscode
 
 		    if (not versions):
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
-			dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = -1,1
+                        self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
 			return -1,1
 
 		    # who is newer ?
@@ -3288,14 +3308,12 @@ class etpDatabase:
 	            similarPackages = self.searchPackagesByNameAndVersionAndCategory(name = newerPkgName, version = newerPkgVersion, category = newerPkgCategory, branch = newerPkgBranch)
 
 		    if (multiMatch):
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
-			dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
-		        dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = similarPackages,0
-			return similarPackages,0
+                        statuscode = 0
+                        # filter only valid keywords
+                        if keywording:
+                            similarPackages,statuscode = self.keywordsFilter(similarPackages)
+                        self.atomMatchStoreCache((similarPackages,statuscode), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
+			return similarPackages,statuscode
 
 		    #print newerPackage
 		    #print similarPackages
@@ -3308,25 +3326,17 @@ class etpDatabase:
 		        versiontaglist = entropyTools.getNewerVersionTag(versionTags)
 		        newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
 		
-		    #print newerPackage
-		    #print newerPackage[1]
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = newerPackage[0],0
-		    return newerPackage[0],0
+
+                    statuscode = 0
+                    # filter only valid keywords
+                    choosenid = newerPackage[0]
+                    if keywording:
+                        choosenid,statuscode = self.keywordsFilter(choosenid)
+                    self.atomMatchStoreCache((choosenid,statuscode), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
+		    return choosenid,statuscode
 
 	        else:
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = -1,1
+                    self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
 		    return -1,1
 		
 	    else:
@@ -3358,16 +3368,15 @@ class etpDatabase:
 		foundIDs = _foundIDs
 	    
 		if (multiMatch):
-		    return multiMatchList,0
+                    # filter only valid keywords
+                    statuscode = 0
+                    if keywording:
+                        multiMatchList, statuscode = self.keywordsFilter(multiMatchList)
+                    self.atomMatchStoreCache((multiMatchList,statuscode), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
+		    return multiMatchList,statuscode
 		
 		if (not versionIDs):
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
-		    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = -1,1
+                    self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
 		    return -1,1
 		
 	        versionlist = entropyTools.getNewerVersion(versionIDs)
@@ -3388,24 +3397,16 @@ class etpDatabase:
 		        versionTags.append(self.retrieveVersionTag(pkg[1]))
 		    versiontaglist = entropyTools.getNewerVersionTag(versionTags)
 		    newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
-	    
-		dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
-		dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
-		dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
-		dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
-		dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
-		dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
-		dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = newerPackage[1],0
-	        return newerPackage[1],0
+
+                statuscode = 0
+                # filter only valid keywords
+                choosenid = newerPackage[1]
+                if keywording:
+                    choosenid,statuscode = self.keywordsFilter(choosenid)
+                self.atomMatchStoreCache((choosenid,statuscode), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
+	        return choosenid,statuscode
 
         else:
 	    # package not found in any branch
-	    dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
-	    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
-	    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
-	    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['multiMatch'] = multiMatch
-	    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['caseSensitive'] = caseSensitive
-	    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchBranches'] = matchBranches
-	    dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['result'] = -1,1
+            self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
 	    return -1,1
-	

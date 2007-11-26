@@ -21,7 +21,6 @@
 '''
 
 import os
-import commands
 import random
 from sys import exit
 
@@ -406,6 +405,7 @@ etpConst = {
     
     'branches': ["3.5","2008"], # available branches, this only exists for the server part
     'branch': "3.5", # choosen branch
+    'keywords': set([ETP_ARCH_CONST,"~"+ETP_ARCH_CONST]), # default allowed package keywords
     'gentoo-compat': False, # Gentoo compatibility (/var/db/pkg + Portage availability)
     'filesystemdirs': ['/bin','/boot','/emul','/etc','/lib','/lib32','/lib64','/opt','/sbin','/usr','/var'], # directory of the filesystem
     'filesystemdirsmask': [
@@ -430,6 +430,9 @@ etpConst = {
     'errorstatus': ETP_CONF_DIR+"/code",
     
     'dumpstoragedir': ETP_DIR+ETP_XMLDIR, # data storage directory, useful to speed up equo across multiple issued commands
+
+    # packages keywords/mask/unmask settings
+    'packagemasking': {}, # package masking information dictionary filled by maskingparser.py
 
 }
 
@@ -586,14 +589,16 @@ if os.path.isfile(etpConst['entropyconf']):
 		import time
 		time.sleep(5)
         
-	if line.startswith("ftp-proxy|") and (len(line.split("|")) == 2):
+	elif line.startswith("ftp-proxy|") and (len(line.split("|")) == 2):
 	    ftpproxy = line.split("|")[1].strip()
 	    for x in ftpproxy.split():
 		etpConst['proxy']['ftp'] = ftpproxy
-	if line.startswith("http-proxy|") and (len(line.split("|")) == 2):
+	elif line.startswith("http-proxy|") and (len(line.split("|")) == 2):
 	    httpproxy = line.split("|")[1].strip()
 	    for x in httpproxy.split():
 		etpConst['proxy']['http'] = httpproxy
+    
+
 
 # Client packages/database repositories
 etpRepositories = {}
@@ -717,6 +722,13 @@ if (os.path.isfile(etpConst['remoteconf'])):
             url += etpConst['product']+"/handlers/"
 	    etpRemoteSupport[servername] = url
 
+# generate masking dictionary
+import maskingparser
+etpConst['packagemasking'] = maskingparser.parse()
+# merge universal keywords
+for x in etpConst['packagemasking']['keywords']['universal']:
+    etpConst['keywords'].add(x)
+
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things
 dbDESCRIPTION = "DESCRIPTION"
@@ -742,7 +754,3 @@ dbCONTENTS = "CONTENTS"
 dbCOUNTER = "COUNTER"
 edbCOUNTER = "/var/cache/edb/counter"
 
-# Portage variables reference
-# vdbVARIABLE --> $VARIABLE
-vdbPORTDIR = "PORTDIR"
-vdbPORTDIR_OVERLAY = "PORTDIR_OVERLAY"

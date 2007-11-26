@@ -493,7 +493,8 @@ def susetuid(pkgdata):
     if os.path.isfile("/bin/su"):
         print_info(red("   ##")+brown(" Configuring '/bin/su' executable SETUID"))
         os.chown("/bin/su",0,0)
-        os.chmod("/bin/su",4755)
+        os.system("chmod 4755 /bin/su")
+        #os.chmod("/bin/su",4755) #FIXME: probably there's something I don't know here since 
 
 def cleanpy(pkgdata):
     pyfiles = [x for x in pkgdata['content'] if x.endswith(".py")]

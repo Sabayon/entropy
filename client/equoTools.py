@@ -1404,9 +1404,9 @@ def installPackageIntoDatabase(idpackage, repository):
     dbconn = openRepositoryDatabase(repository)
     data = dbconn.getPackageData(idpackage)
     dbconn.closeDB()
+    #print data['dependencies']
     # open client db
     clientDbconn = openClientDatabase()
-
     idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = data['revision'])
     del x
     
@@ -1421,6 +1421,7 @@ def installPackageIntoDatabase(idpackage, repository):
 	# update dependstable
 	try:
 	    depends = clientDbconn.listIdpackageDependencies(idpk)
+            #print depends
 	    for depend in depends:
 		atom = depend[1]
 		iddep = depend[0]
