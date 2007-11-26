@@ -59,7 +59,7 @@ def package(options):
     equoRequestUpgrade = False
     equoRequestResume = False
     equoRequestSkipfirst = False
-    equoRequestUpgradeTo = ''
+    equoRequestUpgradeTo = None
     rc = 0
     _myopts = []
     mytbz2paths = []
@@ -91,6 +91,8 @@ def package(options):
 	elif (opt == "--skipfirst"):
 	    equoRequestSkipfirst = True
 	else:
+	    if opt.startswith("--"):
+		continue
             if (equoRequestUpgrade):
                 equoRequestUpgradeTo = opt
 	    elif opt.endswith(".tbz2") and os.access(opt,os.R_OK):
@@ -130,7 +132,7 @@ def package(options):
     return rc
 
 
-def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False, replay = False, upgradeTo = '', resume = False, skipfirst = False):
+def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False, replay = False, upgradeTo = None, resume = False, skipfirst = False):
 
     # check if I am root
     if (not entropyTools.isRoot()):
@@ -144,8 +146,8 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
         # verify selected release (branch)
         if (upgradeTo):
             availbranches = listAllAvailableBranches()
-            if upgradeTo not in availbranches:
-                print_error(red("Selected release: ")+bold(upgradeTo)+red(" is not available."))
+            if (upgradeTo not in availbranches) or (upgradeTo == None):
+                print_error(red("Selected release: ")+bold(str(upgradeTo))+red(" is not available."))
                 return 1,-2
             else:
                 branches = (upgradeTo,)

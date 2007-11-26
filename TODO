@@ -1,4 +1,5 @@
 TODO list:
+  - add keywording support: package.keywords
   - server: handle multiple packages for each scope with these abilities:
     - enable/disable it
     - purge function

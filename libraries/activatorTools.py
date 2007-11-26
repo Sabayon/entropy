@@ -99,15 +99,24 @@ def sync(options, justTidy = False):
         removeList = []
         # select packages
         for repoBin in repoBinaries:
-	    if (not repoBin.endswith(etpConst['packageshashfileext'])):
+	    if (repoBin.endswith(".tbz2")):
 	        if repoBin not in dbBinaries:
                     # check if it's expired
                     filepath = etpConst['packagesbindir']+"/"+mybranch+"/"+repoBin
-                    mtime = getFileUnixMtime(filepath)
-                    delta = int(etpConst['packagesexpirationdays'])*24*3600
-                    currmtime = time.time()
-                    if currmtime - mtime > delta: # if it's expired
-                        removeList.append(repoBin)
+		    if os.path.isfile(filepath+etpConst['packagesexpirationfileext']):
+			# check mtime
+			mtime = getFileUnixMtime(filepath+etpConst['packagesexpirationfileext'])
+			delta = int(etpConst['packagesexpirationdays'])*24*3600
+			currmtime = time.time()
+			if currmtime - mtime > delta: # if it's expired
+			    removeList.append(repoBin)
+		    else:
+			# create expiration file
+			f = open(filepath+etpConst['packagesexpirationfileext'],"w")
+			f.write("\n")
+			f.flush()
+			f.close()
+			# not expired.
 
         if (not removeList):
 	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: no packages to remove from the lirrors.")
