@@ -106,9 +106,9 @@ def openServerDatabase(readOnly = True, noUpload = True):
    @description: open a generic client database and returns the pointer.
    @output: database pointer
 '''
-def openGenericDatabase(dbfile, dbname = None):
+def openGenericDatabase(dbfile, dbname = None, xcache = False):
     if dbname == None: dbname = "generic"
-    conn = etpDatabase(readOnly = False, dbFile = dbfile, clientDatabase = True, dbname = dbname, xcache = False)
+    conn = etpDatabase(readOnly = False, dbFile = dbfile, clientDatabase = True, dbname = dbname, xcache = xcache)
     return conn
 
 def backupClientDatabase():
