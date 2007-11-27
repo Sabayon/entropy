@@ -3041,7 +3041,6 @@ class etpDatabase:
         newresults = []
         for item in results:
             rc = self.keywordsIdValidator(item[1])
-            print rc
             if rc != -1:
                 newresults.append(item)
         
