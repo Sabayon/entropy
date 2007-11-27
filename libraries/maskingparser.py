@@ -20,10 +20,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-from entropyConstants import ETP_CONF_DIR, os
+from entropyConstants import ETP_CONF_DIR, etpConst, etpCache, os
 
 etpMaskFiles = {
     'keywords': ETP_CONF_DIR+"/packages/package.keywords", # keywords configuration files
+}
+
+etpMtimesFiles = {
+    'keywords_mtime': etpConst['dumpstoragedir']+"/keywords.mtime", # keywords configuration files mtime
 }
 
 '''
@@ -40,6 +44,33 @@ def parse():
    parser of package.keywords file
 '''
 def keywords_parser():
+    
+    # handle on-disk cache validation
+    # in this case, repositories cache
+    # if package.keywords is changed, we must destroy cache
+    if not os.path.isfile(etpMtimesFiles['keywords_mtime']):
+        # we can't know if package.keywords has been updated
+        # remove repositories caches
+        __removeRepoCache()
+        __savePackageKeywordsMtime()
+    else:
+        # check mtime
+        try:
+            f = open(etpMtimesFiles['keywords_mtime'],"r")
+            mtime = int(f.readline().strip())
+            # compare with current mtime
+            try:
+                currmtime = os.path.getmtime(etpMaskFiles['keywords'])
+            except OSError:
+                currmtime = 0
+            if mtime != currmtime:
+                __removeRepoCache()
+                __savePackageKeywordsMtime()
+        except:
+            __removeRepoCache()
+            __savePackageKeywordsMtime()
+
+    
     data = {
             'universal': set(),
             'packages': {},
@@ -102,3 +133,28 @@ def keywords_parser():
     return data
 
 
+'''
+   internal functions
+'''
+
+def __removeRepoCache():
+    content = os.listdir(etpConst['dumpstoragedir'])
+    for file in content:
+        if file.startswith(etpCache['dbMatch']+etpConst['dbnamerepoprefix']) and file.endswith(".dmp"):
+            os.remove(etpConst['dumpstoragedir']+"/"+file)
+
+def __savePackageKeywordsMtime():
+    
+    if not os.path.isfile(etpMaskFiles['keywords']):
+        currmtime = 0
+    else:
+        currmtime = os.path.getmtime(etpMaskFiles['keywords'])
+    
+    if not os.path.isdir(etpConst['dumpstoragedir']):
+        os.makedirs(etpConst['dumpstoragedir'])
+    
+    f = open(etpMtimesFiles['keywords_mtime'],"w")
+    f.write(str(currmtime))
+    f.flush()
+    f.close()
+    

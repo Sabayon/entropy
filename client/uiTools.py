@@ -363,7 +363,8 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
             if (exitcode != -1):
                 _foundAtoms.append(result[1])
             else:
-                print_warning(red("## ATTENTION: no match for ")+bold(" "+result[0]+" ")+red(" in database. If you omitted the category, try adding it."))
+                print_warning(bold("!!!")+red(" No match for ")+bold(result[0])+red(" in database. If you omitted the category, try adding it."))
+                print_warning(red("    Also, if package is masked, you need to unmask it. See ")+bold(etpConst['confdir']+"/packages/*")+red(" files for help."))
 
         foundAtoms = _foundAtoms
 

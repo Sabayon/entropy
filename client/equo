@@ -231,8 +231,10 @@ try:
 	equoTools.saveCaches()
 
     elif (options[0] == "query"):
+        equoTools.loadCaches(quiet = True)
 	import queryTools
         rc = queryTools.query(options[1:])
+        equoTools.saveCaches()
 
     # smartapps tool
     elif (options[0] == "smart"):

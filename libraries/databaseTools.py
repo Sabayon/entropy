@@ -33,7 +33,6 @@ except ImportError: # fallback to embedded pysqlite
     from pysqlite2 import dbapi2 as sqlite
 import dumpTools
 import os
-import types
 
 # Logging initialization
 import logTools
@@ -55,7 +54,7 @@ def openRepositoryDatabase(repositoryName, xcache = True):
 	rc = fetchRepositoryIfNotAvailable(repositoryName)
 	if (rc):
 	    raise Exception, "openRepositoryDatabase: cannot sync repository "+repositoryName
-    conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = 'repo_'+repositoryName, xcache = xcache)
+    conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = etpConst['dbnamerepoprefix']+repositoryName, xcache = xcache)
     # initialize CONFIG_PROTECT
     if (etpRepositories[repositoryName]['configprotect'] == None) or (etpRepositories[repositoryName]['configprotectmask'] == None):
         etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
@@ -2969,6 +2968,7 @@ class etpDatabase:
 
     def atomMatchStoreCache(self, result, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording):
         try:
+            #print "CACHING",result,atom,self.dbname
             dbCacheStore[etpCache['dbMatch']+self.dbname][atom] = {}
             dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchSlot'] = matchSlot
             dbCacheStore[etpCache['dbMatch']+self.dbname][atom]['matchTag'] = matchTag
@@ -2980,9 +2980,72 @@ class etpDatabase:
         except KeyError: # againnn, issues with dicts??
             pass
 
+    # function that validate one atom by reading keywords settings
+    # keywordValidatorCache = {} << done in entropyConstants
+    def keywordsIdValidator(self,idpackage):
+        
+        reponame = self.dbname[5:]
+        cached = keywordValidatorCache.get((idpackage,reponame))
+        if cached != None: return cached
+        
+        mykeywords = self.retrieveKeywords(idpackage)
+        # firstly, check if package keywords are in etpConst['keywords'] (universal keywords have been merged from package.mask)
+        for key in etpConst['keywords']:
+            if key in mykeywords:
+                # found! all fine
+                keywordValidatorCache[(idpackage,reponame)] = idpackage
+                return idpackage
+        
+        # if we get here, it means we didn't find mykeywords in etpConst['keywords'], we need to seek etpConst['packagemasking']['keywords']
+        # seek in repository first
+        if reponame in etpConst['packagemasking']['keywords']['repositories']:
+            for keyword in etpConst['packagemasking']['keywords']['repositories'][reponame]:
+                if keyword in mykeywords:
+                    keyword_data = etpConst['packagemasking']['keywords']['repositories'][reponame].get(keyword)
+                    for atom in keyword_data:
+                        if atom == "*": # all packages in this repo with keyword "keyword" are ok
+                            return idpackage
+                        matches = self.atomMatch(atom, multiMatch = True, keywording = False)
+                        if idpackage in matches[0]:
+                            keywordValidatorCache[(idpackage,reponame)] = idpackage
+                            return idpackage
+
+        # if we get here, it means we didn't find a match in repositories
+        # so we scan packages, last chance
+        for keyword in etpConst['packagemasking']['keywords']['packages']:
+            # first of all check if keyword is in mykeywords
+            if keyword in mykeywords:
+                #print "found",keyword
+                keyword_data = etpConst['packagemasking']['keywords']['packages'].get(keyword)
+                # check for relation
+                for atom in keyword_data:
+                    # match atom
+                    matches = self.atomMatch(atom, multiMatch = True, keywording = False)
+                    if idpackage in matches[0]:
+                        # valid!
+                        keywordValidatorCache[(idpackage,reponame)] = idpackage
+                        return idpackage
+        
+        # holy crap, can't validate
+        keywordValidatorCache[(idpackage,reponame)] = -1
+        return -1
+
+    # keywords filter used by atomMatch, input must me foundIDs, a list like this:
+    # [(u'x11-libs/qt-4.3.2', 608), (u'x11-libs/qt-3.3.8-r4', 1867)]
     def keywordsFilter(self,results):
-        #print results
-        return results,0
+        
+        # keywordsFilter ONLY FILTERS results if self.dbname.startswith(etpConst['dbnamerepoprefix']), repository database is open
+        if not self.dbname.startswith(etpConst['dbnamerepoprefix']):
+            return results
+
+        newresults = []
+        for item in results:
+            rc = self.keywordsIdValidator(item[1])
+            print rc
+            if rc != -1:
+                newresults.append(item)
+        
+        return newresults
 
     '''
        @description: matches the user chosen package name+ver, if possibile, in a single repository
@@ -3003,20 +3066,20 @@ class etpDatabase:
 	atomTag = entropyTools.dep_gettag(atom)
 	atomSlot = entropyTools.dep_getslot(atom)
 
-	atom = entropyTools.remove_tag(atom)
+	scan_atom = entropyTools.remove_tag(atom)
 	if (matchTag == None) and (atomTag != None):
 	    matchTag = atomTag
 	
 	# check if slot is provided -> app-foo/foo-1.2.3:SLOT
-	atom = entropyTools.remove_slot(atom)
+	scan_atom = entropyTools.remove_slot(scan_atom)
 	if (matchSlot == None) and (atomSlot != None):
 	    matchSlot = atomSlot
 
         # check for direction
-        strippedAtom = entropyTools.dep_getcpv(atom)
-        if atom[-1] == "*":
+        strippedAtom = entropyTools.dep_getcpv(scan_atom)
+        if scan_atom[-1] == "*":
 	    strippedAtom += "*"
-        direction = atom[0:len(atom)-len(strippedAtom)]
+        direction = scan_atom[0:len(scan_atom)-len(strippedAtom)]
 	
         justname = entropyTools.isjustname(strippedAtom)
         pkgversion = ''
@@ -3036,8 +3099,8 @@ class etpDatabase:
 	    
 	    # FIXME: deprecated - will be removed soonly
 	    if not matchTag:
-	        if atom.split("-")[-1].startswith("t"):
-	            matchTag = atom.split("-")[-1]
+	        if scan_atom.split("-")[-1].startswith("t"):
+	            matchTag = scan_atom.split("-")[-1]
 	
         pkgkey = entropyTools.dep_getkey(strippedAtom)
 	splitkey = pkgkey.split("/")
@@ -3063,6 +3126,7 @@ class etpDatabase:
         
         for idx in myBranchIndex:
 	    results = self.searchPackagesByName(pkgname, sensitive = caseSensitive, branch = idx)
+            
 	    mypkgcat = pkgcat
 	    mypkgname = pkgname
             
@@ -3132,7 +3196,10 @@ class etpDatabase:
 		else:
 	            foundIDs.append(results[0])
 	            break
-
+        
+        if keywording: # keyword filtering
+            foundIDs = self.keywordsFilter(foundIDs)
+        
         if (foundIDs):
 	    # now we have to handle direction
 	    if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
@@ -3207,11 +3274,8 @@ class etpDatabase:
 		    
 		    if (multiMatch):
                         # filter only valid keywords
-                        statuscode = 0
-                        if keywording:
-                            similarPackages, statuscode = self.keywordsFilter(similarPackages)
-                        self.atomMatchStoreCache((similarPackages,statuscode), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
-			return similarPackages,statuscode
+                        self.atomMatchStoreCache((similarPackages,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
+			return similarPackages,0
 		    
 		    #print newerPackage
 		    #print similarPackages
@@ -3225,12 +3289,8 @@ class etpDatabase:
 		        newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
 		
                     # filter only valid keywords
-                    statuscode = 0
-                    choosenid = newerPackage[0]
-                    if keywording:
-                        choosenid,statuscode = self.keywordsFilter(choosenid)
-                    self.atomMatchStoreCache((choosenid,statuscode), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
-		    return choosenid,0
+                    self.atomMatchStoreCache((newerPackage[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
+		    return newerPackage[0],0
 
 	        elif (direction.find(">") != -1) or (direction.find("<") != -1):
 		
@@ -3285,12 +3345,8 @@ class etpDatabase:
 		    dbpkginfo = _dbpkginfo
 		    
 		    if (multiMatch):
-                        # filter only valid keywords
-                        statuscode = 0
-                        if keywording:
-                            multiMatchList, statuscode = self.keywordsFilter(multiMatchList)
-                        self.atomMatchStoreCache((multiMatchList,statuscode), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
-			return multiMatchList,statuscode
+                        self.atomMatchStoreCache((multiMatchList,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
+			return multiMatchList,0
 
 		    if (not versions):
                         self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
@@ -3308,12 +3364,8 @@ class etpDatabase:
 	            similarPackages = self.searchPackagesByNameAndVersionAndCategory(name = newerPkgName, version = newerPkgVersion, category = newerPkgCategory, branch = newerPkgBranch)
 
 		    if (multiMatch):
-                        statuscode = 0
-                        # filter only valid keywords
-                        if keywording:
-                            similarPackages,statuscode = self.keywordsFilter(similarPackages)
-                        self.atomMatchStoreCache((similarPackages,statuscode), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
-			return similarPackages,statuscode
+                        self.atomMatchStoreCache((similarPackages,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
+			return similarPackages,0
 
 		    #print newerPackage
 		    #print similarPackages
@@ -3327,13 +3379,8 @@ class etpDatabase:
 		        newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
 		
 
-                    statuscode = 0
-                    # filter only valid keywords
-                    choosenid = newerPackage[0]
-                    if keywording:
-                        choosenid,statuscode = self.keywordsFilter(choosenid)
-                    self.atomMatchStoreCache((choosenid,statuscode), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
-		    return choosenid,statuscode
+                    self.atomMatchStoreCache((newerPackage[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
+		    return newerPackage[0],0
 
 	        else:
                     self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
@@ -3368,12 +3415,8 @@ class etpDatabase:
 		foundIDs = _foundIDs
 	    
 		if (multiMatch):
-                    # filter only valid keywords
-                    statuscode = 0
-                    if keywording:
-                        multiMatchList, statuscode = self.keywordsFilter(multiMatchList)
-                    self.atomMatchStoreCache((multiMatchList,statuscode), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
-		    return multiMatchList,statuscode
+                    self.atomMatchStoreCache((multiMatchList,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
+		    return multiMatchList,0
 		
 		if (not versionIDs):
                     self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
@@ -3398,13 +3441,8 @@ class etpDatabase:
 		    versiontaglist = entropyTools.getNewerVersionTag(versionTags)
 		    newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
 
-                statuscode = 0
-                # filter only valid keywords
-                choosenid = newerPackage[1]
-                if keywording:
-                    choosenid,statuscode = self.keywordsFilter(choosenid)
-                self.atomMatchStoreCache((choosenid,statuscode), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
-	        return choosenid,statuscode
+                self.atomMatchStoreCache((newerPackage[1],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, keywording)
+	        return newerPackage[1],0
 
         else:
 	    # package not found in any branch

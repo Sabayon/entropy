@@ -1,8 +1,8 @@
 TODO list:
-  - add keywording support: package.keywords
   - server: handle multiple packages for each scope with these abilities:
     - enable/disable it
     - purge function
+  - remove binkeywords, not used
   - add external trigger for splashutils
   - find a way to better handle real smartapps deps
   - add support for database revisions log

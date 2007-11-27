@@ -366,76 +366,75 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
     # query the installed packages database
     #print etpConst['etpdatabaseclientfilepath']
     clientDbconn = openClientDatabase()
-    if (clientDbconn != -1):
-        for dependency in dependencies:
+    for dependency in dependencies:
 
-	    depsatisfied = set()
-	    depunsatisfied = set()
+        depsatisfied = set()
+        depunsatisfied = set()
 
-            ''' caching '''
-	    cached = filterSatisfiedDependenciesCache.get(dependency)
-	    if cached:
-		if (cached['deepdeps'] == deepdeps):
-		    unsatisfiedDeps.update(cached['depunsatisfied'])
-		    satisfiedDeps.update(cached['depsatisfied'])
-		    continue
+        ''' caching '''
+        cached = filterSatisfiedDependenciesCache.get(dependency)
+        if cached:
+            if (cached['deepdeps'] == deepdeps):
+                unsatisfiedDeps.update(cached['depunsatisfied'])
+                satisfiedDeps.update(cached['depsatisfied'])
+                continue
 
-	    ### conflict
-	    if dependency[0] == "!":
-		testdep = dependency[1:]
-		xmatch = clientDbconn.atomMatch(testdep)
-		if xmatch[0] != -1:
-		    unsatisfiedDeps.add(dependency)
-		else:
-		    satisfiedDeps.add(dependency)
-		continue
+        ### conflict
+        if dependency[0] == "!":
+            testdep = dependency[1:]
+            xmatch = clientDbconn.atomMatch(testdep)
+            if xmatch[0] != -1:
+                unsatisfiedDeps.add(dependency)
+            else:
+                satisfiedDeps.add(dependency)
+            continue
 
-	    repoMatch = atomMatch(dependency)
-	    if repoMatch[0] != -1:
-		dbconn = openRepositoryDatabase(repoMatch[1])
-		repo_pkgver = dbconn.retrieveVersion(repoMatch[0])
-		repo_pkgtag = dbconn.retrieveVersionTag(repoMatch[0])
-		repo_pkgrev = dbconn.retrieveRevision(repoMatch[0])
-		dbconn.closeDB()
-	    else:
-		# dependency does not exist in our database
-		unsatisfiedDeps.add(dependency)
-		continue
+        repoMatch = atomMatch(dependency)
+        if repoMatch[0] != -1:
+            dbconn = openRepositoryDatabase(repoMatch[1])
+            repo_pkgver = dbconn.retrieveVersion(repoMatch[0])
+            repo_pkgtag = dbconn.retrieveVersionTag(repoMatch[0])
+            repo_pkgrev = dbconn.retrieveRevision(repoMatch[0])
+            dbconn.closeDB()
+        else:
+            # dependency does not exist in our database
+            unsatisfiedDeps.add(dependency)
+            continue
 
-	    clientMatch = clientDbconn.atomMatch(dependency)
-	    if clientMatch[0] != -1:
-		
-		installedVer = clientDbconn.retrieveVersion(clientMatch[0])
-		installedTag = clientDbconn.retrieveVersionTag(clientMatch[0])
-		installedRev = clientDbconn.retrieveRevision(clientMatch[0])
-                if installedRev == 9999: # any revision is fine
-                    repo_pkgrev = 9999
-		
-		if (deepdeps):
-		    vcmp = entropyCompareVersions((repo_pkgver,repo_pkgtag,repo_pkgrev),(installedVer,installedTag,installedRev))
-		    if vcmp != 0:
-			filterSatisfiedDependenciesCmpResults[dependency] = vcmp
-	                depunsatisfied.add(dependency)
-		    else:
-		        depsatisfied.add(dependency)
-		else:
-		    depsatisfied.add(dependency)
-	    else:
-		# not installed
-		filterSatisfiedDependenciesCmpResults[dependency] = 0
-		depunsatisfied.add(dependency)
-	
-	    
-	    unsatisfiedDeps.update(depunsatisfied)
-	    satisfiedDeps.update(depsatisfied)
-	    
-	    ''' caching '''
-	    filterSatisfiedDependenciesCache[dependency] = {}
-	    filterSatisfiedDependenciesCache[dependency]['depunsatisfied'] = depunsatisfied
-	    filterSatisfiedDependenciesCache[dependency]['depsatisfied'] = depsatisfied
-	    filterSatisfiedDependenciesCache[dependency]['deepdeps'] = deepdeps
+        clientMatch = clientDbconn.atomMatch(dependency)
+        if clientMatch[0] != -1:
+            
+            installedVer = clientDbconn.retrieveVersion(clientMatch[0])
+            installedTag = clientDbconn.retrieveVersionTag(clientMatch[0])
+            installedRev = clientDbconn.retrieveRevision(clientMatch[0])
+            if installedRev == 9999: # any revision is fine
+                repo_pkgrev = 9999
+            
+            if (deepdeps):
+                vcmp = entropyCompareVersions((repo_pkgver,repo_pkgtag,repo_pkgrev),(installedVer,installedTag,installedRev))
+                if vcmp != 0:
+                    filterSatisfiedDependenciesCmpResults[dependency] = vcmp
+                    depunsatisfied.add(dependency)
+                else:
+                    depsatisfied.add(dependency)
+            else:
+                depsatisfied.add(dependency)
+        else:
+            # not installed
+            filterSatisfiedDependenciesCmpResults[dependency] = 0
+            depunsatisfied.add(dependency)
     
-        clientDbconn.closeDB()
+        
+        unsatisfiedDeps.update(depunsatisfied)
+        satisfiedDeps.update(depsatisfied)
+        
+        ''' caching '''
+        filterSatisfiedDependenciesCache[dependency] = {}
+        filterSatisfiedDependenciesCache[dependency]['depunsatisfied'] = depunsatisfied
+        filterSatisfiedDependenciesCache[dependency]['depsatisfied'] = depsatisfied
+        filterSatisfiedDependenciesCache[dependency]['deepdeps'] = deepdeps
+    
+    clientDbconn.closeDB()
 
     return unsatisfiedDeps, satisfiedDeps
 

@@ -398,6 +398,7 @@ etpConst = {
     'etpdatabasefilepath': ETP_DIR+ETP_DBDIR+"/"+ETP_DBFILE,
     'etpdatabaseclientdir': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR,
     'etpdatabaseclientfilepath': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR+"/"+ETP_DBCLIENTFILE, # path to equo.db - client side database file
+    'dbnamerepoprefix': "repo_", # prefix of the name of self.dbname in etpDatabase class for the repositories
     
     'etpapi': ETP_API, # Entropy database API revision
     'currentarch': ETP_ARCH_CONST, # contains the current running architecture
@@ -471,19 +472,17 @@ etpExitMessages = {
 }
 
 ### Application disk cache
-global dbCacheStore
 dbCacheStore = {}
-global atomMatchCache
 atomMatchCache = {}
-global atomClientMatchCache
 atomClientMatchCache = {}
-global generateDependsTreeCache
 generateDependsTreeCache = {}
+keywordValidatorCache = {}
 def const_resetCache():
     dbCacheStore.clear()
     atomMatchCache.clear()
     atomClientMatchCache.clear()
     generateDependsTreeCache.clear()
+    keywordValidatorCache.clear()
 
 # handle Entropy Version
 ETP_REVISION_FILE = "../libraries/revision"
@@ -723,6 +722,7 @@ if (os.path.isfile(etpConst['remoteconf'])):
 	    etpRemoteSupport[servername] = url
 
 # generate masking dictionary
+# MUST BE INSTANTIANTED BEFORE ANY DB CONNECTION BEGINS
 import maskingparser
 etpConst['packagemasking'] = maskingparser.parse()
 # merge universal keywords
