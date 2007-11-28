@@ -476,13 +476,13 @@ dbCacheStore = {}
 atomMatchCache = {}
 atomClientMatchCache = {}
 generateDependsTreeCache = {}
-keywordValidatorCache = {}
+idpackageValidatorCache = {}
 def const_resetCache():
     dbCacheStore.clear()
     atomMatchCache.clear()
     atomClientMatchCache.clear()
     generateDependsTreeCache.clear()
-    keywordValidatorCache.clear()
+    idpackageValidatorCache.clear()
 
 # handle Entropy Version
 ETP_REVISION_FILE = "../libraries/revision"

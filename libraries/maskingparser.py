@@ -23,11 +23,15 @@
 from entropyConstants import ETP_CONF_DIR, etpConst, etpCache, os
 
 etpMaskFiles = {
-    'keywords': ETP_CONF_DIR+"/packages/package.keywords", # keywords configuration files
+    'keywords': ETP_CONF_DIR+"/packages/package.keywords", # keywording configuration files
+    'unmask': ETP_CONF_DIR+"/packages/package.unmask", # unmasking configuration files
+    'mask': ETP_CONF_DIR+"/packages/package.mask", # masking configuration files
 }
 
-etpMtimesFiles = {
-    'keywords_mtime': etpConst['dumpstoragedir']+"/keywords.mtime", # keywords configuration files mtime
+etpMtimeFiles = {
+    'keywords_mtime': etpConst['dumpstoragedir']+"/keywords.mtime", # keywording configuration files mtime
+    'unmask_mtime': etpConst['dumpstoragedir']+"/unmask.mtime", # unmasking configuration files mtime
+    'mask_mtime': etpConst['dumpstoragedir']+"/mask.mtime", # masking configuration files mtime
 }
 
 '''
@@ -45,31 +49,7 @@ def parse():
 '''
 def keywords_parser():
     
-    # handle on-disk cache validation
-    # in this case, repositories cache
-    # if package.keywords is changed, we must destroy cache
-    if not os.path.isfile(etpMtimesFiles['keywords_mtime']):
-        # we can't know if package.keywords has been updated
-        # remove repositories caches
-        __removeRepoCache()
-        __savePackageKeywordsMtime()
-    else:
-        # check mtime
-        try:
-            f = open(etpMtimesFiles['keywords_mtime'],"r")
-            mtime = int(f.readline().strip())
-            # compare with current mtime
-            try:
-                currmtime = os.path.getmtime(etpMaskFiles['keywords'])
-            except OSError:
-                currmtime = 0
-            if mtime != currmtime:
-                __removeRepoCache()
-                __savePackageKeywordsMtime()
-        except:
-            __removeRepoCache()
-            __savePackageKeywordsMtime()
-
+    __validateEntropyCache(etpMaskFiles['keywords'],etpMtimeFiles['keywords_mtime'])
     
     data = {
             'universal': set(),
@@ -133,6 +113,38 @@ def keywords_parser():
     return data
 
 
+def unmask_parser():
+    __validateEntropyCache(etpMaskFiles['unmask'],etpMtimeFiles['unmask_mtime'])
+    
+    data = set()
+    if os.path.isfile(etpMaskFiles['unmask']):
+        f = open(etpMaskFiles['unmask'],"r")
+        content = f.readlines()
+        f.close()
+        # filter comments and white lines
+        content = [x.strip() for x in content if not x.startswith("#") and x.strip()]
+        for line in content:
+            # FIXME: need validation? probably not since atomMatch handles it all
+            # and doesn't care about badly formatted atoms
+            data.add(line)
+    return data
+
+def mask_parser():
+    __validateEntropyCache(etpMaskFiles['mask'],etpMtimeFiles['mask_mtime'])
+    
+    data = set()
+    if os.path.isfile(etpMaskFiles['mask']):
+        f = open(etpMaskFiles['mask'],"r")
+        content = f.readlines()
+        f.close()
+        # filter comments and white lines
+        content = [x.strip() for x in content if not x.startswith("#") and x.strip()]
+        for line in content:
+            # FIXME: need validation? probably not since atomMatch handles it all
+            # and doesn't care about badly formatted atoms
+            data.add(line)
+    return data
+
 '''
    internal functions
 '''
@@ -143,18 +155,44 @@ def __removeRepoCache():
         if file.startswith(etpCache['dbMatch']+etpConst['dbnamerepoprefix']) and file.endswith(".dmp"):
             os.remove(etpConst['dumpstoragedir']+"/"+file)
 
-def __savePackageKeywordsMtime():
+def __saveFileMtime(toread,tosaveinto):
     
-    if not os.path.isfile(etpMaskFiles['keywords']):
-        currmtime = 0
+    if not os.path.isfile(toread):
+        currmtime = 0.0
     else:
-        currmtime = os.path.getmtime(etpMaskFiles['keywords'])
+        currmtime = os.path.getmtime(toread)
     
     if not os.path.isdir(etpConst['dumpstoragedir']):
         os.makedirs(etpConst['dumpstoragedir'])
     
-    f = open(etpMtimesFiles['keywords_mtime'],"w")
+    f = open(tosaveinto,"w")
     f.write(str(currmtime))
     f.flush()
     f.close()
     
+
+def __validateEntropyCache(maskfile,mtimefile):
+    # handle on-disk cache validation
+    # in this case, repositories cache
+    # if package.keywords is changed, we must destroy cache
+    if not os.path.isfile(mtimefile):
+        # we can't know if package.keywords has been updated
+        # remove repositories caches
+        __removeRepoCache()
+        __saveFileMtime(maskfile,mtimefile)
+    else:
+        # check mtime
+        try:
+            f = open(mtimefile,"r")
+            mtime = float(f.readline().strip())
+            # compare with current mtime
+            try:
+                currmtime = os.path.getmtime(maskfile)
+            except OSError:
+                currmtime = 0.0
+            if mtime != currmtime:
+                __removeRepoCache()
+                __saveFileMtime(maskfile,mtimefile)
+        except:
+            __removeRepoCache()
+            __saveFileMtime(maskfile,mtimefile)
