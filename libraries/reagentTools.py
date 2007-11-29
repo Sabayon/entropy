@@ -484,7 +484,7 @@ def database(options):
         return 0
 
     elif (options[0] == "create-empty-database"):
-        
+        import databaseTools
 	mypath = options[1:]
 	if len(mypath) == 0:
 	    print_error(yellow(" * ")+red("Not enough parameters"))
@@ -493,7 +493,7 @@ def database(options):
 	    print_error(green(" * ")+red("Supplied directory does not exist."))
 	    return 5
 	print_info(green(" * ")+red("Initializing an empty database file with Entropy structure ..."),back = True)
-	connection = sqlite.connect(mypath[0])
+	connection = databaseTools.sqlite.connect(mypath[0])
 	cursor = connection.cursor()
 	for sql in etpSQLInitDestroyAll.split(";"):
 	    if sql:
