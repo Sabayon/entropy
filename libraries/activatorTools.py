@@ -251,7 +251,8 @@ def packages(options):
                         bdir = ""
                         for mydir in etpConst['binaryurirelativepath'].split("/"):
                             bdir += "/"+mydir
-                            ftp.mkdir(bdir)
+                            if (not ftp.isFileAvailable(bdir)):
+                                ftp.mkdir(bdir)
                         ftp.setCWD(etpConst['binaryurirelativepath'])
 
 		    if (not ftp.isFileAvailable(mybranch)):

@@ -244,7 +244,8 @@ class etpDatabase:
                     bdir = ""
                     for mydir in etpConst['etpurirelativepath'].split("/"):
                         bdir += "/"+mydir
-                        ftp.mkdir(bdir)
+                        if (not ftp.isFileAvailable(bdir)):
+                            ftp.mkdir(bdir)
                     ftp.setCWD(etpConst['etpurirelativepath'])
 	        if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
 		    import time
