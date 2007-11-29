@@ -80,6 +80,8 @@ class handlerFTP:
 	self.ftpdir = self.ftpdir.split(":")[0]
 	if self.ftpdir.endswith("/"):
 	    self.ftpdir = self.ftpdir[:len(self.ftpdir)-1]
+        if self.ftpdir == "":
+            self.ftpdir = "/"
 
 	self.ftpconn = ftplib.FTP(self.ftphost)
 	# enable debug?
