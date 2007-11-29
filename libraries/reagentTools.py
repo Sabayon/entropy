@@ -484,8 +484,8 @@ def database(options):
         return 0
 
     elif (options[0] == "create-empty-database"):
-        import databaseTools
-	mypath = options[1:]
+	
+        mypath = options[1:]
 	if len(mypath) == 0:
 	    print_error(yellow(" * ")+red("Not enough parameters"))
 	    return 4
