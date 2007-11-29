@@ -375,7 +375,11 @@ def database(options):
 	revisionsMatch = {}
         if os.path.isfile(etpConst['etpdatabasefilepath']):
 	    dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
-	    idpackages = dbconn.listAllIdpackages()
+            idpackages = []
+            try:
+                idpackages = dbconn.listAllIdpackages()
+            except:
+                pass
 	    for idpackage in idpackages:
 		try:
 		    package = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
