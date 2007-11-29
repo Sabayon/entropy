@@ -98,7 +98,11 @@ def searchInstalledPackages(packages, idreturn = False, quiet = False):
     if (not idreturn) and (not quiet):
         print_info(brown(" @@ ")+darkgreen("Searching..."))
 
-    clientDbconn = openClientDatabase()
+    try:
+        clientDbconn = openClientDatabase()
+    except Exception:
+        print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
+        return 128
     dataInfo = set() # when idreturn is True
     
     for package in packages:
@@ -135,7 +139,11 @@ def searchBelongs(files, idreturn = False, quiet = False):
     if (not idreturn) and (not quiet):
         print_info(yellow(" @@ ")+darkgreen("Belong Search..."))
 
-    clientDbconn = openClientDatabase()
+    try:
+        clientDbconn = openClientDatabase()
+    except Exception:
+        print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
+        return 128
     dataInfo = set() # when idreturn is True
     
     results = {}
@@ -185,7 +193,11 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
     if (not idreturn) and (not quiet):
         print_info(yellow(" @@ ")+darkgreen("Depends Search..."))
 
-    clientDbconn = openClientDatabase()
+    try:
+        clientDbconn = openClientDatabase()
+    except Exception:
+        print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
+        return 128
 
     dataInfo = set() # when idreturn is True
     for atom in atoms:
@@ -243,7 +255,11 @@ def searchNeeded(atoms, idreturn = False, quiet = False):
     if (not idreturn) and (not quiet):
         print_info(yellow(" @@ ")+darkgreen("Needed Search..."))
 
-    clientDbconn = openClientDatabase()
+    try:
+        clientDbconn = openClientDatabase()
+    except Exception:
+        print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
+        return 128
     dataInfo = set() # when idreturn is True
     
     for atom in atoms:
@@ -276,7 +292,11 @@ def searchFiles(atoms, idreturn = False, quiet = False):
         print_info(yellow(" @@ ")+darkgreen("Files Search..."))
 
     results = searchInstalledPackages(atoms, idreturn = True)
-    clientDbconn = openClientDatabase()
+    try:
+        clientDbconn = openClientDatabase()
+    except Exception:
+        print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
+        return 128
     dataInfo = set() # when idreturn is True
     for result in results:
 	if (result != -1):
@@ -312,6 +332,12 @@ def searchOrphans(quiet = False):
     if (not quiet):
         print_info(yellow(" @@ ")+darkgreen("Orphans Search..."))
 
+    try:
+        clientDbconn = openClientDatabase()
+    except Exception:
+        print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
+        return 128
+
     # start to list all files on the system:
     dirs = etpConst['filesystemdirs']
     foundFiles = set()
@@ -335,7 +361,6 @@ def searchOrphans(quiet = False):
         print_info(red(" @@ ")+blue("Now looking into Installed Packages database..."))
 
     # list all idpackages
-    clientDbconn = openClientDatabase()
     idpackages = clientDbconn.listAllIdpackages()
     # create content list
     length = str(len(idpackages))
@@ -385,7 +410,11 @@ def searchRemoval(atoms, idreturn = False, quiet = False, deep = False):
     if (not idreturn) and (not quiet):
         print_info(yellow(" @@ ")+darkgreen("Removal Search..."))
 
-    clientDbconn = openClientDatabase()
+    try:
+        clientDbconn = openClientDatabase()
+    except Exception:
+        print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
+        return 128
     foundAtoms = []
     for atom in atoms:
 	match = clientDbconn.atomMatch(atom)
@@ -440,7 +469,11 @@ def searchInstalled(idreturn = False, verbose = False, quiet = False):
     if (not idreturn) and (not quiet):
         print_info(yellow(" @@ ")+darkgreen("Installed Search..."))
 
-    clientDbconn = openClientDatabase()
+    try:
+        clientDbconn = openClientDatabase()
+    except Exception:
+        print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
+        return 128
     installedPackages = clientDbconn.listAllPackages()
     installedPackages.sort()
     if (not idreturn):
@@ -636,7 +669,10 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
         installedVer = "Not installed"
         installedTag = "N/A"
         installedRev = "N/A"
-        clientDbconn = openClientDatabase()
+        try:
+            clientDbconn = openClientDatabase()
+        except Exception:
+            clientDbconn == -1
         if (clientDbconn != -1):
             pkginstalled = clientDbconn.atomMatch(dep_getkey(pkgatom), matchSlot = pkgslot)
             if (pkginstalled[1] == 0):

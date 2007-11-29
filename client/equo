@@ -228,7 +228,10 @@ try:
         rc = uiTools.package(options)
         loadconfcache()
 	# save caches
-	equoTools.saveCaches()
+        try:
+            equoTools.saveCaches()
+        except IOError:
+            pass
 
     elif (options[0] == "query"):
         equoTools.loadCaches(quiet = True)

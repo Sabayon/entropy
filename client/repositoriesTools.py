@@ -163,7 +163,7 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
     # Test network connectivity
     conntest = getOnlineContent("http://svn.sabayonlinux.org")
     if conntest == False:
-	print_info(darkred(" @@ ")+darkgreen("You are not connected to the Internet. You should do it."))
+	print_info(darkred(" @@ ")+darkgreen("You are not connected to the Internet. You should."))
 	return 2
     
     for repo in reponames:
@@ -209,7 +209,10 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	        print_info(red("\t\tCreating database directory..."))
 	    os.makedirs(etpRepositories[repo]['dbpath'])
 	# download
-	downloadData(etpRepositories[repo]['database']+"/"+etpConst[cmethod[2]],etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
+	rc = downloadData(etpRepositories[repo]['database']+"/"+etpConst[cmethod[2]],etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
+        if rc in ("-1","-2","-3"):
+            print_info(bold("\tAttention: ")+red("database does not exist online."))
+            return 128
 	
 	if (not quiet):
 	    print_info(red("\tUnpacking database to ")+darkgreen(etpConst['etpdatabasefile'])+red(" ..."))
