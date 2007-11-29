@@ -245,7 +245,15 @@ def packages(options):
 	    
 	            print_info(green(" * ")+yellow("Fetching remote statistics..."), back = True)
 	            ftp = mirrorTools.handlerFTP(uri)
-		    ftp.setCWD(etpConst['binaryurirelativepath'])
+                    try:
+                        ftp.setCWD(etpConst['binaryurirelativepath'])
+                    except:
+                        bdir = ""
+                        for mydir in etpConst['binaryurirelativepath'].split("/"):
+                            bdir += "/"+mydir
+                            ftp.mkdir(bdir)
+                        ftp.setCWD(etpConst['binaryurirelativepath'])
+
 		    if (not ftp.isFileAvailable(mybranch)):
 			ftp.mkdir(mybranch)
 	            ftp.setCWD(mybranch)

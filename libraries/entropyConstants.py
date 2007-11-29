@@ -404,7 +404,7 @@ etpConst = {
     'currentarch': ETP_ARCH_CONST, # contains the current running architecture
     'supportedarchs': ETP_ARCHS, # Entropy supported Archs
     
-    'branches': ["3.5","2008"], # available branches, this only exists for the server part
+    'branches': ["3.5","2008"], # available branches, this only exists for the server part FIXME: move them to server config files
     'branch': "3.5", # choosen branch
     'keywords': set([ETP_ARCH_CONST,"~"+ETP_ARCH_CONST]), # default allowed package keywords
     'gentoo-compat': False, # Gentoo compatibility (/var/db/pkg + Portage availability)
