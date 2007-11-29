@@ -339,6 +339,7 @@ etpConst = {
     'entropyconf': ETP_CONF_DIR+"/entropy.conf", # entropy.conf file
     'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
     'activatorconf': ETP_CONF_DIR+"/activator.conf", # activator.conf file
+    'serverconf': ETP_CONF_DIR+"/server.conf", # server.conf file (generic server side settings)
     'reagentconf': ETP_CONF_DIR+"/reagent.conf", # reagent.conf file
     'databaseconf': ETP_CONF_DIR+"/database.conf", # database.conf file
     'mirrorsconf': ETP_CONF_DIR+"/mirrors.conf", # mirrors.conf file
@@ -404,8 +405,8 @@ etpConst = {
     'currentarch': ETP_ARCH_CONST, # contains the current running architecture
     'supportedarchs': ETP_ARCHS, # Entropy supported Archs
     
-    'branches': ["3.5","2008"], # available branches, this only exists for the server part FIXME: move them to server config files
-    'branch': "3.5", # choosen branch
+    'branches': [], # available branches, this only exists for the server part, these settings will be overridden by server.conf ones
+    'branch': "3.5", # default choosen branch (overridden by setting in repositories.conf)
     'keywords': set([ETP_ARCH_CONST,"~"+ETP_ARCH_CONST]), # default allowed package keywords
     'gentoo-compat': False, # Gentoo compatibility (/var/db/pkg + Portage availability)
     'filesystemdirs': ['/bin','/boot','/emul','/etc','/lib','/lib32','/lib64','/opt','/sbin','/usr','/var'], # directory of the filesystem
@@ -647,14 +648,12 @@ if os.path.isfile(etpConst['repositoriesconf']):
 	elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
 	    branch = line.split("|")[1]
 	    etpConst['branch'] = branch
-	    if branch not in etpConst['branches']:
-		etpConst['branches'].append(branch)
-		if not os.path.isdir(etpConst['packagesbindir']+"/"+branch):
-        	    if os.getuid() == 0:
-			os.makedirs(etpConst['packagesbindir']+"/"+branch)
-		    else:
-			print "ERROR: please run equo as root at least once or create: "+str(etpConst['packagesbindir']+"/"+branch)
-			exit(49)
+            if not os.path.isdir(etpConst['packagesbindir']+"/"+branch):
+                if os.getuid() == 0:
+                    os.makedirs(etpConst['packagesbindir']+"/"+branch)
+                else:
+                    print "ERROR: please run this as root at least once or create: "+str(etpConst['packagesbindir']+"/"+branch)
+                    exit(49)
 
 # align etpConst['binaryurirelativepath'] and etpConst['etpurirelativepath'] with etpConst['product']
 etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['binaryurirelativepath']

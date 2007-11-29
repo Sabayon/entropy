@@ -25,15 +25,12 @@ from sys import exit
 from entropyConstants import *
 
 # activator section
-if (not os.path.isfile(etpConst['activatorconf'])):
-    print "CRITICAL WARNING!!! "+etpConst['activatorconf']+" does not exist"
-else:
+if (os.path.isfile(etpConst['activatorconf'])):
     try:
 	if (os.stat(etpConst['activatorconf'])[0] != 33152):
 	    os.chmod(etpConst['activatorconf'],0600)
     except:
-	print "ERROR: cannot chmod 0600 file: "+etpConst['activatorconf']
-	exit(50)
+        pass
     # fill etpConst['activatoruploaduris'] and etpConst['activatordownloaduris']
     f = open(etpConst['activatorconf'],"r")
     actconffile = f.readlines()
@@ -69,9 +66,7 @@ else:
 		time.sleep(5)
 
 # reagent section
-if (not os.path.isfile(etpConst['reagentconf'])):
-    print "CRITICAL WARNING!!! "+etpConst['reagentconf']+" does not exist"
-else:
+if (os.path.isfile(etpConst['reagentconf'])):
     f = open(etpConst['reagentconf'],"r")
     reagentconf = f.readlines()
     f.close()
@@ -91,9 +86,7 @@ else:
 		time.sleep(5)
 
 # mirrors section
-if (not os.path.isfile(etpConst['mirrorsconf'])):
-    print "CRITICAL WARNING!!! "+etpConst['mirrorsconf']+" does not exist"
-else:
+if (os.path.isfile(etpConst['mirrorsconf'])):
     f = open(etpConst['mirrorsconf'],"r")
     databaseconf = f.readlines()
     f.close()
@@ -114,9 +107,7 @@ else:
 
 
 # spmbackend section
-if (not os.path.isfile(etpConst['spmbackendconf'])):
-    print "CRITICAL WARNING!!! "+etpConst['spmbackendconf']+" does not exist"
-else:
+if (os.path.isfile(etpConst['spmbackendconf'])):
     f = open(etpConst['spmbackendconf'],"r")
     spmconf = f.readlines()
     f.close()
@@ -134,3 +125,18 @@ else:
 		print "WARNING: invalid loglevel in: "+etpConst['spmbackendconf']
 		import time
 		time.sleep(5)
+
+
+# generic settings section
+if (os.path.isfile(etpConst['serverconf'])):
+    f = open(etpConst['serverconf'],"r")
+    spmconf = f.readlines()
+    f.close()
+    for line in spmconf:
+	if line.startswith("branches|") and (len(line.split("branches|")) == 2):
+	    branches = line.split("branches|")[1]
+            etpConst['branches'] = []
+            for branch in branches.split():
+                etpConst['branches'].append(branch)
+	    if etpConst['branch'] not in etpConst['branches']:
+		etpConst['branches'].append(etpConst['branch'])

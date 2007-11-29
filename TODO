@@ -5,7 +5,6 @@ TODO list:
     - enable/disable it
     - purge function
   - remove binkeywords, not used
-  - move etpConst['branches'] to config files
   - add external trigger for splashutils
   - find a way to better handle real smartapps deps
   - reduce size of packages.db.bz2

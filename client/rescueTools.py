@@ -437,7 +437,6 @@ def getinfo(dict = False):
     info['entropyTools Log Level'] = etpConst['entropyloglevel']
     info['remoteTools Log Level'] = etpConst['remoteloglevel']
     info['Current branch'] = etpConst['branch']
-    info['Available branches'] = etpConst['branches']
     info['Entropy configuration directory'] = etpConst['confdir']
     info['Entropy work directory'] = etpConst['entropyworkdir']
     info['Entropy unpack directory'] = etpConst['entropyunpackdir']
