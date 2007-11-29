@@ -245,7 +245,12 @@ class etpDatabase:
                     for mydir in etpConst['etpurirelativepath'].split("/"):
                         bdir += "/"+mydir
                         if (not ftp.isFileAvailable(bdir)):
-                            ftp.mkdir(bdir)
+                            try:
+                                ftp.mkdir(bdir)
+                            except Exception, e:
+                                if str(e).find("550") != -1:
+                                    pass
+                                raise
                     ftp.setCWD(etpConst['etpurirelativepath'])
 	        if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
 		    import time
