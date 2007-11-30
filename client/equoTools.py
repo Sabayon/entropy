@@ -1171,11 +1171,13 @@ def installPackage(infoDict):
 	        # request new tofile then
 	        if (protected):
                     if tofile not in etpConst['configprotectskip']:
-                        oldtofile = tofile
                         tofile, prot_status = allocateMaskedFile(tofile, fromfile)
                         if not prot_status:
                             protected = False
                         else:
+                            oldtofile = tofile
+                            if oldtofile.find("._cfg") != -1:
+                                oldtofile = os.path.dirname(oldtofile)+"/"+os.path.basename(oldtofile)[10:]
                             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Protecting config file: "+oldtofile)
                             print_warning(darkred("   ## ")+red("Protecting config file: ")+oldtofile)
                     else:

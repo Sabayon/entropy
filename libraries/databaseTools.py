@@ -3204,10 +3204,11 @@ class etpDatabase:
 		    idpackage = result[1]
 		    cat = self.retrieveCategory(idpackage)
 		    cats.add(cat)
-		    if (cat == mypkgcat) or ((not virtual) and (mypkgcat == "virtual")): # in case of virtual packages only (that they're not stored as provide)
+		    if (cat == mypkgcat) or ((not virtual) and (mypkgcat == "virtual") and (cat == mypkgcat)): # in case of virtual packages only (that they're not stored as provide)
 		        foundCat = cat
 		        break
-	        # if I found something at least...
+	        
+                # if I found something at least...
 	        if (not foundCat) and (len(cats) == 1):
 		    foundCat = list(cats)[0]
 	        if (not foundCat) and (mypkgcat == "null"):
