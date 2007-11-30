@@ -27,7 +27,7 @@ import time, datetime
 feed_title = etpConst['systemname']+" Online Repository Status"
 feed_description = "Keep you updated on what's going on in the Official "+etpConst['systemname']+" Repository."
 feed_language = "en-EN"
-feed_editor = etpConst['systemname']+" development team"
+feed_editor = etpConst['rss-managing-editor']
 feed_copyright = etpConst['systemname']+" (C) 2007-2009"
 
 class rssFeed:
@@ -91,7 +91,10 @@ class rssFeed:
         self.items[self.itemscounter]['pubDate'] = time.strftime("%a, %d %b %Y %X +0000")
         self.items[self.itemscounter]['description'] = description
         self.items[self.itemscounter]['link'] = link
-        self.items[self.itemscounter]['guid'] = str(self.itemscounter)
+        if link:
+            self.items[self.itemscounter]['guid'] = link
+        else:
+            self.items[self.itemscounter]['guid'] = "sabayonlinux.org~"+description+str(self.itemscounter)
         return self.itemscounter
     
     def removeEntry(self, id):

@@ -983,7 +983,7 @@ def uploadDatabase(uris):
     ### PREPARE RSS FEED
     if etpConst['rss-feed']:
         import rssTools
-        rssClass = rssTools.rssFeed(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'], maxentries = etpConst['max-rss-entries'])
+        rssClass = rssTools.rssFeed(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'], maxentries = etpConst['rss-max-entries'])
         # load dump
         db_actions = dumpTools.loadobj(etpConst['rss-dump-name'])
         if db_actions:
