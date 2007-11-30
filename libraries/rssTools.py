@@ -32,11 +32,12 @@ feed_copyright = etpConst['systemname']+" (C) 2007-2009"
 
 class rssFeed:
     
-    def __init__(self, filename):
+    def __init__(self, filename, maxentries = 100):
         
         self.file = filename
         self.items = {}
         self.itemscounter = 0
+        self.maxentries = maxentries
         
         if not os.path.isfile(self.file):
             self.title = feed_title
@@ -61,8 +62,12 @@ class rssFeed:
             self.editor = self.channel.getElementsByTagName("managingEditor")[0].firstChild.data
             entries = self.channel.getElementsByTagName("item")
             self.itemscounter = len(entries)
+            if self.itemscounter > self.maxentries:
+                self.itemscounter = self.maxentries
             mycounter = self.itemscounter
             for item in entries:
+                if mycounter == 0: # max entries reached
+                    break
                 mycounter -= 1
                 self.items[mycounter] = {}
                 self.items[mycounter]['title'] = item.getElementsByTagName("title")[0].firstChild.data
@@ -98,6 +103,13 @@ class rssFeed:
         return self.items, self.itemscounter
 
     def writeChanges(self):
+        
+        # filter entries to fit in maxentries
+        if self.itemscounter > self.maxentries:
+            tobefiltered = self.itemscounter - self.maxentries
+            for index in range(tobefiltered):
+                del self.items[index]
+        
         doc = minidom.Document()
         
         rss = doc.createElement("rss")

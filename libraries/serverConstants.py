@@ -99,7 +99,12 @@ if (os.path.isfile(etpConst['reagentconf'])):
                 etpConst['rss-base-url'] += "/"
 	elif line.startswith("rss-website-url|") and (len(line.split("rss-website-url|")) == 2):
             etpConst['rss-website-url'] = line.split("rss-website-url|")[1]
-        
+	elif line.startswith("max-rss-entries|") and (len(line.split("max-rss-entries|")) == 2):
+            try:
+                entries = int(line.split("max-rss-entries|")[1])
+                etpConst['max-rss-entries'] = entries
+            except:
+                pass
 
 # mirrors section
 if (os.path.isfile(etpConst['mirrorsconf'])):

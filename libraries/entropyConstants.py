@@ -373,6 +373,7 @@ etpConst = {
     'rss-base-url': "http://packages.sabayonlinux.org/", # default URL to the entropy web interface (overridden in reagent.conf)
     'rss-website-url': "http://www.sabayonlinux.org/", # default URL to the Operating System website (overridden in reagent.conf)
     'rss-dump-name': "rss_database_actions", # xml file where will be dumped etpRSSMessages dictionary
+    'max-rss-entries': 10000, # maximum rss entries
 
     'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
     'packagesexpirationfileext': ".expired", # Extension of the file that "contains" expiration mtime
