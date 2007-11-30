@@ -91,17 +91,17 @@ if (os.path.isfile(etpConst['reagentconf'])):
             elif feed in ("disable","disabled","false","0"):
                 etpConst['rss-feed'] = False
 	elif line.startswith("rss-name|") and (len(line.split("rss-name|")) == 2):
-	    feedname = line.split("rss-name|")[1]
+	    feedname = line.split("rss-name|")[1].strip()
             etpConst['rss-name'] = feedname
 	elif line.startswith("rss-base-url|") and (len(line.split("rss-base-url|")) == 2):
-            etpConst['rss-base-url'] = line.split("rss-base-url|")[1]
+            etpConst['rss-base-url'] = line.split("rss-base-url|")[1].strip()
             if not etpConst['rss-base-url'][-1] == "/":
                 etpConst['rss-base-url'] += "/"
 	elif line.startswith("rss-website-url|") and (len(line.split("rss-website-url|")) == 2):
-            etpConst['rss-website-url'] = line.split("rss-website-url|")[1]
+            etpConst['rss-website-url'] = line.split("rss-website-url|")[1].strip()
 	elif line.startswith("max-rss-entries|") and (len(line.split("max-rss-entries|")) == 2):
             try:
-                entries = int(line.split("max-rss-entries|")[1])
+                entries = int(line.split("max-rss-entries|")[1].strip())
                 etpConst['max-rss-entries'] = entries
             except:
                 pass
