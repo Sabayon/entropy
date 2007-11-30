@@ -150,10 +150,13 @@ def mask_parser():
 '''
 
 def __removeRepoCache():
-    content = os.listdir(etpConst['dumpstoragedir'])
-    for file in content:
-        if file.startswith(etpCache['dbMatch']+etpConst['dbnamerepoprefix']) and file.endswith(".dmp"):
-            os.remove(etpConst['dumpstoragedir']+"/"+file)
+    if os.path.isdir(etpConst['dumpstoragedir']):
+        content = os.listdir(etpConst['dumpstoragedir'])
+        for file in content:
+            if file.startswith(etpCache['dbMatch']+etpConst['dbnamerepoprefix']) and file.endswith(".dmp"):
+                os.remove(etpConst['dumpstoragedir']+"/"+file)
+    else:
+        os.makedirs(etpConst['dumpstoragedir'])
 
 def __saveFileMtime(toread,tosaveinto):
     
