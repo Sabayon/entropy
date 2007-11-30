@@ -28,7 +28,7 @@ from entropyConstants import *
    @input: name of the object, object
    @output: status code
 '''
-def dumpobj(name,object):
+def dumpobj(name, object, completePath = False):
     while 1: # trap ctrl+C
         doc = minidom.Document()
         structure = doc.createElement("structure")
@@ -39,9 +39,13 @@ def dumpobj(name,object):
         data.appendChild(text)
         # etpConst['dumpstoragedir']
         try:
-            if not os.path.isdir(etpConst['dumpstoragedir']):
-                os.makedirs(etpConst['dumpstoragedir'])
-            f = open(etpConst['dumpstoragedir']+"/"+name+".dmp","w") #FIXME add check
+            if completePath:
+                dmpfile = name
+            else:
+                if not os.path.isdir(etpConst['dumpstoragedir']):
+                    os.makedirs(etpConst['dumpstoragedir'])
+                dmpfile = etpConst['dumpstoragedir']+"/"+name+".dmp"
+            f = open(dmpfile,"w")
             f.writelines(doc.toprettyxml(indent="  "))
             f.flush()
             f.close()
@@ -55,8 +59,11 @@ def dumpobj(name,object):
    @input: name of the object
    @output: object or, if error -1
 '''
-def loadobj(name):
-    dmpfile = etpConst['dumpstoragedir']+"/"+name+".dmp"
+def loadobj(name, completePath = False):
+    if completePath:
+        dmpfile = name
+    else:
+        dmpfile = etpConst['dumpstoragedir']+"/"+name+".dmp"
     if os.path.isfile(dmpfile):
 	try:
 	    xmldoc = minidom.parse(dmpfile)
@@ -67,3 +74,10 @@ def loadobj(name):
 	except:
 	    os.remove(dmpfile)
 	    raise SyntaxError,"cannot load object"
+
+def removeobj(name):
+    if os.path.isfile(etpConst['dumpstoragedir']+"/"+name+".dmp"):
+        try:
+            os.remove(etpConst['dumpstoragedir']+"/"+name+".dmp")
+        except OSError:
+            pass

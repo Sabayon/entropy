@@ -501,11 +501,12 @@ class etpDatabase:
             trigger = 1
         
 	# baseinfo
+        pkgatom = etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag
         try:
             self.cursor.execute(
                     'INSERT into baseinfo VALUES '
                     '(NULL,?,?,?,?,?,?,?,?,?,?,?)'
-                    , (	etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag,
+                    , (	pkgatom,
                             catid,
                             etpData['name'],
                             etpData['version'],
@@ -523,7 +524,7 @@ class etpDatabase:
             self.cursor.execute(
                     'INSERT into baseinfo VALUES '
                     '(NULL,?,?,?,?,?,?,?,?,?,?,?)'
-                    , (	etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag,
+                    , (	pkgatom,
                             catid,
                             etpData['name'],
                             etpData['version'],
@@ -539,6 +540,23 @@ class etpDatabase:
         
 	self.connection.commit()
 	idpackage = self.cursor.lastrowid
+
+        ### RSS Atom support
+        ### dictionary will be elaborated by activator
+        if etpConst['rss-feed'] and not self.clientDatabase:
+            rssAtom = pkgatom+"~"+str(revision)
+            # store addPackage action
+            rssObj = dumpTools.loadobj(etpConst['rss-dump-name'])
+            if rssObj:
+                global etpRSSMessages
+                etpRSSMessages = rssObj.copy()
+            if rssAtom in etpRSSMessages['removed']:
+                del etpRSSMessages['removed'][rssAtom]
+            etpRSSMessages['added'][rssAtom] = {}
+            etpRSSMessages['added'][rssAtom]['description'] = etpData['description']
+            etpRSSMessages['added'][rssAtom]['homepage'] = etpData['homepage']
+            # save
+            dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
 
 	# create new idflag if it doesn't exist
 	idflags = self.areCompileFlagsAvailable(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
@@ -943,6 +961,25 @@ class etpDatabase:
 
 	key = self.retrieveAtom(idpackage)
 	branch = self.retrieveBranch(idpackage)
+
+        ### RSS Atom support
+        ### dictionary will be elaborated by activator
+        if etpConst['rss-feed'] and not self.clientDatabase:
+            # store addPackage action
+            rssObj = dumpTools.loadobj(etpConst['rss-dump-name'])
+            if rssObj:
+                global etpRSSMessages
+                etpRSSMessages = rssObj.copy()
+            rssAtom = self.retrieveAtom(idpackage)
+            rssRevision = self.retrieveRevision(idpackage)
+            rssAtom += "~"+str(rssRevision)
+            if rssAtom in etpRSSMessages['added']:
+                del etpRSSMessages['added'][rssAtom]
+            etpRSSMessages['removed'][rssAtom] = {}
+            etpRSSMessages['removed'][rssAtom]['description'] = self.retrieveDescription(idpackage)
+            etpRSSMessages['removed'][rssAtom]['homepage'] = self.retrieveHomepage(idpackage)
+            # save
+            dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
 
 	idpackage = str(idpackage)
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"removePackage: trying to remove (if exists) -> "+idpackage+":"+str(key)+" | branch: "+branch)

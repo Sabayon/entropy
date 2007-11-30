@@ -368,6 +368,12 @@ etpConst = {
     					"bz2": ("bz2.BZ2File","unpackBzip2","etpdatabasefilebzip2",),
 					"gz": ("gzip.GzipFile","unpackGzip","etpdatabasefilegzip",)
     },
+    'rss-feed': True, # enable/disable packages RSS feed feature
+    'rss-name': "packages.rss", # default name of the RSS feed
+    'rss-base-url': "http://packages.sabayonlinux.org/", # default URL to the entropy web interface (overridden in reagent.conf)
+    'rss-website-url': "http://www.sabayonlinux.org/", # default URL to the Operating System website (overridden in reagent.conf)
+    'rss-dump-name': "rss_database_actions", # xml file where will be dumped etpRSSMessages dictionary
+
     'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
     'packagesexpirationfileext': ".expired", # Extension of the file that "contains" expiration mtime
     'packagesexpirationdays': 15, # number of days after a package will be removed from mirrors
@@ -427,7 +433,7 @@ etpConst = {
     'dbconfigprotectmask': [], # installed database CONFIG_PROTECT_MASK directories
     'configprotectcounter': 0, # this will be used to show the number of updated files at the end of the processes
     'entropyversion': "1.0", # default Entropy release version
-    'systemname': "Sabayon Linux", # default system name
+    'systemname': "Sabayon Linux", # default system name (overidden by entropy.conf settings)
     'product': "standard", # Product identificator (standard, professional...)
     'errorstatus': ETP_CONF_DIR+"/code",
     
@@ -470,6 +476,13 @@ etpExitMessages = {
     5: "Illiteracy is a huge problem in this world",
     6: "Ok i give up, you are hopeless",
     7: "Go to hell."
+}
+
+# information about what has been done on the database,
+# those dicts will be dumped to a file and used by activator to update and updload .rss
+etpRSSMessages = {
+    'added': {}, # packages that has been added
+    'removed': {} # packages that has been removed
 }
 
 ### Application disk cache
@@ -597,6 +610,8 @@ if os.path.isfile(etpConst['entropyconf']):
 	    httpproxy = line.split("|")[1].strip()
 	    for x in httpproxy.split():
 		etpConst['proxy']['http'] = httpproxy
+	elif line.startswith("system-name|") and (len(line.split("|")) == 2):
+	    etpConst['systemname'] = line.split("|")[1].strip()
     
 
 

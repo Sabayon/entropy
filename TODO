@@ -1,5 +1,5 @@
 TODO list:
-  - add support for database revisions log (RSS)
+  - RSS Extension: let developer sumbit a comment along with the revision upload
   - Community repositories
   - server: handle multiple packages for each scope with these abilities:
     - enable/disable it
@@ -8,6 +8,7 @@ TODO list:
   - add external trigger for splashutils
   - find a way to better handle real smartapps deps
   - reduce size of packages.db.bz2
+  - rethink external triggers?
 
 
 Project Status:

@@ -84,6 +84,20 @@ if (os.path.isfile(etpConst['reagentconf'])):
 		print "WARNING: invalid loglevel in: "+etpConst['reagentconf']
 		import time
 		time.sleep(5)
+	elif line.startswith("rss-feed|") and (len(line.split("rss-feed|")) == 2):
+	    feed = line.split("rss-feed|")[1]
+            if feed in ("enable","enabled","true","1"):
+                etpConst['rss-feed'] = True
+            elif feed in ("disable","disabled","false","0"):
+                etpConst['rss-feed'] = False
+	elif line.startswith("rss-name|") and (len(line.split("rss-name|")) == 2):
+	    feedname = line.split("rss-name|")[1]
+            etpConst['rss-name'] = feedname
+	elif line.startswith("rss-base-url|") and (len(line.split("rss-base-url|")) == 2):
+            etpConst['rss-base-url'] = line.split("rss-base-url|")[1]
+	elif line.startswith("rss-website-url|") and (len(line.split("rss-website-url|")) == 2):
+            etpConst['rss-website-url'] = line.split("rss-website-url|")[1]
+        
 
 # mirrors section
 if (os.path.isfile(etpConst['mirrorsconf'])):

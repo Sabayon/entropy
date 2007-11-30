@@ -28,6 +28,7 @@ from serverConstants import *
 from entropyTools import *
 from outputTools import *
 import mirrorTools
+import dumpTools
 
 from sys import exit
 import os
@@ -857,8 +858,6 @@ def syncRemoteDatabases(noUpload = False, justStats = False):
     uploadLatest = False
     uploadList = []
     
-    #print str(etpDbLocalRevision)
-    
     # if the local DB does not exist, get the latest
     if (etpDbLocalRevision == 0):
 	# seek mirrors
@@ -920,18 +919,12 @@ def syncRemoteDatabases(noUpload = False, justStats = False):
 		    latestRemoteDb = dbstat
 		    break
 	    # now compare downloadLatest with our local db revision
-	    #print "data revisions:"
-	    #print str(latestRemoteDb[1])
-	    #print str(etpDbLocalRevision)
 	    if (etpDbLocalRevision < latestRemoteDb[1]):
 		# download !
 		#print "appending a download"
 		downloadLatest = latestRemoteDb
 	    elif (etpDbLocalRevision > latestRemoteDb[1]):
 		# upload to all !
-		#print str(etpDbLocalRevision)
-		#print str(latestRemoteDb[1])
-		#print "appending the upload to all"
 		uploadLatest = True
 		uploadList = remoteDbsStatus
 
@@ -982,6 +975,39 @@ def uploadDatabase(uris):
 
     import gzip
     import bz2
+    
+    ### PREPARE RSS FEED
+    if etpConst['rss-feed']:
+        import rssTools
+        rssClass = rssTools.rssFeed(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'])
+        # load dump
+        db_actions = dumpTools.loadobj(etpConst['rss-dump-name'])
+        if db_actions:
+            try:
+                f = open(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])
+                revision = f.readline().strip()
+                f.close()
+            except:
+                revision = "N/A"
+                pass
+            title = ": "+etpConst['systemname']+" "+etpConst['product'][0].upper()+etpConst['product'][1:]+" "+etpConst['branch']+" :: Revision: "+revision
+            link = etpConst['rss-base-url']
+            # create description
+            added_items = db_actions.get("added")
+            if added_items:
+                for atom in added_items:
+                    description = atom+": "+added_items[atom]['description']
+                    rssClass.addItem(title = "Added/Updated"+title, link = link, description = description)
+            removed_items = db_actions.get("removed")
+            if removed_items:
+                for atom in removed_items:
+                    description = atom+": "+removed_items[atom]['description']
+                    rssClass.addItem(title = "Removed"+title, link = link, description = description)
+            
+        rssClass.writeChanges()
+        # clean global vars
+        etpRSSMessages.clear()
+        dumpTools.removeobj(etpConst['rss-dump-name'])
     
     for uri in uris:
 	downloadLockDatabases(True,[uri])
@@ -1035,14 +1061,23 @@ def uploadDatabase(uris):
 	    entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"uploadDatabase: uploading to: "+extractFTPHostFromUri(uri)+" UNSUCCESSFUL! ERROR!.")
 	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 	
-	print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" ..."), back = True)
 	# uploading revision file
+	print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" ..."), back = True)
 	rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'],True)
 	if (rc == True):
-	    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" completed. Disconnecting."))
+	    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" completed."))
 	else:
 	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 	
+	# uploading rss file (if enabled)
+        if etpConst['rss-feed'] and os.path.isfile(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name']):
+            print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'])+red(" ..."), back = True)
+            rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'],True)
+            if (rc == True):
+                print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'])+red(" completed."))
+            else:
+                print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+        
 	# close connection
 	ftp.closeConnection()
 	# unlock database
@@ -1096,13 +1131,31 @@ def downloadDatabase(uri):
     print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['etpdatabasehashfile'])+red(" ..."), back = True)
     rc = ftp.downloadFile(etpConst['etpdatabasehashfile'],os.path.dirname(etpConst['etpdatabasefilepath']),True)
     if (rc == True):
-	print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabasehashfile'])+red(" completed. Disconnecting."))
+	print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabasehashfile'])+red(" completed."))
     else:
 	entropyLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: Cannot properly download from "+extractFTPHostFromUri(uri)+". Please check.")
 	print_warning(yellow(" * ")+red("Cannot properly download from ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 
+    # download RSS
+    if etpConst['rss-feed']:
+        entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: downloading RSS file for "+extractFTPHostFromUri(uri))
+        
+        print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['rss-name'])+red(" ..."), back = True)
+        try:
+            rc = ftp.downloadFile(etpConst['rss-name'],etpConst['etpdatabasedir'],True)
+            if (rc == True):
+                print_info(green(" * ")+red("Download of ")+bold(etpConst['rss-name'])+red(" completed."))
+            else:
+                entropyLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: Cannot properly download from "+extractFTPHostFromUri(uri)+". Please check.")
+                print_warning(yellow(" * ")+red("Cannot properly download from ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+        except:
+            print_warning(yellow(" * ")+red("Cannot properly download RSS file: "+etpConst['rss-name']+" for: ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: do some tidy.")
-    spawnCommand("rm -f " + etpConst['etpdatabasedir'] + "/" + dbfilename, "&> /dev/null")
+    try:
+        os.remove(etpConst['etpdatabasedir'] + "/" + dbfilename)
+    except OSError:
+        pass
     # close connection
     ftp.closeConnection()
 
