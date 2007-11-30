@@ -95,6 +95,8 @@ if (os.path.isfile(etpConst['reagentconf'])):
             etpConst['rss-name'] = feedname
 	elif line.startswith("rss-base-url|") and (len(line.split("rss-base-url|")) == 2):
             etpConst['rss-base-url'] = line.split("rss-base-url|")[1]
+            if not etpConst['rss-base-url'][-1] == "/":
+                etpConst['rss-base-url'] += "/"
 	elif line.startswith("rss-website-url|") and (len(line.split("rss-website-url|")) == 2):
             etpConst['rss-website-url'] = line.split("rss-website-url|")[1]
         

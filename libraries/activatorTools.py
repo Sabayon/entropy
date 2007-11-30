@@ -68,6 +68,10 @@ def sync(options, justTidy = False):
         if (rc == False):
 	    exit(401)
 	else:
+            if (not activatorRequestNoAsk) and etpConst['rss-feed']:
+                etpRSSMessages['commitmessage'] = readtext(print_info(darkgreen("Please insert a commit message: ")))
+            elif etpConst['rss-feed']:
+                etpRSSMessages['commitmessage'] = "Autodriven Update"
             # if packages are ok, we can sync the database
 	    database(["sync"])
 	    # now check packages checksum
@@ -192,7 +196,7 @@ def packages(options):
 	elif (opt == "--do-packages-check"):
 	    activatorRequestPackagesCheck = True
 
-    if len(options) == 0:
+    if not options:
 	return
 
     if (options[0] == "sync"):
@@ -698,10 +702,10 @@ def packages(options):
 	else:
 	    exit(470)
 
-    # Now we should start to check all the packages in the packages directory
-    if (activatorRequestPackagesCheck):
-	import reagentTools
-	reagentTools.database(['md5check'])
+        # Now we should start to check all the packages in the packages directory
+        if (activatorRequestPackagesCheck):
+            import reagentTools
+            reagentTools.database(['md5check'])
 	
 
 def database(options):
@@ -790,7 +794,7 @@ def database(options):
 		break
 	
 	if (mirrorsLocked):
-	    # if the mirrors are locked, we need to change if we have
+	    # if the mirrors are locked, we need to check if we have
 	    # the taint file in place. Because in this case, the one
 	    # that tainted the db, was me.
 	    if (dbLockFile):
@@ -975,7 +979,7 @@ def uploadDatabase(uris):
 
     import gzip
     import bz2
-    
+
     ### PREPARE RSS FEED
     if etpConst['rss-feed']:
         import rssTools
@@ -990,14 +994,18 @@ def uploadDatabase(uris):
             except:
                 revision = "N/A"
                 pass
-            title = ": "+etpConst['systemname']+" "+etpConst['product'][0].upper()+etpConst['product'][1:]+" "+etpConst['branch']+" :: Revision: "+revision
+            commitmessage = ''
+            if etpRSSMessages['commitmessage']:
+                commitmessage = ' :: '+etpRSSMessages['commitmessage']
+            title = ": "+etpConst['systemname']+" "+etpConst['product'][0].upper()+etpConst['product'][1:]+" "+etpConst['branch']+" :: Revision: "+revision+commitmessage
             link = etpConst['rss-base-url']
             # create description
             added_items = db_actions.get("added")
             if added_items:
                 for atom in added_items:
+                    mylink = link+"?search="+atom.split("~")[0]+"&arch="+etpConst['currentarch']+"&product="+etpConst['product']
                     description = atom+": "+added_items[atom]['description']
-                    rssClass.addItem(title = "Added/Updated"+title, link = link, description = description)
+                    rssClass.addItem(title = "Added/Updated"+title, link = mylink, description = description)
             removed_items = db_actions.get("removed")
             if removed_items:
                 for atom in removed_items:

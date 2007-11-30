@@ -482,7 +482,8 @@ etpExitMessages = {
 # those dicts will be dumped to a file and used by activator to update and updload .rss
 etpRSSMessages = {
     'added': {}, # packages that has been added
-    'removed': {} # packages that has been removed
+    'removed': {}, # packages that has been removed
+    'commitmessage': "" # commit message from the guy who is going to submit a repository update
 }
 
 ### Application disk cache
