@@ -117,6 +117,7 @@ class rssFeed:
         
         rss = doc.createElement("rss")
         rss.setAttribute("version","2.0")
+        rss.setAttribute("xmlns:atom","http://www.w3.org/2005/Atom")
         
         channel = doc.createElement("channel")
         
@@ -168,7 +169,7 @@ class rssFeed:
             item.appendChild(item_link)
             # guid
             item_guid = doc.createElement("guid")
-            item_guid.setAttribute("isPermaLink","false")
+            item_guid.setAttribute("isPermaLink","true")
             item_guid_text = doc.createTextNode(unicode(self.items[key]['guid']))
             item_guid.appendChild(item_guid_text)
             item.appendChild(item_guid)
@@ -190,7 +191,7 @@ class rssFeed:
         rss.appendChild(channel)
         doc.appendChild(rss)
         f = open(self.file,"w")
-        f.writelines(doc.toprettyxml(indent="\t"))
+        f.writelines(doc.toprettyxml(indent="    "))
         f.flush()
         f.close()
 
