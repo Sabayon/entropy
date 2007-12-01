@@ -2500,7 +2500,7 @@ class etpDatabase:
 	return results
 
 
-    def searchPackagesByCategory(self, keyword, like = False branch = None):
+    def searchPackagesByCategory(self, keyword, like = False, branch = None):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByCategory: called for "+keyword)
 	
 	if (self.xcache):
