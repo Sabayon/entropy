@@ -2371,9 +2371,13 @@ class etpDatabase:
 	    return self.fetchall2set(self.cursor.fetchall())
 
     ''' search packages that need the specified library (in neededreference table) specified by keyword '''
-    def searchNeeded(self, keyword):
+    def searchNeeded(self, keyword, like = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchNeeded: called for "+keyword)
-	self.cursor.execute('SELECT needed.idpackage FROM needed,neededreference WHERE library = "'+keyword+'" and needed.idneeded = neededreference.idneeded')
+        
+        if like:
+            self.cursor.execute('SELECT needed.idpackage FROM needed,neededreference WHERE library LIKE "'+keyword+'" and needed.idneeded = neededreference.idneeded')
+        else:
+            self.cursor.execute('SELECT needed.idpackage FROM needed,neededreference WHERE library = "'+keyword+'" and needed.idneeded = neededreference.idneeded')
 	return self.fetchall2set(self.cursor.fetchall())
 
     ''' same as above but with branch support '''
@@ -2493,6 +2497,28 @@ class etpDatabase:
 	results = self.cursor.fetchall()
 	if (self.xcache):
 	    self.storeSearchCache((keyword,sensitive,branch),'searchPackagesByName',results)
+	return results
+
+
+    def searchPackagesByCategory(self, keyword, like = False branch = None):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByCategory: called for "+keyword)
+	
+	if (self.xcache):
+	    cached = self.fetchSearchCache((keyword,branch),'searchPackagesByCategory')
+	    if cached != None: return cached
+	
+	branchstring = ''
+	if branch:
+	    branchstring = ' and branch = "'+branch+'"'
+	
+        if like:
+            self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE categories.category LIKE "'+keyword+'" and baseinfo.idcategory = categories.idcategory '+branchstring)
+        else:
+            self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE categories.category = "'+keyword+'" and baseinfo.idcategory = categories.idcategory '+branchstring)
+	
+	results = self.cursor.fetchall()
+	if (self.xcache):
+	    self.storeSearchCache((keyword,branch),'searchPackagesByCategory',results)
 	return results
 
     def searchPackagesByNameAndCategory(self, name, category, sensitive = False, branch = None):

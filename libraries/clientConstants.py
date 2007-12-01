@@ -32,54 +32,54 @@ etpInstallTriggers = {}
 ### structure same as above
 etpRemovalTriggers = {}
 
-# equo section
-if (not os.path.isfile(etpConst['equoconf'])):
-    print "ERROR: "+etpConst['equoconf']+" does not exist"
-    sys.exit(50)
-else:
-    f = open(etpConst['equoconf'],"r")
-    equoconf = f.readlines()
-    f.close()
-    for line in equoconf:
-	if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
-	    loglevel = line.split("loglevel|")[1]
-	    try:
-		loglevel = int(loglevel)
-	    except:
-		print "ERROR: invalid loglevel in: "+etpConst['equoconf']
-		sys.exit(51)
-	    if (loglevel > -1) and (loglevel < 3):
-	        etpConst['equologlevel'] = loglevel
-	    else:
-		print "WARNING: invalid loglevel in: "+etpConst['equoconf']
-		import time
-		time.sleep(5)
+def initConfig_clientConstants():
+    # equo section
+    if (os.path.isfile(etpConst['equoconf'])):
+        f = open(etpConst['equoconf'],"r")
+        equoconf = f.readlines()
+        f.close()
+        for line in equoconf:
+            if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
+                loglevel = line.split("loglevel|")[1]
+                try:
+                    loglevel = int(loglevel)
+                except:
+                    print "ERROR: invalid loglevel in: "+etpConst['equoconf']
+                    sys.exit(51)
+                if (loglevel > -1) and (loglevel < 3):
+                    etpConst['equologlevel'] = loglevel
+                else:
+                    print "WARNING: invalid loglevel in: "+etpConst['equoconf']
+                    import time
+                    time.sleep(5)
+    
+            if line.startswith("gentoo-compat|") and (len(line.split("|")) == 2):
+                compatopt = line.split("|")[1].strip()
+                if compatopt == "disable":
+                    etpConst['gentoo-compat'] = False
+                else:
+                    etpConst['gentoo-compat'] = True
+    
+            if line.startswith("collisionprotect|") and (len(line.split("|")) == 2):
+                collopt = line.split("|")[1].strip()
+                if collopt == "0" or collopt == "1" or collopt == "2":
+                    etpConst['collisionprotect'] = int(collopt)
+                else:
+                    print "WARNING: invalid collisionprotect in: "+etpConst['equoconf']
+    
+            if line.startswith("configprotect|") and (len(line.split("|")) == 2):
+                configprotect = line.split("|")[1].strip()
+                for x in configprotect.split():
+                    etpConst['configprotect'].append(x)
+    
+            if line.startswith("configprotectmask|") and (len(line.split("|")) == 2):
+                configprotect = line.split("|")[1].strip()
+                for x in configprotect.split():
+                    etpConst['configprotectmask'].append(x)
+    
+            if line.startswith("configprotectskip|") and (len(line.split("|")) == 2):
+                configprotect = line.split("|")[1].strip()
+                for x in configprotect.split():
+                    etpConst['configprotectskip'].append(x)
 
-	if line.startswith("gentoo-compat|") and (len(line.split("|")) == 2):
-	    compatopt = line.split("|")[1].strip()
-	    if compatopt == "disable":
-		etpConst['gentoo-compat'] = False
-	    else:
-		etpConst['gentoo-compat'] = True
-
-	if line.startswith("collisionprotect|") and (len(line.split("|")) == 2):
-	    collopt = line.split("|")[1].strip()
-	    if collopt == "0" or collopt == "1" or collopt == "2":
-		etpConst['collisionprotect'] = int(collopt)
-	    else:
-		print "WARNING: invalid collisionprotect in: "+etpConst['equoconf']
-
-	if line.startswith("configprotect|") and (len(line.split("|")) == 2):
-	    configprotect = line.split("|")[1].strip()
-	    for x in configprotect.split():
-		etpConst['configprotect'].append(x)
-
-	if line.startswith("configprotectmask|") and (len(line.split("|")) == 2):
-	    configprotect = line.split("|")[1].strip()
-	    for x in configprotect.split():
-		etpConst['configprotectmask'].append(x)
-
-	if line.startswith("configprotectskip|") and (len(line.split("|")) == 2):
-	    configprotect = line.split("|")[1].strip()
-	    for x in configprotect.split():
-		etpConst['configprotectskip'].append(x)
+initConfig_clientConstants()

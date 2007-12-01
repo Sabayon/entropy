@@ -26,6 +26,7 @@ from outputTools import *
 import entropyTools
 import equoTools
 import confTools
+from databaseTools import openRepositoryDatabase
 
 
 def cache(options):
@@ -90,7 +91,7 @@ def generateCache(quiet = False, verbose = False, depcache = True, configcache =
         for reponame in etpRepositories:
 	    if (not quiet): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Scanning ")+brown(etpRepositories[reponame]['description']), back = True)
 	    # get all packages keys
-	    dbconn = equoTools.openRepositoryDatabase(reponame)
+	    dbconn = openRepositoryDatabase(reponame)
 	    pkgdata = dbconn.listAllPackages()
 	    pkgdata = set(pkgdata)
 	    for info in pkgdata:

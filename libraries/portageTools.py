@@ -136,8 +136,9 @@ def getAtomCategory(atom):
 
 # please always force =pkgcat/pkgname-ver if possible
 def getInstalledAtom(atom):
+    mypath = etpConst['systemroot']+"/"
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtom: called -> "+str(atom))
-    rc = portage.db['/']['vartree'].dep_match(str(atom))
+    rc = portage.db[mypath]['vartree'].dep_match(str(atom))
     if (rc != []):
 	if (len(rc) == 1):
 	    return rc[0]
@@ -147,10 +148,11 @@ def getInstalledAtom(atom):
         return None
 
 def getPackageSlot(atom):
+    mypath = etpConst['systemroot']+"/"
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: called. ")
     if atom.startswith("="):
 	atom = atom[1:]
-    rc = portage.db['/']['vartree'].getslot(atom)
+    rc = portage.db[mypath]['vartree'].getslot(atom)
     if rc != "":
 	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: slot found -> "+str(atom)+" -> "+str(rc))
 	return rc
@@ -159,8 +161,9 @@ def getPackageSlot(atom):
 	return None
 
 def getEbuildDbPath(atom):
+    mypath = etpConst['systemroot']+"/"
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getEbuildDbPath: called -> "+atom)
-    return portage.db['/']['vartree'].getebuildpath(atom)
+    return portage.db[mypath]['vartree'].getebuildpath(atom)
 
 def getEbuildTreePath(atom):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getEbuildTreePath: called -> "+atom)
@@ -174,7 +177,8 @@ def getEbuildTreePath(atom):
 
 def getInstalledAtoms(atom):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtoms: called -> "+atom)
-    rc = portage.db['/']['vartree'].dep_match(str(atom))
+    mypath = etpConst['systemroot']+"/"
+    rc = portage.db[mypath]['vartree'].dep_match(str(atom))
     if (rc != []):
         return rc
     else:
@@ -490,16 +494,19 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
     return dependencies, conflicts
 
 def getPortageAppDbPath():
-    rc = getPortageEnv("ROOT")+portage_const.VDB_PATH
+    rc = getPortageEnv("ROOT")+etpConst['systemroot']+portage_const.VDB_PATH
     if (not rc.endswith("/")):
 	return rc+"/"
     return rc
 
 # Collect installed packages
-def getInstalledPackages():
+def getInstalledPackages(dbdir = None):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackages: called.")
     import os
-    appDbDir = getPortageAppDbPath()
+    if not dbdir:
+        appDbDir = getPortageAppDbPath()
+    else:
+        appDbDir = dbdir
     dbDirs = os.listdir(appDbDir)
     installedAtoms = []
     for pkgsdir in dbDirs:

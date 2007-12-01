@@ -52,6 +52,7 @@ def database(options):
             print_error(darkred(" * ")+bold("Portage")+red(" is not available."))
             return 1
 
+        
 	print_warning(bold("ATTENTION: ")+red("The installed package database will be generated again using Gentoo one."))
 	print_warning(red("If you dont know what you're doing just, don't do this. Really. I'm not joking."))
 	rc = entropyTools.askquestion("  Understood?")

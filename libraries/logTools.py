@@ -27,6 +27,7 @@
 
 from sys import stderr
 from time import strftime
+from entropyConstants import *
 
 class LogFile:
     def __init__ (self, level = 0, filename = None, header = "[LOG]"):
