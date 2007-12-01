@@ -599,13 +599,18 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     
         if (removalQueue):
             
+            '''
+            
+            FIXME: it's broken, on equo world it pulls in depends that shouldn't be removed
+            fix, or remove and forget
+            
             # add depends to removalQueue that are not in runQueue
             dependQueue = set()
             for idpackage in removalQueue:
                 depends = clientDbconn.retrieveDepends(idpackage)
                 if depends == -2:
                     clientDbconn.regenerateDependsTable(output = False)
-                    depends = clientDbconn.retrieveDepends(idpackage)
+                    depends = clientDbconn.retrieveDepends(idpackage) 
                 for depend in depends:
                     dependkey = clientDbconn.retrieveCategory(depend)+"/"+clientDbconn.retrieveName(depend)
                     dependslot = clientDbconn.retrieveSlot(depend)
@@ -616,9 +621,15 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                         matchatom = matchdbconn.retrieveAtom(match[0])
                         matchdbconn.closeDB()
                         if (matchatom not in actionQueue) and (depend not in removalQueue): # if the atom hasn't been pulled in, we need to remove depend
+                            # check if the atom is already up to date
+                            mymatch = equoTools.atomMatch(matchatom)
+                            print mymatch
+                            #print matchatom
                             dependQueue.add(depend)
+
             for depend in dependQueue:
                 removalQueue.append(depend)
+            '''
             
             if (ask or pretend or verbose):
                 print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("removed")+blue(" (conflicting/substituted):"))

@@ -69,7 +69,7 @@ def sync(options, justTidy = False):
 	    exit(401)
 	else:
             if (not activatorRequestNoAsk) and etpConst['rss-feed']:
-                etpRSSMessages['commitmessage'] = readtext(print_info(darkgreen("Please insert a commit message: ")))
+                etpRSSMessages['commitmessage'] = readtext(">> Please insert a commit message: ")
             elif etpConst['rss-feed']:
                 etpRSSMessages['commitmessage'] = "Autodriven Update"
             # if packages are ok, we can sync the database
