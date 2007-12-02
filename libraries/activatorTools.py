@@ -45,7 +45,7 @@ activatorLog = logTools.LogFile(level=etpConst['activatorloglevel'],filename = e
 import remoteTools
 
 def sync(options, justTidy = False):
-	
+
     activatorRequestNoAsk = False
     myopts = []
     for i in options:
@@ -74,10 +74,6 @@ def sync(options, justTidy = False):
                 etpRSSMessages['commitmessage'] = "Autodriven Update"
             # if packages are ok, we can sync the database
 	    database(["sync"])
-	    # now check packages checksum
-	    import reagentTools
-	    reagentTools.database(['md5check','--noask'])
-	    time.sleep(2)
 	    if (not activatorRequestNoAsk):
 	        # ask question
 	        rc = askquestion("     Should I continue with the tidy procedure ?")

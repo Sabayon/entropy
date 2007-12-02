@@ -1083,7 +1083,7 @@ def installPackage(infoDict):
     imageDir = unpackDir+"/image"
     os.makedirs(imageDir)
 
-    rc = uncompressTarBz2(pkgpath,imageDir, catchEmpty = True)
+    rc = uncompressTarBz2(pkgpath, imageDir, catchEmpty = True)
     if (rc != 0):
 	return rc
     if not os.path.isdir(imageDir):
@@ -1240,6 +1240,10 @@ def installPackage(infoDict):
     
     # remove unpack dir
     shutil.rmtree(unpackDir,True)
+    try:
+        os.rmdir(unpackDir)
+    except OSError:
+        pass
     return rc
 
 '''
@@ -1324,13 +1328,14 @@ def installPackageIntoGentooDatabase(infoDict,packageFile, newidpackage = -1):
 	        #print "removing -> "+removePath
 	
 	### INSTALL NEW
-	extractPath = etpConst['entropyunpackdir']+"/"+os.path.basename(packageFile)+"/xpak"
+        extractTmp = etpConst['entropyunpackdir']+"/"+os.path.basename(packageFile)
+	xpakPath = extractTmp+"/xpak"
         if os.path.isfile(etpConst['entropyunpackdir']+"/"+os.path.basename(packageFile)):
             os.remove(etpConst['entropyunpackdir']+"/"+os.path.basename(packageFile))
-	if os.path.isdir(extractPath):
-	    shutil.rmtree(extractPath)
+	if os.path.isdir(xpakPath):
+	    shutil.rmtree(xpakPath)
 	else:
-	    os.makedirs(extractPath)
+	    os.makedirs(xpakPath)
         
         smartpackage = False
         if infoDict['repository'].endswith(".tbz2"):
@@ -1342,16 +1347,16 @@ def installPackageIntoGentooDatabase(infoDict,packageFile, newidpackage = -1):
             xpakdata = xdbconn.retrieveXpakMetadata(infoDict['idpackage'])
             if xpakdata:
                 # save into a file
-                f = open(extractPath+".xpak","wb")
+                f = open(xpakPath+".xpak","wb")
                 f.write(xpakdata)
                 f.flush()
                 f.close()
-                xpakstatus = unpackXpak(extractPath+".xpak",extractPath)
+                xpakstatus = unpackXpak(xpakPath+".xpak",xpakPath)
             else:
                 xpakstatus = None
             xdbconn.closeDB()
         else:
-            xpakstatus = extractXpak(packageFile,extractPath)
+            xpakstatus = extractXpak(packageFile,xpakPath)
         if xpakstatus != None:
             if not os.path.isdir(portDbDir+infoDict['category']):
                 os.makedirs(portDbDir+infoDict['category'])
@@ -1359,7 +1364,13 @@ def installPackageIntoGentooDatabase(infoDict,packageFile, newidpackage = -1):
             if os.path.isdir(destination):
                 shutil.rmtree(destination)
             
-            shutil.move(extractPath,destination)
+            shutil.move(xpakPath,destination)
+            # clean temp directory
+            shutil.rmtree(extractTmp,True)
+            try:
+                os.rmdir(extractTmp)
+            except OSError:
+                pass
             
             # test if /var/cache/edb/counter is fine
             if os.path.isfile(edbCOUNTER):

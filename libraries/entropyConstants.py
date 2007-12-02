@@ -667,10 +667,9 @@ def initConfig_entropyConstants(rootdir):
                 etpConst['systemname'] = line.split("|")[1].strip()
         
     
-    etpHandlers = {
-        'md5sum': "md5sum.php?arch="+etpConst['currentarch']+"&package=", # md5sum handler
-        'errorsend': "http://svn.sabayonlinux.org/entropy/"+etpConst['product']+"/handlers/error_report.php?arch="+etpConst['currentarch']+"&stacktrace=",
-    }
+    etpHandlers.clear()
+    etpHandlers['md5sum'] = "md5sum.php?arch="+etpConst['currentarch']+"&package=" # md5sum handler
+    etpHandlers['errorsend'] = "http://svn.sabayonlinux.org/entropy/"+etpConst['product']+"/handlers/error_report.php?arch="+etpConst['currentarch']+"&stacktrace="
     
     etpRepositories.clear()
     etpRepositoriesOrder.clear()
