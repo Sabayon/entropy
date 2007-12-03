@@ -183,6 +183,10 @@ class parser:
         
     
     def __validateEntropyCache(self,maskfile,mtimefile):
+
+        if os.getuid() != 0: # can't validate if running as user, thus cache shouldn't be loaded either
+            return
+
         # handle on-disk cache validation
         # in this case, repositories cache
         # if package.keywords is changed, we must destroy cache

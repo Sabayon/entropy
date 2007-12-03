@@ -41,6 +41,10 @@ equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst[
 ### Caching functions
 
 def loadCaches(quiet = False):
+    
+    if os.getuid() != 0: # don't load cache as user
+        return
+    
     if not quiet: print_info(darkred(" @@ ")+blue("Loading On-Disk Cache..."))
     # atomMatch
     try:
@@ -62,6 +66,10 @@ def loadCaches(quiet = False):
 
 
 def saveCaches():
+    
+    if os.getuid() != 0: # don't save cache as user
+        return
+    
     dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
     if os.path.isfile(etpConst['dumpstoragedir']+"/"+etpCache['atomMatch']+".dmp"):
 	if os.stat(etpConst['dumpstoragedir']+"/"+etpCache['atomMatch']+".dmp")[6] > etpCacheSizes['atomMatch']:

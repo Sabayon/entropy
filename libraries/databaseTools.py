@@ -148,7 +148,7 @@ class etpDatabase:
 	self.dbname = dbname
 	
 	# caching dictionaries
-	if (self.xcache) and (dbname != 'etpdb'):
+	if (self.xcache) and (dbname != 'etpdb') and (os.getuid() == 0):
 	    
             ''' database query cache '''
 	    broken1 = False
@@ -307,6 +307,7 @@ class etpDatabase:
 	    #self.connection.rollback()
 	    self.cursor.close()
 	    self.connection.close()
+            del self
 	    return
 
 	# if it's equo that's calling the function, just save changes and quit
@@ -315,6 +316,7 @@ class etpDatabase:
 	    self.commitChanges()
 	    self.cursor.close()
 	    self.connection.close()
+            del self
 	    return
 
 	# Cleanups if at least one package has been removed
@@ -350,6 +352,7 @@ class etpDatabase:
 	
 	self.cursor.close()
 	self.connection.close()
+        del self
 
     def commitChanges(self):
 	if (not self.readOnly):

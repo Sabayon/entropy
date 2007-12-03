@@ -137,7 +137,7 @@ def searchInstalledPackages(packages, idreturn = False, quiet = False):
 def searchBelongs(files, idreturn = False, quiet = False):
     
     if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Belong Search..."))
+        print_info(darkred(" @@ ")+darkgreen("Belong Search..."))
 
     try:
         clientDbconn = openClientDatabase()
@@ -191,7 +191,7 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
     
     from equoTools import atomMatch
     if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Depends Search..."))
+        print_info(darkred(" @@ ")+darkgreen("Depends Search..."))
 
     try:
         clientDbconn = openClientDatabase()
@@ -253,7 +253,7 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
 def searchNeeded(atoms, idreturn = False, quiet = False):
     
     if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Needed Search..."))
+        print_info(darkred(" @@ ")+darkgreen("Needed Search..."))
 
     try:
         clientDbconn = openClientDatabase()
@@ -289,7 +289,7 @@ def searchNeeded(atoms, idreturn = False, quiet = False):
 def searchFiles(atoms, idreturn = False, quiet = False):
     
     if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Files Search..."))
+        print_info(darkred(" @@ ")+darkgreen("Files Search..."))
 
     results = searchInstalledPackages(atoms, idreturn = True)
     try:
@@ -330,7 +330,7 @@ def searchFiles(atoms, idreturn = False, quiet = False):
 def searchOrphans(quiet = False):
 
     if (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Orphans Search..."))
+        print_info(darkred(" @@ ")+darkgreen("Orphans Search..."))
 
     try:
         clientDbconn = openClientDatabase()
@@ -408,7 +408,7 @@ def searchRemoval(atoms, idreturn = False, quiet = False, deep = False):
     
     from equoTools import generateDependsTree
     if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Removal Search..."))
+        print_info(darkred(" @@ ")+darkgreen("Removal Search..."))
 
     try:
         clientDbconn = openClientDatabase()
@@ -467,7 +467,7 @@ def searchRemoval(atoms, idreturn = False, quiet = False, deep = False):
 def searchInstalled(idreturn = False, verbose = False, quiet = False):
     
     if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Installed Search..."))
+        print_info(darkred(" @@ ")+darkgreen("Installed Search..."))
 
     try:
         clientDbconn = openClientDatabase()
@@ -507,7 +507,7 @@ def searchPackage(packages, idreturn = False):
     dataInfo = set() # when idreturn is True
     
     if (not idreturn):
-        print_info(yellow(" @@ ")+darkgreen("Searching..."))
+        print_info(darkred(" @@ ")+darkgreen("Searching..."))
     # search inside each available database
     repoNumber = 0
     searchError = False
@@ -556,7 +556,7 @@ def searchTaggedPackages(tags, datareturn = False, quiet = False):
     foundPackages = {}
     
     if (not datareturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Tag Search..."))
+        print_info(darkred(" @@ ")+darkgreen("Tag Search..."))
     # search inside each available database
     repoNumber = 0
     for repo in etpRepositories:
@@ -590,7 +590,7 @@ def searchDescription(descriptions, idreturn = False, quiet = False):
     foundPackages = {}
     
     if (not idreturn) and (not quiet):
-        print_info(yellow(" @@ ")+darkgreen("Description Search..."))
+        print_info(darkred(" @@ ")+darkgreen("Description Search..."))
     # search inside each available database
     repoNumber = 0
     for repo in etpRepositories:

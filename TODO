@@ -1,5 +1,6 @@
 TODO list:
   - world: first fetch all, then upgrade
+  - mirrors: one more and in random order
   - Community repositories
   - server: handle multiple packages for each scope with these abilities:
     - enable/disable it
