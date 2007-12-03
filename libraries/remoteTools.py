@@ -41,7 +41,7 @@ import urllib2
 # @returns hex: if the file exists
 # @returns None: if the server does not support HTTP handlers
 # @returns None: if the file is not found
-def getRemotePackageChecksum(serverName,filename, branch):
+def getRemotePackageChecksum(servername, filename, branch):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getRemotePackageChecksum: called.")
     # etpHandlers['md5sum'] is the command
     # create the request

@@ -99,7 +99,16 @@ class handlerFTP:
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.reconnectHost: called.")
         # import FTP modules
         socket.setdefaulttimeout(60)
-	self.ftpconn = ftplib.FTP(self.ftphost)
+        counter = 10
+        while 1:
+            counter -= 1
+            try:
+                self.ftpconn = ftplib.FTP(self.ftphost)
+                break
+            except:
+                if not counter:
+                    raise
+                continue
 	self.ftpconn.login(self.ftpuser,self.ftppassword)
 	# save curr dir
 	#cur = self.currentdir

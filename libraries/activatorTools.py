@@ -196,6 +196,7 @@ def packages(options):
 	return
 
     if (options[0] == "sync"):
+        
 	print_info(green(" * ")+red("Starting ")+bold("binary")+yellow(" packages")+red(" syncronization across servers ..."))
 	
 	totalUris = len(etpConst['activatoruploaduris'])
