@@ -241,6 +241,9 @@ def update(options):
 	    mybranch = i.split("=")[1]
 	    if (mybranch):
 	        enzymeRequestBranch = mybranch
+    
+    if not os.path.isdir(etpConst['packagessuploaddir']+"/"+enzymeRequestBranch):
+        os.makedirs(etpConst['packagessuploaddir']+"/"+enzymeRequestBranch)
 
     tbz2files = os.listdir(etpConst['packagesstoredir'])
     totalCounter = 0

@@ -1,6 +1,7 @@
 TODO list:
   - world: first fetch all, then upgrade
   - mirrors: one more and in random order
+  - trigger: Regenerating cracklib dictionary
   - Community repositories
   - server: handle multiple packages for each scope with these abilities:
     - enable/disable it

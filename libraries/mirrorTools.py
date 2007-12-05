@@ -83,11 +83,16 @@ class handlerFTP:
         if self.ftpdir == "":
             self.ftpdir = "/"
 
-	self.ftpconn = ftplib.FTP(self.ftphost)
-	# enable debug?
-	#if debug:
-	#    mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.__init__: DEBUG enabled.")
-	#    self.ftpconn.set_debuglevel(2)
+        count = 10
+        while 1:
+            count -= 1
+            try:
+                self.ftpconn = ftplib.FTP(self.ftphost)
+                break
+            except:
+                if not count:
+                    raise
+                continue
 	
 	self.ftpconn.login(self.ftpuser,self.ftppassword)
 	# change to our dir

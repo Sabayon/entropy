@@ -416,7 +416,7 @@ def const_resetCache():
 def initConfig_entropyConstants(rootdir):
 
     ETP_DIR = rootdir+"/var/lib/entropy"
-    ETP_TMPDIR = rootdir+"/tmp"
+    ETP_TMPDIR = "/tmp"
     ETP_RANDOM = str(random.random())[2:7]
     ETP_TMPFILE = "/.random-"+ETP_RANDOM+".tmp"
     ETP_REPODIR = "/packages/"+ETP_ARCH_CONST

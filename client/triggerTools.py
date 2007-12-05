@@ -690,11 +690,12 @@ def run_depmod(name):
 '''
 def python_update_symlink():
     bins = [x for x in os.listdir("/usr/bin") if x.startswith("python2.")]
-    versions = [x[6:] for x in bins]
-    versions.sort()
-    latest = versions[-1]
-    os.system('ln -sf /usr/bin/python'+str(latest)+' /usr/bin/python')
-    os.system('ln -sf /usr/bin/python'+str(latest)+' /usr/bin/python2')
+    if bins: # don't ask me why but it happened...
+        versions = [x[6:] for x in bins]
+        versions.sort()
+        latest = versions[-1]
+        os.system('ln -sf /usr/bin/python'+str(latest)+' /usr/bin/python')
+        os.system('ln -sf /usr/bin/python'+str(latest)+' /usr/bin/python2')
     return 0
 
 '''
@@ -791,7 +792,11 @@ def remove_boot_grub(kernel,initramfs):
                 new_conf = new_conf[::-1][rlines:][::-1]
             if (found):
                 # check if the parameter belongs to title or it is something else
-                line = grub_conf[count].strip().split()[0]
+                try:
+                    line = grub_conf[count].strip().split()[0]
+                except IndexError: # in case of weird stuff (happened...)
+                    new_conf.append(grub_conf[count])
+                    continue
                 if line: # skip empty lines
                     if line in ["root","kernel","initrd","hide","unhide","chainloader","makeactive","rootnoverify"]:
                         # skip write

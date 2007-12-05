@@ -54,7 +54,10 @@ portageLog = logTools.LogFile(level=etpConst['spmbackendloglevel'],filename = et
 #####################################################################################
 
 def getThirdPartyMirrors(mirrorname):
-    return portage.thirdpartymirrors[mirrorname]
+    try:
+        return portage.thirdpartymirrors[mirrorname]
+    except KeyError:
+        return []
 
 def getPortageEnv(var):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPortageEnv: called.")
@@ -137,8 +140,9 @@ def getAtomCategory(atom):
 # please always force =pkgcat/pkgname-ver if possible
 def getInstalledAtom(atom):
     mypath = etpConst['systemroot']+"/"
+    mytree = portage.vartree(root=mypath)
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtom: called -> "+str(atom))
-    rc = portage.db[mypath]['vartree'].dep_match(str(atom))
+    rc = mytree.dep_match(str(atom))
     if (rc != []):
 	if (len(rc) == 1):
 	    return rc[0]
@@ -149,10 +153,11 @@ def getInstalledAtom(atom):
 
 def getPackageSlot(atom):
     mypath = etpConst['systemroot']+"/"
+    mytree = portage.vartree(root=mypath)
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: called. ")
     if atom.startswith("="):
 	atom = atom[1:]
-    rc = portage.db[mypath]['vartree'].getslot(atom)
+    rc = mytree.getslot(atom)
     if rc != "":
 	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: slot found -> "+str(atom)+" -> "+str(rc))
 	return rc
@@ -160,25 +165,11 @@ def getPackageSlot(atom):
 	portageLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: slot not found -> "+str(atom))
 	return None
 
-def getEbuildDbPath(atom):
-    mypath = etpConst['systemroot']+"/"
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getEbuildDbPath: called -> "+atom)
-    return portage.db[mypath]['vartree'].getebuildpath(atom)
-
-def getEbuildTreePath(atom):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getEbuildTreePath: called -> "+atom)
-    if atom.startswith("="):
-	atom = atom[1:]
-    rc = portage.portdb.findname(atom)
-    if rc != "":
-	return rc
-    else:
-	return None
-
 def getInstalledAtoms(atom):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtoms: called -> "+atom)
     mypath = etpConst['systemroot']+"/"
-    rc = portage.db[mypath]['vartree'].dep_match(str(atom))
+    mytree = portage.vartree(root=mypath)
+    rc = mytree.dep_match(str(atom))
     if (rc != []):
         return rc
     else:
