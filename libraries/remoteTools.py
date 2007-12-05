@@ -53,6 +53,8 @@ def getRemotePackageChecksum(servername, filename, branch):
     
     # does the package has "#" (== tag) ? hackish thing that works
     filename = filename.replace("#","%23")
+    # "+"
+    filename = filename.replace("+","%2b")
     
     request = url+etpHandlers['md5sum']+filename+"&branch="+branch
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getRemotePackageChecksum: requested url -> "+request)

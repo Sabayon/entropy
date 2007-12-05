@@ -224,6 +224,8 @@ def quickpkg(atom,dirpath):
     pkgname = atom.split("/")[1]
     pkgcat = atom.split("/")[0]
     pkgfile = pkgname+".tbz2"
+    if not os.path.isdir(dirpath):
+        os.makedirs(dirpath)
     dirpath += "/"+pkgname+".tbz2"
     dbdir = getPortageAppDbPath()+"/"+pkgcat+"/"+pkgname+"/"
 

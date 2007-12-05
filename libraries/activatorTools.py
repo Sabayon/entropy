@@ -453,7 +453,7 @@ def packages(options):
 			    uploadQueueLength += 1
 		
 	            print_info(red(" * ")+blue("Packages that would be ")+red("removed:\t\t\t")+bold(str(removalQueueLength)))
-	            print_info(red(" * ")+blue("Packages that would be ")+yellow("downloaded/moved locally:\t\t")+bold(str(downloadQueueLength)))
+	            print_info(red(" * ")+blue("Packages that would be ")+yellow("downloaded/moved locally:\t")+bold(str(downloadQueueLength)))
 	            print_info(red(" * ")+blue("Packages that would be ")+green("uploaded:\t\t\t")+bold(str(uploadQueueLength)))
 	            print_info(red(" * ")+blue("Total removal ")+red("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalRemovalSize))))
 	            print_info(red(" * ")+blue("Total download ")+yellow("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalDownloadSize))))
