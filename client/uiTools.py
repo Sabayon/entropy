@@ -297,11 +297,11 @@ def worldUpdate(ask = False, pretend = False, verbose = False, onlyfetch = False
     clientDbconn.closeDB()
     return 0,0
 
-def installPackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = [], resume = False, skipfirst = False):
+def installPackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = [], resume = False, skipfirst = False, returnQueue = False, quiet = False):
 
     # check if I am root
     if (not entropyTools.isRoot()):
-        print_warning(red("Running with ")+bold("--pretend")+red("..."))
+        if not (quiet or returnQueue): print_warning(red("Running with ")+bold("--pretend")+red("..."))
 	pretend = True
 
     dirsCleanup = set()
@@ -331,7 +331,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                     os.makedirs(etpConst['entropyunpackdir']+"/"+basefile[:-5])
                     dbfile = entropyTools.extractEdb(pkg,dbpath = etpConst['entropyunpackdir']+"/"+basefile[:-5]+"/packages.db")
                     if dbfile == None:
-                        print_warning(red("## ATTENTION:")+bold(" "+basefile+" ")+red(" is not a valid Entropy package. Skipping..."))
+                        if not (quiet or returnQueue): print_warning(red("## ATTENTION:")+bold(" "+basefile+" ")+red(" is not a valid Entropy package. Skipping..."))
                         continue
                     dirsCleanup.add(os.path.dirname(dbfile))
                     # add dbfile
@@ -363,20 +363,20 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
             if (exitcode != -1):
                 _foundAtoms.append(result[1])
             else:
-                print_warning(bold("!!!")+red(" No match for ")+bold(result[0])+red(" in database. If you omitted the category, try adding it."))
-                print_warning(red("    Also, if package is masked, you need to unmask it. See ")+bold(etpConst['confdir']+"/packages/*")+red(" files for help."))
+                if not (quiet or returnQueue): print_warning(bold("!!!")+red(" No match for ")+bold(result[0])+red(" in database. If you omitted the category, try adding it."))
+                if not (quiet or returnQueue): print_warning(red("    Also, if package is masked, you need to unmask it. See ")+bold(etpConst['confdir']+"/packages/*")+red(" files for help."))
 
         foundAtoms = _foundAtoms
 
         # are there packages in foundAtoms?
         if (not foundAtoms):
-            print_error(red("No packages found"))
+            if not (quiet or returnQueue): print_error(red("No packages found"))
             dirscleanup()
             return 127,-1
 
         if (ask or pretend or verbose):
             # now print the selected packages
-            print_info(red(" @@ ")+blue("These are the chosen packages:"))
+            if not (quiet or returnQueue): print_info(red(" @@ ")+blue("These are the chosen packages:"))
             totalatoms = len(foundAtoms)
             atomscounter = 0
             for atomInfo in foundAtoms:
@@ -409,8 +409,8 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                         installedTag = "NoTag"
                     installedRev = clientDbconn.retrieveRevision(idx)
     
-                print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
-                print_info("\t"+red("Versioning:\t")+" "+blue(installedVer)+" / "+blue(installedTag)+" / "+blue(str(installedRev))+bold(" ===> ")+darkgreen(pkgver)+" / "+darkgreen(pkgtag)+" / "+darkgreen(str(pkgrev)))
+                if not (quiet or returnQueue): print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
+                if not (quiet or returnQueue): print_info("\t"+red("Versioning:\t")+" "+blue(installedVer)+" / "+blue(installedTag)+" / "+blue(str(installedRev))+bold(" ===> ")+darkgreen(pkgver)+" / "+darkgreen(pkgtag)+" / "+darkgreen(str(pkgrev)))
                 # tell wether we should update it
                 if installedVer == "Not installed":
                     installedVer = "0"
@@ -428,12 +428,12 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                         action = blue("Upgrade")
                 else:
                     action = red("Downgrade")
-                print_info("\t"+red("Action:\t\t")+" "+action)
+                if not (quiet or returnQueue): print_info("\t"+red("Action:\t\t")+" "+action)
             
                 dbconn.closeDB()
     
             if (verbose or ask or pretend):
-                print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
+                if not (quiet or returnQueue): print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
         
             if (deps):
                 if (ask):
@@ -444,14 +444,16 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
     
         runQueue = []
         removalQueue = [] # aka, conflicts
-        print_info(red(" @@ ")+blue("Calculating dependencies..."))
+        if not (quiet or returnQueue): print_info(red(" @@ ")+blue("Calculating dependencies..."))
 
         if (deps):
-            treepackages, result = equoTools.getRequiredPackages(foundAtoms, emptydeps, deepdeps, spinning = True)
+            spinning = False
+            if not (quiet or returnQueue): spinning = True
+            treepackages, result = equoTools.getRequiredPackages(foundAtoms, emptydeps, deepdeps, spinning = spinning)
             # add dependencies, explode them
             
             if (result == -2):
-                print_error(red(" @@ ")+blue("Cannot find needed dependencies: ")+str(treepackages))
+                if not (quiet or returnQueue): print_error(red(" @@ ")+blue("Cannot find needed dependencies: ")+str(treepackages))
                 for atom in treepackages:
                     for repo in etpRepositories:
                         rdbconn = openRepositoryDatabase(repo)
@@ -459,16 +461,16 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                         if riddep != -1:
                             ridpackages = rdbconn.searchIdpackageFromIddependency(riddep)
                             if ridpackages:
-                                print_error(red(" @@ ")+blue("Dependency found and probably needed by:"))
+                                if not (quiet or returnQueue): print_error(red(" @@ ")+blue("Dependency found and probably needed by:"))
                             for i in ridpackages:
                                 iatom = rdbconn.retrieveAtom(i)
-                                print_error(red("     # ")+" [from:"+repo+"] "+darkred(iatom))
+                                if not (quiet or returnQueue): print_error(red("     # ")+" [from:"+repo+"] "+darkred(iatom))
                         rdbconn.closeDB()
                 dirscleanup()
                 return 130, -1
             
             elif (result == -1): # no database connection
-                print_error(red(" @@ ")+blue("Cannot find the Installed Packages Database. It's needed to accomplish dependency resolving. Try to run ")+bold("equo database generate"))
+                if not (quiet or returnQueue): print_error(red(" @@ ")+blue("Cannot find the Installed Packages Database. It's needed to accomplish dependency resolving. Try to run ")+bold("equo database generate"))
                 dirscleanup()
                 return 200, -1
             
@@ -494,22 +496,23 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
         pkgsToDowngrade = 0
         pkgsToRemove = len(removalQueue)
         actionQueue = {}
-
+        
         if ((not runQueue) and (not removalQueue)):
-            print_error(red("Nothing to do."))
+            if not (quiet or returnQueue): print_error(red("Nothing to do."))
             dirscleanup()
             return 127,-1
 
         if (runQueue):
             if (ask or pretend):
-                print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("merged:"))
+                if not (quiet or returnQueue): print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("merged:"))
             
             count = 0
             atomlen = len(runQueue)
             for packageInfo in runQueue:
                 count += 1
                 
-                if not (ask or pretend): print_info(":: Collecting data: "+str(round((float(count)/atomlen)*100,1))+"% ::", back = True)
+                if not (quiet or returnQueue):
+                    if not (ask or pretend): print_info(":: Collecting data: "+str(round((float(count)/atomlen)*100,1))+"% ::", back = True)
                 dbconn = openRepositoryDatabase(packageInfo[1])
                 mydata = dbconn.getBaseData(packageInfo[0])
                 pkgatom = mydata[0]
@@ -594,7 +597,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                         oldtag = "/"+darkred(installedTag)+oldtag
                     oldinfo += oldtag
     
-                print_info(darkred(" ##")+flags+repoinfo+enlightenatom(str(pkgatom))+"/"+str(pkgrev)+oldinfo)
+                if not (quiet or returnQueue): print_info(darkred(" ##")+flags+repoinfo+enlightenatom(str(pkgatom))+"/"+str(pkgrev)+oldinfo)
                 dbconn.closeDB()
     
         if (removalQueue):
@@ -632,30 +635,30 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
             '''
             
             if (ask or pretend or verbose):
-                print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("removed")+blue(" (conflicting/substituted):"))
+                if not (quiet or returnQueue): print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("removed")+blue(" (conflicting/substituted):"))
     
                 for idpackage in removalQueue:
                     pkgatom = clientDbconn.retrieveAtom(idpackage)
                     onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idpackage)
                     installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
                     repoinfo = red("[")+brown("from: ")+bold(installedfrom)+red("] ")
-                    print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
+                    if not (quiet or returnQueue): print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
     
         if (runQueue) or (removalQueue):
             # show download info
-            print_info(red(" @@ ")+blue("Packages needing install:\t")+red(str(len(runQueue))))
-            print_info(red(" @@ ")+blue("Packages needing removal:\t")+red(str(pkgsToRemove)))
+            if not (quiet or returnQueue): print_info(red(" @@ ")+blue("Packages needing install:\t")+red(str(len(runQueue))))
+            if not (quiet or returnQueue): print_info(red(" @@ ")+blue("Packages needing removal:\t")+red(str(pkgsToRemove)))
             if (ask or verbose or pretend):
-                print_info(red(" @@ ")+darkgreen("Packages needing install:\t")+darkgreen(str(pkgsToInstall)))
-                print_info(red(" @@ ")+darkgreen("Packages needing reinstall:\t")+darkgreen(str(pkgsToReinstall)))
-                print_info(red(" @@ ")+blue("Packages needing update:\t\t")+blue(str(pkgsToUpdate)))
-                print_info(red(" @@ ")+red("Packages needing downgrade:\t")+red(str(pkgsToDowngrade)))
-            print_info(red(" @@ ")+blue("Download size:\t\t\t")+bold(str(entropyTools.bytesIntoHuman(downloadSize))))
+                if not (quiet or returnQueue): print_info(red(" @@ ")+darkgreen("Packages needing install:\t")+darkgreen(str(pkgsToInstall)))
+                if not (quiet or returnQueue): print_info(red(" @@ ")+darkgreen("Packages needing reinstall:\t")+darkgreen(str(pkgsToReinstall)))
+                if not (quiet or returnQueue): print_info(red(" @@ ")+blue("Packages needing update:\t\t")+blue(str(pkgsToUpdate)))
+                if not (quiet or returnQueue): print_info(red(" @@ ")+red("Packages needing downgrade:\t")+red(str(pkgsToDowngrade)))
+            if not (quiet or returnQueue): print_info(red(" @@ ")+blue("Download size:\t\t\t")+bold(str(entropyTools.bytesIntoHuman(downloadSize))))
             deltaSize = onDiskUsedSize - onDiskFreedSize
             if (deltaSize > 0):
-                print_info(red(" @@ ")+blue("Used disk space:\t\t\t")+bold(str(entropyTools.bytesIntoHuman(deltaSize))))
+                if not (quiet or returnQueue): print_info(red(" @@ ")+blue("Used disk space:\t\t\t")+bold(str(entropyTools.bytesIntoHuman(deltaSize))))
             else:
-                print_info(red(" @@ ")+blue("Freed disk space:\t\t")+bold(str(entropyTools.bytesIntoHuman(abs(deltaSize)))))
+                if not (quiet or returnQueue): print_info(red(" @@ ")+blue("Freed disk space:\t\t")+bold(str(entropyTools.bytesIntoHuman(abs(deltaSize)))))
     
         if (ask):
             rc = entropyTools.askquestion("     Would you like to run the queue ?")
@@ -682,7 +685,7 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
         # check if there's something to resume
         resume_cache = dumpTools.loadobj(etpCache['install'])
         if not resume_cache: # None or {}
-            print_error(red("Nothing to resume."))
+            if not (quiet or returnQueue): print_error(red("Nothing to resume."))
             return 128,-1
         else:
             try:
@@ -690,9 +693,9 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                 runQueue = resume_cache['runQueue'][:]
                 actionQueue = resume_cache['actionQueue'].copy()
                 onlyfetch = resume_cache['onlyfetch']
-                print_warning(red("Resuming previous operations..."))
+                if not (quiet or returnQueue): print_warning(red("Resuming previous operations..."))
             except:
-                print_error(red("Resume cache corrupted."))
+                if not (quiet or returnQueue): print_error(red("Resume cache corrupted."))
                 dumpTools.dumpobj(etpCache['install'],{})
                 return 128,-1
             if skipfirst:
@@ -717,6 +720,18 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
                     dumpTools.dumpobj(etpCache['install'],resume_cache)
                     
 
+    if returnQueue:
+        # prepare return dictionary
+        returnActionQueue = {}
+        returnActionQueue['etpRepositories'] = etpRepositories.copy()
+        returnActionQueue['etpRepositoriesOrder'] = etpRepositoriesOrder.copy()
+        returnActionQueue['removalQueue'] = {}
+        returnActionQueue['removalQueue']['queue'] = removalQueue[:]
+        returnActionQueue['removalQueue']['data'] = {}
+        returnActionQueue['runQueue'] = {}
+        returnActionQueue['runQueue']['queue'] = runQueue[:]
+        returnActionQueue['runQueue']['data'] = {}
+        
 
     # running tasks
     totalqueue = str(len(runQueue))
@@ -739,12 +754,22 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	steps.append("preremove")
 	steps.append("remove")
 	steps.append("postremove")
-	for step in steps:
-	    rc = equoTools.stepExecutor(step,infoDict,str(currentremovalqueue)+"/"+totalremovalqueue)
-	    if (rc != 0):
-		clientDbconn.closeDB()
-                dirscleanup()
-		return -1,rc
+        
+        if returnQueue:
+            
+            returnActionQueue['removalQueue']['data'][idpackage] = {}
+            returnActionQueue['removalQueue']['data'][idpackage]['infoDict'] = infoDict.copy()
+            returnActionQueue['removalQueue']['data'][idpackage]['triggerdata'] = etpRemovalTriggers[infoDict['removeatom']].copy()
+            returnActionQueue['removalQueue']['data'][idpackage]['steps'] = steps[:]
+            
+        else:
+        
+            for step in steps:
+                rc = equoTools.stepExecutor(step,infoDict,str(currentremovalqueue)+"/"+totalremovalqueue)
+                if (rc != 0):
+                    clientDbconn.closeDB()
+                    dirscleanup()
+                    return -1,rc
         
         # update resume cache
         if not tbz2: # tbz2 caching not supported
@@ -802,14 +827,23 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
 	    steps.append("postinstall")
 	    steps.append("showmessages")
 	
-	print_info(red(" @@ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
-	
-	for step in steps:
-	    rc = equoTools.stepExecutor(step,actionQueue[pkgatom],str(currentqueue)+"/"+totalqueue)
-	    if (rc != 0):
-		clientDbconn.closeDB()
-                dirscleanup()
-		return -1,rc
+	if not (quiet or returnQueue): print_info(red(" @@ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
+
+        if returnQueue:
+
+            returnActionQueue['runQueue']['data'][pkgatom] = {}
+            returnActionQueue['runQueue']['data'][pkgatom]['infoDict'] = actionQueue[pkgatom].copy()
+            returnActionQueue['runQueue']['data'][pkgatom]['triggerdata'] = etpInstallTriggers[pkgatom].copy()
+            returnActionQueue['runQueue']['data'][pkgatom]['steps'] = steps[:]
+
+        else:
+
+            for step in steps:
+                rc = equoTools.stepExecutor(step,actionQueue[pkgatom],str(currentqueue)+"/"+totalqueue)
+                if (rc != 0):
+                    clientDbconn.closeDB()
+                    dirscleanup()
+                    return -1,rc
 
         # update resume cache
         if not tbz2: # tbz2 caching not supported
@@ -817,23 +851,27 @@ def installPackages(packages = [], atomsdata = [], ask = False, pretend = False,
             dumpTools.dumpobj(etpCache['install'],resume_cache)
 
     if (onlyfetch):
-	print_info(red(" @@ ")+blue("Fetch Complete."))
+	if not (quiet or returnQueue): print_info(red(" @@ ")+blue("Fetch Complete."))
     else:
-	print_info(red(" @@ ")+blue("Install Complete."))
+	if not (quiet or returnQueue): print_info(red(" @@ ")+blue("Install Complete."))
 
     # clear resume information
     dumpTools.dumpobj(etpCache['install'],{})
     
     clientDbconn.closeDB()
     dirscleanup()
+    
+    if returnQueue:
+        return returnActionQueue,0
+    
     return 0,0
 
 
-def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, deep = False, systemPackagesCheck = True, configFiles = False, resume = False):
+def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, verbose = False, deps = True, deep = False, systemPackagesCheck = True, configFiles = False, resume = False, returnQueue = False, quiet = False):
     
     # check if I am root
     if (not entropyTools.isRoot()):
-        print_warning(red("Running with ")+bold("--pretend")+red("..."))
+        if not (quiet or returnQueue): print_warning(red("Running with ")+bold("--pretend")+red("..."))
 	pretend = True
 
     clientDbconn = openClientDatabase()
@@ -855,20 +893,20 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
             if (exitcode != -1):
                 _foundAtoms.append(result[1])
             else:
-                print_warning(red("## ATTENTION -> package")+bold(" "+result[0]+" ")+red("is not installed."))
+                if not (quiet or returnQueue): print_warning(red("## ATTENTION -> package")+bold(" "+result[0]+" ")+red("is not installed."))
     
         foundAtoms = _foundAtoms
         
         # are packages in foundAtoms?
         if (len(foundAtoms) == 0):
-            print_error(red("No packages found"))
+            if not (quiet or returnQueue): print_error(red("No packages found"))
             return 127,-1
     
         plainRemovalQueue = []
         
         lookForOrphanedPackages = True
         # now print the selected packages
-        print_info(red(" @@ ")+blue("These are the chosen packages:"))
+        if not (quiet or returnQueue): print_info(red(" @@ ")+blue("These are the chosen packages:"))
         totalatoms = len(foundAtoms)
         atomscounter = 0
         for atomInfo in foundAtoms:
@@ -888,17 +926,18 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
                     for x in sysresults[0]:
                         slots.add(clientDbconn.retrieveSlot(x))
                     if len(slots) < 2:
-                        print_warning(darkred("   # !!! ")+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+red(" is a vital package. Removal forbidden."))
+                        if not (quiet or returnQueue): print_warning(darkred("   # !!! ")+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+red(" is a vital package. Removal forbidden."))
                         continue
                 else:
-                    print_warning(darkred("   # !!! ")+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+red(" is a vital package. Removal forbidden."))
+                    if not (quiet or returnQueue): print_warning(darkred("   # !!! ")+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+red(" is a vital package. Removal forbidden."))
                     continue
             plainRemovalQueue.append(idpackage)
             
-            print_info("   # "+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+" | Installed from: "+red(installedfrom))
+            if not (quiet or returnQueue): print_info("   # "+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+" | Installed from: "+red(installedfrom))
     
         if (verbose or ask or pretend):
-            print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
+            if not (quiet or returnQueue): print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
+        
         
         if (deps):
             question = "     Would you like to look for packages that can be removed along with the selected above?"
@@ -915,14 +954,14 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
                     return 0,0
     
         if (not plainRemovalQueue):
-            print_error(red("Nothing to do."))
+            if not (quiet or returnQueue): print_error(red("Nothing to do."))
             return 127,-1
     
         removalQueue = []
         
         if (lookForOrphanedPackages):
             choosenRemovalQueue = []
-            print_info(red(" @@ ")+blue("Calculating..."))
+            if not (quiet or returnQueue): print_info(red(" @@ ")+blue("Calculating..."))
             treeview = equoTools.generateDependsTree(plainRemovalQueue, deep = deep)
             treelength = len(treeview[0])
             if treelength > 1:
@@ -932,7 +971,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
                         choosenRemovalQueue.append(y)
             
                 if (choosenRemovalQueue):
-                    print_info(red(" @@ ")+blue("This is the new removal queue:"))
+                    if not (quiet or returnQueue): print_info(red(" @@ ")+blue("This is the new removal queue:"))
                     totalatoms = str(len(choosenRemovalQueue))
                     atomscounter = 0
                 
@@ -950,14 +989,14 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
                         removalQueue.append(x)
 
                 else:
-                    writechar("\n")
+                    if not (quiet or returnQueue): writechar("\n")
         if (ask):
             rc = entropyTools.askquestion("     Would you like to proceed?")
             if rc == "No":
                 clientDbconn.closeDB()
                 return 0,0
         elif (deps):
-            entropyTools.countdown(what = red(" @@ ")+blue("Starting removal in "),back = True)
+            if not (quiet or returnQueue): entropyTools.countdown(what = red(" @@ ")+blue("Starting removal in "),back = True)
 
         for idpackage in plainRemovalQueue: # append at the end requested packages if not in queue
             if idpackage not in removalQueue:
@@ -975,14 +1014,14 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
         # check if there's something to resume
         resume_cache = dumpTools.loadobj(etpCache['remove'])
         if not resume_cache: # None or {}
-            print_error(red("Nothing to resume."))
+            if not (quiet or returnQueue): print_error(red("Nothing to resume."))
             return 128,-1
         else:
             try:
                 removalQueue = resume_cache['removalQueue'][:]
-                print_warning(red("Resuming previous operations..."))
+                if not (quiet or returnQueue): print_warning(red("Resuming previous operations..."))
             except:
-                print_error(red("Resume cache corrupted."))
+                if not (quiet or returnQueue): print_error(red("Resume cache corrupted."))
                 dumpTools.dumpobj(etpCache['remove'],{})
                 return 128,-1
 
@@ -995,6 +1034,11 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
             invalid.add(idpackage)
     removalQueue = [x for x in removalQueue if x not in invalid]
 
+    if returnQueue:
+        returnActionQueue = {}
+        returnActionQueue['queue'] = removalQueue[:]
+        returnActionQueue['data'] = {}
+
     currentqueue = 0
     for idpackage in removalQueue:
         currentqueue += 1
@@ -1005,7 +1049,7 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
         except TypeError: # resume cache issues?
             try:
                 # force database removal and forget about the rest
-                print "DEBUG: attention! entry broken probably due to a resume cache issue, forcing removal from database"
+                if not (quiet or returnQueue): print "DEBUG: attention! entry broken probably due to a resume cache issue, forcing removal from database"
                 clientDbconn.removePackage(idpackage)
                 clientDbconn.removePackageFromInstalledTable(idpackage)
             except:
@@ -1024,19 +1068,33 @@ def removePackages(packages = [], atomsdata = [], ask = False, pretend = False, 
 	steps.append("preremove")
 	steps.append("remove")
 	steps.append("postremove")
-	for step in steps:
-	    rc = equoTools.stepExecutor(step,infoDict,str(currentqueue)+"/"+str(len(removalQueue)))
-	    if (rc != 0):
-		clientDbconn.closeDB()
-		return -1,rc
+        
+        if returnQueue:
+            
+            returnActionQueue['data'][idpackage] = {}
+            returnActionQueue['data'][idpackage]['infoDict'] = infoDict.copy()
+            returnActionQueue['data'][idpackage]['triggerdata'] = etpRemovalTriggers[infoDict['removeatom']].copy()
+            returnActionQueue['data'][idpackage]['steps'] = steps[:]
+            
+        else:
+        
+            for step in steps:
+                rc = equoTools.stepExecutor(step,infoDict,str(currentqueue)+"/"+str(len(removalQueue)))
+                if (rc != 0):
+                    clientDbconn.closeDB()
+                    return -1,rc
         
         # update resume cache
         resume_cache['removalQueue'].remove(idpackage)
         dumpTools.dumpobj(etpCache['remove'],resume_cache)
     
-    print_info(red(" @@ ")+blue("All done."))
+    if not (quiet or returnQueue): print_info(red(" @@ ")+blue("All done."))
     
     clientDbconn.closeDB()
+    
+    if returnQueue:
+        return returnActionQueue,0
+    
     return 0,0
 
 
