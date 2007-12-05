@@ -296,7 +296,7 @@ def packages(options):
 			    for data in remotePackagesInfo:
 			        if data.split()[8] == localPackage:
 				    remoteSize = int(data.split()[4])
-                            print localPackage,"==>",localSize, remoteSize
+                            #print localPackage,"==>",localSize, remoteSize
 			    if (localSize != remoteSize):
 			        # size does not match, adding to the upload queue
 			        uploadQueue.add(localPackage)
@@ -452,12 +452,12 @@ def packages(options):
 		        if not i.endswith(etpConst['packageshashfileext']):
 			    uploadQueueLength += 1
 		
-	            print_info(red(" * ")+blue("Packages that would be ")+red("removed:\t\t")+bold(str(removalQueueLength)))
-	            print_info(red(" * ")+blue("Packages that would be ")+yellow("downloaded:\t")+bold(str(downloadQueueLength)))
-	            print_info(red(" * ")+blue("Packages that would be ")+green("uploaded:\t\t")+bold(str(uploadQueueLength)))
-	            print_info(red(" * ")+blue("Total removal ")+red("size:\t\t\t")+bold(bytesIntoHuman(str(totalRemovalSize))))
-	            print_info(red(" * ")+blue("Total download ")+yellow("size:\t\t\t")+bold(bytesIntoHuman(str(totalDownloadSize))))
-	            print_info(red(" * ")+blue("Total upload ")+green("size:\t\t\t")+bold(bytesIntoHuman(str(totalUploadSize))))
+	            print_info(red(" * ")+blue("Packages that would be ")+red("removed:\t\t\t")+bold(str(removalQueueLength)))
+	            print_info(red(" * ")+blue("Packages that would be ")+yellow("downloaded/moved locally:\t\t")+bold(str(downloadQueueLength)))
+	            print_info(red(" * ")+blue("Packages that would be ")+green("uploaded:\t\t\t")+bold(str(uploadQueueLength)))
+	            print_info(red(" * ")+blue("Total removal ")+red("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalRemovalSize))))
+	            print_info(red(" * ")+blue("Total download ")+yellow("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalDownloadSize))))
+	            print_info(red(" * ")+blue("Total upload ")+green("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalUploadSize))))
 	    
 	            if (activatorRequestAsk):
 		        rc = askquestion("\n     Would you like to run the steps above ?")
