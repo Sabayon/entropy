@@ -235,7 +235,7 @@ def print_error(msg, back = False):
 	    _lastline = msg
         else:
 	    return
-	writechar("\r"+_cleanline+"\r")
+	writechar("\r"+_lastline.rstrip()+"\r")
 	writechar("\r"+red(">>")+" "+msg)
 	return
     writechar("\r"+_cleanline+"\r")
@@ -248,7 +248,8 @@ def print_info(msg, back = False):
 	    _lastline = msg
         else:
 	    return
-	writechar("\r"+_cleanline+"\r")
+        
+	writechar("\r"+_lastline.rstrip()+"\r")
 	writechar("\r"+green(">>")+" "+msg)
 	return
     writechar("\r"+_cleanline+"\r")
