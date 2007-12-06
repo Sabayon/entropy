@@ -1238,6 +1238,12 @@ class etpDatabase:
     #addCompileFlags(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
     def addCompileFlags(self,chost,cflags,cxxflags):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addCompileFlags: adding Flags -> "+chost+"|"+cflags+"|"+cxxflags)
+
+        # escape
+        chost = entropyTools.escape(chost)
+        cflags = entropyTools.escape(cflags)
+        cxxflags = entropyTools.escape(cxxflags)
+
 	self.cursor.execute(
 		'INSERT into flags VALUES '
 		'(NULL,?,?,?)', (chost,cflags,cxxflags,)
@@ -2372,6 +2378,12 @@ class etpDatabase:
 
     def areCompileFlagsAvailable(self,chost,cflags,cxxflags):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"areCompileFlagsAvailable: called.")
+        
+        # escape
+        chost = entropyTools.escape(chost)
+        cflags = entropyTools.escape(cflags)
+        cxxflags = entropyTools.escape(cxxflags)
+        
 	self.cursor.execute('SELECT idflags FROM flags WHERE chost = "'+chost+'" AND cflags = "'+cflags+'" AND cxxflags = "'+cxxflags+'"')
         result = self.cursor.fetchone()
 	if not result:
