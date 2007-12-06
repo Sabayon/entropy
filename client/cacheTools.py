@@ -100,28 +100,28 @@ def generateCache(depcache = True, configcache = True):
         for name in names:
 	    cnt += 1
 	    lenstat = str(cnt)+"/"+maxlen
-	    if (not etpUi['quiet']): print_info("  "+darkgreen("(")+bold(lenstat)+darkgreen(")")+darkred(" Resolving name: ")+brown(name), back = not verbose)
+	    if (not etpUi['quiet']): print_info("  "+darkgreen("(")+bold(lenstat)+darkgreen(")")+darkred(" Resolving name: ")+brown(name), back = not etpUi['verbose'])
 	    equoTools.atomMatch(name)
 	maxlen = str(len(keys))
 	cnt = 0
         for key in keys:
 	    cnt += 1
 	    lenstat = str(cnt)+"/"+maxlen
-	    if (not etpUi['quiet']): print_info("  "+darkgreen("(")+bold(lenstat)+darkgreen(")")+darkred(" Resolving key: ")+brown(key), back = not verbose)
+	    if (not etpUi['quiet']): print_info("  "+darkgreen("(")+bold(lenstat)+darkgreen(")")+darkred(" Resolving key: ")+brown(key), back = not etpUi['verbose'])
 	    equoTools.atomMatch(key)
 	maxlen = str(len(atoms))
 	cnt = 0
         for atom in atoms:
 	    cnt += 1
 	    lenstat = str(cnt)+"/"+maxlen
-	    if (not etpUi['quiet']): print_info("  "+darkgreen("(")+bold(lenstat)+darkgreen(")")+darkred(" Resolving atom: ")+brown(atom), back = not verbose)
+	    if (not etpUi['quiet']): print_info("  "+darkgreen("(")+bold(lenstat)+darkgreen(")")+darkred(" Resolving atom: ")+brown(atom), back = not etpUi['verbose'])
 	    equoTools.atomMatch(atom)
 	maxlen = str(len(depends))
 	cnt = 0
         for depend in depends:
 	    cnt += 1
 	    lenstat = str(cnt)+"/"+maxlen
-	    if (not etpUi['quiet']): print_info("  "+darkgreen("(")+bold(lenstat)+darkgreen(")")+darkred(" Resolving dependencies: ")+brown(depend), back = not verbose)
+	    if (not etpUi['quiet']): print_info("  "+darkgreen("(")+bold(lenstat)+darkgreen(")")+darkred(" Resolving dependencies: ")+brown(depend), back = not etpUi['verbose'])
 	    equoTools.atomMatch(depend)
         if (not etpUi['quiet']): print_warning(blue("(")+bold("@@")+blue(")")+darkred(" Dependencies filled. Flushing to disk."))
         equoTools.saveCaches()
