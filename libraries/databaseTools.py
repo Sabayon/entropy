@@ -1004,8 +1004,14 @@ class etpDatabase:
             if rssAtom in etpRSSMessages['added']:
                 del etpRSSMessages['added'][rssAtom]
             etpRSSMessages['removed'][rssAtom] = {}
-            etpRSSMessages['removed'][rssAtom]['description'] = self.retrieveDescription(idpackage)
-            etpRSSMessages['removed'][rssAtom]['homepage'] = self.retrieveHomepage(idpackage)
+            try:
+                etpRSSMessages['removed'][rssAtom]['description'] = self.retrieveDescription(idpackage)
+            except:
+                etpRSSMessages['removed'][rssAtom]['description'] = "N/A"
+            try:
+                etpRSSMessages['removed'][rssAtom]['homepage'] = self.retrieveHomepage(idpackage)
+            except:
+                etpRSSMessages['removed'][rssAtom]['homepage'] = ""
             # save
             dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
 
