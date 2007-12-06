@@ -967,27 +967,27 @@ def removePackage(infoDict):
         # collision check
         if etpConst['collisionprotect'] > 0:
             
-            if clientDbconn.isFileAvailable(file) and os.path.isfile(file): # in this way we filter out directories
-                if not etpUi['quiet']: print_warning(darkred("   ## ")+red("Collision found during remove of ")+file+red(" - cannot overwrite"))
-                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove of "+file+" - cannot overwrite")
+            if clientDbconn.isFileAvailable(file) and os.path.isfile(etpConst['systemroot']+file): # in this way we filter out directories
+                if not etpUi['quiet']: print_warning(darkred("   ## ")+red("Collision found during remove of ")+etpConst['systemroot']+file+red(" - cannot overwrite"))
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove of "+etpConst['systemroot']+file+" - cannot overwrite")
                 continue
     
         protected = False
         if (not infoDict['removeconfig']) and (not infoDict['diffremoval']):
             try:
                 # -- CONFIGURATION FILE PROTECTION --
-                if os.access(file,os.R_OK):
+                if os.access(etpConst['systemroot']+file,os.R_OK):
                     for x in protect:
-                        if file.startswith(x):
+                        if etpConst['systemroot']+file.startswith(x):
                             protected = True
                             break
                     if (protected):
                         for x in mask:
-                            if file.startswith(x):
+                            if etpConst['systemroot']+file.startswith(x):
                                 protected = False
                                 break
-                    if (protected) and os.path.isfile(file):
-                        protected = istextfile(file)
+                    if (protected) and os.path.isfile(etpConst['systemroot']+file):
+                        protected = istextfile(etpConst['systemroot']+file)
                     else:
                         protected = False # it's not a file
                 # -- CONFIGURATION FILE PROTECTION --
@@ -996,29 +996,29 @@ def removePackage(infoDict):
         
         
         if (protected):
-            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file: "+file)
-            if not etpUi['quiet']: print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+file)
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file: "+etpConst['systemroot']+file)
+            if not etpUi['quiet']: print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+etpConst['systemroot']+file)
         else:
             try:
-                os.lstat(file)
+                os.lstat(etpConst['systemroot']+file)
             except OSError:
                 continue # skip file, does not exist
             
-            if os.path.isdir(file) and os.path.islink(file): # S_ISDIR returns False for directory symlinks, so using os.path.isdir
+            if os.path.isdir(etpConst['systemroot']+file) and os.path.islink(etpConst['systemroot']+file): # S_ISDIR returns False for directory symlinks, so using os.path.isdir
                 # valid directory symlink
                 #print "symlink dir",file
-                directories.add((file,"link"))
-            elif os.path.isdir(file):
+                directories.add((etpConst['systemroot']+file,"link"))
+            elif os.path.isdir(etpConst['systemroot']+file):
                 # plain directory
                 #print "plain dir",file
-                directories.add((file,"dir"))
+                directories.add((etpConst['systemroot']+file,"dir"))
             else: # files, symlinks or not
                 # just a file or symlink or broken directory symlink (remove now)
                 try:
                     #print "plain file",file
-                    os.remove(file)
+                    os.remove(etpConst['systemroot']+file)
                     # add its parent directory
-                    dirfile = os.path.dirname(file)
+                    dirfile = os.path.dirname(etpConst['systemroot']+file)
                     if os.path.isdir(dirfile) and os.path.islink(dirfile):
                         #print "symlink dir2",dirfile
                         directories.add((dirfile,"link"))
@@ -1034,12 +1034,13 @@ def removePackage(infoDict):
     while 1:
         taint = False
         for directory in directories:
+            mydir = etpConst['systemroot']+directory[0]
             if directory[1] == "link":
                 try:
-                    mylist = os.listdir(directory[0])
+                    mylist = os.listdir(mydir)
                     if not mylist:
                         try:
-                            os.remove(directory[0])
+                            os.remove(mydir)
                             taint = True
                         except OSError:
                             pass
@@ -1047,10 +1048,10 @@ def removePackage(infoDict):
                     pass
             elif directory[1] == "dir":
                 try:
-                    mylist = os.listdir(directory[0])
+                    mylist = os.listdir(mydir)
                     if not mylist:
                         try:
-                            os.rmdir(directory[0])
+                            os.rmdir(mydir)
                             taint = True
                         except OSError:
                             pass
@@ -1111,7 +1112,8 @@ def installPackage(infoDict):
         for dir in subdirs:
 	    
             imagepathDir = currentdir + "/" + dir
-	    rootdir = imagepathDir[len(imageDir):]
+	    rootdir = etpConst['systemroot']+imagepathDir[len(imageDir):]
+            #print rootdir
 	    
             # handle broken symlinks
             if os.path.islink(rootdir) and not os.path.exists(rootdir):# broken symlink
@@ -1143,10 +1145,12 @@ def installPackage(infoDict):
 	
         for file in files:
 	    fromfile = currentdir+"/"+file
-	    tofile = fromfile[len(imageDir):]
+	    todbfile = fromfile[len(imageDir):]
+            tofile = etpConst['systemroot']+fromfile[len(imageDir):]
+            #print tofile
 	    
 	    if etpConst['collisionprotect'] > 1:
-		if clientDbconn.isFileAvailable(tofile):
+		if clientDbconn.isFileAvailable(todbfile):
 		    print_warning(darkred("   ## ")+red("Collision found during install for ")+tofile+" - cannot overwrite")
     		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! Collision found during install for "+tofile+" - cannot overwrite")
     		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[collision] Protecting config file: "+tofile)
@@ -1220,7 +1224,7 @@ def installPackage(infoDict):
 	    
 	    if (protected):
 		# add to disk cache
-		confTools.addtocache(tofile)
+		confTools.addtocache(todbfile)
 
     # inject into database
     print_info(red("   ## ")+blue("Updating database with: ")+red(infoDict['atom']))
@@ -1244,7 +1248,7 @@ def installPackage(infoDict):
     rc = 0
     if (etpConst['gentoo-compat']):
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing new Gentoo database entry: "+str(infoDict['atom']))
-	rc = installPackageIntoGentooDatabase(infoDict,pkgpath, newidpackage = newidpackage)
+	rc = installPackageIntoGentooDatabase(infoDict, pkgpath, newidpackage = newidpackage)
     
     # remove unpack dir
     shutil.rmtree(unpackDir,True)
@@ -1287,7 +1291,7 @@ def removePackageFromGentooDatabase(atom):
 		if x == "/":
 		    x = "\/"
 		skippedKey += x
-	    os.system("sed -i '/"+skippedKey+"/d' /var/lib/portage/world")
+	    os.system("sed -i '/"+skippedKey+"/d' "+etpConst['systemroot']+"/var/lib/portage/world")
 
     return 0
 
@@ -1332,7 +1336,11 @@ def installPackageIntoGentooDatabase(infoDict,packageFile, newidpackage = -1):
 		    break
 	    if (pkgToRemove):
 	        removePath = portDbDir+pkgToRemove
-	        os.system("rm -rf "+removePath)
+                shutil.rmtree(removePath,True)
+                try:
+                    os.rmdir(removePath)
+                except OSError:
+                    pass
 	        #print "removing -> "+removePath
 	
 	### INSTALL NEW
@@ -1381,9 +1389,9 @@ def installPackageIntoGentooDatabase(infoDict,packageFile, newidpackage = -1):
                 pass
             
             # test if /var/cache/edb/counter is fine
-            if os.path.isfile(edbCOUNTER):
+            if os.path.isfile(etpConst['edbcounter']):
                 try:
-                    f = open(edbCOUNTER,"r")
+                    f = open(etpConst['edbcounter'],"r")
                     counter = int(f.readline().strip())
                     f.close()
                 except:
@@ -1399,7 +1407,7 @@ def installPackageIntoGentooDatabase(infoDict,packageFile, newidpackage = -1):
                 f.write(str(counter)+"\n")
                 f.flush()
                 f.close()
-                f = open(edbCOUNTER,"w")
+                f = open(etpConst['edbcounter'],"w")
                 f.write(str(counter))
                 f.flush()
                 f.close()

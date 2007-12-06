@@ -57,10 +57,15 @@ def openRepositoryDatabase(repositoryName, xcache = True, indexing = True):
     conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = etpConst['dbnamerepoprefix']+repositoryName, xcache = xcache, indexing = indexing)
     # initialize CONFIG_PROTECT
     if (etpRepositories[repositoryName]['configprotect'] == None) or (etpRepositories[repositoryName]['configprotectmask'] == None):
+        
         etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
         etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectDirectories(mask = True)
-	etpRepositories[repositoryName]['configprotect'] += [x for x in etpConst['configprotect'] if x not in etpRepositories[repositoryName]['configprotect']]
-	etpRepositories[repositoryName]['configprotectmask'] += [x for x in etpConst['configprotectmask'] if x not in etpRepositories[repositoryName]['configprotectmask']]
+        etpRepositories[repositoryName]['configprotect'] = [etpConst['systemroot']+x for x in etpRepositories[repositoryName]['configprotect']]
+        etpRepositories[repositoryName]['configprotectmask'] = [etpConst['systemroot']+x for x in etpRepositories[repositoryName]['configprotectmask']]
+        
+	etpRepositories[repositoryName]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotect']]
+	etpRepositories[repositoryName]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotectmask']]
+        
     return conn
 
 def fetchRepositoryIfNotAvailable(reponame):
@@ -88,10 +93,15 @@ def openClientDatabase(xcache = True, generate = False, indexing = True):
 	if (not etpConst['dbconfigprotect']):
 	    # config protect not prepared
             if (not generate):
+                
                 etpConst['dbconfigprotect'] = conn.listConfigProtectDirectories()
                 etpConst['dbconfigprotectmask'] = conn.listConfigProtectDirectories(mask = True)
-                etpConst['dbconfigprotect'] += [x for x in etpConst['configprotect'] if x not in etpConst['dbconfigprotect']]
-                etpConst['dbconfigprotectmask'] += [x for x in etpConst['configprotectmask'] if x not in etpConst['dbconfigprotectmask']]
+                etpConst['dbconfigprotect'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
+                etpConst['dbconfigprotectmask'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
+                
+                etpConst['dbconfigprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpConst['dbconfigprotect']]
+                etpConst['dbconfigprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpConst['dbconfigprotectmask']]
+                
 	return conn
 
 '''

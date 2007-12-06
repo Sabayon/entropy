@@ -405,7 +405,6 @@ dbOR = "|or|"
 dbKEYWORDS = "KEYWORDS"
 dbCONTENTS = "CONTENTS"
 dbCOUNTER = "COUNTER"
-edbCOUNTER = "/var/cache/edb/counter"
 
 
 ### Application disk cache
@@ -444,6 +443,7 @@ def initConfig_entropyConstants(rootdir):
     ETP_CONF_DIR = rootdir+"/etc/entropy"
     ETP_SYSLOG_DIR = rootdir+"/var/log/entropy/"
     ETP_VAR_DIR = rootdir+"/var/tmp/entropy"
+    edbCOUNTER = rootdir+"/var/cache/edb/counter"
 
 
     const_resetCache()
@@ -543,6 +543,7 @@ def initConfig_entropyConstants(rootdir):
         'branch': "3.5", # default choosen branch (overridden by setting in repositories.conf)
         'keywords': set([etpSys['arch'],"~"+etpSys['arch']]), # default allowed package keywords
         'gentoo-compat': False, # Gentoo compatibility (/var/db/pkg + Portage availability)
+        'edbcounter': edbCOUNTER,
         'filesystemdirs': ['/bin','/boot','/emul','/etc','/lib','/lib32','/lib64','/opt','/sbin','/usr','/var'], # directory of the filesystem
         'filesystemdirsmask': [
                                     '/var/cache','/var/db','/var/empty','/var/lib/portage','/var/lib/entropy','/var/log','/var/mail','/var/tmp','/var/www', '/usr/portage',

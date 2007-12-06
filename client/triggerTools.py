@@ -261,8 +261,9 @@ def call_ext_generic(pkgdata, stage):
 def fontconfig(pkgdata):
     fontdirs = set()
     for xdir in pkgdata['content']:
-	if xdir.startswith("/usr/share/fonts"):
-	    origdir = xdir[16:]
+        xdir = etpConst['systemroot']+xdir
+	if xdir.startswith(etpConst['systemroot']+"/usr/share/fonts"):
+	    origdir = xdir[len(etpConst['systemroot'])+16:]
 	    if origdir:
 		if origdir.startswith("/"):
 		    origdir = origdir.split("/")[1]
@@ -287,7 +288,8 @@ def iconscache(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating icons cache...")
     print_info(red("   ##")+brown(" Updating icons cache..."))
     for file in pkgdata['content']:
-	if file.startswith("/usr/share/icons") and file.endswith("index.theme"):
+        file = etpConst['systemroot']+file
+	if file.startswith(etpConst['systemroot']+"/usr/share/icons") and file.endswith("index.theme"):
 	    cachedir = os.path.dirname(file)
 	    generate_icons_cache(cachedir)
 
@@ -329,10 +331,13 @@ def kernelmod(pkgdata):
     # get kernel modules dir name
     name = ''
     for file in pkgdata['content']:
-        if file.startswith("/lib/modules/"):
-            name = file.split("/")[3]
+        file = etpConst['systemroot']+file
+        if file.startswith(etpConst['systemroot']+"/lib/modules/"):
+            name = file[len(etpConst['systemroot']):]
+            name = name.split("/")[3]
             break
-    run_depmod(name)
+    if name:
+        run_depmod(name)
 
 def pythoninst(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Python...")
@@ -346,25 +351,36 @@ def sqliteinst(pkgdata):
 
 def initdisable(pkgdata):
     for file in pkgdata['removecontent']:
-	if file.startswith("/etc/init.d/") and os.path.isfile(file):
+        file = etpConst['systemroot']+file
+	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(etpConst['systemroot']+file):
 	    # running?
-	    running = os.path.isfile(INITSERVICES_DIR+'/started/'+os.path.basename(file))
-	    scheduled = not os.system('rc-update show | grep '+os.path.basename(file)+'&> /dev/null')
+	    running = os.path.isfile(etpConst['systemroot']+INITSERVICES_DIR+'/started/'+os.path.basename(file))
+            if not etpConst['systemroot']:
+                myroot = "/"
+            else:
+                myroot = etpConst['systemroot']+"/"
+	    scheduled = not os.system('ROOT="'+myroot+'" rc-update show | grep '+os.path.basename(file)+'&> /dev/null')
 	    initdeactivate(file, running, scheduled)
 
 def initinform(pkgdata):
     for file in pkgdata['content']:
-	if file.startswith("/etc/init.d/") and not os.path.isfile(file):
-            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+file)
-	    print_info(red("   ##")+brown(" A new service will be installed: ")+file)
+        file = etpConst['systemroot']+file
+	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and not os.path.isfile(etpConst['systemroot']+file):
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+etpConst['systemroot']+file)
+	    print_info(red("   ##")+brown(" A new service will be installed: ")+etpConst['systemroot']+file)
 
 def removeinit(pkgdata):
     for file in pkgdata['removecontent']:
-	if file.startswith("/etc/init.d/") and os.path.isfile(file):
+        file = etpConst['systemroot']+file
+	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(etpConst['systemroot']+file):
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Removing boot service: "+os.path.basename(file))
 	    print_info(red("   ##")+brown(" Removing boot service: ")+os.path.basename(file))
+            if not etpConst['systemroot']:
+                myroot = "/"
+            else:
+                myroot = etpConst['systemroot']+"/"
 	    try:
-		os.system('rc-update del '+os.path.basename(file)+' &> /dev/null')
+		os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(file)+' &> /dev/null')
 	    except:
 		pass
 
@@ -379,7 +395,13 @@ def openglsetup(pkgdata):
     if eselect == 0:
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to "+opengl+" ...")
 	print_info(red("   ##")+brown(" Reconfiguring OpenGL..."))
-	os.system("eselect opengl set --use-old "+opengl)
+        if not etpConst['systemroot']:
+            myroot = "/"
+        else:
+            myroot = etpConst['systemroot']+"/"
+        quietstring = ''
+        if etpUi['quiet']: quietstring = " &>/dev/null"
+	os.system('ROOT="'+myroot+'" eselect opengl set --use-old '+opengl+quietstring)
     else:
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
 	print_info(red("   ##")+brown(" Eselect NOT found, cannot run OpenGL trigger"))
@@ -389,7 +411,13 @@ def openglsetup_xorg(pkgdata):
     if eselect == 0:
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to fallback xorg-x11 ...")
 	print_info(red("   ##")+brown(" Reconfiguring OpenGL..."))
-	os.system("eselect opengl set xorg-x11")
+        if not etpConst['systemroot']:
+            myroot = "/"
+        else:
+            myroot = etpConst['systemroot']+"/"
+        quietstring = ''
+        if etpUi['quiet']: quietstring = " &>/dev/null"
+	os.system('ROOT="'+myroot+'" eselect opengl set xorg-x11'+quietstring)
     else:
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
 	print_info(red("   ##")+brown(" Eselect NOT found, cannot run OpenGL trigger"))
@@ -421,15 +449,17 @@ def removebootablekernel(pkgdata):
 
 def mountboot(pkgdata):
     # is in fstab?
+    if etpConst['systemroot']:
+        return
     if os.path.isfile("/etc/fstab"):
         f = open("/etc/fstab","r")
-	fstab = f.readlines()
+        fstab = f.readlines()
         fstab = entropyTools.listToUtf8(fstab)
-	f.close()
-	for line in fstab:
-	    fsline = line.split()
-	    if len(fsline) > 1:
-		if fsline[1] == "/boot":
+        f.close()
+        for line in fstab:
+            fsline = line.split()
+            if len(fsline) > 1:
+                if fsline[1] == "/boot":
                     if not os.path.ismount("/boot"):
                         # trigger mount /boot
                         rc = os.system("mount /boot &> /dev/null")
@@ -442,6 +472,8 @@ def mountboot(pkgdata):
                         break
 
 def kbuildsycoca(pkgdata):
+    if etpConst['systemroot']:
+        return
     kdedirs = ''
     try:
 	kdedirs = os.environ['KDEDIRS']
@@ -461,44 +493,55 @@ def kbuildsycoca(pkgdata):
 
 def gconfinstallschemas(pkgdata):
     gtest = os.system("which gconftool-2 &> /dev/null")
-    if gtest == 0:
+    if gtest == 0 or etpConst['systemroot']:
 	schemas = [x for x in pkgdata['content'] if x.startswith("/etc/gconf/schemas") and x.endswith(".schemas")]
 	print_info(red("   ##")+brown(" Installing GConf2 schemas..."))
 	for schema in schemas:
-	    os.system("""
-	    unset GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL
-	    export GCONF_CONFIG_SOURCE=$(gconftool-2 --get-default-source)
-	    gconftool-2 --makefile-install-rule """+schema+""" 1>/dev/null
-	    """)
+            if not etpConst['systemroot']:
+                os.system("""
+                unset GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL
+                export GCONF_CONFIG_SOURCE=$(gconftool-2 --get-default-source)
+                gconftool-2 --makefile-install-rule """+schema+""" 1>/dev/null
+                """)
+            else:
+                os.system(""" echo "
+                unset GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL
+                export GCONF_CONFIG_SOURCE=$(gconftool-2 --get-default-source)
+                gconftool-2 --makefile-install-rule """+schema+""" " | chroot """+etpConst['systemroot']+""" &>/dev/null
+                """)
 
 def pygtksetup(pkgdata):
     python_sym_files = [x for x in pkgdata['content'] if x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0")]
-    print python_sym_files
     for file in python_sym_files:
+        file = etpConst['systemroot']+file
+        filepath = file[:-4]
+        sympath = os.path.basename(file)
 	if os.path.isfile(file):
             try:
-                if os.path.isfile(file[:-4]):
-                    os.remove(file[:-4])
-                os.symlink(file,file[:-4])
+                if os.path.isfile(filepath):
+                    os.remove(filepath)
+                os.symlink(sympath,filepath)
             except OSError:
                 pass
 
 def pygtkremove(pkgdata):
     python_sym_files = [x for x in pkgdata['content'] if x.startswith("/usr/lib/python") and (x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0"))]
     for file in python_sym_files:
+        file = etpConst['systemroot']+file
 	if os.path.isfile(file[:-4]):
 	    os.remove(file[:-4])
 
 def susetuid(pkgdata):
-    if os.path.isfile("/bin/su"):
-        print_info(red("   ##")+brown(" Configuring '/bin/su' executable SETUID"))
-        os.chown("/bin/su",0,0)
-        os.system("chmod 4755 /bin/su")
-        #os.chmod("/bin/su",4755) #FIXME: probably there's something I don't know here since 
+    if os.path.isfile(etpConst['systemroot']+"/bin/su"):
+        print_info(red("   ##")+brown(" Configuring '"+etpConst['systemroot']+"/bin/su' executable SETUID"))
+        os.chown(etpConst['systemroot']+"/bin/su",0,0)
+        os.system("chmod 4755 "+etpConst['systemroot']+"/bin/su")
+        #os.chmod("/bin/su",4755) #FIXME: probably there's something I don't know here since, masks?
 
 def cleanpy(pkgdata):
     pyfiles = [x for x in pkgdata['content'] if x.endswith(".py")]
     for file in pyfiles:
+        file = etpConst['systemroot']+file
         if os.path.isfile(file+"o"):
             try: os.remove(file+"o")
             except OSError: pass
@@ -508,36 +551,55 @@ def cleanpy(pkgdata):
 
 def createkernelsym(pkgdata):
     for file in pkgdata['content']:
-        if file.startswith("/usr/src/"):
+        file = etpConst['systemroot']+file
+        if file.startswith(etpConst['systemroot']+"/usr/src/"):
             # extract directory
             try:
-                todir = file.split("/")[3]
+                todir = file[len(etpConst['systemroot']):]
+                todir = todir.split("/")[3]
             except:
                 continue
-            if os.path.isdir("/usr/src/"+todir):
+            if os.path.isdir(etpConst['systemroot']+"/usr/src/"+todir):
                 # link to /usr/src/linux
-		equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Creating kernel symlink /usr/src/linux for /usr/src/"+todir)
-		print_info(red("   ##")+brown(" Creating kernel symlink /usr/src/linux for /usr/src/"+todir))
-                if os.path.isfile("/usr/src/linux") or os.path.islink("/usr/src/linux"):
-                    os.remove("/usr/src/linux")
-                os.symlink(todir,"/usr/src/linux")
+		equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir)
+		print_info(red("   ##")+brown(" Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir))
+                if os.path.isfile(etpConst['systemroot']+"/usr/src/linux") or os.path.islink(etpConst['systemroot']+"/usr/src/linux"):
+                    os.remove(etpConst['systemroot']+"/usr/src/linux")
+                if os.path.isdir(etpConst['systemroot']+"/usr/src/linux"):
+                    mydir = etpConst['systemroot']+"/usr/src/linux."+str(entropyTools.getRandomNumber())
+                    while os.path.isdir(mydir):
+                        mydir = etpConst['systemroot']+"/usr/src/linux."+str(entropyTools.getRandomNumber())
+                    shutil.move(etpConst['systemroot']+"/usr/src/linux",mydir)
+                try:
+                    os.symlink(todir,etpConst['systemroot']+"/usr/src/linux")
+                except OSError: # not important in the end
+                    pass
                 break
 
 def run_ldconfig(pkgdata):
+    if not etpConst['systemroot']:
+        myroot = "/"
+    else:
+        myroot = etpConst['systemroot']+"/"
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running ldconfig")
     print_info(red("   ##")+brown(" Regenerating /etc/ld.so.cache"))
-    os.system("ldconfig &> /dev/null")
+    os.system("ldconfig -r "+myroot+" &> /dev/null")
 
 def env_update(pkgdata):
+    if not etpConst['systemroot']:
+        myroot = "/"
+    else:
+        myroot = etpConst['systemroot']+"/"
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running env-update")
     if os.access("/usr/sbin/env-update",os.X_OK):
         print_info(red("   ##")+brown(" Updating environment using env-update"))
-        os.system("env-update &> /dev/null")
+        os.system('ROOT="'+myroot+'" env-update --no-ldconfig &> /dev/null')
 
 def add_java_config_2(pkgdata):
     vms = set()
     for vm in pkgdata['content']:
-        if vm.startswith("/usr/share/java-config-2/vm/") and os.path.isfile(vm):
+        vm = etpConst['systemroot']+vm
+        if vm.startswith(etpConst['systemroot']+"/usr/share/java-config-2/vm/") and os.path.isfile(vm):
             vms.add(vm)
     # sort and get the latter
     if vms:
@@ -545,11 +607,14 @@ def add_java_config_2(pkgdata):
         vms.reverse()
         myvm = vms[0].split("/")[-1]
         if myvm:
-            if os.access("/usr/bin/java-config",os.X_OK):
+            if os.access(etpConst['systemroot']+"/usr/bin/java-config",os.X_OK):
                 equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring JAVA using java-config with VM: "+myvm)
                 # set
                 print_info(red("   ##")+brown(" Setting system VM to ")+bold(myvm)+brown("..."))
-                os.system("java-config -S "+myvm)
+                if not etpConst['systemroot']:
+                    os.system("java-config -S "+myvm)
+                else:
+                    os.system("echo 'java-config -S "+myvm+"' | chroot "+etpConst['systemroot']+" &> /dev/null")
             else:
                 equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION /usr/bin/java-config does not exist. I was about to set JAVA VM: "+myvm)
                 print_info(red("   ##")+bold(" Attention: ")+brown("/usr/bin/java-config does not exist. Cannot set JAVA VM."))
@@ -570,7 +635,7 @@ def setup_font_dir(fontdir):
 	os.system('/usr/bin/mkfontscale '+unicode(fontdir))
     # mkfontdir
     if os.access('/usr/bin/mkfontdir',os.X_OK):
-	os.system('/usr/bin/mkfontdir -e /usr/share/fonts/encodings -e /usr/share/fonts/encodings/large '+unicode(fontdir))
+	os.system('/usr/bin/mkfontdir -e '+etpConst['systemroot']+'/usr/share/fonts/encodings -e '+etpConst['systemroot']+'/usr/share/fonts/encodings/large '+unicode(fontdir))
     return 0
 
 '''
@@ -588,8 +653,12 @@ def setup_font_cache(fontdir):
    @output: returns int() as exit status
 '''
 def set_gcc_profile(profile):
+    if not etpConst['systemroot']:
+        myroot = "/"
+    else:
+        myroot = etpConst['systemroot']+"/"
     if os.access('/usr/bin/gcc-config',os.X_OK):
-	os.system('/usr/bin/gcc-config '+profile)
+	os.system('ROOT="'+myroot+'" /usr/bin/gcc-config '+profile)
     return 0
 
 '''
@@ -597,6 +666,10 @@ def set_gcc_profile(profile):
    @output: returns int() as exit status
 '''
 def set_binutils_profile(profile):
+    if not etpConst['systemroot']:
+        myroot = "/"
+    else:
+        myroot = etpConst['systemroot']+"/"
     if os.access('/usr/bin/binutils-config',os.X_OK):
 	os.system('/usr/bin/binutils-config '+profile)
     return 0
@@ -607,7 +680,7 @@ def set_binutils_profile(profile):
 '''
 def generate_icons_cache(cachedir):
     if os.access('/usr/bin/gtk-update-icon-cache',os.X_OK):
-	os.system('/usr/bin/gtk-update-icon-cache -qf '+cachedir)
+	os.system('ROOT="'+myroot+'" /usr/bin/gtk-update-icon-cache -qf '+cachedir)
     return 0
 
 '''
@@ -615,8 +688,12 @@ def generate_icons_cache(cachedir):
    @output: returns int() as exit status
 '''
 def update_mime_db():
-    if os.access('/usr/bin/update-mime-database',os.X_OK):
-	os.system('/usr/bin/update-mime-database /usr/share/mime')
+    
+    if os.access(etpConst['systemroot']+'/usr/bin/update-mime-database',os.X_OK):
+        if not etpConst['systemroot']:
+            os.system('/usr/bin/update-mime-database /usr/share/mime')
+        else:
+            os.system("echo '/usr/bin/update-mime-database /usr/share/mime' | chroot "+etpConst['systemroot']+" &> /dev/null")
     return 0
 
 '''
@@ -624,8 +701,11 @@ def update_mime_db():
    @output: returns int() as exit status
 '''
 def update_mime_desktop_db():
-    if os.access('/usr/bin/update-desktop-database',os.X_OK):
-	os.system('/usr/bin/update-desktop-database -q /usr/share/applications')
+    if os.access(etpConst['systemroot']+'/usr/bin/update-desktop-database',os.X_OK):
+        if not etpConst['systemroot']:
+            os.system('/usr/bin/update-desktop-database -q /usr/share/applications')
+        else:
+            os.system("echo '/usr/bin/update-desktop-database -q /usr/share/applications' | chroot "+etpConst['systemroot']+" &> /dev/null")
     return 0
 
 '''
@@ -633,10 +713,17 @@ def update_mime_desktop_db():
    @output: returns int() as exit status
 '''
 def update_scrollkeeper_db():
-    if os.access('/usr/bin/scrollkeeper-update',os.X_OK):
-	if not os.path.isdir('/var/lib/scrollkeeper'):
-	    os.makedirs('/var/lib/scrollkeeper')
-	os.system('/usr/bin/scrollkeeper-update -q -p /var/lib/scrollkeeper')
+    
+    if os.access(etpConst['systemroot']+'/usr/bin/scrollkeeper-update',os.X_OK):
+        
+	if not os.path.isdir(etpConst['systemroot']+'/var/lib/scrollkeeper'):
+	    os.makedirs(etpConst['systemroot']+'/var/lib/scrollkeeper')
+        
+        if not etpConst['systemroot']:
+            os.system('/usr/bin/scrollkeeper-update -q -p /var/lib/scrollkeeper')
+        else:
+            os.system("echo '/usr/bin/scrollkeeper-update -q -p /var/lib/scrollkeeper' | chroot "+etpConst['systemroot']+" &> /dev/null")
+    
     return 0
 
 '''
@@ -644,6 +731,8 @@ def update_scrollkeeper_db():
    @output: returns int() as exit status
 '''
 def reload_gconf_db():
+    if etpConst['systemroot']:
+        return 0
     rc = os.system('pgrep -x gconfd-2')
     if (rc == 0):
 	pids = getoutput('pgrep -x gconfd-2').split("\n")
@@ -661,15 +750,15 @@ def reload_gconf_db():
    @output: returns int() as exit status
 '''
 def update_moduledb(item):
-    if os.access('/usr/sbin/module-rebuild',os.X_OK):
-	if os.path.isfile(MODULEDB_DIR+'moduledb'):
-	    f = open(MODULEDB_DIR+'moduledb',"r")
+    if os.access(etpConst['systemroot']+'/usr/sbin/module-rebuild',os.X_OK):
+	if os.path.isfile(etpConst['systemroot']+MODULEDB_DIR+'moduledb'):
+	    f = open(etpConst['systemroot']+MODULEDB_DIR+'moduledb',"r")
 	    moduledb = f.readlines()
             moduledb = entropyTools.listToUtf8(moduledb)
 	    f.close()
 	    avail = [x for x in moduledb if x.strip() == item]
 	    if (not avail):
-		f = open(MODULEDB_DIR+'moduledb',"aw")
+		f = open(etpConst['systemroot']+MODULEDB_DIR+'moduledb',"aw")
 		f.write(item+"\n")
 		f.flush()
 		f.close()
@@ -681,7 +770,11 @@ def update_moduledb(item):
 '''
 def run_depmod(name):
     if os.access('/sbin/depmod',os.X_OK):
-	os.system('/sbin/depmod -a -b / -r '+name+' &> /dev/null')
+        if not etpConst['systemroot']:
+            myroot = "/"
+        else:
+            myroot = etpConst['systemroot']+"/"
+	os.system('/sbin/depmod -a -b '+myroot+' -r '+name+' &> /dev/null')
     return 0
 
 '''
@@ -691,11 +784,20 @@ def run_depmod(name):
 def python_update_symlink():
     bins = [x for x in os.listdir("/usr/bin") if x.startswith("python2.")]
     if bins: # don't ask me why but it happened...
-        versions = [x[6:] for x in bins]
-        versions.sort()
-        latest = versions[-1]
-        os.system('ln -sf /usr/bin/python'+str(latest)+' /usr/bin/python')
-        os.system('ln -sf /usr/bin/python'+str(latest)+' /usr/bin/python2')
+        bins.sort()
+        latest = bins[-1]
+        
+        latest = etpConst['systemroot']+latest
+        filepath = os.path.dirname(latest)+"/python"
+        sympath = os.path.basename(latest)
+	if os.path.isfile(latest):
+            try:
+                if os.path.isfile(filepath):
+                    os.remove(filepath)
+                os.symlink(sympath,filepath)
+            except OSError:
+                pass
+
     return 0
 
 '''
@@ -704,10 +806,20 @@ def python_update_symlink():
 '''
 def sqlite_update_symlink():
     bins = [x for x in os.listdir("/usr/bin") if x.startswith("lemon-")]
-    versions = [x[6:] for x in bins]
-    versions.sort()
-    latest = versions[-1]
-    os.system('ln -sf /usr/bin/lemon-'+str(latest)+' /usr/bin/lemon')
+    if bins:
+        bins.sort()
+        latest = bins[-1]
+        
+        filepath = os.path.dirname(latest)+"/lemon"
+        sympath = os.path.basename(latest)
+        if os.path.isfile(latest):
+            try:
+                if os.path.isfile(filepath):
+                    os.remove(filepath)
+                os.symlink(sympath,filepath)
+            except OSError:
+                pass
+    
     return 0
 
 '''
@@ -715,10 +827,17 @@ def sqlite_update_symlink():
    @output: returns int() as exit status
 '''
 def initdeactivate(file, running, scheduled):
-    if (running):
-        os.system(file+' stop --quiet')
+    
+    if not etpConst['systemroot']:
+        myroot = "/"
+        if (running):
+            os.system(file+' stop --quiet')
+    else:
+        myroot = etpConst['systemroot']+"/"
+
     if (scheduled):
-	os.system('rc-update del '+os.path.basename(file))
+	os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(file))
+    
     return 0
 
 '''
@@ -726,15 +845,16 @@ def initdeactivate(file, running, scheduled):
    @output: returns int() as exit status
 '''
 def configure_boot_grub(kernel,initramfs):
-    if not os.path.isdir("/boot/grub"):
-	os.makedirs("/boot/grub")
-    if os.path.isfile("/boot/grub/grub.conf"):
+    
+    if not os.path.isdir(etpConst['systemroot']+"/boot/grub"):
+	os.makedirs(etpConst['systemroot']+"/boot/grub")
+    if os.path.isfile(etpConst['systemroot']+"/boot/grub/grub.conf"):
 	# open in append
-	grub = open("/boot/grub/grub.conf","aw")
+	grub = open(etpConst['systemroot']+"/boot/grub/grub.conf","aw")
 	# get boot dev
 	boot_dev = get_grub_boot_dev()
 	# test if entry has been already added
-	grubtest = open("/boot/grub/grub.conf","r")
+	grubtest = open(etpConst['systemroot']+"/boot/grub/grub.conf","r")
 	content = grubtest.readlines()
         content = entropyTools.listToUtf8(content)
         for line in content:
@@ -747,7 +867,7 @@ def configure_boot_grub(kernel,initramfs):
     else:
 	# create
 	boot_dev = "(hd0,0)"
-	grub = open("/boot/grub/grub.conf","w")
+	grub = open(etpConst['systemroot']+"/boot/grub/grub.conf","w")
 	# write header - guess (hd0,0)... since it is weird having a running system without a bootloader, at least, grub.
 	grub_header = '''
 default=0
@@ -772,8 +892,8 @@ timeout=10
     grub.close()
 
 def remove_boot_grub(kernel,initramfs):
-    if os.path.isdir("/boot/grub") and os.path.isfile("/boot/grub/grub.conf"):
-	f = open("/boot/grub/grub.conf","r")
+    if os.path.isdir(etpConst['systemroot']+"/boot/grub") and os.path.isfile(etpConst['systemroot']+"/boot/grub/grub.conf"):
+	f = open(etpConst['systemroot']+"/boot/grub/grub.conf","r")
 	grub_conf = f.readlines()
         grub_conf = entropyTools.listToUtf8(grub_conf)
 	kernelname = os.path.basename(kernel)
@@ -805,20 +925,22 @@ def remove_boot_grub(kernel,initramfs):
                         # skip completed
                         found = False
             new_conf.append(grub_conf[count])
-	f = open("/boot/grub/grub.conf","w")
+	f = open(etpConst['systemroot']+"/boot/grub/grub.conf","w")
 	f.writelines(new_conf)
 	f.flush()
 	f.close()
 
 def get_grub_boot_dev():
+    if etpConst['systemroot']:
+        return "(hd0,0)"
     import re
     df_avail = os.system("which df &> /dev/null")
     if df_avail != 0:
-	print "DEBUG: cannot find df!! Cannot properly configure kernel! Defaulting to (hd0,0)"
+	print_generic("DEBUG: cannot find df!! Cannot properly configure kernel! Defaulting to (hd0,0)")
 	return "(hd0,0)"
     grub_avail = os.system("which grub &> /dev/null")
     if grub_avail != 0:
-	print "DEBUG: cannot find grub!! Cannot properly configure kernel! Defaulting to (hd0,0)"
+	print_generic("DEBUG: cannot find grub!! Cannot properly configure kernel! Defaulting to (hd0,0)")
 	return "(hd0,0)"
     
     gboot = getoutput("df /boot").split("\n")[-1].split()[0]
@@ -866,12 +988,12 @@ def get_grub_boot_dev():
 		grub_dev = grub_disk[:-1]+","+gpartnum+")"
 		return grub_dev
 	    else:
-		print "DEBUG: cannot match grub device with linux one!! Cannot properly configure kernel! Defaulting to (hd0,0)"
+		print_generic("DEBUG: cannot match grub device with linux one!! Cannot properly configure kernel! Defaulting to (hd0,0)")
 		return "(hd0,0)"
 	else:
-	    print "DEBUG: cannot find generated device.map!! Cannot properly configure kernel! Defaulting to (hd0,0)"
+	    print_generic("DEBUG: cannot find generated device.map!! Cannot properly configure kernel! Defaulting to (hd0,0)")
 	    return "(hd0,0)"
     else:
-	print "DEBUG: cannot run df /boot!! Cannot properly configure kernel! Defaulting to (hd0,0)"
+	print_generic("DEBUG: cannot run df /boot!! Cannot properly configure kernel! Defaulting to (hd0,0)")
 	return "(hd0,0)"
 	

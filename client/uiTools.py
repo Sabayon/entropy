@@ -648,7 +648,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
                     repoinfo = red("[")+brown("from: ")+bold(installedfrom)+red("] ")
                     if not (etpUi['quiet'] or returnQueue): print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
-    
+        
         if (runQueue) or (removalQueue):
             # show download info
             if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("Packages needing install:\t")+red(str(len(runQueue))))
@@ -736,6 +736,12 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         returnActionQueue['runQueue'] = {}
         returnActionQueue['runQueue']['queue'] = runQueue[:]
         returnActionQueue['runQueue']['data'] = {}
+        returnActionQueue['extrainfo'] = {}
+        try:
+            dsize = deltaSize
+        except:
+            dsize = 0
+        returnActionQueue['extrainfo']['deltaSize'] = dsize
         
 
     # running tasks

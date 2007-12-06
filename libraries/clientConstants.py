@@ -80,6 +80,6 @@ def initConfig_clientConstants():
             if line.startswith("configprotectskip|") and (len(line.split("|")) == 2):
                 configprotect = line.split("|")[1].strip()
                 for x in configprotect.split():
-                    etpConst['configprotectskip'].append(x)
+                    etpConst['configprotectskip'].append(etpConst['systemroot']+x)
 
 initConfig_clientConstants()

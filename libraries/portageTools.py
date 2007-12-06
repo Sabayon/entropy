@@ -139,7 +139,7 @@ def getAtomCategory(atom):
 
 # please always force =pkgcat/pkgname-ver if possible
 def getInstalledAtom(atom):
-    mypath = etpConst['systemroot']+"/"
+    mypath = etpConst['systemroot']
     mytree = portage.vartree(root=mypath)
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtom: called -> "+str(atom))
     rc = mytree.dep_match(str(atom))
@@ -152,7 +152,7 @@ def getInstalledAtom(atom):
         return None
 
 def getPackageSlot(atom):
-    mypath = etpConst['systemroot']+"/"
+    mypath = etpConst['systemroot']
     mytree = portage.vartree(root=mypath)
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: called. ")
     if atom.startswith("="):
@@ -167,7 +167,7 @@ def getPackageSlot(atom):
 
 def getInstalledAtoms(atom):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtoms: called -> "+atom)
-    mypath = etpConst['systemroot']+"/"
+    mypath = etpConst['systemroot']
     mytree = portage.vartree(root=mypath)
     rc = mytree.dep_match(str(atom))
     if (rc != []):
@@ -487,7 +487,7 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
     return dependencies, conflicts
 
 def getPortageAppDbPath():
-    rc = getPortageEnv("ROOT")+etpConst['systemroot']+portage_const.VDB_PATH
+    rc = etpConst['systemroot']+"/"+portage_const.VDB_PATH
     if (not rc.endswith("/")):
 	return rc+"/"
     return rc
@@ -554,9 +554,9 @@ def refillCounter():
             except:
                 continue
     newcounter = max(counters)
-    if not os.path.isdir(os.path.dirname(edbCOUNTER)):
-        os.makedirs(os.path.dirname(edbCOUNTER))
-    f = open(edbCOUNTER,"w")
+    if not os.path.isdir(os.path.dirname(etpConst['edbcounter'])):
+        os.makedirs(os.path.dirname(etpConst['edbcounter']))
+    f = open(etpConst['edbcounter'],"w")
     f.write(str(newcounter))
     f.flush()
     f.close()
