@@ -317,6 +317,8 @@ def database(options):
         # packages to be removed from the database
         databaseCounters = clientDbconn.listAllCounters()
         for x in databaseCounters:
+            if x[0] < 0: # skip packages without valid counter
+                continue
             if x[0] not in installedCounters:
                 # check if the package is in toBeAdded
                 if (toBeAdded):

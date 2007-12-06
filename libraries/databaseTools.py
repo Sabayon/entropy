@@ -616,8 +616,22 @@ class etpDatabase:
                             )
                 )
 
-	# counter, if != -1
+        etpData['counter'] = int(etpData['counter']) # cast to integer
 	if etpData['counter'] != -1:
+            
+            if etpData['counter'] <= -2:
+                # special cases
+                
+                try:
+                    mycounters = list(self.listAllCounters(onlycounters = True))
+                    mycounter = min(mycounters)
+                    if mycounter >= -1:
+                        etpData['counter'] = -2
+                    else:
+                        etpData['counter'] = mycounter-1
+                except:
+                    etpData['counter'] = -2
+            
             try:
                 self.cursor.execute(
                 'INSERT into counters VALUES '
@@ -2601,10 +2615,14 @@ class etpDatabase:
 	self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo')
 	return self.cursor.fetchall()
 
-    def listAllCounters(self):
+    def listAllCounters(self, onlycounters = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllCounters: called.")
-	self.cursor.execute('SELECT counter,idpackage FROM counters')
-	return self.cursor.fetchall()
+        if onlycounters:
+            self.cursor.execute('SELECT counter FROM counters')
+            return self.fetchall2set(self.cursor.fetchall())
+        else:
+            self.cursor.execute('SELECT counter,idpackage FROM counters')
+            return self.cursor.fetchall()
 
     def listAllIdpackages(self, branch = None):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllIdpackages: called.")

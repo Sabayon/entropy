@@ -135,6 +135,8 @@ def update(options):
             # packages to be removed from the database
             databaseCounters = dbconn.listAllCounters()
             for x in databaseCounters:
+                if x[0] < 0:
+                    continue # skip packages without valid counter
                 if x[0] not in installedCounters:
 	            # check if the package is in toBeAdded
 	            if (toBeAdded):

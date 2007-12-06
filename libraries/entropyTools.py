@@ -1681,9 +1681,13 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False):
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package counter..."),back = True)
     # Fill counter
-    f = open(tbz2TmpDir+dbCOUNTER,"r")
-    data['counter'] = f.readline().strip()
-    f.close()
+    try:
+        f = open(tbz2TmpDir+dbCOUNTER,"r")
+        data['counter'] = int(f.readline().strip())
+        f.close()
+    except IOError:
+        data['counter'] = -2 # -2 values will be insterted as incremental negative values into the database
+
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package category..."),back = True)
     # Fill category
