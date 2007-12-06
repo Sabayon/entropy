@@ -37,17 +37,10 @@ def repositories(options):
     
     # Options available for all the packages submodules
     myopts = options[1:]
-    equoRequestAsk = False
-    equoRequestPretend = False
-    equoRequestPackagesCheck = False
     equoRequestForceUpdate = False
     rc = 0
     for opt in myopts:
-	if (opt == "--ask"):
-	    equoRequestAsk = True
-	elif (opt == "--pretend"):
-	    equoRequestPretend = True
-	elif (opt == "--force"):
+	if (opt == "--force"):
 	    equoRequestForceUpdate = True
 
     if (options[0] == "update"):
@@ -136,7 +129,7 @@ def getRepositoryDbFileHash(reponame):
 	mhash = "-1"
     return mhash
 
-def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
+def syncRepositories(reponames = [], forceUpdate = False):
 
     # check if I am root
     if (not entropyTools.isRoot()):
@@ -145,11 +138,11 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 
     # check etpRepositories
     if len(etpRepositories) == 0:
-	if (not quiet):
+	if (not etpUi['quiet']):
 	    print_error(darkred(" * ")+red("No repositories specified in ")+etpConst['repositoriesconf'])
 	return 127
 
-    if (not quiet):
+    if (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Repositories syncronization..."))
     repoNumber = 0
     syncErrors = False
@@ -170,7 +163,7 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	
 	repoNumber += 1
 	
-	if (not quiet):
+	if (not etpUi['quiet']):
 	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 	    print_info(red("\tDatabase URL: ")+darkgreen(etpRepositories[repo]['database']))
 	    print_info(red("\tDatabase local path: ")+darkgreen(etpRepositories[repo]['dbpath']))
@@ -180,14 +173,14 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	if (onlinestatus != -1):
 	    localstatus = getRepositoryRevision(repo)
 	    if (localstatus == onlinestatus) and (forceUpdate == False):
-		if (not quiet):
+		if (not etpUi['quiet']):
 		    print_info(bold("\tAttention: ")+red("database is already up to date."))
 		continue
 	
 	# get database lock
 	rc = downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabasedownloadlockfile'],"/dev/null")
 	if rc != "-3": # cannot download database
-	    if (not quiet):
+	    if (not etpUi['quiet']):
 	        print_error(bold("\tATTENTION -> ")+red("repository is being updated. Try again in few minutes."))
 	    syncErrors = True
 	    continue
@@ -201,11 +194,11 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	if cmethod == None: raise Exception
 	
 	# starting to download
-	if (not quiet):
+	if (not etpUi['quiet']):
 	    print_info(red("\tDownloading database ")+darkgreen(etpConst[cmethod[2]])+red(" ..."))
 	# create dir if it doesn't exist
 	if not os.path.isdir(etpRepositories[repo]['dbpath']):
-	    if (not quiet):
+	    if (not etpUi['quiet']):
 	        print_info(red("\t\tCreating database directory..."))
 	    os.makedirs(etpRepositories[repo]['dbpath'])
 	# download
@@ -214,15 +207,15 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
             print_info(bold("\tAttention: ")+red("database does not exist online."))
             return 128
 	
-	if (not quiet):
+	if (not etpUi['quiet']):
 	    print_info(red("\tUnpacking database to ")+darkgreen(etpConst['etpdatabasefile'])+red(" ..."))
 	eval("entropyTools."+cmethod[1])(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
 	# download etpdatabasehashfile
-	if (not quiet):
+	if (not etpUi['quiet']):
 	    print_info(red("\tDownloading checksum ")+darkgreen(etpConst['etpdatabasehashfile'])+red(" ..."))
 	downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabasehashfile'],etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'])
 	# checking checksum
-	if (not quiet):
+	if (not etpUi['quiet']):
 	    print_info(red("\tChecking downloaded database ")+darkgreen(etpConst['etpdatabasefile'])+red(" ..."), back = True)
 	f = open(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
 	md5hash = f.readline().strip()
@@ -230,10 +223,10 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	f.close()
 	rc = entropyTools.compareMd5(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile'],md5hash)
 	if rc:
-	    if (not quiet):
+	    if (not etpUi['quiet']):
 	        print_info(red("\tDownloaded database status: ")+bold("OK"))
 	else:
-	    if (not quiet):
+	    if (not etpUi['quiet']):
 	        print_error(red("\tDownloaded database status: ")+darkred("ERROR"))
 	        print_error(red("\t An error occured while checking database integrity"))
 	    # delete all
@@ -247,16 +240,16 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
 	    continue
 	
 	# download etpdatabaserevisionfile
-	if (not quiet):
+	if (not etpUi['quiet']):
 	    print_info(red("\tDownloading revision ")+darkgreen(etpConst['etpdatabaserevisionfile'])+red(" ..."))
 	downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabaserevisionfile'],etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'])
 	
-	if (not quiet):
+	if (not etpUi['quiet']):
 	    print_info(red("\tUpdated repository revision: ")+bold(str(getRepositoryRevision(repo))))
 	print_info(darkgreen("\tUpdate completed"))
 
     if syncErrors:
-	if (not quiet):
+	if (not etpUi['quiet']):
 	    print_warning(darkred(" @@ ")+red("Something bad happened. Please have a look."))
 	return 128
 
@@ -273,7 +266,7 @@ def syncRepositories(reponames = [], forceUpdate = False, quiet = False):
         
 	# clean caches
         import cacheTools
-        cacheTools.generateCache(quiet = quiet, depcache = True, configcache = False)
+        cacheTools.generateCache(depcache = True, configcache = False)
         
         # clean resume caches
         dumpTools.dumpobj(etpCache['install'],{})

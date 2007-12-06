@@ -82,19 +82,25 @@ import entropyTools
 import reagentTools
 import databaseTools
 
-
 # preliminary options parsing
 _options = []
 for opt in options:
     if (opt == "--nocolor"):
-	entropyTools.nocolor()
+	nocolor()
     elif (opt == "--debug"):
 	entropyTools.enableDebug()
     else:
-	_options.append(opt)
+        if (opt == "--quiet"):
+            etpUi['quiet'] = True
+        elif (opt == "--verbose"):
+            etpUi['verbose'] = True
+        elif (opt == "--ask"):
+            etpUi['ask'] = True
+        elif (opt == "--pretend"):
+            etpUi['pretend'] = True
+        else:
+            _options.append(opt)
 options = _options
-
-
 
 if (not entropyTools.isRoot()):
     print_error("you must be root in order to run "+APPNAME)

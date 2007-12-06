@@ -348,7 +348,7 @@ def dependenciesTest(options):
     import uiTools
     
     dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
-    rc = uiTools.dependenciesTest(quiet = reagentRequestQuiet, clientDbconn = dbconn, reagent = True)
+    rc, garbage = uiTools.dependenciesTest(quiet = reagentRequestQuiet, clientDbconn = dbconn, reagent = True)
 
     return rc
 
@@ -562,7 +562,10 @@ def database(options):
 	
 	# sync packages
 	import activatorTools
-	activatorTools.packages(["sync","--ask"])
+        ask = etpUi['ask']
+        etpUi['ask'] = True
+	activatorTools.packages(["sync"])
+        etpUi['ask'] = ask
 	
 	print_info(green(" * ")+red("Switching selected packages ..."))
 	import re

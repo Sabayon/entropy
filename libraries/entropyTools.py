@@ -1367,8 +1367,9 @@ def quickpkg(pkgdata,dirpath):
 
     # getting package info
     pkgtag = ''
+    pkgrev = "~"+str(pkgdata['revision'])
     if pkgdata['versiontag']: pkgtag = "#"+pkgdata['versiontag']
-    pkgname = pkgdata['name']+"-"+pkgdata['version']+pkgtag # + version + tag
+    pkgname = pkgdata['name']+"-"+pkgdata['version']+pkgrev+pkgtag # + version + tag
     pkgcat = pkgdata['category']
     pkgfile = pkgname+".tbz2"
     dirpath += "/"+pkgname+".tbz2"

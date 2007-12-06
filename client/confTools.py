@@ -44,21 +44,9 @@ def configurator(options):
     if len(options) < 1:
 	return -10
 
-    equoRequestVerbose = False
-    equoRequestQuiet = False
-    myopts = []
-    for opt in options:
-	if (opt == "--verbose"):
-	    equoRequestVerbose = True
-	elif (opt == "--quiet"):
-	    equoRequestQuiet = True
-	else:
-	    if not opt.startswith("-"):
-	        myopts.append(opt)
-
-    if myopts[0] == "info":
+    if options[0] == "info":
 	rc = confinfo()
-    elif myopts[0] == "update":
+    elif options[0] == "update":
 	rc = update()
     else:
         rc = -10
@@ -73,7 +61,7 @@ def configurator(options):
 def update():
     cache_status = False
     while 1:
-	scandata = scanfs(quiet = False, dcache = cache_status)
+	scandata = scanfs(dcache = cache_status)
 	if (cache_status):
 	    for x in scandata:
 		print_info("("+blue(str(x))+") "+red(" file: ")+scandata[x]['destination'])
@@ -289,7 +277,7 @@ def showdiff(fromfile,tofile):
    @description: scan for files that need to be merged
    @output: dictionary using filename as key
 '''
-def scanfs(quiet = True, dcache = True):
+def scanfs(dcache = True):
 
     if (dcache):
 	# can we load cache?
@@ -304,7 +292,7 @@ def scanfs(quiet = True, dcache = True):
     clientDbconn = equoTools.openClientDatabase()
     clientDbconn.closeDB()
     # etpConst['dbconfigprotect']
-    if (not quiet): print_info(yellow(" @@ ")+darkgreen("Scanning filesystem..."))
+    if (not etpUi['quiet']): print_info(yellow(" @@ ")+darkgreen("Scanning filesystem..."))
     scandata = {}
     counter = 0
     for path in etpConst['dbconfigprotect']:
@@ -336,7 +324,7 @@ def scanfs(quiet = True, dcache = True):
 		    
 		    mydict = generatedict(filepath)
 		    if mydict['automerge']:
-		        if (not quiet): print_info(darkred("Automerging file: ")+darkgreen(mydict['source']))
+		        if (not etpUi['quiet']): print_info(darkred("Automerging file: ")+darkgreen(mydict['source']))
 			if os.path.isfile(mydict['source']):
 		            os.rename(mydict['source'],mydict['destination'])
 			continue
@@ -345,7 +333,7 @@ def scanfs(quiet = True, dcache = True):
 		        scandata[counter] = mydict.copy()
 
 		    try:
-		        if (not quiet): print_info("("+blue(str(counter))+") "+red(" file: ")+os.path.dirname(filepath)+"/"+os.path.basename(filepath)[10:])
+		        if (not etpUi['quiet']): print_info("("+blue(str(counter))+") "+red(" file: ")+os.path.dirname(filepath)+"/"+os.path.basename(filepath)[10:])
 		    except:
 			pass # possible encoding issues
     # store data
@@ -431,7 +419,7 @@ def addtocache(filepath):
     try:
 	scandata = loadcache()
     except:
-	scandata = scanfs(quiet = True, dcache = False)
+	scandata = scanfs(dcache = False)
     keys = scandata.keys()
     try:
 	for key in keys:
@@ -466,7 +454,7 @@ def removefromcache(sd,key):
 '''
 def confinfo():
     print_info(yellow(" @@ ")+darkgreen("These are the files that would be updated:"))
-    data = scanfs(quiet = True, dcache = False)
+    data = scanfs(dcache = False)
     counter = 0
     for file in data:
 	counter += 1

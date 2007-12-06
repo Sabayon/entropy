@@ -145,7 +145,6 @@ import equoTools
 import entropyTools
 from clientConstants import *
 
-equoRequestQuiet = False
 # preliminary options parsing
 _options = []
 for opt in options:
@@ -155,8 +154,17 @@ for opt in options:
 	entropyTools.enableDebug()
     else:
         if (opt == "--quiet"):
-            equoRequestQuiet = True
-	_options.append(opt)
+            etpUi['quiet'] = True
+        elif (opt == "--verbose"):
+            etpUi['verbose'] = True
+        elif (opt == "--ask"):
+            etpUi['ask'] = True
+        elif (opt == "--pretend"):
+            etpUi['pretend'] = True
+        elif (opt == "--ihateprint"):
+            etpUi['mute'] = True
+        else:
+            _options.append(opt)
 options = _options
 
 # print version
@@ -188,12 +196,12 @@ def writeerrorstatus(status):
         pass
 
 def loadconfcache():
-    if not equoRequestQuiet: print_info(red(" @@ ")+blue("Caching equo conf"), back = True)
+    if not etpUi['quiet']: print_info(red(" @@ ")+blue("Caching equo conf"), back = True)
     import confTools
-    scandata = confTools.scanfs(quiet = True, dcache = True)
-    if not equoRequestQuiet: print_info(red(" @@ ")+blue("Caching complete."))
+    scandata = confTools.scanfs(dcache = True)
+    if not etpUi['quiet']: print_info(red(" @@ ")+blue("Caching complete."))
     if len(scandata) > 0:
-        if not equoRequestQuiet:
+        if not etpUi['quiet']:
             print_warning(darkgreen("There are "+str(len(scandata))+" configuration file(s) that need(s) to be updated."))
             print_warning(red("Please run: ")+bold("equo conf update"))
 
@@ -212,20 +220,17 @@ try:
             cr = entropyTools.applicationLockCheck("install", gentle = True)
 	    if (cr):
 		print_warning(red("Running with ")+bold("--pretend")+red("..."))
-		if "--pretend" not in options:
-		    options.append("--pretend")
+                etpUi['pretend'] = True
         elif options[0] == "remove":
             cr = entropyTools.applicationLockCheck("remove", gentle = True)
 	    if (cr):
 		print_warning(red("Running with ")+bold("--pretend")+red("..."))
-		if "--pretend" not in options:
-		    options.append("--pretend")
+                etpUi['pretend'] = True
 	elif options[0] == "world":
 	    cr = entropyTools.applicationLockCheck("world", gentle = True)
 	    if (cr):
 		print_warning(red("Running with ")+bold("--pretend")+red("..."))
-		if "--pretend" not in options:
-		    options.append("--pretend")
+                etpUi['pretend'] = True
         rc = uiTools.package(options)
         loadconfcache()
 	# save caches

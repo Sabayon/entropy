@@ -293,7 +293,15 @@ etpSys = {
     'archs': ["x86", "amd64"],
     'api': '1',
     'arch': ETP_ARCH_CONST,
-    'rootdir': ""
+    'rootdir': "",
+}
+
+etpUi = {
+    'quiet': False,
+    'verbose': False,
+    'ask': False,
+    'pretend': False,
+    'mute': False
 }
 
 # static logging stuff

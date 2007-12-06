@@ -48,13 +48,13 @@ dbLog = logTools.LogFile(level = etpConst['databaseloglevel'],filename = etpCons
    @input repositoryName: name of the client database
    @output: database pointer or, -1 if error
 '''
-def openRepositoryDatabase(repositoryName, xcache = True):
+def openRepositoryDatabase(repositoryName, xcache = True, indexing = True):
     dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
     if not os.path.isfile(dbfile):
 	rc = fetchRepositoryIfNotAvailable(repositoryName)
 	if (rc):
 	    raise Exception, "openRepositoryDatabase: cannot sync repository "+repositoryName
-    conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = etpConst['dbnamerepoprefix']+repositoryName, xcache = xcache)
+    conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = etpConst['dbnamerepoprefix']+repositoryName, xcache = xcache, indexing = indexing)
     # initialize CONFIG_PROTECT
     if (etpRepositories[repositoryName]['configprotect'] == None) or (etpRepositories[repositoryName]['configprotectmask'] == None):
         etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
@@ -80,11 +80,11 @@ def fetchRepositoryIfNotAvailable(reponame):
    @description: open the installed packages database and returns the pointer
    @output: database pointer or, -1 if error
 '''
-def openClientDatabase(xcache = True, generate = False):
+def openClientDatabase(xcache = True, generate = False, indexing = True):
     if (not generate) and (not os.path.isfile(etpConst['etpdatabaseclientfilepath'])):
 	raise Exception,"openClientDatabase: installed packages database not found. At this stage, the only way to have it is to run 'equo database generate'. Please note: don't use Equo on a critical environment !!"
     else:
-        conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = 'client', xcache = xcache)
+        conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = 'client', xcache = xcache, indexing = indexing)
 	if (not etpConst['dbconfigprotect']):
 	    # config protect not prepared
             if (not generate):
@@ -106,9 +106,9 @@ def openServerDatabase(readOnly = True, noUpload = True):
    @description: open a generic client database and returns the pointer.
    @output: database pointer
 '''
-def openGenericDatabase(dbfile, dbname = None, xcache = False):
+def openGenericDatabase(dbfile, dbname = None, xcache = False, indexing = True):
     if dbname == None: dbname = "generic"
-    conn = etpDatabase(readOnly = False, dbFile = dbfile, clientDatabase = True, dbname = dbname, xcache = xcache)
+    conn = etpDatabase(readOnly = False, dbFile = dbfile, clientDatabase = True, dbname = dbname, xcache = xcache, indexing = indexing)
     return conn
 
 def backupClientDatabase():
@@ -135,7 +135,7 @@ def listAllAvailableBranches():
 
 class etpDatabase:
 
-    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = 'etpdb'):
+    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = 'etpdb', indexing = True):
 	
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase.__init__ called.")
 	
@@ -146,6 +146,7 @@ class etpDatabase:
 	self.clientDatabase = clientDatabase
 	self.xcache = xcache
 	self.dbname = dbname
+        self.indexing = indexing
 	
 	# caching dictionaries
 	if (self.xcache) and (dbname != 'etpdb') and (os.getuid() == 0):
@@ -2869,20 +2870,20 @@ class etpDatabase:
         self.commitChanges()
 
     def createContentIndex(self):
-        if self.dbname != "etpdb":
+        if self.dbname != "etpdb" and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex ON content ( file )')
 
     def createBaseinfoIndex(self):
-        if self.dbname != "etpdb":
+        if self.dbname != "etpdb" and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex ON baseinfo ( idpackage, atom, name, version, slot, branch, revision )')
 
     def createDependenciesIndex(self):
-        if self.dbname != "etpdb":
+        if self.dbname != "etpdb" and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex ON dependencies ( idpackage, iddependency )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesreferenceindex ON dependenciesreference ( iddependency, dependency )')
 
     def createExtrainfoIndex(self):
-        if self.dbname != "etpdb":
+        if self.dbname != "etpdb" and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( idpackage, description, homepage, download, digest, datecreation, size )')
 
     def regenerateCountersTable(self, output = False):
@@ -2929,8 +2930,11 @@ class etpDatabase:
 
     def createContentTypeColumn(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createContentTypeColumn: called.")
-	self.cursor.execute('ALTER TABLE content ADD COLUMN type VARCHAR;')
-	self.cursor.execute('UPDATE content SET type = "0"')
+        try: # if database disk image is malformed, won't raise exception here
+            self.cursor.execute('ALTER TABLE content ADD COLUMN type VARCHAR;')
+            self.cursor.execute('UPDATE content SET type = "0"')
+        except:
+            pass
 	self.commitChanges()
 
     def createTriggerTable(self):

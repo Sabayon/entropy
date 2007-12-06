@@ -40,12 +40,12 @@ equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst[
 
 ### Caching functions
 
-def loadCaches(quiet = False):
+def loadCaches():
     
     if os.getuid() != 0: # don't load cache as user
         return
     
-    if not quiet: print_info(darkred(" @@ ")+blue("Loading On-Disk Cache..."))
+    if not etpUi['quiet']: print_info(darkred(" @@ ")+blue("Loading On-Disk Cache..."))
     # atomMatch
     try:
         mycache = dumpTools.loadobj(etpCache['atomMatch'])
@@ -933,7 +933,7 @@ def matchChecksum(infoDict):
 	return 1
     return 0
 
-def removePackage(infoDict, quiet = False):
+def removePackage(infoDict):
     
     atom = infoDict['removeatom']
     content = infoDict['removecontent']
@@ -948,7 +948,7 @@ def removePackage(infoDict, quiet = False):
 
     # remove from database
     if removeidpackage != -1:
-	if not quiet: print_info(red("   ## ")+blue("Removing from database: ")+red(infoDict['removeatom']))
+	if not etpUi['quiet']: print_info(red("   ## ")+blue("Removing from database: ")+red(infoDict['removeatom']))
 	removePackageFromDatabase(removeidpackage)
 
     # Handle gentoo database
@@ -968,7 +968,7 @@ def removePackage(infoDict, quiet = False):
         if etpConst['collisionprotect'] > 0:
             
             if clientDbconn.isFileAvailable(file) and os.path.isfile(file): # in this way we filter out directories
-                if not quiet: print_warning(darkred("   ## ")+red("Collision found during remove of ")+file+red(" - cannot overwrite"))
+                if not etpUi['quiet']: print_warning(darkred("   ## ")+red("Collision found during remove of ")+file+red(" - cannot overwrite"))
                 equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove of "+file+" - cannot overwrite")
                 continue
     
@@ -997,7 +997,7 @@ def removePackage(infoDict, quiet = False):
         
         if (protected):
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file: "+file)
-            if not quiet: print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+file)
+            if not etpUi['quiet']: print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+file)
         else:
             try:
                 os.lstat(file)
@@ -1482,6 +1482,9 @@ def stepExecutor(step, infoDict, loopString = None):
 
     clientDbconn = openClientDatabase()
     output = 0
+    
+    if loopString == None:
+        loopString = ''
     
     if step == "fetch":
 	print_info(red("   ## ")+blue("Fetching archive: ")+red(os.path.basename(infoDict['download'])))

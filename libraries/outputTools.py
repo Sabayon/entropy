@@ -28,15 +28,17 @@ from sys import stderr, stdout, modules
 from os import environ, getenv
 import curses
 import readline
-_cleanline = ''
-_cols = 30
+from entropyConstants import etpUi
+stuff = {}
+stuff['cleanline'] = ''
+stuff['cols'] = 30
 try:
     curses.setupterm()
-    _cols = curses.tigetnum('cols')
+    stuff['cols'] = curses.tigetnum('cols')
 except:
     pass
-for x in range(_cols):
-    _cleanline += ' '
+for x in range(stuff['cols']):
+    stuff['cleanline'] += ' '
 
 havecolor=1
 dotitles=1
@@ -221,45 +223,39 @@ def create_color_func(color_key):
 for c in compat_functions_colors:
 	setattr(modules[__name__], c, create_color_func(c))
 
-_lastline = _cleanline
-#_linelength = [' ' for x in _cleanline]
-
 def enlightenatom(atom):
     out = atom.split("/")
     return blue(out[0])+"/"+red(out[1])
 
 def print_error(msg, back = False):
-    global _lastline
+    if etpUi['mute']:
+        return
     if (back):
-        if _lastline != msg:
-	    _lastline = msg
-        else:
-	    return
-	writechar("\r   "+_lastline.rstrip()+"\r")
+	writechar("\r   "+stuff['cleanline']+"\r")
 	writechar("\r"+red(">>")+" "+msg)
 	return
-    writechar("\r"+_cleanline+"\r")
+    writechar("\r"+stuff['cleanline']+"\r")
     print darkred(">>")+" "+msg
 
 def print_info(msg, back = False):
-    global _lastline
-    if (back):
-	if _lastline != msg:
-	    _lastline = msg
-        else:
-	    return
-        
-	writechar("\r   "+_lastline.rstrip()+"\r")
+    if etpUi['mute']:
+        return
+    if back:
+        writechar("\r"+stuff['cleanline']+"\r")
 	writechar("\r"+green(">>")+" "+msg)
-	return
-    writechar("\r"+_cleanline+"\r")
+        return
+    writechar("\r"+stuff['cleanline']+"\r")
     print green(">>")+" "+msg
 
 def print_warning(msg):
-    writechar("\r"+_cleanline+"\r")
+    if etpUi['mute']:
+        return
+    writechar("\r"+stuff['cleanline']+"\r")
     print red(">>")+" "+msg
 
 def print_generic(msg): # here we'll wrap any nice formatting
+    if etpUi['mute']:
+        return
     print msg
 
 def writechar(char):

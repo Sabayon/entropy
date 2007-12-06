@@ -39,53 +39,47 @@ def query(options):
     if len(options) < 1:
 	return -10
 
-    equoRequestVerbose = False
-    equoRequestQuiet = False
     equoRequestDeep = False
     myopts = []
     for opt in options:
-	if (opt == "--verbose"):
-	    equoRequestVerbose = True
-	elif (opt == "--quiet"):
-	    equoRequestQuiet = True
-	elif (opt == "--deep"):
+	if (opt == "--deep"):
 	    equoRequestDeep = True
 	else:
 	    if not opt.startswith("-"):
 	        myopts.append(opt)
 
     if myopts[0] == "installed":
-	rc = searchInstalledPackages(myopts[1:], quiet = equoRequestQuiet)
+	rc = searchInstalledPackages(myopts[1:])
 
     elif myopts[0] == "belongs":
-	rc = searchBelongs(myopts[1:], quiet = equoRequestQuiet)
+	rc = searchBelongs(myopts[1:])
 
     elif myopts[0] == "depends":
-	rc = searchDepends(myopts[1:], verbose = equoRequestVerbose, quiet = equoRequestQuiet)
+	rc = searchDepends(myopts[1:])
 
     elif myopts[0] == "files":
-	rc = searchFiles(myopts[1:], quiet = equoRequestQuiet)
+	rc = searchFiles(myopts[1:])
 
     elif myopts[0] == "needed":
-	rc = searchNeeded(myopts[1:], quiet = equoRequestQuiet)
+	rc = searchNeeded(myopts[1:])
 
     elif myopts[0] == "removal":
-	rc = searchRemoval(myopts[1:], quiet = equoRequestQuiet, deep = equoRequestDeep)
+	rc = searchRemoval(myopts[1:]deep = equoRequestDeep)
 
     elif myopts[0] == "tags":
 	if (len(myopts) > 1):
-	    rc = searchTaggedPackages(myopts[1:], quiet = equoRequestQuiet)
+	    rc = searchTaggedPackages(myopts[1:])
 
     elif myopts[0] == "orphans":
-	rc = searchOrphans(quiet = equoRequestQuiet)
+	rc = searchOrphans()
 
     elif myopts[0] == "list":
 	mylistopts = options[1:]
 	if len(mylistopts) > 0:
 	    if mylistopts[0] == "installed":
-	        rc = searchInstalled(verbose = equoRequestVerbose, quiet = equoRequestQuiet)
+	        rc = searchInstalled()
     elif myopts[0] == "description":
-	rc = searchDescription(myopts[1:], quiet = equoRequestQuiet)
+	rc = searchDescription(myopts[1:])
     else:
         rc = -10
 
@@ -93,9 +87,9 @@ def query(options):
 
 
 
-def searchInstalledPackages(packages, idreturn = False, quiet = False):
+def searchInstalledPackages(packages, idreturn = False):
     
-    if (not idreturn) and (not quiet):
+    if (not idreturn) and (not etpUi['quiet']):
         print_info(brown(" @@ ")+darkgreen("Searching..."))
 
     try:
@@ -120,9 +114,9 @@ def searchInstalledPackages(packages, idreturn = False, quiet = False):
 		if (idreturn):
 		    dataInfo.add(idpackage)
 		else:
-		    printPackageInfo(idpackage, clientDbconn, clientSearch = True, quiet = quiet)
+		    printPackageInfo(idpackage, clientDbconn, clientSearch = True)
 	    # print info
-	    if (not idreturn) and (not quiet):
+	    if (not idreturn) and (not etpUi['quiet']):
 	        print_info(blue(" Keyword: ")+bold("\t"+package))
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
 	
@@ -134,9 +128,9 @@ def searchInstalledPackages(packages, idreturn = False, quiet = False):
     return 0
 
 
-def searchBelongs(files, idreturn = False, quiet = False):
+def searchBelongs(files, idreturn = False):
     
-    if (not idreturn) and (not quiet):
+    if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Belong Search..."))
 
     try:
@@ -170,11 +164,11 @@ def searchBelongs(files, idreturn = False, quiet = False):
 	    for idpackage in result:
 		if (idreturn):
 		    dataInfo.add(idpackage)
-		elif (quiet):
+		elif (etpUi['quiet']):
 		    print clientDbconn.retrieveAtom(idpackage)
 		else:
 		    printPackageInfo(idpackage, clientDbconn, clientSearch = True)
-	    if (not idreturn) and (not quiet):
+	    if (not idreturn) and (not etpUi['quiet']):
 	        print_info(blue(" Keyword: ")+bold("\t"+file))
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
 	
@@ -187,10 +181,10 @@ def searchBelongs(files, idreturn = False, quiet = False):
 
 
 
-def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
+def searchDepends(atoms, idreturn = False):
     
     from equoTools import atomMatch
-    if (not idreturn) and (not quiet):
+    if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Depends Search..."))
 
     try:
@@ -226,12 +220,12 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
 		if (idreturn):
 		    dataInfo.add(idpackage)
 		else:
-		    if (verbose):
-		        printPackageInfo(idpackage, dbconn, clientSearch = True, quiet = quiet)
+		    if (etpUi['verbose']):
+		        printPackageInfo(idpackage, dbconn, clientSearch = True)
 		    else:
-		        printPackageInfo(idpackage, dbconn, clientSearch = True, strictOutput = True, quiet = quiet)
+		        printPackageInfo(idpackage, dbconn, clientSearch = True, strictOutput = True)
 	    # print info
-	    if (not idreturn) and (not quiet):
+	    if (not idreturn) and (not etpUi['quiet']):
 	        print_info(blue(" Keyword: ")+bold("\t"+atom))
 		if (matchInRepo):
 		    where = " from repository "+str(result[1])
@@ -250,9 +244,9 @@ def searchDepends(atoms, idreturn = False, verbose = False, quiet = False):
     
     return 0
 
-def searchNeeded(atoms, idreturn = False, quiet = False):
+def searchNeeded(atoms, idreturn = False):
     
-    if (not idreturn) and (not quiet):
+    if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Needed Search..."))
 
     try:
@@ -271,11 +265,11 @@ def searchNeeded(atoms, idreturn = False, quiet = False):
 	    for needed in myneeded:
 		if (idreturn):
 		    dataInfo.add(needed)
-		elif (quiet):
+		elif (etpUi['quiet']):
 		    print needed
 		else:
 		    print_info(blue("       # ")+red(str(needed)))
-	    if (not idreturn) and (not quiet):
+	    if (not idreturn) and (not etpUi['quiet']):
 	        print_info(blue("     Atom: ")+bold("\t"+myatom))
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(myneeded)))+red(" libraries"))
 	
@@ -286,9 +280,9 @@ def searchNeeded(atoms, idreturn = False, quiet = False):
     
     return 0
 
-def searchFiles(atoms, idreturn = False, quiet = False):
+def searchFiles(atoms, idreturn = False):
     
-    if (not idreturn) and (not quiet):
+    if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Files Search..."))
 
     results = searchInstalledPackages(atoms, idreturn = True)
@@ -308,13 +302,13 @@ def searchFiles(atoms, idreturn = False, quiet = False):
 	    if (idreturn):
 		dataInfo.add((result,files))
 	    else:
-		if quiet:
+		if etpUi['quiet']:
 		    for file in files:
 			print file
 		else:
 		    for file in files:
 		        print_info(blue(" ### ")+red(file))
-	    if (not idreturn) and (not quiet):
+	    if (not idreturn) and (not etpUi['quiet']):
 	        print_info(blue(" Package: ")+bold("\t"+atom))
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(files)))+red(" files"))
 	
@@ -327,9 +321,9 @@ def searchFiles(atoms, idreturn = False, quiet = False):
 
 
 
-def searchOrphans(quiet = False):
+def searchOrphans():
 
-    if (not quiet):
+    if (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Orphans Search..."))
 
     try:
@@ -350,11 +344,11 @@ def searchOrphans(quiet = False):
 		    continue
 		mask = [x for x in etpConst['filesystemdirsmask'] if file.startswith(x)]
 		if (not mask):
-		    if (not quiet):
+		    if (not etpUi['quiet']):
 		        print_info(red(" @@ ")+blue("Looking: ")+bold(file[:50]+"..."), back = True)
 	            foundFiles.add(file)
     totalfiles = len(foundFiles)
-    if (not quiet):
+    if (not etpUi['quiet']):
 	print_info(red(" @@ ")+blue("Analyzed directories: ")+' '.join(etpConst['filesystemdirs']))
 	print_info(red(" @@ ")+blue("Masked directories: ")+' '.join(etpConst['filesystemdirsmask']))
         print_info(red(" @@ ")+blue("Number of files collected on the filesystem: ")+bold(str(totalfiles)))
@@ -366,7 +360,7 @@ def searchOrphans(quiet = False):
     length = str(len(idpackages))
     count = 0
     for idpackage in idpackages:
-	if (not quiet):
+	if (not etpUi['quiet']):
 	    count += 1
 	    atom = clientDbconn.retrieveAtom(idpackage)
 	    txt = "["+str(count)+"/"+length+"] "
@@ -380,7 +374,7 @@ def searchOrphans(quiet = False):
 	# remove from foundFiles
 	del content
 	foundFiles.difference_update(_content)
-    if (not quiet):
+    if (not etpUi['quiet']):
         print_info(red(" @@ ")+blue("Intersection completed. Showing statistics: "))
 	print_info(red(" @@ ")+blue("Number of total files: ")+bold(str(totalfiles)))
 	print_info(red(" @@ ")+blue("Number of matching files: ")+bold(str(totalfiles - len(foundFiles))))
@@ -389,7 +383,7 @@ def searchOrphans(quiet = False):
     # order
     foundFiles = list(foundFiles)
     foundFiles.sort()
-    if (not quiet):
+    if (not etpUi['quiet']):
 	print_info(red(" @@ ")+blue("Writing file to disk: ")+bold("/tmp/equo-orphans.txt"))
         f = open("/tmp/equo-orphans.txt","w")
         for x in foundFiles:
@@ -404,10 +398,10 @@ def searchOrphans(quiet = False):
     return 0
 
 
-def searchRemoval(atoms, idreturn = False, quiet = False, deep = False):
+def searchRemoval(atoms, idreturn = False, deep = False):
     
     from equoTools import generateDependsTree
-    if (not idreturn) and (not quiet):
+    if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Removal Search..."))
 
     try:
@@ -427,7 +421,7 @@ def searchRemoval(atoms, idreturn = False, quiet = False, deep = False):
 	return 127,-1
 
     choosenRemovalQueue = []
-    if (not quiet):
+    if (not etpUi['quiet']):
         print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
     treeview = generateDependsTree(foundAtoms, deep = deep)
     treelength = len(treeview[0])
@@ -438,7 +432,7 @@ def searchRemoval(atoms, idreturn = False, quiet = False, deep = False):
 		choosenRemovalQueue.append(y)
 	
     if (choosenRemovalQueue):
-	if (not quiet):
+	if (not etpUi['quiet']):
 	    print_info(red(" @@ ")+blue("These are the packages that would added to the removal queue:"))
 	totalatoms = str(len(choosenRemovalQueue))
 	atomscounter = 0
@@ -446,7 +440,7 @@ def searchRemoval(atoms, idreturn = False, quiet = False, deep = False):
 	for idpackage in choosenRemovalQueue:
 	    atomscounter += 1
 	    rematom = clientDbconn.retrieveAtom(idpackage)
-	    if (not quiet):
+	    if (not etpUi['quiet']):
 	        installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
 	        repositoryInfo = bold("[")+red("from: ")+brown(installedfrom)+bold("]")
 	        stratomscounter = str(atomscounter)
@@ -464,9 +458,9 @@ def searchRemoval(atoms, idreturn = False, quiet = False, deep = False):
 
 
 
-def searchInstalled(idreturn = False, verbose = False, quiet = False):
+def searchInstalled(idreturn = False):
     
-    if (not idreturn) and (not quiet):
+    if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Installed Search..."))
 
     try:
@@ -477,17 +471,17 @@ def searchInstalled(idreturn = False, verbose = False, quiet = False):
     installedPackages = clientDbconn.listAllPackages()
     installedPackages.sort()
     if (not idreturn):
-        if (not quiet):
+        if (not etpUi['quiet']):
 	    print_info(red(" @@ ")+blue("These are the installed packages:"))
         for package in installedPackages:
-	    if (not verbose):
+	    if (not etpUi['verbose']):
 	        atom = dep_getkey(package[0])
 	    else:
 	        atom = package[0]
 	    branchinfo = ""
-	    if (verbose):
+	    if (etpUi['verbose']):
 	        branchinfo = darkgreen(" [")+red(package[2])+darkgreen("]")
-	    if (not quiet):
+	    if (not etpUi['quiet']):
 	        print_info(red("  #")+blue(str(package[1]))+branchinfo+" "+atom)
 	    else:
 	        print atom
@@ -551,11 +545,11 @@ def searchPackage(packages, idreturn = False):
 
     return 0
 
-def searchTaggedPackages(tags, datareturn = False, quiet = False):
+def searchTaggedPackages(tags, datareturn = False):
     
     foundPackages = {}
     
-    if (not datareturn) and (not quiet):
+    if (not datareturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Tag Search..."))
     # search inside each available database
     repoNumber = 0
@@ -563,7 +557,7 @@ def searchTaggedPackages(tags, datareturn = False, quiet = False):
 	foundPackages[repo] = {}
 	repoNumber += 1
 	
-	if (not datareturn) and (not quiet):
+	if (not datareturn) and (not etpUi['quiet']):
 	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 	
 	dbconn = openRepositoryDatabase(repo)
@@ -573,8 +567,8 @@ def searchTaggedPackages(tags, datareturn = False, quiet = False):
 		foundPackages[repo][result[1]] = result[0]
 	        # print info
 		if (not datareturn):
-		    printPackageInfo(result[1],dbconn, quiet = quiet)
-	    if (not datareturn) and (not quiet):
+		    printPackageInfo(result[1],dbconn)
+	    if (not datareturn) and (not etpUi['quiet']):
 	        print_info(blue(" Keyword: ")+bold("\t"+tag))
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
 	
@@ -585,11 +579,11 @@ def searchTaggedPackages(tags, datareturn = False, quiet = False):
 
     return 0
 
-def searchDescription(descriptions, idreturn = False, quiet = False):
+def searchDescription(descriptions, idreturn = False):
     
     foundPackages = {}
     
-    if (not idreturn) and (not quiet):
+    if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Description Search..."))
     # search inside each available database
     repoNumber = 0
@@ -597,7 +591,7 @@ def searchDescription(descriptions, idreturn = False, quiet = False):
 	foundPackages[repo] = {}
 	repoNumber += 1
 	
-	if (not idreturn) and (not quiet):
+	if (not idreturn) and (not etpUi['quiet']):
 	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 	
 	dbconn = openRepositoryDatabase(repo)
@@ -611,12 +605,12 @@ def searchDescription(descriptions, idreturn = False, quiet = False):
 		    atom = pkg[0]
 		    if (idreturn):
 			dataInfo.append([idpackage,repo])
-		    elif (quiet):
+		    elif (etpUi['quiet']):
 			print dbconn.retrieveAtom(idpackage)
 		    else:
 		        printPackageInfo(idpackage,dbconn)
 	        # print info
-		if (not idreturn) and (not quiet):
+		if (not idreturn) and (not etpUi['quiet']):
 	            print_info(blue(" Keyword: ")+bold("\t"+desc))
 	            print_info(blue(" Found:   ")+bold("\t"+str(len(foundPackages[repo][desc])))+red(" entries"))
 	
@@ -633,10 +627,10 @@ def searchDescription(descriptions, idreturn = False, quiet = False):
    Internal functions
 '''
 
-def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, quiet = False, extended = False):
+def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, extended = False):
     # now fetch essential info
     pkgatom = dbconn.retrieveAtom(idpackage)
-    if (quiet):
+    if (etpUi['quiet']):
 	print pkgatom
 	return
     
@@ -672,7 +666,7 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
         try:
             clientDbconn = openClientDatabase()
         except Exception:
-            clientDbconn == -1
+            clientDbconn = -1
         if (clientDbconn != -1):
             pkginstalled = clientDbconn.atomMatch(dep_getkey(pkgatom), matchSlot = pkgslot)
             if (pkginstalled[1] == 0):

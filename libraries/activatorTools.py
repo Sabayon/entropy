@@ -63,7 +63,10 @@ def sync(options, justTidy = False):
 	if (activatorRequestNoAsk):
 	    rc = packages([ "sync" ])
 	else:
+            ask = etpUi['ask']
+            etpUi['ask'] = True
 	    rc = packages([ "sync" , "--ask" ])
+            etpUi['ask'] = ask
         # then sync the database, if the packages sync completed successfully
         if (rc == False):
 	    exit(401)
@@ -181,15 +184,9 @@ def packages(options):
 
     # Options available for all the packages submodules
     myopts = options[1:]
-    activatorRequestAsk = False
-    activatorRequestPretend = False
     activatorRequestPackagesCheck = False
     for opt in myopts:
-	if (opt == "--ask"):
-	    activatorRequestAsk = True
-	elif (opt == "--pretend"):
-	    activatorRequestPretend = True
-	elif (opt == "--do-packages-check"):
+	if (opt == "--do-packages-check"):
 	    activatorRequestPackagesCheck = True
 
     if not options:
@@ -459,12 +456,12 @@ def packages(options):
 	            print_info(red(" * ")+blue("Total download ")+yellow("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalDownloadSize))))
 	            print_info(red(" * ")+blue("Total upload ")+green("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalUploadSize))))
 	    
-	            if (activatorRequestAsk):
+	            if (etpUi['pretend']):
 		        rc = askquestion("\n     Would you like to run the steps above ?")
 		        if rc == "No":
 		            print "\n"
 		            continue
-	            elif (activatorRequestPretend):
+	            elif (etpUi['pretend']):
 		        continue
 
 		    # queues management
@@ -661,7 +658,7 @@ def packages(options):
 		print_warning(yellow(" * ")+red("ATTENTION: cannot properly syncronize ")+bold(extractFTPHostFromUri(uri))+red(". Continuing if possible..."))
 		
 		# decide what to do
-		if (totalSuccessfulUri > 0) or (activatorRequestPretend):
+		if (totalSuccessfulUri > 0) or (etpUi['pretend']):
 		    # we're safe
 		    activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: at least one mirror has been synced properly. I'm fine.")
 		    print_info(green(" * ")+red("At least one mirror has been synced properly. I'm fine."))
@@ -679,7 +676,7 @@ def packages(options):
 
 
 	# if at least one server has been synced successfully, move files
-	if (totalSuccessfulUri > 0) and (not activatorRequestPretend):
+	if (totalSuccessfulUri > 0) and (not etpUi['pretend']):
 	    import shutil
 	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"packages: all done. Now it's time to move packages to "+etpConst['packagesbindir'])
 	    pkgbranches = os.listdir(etpConst['packagessuploaddir'])
