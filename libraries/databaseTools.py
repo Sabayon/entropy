@@ -1240,9 +1240,9 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addCompileFlags: adding Flags -> "+chost+"|"+cflags+"|"+cxxflags)
 
         # escape
-        chost = entropyTools.escape(chost)
-        cflags = entropyTools.escape(cflags)
-        cxxflags = entropyTools.escape(cxxflags)
+        #echost = entropyTools.escape(chost)
+        #ecflags = entropyTools.escape(cflags)
+        #ecxxflags = entropyTools.escape(cxxflags)
 
 	self.cursor.execute(
 		'INSERT into flags VALUES '
