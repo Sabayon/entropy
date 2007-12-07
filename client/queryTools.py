@@ -64,7 +64,7 @@ def query(options):
 	rc = searchNeeded(myopts[1:])
 
     elif myopts[0] == "removal":
-	rc = searchRemoval(myopts[1:]deep = equoRequestDeep)
+	rc = searchRemoval(myopts[1:],deep = equoRequestDeep)
 
     elif myopts[0] == "tags":
 	if (len(myopts) > 1):

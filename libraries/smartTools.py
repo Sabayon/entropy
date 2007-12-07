@@ -38,7 +38,6 @@ def smart(options):
 
     # Options available for all the packages submodules
     smartRequestEmpty = False
-    smartRequestAsk = False
     smartRequestSavedir = None
     savedir = False
     newopts = []
@@ -47,8 +46,6 @@ def smart(options):
 	    smartRequestEmpty = True
 	elif (opt == "--savedir"):
 	    savedir = True
-	elif (opt == "--ask"):
-	    smartRequestAsk = True
         else:
             if savedir:
                 smartRequestSavedir = opt
@@ -63,7 +60,7 @@ def smart(options):
     elif (options[0] == "package"):
         rc = smartPackagesHandler(options[1:])
     elif (options[0] == "quickpkg"):
-        rc = QuickpkgHandler(options[1:], quiet = False, ask = smartRequestAsk, savedir = savedir)
+        rc = QuickpkgHandler(options[1:], savedir = savedir)
     elif (options[0] == "inflate") or (options[0] == "deflate") or (options[0] == "extract"):
         rc = CommonFlate(options[1:], action = options[0], savedir = smartRequestSavedir)
     else:
@@ -72,10 +69,10 @@ def smart(options):
     return rc
 
 
-def QuickpkgHandler(mypackages, quiet = False, ask = True, savedir = None):
+def QuickpkgHandler(mypackages, savedir = None):
     
     if (not mypackages):
-        if not quiet: print_error(darkred(" * ")+red("No packages specified."))
+        if not etpUi['quiet']: print_error(darkred(" * ")+red("No packages specified."))
         return 1
     
     if savedir == None:
@@ -94,14 +91,14 @@ def QuickpkgHandler(mypackages, quiet = False, ask = True, savedir = None):
         if match[0] != -1:
             packages.append(match)
         else:
-            if not quiet: print_warning(darkred(" * ")+red("Cannot find: ")+bold(opt))
+            if not etpUi['quiet']: print_warning(darkred(" * ")+red("Cannot find: ")+bold(opt))
     packages = entropyTools.filterDuplicatedEntries(packages)
     if (not packages):
         print_error(darkred(" * ")+red("No valid packages specified."))
         return 2
 
     # print the list
-    if (not quiet) or (ask): print_info(darkgreen(" * ")+red("This is the list of the packages that would be quickpkg'd:"))
+    if (not etpUi['quiet']) or (etpUi['ask']): print_info(darkgreen(" * ")+red("This is the list of the packages that would be quickpkg'd:"))
     pkgInfo = {}
     pkgData = {}
     for pkg in packages:
@@ -110,7 +107,7 @@ def QuickpkgHandler(mypackages, quiet = False, ask = True, savedir = None):
         pkgData[pkg] = clientDbconn.getPackageData(pkg[0])
         print_info(brown("\t[")+red("from:")+bold("installed")+brown("]")+" - "+atom)
 
-    if (not quiet) or (ask):
+    if (not etpUi['quiet']) or (etpUi['ask']):
         rc = entropyTools.askquestion(">>   Would you like to recompose the selected packages ?")
         if rc == "No":
             return 0
@@ -118,12 +115,12 @@ def QuickpkgHandler(mypackages, quiet = False, ask = True, savedir = None):
     clientDbconn.closeDB()
 
     for pkg in packages:
-        if not quiet: print_info(brown(" * ")+red("Compressing: ")+darkgreen(pkgInfo[pkg]))
+        if not etpUi['quiet']: print_info(brown(" * ")+red("Compressing: ")+darkgreen(pkgInfo[pkg]))
         resultfile = entropyTools.quickpkg(pkgdata = pkgData[pkg], dirpath = savedir)
         if resultfile == None:
-            if not quiet: print_error(darkred(" * ")+red("Error creating package for: ")+bold(pkgInfo[pkg])+darkred(". Cannot continue."))
+            if not etpUi['quiet']: print_error(darkred(" * ")+red("Error creating package for: ")+bold(pkgInfo[pkg])+darkred(". Cannot continue."))
             return 3
-        if not quiet: print_info(darkgreen("  * ")+red("Saved in: ")+resultfile)
+        if not etpUi['quiet']: print_info(darkgreen("  * ")+red("Saved in: ")+resultfile)
     return 0
 
 def CommonFlate(mytbz2s, action, savedir = None):

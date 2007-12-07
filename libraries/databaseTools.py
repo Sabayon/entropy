@@ -1239,15 +1239,11 @@ class etpDatabase:
     def addCompileFlags(self,chost,cflags,cxxflags):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addCompileFlags: adding Flags -> "+chost+"|"+cflags+"|"+cxxflags)
 
-        # escape
-        #echost = entropyTools.escape(chost)
-        #ecflags = entropyTools.escape(cflags)
-        #ecxxflags = entropyTools.escape(cxxflags)
-
 	self.cursor.execute(
 		'INSERT into flags VALUES '
 		'(NULL,?,?,?)', (chost,cflags,cxxflags,)
 	)
+        self.commitChanges()
 	# get info about inserted value and return
 	idflag = self.areCompileFlagsAvailable(chost,cflags,cxxflags)
 	if idflag != -1:
@@ -2379,12 +2375,7 @@ class etpDatabase:
     def areCompileFlagsAvailable(self,chost,cflags,cxxflags):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"areCompileFlagsAvailable: called.")
         
-        # escape
-        chost = entropyTools.escape(chost)
-        cflags = entropyTools.escape(cflags)
-        cxxflags = entropyTools.escape(cxxflags)
-        
-	self.cursor.execute('SELECT idflags FROM flags WHERE chost = "'+chost+'" AND cflags = "'+cflags+'" AND cxxflags = "'+cxxflags+'"')
+	self.cursor.execute('SELECT idflags FROM flags WHERE chost in (?) AND cflags in (?) AND cxxflags in (?)', (chost,cflags,cxxflags,))
         result = self.cursor.fetchone()
 	if not result:
 	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"areCompileFlagsAvailable: flags tuple "+chost+"|"+cflags+"|"+cxxflags+" not available.")
@@ -2410,10 +2401,10 @@ class etpDatabase:
     def searchTaggedPackages(self, tag, atoms = False): # atoms = return atoms directly
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchTaggedPackages: called for "+tag)
 	if atoms:
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE versiontag = "'+tag+'"')
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE versiontag in (?)', (tag,))
 	    return self.cursor.fetchall()
 	else:
-	    self.cursor.execute('SELECT idpackage FROM baseinfo WHERE versiontag = "'+tag+'"')
+	    self.cursor.execute('SELECT idpackage FROM baseinfo WHERE versiontag = in (?)', (tag,))
 	    return self.fetchall2set(self.cursor.fetchall())
 
     ''' search packages that need the specified library (in neededreference table) specified by keyword '''
@@ -2453,7 +2444,7 @@ class etpDatabase:
     def searchPackages(self, keyword, sensitive = False, slot = None, tag = None, branch = None):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackages: called for "+keyword)
 	
-	slotstring = ''
+        slotstring = ''
 	if slot:
 	    slotstring = ' and slot = "'+slot+'"'
 	tagstring = ''
@@ -2464,9 +2455,9 @@ class etpDatabase:
 	    branchstring = ' and branch = "'+branch+'"'
 	
 	if (sensitive):
-	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE atom LIKE "%'+keyword+'%"'+slotstring+tagstring+branchstring)
+	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE atom LIKE (?)'+slotstring+tagstring+branchstring, ("%"+keyword+"%",))
 	else:
-	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE LOWER(atom) LIKE "%'+keyword.lower()+'%"'+slotstring+tagstring+branchstring)
+	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE LOWER(atom) LIKE (?)'+slotstring+tagstring+branchstring, ("%"+keyword.lower()+"%",))
 	return self.cursor.fetchall()
 
     def searchProvide(self, keyword, slot = None, tag = None, branch = None):

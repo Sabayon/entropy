@@ -1,4 +1,5 @@
 TODO list:
+  - strengthen SQL queries
   - world: first fetch all, then upgrade
   - mirrors: one more and in random order
   - trigger: Regenerating cracklib dictionary
