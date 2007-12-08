@@ -679,6 +679,10 @@ def set_binutils_profile(profile):
    @output: returns int() as exit status
 '''
 def generate_icons_cache(cachedir):
+    if not etpConst['systemroot']:
+        myroot = "/"
+    else:
+        myroot = etpConst['systemroot']+"/"
     if os.access('/usr/bin/gtk-update-icon-cache',os.X_OK):
 	os.system('ROOT="'+myroot+'" /usr/bin/gtk-update-icon-cache -qf '+cachedir)
     return 0

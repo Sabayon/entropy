@@ -1117,7 +1117,8 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         dumpTools.dumpobj(etpCache['remove'],resume_cache)
         
         # unload dict
-        del etpRemovalTriggers[infoDict['removeatom']]
+        if not returnQueue:
+            del etpRemovalTriggers[infoDict['removeatom']]
     
     if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("All done."))
     
