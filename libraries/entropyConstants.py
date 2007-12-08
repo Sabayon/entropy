@@ -573,13 +573,8 @@ def initConfig_entropyConstants(rootdir):
         'packagemasking': {}, # package masking information dictionary filled by maskingparser.py
     
     }
-    for item in myConst:
-        if (type(myConst[item]) is set) or (type(myConst[item]) is dict):
-            etpConst[item] = myConst[item].copy()
-        else:
-            etpConst[item] = myConst[item]
+    etpConst.update(myConst)
     del myConst
-    
     
     # handle Entropy Version
     ETP_REVISION_FILE = "../libraries/revision"
