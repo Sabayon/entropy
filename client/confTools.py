@@ -27,6 +27,7 @@ from outputTools import *
 import entropyTools
 import dumpTools
 import equoTools
+import shutil
 
 # test if diff is installed
 difftest = entropyTools.spawnCommand("diff -v", redirect = "&> /dev/null")
@@ -64,7 +65,7 @@ def update():
 	scandata = scanfs(dcache = cache_status)
 	if (cache_status):
 	    for x in scandata:
-		print_info("("+blue(str(x))+") "+red(" file: ")+scandata[x]['destination'])
+		print_info("("+blue(str(x))+") "+red(" file: ")+etpConst['systemroot']+scandata[x]['destination'])
 	cache_status = True
 	
 	if (not scandata):
@@ -87,16 +88,16 @@ def update():
 	elif cmd in (-3,-5):
 	    # automerge files asking one by one
 	    for key in keys:
-		if not os.path.isfile(scandata[key]['source']):
+		if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
 		    scandata = removefromcache(scandata,key)
 		    continue
-		print_info(darkred("Configuration file: ")+darkgreen(scandata[key]['destination']))
+		print_info(darkred("Configuration file: ")+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
 		if cmd == -3:
 		    rc = entropyTools.askquestion(">>   Overwrite ?")
 		    if rc == "No":
 			continue
-		print_info(darkred("Moving ")+darkgreen(scandata[key]['source'])+darkred(" to ")+brown(scandata[key]['destination']))
-		os.rename(scandata[key]['source'],scandata[key]['destination'])
+		print_info(darkred("Moving ")+darkgreen(etpConst['systemroot']+scandata[key]['source'])+darkred(" to ")+brown(etpConst['systemroot']+scandata[key]['destination']))
+		shutil.move(etpConst['systemroot']+scandata[key]['source'],etpConst['systemroot']+scandata[key]['destination'])
 		# remove from cache
 		scandata = removefromcache(scandata,key)
 	    break
@@ -104,17 +105,17 @@ def update():
 	elif cmd in (-7,-9):
 	    for key in keys:
 		
-		if not os.path.isfile(scandata[key]['source']):
+		if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
 		    scandata = removefromcache(scandata,key)
 		    continue
-		print_info(darkred("Configuration file: ")+darkgreen(scandata[key]['destination']))
+		print_info(darkred("Configuration file: ")+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
 		if cmd == -7:
 		    rc = entropyTools.askquestion(">>   Discard ?")
 		    if rc == "No":
 			continue
-		print_info(darkred("Discarding ")+darkgreen(scandata[key]['source']))
+		print_info(darkred("Discarding ")+darkgreen(etpConst['systemroot']+scandata[key]['source']))
 		try:
-		    os.remove(scandata[key]['source'])
+		    os.remove(etpConst['systemroot']+scandata[key]['source'])
 		except:
 		    pass
 		scandata = removefromcache(scandata,key)
@@ -125,23 +126,23 @@ def update():
 	    if scandata.get(cmd):
 		
 		# do files exist?
-		if not os.path.isfile(scandata[cmd]['source']):
+		if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['source']):
 		    scandata = removefromcache(scandata,key)
 		    continue
-		if not os.path.isfile(scandata[cmd]['destination']):
-		    print_info(darkred("Automerging file: ")+darkgreen(scandata[cmd]['source']))
-		    os.rename(scandata[key]['source'],scandata[key]['destination'])
+		if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['destination']):
+		    print_info(darkred("Automerging file: ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+		    shutil.move(etpConst['systemroot']+scandata[key]['source'],etpConst['systemroot']+scandata[key]['destination'])
 		    scandata = removefromcache(scandata,key)
 		    continue
 		# end check
 		
-		diff = showdiff(scandata[cmd]['destination'],scandata[cmd]['source'])
+		diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],etpConst['systemroot']+scandata[cmd]['source'])
 		if (not diff):
-		    print_info(darkred("Automerging file ")+darkgreen(scandata[cmd]['source']))
-		    os.rename(scandata[cmd]['source'],scandata[cmd]['destination'])
+		    print_info(darkred("Automerging file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+		    shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
 		    scandata = removefromcache(scandata,key)
 		    continue
-	        print_info(darkred("Selected file: ")+darkgreen(scandata[cmd]['source']))
+	        print_info(darkred("Selected file: ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 
 		comeback = False
 		while 1:
@@ -157,16 +158,16 @@ def update():
 			comeback = True
 			break
 		    elif action == 1:
-			print_info(darkred("Replacing ")+darkgreen(scandata[cmd]['destination'])+darkred(" with ")+darkgreen(scandata[cmd]['source']))
-			os.rename(scandata[cmd]['source'],scandata[cmd]['destination'])
+			print_info(darkred("Replacing ")+darkgreen(etpConst['systemroot']+scandata[cmd]['destination'])+darkred(" with ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+			shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
 			scandata = removefromcache(scandata,cmd)
 			comeback = True
 			break
 		
 		    elif action == 2:
-			print_info(darkred("Deleting file ")+darkgreen(scandata[cmd]['source']))
+			print_info(darkred("Deleting file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 			try:
-			    os.remove(scandata[cmd]['source'])
+			    os.remove(etpConst['systemroot']+scandata[cmd]['source'])
 			except:
 			    pass
 			scandata = removefromcache(scandata,cmd)
@@ -174,28 +175,28 @@ def update():
 			break
 		
 		    elif action == 3:
-			print_info(darkred("Editing file ")+darkgreen(scandata[cmd]['source']))
+			print_info(darkred("Editing file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 			if os.getenv("EDITOR"):
-			    os.system("$EDITOR "+scandata[cmd]['source'])
+			    os.system("$EDITOR "+etpConst['systemroot']+scandata[cmd]['source'])
 			elif os.access("/bin/nano",os.X_OK):
-			    os.system("/bin/nano "+scandata[cmd]['source'])
+			    os.system("/bin/nano "+etpConst['systemroot']+scandata[cmd]['source'])
 			elif os.access("/bin/vi",os.X_OK):
-			    os.system("/bin/vi "+scandata[cmd]['source'])
+			    os.system("/bin/vi "+etpConst['systemroot']+scandata[cmd]['source'])
 			elif os.access("/usr/bin/vi",os.X_OK):
-			    os.system("/usr/bin/vi "+scandata[cmd]['source'])
+			    os.system("/usr/bin/vi "+etpConst['systemroot']+scandata[cmd]['source'])
 			elif os.access("/usr/bin/emacs",os.X_OK):
-			    os.system("/usr/bin/emacs "+scandata[cmd]['source'])
+			    os.system("/usr/bin/emacs "+etpConst['systemroot']+scandata[cmd]['source'])
 			elif os.access("/bin/emacs",os.X_OK):
-			    os.system("/bin/emacs "+scandata[cmd]['source'])
+			    os.system("/bin/emacs "+etpConst['systemroot']+scandata[cmd]['source'])
 			else:
 			    print_error(" Cannot find a suitable editor. Can't edit file directly.")
 			    comeback = True
 			    break
-			print_info(darkred("Edited file ")+darkgreen(scandata[cmd]['source'])+darkred(" - showing differencies:"))
-			diff = showdiff(scandata[cmd]['source'],scandata[cmd]['destination'])
+			print_info(darkred("Edited file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source'])+darkred(" - showing differencies:"))
+			diff = showdiff(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
 			if (not diff):
 			    print_info(darkred("Automerging file ")+darkgreen(scandata[cmd]['source']))
-			    os.rename(scandata[cmd]['source'],scandata[cmd]['destination'])
+			    shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
 			    scandata = removefromcache(scandata, cmd)
 			    comeback = True
 			    break
@@ -204,7 +205,7 @@ def update():
 
 		    elif action == 4:
 			# show diffs again
-			diff = showdiff(scandata[cmd]['source'],scandata[cmd]['destination'])
+			diff = showdiff(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
 			continue
 		
 		if (comeback):
@@ -324,9 +325,9 @@ def scanfs(dcache = True):
 		    
 		    mydict = generatedict(filepath)
 		    if mydict['automerge']:
-		        if (not etpUi['quiet']): print_info(darkred("Automerging file: ")+darkgreen(mydict['source']))
-			if os.path.isfile(mydict['source']):
-		            os.rename(mydict['source'],mydict['destination'])
+		        if (not etpUi['quiet']): print_info(darkred("Automerging file: ")+darkgreen(etpConst['systemroot']+mydict['source']))
+			if os.path.isfile(etpConst['systemroot']+mydict['source']):
+		            shutil.move(etpConst['systemroot']+mydict['source'],etpConst['systemroot']+mydict['destination'])
 			continue
 		    else:
 			counter += 1
@@ -353,7 +354,7 @@ def loadcache():
 	    try:
 		taint = False
 		for x in sd:
-		    if not os.path.isfile(sd[x]['source']):
+		    if not os.path.isfile(etpConst['systemroot']+sd[x]['source']):
 			taint = True
 			break
 		if (not taint):
@@ -380,8 +381,8 @@ def generatedict(filepath):
     tofilepath = currentdir+"/"+tofile
     mydict = {}
     mydict['revision'] = number
-    mydict['destination'] = tofilepath
-    mydict['source'] = filepath
+    mydict['destination'] = tofilepath[len(etpConst['systemroot']):]
+    mydict['source'] = filepath[len(etpConst['systemroot']):]
     mydict['automerge'] = False
     if not os.path.isfile(tofilepath):
         mydict['automerge'] = True
@@ -423,14 +424,14 @@ def addtocache(filepath):
     keys = scandata.keys()
     try:
 	for key in keys:
-	    if scandata[key]['source'] == filepath:
+	    if scandata[key]['source'] == filepath[len(etpConst['systemroot']):]:
 		del scandata[key]
     except:
 	pass
     # get next counter
     if keys:
         keys.sort()
-        index = keys[len(keys)-1]
+        index = keys[-1]
     else:
 	index = 0
     index += 1

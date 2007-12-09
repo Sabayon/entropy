@@ -1148,11 +1148,11 @@ def installPackage(infoDict):
 	
         for file in files:
 	    fromfile = currentdir+"/"+file
-	    todbfile = fromfile[len(imageDir):]
             tofile = etpConst['systemroot']+fromfile[len(imageDir):]
             #print tofile
 	    
 	    if etpConst['collisionprotect'] > 1:
+                todbfile = fromfile[len(imageDir):]
 		if clientDbconn.isFileAvailable(todbfile):
 		    print_warning(darkred("   ## ")+red("Collision found during install for ")+tofile+" - cannot overwrite")
     		    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! Collision found during install for "+tofile+" - cannot overwrite")
@@ -1227,7 +1227,7 @@ def installPackage(infoDict):
 	    
 	    if (protected):
 		# add to disk cache
-		confTools.addtocache(todbfile)
+		confTools.addtocache(tofile)
 
     # inject into database
     print_info(red("   ## ")+blue("Updating database with: ")+red(infoDict['atom']))
