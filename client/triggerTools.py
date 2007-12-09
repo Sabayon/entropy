@@ -586,14 +586,13 @@ def run_ldconfig(pkgdata):
     os.system("ldconfig -r "+myroot+" &> /dev/null")
 
 def env_update(pkgdata):
-    if not etpConst['systemroot']:
-        myroot = "/"
-    else:
-        myroot = etpConst['systemroot']+"/"
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running env-update")
-    if os.access("/usr/sbin/env-update",os.X_OK):
+    if os.access(etpConst['systemroot']+"/usr/sbin/env-update",os.X_OK):
         print_info(red("   ##")+brown(" Updating environment using env-update"))
-        os.system('ROOT="'+myroot+'" env-update --no-ldconfig &> /dev/null')
+        if etpConst['systemroot']:
+            os.system("echo 'env-update --no-ldconfig' | chroot "+etpConst['systemroot']+" &> /dev/null")
+        else:
+            os.system('env-update --no-ldconfig &> /dev/null')
 
 def add_java_config_2(pkgdata):
     vms = set()
@@ -904,6 +903,8 @@ def remove_boot_grub(kernel,initramfs):
 	f = open(etpConst['systemroot']+"/boot/grub/grub.conf","r")
 	grub_conf = f.readlines()
         grub_conf = entropyTools.listToUtf8(grub_conf)
+        # validate file encodings - damn what a crap
+        kernel, initramfs = entropyTools.listToUtf8([kernel,initramfs])
 	kernelname = os.path.basename(kernel)
 	new_conf = []
         found = False

@@ -1359,7 +1359,7 @@ def writeNewBranch(branch):
 
 # @pkgdata: etpData mapping dictionary (retrieved from db using getPackageData())
 # @dirpath: directory to save .tbz2
-def quickpkg(pkgdata,dirpath):
+def quickpkg(pkgdata,dirpath, edb = True):
 
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+str(pkgdata)+" | dirpath: "+dirpath)
     import stat
@@ -1421,16 +1421,17 @@ def quickpkg(pkgdata,dirpath):
             tbz2 = xpak.tbz2(dirpath)
             tbz2.recompose(dbdir)
 
-    # appending entropy metadata
-    dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
-    while os.path.isfile(dbpath):
+    if edb:
+        # appending entropy metadata
         dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
-    # create db
-    mydbconn = databaseTools.openGenericDatabase(dbpath)
-    mydbconn.initializeDatabase()
-    mydbconn.addPackage(pkgdata, revision = pkgdata['revision'])
-    mydbconn.closeDB()
-    aggregateEdb(tbz2file = dirpath, dbfile = dbpath)
+        while os.path.isfile(dbpath):
+            dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
+        # create db
+        mydbconn = databaseTools.openGenericDatabase(dbpath)
+        mydbconn.initializeDatabase()
+        mydbconn.addPackage(pkgdata, revision = pkgdata['revision'])
+        mydbconn.closeDB()
+        aggregateEdb(tbz2file = dirpath, dbfile = dbpath)
 
     if os.path.isfile(dirpath):
 	return dirpath

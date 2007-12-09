@@ -302,7 +302,11 @@ etpUi = {
     'ask': False,
     'pretend': False,
     'mute': False,
-    'nolog': False
+    'nolog': False,
+    'postinstall_triggers_disable': set(),
+    'postremove_triggers_disable': set(),
+    'preinstall_triggers_disable': set(),
+    'postremove_triggers_disable': set()
 }
 
 # static logging stuff

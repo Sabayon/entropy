@@ -1003,6 +1003,9 @@ def removePackage(infoDict):
                 os.lstat(etpConst['systemroot']+file)
             except OSError:
                 continue # skip file, does not exist
+            except UnicodeEncodeError:
+                print_warning(darkred("   ## ")+red("QA: ")+brown("this package contains a badly encoded file"))
+                continue # file has a really bad encoding
             
             if os.path.isdir(etpConst['systemroot']+file) and os.path.islink(etpConst['systemroot']+file): # S_ISDIR returns False for directory symlinks, so using os.path.isdir
                 # valid directory symlink
@@ -1545,7 +1548,8 @@ def stepExecutor(step, infoDict, loopString = None):
 	if pkgdata:
 	    triggers = triggerTools.postinstall(pkgdata)
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
-		eval("triggerTools."+trigger)(pkgdata)
+                if trigger not in etpUi['postinstall_triggers_disable']:
+                    eval("triggerTools."+trigger)(pkgdata)
 
     elif step == "preinstall":
 	# analyze atom
@@ -1553,7 +1557,8 @@ def stepExecutor(step, infoDict, loopString = None):
 	if pkgdata:
 	    triggers = triggerTools.preinstall(pkgdata)
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
-		eval("triggerTools."+trigger)(pkgdata)
+                if trigger not in etpUi['preinstall_triggers_disable']:
+                    eval("triggerTools."+trigger)(pkgdata)
 
     elif step == "preremove":
 	# analyze atom
@@ -1568,7 +1573,8 @@ def stepExecutor(step, infoDict, loopString = None):
 		    triggers.difference_update(itriggers)
 
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
-		eval("triggerTools."+trigger)(remdata)
+                if trigger not in etpUi['preremove_triggers_disable']:
+                    eval("triggerTools."+trigger)(remdata)
 
     elif step == "postremove":
 	# analyze atom
@@ -1583,7 +1589,8 @@ def stepExecutor(step, infoDict, loopString = None):
 		    triggers.difference_update(itriggers)
 	    
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
-		eval("triggerTools."+trigger)(remdata)
+                if trigger not in etpUi['postremove_triggers_disable']:
+                    eval("triggerTools."+trigger)(remdata)
     
     clientDbconn.closeDB()
     

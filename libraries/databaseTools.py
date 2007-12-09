@@ -116,9 +116,9 @@ def openServerDatabase(readOnly = True, noUpload = True):
    @description: open a generic client database and returns the pointer.
    @output: database pointer
 '''
-def openGenericDatabase(dbfile, dbname = None, xcache = False, indexing = True):
+def openGenericDatabase(dbfile, dbname = None, xcache = False, indexing = True, readOnly = False):
     if dbname == None: dbname = "generic"
-    conn = etpDatabase(readOnly = False, dbFile = dbfile, clientDatabase = True, dbname = dbname, xcache = xcache, indexing = indexing)
+    conn = etpDatabase(readOnly = readOnly, dbFile = dbfile, clientDatabase = True, dbname = dbname, xcache = xcache, indexing = indexing)
     return conn
 
 def backupClientDatabase():
@@ -2356,6 +2356,8 @@ class etpDatabase:
 
     def isLicenseAvailable(self,license):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLicenseAvailable: called.")
+        if not license: # workaround for packages without a license but just garbage
+            license = ' '
 	self.cursor.execute('SELECT idlicense FROM licenses WHERE license = "'+license+'"')
 	result = self.cursor.fetchone()
 	if not result:

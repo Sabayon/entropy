@@ -130,7 +130,7 @@ def sync(options, justTidy = False):
     
         print_info(green(" * ")+red("This is the list of files that would be removed from the mirrors: "))
         for file in removeList:
-	    print_info(green("\t* ")+yellow(file))
+	    print_info(green("\t* ")+brown(file))
 	
         # ask question
         if (not activatorRequestNoAsk):
@@ -155,14 +155,14 @@ def sync(options, justTidy = False):
 	            if (rc):
 		        print_info(green(" * ")+red("Package file: ")+bold(file)+red(" removed successfully from ")+bold(extractFTPHostFromUri(uri)))
 	            else:
-		        print_warning(yellow(" * ")+red("ATTENTION: remote file ")+bold(file)+red(" cannot be removed."))
+		        print_warning(brown(" * ")+red("ATTENTION: remote file ")+bold(file)+red(" cannot be removed."))
 	        # checksum
 	        if (ftp.isFileAvailable(file+etpConst['packageshashfileext'])):
 	            rc = ftp.deleteFile(file+etpConst['packageshashfileext'])
 	            if (rc):
 		        print_info(green(" * ")+red("Checksum file: ")+bold(file+etpConst['packageshashfileext'])+red(" removed successfully from ")+bold(extractFTPHostFromUri(uri)))
 	            else:
-		        print_warning(yellow(" * ")+red("ATTENTION: remote checksum file ")+bold(file)+red(" cannot be removed."))
+		        print_warning(brown(" * ")+red("ATTENTION: remote checksum file ")+bold(file)+red(" cannot be removed."))
 	        # remove locally
 	        if os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+file):
 		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+file)
@@ -194,7 +194,7 @@ def packages(options):
 
     if (options[0] == "sync"):
         
-	print_info(green(" * ")+red("Starting ")+bold("binary")+yellow(" packages")+red(" syncronization across servers ..."))
+	print_info(green(" * ")+red("Starting ")+bold("binary")+brown(" packages")+red(" syncronization across servers ..."))
 	
 	totalUris = len(etpConst['activatoruploaduris'])
 	currentUri = 0
@@ -207,7 +207,7 @@ def packages(options):
 	    uriSuccessfulSync = 0
 	    currentUri += 1
 	    try:
-	        print_info(green(" * ")+yellow("Working on ")+bold(extractFTPHostFromUri(uri)+red(" mirror.")))
+	        print_info(green(" * ")+brown("Working on ")+bold(extractFTPHostFromUri(uri)+red(" mirror.")))
 		
 		pkgbranches = os.listdir(etpConst['packagessuploaddir'])
 		pkgbranches = [x for x in pkgbranches if os.path.isdir(etpConst['packagessuploaddir']+"/"+x)]
@@ -215,7 +215,7 @@ def packages(options):
 		for mybranch in pkgbranches:
 
 		    print_info(red(" * ")+blue("Switching to branch: ")+bold(mybranch))
-	            print_info(green(" * ")+yellow("Local Statistics: "))
+	            print_info(green(" * ")+brown("Local Statistics: "))
 	            print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagessuploaddir']+"/"+mybranch)+red(" ..."), back = True)
 		
 	            uploadCounter = 0
@@ -242,7 +242,7 @@ def packages(options):
 		
 	            print_info(green(" * ")+red("Packages directory:\t")+bold(str(packageCounter))+red(" files ready."))
 	    
-	            print_info(green(" * ")+yellow("Fetching remote statistics..."), back = True)
+	            print_info(green(" * ")+brown("Fetching remote statistics..."), back = True)
 	            ftp = mirrorTools.handlerFTP(uri)
                     try:
                         ftp.setCWD(etpConst['binaryurirelativepath'])
@@ -266,7 +266,7 @@ def packages(options):
 	            remotePackagesInfo = ftp.getRoughList()
 	            ftp.closeConnection()
 
-	            print_info(green(" * ")+yellow("Remote statistics"))
+	            print_info(green(" * ")+brown("Remote statistics"))
 	            remoteCounter = 0
 	            for tbz2 in remotePackages:
 		        if tbz2.endswith(".tbz2"):
@@ -276,7 +276,7 @@ def packages(options):
 		
 	            print_info(green(" * ")+red("Remote packages:\t\t")+bold(str(remoteCounter))+red(" files stored."))
 
-	            print_info(green(" * ")+yellow("Calculating..."))
+	            print_info(green(" * ")+brown("Calculating..."))
 	            uploadQueue = set()
 	            downloadQueue = set()
 	            removalQueue = set()
@@ -391,7 +391,7 @@ def packages(options):
 	            totalDownloadSize = 0
 	            totalUploadSize = 0
 
-	            print_info(green(" * ")+yellow("Queue tasks:"))
+	            print_info(green(" * ")+brown("Queue tasks:"))
 	            detailedRemovalQueue = []
 	            detailedDownloadQueue = []
 	            detailedUploadQueue = []
@@ -415,7 +415,7 @@ def packages(options):
 			            break
 			    if not item.endswith(etpConst['packageshashfileext']): # do not show .md5 to upload
 		                totalDownloadSize += int(fileSize)
-		                print_info(bold("\t[") + yellow("REMOTE DOWNLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
+		                print_info(bold("\t[") + brown("REMOTE DOWNLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
 		            detailedDownloadQueue.append([item,fileSize])
 		        else:
 			    if (not item.endswith(etpConst['packageshashfileext'])):
@@ -450,10 +450,10 @@ def packages(options):
 			    uploadQueueLength += 1
 		
 	            print_info(red(" * ")+blue("Packages that would be ")+red("removed:\t\t\t")+bold(str(removalQueueLength)))
-	            print_info(red(" * ")+blue("Packages that would be ")+yellow("downloaded/moved locally:\t")+bold(str(downloadQueueLength)))
+	            print_info(red(" * ")+blue("Packages that would be ")+brown("downloaded/moved locally:\t")+bold(str(downloadQueueLength)))
 	            print_info(red(" * ")+blue("Packages that would be ")+green("uploaded:\t\t\t")+bold(str(uploadQueueLength)))
 	            print_info(red(" * ")+blue("Total removal ")+red("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalRemovalSize))))
-	            print_info(red(" * ")+blue("Total download ")+yellow("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalDownloadSize))))
+	            print_info(red(" * ")+blue("Total download ")+brown("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalDownloadSize))))
 	            print_info(red(" * ")+blue("Total upload ")+green("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalUploadSize))))
 	    
 	            if (etpUi['pretend']):
@@ -528,7 +528,7 @@ def packages(options):
 					        print_info("    "+red("   -> Package ")+bold(item[0])+red(" has been uploaded correctly."))
 					        ckOk = True
 					    else:
-					        print_warning("    "+red("   -> Package ")+bold(item[0])+yellow(" has NOT been uploaded correctly. Reuploading..."))
+					        print_warning("    "+red("   -> Package ")+bold(item[0])+brown(" has NOT been uploaded correctly. Reuploading..."))
 				        else:
 					    # hum, what the hell is this checksum!?!?!?!
 					    print_warning("    "+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum: "+str(ck)+". Reuploading..."))
@@ -561,7 +561,7 @@ def packages(options):
 					        print_info("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" has been uploaded correctly."))
 					        ckOk = True
 					    else:
-					        print_warning("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+yellow(" has NOT been uploaded correctly. Reuploading..."))
+					        print_warning("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+brown(" has NOT been uploaded correctly. Reuploading..."))
 				        else:
 					    # hum, what the hell is this checksum!?!?!?!
 					    print_warning("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" does not have a proper checksum: "+str(ck)+" Reuploading..."))
@@ -618,7 +618,7 @@ def packages(options):
 					            print_info(counterInfo+red("   -> Package ")+bold(item[0])+red(" has been downloaded correctly."))
 					            ckOk = True
 					        else:
-					            print_warning(counterInfo+red("   -> Package ")+bold(item[0])+yellow(" has NOT been downloaded correctly. Redownloading..."))
+					            print_warning(counterInfo+red("   -> Package ")+bold(item[0])+brown(" has NOT been downloaded correctly. Redownloading..."))
 				            else:
 					        # hum, what the hell is this checksum!?!?!?!
 					        print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum: "+str(ck)+" Redownloading..."))
@@ -643,7 +643,7 @@ def packages(options):
 	    # trap exceptions, failed to upload/download someting?
 	    except Exception, e: # FIXME: only trap proper ftp exceptions
 		
-		print_error(yellow(" * ")+red("packages: Exception caught: ")+str(e)+red(" . Showing traceback:"))
+		print_error(brown(" * ")+red("packages: Exception caught: ")+str(e)+red(" . Showing traceback:"))
 		import traceback
 		traceback.print_exc()
 		
@@ -655,7 +655,7 @@ def packages(options):
 		activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: cannot properly syncronize "+extractFTPHostFromUri(uri)+". Trying to continue if possible.")
 		
 		# print warning cannot sync uri
-		print_warning(yellow(" * ")+red("ATTENTION: cannot properly syncronize ")+bold(extractFTPHostFromUri(uri))+red(". Continuing if possible..."))
+		print_warning(brown(" * ")+red("ATTENTION: cannot properly syncronize ")+bold(extractFTPHostFromUri(uri))+red(". Continuing if possible..."))
 		
 		# decide what to do
 		if (totalSuccessfulUri > 0) or (etpUi['pretend']):
@@ -671,7 +671,7 @@ def packages(options):
 			# no mirrors were synced properly
 			# show error and return, do not move files from the upload dir
 			activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: no mirrors have been properly syncronized. Check network status and retry. Cannot continue.")
-			print_error(yellow(" * ")+red("ERROR: no mirrors have been properly syncronized. Check network status and retry. Cannot continue."))
+			print_error(brown(" * ")+red("ERROR: no mirrors have been properly syncronized. Check network status and retry. Cannot continue."))
 			return False
 
 
@@ -750,7 +750,7 @@ def database(options):
 
     # lock status tool
     elif (options[0] == "lock-status"):
-	print_info(yellow(" * ")+green("Mirrors status table:"))
+	print_info(brown(" * ")+green("Mirrors status table:"))
 	dbstatus = getMirrorsLock()
 	for db in dbstatus:
 	    if (db[1]):
@@ -761,7 +761,7 @@ def database(options):
 	        db[2] = red("Locked")
 	    else:
 	        db[2] = green("Unlocked")
-	    print_info(bold("\t"+extractFTPHostFromUri(db[0])+": ")+red("[")+yellow("DATABASE: ")+db[1]+red("] [")+yellow("DOWNLOAD: ")+db[2]+red("]"))
+	    print_info(bold("\t"+extractFTPHostFromUri(db[0])+": ")+red("[")+brown("DATABASE: ")+db[1]+red("] [")+brown("DOWNLOAD: ")+db[2]+red("]"))
 
     # database sync tool
     elif (options[0] == "sync"):
@@ -1039,7 +1039,7 @@ def uploadDatabase(uris):
 	if (rc == True):
 	    print_info(green(" * ")+red("Upload of ")+bold(etpConst[cmethod[2]])+red(" completed."))
 	else:
-	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+	    print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 	
 	# remove the compressed file
 	os.remove(etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[2]])
@@ -1059,7 +1059,7 @@ def uploadDatabase(uris):
 	    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'])+red(" completed."))
 	else:
 	    entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"uploadDatabase: uploading to: "+extractFTPHostFromUri(uri)+" UNSUCCESSFUL! ERROR!.")
-	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+	    print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 	
 	# uploading revision file
 	print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" ..."), back = True)
@@ -1067,7 +1067,7 @@ def uploadDatabase(uris):
 	if (rc == True):
 	    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" completed."))
 	else:
-	    print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+	    print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 	
 	# uploading rss file (if enabled)
         if etpConst['rss-feed'] and os.path.isfile(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name']):
@@ -1076,7 +1076,7 @@ def uploadDatabase(uris):
             if (rc == True):
                 print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'])+red(" completed."))
             else:
-                print_warning(yellow(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+                print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
         
 	# close connection
 	ftp.closeConnection()
@@ -1108,7 +1108,7 @@ def downloadDatabase(uri):
     if (rc == True):
 	print_info(green(" * ")+red("Download of ")+bold(dbfilename)+red(" completed."))
     else:
-	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+	print_warning(brown(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 
     # On the fly decompression
     print_info(green(" * ")+red("Decompressing ")+bold(dbfilename)+red(" ..."), back = True)
@@ -1124,7 +1124,7 @@ def downloadDatabase(uri):
     if (rc == True):
 	print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabaserevisionfile'])+red(" completed."))
     else:
-	print_warning(yellow(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+	print_warning(brown(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
     
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: downloading digest file for "+extractFTPHostFromUri(uri))
     # downlading digest -> FIXME: add digest comparation
@@ -1134,7 +1134,7 @@ def downloadDatabase(uri):
 	print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabasehashfile'])+red(" completed."))
     else:
 	entropyLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: Cannot properly download from "+extractFTPHostFromUri(uri)+". Please check.")
-	print_warning(yellow(" * ")+red("Cannot properly download from ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+	print_warning(brown(" * ")+red("Cannot properly download from ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 
     # download RSS
     if etpConst['rss-feed']:
@@ -1147,9 +1147,9 @@ def downloadDatabase(uri):
                 print_info(green(" * ")+red("Download of ")+bold(etpConst['rss-name'])+red(" completed."))
             else:
                 entropyLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: Cannot properly download from "+extractFTPHostFromUri(uri)+". Please check.")
-                print_warning(yellow(" * ")+red("Cannot properly download from ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+                print_warning(brown(" * ")+red("Cannot properly download from ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
         except:
-            print_warning(yellow(" * ")+red("Cannot properly download RSS file: "+etpConst['rss-name']+" for: ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+            print_warning(brown(" * ")+red("Cannot properly download RSS file: "+etpConst['rss-name']+" for: ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
 
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: do some tidy.")
     try:
@@ -1231,12 +1231,12 @@ def downloadPackageFromMirror(uri,pkgfile,branch):
         ftp = mirrorTools.handlerFTP(uri)
         ftp.setCWD(etpConst['binaryurirelativepath']+"/"+branch)
         # get the files
-        print_info(red("  * Downloading ")+yellow(pkgfile)+red(" from ")+bold(extractFTPHostFromUri(uri)))
+        print_info(red("  * Downloading ")+brown(pkgfile)+red(" from ")+bold(extractFTPHostFromUri(uri)))
         rc = ftp.downloadFile(pkgfile,etpConst['packagesbindir']+"/"+branch)
 	if (rc is None):
 	    entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+str(tries)+"/"+str(maxtries)+") Error. File not found. -> "+pkgfile)
 	    # file does not exist
-	    print_warning(red("  * File ")+yellow(pkgfile)+red(" does not exist remotely on ")+bold(extractFTPHostFromUri(uri)))
+	    print_warning(red("  * File ")+brown(pkgfile)+red(" does not exist remotely on ")+bold(extractFTPHostFromUri(uri)))
 	    ftp.closeConnection()
 	    return None
 	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+str(tries)+"/"+str(maxtries)+") checking md5 for -> "+pkgfile)
@@ -1245,19 +1245,19 @@ def downloadPackageFromMirror(uri,pkgfile,branch):
 	idpackage = dbconn.getIDPackageFromFileInBranch(pkgfile,branch)
 	storedmd5 = dbconn.retrieveDigest(idpackage)
 	dbconn.closeDB()
-	print_info(red("  * Checking MD5 of ")+yellow(pkgfile)+red(": should be ")+bold(storedmd5), back = True)
+	print_info(red("  * Checking MD5 of ")+brown(pkgfile)+red(": should be ")+bold(storedmd5), back = True)
 	md5check = compareMd5(etpConst['packagesbindir']+"/"+branch+"/"+pkgfile,storedmd5)
 	if (md5check):
-	    print_info(red("  * Package ")+yellow(pkgfile)+red("downloaded successfully."))
+	    print_info(red("  * Package ")+brown(pkgfile)+red("downloaded successfully."))
 	    return True
 	else:
 	    if (tries == maxtries):
 		entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: Max tries limit reached. Checksum does not match. Please consider to download or repackage again. Giving up.")
-		print_warning(red("  * Package ")+yellow(pkgfile)+red(" checksum does not match. Please consider to download or repackage again. Giving up."))
+		print_warning(red("  * Package ")+brown(pkgfile)+red(" checksum does not match. Please consider to download or repackage again. Giving up."))
 		return False
 	    else:
 		entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: Checksum does not match. Trying to download it again...")
-		print_warning(red("  * Package ")+yellow(pkgfile)+red(" checksum does not match. Trying to download it again..."))
+		print_warning(red("  * Package ")+brown(pkgfile)+red(" checksum does not match. Trying to download it again..."))
 		tries += 1
 		if os.path.isfile(etpConst['packagesbindir']+"/"+branch+"/"+pkgfile):
 		    os.remove(etpConst['packagesbindir']+"/"+branch+"/"+pkgfile)
@@ -1274,9 +1274,9 @@ def lockDatabases(lock = True, mirrorList = []):
 	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"lockDatabases: locking? "+str(lock)+" for: "+extractFTPHostFromUri(uri))
 	
 	if (lock):
-	    print_info(yellow(" * ")+red("Locking ")+bold(extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
+	    print_info(brown(" * ")+red("Locking ")+bold(extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
 	else:
-	    print_info(yellow(" * ")+red("Unlocking ")+bold(extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
+	    print_info(brown(" * ")+red("Unlocking ")+bold(extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
 	ftp = mirrorTools.handlerFTP(uri)
 	# upload the lock file to database/%ARCH% directory
 	ftp.setCWD(etpConst['etpurirelativepath'])
@@ -1334,10 +1334,10 @@ def downloadLockDatabases(lock = True, mirrorList = []):
     for uri in mirrorList:
 	if (lock):
 	    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadLockDatabases: download locking -> "+extractFTPHostFromUri(uri))
-	    print_info(yellow(" * ")+red("Locking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
+	    print_info(brown(" * ")+red("Locking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
 	else:
 	    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadLockDatabases: download unlocking -> "+extractFTPHostFromUri(uri))
-	    print_info(yellow(" * ")+red("Unlocking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
+	    print_info(brown(" * ")+red("Unlocking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
 	ftp = mirrorTools.handlerFTP(uri)
 	# upload the lock file to database/%ARCH% directory
 	ftp.setCWD(etpConst['etpurirelativepath'])

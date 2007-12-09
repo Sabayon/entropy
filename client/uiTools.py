@@ -56,6 +56,7 @@ def package(options):
     equoRequestResume = False
     equoRequestSkipfirst = False
     equoRequestUpgradeTo = None
+    equoRequestListfiles = False
     rc = 0
     _myopts = []
     mytbz2paths = []
@@ -68,6 +69,8 @@ def package(options):
 	    equoRequestOnlyFetch = True
 	elif (opt == "--deep"):
 	    equoRequestDeep = True
+	elif (opt == "--listfiles"):
+	    equoRequestListfiles = True
 	elif (opt == "--configfiles"):
 	    equoRequestConfigFiles = True
 	elif (opt == "--replay"):
@@ -93,7 +96,7 @@ def package(options):
 	rc, garbage = dependenciesTest()
 
     elif (options[0] == "libtest"):
-	rc, garbage = librariesTest()
+	rc, garbage = librariesTest(listfiles = equoRequestListfiles)
 
     elif (options[0] == "install"):
 	if (myopts) or (mytbz2paths) or (equoRequestResume):
@@ -1223,7 +1226,11 @@ def dependenciesTest(clientDbconn = None, reagent = False):
         clientDbconn.closeDB()
     return 0,packagesNeeded
 
-def librariesTest(clientDbconn = None, reagent = False):
+def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
+    
+    qstat = etpUi['quiet']
+    if listfiles:
+        etpUi['quiet'] = True
     
     import sys
     if (not etpUi['quiet']):
@@ -1324,6 +1331,12 @@ def librariesTest(clientDbconn = None, reagent = False):
                         packagesMatched.add((idpackage,repodata[1],lib))
         brokenlibs.difference_update(libsfound)
         dbconn.closeDB()
+
+    if listfiles:
+        etpUi['quiet'] = qstat
+        for x in brokenlibs:
+            print x
+        return 0,0
 
     if (not brokenlibs) and (not packagesMatched):
         if not etpUi['quiet']: print_info(red(" @@ ")+blue("System is healthy."))

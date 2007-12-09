@@ -49,7 +49,7 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
 	print_warning(package+" does not exist !")
 
     packagename = os.path.basename(package)
-    print_info(yellow(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
+    print_info(brown(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
     mydata = extractPkgData(package, enzymeRequestBranch)
     
     if dbconnection is None:
@@ -117,7 +117,7 @@ def update(options):
         dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
 	
 	if (not reagentRequestRepackage):
-            print_info(yellow(" * ")+red("Scanning database for differences..."))
+            print_info(brown(" * ")+red("Scanning database for differences..."))
             from portageTools import getInstalledPackagesCounters, quickpkg, getPackageSlot
             installedPackages = getInstalledPackagesCounters()
             installedCounters = set()
@@ -163,15 +163,15 @@ def update(options):
 	                toBeRemoved.add(x[1])
 
             if (not toBeRemoved) and (not toBeAdded):
-	        print_info(yellow(" * ")+red("Nothing to do, check later."))
+	        print_info(brown(" * ")+red("Nothing to do, check later."))
 	        # then exit gracefully
 	        return 0
 
             if (toBeRemoved):
-	        print_info(yellow(" @@ ")+blue("These are the packages that would be removed from the database:"))
+	        print_info(brown(" @@ ")+blue("These are the packages that would be removed from the database:"))
 	        for x in toBeRemoved:
 	            atom = dbconn.retrieveAtom(x)
-	            print_info(yellow("    # ")+red(atom))
+	            print_info(brown("    # ")+red(atom))
                 if reagentRequestAsk:
                     rc = askquestion(">>   Would you like to remove them now ?")
                 else:
@@ -180,15 +180,15 @@ def update(options):
 	            rwdbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
 	            for x in toBeRemoved:
 		        atom = rwdbconn.retrieveAtom(x)
-		        print_info(yellow(" @@ ")+blue("Removing from database: ")+red(atom), back = True)
+		        print_info(brown(" @@ ")+blue("Removing from database: ")+red(atom), back = True)
 		        rwdbconn.removePackage(x)
 	            rwdbconn.closeDB()
-	            print_info(yellow(" @@ ")+blue("Database removal complete."))
+	            print_info(brown(" @@ ")+blue("Database removal complete."))
 
             if (toBeAdded):
-	        print_info(yellow(" @@ ")+blue("These are the packages that would be added/updated to the add list:"))
+	        print_info(brown(" @@ ")+blue("These are the packages that would be added/updated to the add list:"))
 	        for x in toBeAdded:
-	            print_info(yellow("    # ")+red(x[0]))
+	            print_info(brown("    # ")+red(x[0]))
                 if reagentRequestAsk:
 	            rc = askquestion(">>   Would you like to package them now ?")
                     if rc == "No":
@@ -196,7 +196,7 @@ def update(options):
 
 	else:
 	    if not repackageItems:
-	        print_info(yellow(" * ")+red("Nothing to do, check later."))
+	        print_info(brown(" * ")+red("Nothing to do, check later."))
 	        # then exit gracefully
 	        return 0
 	    
@@ -217,16 +217,16 @@ def update(options):
 		        packages.append([cat+"/"+name+"-"+version,0])
 	    
 	    if not packages:
-	        print_info(yellow(" * ")+red("Nothing to do, check later."))
+	        print_info(brown(" * ")+red("Nothing to do, check later."))
 	        # then exit gracefully
 	        return 0
 	    
 	    toBeAdded = packages
 
         # package them
-        print_info(yellow(" @@ ")+blue("Compressing packages..."))
+        print_info(brown(" @@ ")+blue("Compressing packages..."))
         for x in toBeAdded:
-	    print_info(yellow("    # ")+red(x[0]+"..."))
+	    print_info(brown("    # ")+red(x[0]+"..."))
 	    rc = quickpkg(x[0],etpConst['packagesstoredir'])
 	    if (rc is None):
 	        reagentLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"update: "+str(dep)+" -> quickpkg error. Cannot continue.")
@@ -254,7 +254,7 @@ def update(options):
 	totalCounter += 1
 
     if (totalCounter == 0):
-	print_info(yellow(" * ")+red("Nothing to do, check later."))
+	print_info(brown(" * ")+red("Nothing to do, check later."))
 	# then exit gracefully
 	return 0
 
@@ -285,7 +285,7 @@ def update(options):
             dbconn.setDownloadURL(idpk,downloadurl)
             
             shutil.move(tbz2path,etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+downloadfile)
-	    print_info(yellow(" * ")+red("Injecting database information into ")+bold(downloadfile)+red(", please wait..."), back = True)
+	    print_info(brown(" * ")+red("Injecting database information into ")+bold(downloadfile)+red(", please wait..."), back = True)
             
             dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
             while os.path.isfile(dbpath):
@@ -306,7 +306,7 @@ def update(options):
 	    hashFilePath = createHashFile(etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+downloadfile)
 	    # remove garbage
 	    os.remove(dbpath)
-	    print_info(yellow(" * ")+red("Database injection complete for ")+downloadfile)
+	    print_info(brown(" * ")+red("Database injection complete for ")+downloadfile)
 	    
 	else:
 	    etpNotCreated += 1
@@ -320,7 +320,7 @@ def update(options):
     
     dbconn.closeDB()
 
-    print_info(green(" * ")+red("Statistics: ")+blue("Entries created/updated: ")+bold(str(etpCreated))+yellow(" - ")+darkblue("Entries discarded: ")+bold(str(etpNotCreated)))
+    print_info(green(" * ")+red("Statistics: ")+blue("Entries created/updated: ")+bold(str(etpCreated))+brown(" - ")+darkblue("Entries discarded: ")+bold(str(etpNotCreated)))
     return 0
 
 
@@ -369,7 +369,7 @@ def database(options):
     options = _options
 
     if len(options) == 0:
-	print_error(yellow(" * ")+red("Not enough parameters"))
+	print_error(brown(" * ")+red("Not enough parameters"))
 	return 1
 
     if (options[0] == "--initialize"):
@@ -465,10 +465,10 @@ def database(options):
     elif (options[0] == "search"):
 	mykeywords = options[1:]
 	if (len(mykeywords) == 0):
-	    print_error(yellow(" * ")+red("Not enough parameters"))
+	    print_error(brown(" * ")+red("Not enough parameters"))
 	    return 2
 	if (not os.path.isfile(etpConst['etpdatabasefilepath'])):
-	    print_error(yellow(" * ")+red("Entropy Datbase does not exist"))
+	    print_error(brown(" * ")+red("Entropy Datbase does not exist"))
 	    return 3
 	
 	# search tool
@@ -496,7 +496,7 @@ def database(options):
 	
         mypath = options[1:]
 	if len(mypath) == 0:
-	    print_error(yellow(" * ")+red("Not enough parameters"))
+	    print_error(brown(" * ")+red("Not enough parameters"))
 	    return 4
 	if (os.path.dirname(mypath[0]) != '') and (not os.path.isdir(os.path.dirname(mypath[0]))):
 	    print_error(green(" * ")+red("Supplied directory does not exist."))
@@ -520,7 +520,7 @@ def database(options):
     elif (options[0] == "switchbranch"):
 	
 	if (len(options) < 2):
-	    print_error(yellow(" * ")+red("Not enough parameters"))
+	    print_error(brown(" * ")+red("Not enough parameters"))
 	    return 6
 
 	switchbranch = options[1]
@@ -528,7 +528,7 @@ def database(options):
 
 	myatoms = options[2:]
 	if not myatoms:
-	    print_error(yellow(" * ")+red("Not enough parameters"))
+	    print_error(brown(" * ")+red("Not enough parameters"))
 	    return 7
 	
 	dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
@@ -541,14 +541,14 @@ def database(options):
 		# validate atom
 		match = dbconn.atomMatch(atom)
 		if match == -1:
-		    print_warning(yellow(" * ")+red("Cannot match: ")+bold(atom))
+		    print_warning(brown(" * ")+red("Cannot match: ")+bold(atom))
 		else:
 		    pkglist.add(match[0])
 	
 	# check if atoms were found
 	if not pkglist:
 	    print
-	    print_error(yellow(" * ")+red("No packages found."))
+	    print_error(brown(" * ")+red("No packages found."))
 	    return 8
 	
 	# show what would be done
@@ -636,7 +636,7 @@ def database(options):
 	myopts = _myopts
 	
 	if len(myopts) == 0:
-	    print_error(yellow(" * ")+red("Not enough parameters"))
+	    print_error(brown(" * ")+red("Not enough parameters"))
 	    return 10
 
 	pkglist = set()
@@ -654,7 +654,7 @@ def database(options):
 	if not pkglist:
 	    print
 	    dbconn.closeDB()
-	    print_error(yellow(" * ")+red("No packages found."))
+	    print_error(brown(" * ")+red("No packages found."))
 	    return 11
 	
 	print_info(green(" * ")+red("These are the packages that would be removed from the database:"))
@@ -739,7 +739,7 @@ def database(options):
 	    elif (os.path.isfile(etpConst['packagessuploaddir']+"/"+pkgbranch+"/"+pkgfile)):
 		if (not worldSelected): print_info(green("   - [RUN ACTIVATOR] ")+darkred(pkgatom)+" -> "+bold(pkgfile))
 	    else:
-		if (not worldSelected): print_info(green("   - [MUST DOWNLOAD] ")+yellow(pkgatom)+" -> "+bold(pkgfile))
+		if (not worldSelected): print_info(green("   - [MUST DOWNLOAD] ")+brown(pkgatom)+" -> "+bold(pkgfile))
 		toBeDownloaded.append([idpackage,pkgfile,pkgbranch])
 	
 	if (not databaseRequestNoAsk):
@@ -775,7 +775,7 @@ def database(options):
 		print_warning(red("   These are the packages that cannot be found online:"))
 		for i in notDownloadedPackages:
 		    pkgDownloadedError += 1
-		    print_warning(red("    * ")+yellow(i[0])+" in "+blue(i[1]))
+		    print_warning(red("    * ")+brown(i[0])+" in "+blue(i[1]))
 		print_warning(red("   They won't be checked."))
 	
 	brokenPkgsList = []
@@ -786,16 +786,16 @@ def database(options):
 	    pkgfile = dbconn.retrieveDownloadURL(pkg)
 	    pkgbranch = dbconn.retrieveBranch(pkg)
 	    pkgfile = os.path.basename(pkgfile)
-	    print_info("  ("+red(str(currentcounter))+"/"+blue(totalcounter)+") "+red("Checking hash of ")+yellow(pkgfile)+red(" in branch: ")+blue(pkgbranch)+red(" ..."), back = True)
+	    print_info("  ("+red(str(currentcounter))+"/"+blue(totalcounter)+") "+red("Checking hash of ")+brown(pkgfile)+red(" in branch: ")+blue(pkgbranch)+red(" ..."), back = True)
 	    storedmd5 = dbconn.retrieveDigest(pkg)
 	    result = compareMd5(etpConst['packagesbindir']+"/"+pkgbranch+"/"+pkgfile,storedmd5)
 	    if (result):
 		# match !
 		pkgMatch += 1
-		#print_info(red("   Package ")+yellow(pkg)+green(" is healthy. Checksum: ")+yellow(storedmd5), back = True)
+		#print_info(red("   Package ")+brown(pkg)+green(" is healthy. Checksum: ")+brown(storedmd5), back = True)
 	    else:
 		pkgNotMatch += 1
-		print_error(red("   Package ")+yellow(pkgfile)+red(" in branch: ")+blue(pkgbranch)+red(" is _NOT_ healthy !!!! Stored checksum: ")+yellow(storedmd5))
+		print_error(red("   Package ")+brown(pkgfile)+red(" in branch: ")+blue(pkgbranch)+red(" is _NOT_ healthy !!!! Stored checksum: ")+brown(storedmd5))
 		brokenPkgsList.append([pkgfile,pkgbranch])
 
 	dbconn.closeDB()
@@ -807,7 +807,7 @@ def database(options):
 
 	# print stats
 	print_info(blue(" *  Statistics: "))
-	print_info(yellow("     Number of checked packages:\t\t")+str(pkgMatch+pkgNotMatch))
+	print_info(brown("     Number of checked packages:\t\t")+str(pkgMatch+pkgNotMatch))
 	print_info(green("     Number of healthy packages:\t\t")+str(pkgMatch))
 	print_info(red("     Number of broken packages:\t\t")+str(pkgNotMatch))
 	if (pkgDownloadedSuccessfully > 0) or (pkgDownloadedError > 0):
@@ -871,7 +871,7 @@ def database(options):
             pkgMatch = 0
             pkgNotMatch = 0
             currentcounter = 0
-            print_info(green(" * ")+yellow("Working on ")+bold(extractFTPHostFromUri(uri)+red(" mirror.")))
+            print_info(green(" * ")+brown("Working on ")+bold(extractFTPHostFromUri(uri)+red(" mirror.")))
             brokenPkgsList = []
             totalcounter = str(len(pkgs2check))
 
@@ -907,7 +907,7 @@ def database(options):
 
             # print stats
             print_info(blue(" *  Statistics for "+extractFTPHostFromUri(uri)+":"))
-            print_info(yellow("     Number of checked packages:\t\t")+str(pkgMatch+pkgNotMatch))
+            print_info(brown("     Number of checked packages:\t\t")+str(pkgMatch+pkgNotMatch))
             print_info(green("     Number of healthy packages:\t\t")+str(pkgMatch))
             print_info(red("     Number of broken packages:\t\t")+str(pkgNotMatch))
 

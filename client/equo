@@ -77,6 +77,7 @@ def print_help():
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
     print_info(" \t"+blue("libtest")+brown("\t\t look for missing libraries"))
+    print_info(" \t\t"+red("--listfiles")+"\t\t\t print broken files to stdout")
     print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
