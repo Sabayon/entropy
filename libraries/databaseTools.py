@@ -157,6 +157,7 @@ class etpDatabase:
 	self.xcache = xcache
 	self.dbname = dbname
         self.indexing = indexing
+        self.dbFile = dbFile
 	
 	# caching dictionaries
 	if (self.xcache) and (dbname != 'etpdb') and (os.getuid() == 0):
@@ -2087,7 +2088,7 @@ class etpDatabase:
 	'''
 	return sources
 
-    def retrieveContent(self, idpackage, extended = False):
+    def retrieveContent(self, idpackage, extended = False, contentType = None):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveContent: retrieving Content for package ID "+str(idpackage))
 
         self.createContentIndex() # FIXME: remove this with 1.0
@@ -2095,13 +2096,17 @@ class etpDatabase:
         extstring = ''
         if extended:
             extstring = ",type"
+        
+        contentstring = ''
+        if contentType:
+            contentstring = ' and type = "'+str(contentType)+'"'
 
         try:
-            self.cursor.execute('SELECT file'+extstring+' FROM content WHERE idpackage = "'+str(idpackage)+'"')
+            self.cursor.execute('SELECT file'+extstring+' FROM content WHERE idpackage = "'+str(idpackage)+'"'+contentstring)
         except:
             if extended:
                 self.createContentTypeColumn()
-                self.cursor.execute('SELECT file'+extstring+' FROM content WHERE idpackage = "'+str(idpackage)+'"')
+                self.cursor.execute('SELECT file'+extstring+' FROM content WHERE idpackage = "'+str(idpackage)+'"'+contentstring)
             else:
                 raise
         if extended:
@@ -2256,16 +2261,25 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isProtectAvailable: "+protect+" available.")
 	return result[0]
 
-    def isFileAvailable(self,file):
+    def isFileAvailable(self, file, extended = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isFileAvailable: called.")
         self.createContentIndex() # FIXME: remove this with 1.0
-	self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
+        if extended:
+            self.cursor.execute('SELECT * FROM content WHERE file = "'+file+'"')
+        else:
+            self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
 	result = self.cursor.fetchone()
 	if not result:
 	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isFileAvailable: "+file+" not available.")
-	    return False
+            if extended:
+                return False,()
+            else:
+                return False
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isFileAvailable: "+file+" available.")
-	return True
+        if extended:
+            return True,result
+        else:
+            return True
 
     def isSourceAvailable(self,source):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSourceAvailable: called.")

@@ -68,7 +68,7 @@ class LogFile:
         self.level = level
 
     def log(self, messagetype, level, message):
-        if self.level >= level:
+        if self.level >= level and not etpUi['nolog']:
             self.handler(self.getTimeDateHeader()+messagetype+' '+self.header+' '+message)
 
     def getTimeDateHeader(self):
@@ -86,4 +86,4 @@ class LogFile:
         if self.level >= level:
             self.handler("-+ %s \t%s" % (file, message))
 
-log = LogFile()
+#log = LogFile()

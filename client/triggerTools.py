@@ -352,7 +352,7 @@ def sqliteinst(pkgdata):
 def initdisable(pkgdata):
     for file in pkgdata['removecontent']:
         file = etpConst['systemroot']+file
-	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(etpConst['systemroot']+file):
+	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(file):
 	    # running?
 	    running = os.path.isfile(etpConst['systemroot']+INITSERVICES_DIR+'/started/'+os.path.basename(file))
             if not etpConst['systemroot']:
@@ -366,13 +366,13 @@ def initinform(pkgdata):
     for file in pkgdata['content']:
         file = etpConst['systemroot']+file
 	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and not os.path.isfile(etpConst['systemroot']+file):
-            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+etpConst['systemroot']+file)
-	    print_info(red("   ##")+brown(" A new service will be installed: ")+etpConst['systemroot']+file)
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+file)
+	    print_info(red("   ##")+brown(" A new service will be installed: ")+file)
 
 def removeinit(pkgdata):
     for file in pkgdata['removecontent']:
         file = etpConst['systemroot']+file
-	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(etpConst['systemroot']+file):
+	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(file):
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Removing boot service: "+os.path.basename(file))
 	    print_info(red("   ##")+brown(" Removing boot service: ")+os.path.basename(file))
             if not etpConst['systemroot']:
@@ -653,12 +653,14 @@ def setup_font_cache(fontdir):
    @output: returns int() as exit status
 '''
 def set_gcc_profile(profile):
-    if not etpConst['systemroot']:
-        myroot = "/"
-    else:
-        myroot = etpConst['systemroot']+"/"
-    if os.access('/usr/bin/gcc-config',os.X_OK):
-	os.system('ROOT="'+myroot+'" /usr/bin/gcc-config '+profile)
+    if os.access(etpConst['systemroot']+'/usr/bin/gcc-config',os.X_OK):
+        redirect = ""
+        if etpUi['quiet']:
+            redirect = " &> /dev/null"
+        if etpConst['systemroot']:
+            os.system("echo '/usr/bin/gcc-config "+profile+"' | chroot "+etpConst['systemroot']+redirect)
+        else:
+            os.system('/usr/bin/gcc-config '+profile+redirect)
     return 0
 
 '''
@@ -666,12 +668,14 @@ def set_gcc_profile(profile):
    @output: returns int() as exit status
 '''
 def set_binutils_profile(profile):
-    if not etpConst['systemroot']:
-        myroot = "/"
-    else:
-        myroot = etpConst['systemroot']+"/"
-    if os.access('/usr/bin/binutils-config',os.X_OK):
-	os.system('/usr/bin/binutils-config '+profile)
+    if os.access(etpConst['systemroot']+'/usr/bin/binutils-config',os.X_OK):
+        redirect = ""
+        if etpUi['quiet']:
+            redirect = " &> /dev/null"
+        if etpConst['systemroot']:
+            os.system("echo '/usr/bin/binutils-config "+profile+"' | chroot "+etpConst['systemroot']+redirect)
+        else:
+            os.system('/usr/bin/binutils-config '+profile+redirect)
     return 0
 
 '''

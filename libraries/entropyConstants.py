@@ -129,7 +129,7 @@ CREATE TABLE baseinfo (
 );
 
 CREATE TABLE extrainfo (
-    idpackage INTEGER,
+    idpackage INTEGER PRIMARY KEY,
     description VARCHAR,
     homepage VARCHAR,
     download VARCHAR,
@@ -301,7 +301,8 @@ etpUi = {
     'verbose': False,
     'ask': False,
     'pretend': False,
-    'mute': False
+    'mute': False,
+    'nolog': False
 }
 
 # static logging stuff
@@ -409,7 +410,8 @@ dbCOUNTER = "COUNTER"
 
 ### Application disk cache
 def const_resetCache():
-    dbCacheStore.clear()
+    for item in dbCacheStore:
+        dbCacheStore[item].clear()
     atomMatchCache.clear()
     atomClientMatchCache.clear()
     generateDependsTreeCache.clear()
@@ -519,14 +521,14 @@ def initConfig_entropyConstants(rootdir):
         'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their stuff
         
         'syslogdir': ETP_SYSLOG_DIR, # Entropy system tools log directory
-        'mirrorslogfile': ETP_SYSLOG_DIR+"/mirrors.log", # Mirrors operations log file
-        'remotelogfile': ETP_SYSLOG_DIR+"/remote.log", # Mirrors operations log file
-        'spmbackendlogfile': ETP_SYSLOG_DIR+"/spmbackend.log", # Source Package Manager backend configuration log file
-        'databaselogfile': ETP_SYSLOG_DIR+"/database.log", # Database operations log file
-        'reagentlogfile': ETP_SYSLOG_DIR+"/reagent.log", # Reagent operations log file
-        'activatorlogfile': ETP_SYSLOG_DIR+"/activator.log", # Activator operations log file
-        'entropylogfile': ETP_SYSLOG_DIR+"/entropy.log", # Activator operations log file
-        'equologfile': ETP_SYSLOG_DIR+"/equo.log", # Activator operations log file
+        'mirrorslogfile': ETP_SYSLOG_DIR+"mirrors.log", # Mirrors operations log file
+        'remotelogfile': ETP_SYSLOG_DIR+"remote.log", # Mirrors operations log file
+        'spmbackendlogfile': ETP_SYSLOG_DIR+"spmbackend.log", # Source Package Manager backend configuration log file
+        'databaselogfile': ETP_SYSLOG_DIR+"database.log", # Database operations log file
+        'reagentlogfile': ETP_SYSLOG_DIR+"reagent.log", # Reagent operations log file
+        'activatorlogfile': ETP_SYSLOG_DIR+"activator.log", # Activator operations log file
+        'entropylogfile': ETP_SYSLOG_DIR+"entropy.log", # Activator operations log file
+        'equologfile': ETP_SYSLOG_DIR+"equo.log", # Activator operations log file
         
         'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file FIXME: remove this?
         'etpdatabasedir': ETP_DIR+ETP_DBDIR,

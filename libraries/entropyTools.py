@@ -1976,7 +1976,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False):
 def collectLinkerPaths():
     ldpaths = set()
     try:
-        f = open("/etc/ld.so.conf","r")
+        f = open(etpConst['systemroot']+"/etc/ld.so.conf","r")
         paths = f.readlines()
         for path in paths:
             if path.strip():
@@ -1994,7 +1994,7 @@ def listToUtf8(mylist):
             mynewlist.append(item.decode("utf8"))
         except UnicodeDecodeError:
             try:
-                mynewlist.append(item.decode("latin1").encode("utf8"))
+                mynewlist.append(item.decode("latin1").decode("utf8"))
             except:
                 raise
     return mynewlist

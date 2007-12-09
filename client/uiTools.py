@@ -1237,12 +1237,16 @@ def librariesTest(clientDbconn = None, reagent = False):
     if (not etpUi['quiet']):
         print_info(red(" @@ ")+blue("Collecting linker paths..."))
     
+    if not etpConst['systemroot']:
+        myroot = "/"
+    else:
+        myroot = etpConst['systemroot']+"/"
     # run ldconfig first
-    os.system("ldconfig &> /dev/null")
+    os.system("ldconfig -r "+myroot+" &> /dev/null")
     # open /etc/ld.so.conf
-    if not os.path.isfile("/etc/ld.so.conf"):
+    if not os.path.isfile(etpConst['systemroot']+"/etc/ld.so.conf"):
         if not etpUi['quiet']:
-            print_error(red(" @@ ")+blue("Cannot find ")+red("/etc/ld.so.conf"))
+            print_error(red(" @@ ")+blue("Cannot find ")+red(etpConst['systemroot']+"/etc/ld.so.conf"))
         return 1,-1
     
     ldpaths = entropyTools.collectLinkerPaths()
@@ -1255,13 +1259,13 @@ def librariesTest(clientDbconn = None, reagent = False):
     count = 0
     for ldpath in ldpaths:
         count += 1
-        if not etpUi['quiet']: print_info("  ["+str((round(float(count)/total*100,1)))+"%] "+blue("Tree: ")+red(ldpath), back = True)
+        if not etpUi['quiet']: print_info("  ["+str((round(float(count)/total*100,1)))+"%] "+blue("Tree: ")+red(etpConst['systemroot']+ldpath), back = True)
         ldpath = ldpath.encode(sys.getfilesystemencoding())
-        for currentdir,subdirs,files in os.walk(ldpath):
+        for currentdir,subdirs,files in os.walk(etpConst['systemroot']+ldpath):
             for file in files:
                 filepath = currentdir+"/"+file
                 if os.access(filepath,os.X_OK):
-                    executables.add(filepath)
+                    executables.add(filepath[len(etpConst['systemroot']):])
 
     if (not etpUi['quiet']):
         print_info(red(" @@ ")+blue("Collecting broken executables..."))
@@ -1272,8 +1276,13 @@ def librariesTest(clientDbconn = None, reagent = False):
     count = 0
     for executable in executables:
         count += 1
-        if not etpUi['quiet']: print_info("  ["+str((round(float(count)/total*100,1)))+"%] "+red(executable), back = True)
-        stdin, stdouterr = os.popen4("ldd "+executable)
+        if not etpUi['quiet']: print_info("  ["+str((round(float(count)/total*100,1)))+"%] "+red(etpConst['systemroot']+executable), back = True)
+        if not etpConst['systemroot']:
+            stdin, stdouterr = os.popen4("ldd "+executable)
+        else:
+            if not os.access(etpConst['systemroot']+"/bin/sh",os.X_OK):
+                raise Exception, "not a valid chroot"
+            stdin, stdouterr = os.popen4("echo 'ldd "+executable+"' | chroot "+etpConst['systemroot'])
         output = stdouterr.readlines()
         if '\n'.join(output).find("not found") != -1:
             # investigate
@@ -1288,7 +1297,7 @@ def librariesTest(clientDbconn = None, reagent = False):
             if not etpUi['quiet']:
                 if mylibs:
                     alllibs = blue(' :: ').join(list(mylibs))
-                    print_info("  ["+str((round(float(count)/total*100,1)))+"%] "+red(executable)+" [ "+alllibs+" ]")
+                    print_info("  ["+str((round(float(count)/total*100,1)))+"%] "+red(etpConst['systemroot']+executable)+" [ "+alllibs+" ]")
             brokenlibs.update(mylibs)
     del executables
     
@@ -1346,7 +1355,7 @@ def librariesTest(clientDbconn = None, reagent = False):
 
     if (etpUi['pretend']):
 	clientDbconn.closeDB()
-	return 0, atomsdata
+	return 0,atomsdata
 
     if (atomsdata) and (not reagent):
         if (etpUi['ask']):
