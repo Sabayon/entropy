@@ -475,6 +475,7 @@ def database(options):
 	print_info(green(" * ")+red("Searching ..."))
 	# open read only
 	dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+        
 	from queryTools import printPackageInfo
 	foundCounter = 0
 	for mykeyword in mykeywords:

@@ -3220,8 +3220,6 @@ class etpDatabase:
         justname = entropyTools.isjustname(strippedAtom)
         pkgversion = ''
         if (not justname):
-	    # strip tag
-	    strippedAtom = entropyTools.remove_tag(strippedAtom)
 	    
 	    # FIXME: deprecated - will be removed soonly
             if strippedAtom.split("-")[-1][0] == "t":
@@ -3247,7 +3245,6 @@ class etpDatabase:
             pkgname = splitkey[0]
 	    pkgcat = "null"
 
-        #print dep_getkey(strippedAtom)
 	if (matchBranches):
 	    myBranchIndex = tuple(matchBranches) # force to tuple for security
 	else:
@@ -3424,6 +3421,7 @@ class etpDatabase:
 		            versionTags.append(self.retrieveVersionTag(pkg[1]))
 			versiontaglist = entropyTools.getNewerVersionTag(versionTags)
 		        newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
+                        newerPackage = newerPackage[1],None # so will return correctly
 		
                     # filter only valid keywords
                     self.atomMatchStoreCache((newerPackage[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
@@ -3514,6 +3512,7 @@ class etpDatabase:
 		            versionTags.append(self.retrieveVersionTag(pkg[1]))
 		        versiontaglist = entropyTools.getNewerVersionTag(versionTags)
 		        newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
+                        newerPackage = newerPackage[1],None
 		
 
                     self.atomMatchStoreCache((newerPackage[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
