@@ -2495,7 +2495,7 @@ class etpDatabase:
 	    return ()
 
 	slotstring = ''
-        searchkeywords = [idpackage]
+        searchkeywords = [idpackage[0]]
 	if slot:
             searchkeywords.append(slot)
 	    slotstring = ' and slot = (?)'
