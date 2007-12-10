@@ -1303,7 +1303,7 @@ def removePackageFromGentooDatabase(atom):
    @input package: dictionary containing information collected by installPackages (important are atom, slot, category, name, version)
    @output: 0 = all fine, >0 = error!
 '''
-def installPackageIntoGentooDatabase(infoDict,packageFile, newidpackage = -1):
+def installPackageIntoGentooDatabase(infoDict, packageFile, newidpackage = -1):
     
     # handle gentoo-compat
     _portage_avail = False
@@ -1327,7 +1327,7 @@ def installPackageIntoGentooDatabase(infoDict,packageFile, newidpackage = -1):
 	# atomsfound = _portage_getInstalledAtoms(key) too slow!
 	
 	### REMOVE
-	# parse slot and match and remove)
+	# parse slot and match and remove
 	if atomsfound:
 	    pkgToRemove = ''
 	    for atom in atomsfound:

@@ -1225,6 +1225,8 @@ class etpDatabase:
 	raise Exception, "I tried to insert a needed library but then, fetching it returned -1. There's something broken."
 
     def addLicense(self,license):
+        if not license:
+            license = ' ' # workaround for broken license entries
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addLicense: adding License -> "+str(license))
 	self.cursor.execute(
 		'INSERT into licenses VALUES '

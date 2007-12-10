@@ -199,7 +199,7 @@ def database(options):
 	# spawn process
 	if os.path.isfile(etpConst['packagestmpfile']):
 	    os.remove(etpConst['packagestmpfile'])
-	os.system("find / -mount 1> "+etpConst['packagestmpfile'])
+	os.system("find "+etpConst['systemroot']+"/ -mount 1> "+etpConst['packagestmpfile'])
 	if not os.path.isfile(etpConst['packagestmpfile']):
 	    print_error(darkred("Attention: ")+red("find couldn't generate an output file."))
 	    return
@@ -232,10 +232,10 @@ def database(options):
 		# content
 		content = dbconn.retrieveContent(idpackage)
 		for file in content:
-		    if file in filelist:
+		    if etpConst['systemroot']+file in filelist:
 			pkgsfound.add((idpackage,repo))
 			atoms[(idpackage,repo)] = idpackageatom
-			filelist.difference_update(set(content))
+			filelist.difference_update(set([etpConst['systemroot']+x for x in content]))
 			break
 	    dbconn.closeDB()
 	
@@ -450,6 +450,8 @@ def getinfo(dict = False):
     info['Equo pidfile'] = etpConst['pidfile']
     info['Entropy database tag'] = etpConst['databasestarttag']
     info['Repositories'] = etpRepositories
+    info['System Config'] = etpSys
+    info['UI Config'] = etpUi
     
     # client database info
     conn = False
