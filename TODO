@@ -1,5 +1,6 @@
 TODO list:
   - world: first fetch all, then upgrade
+  - multipackage: clean tool
   - mirrors: one more and in random order
   - trigger: Regenerating cracklib dictionary
   - autotriggers: for enewgroup, enewuser and friends
