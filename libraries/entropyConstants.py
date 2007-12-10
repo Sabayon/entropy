@@ -64,6 +64,7 @@ etpData = {
     'eclasses': u"", # eclasses used by the ebuild
     'needed': u"", # runtime libraries needed by the package
     'trigger': u"", # this will become a bool, containing info about external trigger presence
+    'injected': bool, # if the package has been injected manually, this will be true
 }
 '''
 
@@ -109,6 +110,7 @@ DROP TABLE IF EXISTS needed;
 DROP TABLE IF EXISTS neededreference;
 DROP TABLE IF EXISTS triggers;
 DROP TABLE IF EXISTS countersdata;
+DROP TABLE IF EXISTS injected;
 """
 
 etpSQLInit = """
@@ -223,12 +225,12 @@ CREATE TABLE flags (
 );
 
 CREATE TABLE configprotect (
-    idpackage INTEGER,
+    idpackage INTEGER PRIMARY KEY,
     idprotect INTEGER
 );
 
 CREATE TABLE configprotectmask (
-    idpackage INTEGER,
+    idpackage INTEGER PRIMARY KEY,
     idprotect INTEGER
 );
 
@@ -238,16 +240,20 @@ CREATE TABLE configprotectreference (
 );
 
 CREATE TABLE systempackages (
-    idpackage INTEGER
+    idpackage INTEGER PRIMARY KEY
+);
+
+CREATE TABLE injected (
+    idpackage INTEGER PRIMARY KEY
 );
 
 CREATE TABLE installedtable (
-    idpackage INTEGER,
+    idpackage INTEGER PRIMARY KEY,
     repositoryname VARCHAR
 );
 
 CREATE TABLE sizes (
-    idpackage INTEGER,
+    idpackage INTEGER PRIMARY KEY,
     size INTEGER
 );
 

@@ -65,7 +65,7 @@ def sync(options, justTidy = False):
 	else:
             ask = etpUi['ask']
             etpUi['ask'] = True
-	    rc = packages([ "sync" , "--ask" ])
+	    rc = packages(["sync"])
             etpUi['ask'] = ask
         # then sync the database, if the packages sync completed successfully
         if (rc == False):
@@ -456,13 +456,14 @@ def packages(options):
 	            print_info(red(" * ")+blue("Total download ")+brown("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalDownloadSize))))
 	            print_info(red(" * ")+blue("Total upload ")+green("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalUploadSize))))
 	    
+
 	            if (etpUi['pretend']):
-		        rc = askquestion("\n     Would you like to run the steps above ?")
-		        if rc == "No":
-		            print "\n"
-		            continue
-	            elif (etpUi['pretend']):
 		        continue
+                    if (etpUi['ask']):
+                        rc = askquestion("\n     Would you like to run the steps above ?")
+                        if rc == "No":
+                            print "\n"
+                            continue
 
 		    # queues management
 		    successfulUploadCounter = 0

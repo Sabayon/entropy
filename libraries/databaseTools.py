@@ -483,13 +483,17 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"addPackage: here is the list of similar packages (that will be removed) found for "+etpData['category']+"/"+etpData['name']+": "+str(searchsimilar))
 	
 	removelist = set()
-	for oldpkg in searchsimilar:
-	    # get the package slot
-	    idpackage = oldpkg[1]
-	    slot = self.retrieveSlot(idpackage)
-	    if (etpData['slot'] == slot):
-		# remove!
-		removelist.add(idpackage)
+        if not etpData['injected']: # read: if package has been injected, we'll skip the removal of packages in the same slot, usually used server side btw
+            for oldpkg in searchsimilar:
+                # get the package slot
+                idpackage = oldpkg[1]
+                slot = self.retrieveSlot(idpackage)
+                isinjected = self.isInjected(idpackage)
+                if isinjected:
+                    continue # we merely ignore packages with negative counters, since they're the injected ones
+                if (etpData['slot'] == slot):
+                    # remove!
+                    removelist.add(idpackage)
 	
 	for pkg in removelist:
 	    self.removePackage(pkg)
@@ -759,6 +763,22 @@ class etpDatabase:
 			atom,
 			)
 	    )
+
+        # injected?
+        if etpData['injected']:
+            try:
+                self.cursor.execute(
+                    'INSERT into injected VALUES '
+                    '(?)'
+                    , ( idpackage, )
+                )
+            except: # FIXME: remove this before 1.0
+                self.createInjectedTable()
+                self.cursor.execute(
+                    'INSERT into injected VALUES '
+                    '(?)'
+                    , ( idpackage, )
+                )
 
 	# compile messages
 	try:
@@ -1081,6 +1101,11 @@ class etpDatabase:
 	try:
 	    # triggers
 	    self.cursor.execute('DELETE FROM triggers WHERE idpackage = '+idpackage)
+	except:
+	    pass
+	try:
+	    # inject table
+	    self.cursor.execute('DELETE FROM injected WHERE idpackage = '+idpackage)
 	except:
 	    pass
 	
@@ -1605,6 +1630,7 @@ class etpDatabase:
 	    data['mirrorlinks'].append([mirror,mirrorlinks])
 	
 	data['slot'] = mydata[14]
+        data['injected'] = self.isInjected(idpackage)
         mycontent = self.retrieveContent(idpackage, extended = True)
         data['content'] = {}
         for cdata in mycontent:
@@ -2392,6 +2418,28 @@ class etpDatabase:
 	self.storeInfoCache(idpackage,'isSystemPackage',rslt)
 	return rslt
 
+    def isInjected(self,idpackage):
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isInjected: called.")
+
+	cache = self.fetchInfoCache(idpackage,'isInjected')
+	if cache != None: return cache
+
+        try:
+	    self.cursor.execute('SELECT idpackage FROM injected WHERE idpackage = (?)', (idpackage,))
+        except: # FIXME: remove this for 1.0
+            self.createInjectedTable()
+            self.cursor.execute('SELECT idpackage FROM injected WHERE idpackage = (?)', (idpackage,))
+        
+	result = self.cursor.fetchone()
+	rslt = False
+	if result:
+	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isInjected: package is in system.")
+	    rslt = True
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isInjected: package is NOT in system.")
+
+	self.storeInfoCache(idpackage,'isInjected',rslt)
+	return rslt
+
     def areCompileFlagsAvailable(self,chost,cflags,cxxflags):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"areCompileFlagsAvailable: called.")
         
@@ -3061,7 +3109,12 @@ class etpDatabase:
     
     def createSystemPackagesTable(self):
         dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createSystemPackagesTable: called.")
-        self.cursor.execute('CREATE TABLE systempackages ( idpackage INTEGER );')
+        self.cursor.execute('CREATE TABLE systempackages ( idpackage INTEGER PRIMARY KEY );')
+	self.commitChanges()
+    
+    def createInjectedTable(self):
+        dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createInjectedTable: called.")
+        self.cursor.execute('CREATE TABLE injected ( idpackage INTEGER PRIMARY KEY );')
 	self.commitChanges()
     
     def createProtectTable(self):
@@ -3069,15 +3122,15 @@ class etpDatabase:
 	self.cursor.execute('DROP TABLE IF EXISTS configprotect;')
 	self.cursor.execute('DROP TABLE IF EXISTS configprotectmask;')
 	self.cursor.execute('DROP TABLE IF EXISTS configprotectreference;')
-	self.cursor.execute('CREATE TABLE configprotect ( idpackage INTEGER, idprotect INTEGER );')
-	self.cursor.execute('CREATE TABLE configprotectmask ( idpackage INTEGER, idprotect INTEGER );')
+	self.cursor.execute('CREATE TABLE configprotect ( idpackage INTEGER PRIMARY KEY, idprotect INTEGER );')
+	self.cursor.execute('CREATE TABLE configprotectmask ( idpackage INTEGER PRIMARY KEY, idprotect INTEGER );')
 	self.cursor.execute('CREATE TABLE configprotectreference ( idprotect INTEGER PRIMARY KEY, protect VARCHAR );')
 	self.commitChanges()
 
     def createInstalledTable(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createInstalledTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS installedtable;')
-	self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER, repositoryname VARCHAR );')
+	self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER PRIMARY KEY, repositoryname VARCHAR );')
 	self.commitChanges()
 
     def addDependRelationToDependsTable(self, iddependency, idpackage):

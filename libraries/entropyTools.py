@@ -1448,7 +1448,7 @@ def appendXpak(tbz2file, atom):
     return tbz2file
 
 # This function extracts all the info from a .tbz2 file and returns them
-def extractPkgData(package, etpBranch = etpConst['branch'], silent = False):
+def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inject = False):
 
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractPkgData: called -> package: "+str(package))
     data = {}
@@ -1542,6 +1542,13 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False):
         f.close()
     except IOError:
         pass
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package injection information..."),back = True)
+    # fill slot, if it is
+    if inject:
+        data['injected'] = True
+    else:
+        data['injected'] = False
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package eclasses information..."),back = True)
     # fill eclasses list
