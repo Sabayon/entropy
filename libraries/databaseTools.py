@@ -538,7 +538,7 @@ class etpDatabase:
                             trigger,
                             )
             )
-        except OperationalError: # workaround for old tables
+        except: # workaround for old tables
             self.createTriggerColumn() # FIXME: will be removed before 1.0
             self.cursor.execute(
                     'INSERT into baseinfo VALUES '
@@ -622,7 +622,7 @@ class etpDatabase:
                 )
 
         etpData['counter'] = int(etpData['counter']) # cast to integer
-	if etpData['counter'] != -1:
+	if etpData['counter'] != -1 and not (etpData['injected']):
             
             if etpData['counter'] <= -2:
                 # special cases

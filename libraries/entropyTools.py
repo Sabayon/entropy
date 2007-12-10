@@ -1457,6 +1457,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 
     info_package = bold(os.path.basename(package))+": "
 
+    filepath = package
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package name/version..."),back = True)
     tbz2File = package
     package = package.split(".tbz2")[0]
@@ -1629,7 +1630,42 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 	for i in outcontent:
             data['content'][str(i[0])] = i[1]
 	
-    except IOError:
+    except IOError, e:
+        if inject: # CONTENTS is not generated when a package is emerged with portage and the option -B
+            # we have to unpack the tbz2 and generate content dict
+            import shutil
+            mytempdir = etpConst['packagestmpdir']+"/"+os.path.basename(filepath)+".inject"
+            if os.path.isdir(mytempdir):
+                shutil.rmtree(mytempdir)
+            if not os.path.isdir(mytempdir):
+                os.makedirs(mytempdir)
+            mytempdir = mytempdir.encode(getfilesystemencoding())
+            uncompressTarBz2(filepath, extractPath = mytempdir, catchEmpty = True)
+            
+            for currentdir, subdirs, files in os.walk(mytempdir):
+                data['content'][currentdir[len(mytempdir):]] = "dir"
+                for file in files:
+                    try:
+                        file = file.encode(getfilesystemencoding())
+                    except:
+                        try:
+                            file = file.decode("latin1")
+                            file = file.encode(getfilesystemencoding())
+                        except:
+                            print "DEBUG: cannot encode into filesystem encoding -> "+str(file)
+                            continue
+                    file = currentdir+"/"+file
+                    if os.path.islink(file):
+                        data['content'][file[len(mytempdir):]] = "sym"
+                    else:
+                        data['content'][file[len(mytempdir):]] = "obj"
+            
+            # now remove
+            shutil.rmtree(mytempdir,True)
+            try:
+                os.rmdir(mytempdir)
+            except:
+                pass
         pass
 
     # files size on disk

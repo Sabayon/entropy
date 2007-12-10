@@ -3,8 +3,6 @@ TODO list:
   - mirrors: one more and in random order
   - trigger: Regenerating cracklib dictionary
   - Community repositories
-  - server: handle multiple packages for each scope with these abilities:
-    - purge function
   - remove binkeywords, not used
   - add external trigger for splashutils
   - find a way to better handle real smartapps deps

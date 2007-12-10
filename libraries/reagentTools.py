@@ -37,7 +37,7 @@ reagentLog = logTools.LogFile(level=etpConst['reagentloglevel'],filename = etpCo
 
 # reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFunction: example. ")
 
-def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['branch']):
+def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['branch'], inject = False):
 
     reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: called -> Package: "+str(package)+" | dbconnection: "+str(dbconnection))
 
@@ -50,7 +50,7 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
 
     packagename = os.path.basename(package)
     print_info(brown(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
-    mydata = extractPkgData(package, enzymeRequestBranch)
+    mydata = extractPkgData(package, enzymeRequestBranch, inject = inject)
     
     if dbconnection is None:
 	dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
@@ -71,21 +71,52 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
     packagename = packagename[:-5]+"~"+str(revision)+".tbz2"
 
     if (accepted) and (revision != 0):
-	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" has been updated to revision: "+str(revision))
-	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry has been updated. Revision: ")+bold(str(revision)))
+	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(os.path.basename(etpDataUpdated['download']))+" has been updated to revision: "+str(revision))
+	print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" entry has been updated. Revision: ")+bold(str(revision)))
 	return True, idpk
     elif (accepted) and (revision == 0):
-	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" newly created or version bumped.")
-	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" entry newly created."))
+	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(os.path.basename(etpDataUpdated['download']))+" newly created or version bumped.")
+	print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" entry newly created."))
 	return True, idpk
     else:
-	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(packagename)+" kept intact, no updates needed.")
-	print_info(green(" * ")+red("Package ")+bold(packagename)+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
+	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(os.path.basename(etpDataUpdated['download']))+" kept intact, no updates needed.")
+	print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
 	return False, idpk
 
 
-# This tool is used by Entropy after enzyme, it simply parses the content of etpConst['packagesstoredir']
-def update(options):
+
+def inject(options):
+    
+    requestedBranch = etpConst['branch']
+    mytbz2s = []
+    for opt in options:
+	if opt.startswith("--branch=") and len(opt.split("=")) == 2:
+            requestedBranch = opt.split("=")[1]
+	else:
+            if not os.path.isfile(opt) or not opt.endswith(".tbz2"):
+                print_error(darkred(" * ")+bold(opt)+red(" is invalid."))
+                return 1
+            mytbz2s.append(opt)
+    
+    if not mytbz2s:
+        print_error(red("no .tbz2 specified."))
+        return 2
+
+    if not os.path.isdir(etpConst['packagessuploaddir']+"/"+requestedBranch):
+        os.makedirs(etpConst['packagessuploaddir']+"/"+requestedBranch)
+
+    dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+    for tbz2 in mytbz2s:
+        print_info(red("Working on: ")+blue(tbz2))
+        tbz2Handler(tbz2, dbconn, requestedBranch, inject = True)
+    
+    dbconn.commitChanges()
+    dependsTableInitialize(dbconn, False)
+    dbconn.closeDB()
+    
+
+
+def update(options, inject = False):
 
     reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"update: called -> options: "+str(options))
 
@@ -239,7 +270,7 @@ def update(options):
     enzymeRequestBranch = etpConst['branch']
     #_atoms = []
     for i in options:
-        if ( i == "--branch=" and len(i.split("=")) == 2 ):
+        if ( i.startswith("--branch=") and len(i.split("=")) == 2 ):
 	    mybranch = i.split("=")[1]
 	    if (mybranch):
 	        enzymeRequestBranch = mybranch
@@ -266,63 +297,62 @@ def update(options):
     etpNotCreated = 0
     for tbz2 in tbz2files:
 	counter += 1
+        etpCreated += 1
 	tbz2name = tbz2.split("/")[-1]
 	print_info(" ("+str(counter)+"/"+str(totalCounter)+") Processing "+tbz2name)
 	tbz2path = etpConst['packagesstoredir']+"/"+tbz2
-	rc, idpk = generator(tbz2path, dbconn, enzymeRequestBranch)
-	if (rc):
-	    etpCreated += 1
-            
-            # add revision to package file
-            downloadurl = dbconn.retrieveDownloadURL(idpk)
-            packagerev = dbconn.retrieveRevision(idpk)
-            downloaddir = os.path.dirname(downloadurl)
-            downloadfile = os.path.basename(downloadurl)
-            # remove tbz2 and add revision
-            downloadfile = downloadfile[:-5]+"~"+str(packagerev)+".tbz2"
-            downloadurl = downloaddir+"/"+downloadfile
-            # update url
-            dbconn.setDownloadURL(idpk,downloadurl)
-            
-            shutil.move(tbz2path,etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+downloadfile)
-	    print_info(brown(" * ")+red("Injecting database information into ")+bold(downloadfile)+red(", please wait..."), back = True)
-            
-            dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
-            while os.path.isfile(dbpath):
-                dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
-	    # create db
-            pkgDbconn = databaseTools.openGenericDatabase(dbpath)
-	    pkgDbconn.initializeDatabase()
-	    data = dbconn.getPackageData(idpk)
-	    rev = dbconn.retrieveRevision(idpk)
-	    # inject
-	    pkgDbconn.addPackage(data, revision = rev)
-	    pkgDbconn.closeDB()
-	    # append the database to the new file
-	    aggregateEdb(tbz2file = etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+downloadfile, dbfile = dbpath)
-	    
-	    digest = md5sum(etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+downloadfile)
-	    dbconn.setDigest(idpk,digest)
-	    hashFilePath = createHashFile(etpConst['packagessuploaddir']+"/"+enzymeRequestBranch+"/"+downloadfile)
-	    # remove garbage
-	    os.remove(dbpath)
-	    print_info(brown(" * ")+red("Database injection complete for ")+downloadfile)
-	    
-	else:
-	    etpNotCreated += 1
-	    spawnCommand("rm -rf "+tbz2path)
-	dbconn.commitChanges()
-
-    dbconn.commitChanges()
+        tbz2handler(tbz2path, dbconn, enzymeRequestBranch)
+        dbconn.commitChanges()
     
+    dbconn.commitChanges()
     # regen dependstable
     dependsTableInitialize(dbconn, False)
     
     dbconn.closeDB()
 
-    print_info(green(" * ")+red("Statistics: ")+blue("Entries created/updated: ")+bold(str(etpCreated))+brown(" - ")+darkblue("Entries discarded: ")+bold(str(etpNotCreated)))
+    print_info(green(" * ")+red("Statistics: ")+blue("Entries created/updated: ")+bold(str(etpCreated)))
     return 0
 
+
+def tbz2Handler(tbz2path, dbconn, requested_branch, inject = False):
+    rc, idpk = generator(tbz2path, dbconn, requested_branch, inject)
+    if (rc): # still needed ?
+        # add revision to package file
+        downloadurl = dbconn.retrieveDownloadURL(idpk)
+        packagerev = dbconn.retrieveRevision(idpk)
+        downloaddir = os.path.dirname(downloadurl)
+        downloadfile = os.path.basename(downloadurl)
+        # remove tbz2 and add revision
+        downloadfile = downloadfile[:-5]+"~"+str(packagerev)+".tbz2"
+        downloadurl = downloaddir+"/"+downloadfile
+        # update url
+        dbconn.setDownloadURL(idpk,downloadurl)
+        
+        shutil.move(tbz2path,etpConst['packagessuploaddir']+"/"+requested_branch+"/"+downloadfile)
+        print_info(brown(" * ")+red("Injecting database information into ")+bold(downloadfile)+red(", please wait..."), back = True)
+        
+        dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
+        while os.path.isfile(dbpath):
+            dbpath = etpConst['packagestmpdir']+"/"+str(getRandomNumber())
+        # create db
+        pkgDbconn = databaseTools.openGenericDatabase(dbpath)
+        pkgDbconn.initializeDatabase()
+        data = dbconn.getPackageData(idpk)
+        rev = dbconn.retrieveRevision(idpk)
+        # inject
+        pkgDbconn.addPackage(data, revision = rev)
+        pkgDbconn.closeDB()
+        # append the database to the new file
+        aggregateEdb(tbz2file = etpConst['packagessuploaddir']+"/"+requested_branch+"/"+downloadfile, dbfile = dbpath)
+        
+        digest = md5sum(etpConst['packagessuploaddir']+"/"+requested_branch+"/"+downloadfile)
+        dbconn.setDigest(idpk,digest)
+        hashFilePath = createHashFile(etpConst['packagessuploaddir']+"/"+requested_branch+"/"+downloadfile)
+        # remove garbage
+        os.remove(dbpath)
+        print_info(brown(" * ")+red("Database injection complete for ")+downloadfile)
+    else: # FIXME: remove this because packages are always accepted now
+        raise Exception, "something bad happened, tbz2 not generated"
 
 def dependsTableInitialize(dbconn = None, runActivator = True):
     closedb = False
