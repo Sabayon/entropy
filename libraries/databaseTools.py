@@ -2405,7 +2405,11 @@ class etpDatabase:
         try:
 	    self.cursor.execute('SELECT idpackage FROM systempackages WHERE idpackage = (?)', (idpackage,))
         except: # FIXME: remove this for 1.0
-            self.createSystemPackagesTable()
+            try:
+                self.createSystemPackagesTable()
+            except:
+                # readonly database?
+                return False
             self.cursor.execute('SELECT idpackage FROM systempackages WHERE idpackage = (?)', (idpackage,))
         
 	result = self.cursor.fetchone()
@@ -2427,7 +2431,11 @@ class etpDatabase:
         try:
 	    self.cursor.execute('SELECT idpackage FROM injected WHERE idpackage = (?)', (idpackage,))
         except: # FIXME: remove this for 1.0
-            self.createInjectedTable()
+            try:
+                self.createInjectedTable()
+            except:
+                # readonly database?
+                return False
             self.cursor.execute('SELECT idpackage FROM injected WHERE idpackage = (?)', (idpackage,))
         
 	result = self.cursor.fetchone()
