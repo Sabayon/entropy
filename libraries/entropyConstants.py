@@ -306,7 +306,7 @@ etpUi = {
     'postinstall_triggers_disable': set(),
     'postremove_triggers_disable': set(),
     'preinstall_triggers_disable': set(),
-    'postremove_triggers_disable': set()
+    'preremove_triggers_disable': set()
 }
 
 # static logging stuff
