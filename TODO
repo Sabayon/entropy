@@ -2,6 +2,7 @@ TODO list:
   - world: first fetch all, then upgrade
   - mirrors: one more and in random order
   - trigger: Regenerating cracklib dictionary
+  - autotriggers: for enewgroup, enewuser and friends
   - Community repositories
   - remove binkeywords, not used
   - add external trigger for splashutils

@@ -391,7 +391,11 @@ etpRepositoriesOrder = set()
 etpRemoteSupport = {}
 etpRemoteFailures = {} # dict of excluded mirrors due to failures, it contains mirror name and failure count | > 5 == ignore mirror
 
+# your bible
 etpConst = {}
+
+# database status dict
+etpDatabase = {}
 
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things
@@ -587,6 +591,17 @@ def initConfig_entropyConstants(rootdir):
     }
     etpConst.update(myConst)
     del myConst
+    
+    # load server database status
+    myDatabase = {
+        'bumped': False,
+        'tainted'; False,
+    }
+    if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
+        myDatabase['tainted'] = True
+        myDatabase['bumped'] = True
+    etpDatabase.update(myDatabase)
+    del myDatabase
     
     # handle Entropy Version
     ETP_REVISION_FILE = "../libraries/revision"
