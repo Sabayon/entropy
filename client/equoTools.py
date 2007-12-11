@@ -115,7 +115,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
     if xcache:
         cached = atomMatchCache.get(atom)
         if cached:
-	    if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches):
+	    if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches) and (cached['etpRepositories'] == matchBranches):
 	        return cached['result']
 
     repoResults = {}
@@ -149,6 +149,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 	atomMatchCache[atom]['result'] = -1,1
 	atomMatchCache[atom]['matchSlot'] = matchSlot
 	atomMatchCache[atom]['matchBranches'] = matchBranches
+	atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
 	return -1,1
     
     elif len(repoResults) == 1:
@@ -158,6 +159,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 	    atomMatchCache[atom]['result'] = repoResults[repo],repo
 	    atomMatchCache[atom]['matchSlot'] = matchSlot
 	    atomMatchCache[atom]['matchBranches'] = matchBranches
+            atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
 	    return repoResults[repo],repo
     
     elif len(repoResults) > 1:
@@ -262,6 +264,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 				    atomMatchCache[atom]['result'] = repoResults[repo],repo
 				    atomMatchCache[atom]['matchSlot'] = matchSlot
 				    atomMatchCache[atom]['matchBranches'] = matchBranches
+                                    atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
 				    return repoResults[repo],repo
 		    
 		    else:
@@ -276,6 +279,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 			atomMatchCache[atom]['result'] = repoResults[reponame],reponame
 			atomMatchCache[atom]['matchSlot'] = matchSlot
 			atomMatchCache[atom]['matchBranches'] = matchBranches
+                        atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
 		        return repoResults[reponame],reponame
 		
 		else:
@@ -289,6 +293,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 		    atomMatchCache[atom]['result'] = repoResults[reponame],reponame
 		    atomMatchCache[atom]['matchSlot'] = matchSlot
 		    atomMatchCache[atom]['matchBranches'] = matchBranches
+                    atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
 		    return repoResults[reponame],reponame
 
 	    else:
@@ -302,6 +307,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 		atomMatchCache[atom]['result'] = repoResults[reponame],reponame
 		atomMatchCache[atom]['matchSlot'] = matchSlot
 		atomMatchCache[atom]['matchBranches'] = matchBranches
+                atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
 		return repoResults[reponame],reponame
 
 	    #print versions
@@ -322,6 +328,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 	    atomMatchCache[atom]['result'] = repoResults[reponame],reponame
 	    atomMatchCache[atom]['matchSlot'] = matchSlot
 	    atomMatchCache[atom]['matchBranches'] = matchBranches
+            atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
 	    return repoResults[reponame],reponame
 
 
@@ -1318,11 +1325,11 @@ def installPackageIntoGentooDatabase(infoDict, packageFile, newidpackage = -1):
 	key = infoDict['category']+"/"+infoDict['name']
 	#print _portage_getInstalledAtom(key)
 	atomsfound = set()
-	for xdir in os.listdir(portDbDir):
-	    if (xdir == infoDict['category']):
-		for ydir in os.listdir(portDbDir+"/"+xdir):
-		    if (key == dep_getkey(xdir+"/"+ydir)):
-			atomsfound.add(xdir+"/"+ydir)
+        dbdirs = os.listdir(portDbDir)
+        if infoDict['category'] in dbdirs:
+            catdirs = os.listdir(portDbDir+"/"+infoDict['category'])
+            dirsfound = set([infoDict['category']+"/"+x for x in catdirs if key == dep_getkey(infoDict['category']+"/"+x)])
+            atomsfound.update(dirsfound)
 	
 	# atomsfound = _portage_getInstalledAtoms(key) too slow!
 	

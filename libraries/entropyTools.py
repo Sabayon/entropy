@@ -151,15 +151,15 @@ def readXpak(tbz2file):
 
 def unpackXpak(xpakfile, tmpdir = None):
     try:
-        import xpak
+        import etpXpak
         import shutil
         if tmpdir is None:
             tmpdir = etpConst['packagestmpdir']+"/"+os.path.basename(xpakfile)[:-5]+"/"
         if os.path.isdir(tmpdir):
             shutil.rmtree(tmpdir,True)
         os.makedirs(tmpdir)
-        xpakdata = xpak.getboth(xpakfile)
-        xpak.xpand(xpakdata,tmpdir)
+        xpakdata = etpXpak.getboth(xpakfile)
+        etpXpak.xpand(xpakdata,tmpdir)
         try:
             os.remove(xpakfile)
         except:
@@ -1352,11 +1352,11 @@ def quickpkg(pkgdata,dirpath, edb = True):
     
     # appending xpak metadata
     if etpConst['gentoo-compat']:
-        import xpak
+        import etpXpak
         from portageTools import getPortageAppDbPath
         dbdir = getPortageAppDbPath()+"/"+pkgcat+"/"+pkgname+"/"
         if os.path.isdir(dbdir):
-            tbz2 = xpak.tbz2(dirpath)
+            tbz2 = etpXpak.tbz2(dirpath)
             tbz2.recompose(dbdir)
 
     if edb:
@@ -1377,11 +1377,11 @@ def quickpkg(pkgdata,dirpath, edb = True):
 	return None
 
 def appendXpak(tbz2file, atom):
-    import xpak
+    import etpXpak
     from portageTools import getPortageAppDbPath
     dbdir = getPortageAppDbPath()+"/"+atom+"/"
     if os.path.isdir(dbdir):
-        tbz2 = xpak.tbz2(tbz2file)
+        tbz2 = etpXpak.tbz2(tbz2file)
         tbz2.recompose(dbdir)
     return tbz2file
 

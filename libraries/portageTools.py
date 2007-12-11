@@ -271,8 +271,8 @@ def quickpkg(atom,dirpath):
     tar.close()
     
     # appending xpak informations
-    import xpak
-    tbz2 = xpak.tbz2(dirpath)
+    import etpXpak
+    tbz2 = etpXpak.tbz2(dirpath)
     tbz2.recompose(dbdir)
     
     dblnk.unlockdb()
@@ -555,7 +555,17 @@ def refillCounter():
     newcounter = max(counters)
     if not os.path.isdir(os.path.dirname(etpConst['edbcounter'])):
         os.makedirs(os.path.dirname(etpConst['edbcounter']))
-    f = open(etpConst['edbcounter'],"w")
+    try:
+        f = open(etpConst['edbcounter'],"w")
+    except IOError, e:
+        if e[0] == 21:
+            import shutil
+            shutil.rmtree(etpConst['edbcounter'],True)
+            try:
+                os.rmdir(etpConst['edbcounter'])
+            except:
+                pass
+        f = open(etpConst['edbcounter'],"w")
     f.write(str(newcounter))
     f.flush()
     f.close()
