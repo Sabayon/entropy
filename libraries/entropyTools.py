@@ -1297,7 +1297,7 @@ def writeNewBranch(branch):
 
 # @pkgdata: etpData mapping dictionary (retrieved from db using getPackageData())
 # @dirpath: directory to save .tbz2
-def quickpkg(pkgdata,dirpath, edb = True):
+def quickpkg(pkgdata,dirpath, edb = True, portdbPath = None):
 
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+str(pkgdata)+" | dirpath: "+dirpath)
     import stat
@@ -1353,8 +1353,14 @@ def quickpkg(pkgdata,dirpath, edb = True):
     # appending xpak metadata
     if etpConst['gentoo-compat']:
         import etpXpak
-        from portageTools import getPortageAppDbPath
-        dbdir = getPortageAppDbPath()+"/"+pkgcat+"/"+pkgname+"/"
+
+        gentoo_name = remove_tag(pkgname)
+        gentoo_name = remove_entropy_revision(gentoo_name)
+        if portdbPath == None:
+            from portageTools import getPortageAppDbPath
+            dbdir = getPortageAppDbPath()+"/"+pkgcat+"/"+gentoo_name+"/"
+        else:
+            dbdir = portdbPath+"/"+pkgcat+"/"+gentoo_name+"/"
         if os.path.isdir(dbdir):
             tbz2 = etpXpak.tbz2(dirpath)
             tbz2.recompose(dbdir)
