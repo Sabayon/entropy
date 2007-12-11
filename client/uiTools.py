@@ -351,10 +351,11 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     etpRepositories[basefile]['configprotect'] = set()
                     etpRepositories[basefile]['configprotectmask'] = set()
                     etpRepositories[basefile]['smartpackage'] = False # extra info added
-                    # get max count
-                    repoordercount = [x[0] for x in etpRepositoriesOrder]
-                    repoordercount.sort()
-                    etpRepositoriesOrder.add((repoordercount[-1]+1,basefile))
+                    # put at top priority, shift others
+                    myrepo_order = set([(x[0]+1,x[1]) for x in etpRepositoriesOrder])
+                    etpRepositoriesOrder.clear()
+                    etpRepositoriesOrder.update(myrepo_order)
+                    etpRepositoriesOrder.add((1,basefile))
                     mydbconn = openGenericDatabase(dbfile)
                     # read all idpackages
                     try:
