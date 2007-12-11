@@ -395,7 +395,7 @@ etpRemoteFailures = {} # dict of excluded mirrors due to failures, it contains m
 etpConst = {}
 
 # database status dict
-etpDatabase = {}
+etpDbStatus = {}
 
 # Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
 # you never know if gentoo devs change these things
@@ -600,7 +600,7 @@ def initConfig_entropyConstants(rootdir):
     if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
         myDatabase['tainted'] = True
         myDatabase['bumped'] = True
-    etpDatabase.update(myDatabase)
+    etpDbStatus.update(myDatabase)
     del myDatabase
     
     # handle Entropy Version
