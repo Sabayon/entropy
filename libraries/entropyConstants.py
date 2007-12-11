@@ -595,7 +595,7 @@ def initConfig_entropyConstants(rootdir):
     # load server database status
     myDatabase = {
         'bumped': False,
-        'tainted'; False
+        'tainted': False
     }
     if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
         myDatabase['tainted'] = True
