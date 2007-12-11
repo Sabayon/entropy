@@ -301,7 +301,7 @@ def update(options, inject = False):
 	tbz2name = tbz2.split("/")[-1]
 	print_info(" ("+str(counter)+"/"+str(totalCounter)+") Processing "+tbz2name)
 	tbz2path = etpConst['packagesstoredir']+"/"+tbz2
-        tbz2handler(tbz2path, dbconn, enzymeRequestBranch)
+        tbz2Handler(tbz2path, dbconn, enzymeRequestBranch)
         dbconn.commitChanges()
     
     dbconn.commitChanges()
