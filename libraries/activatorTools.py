@@ -35,6 +35,7 @@ import os
 import commands
 import string
 import time
+import shutil
 
 
 # Logging initialization
@@ -61,16 +62,14 @@ def sync(options, justTidy = False):
     if (not justTidy):
         # firstly sync the packages
 	if (activatorRequestNoAsk):
-	    rc = packages([ "sync" ])
+	    rc = packages(["sync"])
 	else:
             ask = etpUi['ask']
             etpUi['ask'] = True
 	    rc = packages(["sync"])
             etpUi['ask'] = ask
         # then sync the database, if the packages sync completed successfully
-        if (rc == False):
-	    exit(401)
-	else:
+        if rc:
             if (not activatorRequestNoAsk) and etpConst['rss-feed']:
                 etpRSSMessages['commitmessage'] = readtext(">> Please insert a commit message: ")
             elif etpConst['rss-feed']:
@@ -199,6 +198,7 @@ def packages(options):
 	totalUris = len(etpConst['activatoruploaduris'])
 	currentUri = 0
 	totalSuccessfulUri = 0
+        mirrorsTainted = False
 	
 	activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: called sync.")
 	
@@ -455,7 +455,6 @@ def packages(options):
 	            print_info(red(" * ")+blue("Total removal ")+red("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalRemovalSize))))
 	            print_info(red(" * ")+blue("Total download ")+brown("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalDownloadSize))))
 	            print_info(red(" * ")+blue("Total upload ")+green("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalUploadSize))))
-	    
 
 	            if (etpUi['pretend']):
 		        continue
@@ -478,22 +477,35 @@ def packages(options):
 		
 
 	            # removal queue
-	            if (detailedRemovalQueue != []):
+	            if (detailedRemovalQueue):
 		        for item in detailedRemovalQueue:
 		            print_info(red(" * Removing file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(etpConst['packagesbindir']+"/"+mybranch)+red(" ..."))
-		            spawnCommand("rm -f "+etpConst['packagesbindir']+"/"+mybranch+"/"+item[0])
-			    spawnCommand("rm -f "+etpConst['packagesbindir']+"/"+mybranch+"/"+item[0]+etpConst['packageshashfileext'])
+                            try:
+                                os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+item[0])
+                            except OSError:
+                                pass
+                            try:
+                                os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+item[0]+etpConst['packageshashfileext'])
+                            except OSError:
+                                pass
 		        print_info(red(" * Removal completed for ")+bold(etpConst['packagesbindir']+"/"+mybranch))
 
 		    # simple copy queue
-		    if (simpleCopyQueue != []):
+		    if (simpleCopyQueue):
 		        for item in simpleCopyQueue:
 			    print_info(red(" * Copying file from ") + bold(item) + red(" to ")+bold(etpConst['packagesbindir']+"/"+mybranch))
-			    spawnCommand("cp -p "+item+" "+etpConst['packagesbindir']+"/"+mybranch+"/", "> /dev/null")
+                            toitem = etpConst['packagesbindir']+"/"+mybranch+"/"+os.path.basename(item)
+                            if not os.path.isdir(os.path.dirname(toitem)):
+                                os.makedirs(os.path.dirname(toitem))
 			    # md5 copy not needed, already in simpleCopyQueue
+                            shutil.copy2(item,toitem)
+                            if os.path.isfile(toitem+etpConst['packagesexpirationfileext']): # clear expiration file
+                                os.remove(toitem+etpConst['packagesexpirationfileext'])
+
 
 	            # upload queue
-	            if (detailedUploadQueue != []):
+	            if (detailedUploadQueue):
+                        mirrorsTainted = True
 	                ftp = mirrorTools.handlerFTP(uri)
 	                ftp.setCWD(etpConst['binaryurirelativepath']+"/"+mybranch)
 		        uploadCounter = str(len(detailedUploadQueue))
@@ -574,7 +586,7 @@ def packages(options):
 		        ftp.closeConnection()
 
 	            # download queue
-	            if (detailedDownloadQueue != []):
+	            if (detailedDownloadQueue):
 	                ftp = mirrorTools.handlerFTP(uri)
 	                ftp.setCWD(etpConst['binaryurirelativepath']+"/"+mybranch)
 		        downloadCounter = str(len(detailedDownloadQueue))
@@ -678,7 +690,6 @@ def packages(options):
 
 	# if at least one server has been synced successfully, move files
 	if (totalSuccessfulUri > 0) and (not etpUi['pretend']):
-	    import shutil
 	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"packages: all done. Now it's time to move packages to "+etpConst['packagesbindir'])
 	    pkgbranches = os.listdir(etpConst['packagessuploaddir'])
 	    pkgbranches = [x for x in pkgbranches if os.path.isdir(etpConst['packagessuploaddir']+"/"+x)]
@@ -691,7 +702,9 @@ def packages(options):
 		        os.makedirs(destdir)
 		    dest = destdir+"/"+file
 		    shutil.move(source,dest)
-	    return True
+                    if os.path.isfile(dest+etpConst['packagesexpirationfileext']): # clear expiration file
+                        os.remove(dest+etpConst['packagesexpirationfileext'])
+	    return mirrorsTainted
 	else:
 	    exit(470)
 

@@ -350,12 +350,12 @@ class etpDatabase:
 
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in read/write.")
 	
-	if (etpDbStatus['tainted']) and (not etpDbStatus['bumped']):
+	if (etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']) and (not etpDbStatus[etpConst['etpdatabasefilepath']]['bumped']):
 	    # bump revision, setting DatabaseBump causes the session to just bump once
-	    etpDbStatus['bumped'] = True
+	    etpDbStatus[etpConst['etpdatabasefilepath']]['bumped'] = True
 	    self.revisionBump()
 	
-	if (not etpDbStatus['tainted']):
+	if (not etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']):
 	    # we can unlock it, no changes were made
 	    import activatorTools
 	    activatorTools.lockDatabases(False)
@@ -388,14 +388,14 @@ class etpDatabase:
 	f.write(etpConst['currentarch']+" database tainted\n")
 	f.flush()
 	f.close()
-	etpDbStatus['tainted'] = True
+	etpDbStatus[etpConst['etpdatabasefilepath']]['tainted'] = True
 
     def untaintDatabase(self):
 	if (self.clientDatabase): # if it's equo to open it, this should be avoided
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called by Entropy client, won't do anything.")
 	    return
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called.")
-	etpDbStatus['tainted'] = False
+	etpDbStatus[etpConst['etpdatabasefilepath']]['tainted'] = False
 	# untaint the database status
         if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
             os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])

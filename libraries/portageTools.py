@@ -40,7 +40,6 @@ from portage_const import USER_CONFIG_PATH
 from outputTools import *
 # misc modules
 import sys
-import os
 import commands
 import entropyTools
 

@@ -1258,6 +1258,7 @@ def askquestion(prompt):
 	print "Interrupted."
         xtermTitleReset()
 	exit(100)
+    xtermTitleReset()
 
 class lifobuffer:
     

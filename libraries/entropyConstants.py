@@ -594,12 +594,14 @@ def initConfig_entropyConstants(rootdir):
     
     # load server database status
     myDatabase = {
-        'bumped': False,
-        'tainted': False
+        etpConst['etpdatabasefilepath']: {
+            'bumped': False,
+            'tainted': False
+        }
     }
     if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
-        myDatabase['tainted'] = True
-        myDatabase['bumped'] = True
+        myDatabase[etpConst['etpdatabasefilepath']]['tainted'] = True
+        myDatabase[etpConst['etpdatabasefilepath']]['bumped'] = True
     etpDbStatus.update(myDatabase)
     del myDatabase
     
