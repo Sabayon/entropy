@@ -363,6 +363,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     except DatabaseError:
                         if not (etpUi['quiet'] or returnQueue): print_warning(red("## ATTENTION:")+bold(" "+basefile+" ")+red(" is not a valid Entropy package. Skipping..."))
                         del etpRepositories[basefile]
+                        if returnQueue:
+                            raise
                         continue
                     if len(myidpackages) > 1:
                         etpRepositories[basefile]['smartpackage'] = True
