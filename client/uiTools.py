@@ -357,7 +357,12 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     etpRepositoriesOrder.add((repoordercount[-1]+1,basefile))
                     mydbconn = openGenericDatabase(dbfile)
                     # read all idpackages
-                    myidpackages = mydbconn.listAllIdpackages() # all branches admitted from external files
+                    try:
+                        myidpackages = mydbconn.listAllIdpackages() # all branches admitted from external files
+                    except DatabaseError:
+                        if not (etpUi['quiet'] or returnQueue): print_warning(red("## ATTENTION:")+bold(" "+basefile+" ")+red(" is not a valid Entropy package. Skipping..."))
+                        del etpRepositories[basefile]
+                        continue
                     if len(myidpackages) > 1:
                         etpRepositories[basefile]['smartpackage'] = True
                     for myidpackage in myidpackages:

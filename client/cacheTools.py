@@ -59,7 +59,7 @@ def cleanCache():
 	    os.system("rm -f "+cachefile)
 	except:
 	    pass
-    if (not etpUi['quiet']): print_info(blue("(")+bold("*")+blue(")")+darkred(" Cache in now empty."))
+    if (not etpUi['quiet']): print_info(blue("(")+bold("*")+blue(")")+darkred(" Cache is now empty."))
     return 0
 
 '''
