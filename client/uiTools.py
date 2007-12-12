@@ -524,7 +524,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         if ((not runQueue) and (not removalQueue)):
             if not (etpUi['quiet'] or returnQueue): print_error(red("Nothing to do."))
             dirscleanup()
-            return 127,-1
+            return 126,-1
 
         if (runQueue):
             if (etpUi['ask'] or etpUi['pretend']):
@@ -552,16 +552,9 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 
                 # fill action queue
                 actionQueue[pkgatom] = {}
-                actionQueue[pkgatom]['repository'] = packageInfo[1]
-                actionQueue[pkgatom]['idpackage'] = packageInfo[0]
-                actionQueue[pkgatom]['slot'] = pkgslot
-                actionQueue[pkgatom]['atom'] = pkgatom
-                actionQueue[pkgatom]['version'] = pkgver
-                actionQueue[pkgatom]['category'] = pkgcat
-                actionQueue[pkgatom]['name'] = pkgname
                 actionQueue[pkgatom]['removeidpackage'] = -1
-                actionQueue[pkgatom]['download'] = pkgfile
                 actionQueue[pkgatom]['removeconfig'] = configFiles
+                
                 dl = equoTools.checkNeededDownload(pkgfile, None) # we'll do a good check during installPackage
                 actionQueue[pkgatom]['fetch'] = dl
                 if dl < 0:
@@ -822,8 +815,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 	# get package atom
 	dbconn = openRepositoryDatabase(repository)
 	pkgatom = dbconn.retrieveAtom(idpackage)
-
-
+        
 	steps = []
 	# download
 	if not repository.endswith(".tbz2"):
@@ -849,6 +841,15 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 actionQueue[pkgatom]['removeidpackage'] = -1
 
         if not returnQueue: # must be loaded manually
+            actionQueue[pkgatom]['atom'] = pkgatom
+            actionQueue[pkgatom]['slot'] = dbconn.retrieveSlot(idpackage)
+            actionQueue[pkgatom]['download'] = dbconn.retrieveDownloadURL(idpackage)
+            actionQueue[pkgatom]['version'] = dbconn.retrieveVersion(idpackage)
+            actionQueue[pkgatom]['category'] = dbconn.retrieveCategory(idpackage)
+            actionQueue[pkgatom]['name'] = dbconn.retrieveName(idpackage)
+            actionQueue[pkgatom]['repository'] = packageInfo[1]
+            actionQueue[pkgatom]['idpackage'] = packageInfo[0]
+            
             actionQueue[pkgatom]['messages'] = dbconn.retrieveMessages(idpackage)
             actionQueue[pkgatom]['checksum'] = dbconn.retrieveDigest(idpackage)
             # get data for triggerring tool
@@ -952,7 +953,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         # are packages in foundAtoms?
         if (len(foundAtoms) == 0):
             if not (etpUi['quiet'] or returnQueue): print_error(red("No packages found"))
-            return 127,-1
+            return 125,-1
     
         plainRemovalQueue = []
         
@@ -1008,7 +1009,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
     
         if (not plainRemovalQueue):
             if not (etpUi['quiet'] or returnQueue): print_error(red("Nothing to do."))
-            return 127,-1
+            return 126,-1
     
         removalQueue = []
         
