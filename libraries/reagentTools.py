@@ -712,6 +712,72 @@ def database(options):
 	dbconn.closeDB()
         return 0
 
+    elif (options[0] == "multiremove"):
+
+	print_info(green(" * ")+red("Scanning packages that would be removed ..."), back = True)
+	
+	branch = etpConst['branch']
+        atoms = []
+	for opt in options[1:]:
+	    if (opt.startswith("--branch=")) and (len(opt.split("=")) == 2):
+		branch = opt.split("=")[1]
+	    else:
+		atoms.append(opt)
+	
+	pkglist = set()
+	dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+        allidpackages = dbconn.listAllIdpackages()
+
+        idpackages = set()
+        if not atoms:
+            # choose all
+            for idpackage in allidpackages:
+                if dbconn.isInjected(idpackage):
+                    idpackages.add(idpackage)
+        else:
+            for atom in atoms:
+                match = dbconn.atomMatch(atom, matchBranches = (branch,), multiMatch = True, packagesFilter = False)
+                if match[1] != 0:
+                    print_warning(red("Attention, no match for: ")+bold(atom))
+                else:
+                    for x in match[0]:
+                        if dbconn.isInjected(x):
+                            idpackages.add(x)
+
+	# check if atoms were found
+	if not idpackages:
+	    dbconn.closeDB()
+	    print_error(brown(" * ")+red("No packages found."))
+	    return 11
+	
+	print_info(green(" * ")+blue("These are the packages that would be removed from the database:"))
+
+	for idpackage in idpackages:
+	    pkgatom = dbconn.retrieveAtom(idpackage)
+	    branch = dbconn.retrieveBranch(idpackage)
+	    print_info(darkred("    (*) ")+blue("[")+red(branch)+blue("] ")+brown(pkgatom))
+
+	# ask to continue
+	rc = askquestion("     Would you like to continue ?")
+	if rc == "No":
+	    return 0
+
+        dbconn.closeDB()
+        del dbconn
+	dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+
+	print_info(green(" * ")+red("Removing selected packages ..."))
+
+	# open db
+	for idpackage in idpackages:
+	    pkgatom = dbconn.retrieveAtom(idpackage)
+	    print_info(green(" * ")+red("Removing package: ")+bold(pkgatom)+red(" ..."))
+	    dbconn.removePackage(idpackage)
+	print_info(green(" * ")+red("All the selected packages have been removed as requested."))
+	dbconn.closeDB()
+        del dbconn
+        return 0
+
     # used by reagent
     elif (options[0] == "md5check"):
 
