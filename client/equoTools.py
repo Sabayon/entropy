@@ -1331,8 +1331,6 @@ def installPackageIntoGentooDatabase(infoDict, packageFile, newidpackage = -1):
             dirsfound = set([infoDict['category']+"/"+x for x in catdirs if key == dep_getkey(infoDict['category']+"/"+x)])
             atomsfound.update(dirsfound)
 	
-	# atomsfound = _portage_getInstalledAtoms(key) too slow!
-	
 	### REMOVE
 	# parse slot and match and remove
 	if atomsfound:
