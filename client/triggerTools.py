@@ -518,7 +518,7 @@ def pygtksetup(pkgdata):
         sympath = os.path.basename(file)
 	if os.path.isfile(file):
             try:
-                if os.path.isfile(filepath):
+                if os.path.lexists(filepath):
                     os.remove(filepath)
                 os.symlink(sympath,filepath)
             except OSError:
@@ -794,12 +794,12 @@ def python_update_symlink():
         bins.sort()
         latest = bins[-1]
         
-        latest = etpConst['systemroot']+latest
+        latest = etpConst['systemroot']+"/usr/bin/"+latest
         filepath = os.path.dirname(latest)+"/python"
         sympath = os.path.basename(latest)
 	if os.path.isfile(latest):
             try:
-                if os.path.isfile(filepath):
+                if os.path.lexists(filepath):
                     os.remove(filepath)
                 os.symlink(sympath,filepath)
             except OSError:
@@ -816,12 +816,13 @@ def sqlite_update_symlink():
     if bins:
         bins.sort()
         latest = bins[-1]
+        latest = etpConst['systemroot']+"/usr/bin/"+latest
         
         filepath = os.path.dirname(latest)+"/lemon"
         sympath = os.path.basename(latest)
         if os.path.isfile(latest):
             try:
-                if os.path.isfile(filepath):
+                if os.path.lexists(filepath):
                     os.remove(filepath)
                 os.symlink(sympath,filepath)
             except OSError:
