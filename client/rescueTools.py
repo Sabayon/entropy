@@ -81,6 +81,7 @@ def database(options):
                 myrevision = clientDbconn.retrieveRevision(myid)
                 revisionsMatch[myatom] = myrevision
             clientDbconn.closeDB()
+            del clientDbconn
         except:
             pass
         
@@ -155,6 +156,7 @@ def database(options):
 	clientDbconn.regenerateDependsTable()
 	print_info(red("  Database reinitialized successfully."))
 	clientDbconn.closeDB()
+        del clientDbconn
         return 0
 
     elif (options[0] == "resurrect"):
@@ -238,6 +240,7 @@ def database(options):
 			filelist.difference_update(set([etpConst['systemroot']+x for x in content]))
 			break
 	    dbconn.closeDB()
+            del clientDbconn
 	
 	print_info(red("  Found "+str(len(pkgsfound))+" packages. Filling database..."))
 	count = str(len(pkgsfound))
@@ -258,6 +261,7 @@ def database(options):
 	clientDbconn = openClientDatabase()
 	clientDbconn.regenerateDependsTable()
 	clientDbconn.closeDB()
+        del clientDbconn
 	print_info(red("  Depends caching table regenerated successfully."))
         return 0
 
@@ -273,6 +277,7 @@ def database(options):
 	clientDbconn = openClientDatabase()
 	clientDbconn.regenerateCountersTable(output = True)
 	clientDbconn.closeDB()
+        del clientDbconn
 	print_info(red("  Counters table regenerated. Check above for errors."))
         return 0
 
@@ -293,6 +298,7 @@ def database(options):
             clientDbconn.isCounterAvailable(1)
         except:
             clientDbconn.closeDB()
+            del clientDbconn
             print_error(darkred(" * ")+bold("Entropy database")+red(" has never been in sync with Portage one. So, you can't run this unless you run '")+bold("equo database generate")+red("' first. Sorry."))
             return 1
 
@@ -344,6 +350,7 @@ def database(options):
             print_info(red(" Databases already synced."))
             # then exit gracefully
             clientDbconn.closeDB()
+            del clientDbconn
             return 0
         
         if (toBeRemoved):
@@ -410,6 +417,7 @@ def database(options):
             print_info(brown(" @@ ")+blue("Database update completed."))
         
         clientDbconn.closeDB()
+        del clientDbconn
         return 0
 
     else:
@@ -467,6 +475,7 @@ def getinfo(dict = False):
 	info['Removal internal protected directory masks'] = clientDbconn.listConfigProtectDirectories(mask = True)
 	info['Total installed packages'] = len(clientDbconn.listAllIdpackages())
 	clientDbconn.closeDB()
+        del clientDbconn
     
     # repository databases info (if found on the system)
     info['Repository databases'] = {}
@@ -482,6 +491,7 @@ def getinfo(dict = False):
 	    info['Repository databases'][x]['Database revision'] = repositoriesTools.getRepositoryRevision(x)
 	    info['Repository databases'][x]['Database hash'] = repositoriesTools.getRepositoryDbFileHash(x)
 	    dbconn.closeDB()
+            del dbconn
     
     if (dict):
 	return info

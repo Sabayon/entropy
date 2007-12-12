@@ -141,6 +141,7 @@ def listAllAvailableBranches():
         dbconn = openRepositoryDatabase(repo)
         branches.update(dbconn.listAllBranches())
         dbconn.closeDB()
+        del dbconn
     return branches
 
 class etpDatabase:
@@ -309,8 +310,6 @@ class etpDatabase:
 	
 	self.connection = sqlite.connect(dbFile,timeout=300.0)
 	self.cursor = self.connection.cursor()
-        self.connection.text_factory = sqlite.OptimizedUnicode
-        #self.connection.text_factory = asd
 
     def closeDB(self):
 

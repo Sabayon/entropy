@@ -121,6 +121,7 @@ def searchInstalledPackages(packages, idreturn = False):
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
 	
     clientDbconn.closeDB()
+    del clientDbconn
 
     if (idreturn):
 	return dataInfo
@@ -173,6 +174,7 @@ def searchBelongs(files, idreturn = False):
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
 	
     clientDbconn.closeDB()
+    del clientDbconn
 
     if (idreturn):
 	return dataInfo
@@ -210,6 +212,7 @@ def searchDepends(atoms, idreturn = False):
 		if (matchInRepo):
 		    # run equo update
 		    dbconn.closeDB()
+                    del dbconn
 		    syncRepositories([result[1]], forceUpdate = True)
 		    dbconn = openRepositoryDatabase(result[1])
 		else:
@@ -236,8 +239,10 @@ def searchDepends(atoms, idreturn = False):
 	    continue
 	if (matchInRepo):
 	    dbconn.closeDB()
+            del dbconn
 
     clientDbconn.closeDB()
+    del clientDbconn
 
     if (idreturn):
 	return dataInfo
@@ -274,6 +279,7 @@ def searchNeeded(atoms, idreturn = False):
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(myneeded)))+red(" libraries"))
 	
     clientDbconn.closeDB()
+    del clientDbconn
 
     if (idreturn):
 	return dataInfo
@@ -313,6 +319,7 @@ def searchFiles(atoms, idreturn = False):
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(files)))+red(" files"))
 	
     clientDbconn.closeDB()
+    del clientDbconn
 
     if (idreturn):
 	return dataInfo
@@ -486,12 +493,14 @@ def searchInstalled(idreturn = False):
 	    else:
 	        print atom
 	clientDbconn.closeDB()
+        del clientDbconn
 	return 0
     else:
 	idpackages = set()
 	for x in installedPackages:
 	    idpackages.add(package[1])
         clientDbconn.closeDB()
+        del clientDbconn
         return list(idpackages)
 
 
@@ -539,6 +548,7 @@ def searchPackage(packages, idreturn = False):
 	            print_info(blue(" Found:   ")+bold("\t"+str(len(foundPackages[repo][package])))+red(" entries"))
 	
 	dbconn.closeDB()
+        del dbconn
 
     if (idreturn):
 	return dataInfo
@@ -573,6 +583,7 @@ def searchTaggedPackages(tags, datareturn = False):
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
 	
 	dbconn.closeDB()
+        del dbconn
 
     if (datareturn):
 	return foundPackages
@@ -615,6 +626,7 @@ def searchDescription(descriptions, idreturn = False):
 	            print_info(blue(" Found:   ")+bold("\t"+str(len(foundPackages[repo][desc])))+red(" entries"))
 	
 	dbconn.closeDB()
+        del dbconn
 
     if (idreturn):
 	return dataInfo
@@ -678,6 +690,7 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
 		    installedTag = "NoTag"
 		installedRev = clientDbconn.retrieveRevision(idx)
 	    clientDbconn.closeDB()
+            del clientDbconn
 
 
     print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(pkgbranch))

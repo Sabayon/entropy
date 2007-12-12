@@ -1375,6 +1375,7 @@ def quickpkg(pkgdata,dirpath, edb = True, portdbPath = None):
         mydbconn.initializeDatabase()
         mydbconn.addPackage(pkgdata, revision = pkgdata['revision'])
         mydbconn.closeDB()
+        del mydbconn
         aggregateEdb(tbz2file = dirpath, dbfile = dbpath)
 
     if os.path.isfile(dirpath):
@@ -1563,8 +1564,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
                 i[0] = i[0].encode(getfilesystemencoding())
             except:  # default encoding failed
                 try:
-                    i[0] = i[0].decode("latin1") # try to convert to latin1 and then back to sys.getfilesystemencoding()
-                    i[0] = i[0].encode(getfilesystemencoding())
+                    i[0] = i[0].decode("latin1").decode("iso-8859-1").encode(getfilesystemencoding()) # try to convert to latin1 and then back to sys.getfilesystemencoding()
                 except:
                     print "DEBUG: cannot encode into filesystem encoding -> "+str(i[0])
                     continue
@@ -1593,8 +1593,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
                         file = file.encode(getfilesystemencoding())
                     except:
                         try:
-                            file = file.decode("latin1")
-                            file = file.encode(getfilesystemencoding())
+                            file = file.decode("latin1").decode("iso-8859-1").encode(getfilesystemencoding())
                         except:
                             print "DEBUG: cannot encode into filesystem encoding -> "+str(file)
                             continue

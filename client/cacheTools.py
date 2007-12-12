@@ -93,6 +93,7 @@ def generateCache(depcache = True, configcache = True):
 	    for info in pkgdata:
 	        depends.add(info[1])
 	    dbconn.closeDB()
+            del dbconn
         if (not etpUi['quiet']): print_warning(blue("(")+bold("*")+blue(")")+darkred(" Resolving metadata"))
 	atomMatchCache.clear()
 	maxlen = str(len(names))

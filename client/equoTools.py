@@ -139,6 +139,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 	    repoResults[repo] = query[0]
 	
 	dbconn.closeDB()
+        del dbconn
 
     # handle repoResults
     packageInformation = {}
@@ -177,6 +178,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 	    packageInformation[repo]['versiontag'] = dbconn.retrieveVersionTag(repoResults[repo])
 	    packageInformation[repo]['revision'] = dbconn.retrieveRevision(repoResults[repo])
 	    dbconn.closeDB()
+            del dbconn
 
 	versions = []
 	repoNames = []
@@ -358,6 +360,7 @@ def getDependencies(packageInfo):
     for x in conflicts:
 	depend.add("!"+x)
     dbconn.closeDB()
+    del dbconn
 
     ''' caching '''
     getDependenciesCache[tuple(packageInfo)] = {}
@@ -410,6 +413,7 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
             repo_pkgtag = dbconn.retrieveVersionTag(repoMatch[0])
             repo_pkgrev = dbconn.retrieveRevision(repoMatch[0])
             dbconn.closeDB()
+            del dbconn
         else:
             # dependency does not exist in our database
             unsatisfiedDeps.add(dependency)
@@ -449,6 +453,7 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
         filterSatisfiedDependenciesCache[dependency]['deepdeps'] = deepdeps
     
     clientDbconn.closeDB()
+    del clientDbconn
 
     return unsatisfiedDeps, satisfiedDeps
 
@@ -476,6 +481,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
     mydbconn = openRepositoryDatabase(atomInfo[1])
     myatom = mydbconn.retrieveAtom(atomInfo[0])
     mydbconn.closeDB()
+    del mydbconn
 
     # caches
     treecache = set()
@@ -519,8 +525,8 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
         matchdb = openRepositoryDatabase(match[1])
         matchatom = matchdb.retrieveAtom(match[0])
         matchdb.closeDB()
+        del matchdb
         if matchatom in treecache:
-            print matchatom
             mydep = mybuffer.pop()
             continue
         else:
@@ -563,6 +569,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
                     ndbconn = openRepositoryDatabase(atom[1])
                     needed = ndbconn.retrieveNeeded(atom[0])
                     ndbconn.closeDB()
+                    del ndbconn
                     oldneeded.difference_update(needed)
                     if oldneeded:
                         # reverse lookup to find belonging package
@@ -578,6 +585,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
                                     mydbconn = openRepositoryDatabase(mymatch[1])
                                     mynewatom = mydbconn.retrieveAtom(mymatch[0])
                                     mydbconn.closeDB()
+                                    del mydbconn
                                     if (mymatch not in matchcache) and (mynewatom not in treecache):
                                         mybuffer.push((treedepth,mynewatom))
                                 else:
@@ -598,6 +606,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
     del deptree
     
     clientDbconn.closeDB()
+    del clientDbconn
     
     if (dependenciesNotFound):
 	# Houston, we've got a problem
@@ -771,6 +780,7 @@ def generateDependsTree(idpackages, deep = False):
     del tree
     
     clientDbconn.closeDB()
+    del clientDbconn
     
     ''' caching '''
     generateDependsTreeCache[tuple(idpackages)] = {}
@@ -1071,6 +1081,7 @@ def removePackage(infoDict):
             break
 
     clientDbconn.closeDB()
+    del clientDbconn
     return 0
 
 
@@ -1253,6 +1264,7 @@ def installPackage(infoDict):
 	removePackage(infoDict)
 
     clientDbconn.closeDB()
+    del clientDbconn
 
     rc = 0
     if (etpConst['gentoo-compat']):
@@ -1378,6 +1390,7 @@ def installPackageIntoGentooDatabase(infoDict, packageFile, newidpackage = -1):
             else:
                 xpakstatus = None
             xdbconn.closeDB()
+            del xdbconn
         else:
             xpakstatus = extractXpak(packageFile,xpakPath)
         if xpakstatus != None:
@@ -1422,6 +1435,7 @@ def installPackageIntoGentooDatabase(infoDict, packageFile, newidpackage = -1):
                 clientDbconn = openClientDatabase()
                 clientDbconn.setCounter(newidpackage,counter)
                 clientDbconn.closeDB()
+                del clientDbconn
             else:
                 print "DEBUG: WARNING!! "+destination+" DOES NOT EXIST, CANNOT UPDATE COUNTER!!"
 
@@ -1439,6 +1453,7 @@ def installPackageIntoDatabase(idpackage, repository):
     dbconn = openRepositoryDatabase(repository)
     data = dbconn.getPackageData(idpackage)
     dbconn.closeDB()
+    del dbconn
     #print data['dependencies']
     # open client db
     clientDbconn = openClientDatabase()
@@ -1469,6 +1484,7 @@ def installPackageIntoDatabase(idpackage, repository):
 	    clientDbconn.regenerateDependsTable()
 
     clientDbconn.closeDB()
+    del clientDbconn
     return idpk
 
 '''
@@ -1482,6 +1498,7 @@ def removePackageFromDatabase(idpackage):
     clientDbconn = openClientDatabase()
     clientDbconn.removePackage(idpackage)
     clientDbconn.closeDB()
+    del clientDbconn
     return 0
 
 
@@ -1597,5 +1614,6 @@ def stepExecutor(step, infoDict, loopString = None):
                     eval("triggerTools."+trigger)(remdata)
     
     clientDbconn.closeDB()
+    del clientDbconn
     
     return output

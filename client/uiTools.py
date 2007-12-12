@@ -179,6 +179,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
                 # if revision is 9999, then any revision is fine
                 if revision == 9999: arevision = 9999
                 adbconn.closeDB()
+                del adbconn
                 if revision != arevision:
                     tainted = True
                 elif (replay):
@@ -190,6 +191,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
                     mdbconn = openRepositoryDatabase(matchresults[1])
                     matchatom = mdbconn.retrieveAtom(matchresults[0])
                     mdbconn.closeDB()
+                    del mdbconn
                     updateList.add((matchatom,matchresults))
                 else:
                     removedList.add(idpackage)
@@ -199,6 +201,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
                         mdbconn = openRepositoryDatabase(matchresults[1])
                         matchatom = mdbconn.retrieveAtom(matchresults[0])
                         mdbconn.closeDB()
+                        del mdbconn
                         # compare versions
                         unsatisfied, satisfied = equoTools.filterSatisfiedDependencies((matchatom,))
                         if unsatisfied:
@@ -278,6 +281,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
 	        rc = entropyTools.askquestion("     Would you like to query them ?")
 	        if rc == "No":
 		    clientDbconn.closeDB()
+                    del clientDbconn
 		    return 0,0
 	    else:
 		if not (etpUi['quiet'] or returnQueue):
@@ -295,6 +299,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
 	if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("Nothing to remove."))
 
     clientDbconn.closeDB()
+    del clientDbconn
     
     if returnQueue:
         return worldQueue,0
@@ -371,6 +376,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     for myidpackage in myidpackages:
                         foundAtoms.append([pkg,(int(myidpackage),basefile)])
                     mydbconn.closeDB()
+                    del mydbconn
 
         # filter packages not found
         _foundAtoms = []
@@ -447,6 +453,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 if not (etpUi['quiet'] or returnQueue): print_info("\t"+red("Action:\t\t")+" "+action)
             
                 dbconn.closeDB()
+                del dbconn
     
             if (etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']):
                 if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
@@ -482,6 +489,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                                 iatom = rdbconn.retrieveAtom(i)
                                 if not (etpUi['quiet'] or returnQueue): print_error(red("     # ")+" [from:"+repo+"] "+darkred(iatom))
                         rdbconn.closeDB()
+                        del rdbconn
                 dirscleanup()
                 return 130, -1
             
@@ -615,6 +623,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     
                 if not (etpUi['quiet'] or returnQueue): print_info(darkred(" ##")+flags+repoinfo+enlightenatom(str(pkgatom))+"/"+str(pkgrev)+oldinfo)
                 dbconn.closeDB()
+                del dbconn
     
         if (removalQueue):
             
@@ -639,6 +648,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         matchdbconn = openRepositoryDatabase(match[1])
                         matchatom = matchdbconn.retrieveAtom(match[0])
                         matchdbconn.closeDB()
+                        del matchdbconn
                         if (matchatom not in actionQueue) and (depend not in removalQueue): # if the atom hasn't been pulled in, we need to remove depend
                             # check if the atom is already up to date
                             mymatch = equoTools.atomMatch(matchatom)
@@ -724,6 +734,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         rdbconn = openRepositoryDatabase(item[1])
                         rconflicts = rdbconn.retrieveConflicts(item[0])
                         rdbconn.closeDB()
+                        del rdbconn
                         for rconflict in rconflicts:
                             rmatch = clientDbconn.atomMatch(rconflict)
                             if rmatch[0] != -1:
@@ -790,6 +801,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 rc = equoTools.stepExecutor(step,infoDict,str(currentremovalqueue)+"/"+totalremovalqueue)
                 if (rc != 0):
                     clientDbconn.closeDB()
+                    del clientDbconn
                     dirscleanup()
                     return -1,rc
         
@@ -844,6 +856,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             etpInstallTriggers[pkgatom]['trigger'] = dbconn.retrieveTrigger(idpackage)
 
 	dbconn.closeDB()
+        del dbconn
 
 	if (not onlyfetch):
 	    # install
@@ -870,6 +883,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 rc = equoTools.stepExecutor(step,actionQueue[pkgatom],str(currentqueue)+"/"+totalqueue)
                 if (rc != 0):
                     clientDbconn.closeDB()
+                    del clientDbconn
                     dirscleanup()
                     return -1,rc
 
@@ -892,6 +906,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     dumpTools.dumpobj(etpCache['install'],{})
     
     clientDbconn.closeDB()
+    del clientDbconn
     dirscleanup()
     
     if returnQueue:
@@ -988,6 +1003,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                 lookForOrphanedPackages = False
                 if (not deps):
                     clientDbconn.closeDB()
+                    del clientDbconn
                     return 0,0
     
         if (not plainRemovalQueue):
@@ -1031,6 +1047,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             rc = entropyTools.askquestion("     Would you like to proceed?")
             if rc == "No":
                 clientDbconn.closeDB()
+                del clientDbconn
                 return 0,0
         elif (deps):
             if not (etpUi['quiet'] or returnQueue): entropyTools.countdown(what = red(" @@ ")+blue("Starting removal in "),back = True)
@@ -1121,6 +1138,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                 rc = equoTools.stepExecutor(step,infoDict,str(currentqueue)+"/"+str(len(removalQueue)))
                 if (rc != 0):
                     clientDbconn.closeDB()
+                    del clientDbconn
                     return -1,rc
         
         # update resume cache
@@ -1134,6 +1152,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
     if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("All done."))
     
     clientDbconn.closeDB()
+    del clientDbconn
     
     if returnQueue:
         return returnActionQueue,0
@@ -1202,6 +1221,7 @@ def dependenciesTest(clientDbconn = None, reagent = False):
 		dbconn = openRepositoryDatabase(repo)
 		depatom = dbconn.retrieveAtom(iddep)
 		dbconn.closeDB()
+                del dbconn
 		if (not etpUi['quiet']):
 		    print_info(bold("       :o: ")+red(depatom))
 		else:
@@ -1210,6 +1230,7 @@ def dependenciesTest(clientDbconn = None, reagent = False):
 
     if (etpUi['pretend']):
 	clientDbconn.closeDB()
+        del clientDbconn
 	return 0, packagesNeeded
 
     if (packagesNeeded) and (not etpUi['quiet']) and (not reagent):
@@ -1217,6 +1238,7 @@ def dependenciesTest(clientDbconn = None, reagent = False):
             rc = entropyTools.askquestion("     Would you like to install the available packages?")
             if rc == "No":
 		clientDbconn.closeDB()
+                del clientDbconn
 	        return 0,packagesNeeded
 	else:
 	    print_info(red(" @@ ")+blue("Installing available packages in ")+red("10 seconds")+blue("..."))
@@ -1232,6 +1254,7 @@ def dependenciesTest(clientDbconn = None, reagent = False):
     if not etpUi['quiet']: print_info(red(" @@ ")+blue("All done."))
     if closedb:
         clientDbconn.closeDB()
+        del clientDbconn
     return 0,packagesNeeded
 
 def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
@@ -1339,6 +1362,7 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
                         packagesMatched.add((idpackage,repodata[1],lib))
         brokenlibs.difference_update(libsfound)
         dbconn.closeDB()
+        del dbconn
 
     if listfiles:
         etpUi['quiet'] = qstat
@@ -1364,6 +1388,7 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
             atomsdata.add((myatom,(packagedata[0],packagedata[1])))
             print_info("   "+red(packagedata[2])+" => "+brown(myatom)+" ["+red(packagedata[1])+"]")
             dbconn.closeDB()
+            del dbconn
     else:
         for packagedata in packagesMatched:
             dbconn = openRepositoryDatabase(packagedata[1])
@@ -1371,11 +1396,14 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
             atomsdata.add((myatom,(packagedata[0],packagedata[1])))
             print myatom
             dbconn.closeDB()
+            del dbconn
         clientDbconn.closeDB()
+        del clientDbconn
         return 0,atomsdata
 
     if (etpUi['pretend']):
 	clientDbconn.closeDB()
+        del clientDbconn
 	return 0,atomsdata
 
     if (atomsdata) and (not reagent):
@@ -1383,6 +1411,7 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
             rc = entropyTools.askquestion("     Would you like to install them?")
             if rc == "No":
 		clientDbconn.closeDB()
+                del clientDbconn
 	        return 0,atomsdata
 	else:
 	    print_info(red(" @@ ")+blue("Installing found packages in ")+red("10 seconds")+blue("..."))
@@ -1393,6 +1422,7 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
         rc = installPackages(atomsdata = list(atomsdata))
         if closedb:
             clientDbconn.closeDB()
+            del clientDbconn
         if rc[0] == 0:
             return 0,atomsdata
         else:
@@ -1400,4 +1430,5 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
 
     if closedb:
         clientDbconn.closeDB()
+        del clientDbconn
     return 0,atomsdata
