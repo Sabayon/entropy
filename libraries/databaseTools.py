@@ -299,8 +299,7 @@ class etpDatabase:
 	    	        print_info(bold("\t"+entropyTools.extractFTPHostFromUri(db[0])+": ")+red("[")+yellow("DATABASE: ")+db[1]+red("] [")+yellow("DOWNLOAD: ")+db[2]+red("]"))
 	    
 	            ftp.closeConnection()
-	            from sys import exit
-                    exit(320)
+                    raise Exception, "cannot continue."
 
 	    # if we arrive here, it is because all the mirrors are unlocked so... damn, LOCK!
 	    activatorTools.lockDatabases(True)
