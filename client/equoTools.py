@@ -50,7 +50,9 @@ def loadCaches():
     try:
         mycache = dumpTools.loadobj(etpCache['atomMatch'])
 	if isinstance(mycache, dict):
-	    atomMatchCache = mycache.copy()
+            atomMatchCache.clear()
+            atomMatchCache.update(mycache)
+	    del mycache
     except:
 	atomMatchCache.clear()
 	dumpTools.dumpobj(etpCache['atomMatch'],{})
@@ -59,7 +61,9 @@ def loadCaches():
     try:
         mycache3 = dumpTools.loadobj(etpCache['generateDependsTree'])
 	if isinstance(mycache3, dict):
-	    generateDependsTreeCache = mycache3.copy()
+            generateDependsTreeCache.clear()
+            generateDependsTreeCache.update(mycache3)
+            del mycache3
     except:
 	generateDependsTreeCache.clear()
 	dumpTools.dumpobj(etpCache['generateDependsTree'],{})

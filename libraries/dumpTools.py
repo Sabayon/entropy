@@ -19,9 +19,8 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
-import sys
-from xml.dom import minidom
 from entropyConstants import *
+import cPickle
 
 '''
    @description: dump object to file
@@ -30,13 +29,6 @@ from entropyConstants import *
 '''
 def dumpobj(name, object, completePath = False):
     while 1: # trap ctrl+C
-        doc = minidom.Document()
-        structure = doc.createElement("structure")
-        doc.appendChild(structure)
-        data = doc.createElement("data")
-        structure.appendChild(data)
-        text = doc.createTextNode(unicode(object))
-        data.appendChild(text)
         # etpConst['dumpstoragedir']
         try:
             if completePath:
@@ -45,8 +37,8 @@ def dumpobj(name, object, completePath = False):
                 if not os.path.isdir(etpConst['dumpstoragedir']):
                     os.makedirs(etpConst['dumpstoragedir'])
                 dmpfile = etpConst['dumpstoragedir']+"/"+name+".dmp"
-            f = open(dmpfile,"w")
-            f.writelines(doc.toprettyxml(indent="  "))
+            f = open(dmpfile,"wb")
+            cPickle.dump(object,f)
             f.flush()
             f.close()
         except:
@@ -66,12 +58,11 @@ def loadobj(name, completePath = False):
         dmpfile = etpConst['dumpstoragedir']+"/"+name+".dmp"
     if os.path.isfile(dmpfile):
 	try:
-	    xmldoc = minidom.parse(dmpfile)
-	    structure = xmldoc.firstChild
-	    data = structure.childNodes[1]
-	    x = eval(data.firstChild.data.strip())
-	    return x
-	except:
+            f = open(dmpfile,"rb")
+            x = cPickle.load(f)
+            f.close()
+            return x
+	except cPickle.UnpicklingError:
 	    os.remove(dmpfile)
 	    raise SyntaxError,"cannot load object"
 
