@@ -407,7 +407,6 @@ def isjustpkgname(mypkg):
 	    return 0
     return 1
 
-ververifyCache = {}
 def ververify(myverx, silent=1):
     
     cached = ververifyCache.get(myverx)
@@ -426,7 +425,7 @@ def ververify(myverx, silent=1):
 	ververifyCache[myverx] = 0
 	return 0
 
-isjustnameCache = {}
+
 def isjustname(mypkg):
     """
     Checks to see if the depstring is only the package name (no version parts)
@@ -482,7 +481,7 @@ def isspecific(mypkg):
 	return 1
     return 0
 
-catpkgsplitCache = {}
+
 def catpkgsplit(mydata,silent=1):
     """
     Takes a Category/Package-Version-Rev and returns a list of each.
@@ -564,7 +563,7 @@ def pkgsplit(mypkg,silent=1):
 	return None
 
 # FIXME: deprecated, use remove_tag - will be removed soonly
-dep_striptagCache = {}
+
 def dep_striptag(mydepx):
 
     cached = dep_striptagCache.get(mydepx)
@@ -580,7 +579,7 @@ def dep_striptag(mydepx):
     dep_striptagCache[mydepx] = mydep
     return mydep
 
-dep_getkeyCache = {}
+
 def dep_getkey(mydepx):
     """
     Return the category/package-name of a depstring.
@@ -615,7 +614,7 @@ def dep_getkey(mydepx):
 	dep_getkeyCache[mydepx] = mydep
 	return mydep
 
-dep_getcpvCache = {}
+
 def dep_getcpv(mydep):
     """
     Return the category-package-version with any operators/slot specifications stripped off
@@ -652,7 +651,7 @@ def dep_getcpv(mydep):
     dep_getcpvCache[mydep] = mydep
     return mydep
 
-dep_getslotCache = {}
+
 def dep_getslot(dep):
     """
     Retrieve the slot on a depend.
@@ -708,7 +707,7 @@ def remove_entropy_revision(mydep):
         return mystring
     return mydep
 
-dep_gettagCache = {}
+
 def dep_gettag(dep):
     """
     Retrieve the slot on a depend.
@@ -732,7 +731,7 @@ def dep_gettag(dep):
     dep_gettagCache[dep] = None
     return None
 
-removePackageOperatorsCache = {}
+
 def removePackageOperators(atom):
 
     cached = removePackageOperatorsCache.get(atom)
@@ -757,7 +756,6 @@ ver_regexp = re.compile("^(cvs\\.)?(\\d+)((\\.\\d+)*)([a-z]?)((_(pre|p|beta|alph
 suffix_regexp = re.compile("^(alpha|beta|rc|pre|p)(\\d*)$")
 suffix_value = {"pre": -2, "p": 0, "alpha": -4, "beta": -3, "rc": -1}
 endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
-compareVersionsCache = {}
 def compareVersions(ver1, ver2, silent=1):
 	
 	cached = compareVersionsCache.get(tuple([ver1,ver2]))
@@ -889,7 +887,7 @@ def entropyCompareVersions(listA,listB):
    @input versionlist: a list
    @output: the ordered list
 '''
-getNewerVersionCache = {}
+
 def getNewerVersion(InputVersionlist):
 
     cached = getNewerVersionCache.get(tuple(InputVersionlist))

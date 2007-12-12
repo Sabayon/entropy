@@ -52,7 +52,7 @@ def loadCaches():
 	if isinstance(mycache, dict):
 	    atomMatchCache = mycache.copy()
     except:
-	atomMatchCache = {}
+	atomMatchCache.clear()
 	dumpTools.dumpobj(etpCache['atomMatch'],{})
 
     # removal dependencies
@@ -61,7 +61,7 @@ def loadCaches():
 	if isinstance(mycache3, dict):
 	    generateDependsTreeCache = mycache3.copy()
     except:
-	generateDependsTreeCache = {}
+	generateDependsTreeCache.clear()
 	dumpTools.dumpobj(etpCache['generateDependsTree'],{})
 
 
@@ -143,7 +143,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 
     # handle repoResults
     packageInformation = {}
-    
+
     # nothing found
     if len(repoResults) == 0:
 	atomMatchCache[atom] = {}
@@ -165,7 +165,16 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
     
     elif len(repoResults) > 1:
 	# we have to decide which version should be taken
-	
+        
+        # .tbz2 repos have always the precedence, so if we find them, we should second what user wants, installing his tbz2
+        tbz2repos = [x for x in repoResults if x.endswith(".tbz2")]
+        if tbz2repos:
+            del tbz2repos
+            newrepos = repoResults.copy()
+            for x in newrepos:
+                if not x.endswith(".tbz2"):
+                    del repoResults[x]
+        
 	# get package information for all the entries
 	for repo in repoResults:
 	    
@@ -338,7 +347,6 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
    @input packageInfo: tuple composed by int(id) and str(repository name), if this one is int(0), the client database will be opened.
    @output: ordered dependency list
 '''
-getDependenciesCache = {}
 def getDependencies(packageInfo):
 
     ''' caching '''
@@ -373,8 +381,6 @@ def getDependencies(packageInfo):
    @input dependencies: list of dependencies to check
    @output: filtered list, aka the needed ones and the ones satisfied
 '''
-filterSatisfiedDependenciesCache = {}
-filterSatisfiedDependenciesCmpResults = {} # 0: not installed, <0 a<b | >0 a>b
 def filterSatisfiedDependencies(dependencies, deepdeps = False):
 
     unsatisfiedDeps = set()
@@ -462,7 +468,6 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
    @input package: atomInfo (idpackage,reponame)
    @output: dependency tree dictionary, plus status code
 '''
-generateDependencyTreeCache = {}
 matchFilter = set()
 def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefilter = False):
 

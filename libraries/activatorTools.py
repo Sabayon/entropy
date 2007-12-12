@@ -256,7 +256,8 @@ def packages(options):
                                 except Exception, e:
                                     if str(e).find("550") != -1:
                                         pass
-                                    raise
+                                    else:
+                                        raise
                         ftp.setCWD(etpConst['binaryurirelativepath'])
 
 		    if (not ftp.isFileAvailable(mybranch)):
@@ -720,118 +721,132 @@ def database(options):
 
     # lock tool
     if (options[0] == "lock"):
-	print_info(green(" * ")+green("Starting to lock mirrors' databases..."))
-	rc = lockDatabases(lock = True)
-	if (rc):
-	    activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (lock) A problem occured on at least one mirror !")
-	    print_info(green(" * ")+red("A problem occured on at least one mirror !"))
-	else:
-	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Databases lock complete.")
-	    print_info(green(" * ")+green("Databases lock complete"))
+        print_info(green(" * ")+green("Starting to lock mirrors' databases..."))
+        rc = lockDatabases(lock = True)
+        if (rc):
+            activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (lock) A problem occured on at least one mirror !")
+            print_info(green(" * ")+red("A problem occured on at least one mirror !"))
+        else:
+            activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Databases lock complete.")
+            print_info(green(" * ")+green("Databases lock complete"))
 
     # unlock tool
     elif (options[0] == "unlock"):
-	print_info(green(" * ")+green("Starting to unlock mirrors' databases..."))
-	rc = lockDatabases(lock = False)
-	if (rc):
-	    activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (unlock) A problem occured on at least one mirror !")
-	    print_info(green(" * ")+green("A problem occured on at least one mirror !"))
-	else:
-	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Databases lock complete.")
-	    print_info(green(" * ")+green("Databases unlock complete"))
+        print_info(green(" * ")+green("Starting to unlock mirrors' databases..."))
+        rc = lockDatabases(lock = False)
+        if (rc):
+            activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (unlock) A problem occured on at least one mirror !")
+            print_info(green(" * ")+green("A problem occured on at least one mirror !"))
+        else:
+            activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Databases lock complete.")
+            print_info(green(" * ")+green("Databases unlock complete"))
 
     # download lock tool
     elif (options[0] == "download-lock"):
-	print_info(green(" * ")+green("Starting to lock download mirrors' databases..."))
-	rc = downloadLockDatabases(lock = True)
-	if (rc):
-	    activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (download-lock) A problem occured on at least one mirror !")
-	    print_info(green(" * ")+green("A problem occured on at least one mirror !"))
-	else:
-	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Download mirrors lock complete.")
-	    print_info(green(" * ")+green("Download mirrors lock complete"))
+        print_info(green(" * ")+green("Starting to lock download mirrors' databases..."))
+        rc = downloadLockDatabases(lock = True)
+        if (rc):
+            activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (download-lock) A problem occured on at least one mirror !")
+            print_info(green(" * ")+green("A problem occured on at least one mirror !"))
+        else:
+            activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Download mirrors lock complete.")
+            print_info(green(" * ")+green("Download mirrors lock complete"))
 
     # download unlock tool
     elif (options[0] == "download-unlock"):
-	print_info(green(" * ")+green("Starting to unlock download mirrors' databases..."))
-	rc = downloadLockDatabases(lock = False)
-	if (rc):
-	    activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (download-unlock) A problem occured on at least one mirror !")
-	    print_info(green(" * ")+green("A problem occured on at least one mirror..."))
-	else:
-	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Download mirrors unlock complete.")
-	    print_info(green(" * ")+green("Download mirrors unlock complete"))
+        print_info(green(" * ")+green("Starting to unlock download mirrors' databases..."))
+        rc = downloadLockDatabases(lock = False)
+        if (rc):
+            activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (download-unlock) A problem occured on at least one mirror !")
+            print_info(green(" * ")+green("A problem occured on at least one mirror..."))
+        else:
+            activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Download mirrors unlock complete.")
+            print_info(green(" * ")+green("Download mirrors unlock complete"))
 
     # lock status tool
     elif (options[0] == "lock-status"):
-	print_info(brown(" * ")+green("Mirrors status table:"))
-	dbstatus = getMirrorsLock()
-	for db in dbstatus:
-	    if (db[1]):
-	        db[1] = red("Locked")
-	    else:
-	        db[1] = green("Unlocked")
-	    if (db[2]):
-	        db[2] = red("Locked")
-	    else:
-	        db[2] = green("Unlocked")
-	    print_info(bold("\t"+extractFTPHostFromUri(db[0])+": ")+red("[")+brown("DATABASE: ")+db[1]+red("] [")+brown("DOWNLOAD: ")+db[2]+red("]"))
+        print_info(brown(" * ")+green("Mirrors status table:"))
+        dbstatus = getMirrorsLock()
+        for db in dbstatus:
+            if (db[1]):
+                db[1] = red("Locked")
+            else:
+                db[1] = green("Unlocked")
+            if (db[2]):
+                db[2] = red("Locked")
+            else:
+                db[2] = green("Unlocked")
+            print_info(bold("\t"+extractFTPHostFromUri(db[0])+": ")+red("[")+brown("DATABASE: ")+db[1]+red("] [")+brown("DOWNLOAD: ")+db[2]+red("]"))
 
     # database sync tool
     elif (options[0] == "sync"):
 
-	activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: database sync called.")
-
-	print_info(green(" * ")+red("Checking database status ..."), back = True)
-	
-	dbLockFile = False
-	# does the taint file exist?
-	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
-	    dbLockFile = True
-	
-	# are online mirrors locked?
-	mirrorsLocked = False
-	for uri in etpConst['activatoruploaduris']:
-	    ftp = mirrorTools.handlerFTP(uri)
-	    ftp.setCWD(etpConst['etpurirelativepath'])
-	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) or (ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
-		mirrorsLocked = True
-		ftp.closeConnection()
-		break
-	
-	if (mirrorsLocked):
-	    # if the mirrors are locked, we need to check if we have
-	    # the taint file in place. Because in this case, the one
-	    # that tainted the db, was me.
-	    if (dbLockFile):
-		print_info(green(" * ")+red("Updating mirrors with new information ..."))
-		# it's safe to sync
-	        syncRemoteDatabases()
-		# remove the online lock file
-		lockDatabases(False)
-		# remove the taint file
-		if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
-		    os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
-	    else:
-		print
-		activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database (sync inside activatorTools): At the moment, mirrors are locked, someone is working on their databases, try again later...")
-		print_error(green(" * ")+red("At the moment, mirrors are locked, someone is working on their databases, try again later..."))
-		exit(422)
-	
-	else:
-	    if (dbLockFile):
-		activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database (sync inside activatorTools): Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
-		print_info(green(" * ")+red("Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']))
-		exit(423)
-	    else:
-		activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database (sync inside activatorTools): Mirrors are not locked. Fetching data...")
-		print_info(green(" * ")+red("Mirrors are not locked. Fetching data..."))
-	    
-	    syncRemoteDatabases()
-
+        activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: database sync called.")
+    
+        print_info(green(" * ")+red("Checking database status ..."), back = True)
+        
+        dbLockFile = False
+        # does the taint file exist?
+        if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
+            dbLockFile = True
+        
+        # are online mirrors locked?
+        mirrorsLocked = False
+        for uri in etpConst['activatoruploaduris']:
+            ftp = mirrorTools.handlerFTP(uri)
+            try:
+                ftp.setCWD(etpConst['etpurirelativepath'])
+            except:
+                bdir = ""
+                for mydir in etpConst['etpurirelativepath'].split("/"):
+                    bdir += "/"+mydir
+                    if (not ftp.isFileAvailable(bdir)):
+                        try:
+                            ftp.mkdir(bdir)
+                        except Exception, e:
+                            if str(e).find("550") != -1:
+                                pass
+                            else:
+                                raise
+                ftp.setCWD(etpConst['etpurirelativepath'])
+            if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) or (ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
+                mirrorsLocked = True
+                ftp.closeConnection()
+                break
+        
+        if (mirrorsLocked):
+            # if the mirrors are locked, we need to check if we have
+            # the taint file in place. Because in this case, the one
+            # that tainted the db, was me.
+            if (dbLockFile):
+                print_info(green(" * ")+red("Updating mirrors with new information ..."))
+                # it's safe to sync
+                syncRemoteDatabases()
+                # remove the online lock file
+                lockDatabases(False)
+                # remove the taint file
+                if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
+                    os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
+            else:
+                print
+                activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database (sync inside activatorTools): At the moment, mirrors are locked, someone is working on their databases, try again later...")
+                print_error(green(" * ")+red("At the moment, mirrors are locked, someone is working on their databases, try again later..."))
+                exit(422)
+        
+        else:
+            if (dbLockFile):
+                activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database (sync inside activatorTools): Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
+                print_info(green(" * ")+red("Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']))
+                exit(423)
+            else:
+                activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database (sync inside activatorTools): Mirrors are not locked. Fetching data...")
+                print_info(green(" * ")+red("Mirrors are not locked. Fetching data..."))
+            
+            syncRemoteDatabases()
+    
     else:
-	print_error(red(" * ")+green("No valid tool specified."))
-	exit(400)
+        print_error(red(" * ")+green("No valid tool specified."))
+        exit(400)
 
 
 ########################################################

@@ -382,6 +382,46 @@ atomMatchCache = {}
 atomClientMatchCache = {}
 generateDependsTreeCache = {}
 idpackageValidatorCache = {}
+filterSatisfiedDependenciesCache = {}
+filterSatisfiedDependenciesCmpResults = {}
+getDependenciesCache = {}
+generateDependencyTreeCache = {}
+ververifyCache = {}
+isjustnameCache = {}
+catpkgsplitCache = {}
+dep_striptagCache = {}
+dep_getkeyCache = {}
+dep_getcpvCache = {}
+dep_getslotCache = {}
+dep_gettagCache = {}
+removePackageOperatorsCache = {}
+compareVersionsCache = {}
+getNewerVersionCache = {}
+
+
+### Application disk cache
+def const_resetCache():
+    for item in dbCacheStore:
+        dbCacheStore[item].clear()
+    atomMatchCache.clear()
+    atomClientMatchCache.clear()
+    generateDependsTreeCache.clear()
+    idpackageValidatorCache.clear()
+    filterSatisfiedDependenciesCache.clear()
+    filterSatisfiedDependenciesCmpResults.clear()
+    getDependenciesCache.clear()
+    generateDependencyTreeCache.clear()
+    ververifyCache.clear()
+    isjustnameCache.clear()
+    catpkgsplitCache.clear()
+    dep_striptagCache.clear()
+    dep_getkeyCache.clear()
+    dep_getcpvCache.clear()
+    dep_getslotCache.clear()
+    dep_gettagCache.clear()
+    removePackageOperatorsCache.clear()
+    compareVersionsCache.clear()
+    getNewerVersionCache.clear()
 
 # Client packages/database repositories
 etpRepositories = {}
@@ -420,16 +460,6 @@ dbOR = "|or|"
 dbKEYWORDS = "KEYWORDS"
 dbCONTENTS = "CONTENTS"
 dbCOUNTER = "COUNTER"
-
-
-### Application disk cache
-def const_resetCache():
-    for item in dbCacheStore:
-        dbCacheStore[item].clear()
-    atomMatchCache.clear()
-    atomClientMatchCache.clear()
-    generateDependsTreeCache.clear()
-    idpackageValidatorCache.clear()
 
 
 # ===============================================================================================
