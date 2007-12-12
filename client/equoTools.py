@@ -115,13 +115,12 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
     if xcache:
         cached = atomMatchCache.get(atom)
         if cached:
-	    if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches) and (cached['etpRepositories'] == matchBranches):
+	    if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches) and (cached['etpRepositories'] == etpRepositories):
 	        return cached['result']
 
     repoResults = {}
     exitstatus = 0
     exitErrors = {}
-    
     for repo in etpRepositories:
 	# sync database if not available
 	rc = fetchRepositoryIfNotAvailable(repo)
@@ -134,6 +133,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 	
 	# search
 	query = dbconn.atomMatch(atom, caseSensitive = caseSentitive, matchSlot = matchSlot, matchBranches = matchBranches)
+        #print "repo:",repo,"atom:",atom,"result:",query
 	if query[1] == 0:
 	    # package found, add to our dictionary
 	    repoResults[repo] = query[0]
@@ -243,8 +243,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 		    revisions = []
 		    for repo in conflictingTags:
 			revisions.append(str(conflictingTags[repo]['revision']))
-		    newerRevision = getNewerVersionTag(revisions)
-		    newerRevision = newerRevision[0]
+		    newerRevision = max(revisions)
 		    duplicatedRevisions = extractDuplicatedEntries(revisions)
 		    needFiltering = False
 		    if newerRevision in duplicatedRevisions:
@@ -494,7 +493,6 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
         deptree.add((1,atomInfo))
     clientDbconn = openClientDatabase()
 
-    
     while mydep != None:
 
         # already analyzed in this call
@@ -522,6 +520,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
         matchatom = matchdb.retrieveAtom(match[0])
         matchdb.closeDB()
         if matchatom in treecache:
+            print matchatom
             mydep = mybuffer.pop()
             continue
         else:

@@ -199,7 +199,11 @@ def writeerrorstatus(status):
 def loadconfcache():
     if not etpUi['quiet']: print_info(red(" @@ ")+blue("Caching equo conf"), back = True)
     import confTools
-    scandata = confTools.scanfs(dcache = True)
+    try:
+        scandata = confTools.scanfs(dcache = True)
+    except: # FIXME: create specific exception, client database does not exist
+        if not etpUi['quiet']: print_info(red(" @@ ")+blue("Caching not run."))
+        return
     if not etpUi['quiet']: print_info(red(" @@ ")+blue("Caching complete."))
     if len(scandata) > 0:
         if not etpUi['quiet']:

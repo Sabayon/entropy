@@ -309,6 +309,8 @@ class etpDatabase:
 	
 	self.connection = sqlite.connect(dbFile,timeout=300.0)
 	self.cursor = self.connection.cursor()
+        # fix for queries that contain weird text
+        self.connection.text_factory = lambda x: unicode(x, "utf-8", "ignore")
 
     def closeDB(self):
 

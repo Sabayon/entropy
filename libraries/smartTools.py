@@ -60,7 +60,7 @@ def smart(options):
     elif (options[0] == "package"):
         rc = smartPackagesHandler(options[1:])
     elif (options[0] == "quickpkg"):
-        rc = QuickpkgHandler(options[1:], savedir = savedir)
+        rc = QuickpkgHandler(options[1:], savedir = smartRequestSavedir)
     elif (options[0] == "inflate") or (options[0] == "deflate") or (options[0] == "extract"):
         rc = CommonFlate(options[1:], action = options[0], savedir = smartRequestSavedir)
     else:
