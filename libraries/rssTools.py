@@ -39,7 +39,18 @@ class rssFeed:
         self.itemscounter = 0
         self.maxentries = maxentries
         
-        if not os.path.isfile(self.file):
+        # sanity check
+        broken = False
+        if os.path.isfile(self.file):
+            try:
+                self.xmldoc = minidom.parse(self.file)
+            except xml.parsers.expat.ExpatError:
+                print "DEBUG: RSS broken, recreating in 5 seconds."
+                print time.sleep(5)
+                broken = True
+            
+        
+        if not os.path.isfile(self.file) or broken:
             self.title = feed_title
             self.description = feed_description
             self.language = feed_language
@@ -51,7 +62,6 @@ class rssFeed:
             f.close()
         else:
             # parse file
-            self.xmldoc = minidom.parse(self.file)
             self.rssdoc = self.xmldoc.getElementsByTagName("rss")[0]
             self.channel = self.rssdoc.getElementsByTagName("channel")[0]
             self.title = self.channel.getElementsByTagName("title")[0].firstChild.data

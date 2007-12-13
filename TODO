@@ -1,15 +1,14 @@
 TODO list:
+  - mirrors: one more and in random order
   - world: first fetch all, then upgrade
   - implement a sane exception infrastructure
-  - mirrors: one more and in random order
   - trigger: Regenerating cracklib dictionary
   - autotriggers: for enewgroup, enewuser and friends
   - Community repositories
-  - remove binkeywords, not used
   - add external trigger for splashutils
   - find a way to better handle real smartapps deps
   - reduce size of packages.db.bz2
-  - rethink external triggers?
+  - remove binkeywords, not used
 
 
 Project Status:

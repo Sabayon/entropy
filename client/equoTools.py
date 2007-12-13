@@ -149,7 +149,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
     packageInformation = {}
 
     # nothing found
-    if len(repoResults) == 0:
+    if not repoResults:
 	atomMatchCache[atom] = {}
 	atomMatchCache[atom]['result'] = -1,1
 	atomMatchCache[atom]['matchSlot'] = matchSlot
@@ -351,6 +351,7 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
    @input packageInfo: tuple composed by int(id) and str(repository name), if this one is int(0), the client database will be opened.
    @output: ordered dependency list
 '''
+# FIXME: move this to database?
 def getDependencies(packageInfo):
 
     ''' caching '''
