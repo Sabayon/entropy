@@ -851,6 +851,7 @@ def initConfig_entropyConstants(rootdir):
     # merge universal keywords
     for x in etpConst['packagemasking']['keywords']['universal']:
         etpConst['keywords'].add(x)
+    del myparser
 
 
 # load config

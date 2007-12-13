@@ -1132,7 +1132,48 @@ def installPackage(infoDict):
     protect = etpRepositories[infoDict['repository']]['configprotect']
     mask = etpRepositories[infoDict['repository']]['configprotectmask']
 
-    packageContent = []
+    # copy files over
+    rc = moveImageToSystem(imageDir, protect, mask)
+    if rc != 0:
+        return rc
+
+    # inject into database
+    print_info(red("   ## ")+blue("Updating database with: ")+red(infoDict['atom']))
+
+    newidpackage = installPackageIntoDatabase(infoDict['idpackage'], infoDict['repository'])
+
+    # remove old files and gentoo stuff
+    if (infoDict['removeidpackage'] != -1):
+	# doing a diff removal
+	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Remove old package: "+str(infoDict['removeatom']))
+	infoDict['removeidpackage'] = -1 # disabling database removal
+	if (etpConst['gentoo-compat']):
+	    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing Gentoo database entry for "+str(infoDict['removeatom']))
+	    print_info(red("   ## ")+blue("Cleaning old package files...")+" ## w/Gentoo compatibility")
+	else:
+	    print_info(red("   ## ")+blue("Cleaning old package files..."))
+	removePackage(infoDict)
+
+    clientDbconn.closeDB()
+    del clientDbconn
+
+    rc = 0
+    if (etpConst['gentoo-compat']):
+	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing new Gentoo database entry: "+str(infoDict['atom']))
+	rc = installPackageIntoGentooDatabase(infoDict, pkgpath, newidpackage = newidpackage)
+    
+    # remove unpack dir
+    shutil.rmtree(unpackDir,True)
+    try:
+        os.rmdir(unpackDir)
+    except OSError:
+        pass
+    return rc
+
+def moveImageToSystem(imageDir, protect, mask):
+    
+    clientDbconn = openClientDatabase()
+
     # setup imageDir properly
     imageDir = imageDir.encode(getfilesystemencoding())
     
@@ -1243,7 +1284,6 @@ def installPackage(infoDict):
 		    rc = os.system("mv "+fromfile+" "+tofile)
 		    if (rc != 0):
 		        return 4
-		    packageContent.append(tofile)
 	    try:
 	        user = os.stat(fromfile)[4]
 	        group = os.stat(fromfile)[5]
@@ -1256,39 +1296,11 @@ def installPackage(infoDict):
 		# add to disk cache
 		confTools.addtocache(tofile)
 
-    # inject into database
-    print_info(red("   ## ")+blue("Updating database with: ")+red(infoDict['atom']))
-
-    newidpackage = installPackageIntoDatabase(infoDict['idpackage'], infoDict['repository'])
-
-    # remove old files and gentoo stuff
-    if (infoDict['removeidpackage'] != -1):
-	# doing a diff removal
-	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Remove old package: "+str(infoDict['removeatom']))
-	infoDict['removeidpackage'] = -1 # disabling database removal
-	if (etpConst['gentoo-compat']):
-	    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing Gentoo database entry for "+str(infoDict['removeatom']))
-	    print_info(red("   ## ")+blue("Cleaning old package files...")+" ## w/Gentoo compatibility")
-	else:
-	    print_info(red("   ## ")+blue("Cleaning old package files..."))
-	removePackage(infoDict)
-
     clientDbconn.closeDB()
     del clientDbconn
+    return 0
 
-    rc = 0
-    if (etpConst['gentoo-compat']):
-	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing new Gentoo database entry: "+str(infoDict['atom']))
-	rc = installPackageIntoGentooDatabase(infoDict, pkgpath, newidpackage = newidpackage)
     
-    # remove unpack dir
-    shutil.rmtree(unpackDir,True)
-    try:
-        os.rmdir(unpackDir)
-    except OSError:
-        pass
-    return rc
-
 '''
    @description: remove package entry from Gentoo database
    @input gentoo package atom (cat/name+ver):

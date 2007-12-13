@@ -389,6 +389,8 @@ def generatedict(filepath):
     if (not mydict['automerge']):
         # is it trivial?
         try:
+            if not os.path.lexists(filepath): # if file does not even exist
+                return mydict
 	    if os.path.islink(filepath):
 		# if it's broken, skip diff and automerge
 		if not os.path.exists(filepath):
@@ -401,6 +403,8 @@ def generatedict(filepath):
 	# another test
 	if (not mydict['automerge']):
 	    try:
+                if not os.path.lexists(filepath): # if file does not even exist
+                    return mydict
 	        if os.path.islink(filepath):
 		    # if it's broken, skip diff and automerge
 		    if not os.path.exists(filepath):

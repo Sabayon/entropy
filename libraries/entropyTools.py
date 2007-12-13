@@ -1065,7 +1065,7 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
     if not os.path.isfile(filepath):
         raise OSError
     try:
-        tar = tarfile.open(filepath,"r:bz2")
+        tar = tarfile.open(filepath,"r:*") # also supports uncompressed .tbz2
     except tarfile.ReadError:
         if catchEmpty:
             return 0
@@ -1293,13 +1293,21 @@ def writeNewBranch(branch):
         f.flush()
         f.close()
 
+def isEntropyTbz2(tbz2file):
+    if not os.path.exists(tbz2file):
+        return False
+    return tarfile.is_tarfile(tbz2file)
+
 # @pkgdata: etpData mapping dictionary (retrieved from db using getPackageData())
 # @dirpath: directory to save .tbz2
-def quickpkg(pkgdata,dirpath, edb = True, portdbPath = None):
+def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, compression = "bz2"):
 
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+str(pkgdata)+" | dirpath: "+dirpath)
     import stat
     import databaseTools
+
+    if compression not in ("bz2","","gz"):
+        compression = "bz2"
 
     # getting package info
     pkgtag = ''
@@ -1311,40 +1319,42 @@ def quickpkg(pkgdata,dirpath, edb = True, portdbPath = None):
     dirpath += "/"+pkgname+".tbz2"
     if os.path.isfile(dirpath):
         os.remove(dirpath)
-    tar = tarfile.open(dirpath,"w:bz2")
+    tar = tarfile.open(dirpath,"w:"+compression)
 
-    contents = [x for x in pkgdata['content']]
-    id_strings = {}
-    contents.sort()
-    
-    # collect files
-    for path in contents:
-	try:
-	    exist = os.lstat(path)
-	except OSError:
-	    continue # skip file
-	lpath = path
-	arcname = path[1:] # remove trailing /
-        ftype = pkgdata['content'][path]
-        if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
-        if 'dir' == ftype and \
-	    not stat.S_ISDIR(exist.st_mode) and \
-	    os.path.isdir(lpath): # workaround for directory symlink issues
-	    lpath = os.path.realpath(lpath)
-        
-	tarinfo = tar.gettarinfo(lpath, str(arcname)) # FIXME: casting to str() cause of python <2.5.1 bug
-	tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
-	tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
-	
-	if stat.S_ISREG(exist.st_mode):
-	    tarinfo.type = tarfile.REGTYPE
-	    f = open(path)
-	    try:
-		tar.addfile(tarinfo, f)
-	    finally:
-		f.close()
-	else:
-	    tar.addfile(tarinfo)
+    if not fake:
+
+        contents = [x for x in pkgdata['content']]
+        id_strings = {}
+        contents.sort()
+
+        # collect files
+        for path in contents:
+            try:
+                exist = os.lstat(path)
+            except OSError:
+                continue # skip file
+            lpath = path
+            arcname = path[1:] # remove trailing /
+            ftype = pkgdata['content'][path]
+            if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
+            if 'dir' == ftype and \
+                not stat.S_ISDIR(exist.st_mode) and \
+                os.path.isdir(lpath): # workaround for directory symlink issues
+                lpath = os.path.realpath(lpath)
+            
+            tarinfo = tar.gettarinfo(lpath, str(arcname)) # FIXME: casting to str() cause of python <2.5.1 bug
+            tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
+            tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
+            
+            if stat.S_ISREG(exist.st_mode):
+                tarinfo.type = tarfile.REGTYPE
+                f = open(path)
+                try:
+                    tar.addfile(tarinfo, f)
+                finally:
+                    f.close()
+            else:
+                tar.addfile(tarinfo)
 
     tar.close()
     

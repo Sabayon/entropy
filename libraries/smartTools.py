@@ -145,7 +145,7 @@ def CommonFlate(mytbz2s, action, savedir = None):
 
     for tbz2 in mytbz2s:
         #print_info(brown(" * ")+darkred("Analyzing: ")+tbz2)
-        if not (os.path.isfile(tbz2) and tbz2.endswith(".tbz2")):
+        if not (os.path.isfile(tbz2) and tbz2.endswith(".tbz2") and entropyTools.isEntropyTbz2(tbz2)):
             print_error(darkred(" * ")+bold(tbz2)+red(" is not a valid tbz2"))
             return 1
     
