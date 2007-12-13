@@ -59,7 +59,6 @@ class rssFeed:
             f = open(self.file,"w")
             f.write('')
             f.close()
-            self.items[self.itemscounter] = {}
         else:
             # parse file
             self.rssdoc = self.xmldoc.getElementsByTagName("rss")[0]
@@ -121,7 +120,10 @@ class rssFeed:
         if self.itemscounter > self.maxentries:
             tobefiltered = self.itemscounter - self.maxentries
             for index in range(tobefiltered):
-                del self.items[index]
+                try:
+                    del self.items[index]
+                except KeyError:
+                    pass
         
         doc = minidom.Document()
         
@@ -165,6 +167,18 @@ class rssFeed:
         keys = self.items.keys()
         keys.reverse()
         for key in keys:
+            
+            # sanity check, you never know
+            try:
+                self.items[key]['title']
+                self.items[key]['link']
+                self.items[key]['guid']
+                self.items[key]['description']
+                self.items[key]['pubDate']
+            except KeyError:
+                self.removeEntry(key)
+                continue
+            
             # item
             item = doc.createElement("item")
             # title
