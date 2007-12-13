@@ -470,7 +470,6 @@ def filterSatisfiedDependencies(dependencies, deepdeps = False):
    @input package: atomInfo (idpackage,reponame)
    @output: dependency tree dictionary, plus status code
 '''
-matchFilter = set()
 def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefilter = False):
 
     if (not usefilter):

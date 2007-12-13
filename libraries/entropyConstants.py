@@ -397,7 +397,8 @@ dep_gettagCache = {}
 removePackageOperatorsCache = {}
 compareVersionsCache = {}
 getNewerVersionCache = {}
-
+# generateDependencyTree match filter
+matchFilter = set()
 
 ### Application disk cache
 def const_resetCache():
@@ -422,6 +423,7 @@ def const_resetCache():
     removePackageOperatorsCache.clear()
     compareVersionsCache.clear()
     getNewerVersionCache.clear()
+    matchFilter.clear()
 
 # Client packages/database repositories
 etpRepositories = {}
@@ -817,7 +819,6 @@ def initConfig_entropyConstants(rootdir):
                     etpConst['databaseloglevel'] = loglevel
                 else:
                     print "WARNING: invalid loglevel in: "+etpConst['databaseconf']
-    
     
     etpRemoteSupport.clear()
     etpRemoteFailures.clear()

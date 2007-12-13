@@ -368,7 +368,7 @@ def initdisable(pkgdata):
 def initinform(pkgdata):
     for item in pkgdata['content']:
         item = etpConst['systemroot']+item
-	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and not os.path.isfile(etpConst['systemroot']+item):
+	if item.startswith(etpConst['systemroot']+"/etc/init.d/") and not os.path.isfile(etpConst['systemroot']+item):
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+item)
 	    print_info(red("   ##")+brown(" A new service will be installed: ")+item)
 
