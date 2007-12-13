@@ -59,6 +59,7 @@ class rssFeed:
             f = open(self.file,"w")
             f.write('')
             f.close()
+            self.items[self.itemscounter] = {}
         else:
             # parse file
             self.rssdoc = self.xmldoc.getElementsByTagName("rss")[0]

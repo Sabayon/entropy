@@ -1,7 +1,7 @@
 TODO list:
+  - implement a sane exception infrastructure
   - mirrors: one more and in random order
   - world: first fetch all, then upgrade
-  - implement a sane exception infrastructure
   - trigger: Regenerating cracklib dictionary
   - autotriggers: for enewgroup, enewuser and friends
   - Community repositories
