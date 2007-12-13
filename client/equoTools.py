@@ -1087,6 +1087,8 @@ def removePackage(infoDict):
         if not taint:
             break
 
+    del directories
+    del content
     clientDbconn.closeDB()
     del clientDbconn
     return 0
