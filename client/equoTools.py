@@ -1478,6 +1478,7 @@ def installPackageIntoDatabase(idpackage, repository):
     clientDbconn = openClientDatabase()
     idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = data['revision'])
     del x
+    del data
     
     if (not status):
 	print "DEBUG!!! THIS SHOULD NOT NEVER HAPPEN. Package "+str(idpk)+" has not been inserted, status: "+str(status)
@@ -1498,6 +1499,7 @@ def installPackageIntoDatabase(idpackage, repository):
 		if (match[0] != -1):
 		    clientDbconn.removeDependencyFromDependsTable(iddep)
 		    clientDbconn.addDependRelationToDependsTable(iddep,match[0])
+            del depends
 
 	except:
 	    clientDbconn.regenerateDependsTable()
@@ -1590,6 +1592,7 @@ def stepExecutor(step, infoDict, loopString = None):
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
                 if trigger not in etpUi['postinstall_triggers_disable']:
                     eval("triggerTools."+trigger)(pkgdata)
+            del triggers
         del pkgdata
 
     elif step == "preinstall":
@@ -1600,6 +1603,7 @@ def stepExecutor(step, infoDict, loopString = None):
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
                 if trigger not in etpUi['preinstall_triggers_disable']:
                     eval("triggerTools."+trigger)(pkgdata)
+            del triggers
         del pkgdata
 
     elif step == "preremove":
@@ -1617,6 +1621,7 @@ def stepExecutor(step, infoDict, loopString = None):
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
                 if trigger not in etpUi['preremove_triggers_disable']:
                     eval("triggerTools."+trigger)(remdata)
+            del triggers
         del remdata
 
     elif step == "postremove":
@@ -1634,6 +1639,7 @@ def stepExecutor(step, infoDict, loopString = None):
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
                 if trigger not in etpUi['postremove_triggers_disable']:
                     eval("triggerTools."+trigger)(remdata)
+            del triggers
         del remdata
     
     clientDbconn.closeDB()

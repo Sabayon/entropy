@@ -3156,6 +3156,7 @@ class etpDatabase:
 	    match = self.atomMatch(atom)
 	    if (match[0] != -1):
 	        self.addDependRelationToDependsTable(iddep,match[0])
+        del depends
 
         # now validate dependstable
         self.sanitizeDependsTable()
