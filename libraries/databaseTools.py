@@ -270,8 +270,10 @@ class etpDatabase:
 		    print_info(red(" * ")+bold("WARNING")+red(": online database is already locked. Waiting up to 2 minutes..."), back = True)
 		    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"etpDatabase: online database already locked. Waiting 2 minutes")
 		    unlocked = False
-		    for x in range(120):
+		    count = 120
+                    while count:
 		        time.sleep(1)
+                        count -= 1
 		        if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
 			    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"etpDatabase: online database has been unlocked !")
 			    print_info(red(" * ")+bold("HOORAY")+red(": online database has been unlocked. Locking back and syncing..."))
@@ -319,7 +321,6 @@ class etpDatabase:
 	    #self.connection.rollback()
 	    self.cursor.close()
 	    self.connection.close()
-            del self
 	    return
 
 	# if it's equo that's calling the function, just save changes and quit
@@ -328,7 +329,6 @@ class etpDatabase:
 	    self.commitChanges()
 	    self.cursor.close()
 	    self.connection.close()
-            del self
 	    return
 
 	# Cleanups if at least one package has been removed
@@ -364,7 +364,6 @@ class etpDatabase:
 	
 	self.cursor.close()
 	self.connection.close()
-        del self
 
     def commitChanges(self):
 	if (not self.readOnly):
@@ -600,14 +599,14 @@ class etpDatabase:
 	)
 
 	# content, a list
-	for file in etpData['content']:
-            contenttype = etpData['content'][file]
+	for xfile in etpData['content']:
+            contenttype = etpData['content'][xfile]
             try:
                 self.cursor.execute(
                     'INSERT into content VALUES '
                     '(?,?,?)'
                     , (	idpackage,
-                            file,
+                            xfile,
                             contenttype,
                             )
                 )
@@ -617,7 +616,7 @@ class etpDatabase:
                     'INSERT into content VALUES '
                     '(?,?,?)'
                     , ( idpackage,
-                            file,
+                            xfile,
                             contenttype,
                             )
                 )
@@ -1250,16 +1249,16 @@ class etpDatabase:
 	    return myneeded
 	raise Exception, "I tried to insert a needed library but then, fetching it returned -1. There's something broken."
 
-    def addLicense(self,license):
-        if not license:
-            license = ' ' # workaround for broken license entries
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addLicense: adding License -> "+str(license))
+    def addLicense(self,pkglicense):
+        if not pkglicense:
+            pkglicense = ' ' # workaround for broken license entries
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addLicense: adding License -> "+str(pkglicense))
 	self.cursor.execute(
 		'INSERT into licenses VALUES '
-		'(NULL,?)', (license,)
+		'(NULL,?)', (pkglicense,)
 	)
 	# get info about inserted value and return
-	lic = self.isLicenseAvailable(license)
+	lic = self.isLicenseAvailable(pkglicense)
 	if lic != -1:
 	    return lic
 	raise Exception, "I tried to insert a license but then, fetching it returned -1. There's something broken."
@@ -1330,9 +1329,6 @@ class etpDatabase:
 	
 	for idflag in orphanedFlags:
 	    self.cursor.execute('DELETE FROM useflagsreference WHERE idflag ='+str(idflag))
-	
-	# empty cursor
-	x = self.cursor.fetchall()
 
     def cleanupSources(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupSources: called.")
@@ -1365,9 +1361,6 @@ class etpDatabase:
 	
 	for idsource in orphanedSources:
 	    self.cursor.execute('DELETE FROM sourcesreference WHERE idsource = '+str(idsource))
-	
-	# empty cursor
-	x = self.cursor.fetchall()
 
     def cleanupEclasses(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupEclasses: called.")
@@ -1400,9 +1393,6 @@ class etpDatabase:
 	
 	for idclass in orphanedClasses:
 	    self.cursor.execute('DELETE FROM eclassesreference WHERE idclass = '+str(idclass))
-	
-	# empty cursor
-	x = self.cursor.fetchall()
 
     def cleanupNeeded(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupNeeded: called.")
@@ -1435,8 +1425,7 @@ class etpDatabase:
 	
 	for idneeded in orphanedNeededs:
 	    self.cursor.execute('DELETE FROM neededreference WHERE idneeded = '+str(idneeded))
-	# empty cursor
-	x = self.cursor.fetchall()
+
 
     def cleanupDependencies(self):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupDependencies: called.")
@@ -1469,8 +1458,6 @@ class etpDatabase:
 
 	for iddep in orphanedDeps:
 	    self.cursor.execute('DELETE FROM dependenciesreference WHERE iddependency = '+str(iddep))
-	# empty cursor
-	x = self.cursor.fetchall()
 
     def getIDPackage(self, atom, branch = etpConst['branch']):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackage: retrieving package ID for "+atom+" | branch: "+branch)
@@ -1514,7 +1501,7 @@ class etpDatabase:
 	return idcat
 
     def getIDPackageFromBinaryPackage(self,packageName):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackageFromBinaryPackage: retrieving package ID for "+atom+" | branch: "+branch)
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackageFromBinaryPackage: retrieving package ID for "+packageName)
 	self.cursor.execute('SELECT "IDPACKAGE" FROM baseinfo WHERE download = "'+etpConst['binaryurirelativepath']+packageName+'"')
 	idpackage = -1
 	for row in self.cursor:
@@ -2385,16 +2372,16 @@ class etpDatabase:
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCounterAvailable: "+str(counter)+" not available.")
 	return result
 
-    def isLicenseAvailable(self,license):
+    def isLicenseAvailable(self,pkglicense):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLicenseAvailable: called.")
-        if not license: # workaround for packages without a license but just garbage
-            license = ' '
-	self.cursor.execute('SELECT idlicense FROM licenses WHERE license = (?)', (license,))
+        if not pkglicense: # workaround for packages without a license but just garbage
+            pkglicense = ' '
+	self.cursor.execute('SELECT idlicense FROM licenses WHERE license = (?)', (pkglicense,))
 	result = self.cursor.fetchone()
 	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isLicenseAvailable: "+license+" not available.")
+	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isLicenseAvailable: "+pkglicense+" not available.")
 	    return -1
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLicenseAvailable: "+license+" available.")
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLicenseAvailable: "+pkglicense+" available.")
 	return result[0]
 
     def isSystemPackage(self,idpackage):
@@ -2903,9 +2890,7 @@ class etpDatabase:
 	self.cursor.execute('UPDATE baseinfo SET branch = (?) WHERE idpackage = (?)', (tobranch,idpackage,))
 	self.cursor.execute('UPDATE extrainfo SET download = (?) WHERE idpackage = (?)', (newdownload,idpackage,))
 	self.commitChanges()
-	# clean cursor - NEEDED?
-	for row in self.cursor:
-	    x = row
+        
 
 
 ########################################################
@@ -2980,15 +2965,14 @@ class etpDatabase:
 	self.commitChanges()
 
     def isDependsTableSane(self):
-	sane = True
 	try:
 	    self.cursor.execute('SELECT iddependency FROM dependstable WHERE iddependency = -1')
 	except:
 	    return False # table does not exist, please regenerate and re-run
-	for row in self.cursor:
-	    sane = False
-	    break
-	return sane
+        status = self.cursor.fetchone()[0]
+        if status:
+            return False
+        return True
 
     def createXpakTable(self):
         self.cursor.execute('CREATE TABLE xpakdata ( idpackage INTEGER PRIMARY KEY, data BLOB );')
@@ -3543,21 +3527,21 @@ class etpDatabase:
 		    for data in foundIDs:
 		        idpackage = data[1]
 		        dbver = self.retrieveVersion(idpackage)
-		        cmp = entropyTools.compareVersions(pkgversion,dbver)
+		        pkgcmp = entropyTools.compareVersions(pkgversion,dbver)
 		        if direction == ">": # the --deep mode should really act on this
-		            if (cmp < 0):
+		            if (pkgcmp < 0):
 			        # found
 			        dbpkginfo.append([idpackage,dbver])
 		        elif direction == "<":
-		            if (cmp > 0):
+		            if (pkgcmp > 0):
 			        # found
 			        dbpkginfo.append([idpackage,dbver])
 		        elif direction == ">=": # the --deep mode should really act on this
-		            if (cmp <= 0):
+		            if (pkgcmp <= 0):
 			        # found
 			        dbpkginfo.append([idpackage,dbver])
 		        elif direction == "<=":
-		            if (cmp >= 0):
+		            if (pkgcmp >= 0):
 			        # found
 			        dbpkginfo.append([idpackage,dbver])
 		

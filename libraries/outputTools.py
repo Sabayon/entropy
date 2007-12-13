@@ -41,6 +41,7 @@ for x in range(stuff['cols']):
     stuff['cleanline'] += ' '
 
 havecolor=1
+global dotitles
 dotitles=1
 
 esc_seq = "\x1b["
@@ -192,6 +193,7 @@ def xtermTitleReset():
 
 def notitles():
 	"turn off title setting"
+        global dotitles
 	dotitles=0
 
 def nocolor():

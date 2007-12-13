@@ -65,8 +65,8 @@ def getRemotePackageChecksum(servername, filename, branch):
             proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
             opener = urllib2.build_opener(proxy_support)
             urllib2.install_opener(opener)
-        file = urllib2.urlopen(request)
-        result = file.readline().strip()
+        item = urllib2.urlopen(request)
+        result = item.readline().strip()
         return result
     except: # no HTTP support?
 	return None
@@ -148,8 +148,8 @@ def getOnlineContent(url):
             proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
             opener = urllib2.build_opener(proxy_support)
             urllib2.install_opener(opener)
-        file = urllib2.urlopen(url)
-        result = file.readlines()
+        item = urllib2.urlopen(url)
+        result = item.readlines()
 	if (not result):
             socket.setdefaulttimeout(2)
 	    return False

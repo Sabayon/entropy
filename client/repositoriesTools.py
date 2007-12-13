@@ -112,7 +112,7 @@ def getRepositoryRevision(reponame):
 def getOnlineRepositoryRevision(reponame):
     url = etpRepositories[reponame]['database']+"/"+etpConst['etpdatabaserevisionfile']
     status = getOnlineContent(url)
-    if (status != False):
+    if (status):
 	status = status[0].strip()
 	return int(status)
     else:
@@ -147,7 +147,7 @@ def syncRepositories(reponames = [], forceUpdate = False):
     repoNumber = 0
     syncErrors = False
     
-    if (reponames == []):
+    if (not reponames):
 	for x in etpRepositories:
 	    reponames.append(x)
     
@@ -155,7 +155,7 @@ def syncRepositories(reponames = [], forceUpdate = False):
     
     # Test network connectivity
     conntest = getOnlineContent("http://svn.sabayonlinux.org")
-    if conntest == False:
+    if not conntest:
 	print_info(darkred(" @@ ")+darkgreen("You are not connected to the Internet. You should."))
 	return 2
     
@@ -172,7 +172,7 @@ def syncRepositories(reponames = [], forceUpdate = False):
 	onlinestatus = getOnlineRepositoryRevision(repo)
 	if (onlinestatus != -1):
 	    localstatus = getRepositoryRevision(repo)
-	    if (localstatus == onlinestatus) and (forceUpdate == False):
+	    if (localstatus == onlinestatus) and (not forceUpdate):
 		if (not etpUi['quiet']):
 		    print_info(bold("\tAttention: ")+red("database is already up to date."))
 		continue

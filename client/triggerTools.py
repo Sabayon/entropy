@@ -27,6 +27,7 @@ from entropyConstants import *
 import entropyTools
 # Logging initialization
 import logTools
+import shutil
 equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[Equo]")
 
 '''
@@ -248,6 +249,8 @@ def call_ext_generic(pkgdata, stage):
         f.write(x)
     f.close()
     
+    my_ext_status = 0
+    
     execfile(triggerfile)
     
     os.remove(triggerfile)
@@ -287,28 +290,28 @@ def gccswitch(pkgdata):
 def iconscache(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating icons cache...")
     print_info(red("   ##")+brown(" Updating icons cache..."))
-    for file in pkgdata['content']:
-        file = etpConst['systemroot']+file
-	if file.startswith(etpConst['systemroot']+"/usr/share/icons") and file.endswith("index.theme"):
-	    cachedir = os.path.dirname(file)
+    for item in pkgdata['content']:
+        item = etpConst['systemroot']+item
+	if item.startswith(etpConst['systemroot']+"/usr/share/icons") and item.endswith("index.theme"):
+	    cachedir = os.path.dirname(item)
 	    generate_icons_cache(cachedir)
 
-def mimeupdate(pkgdata):
+def mimeupdate(pkgdata = None):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating shared mime info database...")
     print_info(red("   ##")+brown(" Updating shared mime info database..."))
     update_mime_db()
 
-def mimedesktopupdate(pkgdata):
+def mimedesktopupdate(pkgdata = None):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating desktop mime database...")
     print_info(red("   ##")+brown(" Updating desktop mime database..."))
     update_mime_desktop_db()
 
-def scrollkeeper(pkgdata):
+def scrollkeeper(pkgdata = None):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating scrollkeeper database...")
     print_info(red("   ##")+brown(" Updating scrollkeeper database..."))
     update_scrollkeeper_db()
 
-def gconfreload(pkgdata):
+def gconfreload(pkgdata = None):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reloading GConf2 database...")
     print_info(red("   ##")+brown(" Reloading GConf2 database..."))
     reload_gconf_db()
@@ -330,10 +333,10 @@ def kernelmod(pkgdata):
     print_info(red("   ##")+brown(" Running depmod..."))
     # get kernel modules dir name
     name = ''
-    for file in pkgdata['content']:
-        file = etpConst['systemroot']+file
+    for item in pkgdata['content']:
+        item = etpConst['systemroot']+item
         if file.startswith(etpConst['systemroot']+"/lib/modules/"):
-            name = file[len(etpConst['systemroot']):]
+            name = item[len(etpConst['systemroot']):]
             name = name.split("/")[3]
             break
     if name:
@@ -350,37 +353,37 @@ def sqliteinst(pkgdata):
     sqlite_update_symlink()
 
 def initdisable(pkgdata):
-    for file in pkgdata['removecontent']:
-        file = etpConst['systemroot']+file
-	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(file):
+    for item in pkgdata['removecontent']:
+        item = etpConst['systemroot']+item
+	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
 	    # running?
-	    running = os.path.isfile(etpConst['systemroot']+INITSERVICES_DIR+'/started/'+os.path.basename(file))
+	    running = os.path.isfile(etpConst['systemroot']+INITSERVICES_DIR+'/started/'+os.path.basename(item))
             if not etpConst['systemroot']:
                 myroot = "/"
             else:
                 myroot = etpConst['systemroot']+"/"
-	    scheduled = not os.system('ROOT="'+myroot+'" rc-update show | grep '+os.path.basename(file)+'&> /dev/null')
-	    initdeactivate(file, running, scheduled)
+	    scheduled = not os.system('ROOT="'+myroot+'" rc-update show | grep '+os.path.basename(item)+'&> /dev/null')
+	    initdeactivate(item, running, scheduled)
 
 def initinform(pkgdata):
-    for file in pkgdata['content']:
-        file = etpConst['systemroot']+file
-	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and not os.path.isfile(etpConst['systemroot']+file):
-            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+file)
-	    print_info(red("   ##")+brown(" A new service will be installed: ")+file)
+    for item in pkgdata['content']:
+        item = etpConst['systemroot']+item
+	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and not os.path.isfile(etpConst['systemroot']+item):
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+item)
+	    print_info(red("   ##")+brown(" A new service will be installed: ")+item)
 
 def removeinit(pkgdata):
-    for file in pkgdata['removecontent']:
-        file = etpConst['systemroot']+file
-	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(file):
-            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Removing boot service: "+os.path.basename(file))
-	    print_info(red("   ##")+brown(" Removing boot service: ")+os.path.basename(file))
+    for item in pkgdata['removecontent']:
+        item = etpConst['systemroot']+item
+	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Removing boot service: "+os.path.basename(item))
+	    print_info(red("   ##")+brown(" Removing boot service: ")+os.path.basename(item))
             if not etpConst['systemroot']:
                 myroot = "/"
             else:
                 myroot = etpConst['systemroot']+"/"
 	    try:
-		os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(file)+' &> /dev/null')
+		os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(item)+' &> /dev/null')
 	    except:
 		pass
 
@@ -512,11 +515,11 @@ def gconfinstallschemas(pkgdata):
 
 def pygtksetup(pkgdata):
     python_sym_files = [x for x in pkgdata['content'] if x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0")]
-    for file in python_sym_files:
-        file = etpConst['systemroot']+file
+    for item in python_sym_files:
+        item = etpConst['systemroot']+item
         filepath = file[:-4]
-        sympath = os.path.basename(file)
-	if os.path.isfile(file):
+        sympath = os.path.basename(item)
+	if os.path.isfile(item):
             try:
                 if os.path.lexists(filepath):
                     os.remove(filepath)
@@ -526,10 +529,10 @@ def pygtksetup(pkgdata):
 
 def pygtkremove(pkgdata):
     python_sym_files = [x for x in pkgdata['content'] if x.startswith("/usr/lib/python") and (x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0"))]
-    for file in python_sym_files:
-        file = etpConst['systemroot']+file
-	if os.path.isfile(file[:-4]):
-	    os.remove(file[:-4])
+    for item in python_sym_files:
+        item = etpConst['systemroot']+item
+	if os.path.isfile(item[:-4]):
+	    os.remove(item[:-4])
 
 def susetuid(pkgdata):
     if os.path.isfile(etpConst['systemroot']+"/bin/su"):
@@ -540,22 +543,22 @@ def susetuid(pkgdata):
 
 def cleanpy(pkgdata):
     pyfiles = [x for x in pkgdata['content'] if x.endswith(".py")]
-    for file in pyfiles:
-        file = etpConst['systemroot']+file
-        if os.path.isfile(file+"o"):
-            try: os.remove(file+"o")
+    for item in pyfiles:
+        item = etpConst['systemroot']+item
+        if os.path.isfile(item+"o"):
+            try: os.remove(item+"o")
             except OSError: pass
-        if os.path.isfile(file+"c"):
-            try: os.remove(file+"c")
+        if os.path.isfile(item+"c"):
+            try: os.remove(item+"c")
             except OSError: pass
 
 def createkernelsym(pkgdata):
-    for file in pkgdata['content']:
-        file = etpConst['systemroot']+file
-        if file.startswith(etpConst['systemroot']+"/usr/src/"):
+    for item in pkgdata['content']:
+        item = etpConst['systemroot']+item
+        if item.startswith(etpConst['systemroot']+"/usr/src/"):
             # extract directory
             try:
-                todir = file[len(etpConst['systemroot']):]
+                todir = item[len(etpConst['systemroot']):]
                 todir = todir.split("/")[3]
             except:
                 continue
@@ -834,17 +837,17 @@ def sqlite_update_symlink():
    @description: shuts down selected init script, and remove from runlevel
    @output: returns int() as exit status
 '''
-def initdeactivate(file, running, scheduled):
+def initdeactivate(item, running, scheduled):
     
     if not etpConst['systemroot']:
         myroot = "/"
         if (running):
-            os.system(file+' stop --quiet')
+            os.system(item+' stop --quiet')
     else:
         myroot = etpConst['systemroot']+"/"
 
     if (scheduled):
-	os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(file))
+	os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(item))
     
     return 0
 

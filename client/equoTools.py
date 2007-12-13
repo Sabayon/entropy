@@ -32,7 +32,6 @@ from databaseTools import openRepositoryDatabase, openClientDatabase, openGeneri
 import triggerTools
 import confTools
 import dumpTools
-import repositoriesTools
 
 # Logging initialization
 import logTools
@@ -123,13 +122,11 @@ def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), 
 	        return cached['result']
 
     repoResults = {}
-    exitstatus = 0
     exitErrors = {}
     for repo in etpRepositories:
 	# sync database if not available
 	rc = fetchRepositoryIfNotAvailable(repo)
 	if (rc != 0):
-	    exitstatus = -1
 	    exitErrors[repo] = -1
 	    continue
 	# open database
@@ -534,6 +531,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
         # check if atom has been already pulled in
         matchdb = openRepositoryDatabase(match[1])
         matchatom = matchdb.retrieveAtom(match[0])
+        matchslot = matchdb.retrieveSlot(match[0]) # used later
         matchdb.closeDB()
         del matchdb
         if matchatom in treecache:
@@ -570,14 +568,14 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
             mybuffer.push((treedepth,x))
 
         # handle possible library breakage
-        action = filterSatisfiedDependenciesCmpResults.get(mydep)
+        action = filterSatisfiedDependenciesCmpResults.get(mydep[1])
         if action and ((action < 0) or (action > 0)): # do not use != 0 since action can be "None"
-            i = clientDbconn.atomMatch(mydep)
+            i = clientDbconn.atomMatch(dep_getkey(mydep[1]), matchSlot = matchslot)
             if i[0] != -1:
                 oldneeded = clientDbconn.retrieveNeeded(i[0])
                 if oldneeded: # if there are needed
-                    ndbconn = openRepositoryDatabase(atom[1])
-                    needed = ndbconn.retrieveNeeded(atom[0])
+                    ndbconn = openRepositoryDatabase(match[1])
+                    needed = ndbconn.retrieveNeeded(match[0])
                     ndbconn.closeDB()
                     del ndbconn
                     oldneeded.difference_update(needed)
@@ -596,7 +594,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
                                     mynewatom = mydbconn.retrieveAtom(mymatch[0])
                                     mydbconn.closeDB()
                                     del mydbconn
-                                    if (mymatch not in matchcache) and (mynewatom not in treecache):
+                                    if (mymatch not in matchcache) and (mynewatom not in treecache) and (mymatch not in matchFilter):
                                         mybuffer.push((treedepth,mynewatom))
                                 else:
                                     # we bastardly ignore the missing library for now
@@ -864,7 +862,7 @@ def fetchFileOnMirrors(repository, filename, digest = False):
         # check if uri is sane
         if getFailingMirrorStatus(uri) >= 30:
             # ohohoh!
-            etpRemoteFailures[mirrorname] = 30 # set to 30 for convenience
+            etpRemoteFailures[uri] = 30 # set to 30 for convenience
             print_warning(red("   ## ")+mirrorCountText+blue(" Mirror: ")+red(spliturl(url)[1])+" - maximum failure threshold reached.")
             if getFailingMirrorStatus(uri) == 30:
                 addFailingMirror(uri,45) # put to 75 then decrement by 4 so we won't reach 30 anytime soon ahahaha
@@ -874,7 +872,7 @@ def fetchFileOnMirrors(repository, filename, digest = False):
                     addFailingMirror(uri,-4)
                 else:
                     # put to 0 - reenable mirror, welcome back uri!
-                    etpRemoteFailures[mirrorname] = 0
+                    etpRemoteFailures[uri] = 0
             
             remaining.remove(uri)
             continue
@@ -908,7 +906,7 @@ def fetchFileOnMirrors(repository, filename, digest = False):
    @input package: url -> HTTP/FTP url, digest -> md5 hash of the file
    @output: -1 = download error (cannot find the file), -2 = digest error, 0 = all fine
 '''
-def fetchFile(url, digest = False):
+def fetchFile(url, digest = None):
     # remove old
     filename = os.path.basename(url)
     filepath = etpConst['packagesbindir']+"/"+etpConst['branch']+"/"+filename
@@ -928,7 +926,7 @@ def fetchFile(url, digest = False):
 	return -1
     if fetchChecksum == "-3":
 	return -3
-    if (digest != False):
+    if (digest):
 	#print digest+" <--> "+fetchChecksum
 	if (fetchChecksum != digest):
 	    # not properly downloaded
@@ -989,31 +987,31 @@ def removePackage(infoDict):
     
     # remove files from system
     directories = set()
-    for file in content:
+    for item in content:
         # collision check
         if etpConst['collisionprotect'] > 0:
             
-            if clientDbconn.isFileAvailable(file) and os.path.isfile(etpConst['systemroot']+file): # in this way we filter out directories
-                if not etpUi['quiet']: print_warning(darkred("   ## ")+red("Collision found during remove of ")+etpConst['systemroot']+file+red(" - cannot overwrite"))
-                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove of "+etpConst['systemroot']+file+" - cannot overwrite")
+            if clientDbconn.isFileAvailable(item) and os.path.isfile(etpConst['systemroot']+item): # in this way we filter out directories
+                if not etpUi['quiet']: print_warning(darkred("   ## ")+red("Collision found during remove of ")+etpConst['systemroot']+item+red(" - cannot overwrite"))
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove of "+etpConst['systemroot']+item+" - cannot overwrite")
                 continue
     
         protected = False
         if (not infoDict['removeconfig']) and (not infoDict['diffremoval']):
             try:
                 # -- CONFIGURATION FILE PROTECTION --
-                if os.access(etpConst['systemroot']+file,os.R_OK):
+                if os.access(etpConst['systemroot']+item,os.R_OK):
                     for x in protect:
-                        if etpConst['systemroot']+file.startswith(x):
+                        if etpConst['systemroot']+item.startswith(x):
                             protected = True
                             break
                     if (protected):
                         for x in mask:
-                            if etpConst['systemroot']+file.startswith(x):
+                            if etpConst['systemroot']+item.startswith(x):
                                 protected = False
                                 break
-                    if (protected) and os.path.isfile(etpConst['systemroot']+file):
-                        protected = istextfile(etpConst['systemroot']+file)
+                    if (protected) and os.path.isfile(etpConst['systemroot']+item):
+                        protected = istextfile(etpConst['systemroot']+item)
                     else:
                         protected = False # it's not a file
                 # -- CONFIGURATION FILE PROTECTION --
@@ -1022,32 +1020,32 @@ def removePackage(infoDict):
         
         
         if (protected):
-            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file: "+etpConst['systemroot']+file)
-            if not etpUi['quiet']: print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+etpConst['systemroot']+file)
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file: "+etpConst['systemroot']+item)
+            if not etpUi['quiet']: print_warning(darkred("   ## ")+red("[remove] Protecting config file: ")+etpConst['systemroot']+item)
         else:
             try:
-                os.lstat(etpConst['systemroot']+file)
+                os.lstat(etpConst['systemroot']+item)
             except OSError:
                 continue # skip file, does not exist
             except UnicodeEncodeError:
                 print_warning(darkred("   ## ")+red("QA: ")+brown("this package contains a badly encoded file"))
                 continue # file has a really bad encoding
             
-            if os.path.isdir(etpConst['systemroot']+file) and os.path.islink(etpConst['systemroot']+file): # S_ISDIR returns False for directory symlinks, so using os.path.isdir
+            if os.path.isdir(etpConst['systemroot']+item) and os.path.islink(etpConst['systemroot']+item): # S_ISDIR returns False for directory symlinks, so using os.path.isdir
                 # valid directory symlink
                 #print "symlink dir",file
-                directories.add((etpConst['systemroot']+file,"link"))
-            elif os.path.isdir(etpConst['systemroot']+file):
+                directories.add((etpConst['systemroot']+item,"link"))
+            elif os.path.isdir(etpConst['systemroot']+item):
                 # plain directory
                 #print "plain dir",file
-                directories.add((etpConst['systemroot']+file,"dir"))
+                directories.add((etpConst['systemroot']+item,"dir"))
             else: # files, symlinks or not
                 # just a file or symlink or broken directory symlink (remove now)
                 try:
                     #print "plain file",file
-                    os.remove(etpConst['systemroot']+file)
+                    os.remove(etpConst['systemroot']+item)
                     # add its parent directory
-                    dirfile = os.path.dirname(etpConst['systemroot']+file)
+                    dirfile = os.path.dirname(etpConst['systemroot']+item)
                     if os.path.isdir(dirfile) and os.path.islink(dirfile):
                         #print "symlink dir2",dirfile
                         directories.add((dirfile,"link"))
@@ -1180,9 +1178,9 @@ def moveImageToSystem(imageDir, protect, mask):
     # merge data into system
     for currentdir,subdirs,files in os.walk(imageDir):
 	# create subdirs
-        for dir in subdirs:
+        for subdir in subdirs:
 	    
-            imagepathDir = currentdir + "/" + dir
+            imagepathDir = currentdir + "/" + subdir
 	    rootdir = etpConst['systemroot']+imagepathDir[len(imageDir):]
             #print rootdir
 	    
@@ -1214,8 +1212,8 @@ def moveImageToSystem(imageDir, protect, mask):
                 os.chown(rootdir,user,group)
                 shutil.copystat(imagepathDir,rootdir)
 	
-        for file in files:
-	    fromfile = currentdir+"/"+file
+        for item in files:
+	    fromfile = currentdir+"/"+item
             tofile = etpConst['systemroot']+fromfile[len(imageDir):]
             #print tofile
 	    
@@ -1593,6 +1591,7 @@ def stepExecutor(step, infoDict, loopString = None):
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
                 if trigger not in etpUi['postinstall_triggers_disable']:
                     eval("triggerTools."+trigger)(pkgdata)
+        del pkgdata
 
     elif step == "preinstall":
 	# analyze atom
@@ -1602,6 +1601,7 @@ def stepExecutor(step, infoDict, loopString = None):
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
                 if trigger not in etpUi['preinstall_triggers_disable']:
                     eval("triggerTools."+trigger)(pkgdata)
+        del pkgdata
 
     elif step == "preremove":
 	# analyze atom
@@ -1618,6 +1618,7 @@ def stepExecutor(step, infoDict, loopString = None):
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
                 if trigger not in etpUi['preremove_triggers_disable']:
                     eval("triggerTools."+trigger)(remdata)
+        del remdata
 
     elif step == "postremove":
 	# analyze atom
@@ -1634,6 +1635,7 @@ def stepExecutor(step, infoDict, loopString = None):
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
                 if trigger not in etpUi['postremove_triggers_disable']:
                     eval("triggerTools."+trigger)(remdata)
+        del remdata
     
     clientDbconn.closeDB()
     del clientDbconn

@@ -16,7 +16,7 @@
 # (integer) == encodeint(integer)  ===> 4 characters (big-endian copy)
 # '+' means concatenate the fields ===> All chunks are strings
 
-import sys,os,shutil,errno
+import os,shutil,errno
 from stat import *
 
 def addtolist(mylist,curdir):
@@ -56,7 +56,7 @@ def xpak(rootdir,outfile=None):
 	xpak segment."""
 	try:
 		origdir=os.getcwd()
-	except SystemExit, e:
+	except SystemExit:
 		raise
 	except:
 		os.chdir("/")
@@ -126,7 +126,7 @@ def xsplit_mem(mydat):
 	if mydat[-8:]!="XPAKSTOP":
 		return None
 	indexsize=decodeint(mydat[8:12])
-	datasize=decodeint(mydat[12:16])
+	#datasize=decodeint(mydat[12:16]) not used
 	return (mydat[16:indexsize+16], mydat[indexsize+16:-8])
 
 def getindex(infile):
@@ -201,7 +201,7 @@ def xpand(myid,mydest):
 	mydata=myid[1]
 	try:
 		origdir=os.getcwd()
-	except SystemExit, e:
+	except SystemExit:
 		raise
 	except:
 		os.chdir("/")
@@ -251,7 +251,7 @@ class tbz2:
 		return self.unpackinfo(datadir)
 	def compose(self,datadir,cleanup=0):
 		"""Alias for recompose()."""
-		return recompose(datadir,cleanup)
+		return self.recompose(datadir,cleanup)
 	def recompose(self,datadir,cleanup=0):
 		"""Creates an xpak segment from the datadir provided, truncates the tbz2
 		to the end of regular data if an xpak segment already exists, and adds
@@ -324,7 +324,7 @@ class tbz2:
 			self.datapos=a.tell()
 			a.close()
 			return 2
-		except SystemExit, e:
+		except SystemExit:
 			raise
 		except:
 			return 0
@@ -361,7 +361,7 @@ class tbz2:
 			return 0
 		try:
 			origdir=os.getcwd()
-		except SystemExit, e:
+		except SystemExit:
 			raise
 		except:
 			os.chdir("/")

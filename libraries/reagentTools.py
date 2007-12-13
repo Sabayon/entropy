@@ -116,7 +116,7 @@ def inject(options):
     
 
 
-def update(options, inject = False):
+def update(options):
 
     reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"update: called -> options: "+str(options))
 
@@ -152,7 +152,6 @@ def update(options, inject = False):
             from portageTools import getInstalledPackagesCounters, quickpkg, getPackageSlot
             installedPackages = getInstalledPackagesCounters()
             installedCounters = set()
-            databasePackages = dbconn.listAllPackages()
             toBeAdded = set()
             toBeRemoved = set()
 	    
@@ -243,7 +242,7 @@ def update(options, inject = False):
 		    cat = dbconn.retrieveCategory(match[0])
 		    name = dbconn.retrieveName(match[0])
 		    version = dbconn.retrieveVersion(match[0])
-		    slot = dbconn.retrieveSlot(match[0])
+		    #slot = dbconn.retrieveSlot(match[0])
 		    if os.path.isdir(appdb+"/"+cat+"/"+name+"-"+version):
 		        packages.append([cat+"/"+name+"-"+version,0])
 	    
@@ -260,8 +259,8 @@ def update(options, inject = False):
 	    print_info(brown("    # ")+red(x[0]+"..."))
 	    rc = quickpkg(x[0],etpConst['packagesstoredir'])
 	    if (rc is None):
-	        reagentLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"update: "+str(dep)+" -> quickpkg error. Cannot continue.")
-	        print_error(red("      *")+" quickpkg error for "+red(dep))
+	        reagentLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"update: "+str(x)+" -> quickpkg error. Cannot continue.")
+	        print_error(red("      *")+" quickpkg error for "+red(x))
 	        print_error(red("  ***")+" Fatal error, cannot continue")
 	        return 251
 
@@ -294,7 +293,6 @@ def update(options, inject = False):
 
     counter = 0
     etpCreated = 0
-    etpNotCreated = 0
     for tbz2 in tbz2files:
 	counter += 1
         etpCreated += 1
@@ -347,7 +345,7 @@ def tbz2Handler(tbz2path, dbconn, requested_branch, inject = False):
         
         digest = md5sum(etpConst['packagessuploaddir']+"/"+requested_branch+"/"+downloadfile)
         dbconn.setDigest(idpk,digest)
-        hashFilePath = createHashFile(etpConst['packagessuploaddir']+"/"+requested_branch+"/"+downloadfile)
+        createHashFile(etpConst['packagessuploaddir']+"/"+requested_branch+"/"+downloadfile)
         # remove garbage
         os.remove(dbpath)
         print_info(brown(" * ")+red("Database injection complete for ")+downloadfile)
@@ -601,7 +599,6 @@ def database(options):
         etpUi['ask'] = ask
 	
 	print_info(green(" * ")+red("Switching selected packages ..."))
-	import re
 	
 	for pkg in pkglist:
 	    atom = dbconn.retrieveAtom(pkg)
@@ -856,11 +853,11 @@ def database(options):
 		
 		for pkg in toBeDownloaded:
 		    rc = activatorTools.downloadPackageFromMirror(uri,pkg[1],pkg[2])
-		    if (rc is None):
+		    if (rc == None):
 			notDownloadedPackages.append([pkg[1],pkg[2]])
-		    if (rc == False):
+		    elif (not rc):
 			notDownloadedPackages.append([pkg[1],pkg[2]])
-		    if (rc == True):
+		    elif (rc):
 			pkgDownloadedSuccessfully += 1
 			availList.append(pkg[0])
 		

@@ -196,7 +196,6 @@ def DeflateHandler(mytbz2s, savedir):
         mytbz2 = entropyTools.removeEdb(tbz2,savedir)
         tbz2name = os.path.basename(mytbz2)[:-5] # remove .tbz2
         tbz2name = entropyTools.remove_tag(tbz2name)+".tbz2"
-        oldtbz2 = mytbz2
         newtbz2 = os.path.dirname(mytbz2)+"/"+tbz2name
         print_info(darkgreen(" * ")+darkred("Deflated package: ")+newtbz2)
 
@@ -451,15 +450,15 @@ def smartgenerator(atomInfo, emptydeps = False):
     entropyTools.uncompressTarBz2(mainBinaryPath,pkgtmpdir) # first unpack
 
     binaryExecs = []
-    for file in pkgcontent:
+    for item in pkgcontent:
 	# remove /
-	filepath = pkgtmpdir+file
+	filepath = pkgtmpdir+item
 	import commands
 	if os.access(filepath,os.X_OK):
 	    # test if it's an exec
 	    out = commands.getoutput("file "+filepath).split("\n")[0]
 	    if out.find("LSB executable") != -1:
-		binaryExecs.append(file)
+		binaryExecs.append(item)
 	# check if file is executable
 
     # now uncompress all the rest
@@ -541,8 +540,8 @@ def smartgenerator(atomInfo, emptydeps = False):
     os.chmod(pkgtmpdir+"/wrp/wrapper",0755)
     
     # now list files in /sh and create .desktop files
-    for file in binaryExecs:
-	file = file.split("/")[len(file.split("/"))-1]
+    for item in binaryExecs:
+	item = file.split("/")[len(item.split("/"))-1]
 	runFile = []
 	runFile.append(
 			'#include <cstdlib>\n'
@@ -550,21 +549,21 @@ def smartgenerator(atomInfo, emptydeps = False):
 			'#include <stdio.h>\n'
 			'int main() {\n'
 			'  int rc = system(\n'
-			'                "pid=$(pidof '+file+'.exe);"\n'
+			'                "pid=$(pidof '+item+'.exe);"\n'
 			'                "listpid=$(ps x | grep $pid);"\n'
 			'                "filename=$(echo $listpid | cut -d\' \' -f 5);"'
 			'                "currdir=$(dirname $filename);"\n'
-			'                "/bin/sh $currdir/wrp/wrapper $currdir '+file+'" );\n'
+			'                "/bin/sh $currdir/wrp/wrapper $currdir '+item+'" );\n'
 			'  return rc;\n'
 			'}\n'
 	)
-	f = open(pkgtmpdir+"/"+file+".cc","w")
+	f = open(pkgtmpdir+"/"+item+".cc","w")
 	f.writelines(runFile)
 	f.flush()
 	f.close()
 	# now compile
-	entropyTools.spawnCommand("cd "+pkgtmpdir+"/ ; g++ -Wall "+file+".cc -o "+file+".exe")
-	os.remove(pkgtmpdir+"/"+file+".cc")
+	entropyTools.spawnCommand("cd "+pkgtmpdir+"/ ; g++ -Wall "+item+".cc -o "+item+".exe")
+	os.remove(pkgtmpdir+"/"+item+".cc")
 
     smartpath = etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tbz2"
     print_info(darkgreen(" * ")+red("Compressing smart application: ")+bold(atom))

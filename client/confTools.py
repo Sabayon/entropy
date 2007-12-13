@@ -283,9 +283,9 @@ def scanfs(dcache = True):
     if (dcache):
 	# can we load cache?
 	try:
-	    c = loadcache()
-	    if c != None:
-	        return c
+	    z = loadcache()
+	    if z != None:
+	        return z
 	except:
 	    pass
 
@@ -305,22 +305,22 @@ def scanfs(dcache = True):
 	    scanfile = True
 	
 	for currentdir,subdirs,files in os.walk(path):
-	    for file in files:
+	    for item in files:
 		
 		if (scanfile):
-		    if path != file:
+		    if path != item:
 			continue
 		
-		filepath = currentdir+"/"+file
-		if file.startswith("._cfg"):
+		filepath = currentdir+"/"+item
+		if item.startswith("._cfg"):
 		    
 		    # further check then
-		    number = file[5:9]
+		    number = item[5:9]
 		    try:
 			int(number)
 		    except:
 			continue # not a valid etc-update file
-		    if file[9] != "_": # no valid format provided
+		    if item[9] != "_": # no valid format provided
 			continue
 		    
 		    mydict = generatedict(filepath)
@@ -370,10 +370,10 @@ def loadcache():
 
 
 def generatedict(filepath):
-    file = os.path.basename(filepath)
+    item = os.path.basename(filepath)
     currentdir = os.path.dirname(filepath)
-    tofile = file[10:]
-    number = file[5:9]
+    tofile = item[10:]
+    number = item[5:9]
     try:
 	int(number)
     except:
@@ -461,9 +461,9 @@ def confinfo():
     print_info(yellow(" @@ ")+darkgreen("These are the files that would be updated:"))
     data = scanfs(dcache = False)
     counter = 0
-    for file in data:
+    for item in data:
 	counter += 1
-	print_info(" ("+blue(str(counter))+") "+"[auto:"+str(data[file]['automerge'])+"]"+red(" file: ")+file)
+	print_info(" ("+blue(str(counter))+") "+"[auto:"+str(data[item]['automerge'])+"]"+red(" file: ")+item)
     print_info(red(" @@ ")+brown("Unique files that would be update:\t\t")+red(str(len(data))))
     automerge = 0
     for x in data:

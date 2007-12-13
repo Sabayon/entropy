@@ -20,8 +20,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import os
-from sys import exit
 from entropyConstants import *
 
 
@@ -60,14 +58,11 @@ def initConfig_serverConstants():
                 try:
                     loglevel = int(loglevel)
                 except:
-                    print "ERROR: invalid loglevel in: "+etpConst['activatorconf']
-                    exit(51)
+                    print "WARNING: invalid loglevel in: "+etpConst['activatorconf']
                 if (loglevel > -1) and (loglevel < 3):
                     etpConst['activatorloglevel'] = loglevel
                 else:
                     print "WARNING: invalid loglevel in: "+etpConst['activatorconf']
-                    import time
-                    time.sleep(5)
     
     # reagent section
     if (os.path.isfile(etpConst['reagentconf'])):
@@ -80,14 +75,11 @@ def initConfig_serverConstants():
                 try:
                     loglevel = int(loglevel)
                 except:
-                    print "ERROR: invalid loglevel in: "+etpConst['reagentconf']
-                    exit(51)
+                    print "WARNING: invalid loglevel in: "+etpConst['reagentconf']
                 if (loglevel > -1) and (loglevel < 3):
                     etpConst['reagentloglevel'] = loglevel
                 else:
                     print "WARNING: invalid loglevel in: "+etpConst['reagentconf']
-                    import time
-                    time.sleep(5)
             elif line.startswith("rss-feed|") and (len(line.split("rss-feed|")) == 2):
                 feed = line.split("rss-feed|")[1]
                 if feed in ("enable","enabled","true","1"):
@@ -123,14 +115,11 @@ def initConfig_serverConstants():
                 try:
                     loglevel = int(loglevel)
                 except:
-                    print "ERROR: invalid loglevel in: "+etpConst['mirrorsconf']
-                    exit(51)
+                    print "WARNING: invalid loglevel in: "+etpConst['mirrorsconf']
                 if (loglevel > -1) and (loglevel < 3):
                     etpConst['mirrorsloglevel'] = loglevel
                 else:
                     print "WARNING: invalid loglevel in: "+etpConst['mirrorsconf']
-                    import time
-                    time.sleep(5)
     
     
     # spmbackend section
@@ -144,14 +133,11 @@ def initConfig_serverConstants():
                 try:
                     loglevel = int(loglevel)
                 except:
-                    print "ERROR: invalid loglevel in: "+etpConst['spmbackendconf']
-                    exit(51)
+                    print "WARNING: invalid loglevel in: "+etpConst['spmbackendconf']
                 if (loglevel > -1) and (loglevel < 3):
                     etpConst['spmbackendloglevel'] = loglevel
                 else:
                     print "WARNING: invalid loglevel in: "+etpConst['spmbackendconf']
-                    import time
-                    time.sleep(5)
     
     
     # generic settings section

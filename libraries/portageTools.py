@@ -34,14 +34,11 @@ import portage
 import portage_const
 from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv
 from portage_util import grabdict_package
-from portage_const import USER_CONFIG_PATH
 
 # colours support
 from outputTools import *
 # misc modules
-import sys
 import commands
-import entropyTools
 
 # Logging initialization
 import logTools
@@ -222,7 +219,7 @@ def quickpkg(atom,dirpath):
     # getting package info
     pkgname = atom.split("/")[1]
     pkgcat = atom.split("/")[0]
-    pkgfile = pkgname+".tbz2"
+    #pkgfile = pkgname+".tbz2"
     if not os.path.isdir(dirpath):
         os.makedirs(dirpath)
     dirpath += "/"+pkgname+".tbz2"
@@ -230,10 +227,9 @@ def quickpkg(atom,dirpath):
 
     import tarfile
     import stat
-    from portage import dblink
     trees = portage.db["/"]
     vartree = trees["vartree"]
-    dblnk = dblink(pkgcat, pkgname, "/", vartree.settings, treetype="vartree", vartree=vartree)
+    dblnk = portage.dblink(pkgcat, pkgname, "/", vartree.settings, treetype="vartree", vartree=vartree)
     dblnk.lockdb()
     tar = tarfile.open(dirpath,"w:bz2")
 
@@ -336,7 +332,6 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
     useflags = useflags.split()
     
     length = len(roughDependencies)
-    global atomcount
     atomcount = -1
 
     while atomcount < length:
@@ -352,9 +347,9 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 		openParenthesisFromOr += 1
 	    openParenthesis += 1
 	    curparenthesis = openParenthesis # 2
-	    if (useFlagQuestion == True) and (useMatch == False):
+	    if (useFlagQuestion) and (not useMatch):
 		skip = True
-		while (skip == True):
+		while (skip):
 		    atomcount += 1
 		    atom = roughDependencies[atomcount]
 		    if atom.startswith("("):
@@ -412,7 +407,7 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 	
 	elif (atom.find("/") != -1) and (not atom.startswith("!")) and (not atom.endswith("?")):
 	    # it's a package name <pkgcat>/<pkgname>-???
-	    if ((useFlagQuestion == True) and (useMatch == True)) or ((useFlagQuestion == False) and (useMatch == False)):
+	    if (useFlagQuestion == useMatch):
 	        # check if there's an OR
 		if (openOr):
 		    dependencies += atom
@@ -494,7 +489,6 @@ def getPortageAppDbPath():
 # Collect installed packages
 def getInstalledPackages(dbdir = None):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackages: called.")
-    import os
     if not dbdir:
         appDbDir = getPortageAppDbPath()
     else:
@@ -513,7 +507,6 @@ def getInstalledPackages(dbdir = None):
 
 def getInstalledPackagesCounters():
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackagesCounters: called.")
-    import os
     appDbDir = getPortageAppDbPath()
     dbDirs = os.listdir(appDbDir)
     installedAtoms = []
@@ -532,7 +525,6 @@ def getInstalledPackagesCounters():
 
 def refillCounter():
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"refillCounter: called.")
-    import os
     appDbDir = getPortageAppDbPath()
     counters = set()
     for catdir in os.listdir(appDbDir):

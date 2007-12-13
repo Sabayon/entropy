@@ -29,7 +29,6 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 import equoTools
-import repositoriesTools
 from databaseTools import openRepositoryDatabase, openClientDatabase, openGenericDatabase, listAllAvailableBranches
 import entropyTools
 import dumpTools
@@ -45,7 +44,6 @@ def package(options):
 
     # Options available for all the packages submodules
     myopts = options[1:]
-    equoRequestPackagesCheck = False
     equoRequestDeps = True
     equoRequestEmptyDeps = False
     equoRequestOnlyFetch = False
@@ -365,7 +363,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     # read all idpackages
                     try:
                         myidpackages = mydbconn.listAllIdpackages() # all branches admitted from external files
-                    except DatabaseError:
+                    except:
                         if not (etpUi['quiet'] or returnQueue): print_warning(red("## ATTENTION:")+bold(" "+basefile+" ")+red(" is not a valid Entropy package. Skipping..."))
                         del etpRepositories[basefile]
                         if returnQueue:
@@ -437,13 +435,13 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 if installedVer == "Not installed":
                     installedVer = "0"
                 if installedTag == "NoTag":
-                    installedTag == ''
+                    installedTag = ''
                 if installedRev == "NoRev":
-                    installedRev == 0
-                cmp = entropyTools.entropyCompareVersions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
-                if (cmp == 0):
+                    installedRev = 0
+                pkgcmp = entropyTools.entropyCompareVersions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
+                if (pkgcmp == 0):
                     action = darkgreen("No update needed")
-                elif (cmp > 0):
+                elif (pkgcmp > 0):
                     if (installedVer == "0"):
                         action = darkgreen("Install")
                     else:
@@ -545,8 +543,6 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 pkgrev = mydata[18]
                 pkgslot = mydata[14]
                 pkgfile = mydata[12]
-                pkgcat = mydata[5]
-                pkgname = mydata[1]
 
                 onDiskUsedSize += dbconn.retrieveOnDiskSize(packageInfo[0]) # still new
                 
@@ -580,13 +576,13 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     
                 action = 0
                 flags = " ["
-                cmp = entropyTools.entropyCompareVersions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
-                if (cmp == 0):
+                pkgcmp = entropyTools.entropyCompareVersions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
+                if (pkgcmp == 0):
                     pkgsToReinstall += 1
                     actionQueue[pkgatom]['removeidpackage'] = -1 # disable removal, not needed
                     flags += red("R")
                     action = 1
-                elif (cmp > 0):
+                elif (pkgcmp > 0):
                     if (installedVer == "0"):
                         pkgsToInstall += 1
                         actionQueue[pkgatom]['removeidpackage'] = -1 # disable removal, not needed
@@ -1173,7 +1169,6 @@ def dependenciesTest(clientDbconn = None, reagent = False):
     # get all the installed packages
     installedPackages = clientDbconn.listAllIdpackages()
     
-    depsNotFound = {}
     depsNotSatisfied = {}
     # now look
     length = str((len(installedPackages)))
@@ -1301,8 +1296,8 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
         if not etpUi['quiet']: print_info("  ["+str((round(float(count)/total*100,1)))+"%] "+blue("Tree: ")+red(etpConst['systemroot']+ldpath), back = True)
         ldpath = ldpath.encode(sys.getfilesystemencoding())
         for currentdir,subdirs,files in os.walk(etpConst['systemroot']+ldpath):
-            for file in files:
-                filepath = currentdir+"/"+file
+            for item in files:
+                filepath = currentdir+"/"+item
                 if os.access(filepath,os.X_OK):
                     executables.add(filepath[len(etpConst['systemroot']):])
 

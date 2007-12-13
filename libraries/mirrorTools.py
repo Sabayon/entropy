@@ -58,7 +58,6 @@ class handlerFTP:
 	else:
 	    self.ftppassword = ftpuri.split("@")[:len(ftpuri.split("@"))-1]
 	    if len(self.ftppassword) > 1:
-		import string
 		self.ftppassword = '@'.join(self.ftppassword)
 		self.ftppassword = self.ftppassword.split(":")[len(self.ftppassword.split(":"))-1]
 		if (self.ftppassword == ""):
@@ -217,7 +216,7 @@ class handlerFTP:
 	self.ftpconn.mkd(directory)
 
     # this function also supports callback, because storbinary doesn't
-    def advancedStorBinary(self, cmd, fp, callback=None, blocksize=8192):
+    def advancedStorBinary(self, cmd, fp, callback=None):
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.advancedStorBinary: called with -> "+str(cmd))
 	''' Store a file in binary mode. Our version supports a callback function'''
         self.ftpconn.voidcmd('TYPE I')
@@ -322,12 +321,12 @@ class handlerFTP:
 
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"handlerFTP.downloadFile: called for -> "+str(filepath)+" | download directory: "+str(downloaddir)+" | ascii? "+str(ascii))
 
-	file = filepath.split("/")[len(filepath.split("/"))-1]
+	item = filepath.split("/")[len(filepath.split("/"))-1]
 	# look if the file exist
-	if self.isFileAvailable(file):
+	if self.isFileAvailable(item):
 	    self.mykByteCount = 0
 	    # get the file size
-	    self.myFileSize = self.getFileSizeCompat(file)
+	    self.myFileSize = self.getFileSizeCompat(item)
 	    if (self.myFileSize):
 	        self.myFileSize = round(float(int(self.myFileSize))/1024,1)
 		if (self.myFileSize == 0):
@@ -335,11 +334,11 @@ class handlerFTP:
 	    else:
 		self.myFileSize = 0
 	    if (not ascii):
-	        f = open(downloaddir+"/"+file,"wb")
-	        rc = self.ftpconn.retrbinary('RETR '+file, downloadFileStoreAndUpdateProgress, 1024)
+	        f = open(downloaddir+"/"+item,"wb")
+	        rc = self.ftpconn.retrbinary('RETR '+item, downloadFileStoreAndUpdateProgress, 1024)
 	    else:
-	        f = open(downloaddir+"/"+file,"w")
-	        rc = self.ftpconn.retrlines('RETR '+file, f.write)
+	        f = open(downloaddir+"/"+item,"w")
+	        rc = self.ftpconn.retrlines('RETR '+item, f.write)
 	    f.flush()
 	    f.close()
 	    if rc.find("226") != -1: # upload complete
@@ -349,7 +348,7 @@ class handlerFTP:
 		mirrorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"handlerFTP.downloadFile: download issues !!.")
 		return False
 	else:
-	    mirrorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"handlerFTP.downloadFile: file '"+file+"' not available !!.")
+	    mirrorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"handlerFTP.downloadFile: file '"+item+"' not available !!.")
 	    return None
 
     # also used to move files
@@ -365,8 +364,8 @@ class handlerFTP:
     
     def getFileSizeCompat(self,file):
 	mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlerFTP.getFileSizeCompat: called for -> "+file)
-	list = self.getRoughList()
-	for item in list:
+	data = self.getRoughList()
+	for item in data:
 	    if item.find(file) != -1:
 		# extact the size
 		return item.split()[4]

@@ -22,7 +22,7 @@
 
 from entropyConstants import *
 from xml.dom import minidom
-import time, datetime
+import time
 
 feed_title = etpConst['systemname']+" Online Repository Status"
 feed_description = "Keep you updated on what's going on in the Official "+etpConst['systemname']+" Repository."
@@ -53,7 +53,7 @@ class rssFeed:
             self.title = feed_title
             self.description = feed_description
             self.language = feed_language
-            self.copyright = feed_copyright
+            self.cright = feed_copyright
             self.editor = feed_editor
             self.link = etpConst['rss-website-url']
             f = open(self.file,"w")
@@ -67,7 +67,7 @@ class rssFeed:
             self.link = self.channel.getElementsByTagName("link")[0].firstChild.data
             self.description = self.channel.getElementsByTagName("description")[0].firstChild.data
             self.language = self.channel.getElementsByTagName("language")[0].firstChild.data
-            self.copyright = self.channel.getElementsByTagName("copyright")[0].firstChild.data
+            self.cright = self.channel.getElementsByTagName("copyright")[0].firstChild.data
             self.editor = self.channel.getElementsByTagName("managingEditor")[0].firstChild.data
             entries = self.channel.getElementsByTagName("item")
             self.itemscounter = len(entries)
@@ -154,10 +154,10 @@ class rssFeed:
         language.appendChild(lang_text)
         channel.appendChild(language)
         # copyright
-        copyright = doc.createElement("copyright")
-        cr_text = doc.createTextNode(unicode(self.copyright))
-        copyright.appendChild(cr_text)
-        channel.appendChild(copyright)
+        cright = doc.createElement("copyright")
+        cr_text = doc.createTextNode(unicode(self.cright))
+        cright.appendChild(cr_text)
+        channel.appendChild(cright)
         # managingEditor
         managingEditor = doc.createElement("managingEditor")
         ed_text = doc.createTextNode(unicode(self.editor))

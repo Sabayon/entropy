@@ -104,8 +104,6 @@ def database(options):
 	portagePackages = portageTools.getInstalledPackages()
 	portagePackages = portagePackages[0]
 
-        appdb = portageTools.getPortageAppDbPath()
-
 	# do for each database
 	maxcount = str(len(portagePackages))
         count = 0
@@ -209,10 +207,10 @@ def database(options):
 	f = open(etpConst['packagestmpfile'],"r")
 	# creating list of files
 	filelist = set()
-	file = f.readline().strip()
-	while file:
-	    filelist.add(file)
-	    file = f.readline().strip()
+	item = f.readline().strip()
+	while item:
+	    filelist.add(item)
+	    item = f.readline().strip()
 	f.close()
 	entries = len(filelist)
 	
@@ -233,8 +231,8 @@ def database(options):
 		print_info("  ("+str(cnt)+"/"+count+")"+red(" Matching files from packages..."), back = True)
 		# content
 		content = dbconn.retrieveContent(idpackage)
-		for file in content:
-		    if etpConst['systemroot']+file in filelist:
+		for item in content:
+		    if etpConst['systemroot']+item in filelist:
 			pkgsfound.add((idpackage,repo))
 			atoms[(idpackage,repo)] = idpackageatom
 			filelist.difference_update(set([etpConst['systemroot']+x for x in content]))
@@ -308,7 +306,6 @@ def database(options):
         installedPackages = getInstalledPackagesCounters()
         print_info(red(" Collecting Entropy packages..."), back = True)
         installedCounters = set()
-        databasePackages = clientDbconn.listAllPackages()
         toBeAdded = set()
         toBeRemoved = set()
 

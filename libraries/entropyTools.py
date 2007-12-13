@@ -25,7 +25,7 @@ from outputTools import *
 from entropyConstants import *
 import os
 import re
-from sys import exit, stdout, getfilesystemencoding
+import sys
 import threading, time, tarfile
 
 # Logging initialization
@@ -35,7 +35,6 @@ entropyLog = logTools.LogFile(level=etpConst['entropyloglevel'],filename = etpCo
 global __etp_debug
 __etp_debug = False
 def enableDebug():
-    __etp_debug = True
     import pdb
     pdb.set_trace()
 
@@ -68,7 +67,7 @@ def applicationLockCheck(option = None, gentle = False):
 	print_error(red("Another instance of Equo is running. Action: ")+bold(str(option))+red(" denied."))
 	print_error(red("If I am lying (maybe). Please remove ")+bold(etpConst['pidfile']))
 	if (not gentle):
-	    exit(10)
+	    sys.exit(10)
 	else:
 	    return True
     return False
@@ -80,12 +79,12 @@ def getRandomNumber():
 def countdown(secs=5,what="Counting...", back = False):
     if secs:
 	if back:
-	    stdout.write(red(">> ")+what)
+	    sys.stdout.write(red(">> ")+what)
 	else:
 	    print what
         for i in range(secs)[::-1]:
-            stdout.write(red(str(i+1)+" "))
-            stdout.flush()
+            sys.stdout.write(red(str(i+1)+" "))
+            sys.stdout.flush()
 	    time.sleep(1)
 
 def spinner(rotations, interval, message=''):
@@ -109,26 +108,26 @@ def md5sum(filepath):
 def unpackGzip(gzipfilepath):
     import gzip
     filepath = gzipfilepath[:-3] # remove .gz
-    file = open(filepath,"wb")
+    item = open(filepath,"wb")
     filegz = gzip.GzipFile(gzipfilepath,"rb")
     filecont = filegz.readlines()
     filegz.close()
-    file.writelines(filecont)
-    file.flush()
-    file.close()
+    item.writelines(filecont)
+    item.flush()
+    item.close()
     del filecont
     return filepath
 
 def unpackBzip2(bzip2filepath):
     import bz2
     filepath = bzip2filepath[:-4] # remove .gz
-    file = open(filepath,"wb")
+    item = open(filepath,"wb")
     filebz2 = bz2.BZ2File(bzip2filepath,"rb")
     filecont = filebz2.readlines()
     filebz2.close()
-    file.writelines(filecont)
-    file.flush()
-    file.close()
+    item.writelines(filecont)
+    item.flush()
+    item.close()
     del filecont
     return filepath
 
@@ -633,7 +632,6 @@ def dep_getcpv(mydep):
     if cached != None:
 	return cached
     
-    mydep_orig = mydep
     if mydep and mydep[0] == "*":
 	mydep = mydep[1:]
     if mydep and mydep[-1] == "*":
@@ -756,7 +754,7 @@ ver_regexp = re.compile("^(cvs\\.)?(\\d+)((\\.\\d+)*)([a-z]?)((_(pre|p|beta|alph
 suffix_regexp = re.compile("^(alpha|beta|rc|pre|p)(\\d*)$")
 suffix_value = {"pre": -2, "p": 0, "alpha": -4, "beta": -3, "rc": -1}
 endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
-def compareVersions(ver1, ver2, silent=1):
+def compareVersions(ver1, ver2):
 	
 	cached = compareVersionsCache.get(tuple([ver1,ver2]))
 	if cached != None:
@@ -765,7 +763,7 @@ def compareVersions(ver1, ver2, silent=1):
 	if ver1 == ver2:
 		compareVersionsCache[tuple([ver1,ver2])] = 0
 		return 0
-	mykey=ver1+":"+ver2
+	#mykey=ver1+":"+ver2
 	match1 = ver_regexp.match(ver1)
 	match2 = ver_regexp.match(ver2)
 	
@@ -930,6 +928,7 @@ def getNewerVersionTag(InputVersionlist):
 def isnumber(x):
     try:
 	t = int(x)
+        del t
 	return True
     except:
 	return False
@@ -963,8 +962,8 @@ def istext(s):
 # nameslist: a list that contains duplicated names
 # @returns filtered list
 def filterDuplicatedEntries(alist):
-    set = {}
-    return [set.setdefault(e,e) for e in alist if e not in set]
+    mydata = {}
+    return [mydata.setdefault(e,e) for e in alist if e not in mydata]
 
 
 # Escapeing functions
@@ -987,18 +986,18 @@ def escape_single(x):
         return escape(x)
     if type(x)==type(""):
         tmpstr=''
-        for c in range(len(x)):
-            if x[c] in mappings.keys():
-                if x[c] in ("'", '"'):
-                    if c+1<len(x):
-                        if x[c+1]!=x[c]:
-                            tmpstr+=mappings[x[c]]
+        for d in range(len(x)):
+            if x[d] in mappings.keys():
+                if x[d] in ("'", '"'):
+                    if d+1<len(x):
+                        if x[d+1]!=x[d]:
+                            tmpstr+=mappings[x[d]]
                     else:
-                        tmpstr+=mappings[x[c]]
+                        tmpstr+=mappings[x[d]]
                 else:
-                   tmpstr+=mappings[x[c]]
+                   tmpstr+=mappings[x[d]]
             else:
-                tmpstr+=x[c]
+                tmpstr+=x[d]
     else:
         tmpstr=x
     return tmpstr
@@ -1024,8 +1023,8 @@ def extractDuplicatedEntries(inputlist):
     mycache = {}
     newlist = set()
     for x in inputlist:
-	c = mycache.get(x)
-	if c:
+	z = mycache.get(x)
+	if z:
 	    newlist.add(x)
 	    continue
 	mycache[x] = 1
@@ -1084,14 +1083,14 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
             directories.append(tarinfo)
         else:
             try:
-                tarinfo.name = tarinfo.name.encode(getfilesystemencoding())
+                tarinfo.name = tarinfo.name.encode(sys.getfilesystemencoding())
             except:  # default encoding failed
                 try:
                     tarinfo.name = tarinfo.name.decode("latin1") # try to convert to latin1 and then back to sys.getfilesystemencoding()
-                    tarinfo.name = tarinfo.name.encode(getfilesystemencoding())
+                    tarinfo.name = tarinfo.name.encode(sys.getfilesystemencoding())
                 except:
                     raise
-            tar.extract(tarinfo, extractPath.encode(getfilesystemencoding()))
+            tar.extract(tarinfo, extractPath.encode(sys.getfilesystemencoding()))
 
     # Reverse sort directories.
     directories.sort(lambda a, b: cmp(a.name, b.name))
@@ -1105,7 +1104,7 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
             tar.chown(tarinfo, extractPath)
             tar.utime(tarinfo, extractPath)
             tar.chmod(tarinfo, extractPath)
-        except tarfile.ExtractError, e:
+        except tarfile.ExtractError:
             if tar.errorlevel > 1:
                 raise
 
@@ -1155,18 +1154,18 @@ def getFileTimeStamp(path):
     # format properly
     humantime = str(humantime)
     outputtime = ""
-    for chr in humantime:
-	if chr != "-" and chr != " " and chr != ":":
-	    outputtime += chr
+    for char in humantime:
+	if char != "-" and char != " " and char != ":":
+	    outputtime += char
     return outputtime
 
 def convertUnixTimeToMtime(unixtime):
     from datetime import datetime
     humantime = str(datetime.fromtimestamp(unixtime))
     outputtime = ""
-    for chr in humantime:
-	if chr != "-" and chr != " " and chr != ":":
-	    outputtime += chr
+    for char in humantime:
+	if char != "-" and char != " " and char != ":":
+	    outputtime += char
     return outputtime
 
 def convertUnixTimeToHumanTime(unixtime):
@@ -1178,19 +1177,19 @@ def convertUnixTimeToHumanTime(unixtime):
 def alphaSorter(seq):
     def stripter(s, goodchrs):
         badchrs = set(s)
-        for c in goodchrs:
-            if c in badchrs:
-                badchrs.remove(c)
+        for d in goodchrs:
+            if d in badchrs:
+                badchrs.remove(d)
         badchrs = ''.join(badchrs)
         return s.strip(badchrs)
     
     def chr_index(value, sortorder):
         result = []
-        for c in stripter(value, order):
-            cindex = sortorder.find(c)
-            if cindex == -1:
-                cindex = len(sortorder)+ord(c)
-            result.append(cindex)
+        for d in stripter(value, order):
+            dindex = sortorder.find(d)
+            if dindex == -1:
+                dindex = len(sortorder)+ord(d)
+            result.append(dindex)
         return result
     
     order = ( '0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz' )
@@ -1255,7 +1254,7 @@ def askquestion(prompt):
     except (EOFError, KeyboardInterrupt):
 	print "Interrupted."
         xtermTitleReset()
-	exit(100)
+	sys.exit(100)
     xtermTitleReset()
 
 class lifobuffer:
@@ -1315,7 +1314,7 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
     if pkgdata['versiontag']: pkgtag = "#"+pkgdata['versiontag']
     pkgname = pkgdata['name']+"-"+pkgdata['version']+pkgrev+pkgtag # + version + tag
     pkgcat = pkgdata['category']
-    pkgfile = pkgname+".tbz2"
+    #pkgfile = pkgname+".tbz2"
     dirpath += "/"+pkgname+".tbz2"
     if os.path.isfile(dirpath):
         os.remove(dirpath)
@@ -1569,10 +1568,10 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
             i = list(i)
             datatype = i[1]
             try:
-                i[0] = i[0].encode(getfilesystemencoding())
+                i[0] = i[0].encode(sys.getfilesystemencoding())
             except:  # default encoding failed
                 try:
-                    i[0] = i[0].decode("latin1").decode("iso-8859-1").encode(getfilesystemencoding()) # try to convert to latin1 and then back to sys.getfilesystemencoding()
+                    i[0] = i[0].decode("latin1").decode("iso-8859-1").encode(sys.getfilesystemencoding()) # try to convert to latin1 and then back to sys.getfilesystemencoding()
                 except:
                     print "DEBUG: cannot encode into filesystem encoding -> "+str(i[0])
                     continue
@@ -1582,7 +1581,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 	for i in outcontent:
             data['content'][str(i[0])] = i[1]
 	
-    except IOError, e:
+    except IOError:
         if inject: # CONTENTS is not generated when a package is emerged with portage and the option -B
             # we have to unpack the tbz2 and generate content dict
             import shutil
@@ -1591,25 +1590,25 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
                 shutil.rmtree(mytempdir)
             if not os.path.isdir(mytempdir):
                 os.makedirs(mytempdir)
-            mytempdir = mytempdir.encode(getfilesystemencoding())
+            mytempdir = mytempdir.encode(sys.getfilesystemencoding())
             uncompressTarBz2(filepath, extractPath = mytempdir, catchEmpty = True)
             
             for currentdir, subdirs, files in os.walk(mytempdir):
                 data['content'][currentdir[len(mytempdir):]] = "dir"
-                for file in files:
+                for item in files:
                     try:
-                        file = file.encode(getfilesystemencoding())
+                        item = item.encode(sys.getfilesystemencoding())
                     except:
                         try:
-                            file = file.decode("latin1").decode("iso-8859-1").encode(getfilesystemencoding())
+                            item = item.decode("latin1").decode("iso-8859-1").encode(sys.getfilesystemencoding())
                         except:
-                            print "DEBUG: cannot encode into filesystem encoding -> "+str(file)
+                            print "DEBUG: cannot encode into filesystem encoding -> "+str(item)
                             continue
-                    file = currentdir+"/"+file
-                    if os.path.islink(file):
-                        data['content'][file[len(mytempdir):]] = "sym"
+                    item = currentdir+"/"+item
+                    if os.path.islink(item):
+                        data['content'][item[len(mytempdir):]] = "sym"
                     else:
-                        data['content'][file[len(mytempdir):]] = "obj"
+                        data['content'][item[len(mytempdir):]] = "obj"
             
             # now remove
             shutil.rmtree(mytempdir,True)
@@ -1622,9 +1621,9 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     # files size on disk
     if (data['content']):
 	data['disksize'] = 0
-	for file in data['content']:
+	for item in data['content']:
 	    try:
-		size = os.stat(file)[6]
+		size = os.stat(item)[6]
 		data['disksize'] += size
 	    except:
 		pass
@@ -1635,11 +1634,11 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     data['versiontag'] = ''
     kernelDependentModule = False
     kernelItself = False
-    for file in data['content']:
-	if file.find("/lib/modules/") != -1:
+    for item in data['content']:
+	if item.find("/lib/modules/") != -1:
 	    kernelDependentModule = True
 	    # get the version of the modules
-	    kmodver = file.split("/lib/modules/")[1]
+	    kmodver = item.split("/lib/modules/")[1]
 	    kmodver = kmodver.split("/")[0]
 
 	    lp = kmodver.split("-")[len(kmodver.split("-"))-1]
@@ -1784,7 +1783,6 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
         f = open(tbz2TmpDir+dbSRC_URI,"r")
 	sources = f.readline().strip().split()
         f.close()
-	tmpData = []
 	cnt = -1
 	skip = False
 	data['sources'] = []
@@ -1938,16 +1936,16 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
         elogfiles = os.listdir(etpConst['logdir']+"/elog")
 	myelogfile = data['category']+":"+data['name']+"-"+data['version']
 	foundfiles = []
-	for file in elogfiles:
-	    if file.startswith(myelogfile):
-		foundfiles.append(file)
+	for item in elogfiles:
+	    if item.startswith(myelogfile):
+		foundfiles.append(item)
 	if foundfiles:
 	    elogfile = foundfiles[0]
 	    if len(foundfiles) > 1:
 		# get the latest
 		mtimes = []
-		for file in foundfiles:
-		    mtimes.append((getFileUnixMtime(etpConst['logdir']+"/elog/"+file),file))
+		for item in foundfiles:
+		    mtimes.append((getFileUnixMtime(etpConst['logdir']+"/elog/"+item),item))
 		mtimes.sort()
 		elogfile = mtimes[len(mtimes)-1][1]
 	    messages = extractElog(etpConst['logdir']+"/elog/"+elogfile)

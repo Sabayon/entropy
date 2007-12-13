@@ -82,7 +82,7 @@ class parser:
                         print ">> "+line+" << is invalid!!"
                         continue
                     # atom? is it worth it? it would take a little bit to parse uhm... >50 entries...!?
-                    kinfo = keywordinfo[0]
+                    #kinfo = keywordinfo[0]
                     if keywordinfo[0] == "**": keywordinfo[0] = "" # convert into entropy format
                     data['universal'].add(keywordinfo[0])
                     continue # needed?
@@ -160,9 +160,9 @@ class parser:
     def __removeRepoCache(self):
         if os.path.isdir(self.etpConst['dumpstoragedir']):
             content = os.listdir(self.etpConst['dumpstoragedir'])
-            for file in content:
-                if file.startswith(self.etpCache['dbMatch']+self.etpConst['dbnamerepoprefix']) and file.endswith(".dmp"):
-                    os.remove(self.etpConst['dumpstoragedir']+"/"+file)
+            for item in content:
+                if item.startswith(self.etpCache['dbMatch']+self.etpConst['dbnamerepoprefix']) and item.endswith(".dmp"):
+                    os.remove(self.etpConst['dumpstoragedir']+"/"+item)
         else:
             os.makedirs(self.etpConst['dumpstoragedir'])
     
