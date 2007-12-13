@@ -44,11 +44,10 @@ class rssFeed:
         if os.path.isfile(self.file):
             try:
                 self.xmldoc = minidom.parse(self.file)
-            except xml.parsers.expat.ExpatError:
-                print "DEBUG: RSS broken, recreating in 5 seconds."
-                print time.sleep(5)
+            except:
+                #print "DEBUG: RSS broken, recreating in 5 seconds."
+                #time.sleep(5)
                 broken = True
-            
         
         if not os.path.isfile(self.file) or broken:
             self.title = feed_title
