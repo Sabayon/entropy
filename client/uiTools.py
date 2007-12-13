@@ -33,6 +33,7 @@ from databaseTools import openRepositoryDatabase, openClientDatabase, openGeneri
 import entropyTools
 import dumpTools
 import shutil
+import gc
 
 import logTools
 equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[Equo]")
@@ -793,6 +794,9 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     del clientDbconn
                     dirscleanup()
                     return -1,rc
+
+            # clear garbage
+            gc.collect()
         
         # update resume cache
         if not tbz2: # tbz2 caching not supported
@@ -802,7 +806,6 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         # unload dict
         if not returnQueue:
             del etpRemovalTriggers[infoDict['removeatom']]
-        
     
     for packageInfo in runQueue:
 	currentqueue += 1
@@ -884,6 +887,9 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     dirscleanup()
                     return -1,rc
 
+            # clear garbage
+            gc.collect()
+
         # update resume cache
         if not tbz2: # tbz2 caching not supported
             resume_cache['runQueue'].remove(packageInfo)
@@ -893,6 +899,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         del actionQueue[pkgatom]
         if not returnQueue:
             del etpInstallTriggers[pkgatom]
+        
+
 
     if (onlyfetch):
 	if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("Fetch Complete."))
@@ -1137,7 +1145,10 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                     clientDbconn.closeDB()
                     del clientDbconn
                     return -1,rc
-        
+
+            # clear garbage
+            gc.collect()
+
         # update resume cache
         resume_cache['removalQueue'].remove(idpackage)
         dumpTools.dumpobj(etpCache['remove'],resume_cache)
@@ -1145,7 +1156,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         # unload dict
         if not returnQueue:
             del etpRemovalTriggers[infoDict['removeatom']]
-    
+
     if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("All done."))
     
     clientDbconn.closeDB()

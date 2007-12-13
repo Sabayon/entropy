@@ -205,6 +205,8 @@ def resetColor():
 	return codes["reset"]
 
 def colorize(color_key, text):
+	if etpUi['mute']:
+		return text
 	global havecolor
 	if havecolor:
 		return codes[color_key] + text + codes["reset"]

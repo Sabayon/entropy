@@ -34,6 +34,7 @@ import portage
 import portage_const
 from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv
 from portage_util import grabdict_package
+import gc
 
 # colours support
 from outputTools import *
@@ -107,6 +108,7 @@ def getBestAtom(atom):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getBestAtom: called -> "+str(atom))
     try:
         rc = portage.portdb.xmatch("bestmatch-visible",str(atom))
+        gc.collect() # XXX: temp workaround for a python bug with portage
 	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getBestAtom: result -> "+str(rc))
         return rc
     except ValueError:
@@ -117,6 +119,7 @@ def getBestAtom(atom):
 def getBestMaskedAtom(atom):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getBestAtom: called. ")
     atoms = portage.portdb.xmatch("match-all",str(atom))
+    gc.collect() # XXX: temp workaround for a python bug with portage
     # find the best
     from portage_versions import best
     rc = best(atoms)
@@ -128,6 +131,7 @@ def getAtomCategory(atom):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getAtomCategory: called. ")
     try:
         rc = portage.portdb.xmatch("match-all",str(atom))[0].split("/")[0]
+        gc.collect() # XXX: temp workaround for a python bug with portage
         return rc
     except:
 	portageLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"getAtomCategory: error, can't extract category !")
@@ -136,9 +140,15 @@ def getAtomCategory(atom):
 # please always force =pkgcat/pkgname-ver if possible
 def getInstalledAtom(atom):
     mypath = etpConst['systemroot']+"/"
-    mytree = portage.vartree(root=mypath)
+    cached = portageRoots.get(mypath)
+    if cached == None:
+        mytree = portage.vartree(root=mypath)
+        portageRoots[mypath] = mytree
+    else:
+        mytree = cached
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtom: called -> "+str(atom))
     rc = mytree.dep_match(str(atom))
+    gc.collect() # XXX: temp workaround for a python bug with portage
     if (rc != []):
 	if (len(rc) == 1):
 	    return rc[0]
@@ -149,11 +159,17 @@ def getInstalledAtom(atom):
 
 def getPackageSlot(atom):
     mypath = etpConst['systemroot']+"/"
-    mytree = portage.vartree(root=mypath)
+    cached = portageRoots.get(mypath)
+    if cached == None:
+        mytree = portage.vartree(root=mypath)
+        portageRoots[mypath] = mytree
+    else:
+        mytree = cached
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: called. ")
     if atom.startswith("="):
 	atom = atom[1:]
     rc = mytree.getslot(atom)
+    gc.collect() # XXX: temp workaround for a python bug with portage
     if rc != "":
 	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: slot found -> "+str(atom)+" -> "+str(rc))
 	return rc
@@ -164,8 +180,14 @@ def getPackageSlot(atom):
 def getInstalledAtoms(atom):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtoms: called -> "+atom)
     mypath = etpConst['systemroot']+"/"
-    mytree = portage.vartree(root=mypath)
+    cached = portageRoots.get(mypath)
+    if cached == None:
+        mytree = portage.vartree(root=mypath)
+        portageRoots[mypath] = mytree
+    else:
+        mytree = cached
     rc = mytree.dep_match(str(atom))
+    gc.collect() # XXX: temp workaround for a python bug with portage
     if (rc != []):
         return rc
     else:
@@ -272,6 +294,7 @@ def quickpkg(atom,dirpath):
     tbz2.recompose(dbdir)
     
     dblnk.unlockdb()
+    gc.collect() # XXX: temp workaround for a python bug with portage
     
     if os.path.isfile(dirpath):
 	return dirpath
@@ -561,5 +584,6 @@ def refillCounter():
     f.write(str(newcounter))
     f.flush()
     f.close()
+    del counters
     return newcounter
 

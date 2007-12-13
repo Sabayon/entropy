@@ -159,6 +159,7 @@ def unpackXpak(xpakfile, tmpdir = None):
         os.makedirs(tmpdir)
         xpakdata = etpXpak.getboth(xpakfile)
         etpXpak.xpand(xpakdata,tmpdir)
+        del xpakdata
         try:
             os.remove(xpakfile)
         except:
@@ -205,6 +206,7 @@ def suckXpak(tbz2file, outputpath):
     db.flush()
     db.close()
     old.close()
+    del dbcontent
     return xpakpath
 
 def aggregateEdb(tbz2file,dbfile):

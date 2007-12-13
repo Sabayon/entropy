@@ -32,6 +32,7 @@ from databaseTools import openRepositoryDatabase, openClientDatabase, openGeneri
 import triggerTools
 import confTools
 import dumpTools
+import gc
 
 # Logging initialization
 import logTools
@@ -1347,15 +1348,15 @@ def installPackageIntoGentooDatabase(infoDict, packageFile, newidpackage = -1):
     # handle gentoo-compat
     _portage_avail = False
     try:
-	from portageTools import getPackageSlot as _portage_getPackageSlot, getPortageAppDbPath as _portage_getPortageAppDbPath, refillCounter as _portage_refillCounter
+        import portageTools
 	_portage_avail = True
     except:
 	return -1 # no Portage support
     if (_portage_avail):
-	portDbDir = _portage_getPortageAppDbPath()
+	portDbDir = portageTools.getPortageAppDbPath()
 	# extract xpak from unpackDir+etpConst['packagecontentdir']+"/"+package
 	key = infoDict['category']+"/"+infoDict['name']
-	#print _portage_getInstalledAtom(key)
+	#print portageTools.getInstalledAtom(key)
 	atomsfound = set()
         dbdirs = os.listdir(portDbDir)
         if infoDict['category'] in dbdirs:
@@ -1368,7 +1369,7 @@ def installPackageIntoGentooDatabase(infoDict, packageFile, newidpackage = -1):
 	if atomsfound:
 	    pkgToRemove = ''
 	    for atom in atomsfound:
-	        atomslot = _portage_getPackageSlot(atom)
+	        atomslot = portageTools.getPackageSlot(atom)
 		# get slot from gentoo db
 	        if atomslot == infoDict['slot']:
 		    #print "match slot, remove -> "+str(atomslot)
@@ -1382,7 +1383,8 @@ def installPackageIntoGentooDatabase(infoDict, packageFile, newidpackage = -1):
                 except OSError:
                     pass
 	        #print "removing -> "+removePath
-	
+	del atomsfound
+        
 	### INSTALL NEW
         extractTmp = etpConst['entropyunpackdir']+"/"+os.path.basename(packageFile)
 	xpakPath = extractTmp+"/xpak"
@@ -1437,9 +1439,9 @@ def installPackageIntoGentooDatabase(infoDict, packageFile, newidpackage = -1):
                     f.close()
                 except:
                     # need file recreation, parse gentoo tree
-                    counter = _portage_refillCounter()
+                    counter = portageTools.refillCounter()
             else:
-                counter = _portage_refillCounter()
+                counter = portageTools.refillCounter()
             
             # write new counter to file
             if os.path.isdir(destination):
@@ -1646,5 +1648,8 @@ def stepExecutor(step, infoDict, loopString = None):
     
     clientDbconn.closeDB()
     del clientDbconn
+    
+    # clear garbage
+    gc.collect()
     
     return output

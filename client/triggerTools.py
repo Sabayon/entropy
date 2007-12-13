@@ -295,30 +295,26 @@ def iconscache(pkgdata):
 	if item.startswith(etpConst['systemroot']+"/usr/share/icons") and item.endswith("index.theme"):
 	    cachedir = os.path.dirname(item)
 	    generate_icons_cache(cachedir)
-    del pkgdata
 
-def mimeupdate(pkgdata):
+def mimeupdate(pkgdata = None):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating shared mime info database...")
     print_info(red("   ##")+brown(" Updating shared mime info database..."))
     update_mime_db()
-    del pkgdata
 
-def mimedesktopupdate(pkgdata):
+def mimedesktopupdate(pkgdata = None):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating desktop mime database...")
     print_info(red("   ##")+brown(" Updating desktop mime database..."))
     update_mime_desktop_db()
-    del pkgdata
 
-def scrollkeeper(pkgdata):
+def scrollkeeper(pkgdata = None):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating scrollkeeper database...")
     print_info(red("   ##")+brown(" Updating scrollkeeper database..."))
     update_scrollkeeper_db()
 
-def gconfreload(pkgdata):
+def gconfreload(pkgdata = None):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reloading GConf2 database...")
     print_info(red("   ##")+brown(" Reloading GConf2 database..."))
     reload_gconf_db()
-    del pkgdata
 
 def binutilsswitch(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Binutils Profile...")
@@ -516,7 +512,6 @@ def gconfinstallschemas(pkgdata):
                 export GCONF_CONFIG_SOURCE=$(gconftool-2 --get-default-source)
                 gconftool-2 --makefile-install-rule """+schema+""" " | chroot """+etpConst['systemroot']+""" &>/dev/null
                 """)
-    del pkgdata
 
 def pygtksetup(pkgdata):
     python_sym_files = [x for x in pkgdata['content'] if x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0")]
@@ -592,7 +587,6 @@ def run_ldconfig(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running ldconfig")
     print_info(red("   ##")+brown(" Regenerating /etc/ld.so.cache"))
     os.system("ldconfig -r "+myroot+" &> /dev/null")
-    del pkgdata
 
 def env_update(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running env-update")

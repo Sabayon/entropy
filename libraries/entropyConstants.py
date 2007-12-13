@@ -22,6 +22,7 @@
 
 import os
 import random
+import gc
 from sys import exit
 import maskingparser
 
@@ -424,6 +425,9 @@ def const_resetCache():
     compareVersionsCache.clear()
     getNewerVersionCache.clear()
     matchFilter.clear()
+
+# Inside it you'll find instantiated vartree classes
+portageRoots = {}
 
 # Client packages/database repositories
 etpRepositories = {}
@@ -854,6 +858,7 @@ def initConfig_entropyConstants(rootdir):
         etpConst['keywords'].add(x)
     del myparser
 
+    gc.collect()
 
 # load config
 initConfig_entropyConstants(etpSys['rootdir'])
