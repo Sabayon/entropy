@@ -543,6 +543,8 @@ def getInstalledPackagesCounters():
     dbDirs = os.listdir(appDbDir)
     installedAtoms = []
     for pkgsdir in dbDirs:
+        if not os.path.isdir(appDbDir+pkgsdir):
+            continue
 	pkgdir = os.listdir(appDbDir+pkgsdir)
 	for pdir in pkgdir:
 	    pkgcat = pkgsdir.split("/")[len(pkgsdir.split("/"))-1]
