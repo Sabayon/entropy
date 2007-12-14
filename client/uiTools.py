@@ -804,6 +804,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             del etpRemovalTriggers[infoDict['removeatom']]
     
     for packageInfo in runQueue:
+        
 	currentqueue += 1
 	idpackage = packageInfo[0]
 	repository = packageInfo[1]
@@ -817,7 +818,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 	    if (actionQueue[pkgatom]['fetch'] < 0):
 	        steps.append("fetch")
 	    steps.append("checksum")
-	
+
 	# differential remove list
 	if (actionQueue[pkgatom]['removeidpackage'] != -1):
             # is it still available?
@@ -828,6 +829,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     oldcontent = clientDbconn.retrieveContent(actionQueue[pkgatom]['removeidpackage'])
                     newcontent = dbconn.retrieveContent(idpackage)
                     oldcontent.difference_update(newcontent)
+                    del newcontent
                     actionQueue[pkgatom]['removecontent'] = oldcontent.copy()
                     etpRemovalTriggers[actionQueue[pkgatom]['removeatom']] = clientDbconn.getPackageData(actionQueue[pkgatom]['removeidpackage'])
                     etpRemovalTriggers[actionQueue[pkgatom]['removeatom']]['removecontent'] = actionQueue[pkgatom]['removecontent'].copy()
@@ -889,6 +891,10 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             dumpTools.dumpobj(etpCache['install'],resume_cache)
         
         # unload dict
+        try:
+            del etpRemovalTriggers[actionQueue[pkgatom]['removeatom']]
+        except:
+            pass
         del actionQueue[pkgatom]
         if not returnQueue:
             del etpInstallTriggers[pkgatom]

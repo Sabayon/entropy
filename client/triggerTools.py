@@ -517,7 +517,7 @@ def pygtksetup(pkgdata):
     python_sym_files = [x for x in pkgdata['content'] if x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0")]
     for item in python_sym_files:
         item = etpConst['systemroot']+item
-        filepath = file[:-4]
+        filepath = item[:-4]
         sympath = os.path.basename(item)
 	if os.path.isfile(item):
             try:

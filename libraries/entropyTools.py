@@ -214,6 +214,7 @@ def suckXpak(tbz2file, outputpath):
     xpakpath = outputpath+"/"+os.path.basename(tbz2file)[:-5]+".xpak"
     old = open(tbz2file,"rb")
     db = open(xpakpath,"wb")
+    db_tmp = open(xpakpath+".reverse","wb")
     allowWrite = False
     
     # position old to the end
@@ -221,7 +222,6 @@ def suckXpak(tbz2file, outputpath):
     # read backward until we find
     bytes = old.tell()
     counter = bytes
-    dbcontent = []
     
     while counter >= 0:
 	old.seek(counter-bytes,2)
@@ -231,24 +231,39 @@ def suckXpak(tbz2file, outputpath):
 	    chunk = old.read(7)+byte
 	    if chunk == "XPAKPACK":
 		allowWrite = False
-		dbcontent.append(chunk)
+                db_tmp.write(chunk[::-1])
 		break
 	    elif chunk == "XPAKSTOP":
 		allowWrite = True
 		old.seek(counter-bytes,2)
 	if (allowWrite):
-	    dbcontent.append(byte)
+	    db_tmp.write(byte)
 	counter -= 1
-    dbcontent.reverse()
-    for x in dbcontent:
-	db.write(x)
     
+    db_tmp.flush()
+    db_tmp.close()
+    db_tmp = open(xpakpath+".reverse","rb")
+    # now reverse from db_tmp to db
+    db_tmp.seek(0,2)
+    bytes = db_tmp.tell()
+    counter = bytes
+    while counter >= 0:
+        db_tmp.seek(counter-bytes,2)
+        byte = db_tmp.read(1)
+        db.write(byte)
+        counter -= 1
+     
     db.flush()
     db.close()
+    db_tmp.close()
     old.close()
-    del dbcontent
+    try:
+        os.remove(xpakpath+".reverse")
+    except OSError:
+        pass
     return xpakpath
 
+# FIXME: uses too much ram, please rewrite
 def aggregateEdb(tbz2file,dbfile):
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"aggregateEntropyDb: called -> "+tbz2file+" and "+dbfile)
     f = open(tbz2file,"abw")
@@ -1135,6 +1150,7 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
             tar.extract(tarinfo, extractPath.encode(sys.getfilesystemencoding()))
 
     # Reverse sort directories.
+    #'''
     directories.sort(lambda a, b: cmp(a.name, b.name))
     directories.reverse()
 
@@ -1149,8 +1165,11 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
         except tarfile.ExtractError:
             if tar.errorlevel > 1:
                 raise
+    #'''
 
+    del directories
     tar.close()
+    del tar
     if os.listdir(origpath):
         return 0
     else:
