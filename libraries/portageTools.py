@@ -140,12 +140,15 @@ def getAtomCategory(atom):
 # please always force =pkgcat/pkgname-ver if possible
 def getInstalledAtom(atom):
     mypath = etpConst['systemroot']+"/"
-    cached = portageRoots.get(mypath)
-    if cached == None:
+    try:
+        cached = portageRoots.get(mypath)
+        if cached == None:
+            mytree = portage.vartree(root=mypath)
+            portageRoots[mypath] = mytree
+        else:
+            mytree = cached
+    except NameError:
         mytree = portage.vartree(root=mypath)
-        portageRoots[mypath] = mytree
-    else:
-        mytree = cached
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtom: called -> "+str(atom))
     rc = mytree.dep_match(str(atom))
     #gc.collect() # XXX: temp workaround for a python bug with portage
@@ -159,12 +162,15 @@ def getInstalledAtom(atom):
 
 def getPackageSlot(atom):
     mypath = etpConst['systemroot']+"/"
-    cached = portageRoots.get(mypath)
-    if cached == None:
+    try:
+        cached = portageRoots.get(mypath)
+        if cached == None:
+            mytree = portage.vartree(root=mypath)
+            portageRoots[mypath] = mytree
+        else:
+            mytree = cached
+    except NameError:
         mytree = portage.vartree(root=mypath)
-        portageRoots[mypath] = mytree
-    else:
-        mytree = cached
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: called. ")
     if atom.startswith("="):
 	atom = atom[1:]
@@ -180,12 +186,15 @@ def getPackageSlot(atom):
 def getInstalledAtoms(atom):
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtoms: called -> "+atom)
     mypath = etpConst['systemroot']+"/"
-    cached = portageRoots.get(mypath)
-    if cached == None:
+    try:
+        cached = portageRoots.get(mypath)
+        if cached == None:
+            mytree = portage.vartree(root=mypath)
+            portageRoots[mypath] = mytree
+        else:
+            mytree = cached
+    except NameError:
         mytree = portage.vartree(root=mypath)
-        portageRoots[mypath] = mytree
-    else:
-        mytree = cached
     rc = mytree.dep_match(str(atom))
     #gc.collect() # XXX: temp workaround for a python bug with portage
     if (rc != []):
