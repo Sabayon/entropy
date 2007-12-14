@@ -10,6 +10,10 @@ TODO list:
   - reduce size of packages.db.bz2
   - remove binkeywords, not used
 
+ * Starting dbus session for kbuildsycoca4
+ * Running kbuildsycoca4 to build global database ...
+ * Killing dbus session for kbuildsycoca4
+
 
 Project Status:
 - reagent: complete. Stabilization mode.

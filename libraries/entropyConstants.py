@@ -771,19 +771,24 @@ def initConfig_entropyConstants(rootdir):
                             pass
                     repodatabase = repodatabase[:dbformatcolon]
                 if (repopackages.startswith("http://") or repopackages.startswith("ftp://")) and (repodatabase.startswith("http://") or repodatabase.startswith("ftp://")):
-                    etpRepositories[reponame] = {}
+                    stated = etpRepositories.get(reponame)
+                    if stated == None:
+                        etpRepositories[reponame] = {}
+                        etpRepositories[reponame]['description'] = repodesc
+                        etpRepositories[reponame]['packages'] = []
+                        etpRepositories[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['product']+"/"+etpConst['currentarch']
+                        etpRepositories[reponame]['dbcformat'] = dbformat
+                        etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['product']+"/database/"+etpConst['currentarch']
+                        # initialize CONFIG_PROTECT - will be filled the first time the db will be opened
+                        etpRepositories[reponame]['configprotect'] = None
+                        etpRepositories[reponame]['configprotectmask'] = None
+                    
                     ordercount += 1
                     etpRepositoriesOrder.add((ordercount,reponame))
-                    etpRepositories[reponame]['description'] = repodesc
-                    etpRepositories[reponame]['packages'] = []
+
                     for x in repopackages.split():
                         etpRepositories[reponame]['packages'].append(x+"/"+etpConst['product'])
-                    etpRepositories[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['product']+"/"+etpConst['currentarch']
-                    etpRepositories[reponame]['dbcformat'] = dbformat
-                    etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['product']+"/database/"+etpConst['currentarch']
-                    # initialize CONFIG_PROTECT - will be filled the first time the db will be opened
-                    etpRepositories[reponame]['configprotect'] = None
-                    etpRepositories[reponame]['configprotectmask'] = None
+
             elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 branch = line.split("|")[1]
                 etpConst['branch'] = branch
