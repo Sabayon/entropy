@@ -25,64 +25,65 @@
 '''
 
 class EntropyException(Exception):
-	"""General superclass for portage exceptions"""
-	def __init__(self,value):
-		self.value = value[:]
-	def __str__(self):
-		if isinstance(self.value, basestring):
-			return self.value
-		else:
-			return repr(self.value)
+    """General superclass for portage exceptions"""
+    def __init__(self,value):
+        self.value = value[:]
+        
+    def __str__(self):
+        if isinstance(self.value, basestring):
+            return self.value
+        else:
+            return repr(self.value)
 
 class CorruptionError(EntropyException):
-	"""Corruption indication"""
+        """Corruption indication"""
 
 class InvalidDependString(EntropyException):
-	"""An invalid depend string has been encountered"""
+        """An invalid depend string has been encountered"""
 
 class InvalidVersionString(EntropyException):
-	"""An invalid version string has been encountered"""
+        """An invalid version string has been encountered"""
 
 class SecurityViolation(EntropyException):
-	"""An incorrect formatting was passed instead of the expected one"""
+        """An incorrect formatting was passed instead of the expected one"""
 
 class IncorrectParameter(EntropyException):
-	"""A parameter of the wrong type was passed"""
+        """A parameter of the wrong type was passed"""
 
 class MissingParameter(EntropyException):
-	"""A parameter is required for the action requested but was not passed"""
+        """A parameter is required for the action requested but was not passed"""
 
 class ParseError(EntropyException):
-	"""An error was generated while attempting to parse the request"""
+        """An error was generated while attempting to parse the request"""
 
 class InvalidData(EntropyException):
-	"""An incorrect formatting was passed instead of the expected one"""
+        """An incorrect formatting was passed instead of the expected one"""
 
 class InvalidDataType(EntropyException):
-	"""An incorrect type was passed instead of the expected one"""
+        """An incorrect type was passed instead of the expected one"""
 
 class InvalidLocation(EntropyException):
-	"""Data was not found when it was expected to exist or was specified incorrectly"""
+        """Data was not found when it was expected to exist or was specified incorrectly"""
 
 class FileNotFound(InvalidLocation):
-	"""A file was not found when it was expected to exist"""
+        """A file was not found when it was expected to exist"""
 
 class DirectoryNotFound(InvalidLocation):
-	"""A directory was not found when it was expected to exist"""
+        """A directory was not found when it was expected to exist"""
 
 class OperationNotPermitted(EntropyException):
-	"""An operation was not permitted operating system"""
+        """An operation was not permitted operating system"""
 
 class PermissionDenied(EntropyException):
-	from errno import EACCES as errno
-	"""Permission denied"""
+        from errno import EACCES as errno
+        """Permission denied"""
 
 class ReadOnlyFileSystem(EntropyException):
-	"""Read-only file system"""
+        """Read-only file system"""
 
 class CommandNotFound(EntropyException):
-	"""A required binary was not available or executable"""
+        """A required binary was not available or executable"""
 
 class EntropyPackageException(EntropyException):
-	"""Malformed or missing package data"""
+        """Malformed or missing package data"""
 

@@ -19,12 +19,11 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
-
-from sys import exit, argv, path
-path.append('../libraries')
-path.append('../client')
-path.append('/usr/lib/entropy/client')
-path.append('/usr/lib/entropy/libraries')
+import sys
+sys.path.append('../libraries')
+sys.path.append('../client')
+sys.path.append('/usr/lib/entropy/client')
+sys.path.append('/usr/lib/entropy/libraries')
 from entropyConstants import *
 from outputTools import *
 
@@ -132,14 +131,14 @@ def print_help():
     print_info(" \t"+blue("--info")+brown("\t\t show system information"))
     
 
-options = argv[1:]
+options = sys.argv[1:]
 
 # print help
 if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(options).find(" -h") != -1:
     print_help()
     if len(options) < 1:
 	print_error("not enough parameters")
-    exit(1)
+    sys.exit(1)
 
 
 import equoTools
@@ -171,11 +170,11 @@ options = _options
 # print version
 if (options[0] == "--version"):
     print_generic(APPNAME+": v"+etpConst['entropyversion'])
-    exit(0)
+    sys.exit(0)
 elif (options[0] == "--info"):
     import rescueTools
     rescueTools.getinfo()
-    exit(0)
+    sys.exit(0)
 
 def readerrorstatus():
     try:
@@ -285,9 +284,9 @@ try:
 
     if rc == -10:
         status = readerrorstatus()
-        print_error(darkred(etpExitMessages[status]))
+        print_error(darkred(etpsys.exitMessages[status]))
         # increment
-        if status < len(etpExitMessages)-1:
+        if status < len(etpsys.exitMessages)-1:
             writeerrorstatus(status+1)
     else:
         writeerrorstatus(0)
@@ -296,41 +295,45 @@ try:
     for thread in threads:
         if thread.getName() == "download": # equo current download speed thread
             thread.kill()
-    exit(rc)
+    sys.exit(rc)
 except SystemExit:
     pass
 except KeyboardInterrupt:
-    exit(0)
+    sys.exit(0)
 #except Timeout:
 #    pass
-except:
-    from entropyTools import askquestion
+except Exception:
+    from entropyTools import askquestion, printException
     from remoteTools import getOnlineContent, reportApplicationError
-    import string
     print_error(darkred("Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. Well, you know, shit happens."))
     print_error(darkred("But there's something you could do to help Equo to be a better application."))
     print_error(darkred("-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"))
     print_error(darkgreen("Now I am showing you what happened. Don't panic, I'm here to help you."))
-    print
-    import traceback
-    traceback.print_exc()
+    
+    printException()
+    
     #import pdb
     #pdb.pm()
+    import traceback
     try:
         ferror = open("/tmp/equoerror.txt","w")
         traceback.print_exc(file = ferror)
-	ferror.write("\nRevision: "+etpConst['entropyversion']+"\n")
+	ferror.write("\nRevision: "+etpConst['entropyversion']+"\n\n")
+        data = printException(True)
+        for x in data:
+            ferror.write(str(x)+"\n")
+        ferror.write("\n")
         ferror.flush()
         ferror.close()
 	f = open("/tmp/equoerror.txt","r")
 	errorText = f.readlines()
 	f.close()
 	errorText = ' '.join(errorText)
-    except:
+    except Exception, e:
 	print
 	print_error(darkred("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org."))
         loadconfcache()
-	exit(1)
+	sys.exit(1)
 
     print
     print_error(darkred("!!! If the error is about missing tables in the database, just run 'equo database generate' again !!!"))
@@ -342,11 +345,11 @@ except:
 	if rc == "No":
 	    print_error(darkgreen("Ok, ok ok ok... Sorry!"))
             loadconfcache()
-	    exit(2)
+	    sys.exit(2)
     else:
 	print_error(darkgreen("Gosh, you aren't! Well, I wrote the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
         loadconfcache()
-	exit(3)
+	sys.exit(3)
 
     print_error(darkgreen("If you want to be contacted back (and actively supported), also answer the questions below:"))
     fullname = readtext("Your Full name: ")
@@ -361,5 +364,5 @@ except:
     else:
 	print_error(darkred("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
         loadconfcache()
-	exit(4)
+	sys.exit(4)
     loadconfcache()

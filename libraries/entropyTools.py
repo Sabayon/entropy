@@ -62,6 +62,46 @@ class TimeScheduled(threading.Thread):
     def kill(self):
         self.alive = 0
 
+def printException(returndata = False):
+    import traceback
+    data = []
+    tb = sys.exc_info()[2]
+    while 1:
+        if not tb.tb_next:
+            break
+        tb = tb.tb_next
+    stack = []
+    f = tb.tb_frame
+    #while f:
+    stack.append(f) # just the last one
+        #f = f.f_back
+    stack.reverse()
+    traceback.print_exc()
+    if not returndata: print
+    for frame in stack:
+        if not returndata:
+            print
+            print "Frame %s in %s at line %s" % (frame.f_code.co_name,
+                                             frame.f_code.co_filename,
+                                             frame.f_lineno)
+        else:
+            data.append("Frame %s in %s at line %s" % (frame.f_code.co_name,
+                                             frame.f_code.co_filename,
+                                             frame.f_lineno))
+        for key, value in frame.f_locals.items():
+            if not returndata:
+                print "\t%20s = " % key,
+            else:
+                data.append("\t%20s = " % key,)
+            try:
+                if not returndata:
+                    print value
+                else:
+                    data.append(value)
+            except:
+                if not returndata: print "<ERROR WHILE PRINTING VALUE>"
+    return data
+
 def applicationLockCheck(option = None, gentle = False):
     if (etpConst['applicationlock']):
 	print_error(red("Another instance of Equo is running. Action: ")+bold(str(option))+red(" denied."))
