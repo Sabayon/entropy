@@ -1322,7 +1322,7 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
             stdin, stdouterr = os.popen4("ldd "+executable)
         else:
             if not os.access(etpConst['systemroot']+"/bin/sh",os.X_OK):
-                raise Exception, "not a valid chroot"
+                raise exceptionTools.FileNotFound("FileNotFound: /bin/sh not found.")
             stdin, stdouterr = os.popen4("echo 'ldd "+executable+"' | chroot "+etpConst['systemroot'])
         output = stdouterr.readlines()
         if '\n'.join(output).find("not found") != -1:

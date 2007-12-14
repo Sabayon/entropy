@@ -28,6 +28,7 @@ import entropyTools
 import dumpTools
 import equoTools
 import shutil
+import exceptionTools
 
 # test if diff is installed
 difftest = entropyTools.spawnCommand("diff -v", redirect = "&> /dev/null")
@@ -360,13 +361,13 @@ def loadcache():
 		if (not taint):
 		    return sd
 		else:
-		    raise Exception
+		    raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
 	    except:
-		raise Exception
+		raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
 	else:
-	    raise Exception
+	    raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
     except:
-	raise Exception
+	raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
 
 
 def generatedict(filepath):
@@ -377,7 +378,7 @@ def generatedict(filepath):
     try:
 	int(number)
     except:
-	raise Exception,"bad formatted filepath"
+	raise exceptionTools.InvalidDataType("InvalidDataType: invalid config file number '0000->9999'.")
     tofilepath = currentdir+"/"+tofile
     mydict = {}
     mydict['revision'] = number

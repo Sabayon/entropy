@@ -23,6 +23,7 @@
 # FIXME: this depends on portage, should be moved from here ASAP
 from outputTools import *
 from entropyConstants import *
+import exceptionTools
 import os
 import re
 import sys
@@ -64,6 +65,7 @@ class TimeScheduled(threading.Thread):
 
 def printException(returndata = False):
     import traceback
+    if not returndata: traceback.print_exc()
     data = []
     tb = sys.exc_info()[2]
     while 1:
@@ -71,13 +73,8 @@ def printException(returndata = False):
             break
         tb = tb.tb_next
     stack = []
-    f = tb.tb_frame
-    #while f:
-    stack.append(f) # just the last one
-        #f = f.f_back
-    stack.reverse()
-    traceback.print_exc()
-    if not returndata: print
+    stack.append(tb.tb_frame)
+    #if not returndata: print
     for frame in stack:
         if not returndata:
             print
@@ -917,7 +914,7 @@ def compareVersions(ver1, ver2):
 '''
 def entropyCompareVersions(listA,listB):
     if len(listA) != 3 or len(listB) != 3:
-	raise Exception, "compareVersions: listA and/or listB must be long 3"
+        raise exceptionTools.InvalidDataType("InvalidDataType: listA or listB are not properly formatted.")
     # start with version
     rc = compareVersions(listA[0],listB[0])
     
@@ -1616,8 +1613,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
                     datafile = datafile[:-3]
                     datafile = ' '.join(datafile)
                 else:
-                    print "unhandled !!!!!!!",datafile
-                    raise Exception
+                    raise exceptionTools.InvalidData("InvalidData: "+str(datafile)+" not supported. Probably portage API changed.")
                 outcontent.add((datafile,datatype))
             except:
                 pass

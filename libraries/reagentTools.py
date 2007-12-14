@@ -27,6 +27,7 @@
 from entropyConstants import *
 from serverConstants import *
 from entropyTools import *
+import exceptionTools
 import os
 import shutil
 import databaseTools
@@ -349,9 +350,9 @@ def tbz2Handler(tbz2path, dbconn, requested_branch, inject = False):
         # remove garbage
         os.remove(dbpath)
         print_info(brown(" * ")+red("Database injection complete for ")+downloadfile)
-    else: # FIXME: remove this because packages are always accepted now
-        raise Exception, "something bad happened, tbz2 not generated"
-
+    else:
+        raise exceptionTools.CorruptionError("CorruptionError: something bad happened, tbz2 not generated.")
+    
 def dependsTableInitialize(dbconn = None, runActivator = True):
     closedb = False
     if dbconn == None:

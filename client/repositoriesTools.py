@@ -32,6 +32,7 @@ from outputTools import *
 import entropyTools
 from remoteTools import downloadData, getOnlineContent
 import dumpTools
+import exceptionTools
 
 def repositories(options):
     
@@ -191,7 +192,7 @@ def syncRepositories(reponames = [], forceUpdate = False):
 	dumpTools.dumpobj(etpCache['dbInfo']+repo,{})
 	
 	cmethod = etpConst['etpdatabasecompressclasses'].get(etpRepositories[repo]['dbcformat'])
-	if cmethod == None: raise Exception
+	if cmethod == None: raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
 	
 	# starting to download
 	if (not etpUi['quiet']):

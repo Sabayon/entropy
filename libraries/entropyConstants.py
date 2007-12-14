@@ -25,6 +25,7 @@ import random
 import gc
 from sys import exit
 import maskingparser
+import exceptionTools
 
 
 # Specifications of the content of etpData
@@ -473,6 +474,9 @@ dbCOUNTER = "COUNTER"
 # ===============================================================================================
 
 def initConfig_entropyConstants(rootdir):
+
+    if not os.path.isdir(rootdir):
+        raise exceptionTools.FileNotFound("FileNotFound: not a valid chroot.")
 
     ETP_DIR = rootdir+"/var/lib/entropy"
     ETP_TMPDIR = "/tmp"

@@ -38,6 +38,9 @@ class EntropyException(Exception):
 class CorruptionError(EntropyException):
         """Corruption indication"""
 
+class CacheCorruptionError(EntropyException):
+        """On-Disk cache Corruption indication"""
+
 class InvalidDependString(EntropyException):
         """An invalid depend string has been encountered"""
 
@@ -61,6 +64,15 @@ class InvalidData(EntropyException):
 
 class InvalidDataType(EntropyException):
         """An incorrect type was passed instead of the expected one"""
+
+class RepositoryError(EntropyException):
+        """Cannot open repository database"""
+
+class SystemDatabaseError(EntropyException):
+        """Cannot open system database"""
+
+class OnlineMirrorError(EntropyException):
+        """Cannot lock online mirror for syncing"""
 
 class InvalidLocation(EntropyException):
         """Data was not found when it was expected to exist or was specified incorrectly"""

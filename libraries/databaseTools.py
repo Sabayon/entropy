@@ -32,7 +32,7 @@ try: # try with sqlite3 from python 2.5 - default one
 except ImportError: # fallback to embedded pysqlite
     from pysqlite2 import dbapi2 as sqlite
 import dumpTools
-import os
+import exceptionTools
 
 # Logging initialization
 import logTools
@@ -51,9 +51,7 @@ dbLog = logTools.LogFile(level = etpConst['databaseloglevel'],filename = etpCons
 def openRepositoryDatabase(repositoryName, xcache = True, indexing = True):
     dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
     if not os.path.isfile(dbfile):
-	rc = fetchRepositoryIfNotAvailable(repositoryName)
-	if (rc):
-	    raise Exception, "openRepositoryDatabase: cannot sync repository "+repositoryName
+	fetchRepositoryIfNotAvailable(repositoryName)
     conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = etpConst['dbnamerepoprefix']+repositoryName, xcache = xcache, indexing = indexing)
     # initialize CONFIG_PROTECT
     if (etpRepositories[repositoryName]['configprotect'] == None) or (etpRepositories[repositoryName]['configprotectmask'] == None):
@@ -77,8 +75,7 @@ def fetchRepositoryIfNotAvailable(reponame):
         import repositoriesTools
 	rc = repositoriesTools.syncRepositories([reponame])
     if not os.path.isfile(dbfile):
-	# so quit
-	print_error(red("Database file for '"+bold(etpRepositories[reponame]['description'])+red("' does not exist. Cannot search.")))
+        raise exceptionTools.RepositoryError("RepositoryError: cannot fetch database for repo id: "+reponame)
     return rc
 
 '''
@@ -87,7 +84,7 @@ def fetchRepositoryIfNotAvailable(reponame):
 '''
 def openClientDatabase(xcache = True, generate = False, indexing = True):
     if (not generate) and (not os.path.isfile(etpConst['etpdatabaseclientfilepath'])):
-	raise Exception,"openClientDatabase: installed packages database not found. At this stage, the only way to have it is to run 'equo database generate'. Please note: don't use Equo on a critical environment !!"
+        raise exceptionTools.SystemDatabaseError("SystemDatabaseError: system database not found. Either does not exist or corrupted.")
     else:
         conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = 'client', xcache = xcache, indexing = indexing)
 	if (not etpConst['dbconfigprotect']):
@@ -249,7 +246,7 @@ class etpDatabase:
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"etpDatabase: starting to lock and sync database")
 	    print_info(red(" * ")+red(" Locking and Syncing Entropy database ..."), back = True)
 	    for uri in etpConst['activatoruploaduris']:
-		dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: connecting to "+uri)
+		dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: connecting to "+entropyTools.extractFTPHostFromUri(uri))
 	        ftp = mirrorTools.handlerFTP(uri)
                 try:
                     ftp.setCWD(etpConst['etpurirelativepath'])
@@ -302,7 +299,7 @@ class etpDatabase:
 	    	        print_info(bold("\t"+entropyTools.extractFTPHostFromUri(db[0])+": ")+red("[")+yellow("DATABASE: ")+db[1]+red("] [")+yellow("DOWNLOAD: ")+db[2]+red("]"))
 	    
 	            ftp.closeConnection()
-                    raise Exception, "cannot continue."
+                    raise exceptionTools.OnlineMirrorError("OnlineMirrorError: cannot lock mirror "+entropyTools.extractFTPHostFromUri(uri))
 
 	    # if we arrive here, it is because all the mirrors are unlocked so... damn, LOCK!
 	    activatorTools.lockDatabases(True)
@@ -438,7 +435,7 @@ class etpDatabase:
     def checkReadOnly(self):
 	if (self.readOnly):
 	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: Cannot handle this in read only.")
-	    raise Exception, "What are you trying to do?"
+	    raise exceptionTools.OperationNotPermitted("OperationNotPermitted: can't do that on a readonly database.")
 
     # this function manages the submitted package
     # if it does not exist, it fires up addPackage
@@ -1004,9 +1001,7 @@ class etpDatabase:
 
     def removePackage(self,idpackage):
 
-	if (self.readOnly):
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removePackage: Cannot handle this in read only.")
-	    raise Exception, "What are you trying to do?"
+	self.checkReadOnly()
 
 	key = self.retrieveAtom(idpackage)
 	branch = self.retrieveBranch(idpackage)
@@ -1151,7 +1146,7 @@ class etpDatabase:
 	if cat != -1:
 	    self.commitChanges()
 	    return cat
-	raise Exception, "I tried to insert a category but then, fetching it returned -1. There's something broken."
+        raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a category but then, fetching it returned -1. There's something broken.")
 
     def addProtect(self,protect):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addProtect: adding CONFIG_PROTECT/CONFIG_PROTECT_MASK -> "+str(protect))
@@ -1167,7 +1162,7 @@ class etpDatabase:
 	    prt = self.isProtectAvailable(protect)
 	if prt != -1:
 	    return prt
-	raise Exception, "I tried to insert a protect but then, fetching it returned -1. There's something broken."
+        raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a protect but then, fetching it returned -1. There's something broken.")
 
     def addSource(self,source):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addSource: adding Package Source -> "+str(source))
@@ -1179,7 +1174,7 @@ class etpDatabase:
 	src = self.isSourceAvailable(source)
 	if src != -1:
 	    return src
-	raise Exception, "I tried to insert a source but then, fetching it returned -1. There's something broken."
+        raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a source but then, fetching it returned -1. There's something broken.")
 
     def addDependency(self,dependency):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addDependency: adding Package Dependency -> "+str(dependency))
@@ -1191,7 +1186,7 @@ class etpDatabase:
 	dep = self.isDependencyAvailable(dependency)
 	if dep != -1:
 	    return dep
-	raise Exception, "I tried to insert a dependency but then, fetching it returned -1. There's something broken."
+        raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a dependency but then, fetching it returned -1. There's something broken.")
 
     def addKeyword(self,keyword):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addKeyword: adding Keyword -> "+str(keyword))
@@ -1203,7 +1198,7 @@ class etpDatabase:
 	key = self.isKeywordAvailable(keyword)
 	if key != -1:
 	    return key
-	raise Exception, "I tried to insert a keyword but then, fetching it returned -1. There's something broken."
+        raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a keyword but then, fetching it returned -1. There's something broken.")
 
     def addUseflag(self,useflag):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addUseflag: adding Keyword -> "+str(useflag))
@@ -1215,7 +1210,7 @@ class etpDatabase:
 	use = self.isUseflagAvailable(useflag)
 	if use != -1:
 	    return use
-	raise Exception, "I tried to insert a useflag but then, fetching it returned -1. There's something broken."
+        raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a use flag but then, fetching it returned -1. There's something broken.")
 
     def addEclass(self,eclass):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addEclass: adding Eclass -> "+str(eclass))
@@ -1231,7 +1226,7 @@ class etpDatabase:
 	    myclass = self.isEclassAvailable(eclass)
 	if myclass != -1:
 	    return myclass
-	raise Exception, "I tried to insert an eclass but then, fetching it returned -1. There's something broken."
+        raise exceptionTools.CorruptionError("CorruptionError: I tried to insert an eclass but then, fetching it returned -1. There's something broken.")
 
     def addNeeded(self,needed):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addNeeded: adding needed library -> "+str(needed))
@@ -1247,7 +1242,7 @@ class etpDatabase:
 	    myneeded = self.isNeededAvailable(needed)
 	if myneeded != -1:
 	    return myneeded
-	raise Exception, "I tried to insert a needed library but then, fetching it returned -1. There's something broken."
+        raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a needed library but then, fetching it returned -1. There's something broken.")
 
     def addLicense(self,pkglicense):
         if not pkglicense:
@@ -1261,7 +1256,7 @@ class etpDatabase:
 	lic = self.isLicenseAvailable(pkglicense)
 	if lic != -1:
 	    return lic
-	raise Exception, "I tried to insert a license but then, fetching it returned -1. There's something broken."
+        raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a license but then, fetching it returned -1. There's something broken.")
 
     #addCompileFlags(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
     def addCompileFlags(self,chost,cflags,cxxflags):
@@ -1276,7 +1271,7 @@ class etpDatabase:
 	idflag = self.areCompileFlagsAvailable(chost,cflags,cxxflags)
 	if idflag != -1:
 	    return idflag
-	raise Exception, "I tried to insert a flag tuple but then, fetching it returned -1. There's something broken."
+        raise exceptionTools.CorruptionError("CorruptionError: I tried to insert compile flags but then, fetching it returned -1. There's something broken.")
 
     def setDigest(self, idpackage, digest):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setDigest: setting new digest for idpackage: "+str(idpackage)+" -> "+str(digest))

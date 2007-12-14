@@ -29,8 +29,9 @@ from entropyTools import *
 from outputTools import *
 import mirrorTools
 import dumpTools
+import exceptionTools
+import remoteTools
 
-from sys import exit
 import os
 import commands
 import string
@@ -41,11 +42,11 @@ import shutil
 # Logging initialization
 import logTools
 activatorLog = logTools.LogFile(level=etpConst['activatorloglevel'],filename = etpConst['activatorlogfile'], header = "[Activator]")
-# example: activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFuncton: called.")
 
-import remoteTools
 
 def sync(options, justTidy = False):
+
+    import sys
 
     activatorRequestNoAsk = False
     myopts = []
@@ -80,7 +81,7 @@ def sync(options, justTidy = False):
 	        # ask question
 	        rc = askquestion("     Should I continue with the tidy procedure ?")
 	        if rc == "No":
-		    exit(0)
+		    sys.exit(0)
     
     print_info(green(" * ")+red("Starting to collect packages that would be removed from the repository ..."), back = True)
     
@@ -135,7 +136,7 @@ def sync(options, justTidy = False):
         if (not activatorRequestNoAsk):
             rc = askquestion("     Would you like to continue ?")
             if rc == "No":
-	        exit(0)
+	        sys.exit(0)
 
         # remove them!
         activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: starting to remove packages from mirrors.")
@@ -663,7 +664,7 @@ def packages(options):
 		
 		# trap CTRL+C
 		if (str(e) == "100"):
-		    exit(471)
+		    sys.exit(0)
 		
 		activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: Exception caught: "+str(e)+" . Trying to continue if possible.")
 		activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: cannot properly syncronize "+extractFTPHostFromUri(uri)+". Trying to continue if possible.")
@@ -707,7 +708,7 @@ def packages(options):
                         os.remove(dest+etpConst['packagesexpirationfileext'])
 	    return mirrorsTainted
 	else:
-	    exit(470)
+	    raise exceptionTools.OnlineMirrorError("OnlineMirrorError: neither a mirror has been properly sync'd.")
 
         # Now we should start to check all the packages in the packages directory
         if (activatorRequestPackagesCheck):
@@ -830,14 +831,12 @@ def database(options):
             else:
                 print
                 activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database (sync inside activatorTools): At the moment, mirrors are locked, someone is working on their databases, try again later...")
-                print_error(green(" * ")+red("At the moment, mirrors are locked, someone is working on their databases, try again later..."))
-                exit(422)
+                raise exceptionTools.OnlineMirrorError("OnlineMirrorError: At the moment, mirrors are locked, someone is working on their databases, try again later...")
         
         else:
             if (dbLockFile):
                 activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database (sync inside activatorTools): Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
-                print_info(green(" * ")+red("Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']))
-                exit(423)
+                raise exceptionTools.OnlineMirrorError("OnlineMirrorError: Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
             else:
                 activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database (sync inside activatorTools): Mirrors are not locked. Fetching data...")
                 print_info(green(" * ")+red("Mirrors are not locked. Fetching data..."))
@@ -846,8 +845,6 @@ def database(options):
     
     else:
         print_error(red(" * ")+green("No valid tool specified."))
-        exit(400)
-
 
 ########################################################
 ####
@@ -1050,7 +1047,7 @@ def uploadDatabase(uris):
 	ftp.setCWD(etpConst['etpurirelativepath'])
 	
 	cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
-	if cmethod == None: raise Exception
+	if cmethod == None: raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
 	print_info(green(" * ")+red("Uploading file ")+bold(etpConst[cmethod[2]])+red(" ..."), back = True)
 	
 	dbfilec = eval(cmethod[0])(etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[2]], "wb")
@@ -1126,7 +1123,7 @@ def downloadDatabase(uri):
     ftp.setCWD(etpConst['etpurirelativepath'])
     
     cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
-    if cmethod == None: raise Exception
+    if cmethod == None: raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
     
     unpackFunction = cmethod[1]
     dbfilename = etpConst[cmethod[2]]
@@ -1221,7 +1218,7 @@ def getEtpRemoteDatabaseStatus():
 	ftp = mirrorTools.handlerFTP(uri)
 	ftp.setCWD(etpConst['etpurirelativepath'])
 	cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
-	if cmethod == None: raise Exception
+	if cmethod == None: raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
 	compressedfile = etpConst[cmethod[2]]
 	rc = ftp.isFileAvailable(compressedfile)
 	if (rc):
