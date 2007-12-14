@@ -1112,6 +1112,7 @@ def compressTarBz2(storepath,pathtocompress):
 
 # tar.bz2 uncompress function...
 def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
+    
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"uncompressTarBz2: called.")
     if extractPath is None:
 	extractPath = os.path.dirname(filepath)
@@ -1148,6 +1149,7 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
                 except:
                     raise
             tar.extract(tarinfo, extractPath.encode(sys.getfilesystemencoding()))
+        del tar.members[:]
 
     # Reverse sort directories.
     #'''
