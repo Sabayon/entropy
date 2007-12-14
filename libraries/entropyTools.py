@@ -1904,9 +1904,12 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     try:
         f = open(tbz2TmpDir+dbKEYWORDS,"r")
         cnt = f.readline().strip().split()
-	for i in cnt:
-	    if i:
-		data['keywords'].append(i)
+        if not cnt:
+            data['keywords'].append("") # support for packages with no keywords
+        else:
+            for i in cnt:
+                if i:
+                    data['keywords'].append(i)
         f.close()
     except IOError:
 	pass

@@ -3201,6 +3201,8 @@ class etpDatabase:
                 return -1
         
         mykeywords = self.retrieveKeywords(idpackage)
+        # XXX WORKAROUND
+        if not mykeywords: mykeywords = [''] # ** is fine then
         # firstly, check if package keywords are in etpConst['keywords'] (universal keywords have been merged from package.mask)
         for key in etpConst['keywords']:
             if key in mykeywords:
