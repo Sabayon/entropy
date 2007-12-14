@@ -335,7 +335,7 @@ def kernelmod(pkgdata):
     name = ''
     for item in pkgdata['content']:
         item = etpConst['systemroot']+item
-        if file.startswith(etpConst['systemroot']+"/lib/modules/"):
+        if item.startswith(etpConst['systemroot']+"/lib/modules/"):
             name = item[len(etpConst['systemroot']):]
             name = name.split("/")[3]
             break
@@ -355,7 +355,7 @@ def sqliteinst(pkgdata):
 def initdisable(pkgdata):
     for item in pkgdata['removecontent']:
         item = etpConst['systemroot']+item
-	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
+	if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
 	    # running?
 	    running = os.path.isfile(etpConst['systemroot']+INITSERVICES_DIR+'/started/'+os.path.basename(item))
             if not etpConst['systemroot']:
@@ -375,7 +375,7 @@ def initinform(pkgdata):
 def removeinit(pkgdata):
     for item in pkgdata['removecontent']:
         item = etpConst['systemroot']+item
-	if file.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
+	if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Removing boot service: "+os.path.basename(item))
 	    print_info(red("   ##")+brown(" Removing boot service: ")+os.path.basename(item))
             if not etpConst['systemroot']:

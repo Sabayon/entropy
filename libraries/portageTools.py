@@ -148,7 +148,7 @@ def getInstalledAtom(atom):
         mytree = cached
     portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtom: called -> "+str(atom))
     rc = mytree.dep_match(str(atom))
-    gc.collect() # XXX: temp workaround for a python bug with portage
+    #gc.collect() # XXX: temp workaround for a python bug with portage
     if (rc != []):
 	if (len(rc) == 1):
 	    return rc[0]
@@ -169,7 +169,7 @@ def getPackageSlot(atom):
     if atom.startswith("="):
 	atom = atom[1:]
     rc = mytree.getslot(atom)
-    gc.collect() # XXX: temp workaround for a python bug with portage
+    #gc.collect() # XXX: temp workaround for a python bug with portage
     if rc != "":
 	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: slot found -> "+str(atom)+" -> "+str(rc))
 	return rc
@@ -187,7 +187,7 @@ def getInstalledAtoms(atom):
     else:
         mytree = cached
     rc = mytree.dep_match(str(atom))
-    gc.collect() # XXX: temp workaround for a python bug with portage
+    #gc.collect() # XXX: temp workaround for a python bug with portage
     if (rc != []):
         return rc
     else:
@@ -294,7 +294,7 @@ def quickpkg(atom,dirpath):
     tbz2.recompose(dbdir)
     
     dblnk.unlockdb()
-    gc.collect() # XXX: temp workaround for a python bug with portage
+    #gc.collect() # XXX: temp workaround for a python bug with portage
     
     if os.path.isfile(dirpath):
 	return dirpath

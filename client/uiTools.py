@@ -33,7 +33,6 @@ from databaseTools import openRepositoryDatabase, openClientDatabase, openGeneri
 import entropyTools
 import dumpTools
 import shutil
-import gc
 
 import logTools
 equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[Equo]")
@@ -795,9 +794,6 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     dirscleanup()
                     return -1,rc
 
-            # clear garbage
-            gc.collect()
-        
         # update resume cache
         if not tbz2: # tbz2 caching not supported
             resume_cache['removalQueue'].remove(idpackage)
@@ -886,9 +882,6 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     del clientDbconn
                     dirscleanup()
                     return -1,rc
-
-            # clear garbage
-            gc.collect()
 
         # update resume cache
         if not tbz2: # tbz2 caching not supported
@@ -1145,9 +1138,6 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                     clientDbconn.closeDB()
                     del clientDbconn
                     return -1,rc
-
-            # clear garbage
-            gc.collect()
 
         # update resume cache
         resume_cache['removalQueue'].remove(idpackage)
