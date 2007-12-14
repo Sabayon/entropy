@@ -168,6 +168,10 @@ def sync(options, justTidy = False):
 		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+file)
 		    print_info(green(" * ")+red("Package file: ")+bold(file)+red(" removed successfully from ")+bold(etpConst['packagesbindir']+"/"+mybranch))
 		    os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+file)
+                    try:
+                        os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+file+etpConst['packagesexpirationfileext'])
+                    except OSError:
+                        pass
 	        # checksum
 	        if os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+file+etpConst['packageshashfileext']):
 		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+file+etpConst['packageshashfileext'])
