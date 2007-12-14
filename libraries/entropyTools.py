@@ -1118,7 +1118,7 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
     if not os.path.isfile(filepath):
         raise OSError
     try:
-        tar = tarfile.open(filepath,"r:*") # also supports uncompressed .tbz2
+        tar = tarfile.open(filepath,"r:bz2")
     except tarfile.ReadError:
         if catchEmpty:
             return 0
@@ -1625,7 +1625,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
             i = list(i)
             datatype = i[1]
             try:
-                i[0] = i[0].encode(sys.getfilesystemencoding())
+                i[0] = i[0].decode(sys.getfilesystemencoding()).encode(sys.getfilesystemencoding())
             except:  # default encoding failed
                 try:
                     i[0] = i[0].decode("latin1").decode("iso-8859-1").encode(sys.getfilesystemencoding()) # try to convert to latin1 and then back to sys.getfilesystemencoding()

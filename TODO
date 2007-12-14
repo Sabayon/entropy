@@ -11,6 +11,7 @@ TODO list:
  * Starting dbus session for kbuildsycoca4
  * Running kbuildsycoca4 to build global database ...
  * Killing dbus session for kbuildsycoca4
+ * setting GID /usr/kde/3.9/lib/kde4/libexec/kdesud
 
 
 Project Status:
