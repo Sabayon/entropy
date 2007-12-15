@@ -59,7 +59,12 @@ def initConfig_clientConstants():
                     etpConst['gentoo-compat'] = False
                 else:
                     etpConst['gentoo-compat'] = True
-    
+
+            if line.startswith("filesbackup|") and (len(line.split("|")) == 2):
+                compatopt = line.split("|")[1].strip()
+                if compatopt == "disable":
+                    etpConst['filesbackup'] = False
+
             if line.startswith("collisionprotect|") and (len(line.split("|")) == 2):
                 collopt = line.split("|")[1].strip()
                 if collopt == "0" or collopt == "1" or collopt == "2":

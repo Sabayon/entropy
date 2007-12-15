@@ -98,6 +98,16 @@ def update():
 		    if rc == "No":
 			continue
 		print_info(darkred("Moving ")+darkgreen(etpConst['systemroot']+scandata[key]['source'])+darkred(" to ")+brown(etpConst['systemroot']+scandata[key]['destination']))
+
+                # old file backup
+                if etpConst['filesbackup'] and os.path.isfile(etpConst['systemroot']+scandata[key]['destination']):
+                    bcount = 0
+                    backupfile = etpConst['systemroot']+scandata[cmd]['destination']+".equo_backup."+unicode(bcount)
+                    while os.path.lexists(backupfile):
+                        bcount += 1
+                        backupfile = etpConst['systemroot']+scandata[cmd]['destination']+".equo_backup."+unicode(bcount)
+                    shutil.copy2(etpConst['systemroot']+scandata[cmd]['destination'],backupfile)
+
 		shutil.move(etpConst['systemroot']+scandata[key]['source'],etpConst['systemroot']+scandata[key]['destination'])
 		# remove from cache
 		scandata = removefromcache(scandata,key)
@@ -160,6 +170,16 @@ def update():
 			break
 		    elif action == 1:
 			print_info(darkred("Replacing ")+darkgreen(etpConst['systemroot']+scandata[cmd]['destination'])+darkred(" with ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+                        
+                        # old file backup
+                        if etpConst['filesbackup'] and os.path.isfile(etpConst['systemroot']+scandata[key]['destination']):
+                            bcount = 0
+                            backupfile = etpConst['systemroot']+scandata[cmd]['destination']+".equo_backup."+unicode(bcount)
+                            while os.path.lexists(backupfile):
+                                bcount += 1
+                                backupfile = etpConst['systemroot']+scandata[cmd]['destination']+".equo_backup."+unicode(bcount)
+                            shutil.copy2(etpConst['systemroot']+scandata[cmd]['destination'],backupfile)
+                        
 			shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
 			scandata = removefromcache(scandata,cmd)
 			comeback = True

@@ -1,5 +1,4 @@
 TODO list:
-  - conf files backup
   - world: first fetch all, then upgrade
   - trigger: Regenerating cracklib dictionary
   - autotriggers: for enewgroup, enewuser and friends

@@ -610,6 +610,7 @@ def initConfig_entropyConstants(rootdir):
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|", # tag to append to .tbz2 file before entropy database (must be 32bytes)
         'pidfile': "/var/run/equo.pid",
         'applicationlock': False,
+        'filesbackup': True, # option to keep a backup of config files after being overwritten by equo conf update
         'collisionprotect': 1, # collision protection option, read equo.conf for more info
         'configprotect': [], # list of user specified CONFIG_PROTECT directories (see Gentoo manual to understand the meaining of this parameter)
         'configprotectmask': [], # list of user specified CONFIG_PROTECT_MASK directories
