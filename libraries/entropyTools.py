@@ -1121,7 +1121,7 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
     try:
         try:
             tar = tarfile.open(filepath,"r")
-        except CompressionError:
+        except tarfile.CompressionError:
             tar = tarfile.open(filepath,"r:bz2") # python 2.4 crashes above, so supporting only bz2
     except tarfile.ReadError:
         if catchEmpty:
