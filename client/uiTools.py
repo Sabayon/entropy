@@ -802,6 +802,50 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         # unload dict
         if not returnQueue:
             del etpRemovalTriggers[infoDict['removeatom']]
+
+
+    ### Before starting the real install, fetch packages and verify checksum.
+    if not returnQueue:
+        fetchqueue = 0
+        for packageInfo in runQueue:
+            
+            fetchqueue += 1
+            idpackage = packageInfo[0]
+            repository = packageInfo[1]
+            dbconn = openRepositoryDatabase(repository)
+            pkgatom = dbconn.retrieveAtom(idpackage)
+            
+            infoDict = actionQueue[pkgatom].copy()
+            
+            infoDict['repository'] = packageInfo[1]
+            infoDict['idpackage'] = packageInfo[0]
+            infoDict['checksum'] = dbconn.retrieveDigest(idpackage)
+            infoDict['download'] = dbconn.retrieveDownloadURL(idpackage)
+            
+            dbconn.closeDB()
+            del dbconn
+            
+            steps = []
+            
+            if not repository.endswith(".tbz2"):
+                if (actionQueue[pkgatom]['fetch'] < 0):
+                    steps.append("fetch")
+                steps.append("checksum")
+            
+            for step in steps:
+                rc = equoTools.stepExecutor(step,infoDict,str(fetchqueue)+"/"+totalqueue)
+                if (rc != 0):
+                    clientDbconn.closeDB()
+                    del clientDbconn
+                    dirscleanup()
+                    return -1,rc
+            
+            # disable fetch now, file fetched
+            actionQueue[pkgatom]['fetch'] = 1
+            actionQueue[pkgatom]['checksummatch'] = 1
+            del infoDict
+        del fetchqueue
+
     
     for packageInfo in runQueue:
         
@@ -817,7 +861,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 	if not repository.endswith(".tbz2"):
 	    if (actionQueue[pkgatom]['fetch'] < 0):
 	        steps.append("fetch")
-	    steps.append("checksum")
+            if actionQueue[pkgatom].get("checksummatch") != 1: # was it already checked above?
+                steps.append("checksum")
 
 	# differential remove list
 	if (actionQueue[pkgatom]['removeidpackage'] != -1):
