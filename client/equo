@@ -284,9 +284,9 @@ try:
 
     if rc == -10:
         status = readerrorstatus()
-        print_error(darkred(etpsys.exitMessages[status]))
+        print_error(darkred(etpExitMessages[status]))
         # increment
-        if status < len(etpsys.exitMessages)-1:
+        if status < len(etpExitMessages)-1:
             writeerrorstatus(status+1)
     else:
         writeerrorstatus(0)

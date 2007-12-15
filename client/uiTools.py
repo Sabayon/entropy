@@ -434,13 +434,11 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 # tell wether we should update it
                 if installedVer == "Not installed":
                     installedVer = "0"
-                if installedTag == "NoTag":
-                    installedTag = ''
                 if installedRev == "NoRev":
                     installedRev = 0
                 pkgcmp = entropyTools.entropyCompareVersions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
                 if (pkgcmp == 0):
-                    action = darkgreen("No update needed")
+                    action = darkgreen("Reinstall")
                 elif (pkgcmp > 0):
                     if (installedVer == "0"):
                         action = darkgreen("Install")
