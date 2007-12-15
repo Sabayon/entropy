@@ -398,13 +398,12 @@ def openglsetup(pkgdata):
     if eselect == 0:
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to "+opengl+" ...")
 	print_info(red("   ##")+brown(" Reconfiguring OpenGL..."))
-        if not etpConst['systemroot']:
-            myroot = "/"
-        else:
-            myroot = etpConst['systemroot']+"/"
         quietstring = ''
         if etpUi['quiet']: quietstring = " &>/dev/null"
-	os.system('ROOT="'+myroot+'" eselect opengl set --use-old '+opengl+quietstring)
+        if etpConst['systemroot']:
+            os.system('echo "eselect opengl set --use-old '+opengl+'" | chroot '+etpConst['systemroot']+quietstring)
+        else:
+            os.system('eselect opengl set --use-old '+opengl+quietstring)
     else:
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
 	print_info(red("   ##")+brown(" Eselect NOT found, cannot run OpenGL trigger"))
@@ -414,13 +413,12 @@ def openglsetup_xorg(pkgdata):
     if eselect == 0:
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to fallback xorg-x11 ...")
 	print_info(red("   ##")+brown(" Reconfiguring OpenGL..."))
-        if not etpConst['systemroot']:
-            myroot = "/"
-        else:
-            myroot = etpConst['systemroot']+"/"
         quietstring = ''
         if etpUi['quiet']: quietstring = " &>/dev/null"
-	os.system('ROOT="'+myroot+'" eselect opengl set xorg-x11'+quietstring)
+        if etpConst['systemroot']:
+            os.system('echo "eselect opengl set xorg-x11" | chroot '+etpConst['systemroot']+quietstring)
+        else:
+            os.system('eselect opengl set xorg-x11'+quietstring)
     else:
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
 	print_info(red("   ##")+brown(" Eselect NOT found, cannot run OpenGL trigger"))
