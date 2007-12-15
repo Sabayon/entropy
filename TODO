@@ -1,6 +1,4 @@
 TODO list:
-  - world: first fetch all, then upgrade
-  - trigger: Regenerating cracklib dictionary
   - autotriggers: for enewgroup, enewuser and friends
   - Community repositories
   - add external trigger for splashutils
@@ -8,6 +6,7 @@ TODO list:
   - reduce size of packages.db.bz2
   - remove binkeywords, not used
 
+ - trigger: Regenerating cracklib dictionary
  * Starting dbus session for kbuildsycoca4
  * Running kbuildsycoca4 to build global database ...
  * Killing dbus session for kbuildsycoca4

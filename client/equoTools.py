@@ -493,6 +493,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
     # caches
     treecache = set()
     matchcache = set()
+    keyslotcache = set()
     # special events
     dependenciesNotFound = set()
     conflicts = set()
@@ -541,6 +542,14 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
             treecache.add(matchatom)
 
         treecache.add(mydep[1])
+
+        # check if key + slot has been already pulled in
+        key = dep_getkey(matchatom)
+        if (matchslot,key) in keyslotcache:
+            mydep = mybuffer.pop()
+            continue
+        else:
+            keyslotcache.add((matchslot,key))
 
         # already analyzed by the calling function
         if (match in matchFilter) and (usefilter):
