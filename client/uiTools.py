@@ -617,7 +617,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             # filter out packages that are in actionQueue comparing key + slot
             if runQueue:
                 myremmatch = {}
-                [myremmatch[(entropyTools.dep_getkey(clientDbconn.retrieveAtom(x)),clientDbconn.retrieveSlot(x))] = x for x in removalQueue]
+                [myremmatch.update({(entropyTools.dep_getkey(clientDbconn.retrieveAtom(x)),clientDbconn.retrieveSlot(x)): x}) for x in removalQueue]
                 for packageInfo in runQueue:
                     dbconn = openRepositoryDatabase(packageInfo[1])
                     testtuple = (entropyTools.dep_getkey(dbconn.retrieveAtom(packageInfo[0])),dbconn.retrieveSlot(packageInfo[0]))
