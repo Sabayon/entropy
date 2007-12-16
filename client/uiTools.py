@@ -614,6 +614,20 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     
         if (removalQueue):
             
+            # filter out packages that are in actionQueue comparing key + slot
+            if runQueue:
+                myremmatch = {}
+                [myremmatch[(entropyTools.dep_getkey(clientDbconn.retrieveAtom(x)),clientDbconn.retrieveSlot(x))] = x for x in removalQueue]
+                for packageInfo in runQueue:
+                    dbconn = openRepositoryDatabase(packageInfo[1])
+                    testtuple = (entropyTools.dep_getkey(dbconn.retrieveAtom(packageInfo[0])),dbconn.retrieveSlot(packageInfo[0]))
+                    if testtuple in myremmatch:
+                        # remove from removalQueue
+                        if myremmatch[testtuple] in removalQueue:
+                            removalQueue.remove(myremmatch[testtuple])
+                    del testtuple
+                del myremmatch
+            
             '''
             
             FIXME: it's broken, on equo world it pulls in depends that shouldn't be removed
@@ -787,7 +801,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     steps.append("fetch")
                 steps.append("checksum")
             
-	   if not (etpUi['quiet'] or returnQueue): print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
+            if not (etpUi['quiet'] or returnQueue): print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
             
             for step in steps:
                 rc = equoTools.stepExecutor(step,infoDict,str(fetchqueue)+"/"+totalqueue)
@@ -827,7 +841,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             
         else:
         
-	   if not (etpUi['quiet'] or returnQueue): print_info(red(" -- ")+bold("(")+blue(str(currentremovalqueue))+"/"+red(totalremovalqueue)+bold(") ")+">>> "+darkgreen(infoDict['removeatom']))
+            if not (etpUi['quiet'] or returnQueue): print_info(red(" -- ")+bold("(")+blue(str(currentremovalqueue))+"/"+red(totalremovalqueue)+bold(") ")+">>> "+darkgreen(infoDict['removeatom']))
         
             for step in steps:
                 rc = equoTools.stepExecutor(step,infoDict,str(currentremovalqueue)+"/"+totalremovalqueue)
