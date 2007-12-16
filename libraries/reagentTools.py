@@ -1008,3 +1008,39 @@ def database(options):
 
         dbconn.closeDB()
         return 0
+
+    # query tools
+    elif (options[0] == "query"):
+        
+        import queryTools
+        myopts = options[1:]
+        
+        rc = 0
+	dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+        
+        if myopts[0] == "tags":
+            if (len(myopts) > 1):
+                rc = queryTools.searchTaggedPackages(myopts[1:], dbconn = dbconn)
+
+        if myopts[0] == "files":
+            if (len(myopts) > 1):
+                rc = queryTools.searchFiles(myopts[1:], dbconn = dbconn)
+
+        if myopts[0] == "belongs":
+            if (len(myopts) > 1):
+                rc = queryTools.searchBelongs(myopts[1:], dbconn = dbconn)
+
+        if myopts[0] == "description":
+            if (len(myopts) > 1):
+                queryTools.__searchDescriptions(myopts[1:], dbconn = dbconn)
+
+        if myopts[0] == "needed":
+            if (len(myopts) > 1):
+                queryTools.searchNeeded(myopts[1:], dbconn = dbconn)
+
+        if myopts[0] == "depends":
+            if (len(myopts) > 1):
+                queryTools.searchDepends(myopts[1:], dbconn = dbconn)
+
+        dbconn.closeDB()
+        return rc

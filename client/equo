@@ -97,7 +97,7 @@ def print_help():
     print_info(" \t\t"+darkgreen("list")+red("\t\t\t list packages based on the chosen parameter below"))
     print_info(" \t\t\t"+green("installed")+red("\t list installed packages"))
     print_info(" \t\t"+darkgreen("orphans")+red("\t\t\t search files that don't belong to any package")+bold(" [USE WITH CARE]"))
-    print_info(" \t\t"+darkgreen("description")+red("\t\t search a package description"))
+    print_info(" \t\t"+darkgreen("description")+red("\t\t search packages by description"))
     print_info(" \t\t"+red("--verbose")+"\t\t show more details")
     print_info(" \t\t"+red("--quiet")+"\t\t\t print results in a scriptable way")
 

@@ -2964,7 +2964,7 @@ class etpDatabase:
 	    self.cursor.execute('SELECT iddependency FROM dependstable WHERE iddependency = -1')
 	except:
 	    return False # table does not exist, please regenerate and re-run
-        status = self.cursor.fetchone()[0]
+        status = self.cursor.fetchone()
         if status:
             return False
         return True

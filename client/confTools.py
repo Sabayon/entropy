@@ -311,8 +311,12 @@ def scanfs(dcache = True):
 	    pass
 
     # load etpConst['dbconfigprotect']
-    clientDbconn = equoTools.openClientDatabase()
-    clientDbconn.closeDB()
+    try:
+        clientDbconn = equoTools.openClientDatabase()
+        clientDbconn.closeDB()
+    except exceptionTools.SystemDatabaseError:
+        if (not etpUi['quiet']): print_error(darkred("System database error. Does it exist?"))
+        return
     # etpConst['dbconfigprotect']
     if (not etpUi['quiet']): print_info(yellow(" @@ ")+darkgreen("Scanning filesystem..."))
     scandata = {}

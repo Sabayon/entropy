@@ -87,16 +87,22 @@ def query(options):
 
 
 
-def searchInstalledPackages(packages, idreturn = False):
+def searchInstalledPackages(packages, idreturn = False, dbconn = None):
     
     if (not idreturn) and (not etpUi['quiet']):
         print_info(brown(" @@ ")+darkgreen("Searching..."))
 
-    try:
-        clientDbconn = openClientDatabase()
-    except Exception:
-        print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
-        return 128
+    dbclose = True
+    if not dbconn:
+        try:
+            clientDbconn = openClientDatabase()
+        except Exception:
+            print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
+            return 128
+    else:
+        dbclose = False
+        clientDbconn = dbconn
+    
     dataInfo = set() # when idreturn is True
     
     for package in packages:
@@ -119,9 +125,10 @@ def searchInstalledPackages(packages, idreturn = False):
 	    if (not idreturn) and (not etpUi['quiet']):
 	        print_info(blue(" Keyword: ")+bold("\t"+package))
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
-	
-    clientDbconn.closeDB()
-    del clientDbconn
+
+    if dbclose:
+        clientDbconn.closeDB()
+        del clientDbconn
 
     if (idreturn):
 	return dataInfo
@@ -129,18 +136,23 @@ def searchInstalledPackages(packages, idreturn = False):
     return 0
 
 
-def searchBelongs(files, idreturn = False):
+def searchBelongs(files, idreturn = False, dbconn = None):
     
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Belong Search..."))
 
-    try:
-        clientDbconn = openClientDatabase()
-    except Exception:
-        print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
-        return 128
-    dataInfo = set() # when idreturn is True
+    dbclose = True
+    if not dbconn:
+        try:
+            clientDbconn = openClientDatabase()
+        except Exception:
+            print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
+            return 128
+    else:
+        dbclose = False
+        clientDbconn = dbconn
     
+    dataInfo = set() # when idreturn is True
     results = {}
     flatresults = {}
     for file in files:
@@ -172,9 +184,10 @@ def searchBelongs(files, idreturn = False):
 	    if (not idreturn) and (not etpUi['quiet']):
 	        print_info(blue(" Keyword: ")+bold("\t"+file))
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
-	
-    clientDbconn.closeDB()
-    del clientDbconn
+
+    if dbclose:
+        clientDbconn.closeDB()
+        del clientDbconn
 
     if (idreturn):
 	return dataInfo
@@ -183,23 +196,28 @@ def searchBelongs(files, idreturn = False):
 
 
 
-def searchDepends(atoms, idreturn = False):
+def searchDepends(atoms, idreturn = False, dbconn = None):
     
-    from equoTools import atomMatch
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Depends Search..."))
 
-    try:
-        clientDbconn = openClientDatabase()
-    except Exception:
-        print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
-        return 128
+    dbclose = True
+    if not dbconn:
+        from equoTools import atomMatch
+        try:
+            clientDbconn = openClientDatabase()
+        except Exception:
+            print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
+            return 128
+    else:
+        dbclose = False
+        clientDbconn = dbconn
 
     dataInfo = set() # when idreturn is True
     for atom in atoms:
 	result = clientDbconn.atomMatch(atom)
 	matchInRepo = False
-	if (result[0] == -1):
+	if (result[0] == -1) and dbclose:
 	    matchInRepo = True
 	    result = atomMatch(atom)
 	if (result[0] != -1):
@@ -241,25 +259,31 @@ def searchDepends(atoms, idreturn = False):
 	    dbconn.closeDB()
             del dbconn
 
-    clientDbconn.closeDB()
-    del clientDbconn
+    if dbclose:
+        clientDbconn.closeDB()
+        del clientDbconn
 
     if (idreturn):
 	return dataInfo
     
     return 0
 
-def searchNeeded(atoms, idreturn = False):
+def searchNeeded(atoms, idreturn = False, dbconn = None):
     
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Needed Search..."))
 
-    try:
-        clientDbconn = openClientDatabase()
-    except Exception:
-        print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
-        return 128
-    dataInfo = set() # when idreturn is True
+    dbclose = True
+    if not dbconn:
+        try:
+            clientDbconn = openClientDatabase()
+        except Exception:
+            print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
+            return 128
+        dataInfo = set() # when idreturn is True
+    else:
+        dbclose = False
+        clientDbconn = dbconn
     
     for atom in atoms:
 	match = clientDbconn.atomMatch(atom)
@@ -277,26 +301,34 @@ def searchNeeded(atoms, idreturn = False):
 	    if (not idreturn) and (not etpUi['quiet']):
 	        print_info(blue("     Atom: ")+bold("\t"+myatom))
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(myneeded)))+red(" libraries"))
-	
-    clientDbconn.closeDB()
-    del clientDbconn
+
+    if dbclose:
+        clientDbconn.closeDB()
+        del clientDbconn
 
     if (idreturn):
 	return dataInfo
     
     return 0
 
-def searchFiles(atoms, idreturn = False):
+def searchFiles(atoms, idreturn = False, dbconn = None):
     
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Files Search..."))
 
-    results = searchInstalledPackages(atoms, idreturn = True)
-    try:
-        clientDbconn = openClientDatabase()
-    except Exception:
-        print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
-        return 128
+    dbclose = True
+    if not dbconn:
+        results = searchInstalledPackages(atoms, idreturn = True)
+        try:
+            clientDbconn = openClientDatabase()
+        except Exception:
+            print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
+            return 128
+    else:
+        dbclose = False
+        results = searchInstalledPackages(atoms, idreturn = True, dbconn = dbconn)
+        clientDbconn = dbconn
+    
     dataInfo = set() # when idreturn is True
     for result in results:
 	if (result != -1):
@@ -317,9 +349,10 @@ def searchFiles(atoms, idreturn = False):
 	    if (not idreturn) and (not etpUi['quiet']):
 	        print_info(blue(" Package: ")+bold("\t"+atom))
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(files)))+red(" files"))
-	
-    clientDbconn.closeDB()
-    del clientDbconn
+
+    if dbclose:
+        clientDbconn.closeDB()
+        del clientDbconn
 
     if (idreturn):
 	return dataInfo
@@ -555,9 +588,12 @@ def searchPackage(packages, idreturn = False):
 
     return 0
 
-def searchTaggedPackages(tags, datareturn = False):
+def searchTaggedPackages(tags, datareturn = False, dbconn = None):
     
     foundPackages = {}
+    dbclose = True
+    if dbconn:
+        dbclose = False
     
     if (not datareturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Tag Search..."))
@@ -570,7 +606,8 @@ def searchTaggedPackages(tags, datareturn = False):
 	if (not datareturn) and (not etpUi['quiet']):
 	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 	
-	dbconn = openRepositoryDatabase(repo)
+        if dbclose:
+            dbconn = openRepositoryDatabase(repo)
 	for tag in tags:
 	    results = dbconn.searchTaggedPackages(tag, atoms = True)
 	    for result in results:
@@ -581,9 +618,10 @@ def searchTaggedPackages(tags, datareturn = False):
 	    if (not datareturn) and (not etpUi['quiet']):
 	        print_info(blue(" Keyword: ")+bold("\t"+tag))
 	        print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
-	
-	dbconn.closeDB()
-        del dbconn
+
+        if dbclose:
+            dbconn.closeDB()
+            del dbconn
 
     if (datareturn):
 	return foundPackages
@@ -606,24 +644,8 @@ def searchDescription(descriptions, idreturn = False):
 	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 	
 	dbconn = openRepositoryDatabase(repo)
-	dataInfo = [] # when idreturn is True
-	for desc in descriptions:
-	    result = dbconn.searchPackagesByDescription(desc)
-	    if (result):
-		foundPackages[repo][desc] = result
-	        for pkg in foundPackages[repo][desc]:
-		    idpackage = pkg[1]
-		    atom = pkg[0]
-		    if (idreturn):
-			dataInfo.append([idpackage,repo])
-		    elif (etpUi['quiet']):
-			print dbconn.retrieveAtom(idpackage)
-		    else:
-		        printPackageInfo(idpackage,dbconn)
-	        # print info
-		if (not idreturn) and (not etpUi['quiet']):
-	            print_info(blue(" Keyword: ")+bold("\t"+desc))
-	            print_info(blue(" Found:   ")+bold("\t"+str(len(foundPackages[repo][desc])))+red(" entries"))
+        dataInfo, descdata = __searchDescriptions(descriptions, dbconn, idreturn)
+        foundPackages[repo].update(descdata)
 	
 	dbconn.closeDB()
         del dbconn
@@ -633,11 +655,31 @@ def searchDescription(descriptions, idreturn = False):
 
     return 0
 
-
-
 '''
    Internal functions
 '''
+def __searchDescriptions(descriptions, dbconn, idreturn = False):
+    dataInfo = [] # when idreturn is True
+    mydescdata = {}
+    
+    for desc in descriptions:
+        result = dbconn.searchPackagesByDescription(desc)
+        if (result):
+            mydescdata[desc] = result
+            for pkg in mydescdata[desc]:
+                idpackage = pkg[1]
+                atom = pkg[0]
+                if (idreturn):
+                    dataInfo.append([idpackage,repo])
+                elif (etpUi['quiet']):
+                    print dbconn.retrieveAtom(idpackage)
+                else:
+                    printPackageInfo(idpackage,dbconn)
+            # print info
+            if (not idreturn) and (not etpUi['quiet']):
+                print_info(blue(" Keyword: ")+bold("\t"+desc))
+                print_info(blue(" Found:   ")+bold("\t"+str(len(mydescdata[desc])))+red(" entries"))
+    return dataInfo,mydescdata
 
 def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, extended = False):
     # now fetch essential info
