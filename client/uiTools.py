@@ -787,6 +787,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     steps.append("fetch")
                 steps.append("checksum")
             
+	   if not (etpUi['quiet'] or returnQueue): print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
+            
             for step in steps:
                 rc = equoTools.stepExecutor(step,infoDict,str(fetchqueue)+"/"+totalqueue)
                 if (rc != 0):
@@ -824,6 +826,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             returnActionQueue['removalQueue']['data'][idpackage]['steps'] = steps[:]
             
         else:
+        
+	   if not (etpUi['quiet'] or returnQueue): print_info(red(" -- ")+bold("(")+blue(str(currentremovalqueue))+"/"+red(totalremovalqueue)+bold(") ")+">>> "+darkgreen(infoDict['removeatom']))
         
             for step in steps:
                 rc = equoTools.stepExecutor(step,infoDict,str(currentremovalqueue)+"/"+totalremovalqueue)
@@ -908,7 +912,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 	    steps.append("postinstall")
 	    steps.append("showmessages")
 	
-	if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
+	if not (etpUi['quiet'] or returnQueue): print_info(red(" ++ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
 
         if returnQueue:
 
