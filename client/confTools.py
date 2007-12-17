@@ -172,7 +172,7 @@ def update():
 			print_info(darkred("Replacing ")+darkgreen(etpConst['systemroot']+scandata[cmd]['destination'])+darkred(" with ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
                         
                         # old file backup
-                        if etpConst['filesbackup'] and os.path.isfile(etpConst['systemroot']+scandata[key]['destination']):
+                        if etpConst['filesbackup'] and os.path.isfile(etpConst['systemroot']+scandata[cmd]['destination']):
                             bcount = 0
                             backupfile = etpConst['systemroot']+scandata[cmd]['destination']+".equo_backup."+unicode(bcount)
                             while os.path.lexists(backupfile):
