@@ -133,14 +133,6 @@ def print_help():
 
 options = sys.argv[1:]
 
-# print help
-if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(options).find(" -h") != -1:
-    print_help()
-    if len(options) < 1:
-	print_error("not enough parameters")
-    sys.exit(1)
-
-
 import equoTools
 import entropyTools
 from clientConstants import *
@@ -166,6 +158,13 @@ for opt in options:
         else:
             _options.append(opt)
 options = _options
+
+# print help
+if (not options) or ("--help" in options):
+    print_help()
+    if not options:
+	print_error("not enough parameters")
+    sys.exit()
 
 # print version
 if (options[0] == "--version"):

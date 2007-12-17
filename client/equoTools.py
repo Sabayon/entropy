@@ -1591,6 +1591,7 @@ def stepExecutor(step, infoDict, loopString = None):
 	# get messages
 	if infoDict['messages']:
 	    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Message from "+infoDict['atom']+" :")
+            print_warning(brown('   ## ')+darkgreen("Gentoo ebuild messages:"))
 	for msg in infoDict['messages']:
 	    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,msg)
 	    print_warning(brown('   ## ')+msg)
