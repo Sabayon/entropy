@@ -102,11 +102,11 @@ def update():
                 # old file backup
                 if etpConst['filesbackup'] and os.path.isfile(etpConst['systemroot']+scandata[key]['destination']):
                     bcount = 0
-                    backupfile = etpConst['systemroot']+scandata[cmd]['destination']+".equo_backup."+unicode(bcount)
+                    backupfile = etpConst['systemroot']+scandata[key]['destination']+".equo_backup."+unicode(bcount)
                     while os.path.lexists(backupfile):
                         bcount += 1
-                        backupfile = etpConst['systemroot']+scandata[cmd]['destination']+".equo_backup."+unicode(bcount)
-                    shutil.copy2(etpConst['systemroot']+scandata[cmd]['destination'],backupfile)
+                        backupfile = etpConst['systemroot']+scandata[key]['destination']+".equo_backup."+unicode(bcount)
+                    shutil.copy2(etpConst['systemroot']+scandata[key]['destination'],backupfile)
 
 		shutil.move(etpConst['systemroot']+scandata[key]['source'],etpConst['systemroot']+scandata[key]['destination'])
 		# remove from cache
