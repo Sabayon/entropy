@@ -1113,7 +1113,7 @@ def compressTarBz2(storepath,pathtocompress):
 # OLD tar.bz2 uncompress function...
 def compat_uncompressTarBz2(filepath, extractPath = None):
     
-    cmd = "tar xjf "+filepath+" -C "+extractPath
+    cmd = "tar xjf "+filepath+" -C "+extractPath+" &> /dev/null"
     rc = os.system(cmd)
     if rc != 0:
         return -1
