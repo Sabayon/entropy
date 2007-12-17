@@ -1613,6 +1613,15 @@ def stepExecutor(step, infoDict, loopString = None):
 	pkgdata = etpInstallTriggers.get(infoDict['atom'])
 	if pkgdata:
 	    triggers = triggerTools.preinstall(pkgdata)
+            
+	    if infoDict['diffremoval'] and (infoDict.get("removeatom") != None): # diffremoval is true only when the remove action is triggered by installPackages()
+		remdata = etpRemovalTriggers.get(infoDict['removeatom'])
+		if remdata:
+		    itriggers = triggerTools.preremove(remdata) # remove duplicated triggers
+		    triggers.difference_update(itriggers)
+                    del itriggers
+                del remdata
+            
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
                 if trigger not in etpUi['preinstall_triggers_disable']:
                     eval("triggerTools."+trigger)(pkgdata)
@@ -1624,13 +1633,6 @@ def stepExecutor(step, infoDict, loopString = None):
 	remdata = etpRemovalTriggers.get(infoDict['removeatom'])
 	if remdata:
 	    triggers = triggerTools.preremove(remdata)
-
-	    if infoDict['diffremoval']: # diffremoval is true only when the remove action is triggered by installPackages()
-		pkgdata = etpRemovalTriggers.get(infoDict['atom'])
-		if pkgdata:
-		    itriggers = triggerTools.preinstall(pkgdata) # remove duplicated triggers
-		    triggers.difference_update(itriggers)
-
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
                 if trigger not in etpUi['preremove_triggers_disable']:
                     eval("triggerTools."+trigger)(remdata)
@@ -1643,11 +1645,13 @@ def stepExecutor(step, infoDict, loopString = None):
 	if remdata:
 	    triggers = triggerTools.postremove(remdata)
 	    
-	    if infoDict['diffremoval']: # diffremoval is true only when the remove action is triggered by installPackages()
-		pkgdata = etpRemovalTriggers.get(infoDict['atom']) # remove duplicated triggers
+	    if infoDict['diffremoval'] and (infoDict.get("atom") != None): # diffremoval is true only when the remove action is triggered by installPackages()
+		pkgdata = etpInstallTriggers.get(infoDict['atom']) # remove duplicated triggers
 		if pkgdata:
 		    itriggers = triggerTools.postinstall(pkgdata)
 		    triggers.difference_update(itriggers)
+                    del itriggers
+                del pkgdata
 	    
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
                 if trigger not in etpUi['postremove_triggers_disable']:

@@ -1110,7 +1110,16 @@ def compressTarBz2(storepath,pathtocompress):
     rc = spawnCommand("cd "+pathtocompress+" && "+cmd, "&> /dev/null")
     return rc
 
-# tar.bz2 uncompress function...
+# OLD tar.bz2 uncompress function...
+def compat_uncompressTarBz2(filepath, extractPath = None):
+    
+    cmd = "tar xjf "+filepath+" -C "+extractPath
+    rc = os.system(cmd)
+    if rc != 0:
+        return -1
+    return 0
+
+# tar* uncompress function...
 def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
     
     entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"uncompressTarBz2: called.")
@@ -1118,6 +1127,12 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
 	extractPath = os.path.dirname(filepath)
     if not os.path.isfile(filepath):
         raise OSError
+
+    ### XXX dirty bastard workaround for buggy python2.4's tarfile
+    if sys.version[:3] == "2.4":
+        rc = compat_uncompressTarBz2(filepath, extractPath)
+        return rc
+
     try:
         try:
             tar = tarfile.open(filepath,"r")
