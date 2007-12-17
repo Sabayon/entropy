@@ -1614,13 +1614,14 @@ def stepExecutor(step, infoDict, loopString = None):
 	if pkgdata:
 	    triggers = triggerTools.preinstall(pkgdata)
             
-	    if infoDict['diffremoval'] and (infoDict.get("removeatom") != None): # diffremoval is true only when the remove action is triggered by installPackages()
-		remdata = etpRemovalTriggers.get(infoDict['removeatom'])
-		if remdata:
-		    itriggers = triggerTools.preremove(remdata) # remove duplicated triggers
-		    triggers.difference_update(itriggers)
-                    del itriggers
-                del remdata
+	    if (infoDict.get("diffremoval") != None): # diffremoval is true only when the remove action is triggered by installPackages()
+                if infoDict['diffremoval']:
+                    remdata = etpRemovalTriggers.get(infoDict['removeatom'])
+                    if remdata:
+                        itriggers = triggerTools.preremove(remdata) # remove duplicated triggers
+                        triggers.difference_update(itriggers)
+                        del itriggers
+                    del remdata
             
 	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
                 if trigger not in etpUi['preinstall_triggers_disable']:
