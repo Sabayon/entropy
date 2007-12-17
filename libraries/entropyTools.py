@@ -1650,14 +1650,10 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 	for i in outcontent:
             i = list(i)
             datatype = i[1]
-            try:
-                i[0] = i[0].decode(sys.getfilesystemencoding()).encode(sys.getfilesystemencoding())
-            except:  # default encoding failed
-                try:
-                    i[0] = i[0].decode("latin1").decode("iso-8859-1").encode(sys.getfilesystemencoding()) # try to convert to latin1 and then back to sys.getfilesystemencoding()
-                except:
-                    print "DEBUG: cannot encode into filesystem encoding -> "+str(i[0])
-                    continue
+            string = string_to_utf8(i[0])
+            if string == None:
+                continue
+            i[0] = string
             _outcontent.add((i[0],i[1]))
         outcontent = list(_outcontent)
         outcontent.sort()
@@ -1685,7 +1681,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
                         try:
                             item = item.decode("latin1").decode("iso-8859-1").encode(sys.getfilesystemencoding())
                         except:
-                            print "DEBUG: cannot encode into filesystem encoding -> "+str(item)
+                            print "DEBUG: extractPkgData-2: cannot encode into filesystem encoding -> "+str(item)
                             continue
                     item = currentdir+"/"+item
                     if os.path.islink(item):
@@ -2065,6 +2061,40 @@ def collectLinkerPaths():
     except:
         pass
     return ldpaths
+
+def string_to_utf8(string):
+    done = False
+    
+    # try it easy
+    try:
+        string = string.decode("utf8").encode(sys.getfilesystemencoding())
+        done = True
+    except:
+        pass
+    if done:
+        return string
+
+    # try latin1 + iso-8859-1
+    try:
+        string = string.decode("latin1").decode("iso-8859-1").encode(sys.getfilesystemencoding())
+        done = True
+    except:
+        pass
+    if done:
+        return string
+
+    # try just latin1
+    try:
+        string = string.decode("latin1").encode(sys.getfilesystemencoding())
+        done = True
+    except:
+        pass
+    if done:
+        return string
+    
+    # otherwise return None
+    print "DEBUG: cannot encode into filesystem encoding -> "+str(string)
+    return None
 
 def listToUtf8(mylist):
     mynewlist = []
