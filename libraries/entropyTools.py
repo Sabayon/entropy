@@ -946,8 +946,14 @@ def getNewerVersion(InputVersionlist):
     if cached != None:
 	return cached
 
-    rc = False
     versionlist = InputVersionlist[:]
+
+    # is there anything to filter btw?
+    if len(InputVersionlist) == 1:
+        getNewerVersionCache[tuple(versionlist)] = versionlist
+        return versionlist
+
+    rc = False
     while not rc:
 	change = False
         for x in range(len(versionlist)):
