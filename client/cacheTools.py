@@ -27,6 +27,7 @@ import entropyTools
 import equoTools
 import confTools
 from databaseTools import openRepositoryDatabase
+import exceptionTools
 
 
 def cache(options):
@@ -80,7 +81,11 @@ def generateCache(depcache = True, configcache = True):
         for reponame in etpRepositories:
 	    if (not etpUi['quiet']): print_info("  "+darkgreen("(")+bold("*")+darkgreen(")")+darkred(" Scanning ")+brown(etpRepositories[reponame]['description']), back = True)
 	    # get all packages keys
-	    dbconn = openRepositoryDatabase(reponame)
+            try:
+                dbconn = openRepositoryDatabase(reponame)
+            except exceptionTools.RepositoryError:
+                if (not etpUi['quiet']): print_error("  "+darkred("(")+bold("*")+darkred(")")+red(" Cannot download/access: ")+brown(etpRepositories[reponame]['description']))
+                continue
 	    pkgdata = dbconn.listAllPackages()
 	    pkgdata = set(pkgdata)
 	    for info in pkgdata:

@@ -273,5 +273,21 @@ def syncRepositories(reponames = [], forceUpdate = False):
         dumpTools.dumpobj(etpCache['install'],{})
         dumpTools.dumpobj(etpCache['world'],{})
         dumpTools.dumpobj(etpCache['remove'],[])
+        
+    # tell if a new equo release is available
+    import equoTools
+    from databaseTools import openClientDatabase
+    clientDbconn = openClientDatabase(xcache = False)
+    matches = clientDbconn.searchPackages("app-admin/equo")
+    if matches:
+        equo_match = "<="+matches[0][0]
+        equo_unsatisfied,x = equoTools.filterSatisfiedDependencies([equo_match])
+        del x
+        if equo_unsatisfied:
+            print_warning(darkred(" !! ")+blue("A new version of ")+bold("equo")+blue(" is available. Please ")+bold("install it")+blue(" before any other package."))
+        del matches
+        del equo_unsatisfied
+    clientDbconn.closeDB()
+    del clientDbconn
 
     return 0

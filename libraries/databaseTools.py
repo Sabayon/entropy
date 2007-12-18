@@ -2458,6 +2458,16 @@ class etpDatabase:
 
 	return self.fetchall2set(self.cursor.fetchall())
 
+    ''' search packages that uses the eclass provided '''
+    def searchEclassedPackages(self, eclass, atoms = False): # atoms = return atoms directly
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchEclassedPackages: called for "+eclass)
+	if atoms:
+	    self.cursor.execute('SELECT baseinfo.atom,eclasses.idpackage FROM baseinfo,eclasses,eclassesreference WHERE eclassesreference.classname = (?) and eclassesreference.idclass = eclasses.idclass and eclasses.idpackage = baseinfo.idpackage', (eclass,))
+	    return self.cursor.fetchall()
+	else:
+	    self.cursor.execute('SELECT idpackage FROM baseinfo WHERE versiontag = in (?)', (eclass,))
+	    return self.fetchall2set(self.cursor.fetchall())
+
     ''' search packages whose versiontag matches the one provided '''
     def searchTaggedPackages(self, tag, atoms = False): # atoms = return atoms directly
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchTaggedPackages: called for "+tag)

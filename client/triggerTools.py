@@ -73,6 +73,9 @@ def postinstall(pkgdata):
     if "kde" in pkgdata['eclasses']:
 	functions.add("kbuildsycoca")
 
+    if "kde4-base" in pkgdata['eclasses'] or "kde4-meta" in pkgdata['eclasses']:
+	functions.add("kbuildsycoca4")
+
     # update mime
     if "fdo-mime" in pkgdata['eclasses']:
 	functions.add('mimeupdate')
@@ -157,6 +160,9 @@ def postremove(pkgdata):
     # kde package ?
     if "kde" in pkgdata['eclasses']:
 	functions.add("kbuildsycoca")
+
+    if "kde4-base" in pkgdata['eclasses'] or "kde4-meta" in pkgdata['eclasses']:
+	functions.add("kbuildsycoca4")
 
     if pkgdata['name'] == "pygtk":
 	functions.add('pygtkremove')
@@ -491,6 +497,41 @@ def kbuildsycoca(pkgdata):
 		equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca to build global KDE database")
 		print_info(red("   ##")+brown(" Running kbuildsycoca to build global KDE database"))
 		os.system(builddir+"/bin/kbuildsycoca --global --noincremental &> /dev/null")
+
+def kbuildsycoca4(pkgdata):
+    if etpConst['systemroot']:
+        return
+    kdedirs = ''
+    try:
+	kdedirs = os.environ['KDEDIRS']
+    except:
+	pass
+    if kdedirs:
+	dirs = kdedirs.split(":")
+	for builddir in dirs:
+	    if os.access(builddir+"/bin/kbuildsycoca4",os.X_OK):
+		if not os.path.isdir("/usr/share/services"):
+		    os.makedirs("/usr/share/services")
+		os.chown("/usr/share/services",0,0)
+		os.chmod("/usr/share/services",0755)
+		equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca4 to build global KDE4 database")
+		print_info(red("   ##")+brown(" Running kbuildsycoca to build global KDE database"))
+                # do it
+                kbuild4cmd = """
+                
+                # Thanks to the hard work of kde4 gentoo overlay maintainers
+                
+                for i in $(dbus-launch); do
+                        export "$i"
+                done
+                
+                # This is needed because we support multiple kde versions installed together.
+                XDG_DATA_DIRS="/usr/share:${KDEDIRS}/share:/usr/local/share"
+                ${KDEDIR}/bin/kbuildsycoca4 --global --noincremental &> /dev/null
+                kill ${DBUS_SESSION_BUS_PID}
+
+                """
+		os.system(kbuild4cmd)
 
 def gconfinstallschemas(pkgdata):
     gtest = os.system("which gconftool-2 &> /dev/null")

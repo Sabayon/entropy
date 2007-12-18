@@ -311,6 +311,51 @@ def searchNeeded(atoms, idreturn = False, dbconn = None):
     
     return 0
 
+def searchEclass(eclasses, idreturn = False, dbconn = None):
+    
+    if (not idreturn) and (not etpUi['quiet']):
+        print_info(darkred(" @@ ")+darkgreen("Eclass Search..."))
+
+    dbclose = True
+    dataInfo = set() # when idreturn is True
+    if not dbconn:
+        try:
+            clientDbconn = openClientDatabase()
+        except Exception:
+            print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
+            return 128
+    else:
+        dbclose = False
+        clientDbconn = dbconn
+    
+    for eclass in eclasses:
+	matches = clientDbconn.searchEclassedPackages(eclass, atoms = True)
+        for match in matches:
+            if (idreturn):
+                dataInfo.add(match)
+                continue
+	    # print info
+	    myatom = match[0]
+            idpackage = match[1]
+            if (etpUi['quiet']):
+                print myatom
+            else:
+                if (etpUi['verbose']):
+                    printPackageInfo(idpackage, clientDbconn, clientSearch = True)
+                else:
+                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, strictOutput = True)
+        if (not etpUi['quiet']):
+            print_info(blue(" Found:   ")+bold("\t"+str(len(matches)))+red(" packages"))
+
+    if dbclose:
+        clientDbconn.closeDB()
+        del clientDbconn
+
+    if (idreturn):
+	return dataInfo
+    
+    return 0
+
 def searchFiles(atoms, idreturn = False, dbconn = None):
     
     if (not idreturn) and (not etpUi['quiet']):

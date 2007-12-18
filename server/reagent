@@ -62,6 +62,7 @@ def print_help():
     print_info(" \t\t\t"+red("files")+"\t\t list files owned by the provided atoms")
     print_info(" \t\t\t"+red("belongs")+"\t\t search from what package a file belongs [*filename* allowed]")
     print_info(" \t\t\t"+red("description")+"\t search packages by description")
+    print_info(" \t\t\t"+red("eclass")+"\t\t search packages using the specified eclasses")
     print_info(" \t\t\t"+brown("--verbose")+"\t show more details")
     print_info(" \t\t\t"+brown("--quiet")+"\t\t print results in a scriptable way")
     print_info(" \t\t"+green("remove")+"\t\t\t\t Remove a package or a list of packages")

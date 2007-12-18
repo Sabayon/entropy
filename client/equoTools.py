@@ -1283,6 +1283,17 @@ def moveImageToSystem(imageDir, protect, mask):
 	        pass # some files are buggy encoded
 
 	    try:
+                if os.path.realpath(fromfile) == os.path.realpath(tofile) and os.path.islink(tofile):
+                    # there is a serious issue here, better removing tofile, happened to someone:
+                    '''
+                        File \"/usr/lib/python2.4/shutil.py\", line 42, in copyfile
+                        raise Error, \"`%s` and `%s` are the same file\" % (src, dst)
+                        Error: `/var/tmp/entropy/packages/x86/3.5/mozilla-firefox-2.0.0.8.tbz2/image/usr/lib/mozilla-firefox/include/nsIURI.h` and `/usr/lib/mozilla-firefox/include/nsIURI.h` are the same file
+                    '''
+                    try: # try to cope...
+                        os.remove(tofile)
+                    except:
+                        pass
 		# this also handles symlinks
 		shutil.move(fromfile,tofile)
 	    except IOError,(errno,strerror):

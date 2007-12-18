@@ -32,6 +32,7 @@ from outputTools import *
 from databaseTools import etpDatabase, openRepositoryDatabase, openClientDatabase, backupClientDatabase
 import entropyTools
 import equoTools
+import exceptionTools
 
 def database(options):
 
@@ -289,7 +290,12 @@ def database(options):
         
 	print_info(red(" Scanning Portage and Entropy databases for differences..."))
 
-        clientDbconn = openClientDatabase()
+        try:
+            clientDbconn = openClientDatabase()
+        except exceptionTools.SystemDatabaseError:
+            # damn
+            print_error(darkred(" * ")+bold("Entropy database")+red(" does not exist. So, you can't run this unless you run '")+bold("equo database generate")+red("' first. Sorry."))
+            return 1
 
         # test if counters table exists, because if not, it's useless to run the diff scan
         try:

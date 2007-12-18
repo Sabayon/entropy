@@ -1042,5 +1042,9 @@ def database(options):
             if (len(myopts) > 1):
                 queryTools.searchDepends(myopts[1:], dbconn = dbconn)
 
+        if myopts[0] == "eclass":
+            if (len(myopts) > 1):
+                queryTools.searchEclass(myopts[1:], dbconn = dbconn)
+
         dbconn.closeDB()
         return rc

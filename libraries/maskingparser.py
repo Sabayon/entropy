@@ -163,6 +163,8 @@ class parser:
             for item in content:
                 if item.startswith(self.etpCache['dbMatch']+self.etpConst['dbnamerepoprefix']) and item.endswith(".dmp"):
                     os.remove(self.etpConst['dumpstoragedir']+"/"+item)
+                elif item.startswith(self.etpCache['atomMatch']) and item.endswith(".dmp"):
+                    os.remove(self.etpConst['dumpstoragedir']+"/"+item)
         else:
             os.makedirs(self.etpConst['dumpstoragedir'])
     

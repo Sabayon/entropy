@@ -473,19 +473,23 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             
             if (result == -2):
                 if not (etpUi['quiet'] or returnQueue): print_error(red(" @@ ")+blue("Cannot find needed dependencies: ")+str(treepackages))
+                crying_atoms = set()
                 for atom in treepackages:
                     for repo in etpRepositories:
                         rdbconn = openRepositoryDatabase(repo)
                         riddep = rdbconn.searchDependency(atom)
                         if riddep != -1:
                             ridpackages = rdbconn.searchIdpackageFromIddependency(riddep)
-                            if ridpackages:
-                                if not (etpUi['quiet'] or returnQueue): print_error(red(" @@ ")+blue("Dependency found and probably needed by:"))
                             for i in ridpackages:
                                 iatom = rdbconn.retrieveAtom(i)
-                                if not (etpUi['quiet'] or returnQueue): print_error(red("     # ")+" [from:"+repo+"] "+darkred(iatom))
+                                crying_atoms.add((iatom,repo))
                         rdbconn.closeDB()
                         del rdbconn
+                if crying_atoms:
+                    if not (etpUi['quiet'] or returnQueue): print_error(red(" @@ ")+blue("Dependency found and probably needed by:"))
+                    for crying_atomdata in crying_atoms:
+                        if not (etpUi['quiet'] or returnQueue): print_error(red("     # ")+" [from:"+crying_atomdata[1]+"] "+darkred(crying_atomdata[0]))
+
                 dirscleanup()
                 return 130, -1
             
