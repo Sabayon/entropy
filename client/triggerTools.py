@@ -527,7 +527,7 @@ def kbuildsycoca4(pkgdata):
                 
                 # This is needed because we support multiple kde versions installed together.
                 XDG_DATA_DIRS="/usr/share:${KDEDIRS}/share:/usr/local/share"
-                ${KDEDIR}/bin/kbuildsycoca4 --global --noincremental &> /dev/null
+                """+builddir+"""/bin/kbuildsycoca4 --global --noincremental &> /dev/null
                 kill ${DBUS_SESSION_BUS_PID}
 
                 """
