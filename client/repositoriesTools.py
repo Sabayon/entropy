@@ -280,8 +280,6 @@ def syncRepositories(reponames = [], forceUpdate = False):
     try:
         clientDbconn = openClientDatabase(xcache = False)
     except exceptionTools.SystemDatabaseError:
-        clientDbconn.closeDB()
-        del clientDbconn
         return 0
     
     matches = clientDbconn.searchPackages("app-admin/equo")
