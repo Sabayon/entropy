@@ -277,7 +277,13 @@ def syncRepositories(reponames = [], forceUpdate = False):
     # tell if a new equo release is available
     import equoTools
     from databaseTools import openClientDatabase
-    clientDbconn = openClientDatabase(xcache = False)
+    try:
+        clientDbconn = openClientDatabase(xcache = False)
+    except exceptionTools.SystemDatabaseError:
+        clientDbconn.closeDB()
+        del clientDbconn
+        return 0
+    
     matches = clientDbconn.searchPackages("app-admin/equo")
     if matches:
         equo_match = "<="+matches[0][0]
