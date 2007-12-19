@@ -182,7 +182,7 @@ def syncRepositories(reponames = [], forceUpdate = False):
 	rc = downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabasedownloadlockfile'],"/dev/null")
 	if rc != "-3": # cannot download database
 	    if (not etpUi['quiet']):
-	        print_error(bold("\tATTENTION -> ")+red("repository is being updated. Try again in few minutes."))
+	        print_error(bold("\tATTENTION -> ")+red("repository is being updated. Try again in a few minutes."))
 	    syncErrors = True
 	    continue
 	
