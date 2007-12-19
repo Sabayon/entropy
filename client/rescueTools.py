@@ -320,6 +320,7 @@ def database(options):
         for x in installedPackages[0]:
             installedCounters.add(x[1])
             counter = clientDbconn.isCounterAvailable(x[1])
+            print counter
             if (not counter):
                 toBeAdded.add(tuple(x))
 
@@ -358,31 +359,39 @@ def database(options):
         
         if (toBeRemoved):
             print_info(brown(" @@ ")+blue("Someone removed these packages. Would be removed from the Entropy database:"))
+
             for x in toBeRemoved:
                 atom = clientDbconn.retrieveAtom(x)
                 print_info(brown("    # ")+red(atom))
             rc = "Yes"
             if etpUi['ask']: rc = entropyTools.askquestion(">>   Continue with removal?")
             if rc == "Yes":
+                queue = 0
+                totalqueue = str(len(toBeRemoved))
                 for x in toBeRemoved:
+                    queue += 1
                     atom = clientDbconn.retrieveAtom(x)
-                    print_info(brown(" @@ ")+blue("Removing from database: ")+red(atom), back = True)
+                    print_info(red(" ++ ")+bold("(")+blue(str(queue))+"/"+red(totalqueue)+bold(") ")+">>> Removing "+darkgreen(atom))
                     clientDbconn.removePackage(x)
                 print_info(brown(" @@ ")+blue("Database removal complete."))
 
         if (toBeAdded):
             print_info(brown(" @@ ")+blue("Someone added these packages. Would be added/updated into the Entropy database:"))
             for x in toBeAdded:
-                print_info(yellow("   # ")+red(x[0]))
+                print_info(darkgreen("   # ")+red(x[0]))
             rc = "Yes"
             if etpUi['ask']: rc = entropyTools.askquestion(">>   Continue with adding?")
             if rc == "No":
                 return 0
             # now analyze
 
+            totalqueue = str(len(toBeAdded))
+            queue = 0
             for item in toBeAdded:
+                queue += 1
                 counter = item[1]
                 atom = item[0]
+                print_info(red(" ++ ")+bold("(")+blue(str(queue))+"/"+red(totalqueue)+bold(") ")+">>> Adding "+darkgreen(atom))
                 if not os.path.isdir(etpConst['entropyunpackdir']):
                     os.makedirs(etpConst['entropyunpackdir'])
                 temptbz2 = etpConst['entropyunpackdir']+"/"+atom.split("/")[1]+".tbz2"
