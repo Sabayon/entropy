@@ -1412,6 +1412,12 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
 
         # collect files
         for path in contents:
+            # convert path into utf8
+            path = string_to_utf8(path)
+            if path == None:
+                path.decode("utf8") # will raise the exception
+                # otherwise, force it
+                raise Exception, "something is broken here!"
             try:
                 exist = os.lstat(path)
             except OSError:
