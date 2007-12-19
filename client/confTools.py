@@ -102,10 +102,10 @@ def update():
                 # old file backup
                 if etpConst['filesbackup'] and os.path.isfile(etpConst['systemroot']+scandata[key]['destination']):
                     bcount = 0
-                    backupfile = etpConst['systemroot']+scandata[key]['destination']+".equo_backup."+unicode(bcount)
+                    backupfile = etpConst['systemroot']+os.path.dirname(scandata[key]['destination'])+"/._equo_backup."+unicode(bcount)+"_"+os.path.basename(scandata[key]['destination'])
                     while os.path.lexists(backupfile):
                         bcount += 1
-                        backupfile = etpConst['systemroot']+scandata[key]['destination']+".equo_backup."+unicode(bcount)
+                        backupfile = etpConst['systemroot']+os.path.dirname(scandata[key]['destination'])+"/._equo_backup."+unicode(bcount)+"_"+os.path.basename(scandata[key]['destination'])
                     shutil.copy2(etpConst['systemroot']+scandata[key]['destination'],backupfile)
 
 		shutil.move(etpConst['systemroot']+scandata[key]['source'],etpConst['systemroot']+scandata[key]['destination'])
@@ -174,10 +174,10 @@ def update():
                         # old file backup
                         if etpConst['filesbackup'] and os.path.isfile(etpConst['systemroot']+scandata[cmd]['destination']):
                             bcount = 0
-                            backupfile = etpConst['systemroot']+scandata[cmd]['destination']+".equo_backup."+unicode(bcount)
+                            backupfile = etpConst['systemroot']+os.path.dirname(scandata[cmd]['destination'])+"/._equo_backup."+unicode(bcount)+"_"+os.path.basename(scandata[cmd]['destination'])
                             while os.path.lexists(backupfile):
                                 bcount += 1
-                                backupfile = etpConst['systemroot']+scandata[cmd]['destination']+".equo_backup."+unicode(bcount)
+                                backupfile = etpConst['systemroot']+os.path.dirname(scandata[cmd]['destination'])+"/._equo_backup."+unicode(bcount)+"_"+os.path.basename(scandata[cmd]['destination'])
                             shutil.copy2(etpConst['systemroot']+scandata[cmd]['destination'],backupfile)
                         
 			shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
