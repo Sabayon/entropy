@@ -106,7 +106,7 @@ def package(options):
 
     elif (options[0] == "world"):
 	equoTools.loadCaches()
-	rc, status = worldUpdate(onlyfetch = equoRequestOnlyFetch, replay = (equoRequestReplay or equoRequestEmptyDeps), upgradeTo = equoRequestUpgradeTo, resume = equoRequestResume, skipfirst = equoRequestSkipfirst)
+	rc, status = worldUpdate(onlyfetch = equoRequestOnlyFetch, replay = (equoRequestReplay or equoRequestEmptyDeps), upgradeTo = equoRequestUpgradeTo, resume = equoRequestResume, skipfirst = equoRequestSkipfirst, human = True)
 
     elif (options[0] == "remove"):
 	if myopts or equoRequestResume:
@@ -121,7 +121,7 @@ def package(options):
     return rc
 
 
-def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = False, skipfirst = False, returnQueue = False):
+def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = False, skipfirst = False, returnQueue = False, human = False):
 
     # check if I am root
     if (not entropyTools.isRoot()):
@@ -275,21 +275,15 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
 	if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("Even if they are usually harmless, it is suggested to remove them."))
 	
 	if (not etpUi['pretend']):
-	    if (etpUi['ask']):
-	        rc = entropyTools.askquestion("     Would you like to query them ?")
-	        if rc == "No":
-		    clientDbconn.closeDB()
+            if human:
+                rc = entropyTools.askquestion("     Would you like to query them ?")
+                if rc == "No":
+                    clientDbconn.closeDB()
                     del clientDbconn
-		    return 0,0
-	    else:
-		if not (etpUi['quiet'] or returnQueue):
-                    print_info(red(" @@ ")+blue("Running query in ")+red("5 seconds")+blue("..."))
-                    print_info(red(" @@ ")+blue(":: Hit CTRL+C to stop"))
-                    import time
-                    time.sleep(5)
+                    return 0,0
 	
 	    # run removePackages with --nodeps
-	    worldQueue['removePackages'], rc = removePackages(atomsdata = removedList, deps = False, systemPackagesCheck = False, configFiles = True, resume = resume, returnQueue = returnQueue)
+	    worldQueue['removePackages'], rc = removePackages(atomsdata = removedList, deps = False, systemPackagesCheck = False, configFiles = True, resume = resume, returnQueue = returnQueue, human = human)
 	else:
 	    if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("Calculation complete."))
 
@@ -982,7 +976,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     return 0,0
 
 
-def removePackages(packages = [], atomsdata = [], deps = True, deep = False, systemPackagesCheck = True, configFiles = False, resume = False, returnQueue = False):
+def removePackages(packages = [], atomsdata = [], deps = True, deep = False, systemPackagesCheck = True, configFiles = False, resume = False, returnQueue = False, human = False):
     
     # check if I am root
     if (not entropyTools.isRoot()):
@@ -1017,7 +1011,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         foundAtoms = _foundAtoms
         
         # are packages in foundAtoms?
-        if (len(foundAtoms) == 0):
+        if (not foundAtoms):
             if not (etpUi['quiet'] or returnQueue): print_error(red("No packages found"))
             return 125,-1
     
@@ -1110,8 +1104,11 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 
                 else:
                     if not (etpUi['quiet'] or returnQueue): writechar("\n")
-        if (etpUi['ask']):
-            rc = entropyTools.askquestion("     Would you like to proceed?")
+        if (etpUi['ask']) or human:
+            question = "     Would you like to proceed?"
+            if human:
+                question = "     Would you like to proceed with a selective removal ?"
+            rc = entropyTools.askquestion(question)
             if rc == "No":
                 clientDbconn.closeDB()
                 del clientDbconn
@@ -1160,6 +1157,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         returnActionQueue['queue'] = removalQueue[:]
         returnActionQueue['data'] = {}
 
+    totalqueue = str(len(removalQueue))
     currentqueue = 0
     for idpackage in removalQueue:
         currentqueue += 1
@@ -1179,6 +1177,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             resume_cache['removalQueue'].remove(idpackage)
             dumpTools.dumpobj(etpCache['remove'],resume_cache)
             continue
+        
 	infoDict['diffremoval'] = False
 	infoDict['removeconfig'] = configFiles
 
@@ -1200,6 +1199,19 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             returnActionQueue['data'][idpackage]['steps'] = steps[:]
             
         else:
+        
+            # if human
+            if not (etpUi['quiet'] or returnQueue): print_info(red(" -- ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(infoDict['removeatom']))
+            if human:
+                rc = entropyTools.askquestion("     Remove this one ?")
+                if rc == "No":
+                    # update resume cache
+                    resume_cache['removalQueue'].remove(idpackage)
+                    dumpTools.dumpobj(etpCache['remove'],resume_cache)
+                    # unload dict
+                    if not returnQueue:
+                        del etpRemovalTriggers[infoDict['removeatom']]
+                    continue
         
             for step in steps:
                 rc = equoTools.stepExecutor(step,infoDict,str(currentqueue)+"/"+str(len(removalQueue)))

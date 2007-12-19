@@ -280,7 +280,7 @@ def database(options):
 	print_info(red("  Counters table regenerated. Check above for errors."))
         return 0
 
-    elif (options[0] == "gentoosync"): # FIXME: add --ask
+    elif (options[0] == "gentoosync"):
         
         try:
             import portageTools
@@ -361,7 +361,8 @@ def database(options):
             for x in toBeRemoved:
                 atom = clientDbconn.retrieveAtom(x)
                 print_info(brown("    # ")+red(atom))
-            rc = entropyTools.askquestion(">>   Continue with removal?")
+            rc = "Yes"
+            if etpUi['ask']: rc = entropyTools.askquestion(">>   Continue with removal?")
             if rc == "Yes":
                 for x in toBeRemoved:
                     atom = clientDbconn.retrieveAtom(x)
@@ -373,7 +374,8 @@ def database(options):
             print_info(brown(" @@ ")+blue("Someone added these packages. Would be added/updated into the Entropy database:"))
             for x in toBeAdded:
                 print_info(yellow("   # ")+red(x[0]))
-            rc = entropyTools.askquestion(">>   Continue with adding?")
+            rc = "Yes"
+            if etpUi['ask']: rc = entropyTools.askquestion(">>   Continue with adding?")
             if rc == "No":
                 return 0
             # now analyze
