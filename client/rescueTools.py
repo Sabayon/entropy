@@ -320,7 +320,6 @@ def database(options):
         for x in installedPackages[0]:
             installedCounters.add(x[1])
             counter = clientDbconn.isCounterAvailable(x[1])
-            print counter
             if (not counter):
                 toBeAdded.add(tuple(x))
 
