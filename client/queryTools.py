@@ -587,7 +587,7 @@ def searchPackage(packages, idreturn = False):
     foundPackages = {}
     dataInfo = set() # when idreturn is True
     
-    if (not idreturn):
+    if (not idreturn) or (etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Searching..."))
     # search inside each available database
     repoNumber = 0
@@ -596,7 +596,7 @@ def searchPackage(packages, idreturn = False):
 	foundPackages[repo] = {}
 	repoNumber += 1
 	
-	if (not idreturn):
+	if (not idreturn) and (not etpUi['quiet']):
 	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 	
 	dbconn = openRepositoryDatabase(repo)
@@ -621,7 +621,7 @@ def searchPackage(packages, idreturn = False):
 			dataInfo.add((idpackage,repo))
 		    else:
 		        printPackageInfo(idpackage,dbconn)
-		if (not idreturn):
+		if (not idreturn) and (not etpUi['quiet']):
 	            print_info(blue(" Keyword: ")+bold("\t"+package))
 	            print_info(blue(" Found:   ")+bold("\t"+str(len(foundPackages[repo][package])))+red(" entries"))
 	

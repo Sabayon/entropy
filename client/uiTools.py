@@ -794,6 +794,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             infoDict['idpackage'] = packageInfo[0]
             infoDict['checksum'] = dbconn.retrieveDigest(idpackage)
             infoDict['download'] = dbconn.retrieveDownloadURL(idpackage)
+            infoDict['verified'] = False
             
             dbconn.closeDB()
             del dbconn
@@ -804,6 +805,10 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 if (actionQueue[pkgatom]['fetch'] < 0):
                     steps.append("fetch")
                 steps.append("checksum")
+            
+            # if file exists, first checksum then fetch
+            if os.path.isfile(os.path.join(etpConst['entropyworkdir'],infoDict['download'])):
+                steps.reverse()
             
             if not (etpUi['quiet'] or returnQueue): print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
             
@@ -816,6 +821,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     return -1,rc
             
             # disable fetch now, file fetched
+            # also taint actionQueue[pkgatom]['fetch'] so resume won't re-fetch all again
+            actionQueue[pkgatom]['fetch'] = 1
             del infoDict
             
         del fetchqueue

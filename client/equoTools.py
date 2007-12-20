@@ -853,10 +853,13 @@ def getFailingMirrorStatus(mirrorname):
    @input package: repository -> name of the repository, filename -> name of the file to download, digest -> md5 hash of the file
    @output: 0 = all fine, -3 = error on all the available mirrors
 '''
-def fetchFileOnMirrors(repository, filename, digest = False):
+def fetchFileOnMirrors(repository, filename, digest = False, verified = False):
 
     uris = etpRepositories[repository]['packages'][::-1]
     remaining = set(uris[:])
+
+    if verified: # file is already in place, matchChecksum set infoDict['verified'] to True
+        return 0
 
     mirrorcount = 0
     for uri in uris:
@@ -953,6 +956,7 @@ def matchChecksum(infoDict):
 	dlcheck = checkNeededDownload(infoDict['download'], checksum = infoDict['checksum'])
 	if dlcheck == 0:
 	    print_info(red("   ## ")+blue("Package checksum matches."))
+            infoDict['verified'] = True
 	    match = True
 	    break # file downloaded successfully
 	else:
@@ -962,6 +966,8 @@ def matchChecksum(infoDict):
 	    if fetch != 0:
 		print_info(red("   ## ")+blue("Cannot properly fetch package! Quitting."))
 		return 1
+            else:
+                infoDict['verified'] = True
     if (not match):
 	print_info(red("   ## ")+blue("Cannot properly fetch package or checksum does not match. Try running again '")+bold("equo update")+blue("'"))
 	return 1
@@ -1599,7 +1605,7 @@ def stepExecutor(step, infoDict, loopString = None):
     if step == "fetch":
 	print_info(red("   ## ")+blue("Fetching archive: ")+red(os.path.basename(infoDict['download'])))
         xtermTitle(loopString+' Fetching archive: '+os.path.basename(infoDict['download']))
-	output = fetchFileOnMirrors(infoDict['repository'],infoDict['download'],infoDict['checksum'])
+	output = fetchFileOnMirrors(infoDict['repository'],infoDict['download'],infoDict['checksum'], infoDict['verified'])
 	if output < 0:
 	    print_error(red("Package cannot be fetched. Try to run: '")+bold("equo update")+red("' and this command again. Error "+str(output)))
     

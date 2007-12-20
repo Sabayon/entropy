@@ -701,6 +701,8 @@ def ebuild_postinstall(pkgdata):
         portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
         print_info(red("   ##")+brown(" Ebuild postinstall hook."))
         try:
+            if not os.path.isfile(pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"): # if environment is not yet created, we need to run pkg_setup()
+                portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
             portage_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
         except Exception, e:
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
@@ -715,6 +717,7 @@ def ebuild_preinstall(pkgdata):
         portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
         print_info(red("   ##")+brown(" Ebuild preinstall hook."))
         try:
+            portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir']) # create mysettings["T"]+"/environment"
             portage_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
         except Exception, e:
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
