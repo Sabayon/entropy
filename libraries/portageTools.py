@@ -598,3 +598,45 @@ def refillCounter():
     del counters
     return newcounter
 
+def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
+    # myebuild = path/to/ebuild.ebuild with a valid unpacked xpak metadata
+    # tree = "bintree"
+    # tree = "bintree"
+    # cpv = atom
+    '''
+        # This is a demonstration that Sabayon team love Gentoo so much
+        [01:46] <zmedico> if you want something to stay in mysettings
+        [01:46] <zmedico> do mysettings.backup_changes("CFLAGS") for example
+        [01:46] <zmedico> otherwise your change can get lost inside doebuild()
+        [01:47] <zmedico> because it calls mysettings.reset()
+        # ^^^ this is DA MAN!
+    '''
+    # mydbapi = portage.fakedbapi(settings=portage.settings)
+    # vartree = portage.vartree(root=myroot)
+    
+    # load metadata
+    myebuilddir = os.path.dirname(myebuild)
+    keys = portage.auxdbkeys
+    metadata = {}
+    for key in keys:
+        mykeypath = os.path.join(myebuilddir,key)
+        if os.path.isfile(mykeypath) and os.access(mykeypath,os.R_OK):
+            f = open(mykeypath,"r")
+            metadata[key] = f.readline().strip()
+            f.close()
+    cpv = str(cpv)
+    mysettings = portage.config(config_root="/", target_root=etpConst['systemroot']+"/", config_incrementals=portage_const.INCREMENTALS)
+    mysettings.setcpv(cpv)
+    if portage_tmpdir:
+        mysettings['PORTAGE_TMPDIR'] = str(portage_tmpdir)
+        mysettings.backup_changes("PORTAGE_TMPDIR")
+    # disable portage hooks
+    mysettings['PORTAGE_BASHRC'] = ''
+    mysettings.backup_changes("PORTAGE_BASHRC")
+    mydbapi = portage.fakedbapi(settings=mysettings)
+    mydbapi.cpv_inject(cpv, metadata = metadata)
+    vartree = portage.vartree(root=etpConst['systemroot']+"/")
+    
+    os.environ["SKIP_EQUO_SYNC"] = "1"
+    portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = etpConst['systemroot']+"/", tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree)
+    os.unsetenv("SKIP_EQUO_SYNC")

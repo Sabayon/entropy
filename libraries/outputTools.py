@@ -162,70 +162,70 @@ codes["UNMERGE_WARN"] = codes["red"]
 codes["MERGE_LIST_PROGRESS"] = codes["yellow"]
 
 def xtermTitle(mystr, raw=False):
-	if dotitles and "TERM" in environ and stderr.isatty():
-		myt=environ["TERM"]
-		legal_terms = ["xterm","Eterm","aterm","rxvt","screen","kterm","rxvt-unicode","gnome"]
+        if dotitles and "TERM" in environ and stderr.isatty():
+                myt=environ["TERM"]
+                legal_terms = ["xterm","Eterm","aterm","rxvt","screen","kterm","rxvt-unicode","gnome"]
                 if myt in legal_terms:
-			if not raw:
-				mystr = "\x1b]0;%s\x07" % mystr
-			stderr.write(mystr)
-			stderr.flush()
+                        if not raw:
+                                mystr = "\x1b]0;%s\x07" % mystr
+                        stderr.write(mystr)
+                        stderr.flush()
 
 default_xterm_title = None
 
 def xtermTitleReset():
-	global default_xterm_title
-	if default_xterm_title is None:
-		prompt_command = getenv('PROMPT_COMMAND')
-		if prompt_command == "":
-			default_xterm_title = ""
-		elif prompt_command is not None:
+        global default_xterm_title
+        if default_xterm_title is None:
+                prompt_command = getenv('PROMPT_COMMAND')
+                if prompt_command == "":
+                        default_xterm_title = ""
+                elif prompt_command is not None:
                         import commands
-			default_xterm_title = commands.getoutput(prompt_command)
-		else:
-			pwd = getenv('PWD','')
-			home = getenv('HOME', '')
-			if home != '' and pwd.startswith(home):
-				pwd = '~' + pwd[len(home):]
-			default_xterm_title = '\x1b]0;%s@%s:%s\x07' % (
-				getenv('LOGNAME', ''), getenv('HOSTNAME', '').split('.', 1)[0], pwd)
-	xtermTitle(default_xterm_title, raw=True)
+                        default_xterm_title = commands.getoutput(prompt_command)
+                else:
+                        pwd = getenv('PWD','')
+                        home = getenv('HOME', '')
+                        if home != '' and pwd.startswith(home):
+                                pwd = '~' + pwd[len(home):]
+                        default_xterm_title = '\x1b]0;%s@%s:%s\x07' % (
+                                getenv('LOGNAME', ''), getenv('HOSTNAME', '').split('.', 1)[0], pwd)
+        xtermTitle(default_xterm_title, raw=True)
 
 def notitles():
-	"turn off title setting"
-        global dotitles
-	dotitles=0
+    "turn off title setting"
+    global dotitles
+    dotitles=0
 
 def nocolor():
-	"turn off colorization"
-	global havecolor
-	havecolor=0
+    "turn off colorization"
+    global havecolor
+    havecolor=0
 
 def resetColor():
-	return codes["reset"]
+    return codes["reset"]
 
 def colorize(color_key, text):
-	if etpUi['mute']:
-		return text
-	global havecolor
-	if havecolor:
-		return codes[color_key] + text + codes["reset"]
-	else:
-		return text
+    if etpUi['mute']:
+        return text
+    global havecolor
+    if havecolor:
+        return codes[color_key] + text + codes["reset"]
+    else:
+        return text
 
 compat_functions_colors = ["bold","white","teal","turquoise","darkteal",
-	"fuscia","fuchsia","purple","blue","darkblue","green","darkgreen","yellow",
-	"brown","darkyellow","red","darkred"]
+        "fuscia","fuchsia","purple","blue","darkblue","green","darkgreen","yellow",
+        "brown","darkyellow","red","darkred"]
 
 def create_color_func(color_key):
-	def derived_func(*args):
-		newargs = list(args)
-		newargs.insert(0, color_key)
-		return colorize(*newargs)
-	return derived_func
+    def derived_func(*args):
+        newargs = list(args)
+        newargs.insert(0, color_key)
+        return colorize(*newargs)
+    return derived_func
 
 for c in compat_functions_colors:
-	setattr(modules[__name__], c, create_color_func(c))
+    setattr(modules[__name__], c, create_color_func(c))
 
 def enlightenatom(atom):
     out = atom.split("/")
@@ -235,9 +235,9 @@ def print_error(msg, back = False):
     if etpUi['mute']:
         return
     if (back):
-	writechar("\r   "+stuff['cleanline']+"\r")
-	writechar("\r"+red(">>")+" "+msg)
-	return
+        writechar("\r   "+stuff['cleanline']+"\r")
+        writechar("\r"+red(">>")+" "+msg)
+        return
     writechar("\r"+stuff['cleanline']+"\r")
     print darkred(">>")+" "+msg
 
@@ -246,7 +246,7 @@ def print_info(msg, back = False):
         return
     if back:
         writechar("\r"+stuff['cleanline']+"\r")
-	writechar("\r"+green(">>")+" "+msg)
+        writechar("\r"+green(">>")+" "+msg)
         return
     writechar("\r"+stuff['cleanline']+"\r")
     print green(">>")+" "+msg
@@ -263,7 +263,7 @@ def print_generic(msg): # here we'll wrap any nice formatting
     print msg
 
 def writechar(char):
-	stdout.write(char); stdout.flush()
+    stdout.write(char); stdout.flush()
 
 def readtext(request):
     xtermTitle("Entropy needs your attention")

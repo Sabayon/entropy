@@ -535,6 +535,10 @@ def initConfig_entropyConstants(rootdir):
     
         'entropyworkdir': ETP_DIR, # Entropy workdir
         'entropyunpackdir': ETP_VAR_DIR, # Entropy unpack directory
+        'entropyimagerelativepath': "image", # Entropy packages image directory
+        'entropyxpakrelativepath': "xpak", # Gentoo xpak temp directory path
+        'entropyxpakdatarelativepath': "data", # Gentoo xpak metadata directory path
+        'entropyxpakfilename': "metadata.xpak", # Gentoo xpak metadata file name
     
         'etpdatabaserevisionfile': ETP_DBFILE+".revision", # the local/remote database revision file
         'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum

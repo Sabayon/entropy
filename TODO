@@ -1,16 +1,9 @@
 TODO list:
-  - autotriggers: for enewgroup, enewuser and friends
   - Community repositories
-  - add external trigger for splashutils
   - find a way to better handle real smartapps deps
   - reduce size of packages.db.bz2
   - remove binkeywords, not used
-
- - trigger: Regenerating cracklib dictionary
- * Starting dbus session for kbuildsycoca4
- * Running kbuildsycoca4 to build global database ...
- * Killing dbus session for kbuildsycoca4
- * setting GID /usr/kde/3.9/lib/kde4/libexec/kdesud
+  - add deptest check for every reagent run
 
 
 Project Status:

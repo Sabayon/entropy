@@ -22,12 +22,13 @@
 
 from sys import path, getfilesystemencoding
 import os
+import time
 import shutil
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 import remoteTools
-from entropyTools import compareMd5, bytesIntoHuman, askquestion, getRandomNumber, dep_getkey, entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag, unpackXpak, lifobuffer
+from entropyTools import compareMd5, bytesIntoHuman, askquestion, getRandomNumber, dep_getkey, entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag, unpackXpak, lifobuffer, ebeep
 from databaseTools import openRepositoryDatabase, openClientDatabase, openGenericDatabase, fetchRepositoryIfNotAvailable, listAllAvailableBranches
 import triggerTools
 import confTools
@@ -1103,46 +1104,104 @@ def removePackage(infoDict):
     del clientDbconn
     return 0
 
+'''
+   @description: unpack the given package file into the unpack dir
+   @input infoDict: dictionary containing package information
+   @output: 0 = all fine, >0 = error!
+'''
+def unpackPackage(infoDict):
+
+    package = infoDict['download']
+    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Unpacking package: "+str(infoDict['atom']))
+
+    if os.path.isdir(infoDict['unpackdir']):
+	shutil.rmtree(infoDict['unpackdir'])
+    os.makedirs(infoDict['imagedir'])
+
+    rc = uncompressTarBz2(infoDict['pkgpath'], infoDict['imagedir'], catchEmpty = True)
+    if (rc != 0):
+	return rc
+    if not os.path.isdir(infoDict['imagedir']):
+	return 2
+    
+    # unpack xpak ?
+    if etpConst['gentoo-compat']:
+        #os.remove(infoDict['xpakpath']+"/"+etpConst['entropyxpakfilename'])
+        if os.path.isdir(infoDict['xpakpath']):
+	    shutil.rmtree(infoDict['xpakpath'])
+        try:
+            os.rmdir(infoDict['xpakpath'])
+        except OSError:
+            pass
+        os.makedirs(infoDict['xpakpath'])
+        # create data dir where we'll unpack the xpak
+        os.mkdir(infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'])
+        # now unpack for real
+        xpakPath = infoDict['xpakpath']+"/"+etpConst['entropyxpakfilename']
+
+        if (infoDict['smartpackage']):
+            # we need to get the .xpak from database
+            xdbconn = openRepositoryDatabase(infoDict['repository'])
+            xpakdata = xdbconn.retrieveXpakMetadata(infoDict['idpackage'])
+            if xpakdata:
+                # save into a file
+                f = open(xpakPath,"wb")
+                f.write(xpakdata)
+                f.flush()
+                f.close()
+                infoDict['xpakstatus'] = unpackXpak(xpakPath,infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'])
+            else:
+                infoDict['xpakstatus'] = None
+            xdbconn.closeDB()
+            del xdbconn
+            del xpakdata
+        else:
+            infoDict['xpakstatus'] = extractXpak(infoDict['pkgpath'],infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'])
+
+        # create fake portage ${D} linking it to imagedir
+        portage_db_fakedir = os.path.join(infoDict['unpackdir'],"portage/"+infoDict['category']+"/"+infoDict['name']+"-"+infoDict['version'])
+        os.makedirs(portage_db_fakedir)
+        # now link it to infoDict['imagedir']
+        os.symlink(infoDict['imagedir'],os.path.join(portage_db_fakedir,"image"))
+
+    
+    return 0
 
 '''
-   @description: unpack the given file on the system, update database and also update gentoo db if requested
-   @input package: package file (without path)
+   @description: function that runs at the end of the package installation process, just removes data left by other steps
+   @input infoDict: dictionary containing package information
+   @output: 0 = all fine, >0 = error!
+'''
+def cleanupPackage(infoDict):
+
+    # remove unpack dir
+    shutil.rmtree(infoDict['unpackdir'],True)
+    try:
+        os.rmdir(infoDict['unpackdir'])
+    except OSError:
+        pass
+
+    return 0
+
+'''
+   @description: install unpacked files, update database and also update gentoo db if requested
+   @input infoDict: dictionary containing package information
    @output: 0 = all fine, >0 = error!
 '''
 def installPackage(infoDict):
     
-    clientDbconn = openClientDatabase()
-    package = infoDict['download']
-
     # clear on-disk cache
     generateDependsTreeCache.clear()
     dumpTools.dumpobj(etpCache['generateDependsTree'],{})
 
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing package: "+str(infoDict['atom']))
 
-    # unpack and install
-    if infoDict['repository'].endswith(".tbz2"):
-        pkgpath = etpRepositories[infoDict['repository']]['pkgpath']
-    else:
-        pkgpath = etpConst['entropyworkdir']+"/"+package
-    unpackDir = etpConst['entropyunpackdir']+"/"+package
-    if os.path.isdir(unpackDir):
-	shutil.rmtree(unpackDir)
-    imageDir = unpackDir+"/image"
-    os.makedirs(imageDir)
-
-    rc = uncompressTarBz2(pkgpath, imageDir, catchEmpty = True)
-    if (rc != 0):
-	return rc
-    if not os.path.isdir(imageDir):
-	return 2
-
     # load CONFIG_PROTECT and its mask
     protect = etpRepositories[infoDict['repository']]['configprotect']
     mask = etpRepositories[infoDict['repository']]['configprotectmask']
 
-    # copy files over
-    rc = moveImageToSystem(imageDir, protect, mask)
+    # copy files over - install
+    rc = moveImageToSystem(infoDict['imagedir'], protect, mask)
     if rc != 0:
         return rc
 
@@ -1163,20 +1222,11 @@ def installPackage(infoDict):
 	    print_info(red("   ## ")+blue("Cleaning old package files..."))
 	removePackage(infoDict)
 
-    clientDbconn.closeDB()
-    del clientDbconn
-
     rc = 0
     if (etpConst['gentoo-compat']):
 	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing new Gentoo database entry: "+str(infoDict['atom']))
-	rc = installPackageIntoGentooDatabase(infoDict, pkgpath, newidpackage = newidpackage)
+	rc = installPackageIntoGentooDatabase(infoDict, newidpackage = newidpackage)
     
-    # remove unpack dir
-    shutil.rmtree(unpackDir,True)
-    try:
-        os.rmdir(unpackDir)
-    except OSError:
-        pass
     return rc
 
 def moveImageToSystem(imageDir, protect, mask):
@@ -1202,9 +1252,9 @@ def moveImageToSystem(imageDir, protect, mask):
             # if our directory is a file on the live system
             elif os.path.isfile(rootdir): # really weird...!
                 equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+rootdir+" is a file when it should be a directory !! Removing in 10 seconds...")
-                print_warning(red(" *** ")+bold(rootdir)+red(" is a file when it should be a directory !! Removing in 10 seconds..."))
-                import time
-                time.sleep(10)
+                print_warning(red(" *** ")+bold(rootdir)+red(" is a file when it should be a directory !! Removing in 20 seconds..."))
+                ebeep(10)
+                time.sleep(20)
                 os.remove(rootdir)
             
             # if our directory is a symlink instead, then copy the symlink
@@ -1283,6 +1333,7 @@ def moveImageToSystem(imageDir, protect, mask):
 	        pass # some files are buggy encoded
 
 	    try:
+                
                 if os.path.realpath(fromfile) == os.path.realpath(tofile) and os.path.islink(tofile):
                     # there is a serious issue here, better removing tofile, happened to someone:
                     '''
@@ -1294,27 +1345,44 @@ def moveImageToSystem(imageDir, protect, mask):
                         os.remove(tofile)
                     except:
                         pass
-		# this also handles symlinks
-		shutil.move(fromfile,tofile)
-	    except IOError,(errno,strerror):
-		if errno == 2:
-		    # better to pass away, sometimes gentoo packages are fucked up and contain broken things
-		    pass
-		else:
-		    rc = os.system("mv "+fromfile+" "+tofile)
-		    if (rc != 0):
-		        return 4
-	    try:
-	        user = os.stat(fromfile)[4]
-	        group = os.stat(fromfile)[5]
-	        os.chown(tofile,user,group)
-	        shutil.copystat(fromfile,tofile)
-	    except:
-		pass # sometimes, gentoo packages are fucked up and contain broken symlinks
-	    
-	    if (protected):
-		# add to disk cache
-		confTools.addtocache(tofile)
+
+                # if our file is a dir on the live system
+                if os.path.isdir(tofile): # really weird...!
+                    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+tofile+" is a directory when it should be a file !! Removing in 10 seconds...")
+                    print_warning(red(" *** ")+bold(tofile)+red(" is a directory when it should be a file !! Removing in 20 seconds..."))
+                    ebeep(10)
+                    time.sleep(20)
+                    try:
+                        shutil.rmtree(tofile, True)
+                        os.rmdir(tofile)
+                    except:
+                        pass
+                    try: # if it was a link
+                        os.remove(tofile)
+                    except OSError:
+                        pass
+
+                # this also handles symlinks
+                shutil.move(fromfile,tofile)
+            except IOError,(errno,strerror):
+                if errno == 2:
+                    # better to pass away, sometimes gentoo packages are fucked up and contain broken things
+                    pass
+                else:
+                    rc = os.system("mv "+fromfile+" "+tofile)
+                    if (rc != 0):
+                        return 4
+            try:
+                user = os.stat(fromfile)[4]
+                group = os.stat(fromfile)[5]
+                os.chown(tofile,user,group)
+                shutil.copystat(fromfile,tofile)
+            except:
+                pass # sometimes, gentoo packages are fucked up and contain broken symlinks
+            
+            if (protected):
+                # add to disk cache
+                confTools.addtocache(tofile)
 
     clientDbconn.closeDB()
     del clientDbconn
@@ -1363,7 +1431,7 @@ def removePackageFromGentooDatabase(atom):
    @input package: dictionary containing information collected by installPackages (important are atom, slot, category, name, version)
    @output: 0 = all fine, >0 = error!
 '''
-def installPackageIntoGentooDatabase(infoDict, packageFile, newidpackage = -1):
+def installPackageIntoGentooDatabase(infoDict, newidpackage = -1):
     
     # handle gentoo-compat
     _portage_avail = False
@@ -1405,51 +1473,16 @@ def installPackageIntoGentooDatabase(infoDict, packageFile, newidpackage = -1):
 	        #print "removing -> "+removePath
 	del atomsfound
         
-	### INSTALL NEW
-        extractTmp = etpConst['entropyunpackdir']+"/"+os.path.basename(packageFile)
-	xpakPath = extractTmp+"/xpak"
-        if os.path.isfile(etpConst['entropyunpackdir']+"/"+os.path.basename(packageFile)):
-            os.remove(etpConst['entropyunpackdir']+"/"+os.path.basename(packageFile))
-	if os.path.isdir(xpakPath):
-	    shutil.rmtree(xpakPath)
-	else:
-	    os.makedirs(xpakPath)
-        
-        smartpackage = False
-        if infoDict['repository'].endswith(".tbz2"):
-            smartpackage = etpRepositories[infoDict['repository']]['smartpackage']
-        
-        if (smartpackage):
-            # we need to get the .xpak from database
-            xdbconn = openRepositoryDatabase(infoDict['repository'])
-            xpakdata = xdbconn.retrieveXpakMetadata(infoDict['idpackage'])
-            if xpakdata:
-                # save into a file
-                f = open(xpakPath+".xpak","wb")
-                f.write(xpakdata)
-                f.flush()
-                f.close()
-                xpakstatus = unpackXpak(xpakPath+".xpak",xpakPath)
-            else:
-                xpakstatus = None
-            xdbconn.closeDB()
-            del xdbconn
-        else:
-            xpakstatus = extractXpak(packageFile,xpakPath)
-        if xpakstatus != None:
+        # xpakstatus is perpared by unpackPackage()
+        # we now install it
+        if infoDict['xpakstatus'] != None and os.path.isdir(infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']):
             if not os.path.isdir(portDbDir+infoDict['category']):
                 os.makedirs(portDbDir+infoDict['category'])
             destination = portDbDir+infoDict['category']+"/"+infoDict['name']+"-"+infoDict['version']
             if os.path.isdir(destination):
                 shutil.rmtree(destination)
             
-            shutil.move(xpakPath,destination)
-            # clean temp directory
-            shutil.rmtree(extractTmp,True)
-            try:
-                os.rmdir(extractTmp)
-            except OSError:
-                pass
+            shutil.copytree(infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'],destination)
             
             # test if /var/cache/edb/counter is fine
             if os.path.isfile(etpConst['edbcounter']):
@@ -1467,7 +1500,7 @@ def installPackageIntoGentooDatabase(infoDict, packageFile, newidpackage = -1):
             if os.path.isdir(destination):
                 counter += 1
                 f = open(destination+"/"+dbCOUNTER,"w")
-                f.write(str(counter)+"\n")
+                f.write(str(counter))
                 f.flush()
                 f.close()
                 f = open(etpConst['edbcounter'],"w")
@@ -1572,7 +1605,18 @@ def stepExecutor(step, infoDict, loopString = None):
     
     elif step == "checksum":
 	output = matchChecksum(infoDict)
-    
+
+    elif step == "unpack":
+	print_info(red("   ## ")+blue("Unpacking package: ")+red(os.path.basename(infoDict['atom'])))
+        xtermTitle(loopString+' Unpacking package: '+os.path.basename(infoDict['atom']))
+	output = unpackPackage(infoDict)
+	if output != 0:
+	    if output == 512:
+	        errormsg = red("You are running out of disk space. I bet, you're probably Michele. Error 512")
+	    else:
+	        errormsg = red("An error occured while trying to unpack the package. Check if your system is healthy. Error "+str(output))
+	    print_error(errormsg)
+
     elif step == "install":
         compatstring = ''
 	if (etpConst['gentoo-compat']):
@@ -1581,11 +1625,7 @@ def stepExecutor(step, infoDict, loopString = None):
         xtermTitle(loopString+' Installing package: '+os.path.basename(infoDict['atom'])+compatstring)
 	output = installPackage(infoDict)
 	if output != 0:
-	    if output == 512:
-	        errormsg = red("You are running out of disk space. I bet, you're probably Michele. Error 512")
-	    else:
-	        errormsg = red("An error occured while trying to install the package. Check if your hard disk is healthy. Error "+str(output))
-	    print_error(errormsg)
+	    print_error(red("An error occured while trying to install the package. Check if your system is healthy. Error "+str(output)))
     
     elif step == "remove":
 	gcompat = ""
@@ -1671,7 +1711,14 @@ def stepExecutor(step, infoDict, loopString = None):
                     eval("triggerTools."+trigger)(remdata)
             del triggers
         del remdata
-    
+
+    elif step == "cleanup":
+	print_info(red("   ## ")+blue("Cleaning temporary files for: ")+red(os.path.basename(infoDict['atom'])))
+        xtermTitle(loopString+' Cleaning temporary files for: '+os.path.basename(infoDict['atom']))
+	output = cleanupPackage(infoDict)
+	if output != 0:
+	    print_error(red("An error occured while trying to cleanup package temporary directories. Check if your system is healthy. Error "+str(output)))
+
     clientDbconn.closeDB()
     del clientDbconn
     

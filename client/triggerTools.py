@@ -43,85 +43,99 @@ def postinstall(pkgdata):
     
     functions = set()
 
+    # Gentoo hook
+    if etpConst['gentoo-compat']:
+        functions.add('ebuild_postinstall')
+
     if pkgdata['trigger']:
         functions.add('call_ext_postinstall')
 
-    # fonts configuration
-    if pkgdata['category'] == "media-fonts":
-	functions.add("fontconfig")
+    # triggers that are not needed when gentoo-compat is enabled
+    if not etpConst['gentoo-compat']:
+        
+        if "gnome2" in pkgdata['eclasses']:
+            functions.add('iconscache')
+            functions.add('gconfinstallschemas')
+            functions.add('gconfreload')
+        
+        if pkgdata['name'] == "pygobject":
+            functions.add('pygtksetup')
+
+        # fonts configuration
+        if pkgdata['category'] == "media-fonts":
+            functions.add("fontconfig")
+
+        # gcc configuration
+        if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/gcc":
+            functions.add("gccswitch")
+    
+        # binutils configuration
+        if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/binutils":
+            functions.add("binutilsswitch")
+
+        # kde package ?
+        if "kde" in pkgdata['eclasses']:
+            functions.add("kbuildsycoca")
+    
+        if "kde4-base" in pkgdata['eclasses'] or "kde4-meta" in pkgdata['eclasses']:
+            functions.add("kbuildsycoca4")
+        
+        # update mime
+        if "fdo-mime" in pkgdata['eclasses']:
+            functions.add('mimeupdate')
+            functions.add('mimedesktopupdate')
+
+        if pkgdata['category']+"/"+pkgdata['name'] == "dev-db/sqlite":
+            functions.add('sqliteinst')
+
+        # python configuration
+        if pkgdata['category']+"/"+pkgdata['name'] == "dev-lang/python":
+            functions.add("pythoninst")
 
     # opengl configuration
     if (pkgdata['category'] == "x11-drivers") and (pkgdata['name'].startswith("nvidia-") or pkgdata['name'].startswith("ati-")):
+        try:
+            functions.remove("ebuild_postinstall") # disabling gentoo postinstall since we reimplemented it
+        except:
+            pass
 	functions.add("openglsetup")
-
-    # gcc configuration
-    if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/gcc":
-	functions.add("gccswitch")
-
-    # binutils configuration
-    if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/binutils":
-	functions.add("binutilsswitch")
-
-    # python configuration
-    if pkgdata['category']+"/"+pkgdata['name'] == "dev-lang/python":
-	functions.add("pythoninst")
-
-    if pkgdata['category']+"/"+pkgdata['name'] == "dev-db/sqlite":
-	functions.add('sqliteinst')
-
-    # kde package ?
-    if "kde" in pkgdata['eclasses']:
-	functions.add("kbuildsycoca")
-
-    if "kde4-base" in pkgdata['eclasses'] or "kde4-meta" in pkgdata['eclasses']:
-	functions.add("kbuildsycoca4")
-
-    # update mime
-    if "fdo-mime" in pkgdata['eclasses']:
-	functions.add('mimeupdate')
-	functions.add('mimedesktopupdate')
-
-    # update gconf db and icon cache
-    if "gnome2" in pkgdata['eclasses']:
-	functions.add('iconscache')
-	functions.add('gconfinstallschemas')
-	functions.add('gconfreload')
-
-    if pkgdata['name'] == "pygobject":
-	functions.add('pygtksetup')
 
     # load linker paths
     ldpaths = entropyTools.collectLinkerPaths()
 
     # prepare content
     for x in pkgdata['content']:
-	if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
-	    functions.add('iconscache')
-	if x.startswith("/usr/share/mime"):
-	    functions.add('mimeupdate')
-	if x.startswith("/usr/share/applications"):
-	    functions.add('mimedesktopupdate')
-	if x.startswith("/usr/share/omf"):
-	    functions.add('scrollkeeper')
-	if x.startswith("/etc/gconf/schemas"):
-	    functions.add('gconfreload')
-	if x.startswith('/lib/modules/'):
-	    functions.add('kernelmod')
-	if x.startswith('/boot/kernel-'):
-	    functions.add('addbootablekernel')
-	if x.startswith('/usr/src/'):
-	    functions.add('createkernelsym')
-	if x.startswith('/usr/share/java-config-2/vm/'):
-	    functions.add('add_java_config_2')
-        if x.startswith('/etc/env.d/'):
-            functions.add('env_update')
-        if x == '/bin/su':
-            functions.add("susetuid")
-        for path in ldpaths:
-            if x.startswith(path) and (x.find(".so") != -1):
-	        functions.add('run_ldconfig')
-	#if x.startswith("/etc/init.d/"): do it externally
-	#    functions.add('initadd')
+        if not etpConst['gentoo-compat']:
+            if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
+                functions.add('iconscache')
+            if x.startswith("/usr/share/mime"):
+                functions.add('mimeupdate')
+            if x.startswith("/usr/share/applications"):
+                functions.add('mimedesktopupdate')
+            if x.startswith("/usr/share/omf"):
+                functions.add('scrollkeeper')
+            if x.startswith("/etc/gconf/schemas"):
+                functions.add('gconfreload')
+            if x == '/bin/su':
+                functions.add("susetuid")
+            if x.startswith('/usr/share/java-config-2/vm/'):
+                functions.add('add_java_config_2')
+        else:
+            if x.startswith('/lib/modules/'):
+                try:
+                    functions.remove("ebuild_postinstall") # disabling gentoo postinstall since we reimplemented it
+                except:
+                    pass
+                functions.add('kernelmod')
+            if x.startswith('/boot/kernel-'):
+                functions.add('addbootablekernel')
+            if x.startswith('/usr/src/'):
+                functions.add('createkernelsym')
+            if x.startswith('/etc/env.d/'):
+                functions.add('env_update')
+            for path in ldpaths:
+                if x.startswith(path) and (x.find(".so") != -1):
+                    functions.add('run_ldconfig')
 
     return functions
 
@@ -134,7 +148,11 @@ def preinstall(pkgdata):
     
     if pkgdata['trigger']:
         functions.add('call_ext_preinstall')
-    
+
+    # Gentoo hook
+    if etpConst['gentoo-compat']:
+        functions.add('ebuild_preinstall')
+
     for x in pkgdata['content']:
 	if x.startswith("/etc/init.d/"):
 	    functions.add('initinform')
@@ -153,56 +171,56 @@ def postremove(pkgdata):
     if pkgdata['trigger']:
         functions.add('call_ext_postremove')
 
-    # opengl configuration
-    if (pkgdata['category'] == "x11-drivers") and (pkgdata['name'].startswith("nvidia-") or pkgdata['name'].startswith("ati-")):
-	functions.add("openglsetup_xorg")
+    if not etpConst['gentoo-compat']:
 
-    # kde package ?
-    if "kde" in pkgdata['eclasses']:
-	functions.add("kbuildsycoca")
-
-    if "kde4-base" in pkgdata['eclasses'] or "kde4-meta" in pkgdata['eclasses']:
-	functions.add("kbuildsycoca4")
-
-    if pkgdata['name'] == "pygtk":
-	functions.add('pygtkremove')
-
-    if pkgdata['category']+"/"+pkgdata['name'] == "dev-db/sqlite":
-	functions.add('sqliteinst')
-
-    # python configuration
-    if pkgdata['category']+"/"+pkgdata['name'] == "dev-lang/python":
-	functions.add("pythoninst")
-
-    # fonts configuration
-    if pkgdata['category'] == "media-fonts":
-	functions.add("fontconfig")
+        # kde package ?
+        if "kde" in pkgdata['eclasses']:
+            functions.add("kbuildsycoca")
+    
+        if "kde4-base" in pkgdata['eclasses'] or "kde4-meta" in pkgdata['eclasses']:
+            functions.add("kbuildsycoca4")
+    
+        if pkgdata['name'] == "pygtk":
+            functions.add('pygtkremove')
+    
+        if pkgdata['category']+"/"+pkgdata['name'] == "dev-db/sqlite":
+            functions.add('sqliteinst')
+    
+        # python configuration
+        if pkgdata['category']+"/"+pkgdata['name'] == "dev-lang/python":
+            functions.add("pythoninst")
+    
+        # fonts configuration
+        if pkgdata['category'] == "media-fonts":
+            functions.add("fontconfig")
 
     # load linker paths
     ldpaths = entropyTools.collectLinkerPaths()
 
     for x in pkgdata['removecontent']:
-	if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
-	    functions.add('iconscache')
-	if x.startswith("/usr/share/mime"):
-	    functions.add('mimeupdate')
-	if x.startswith("/usr/share/applications"):
-	    functions.add('mimedesktopupdate')
-	if x.startswith("/usr/share/omf"):
-	    functions.add('scrollkeeper')
-	if x.startswith("/etc/gconf/schemas"):
-	    functions.add('gconfreload')
-	if x.startswith('/boot/kernel-'):
-	    functions.add('removebootablekernel')
-	if x.startswith('/etc/init.d/'):
-	    functions.add('removeinit')
-        if x.endswith('.py'):
-            functions.add('cleanpy')
-        if x.startswith('/etc/env.d/'):
-            functions.add('env_update')
-        for path in ldpaths:
-            if x.startswith(path) and (x.find(".so") != -1):
-	        functions.add('run_ldconfig')
+        if not etpConst['gentoo-compat']:
+            if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
+                functions.add('iconscache')
+            if x.startswith("/usr/share/mime"):
+                functions.add('mimeupdate')
+            if x.startswith("/usr/share/applications"):
+                functions.add('mimedesktopupdate')
+            if x.startswith("/usr/share/omf"):
+                functions.add('scrollkeeper')
+            if x.startswith("/etc/gconf/schemas"):
+                functions.add('gconfreload')
+        else:
+            if x.startswith('/boot/kernel-'):
+                functions.add('removebootablekernel')
+            if x.startswith('/etc/init.d/'):
+                functions.add('removeinit')
+            if x.endswith('.py'):
+                functions.add('cleanpy')
+            if x.startswith('/etc/env.d/'):
+                functions.add('env_update')
+            for path in ldpaths:
+                if x.startswith(path) and (x.find(".so") != -1):
+                    functions.add('run_ldconfig')
 
     return functions
 
@@ -215,6 +233,20 @@ def preremove(pkgdata):
 
     if pkgdata['trigger']:
         functions.add('call_ext_preremove')
+
+    # Gentoo hook
+    if etpConst['gentoo-compat']:
+        functions.add('ebuild_preremove')
+        functions.add('ebuild_postremove') # doing here because we need /var/db/pkg stuff in place and also because doesn't make any difference
+
+    # opengl configuration
+    if (pkgdata['category'] == "x11-drivers") and (pkgdata['name'].startswith("nvidia-") or pkgdata['name'].startswith("ati-")):
+        try:
+            functions.remove("ebuild_preremove") # disabling gentoo postinstall since we reimplemented it
+            functions.remove("ebuild_postremove")
+        except:
+            pass
+	functions.add("openglsetup_xorg")
 
     for x in pkgdata['removecontent']:
 	if x.startswith("/etc/init.d/"):
@@ -660,6 +692,60 @@ def add_java_config_2(pkgdata):
                 equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION /usr/bin/java-config does not exist. I was about to set JAVA VM: "+myvm)
                 print_info(red("   ##")+bold(" Attention: ")+brown("/usr/bin/java-config does not exist. Cannot set JAVA VM."))
     del vms
+
+def ebuild_postinstall(pkgdata):
+    myebuild = [pkgdata['xpakdir']+"/"+x for x in os.listdir(pkgdata['xpakdir']) if x.endswith(".ebuild")]
+    if myebuild:
+        myebuild = myebuild[0]
+        from portageTools import portage_doebuild
+        portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
+        print_info(red("   ##")+brown(" Ebuild postinstall hook."))
+        try:
+            portage_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
+        except Exception, e:
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+            print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo postint trigger for ")+bold(portage_atom)+brown(". Please report."))
+    return 0
+
+def ebuild_preinstall(pkgdata):
+    myebuild = [pkgdata['xpakdir']+"/"+x for x in os.listdir(pkgdata['xpakdir']) if x.endswith(".ebuild")]
+    if myebuild:
+        myebuild = myebuild[0]
+        from portageTools import portage_doebuild
+        portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
+        print_info(red("   ##")+brown(" Ebuild preinstall hook."))
+        try:
+            portage_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
+        except Exception, e:
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+            print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo preinst trigger for ")+bold(portage_atom)+brown(". Please report."))
+    return 0
+
+def ebuild_preremove(pkgdata):
+    from portageTools import getPortageAppDbPath, portage_doebuild
+    portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
+    myebuild = getPortageAppDbPath()+portage_atom+"/"+pkgdata['name']+"-"+pkgdata['version']+".ebuild"
+    if os.path.isfile(myebuild):
+        print_info(red("   ##")+brown(" Ebuild preremove hook."))
+        try:
+            portage_doebuild(myebuild, mydo = "prerm", tree = "bintree", cpv = portage_atom)
+        except Exception, e:
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo preremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+            print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo preremove trigger for ")+bold(portage_atom)+brown(". Please report."))
+    return 0
+
+def ebuild_postremove(pkgdata):
+    from portageTools import getPortageAppDbPath, portage_doebuild
+    portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
+    myebuild = getPortageAppDbPath()+portage_atom+"/"+pkgdata['name']+"-"+pkgdata['version']+".ebuild"
+    if os.path.isfile(myebuild):
+        print_info(red("   ##")+brown(" Ebuild postremove hook."))
+        try:
+            portage_doebuild(myebuild, mydo = "postrm", tree = "bintree", cpv = portage_atom)
+        except Exception, e:
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+            print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo postremove trigger for ")+bold(portage_atom)+brown(". Please report."))
+    return 0
 
 ########################################################
 ####

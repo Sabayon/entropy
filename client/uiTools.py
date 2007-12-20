@@ -613,6 +613,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         if (removalQueue):
             
             # filter out packages that are in actionQueue comparing key + slot
+            # XXX: probably risky?
+            '''
             if runQueue:
                 myremmatch = {}
                 [myremmatch.update({(entropyTools.dep_getkey(clientDbconn.retrieveAtom(x)),clientDbconn.retrieveSlot(x)): x}) for x in removalQueue]
@@ -625,6 +627,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                             removalQueue.remove(myremmatch[testtuple])
                     del testtuple
                 del myremmatch
+            
+            '''
             
             '''
             
@@ -909,6 +913,27 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             # get data for triggerring tool
             etpInstallTriggers[pkgatom] = dbconn.getPackageData(idpackage)
             etpInstallTriggers[pkgatom]['trigger'] = dbconn.retrieveTrigger(idpackage)
+            
+            
+            # set unpack dir and image dir
+            if actionQueue[pkgatom]['repository'].endswith(".tbz2"):
+                actionQueue[pkgatom]['pkgpath'] = etpRepositories[actionQueue[pkgatom]['repository']]['pkgpath']
+            else:
+                actionQueue[pkgatom]['pkgpath'] = etpConst['entropyworkdir']+"/"+actionQueue[pkgatom]['download']
+            actionQueue[pkgatom]['unpackdir'] = etpConst['entropyunpackdir']+"/"+actionQueue[pkgatom]['download']
+            actionQueue[pkgatom]['imagedir'] = etpConst['entropyunpackdir']+"/"+actionQueue[pkgatom]['download']+"/"+etpConst['entropyimagerelativepath']
+
+            # is it a smart package?
+            actionQueue[pkgatom]['smartpackage'] = False
+            if actionQueue[pkgatom]['repository'].endswith(".tbz2"):
+                actionQueue[pkgatom]['smartpackage'] = etpRepositories[actionQueue[pkgatom]['repository']]['smartpackage']
+
+            # gentoo xpak data
+            if etpConst['gentoo-compat']:
+                actionQueue[pkgatom]['xpakstatus'] = None
+                actionQueue[pkgatom]['xpakpath'] = etpConst['entropyunpackdir']+"/"+actionQueue[pkgatom]['download']+"/"+etpConst['entropyxpakrelativepath']
+                etpInstallTriggers[pkgatom]['xpakdir'] = actionQueue[pkgatom]['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
+                etpInstallTriggers[pkgatom]['unpackdir'] = actionQueue[pkgatom]['unpackdir']
 
 	dbconn.closeDB()
         del dbconn
@@ -917,12 +942,15 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 	    # install
 	    if (actionQueue[pkgatom]['removeidpackage'] != -1):
 		steps.append("preremove")
+            steps.append("unpack")
 	    steps.append("preinstall")
 	    steps.append("install")
 	    if (actionQueue[pkgatom]['removeidpackage'] != -1):
 		steps.append("postremove")
 	    steps.append("postinstall")
-	    steps.append("showmessages")
+            if not etpConst['gentoo-compat']: # otherwise gentoo triggers will show that
+                steps.append("showmessages")
+            steps.append("cleanup")
 	
 	if not (etpUi['quiet'] or returnQueue): print_info(red(" ++ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(pkgatom))
 

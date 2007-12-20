@@ -20,7 +20,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-# FIXME: this depends on portage, should be moved from here ASAP
 from outputTools import *
 from entropyConstants import *
 import exceptionTools
@@ -98,6 +97,10 @@ def printException(returndata = False):
             except:
                 if not returndata: print "<ERROR WHILE PRINTING VALUE>"
     return data
+
+def ebeep(count = 5):
+    for x in range(count):
+        os.system("sleep 0.35; echo -ne \"\a\"; sleep 0.35")
 
 def applicationLockCheck(option = None, gentle = False):
     if (etpConst['applicationlock']):
