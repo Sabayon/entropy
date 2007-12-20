@@ -627,6 +627,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                             removalQueue.remove(myremmatch[testtuple])
                     del testtuple
                 del myremmatch
+                # update
+                pkgsToRemove = len(removalQueue)
             
             #'''
             
@@ -663,7 +665,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 removalQueue.append(depend)
             '''
             
-            if (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']):
+            if (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']) and removalQueue:
                 if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("removed")+blue(" (conflicting/substituted):"))
     
                 for idpackage in removalQueue:
