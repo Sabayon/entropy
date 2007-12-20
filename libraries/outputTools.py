@@ -263,6 +263,8 @@ def print_generic(msg): # here we'll wrap any nice formatting
     print msg
 
 def writechar(char):
+    if etpUi['mute']:
+        return
     stdout.write(char); stdout.flush()
 
 def readtext(request):

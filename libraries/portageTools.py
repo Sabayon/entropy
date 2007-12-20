@@ -29,6 +29,7 @@
 #####################################################################################
 
 import os
+import sys
 from entropyConstants import *
 import portage
 import portage_const
@@ -631,12 +632,32 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
         mysettings['PORTAGE_TMPDIR'] = str(portage_tmpdir)
         mysettings.backup_changes("PORTAGE_TMPDIR")
     # disable portage hooks
-    mysettings['PORTAGE_BASHRC'] = ''
-    mysettings.backup_changes("PORTAGE_BASHRC")
+    #mysettings['PORTAGE_BASHRC'] = ''
+    #mysettings.backup_changes("PORTAGE_BASHRC")
     mydbapi = portage.fakedbapi(settings=mysettings)
     mydbapi.cpv_inject(cpv, metadata = metadata)
-    vartree = portage.vartree(root=etpConst['systemroot']+"/")
+    mypath = etpConst['systemroot']+"/"
+    cached = portageRoots.get(mypath)
+    if cached == None:
+        vartree = portage.vartree(root=mypath)
+        portageRoots[mypath] = mytree
+    else:
+        vartree = cached
+    
+    # if mute, supress portage output
+    if etpUi['mute']:
+        oldstdout = sys.stdout
+        oldstderr = sys.stderr
+        f = open("/dev/null","w")
+        sys.stdout = f
+        sys.stderr = f
     
     os.environ["SKIP_EQUO_SYNC"] = "1"
-    portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = etpConst['systemroot']+"/", tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree)
+    portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = mypath, tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree)
     os.unsetenv("SKIP_EQUO_SYNC")
+
+    # if mute, restore old stdout/stderr
+    if etpUi['mute']:
+        sys.stdout = oldstdout
+        sys.stderr = oldstderr
+        f.close()

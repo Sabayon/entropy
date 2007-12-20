@@ -1723,7 +1723,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     kernelDependentModule = False
     kernelItself = False
     for item in data['content']:
-	if item.find("/lib/modules/") != -1:
+	if item.startswith("/lib/modules/"):
 	    kernelDependentModule = True
 	    # get the version of the modules
 	    kmodver = item.split("/lib/modules/")[1]
