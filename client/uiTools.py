@@ -614,7 +614,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             
             # filter out packages that are in actionQueue comparing key + slot
             # XXX: probably risky?
-            '''
+            #'''
             if runQueue:
                 myremmatch = {}
                 [myremmatch.update({(entropyTools.dep_getkey(clientDbconn.retrieveAtom(x)),clientDbconn.retrieveSlot(x)): x}) for x in removalQueue]
@@ -628,7 +628,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     del testtuple
                 del myremmatch
             
-            '''
+            #'''
             
             '''
             
