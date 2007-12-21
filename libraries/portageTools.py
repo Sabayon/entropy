@@ -664,7 +664,7 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
     
     os.environ["SKIP_EQUO_SYNC"] = "1"
     os.environ["CD_ROOT"] = "/tmp" # workaround for scripts asking for user intervention
-    portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = mypath, tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree)
+    rc = portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = mypath, tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree)
     os.unsetenv("SKIP_EQUO_SYNC")
     os.unsetenv("CD_ROOT")
 
@@ -677,4 +677,4 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
     del mydbapi
     del metadata
     del keys
-    
+    return rc

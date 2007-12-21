@@ -280,6 +280,14 @@ def call_ext_postremove(pkgdata):
 
 def call_ext_generic(pkgdata, stage):
 
+    # if mute, supress portage output
+    if etpUi['mute']:
+        oldsystderr = sys.stderr
+        oldsysstdout = sys.stdout
+        stdfile = open("/dev/null","w")
+        sys.stdout = stdfile
+        sys.stderr = stdfile
+
     triggerfile = etpConst['entropyunpackdir']+"/trigger-"+str(entropyTools.getRandomNumber())
     while os.path.isfile(triggerfile):
         triggerfile = etpConst['entropyunpackdir']+"/trigger-"+str(entropyTools.getRandomNumber())
@@ -287,6 +295,13 @@ def call_ext_generic(pkgdata, stage):
     for x in pkgdata['trigger']:
         f.write(x)
     f.close()
+
+    # if mute, restore old stdout/stderr
+    if etpUi['mute']:
+        sys.stderr = oldsystderr
+        sys.stdout = oldsysstdout
+        stdfile.close()
+
     
     my_ext_status = 0
     
@@ -699,7 +714,7 @@ def ebuild_postinstall(pkgdata):
     if myebuild:
         myebuild = myebuild[0]
         portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
-        print_info(red("   ##")+brown(" Ebuild postinstall hook..."))
+        print_info(red("   ##")+brown(" Ebuild: pkg_postinst()"))
         try:
             if not os.path.isfile(pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"): # if environment is not yet created, we need to run pkg_setup()
                 # if linux-mod is found, we just disable doebuild output since will surely fail
@@ -709,12 +724,16 @@ def ebuild_postinstall(pkgdata):
                     oldsysstderr = sys.stderr
                     sys.stdout = open("/dev/null","w")
                     sys.stdout = open("/dev/null","w")
-                portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
+                rc = portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
+                if rc == 1:
+                    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
                 if "linux-mod" in pkgdata['eclasses'] \
                     or "linux-info" in pkgdata['eclasses']:
                     sys.stdout = oldsysstdout
                     sys.stderr = oldsysstderr
-            portageTools.portage_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
+            rc = portageTools.portage_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
+            if rc == 1:
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_postinst()) trigger for "+str(portage_atom)+". Something bad happened.")
         except Exception, e:
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
             print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo postint trigger for ")+bold(portage_atom)+brown(". Please report."))
@@ -725,7 +744,7 @@ def ebuild_preinstall(pkgdata):
     if myebuild:
         myebuild = myebuild[0]
         portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
-        print_info(red("   ##")+brown(" Ebuild preinstall hook..."))
+        print_info(red("   ##")+brown(" Ebuild: pkg_preinst()"))
         try:
             if "linux-mod" in pkgdata['eclasses'] \
                 or "linux-info" in pkgdata['eclasses']:
@@ -733,14 +752,18 @@ def ebuild_preinstall(pkgdata):
                 oldsysstderr = sys.stderr
                 sys.stdout = open("/dev/null","w")
                 sys.stdout = open("/dev/null","w")
-            portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir']) # create mysettings["T"]+"/environment"
+            rc = portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir']) # create mysettings["T"]+"/environment"
+            if rc == 1:
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
             if "linux-mod" in pkgdata['eclasses'] \
                 or "linux-info" in pkgdata['eclasses']:
                 sys.stdout = oldsysstdout
                 sys.stderr = oldsysstderr
-            portageTools.portage_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
+            rc = portageTools.portage_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
+            if rc == 1:
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_preinst()) trigger for "+str(portage_atom)+". Something bad happened.")
         except Exception, e:
-            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
             print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo preinst trigger for ")+bold(portage_atom)+brown(". Please report."))
     return 0
 
@@ -748,11 +771,13 @@ def ebuild_preremove(pkgdata):
     portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
     myebuild = portageTools.getPortageAppDbPath()+portage_atom+"/"+pkgdata['name']+"-"+pkgdata['version']+".ebuild"
     if os.path.isfile(myebuild):
-        print_info(red("   ##")+brown(" Ebuild preremove hook..."))
+        print_info(red("   ##")+brown(" Ebuild: pkg_prerm()"))
         try:
-            portageTools.portage_doebuild(myebuild, mydo = "prerm", tree = "bintree", cpv = portage_atom)
+            rc = portageTools.portage_doebuild(myebuild, mydo = "prerm", tree = "bintree", cpv = portage_atom)
+            if rc == 1:
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preremove trigger for "+str(portage_atom)+". Something bad happened.")
         except Exception, e:
-            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo preremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo preremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
             print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo preremove trigger for ")+bold(portage_atom)+brown(". Please report."))
     return 0
 
@@ -761,11 +786,13 @@ def ebuild_postremove(pkgdata):
     portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
     myebuild = getPortageAppDbPath()+portage_atom+"/"+pkgdata['name']+"-"+pkgdata['version']+".ebuild"
     if os.path.isfile(myebuild):
-        print_info(red("   ##")+brown(" Ebuild postremove hook..."))
+        print_info(red("   ##")+brown(" Ebuild: pkg_postrm()"))
         try:
-            portage_doebuild(myebuild, mydo = "postrm", tree = "bintree", cpv = portage_atom)
+            rc = portage_doebuild(myebuild, mydo = "postrm", tree = "bintree", cpv = portage_atom)
+            if rc == 1:
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo postremove trigger for "+str(portage_atom)+". Something bad happened.")
         except Exception, e:
-            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+            equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo postremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
             print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo postremove trigger for ")+bold(portage_atom)+brown(". Please report."))
     return 0
 

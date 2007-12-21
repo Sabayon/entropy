@@ -30,7 +30,6 @@ from outputTools import *
 import remoteTools
 from entropyTools import compareMd5, bytesIntoHuman, askquestion, getRandomNumber, dep_getkey, entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag, unpackXpak, lifobuffer, ebeep, parallelStep
 from databaseTools import openRepositoryDatabase, openClientDatabase, openGenericDatabase, fetchRepositoryIfNotAvailable, listAllAvailableBranches
-import triggerTools
 import confTools
 import dumpTools
 import gc
@@ -1595,6 +1594,8 @@ def removePackageFromDatabase(idpackage):
     @output:	-1,"description" for error ; 0,True for no errors
 '''
 def stepExecutor(step, infoDict, loopString = None):
+
+    import triggerTools
 
     clientDbconn = openClientDatabase()
     output = 0

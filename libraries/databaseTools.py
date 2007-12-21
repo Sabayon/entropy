@@ -359,6 +359,10 @@ class etpDatabase:
 	else:
 	    print_info(yellow(" * ")+green("Mirrors have not been unlocked. Run activator."))
 	
+        # run vacuum cleaner
+        self.cursor.execute("vacuum")
+        self.connection.commit()
+        
 	self.cursor.close()
 	self.connection.close()
 

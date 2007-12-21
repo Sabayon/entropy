@@ -684,11 +684,17 @@ def initConfig_entropyConstants(rootdir):
             except:
                 # if root, write new pid
                 if os.getuid() == 0:
-                    f = open(etpConst['pidfile'],"w")
-                    f.write(str(pid))
-                    f.flush()
-                    f.close()
-                pass
+                    try:
+                        f = open(etpConst['pidfile'],"w")
+                        f.write(str(pid))
+                        f.flush()
+                        f.close()
+                    except IOError, (errno,strerror):
+                        if errno == 30: # readonly filesystem
+                            pass
+                        else:
+                            raise
+
     else:
         if os.getuid() == 0:
             f = open(etpConst['pidfile'],"w")
