@@ -703,13 +703,15 @@ def ebuild_postinstall(pkgdata):
         try:
             if not os.path.isfile(pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"): # if environment is not yet created, we need to run pkg_setup()
                 # if linux-mod is found, we just disable doebuild output since will surely fail
-                if "linux-mod" in pkgdata['eclasses']:
+                if "linux-mod" in pkgdata['eclasses'] \
+                    or "linux-info" in pkgdata['eclasses']:
                     oldsysstdout = sys.stdout
                     oldsysstderr = sys.stderr
                     sys.stdout = open("/dev/null","w")
                     sys.stdout = open("/dev/null","w")
                 portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
-                if "linux-mod" in pkgdata['eclasses']:
+                if "linux-mod" in pkgdata['eclasses'] \
+                    or "linux-info" in pkgdata['eclasses']:
                     sys.stdout = oldsysstdout
                     sys.stderr = oldsysstderr
             portageTools.portage_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
@@ -725,13 +727,15 @@ def ebuild_preinstall(pkgdata):
         portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
         print_info(red("   ##")+brown(" Ebuild preinstall hook..."))
         try:
-            if "linux-mod" in pkgdata['eclasses']:
+            if "linux-mod" in pkgdata['eclasses'] \
+                or "linux-info" in pkgdata['eclasses']:
                 oldsysstdout = sys.stdout
                 oldsysstderr = sys.stderr
                 sys.stdout = open("/dev/null","w")
                 sys.stdout = open("/dev/null","w")
             portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir']) # create mysettings["T"]+"/environment"
-            if "linux-mod" in pkgdata['eclasses']:
+            if "linux-mod" in pkgdata['eclasses'] \
+                or "linux-info" in pkgdata['eclasses']:
                 sys.stdout = oldsysstdout
                 sys.stderr = oldsysstderr
             portageTools.portage_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
