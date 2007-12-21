@@ -352,7 +352,10 @@ def scanfs(dcache = True):
 		    if mydict['automerge']:
 		        if (not etpUi['quiet']): print_info(darkred("Automerging file: ")+darkgreen(etpConst['systemroot']+mydict['source']))
 			if os.path.isfile(etpConst['systemroot']+mydict['source']):
-		            shutil.move(etpConst['systemroot']+mydict['source'],etpConst['systemroot']+mydict['destination'])
+                            try:
+                                shutil.move(etpConst['systemroot']+mydict['source'],etpConst['systemroot']+mydict['destination'])
+                            except IOError:
+                                if (not etpUi['quiet']): print_info(darkred("I/O Error :: Cannot automerge file: ")+darkgreen(etpConst['systemroot']+mydict['source']))
 			continue
 		    else:
 			counter += 1

@@ -28,7 +28,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 import remoteTools
-from entropyTools import compareMd5, bytesIntoHuman, askquestion, getRandomNumber, dep_getkey, entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag, unpackXpak, lifobuffer, ebeep
+from entropyTools import compareMd5, bytesIntoHuman, askquestion, getRandomNumber, dep_getkey, entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag, unpackXpak, lifobuffer, ebeep, parallelStep
 from databaseTools import openRepositoryDatabase, openClientDatabase, openGenericDatabase, fetchRepositoryIfNotAvailable, listAllAvailableBranches
 import triggerTools
 import confTools
@@ -1257,7 +1257,7 @@ def moveImageToSystem(imageDir, protect, mask):
             
             # if our directory is a file on the live system
             elif os.path.isfile(rootdir): # really weird...!
-                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+rootdir+" is a file when it should be a directory !! Removing in 10 seconds...")
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+rootdir+" is a file when it should be a directory !! Removing in 20 seconds...")
                 print_warning(red(" *** ")+bold(rootdir)+red(" is a file when it should be a directory !! Removing in 20 seconds..."))
                 ebeep(10)
                 time.sleep(20)
@@ -1353,8 +1353,8 @@ def moveImageToSystem(imageDir, protect, mask):
                         pass
 
                 # if our file is a dir on the live system
-                if os.path.isdir(tofile): # really weird...!
-                    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+tofile+" is a directory when it should be a file !! Removing in 10 seconds...")
+                if os.path.isdir(tofile) and not os.path.islink(tofile): # really weird...!
+                    equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+tofile+" is a directory when it should be a file !! Removing in 20 seconds...")
                     print_warning(red(" *** ")+bold(tofile)+red(" is a directory when it should be a file !! Removing in 20 seconds..."))
                     ebeep(10)
                     time.sleep(20)
@@ -1721,9 +1721,13 @@ def stepExecutor(step, infoDict, loopString = None):
     elif step == "cleanup":
 	print_info(red("   ## ")+blue("Cleaning temporary files for: ")+red(os.path.basename(infoDict['atom'])))
         xtermTitle(loopString+' Cleaning temporary files for: '+os.path.basename(infoDict['atom']))
+        parallelClean = parallelStep(cleanupPackage,infoDict)
+        # we don't care if cleanupPackage fails since it's not critical
+        '''
 	output = cleanupPackage(infoDict)
 	if output != 0:
 	    print_error(red("An error occured while trying to cleanup package temporary directories. Check if your system is healthy. Error "+str(output)))
+        '''
 
     clientDbconn.closeDB()
     del clientDbconn

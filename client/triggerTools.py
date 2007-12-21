@@ -20,7 +20,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import os
 from commands import getoutput
 from outputTools import *
 from entropyConstants import *
@@ -29,6 +28,8 @@ import entropyTools
 import logTools
 import shutil
 equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[Equo]")
+if etpConst['gentoo-compat']:
+    import portageTools
 
 '''
    @ description: Gentoo toolchain variables
@@ -697,13 +698,21 @@ def ebuild_postinstall(pkgdata):
     myebuild = [pkgdata['xpakdir']+"/"+x for x in os.listdir(pkgdata['xpakdir']) if x.endswith(".ebuild")]
     if myebuild:
         myebuild = myebuild[0]
-        from portageTools import portage_doebuild
         portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
-        print_info(red("   ##")+brown(" Ebuild postinstall hook."))
+        print_info(red("   ##")+brown(" Ebuild postinstall hook..."))
         try:
             if not os.path.isfile(pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"): # if environment is not yet created, we need to run pkg_setup()
-                portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
-            portage_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
+                # if linux-mod is found, we just disable doebuild output since will surely fail
+                if "linux-mod" in pkgdata['eclasses']:
+                    oldsysstdout = sys.stdout
+                    oldsysstderr = sys.stderr
+                    sys.stdout = open("/dev/null","w")
+                    sys.stdout = open("/dev/null","w")
+                portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
+                if "linux-mod" in pkgdata['eclasses']:
+                    sys.stdout = oldsysstdout
+                    sys.stderr = oldsysstderr
+            portageTools.portage_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
         except Exception, e:
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
             print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo postint trigger for ")+bold(portage_atom)+brown(". Please report."))
@@ -713,25 +722,31 @@ def ebuild_preinstall(pkgdata):
     myebuild = [pkgdata['xpakdir']+"/"+x for x in os.listdir(pkgdata['xpakdir']) if x.endswith(".ebuild")]
     if myebuild:
         myebuild = myebuild[0]
-        from portageTools import portage_doebuild
         portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
-        print_info(red("   ##")+brown(" Ebuild preinstall hook."))
+        print_info(red("   ##")+brown(" Ebuild preinstall hook..."))
         try:
-            portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir']) # create mysettings["T"]+"/environment"
-            portage_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
+            if "linux-mod" in pkgdata['eclasses']:
+                oldsysstdout = sys.stdout
+                oldsysstderr = sys.stderr
+                sys.stdout = open("/dev/null","w")
+                sys.stdout = open("/dev/null","w")
+            portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir']) # create mysettings["T"]+"/environment"
+            if "linux-mod" in pkgdata['eclasses']:
+                sys.stdout = oldsysstdout
+                sys.stderr = oldsysstderr
+            portageTools.portage_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = pkgdata['unpackdir'])
         except Exception, e:
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
             print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo preinst trigger for ")+bold(portage_atom)+brown(". Please report."))
     return 0
 
 def ebuild_preremove(pkgdata):
-    from portageTools import getPortageAppDbPath, portage_doebuild
     portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
-    myebuild = getPortageAppDbPath()+portage_atom+"/"+pkgdata['name']+"-"+pkgdata['version']+".ebuild"
+    myebuild = portageTools.getPortageAppDbPath()+portage_atom+"/"+pkgdata['name']+"-"+pkgdata['version']+".ebuild"
     if os.path.isfile(myebuild):
-        print_info(red("   ##")+brown(" Ebuild preremove hook."))
+        print_info(red("   ##")+brown(" Ebuild preremove hook..."))
         try:
-            portage_doebuild(myebuild, mydo = "prerm", tree = "bintree", cpv = portage_atom)
+            portageTools.portage_doebuild(myebuild, mydo = "prerm", tree = "bintree", cpv = portage_atom)
         except Exception, e:
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo preremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
             print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo preremove trigger for ")+bold(portage_atom)+brown(". Please report."))
@@ -742,7 +757,7 @@ def ebuild_postremove(pkgdata):
     portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
     myebuild = getPortageAppDbPath()+portage_atom+"/"+pkgdata['name']+"-"+pkgdata['version']+".ebuild"
     if os.path.isfile(myebuild):
-        print_info(red("   ##")+brown(" Ebuild postremove hook."))
+        print_info(red("   ##")+brown(" Ebuild postremove hook..."))
         try:
             portage_doebuild(myebuild, mydo = "postrm", tree = "bintree", cpv = portage_atom)
         except Exception, e:

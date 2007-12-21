@@ -62,6 +62,22 @@ class TimeScheduled(threading.Thread):
     def kill(self):
         self.alive = 0
 
+class parallelStep(threading.Thread):
+    def __init__(self, function, dictData):
+        threading.Thread.__init__(self)
+        self.function = function
+        self.data = dictData.copy()
+        self.run()
+        del self.function
+        del self.data
+    
+    def run(self):
+        self.function(self.data)
+    '''
+    def destroy(self):
+        del self.function
+    '''
+
 def printException(returndata = False):
     import traceback
     if not returndata: traceback.print_exc()

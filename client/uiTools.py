@@ -55,6 +55,7 @@ def package(options):
     equoRequestSkipfirst = False
     equoRequestUpgradeTo = None
     equoRequestListfiles = False
+    equoRequestChecksum = True
     rc = 0
     _myopts = []
     mytbz2paths = []
@@ -77,6 +78,8 @@ def package(options):
 	    equoRequestUpgrade = True
 	elif (opt == "--resume"):
 	    equoRequestResume = True
+	elif (opt == "--nochecksum"):
+	    equoRequestChecksum = False
 	elif (opt == "--skipfirst"):
 	    equoRequestSkipfirst = True
 	else:
@@ -99,14 +102,14 @@ def package(options):
     elif (options[0] == "install"):
 	if (myopts) or (mytbz2paths) or (equoRequestResume):
 	    equoTools.loadCaches()
-	    rc, status = installPackages(myopts, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep, configFiles = equoRequestConfigFiles, tbz2 = mytbz2paths, resume = equoRequestResume, skipfirst = equoRequestSkipfirst)
+	    rc, status = installPackages(myopts, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep, configFiles = equoRequestConfigFiles, tbz2 = mytbz2paths, resume = equoRequestResume, skipfirst = equoRequestSkipfirst, dochecksum = equoRequestChecksum)
 	else:
 	    print_error(red(" Nothing to do."))
 	    rc = 127
 
     elif (options[0] == "world"):
 	equoTools.loadCaches()
-	rc, status = worldUpdate(onlyfetch = equoRequestOnlyFetch, replay = (equoRequestReplay or equoRequestEmptyDeps), upgradeTo = equoRequestUpgradeTo, resume = equoRequestResume, skipfirst = equoRequestSkipfirst, human = True)
+	rc, status = worldUpdate(onlyfetch = equoRequestOnlyFetch, replay = (equoRequestReplay or equoRequestEmptyDeps), upgradeTo = equoRequestUpgradeTo, resume = equoRequestResume, skipfirst = equoRequestSkipfirst, human = True, dochecksum = equoRequestChecksum)
 
     elif (options[0] == "remove"):
 	if myopts or equoRequestResume:
@@ -121,7 +124,7 @@ def package(options):
     return rc
 
 
-def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = False, skipfirst = False, returnQueue = False, human = False):
+def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = False, skipfirst = False, returnQueue = False, human = False, dochecksum = True):
 
     # check if I am root
     if (not entropyTools.isRoot()):
@@ -257,7 +260,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
     worldQueue['removePackages'] = {}
 
     if (updateList) or (resume):
-        worldQueue['installPackages'], rc = installPackages(atomsdata = updateList, onlyfetch = onlyfetch, resume = resume, skipfirst = skipfirst, returnQueue = returnQueue)
+        worldQueue['installPackages'], rc = installPackages(atomsdata = updateList, onlyfetch = onlyfetch, resume = resume, skipfirst = skipfirst, returnQueue = returnQueue, dochecksum = dochecksum)
 	if rc != 0:
 	    return 1,rc
     else:
@@ -298,7 +301,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
     
     return 0,0
 
-def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = [], resume = False, skipfirst = False, returnQueue = False):
+def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = [], resume = False, skipfirst = False, returnQueue = False, dochecksum = True):
 
     # check if I am root
     if (not entropyTools.isRoot()):
@@ -804,7 +807,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             if not repository.endswith(".tbz2"):
                 if (actionQueue[pkgatom]['fetch'] < 0):
                     steps.append("fetch")
-                steps.append("checksum")
+                if dochecksum:
+                    steps.append("checksum")
             
             # if file exists, first checksum then fetch
             if os.path.isfile(os.path.join(etpConst['entropyworkdir'],infoDict['download'])):

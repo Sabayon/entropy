@@ -2478,6 +2478,16 @@ class etpDatabase:
 	    self.cursor.execute('SELECT idpackage FROM baseinfo WHERE versiontag = in (?)', (tag,))
 	    return self.fetchall2set(self.cursor.fetchall())
 
+    ''' search packages whose slot matches the one provided '''
+    def searchSlottedPackages(self, slot, atoms = False): # atoms = return atoms directly
+	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchSlottedPackages: called for "+slot)
+	if atoms:
+	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE slot in (?)', (slot,))
+	    return self.cursor.fetchall()
+	else:
+	    self.cursor.execute('SELECT idpackage FROM baseinfo WHERE slot = in (?)', (slot,))
+	    return self.fetchall2set(self.cursor.fetchall())
+
     ''' search packages that need the specified library (in neededreference table) specified by keyword '''
     def searchNeeded(self, keyword, like = False):
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchNeeded: called for "+keyword)

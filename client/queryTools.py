@@ -70,6 +70,10 @@ def query(options):
 	if (len(myopts) > 1):
 	    rc = searchTaggedPackages(myopts[1:])
 
+    elif myopts[0] == "slot":
+	if (len(myopts) > 1):
+	    rc = searchSlottedPackages(myopts[1:])
+
     elif myopts[0] == "orphans":
 	rc = searchOrphans()
 
@@ -630,6 +634,46 @@ def searchPackage(packages, idreturn = False):
 
     if (idreturn):
 	return dataInfo
+
+    return 0
+
+def searchSlottedPackages(slots, datareturn = False, dbconn = None):
+    
+    foundPackages = {}
+    dbclose = True
+    if dbconn:
+        dbclose = False
+    
+    if (not datareturn) and (not etpUi['quiet']):
+        print_info(darkred(" @@ ")+darkgreen("Slot Search..."))
+    # search inside each available database
+    repoNumber = 0
+    for repo in etpRepositories:
+	foundPackages[repo] = {}
+	repoNumber += 1
+	
+	if (not datareturn) and (not etpUi['quiet']):
+	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
+	
+        if dbclose:
+            dbconn = openRepositoryDatabase(repo)
+	for slot in slots:
+	    results = dbconn.searchSlottedPackages(slot, atoms = True)
+	    for result in results:
+		foundPackages[repo][result[1]] = result[0]
+	        # print info
+		if (not datareturn):
+		    printPackageInfo(result[1],dbconn)
+	    if (not datareturn) and (not etpUi['quiet']):
+	        print_info(blue(" Keyword: ")+bold("\t"+slot))
+	        print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
+
+        if dbclose:
+            dbconn.closeDB()
+            del dbconn
+
+    if (datareturn):
+	return foundPackages
 
     return 0
 

@@ -54,6 +54,7 @@ def print_help():
     print_info(" \t\t"+red("--resume")+"\t\t resume previously interrupted operations")
     print_info(" \t\t"+red("--skipfirst")+"\t\t used with --resume, first package in queue will be skipped")
     print_info(" \t\t"+red("--upgrade")+"\t\t upgrade "+etpConst['systemname']+" to the specified release (3.5,3.6...)")
+    print_info(" \t\t"+red("--nochecksum")+"\t\t disable package integrity check")
     
     print_info(" \t"+blue("install")+brown("\t\t install one or more packages or .tbz2"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
@@ -66,6 +67,7 @@ def print_help():
     print_info(" \t\t"+red("--deep")+"\t\t\t analyze dependencies deeply")
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
     print_info(" \t\t"+red("--configfiles")+"\t\t also remove old configuration files [use with care]")
+    print_info(" \t\t"+red("--nochecksum")+"\t\t disable package integrity check")
     
     print_info(" \t"+blue("remove")+brown("\t\t remove one or more packages"))
     print_info(" \t\t"+red("--deep")+"\t\t\t also pull unused dependencies where depends list is empty")
@@ -93,6 +95,7 @@ def print_help():
     print_info(" \t\t"+darkgreen("files")+red("\t\t\t list files owned by the provided atoms"))
     print_info(" \t\t"+darkgreen("removal")+red("\t\t\t print the removal tree for specified atoms"))
     print_info(" \t\t"+darkgreen("tags")+red("\t\t\t search packages that have the specified tags"))
+    print_info(" \t\t"+darkgreen("slot")+red("\t\t\t search packages that have the specified slot"))
     print_info(" \t\t\t"+red("--deep")+"\t\t also pull unused dependencies where depends list is empty")
     print_info(" \t\t"+darkgreen("list")+red("\t\t\t list packages based on the chosen parameter below"))
     print_info(" \t\t\t"+green("installed")+red("\t list installed packages"))

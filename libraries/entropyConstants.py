@@ -20,10 +20,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import os
+
 import random
 import gc
-from sys import exit
+import sys
+import os
 import maskingparser
 import exceptionTools
 
@@ -429,6 +430,8 @@ def const_resetCache():
 
 # Inside it you'll find instantiated vartree classes
 portageRoots = {}
+# portage fakedbapi cache
+portageFakeDbApi = {}
 
 # Client packages/database repositories
 etpRepositories = {}
@@ -664,7 +667,7 @@ def initConfig_entropyConstants(rootdir):
             os.makedirs(piddir)
         else:
             print "you need to run this as root at least once."
-            exit(100)
+            sys.exit(100)
     # PID creation
     pid = os.getpid()
     if os.path.exists(etpConst['pidfile']):
@@ -694,7 +697,7 @@ def initConfig_entropyConstants(rootdir):
             f.close()
         else:
             print "you need to run this as root at least once."
-            exit(100)
+            sys.exit(100)
     
     # Create paths
     if not os.path.isdir(etpConst['entropyworkdir']):
@@ -712,7 +715,7 @@ def initConfig_entropyConstants(rootdir):
                         pass
         else:
             print "you need to run this as root at least once."
-            exit(100)
+            sys.exit(100)
     
     
     # entropy section
@@ -727,7 +730,6 @@ def initConfig_entropyConstants(rootdir):
                     loglevel = int(loglevel)
                 except:
                     print "ERROR: invalid loglevel in: "+etpConst['entropyconf']
-                    exit(51)
                 if (loglevel > -1) and (loglevel < 3):
                     etpConst['entropyloglevel'] = loglevel
                 else:
@@ -806,7 +808,7 @@ def initConfig_entropyConstants(rootdir):
                         os.makedirs(etpConst['packagesbindir']+"/"+branch)
                     else:
                         print "ERROR: please run this as root at least once or create: "+str(etpConst['packagesbindir']+"/"+branch)
-                        exit(49)
+                        sys.exit(49)
     
     # align etpConst['binaryurirelativepath'] and etpConst['etpurirelativepath'] with etpConst['product']
     etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['binaryurirelativepath']
@@ -832,7 +834,6 @@ def initConfig_entropyConstants(rootdir):
                     loglevel = int(loglevel)
                 except:
                     print "ERROR: invalid loglevel in: "+etpConst['databaseconf']
-                    exit(51)
                 if (loglevel > -1) and (loglevel < 3):
                     etpConst['databaseloglevel'] = loglevel
                 else:

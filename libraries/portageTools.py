@@ -619,45 +619,62 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
     myebuilddir = os.path.dirname(myebuild)
     keys = portage.auxdbkeys
     metadata = {}
+    
     for key in keys:
         mykeypath = os.path.join(myebuilddir,key)
         if os.path.isfile(mykeypath) and os.access(mykeypath,os.R_OK):
             f = open(mykeypath,"r")
             metadata[key] = f.readline().strip()
             f.close()
+    
+    mypath = etpConst['systemroot']+"/"
+    mysettings = portage.config(config_root="/", target_root=mypath, config_incrementals=portage_const.INCREMENTALS)
+    
     cpv = str(cpv)
-    mysettings = portage.config(config_root="/", target_root=etpConst['systemroot']+"/", config_incrementals=portage_const.INCREMENTALS)
     mysettings.setcpv(cpv)
     if portage_tmpdir:
         mysettings['PORTAGE_TMPDIR'] = str(portage_tmpdir)
         mysettings.backup_changes("PORTAGE_TMPDIR")
-    # disable portage hooks
-    #mysettings['PORTAGE_BASHRC'] = ''
-    #mysettings.backup_changes("PORTAGE_BASHRC")
+    
     mydbapi = portage.fakedbapi(settings=mysettings)
     mydbapi.cpv_inject(cpv, metadata = metadata)
-    mypath = etpConst['systemroot']+"/"
+    
+    # cached vartree class
     cached = portageRoots.get(mypath)
     if cached == None:
         vartree = portage.vartree(root=mypath)
-        portageRoots[mypath] = mytree
+        portageRoots[mypath] = vartree
     else:
         vartree = cached
     
+    # XXX? always accept license if etpUi['mute']
+    if etpUi['mute']:
+        ACCEPT_LICENSE = ""
+        if os.path.isdir("/usr/portage/licenses"):
+            ACCEPT_LICENSE = ' '.join(os.listdir("/usr/portage/licenses"))
+        os.environ["ACCEPT_LICENSE"] = str(ACCEPT_LICENSE) # force to str to avoid portage complaints
+    
     # if mute, supress portage output
     if etpUi['mute']:
-        oldstdout = sys.stdout
-        oldstderr = sys.stderr
+        oldsystderr = sys.stderr
+        oldsysstdout = sys.stdout
         f = open("/dev/null","w")
         sys.stdout = f
         sys.stderr = f
     
     os.environ["SKIP_EQUO_SYNC"] = "1"
+    os.environ["CD_ROOT"] = "/tmp" # workaround for scripts asking for user intervention
     portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = mypath, tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree)
     os.unsetenv("SKIP_EQUO_SYNC")
+    os.unsetenv("CD_ROOT")
 
     # if mute, restore old stdout/stderr
     if etpUi['mute']:
-        sys.stdout = oldstdout
-        sys.stderr = oldstderr
+        sys.stderr = oldsystderr
+        sys.stdout = oldsysstdout
         f.close()
+    
+    del mydbapi
+    del metadata
+    del keys
+    
