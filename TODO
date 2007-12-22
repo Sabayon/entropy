@@ -4,6 +4,8 @@ TODO list:
   - reduce size of packages.db.bz2
   - remove binkeywords, not used
   - add deptest check for every reagent run
+  - implement client db sanity check
+  - change name of etpConst['dumpstoragedir'] or whatever it is
 
 
 Project Status:
