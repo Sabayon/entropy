@@ -221,7 +221,6 @@ class etpDatabase:
 	    # if the database is opened readonly, we don't need to lock the online status
 	    self.connection = sqlite.connect(dbFile)
 	    self.cursor = self.connection.cursor()
-	    # set the table read only
 	    return
 	
 	if (self.readOnly):
@@ -2107,6 +2106,11 @@ class etpDatabase:
 	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveContent: retrieving Content for package ID "+str(idpackage))
 
         self.createContentIndex() # FIXME: remove this with 1.0
+        
+        # protect user from having a bad day
+        # developers can solve bad utf-8 data (and MUST), so we won't skip bad chars for them
+        if self.clientDatabase:
+            self.connection.text_factory = lambda x: unicode(x, "utf-8", "ignore")
         
         extstring = ''
         if extended:
