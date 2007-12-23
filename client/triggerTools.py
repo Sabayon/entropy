@@ -134,10 +134,11 @@ def postinstall(pkgdata):
                 functions.add('createkernelsym')
             if x.startswith('/etc/env.d/'):
                 functions.add('env_update')
-            for path in ldpaths:
-                if x.startswith(path) and (x.find(".so") != -1):
+            if os.path.dirname(x) in ldpaths:
+                if x.find(".so") > -1:
                     functions.add('run_ldconfig')
-
+    
+    del ldpaths
     return functions
 
 '''
@@ -219,10 +220,11 @@ def postremove(pkgdata):
                 functions.add('cleanpy')
             if x.startswith('/etc/env.d/'):
                 functions.add('env_update')
-            for path in ldpaths:
-                if x.startswith(path) and (x.find(".so") != -1):
+            if os.path.dirname(x) in ldpaths:
+                if x.find(".so") > -1:
                     functions.add('run_ldconfig')
-
+    
+    del ldpaths
     return functions
 
 '''
@@ -676,6 +678,8 @@ def run_ldconfig(pkgdata):
     os.system("ldconfig -r "+myroot+" &> /dev/null")
 
 def env_update(pkgdata):
+    # clear linker paths cache
+    linkerPaths.clear()
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running env-update")
     if os.access(etpConst['systemroot']+"/usr/sbin/env-update",os.X_OK):
         print_info(red("   ##")+brown(" Updating environment using env-update"))

@@ -402,6 +402,7 @@ compareVersionsCache = {}
 getNewerVersionCache = {}
 # generateDependencyTree match filter
 matchFilter = set()
+linkerPaths = set()
 
 ### Application disk cache
 def const_resetCache():
@@ -427,6 +428,7 @@ def const_resetCache():
     compareVersionsCache.clear()
     getNewerVersionCache.clear()
     matchFilter.clear()
+    linkerPaths.clear()
 
 # Inside it you'll find instantiated vartree classes
 portageRoots = {}

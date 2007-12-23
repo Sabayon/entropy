@@ -2074,6 +2074,8 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     return data
 
 def collectLinkerPaths():
+    if linkerPaths:
+        return linkerPaths
     ldpaths = set()
     try:
         f = open(etpConst['systemroot']+"/etc/ld.so.conf","r")
@@ -2085,6 +2087,8 @@ def collectLinkerPaths():
         f.close()
     except:
         pass
+    linkerPaths.clear()
+    linkerPaths.update(ldpaths)
     return ldpaths
 
 def string_to_utf8(string):

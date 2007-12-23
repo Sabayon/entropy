@@ -37,6 +37,7 @@ import exceptionTools
 # Logging initialization
 import logTools
 dbLog = logTools.LogFile(level = etpConst['databaseloglevel'],filename = etpConst['databaselogfile'], header = "[DBase]")
+_do_dbLog = False
 
 
 ############
@@ -145,7 +146,7 @@ class etpDatabase:
 
     def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = 'etpdb', indexing = True):
 	
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase.__init__ called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase.__init__ called.")
 	
 	self.readOnly = readOnly
 	self.noUpload = noUpload
@@ -217,35 +218,35 @@ class etpDatabase:
             dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
 	
 	if (self.clientDatabase):
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened by Entropy client, file: "+str(dbFile))
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened by Entropy client, file: "+str(dbFile))
 	    # if the database is opened readonly, we don't need to lock the online status
 	    self.connection = sqlite.connect(dbFile)
 	    self.cursor = self.connection.cursor()
 	    return
 	
 	if (self.readOnly):
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened readonly, file: "+str(dbFile))
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened readonly, file: "+str(dbFile))
 	    # if the database is opened readonly, we don't need to lock the online status
 	    self.connection = sqlite.connect(dbFile)
 	    self.cursor = self.connection.cursor()
 	    # set the table read only
 	    return
 	
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened in read/write mode, file: "+str(dbFile))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened in read/write mode, file: "+str(dbFile))
 
 	import mirrorTools
 	import activatorTools
 
 	# check if the database is locked locally
 	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"etpDatabase: database already locked")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"etpDatabase: database already locked")
 	    print_info(red(" * ")+red("Entropy database is already locked by you :-)"))
 	else:
 	    # check if the database is locked REMOTELY
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"etpDatabase: starting to lock and sync database")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"etpDatabase: starting to lock and sync database")
 	    print_info(red(" * ")+red(" Locking and Syncing Entropy database ..."), back = True)
 	    for uri in etpConst['activatoruploaduris']:
-		dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: connecting to "+entropyTools.extractFTPHostFromUri(uri))
+		if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: connecting to "+entropyTools.extractFTPHostFromUri(uri))
 	        ftp = mirrorTools.handlerFTP(uri)
                 try:
                     ftp.setCWD(etpConst['etpurirelativepath'])
@@ -264,27 +265,27 @@ class etpDatabase:
 	        if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
 		    import time
 		    print_info(red(" * ")+bold("WARNING")+red(": online database is already locked. Waiting up to 2 minutes..."), back = True)
-		    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"etpDatabase: online database already locked. Waiting 2 minutes")
+		    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"etpDatabase: online database already locked. Waiting 2 minutes")
 		    unlocked = False
 		    count = 120
                     while count:
 		        time.sleep(1)
                         count -= 1
 		        if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
-			    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"etpDatabase: online database has been unlocked !")
+			    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"etpDatabase: online database has been unlocked !")
 			    print_info(red(" * ")+bold("HOORAY")+red(": online database has been unlocked. Locking back and syncing..."))
 			    unlocked = True
 			    break
 		    if (unlocked):
 		        break
 
-		    dbLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"etpDatabase: online database has not been unlocked in time. Giving up.")
+		    if _do_dbLog: dbLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"etpDatabase: online database has not been unlocked in time. Giving up.")
 		    # time over
 		    print_info(red(" * ")+bold("ERROR")+red(": online database has not been unlocked. Giving up. Who the hell is working on it? Damn, it's so frustrating for me. I'm a piece of python code with a soul dude!"))
 
 		    print_info(yellow(" * ")+green("Mirrors status table:"))
 		    dbstatus = activatorTools.getMirrorsLock()
-		    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: showing mirrors status table:")
+		    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: showing mirrors status table:")
 		    for db in dbstatus:
 		        if (db[1]):
 	        	    db[1] = red("Locked")
@@ -294,7 +295,7 @@ class etpDatabase:
 	        	    db[2] = red("Locked")
 	                else:
 	        	    db[2] = green("Unlocked")
-			dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"   "+entropyTools.extractFTPHostFromUri(db[0])+": DATABASE: "+db[1]+" | DOWNLOAD: "+db[2])
+			if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"   "+entropyTools.extractFTPHostFromUri(db[0])+": DATABASE: "+db[1]+" | DOWNLOAD: "+db[2])
 	    	        print_info(bold("\t"+entropyTools.extractFTPHostFromUri(db[0])+": ")+red("[")+yellow("DATABASE: ")+db[1]+red("] [")+yellow("DOWNLOAD: ")+db[2]+red("]"))
 	    
 	            ftp.closeConnection()
@@ -313,7 +314,7 @@ class etpDatabase:
 
 	# if the class is opened readOnly, close and forget
 	if (self.readOnly):
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in readonly.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in readonly.")
 	    #self.connection.rollback()
 	    self.cursor.close()
 	    self.connection.close()
@@ -321,7 +322,7 @@ class etpDatabase:
 
 	# if it's equo that's calling the function, just save changes and quit
 	if (self.clientDatabase):
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened by Entropy Client.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened by Entropy Client.")
 	    self.commitChanges()
 	    self.cursor.close()
 	    self.connection.close()
@@ -344,7 +345,7 @@ class etpDatabase:
 	        self.cleanupNeeded()
 	    self.cleanupDependencies()
 
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in read/write.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in read/write.")
 	
 	if (etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']) and (not etpDbStatus[etpConst['etpdatabasefilepath']]['bumped']):
 	    # bump revision, setting DatabaseBump causes the session to just bump once
@@ -367,21 +368,21 @@ class etpDatabase:
 
     def commitChanges(self):
 	if (not self.readOnly):
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"commitChanges: writing changes to database.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"commitChanges: writing changes to database.")
 	    try:
 	        self.connection.commit()
 	    except:
 		pass
 	    self.taintDatabase()
 	else:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"commitChanges: discarding changes to database (opened readonly).")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"commitChanges: discarding changes to database (opened readonly).")
 	    self.discardChanges() # is it ok?
 
     def taintDatabase(self):
 	if (self.clientDatabase): # if it's equo to open it, this should be avoided
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"taintDatabase: called by Entropy client, won't do anything.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"taintDatabase: called by Entropy client, won't do anything.")
 	    return
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"taintDatabase: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"taintDatabase: called.")
 	# taint the database status
 	f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'],"w")
 	f.write(etpConst['currentarch']+" database tainted\n")
@@ -391,16 +392,16 @@ class etpDatabase:
 
     def untaintDatabase(self):
 	if (self.clientDatabase): # if it's equo to open it, this should be avoided
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called by Entropy client, won't do anything.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called by Entropy client, won't do anything.")
 	    return
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called.")
 	etpDbStatus[etpConst['etpdatabasefilepath']]['tainted'] = False
 	# untaint the database status
         if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
             os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
 
     def revisionBump(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"revisionBump: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"revisionBump: called.")
 	if (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'])):
 	    revision = 0
 	else:
@@ -414,18 +415,18 @@ class etpDatabase:
 	f.close()
 
     def isDatabaseTainted(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isDatabaseTainted: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isDatabaseTainted: called.")
 	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
 	    return True
 	return False
 
     def discardChanges(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"discardChanges: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"discardChanges: called.")
 	self.connection.rollback()
 
     # never use this unless you know what you're doing
     def initializeDatabase(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"initializeDatabase: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"initializeDatabase: called.")
 	for sql in etpSQLInitDestroyAll.split(";"):
 	    if sql:
 	        self.cursor.execute(sql+";")
@@ -437,7 +438,7 @@ class etpDatabase:
 
     def checkReadOnly(self):
 	if (self.readOnly):
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: Cannot handle this in read only.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: Cannot handle this in read only.")
 	    raise exceptionTools.OperationNotPermitted("OperationNotPermitted: can't do that on a readonly database.")
 
     # this function manages the submitted package
@@ -452,7 +453,7 @@ class etpDatabase:
 	if etpData['versiontag']:
 	    versiontag = '#'+etpData['versiontag']
 
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: called.")
 	foundid = self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag)
 	if (foundid < 0): # same atom doesn't exist
 	    idpk, revision, etpDataUpdated, accepted = self.addPackage(etpData, revision = forcedRevision)
@@ -472,7 +473,7 @@ class etpDatabase:
                 etpData['revision'] = 0 # revision not specified
                 revision = 0
 
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackage: called.")
 	
 	# we need to find other packages with the same key and slot, and remove them
 	if (self.clientDatabase): # client database can't care about branch
@@ -480,7 +481,7 @@ class etpDatabase:
 	else: # server supports multiple branches inside a db
 	    searchsimilar = self.searchPackagesByNameAndCategory(name = etpData['name'], category = etpData['category'], sensitive = True, branch = etpData['branch'])
 	
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"addPackage: here is the list of similar packages (that will be removed) found for "+etpData['category']+"/"+etpData['name']+": "+str(searchsimilar))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"addPackage: here is the list of similar packages (that will be removed) found for "+etpData['category']+"/"+etpData['name']+": "+str(searchsimilar))
 	
 	removelist = set()
         if not etpData['injected']: # read: if package has been injected, we'll skip the removal of packages in the same slot, usually used server side btw
@@ -956,7 +957,7 @@ class etpDatabase:
 
 	self.checkReadOnly()
 
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"updatePackage: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"updatePackage: called.")
 
 	# build atom string
 	versiontag = ''
@@ -967,14 +968,14 @@ class etpDatabase:
 	# for client database - the atom if present, must be overwritten with the new one regardless its branch
 	if (self.clientDatabase):
 	    
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"updatePackage: client request. Removing duplicated entries.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"updatePackage: client request. Removing duplicated entries.")
 	    atomid = self.isPackageAvailable(pkgatom)
 	    if atomid > -1:
 		self.removePackage(atomid)
 	    
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: removal complete. Now spawning addPackage.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: removal complete. Now spawning addPackage.")
 	    x,y,z,accepted = self.addPackage(etpData, revision = forcedRevision)
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: returned back from addPackage.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: returned back from addPackage.")
 	    return x,y,z,accepted
 	    
 	else:
@@ -994,10 +995,10 @@ class etpDatabase:
 		if (forcedRevision == -1):
 		    curRevision += 1
 	    
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: current revision set to "+str(curRevision))
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: current revision set to "+str(curRevision))
 
 	    # add the new one
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: complete. Now spawning addPackage.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"updatePackage: complete. Now spawning addPackage.")
 	    x,y,z,accepted = self.addPackage(etpData, revision = curRevision)
 	    return x,y,z,accepted
 	
@@ -1035,7 +1036,7 @@ class etpDatabase:
             dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
 
 	idpackage = str(idpackage)
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"removePackage: trying to remove (if exists) -> "+idpackage+":"+str(key)+" | branch: "+branch)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"removePackage: trying to remove (if exists) -> "+idpackage+":"+str(key)+" | branch: "+branch)
 	# baseinfo
 	self.cursor.execute('DELETE FROM baseinfo WHERE idpackage = '+idpackage)
 	# extrainfo
@@ -1125,12 +1126,12 @@ class etpDatabase:
 	self.commitChanges()
 
     def removeMirrorEntries(self,mirrorname):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removeMirrors: removing entries for mirror -> "+str(mirrorname))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removeMirrors: removing entries for mirror -> "+str(mirrorname))
 	self.cursor.execute('DELETE FROM mirrorlinks WHERE mirrorname = "'+mirrorname+'"')
 	self.commitChanges()
 
     def addMirrors(self,mirrorname,mirrorlist):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addMirrors: adding Mirror list for "+str(mirrorname)+" -> "+str(mirrorlist))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addMirrors: adding Mirror list for "+str(mirrorname)+" -> "+str(mirrorlist))
 	for x in mirrorlist:
 	    self.cursor.execute(
 		'INSERT into mirrorlinks VALUES '
@@ -1139,7 +1140,7 @@ class etpDatabase:
 	self.commitChanges()
 
     def addCategory(self,category):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addCategory: adding Package Category -> "+str(category))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addCategory: adding Package Category -> "+str(category))
 	self.cursor.execute(
 		'INSERT into categories VALUES '
 		'(NULL,?)', (category,)
@@ -1152,7 +1153,7 @@ class etpDatabase:
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a category but then, fetching it returned -1. There's something broken.")
 
     def addProtect(self,protect):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addProtect: adding CONFIG_PROTECT/CONFIG_PROTECT_MASK -> "+str(protect))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addProtect: adding CONFIG_PROTECT/CONFIG_PROTECT_MASK -> "+str(protect))
 	self.cursor.execute(
 		'INSERT into configprotectreference VALUES '
 		'(NULL,?)', (protect,)
@@ -1168,7 +1169,7 @@ class etpDatabase:
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a protect but then, fetching it returned -1. There's something broken.")
 
     def addSource(self,source):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addSource: adding Package Source -> "+str(source))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addSource: adding Package Source -> "+str(source))
 	self.cursor.execute(
 		'INSERT into sourcesreference VALUES '
 		'(NULL,?)', (source,)
@@ -1180,7 +1181,7 @@ class etpDatabase:
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a source but then, fetching it returned -1. There's something broken.")
 
     def addDependency(self,dependency):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addDependency: adding Package Dependency -> "+str(dependency))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addDependency: adding Package Dependency -> "+str(dependency))
 	self.cursor.execute(
 		'INSERT into dependenciesreference VALUES '
 		'(NULL,?)', (dependency,)
@@ -1192,7 +1193,7 @@ class etpDatabase:
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a dependency but then, fetching it returned -1. There's something broken.")
 
     def addKeyword(self,keyword):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addKeyword: adding Keyword -> "+str(keyword))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addKeyword: adding Keyword -> "+str(keyword))
 	self.cursor.execute(
 		'INSERT into keywordsreference VALUES '
 		'(NULL,?)', (keyword,)
@@ -1204,7 +1205,7 @@ class etpDatabase:
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a keyword but then, fetching it returned -1. There's something broken.")
 
     def addUseflag(self,useflag):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addUseflag: adding Keyword -> "+str(useflag))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addUseflag: adding Keyword -> "+str(useflag))
 	self.cursor.execute(
 		'INSERT into useflagsreference VALUES '
 		'(NULL,?)', (useflag,)
@@ -1216,7 +1217,7 @@ class etpDatabase:
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a use flag but then, fetching it returned -1. There's something broken.")
 
     def addEclass(self,eclass):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addEclass: adding Eclass -> "+str(eclass))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addEclass: adding Eclass -> "+str(eclass))
 	self.cursor.execute(
 		'INSERT into eclassesreference VALUES '
 		'(NULL,?)', (eclass,)
@@ -1232,7 +1233,7 @@ class etpDatabase:
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert an eclass but then, fetching it returned -1. There's something broken.")
 
     def addNeeded(self,needed):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addNeeded: adding needed library -> "+str(needed))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addNeeded: adding needed library -> "+str(needed))
 	self.cursor.execute(
 		'INSERT into neededreference VALUES '
 		'(NULL,?)', (needed,)
@@ -1250,7 +1251,7 @@ class etpDatabase:
     def addLicense(self,pkglicense):
         if not pkglicense:
             pkglicense = ' ' # workaround for broken license entries
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addLicense: adding License -> "+str(pkglicense))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addLicense: adding License -> "+str(pkglicense))
 	self.cursor.execute(
 		'INSERT into licenses VALUES '
 		'(NULL,?)', (pkglicense,)
@@ -1263,7 +1264,7 @@ class etpDatabase:
 
     #addCompileFlags(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
     def addCompileFlags(self,chost,cflags,cxxflags):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addCompileFlags: adding Flags -> "+chost+"|"+cflags+"|"+cxxflags)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addCompileFlags: adding Flags -> "+chost+"|"+cflags+"|"+cxxflags)
 
 	self.cursor.execute(
 		'INSERT into flags VALUES '
@@ -1277,15 +1278,15 @@ class etpDatabase:
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert compile flags but then, fetching it returned -1. There's something broken.")
 
     def setDigest(self, idpackage, digest):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setDigest: setting new digest for idpackage: "+str(idpackage)+" -> "+str(digest))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setDigest: setting new digest for idpackage: "+str(idpackage)+" -> "+str(digest))
 	self.cursor.execute('UPDATE extrainfo SET digest = "'+str(digest)+'" WHERE idpackage = "'+str(idpackage)+'"')
 
     def setDownloadURL(self, idpackage, url):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setDownloadURL: setting new download for idpackage: "+str(idpackage)+" -> "+url)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setDownloadURL: setting new download for idpackage: "+str(idpackage)+" -> "+url)
 	self.cursor.execute('UPDATE extrainfo SET download = "'+url+'" WHERE idpackage = "'+str(idpackage)+'"')
 
     def setCounter(self, idpackage, counter):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setCounter: setting new counter for idpackage: "+str(idpackage)+" -> "+str(counter))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setCounter: setting new counter for idpackage: "+str(idpackage)+" -> "+str(counter))
         try:
             self.cursor.execute('UPDATE counters SET counter = "'+str(counter)+'" WHERE idpackage = "'+str(idpackage)+'"')
         except:
@@ -1297,7 +1298,7 @@ class etpDatabase:
                 )
 
     def cleanupUseflags(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupUseflags: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupUseflags: called.")
 	self.cursor.execute('SELECT idflag FROM useflagsreference')
 	idflags = self.fetchall2set(self.cursor.fetchall())
 	# now parse them into useflags table
@@ -1329,7 +1330,7 @@ class etpDatabase:
 	    self.cursor.execute('DELETE FROM useflagsreference WHERE idflag ='+str(idflag))
 
     def cleanupSources(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupSources: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupSources: called.")
 	self.cursor.execute('SELECT idsource FROM sourcesreference')
 	idsources = self.fetchall2set(self.cursor.fetchall())
 	# now parse them into useflags table
@@ -1361,7 +1362,7 @@ class etpDatabase:
 	    self.cursor.execute('DELETE FROM sourcesreference WHERE idsource = '+str(idsource))
 
     def cleanupEclasses(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupEclasses: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupEclasses: called.")
 	self.cursor.execute('SELECT idclass FROM eclassesreference')
 	idclasses = self.fetchall2set(self.cursor.fetchall())
 	# now parse them into useflags table
@@ -1393,7 +1394,7 @@ class etpDatabase:
 	    self.cursor.execute('DELETE FROM eclassesreference WHERE idclass = '+str(idclass))
 
     def cleanupNeeded(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupNeeded: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupNeeded: called.")
 	self.cursor.execute('SELECT idneeded FROM neededreference')
 	idneededs = self.fetchall2set(self.cursor.fetchall())
 	# now parse them into useflags table
@@ -1426,7 +1427,7 @@ class etpDatabase:
 
 
     def cleanupDependencies(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupDependencies: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanupDependencies: called.")
 	self.cursor.execute('SELECT iddependency FROM dependenciesreference')
 	iddeps = self.fetchall2set(self.cursor.fetchall())
 	# now parse them into useflags table
@@ -1458,7 +1459,7 @@ class etpDatabase:
 	    self.cursor.execute('DELETE FROM dependenciesreference WHERE iddependency = '+str(iddep))
 
     def getIDPackage(self, atom, branch = etpConst['branch']):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackage: retrieving package ID for "+atom+" | branch: "+branch)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackage: retrieving package ID for "+atom+" | branch: "+branch)
 	self.cursor.execute('SELECT "IDPACKAGE" FROM baseinfo WHERE atom = "'+atom+'" AND branch = "'+branch+'"')
 	idpackage = -1
         idpackage = self.cursor.fetchone()
@@ -1469,7 +1470,7 @@ class etpDatabase:
 	return idpackage
 
     def getIDPackageFromFileInBranch(self, file, branch = "unstable"):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackageFromFile: retrieving package ID for file "+file+" | branch: "+branch)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackageFromFile: retrieving package ID for file "+file+" | branch: "+branch)
 	self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
 	idpackages = []
 	for row in self.cursor:
@@ -1482,7 +1483,7 @@ class etpDatabase:
 	return result
 
     def getIDPackagesFromFile(self, file):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackageFromFile: retrieving package ID for file "+file)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackageFromFile: retrieving package ID for file "+file)
 	self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
 	idpackages = []
 	for row in self.cursor:
@@ -1490,7 +1491,7 @@ class etpDatabase:
 	return idpackages
 
     def getIDCategory(self, category):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDCategory: retrieving category ID for "+str(category))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDCategory: retrieving category ID for "+str(category))
 	self.cursor.execute('SELECT "idcategory" FROM categories WHERE category = "'+str(category)+'"')
 	idcat = -1
 	for row in self.cursor:
@@ -1499,7 +1500,7 @@ class etpDatabase:
 	return idcat
 
     def getIDPackageFromBinaryPackage(self,packageName):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackageFromBinaryPackage: retrieving package ID for "+packageName)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getIDPackageFromBinaryPackage: retrieving package ID for "+packageName)
 	self.cursor.execute('SELECT "IDPACKAGE" FROM baseinfo WHERE download = "'+etpConst['binaryurirelativepath']+packageName+'"')
 	idpackage = -1
 	for row in self.cursor:
@@ -1551,7 +1552,7 @@ class etpDatabase:
 	
 
     def getPackageData(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageData: retrieving etpData for package ID for "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageData: retrieving etpData for package ID for "+str(idpackage))
 	data = {}
 
 	mydata = self.getBaseData(idpackage)
@@ -1636,15 +1637,13 @@ class etpDatabase:
     def fetchall2set(self, item):
 	mycontent = set()
 	for x in item:
-	    for y in x:
-		mycontent.add(y)
+            mycontent |= set(x)
 	return mycontent
 
     def fetchall2list(self, item):
 	content = []
 	for x in item:
-	    for y in x:
-		content.append(y)
+            content += list(x)
 	return content
 
     def fetchone2list(self, item):
@@ -1716,7 +1715,7 @@ class etpDatabase:
 	        dbCacheStore[etpCache['dbSearch']+self.dbname][function][searchdata] = data
 
     def retrieveAtom(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveAtom: retrieving Atom for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveAtom: retrieving Atom for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveAtom')
 	if cache != None: return cache
@@ -1728,7 +1727,7 @@ class etpDatabase:
 	return atom
 
     def retrieveBranch(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBranch: retrieving Branch for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBranch: retrieving Branch for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveBranch')
 	if cache != None: return cache
@@ -1740,7 +1739,7 @@ class etpDatabase:
 	return br
 
     def retrieveTrigger(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveTrigger: retrieving Branch for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveTrigger: retrieving Branch for package ID "+str(idpackage))
 
 	#cache = self.fetchInfoCache(idpackage,'retrieveTrigger')
 	#if cache != None: return cache
@@ -1762,7 +1761,7 @@ class etpDatabase:
 	return trigger
 
     def retrieveDownloadURL(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDownloadURL: retrieving download URL for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDownloadURL: retrieving download URL for package ID "+str(idpackage))
 	
 	cache = self.fetchInfoCache(idpackage,'retrieveDownloadURL')
 	if cache != None: return cache
@@ -1774,7 +1773,7 @@ class etpDatabase:
 	return download
 
     def retrieveDescription(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDescription: retrieving description for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDescription: retrieving description for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveDescription')
 	if cache != None: return cache
@@ -1786,7 +1785,7 @@ class etpDatabase:
 	return description
 
     def retrieveHomepage(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveHomepage: retrieving Homepage for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveHomepage: retrieving Homepage for package ID "+str(idpackage))
 	
 	cache = self.fetchInfoCache(idpackage,'retrieveHomepage')
 	if cache != None: return cache
@@ -1798,7 +1797,7 @@ class etpDatabase:
 	return home
 
     def retrieveCounter(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveCounter: retrieving Counter for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveCounter: retrieving Counter for package ID "+str(idpackage))
 	
 	cache = self.fetchInfoCache(idpackage,'retrieveCounter')
 	if cache != None: return cache
@@ -1818,7 +1817,7 @@ class etpDatabase:
 	return int(counter)
 
     def retrieveMessages(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveMessages: retrieving messages for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveMessages: retrieving messages for package ID "+str(idpackage))
 	
 	cache = self.fetchInfoCache(idpackage,'retrieveMessages')
 	if cache != None: return cache
@@ -1835,7 +1834,7 @@ class etpDatabase:
 
     # in bytes
     def retrieveSize(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSize: retrieving Size for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSize: retrieving Size for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveSize')
 	if cache != None: return cache
@@ -1848,7 +1847,7 @@ class etpDatabase:
 
     # in bytes
     def retrieveOnDiskSize(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveOnDiskSize: retrieving On Disk Size for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveOnDiskSize: retrieving On Disk Size for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveOnDiskSize')
 	if cache != None: return cache
@@ -1869,7 +1868,7 @@ class etpDatabase:
 	return size
 
     def retrieveDigest(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDigest: retrieving Digest for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDigest: retrieving Digest for package ID "+str(idpackage))
 	
 	cache = self.fetchInfoCache(idpackage,'retrieveDigest')
 	if cache != None: return cache
@@ -1881,7 +1880,7 @@ class etpDatabase:
 	return digest
 
     def retrieveName(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveName: retrieving Name for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveName: retrieving Name for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveName')
 	if cache != None: return cache
@@ -1893,7 +1892,7 @@ class etpDatabase:
 	return name
 
     def retrieveVersion(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveVersion: retrieving Version for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveVersion: retrieving Version for package ID "+str(idpackage))
 	
 	cache = self.fetchInfoCache(idpackage,'retrieveVersion')
 	if cache != None: return cache
@@ -1905,7 +1904,7 @@ class etpDatabase:
 	return ver
 
     def retrieveRevision(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveRevision: retrieving Revision for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveRevision: retrieving Revision for package ID "+str(idpackage))
 	
 	cache = self.fetchInfoCache(idpackage,'retrieveRevision')
 	if cache != None: return cache
@@ -1917,7 +1916,7 @@ class etpDatabase:
 	return rev
 
     def retrieveDateCreation(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDateCreation: retrieving Creation Date for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDateCreation: retrieving Creation Date for package ID "+str(idpackage))
 	
 	cache = self.fetchInfoCache(idpackage,'retrieveDateCreation')
 	if cache != None: return cache
@@ -1931,7 +1930,7 @@ class etpDatabase:
 	return date
 
     def retrieveApi(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveApi: retrieving Database API for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveApi: retrieving Database API for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveApi')
 	if cache != None: return cache
@@ -1943,7 +1942,7 @@ class etpDatabase:
 	return api
 
     def retrieveUseflags(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveUseflags: retrieving USE flags for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveUseflags: retrieving USE flags for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveUseflags')
 	if cache != None: return cache
@@ -1956,7 +1955,7 @@ class etpDatabase:
 	return flags
 
     def retrieveEclasses(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveEclasses: retrieving eclasses for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveEclasses: retrieving eclasses for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveEclasses')
 	if cache != None: return cache
@@ -1968,7 +1967,7 @@ class etpDatabase:
 	return classes
 
     def retrieveNeeded(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveNeeded: retrieving needed libraries for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveNeeded: retrieving needed libraries for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveNeeded')
 	if cache != None: return cache
@@ -1980,7 +1979,7 @@ class etpDatabase:
 	return needed
 
     def retrieveConflicts(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveEclasses: retrieving Conflicts for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveEclasses: retrieving Conflicts for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveConflicts')
 	if cache != None: return cache
@@ -1992,7 +1991,7 @@ class etpDatabase:
 	return confl
 
     def retrieveProvide(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProvide: retrieving Provide for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProvide: retrieving Provide for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveProvide')
 	if cache != None: return cache
@@ -2004,7 +2003,7 @@ class etpDatabase:
 	return provide
 
     def retrieveDependencies(self, idpackage):
-	#dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDependencies: retrieving dependency for package ID "+str(idpackage)) # too slow?
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDependencies: retrieving dependency for package ID "+str(idpackage)) # too slow?
 
 	cache = self.fetchInfoCache(idpackage,'retrieveDependencies')
 	if cache != None: return cache
@@ -2019,7 +2018,7 @@ class etpDatabase:
 	return deps
 
     def retrieveIdDependencies(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveIdDependencies: retrieving Dependencies for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveIdDependencies: retrieving Dependencies for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveIdDependencies')
 	if cache != None: return cache
@@ -2031,7 +2030,7 @@ class etpDatabase:
 	return iddeps
 
     def retrieveBinKeywords(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBinKeywords: retrieving Binary Keywords for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBinKeywords: retrieving Binary Keywords for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveBinKeywords')
 	if cache != None: return cache
@@ -2047,7 +2046,7 @@ class etpDatabase:
 	cache = self.fetchInfoCache(idpackage,'retrieveKeywords')
 	if cache != None: return cache
 
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveKeywords: retrieving Keywords for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveKeywords: retrieving Keywords for package ID "+str(idpackage))
 	self.cursor.execute('SELECT keywordname FROM keywords,keywordsreference WHERE keywords.idpackage = (?) and keywords.idkeyword = keywordsreference.idkeyword', (idpackage,))
 	kw = self.fetchall2set(self.cursor.fetchall())
 
@@ -2055,7 +2054,7 @@ class etpDatabase:
 	return kw
 
     def retrieveProtect(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProtect: retrieving CONFIG_PROTECT for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProtect: retrieving CONFIG_PROTECT for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveProtect')
 	if cache != None: return cache
@@ -2071,7 +2070,7 @@ class etpDatabase:
 	return protect
 
     def retrieveProtectMask(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProtectMask: retrieving CONFIG_PROTECT_MASK for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveProtectMask: retrieving CONFIG_PROTECT_MASK for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveProtectMask')
 	if cache != None: return cache
@@ -2087,7 +2086,7 @@ class etpDatabase:
 	return protect
 
     def retrieveSources(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSources: retrieving Sources for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSources: retrieving Sources for package ID "+str(idpackage))
 
 	''' caching 
 	cache = self.fetchInfoCache(idpackage,'retrieveSources')
@@ -2103,7 +2102,7 @@ class etpDatabase:
 	return sources
 
     def retrieveContent(self, idpackage, extended = False, contentType = None):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveContent: retrieving Content for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveContent: retrieving Content for package ID "+str(idpackage))
 
         self.createContentIndex() # FIXME: remove this with 1.0
         
@@ -2138,7 +2137,7 @@ class etpDatabase:
 	return fl
 
     def retrieveSlot(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSlot: retrieving Slot for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveSlot: retrieving Slot for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveSlot')
 	if cache != None: return cache
@@ -2150,7 +2149,7 @@ class etpDatabase:
 	return ver
     
     def retrieveVersionTag(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveVersionTag: retrieving Version TAG for package ID "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveVersionTag: retrieving Version TAG for package ID "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveVersionTag')
 	if cache != None: return cache
@@ -2162,7 +2161,7 @@ class etpDatabase:
 	return ver
     
     def retrieveMirrorInfo(self, mirrorname):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveMirrorInfo: retrieving Mirror info for mirror name "+str(mirrorname))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveMirrorInfo: retrieving Mirror info for mirror name "+str(mirrorname))
 
 	self.cursor.execute('SELECT "mirrorlink" FROM mirrorlinks WHERE mirrorname = (?)', (mirrorname,))
 	mirrorlist = self.fetchall2set(self.cursor.fetchall())
@@ -2170,7 +2169,7 @@ class etpDatabase:
 	return mirrorlist
 
     def retrieveCategory(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveCategory: retrieving Category for package ID for "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveCategory: retrieving Category for package ID for "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveCategory')
 	if cache != None: return cache
@@ -2182,7 +2181,7 @@ class etpDatabase:
 	return cat
 
     def retrieveLicense(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveLicense: retrieving License for package ID for "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveLicense: retrieving License for package ID for "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveLicense')
 	if cache != None: return cache
@@ -2194,7 +2193,7 @@ class etpDatabase:
 	return licname
 
     def retrieveCompileFlags(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveCompileFlags: retrieving CHOST,CFLAGS,CXXFLAGS for package ID for "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveCompileFlags: retrieving CHOST,CFLAGS,CXXFLAGS for package ID for "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveCompileFlags')
 	if cache != None: return cache
@@ -2211,7 +2210,7 @@ class etpDatabase:
 	return flags
 
     def retrieveDepends(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDepends: called for idpackage "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDepends: called for idpackage "+str(idpackage))
 
 	cache = self.fetchInfoCache(idpackage,'retrieveDepends')
 	if cache != None: return cache
@@ -2230,60 +2229,60 @@ class etpDatabase:
     # You must provide the full atom to this function
     # WARNING: this function does not support branches !!!
     def isPackageAvailable(self,pkgkey):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isPackageAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isPackageAvailable: called.")
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
 	self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = "'+pkgkey+'"')
 	result = self.cursor.fetchone()
 	if result:
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isPackageAvailable: "+pkgkey+" available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isPackageAvailable: "+pkgkey+" available.")
 	    return result[0]
-	dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isPackageAvailable: "+pkgkey+" not available.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isPackageAvailable: "+pkgkey+" not available.")
 	return -1
 
     def isIDPackageAvailable(self,idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isIDPackageAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isIDPackageAvailable: called.")
 	self.cursor.execute('SELECT idpackage FROM baseinfo WHERE idpackage = (?)', (idpackage,))
 	result = self.cursor.fetchone()
 	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isIDPackageAvailable: "+str(idpackage)+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isIDPackageAvailable: "+str(idpackage)+" not available.")
 	    return False
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isIDPackageAvailable: "+str(idpackage)+" available.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isIDPackageAvailable: "+str(idpackage)+" available.")
 	return True
 
     # This version is more specific and supports branches
     def isSpecificPackageAvailable(self, pkgkey, branch):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSpecificPackageAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSpecificPackageAvailable: called.")
 	pkgkey = entropyTools.removePackageOperators(pkgkey)
 	self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?) AND branch = (?)', (pkgkey,branch,))
 	result = self.cursor.fetchone()
 	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isSpecificPackageAvailable: "+pkgkey+" | branch: "+branch+" -> not found.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isSpecificPackageAvailable: "+pkgkey+" | branch: "+branch+" -> not found.")
 	    return False
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSpecificPackageAvailable: "+pkgkey+" | branch: "+branch+" -> found !")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSpecificPackageAvailable: "+pkgkey+" | branch: "+branch+" -> found !")
 	return True
 
     def isCategoryAvailable(self,category):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCategoryAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCategoryAvailable: called.")
 	self.cursor.execute('SELECT idcategory FROM categories WHERE category = (?)', (category,))
 	result = self.cursor.fetchone()
 	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isCategoryAvailable: "+category+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isCategoryAvailable: "+category+" not available.")
 	    return -1
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCategoryAvailable: "+category+" available.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCategoryAvailable: "+category+" available.")
 	return result[0]
 
     def isProtectAvailable(self,protect):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isProtectAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isProtectAvailable: called.")
 	self.cursor.execute('SELECT idprotect FROM configprotectreference WHERE protect = (?)', (protect,))
 	result = self.cursor.fetchone()
 	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isProtectAvailable: "+protect+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isProtectAvailable: "+protect+" not available.")
 	    return -1
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isProtectAvailable: "+protect+" available.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isProtectAvailable: "+protect+" available.")
 	return result[0]
 
     def isFileAvailable(self, file, extended = False):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isFileAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isFileAvailable: called.")
         self.createContentIndex() # FIXME: remove this with 1.0
         if extended:
             self.cursor.execute('SELECT * FROM content WHERE file = (?)', (file,))
@@ -2291,104 +2290,104 @@ class etpDatabase:
             self.cursor.execute('SELECT idpackage FROM content WHERE file = (?)', (file,))
 	result = self.cursor.fetchone()
 	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isFileAvailable: "+file+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isFileAvailable: "+file+" not available.")
             if extended:
                 return False,()
             else:
                 return False
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isFileAvailable: "+file+" available.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isFileAvailable: "+file+" available.")
         if extended:
             return True,result
         else:
             return True
 
     def isSourceAvailable(self,source):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSourceAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSourceAvailable: called.")
 	self.cursor.execute('SELECT idsource FROM sourcesreference WHERE source = "'+source+'"')
 	result = self.cursor.fetchone()
 	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isSourceAvailable: "+source+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isSourceAvailable: "+source+" not available.")
 	    return -1
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSourceAvailable: "+source+" available.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSourceAvailable: "+source+" available.")
 	return result[0]
 
     def isDependencyAvailable(self,dependency):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isDependencyAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isDependencyAvailable: called.")
 	self.cursor.execute('SELECT iddependency FROM dependenciesreference WHERE dependency = (?)', (dependency,))
 	result = self.cursor.fetchone()
 	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isDependencyAvailable: "+dependency+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isDependencyAvailable: "+dependency+" not available.")
 	    return -1
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isDependencyAvailable: "+dependency+" available.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isDependencyAvailable: "+dependency+" available.")
 	return result[0]
 
     def isKeywordAvailable(self,keyword):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isKeywordAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isKeywordAvailable: called.")
 	self.cursor.execute('SELECT idkeyword FROM keywordsreference WHERE keywordname = (?)', (keyword,))
 	result = self.cursor.fetchone()
 	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isKeywordAvailable: "+keyword+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isKeywordAvailable: "+keyword+" not available.")
 	    return -1
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isKeywordAvailable: "+keyword+" available.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isKeywordAvailable: "+keyword+" available.")
 	return result[0]
 
     def isUseflagAvailable(self,useflag):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isUseflagAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isUseflagAvailable: called.")
 	self.cursor.execute('SELECT idflag FROM useflagsreference WHERE flagname = (?)', (useflag,))
 	result = self.cursor.fetchone()
 	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isUseflagAvailable: "+useflag+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isUseflagAvailable: "+useflag+" not available.")
 	    return -1
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isUseflagAvailable: "+useflag+" available.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isUseflagAvailable: "+useflag+" available.")
 	return result[0]
 
     def isEclassAvailable(self,eclass):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isEclassAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isEclassAvailable: called.")
 	self.cursor.execute('SELECT idclass FROM eclassesreference WHERE classname = (?)', (eclass,))
 	result = self.cursor.fetchone()
 	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isEclassAvailable: "+eclass+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isEclassAvailable: "+eclass+" not available.")
 	    return -1
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isEclassAvailable: "+eclass+" available.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isEclassAvailable: "+eclass+" available.")
 	return result[0]
 
     def isNeededAvailable(self,needed):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isNeededAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isNeededAvailable: called.")
 	self.cursor.execute('SELECT idneeded FROM neededreference WHERE library = (?)', (needed,))
 	result = self.cursor.fetchone()
 	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isNeededAvailable: "+needed+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isNeededAvailable: "+needed+" not available.")
 	    return -1
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isNeededAvailable: "+needed+" available.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isNeededAvailable: "+needed+" available.")
 	return result[0]
 
     def isCounterAvailable(self,counter):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCounterAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCounterAvailable: called.")
 	result = False
 	self.cursor.execute('SELECT counter FROM counters WHERE counter = (?)', (counter,))
         result = self.cursor.fetchone()
         if result:
 	    result = True
 	if (result):
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isCounterAvailable: "+str(counter)+" available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isCounterAvailable: "+str(counter)+" available.")
 	else:
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCounterAvailable: "+str(counter)+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isCounterAvailable: "+str(counter)+" not available.")
 	return result
 
     def isLicenseAvailable(self,pkglicense):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLicenseAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLicenseAvailable: called.")
         if not pkglicense: # workaround for packages without a license but just garbage
             pkglicense = ' '
 	self.cursor.execute('SELECT idlicense FROM licenses WHERE license = (?)', (pkglicense,))
 	result = self.cursor.fetchone()
 	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isLicenseAvailable: "+pkglicense+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"isLicenseAvailable: "+pkglicense+" not available.")
 	    return -1
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLicenseAvailable: "+pkglicense+" available.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isLicenseAvailable: "+pkglicense+" available.")
 	return result[0]
 
     def isSystemPackage(self,idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSystemPackage: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSystemPackage: called.")
 
 	cache = self.fetchInfoCache(idpackage,'isSystemPackage')
 	if cache != None: return cache
@@ -2406,15 +2405,15 @@ class etpDatabase:
 	result = self.cursor.fetchone()
 	rslt = False
 	if result:
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSystemPackage: package is in system.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSystemPackage: package is in system.")
 	    rslt = True
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSystemPackage: package is NOT in system.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isSystemPackage: package is NOT in system.")
 
 	self.storeInfoCache(idpackage,'isSystemPackage',rslt)
 	return rslt
 
     def isInjected(self,idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isInjected: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isInjected: called.")
 
 	cache = self.fetchInfoCache(idpackage,'isInjected')
 	if cache != None: return cache
@@ -2432,26 +2431,26 @@ class etpDatabase:
 	result = self.cursor.fetchone()
 	rslt = False
 	if result:
-	    dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isInjected: package is in system.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isInjected: package is in system.")
 	    rslt = True
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isInjected: package is NOT in system.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isInjected: package is NOT in system.")
 
 	self.storeInfoCache(idpackage,'isInjected',rslt)
 	return rslt
 
     def areCompileFlagsAvailable(self,chost,cflags,cxxflags):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"areCompileFlagsAvailable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"areCompileFlagsAvailable: called.")
         
 	self.cursor.execute('SELECT idflags FROM flags WHERE chost in (?) AND cflags in (?) AND cxxflags in (?)', (chost,cflags,cxxflags,))
         result = self.cursor.fetchone()
 	if not result:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"areCompileFlagsAvailable: flags tuple "+chost+"|"+cflags+"|"+cxxflags+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"areCompileFlagsAvailable: flags tuple "+chost+"|"+cflags+"|"+cxxflags+" not available.")
 	    return -1
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"areCompileFlagsAvailable: flags tuple "+chost+"|"+cflags+"|"+cxxflags+" available.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"areCompileFlagsAvailable: flags tuple "+chost+"|"+cflags+"|"+cxxflags+" available.")
 	return result[0]
 
     def searchBelongs(self, file, like = False, branch = None):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchBelongs: called for "+file)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchBelongs: called for "+file)
 	
 	branchstring = ''
         searchkeywords = [file]
@@ -2468,7 +2467,7 @@ class etpDatabase:
 
     ''' search packages that uses the eclass provided '''
     def searchEclassedPackages(self, eclass, atoms = False): # atoms = return atoms directly
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchEclassedPackages: called for "+eclass)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchEclassedPackages: called for "+eclass)
 	if atoms:
 	    self.cursor.execute('SELECT baseinfo.atom,eclasses.idpackage FROM baseinfo,eclasses,eclassesreference WHERE eclassesreference.classname = (?) and eclassesreference.idclass = eclasses.idclass and eclasses.idpackage = baseinfo.idpackage', (eclass,))
 	    return self.cursor.fetchall()
@@ -2478,7 +2477,7 @@ class etpDatabase:
 
     ''' search packages whose versiontag matches the one provided '''
     def searchTaggedPackages(self, tag, atoms = False): # atoms = return atoms directly
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchTaggedPackages: called for "+tag)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchTaggedPackages: called for "+tag)
 	if atoms:
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE versiontag in (?)', (tag,))
 	    return self.cursor.fetchall()
@@ -2488,7 +2487,7 @@ class etpDatabase:
 
     ''' search packages whose slot matches the one provided '''
     def searchSlottedPackages(self, slot, atoms = False): # atoms = return atoms directly
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchSlottedPackages: called for "+slot)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchSlottedPackages: called for "+slot)
 	if atoms:
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE slot in (?)', (slot,))
 	    return self.cursor.fetchall()
@@ -2498,7 +2497,7 @@ class etpDatabase:
 
     ''' search packages that need the specified library (in neededreference table) specified by keyword '''
     def searchNeeded(self, keyword, like = False):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchNeeded: called for "+keyword)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchNeeded: called for "+keyword)
         
         if like:
             self.cursor.execute('SELECT needed.idpackage FROM needed,neededreference WHERE library LIKE (?) and needed.idneeded = neededreference.idneeded', (keyword,))
@@ -2508,14 +2507,14 @@ class etpDatabase:
 
     ''' same as above but with branch support '''
     def searchNeededInBranch(self, keyword, branch):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchNeeded: called for "+keyword+" and branch: "+branch)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchNeeded: called for "+keyword+" and branch: "+branch)
 	self.cursor.execute('SELECT needed.idpackage FROM needed,neededreference,baseinfo WHERE library = (?) and needed.idneeded = neededreference.idneeded and baseinfo.branch = (?)', (keyword,branch,))
 	return self.fetchall2set(self.cursor.fetchall())
 
 
     ''' search dependency string inside dependenciesreference table and retrieve iddependency '''
     def searchDependency(self, dep):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchDependency: called for "+dep)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchDependency: called for "+dep)
 	self.cursor.execute('SELECT iddependency FROM dependenciesreference WHERE dependency = (?)', (dep,))
 	iddep = self.cursor.fetchone()
 	if iddep:
@@ -2526,12 +2525,12 @@ class etpDatabase:
 
     ''' search iddependency inside dependencies table and retrieve idpackages '''
     def searchIdpackageFromIddependency(self, iddep):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchIdpackageFromIddependency: called for "+str(iddep))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchIdpackageFromIddependency: called for "+str(iddep))
 	self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = (?)', (iddep,))
 	return self.fetchall2set(self.cursor.fetchall())
 
     def searchPackages(self, keyword, sensitive = False, slot = None, tag = None, branch = None):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackages: called for "+keyword)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackages: called for "+keyword)
 	
         searchkeywords = ["%"+keyword+"%"]
         slotstring = ''
@@ -2554,7 +2553,7 @@ class etpDatabase:
 	return self.cursor.fetchall()
 
     def searchProvide(self, keyword, slot = None, tag = None, branch = None):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchProvide: called for "+keyword)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchProvide: called for "+keyword)
 
 	self.cursor.execute('SELECT idpackage FROM provide WHERE atom = (?)', (keyword,))
 	idpackage = self.cursor.fetchone()
@@ -2579,7 +2578,7 @@ class etpDatabase:
 	return self.cursor.fetchall()
 
     def searchPackagesByDescription(self, keyword):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByDescription: called for "+keyword.lower())
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByDescription: called for "+keyword.lower())
 	self.cursor.execute('SELECT idpackage FROM extrainfo WHERE LOWER(description) LIKE (?)', ("%"+keyword.lower()+"%",))
 	idpkgs = self.fetchall2set(self.cursor.fetchall())
 	if not idpkgs:
@@ -2613,7 +2612,7 @@ class etpDatabase:
 	return result
 
     def searchPackagesByName(self, keyword, sensitive = False, branch = None):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByName: called for "+keyword)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByName: called for "+keyword)
 	
 	if (self.xcache):
 	    cached = self.fetchSearchCache((keyword,sensitive,branch),'searchPackagesByName')
@@ -2640,7 +2639,7 @@ class etpDatabase:
 
 
     def searchPackagesByCategory(self, keyword, like = False, branch = None):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByCategory: called for "+keyword)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByCategory: called for "+keyword)
 	
 	if (self.xcache):
 	    cached = self.fetchSearchCache((keyword,branch),'searchPackagesByCategory')
@@ -2663,7 +2662,7 @@ class etpDatabase:
 	return results
 
     def searchPackagesByNameAndCategory(self, name, category, sensitive = False, branch = None):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByNameAndCategory: called for name: "+name+" and category: "+category)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByNameAndCategory: called for name: "+name+" and category: "+category)
 	
 	if (self.xcache):
 	    cached = self.fetchSearchCache((name,category,sensitive,branch),'searchPackagesByNameAndCategory')
@@ -2674,7 +2673,7 @@ class etpDatabase:
 	self.cursor.execute('SELECT idcategory FROM categories WHERE category = (?)', (category,))
 	idcat = self.cursor.fetchone()
 	if not idcat:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"searchPackagesByNameAndCategory: Category "+category+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"searchPackagesByNameAndCategory: Category "+category+" not available.")
 	    return ()
 	else:
 	    idcat = idcat[0]
@@ -2703,7 +2702,7 @@ class etpDatabase:
 	return results
 
     def searchPackagesByNameAndVersionAndCategory(self, name, version, category, branch = None, sensitive = False):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByNameAndVersionAndCategory: called for "+name+" and version "+version+" and category "+category+" | branch "+branch)
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchPackagesByNameAndVersionAndCategory: called for "+name+" and version "+version+" and category "+category+" | branch "+branch)
 	
 	if (self.xcache):
 	    cached = self.fetchSearchCache((name,version,category,branch,sensitive),'searchPackagesByNameAndVersionAndCategory')
@@ -2713,7 +2712,7 @@ class etpDatabase:
 	self.cursor.execute('SELECT idcategory FROM categories WHERE category = (?)', (category,))
 	idcat = self.cursor.fetchone()
 	if not idcat:
-	    dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"searchPackagesByNameAndVersionAndCategory: Category "+category+" not available.")
+	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"searchPackagesByNameAndVersionAndCategory: Category "+category+" not available.")
 	    return ()
 	else:
 	    idcat = idcat[0]
@@ -2743,12 +2742,12 @@ class etpDatabase:
 	return results
 
     def listAllPackages(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllPackages: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllPackages: called.")
 	self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo')
 	return self.cursor.fetchall()
 
     def listAllCounters(self, onlycounters = False):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllCounters: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllCounters: called.")
         if onlycounters:
             self.cursor.execute('SELECT counter FROM counters')
             return self.fetchall2set(self.cursor.fetchall())
@@ -2757,7 +2756,7 @@ class etpDatabase:
             return self.cursor.fetchall()
 
     def listAllIdpackages(self, branch = None):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllIdpackages: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllIdpackages: called.")
 	branchstring = ''
         searchkeywords = []
 	if branch:
@@ -2767,22 +2766,22 @@ class etpDatabase:
 	return self.fetchall2set(self.cursor.fetchall())
 
     def listAllDependencies(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllDependencies: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllDependencies: called.")
 	self.cursor.execute('SELECT * FROM dependenciesreference')
 	return self.cursor.fetchall()
 
     def listAllBranches(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllBranches: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllBranches: called.")
 	self.cursor.execute('SELECT branch FROM baseinfo')
 	return self.fetchall2set(self.cursor.fetchall())
 
     def listIdPackagesInIdcategory(self,idcategory):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listIdPackagesInIdcategory: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listIdPackagesInIdcategory: called.")
 	self.cursor.execute('SELECT idpackage FROM baseinfo where idcategory = (?)', (idcategory,))
 	return self.fetchall2set(self.cursor.fetchall())
 
     def listIdpackageDependencies(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listIdpackageDependencies: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listIdpackageDependencies: called.")
 	self.cursor.execute('SELECT iddependency FROM dependencies where idpackage = (?)', (idpackage,))
 	iddeps = self.fetchall2set(self.cursor.fetchall())
 	if not iddeps:
@@ -2816,7 +2815,7 @@ class etpDatabase:
 	return result
 
     def listBranchPackagesTbz2(self, branch):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listBranchPackagesTbz2: called with "+str(branch))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listBranchPackagesTbz2: called with "+str(branch))
         result = set()
         pkglist = self.listBranchPackages(branch)
         for pkg in pkglist:
@@ -2830,12 +2829,12 @@ class etpDatabase:
 	return result
 
     def listBranchPackages(self, branch):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listBranchPackages: called with "+str(branch))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listBranchPackages: called with "+str(branch))
 	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE branch = (?)', (branch,))
 	return self.cursor.fetchall()
 
     def listAllFiles(self, clean = False):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllFiles: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllFiles: called.")
 	self.cursor.execute('SELECT file FROM content')
 	if clean:
 	    return self.fetchall2set(self.cursor.fetchall())
@@ -2843,12 +2842,12 @@ class etpDatabase:
 	    return self.fetchall2list(self.cursor.fetchall())
 
     def listAllCategories(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllCategories: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllCategories: called.")
 	self.cursor.execute('SELECT idcategory,category FROM categories')
 	return self.cursor.fetchall()
 
     def listConfigProtectDirectories(self, mask = False):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listConfigProtectDirectories: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listConfigProtectDirectories: called.")
 	dirs = set()
 	query = 'SELECT idprotect FROM configprotect'
 	if mask:
@@ -2893,7 +2892,7 @@ class etpDatabase:
     
     def switchBranch(self, idpackage, tobranch):
 
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"switchBranch: called for ID "+str(idpackage)+" | branch -> "+str(tobranch))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"switchBranch: called for ID "+str(idpackage)+" | branch -> "+str(tobranch))
 	
 	mycat = self.retrieveCategory(idpackage)
 	myname = self.retrieveName(idpackage)
@@ -2922,7 +2921,7 @@ class etpDatabase:
 #
 
     def addPackageToInstalledTable(self, idpackage, repositoryName):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackageToInstalledTable: called for "+str(idpackage)+" and repository "+str(repositoryName))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addPackageToInstalledTable: called for "+str(idpackage)+" and repository "+str(repositoryName))
 	self.cursor.execute(
 		'INSERT into installedtable VALUES '
 		'(?,?)'
@@ -2933,7 +2932,7 @@ class etpDatabase:
 	self.commitChanges()
 
     def retrievePackageFromInstalledTable(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrievePackageFromInstalledTable: called. ")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrievePackageFromInstalledTable: called. ")
 	result = 'Not available'
 	try:
 	    self.cursor.execute('SELECT repositoryname FROM installedtable WHERE idpackage = (?)', (idpackage,))
@@ -2943,7 +2942,7 @@ class etpDatabase:
 	return result
 
     def removePackageFromInstalledTable(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removePackageFromInstalledTable: called for "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removePackageFromInstalledTable: called for "+str(idpackage))
 	try:
 	    self.cursor.execute('DELETE FROM installedtable WHERE idpackage = (?)', (idpackage,))
 	    self.commitChanges()
@@ -2951,7 +2950,7 @@ class etpDatabase:
 	    self.createInstalledTable()
 
     def removePackageFromDependsTable(self, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removePackageFromDependsTable: called for "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removePackageFromDependsTable: called for "+str(idpackage))
 	try:
 	    self.cursor.execute('DELETE FROM dependstable WHERE idpackage = (?)', (idpackage,))
 	    self.commitChanges()
@@ -2960,7 +2959,7 @@ class etpDatabase:
 	    return 1 # need reinit
 
     def removeDependencyFromDependsTable(self, iddependency):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removeDependencyFromDependsTable: called for "+str(iddependency))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removeDependencyFromDependsTable: called for "+str(iddependency))
 	try:
 	    self.cursor.execute('DELETE FROM dependstable WHERE iddependency = (?)',(iddependency,))
 	    self.commitChanges()
@@ -2970,7 +2969,7 @@ class etpDatabase:
 
     # temporary/compat functions
     def createDependsTable(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createDependsTable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createDependsTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS dependstable;')
 	self.cursor.execute('CREATE TABLE dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );')
 	# this will be removed when dependstable is refilled properly
@@ -3002,7 +3001,7 @@ class etpDatabase:
         self.commitChanges()
 
     def storeXpakMetadata(self, idpackage, blob):
-        dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"storeXpakMetadata: called.")
+        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"storeXpakMetadata: called.")
 	self.cursor.execute(
 		'INSERT into xpakdata VALUES '
 		'(?,?)', ( int(idpackage), buffer(blob), )
@@ -3010,7 +3009,7 @@ class etpDatabase:
         self.commitChanges()
 
     def retrieveXpakMetadata(self, idpackage):
-        dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveXpakMetadata: called.")
+        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveXpakMetadata: called.")
         try:
             self.cursor.execute('SELECT data from xpakdata where idpackage = (?)', (idpackage,))
             mydata = self.cursor.fetchone()
@@ -3023,7 +3022,7 @@ class etpDatabase:
             pass
 
     def createCountersTable(self):
-        dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createCountersTable: called.")
+        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createCountersTable: called.")
         self.cursor.execute('DROP TABLE IF EXISTS counters;')
         self.cursor.execute('CREATE TABLE counters ( counter INTEGER PRIMARY KEY, idpackage INTEGER );')
         self.commitChanges()
@@ -3082,13 +3081,13 @@ class etpDatabase:
     #
     
     def createSizesTable(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createSizesTable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createSizesTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS sizes;')
 	self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
 	self.commitChanges()
 
     def createContentTypeColumn(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createContentTypeColumn: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createContentTypeColumn: called.")
         try: # if database disk image is malformed, won't raise exception here
             self.cursor.execute('ALTER TABLE content ADD COLUMN type VARCHAR;')
             self.cursor.execute('UPDATE content SET type = "0"')
@@ -3097,18 +3096,18 @@ class etpDatabase:
 	self.commitChanges()
 
     def createTriggerTable(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createTriggerTable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createTriggerTable: called.")
 	self.cursor.execute('CREATE TABLE triggers ( idpackage INTEGER PRIMARY KEY, data BLOB );')
 	self.commitChanges()
 
     def createTriggerColumn(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createTriggerColumn: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createTriggerColumn: called.")
 	self.cursor.execute('ALTER TABLE baseinfo ADD COLUMN trigger INTEGER;')
 	self.cursor.execute('UPDATE baseinfo SET trigger = 0')
 	self.commitChanges()
 
     def createEclassesTable(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createEclassesTable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createEclassesTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS eclasses;')
 	self.cursor.execute('DROP TABLE IF EXISTS eclassesreference;')
 	self.cursor.execute('CREATE TABLE eclasses ( idpackage INTEGER, idclass INTEGER );')
@@ -3116,7 +3115,7 @@ class etpDatabase:
 	self.commitChanges()
 
     def createNeededTable(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createNeededTable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createNeededTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS needed;')
 	self.cursor.execute('DROP TABLE IF EXISTS neededreference;')
 	self.cursor.execute('CREATE TABLE needed ( idpackage INTEGER, idneeded INTEGER );')
@@ -3124,17 +3123,17 @@ class etpDatabase:
 	self.commitChanges()
     
     def createSystemPackagesTable(self):
-        dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createSystemPackagesTable: called.")
+        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createSystemPackagesTable: called.")
         self.cursor.execute('CREATE TABLE systempackages ( idpackage INTEGER PRIMARY KEY );')
 	self.commitChanges()
     
     def createInjectedTable(self):
-        dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createInjectedTable: called.")
+        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createInjectedTable: called.")
         self.cursor.execute('CREATE TABLE injected ( idpackage INTEGER PRIMARY KEY );')
 	self.commitChanges()
     
     def createProtectTable(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createProtectTable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createProtectTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS configprotect;')
 	self.cursor.execute('DROP TABLE IF EXISTS configprotectmask;')
 	self.cursor.execute('DROP TABLE IF EXISTS configprotectreference;')
@@ -3144,13 +3143,13 @@ class etpDatabase:
 	self.commitChanges()
 
     def createInstalledTable(self):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createInstalledTable: called.")
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createInstalledTable: called.")
 	self.cursor.execute('DROP TABLE IF EXISTS installedtable;')
 	self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER PRIMARY KEY, repositoryname VARCHAR );')
 	self.commitChanges()
 
     def addDependRelationToDependsTable(self, iddependency, idpackage):
-	dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addDependRelationToDependsTable: called for iddependency "+str(iddependency)+" and idpackage "+str(idpackage))
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addDependRelationToDependsTable: called for iddependency "+str(iddependency)+" and idpackage "+str(idpackage))
 	self.cursor.execute(
 		'INSERT into dependstable VALUES '
 		'(?,?)'
