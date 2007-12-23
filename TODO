@@ -1,4 +1,9 @@
 TODO list:
+  - /usr/portage/profiles/updates support
+  - deps in profile?
+  - aspell deps & depends?
+  - use frozenset() where possible
+  - add gentoo pkg_* triggers logging
   - Community repositories
   - find a way to better handle real smartapps deps
   - reduce size of packages.db.bz2

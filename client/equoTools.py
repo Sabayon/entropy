@@ -587,7 +587,7 @@ def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefil
                     needed = ndbconn.retrieveNeeded(match[0])
                     ndbconn.closeDB()
                     del ndbconn
-                    oldneeded.difference_update(needed)
+                    oldneeded = oldneeded - needed
                     if oldneeded:
                         # reverse lookup to find belonging package
                         for need in oldneeded:
@@ -1538,6 +1538,10 @@ def installPackageIntoDatabase(idpackage, repository):
     #print data['dependencies']
     # open client db
     clientDbconn = openClientDatabase()
+    # always set data['injected'] to False
+    # installed packages database SHOULD never have more than one package for scope (key+slot)
+    data['injected'] = False
+    
     idpk, rev, x, status = clientDbconn.handlePackage(etpData = data, forcedRevision = data['revision'])
     del x
     del data
@@ -1678,7 +1682,7 @@ def stepExecutor(step, infoDict, loopString = None):
                     remdata = etpRemovalTriggers.get(infoDict['removeatom'])
                     if remdata:
                         itriggers = triggerTools.preremove(remdata) # remove duplicated triggers
-                        triggers.difference_update(itriggers)
+                        triggers = triggers - itriggers
                         del itriggers
                     del remdata
             
@@ -1709,7 +1713,7 @@ def stepExecutor(step, infoDict, loopString = None):
 		pkgdata = etpInstallTriggers.get(infoDict['atom']) # remove duplicated triggers
 		if pkgdata:
 		    itriggers = triggerTools.postinstall(pkgdata)
-		    triggers.difference_update(itriggers)
+		    triggers = triggers - itriggers
                     del itriggers
                 del pkgdata
 	    

@@ -572,7 +572,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     
                 if not (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']):
                     continue
-    
+
                 action = 0
                 flags = " ["
                 pkgcmp = entropyTools.entropyCompareVersions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
@@ -902,7 +902,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 if not returnQueue: # must be loaded manually
                     oldcontent = clientDbconn.retrieveContent(actionQueue[pkgatom]['removeidpackage'])
                     newcontent = dbconn.retrieveContent(idpackage)
-                    oldcontent.difference_update(newcontent)
+                    oldcontent = oldcontent - newcontent
                     del newcontent
                     actionQueue[pkgatom]['removecontent'] = oldcontent.copy()
                     etpRemovalTriggers[actionQueue[pkgatom]['removeatom']] = clientDbconn.getPackageData(actionQueue[pkgatom]['removeidpackage'])
