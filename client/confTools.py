@@ -214,7 +214,7 @@ def update():
 			    comeback = True
 			    break
 			print_info(darkred("Edited file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source'])+darkred(" - showing differencies:"))
-			diff = showdiff(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
+			diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],etpConst['systemroot']+scandata[cmd]['source'])
 			if (not diff):
 			    print_info(darkred("Automerging file ")+darkgreen(scandata[cmd]['source']))
 			    shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
@@ -226,7 +226,7 @@ def update():
 
 		    elif action == 4:
 			# show diffs again
-			diff = showdiff(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
+			diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],etpConst['systemroot']+scandata[cmd]['source'])
 			continue
 		
 		if (comeback):
