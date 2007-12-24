@@ -1,4 +1,5 @@
 TODO list:
+  - who pulls in libxcb?
   - /usr/portage/profiles/updates support
   - deps in profile?
   - aspell deps & depends?

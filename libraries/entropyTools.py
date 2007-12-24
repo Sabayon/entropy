@@ -1450,7 +1450,16 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
                 os.path.isdir(lpath): # workaround for directory symlink issues
                 lpath = os.path.realpath(lpath)
             
-            tarinfo = tar.gettarinfo(lpath, str(arcname)) # FIXME: casting to str() cause of python <2.5.1 bug
+            try:
+                arcname = str(arcname)
+            except UnicodeEncodeError:
+                try:
+                    arcname = arcname.encode("latin1")
+                except:
+                    print "DEBUG: python cannot encode path: "+unicode(arcname)+" properly to get it working with tarfile module. Please report."
+                    continue
+            
+            tarinfo = tar.gettarinfo(lpath, arcname) # FIXME: casting to str() cause of python <2.5.1 bug, if exception raised, I'm gonna try this
             tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
             tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
             
@@ -2091,38 +2100,58 @@ def collectLinkerPaths():
     linkerPaths.update(ldpaths)
     return ldpaths
 
+# this is especially used to try to guess portage bytecoded entries in CONTENTS
 def string_to_utf8(string):
     done = False
     
-    # try it easy
+    # simple unicode?
+    '''
     try:
-        string = string.decode("utf8").encode(sys.getfilesystemencoding())
+        newstring = unicode(string)
         done = True
     except:
         pass
     if done:
-        return string
+        return newstring
+    '''
+    
+    # try utf8
+    try:
+        newstring = string.decode("utf8").encode(sys.getfilesystemencoding())
+        done = True
+    except:
+        pass
+    if done:
+        return newstring
+    
+    try:
+        newstring = string.encode("utf8").decode(sys.getfilesystemencoding())
+        done = True
+    except:
+        pass
+    if done:
+        return newstring
 
     # try latin1 + iso-8859-1
     try:
-        string = string.decode("latin1").decode("iso-8859-1").encode(sys.getfilesystemencoding())
+        newstring = string.decode("latin1").decode("iso-8859-1").encode(sys.getfilesystemencoding())
         done = True
     except:
         pass
     if done:
-        return string
+        return newstring
 
     # try just latin1
     try:
-        string = string.decode("latin1").encode(sys.getfilesystemencoding())
+        newstring = string.decode("latin1").encode(sys.getfilesystemencoding())
         done = True
     except:
         pass
     if done:
-        return string
+        return newstring
     
     # otherwise return None
-    print "DEBUG: cannot encode into filesystem encoding -> "+str(string)
+    print "DEBUG: cannot encode into filesystem encoding -> "+unicode(string)
     return None
 
 def listToUtf8(mylist):
