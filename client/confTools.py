@@ -491,7 +491,7 @@ def confinfo():
     counter = 0
     for item in data:
 	counter += 1
-	print_info(" ("+blue(str(counter))+") "+"[auto:"+str(data[item]['automerge'])+"]"+red(" file: ")+item)
+	print_info(" ("+blue(str(counter))+") "+"[auto:"+str(data[item]['automerge'])+"]"+red(" file: ")+str(item))
     print_info(red(" @@ ")+brown("Unique files that would be update:\t\t")+red(str(len(data))))
     automerge = 0
     for x in data:
