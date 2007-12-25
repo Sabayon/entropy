@@ -499,7 +499,7 @@ def initConfig_entropyConstants(rootdir):
     ETP_TRIGGERSDIR = "/triggers/"+ETP_ARCH_CONST
     ETP_SMARTAPPSDIR = "/smartapps/"+ETP_ARCH_CONST
     ETP_SMARTPACKAGESDIR = "/smartpackages/"+ETP_ARCH_CONST
-    ETP_XMLDIR = "/xml/"
+    ETP_CACHESDIR = "/caches/"
     ETP_LOG_DIR = ETP_DIR+"/"+"logs"
     ETP_CONF_DIR = rootdir+"/etc/entropy"
     ETP_SYSLOG_DIR = rootdir+"/var/log/entropy/"
@@ -633,7 +633,7 @@ def initConfig_entropyConstants(rootdir):
         'errorstatus': ETP_CONF_DIR+"/code",
         'systemroot': rootdir, # default system root
         
-        'dumpstoragedir': ETP_DIR+ETP_XMLDIR, # data storage directory, useful to speed up equo across multiple issued commands
+        'dumpstoragedir': ETP_DIR+ETP_CACHESDIR, # data storage directory, useful to speed up equo across multiple issued commands
     
         # packages keywords/mask/unmask settings
         'packagemasking': {}, # package masking information dictionary filled by maskingparser.py
@@ -668,8 +668,8 @@ def initConfig_entropyConstants(rootdir):
         if os.getuid() == 0:
             os.makedirs(piddir)
         else:
-            print "you need to run this as root at least once."
-            sys.exit(100)
+            import exceptionTools
+            raise exceptionTools.DirectoryNotFound("DirectoryNotFound: please run this as root at least once or create: "+piddir)
     # PID creation
     pid = os.getpid()
     if os.path.exists(etpConst['pidfile']):
@@ -704,8 +704,8 @@ def initConfig_entropyConstants(rootdir):
             f.flush()
             f.close()
         else:
-            print "you need to run this as root at least once."
-            sys.exit(100)
+            import exceptionTools
+            raise exceptionTools.FileNotFound("FileNotFound: pid not found. please run this application as root at least once.")
     
     # Create paths
     if not os.path.isdir(etpConst['entropyworkdir']):
@@ -722,8 +722,8 @@ def initConfig_entropyConstants(rootdir):
                     except OSError:
                         pass
         else:
-            print "you need to run this as root at least once."
-            sys.exit(100)
+            import exceptionTools
+            raise exceptionTools.DirectoryNotFound("DirectoryNotFound: pid not found. please run this application as root at least once or create: "+etpConst['entropyworkdir'])
     
     
     # entropy section
@@ -813,10 +813,11 @@ def initConfig_entropyConstants(rootdir):
                 etpConst['branch'] = branch
                 if not os.path.isdir(etpConst['packagesbindir']+"/"+branch):
                     if os.getuid() == 0:
+                        # check if we have a broken symlink
                         os.makedirs(etpConst['packagesbindir']+"/"+branch)
                     else:
-                        print "ERROR: please run this as root at least once or create: "+str(etpConst['packagesbindir']+"/"+branch)
-                        sys.exit(49)
+                        import exceptionTools
+                        raise exceptionTools.DirectoryNotFound("DirectoryNotFound: please run this as root at least once or create: "+etpConst['packagesbindir']+"/"+branch)
     
     # align etpConst['binaryurirelativepath'] and etpConst['etpurirelativepath'] with etpConst['product']
     etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['binaryurirelativepath']
