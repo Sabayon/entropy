@@ -2994,7 +2994,22 @@ class etpDatabase:
         status = self.cursor.fetchone()
         if status:
             return False
-        return True
+        
+        # also check that dependenciesreference length matches dependstable length
+        self.cursor.execute('select count(*) from dependenciesreference')
+        dependenciesreference_count = self.cursor.fetchone()
+        self.cursor.execute('select count(*) from dependstable')
+        dependstable_count = self.cursor.fetchone()
+        if dependenciesreference_count and dependstable_count:
+            try:
+                if dependenciesreference_count[0] == dependstable_count[0]:
+                    return True
+                else:
+                    return False
+            except:
+                return False
+
+        return False
 
     def createXpakTable(self):
         self.cursor.execute('CREATE TABLE xpakdata ( idpackage INTEGER PRIMARY KEY, data BLOB );')
