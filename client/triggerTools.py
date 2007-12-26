@@ -777,7 +777,7 @@ def ebuild_preremove(pkgdata):
     if os.path.isfile(myebuild):
         print_info(red("   ##")+brown(" Ebuild: pkg_prerm()"))
         try:
-            rc = portageTools.portage_doebuild(myebuild, mydo = "prerm", tree = "bintree", cpv = portage_atom)
+            rc = portageTools.portage_doebuild(myebuild, mydo = "prerm", tree = "bintree", cpv = portage_atom, portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom)
             if rc == 1:
                 equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preremove trigger for "+str(portage_atom)+". Something bad happened.")
         except Exception, e:
@@ -792,7 +792,7 @@ def ebuild_postremove(pkgdata):
     if os.path.isfile(myebuild):
         print_info(red("   ##")+brown(" Ebuild: pkg_postrm()"))
         try:
-            rc = portage_doebuild(myebuild, mydo = "postrm", tree = "bintree", cpv = portage_atom)
+            rc = portage_doebuild(myebuild, mydo = "postrm", tree = "bintree", cpv = portage_atom, portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom)
             if rc == 1:
                 equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo postremove trigger for "+str(portage_atom)+". Something bad happened.")
         except Exception, e:

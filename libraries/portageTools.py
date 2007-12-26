@@ -656,7 +656,11 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
 
     cpv = str(cpv)
     mysettings.setcpv(cpv)
+    portage_tmpdir_created = False # for pkg_postrm, pkg_prerm
     if portage_tmpdir:
+        if not os.path.isdir(portage_tmpdir):
+            os.makedirs(portage_tmpdir)
+            portage_tmpdir_created = True
         mysettings['PORTAGE_TMPDIR'] = str(portage_tmpdir)
         mysettings.backup_changes("PORTAGE_TMPDIR")
     
@@ -671,13 +675,17 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
     else:
         vartree = cached
 
-    rc = portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = mypath, tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree)
+    rc = portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = mypath, tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree, use_cache = 0) ### FIXME: add support for cache_overlay
 
     # if mute, restore old stdout/stderr
     if etpUi['mute']:
         sys.stderr = oldsystderr
         sys.stdout = oldsysstdout
         f.close()
+    
+    if portage_tmpdir_created:
+        import shutil
+        shutil.rmtree(portage_tmpdir,True)
     
     del mydbapi
     del metadata
