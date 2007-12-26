@@ -632,6 +632,7 @@ def initConfig_entropyConstants(rootdir):
         'product': "standard", # Product identificator (standard, professional...)
         'errorstatus': ETP_CONF_DIR+"/code",
         'systemroot': rootdir, # default system root
+        'uid': os.getuid(), # current running UID
         
         'dumpstoragedir': ETP_DIR+ETP_CACHESDIR, # data storage directory, useful to speed up equo across multiple issued commands
     
@@ -665,7 +666,7 @@ def initConfig_entropyConstants(rootdir):
     # handle pid file
     piddir = os.path.dirname(etpConst['pidfile'])
     if not os.path.exists(piddir):
-        if os.getuid() == 0:
+        if etpConst['uid'] == 0:
             os.makedirs(piddir)
         else:
             import exceptionTools
@@ -685,7 +686,7 @@ def initConfig_entropyConstants(rootdir):
                 etpConst['applicationlock'] = True
             except:
                 # if root, write new pid
-                if os.getuid() == 0:
+                if etpConst['uid'] == 0:
                     try:
                         f = open(etpConst['pidfile'],"w")
                         f.write(str(pid))
@@ -698,7 +699,7 @@ def initConfig_entropyConstants(rootdir):
                             raise
 
     else:
-        if os.getuid() == 0:
+        if etpConst['uid'] == 0:
             f = open(etpConst['pidfile'],"w")
             f.write(str(pid))
             f.flush()
@@ -709,7 +710,7 @@ def initConfig_entropyConstants(rootdir):
     
     # Create paths
     if not os.path.isdir(etpConst['entropyworkdir']):
-        if os.getuid() == 0:
+        if etpConst['uid'] == 0:
             for x in etpConst:
                 if (type(etpConst[x]) is str):
                     
@@ -812,7 +813,7 @@ def initConfig_entropyConstants(rootdir):
                 branch = line.split("|")[1]
                 etpConst['branch'] = branch
                 if not os.path.isdir(etpConst['packagesbindir']+"/"+branch):
-                    if os.getuid() == 0:
+                    if etpConst['uid'] == 0:
                         # check if we have a broken symlink
                         os.makedirs(etpConst['packagesbindir']+"/"+branch)
                     else:
@@ -824,7 +825,7 @@ def initConfig_entropyConstants(rootdir):
     etpConst['etpurirelativepath'] = etpConst['product']+"/"+etpConst['etpurirelativepath']
     
     # check for packages and upload directories
-    if os.getuid() == 0:
+    if etpConst['uid'] == 0:
         for x in etpConst['branches']:
             if not os.path.isdir(etpConst['packagesbindir']+"/"+x):
                 os.makedirs(etpConst['packagesbindir']+"/"+x)

@@ -7,7 +7,6 @@ TODO list:
   - add deptest check for every reagent run
   - implement client db sanity check
   - equo world: removal packages, first ask all, then do
-  - handle PDEPENDs after? Is it really needed?
 
 
 Project Status:

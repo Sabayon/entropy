@@ -156,6 +156,8 @@ class etpDatabase:
 	self.xcache = xcache
 	self.dbname = dbname
         self.indexing = indexing
+        if etpConst['uid'] > 0: # forcing since we won't have write access to db
+            self.indexing = False
         self.dbFile = dbFile
 	
 	# caching dictionaries
