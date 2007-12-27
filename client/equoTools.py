@@ -716,10 +716,6 @@ def generateDependsTree(idpackages, deep = False):
     
     # check if dependstable is sane before beginning
     rx = clientDbconn.retrieveDepends(idpackages[0])
-    if rx == -2:
-	# generation needed
-	clientDbconn.regenerateDependsTable(output = False)
-        rx = clientDbconn.retrieveDepends(idpackages[0])
     
     while (not dependsOk):
 	treedepth += 1

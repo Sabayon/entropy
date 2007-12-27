@@ -230,17 +230,6 @@ def searchDepends(atoms, idreturn = False, dbconn = None):
 	    else:
 		dbconn = clientDbconn
 	    searchResults = dbconn.retrieveDepends(result[0])
-	    if searchResults == -2:
-		if (matchInRepo):
-		    # run equo update
-		    dbconn.closeDB()
-                    del dbconn
-		    syncRepositories([result[1]], forceUpdate = True)
-		    dbconn = openRepositoryDatabase(result[1])
-		else:
-		    # I need to generate dependstable
-		    dbconn.regenerateDependsTable()
-	        searchResults = dbconn.retrieveDepends(result[0])
 	    for idpackage in searchResults:
 		if (idreturn):
 		    dataInfo.add(idpackage)

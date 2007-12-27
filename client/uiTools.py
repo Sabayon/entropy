@@ -644,9 +644,6 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             dependQueue = set()
             for idpackage in removalQueue:
                 depends = clientDbconn.retrieveDepends(idpackage)
-                if depends == -2:
-                    clientDbconn.regenerateDependsTable(output = False)
-                    depends = clientDbconn.retrieveDepends(idpackage) 
                 for depend in depends:
                     dependkey = clientDbconn.retrieveCategory(depend)+"/"+clientDbconn.retrieveName(depend)
                     dependslot = clientDbconn.retrieveSlot(depend)

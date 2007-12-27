@@ -428,7 +428,6 @@ class etpDatabase:
                 self.runTreeUpdatesActions(update_actions)
             
             # store new actions
-            ### FIXME: add support int reagent database --initialize
             self.addRepositoryUpdatesActions(repository,update_actions)
             # store new digest into database
             self.setRepositoryUpdatesDigest(repository, portage_dirs_digest)
@@ -470,6 +469,7 @@ class etpDatabase:
         for action in actions:
             command = action.split()
             if command[0] == "move":
+                print_warning(darkred(" * ")+bold("RUNNING: ")+red("action: %s" % (blue(action),)))
                 self.runTreeUpdatesMoveAction(command[1:])
             
     
@@ -2454,8 +2454,8 @@ class etpDatabase:
 
 	# sanity check on the table
 	sanity = self.isDependsTableSane()
-	if (not sanity):
-	    return -2 # table does not exist or is broken, please regenerate and re-run
+	if (not sanity): # is empty, need generation
+            self.regenerateDependsTable(output = False)
 
 	self.cursor.execute('SELECT dependencies.idpackage FROM dependstable,dependencies WHERE dependstable.idpackage = (?) and dependstable.iddependency = dependencies.iddependency', (idpackage,))
 	result = self.fetchall2set(self.cursor.fetchall())
