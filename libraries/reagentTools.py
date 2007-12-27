@@ -407,6 +407,7 @@ def database(options):
         # database file: etpConst['etpdatabasefilepath']
 	revisionsMatch = {}
         treeUpdatesActions = []
+        injectedPackages = set()
         if os.path.isfile(etpConst['etpdatabasefilepath']):
 	    dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
             idpackages = []
@@ -417,6 +418,11 @@ def database(options):
             # save treeUpdatesActions
             try:
                 treeUpdatesActions = dbconn.listAllTreeUpdatesActions()
+            except:
+                pass
+            # save list of injected packages
+            try:
+                injectedPackages = dbconn.listAllInjectedPackages(justFiles = True)
             except:
                 pass
 	    for idpackage in idpackages:
@@ -471,7 +477,8 @@ def database(options):
 	for mybranch in pkgbranches:
 	
 	    pkglist = os.listdir(etpConst['packagesbindir']+"/"+mybranch)
-	    pkglist = [x for x in pkglist if x[-5:] == ".tbz2"]
+            # filter .md5 and .expired packages
+	    pkglist = [x for x in pkglist if x[-5:] == ".tbz2" and not os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+x+etpConst['packagesexpirationfileext'])]
 	
 	    if (not pkglist):
 		continue
@@ -486,7 +493,12 @@ def database(options):
 	        currCounter += 1
 	        print_info(darkgreen(" [")+red(mybranch)+darkgreen("] ")+green("(")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."), back = True)
 		
-	        mydata = extractPkgData(etpConst['packagesbindir']+"/"+mybranch+"/"+pkg, mybranch)
+                doinject = False
+                if os.path.join(etpConst['binaryurirelativepath'],mybranch+"/"+pkg) in injectedPackages:
+                    doinject = True
+                
+	        mydata = extractPkgData(etpConst['packagesbindir']+"/"+mybranch+"/"+pkg, mybranch, inject = doinject)
+                
 	        # get previous revision
 		revisionAvail = revisionsMatch.get(os.path.basename(mydata['download']))
 		addRevision = 0

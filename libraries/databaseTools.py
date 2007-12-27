@@ -2650,7 +2650,6 @@ class etpDatabase:
 	return rslt
 
     def isInjected(self,idpackage):
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isInjected: called.")
 
 	cache = self.fetchInfoCache(idpackage,'isInjected')
 	if cache != None: return cache
@@ -2668,9 +2667,7 @@ class etpDatabase:
 	result = self.cursor.fetchone()
 	rslt = False
 	if result:
-	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isInjected: package is in system.")
 	    rslt = True
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isInjected: package is NOT in system.")
 
 	self.storeInfoCache(idpackage,'isInjected',rslt)
 	return rslt
@@ -2987,6 +2984,20 @@ class etpDatabase:
 	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllPackages: called.")
 	self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo')
 	return self.cursor.fetchall()
+
+    def listAllInjectedPackages(self, justFiles = False):
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllInjectedPackages: called.")
+	self.cursor.execute('SELECT idpackage FROM injected')
+        injecteds = self.fetchall2set(self.cursor.fetchall())
+        results = set()
+        # get download
+        for injected in injecteds:
+            download = self.retrieveDownloadURL(injected)
+            if justFiles:
+                results.add(download)
+            else:
+                results.add((download,injected))
+        return results
 
     def listAllCounters(self, onlycounters = False):
 	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllCounters: called.")
