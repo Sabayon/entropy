@@ -225,8 +225,8 @@ class etpDatabase:
             self.indexing = False
         self.dbFile = dbFile
         
-        if (self.xcache) and (self.dbname != 'etpdb') and (etpConst['uid'] == 0):
-            self.loadDatabaseCache()
+        # load db on disk cache?
+        self.loadDatabaseCache()
 
         # create connection
         self.connection = dbapi2.connect(dbFile,timeout=300.0)
@@ -475,62 +475,64 @@ class etpDatabase:
         return new_actions
 
     def loadDatabaseCache(self):
-        
-        ''' database query cache '''
-        broken1 = False
-        dbinfo = dbCacheStore.get(etpCache['dbInfo']+self.dbname)
-        if dbinfo == None:
-            try:
-                dbCacheStore[etpCache['dbInfo']+self.dbname] = dumpTools.loadobj(etpCache['dbInfo']+self.dbname)
-                if dbCacheStore[etpCache['dbInfo']+self.dbname] == None:
+
+        if (self.xcache) and (self.dbname != 'etpdb') and (etpConst['uid'] == 0):
+
+            ''' database query cache '''
+            broken1 = False
+            dbinfo = dbCacheStore.get(etpCache['dbInfo']+self.dbname)
+            if dbinfo == None:
+                try:
+                    dbCacheStore[etpCache['dbInfo']+self.dbname] = dumpTools.loadobj(etpCache['dbInfo']+self.dbname)
+                    if dbCacheStore[etpCache['dbInfo']+self.dbname] == None:
+                        broken1 = True
+                        dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
+                except:
                     broken1 = True
-                    dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
-            except:
-                broken1 = True
-                pass
-
-        ''' database atom dependencies cache '''
-        dbmatch = dbCacheStore.get(etpCache['dbMatch']+self.dbname)
-        broken2 = False
-        if dbmatch == None:
-            try:
-                dbCacheStore[etpCache['dbMatch']+self.dbname] = dumpTools.loadobj(etpCache['dbMatch']+self.dbname)
-                if dbCacheStore[etpCache['dbMatch']+self.dbname] == None:
+                    pass
+    
+            ''' database atom dependencies cache '''
+            dbmatch = dbCacheStore.get(etpCache['dbMatch']+self.dbname)
+            broken2 = False
+            if dbmatch == None:
+                try:
+                    dbCacheStore[etpCache['dbMatch']+self.dbname] = dumpTools.loadobj(etpCache['dbMatch']+self.dbname)
+                    if dbCacheStore[etpCache['dbMatch']+self.dbname] == None:
+                        broken2 = True
+                        dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
+                except:
                     broken2 = True
-                    dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
-            except:
-                broken2 = True
-                pass
-
-        ''' database search cache '''
-        dbmatch = dbCacheStore.get(etpCache['dbSearch']+self.dbname)
-        broken3 = False
-        if dbmatch == None:
-            try:
-                dbCacheStore[etpCache['dbSearch']+self.dbname] = dumpTools.loadobj(etpCache['dbSearch']+self.dbname)
-                if dbCacheStore[etpCache['dbSearch']+self.dbname] == None:
+                    pass
+    
+            ''' database search cache '''
+            dbmatch = dbCacheStore.get(etpCache['dbSearch']+self.dbname)
+            broken3 = False
+            if dbmatch == None:
+                try:
+                    dbCacheStore[etpCache['dbSearch']+self.dbname] = dumpTools.loadobj(etpCache['dbSearch']+self.dbname)
+                    if dbCacheStore[etpCache['dbSearch']+self.dbname] == None:
+                        broken3 = True
+                        dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
+                except:
                     broken3 = True
-                    dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
-            except:
-                broken3 = True
-                pass
-
-        if (broken1 or broken2 or broken3):
-            # discard both caches
+                    pass
+    
+            if (broken1 or broken2 or broken3):
+                # discard both caches
+                dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
+                dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
+                dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
+                dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
+                self.clearInfoCache()
+                
+        else:
+            self.xcache = False # setting this to be safe
             dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
+            try:
+                self.clearInfoCache()
+            except: # if it's not possible to write cache
+                pass
             dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
-            dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
-            dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
-            self.clearInfoCache()
-            
-    else:
-        self.xcache = False # setting this to be safe
-        dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
-        try:
-            self.clearInfoCache()
-        except: # if it's not possible to write cache
-            pass
-        dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
 
 
     # this function manages the submitted package
