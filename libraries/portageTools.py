@@ -494,7 +494,7 @@ def getInstalledPackages(dbdir = None):
 def getInstalledPackagesCounters():
     appDbDir = getPortageAppDbPath()
     dbDirs = os.listdir(appDbDir)
-    installedAtoms = []
+    installedAtoms = set()
     for pkgsdir in dbDirs:
         if not os.path.isdir(appDbDir+pkgsdir):
             continue
@@ -504,10 +504,13 @@ def getInstalledPackagesCounters():
 	    pkgatom = pkgcat+"/"+pdir
 	    if pkgatom.find("-MERGING-") == -1:
 		# get counter
-		f = open(appDbDir+pkgsdir+"/"+pdir+"/"+dbCOUNTER,"r")
+                try:
+                    f = open(appDbDir+pkgsdir+"/"+pdir+"/"+dbCOUNTER,"r")
+                except IOError:
+                    continue
 		counter = f.readline().strip()
 		f.close()
-	        installedAtoms.append([pkgatom,int(counter)])
+	        installedAtoms.add((pkgatom,int(counter)))
     return installedAtoms, len(installedAtoms)
 
 def refillCounter():

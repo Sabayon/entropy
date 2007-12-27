@@ -20,17 +20,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-# Never do "import portage" here, please use entropyTools binding
-# EXIT STATUSES: 300-399
-
 from entropyConstants import *
 import entropyTools
 from outputTools import *
-# FIXME: we'll drop extra sqlite support before 1.0
+# FIXME: add more python db apis
 try: # try with sqlite3 from python 2.5 - default one
-    from sqlite3 import dbapi2 as sqlite
+    from sqlite3 import dbapi2
 except ImportError: # fallback to embedded pysqlite
-    from pysqlite2 import dbapi2 as sqlite
+    from pysqlite2 import dbapi2
 import dumpTools
 import exceptionTools
 
@@ -144,306 +141,236 @@ def listAllAvailableBranches():
         del dbconn
     return branches
 
+def doServerDatabaseSyncLock(noUpload):
+    
+    import mirrorTools
+    import activatorTools
+
+    # check if the database is locked locally
+    if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
+        print_info(red(" * ")+red("Entropy database is already locked by you :-)"))
+    else:
+        # check if the database is locked REMOTELY
+        print_info(red(" * ")+red(" Locking and Syncing Entropy database ..."), back = True)
+        for uri in etpConst['activatoruploaduris']:
+            ftp = mirrorTools.handlerFTP(uri)
+            try:
+                ftp.setCWD(etpConst['etpurirelativepath'])
+            except:
+                bdir = ""
+                for mydir in etpConst['etpurirelativepath'].split("/"):
+                    bdir += "/"+mydir
+                    if (not ftp.isFileAvailable(bdir)):
+                        try:
+                            ftp.mkdir(bdir)
+                        except Exception, e:
+                            if str(e).find("550") != -1:
+                                pass
+                            raise
+                ftp.setCWD(etpConst['etpurirelativepath'])
+            if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
+                import time
+                print_info(red(" * ")+bold("WARNING")+red(": online database is already locked. Waiting up to 2 minutes..."), back = True)
+                if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"etpDatabase: online database already locked. Waiting 2 minutes")
+                unlocked = False
+                count = 120
+                while count:
+                    time.sleep(1)
+                    count -= 1
+                    if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
+                        print_info(red(" * ")+bold("HOORAY")+red(": online database has been unlocked. Locking back and syncing..."))
+                        unlocked = True
+                        break
+                if (unlocked):
+                    break
+
+                print_info(yellow(" * ")+green("Mirrors status table:"))
+                dbstatus = activatorTools.getMirrorsLock()
+                for db in dbstatus:
+                    
+                    db[1] = green("Unlocked")
+                    if (db[1]):
+                        db[1] = red("Locked")
+                    db[2] = green("Unlocked")
+                    if (db[2]):
+                        db[2] = red("Locked")
+                    
+                    print_info(bold("\t"+entropyTools.extractFTPHostFromUri(db[0])+": ")+red("[")+yellow("DATABASE: ")+db[1]+red("] [")+yellow("DOWNLOAD: ")+db[2]+red("]"))
+        
+                ftp.closeConnection()
+                print
+                raise exceptionTools.OnlineMirrorError("OnlineMirrorError: cannot lock mirror "+entropyTools.extractFTPHostFromUri(uri))
+
+        # if we arrive here, it is because all the mirrors are unlocked so... damn, LOCK!
+        activatorTools.lockDatabases(True)
+
+        # ok done... now sync the new db, if needed
+        activatorTools.syncRemoteDatabases(noUpload)
+
 class etpDatabase:
 
     def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = 'etpdb', indexing = True):
-	
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase.__init__ called.")
-	
-	self.readOnly = readOnly
-	self.noUpload = noUpload
-	self.packagesRemoved = False
-	self.packagesAdded = False
-	self.clientDatabase = clientDatabase
-	self.xcache = xcache
-	self.dbname = dbname
+        
+        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase.__init__ called.")
+        
+        self.readOnly = readOnly
+        self.noUpload = noUpload
+        self.packagesRemoved = False
+        self.packagesAdded = False
+        self.clientDatabase = clientDatabase
+        self.xcache = xcache
+        self.dbname = dbname
         self.indexing = indexing
         if etpConst['uid'] > 0: # forcing since we won't have write access to db
             self.indexing = False
         self.dbFile = dbFile
-	
-	# caching dictionaries
-	if (self.xcache) and (dbname != 'etpdb') and (os.getuid() == 0):
-	    
-            ''' database query cache '''
-	    broken1 = False
-	    dbinfo = dbCacheStore.get(etpCache['dbInfo']+self.dbname)
-	    if dbinfo == None:
-		try:
-		    dbCacheStore[etpCache['dbInfo']+self.dbname] = dumpTools.loadobj(etpCache['dbInfo']+self.dbname)
-	            if dbCacheStore[etpCache['dbInfo']+self.dbname] == None:
-		        broken1 = True
-		        dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
-		except:
-		    broken1 = True
-		    pass
+        
+        if (self.xcache) and (self.dbname != 'etpdb') and (etpConst['uid'] == 0):
+            self.loadDatabaseCache()
 
-	    ''' database atom dependencies cache '''
-	    dbmatch = dbCacheStore.get(etpCache['dbMatch']+self.dbname)
-	    broken2 = False
-	    if dbmatch == None:
-		try:
-	            dbCacheStore[etpCache['dbMatch']+self.dbname] = dumpTools.loadobj(etpCache['dbMatch']+self.dbname)
-	            if dbCacheStore[etpCache['dbMatch']+self.dbname] == None:
-		        broken2 = True
-		        dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
-		except:
-		    broken2 = True
-		    pass
+        # create connection
+        self.connection = dbapi2.connect(dbFile,timeout=300.0)
+        self.cursor = self.connection.cursor()
 
-	    ''' database search cache '''
-	    dbmatch = dbCacheStore.get(etpCache['dbSearch']+self.dbname)
-	    broken3 = False
-	    if dbmatch == None:
-		try:
-	            dbCacheStore[etpCache['dbSearch']+self.dbname] = dumpTools.loadobj(etpCache['dbSearch']+self.dbname)
-	            if dbCacheStore[etpCache['dbSearch']+self.dbname] == None:
-		        broken3 = True
-		        dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
-		except:
-		    broken3 = True
-		    pass
+        if (self.clientDatabase) or (self.readOnly):
+            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened by Entropy client or read-only, file: "+str(dbFile))
+            # if the database is opened readonly or from clientDatabase, we don't need to lock the online status
+        else:
+            # lock mirror remotely and ensure to have latest database revision
+            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened in read/write mode, file: "+str(dbFile))
+            doServerDatabaseSyncLock(self.noUpload)
 
-	    if (broken1 or broken2 or broken3):
-		# discard both caches
-		dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
-		dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
-		dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
-		dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
-                self.clearInfoCache()
-		
-	else:
-	    self.xcache = False # setting this to be safe
-	    dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
-            try:
-                self.clearInfoCache()
-            except: # if it's not possible to write cache
-                pass
-            dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
-	
-	if (self.clientDatabase):
-	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened by Entropy client, file: "+str(dbFile))
-	    # if the database is opened readonly, we don't need to lock the online status
-	    self.connection = sqlite.connect(dbFile,timeout=300.0)
-	    self.cursor = self.connection.cursor()
-	    return
-	
-	if (self.readOnly):
-	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened readonly, file: "+str(dbFile))
-	    # if the database is opened readonly, we don't need to lock the online status
-	    self.connection = sqlite.connect(dbFile,timeout=300.0)
-	    self.cursor = self.connection.cursor()
-	    # set the table read only
-	    return
-	
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened in read/write mode, file: "+str(dbFile))
-
-	import mirrorTools
-	import activatorTools
-
-	# check if the database is locked locally
-	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
-	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"etpDatabase: database already locked")
-	    print_info(red(" * ")+red("Entropy database is already locked by you :-)"))
-	else:
-	    # check if the database is locked REMOTELY
-	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"etpDatabase: starting to lock and sync database")
-	    print_info(red(" * ")+red(" Locking and Syncing Entropy database ..."), back = True)
-	    for uri in etpConst['activatoruploaduris']:
-		if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: connecting to "+entropyTools.extractFTPHostFromUri(uri))
-	        ftp = mirrorTools.handlerFTP(uri)
-                try:
-                    ftp.setCWD(etpConst['etpurirelativepath'])
-                except:
-                    bdir = ""
-                    for mydir in etpConst['etpurirelativepath'].split("/"):
-                        bdir += "/"+mydir
-                        if (not ftp.isFileAvailable(bdir)):
-                            try:
-                                ftp.mkdir(bdir)
-                            except Exception, e:
-                                if str(e).find("550") != -1:
-                                    pass
-                                raise
-                    ftp.setCWD(etpConst['etpurirelativepath'])
-	        if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
-		    import time
-		    print_info(red(" * ")+bold("WARNING")+red(": online database is already locked. Waiting up to 2 minutes..."), back = True)
-		    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"etpDatabase: online database already locked. Waiting 2 minutes")
-		    unlocked = False
-		    count = 120
-                    while count:
-		        time.sleep(1)
-                        count -= 1
-		        if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
-			    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"etpDatabase: online database has been unlocked !")
-			    print_info(red(" * ")+bold("HOORAY")+red(": online database has been unlocked. Locking back and syncing..."))
-			    unlocked = True
-			    break
-		    if (unlocked):
-		        break
-
-		    if _do_dbLog: dbLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"etpDatabase: online database has not been unlocked in time. Giving up.")
-		    # time over
-		    print_info(red(" * ")+bold("ERROR")+red(": online database has not been unlocked. Giving up. Who the hell is working on it? Damn, it's so frustrating for me. I'm a piece of python code with a soul dude!"))
-
-		    print_info(yellow(" * ")+green("Mirrors status table:"))
-		    dbstatus = activatorTools.getMirrorsLock()
-		    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: showing mirrors status table:")
-		    for db in dbstatus:
-		        if (db[1]):
-	        	    db[1] = red("Locked")
-	    	        else:
-	        	    db[1] = green("Unlocked")
-	    	        if (db[2]):
-	        	    db[2] = red("Locked")
-	                else:
-	        	    db[2] = green("Unlocked")
-			if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"   "+entropyTools.extractFTPHostFromUri(db[0])+": DATABASE: "+db[1]+" | DOWNLOAD: "+db[2])
-	    	        print_info(bold("\t"+entropyTools.extractFTPHostFromUri(db[0])+": ")+red("[")+yellow("DATABASE: ")+db[1]+red("] [")+yellow("DOWNLOAD: ")+db[2]+red("]"))
-	    
-	            ftp.closeConnection()
-                    raise exceptionTools.OnlineMirrorError("OnlineMirrorError: cannot lock mirror "+entropyTools.extractFTPHostFromUri(uri))
-
-	    # if we arrive here, it is because all the mirrors are unlocked so... damn, LOCK!
-	    activatorTools.lockDatabases(True)
-
-	    # ok done... now sync the new db, if needed
-	    activatorTools.syncRemoteDatabases(self.noUpload)
-	
-	self.connection = sqlite.connect(dbFile,timeout=300.0)
-	self.cursor = self.connection.cursor()
 
     def closeDB(self):
 
-	# if the class is opened readOnly, close and forget
-	if (self.readOnly):
-	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in readonly.")
-	    #self.connection.rollback()
-	    self.cursor.close()
-	    self.connection.close()
-	    return
+        # if the class is opened readOnly, close and forget
+        if (self.readOnly):
+            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in readonly.")
+            #self.connection.rollback()
+            self.cursor.close()
+            self.connection.close()
+            return
 
-	# if it's equo that's calling the function, just save changes and quit
-	if (self.clientDatabase):
-	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened by Entropy Client.")
-	    self.commitChanges()
-	    self.cursor.close()
-	    self.connection.close()
-	    return
-
-	# Cleanups if at least one package has been removed
-	# Please NOTE: the client database does not need it
-	if (self.packagesRemoved):
-	    self.cleanupUseflags()
-	    self.cleanupSources()
-	    try:
-	        self.cleanupEclasses()
-	    except:
-		self.createEclassesTable()
-		self.cleanupEclasses()
-	    try:
-	        self.cleanupNeeded()
-	    except:
-		self.createNeededTable()
-	        self.cleanupNeeded()
-	    self.cleanupDependencies()
-
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in read/write.")
-	
-	if (etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']) and (not etpDbStatus[etpConst['etpdatabasefilepath']]['bumped']):
-	    # bump revision, setting DatabaseBump causes the session to just bump once
-	    etpDbStatus[etpConst['etpdatabasefilepath']]['bumped'] = True
-	    self.revisionBump()
-	
-	if (not etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']):
-	    # we can unlock it, no changes were made
-	    import activatorTools
-	    activatorTools.lockDatabases(False)
-	else:
-	    print_info(yellow(" * ")+green("Mirrors have not been unlocked. Run activator."))
-	
+        # if it's equo that's calling the function, just save changes and quit
+        if (self.clientDatabase):
+            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened by Entropy Client.")
+            self.commitChanges()
+            self.cursor.close()
+            self.connection.close()
+            return
+    
+        # Cleanups if at least one package has been removed
+        # Please NOTE: the client database does not need it
+        if (self.packagesRemoved):
+            self.cleanupUseflags()
+            self.cleanupSources()
+            try:
+                self.cleanupEclasses()
+            except:
+                self.createEclassesTable()
+                self.cleanupEclasses()
+            try:
+                self.cleanupNeeded()
+            except:
+                self.createNeededTable()
+                self.cleanupNeeded()
+            self.cleanupDependencies()
+        
+        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in read/write.")
+        
+        if (etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']) and (not etpDbStatus[etpConst['etpdatabasefilepath']]['bumped']):
+            # bump revision, setting DatabaseBump causes the session to just bump once
+            etpDbStatus[etpConst['etpdatabasefilepath']]['bumped'] = True
+            self.revisionBump()
+        
+        if (not etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']):
+            # we can unlock it, no changes were made
+            import activatorTools
+            activatorTools.lockDatabases(False)
+        else:
+            print_info(yellow(" * ")+green("Mirrors have not been unlocked. Run activator."))
+        
         # run vacuum cleaner
         self.cursor.execute("vacuum")
         self.connection.commit()
         
-	self.cursor.close()
-	self.connection.close()
+        self.cursor.close()
+        self.connection.close()
 
     def commitChanges(self):
-	if (not self.readOnly):
-	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"commitChanges: writing changes to database.")
-	    try:
-	        self.connection.commit()
-	    except:
-		pass
-	    self.taintDatabase()
-	else:
-	    if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"commitChanges: discarding changes to database (opened readonly).")
-	    self.discardChanges() # is it ok?
+        if (not self.readOnly):
+            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"commitChanges: writing changes to database.")
+            try:
+                self.connection.commit()
+            except:
+                pass
+            self.taintDatabase()
+        else:
+            if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"commitChanges: discarding changes to database (opened readonly).")
+            self.discardChanges() # is it ok?
 
     def taintDatabase(self):
-	if (self.clientDatabase): # if it's equo to open it, this should be avoided
-	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"taintDatabase: called by Entropy client, won't do anything.")
-	    return
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"taintDatabase: called.")
-	# taint the database status
-	f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'],"w")
-	f.write(etpConst['currentarch']+" database tainted\n")
-	f.flush()
-	f.close()
-	etpDbStatus[etpConst['etpdatabasefilepath']]['tainted'] = True
+        if (self.clientDatabase): # if it's equo to open it, this should be avoided
+            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"taintDatabase: called by Entropy client, won't do anything.")
+            return
+        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"taintDatabase: called.")
+        # taint the database status
+        f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'],"w")
+        f.write(etpConst['currentarch']+" database tainted\n")
+        f.flush()
+        f.close()
+        etpDbStatus[etpConst['etpdatabasefilepath']]['tainted'] = True
 
     def untaintDatabase(self):
-	if (self.clientDatabase): # if it's equo to open it, this should be avoided
-	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called by Entropy client, won't do anything.")
-	    return
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called.")
-	etpDbStatus[etpConst['etpdatabasefilepath']]['tainted'] = False
-	# untaint the database status
+        if (self.clientDatabase): # if it's equo to open it, this should be avoided
+            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called by Entropy client, won't do anything.")
+            return
+        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called.")
+        etpDbStatus[etpConst['etpdatabasefilepath']]['tainted'] = False
+        # untaint the database status
         if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
             os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
 
     def revisionBump(self):
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"revisionBump: called.")
-	if (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'])):
-	    revision = 0
-	else:
-	    f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'],"r")
-	    revision = int(f.readline().strip())
-	    revision += 1
-	    f.close()
-	f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'],"w")
-	f.write(str(revision)+"\n")
-	f.flush()
-	f.close()
+        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"revisionBump: called.")
+        if (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'])):
+            revision = 0
+        else:
+            f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'],"r")
+            revision = int(f.readline().strip())
+            revision += 1
+            f.close()
+        f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'],"w")
+        f.write(str(revision)+"\n")
+        f.flush()
+        f.close()
 
     def isDatabaseTainted(self):
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isDatabaseTainted: called.")
-	if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
-	    return True
-	return False
+        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isDatabaseTainted: called.")
+        if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
+            return True
+        return False
 
     def discardChanges(self):
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"discardChanges: called.")
-	self.connection.rollback()
+        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"discardChanges: called.")
+        self.connection.rollback()
 
     # never use this unless you know what you're doing
     def initializeDatabase(self):
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"initializeDatabase: called.")
-	for sql in etpSQLInitDestroyAll.split(";"):
-	    if sql:
-	        self.cursor.execute(sql+";")
-	del sql
-	for sql in etpSQLInit.split(";"):
-	    if sql:
-		self.cursor.execute(sql+";")
-	self.commitChanges()
+        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"initializeDatabase: called.")
+        for sql in etpSQLInitDestroyAll.split(";"):
+            if sql:
+                self.cursor.execute(sql+";")
+        del sql
+        for sql in etpSQLInit.split(";"):
+            if sql:
+                self.cursor.execute(sql+";")
+        self.commitChanges()
 
     def checkReadOnly(self):
-	if (self.readOnly):
-	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: Cannot handle this in read only.")
-	    raise exceptionTools.OperationNotPermitted("OperationNotPermitted: can't do that on a readonly database.")
+        if (self.readOnly):
+            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: Cannot handle this in read only.")
+            raise exceptionTools.OperationNotPermitted("OperationNotPermitted: can't do that on a readonly database.")
 
     # check for /usr/portage/profiles/updates changes
     def serverUpdatePackagesData(self):
@@ -546,7 +473,66 @@ class etpDatabase:
                     for idpackage in matches[0]:
                         new_actions.append(action)
         return new_actions
-    
+
+    def loadDatabaseCache(self):
+        
+        ''' database query cache '''
+        broken1 = False
+        dbinfo = dbCacheStore.get(etpCache['dbInfo']+self.dbname)
+        if dbinfo == None:
+            try:
+                dbCacheStore[etpCache['dbInfo']+self.dbname] = dumpTools.loadobj(etpCache['dbInfo']+self.dbname)
+                if dbCacheStore[etpCache['dbInfo']+self.dbname] == None:
+                    broken1 = True
+                    dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
+            except:
+                broken1 = True
+                pass
+
+        ''' database atom dependencies cache '''
+        dbmatch = dbCacheStore.get(etpCache['dbMatch']+self.dbname)
+        broken2 = False
+        if dbmatch == None:
+            try:
+                dbCacheStore[etpCache['dbMatch']+self.dbname] = dumpTools.loadobj(etpCache['dbMatch']+self.dbname)
+                if dbCacheStore[etpCache['dbMatch']+self.dbname] == None:
+                    broken2 = True
+                    dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
+            except:
+                broken2 = True
+                pass
+
+        ''' database search cache '''
+        dbmatch = dbCacheStore.get(etpCache['dbSearch']+self.dbname)
+        broken3 = False
+        if dbmatch == None:
+            try:
+                dbCacheStore[etpCache['dbSearch']+self.dbname] = dumpTools.loadobj(etpCache['dbSearch']+self.dbname)
+                if dbCacheStore[etpCache['dbSearch']+self.dbname] == None:
+                    broken3 = True
+                    dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
+            except:
+                broken3 = True
+                pass
+
+        if (broken1 or broken2 or broken3):
+            # discard both caches
+            dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
+            dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
+            dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
+            dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
+            self.clearInfoCache()
+            
+    else:
+        self.xcache = False # setting this to be safe
+        dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
+        try:
+            self.clearInfoCache()
+        except: # if it's not possible to write cache
+            pass
+        dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
+
+
     # this function manages the submitted package
     # if it does not exist, it fires up addPackage
     # otherwise it fires up updatePackage
