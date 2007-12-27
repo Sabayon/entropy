@@ -268,7 +268,6 @@ def update(options):
         dbconn.closeDB()
 
     enzymeRequestBranch = etpConst['branch']
-    #_atoms = []
     for i in options:
         if ( i.startswith("--branch=") and len(i.split("=")) == 2 ):
 	    mybranch = i.split("=")[1]
@@ -407,11 +406,17 @@ def database(options):
 	print_info(green(" * ")+red("Initializing Entropy database..."), back = True)
         # database file: etpConst['etpdatabasefilepath']
 	revisionsMatch = {}
+        treeUpdatesActions = []
         if os.path.isfile(etpConst['etpdatabasefilepath']):
 	    dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
             idpackages = []
             try:
                 idpackages = dbconn.listAllIdpackages()
+            except:
+                pass
+            # save treeUpdatesActions
+            try:
+                treeUpdatesActions = dbconn.listAllTreeUpdatesActions()
             except:
                 pass
 	    for idpackage in idpackages:
@@ -435,7 +440,7 @@ def database(options):
         dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
 	dbconn.initializeDatabase()
 
-	# sync packages directory
+	# dump revisions - as a backup
         if revisionsMatch:
             print_info(green(" * ")+red("Dumping current revisions to file ")+"/entropy-revisions-dump.txt")
             f = open("/entropy-revisions-dump.txt","w")
@@ -443,10 +448,22 @@ def database(options):
             f.flush()
             f.close()
 
+	# dump treeupdates - as a backup
+        if treeUpdatesActions:
+            print_info(green(" * ")+red("Dumping current tree updates actions to file ")+"/entropy-treeupdates-dump.txt")
+            f = open("/entropy-treeupdates-dump.txt","w")
+            f.write(str(treeUpdatesActions)+"\n")
+            f.flush()
+            f.close()
+
 	rc = askquestion("     Would you like to sync packages first (important if you don't have them synced) ?")
         if rc == "Yes":
             activatorTools.packages(["sync","--ask"])
 	
+        # fill tree updates actions
+        if treeUpdatesActions:
+            dbconn.addTreeUpdatesActions(treeUpdatesActions)
+        
 	# now fill the database
 	pkgbranches = os.listdir(etpConst['packagesbindir'])
 	pkgbranches = [x for x in pkgbranches if os.path.isdir(etpConst['packagesbindir']+"/"+x)]

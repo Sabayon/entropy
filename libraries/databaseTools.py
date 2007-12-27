@@ -35,6 +35,7 @@ import exceptionTools
 import logTools
 dbLog = logTools.LogFile(level = etpConst['databaseloglevel'],filename = etpConst['databaselogfile'], header = "[DBase]")
 _do_dbLog = False
+_treeUpdatesRunning = False
 
 
 ############
@@ -106,7 +107,8 @@ def openClientDatabase(xcache = True, generate = False, indexing = True):
 def openServerDatabase(readOnly = True, noUpload = True):
     conn = etpDatabase(readOnly = readOnly, dbFile = etpConst['etpdatabasefilepath'], noUpload = noUpload)
     # verify if we need to update the database to sync with portage updates, we just ignore being readonly in the case
-    conn.serverUpdatePackagesData()
+    if not _treeUpdatesRunning:
+        conn.serverUpdatePackagesData()
     return conn
 
 '''
@@ -211,8 +213,6 @@ class etpDatabase:
 
     def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = 'etpdb', indexing = True):
         
-        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase.__init__ called.")
-        
         self.readOnly = readOnly
         self.noUpload = noUpload
         self.packagesRemoved = False
@@ -232,12 +232,9 @@ class etpDatabase:
         self.connection = dbapi2.connect(dbFile,timeout=300.0)
         self.cursor = self.connection.cursor()
 
-        if (self.clientDatabase) or (self.readOnly):
-            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened by Entropy client or read-only, file: "+str(dbFile))
-            # if the database is opened readonly or from clientDatabase, we don't need to lock the online status
-        else:
+        if not ((self.clientDatabase) or (self.readOnly)):
+            # server side is calling
             # lock mirror remotely and ensure to have latest database revision
-            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened in read/write mode, file: "+str(dbFile))
             doServerDatabaseSyncLock(self.noUpload)
 
 
@@ -245,7 +242,6 @@ class etpDatabase:
 
         # if the class is opened readOnly, close and forget
         if (self.readOnly):
-            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in readonly.")
             #self.connection.rollback()
             self.cursor.close()
             self.connection.close()
@@ -253,7 +249,6 @@ class etpDatabase:
 
         # if it's equo that's calling the function, just save changes and quit
         if (self.clientDatabase):
-            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened by Entropy Client.")
             self.commitChanges()
             self.cursor.close()
             self.connection.close()
@@ -276,8 +271,6 @@ class etpDatabase:
                 self.cleanupNeeded()
             self.cleanupDependencies()
         
-        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"closeDB: closing database opened in read/write.")
-        
         if (etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']) and (not etpDbStatus[etpConst['etpdatabasefilepath']]['bumped']):
             # bump revision, setting DatabaseBump causes the session to just bump once
             etpDbStatus[etpConst['etpdatabasefilepath']]['bumped'] = True
@@ -299,21 +292,17 @@ class etpDatabase:
 
     def commitChanges(self):
         if (not self.readOnly):
-            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"commitChanges: writing changes to database.")
             try:
                 self.connection.commit()
             except:
                 pass
             self.taintDatabase()
         else:
-            if _do_dbLog: dbLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"commitChanges: discarding changes to database (opened readonly).")
             self.discardChanges() # is it ok?
 
     def taintDatabase(self):
         if (self.clientDatabase): # if it's equo to open it, this should be avoided
-            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"taintDatabase: called by Entropy client, won't do anything.")
             return
-        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"taintDatabase: called.")
         # taint the database status
         f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'],"w")
         f.write(etpConst['currentarch']+" database tainted\n")
@@ -325,14 +314,12 @@ class etpDatabase:
         if (self.clientDatabase): # if it's equo to open it, this should be avoided
             if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called by Entropy client, won't do anything.")
             return
-        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"untaintDatabase: called.")
         etpDbStatus[etpConst['etpdatabasefilepath']]['tainted'] = False
         # untaint the database status
         if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
             os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
 
     def revisionBump(self):
-        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"revisionBump: called.")
         if (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'])):
             revision = 0
         else:
@@ -346,7 +333,6 @@ class etpDatabase:
         f.close()
 
     def isDatabaseTainted(self):
-        if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"isDatabaseTainted: called.")
         if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
             return True
         return False
@@ -369,11 +355,13 @@ class etpDatabase:
 
     def checkReadOnly(self):
         if (self.readOnly):
-            if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: Cannot handle this in read only.")
             raise exceptionTools.OperationNotPermitted("OperationNotPermitted: can't do that on a readonly database.")
 
     # check for /usr/portage/profiles/updates changes
     def serverUpdatePackagesData(self):
+        
+        global _treeUpdatesRunning
+        _treeUpdatesRunning = True
         
         repository = etpConst['officialrepositoryname']
         doRescan = False
@@ -407,6 +395,10 @@ class etpDatabase:
         if doRescan or (str(stored_digest) != str(portage_dirs_digest)):
             #print stored_digest, portage_dirs_digest
             
+            # force parameters
+            self.readOnly = False
+            self.noUpload = True
+            
             # reset database tables
             self.clearTreeupdatesEntries(repository)
             
@@ -424,28 +416,22 @@ class etpDatabase:
                 del lines
             # now filter the required actions
             update_actions = self.filterTreeUpdatesActions(update_actions)
-            '''
             if update_actions:
-                # shait, we need to do:
-                # -- move action:
-                # 1) move package key to the new name: category + name + atom
-                # 2) discard database cache
-                # 3) update all the dependencies in dependenciesreference to the new key
-                # 4) automatically run quickpkg() to build the new binary and taint database (to update the binary package)
-                # -- slotmove action:
-                # 1) move package slot
-                # 2) discard database cache
-                # 3) update all the dependencies in dependenciesreference owning same matched atom + slot
-                # 4) automatically run quickpkg() to build the new binary and taint database
-                print update_actions
-            '''
-            '''
+                
+                # print information
+                print_warning("")
+                print_warning(darkred(" * ")+bold("ATTENTION: ")+red("forcing package updates. Syncing with %s" % (blue(updates_dir),)))
+                print_warning("")
+                # lock database
+                doServerDatabaseSyncLock(self.noUpload)
+                # now run queue
+                self.runTreeUpdatesActions(update_actions)
+            
             # store new actions
             ### FIXME: add support int reagent database --initialize
             self.addRepositoryUpdatesActions(repository,update_actions)
             # store new digest into database
             self.setRepositoryUpdatesDigest(repository, portage_dirs_digest)
-            '''
             
     
     # this functions will filter /usr/portage/profiles/updates/* actions returning only the needed ones
@@ -473,6 +459,98 @@ class etpDatabase:
                     for idpackage in matches[0]:
                         new_actions.append(action)
         return new_actions
+
+    def runTreeUpdatesActions(self, actions):
+        # we need to do:
+        # -- slotmove action:
+        # 1) move package slot
+        # 2) discard database cache
+        # 3) update all the dependencies in dependenciesreference owning same matched atom + slot
+        # 4) automatically run quickpkg() to build the new binary and taint database
+        for action in actions:
+            command = action.split()
+            if command[0] == "move":
+                self.runTreeUpdatesMoveAction(command[1:])
+            
+    
+    # -- move action:
+    # 1) move package key to the new name: category + name + atom
+    # 2) discard database cache
+    # 3) update all the dependencies in dependenciesreference to the new key
+    # 4) automatically run quickpkg() to build the new binary and taint database (to update the binary package)
+    def runTreeUpdatesMoveAction(self, move_command):
+        key_from = move_command[0]
+        cat_from = key_from.split("/")[0]
+        name_from = key_from.split("/")[1]
+        key_to = move_command[1]
+        cat_to = key_to.split("/")[0]
+        name_to = key_to.split("/")[1]
+        matches = self.atomMatch(key_from, multiMatch = True)
+        for idpackage in matches[0]:
+            
+            slot = self.retrieveSlot(idpackage)
+            old_atom = self.retrieveAtom(idpackage)
+            new_atom = old_atom.replace(key_from,key_to)
+            
+            # check for injection and warn the developer
+            injected = self.isInjected(idpackage)
+            if injected:
+                print_warning(darkred(" * ")+bold("INJECT: ")+red("Package %s has been injected. You need to quickpkg it manually !!! Database will be updated." % (blue(new_atom),)))
+            
+            # update category
+            self.setCategory(idpackage, cat_to)
+            # update name
+            self.setName(idpackage, name_to)
+            # update atom
+            self.setAtom(idpackage, new_atom)
+            
+            # look for packages we need to quickpkg again
+            quickpkg_queue = [key_to+":"+str(slot)]
+            iddeps = self.searchDependency(key_from, like = True, multi = True)
+            run_gentoo_fixpackages = False
+            for iddep in iddeps:
+                # update string
+                mydep = self.retrieveDependencyFromIddependency(iddep)
+                mydep = mydep.replace(key_from,key_to)
+                # now update
+                # dependstable on server is always re-generated
+                self.setDependency(iddep, mydep)
+                run_gentoo_fixpackages = True
+
+            if run_gentoo_fixpackages:
+                # run gentoo fixpackages to update /var/db/pkg references
+                os.system("fixpackages")
+
+            # quickpkg package and packages owning it as a dependency
+            self.runTreeUpdatesQuickpkgAction(quickpkg_queue)
+        
+        self.commitChanges()
+
+    def runTreeUpdatesQuickpkgAction(self, atoms):
+        import reagentTools
+        reagent_cmds = ["--repackage"]
+        reagent_cmds += atoms
+        
+        # ask branch question
+        rc = entropyTools.askquestion("     Would you like to continue with the default branch \"%s\" ?" % (etpConst['branch'],))
+        if rc == "No":
+            # ask which
+            mybranch = etpConst['branch']
+            while 1:
+                mybranch = readtext("Type your branch: ")
+                if mybranch not in self.listAllBranches():
+                    print_warning(darkred(" * ")+bold("ATTENTION: ")+red("Specified branch %s does not exist." % (blue(mybranch),)))
+                    continue
+                # ask to confirm
+                rc = entropyTools.askquestion("     Confirm %s ?" % (mybranch,))
+                if rc == "Yes":
+                    break
+            reagent_cmds.append("--branch=%s" % (mybranch,))
+        
+        rc = reagentTools.update(reagent_cmds)
+        if rc != 0:
+            print_warning(darkred(" * ")+bold("ATTENTION: ")+red("reagent update did not run properly. Update packages manually"))
+
 
     def loadDatabaseCache(self):
 
@@ -547,7 +625,6 @@ class etpDatabase:
 	if etpData['versiontag']:
 	    versiontag = '#'+etpData['versiontag']
 
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: called.")
 	foundid = self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag)
 	if (foundid < 0): # same atom doesn't exist
 	    idpk, revision, etpDataUpdated, accepted = self.addPackage(etpData, revision = forcedRevision)
@@ -1358,31 +1435,47 @@ class etpDatabase:
 
     #addCompileFlags(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
     def addCompileFlags(self,chost,cflags,cxxflags):
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"addCompileFlags: adding Flags -> "+chost+"|"+cflags+"|"+cxxflags)
-
-	self.cursor.execute(
-		'INSERT into flags VALUES '
-		'(NULL,?,?,?)', (chost,cflags,cxxflags,)
-	)
+        self.cursor.execute(
+                'INSERT into flags VALUES '
+                '(NULL,?,?,?)', (chost,cflags,cxxflags,)
+        )
         self.commitChanges()
-	# get info about inserted value and return
-	idflag = self.areCompileFlagsAvailable(chost,cflags,cxxflags)
-	if idflag != -1:
-	    return idflag
+        # get info about inserted value and return
+        idflag = self.areCompileFlagsAvailable(chost,cflags,cxxflags)
+        if idflag != -1:
+            return idflag
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert compile flags but then, fetching it returned -1. There's something broken.")
 
     def setDigest(self, idpackage, digest):
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setDigest: setting new digest for idpackage: "+str(idpackage)+" -> "+str(digest))
-	self.cursor.execute('UPDATE extrainfo SET digest = "'+str(digest)+'" WHERE idpackage = "'+str(idpackage)+'"')
-
+        self.cursor.execute('UPDATE extrainfo SET digest = (?) WHERE idpackage = (?)', (digest,idpackage,))
+    
     def setDownloadURL(self, idpackage, url):
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setDownloadURL: setting new download for idpackage: "+str(idpackage)+" -> "+url)
-	self.cursor.execute('UPDATE extrainfo SET download = "'+url+'" WHERE idpackage = "'+str(idpackage)+'"')
+        self.cursor.execute('UPDATE extrainfo SET download = (?) WHERE idpackage = (?)', (url,idpackage,))
+
+    def setCategory(self, idpackage, category):
+        # create new category if it doesn't exist
+        catid = self.isCategoryAvailable(category)
+        if (catid == -1):
+            # create category
+            catid = self.addCategory(category)
+        self.cursor.execute('UPDATE baseinfo SET idcategory = (?) WHERE idpackage = (?)', (catid,idpackage,))
+        self.commitChanges()
+
+    def setName(self, idpackage, name):
+	self.cursor.execute('UPDATE baseinfo SET name = (?) WHERE idpackage = (?)', (name,idpackage,))
+        self.commitChanges()
+
+    def setDependency(self, iddependency, dependency):
+	self.cursor.execute('UPDATE dependenciesreference SET dependency = (?) WHERE iddependency = (?)', (dependency,iddependency,))
+        self.commitChanges()
+
+    def setAtom(self, idpackage, atom):
+	self.cursor.execute('UPDATE baseinfo SET atom = (?) WHERE idpackage = (?)', (atom,idpackage,))
+        self.commitChanges()
 
     def setCounter(self, idpackage, counter):
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"setCounter: setting new counter for idpackage: "+str(idpackage)+" -> "+str(counter))
         try:
-            self.cursor.execute('UPDATE counters SET counter = "'+str(counter)+'" WHERE idpackage = "'+str(idpackage)+'"')
+            self.cursor.execute('UPDATE counters SET counter = (?) WHERE idpackage = (?)', (counter,idpackage,))
         except:
             if self.dbname == "client":
                 self.createCountersTable()
@@ -1822,6 +1915,23 @@ class etpDatabase:
         else:
             return -1
     
+    def listAllTreeUpdatesActions(self):
+        try:
+            self.cursor.execute('SELECT * FROM treeupdatesactions')
+        except:
+            self.createTreeupdatesactionsTable()
+            self.cursor.execute('SELECT * FROM treeupdatesactions')
+        return self.cursor.fetchall()
+    
+    # mainly used to restore a previous table, used by reagent in --initialize
+    def addTreeUpdatesActions(self, updates):
+        for update in updates:
+            idupdate = update[0]
+            repository = update[1]
+            command = update[2]
+            self.cursor.execute('INSERT INTO treeupdatesactions VALUES (?,?,?)', (idupdate,repository,command,))
+    
+    
     def setRepositoryUpdatesDigest(self, repository, digest):
         try:
             self.cursor.execute('DELETE FROM treeupdates where repository = (?)', (repository,)) # doing it for safety
@@ -2151,6 +2261,10 @@ class etpDatabase:
 
 	self.storeInfoCache(idpackage,'retrieveIdDependencies',iddeps)
 	return iddeps
+
+    def retrieveDependencyFromIddependency(self, iddependency):
+	self.cursor.execute('SELECT dependency FROM dependenciesreference WHERE iddependency = (?)', (iddependency,))
+        return self.cursor.fetchone()[0]
 
     def retrieveBinKeywords(self, idpackage):
 	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveBinKeywords: retrieving Binary Keywords for package ID "+str(idpackage))
@@ -2628,27 +2742,32 @@ class etpDatabase:
             self.cursor.execute('SELECT needed.idpackage FROM needed,neededreference WHERE library = (?) and needed.idneeded = neededreference.idneeded', (keyword,))
 	return self.fetchall2set(self.cursor.fetchall())
 
+    # FIXME: deprecate and add functionalities to the function above
     ''' same as above but with branch support '''
     def searchNeededInBranch(self, keyword, branch):
 	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchNeeded: called for "+keyword+" and branch: "+branch)
 	self.cursor.execute('SELECT needed.idpackage FROM needed,neededreference,baseinfo WHERE library = (?) and needed.idneeded = neededreference.idneeded and baseinfo.branch = (?)', (keyword,branch,))
 	return self.fetchall2set(self.cursor.fetchall())
 
-
     ''' search dependency string inside dependenciesreference table and retrieve iddependency '''
-    def searchDependency(self, dep):
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchDependency: called for "+dep)
-	self.cursor.execute('SELECT iddependency FROM dependenciesreference WHERE dependency = (?)', (dep,))
-	iddep = self.cursor.fetchone()
-	if iddep:
-	    iddep = iddep[0]
-	else:
-            iddep = -1
-	return iddep
+    def searchDependency(self, dep, like = False, multi = False):
+        sign = "="
+        if like:
+            sign = "LIKE"
+            dep = "%"+dep+"%"
+        self.cursor.execute('SELECT iddependency FROM dependenciesreference WHERE dependency '+sign+' (?)', (dep,))
+        if multi:
+            return self.fetchall2set(self.cursor.fetchall())
+        else:
+            iddep = self.cursor.fetchone()
+            if iddep:
+                iddep = iddep[0]
+            else:
+                iddep = -1
+            return iddep
 
     ''' search iddependency inside dependencies table and retrieve idpackages '''
     def searchIdpackageFromIddependency(self, iddep):
-	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"searchIdpackageFromIddependency: called for "+str(iddep))
 	self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = (?)', (iddep,))
 	return self.fetchall2set(self.cursor.fetchall())
 
