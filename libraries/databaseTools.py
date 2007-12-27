@@ -104,10 +104,12 @@ def openClientDatabase(xcache = True, generate = False, indexing = True):
 
 '''
    @description: open the entropy server database and returns the pointer. This function must be used only by reagent or activator
-   @output: database pointer
+   @output: database class instance
 '''
 def openServerDatabase(readOnly = True, noUpload = True):
     conn = etpDatabase(readOnly = readOnly, dbFile = etpConst['etpdatabasefilepath'], noUpload = noUpload)
+    # verify if we need to update the database to sync with portage updates, we just ignore being readonly in the case
+    conn.serverUpdatePackagesData()
     return conn
 
 '''
@@ -443,6 +445,108 @@ class etpDatabase:
 	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"handlePackage: Cannot handle this in read only.")
 	    raise exceptionTools.OperationNotPermitted("OperationNotPermitted: can't do that on a readonly database.")
 
+    # check for /usr/portage/profiles/updates changes
+    def serverUpdatePackagesData(self):
+        
+        repository = etpConst['officialrepositoryname']
+        doRescan = False
+        
+        if repositoryUpdatesDigestCache_db.has_key(repository):
+            stored_digest = repositoryUpdatesDigestCache_db.get(repository)
+        else:
+            # check database digest
+            stored_digest = self.retrieveRepositoryUpdatesDigest(repository)
+            repositoryUpdatesDigestCache_db[repository] = stored_digest
+            if stored_digest == -1:
+                doRescan = True
+        
+        # check portage files for changes if doRescan is still false
+        portage_dirs_digest = "0"
+        if not doRescan:
+            
+            if repositoryUpdatesDigestCache_disk.has_key(repository):
+                portage_dirs_digest = repositoryUpdatesDigestCache_disk.get(repository)
+            else:
+                import portageTools
+                # grab portdir
+                updates_dir = etpConst['systemroot']+portageTools.getPortageEnv("PORTDIR")+"/profiles/updates"
+                if os.path.isdir(updates_dir):
+                    # get checksum
+                    portage_dirs_digest = entropyTools.md5sum_directory(updates_dir)
+                    repositoryUpdatesDigestCache_disk[repository] = portage_dirs_digest
+                del updates_dir
+                del portageTools
+        
+        if doRescan or (str(stored_digest) != str(portage_dirs_digest)):
+            #print stored_digest, portage_dirs_digest
+            
+            # reset database tables
+            self.clearTreeupdatesEntries(repository)
+            
+            import portageTools
+            updates_dir = etpConst['systemroot']+portageTools.getPortageEnv("PORTDIR")+"/profiles/updates"
+            update_files = entropyTools.sortUpdateFiles(os.listdir(updates_dir))
+            update_files = [os.path.join(updates_dir,x) for x in update_files]
+            # now load actions from files
+            update_actions = []
+            for update_file in update_files:
+                f = open(update_file,"r")
+                lines = [x.strip() for x in f.readlines() if x.strip()]
+                for line in lines:
+                    update_actions.append(line)
+                del lines
+            # now filter the required actions
+            update_actions = self.filterTreeUpdatesActions(update_actions)
+            '''
+            if update_actions:
+                # shait, we need to do:
+                # -- move action:
+                # 1) move package key to the new name: category + name + atom
+                # 2) discard database cache
+                # 3) update all the dependencies in dependenciesreference to the new key
+                # 4) automatically run quickpkg() to build the new binary and taint database (to update the binary package)
+                # -- slotmove action:
+                # 1) move package slot
+                # 2) discard database cache
+                # 3) update all the dependencies in dependenciesreference owning same matched atom + slot
+                # 4) automatically run quickpkg() to build the new binary and taint database
+                print update_actions
+            '''
+            '''
+            # store new actions
+            ### FIXME: add support int reagent database --initialize
+            self.addRepositoryUpdatesActions(repository,update_actions)
+            # store new digest into database
+            self.setRepositoryUpdatesDigest(repository, portage_dirs_digest)
+            '''
+            
+    
+    # this functions will filter /usr/portage/profiles/updates/* actions returning only the needed ones
+    def filterTreeUpdatesActions(self, actions):
+        new_actions = []
+        for action in actions:
+            doaction = action.split()
+            if doaction[0] == "slotmove":
+                # slot move
+                atom = doaction[1]
+                from_slot = doaction[2]
+                to_slot = doaction[3]
+                matches = self.atomMatch(atom, multiMatch = True)
+                if matches[1] == 0:
+                    # found atom, check slot
+                    for idpackage in matches[0]:
+                        myslot = str(self.retrieveSlot(idpackage))
+                        if (myslot == from_slot) and (myslot != to_slot):
+                            new_actions.append(action)
+            elif doaction[0] == "move":
+                atom = doaction[1]
+                to_atom = doaction[2]
+                matches = self.atomMatch(atom, multiMatch = True)
+                if matches[1] == 0:
+                    for idpackage in matches[0]:
+                        new_actions.append(action)
+        return new_actions
+    
     # this function manages the submitted package
     # if it does not exist, it fires up addPackage
     # otherwise it fires up updatePackage
@@ -1716,6 +1820,35 @@ class etpDatabase:
             else:
 	        dbCacheStore[etpCache['dbSearch']+self.dbname][function][searchdata] = data
 
+    def retrieveRepositoryUpdatesDigest(self, repository):
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveRepositoryUpdatesDigest: retrieving repository digest for "+str(repository))
+        
+        try:
+            self.cursor.execute('SELECT digest FROM treeupdates WHERE repository = (?)', (repository,))
+        except:
+            self.createTreeupdatesTable()
+            self.cursor.execute('SELECT digest FROM treeupdates WHERE repository = (?)', (repository,))
+        mydigest = self.cursor.fetchone()
+        if mydigest:
+            return mydigest[0]
+        else:
+            return -1
+    
+    def setRepositoryUpdatesDigest(self, repository, digest):
+        try:
+            self.cursor.execute('DELETE FROM treeupdates where repository = (?)', (repository,)) # doing it for safety
+        except:
+            self.createTreeupdatesTable()
+        self.cursor.execute('INSERT INTO treeupdates VALUES (?,?)', (repository,digest,))
+    
+    def addRepositoryUpdatesActions(self, repository, actions):
+        for command in actions:
+            try:
+                self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?)', (repository,command,))
+            except:
+                self.createTreeupdatesactionsTable()
+                self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?)', (repository,command,))
+
     def retrieveAtom(self, idpackage):
 	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveAtom: retrieving Atom for package ID "+str(idpackage))
 
@@ -2214,8 +2347,8 @@ class etpDatabase:
     def retrieveDepends(self, idpackage):
 	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"retrieveDepends: called for idpackage "+str(idpackage))
 
-	cache = self.fetchInfoCache(idpackage,'retrieveDepends')
-	if cache != None: return cache
+	#cache = self.fetchInfoCache(idpackage,'retrieveDepends')
+	#if cache != None: return cache
 
 	# sanity check on the table
 	sanity = self.isDependsTableSane()
@@ -2225,7 +2358,7 @@ class etpDatabase:
 	self.cursor.execute('SELECT dependencies.idpackage FROM dependstable,dependencies WHERE dependstable.idpackage = (?) and dependstable.iddependency = dependencies.iddependency', (idpackage,))
 	result = self.fetchall2set(self.cursor.fetchall())
 
-	self.storeInfoCache(idpackage,'retrieveDepends',result)
+	#self.storeInfoCache(idpackage,'retrieveDepends',result)
 	return result
 
     # You must provide the full atom to this function
@@ -2774,8 +2907,17 @@ class etpDatabase:
 
     def listAllBranches(self):
 	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listAllBranches: called.")
+
+	if (self.xcache):
+	    cached = self.fetchSearchCache((None,),'listAllBranches')
+	    if cached != None: return cached
+
 	self.cursor.execute('SELECT branch FROM baseinfo')
-	return self.fetchall2set(self.cursor.fetchall())
+        results = self.fetchall2set(self.cursor.fetchall())
+
+	if (self.xcache):
+	    self.storeSearchCache((None,),'listAllBranches',results)
+	return results
 
     def listIdPackagesInIdcategory(self,idcategory):
 	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"listIdPackagesInIdcategory: called.")
@@ -3093,9 +3235,28 @@ class etpDatabase:
                     if output: print "Attention: counter for atom "+str(myatom)+" is duplicated. Ignoring."
                     continue # don't trust counters, they might not be unique
 
+    def clearTreeupdatesEntries(self, repository):
+        # treeupdates
+        try:
+            self.cursor.execute("DELETE FROM treeupdates WHERE repository = (?)", (repository,))
+        except:
+            self.createTreeupdatesTable()
+
     #
     # FIXME: remove these when 1.0 will be out
     #
+    
+    def createTreeupdatesTable(self):
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createTreeupdatesTable: called.")
+	self.cursor.execute('DROP TABLE IF EXISTS treeupdates;')
+	self.cursor.execute('CREATE TABLE treeupdates ( repository VARCHAR PRIMARY KEY, digest VARCHAR );')
+	self.commitChanges()
+    
+    def createTreeupdatesactionsTable(self):
+	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createTreeupdatesactionsTable: called.")
+	self.cursor.execute('DROP TABLE IF EXISTS treeupdatesactions;')
+	self.cursor.execute('CREATE TABLE treeupdatesactions ( idupdate INTEGER PRIMARY KEY, repository VARCHAR, command VARCHAR );')
+	self.commitChanges()
     
     def createSizesTable(self):
 	if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createSizesTable: called.")
@@ -3174,6 +3335,8 @@ class etpDatabase:
 			idpackage,
 			)
 	)
+        if etpConst['uid'] == 0 and self.dbname == "etpdb": # force commit even if readonly, this will allow to automagically fix dependstable server side
+            self.connection.commit()                        # we don't care much about syncing the database since it's quite trivial
 	self.commitChanges()
 
     '''
@@ -3196,7 +3359,7 @@ class etpDatabase:
 	    if (match[0] != -1):
 	        self.addDependRelationToDependsTable(iddep,match[0])
         del depends
-
+        
         # now validate dependstable
         self.sanitizeDependsTable()
 
@@ -3319,6 +3482,8 @@ class etpDatabase:
        @input caseSensitive: bool, should the atom be parsed case sensitive?
        @input matchSlot: string, match atoms with the provided slot
        @input multiMatch: bool, return all the available atoms
+       @input matchBranches: tuple or list, match packages only in the specified branches
+       @input matchTag: match packages only for the specified tag
        @input packagesFilter: enable/disable package.mask/.keywords/.unmask filter
        @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = not found, 2 = need more info, 3 = cannot use direction without specifying version
     '''
@@ -3389,8 +3554,8 @@ class etpDatabase:
         
         for idx in myBranchIndex:
 	    results = self.searchPackagesByName(pkgname, sensitive = caseSensitive, branch = idx)
-            
-	    mypkgcat = pkgcat
+	    
+            mypkgcat = pkgcat
 	    mypkgname = pkgname
             
             virtual = False
@@ -3419,18 +3584,17 @@ class etpDatabase:
 		    cats.add(cat)
 		    if (cat == mypkgcat) or ((not virtual) and (mypkgcat == "virtual") and (cat == mypkgcat)): # in case of virtual packages only (that they're not stored as provide)
 		        foundCat = cat
-		        break
-	        
-                # if I found something at least...
-	        if (not foundCat) and (len(cats) == 1):
+
+                # if we found something at least...
+	        if (not foundCat) and (len(cats) == 1) and (mypkgcat in ("virtual","null")):
 		    foundCat = list(cats)[0]
-	        if (not foundCat) and (mypkgcat == "null"):
+	        if (not foundCat):
 		    # got the issue
 		    # gosh, return and complain
                     self.atomMatchStoreCache((-1,2), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
 		    return -1,2
 	
-	        # I can use foundCat
+	        # we can use foundCat
 	        mypkgcat = foundCat
 
 	        # we need to search using the category
@@ -3463,7 +3627,7 @@ class etpDatabase:
         
         if packagesFilter: # keyword filtering
             foundIDs = self.packagesFilter(foundIDs)
-        
+
         if (foundIDs):
 	    # now we have to handle direction
 	    if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
@@ -3538,6 +3702,7 @@ class etpDatabase:
 		    
 		    if (multiMatch):
                         # filter only valid keywords
+                        similarPackages = set([x[1] for x in similarPackages])
                         self.atomMatchStoreCache((similarPackages,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
 			return similarPackages,0
 		    
@@ -3629,6 +3794,7 @@ class etpDatabase:
 	            similarPackages = self.searchPackagesByNameAndVersionAndCategory(name = newerPkgName, version = newerPkgVersion, category = newerPkgCategory, branch = newerPkgBranch)
 
 		    if (multiMatch):
+                        similarPackages = set([x[1] for x in similarPackages])
                         self.atomMatchStoreCache((similarPackages,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
 			return similarPackages,0
 
@@ -3654,8 +3820,6 @@ class etpDatabase:
 		
 	    else:
 	    
-	        #print foundIDs
-	    
 	        # not set, just get the newer version, matching slot choosen if matchSlot != None
 	        versionIDs = []
 		#print foundIDs
@@ -3679,7 +3843,7 @@ class etpDatabase:
 			    multiMatchList.add(data[1])
 		    _foundIDs.append(data)
 		foundIDs = _foundIDs
-	    
+
 		if (multiMatch):
                     self.atomMatchStoreCache((multiMatchList,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
 		    return multiMatchList,0

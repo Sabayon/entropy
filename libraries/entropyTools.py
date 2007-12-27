@@ -23,10 +23,8 @@
 from outputTools import *
 from entropyConstants import *
 import exceptionTools
-import os
 import re
-import sys
-import threading, time, tarfile
+import threading, time
 
 # Logging initialization
 import logTools
@@ -42,7 +40,7 @@ def getDebug():
     return __etp_debug
 
 def isRoot():
-    if (os.getuid() == 0):
+    if (etpConst['uid'] == 0):
         return True
     return False
 
@@ -160,6 +158,24 @@ def md5sum(filepath):
         m.update(block)
 	block = readfile.read(1024)
     return m.hexdigest()
+
+def md5sum_directory(directory):
+    if not os.path.isdir(directory):
+        raise exceptionTools.DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
+    myfiles = os.listdir(directory)
+    if not myfiles:
+        return "0" # no files means 0
+    import md5
+    m = md5.new()
+    for currentdir,subdirs,files in os.walk(directory):
+        for myfile in files:
+            myfile = os.path.join(currentdir,myfile)
+            readfile = file(myfile)
+            block = readfile.read(1024)
+            while block:
+                m.update(block)
+                block = readfile.read(1024)
+    return m.hexdigest()
     
 def unpackGzip(gzipfilepath):
     import gzip
@@ -188,7 +204,6 @@ def unpackBzip2(bzip2filepath):
     return filepath
 
 def extractXpak(tbz2file,tmpdir = None):
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractXpak: called -> "+tbz2file)
     # extract xpak content
     xpakpath = suckXpak(tbz2file, etpConst['packagestmpdir'])
     return unpackXpak(xpakpath,tmpdir)
@@ -225,7 +240,6 @@ def unpackXpak(xpakfile, tmpdir = None):
     return tmpdir
     
 def suckXpak(tbz2file, outputpath):
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"suckXpak: called -> "+tbz2file+" and "+outputpath)
     
     xpakpath = outputpath+"/"+os.path.basename(tbz2file)[:-5]+".xpak"
     old = open(tbz2file,"rb")
@@ -281,7 +295,6 @@ def suckXpak(tbz2file, outputpath):
 
 # FIXME: uses too much ram, please rewrite
 def aggregateEdb(tbz2file,dbfile):
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"aggregateEntropyDb: called -> "+tbz2file+" and "+dbfile)
     f = open(tbz2file,"abw")
     g = open(dbfile,"rb")
     dbx = g.readlines()
@@ -293,7 +306,6 @@ def aggregateEdb(tbz2file,dbfile):
     f.close()
 
 def extractEdb(tbz2file, dbpath = None):
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractEdb: called -> "+tbz2file)
     old = open(tbz2file,"rb")
     if not dbpath:
         dbpath = tbz2file[:-5]+".db"
@@ -334,7 +346,6 @@ def extractEdb(tbz2file, dbpath = None):
     return dbpath
 
 def removeEdb(tbz2file, savedir):
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"removeEdb: called -> "+tbz2file)
     old = open(tbz2file,"rb")
     new = open(savedir+"/"+os.path.basename(tbz2file),"wb")
     
@@ -370,7 +381,6 @@ def removeEdb(tbz2file, savedir):
 # This function creates the .md5 file related to the given package file
 # @returns the complete hash file path
 def createHashFile(tbz2filepath):
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"createHashFile: for "+tbz2filepath)
     md5hash = md5sum(tbz2filepath)
     hashfile = tbz2filepath+etpConst['packageshashfileext']
     f = open(hashfile,"w")
@@ -381,14 +391,11 @@ def createHashFile(tbz2filepath):
     return hashfile
 
 def compareMd5(filepath,checksum):
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"compareMd5: called. ")
     checksum = str(checksum)
     result = md5sum(filepath)
     result = str(result)
     if checksum == result:
-        entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"compareMd5: match. ")
 	return True
-    entropyLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"compareMd5: no match. ")
     return False
 
 def md5string(string):
@@ -397,8 +404,29 @@ def md5string(string):
     m.update(string)
     return m.hexdigest()
 
+# used to properly sort /usr/portage/profiles/updates files
+def sortUpdateFiles(update_list):
+    sort_dict = {}
+    # sort per year
+    for item in update_list:
+        # get year
+        year = item.split("-")[1]
+        if sort_dict.has_key(year):
+            sort_dict[year].append(item)
+        else:
+            sort_dict[year] = []
+            sort_dict[year].append(item)
+    new_list = []
+    keys = sort_dict.keys()
+    keys.sort()
+    for key in keys:
+        sort_dict[key].sort()
+        new_list += sort_dict[key]
+    del sort_dict
+    return new_list
+
 # used by equo, this function retrieves the new safe Gentoo-aware file path
-def allocateMaskedFile(file, fromfile): 
+def allocateMaskedFile(file, fromfile):
 
     # check if file and tofile are equal
     if os.path.isfile(file) and os.path.isfile(fromfile):
@@ -446,8 +474,6 @@ def allocateMaskedFile(file, fromfile):
     return newfile, True
 
 def extractElog(file):
-
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractElog: called.")
 
     logline = False
     logoutput = []
@@ -1112,7 +1138,6 @@ def extractDuplicatedEntries(inputlist):
 
 # Tool to run commands
 def spawnCommand(command, redirect = None):
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"spawnCommand: called for: "+command)
     if redirect is not None:
         command += " "+redirect
     rc = os.system(command)
@@ -1147,7 +1172,8 @@ def compat_uncompressTarBz2(filepath, extractPath = None):
 # tar* uncompress function...
 def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
     
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"uncompressTarBz2: called.")
+    import tarfile
+    
     if extractPath is None:
 	extractPath = os.path.dirname(filepath)
     if not os.path.isfile(filepath):
@@ -1230,7 +1256,6 @@ def bytesIntoHuman(bytes):
 
 # hide password from full ftp URI
 def hideFTPpassword(uri):
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"hideFTPpassword: called. ")
     ftppassword = uri.split("@")[:len(uri.split("@"))-1]
     if len(ftppassword) > 1:
 	ftppassword = '@'.join(ftppassword)
@@ -1243,7 +1268,7 @@ def hideFTPpassword(uri):
 	if (ftppassword == ""):
 	    return uri
 
-    newuri = re.subn(ftppassword,"xxxxxxxx",uri)[0]
+    newuri = uri.replace(ftppassword,"xxxxxxxx")
     return newuri
 
 def getFileUnixMtime(path):
@@ -1302,8 +1327,6 @@ def alphaSorter(seq):
 
 # Temporary files cleaner
 def cleanup(toCleanDirs = []):
-
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"cleanup: called.")
 
     if (not toCleanDirs):
         toCleanDirs = [ etpConst['packagestmpdir'], etpConst['logdir'] ]
@@ -1396,6 +1419,7 @@ def writeNewBranch(branch):
         f.close()
 
 def isEntropyTbz2(tbz2file):
+    import tarfile
     if not os.path.exists(tbz2file):
         return False
     return tarfile.is_tarfile(tbz2file)
@@ -1404,8 +1428,8 @@ def isEntropyTbz2(tbz2file):
 # @dirpath: directory to save .tbz2
 def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, compression = "bz2"):
 
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+str(pkgdata)+" | dirpath: "+dirpath)
     import stat
+    import tarfile
     import databaseTools
 
     if compression not in ("bz2","","gz"):
@@ -1520,7 +1544,6 @@ def appendXpak(tbz2file, atom):
 # This function extracts all the info from a .tbz2 file and returns them
 def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inject = False):
 
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"extractPkgData: called -> package: "+str(package))
     data = {}
 
     from portageTools import synthetizeRoughDependencies, getPackagesInSystem, getConfigProtectAndMask, getThirdPartyMirrors
@@ -2066,8 +2089,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 		elogfile = mtimes[len(mtimes)-1][1]
 	    messages = extractElog(etpConst['logdir']+"/elog/"+elogfile)
 	    for message in messages:
-		out = re.subn("emerge","equo install",message)
-		message = out[0]
+		message = message.replace("emerge","equo install")
 		data['messages'].append(message)
     else:
 	if not silent: print_warning(red(etpConst['logdir']+"/elog")+" not set, have you configured make.conf properly?")

@@ -73,7 +73,6 @@ etpData = {
 
 # Entropy database SQL initialization Schema and data structure
 etpSQLInitDestroyAll = """
-DROP TABLE IF EXISTS etpData;
 DROP TABLE IF EXISTS baseinfo;
 DROP TABLE IF EXISTS extrainfo;
 DROP TABLE IF EXISTS content;
@@ -114,6 +113,8 @@ DROP TABLE IF EXISTS neededreference;
 DROP TABLE IF EXISTS triggers;
 DROP TABLE IF EXISTS countersdata;
 DROP TABLE IF EXISTS injected;
+DROP TABLE IF EXISTS treeupdates;
+DROP TABLE IF EXISTS treeupdatesactions;
 """
 
 etpSQLInit = """
@@ -290,6 +291,17 @@ CREATE TABLE neededreference (
     library VARCHAR
 );
 
+CREATE TABLE treeupdates (
+    repository VARCHAR PRIMARY KEY,
+    digest VARCHAR
+);
+
+CREATE TABLE treeupdatesactions (
+    idupdate INTEGER PRIMARY KEY,
+    repository VARCHAR,
+    command VARCHAR
+);
+
 """
 
 # ETP_ARCH_CONST setup
@@ -403,6 +415,9 @@ getNewerVersionCache = {}
 # generateDependencyTree match filter
 matchFilter = set()
 linkerPaths = set()
+# repository atoms updates digest cache
+repositoryUpdatesDigestCache_db = {}
+repositoryUpdatesDigestCache_disk = {}
 
 ### Application disk cache
 def const_resetCache():
@@ -429,6 +444,8 @@ def const_resetCache():
     getNewerVersionCache.clear()
     matchFilter.clear()
     linkerPaths.clear()
+    repositoryUpdatesDigestCache_db.clear()
+    repositoryUpdatesDigestCache_disk.clear()
 
 # Inside it you'll find instantiated vartree classes
 portageRoots = {}
@@ -531,7 +548,6 @@ def initConfig_entropyConstants(rootdir):
         'databaseconf': ETP_CONF_DIR+"/database.conf", # database.conf file
         'mirrorsconf': ETP_CONF_DIR+"/mirrors.conf", # mirrors.conf file
         'remoteconf': ETP_CONF_DIR+"/remote.conf", # remote.conf file
-        'spmbackendconf': ETP_CONF_DIR+"/spmbackend.conf", # spmbackend.conf file
         'equoconf': ETP_CONF_DIR+"/equo.conf", # equo.conf file
         'activatoruploaduris': [], # list of URIs that activator can use to upload files (parsed from activator.conf)
         'activatordownloaduris': [], # list of URIs that activator can use to fetch data
@@ -580,13 +596,11 @@ def initConfig_entropyConstants(rootdir):
         'activatorloglevel': 1, # # Activator log level (default: 1 - see activator.conf for more info)
         'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
         'equologlevel': 1, # # Equo log level (default: 1 - see equo.conf for more info)
-        'spmbackendloglevel': 1, # # Source Package Manager backend log level (default: 1 - see entropy.conf for more info)
         'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their stuff
         
         'syslogdir': ETP_SYSLOG_DIR, # Entropy system tools log directory
         'mirrorslogfile': ETP_SYSLOG_DIR+"mirrors.log", # Mirrors operations log file
         'remotelogfile': ETP_SYSLOG_DIR+"remote.log", # Mirrors operations log file
-        'spmbackendlogfile': ETP_SYSLOG_DIR+"spmbackend.log", # Source Package Manager backend configuration log file
         'databaselogfile': ETP_SYSLOG_DIR+"database.log", # Database operations log file
         'reagentlogfile': ETP_SYSLOG_DIR+"reagent.log", # Reagent operations log file
         'activatorlogfile': ETP_SYSLOG_DIR+"activator.log", # Activator operations log file

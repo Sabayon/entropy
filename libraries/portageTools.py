@@ -28,24 +28,8 @@
 # Portage initialization
 #####################################################################################
 
-import os
-import sys
 from entropyConstants import *
 import portage
-import portage_const
-from portage_dep import isvalidatom, isspecific, isjustname, dep_getkey, dep_getcpv
-from portage_util import grabdict_package
-import gc
-
-# colours support
-from outputTools import *
-# misc modules
-import commands
-
-# Logging initialization
-import logTools
-portageLog = logTools.LogFile(level=etpConst['spmbackendloglevel'],filename = etpConst['spmbackendlogfile'], header = "[Portage]")
-# portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFunction: example. ")
 
 ############
 # Functions and Classes
@@ -58,14 +42,7 @@ def getThirdPartyMirrors(mirrorname):
         return []
 
 def getPortageEnv(var):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPortageEnv: called.")
-    try:
-	rc = portage.config(clone=portage.settings).environ()[var]
-	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPortageEnv: variable available -> "+str(var))
-	return rc
-    except KeyError:
-	portageLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"getPortageEnv: variable not available -> "+str(var))
-	return None
+    return portage.settings[var]
 
 # Packages in system (in the Portage language -> emerge system, remember?)
 def getPackagesInSystem():
@@ -85,7 +62,7 @@ def getPackagesInSystem():
     return sysoutput
 
 def getConfigProtectAndMask():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getConfigProtectAndMask: called.")
+    import commands
     config_protect = portage.settings['CONFIG_PROTECT']
     config_protect = config_protect.split()
     config_protect_mask = portage.settings['CONFIG_PROTECT_MASK']
@@ -106,36 +83,32 @@ def getConfigProtectAndMask():
 # resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1
 def getBestAtom(atom):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getBestAtom: called -> "+str(atom))
+    import gc
     try:
         rc = portage.portdb.xmatch("bestmatch-visible",str(atom))
         gc.collect() # XXX: temp workaround for a python bug with portage
-	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getBestAtom: result -> "+str(rc))
         return rc
     except ValueError:
-	portageLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"getBestAtom: conflict found. ")
 	return "!!conflicts"
 
 # same as above but includes masked ebuilds
 def getBestMaskedAtom(atom):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getBestAtom: called. ")
+    import gc
     atoms = portage.portdb.xmatch("match-all",str(atom))
     gc.collect() # XXX: temp workaround for a python bug with portage
     # find the best
     from portage_versions import best
     rc = best(atoms)
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getBestAtom: result -> "+str(rc))
     return rc
 
 # should be only used when a pkgcat/pkgname <-- is not specified (example: db, amarok, AND NOT media-sound/amarok)
 def getAtomCategory(atom):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getAtomCategory: called. ")
+    import gc
     try:
         rc = portage.portdb.xmatch("match-all",str(atom))[0].split("/")[0]
         gc.collect() # XXX: temp workaround for a python bug with portage
         return rc
     except:
-	portageLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"getAtomCategory: error, can't extract category !")
 	return None
 
 # please always force =pkgcat/pkgname-ver if possible
@@ -150,9 +123,7 @@ def getInstalledAtom(atom):
             mytree = cached
     except NameError:
         mytree = portage.vartree(root=mypath)
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtom: called -> "+str(atom))
     rc = mytree.dep_match(str(atom))
-    #gc.collect() # XXX: temp workaround for a python bug with portage
     if (rc != []):
 	if (len(rc) == 1):
 	    return rc[0]
@@ -172,20 +143,15 @@ def getPackageSlot(atom):
             mytree = cached
     except NameError:
         mytree = portage.vartree(root=mypath)
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: called. ")
     if atom.startswith("="):
 	atom = atom[1:]
     rc = mytree.getslot(atom)
-    #gc.collect() # XXX: temp workaround for a python bug with portage
     if rc != "":
-	portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: slot found -> "+str(atom)+" -> "+str(rc))
 	return rc
     else:
-	portageLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"getPackageSlot: slot not found -> "+str(atom))
 	return None
 
 def getInstalledAtoms(atom):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledAtoms: called -> "+atom)
     mypath = etpConst['systemroot']+"/"
     try:
         cached = portageRoots.get(mypath)
@@ -197,7 +163,6 @@ def getInstalledAtoms(atom):
     except NameError:
         mytree = portage.vartree(root=mypath)
     rc = mytree.dep_match(str(atom))
-    #gc.collect() # XXX: temp workaround for a python bug with portage
     if (rc != []):
         return rc
     else:
@@ -205,7 +170,7 @@ def getInstalledAtoms(atom):
 
 def parseElogFile(atom):
 
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"parseElogFile: called. ")
+    import commands
 
     if atom.startswith("="):
 	atom = atom[1:]
@@ -245,8 +210,6 @@ def parseElogFile(atom):
 
 # create a .tbz2 file in the specified path
 def quickpkg(atom,dirpath):
-
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"quickpkg: called -> "+atom+" | dirpath: "+dirpath)
 
     # getting package info
     pkgname = atom.split("/")[1]
@@ -304,7 +267,6 @@ def quickpkg(atom,dirpath):
     tbz2.recompose(dbdir)
     
     dblnk.unlockdb()
-    #gc.collect() # XXX: temp workaround for a python bug with portage
     
     if os.path.isfile(dirpath):
 	return dirpath
@@ -312,36 +274,28 @@ def quickpkg(atom,dirpath):
 	return False
 
 def getUSEFlags():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getUSEFlags: called.")
     return portage.settings['USE']
 
 def getUSEForce():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getUSEForce: called.")
     return portage.settings.useforce
 
 def getUSEMask():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getUSEMask: called.")
     return portage.settings.usemask
 
 def getMAKEOPTS():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getMAKEOPTS: called.")
     return portage.settings['MAKEOPTS']
 
 def getCFLAGS():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getCFLAGS: called.")
     return portage.settings['CFLAGS']
 
 def getLDFLAGS():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getLDFLAGS: called.")
     return portage.settings['LDFLAGS']
 
 # you must provide a complete atom
 def getPackageIUSE(atom):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageIUSE: called.")
     return getPackageVar(atom,"IUSE")
 
 def getPackageVar(atom,var):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getPackageVar: called -> "+atom+" | var: "+var)
     if atom.startswith("="):
 	atom = atom[1:]
     # can't check - return error
@@ -350,7 +304,6 @@ def getPackageVar(atom,var):
     return portage.portdb.aux_get(atom,[var])[0]
 
 def synthetizeRoughDependencies(roughDependencies, useflags = None):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"synthetizeRoughDependencies: called. ")
     if useflags is None:
         useflags = getUSEFlags()
     # returns dependencies, conflicts
@@ -514,6 +467,7 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
     return dependencies, conflicts
 
 def getPortageAppDbPath():
+    import portage_const
     rc = etpConst['systemroot']+"/"+portage_const.VDB_PATH
     if (not rc.endswith("/")):
 	return rc+"/"
@@ -521,7 +475,6 @@ def getPortageAppDbPath():
 
 # Collect installed packages
 def getInstalledPackages(dbdir = None):
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackages: called.")
     if not dbdir:
         appDbDir = getPortageAppDbPath()
     else:
@@ -539,7 +492,6 @@ def getInstalledPackages(dbdir = None):
     return installedAtoms, len(installedAtoms)
 
 def getInstalledPackagesCounters():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getInstalledPackagesCounters: called.")
     appDbDir = getPortageAppDbPath()
     dbDirs = os.listdir(appDbDir)
     installedAtoms = []
@@ -559,7 +511,6 @@ def getInstalledPackagesCounters():
     return installedAtoms, len(installedAtoms)
 
 def refillCounter():
-    portageLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"refillCounter: called.")
     appDbDir = getPortageAppDbPath()
     counters = set()
     for catdir in os.listdir(appDbDir):
@@ -600,6 +551,7 @@ def refillCounter():
     return newcounter
 
 def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
+    import portage_const
     # myebuild = path/to/ebuild.ebuild with a valid unpacked xpak metadata
     # tree = "bintree"
     # tree = "bintree"

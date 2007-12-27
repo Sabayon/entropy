@@ -122,30 +122,12 @@ def initConfig_serverConstants():
                     print "WARNING: invalid loglevel in: "+etpConst['mirrorsconf']
     
     
-    # spmbackend section
-    if (os.path.isfile(etpConst['spmbackendconf'])):
-        f = open(etpConst['spmbackendconf'],"r")
-        spmconf = f.readlines()
-        f.close()
-        for line in spmconf:
-            if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
-                loglevel = line.split("loglevel|")[1]
-                try:
-                    loglevel = int(loglevel)
-                except:
-                    print "WARNING: invalid loglevel in: "+etpConst['spmbackendconf']
-                if (loglevel > -1) and (loglevel < 3):
-                    etpConst['spmbackendloglevel'] = loglevel
-                else:
-                    print "WARNING: invalid loglevel in: "+etpConst['spmbackendconf']
-    
-    
     # generic settings section
     if (os.path.isfile(etpConst['serverconf'])):
         f = open(etpConst['serverconf'],"r")
-        spmconf = f.readlines()
+        serverconf = f.readlines()
         f.close()
-        for line in spmconf:
+        for line in serverconf:
             if line.startswith("branches|") and (len(line.split("branches|")) == 2):
                 branches = line.split("branches|")[1]
                 etpConst['branches'] = []
@@ -153,5 +135,9 @@ def initConfig_serverConstants():
                     etpConst['branches'].append(branch)
                 if etpConst['branch'] not in etpConst['branches']:
                     etpConst['branches'].append(etpConst['branch'])
+
+    if etpConst['uid'] != 0:
+        import exceptionTools
+        raise exceptionTools.PermissionDenied("PermissionDenied: Entropy server must be run as root")
 
 initConfig_serverConstants()

@@ -174,7 +174,7 @@ def database(options):
 	
 	# clean caches
 	import cacheTools
-	cacheTools.cleanCache(quiet = True)
+	cacheTools.cleanCache()
 	const_resetCache()
 
 	# ok, he/she knows it... hopefully
