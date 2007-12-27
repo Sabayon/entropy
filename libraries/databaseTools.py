@@ -459,25 +459,30 @@ class etpDatabase:
                         new_actions.append(action)
         return new_actions
 
+    # this is the place to add extra actions support
     def runTreeUpdatesActions(self, actions):
-        # we need to do:
-        # -- slotmove action:
-        # 1) move package slot
-        # 2) discard database cache
-        # 3) update all the dependencies in dependenciesreference owning same matched atom + slot
-        # 4) automatically run quickpkg() to build the new binary and taint database
         for action in actions:
             command = action.split()
             if command[0] == "move":
                 print_warning(darkred(" * ")+bold("RUNNING: ")+red("action: %s" % (blue(action),)))
                 self.runTreeUpdatesMoveAction(command[1:])
-            
-    
+            elif command[0] == "slotmove":
+                print_warning(darkred(" * ")+bold("RUNNING: ")+red("action: %s" % (blue(action),)))
+                self.runTreeUpdatesSlotmoveAction(command[1:])
+
+        # discard cache
+        dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
+        dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
+        dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
+        dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
+        self.clearInfoCache()
+
+
     # -- move action:
     # 1) move package key to the new name: category + name + atom
-    # 2) discard database cache
-    # 3) update all the dependencies in dependenciesreference to the new key
-    # 4) automatically run quickpkg() to build the new binary and taint database (to update the binary package)
+    # 2) update all the dependencies in dependenciesreference to the new key
+    # 3) run fixpackages which will update /var/db/pkg files
+    # 4) automatically run quickpkg() to build the new binary and tainted binaries owning tainted iddependency and taint database (LOL)
     def runTreeUpdatesMoveAction(self, move_command):
         key_from = move_command[0]
         cat_from = key_from.split("/")[0]
@@ -487,23 +492,23 @@ class etpDatabase:
         name_to = key_to.split("/")[1]
         matches = self.atomMatch(key_from, multiMatch = True)
         for idpackage in matches[0]:
-            
+
             slot = self.retrieveSlot(idpackage)
             old_atom = self.retrieveAtom(idpackage)
             new_atom = old_atom.replace(key_from,key_to)
-            
+
             # check for injection and warn the developer
             injected = self.isInjected(idpackage)
             if injected:
-                print_warning(darkred(" * ")+bold("INJECT: ")+red("Package %s has been injected. You need to quickpkg it manually !!! Database will be updated." % (blue(new_atom),)))
-            
+                print_warning(darkred(" * ")+bold("INJECT: ")+red("Package %s has been injected. You need to quickpkg it manually to update embedded database !!! Repository database will be updated anyway." % (blue(new_atom),)))
+
             # update category
             self.setCategory(idpackage, cat_to)
             # update name
             self.setName(idpackage, name_to)
             # update atom
             self.setAtom(idpackage, new_atom)
-            
+
             # look for packages we need to quickpkg again
             quickpkg_queue = [key_to+":"+str(slot)]
             iddeps = self.searchDependency(key_from, like = True, multi = True)
@@ -512,10 +517,16 @@ class etpDatabase:
                 # update string
                 mydep = self.retrieveDependencyFromIddependency(iddep)
                 mydep = mydep.replace(key_from,key_to)
+
                 # now update
                 # dependstable on server is always re-generated
                 self.setDependency(iddep, mydep)
                 run_gentoo_fixpackages = True
+
+                # we have to repackage also package owning this iddep
+                iddep_owners = self.searchIdpackageFromIddependency(iddep)
+                for idpackage_owner in iddep_owners:
+                    quickpkg_queue.append(self.retrieveAtom(idpackage_owner))
 
             if run_gentoo_fixpackages:
                 # run gentoo fixpackages to update /var/db/pkg references
@@ -523,8 +534,61 @@ class etpDatabase:
 
             # quickpkg package and packages owning it as a dependency
             self.runTreeUpdatesQuickpkgAction(quickpkg_queue)
-        
+
         self.commitChanges()
+
+    # -- slotmove action:
+    # 1) move package slot
+    # 2) update all the dependencies in dependenciesreference owning same matched atom + slot
+    # 3) run fixpackages which will update /var/db/pkg files
+    # 4) automatically run quickpkg() to build the new binary and tainted binaries owning tainted iddependency and taint database (LOL)
+    def runTreeUpdatesSlotmoveAction(self, slotmove_command):
+        atom = slotmove_command[0]
+        atomkey = entropyTools.dep_getkey(atom)
+        slot_from = slotmove_command[1]
+        slot_to = slotmove_command[2]
+        matches = self.atomMatch(atom, multiMatch = True)
+        for idpackage in matches[0]:
+
+            # check for injection and warn the developer
+            injected = self.isInjected(idpackage)
+            if injected:
+                print_warning(darkred(" * ")+bold("INJECT: ")+red("Package %s has been injected. You need to quickpkg it manually to update embedded database !!! Repository database will be updated anyway." % (blue(new_atom),)))
+
+            # update slot
+            self.setSlot(idpackage, slot_to)
+
+            # look for packages we need to quickpkg again
+            quickpkg_queue = [atom+":"+str(slot_to)]
+            iddeps = self.searchDependency(atomkey, like = True, multi = True)
+            run_gentoo_fixpackages = False
+            for iddep in iddeps:
+                # update string
+                mydep = self.retrieveDependencyFromIddependency(iddep)
+                if mydep.find(":"+str(slot_from)) != -1: # probably slotted dep
+                    mydep = mydep.replace(":"+str(slot_from),":"+str(slot_to))
+                else:
+                    continue # it's fine
+
+                # now update
+                # dependstable on server is always re-generated
+                self.setDependency(iddep, mydep)
+                run_gentoo_fixpackages = True
+
+                # we have to repackage also package owning this iddep
+                iddep_owners = self.searchIdpackageFromIddependency(iddep)
+                for idpackage_owner in iddep_owners:
+                    quickpkg_queue.append(self.retrieveAtom(idpackage_owner))
+
+            if run_gentoo_fixpackages:
+                # run gentoo fixpackages to update /var/db/pkg references
+                os.system("fixpackages")
+
+            # quickpkg package and packages owning it as a dependency
+            self.runTreeUpdatesQuickpkgAction(quickpkg_queue)
+
+        self.commitChanges()
+
 
     def runTreeUpdatesQuickpkgAction(self, atoms):
         import reagentTools
@@ -1471,6 +1535,10 @@ class etpDatabase:
 
     def setAtom(self, idpackage, atom):
 	self.cursor.execute('UPDATE baseinfo SET atom = (?) WHERE idpackage = (?)', (atom,idpackage,))
+        self.commitChanges()
+
+    def setSlot(self, idpackage, slot):
+	self.cursor.execute('UPDATE baseinfo SET slot = (?) WHERE idpackage = (?)', (slot,idpackage,))
         self.commitChanges()
 
     def setCounter(self, idpackage, counter):
