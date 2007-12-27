@@ -224,14 +224,14 @@ class etpDatabase:
 	if (self.clientDatabase):
 	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened by Entropy client, file: "+str(dbFile))
 	    # if the database is opened readonly, we don't need to lock the online status
-	    self.connection = sqlite.connect(dbFile)
+	    self.connection = sqlite.connect(dbFile,timeout=300.0)
 	    self.cursor = self.connection.cursor()
 	    return
 	
 	if (self.readOnly):
 	    if _do_dbLog: dbLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"etpDatabase: database opened readonly, file: "+str(dbFile))
 	    # if the database is opened readonly, we don't need to lock the online status
-	    self.connection = sqlite.connect(dbFile)
+	    self.connection = sqlite.connect(dbFile,timeout=300.0)
 	    self.cursor = self.connection.cursor()
 	    # set the table read only
 	    return
