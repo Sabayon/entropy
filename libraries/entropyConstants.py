@@ -43,7 +43,6 @@ etpData = {
     'useflags': u"", # USE flags used
     'license': u"", # License adpoted
     'keywords': u"", # supported ARCHs (by the SRC)
-    'binkeywords': u"", # supported ARCHs (by the BIN)
     'branch': u"", # package branch location
     'download': u"", # link to download the binary package
     'digest': u"", # md5 hash of the .tbz2 package
@@ -197,11 +196,6 @@ CREATE TABLE useflagsreference (
 );
 
 CREATE TABLE keywords (
-    idpackage INTEGER,
-    idkeyword INTEGER
-);
-
-CREATE TABLE binkeywords (
     idpackage INTEGER,
     idkeyword INTEGER
 );

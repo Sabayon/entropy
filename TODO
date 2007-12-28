@@ -1,8 +1,6 @@
 TODO list:
-  - add gentoo pkg_* triggers logging
   - Community repositories
   - find a way to better handle real smartapps deps
-  - remove binkeywords, not used
   - add deptest check for every reagent run
   - implement client db sanity check
   - equo world: removal packages, first ask all, then do

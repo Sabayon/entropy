@@ -1868,7 +1868,6 @@ class etpDatabase:
 	data['license'] = mydata[10]
 	
 	data['keywords'] = self.retrieveKeywords(idpackage)
-	data['binkeywords'] = self.retrieveBinKeywords(idpackage)
 	
 	data['branch'] = mydata[11]
 	data['download'] = mydata[12]
@@ -2356,17 +2355,6 @@ class etpDatabase:
     def retrieveDependencyFromIddependency(self, iddependency):
 	self.cursor.execute('SELECT dependency FROM dependenciesreference WHERE iddependency = (?)', (iddependency,))
         return self.cursor.fetchone()[0]
-
-    def retrieveBinKeywords(self, idpackage):
-
-	cache = self.fetchInfoCache(idpackage,'retrieveBinKeywords')
-	if cache != None: return cache
-
-	self.cursor.execute('SELECT keywordname FROM binkeywords,keywordsreference WHERE binkeywords.idpackage = (?) and binkeywords.idkeyword = keywordsreference.idkeyword', (idpackage,))
-	kw = self.fetchall2set(self.cursor.fetchall())
-
-	self.storeInfoCache(idpackage,'retrieveBinKeywords',kw)
-	return kw
 
     def retrieveKeywords(self, idpackage):
 

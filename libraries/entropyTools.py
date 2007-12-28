@@ -1993,23 +1993,6 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     except IOError:
 	pass
 
-    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package supported ARCHs..."),back = True)
-    
-    # fill ARCHs
-    kwords = data['keywords']
-    _kwords = []
-    for i in kwords:
-	if i.startswith("~"):
-	    i = i[1:]
-	_kwords.append(i)
-    data['binkeywords'] = []
-    for i in etpConst['supportedarchs']:
-	try:
-	    x = _kwords.index(i)
-	    data['binkeywords'].append(i)
-	except:
-	    pass
-
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package dependencies..."),back = True)
     # Fill dependencies
     # to fill dependencies we use *DEPEND files
