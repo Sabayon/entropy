@@ -1232,21 +1232,6 @@ class etpDatabase:
 			)
 	    )
 
-	for key in etpData['binkeywords']:
-
-	    idbinkeyword = self.isKeywordAvailable(key)
-	    if (idbinkeyword == -1):
-	        # create category
-	        idbinkeyword = self.addKeyword(key)
-
-	    self.cursor.execute(
-		'INSERT into binkeywords VALUES '
-		'(?,?)'
-		, (	idpackage,
-			idbinkeyword,
-			)
-	    )
-
 	# clear caches
 	dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
 	dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
@@ -1357,8 +1342,6 @@ class etpDatabase:
 	self.cursor.execute('DELETE FROM useflags WHERE idpackage = '+idpackage)
 	# keywords
 	self.cursor.execute('DELETE FROM keywords WHERE idpackage = '+idpackage)
-	# binkeywords
-	self.cursor.execute('DELETE FROM binkeywords WHERE idpackage = '+idpackage)
 	
 	#
 	# WARNING: exception won't be handled anymore with 1.0
