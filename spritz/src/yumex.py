@@ -30,15 +30,12 @@ import gtk,gobject
 from threading import Thread,Event
 import thread
 import exceptions
-# Other Imports
-import yum
-import yum.Errors as Errors
 from yumgui.widgets import UI, Controller
 from yumgui import *
 
 # yumex imports
 import filters
-from yumapi import YumexYumHandler
+from entropyapi import YumexYumHandler
 from gui import YumexGUI
 from dialogs import *
 from misc import const,YumexOptions,YumexRepoList,YumexProfile
@@ -401,13 +398,12 @@ class YumexController(Controller):
             self.yumbase.cleanSqlite()            
             
                         
-class YumexApplication(YumexController,YumexGUI):    
+class YumexApplication(YumexController,YumexGUI):
 
     def __init__(self):
         YumexController.__init__( self )
         self.yumexOptions = YumexOptions()
         self.yumexOptions.parseCmdOptions()
-        self.settings = self.yumexOptions.settings
         YumexGUI.__init__(self)
         self.logger = logging.getLogger("yumex.main")
         # init flags
@@ -425,16 +421,13 @@ class YumexApplication(YumexController,YumexGUI):
         self.yumbase = YumexYumHandler(self.getRecentTime(),self.settings,self.progress,self.ui.main,self.yumexOptions._optparser)
         self.yumexOptions.parseCmdOptions()
         # Let the plugins know the commandline options
+        '''
         self.yumbase.plugins.setCmdLine(self.yumexOptions.cmd_options,
                                         self.yumexOptions.cmd_args)
+        '''
         
         self.packageInfo.yumbase = self.yumbase
         self.compsView.yumbase = self.yumbase
-        # Try to set the Logging application shown in syslog
-        try:
-            yum.logginglevels.setLoggingApp('yumex')
-        except:
-            pass
         # Setup GUI
         self.setupGUI()
         self.logger.info(_('GUI Setup Completed'))
@@ -445,7 +438,7 @@ class YumexApplication(YumexController,YumexGUI):
         self.setupRepoView()
         self.firstTime = True
         # Adding Package filter fn.
-        self.yumbase.setFilter(filters.yumexFilter.processFilters)
+        #self.yumbase.setFilter(filters.yumexFilter.processFilters)
         self.initYum = False
         if self.settings.autorefresh:
             self.setupYum()
@@ -456,15 +449,13 @@ class YumexApplication(YumexController,YumexGUI):
         self.isWorking = True
         busyCursor(self.ui.main)        
         self.ui.progressVBox.grab_add()
-        if not self.settings.nothreads:
-            gtkEventThread.startProcessing()        
+        gtkEventThread.startProcessing()
         
     def endWorking(self):
         self.isWorking = False
         self.ui.progressVBox.grab_remove()
         normalCursor(self.ui.main)
-        if not self.settings.nothreads:
-            gtkEventThread.endProcessing()
+        gtkEventThread.endProcessing()
             
     def setupYum(self):
         self.setPage('output')
@@ -477,23 +468,23 @@ class YumexApplication(YumexController,YumexGUI):
                 self.firstTime = False
             else:
                 self.yumbase._setupAgain()
-        except Errors.YumBaseError, e:
+        except Exception, e:
             self.endWorking()
-            errorMessage( self.ui.main, _( "Error" ), _( "Error in Yum Setup" ), str(e) )   
+            errorMessage( self.ui.main, _( "Error" ), _( "Error in Yum Setup" ), str(e) )
             self.logger.error(str(e))
             return         
         # prepare package lists
         self.progress.total.next() # -> List setup        
         self.progressLog(_('Building Package Lists'))
-        self.yumbase.populatePackages(['installed','updates','available'])
+        #self.yumbase.populatePackages(['installed','updates','available'])
         self.progressLog(_('Building Package Lists Completed'))
         self.progressLog(_('Building Groups Lists'))
-        self.yumbase.buildGroups()
-        self.populateGroupCategories()
+        #self.yumbase.buildGroups()
+        #self.populateGroupCategories()
         self.progressLog(_('Building Group Lists Completed'))
         # populate the package view
         self.doProgress = True
-        self.addPackages()
+        #self.addPackages()
         self.doProgress = False
         self.setPage('packages')
         self.initYum = True
@@ -501,7 +492,7 @@ class YumexApplication(YumexController,YumexGUI):
         
     
     def setupRepoView(self):
-        self.repoList.setFilter(self.settings.repo_exclude)
+        #self.repoList.setFilter(self.settings.repo_exclude)
         if self.profile.getActive() == 'yum-enabled':
             enablelist = self.repoList.getEnabledList()
         else:
@@ -769,22 +760,11 @@ if __name__ == "__main__":
     try:
         gtkEventThread = ProcessGtkEventsThread()
         gtkEventThread.start()
-        gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/yumex-icon.png")        
+        gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/yumex-icon.png")
         mainApp = YumexApplication()
         gtk.main()
-    except Errors.LockError, e:       
-        logger = logging.getLogger('yumex.main')
-        msg = _('Yum is locked by another application')
-        logger.error(msg)
-        errorMessage(None, _( "Error" ),_("Error in Yumex"),msg)
-        gtkEventThread.doQuit()
-        sys.exit(1)
     except SystemExit, e:
         print "Quit by User"
-        gtkEventThread.doQuit()
-        sys.exit(1)        
-    except yum.plugins.PluginYumExit,e:
-        errorMessage(None, _( "Error" ),_("Error in plugin, Yum Extender will exit"),str(e))
         gtkEventThread.doQuit()
         sys.exit(1)        
     except: # catch other exception and write it to the logger.

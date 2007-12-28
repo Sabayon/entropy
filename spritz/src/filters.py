@@ -19,9 +19,6 @@
 
 # Filtering action class
 
-import yum.misc
-import yum.Errors as Errors
-
 import sre_constants
 import re
 
@@ -130,7 +127,8 @@ class KeywordFilter(YumexFilter):
     def setKeys(self,criteria):
         self.reList = []
         for string in criteria:
-            restring = yum.misc.refineSearchPattern(string)
+            # FIXME!!!
+            #restring = yum.misc.refineSearchPattern(string)
             try: 
                 crit_re = re.compile(restring, flags=re.I)
                 self.reList.append(crit_re)

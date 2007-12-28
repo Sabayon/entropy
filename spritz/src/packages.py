@@ -21,9 +21,9 @@ from yumgui.packages import PackageWrapper
 import logging
 import time
 
-import yum.misc as misc
-import yum.Errors as Errors
-from yum.packages import parsePackages
+#import yum.misc as misc
+#import yum.Errors as Errors
+#from yum.packages import parsePackages
 
 from i18n import _
 

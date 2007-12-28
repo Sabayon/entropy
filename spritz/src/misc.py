@@ -23,7 +23,7 @@ import gobject
 import time
 import sys,os,traceback
 
-from yum.config import *
+#from yum.config import *
 
 # Use iniparse if it exist, else use Python ConfigParser
 try:
@@ -33,8 +33,8 @@ except:
     
 from optparse import OptionParser
 from i18n import _
-import yum.Errors as Errors
-from yum.repos import RepoStorage
+#import yum.Errors as Errors
+#from yum.repos import RepoStorage
 import packages
 
 
@@ -151,9 +151,10 @@ class YumexRepoList:
 
     def __init__(self,yumbase):
         self.yumbase = yumbase
-        self.repostore = self.yumbase.repos
-        self.repos = self.yumbase.repos.repos
-        self.enabledInFiles = [r.id for r in self.repostore.listEnabled()]
+        #self.repostore = self.yumbase.repos
+        #self.repos = self.yumbase.repos.repos
+        #self.enabledInFiles = [r.id for r in self.repostore.listEnabled()]
+        self.enabledInFiles = []
         self.filters = [] # exclude word list
         
     def clear(self):
@@ -209,10 +210,12 @@ class YumexRepoList:
     def _getList(self):
         ''' Get an filtered list of repo ids'''
         oklist = []
+        '''
         ids = self.repos.keys()
         for id in ids:
             if self._filterRepo(id):
                 oklist.append(id)
+        '''
         return oklist
         
     def _filterRepo(self,id):
@@ -460,31 +463,28 @@ class YumexQueueFile(YumexSaveFile):
             return dict
         except NoSectionError:
             return {}
-               
-class YumexConf( BaseConfig ):
+
+
+class YumexConf:
     """ Yum Extender Config Setting"""
-    autorefresh = BoolOption( True )
-    recentdays = IntOption( 14 )
-    debug = BoolOption( False )
-    plugins = BoolOption( True)
-    usecache = BoolOption( False )
-    proxy = Option()
-    exclude = ListOption()
-    repo_exclude = ListOption(['debug','source'])
-    fullobsoletion = BoolOption( False )
-    yumdebuglevel = IntOption( 2 )
-    font_console = Option( 'Monospace 8' )
-    font_pkgdesc = Option( 'Monospace 8' )
-    color_console = Option( '#68228B' )
-    color_pkgdesc = Option( '#68228B' )   
-    color_install = Option( 'darkgreen' )
-    color_update = Option( 'red' )
-    color_normal = Option( 'black' )
-    color_obsolete = Option( 'blue' )
-    filelist = BoolOption( False )
-    changelog = BoolOption( False )
-    disable_repo_page = BoolOption( False )
-    branding_title = Option('Yum Extender')
+    autorefresh = True
+    recentdays = 14
+    debug = False
+    plugins = True
+    usecache = False
+    proxy = ""
+    font_console = 'Monospace 8'
+    font_pkgdesc = 'Monospace 8'
+    color_console = '#68228B'
+    color_pkgdesc = '#68228B'
+    color_install = 'darkgreen'
+    color_update = 'red'
+    color_normal = 'black'
+    color_obsolete = 'blue'
+    filelist = True
+    changelog = False
+    disable_repo_page = False
+    branding_title = 'Yum Extender'
     
     #
     # This routines are taken from config.py yum > 3.2.2
@@ -508,7 +508,7 @@ class YumexConf( BaseConfig ):
                 raise ValueError("not populated, don't know section")
             section = self._section
 
-        # Updated the ConfigParser with the changed values    
+        # Updated the ConfigParser with the changed values
         cfgOptions = self.cfg.options(section)
         for name,value in self.iteritems():
             option = self.optionobj(name)
@@ -531,13 +531,11 @@ class YumexOptions:
 
     def __init__(self):
         self.logger = logging.getLogger('yumex.YumexOptions')
-        self.settings = self.getYumexConfig()
         self._optparser = OptionParser()
         self.setupParser()
         
     def parseCmdOptions(self):
         self.getCmdlineOptions()
-        self.updateSettings()
 
     def getYumexConfig(self,configfile='/etc/yumex.conf', sec='yumex' ):
         conf = YumexConf()
@@ -548,7 +546,6 @@ class YumexOptions:
     
     def reload(self):
         self.settings = self.getYumexConfig()
-        self.updateSettings()
     
     def getArgs(self):
         return self.cmd_args
@@ -612,39 +609,6 @@ class YumexOptions:
         for s in settings:
             if not s.startswith( '[' ):
                 self.logger.info("    %s" % s )
-        
-        
-
-    def updateSettings( self ):
-        """ update setting with commandline options """
-        #options = ['plugins', 'debug', 'usecache', 'fullobsoletion','nolauncher']
-        options = ['plugins', 'debug', 'usecache','yumdebuglevel',
-                   'fullobsoletion','autorefresh','conffile','downloadonly',
-                   'filelist','changelog','nothreads']
-        for opt in options:
-            self._calcOption(opt)
-            
-        # Set package colors
-        packages.color_normal = self.settings.color_normal
-        packages.color_update = self.settings.color_update
-        packages.color_install = self.settings.color_install
-        packages.color_obsolete = self.settings.color_obsolete
-        
-    def _calcOption(self,option):
-        '''
-        Check if a command line option has a diffent value, than
-        the default value for the setting.
-        if it is the set the setting value to the value from the 
-        commandline option.
-        '''
-        default = None
-        cmdopt = getattr( self.cmd_options, option )
-        if self.settings.isoption(option):
-            optobj = self.settings.optionobj(option)
-            default = optobj.default
-        if cmdopt != default:
-             setattr( self.settings, option,cmdopt)
-            
         
     def check_option( self, option ):
         """ Check options in settings or command line"""

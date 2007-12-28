@@ -19,9 +19,9 @@
 
 import logging
 
-import yum
-import yum.Errors as Errors
-from yum.update_md import UpdateMetadata
+#import yum
+#import yum.Errors as Errors
+#from yum.update_md import UpdateMetadata
 
 from misc import const,cleanMarkupSting
 from i18n import _
@@ -32,38 +32,38 @@ from dialogs import questionDialog
 from urlgrabber.grabber import URLGrabError
 
 
-class YumexYumHandler(yum.YumBase,YumexPackages):
+class YumexYumHandler:
     def __init__(self,recent,settings,progress,mainwin,parser):
-        yum.YumBase.__init__(self)
-        YumexPackages.__init__(self)
+        #YumexPackages.__init__()
         self.yumex_logger = logging.getLogger("yumex.YumHandler")
-        self.filelog = logging.getLogger( "yum.filelogging" ) 
+        self.filelog = logging.getLogger( "yum.filelogging" )
         self.recent = recent
         self.settings = settings  
         self.progress = progress
         self.mainwin = mainwin
         self.downloadProgress = YumexDownloadProgress(self.progress )
         self.dsCallback = YumexDepSolveProgressCallBack()
+        '''
         # yum config setup
         self.doConfigSetup(fn=self.settings.conffile,init_plugins=self.settings.plugins,
                            plugin_types=( yum.plugins.TYPE_CORE, ),
                            debuglevel = self.settings.yumdebuglevel,
                            optparser = parser )
+        '''
         self.filelog = logging.getLogger( "yum.filelogging" )
-        self.doLock( const.YUM_PID_FILE )       
-        self._setup_excludes() # Add yumex excludes to excludelist
-        self.repos.callback = YumexCacheProgressCallback(self.progress)
-        self.repos.setProgressBar( self.downloadProgress )       
+        #self.doLock( const.YUM_PID_FILE )       
+        #self.repos.callback = YumexCacheProgressCallback(self.progress)
+        #self.repos.setProgressBar( self.downloadProgress )       
         # Setup failure callback
         freport = ( self._failureReport, (), {} )
-        self.repos.setFailureCallback( freport )       
-        self.updateMetadata = UpdateMetadata()        
-        self.yumex_logger.info("Yum Version : %s" % yum.__version__)        
+        #self.repos.setFailureCallback( freport )       
+        #self.updateMetadata = UpdateMetadata()        
         self.isSetup = False
         
     def _setupBase(self):
         ''' Basic Yum Setup '''
         self.progress.show()
+        '''
         self.progressLog( _( "Setup Yum : Transaction Set" ) )
         self.doTsSetup()
         self.progressLog( _( "Setup Yum : RPM Db." ) )
@@ -82,6 +82,7 @@ class YumexYumHandler(yum.YumBase,YumexPackages):
         self.progressLog( _( "Setup Yum : Groups" ) )
         self.doGroupSetup()      
         self.progressLog( _( "Setup Yum : Base setup completed" ) )
+        '''
         self.isSetup = True
 
     def cleanup( self ):

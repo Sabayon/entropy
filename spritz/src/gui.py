@@ -18,7 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from yumgui import *
-from misc import YumexQueue,const,cleanMarkupSting
+from misc import YumexQueue,YumexConf,const,cleanMarkupSting
 from views import *
 from yumgui.widgets import TextViewConsole
 from i18n import _
@@ -266,11 +266,11 @@ class YumexProgress:
         self.ui.progressETALabel.set_markup( "<span size=\"small\">%s</span>" % text )
                              
         
-class YumexGUI:   
+class YumexGUI:
     ''' This class contains GUI related methods '''
     def __init__(self):
-        self.output = TextViewConsole( self.ui.viewOutput,font=self.settings.font_console, color=self.settings.color_console)         
-        self.setupLogging()
+        self.settings = YumexConf()
+        self.output = TextViewConsole( self.ui.viewOutput )
         # Package & Queue Views
         self.queue = YumexQueue()
         self.queueView = YumexQueueView(self.ui.queueView,self.queue)
@@ -304,23 +304,6 @@ class YumexGUI:
         self.setupCategory()
         self.setupPkgFilter()
         
-    def setupLogging(self):
-        self.logHandler = TextViewLogHandler(self.output,self.settings.nothreads)
-        formatter = logging.Formatter('%(asctime)s : %(message)s', "%H:%M:%S")
-        self.logHandler.setFormatter(formatter)
-        if self.settings.debug:
-            loglvl = logging.DEBUG
-        else:
-            loglvl = logging.INFO
-        logger = self.loggerSetup( "yumex",loglvl )       
-        logger.propagate = False
-        console_stdout = logging.StreamHandler(sys.stdout)
-        console_stdout.setFormatter(formatter)
-        logger.addHandler(console_stdout)
-        self.loggerSetup( "yum")       
-        self.loggerSetup( "yum.verbose")       
-        
-    
     def loggerSetup(self,logroot,loglvl=None):
         logger = logging.getLogger(logroot)
         if loglvl:

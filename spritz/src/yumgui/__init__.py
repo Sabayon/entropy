@@ -18,15 +18,12 @@
 # Authors:
 #    Tim Lauridsen <tla@rasmil.dk>
 
-import yum
 import gobject
 import gtk
 import pango
 import sys
 import time
 import logging
-
-from yum.packages import YumInstalledPackage
 
 #
 # Classes

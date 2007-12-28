@@ -21,14 +21,14 @@ import sys
 import os
 import re
 import gtk
-import rpm
+#import rpm
 import logging
 from urlgrabber.progress import *
 
 # Yumex imports
 from misc import const
-from yumgui.callbacks import RPMInstallCallback
-from yumgui import *
+#from yumgui.callbacks import RPMInstallCallback
+#from yumgui import *
 from i18n import _
 
           
@@ -40,7 +40,7 @@ class YumexDownloadProgress( BaseMeter ):
         self.totSize = ""
         self.downloadTotal = 0.0
         self.downloadNow = 0.0
-        self.logger = logging.getLogger( 'yumex.YumexCallbacks' )   
+        self.logger = logging.getLogger( 'yumex.YumexCallbacks' )
      
     def clearStats( self ):
         self.downloadTotal = 0.0
@@ -51,7 +51,7 @@ class YumexDownloadProgress( BaseMeter ):
         self.downloadNow = 0.0
           
     def update( self, amount_read, now=None ):
-        BaseMeter.update( self, amount_read, now )           
+        BaseMeter.update( self, amount_read, now )
 
     def _do_start( self, now=None ):
         if self.progress != None:
@@ -67,9 +67,6 @@ class YumexDownloadProgress( BaseMeter ):
                 self.totSize = format_number( self.size )
             if self.url:
                 self.logger.debug( _( "Getting : %s" ) % self.url )
-                
-                
-                
 
     def _do_update( self, amount_read, now=None ):
         etime = self.re.elapsed_time()
@@ -118,12 +115,11 @@ class YumexDownloadProgress( BaseMeter ):
 
 
 
-class YumexRPMCallback( RPMInstallCallback ):
+class YumexRPMCallback:
 
     def __init__( self, progress=None, filelog=None ):
         self.logger = logging.getLogger( 'yumex.yumexRPMCallback' )
         self.filelog = filelog
-        RPMInstallCallback.__init__( self, self.logger )
         self.progress = progress
     
     def _makedone( self ):
