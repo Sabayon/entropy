@@ -275,7 +275,6 @@ class YumexGUI:
         self.queue = YumexQueue()
         self.queueView = YumexQueueView(self.ui.queueView,self.queue)
         self.pkgView = YumexPackageView(self.ui.viewPkg,self.queueView) 
-        self.catView = YumexCategoryView(self.ui.tvCategory)
         self.compsView = YumexCompsView(self.ui.tvComps,self.queueView)
         self.grpPackages = YumexPackageView(self.ui.tvGrpPackages,self.queueView) 
         self.grpDesc = TextViewConsole(self.ui.grpDesc)
@@ -301,7 +300,6 @@ class YumexGUI:
         self.ui.main.present()
         self.setupPageButtons()        # Setup left side toolbar
         self.setPage(self.activePage)
-        self.setupCategory()
         self.setupPkgFilter()
         
     def loggerSetup(self,logroot,loglvl=None):
@@ -310,42 +308,6 @@ class YumexGUI:
             logger.setLevel(loglvl)
         logger.addHandler(self.logHandler)
         return logger
-        
-
-        
-    def setupProfilesMenu(self):
-        profiles = self.profile.getList()
-        profiles.sort()
-        self.firstProfile = self._addToProfileMenu('yum-enabled')
-        for pro in profiles:
-            self._addToProfileMenu(pro,self.firstProfile)
-        
-        
-    def _addToProfileMenu( self, label,group=None):
-        menu = self.ui.profileMenu.get_submenu()
-        item = gtk.RadioMenuItem(group, label, False )
-        item.show()
-        if self.profile.getActive() == label:
-            item.set_active( True )
-        menu.append( item )
-        item.connect_object( "activate", self.on_profile, label )
-        return item
-            
-        
-    def setupCategory(self):
-        ''' Populate Category Combobox'''
-        model = gtk.ListStore( str )
-        keyDict = const.PACKAGE_CATEGORY_DICT
-        no = const.PACKAGE_CATEGORY_NO
-        for i in range(no+1):
-            if i == 0:
-                model.append( ['None'] )
-            else:
-                tup = keyDict[i]
-                model.append( [tup[0]] )
-        self.ui.cbCategory.set_model( model )
-        self.ui.cbCategory.set_active(0) 
-        self.ui.swCategory.hide()
         
     def setupPkgFilter(self):
         ''' set callbacks for package radio buttons (all,updates, ...)'''

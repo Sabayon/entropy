@@ -19,11 +19,14 @@
 
 # Base Python Imports
 import sys,os
-
 import time
 import logging
 import traceback
 
+# Entropy Imports
+sys.path.append("/usr/lib/entropy/libraries")
+sys.path.append("/usr/lib/entropy/client")
+from entropyConstants import *
 
 # GTK Imports
 import gtk,gobject
@@ -38,7 +41,7 @@ import filters
 from entropyapi import YumexYumHandler
 from gui import YumexGUI
 from dialogs import *
-from misc import const,YumexOptions,YumexRepoList,YumexProfile
+from misc import const,YumexOptions,YumexProfile
 from i18n import _
 from packages import RPMGroupTree
        
@@ -71,7 +74,6 @@ class YumexController(Controller):
             return False
 
     def exitNow(self):
-        self.yumbase.doUnlock( const.YUM_PID_FILE )  
         try:
             gtk.main_quit()       # Exit gtk
         except RuntimeError,e:
@@ -81,34 +83,6 @@ class YumexController(Controller):
     def on_PageButton_changed( self, widget, page ):
         ''' Left Side Toolbar Handler'''
         self.setNotebookPage(const.PAGES[page])
-        
-    def on_category_selected(self,widget):
-        ''' Category Change Handler '''
-        ( model, iterator ) = widget.get_selection().get_selected()
-        if model != None and iterator != None:
-            category = model.get_value( iterator, 1 )
-            if category != '':
-                self.addCategoryPackages(category)
-            else:
-                self.pkgView.store.clear()
-                
-        
-    def on_Category_changed(self,widget):
-        ''' Category Type Change Handler'''
-        ndx = self.ui.cbCategory.get_active()
-        if ndx == 0: # None
-           self.categoryOn = False
-           self.packageInfo.clear()
-           self.ui.swCategory.hide()
-           self.addPackages() 
-        else:
-           self.categoryOn = True
-           self.ui.swCategory.show()
-           self.packageInfo.clear()
-           tub = const.PACKAGE_CATEGORY_DICT[ndx]
-           (label,fn,attr,sortcat,splitcat) = tub
-           self.addCategories(fn,attr,sortcat,splitcat)           
-           
         
     def on_pkgFilter_toggled(self,rb,action):
         ''' Package Type Selection Handler'''
@@ -124,18 +98,13 @@ class YumexController(Controller):
                 self.ui.pkgSelect.hide()
                 self.ui.pkgDeSelect.hide()
                 
-            if self.yumbase.currentCategory:
-                self.on_Category_changed(None)
-            else:
-                self.addPackages()                
-            rb.grab_remove()                    
+            #self.addPackages()
+            rb.grab_remove()
 
     def on_repoRefresh_clicked(self,widget):
         repos = self.repoView.get_selected()
         self.setPage('output')
         self.logger.info( "Enabled repositories : %s" % ",".join(repos))
-        self.repoList.clear() # Reset Repositories
-        self.repoList.enableOnly(repos)        
         self.setupYum()
 
     def on_repoDeSelect_clicked(self,widget):
@@ -355,7 +324,7 @@ class YumexController(Controller):
         """ Profiles Menu Handler """
         self.setStatus( _( "Selected the %s profile" ) % data )
         self.profile.setActive(data)
-        self.setupRepoView()        
+        self.setupRepoView()
 
 
     def on_FileQuit( self, widget ):
@@ -420,11 +389,6 @@ class YumexApplication(YumexController,YumexGUI):
         self.logger.info(_('Yum Config Setup'))
         self.yumbase = YumexYumHandler(self.getRecentTime(),self.settings,self.progress,self.ui.main,self.yumexOptions._optparser)
         self.yumexOptions.parseCmdOptions()
-        # Let the plugins know the commandline options
-        '''
-        self.yumbase.plugins.setCmdLine(self.yumexOptions.cmd_options,
-                                        self.yumexOptions.cmd_args)
-        '''
         
         self.packageInfo.yumbase = self.yumbase
         self.compsView.yumbase = self.yumbase
@@ -432,13 +396,9 @@ class YumexApplication(YumexController,YumexGUI):
         self.setupGUI()
         self.logger.info(_('GUI Setup Completed'))
         self.profile = YumexProfile()
-        self.setupProfilesMenu()
         # setup Repositories
-        self.repoList = YumexRepoList(self.yumbase)
         self.setupRepoView()
         self.firstTime = True
-        # Adding Package filter fn.
-        #self.yumbase.setFilter(filters.yumexFilter.processFilters)
         self.initYum = False
         if self.settings.autorefresh:
             self.setupYum()
@@ -492,13 +452,7 @@ class YumexApplication(YumexController,YumexGUI):
         
     
     def setupRepoView(self):
-        #self.repoList.setFilter(self.settings.repo_exclude)
-        if self.profile.getActive() == 'yum-enabled':
-            enablelist = self.repoList.getEnabledList()
-        else:
-            enablelist = self.profile.getProfile()
-        data = self.repoList.getReposToView(enablelist)
-        self.repoView.populate(data)
+        self.repoView.populate()
                 
     def addPackages(self):
         if not self.yumbase or not self.yumbase.isSetup:

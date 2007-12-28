@@ -17,6 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+from entropyConstants import *
 import gtk
 import gobject
 import logging
@@ -465,13 +466,13 @@ class YumexRepoView:
         column2.set_cell_data_func( cell2, self.new_pixbuf )
         column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column2.set_fixed_width( 20 )
-        column2.set_sort_column_id( -1 )            
+        column2.set_sort_column_id( -1 )
         self.view.append_column( column2 )
         column2.set_clickable( True )
                
         # Setup reponame & repofile column's
-        self.create_text_column( _('Repository'),1 )
-        self.create_text_column( _('Name'),2 )
+        self.create_text_column( _('Repository Identifier'),1 )
+        self.create_text_column( _('Description'),2 )
         self.view.set_search_column( 1 )
         self.view.set_reorderable( False )
         return store
@@ -482,11 +483,14 @@ class YumexRepoView:
         column.set_resizable( True )
         self.view.append_column( column )        
 
-    def populate( self, data ):
+    def populate(self):
         """ Populate a repo liststore with data """
         self.store.clear()
-        for state,id,name,gpg in data:
-            self.store.append([state,id,name,gpg])           
+        repos = list(etpRepositoriesOrder)
+        repos.sort()
+        for repo in etpRepositoriesOrder:
+            repodata = etpRepositories[repo[1]]
+            self.store.append([1,repo[1],repodata['description'],"200x"])
 
     def new_pixbuf( self, column, cell, model, iter ):
         gpg = model.get_value( iter, 3 )
