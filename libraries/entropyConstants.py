@@ -498,6 +498,7 @@ dbCOUNTER = "COUNTER"
 def initConfig_entropyConstants(rootdir):
 
     if rootdir and not os.path.isdir(rootdir):
+        import exceptionTools
         raise exceptionTools.FileNotFound("FileNotFound: not a valid chroot.")
 
     ETP_DIR = rootdir+"/var/lib/entropy"

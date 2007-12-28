@@ -1,5 +1,4 @@
 TODO list:
-  - /usr/portage/profiles/updates support
   - add gentoo pkg_* triggers logging
   - Community repositories
   - find a way to better handle real smartapps deps
