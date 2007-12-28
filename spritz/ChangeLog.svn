@@ -1,0 +1,656 @@
+2007-08-16  Tim Lauridsen <tim@yum-extender.org>
+
+	* Makefile:
+	  fixed Makefile to remove .svn and other files we dont want in the
+	  tarball.
+	* src/callbacks.py, src/dialogs.py, src/filters.py, src/gui.py,
+	  src/misc.py, src/views.py, src/yumapi.py, src/yumex.py,
+	  src/yumgui/callbacks.py, src/yumgui/widgets.py, yumex.spec:
+	  Bumped the release to 2.0
+	  cleanup unused code.
+	* src/yumapi.py:
+	  Fixed Tracebacks in depsolve using latest yum HEAD
+
+2007-08-15  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/dialogs.py, src/misc.py:
+	  Make yumex use iniparse if it is installed to make order and
+	  comments persistent in the yumex config files, it need some
+	  changes in config.py, that i made in yum cvs, so it will not be
+	  very usefull before yum 2.2.3 is released.
+
+2007-08-14  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/misc.py, src/packages.py, src/views.py, src/yumex.py:
+	  Made the 'RPM Groups' work right, they was not working is there
+	  was more or less than 2 level in the rpm group.
+
+2007-08-13  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/dialogs.py, src/gui.py, src/misc.py, src/yumex.py:
+	  Added a 'branding_title' & 'disable_repo_page' to make it posible
+	  to rebrand yumex and disable the repo page from /etc/yumex.conf
+	  (IBM Open Client)
+
+2007-08-03  Tim Lauridsen <tim@yum-extender.org>
+
+	* yumex.spec:
+	  Fixed Source License to be GPLv2+
+	* src/i18n.py, src/yumgui/__init__.py, src/yumgui/callbacks.py,
+	  src/yumgui/packages.py, src/yumgui/widgets.py:
+	  Fixed Source License to be GPLv2+
+
+2007-07-30  Tim Lauridsen <tim@yum-extender.org>
+
+	* ChangeLog, src/misc.py, yumex.spec:
+	  bumped release to 1.9.11 & updated changelog
+	* src/yumex.py:
+	  Added application icon to windows
+
+2007-07-16  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/packages.py, src/views.py:
+	  Revert mixed icons in grp view, it looked like crap.
+	  Fixed a traceback in group generation
+
+2007-07-12  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/views.py:
+	  Mixed icons in group view (Not Complete)
+
+2007-07-10  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/misc.py:
+	  remove 'Categories' from package view categories.
+
+2007-07-08  Tim Lauridsen <tim@yum-extender.org>
+
+	* ChangeLog, yumex.spec:
+	  bumped spec to 1.9.10-2.0
+	* src/misc.py:
+	  bumped release shown in gui
+
+2007-07-07  Tim Lauridsen <tim@yum-extender.org>
+
+	* ChangeLog:
+	  rebuild changelog
+	* yumex.spec:
+	  bumped release to 1.9.10
+
+2007-07-02  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumex.glade, src/yumex.py:
+	  Show package description when package is selected in group view
+	* src/gui.py, src/misc.py, src/packages.py, src/views.py,
+	  src/yumex.glade, src/yumex.py:
+	  Rework the comps/category view it is much better now.
+
+2007-06-29  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/views.py, src/yumex.glade, src/yumex.py:
+	  Added support for group icons
+	* src/yumex.glade:
+	  Cleanup glade
+
+2007-06-26  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/gui.py:
+	  Some fixes to to avoid unnessecary progress ticks to reduce load
+	  on X
+
+2007-06-24  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumapi.py:
+	  Added inital support for downloading update metadata
+
+2007-06-22  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/gui.py:
+	  Make background of buttom bar, depend on the current gtk theme
+	  So it look good in a hicontrest theme.
+	* misc/yumex.conf.default, src/dialogs.py, src/misc.py,
+	  src/packages.py, src/yumex.glade:
+	  Added color_install, color_normal, color_update and
+	  color_obsolete options to set the text color of packages
+	  shown in the package views.
+	  Removed unused option in preferences dialog.
+	  cleanup options in default /etc/yumex.conf
+	* src/gui.py, src/misc.py, src/yumapi.py:
+	  added '--changelog' and '--filelist' option to load
+	  extra metadata and show changelog and filelist for available
+	  packages. Also added 'filelist' and 'changelog' options to
+	  /etc/yumex.conf.
+
+2007-06-15  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/gui.py, src/yumex.py, src/yumgui/__init__.py:
+	  Dont update progressbar when current progress is the same, to
+	  reduce load on X server.
+	* src/gui.py:
+	  Added some extra gtk event handler calls
+	* src/gui.py, src/yumex.py:
+	  Fix to 'Fatal Python error: PyEval_RestoreThread: NULL tstate'
+	  when changing Sizes, subcategory.
+	  Dont update progressbar when current progress is the same, to
+	  reduce load on X server.
+
+2007-06-14  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/misc.py, src/yumex.py:
+	  Added '--downloadonly' option.
+	  Change gtk event thread delay.
+
+2007-06-12  Tim Lauridsen <tim@yum-extender.org>
+
+	* ChangeLog:
+	  updated ChangeLog
+	* src/misc.py, yumex.spec:
+	  Bumped release to 1.9.9
+
+2007-06-08  Tim Lauridsen <tim@yum-extender.org>
+
+	* po/ja.po, po/zh_TW.po:
+	  Updated jp & zh_TW translation.
+	  Thanks to MATSUURA Takanori & William Chao
+
+2007-06-07  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumex.py:
+	  removed threaded gtk event processing on
+	  Updates/Availiable/Installed/All radiobuttons.
+	  I might be causing the weird
+	  "Fatal Python error: PyEval_RestoreThread: NULL tstate"
+	  There sometime occours when pressing the Available button.
+	* src/yumapi.py:
+	  Added temporary hack to avoid problems when at transaction
+	  is canceled and more packages are added/removed and the
+	  transaction
+	  is run again.
+
+2007-06-04  Tim Lauridsen <tim@yum-extender.org>
+
+	* yumex.spec:
+	  Bumped to 1.9.8-2.0
+	* ChangeLog:
+	  Updated Changelog
+	* src/misc.py, yumex.spec:
+	  Bumped to 1.9.8
+	* src/yumapi.py:
+	  some fixes for second repository refresh is not working.
+	  rhbz #242100.
+	* src/yumapi.py:
+	  some fixes for second repository refresh is not working.
+	  rhbz #242100.
+
+2007-06-01  Tim Lauridsen <tim@yum-extender.org>
+
+	* po/fi.po, src/misc.py:
+	  Updated credits and fi translation by Tero Hietanen
+
+2007-05-31  Tim Lauridsen <tim@yum-extender.org>
+
+	* po/pa.po:
+	  updated pa (punjabi) translation by A S Alam
+	* po/ru.po:
+	  updated ru translation by nikita
+
+2007-05-30  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumapi.py:
+	  Dont process install/update/remove if there is no packages to
+	  work on.
+
+2007-05-29  Tim Lauridsen <tim@yum-extender.org>
+
+	* ChangeLog:
+	  Updated changelog
+	* po/cs.po, po/da.po, po/de.po, po/es.po, po/fi.po, po/fr.po,
+	  po/hu.po, po/it.po, po/ja.po, po/ko.po, po/pa.po, po/pl.po,
+	  po/pt_BR.po, po/ru.po, po/tr.po, po/uk.po, po/yumex.pot,
+	  po/zh_CN.po, po/zh_TW.po, src/misc.py, yumex.spec:
+	  Refreshed po files and bumped the release to 1.9.7-1.0
+	* po/ru.po:
+	  Updated ru translation by nikita
+
+2007-05-25  Tim Lauridsen <tim@yum-extender.org>
+
+	* po/ru.po:
+	  Updated ru translation by nikita
+	* po/ru.po:
+	  Updated ru translation by nikita
+	* po/ru.po:
+	  Updated ru translation by nikita
+	* src/yumex.glade:
+	  Patches by Patryk Zawadzki.
+	  corrects some stock icons used and slightly alters the
+	  package queue view to make it more user-friendly.
+	  Added better icons for packages to be installed and removed.
+	  rhbz #241227 & #241223
+	* src/views.py:
+	  Patches by Patryk Zawadzki.
+	  corrects some stock icons used and slightly alters the
+	  package queue view to make it more user-friendly.
+	  Added better icons for packages to be installed and removed.
+	  rhbz #241227 & #241223
+
+2007-05-24  Tim Lauridsen <tim@yum-extender.org>
+
+	* po/pl.po:
+	  Updated polish translation by Patryk Zawadzki
+	* src/yumex.glade:
+	  Added a patch by Patryk Zawadzki to use more builtin gtk widgets
+
+2007-05-10  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumapi.py:
+	  Changed the way obsoletion are done to the same ways as yum cli.
+	  Selecting all available updates activate processing of all
+	  obsolettes. (same as 'yum update')
+	  Selection some updates will only process obsolettes for the
+	  selected updates (same as 'yum update foo bar ....).
+	  adding the '-O' or '--fullopsoletion' to the yumex commandline
+	  will force fullopsoletion i both cases.
+
+2007-05-01  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumapi.py:
+	  Handle comperrors in groupsetup
+
+2007-04-18  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/dialogs.py, src/yumex.glade:
+	  Added "Repo Exclude filters" to Preference dialog
+	* Makefile:
+	  added release tag to Makefile
+	* src/misc.py:
+	  updated Credits
+
+2007-04-17  Tim Lauridsen <tim@yum-extender.org>
+
+	* ChangeLog:
+	  Updated changelog
+	* po/cs.po, po/da.po, po/de.po, po/es.po, po/fi.po, po/fr.po,
+	  po/hu.po, po/it.po, po/ja.po, po/ko.po, po/pa.po, po/pl.po,
+	  po/pt_BR.po, po/ru.po, po/tr.po, po/uk.po, po/yumex.pot,
+	  po/zh_CN.po, po/zh_TW.po, src/misc.py, yumex.spec:
+	  Bumped release to 1.9.6
+	  Rebuild pot & po files.
+	* src/misc.py, src/yumapi.py:
+	  fixed excludes.
+	  fixed added new profile included a extra yum-enabled profile
+	* ., po/cs.po, po/da.po, po/de.po, po/es.po, po/fi.po, po/fr.po,
+	  po/hu.po, po/it.po, po/ja.po, po/ko.po, po/pa.po, po/pl.po,
+	  po/pt_BR.po, po/ru.po, po/tr.po, po/uk.po, po/yumex.pot,
+	  po/zh_CN.po, po/zh_TW.po, src/dialogs.py, src/misc.py:
+	  Updated Credits
+	  Added Chinese(Simplified)by Hao Song
+	  Rebuild pot & po files.
+
+2007-04-16  Tim Lauridsen <tim@yum-extender.org>
+
+	* ., gfx/yumex-about.png:
+	  Added about background picture
+	* src/dialogs.py, src/misc.py, src/yumex.py:
+	  New Fanzy about dialog
+
+2007-04-15  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/misc.py:
+	  Changed the way '--version' work , so it dont break the rhnplugin
+	  in rhel5.
+
+2007-03-27  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/gui.py:
+	  make '-d' : Debugmode control what logger messages displayed
+	  by yumex.
+
+2007-03-20  Tim Lauridsen <tim@yum-extender.org>
+
+	* ChangeLog:
+	  updated changelog
+	* src/misc.py, yumex.spec:
+	  Bumped release to 1.9.5
+	* src/packages.py:
+	  fixed obsoleting package show twice
+	* src/packages.py, src/yumapi.py, src/yumex.py:
+	  Made second refresh work with yum 3.1.x.
+	  Clean up code in packages.py
+
+2007-03-19  Tim Lauridsen <tim@yum-extender.org>
+
+	* ChangeLog, src/misc.py, yumex.spec:
+	  Bumped release to 1.9.4 & rebuild changelog
+	* src/gui.py, src/packages.py, src/views.py, src/yumapi.py:
+	  Made obsoletion work right.
+	  Added different colors to different kind of packages.
+	  "Red" = Update.
+	  "Blue" = Obsoletion
+	  "Green" = Installed
+	  "Black" = Available.
+	* src/views.py, src/yumapi.py, src/yumex.py:
+	  fixed some Tracebacks
+
+2007-03-16  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumapi.py:
+	  Dont make yumex fail if no repos has a comps.xml.
+	  Just repost and go on.
+	* src, src/misc.py, src/yumapi.py, src/yumex.py:
+	  added '-c' to specify what yum.conf to use with yumex
+
+2007-03-13  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumapi.py:
+	  revert changes against latest yum api, they are not needed
+	  anymore because of changes in yum HEAD
+
+2007-03-01  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumapi.py:
+	  make some changes to work with the latest changes in
+	  yum cvs HEAD without breaking the compability with yum 3.0.x.
+
+2007-02-16  Tim Lauridsen <tim@yum-extender.org>
+
+	* ChangeLog:
+	  updated changelog
+	* po/Makefile, po/cs.po, po/da.po, po/de.po, po/es.po, po/fi.po,
+	  po/fr.po, po/hu.po, po/it.po, po/ja.po, po/ko.po, po/pa.po,
+	  po/pl.po, po/pt_BR.po, po/ru.po, po/tr.po, po/uk.po,
+	  po/yumex.pot, po/zh_TW.po, src/yumex.py:
+	  updated pot & po files
+	* yumex.spec:
+	  bumped release to 1.9.3-1.0
+	* src/yumapi.py, src/yumex.py:
+	  - Make the quitting work better.
+	  - added check for anything to do, before showing the transaction
+	  confimation dialog.
+	* src/misc.py, src/yumapi.py, src/yumex.py:
+	  Made yumex work better with yum plugins so they can add
+	  commandline option to yumex.
+	  Ex.
+	  if the skip-broken plugin is enabled, then it will add the
+	  '--skip-broken' option to yumex.
+
+2007-02-04  Tim Lauridsen <tim@yum-extender.org>
+
+	* po/pa.po:
+	  punjabi translation updated thanks to A S Alam
+
+2007-01-31  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/misc.py, src/yumapi.py, src/yumex.py:
+	  Added some debug code to dump tsInfo member content
+	* src/misc.py, src/yumapi.py, src/yumex.py:
+	  - Added more steps in yum setup total progress.
+	  - Fixed problem with changes the used repos and
+	  doing a new refresh whas not working right.
+
+2007-01-30  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumex.py:
+	  Added autosave of last package queue
+	* src/misc.py:
+	  Made YumexSaveFile smarter
+	* src/yumex.py:
+	  Added Open/Save Dialogs to package Queue
+	* src/misc.py, src/packages.py, src/yumex.glade, src/yumex.py,
+	  src/yumgui/packages.py:
+	  Added Save/Load of package queue
+	* po/cs.po, po/da.po, po/de.po, po/es.po, po/fi.po, po/fr.po,
+	  po/hu.po, po/it.po, po/ja.po, po/ko.po, po/pa.po, po/pl.po,
+	  po/pt_BR.po, po/ru.po, po/tr.po, po/uk.po, po/yumex.pot,
+	  po/zh_TW.po, yumex.spec:
+	  updated i18n files adn bumped release to 1.9.2-1.1
+
+2007-01-29  Tim Lauridsen <tim@yum-extender.org>
+
+	* ChangeLog:
+	  rebuild changelog
+	* src/misc.py, yumex.spec:
+	  bumped version to 1.9.2
+	* src/gui.py, src/yumapi.py, src/yumex.py, src/yumgui/__init__.py:
+	  redesigned quit handler
+	* src, src/callbacks.py, src/gui.py, src/yumapi.py,
+	  src/yumex.glade, src/yumex.py, src/yumgui/packages.py:
+	  Added skip mirror button to skip to next mirror while
+	  downloading packages.
+
+2007-01-14  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumapi.py:
+	  Added repo init on second refresh
+
+2007-01-08  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumex.glade, src/yumex.py:
+	  added yum clean all code
+	* src/gui.py:
+	  Made custom console colors work
+	* src/yumapi.py, src/yumex.py:
+	  give the right report when yum is locked by another application
+	* src/misc.py, yumex.spec:
+	  bumped release to 1.9.2-0.1.pre1
+	* src/yumgui/packages.py, src/yumgui/widgets.py:
+	  Fixed problem with utf-8 convertions,
+	  if the text to be converted already is utf-8.
+
+2007-01-07  Tim Lauridsen <tim@yum-extender.org>
+
+	* ChangeLog, po/cs.po, po/da.po, po/de.po, po/es.po, po/fi.po,
+	  po/fr.po, po/hu.po, po/it.po, po/ja.po, po/ko.po, po/pa.po,
+	  po/pl.po, po/pt_BR.po, po/ru.po, po/tr.po, po/uk.po,
+	  po/yumex.pot, po/zh_TW.po:
+	  Rebuild po's and updated changelog
+	* src/misc.py, yumex.spec:
+	  Bumped release to 1.9.1-1.0
+
+2007-01-04  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumex.py:
+	  Don't clear queue when Transaction fails.
+
+2006-12-22  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/callbacks.py, src/yumapi.py, src/yumex.py:
+	  Added support for defining logging application in yum so it is
+	  written in syslog
+	* src/yumex.py:
+	  replaced the background Runner with a thread processing gtk
+	  threads.
+	* ChangeLog:
+	  rebuild changelog
+	* yumex.spec:
+	  fixed typo
+	* src/misc.py, yumex.spec:
+	  Bumped release to 1.9.1-pre1
+	* src/yumgui/Makefile:
+	  changes to avoid non-executable-script rpmlint errors
+	* yumex.spec:
+	  minor changes to the spec file.
+	  fixed rpmlint warnings
+	* yumex.spec:
+	  minor changes to the spec file.
+
+2006-12-21  Tim Lauridsen <tim@yum-extender.org>
+
+	* ., src, src/dialogs.py, src/gui.py, src/misc.py, src/yumex.py:
+	  Changed the way gui updating is done, while doing some work.
+	  The GUI updaing is done by a Timer() Thread, insted of doing the
+	  work in a backgound thread.
+
+2006-12-20  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumgui/__init__.py:
+	  Play around with logging, not working right yet
+
+2006-12-19  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/gui.py, src/yumapi.py, src/yumgui/__init__.py:
+	  Changed yum logging so i uses the default yum logging
+
+2006-12-18  Tim Lauridsen <tim@yum-extender.org>
+
+	* yumex.spec:
+	  using %{python_sitearch} macro insted of hardcode path in spec
+	* misc/yumex.pam:
+	  Updated yumex.pam to avoid rpmlint warnings
+	* yumex.spec:
+	  using %{python_sitearch} macro insted of hardcode path in spec
+	* yumex.spec:
+	  Updated url in spec
+	* ChangeLog, po/cs.po, po/da.po, po/de.po, po/es.po, po/fi.po,
+	  po/fr.po, po/hu.po, po/it.po, po/ja.po, po/ko.po, po/pa.po,
+	  po/pl.po, po/pt_BR.po, po/ru.po, po/tr.po, po/uk.po,
+	  po/yumex.pot, po/zh_TW.po:
+	  build changelog.
+	  rebuild po files.
+	* src/misc.py, yumex.spec:
+	  Bumped version to 1.9.0-1.0
+
+2006-12-04  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/dialogs.py, src/yumex.py:
+	  Make the Trackback handler work,
+	* src/yumex.py:
+	  Adden some exception trapping
+
+2006-11-22  Tim Lauridsen <tim@yum-extender.org>
+
+	* ChangeLog:
+	  updated changelog
+	* src/misc.py, yumex.spec:
+	  bumped version to 1.9.0-pre2
+
+2006-11-20  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/gui.py, src/packages.py, src/views.py, src/yumex.glade,
+	  src/yumex.py, src/yumgui/packages.py:
+	  # fixed available spelling error
+	  # fixed completed spelling error
+	* src/dialogs.py, src/gui.py, src/misc.py, src/packages.py,
+	  src/views.py, src/yumex.glade, src/yumex.py:
+	  * Added Repository Profiles.
+	  * Added Preferences.
+	  * Add 'padlock' in repo view to show if gpgcheck is enabled.
+	  # Fixed more args on quickadd not working.
+	  # Fixed Plugins in preferences not working.
+
+2006-11-17  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/misc.py:
+	  fixed problem with missing do fullobsoletion setting
+	* ChangeLog, src/gui.py, src/misc.py, src/views.py, src/yumapi.py,
+	  src/yumex.py:
+	  - Add repo view and make it work.
+	  - Made commandline options work.
+
+2006-11-16  Tim Lauridsen <tim@yum-extender.org>
+
+	* gfx/button-remove.png, gfx/button-run.png, gfx/button-update.png,
+	  gfx/yumex.png, misc/yumex.desktop~:
+	  - Added new icons from the Tango Project
+	  - Clean up unused icons.
+	* gfx/button-group.png, gfx/button-install.png,
+	  gfx/button-output.png, gfx/button-packages.png,
+	  gfx/button-queue.png, gfx/button-repo.png, src/gui.py,
+	  src/yumex.glade:
+	  - Added new icons from the Tango Project
+	  - Clean up unused icons.
+	* ChangeLog, ChangeLog.001, ChangeLog.002, ChangeLog.old, Makefile,
+	  misc/yumex, po/POTFILES.in, po/cs.po, po/da.po, po/de.po,
+	  po/es.po, po/fi.po, po/fr.po, po/hu.po, po/it.po, po/ja.po,
+	  po/ko.po, po/pa.po, po/pl.po, po/pt_BR.po, po/ru.po, po/tr.po,
+	  po/uk.po, po/yumex.pot, po/zh_TW.po, src/dialogs.py, src/misc.py,
+	  src/yumex.py, yumex.spec:
+	  Bumped version to 1.9.0-0.1.pre1
+	  Cleanup deprecated stuff.
+	  Cleanup spec file.
+	* src/gui.py, src/misc.py, src/packages.py, src/views.py,
+	  src/yumapi.py, src/yumex.glade, src/yumex.py:
+	  Completed Yum Group View.
+
+2006-11-15  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/gui.py, src/packages.py, src/views.py, src/yumex.glade,
+	  src/yumex.py:
+	  Added yum group view (not complete yet)
+
+2006-11-13  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/dialogs.py, src/gui.py, src/misc.py, src/packages.py,
+	  src/yumapi.py, src/yumex.py:
+	  - Completted Quick add to queue.
+	  - Added dialog asking for GPG key import
+	* src/misc.py, src/yumapi.py:
+	  Make the BackgroundRunner catch expections and raise them
+	  when the then the thread is finish.
+
+2006-11-12  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/packages.py, src/yumex.glade, src/yumex.py,
+	  src/yumgui/packages.py:
+	  First part of the Queue quick add feature.
+
+2006-11-10  Tim Lauridsen <tim@yum-extender.org>
+
+	* po/ja.po, src/gui.py, src/misc.py, src/packages.py,
+	  src/yumapi.py, src/yumex.py:
+	  - Added Yum Group Category
+	  - Added Yum Group info to package info.
+	  - Added installed package info to package info for updates
+
+2006-11-09  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/yumex.py:
+	  Fixed "add/remove all" not working if less than 50 packages in
+	  view
+	* src/yumex.py:
+	  - Add some some gui locking while processing some actions.
+	  - made a warning dialog when adding/removing more then 50
+	  packages to the queue, by the add/remove all buttons
+	* src/misc.py, src/views.py, src/yumex.py, src/yumgui/packages.py:
+	  Made view quicksearch work.
+	* src/filters.py, src/packages.py, src/yumex.glade, src/yumex.py:
+	  Made search work.
+	  - keyword search (search for word in name,summery & description)
+	  - repo search (Show only packages in specified repos.)
+	  - arch search (Show only packages with specified archs)
+	* src/callbacks.py, src/dialogs.py, src/gui.py, src/i18n.py,
+	  src/misc.py, src/packages.py, src/views.py, src/yumapi.py,
+	  src/yumex.py, src/yumgui/__init__.py, src/yumgui/widgets.py:
+	  - Added translation module (i18n.py)
+	  - Fixed some Tracebacks
+	  - changed color of errors in output view
+
+2006-11-07  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/filters.py, src/packages.py, src/yumapi.py, src/yumex.py,
+	  src/yumgui/widgets.py:
+	  added som search & filter code
+	* src/views.py, src/yumex.glade, src/yumex.py:
+	  Made 'Add' & 'Remove' buttons work
+	* src/gui.py, src/packages.py, src/views.py, src/yumex.glade,
+	  src/yumex.py:
+	  Made category work.
+	  Did some gui adjustments.
+
+2006-10-31  Tim Lauridsen <tim@yum-extender.org>
+
+	* src/gui.py, src/misc.py, src/packages.py, src/views.py,
+	  src/yumex.py:
+	  Added some Category code
+	* src/gui.py, src/packages.py, src/views.py, src/yumapi.py,
+	  src/yumex.glade, src/yumex.py, src/yumgui/__init__.py,
+	  src/yumgui/callbacks.py:
+	  The Basics is now working
+	  - Package selection
+	  - Queue Processing (install,update,remove)
+	  - All action is done in background threads.
+	* Makefile, po/POTFILES.in, po/cs.po, po/da.po, po/de.po, po/es.po,
+	  po/fi.po, po/fr.po, po/hu.po, po/it.po, po/ja.po, po/ko.po,
+	  po/pa.po, po/pl.po, po/pt_BR.po, po/ru.po, po/tr.po, po/uk.po,
+	  po/yumex.pot, po/zh_TW.po, src/misc.py, src/yumex.py:
+	  cleanup trunk and prepare for yumex 1.9.x
+

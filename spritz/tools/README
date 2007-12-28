@@ -1,0 +1,15 @@
+The Tools directory contains tools to support the Makefile.
+
+The tools is not included in the tarball, they only exist in the repository
+
+TOOLS:
+
+git2cl
+======
+git2cl is a tool to create GNU Changelog from a git repository.
+
+Homepage:
+http://josefsson.org/git2cl/
+
+git Repository:
+http://repo.or.cz/w/git2cl.git

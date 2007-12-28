@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Yum Extender
+Name[zh_TW]=Yum 延伸程式
+Comment=GUI front end for Yum
+Comment[zh_TW]=Yum 的圖形使用者介面前端程式
+Categories=Application;System;X-Red-Hat-Base;X-Fedora;
+Icon=/usr/share/pixmaps/yumex/yumex-icon.png
+Exec=/usr/bin/yumex
+Type=Application
+Terminal=false
+Encoding=UTF-8
+X-Desktop-File-Install-Version=0.10

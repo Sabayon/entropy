@@ -1,0 +1,5 @@
+#!/bin/bash
+#
+# Run yumex main python program.
+#
+/usr/bin/python /usr/share/yumex/yumex.pyc $*
