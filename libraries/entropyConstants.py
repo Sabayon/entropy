@@ -296,6 +296,11 @@ CREATE TABLE treeupdatesactions (
     command VARCHAR
 );
 
+CREATE TABLE binkeywords (
+    idpackage INTEGER,
+    idkeyword INTEGER
+);
+
 """
 
 # ETP_ARCH_CONST setup
