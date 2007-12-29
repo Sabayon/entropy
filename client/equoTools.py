@@ -887,12 +887,8 @@ def fetchFileOnMirrors(repository, filename, digest = False, verified = False):
         
         # now fetch the new one
 	print_info(red("   ## ")+mirrorCountText+blue("Downloading from: ")+red(spliturl(url)[1]))
-	rc = fetchFile(url, digest)
+	rc, data_transfer = fetchFile(url, digest)
 	if rc == 0:
-            try:
-                data_transfer = etpFileTransferMetadata[url]['datatransfer']
-            except KeyError:
-                data_transfer = 0
 	    print_info(red("   ## ")+mirrorCountText+blue("Successfully downloaded from: ")+red(spliturl(url)[1])+blue(" at "+str(bytesIntoHuman(data_transfer))+"/sec"))
 	    return 0
 	else:
@@ -933,25 +929,27 @@ def fetchFile(url, digest = None):
     # load class
     fetchConn = remoteTools.urlFetcher(url, filepath)
     # start to download
+    data_transfer = 0
     try:
         fetchChecksum = fetchConn.download()
+        data_transfer = fetchConn.datatransfer
     except KeyboardInterrupt:
-	return -4
+	return -4, data_transfer
     except:
-	return -1
+	return -1, data_transfer
     if fetchChecksum == "-3":
-	return -3
+	return -3, data_transfer
     if (digest):
 	#print digest+" <--> "+fetchChecksum
 	if (fetchChecksum != digest):
 	    # not properly downloaded
             del fetchConn
-	    return -2
+	    return -2, data_transfer
 	else:
             del fetchConn
-	    return 0
+	    return 0, data_transfer
     del fetchConn
-    return 0
+    return 0, data_transfer
 
 def matchChecksum(infoDict):
     dlcount = 0

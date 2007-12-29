@@ -5,6 +5,7 @@ TODO list:
   - implement client db sanity check
   - equo world: removal packages, first ask all, then do
   - separate packages for license restrictions
+  - add a check when installing a package from a different arch
 
 notice this:
 >>    ## Ebuild: pkg_prerm()
