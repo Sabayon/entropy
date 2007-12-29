@@ -25,32 +25,29 @@
 ##   Repositories Tools
 #
 
-import os
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 import entropyTools
-from remoteTools import downloadData, getOnlineContent
-import dumpTools
 import exceptionTools
 
 def repositories(options):
-    
+
     # Options available for all the packages submodules
     myopts = options[1:]
     equoRequestForceUpdate = False
     rc = 0
     for opt in myopts:
-	if (opt == "--force"):
-	    equoRequestForceUpdate = True
+        if (opt == "--force"):
+            equoRequestForceUpdate = True
 
     if (options[0] == "update"):
-	rc = syncRepositories(forceUpdate = equoRequestForceUpdate)
+        rc = syncRepositories(forceUpdate = equoRequestForceUpdate)
     elif (options[0] == "status"):
-	for repo in etpRepositories:
-	    showRepositoryInfo(repo)
+        for repo in etpRepositories:
+            showRepositoryInfo(repo)
     elif (options[0] == "repoinfo"):
-	showRepositories()
+        showRepositories()
     else:
         rc = -10
     return rc
@@ -60,32 +57,32 @@ def showRepositories():
     print_info(darkred(" * ")+darkgreen("Active Repositories:"))
     repoNumber = 0
     for repo in etpRepositories:
-	repoNumber += 1
-	print_info(blue("\t#"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
-	sourcecount = 0
-	for pkgrepo in etpRepositories[repo]['packages']:
-	    sourcecount += 1
-	    print_info(red("\t\tPackages Mirror #"+str(sourcecount)+" : ")+darkgreen(pkgrepo))
-	print_info(red("\t\tDatabase URL: ")+darkgreen(etpRepositories[repo]['database']))
-	print_info(red("\t\tRepository name: ")+bold(repo))
-	print_info(red("\t\tRepository database path: ")+blue(etpRepositories[repo]['dbpath']))
+        repoNumber += 1
+        print_info(blue("\t#"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
+        sourcecount = 0
+        for pkgrepo in etpRepositories[repo]['packages']:
+            sourcecount += 1
+            print_info(red("\t\tPackages Mirror #"+str(sourcecount)+" : ")+darkgreen(pkgrepo))
+        print_info(red("\t\tDatabase URL: ")+darkgreen(etpRepositories[repo]['database']))
+        print_info(red("\t\tRepository name: ")+bold(repo))
+        print_info(red("\t\tRepository database path: ")+blue(etpRepositories[repo]['dbpath']))
     return 0
 
 def showRepositoryInfo(reponame):
     repoNumber = 0
     for repo in etpRepositories:
-	repoNumber += 1
-	if repo == reponame:
-	    break
+        repoNumber += 1
+        if repo == reponame:
+            break
     print_info(blue("#"+str(repoNumber))+bold(" "+etpRepositories[reponame]['description']))
     if os.path.isfile(etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']):
-	status = "active"
+        status = "active"
     else:
-	status = "never synced"
+        status = "never synced"
     print_info(darkgreen("\tStatus: ")+darkred(status))
     urlcount = 0
     for repourl in etpRepositories[reponame]['packages'][::-1]:
-	urlcount += 1
+        urlcount += 1
         print_info(red("\tPackages URL #"+str(urlcount)+": ")+darkgreen(repourl))
     print_info(red("\tDatabase URL: ")+darkgreen(etpRepositories[reponame]['database']))
     print_info(red("\tRepository name: ")+bold(reponame))
@@ -101,187 +98,143 @@ def showRepositoryInfo(reponame):
 # @returns int>0 if the file exists
 def getRepositoryRevision(reponame):
     if os.path.isfile(etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']):
-	f = open(etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'],"r")
-	revision = int(f.readline().strip())
-	f.close()
+        f = open(etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'],"r")
+        revision = int(f.readline().strip())
+        f.close()
     else:
-	revision = -1
+        revision = -1
     return revision
-
-# @returns -1 if the file is not available
-# @returns int>0 if the revision has been retrieved
-def getOnlineRepositoryRevision(reponame):
-    url = etpRepositories[reponame]['database']+"/"+etpConst['etpdatabaserevisionfile']
-    status = getOnlineContent(url)
-    if (status):
-	status = status[0].strip()
-	return int(status)
-    else:
-	return -1
 
 # @returns -1 if the file does not exist
 # @returns int>0 if the file exists
 def getRepositoryDbFileHash(reponame):
     if os.path.isfile(etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasehashfile']):
-	f = open(etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
-	mhash = f.readline().strip().split()[0]
-	f.close()
+        f = open(etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
+        mhash = f.readline().strip().split()[0]
+        f.close()
     else:
-	mhash = "-1"
+        mhash = "-1"
     return mhash
 
 def syncRepositories(reponames = [], forceUpdate = False):
 
-    # check if I am root
-    if (not entropyTools.isRoot()):
-	print_error(red("\t You must run this application as root."))
-	return 1
+    # load repository class
+    try:
+        repoConn = repositoryController(reponames, forceUpdate)
+    except exceptionTools.PermissionDenied:
+        print_error(red("\t You must run this application as root."))
+        return 1
+    except exceptionTools.MissingParameter:
+        print_error(darkred(" * ")+red("No repositories specified in ")+etpConst['repositoriesconf'])
+        return 127
+    except exceptionTools.OnlineMirrorError:
+        print_error(darkred(" @@ ")+darkgreen("You are not connected to the Internet. You should."))
+        return 126
+    except Exception, e:
+        print_error(darkred(" @@ ")+darkgreen("Unhandled exception: %s" % (str(e),)))
+        return 2
 
-    # check etpRepositories
-    if len(etpRepositories) == 0:
-	if (not etpUi['quiet']):
-	    print_error(darkred(" * ")+red("No repositories specified in ")+etpConst['repositoriesconf'])
-	return 127
-
+    # let's dance!
     if (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Repositories syncronization..."))
+
     repoNumber = 0
-    syncErrors = False
-    
-    if (not reponames):
-	for x in etpRepositories:
-	    reponames.append(x)
-    
-    dbupdated = False
-    
-    # Test network connectivity
-    conntest = getOnlineContent("http://svn.sabayonlinux.org")
-    if not conntest:
-	print_info(darkred(" @@ ")+darkgreen("You are not connected to the Internet. You should."))
-	return 2
-    
-    for repo in reponames:
-	
-	repoNumber += 1
-	
-	if (not etpUi['quiet']):
-	    print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
-	    print_info(red("\tDatabase URL: ")+darkgreen(etpRepositories[repo]['database']))
-	    print_info(red("\tDatabase local path: ")+darkgreen(etpRepositories[repo]['dbpath']))
-	
-	# check if database is already updated to the latest revision
-	onlinestatus = getOnlineRepositoryRevision(repo)
-	if (onlinestatus != -1):
-	    localstatus = getRepositoryRevision(repo)
-	    if (localstatus == onlinestatus) and (not forceUpdate):
-		if (not etpUi['quiet']):
-		    print_info(bold("\tAttention: ")+red("database is already up to date."))
-		continue
-	
-	# get database lock
-	rc = downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabasedownloadlockfile'],"/dev/null")
-	if rc != "-3": # cannot download database
-	    if (not etpUi['quiet']):
-	        print_error(bold("\tATTENTION -> ")+red("repository is being updated. Try again in a few minutes."))
-	    syncErrors = True
-	    continue
-	
-	# database is going to be updated
-	dbupdated = True
-	# clear database interface cache belonging to this repository
-	dumpTools.dumpobj(etpCache['dbInfo']+repo,{})
-	
-	cmethod = etpConst['etpdatabasecompressclasses'].get(etpRepositories[repo]['dbcformat'])
-	if cmethod == None: raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
-	
-	# starting to download
-	if (not etpUi['quiet']):
-	    print_info(red("\tDownloading database ")+darkgreen(etpConst[cmethod[2]])+red(" ..."))
-	# create dir if it doesn't exist
-	if not os.path.isdir(etpRepositories[repo]['dbpath']):
-	    if (not etpUi['quiet']):
-	        print_info(red("\t\tCreating database directory..."))
-	    os.makedirs(etpRepositories[repo]['dbpath'])
-	# download
-	rc = downloadData(etpRepositories[repo]['database']+"/"+etpConst[cmethod[2]],etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
-        if rc in ("-1","-2","-3"):
+    for repo in repoConn.reponames:
+
+        repoNumber += 1
+
+        if (not etpUi['quiet']):
+            print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
+            print_info(red("\tDatabase URL: ")+darkgreen(etpRepositories[repo]['database']))
+            print_info(red("\tDatabase local path: ")+darkgreen(etpRepositories[repo]['dbpath']))
+
+        # check if database is already updated to the latest revision
+        update = repoConn.isRepositoryUpdatable(repo)
+        if not update:
+            if not etpUi['quiet']: print_info(bold("\tAttention: ")+red("database is already up to date."))
+            continue
+
+        # get database lock
+        unlocked = repoConn.isRepositoryUnlocked(repo)
+        if not unlocked:
+            if not etpUi['quiet']: print_error(bold("\tATTENTION -> ")+red("repository is being updated. Try again in a few minutes."))
+            continue
+
+        # database is going to be updated
+        repoConn.dbupdated = True
+        # clear database interface cache belonging to this repository
+        repoConn.clearRepositoryCache(repo)
+        cmethod = repoConn.validateCompressionMethod(repo)
+        repoConn.ensureRepositoryPath(repo)
+
+        # starting to download
+        if (not etpUi['quiet']):
+            print_info(red("\tDownloading database ")+darkgreen(etpConst[cmethod[2]])+red(" ..."))
+
+        down_status = repoConn.downloadDatabase(repo, cmethod[2])
+        if not down_status:
             print_info(bold("\tAttention: ")+red("database does not exist online."))
-            return 128
-	
-	if (not etpUi['quiet']):
-	    print_info(red("\tUnpacking database to ")+darkgreen(etpConst['etpdatabasefile'])+red(" ..."))
-	eval("entropyTools."+cmethod[1])(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
-	# download etpdatabasehashfile
-	if (not etpUi['quiet']):
-	    print_info(red("\tDownloading checksum ")+darkgreen(etpConst['etpdatabasehashfile'])+red(" ..."))
-	downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabasehashfile'],etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'])
-	# checking checksum
-	if (not etpUi['quiet']):
-	    print_info(red("\tChecking downloaded database ")+darkgreen(etpConst['etpdatabasefile'])+red(" ..."), back = True)
-	f = open(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
-	md5hash = f.readline().strip()
-	md5hash = md5hash.split()[0]
-	f.close()
-	rc = entropyTools.compareMd5(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile'],md5hash)
-	if rc:
-	    if (not etpUi['quiet']):
-	        print_info(red("\tDownloaded database status: ")+bold("OK"))
-	else:
-	    if (not etpUi['quiet']):
-	        print_error(red("\tDownloaded database status: ")+darkred("ERROR"))
-	        print_error(red("\t An error occured while checking database integrity"))
-	    # delete all
-	    if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile']):
-		os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'])
-	    if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]]):
-		os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
-	    if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']):
-		os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'])
-	    syncErrors = True
-	    continue
-	
-	# download etpdatabaserevisionfile
-	if (not etpUi['quiet']):
-	    print_info(red("\tDownloading revision ")+darkgreen(etpConst['etpdatabaserevisionfile'])+red(" ..."))
-	downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabaserevisionfile'],etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'])
-	
-	if (not etpUi['quiet']):
-	    print_info(red("\tUpdated repository revision: ")+bold(str(getRepositoryRevision(repo))))
-	print_info(darkgreen("\tUpdate completed"))
+            continue
 
-    if syncErrors:
-	if (not etpUi['quiet']):
-	    print_warning(darkred(" @@ ")+red("Something bad happened. Please have a look."))
-	return 128
+        # unpack database
+        if (not etpUi['quiet']):
+            print_info(red("\tUnpacking database to ")+darkgreen(etpConst['etpdatabasefile'])+red(" ..."))
+        # unpack database
+        repoConn.unpackDownloadedDatabase(repo,cmethod)
 
-    if (dbupdated):
-	
-	# safely clean ram caches
-	atomMatchCache.clear()
-	dumpTools.dumpobj(etpCache['atomMatch'],{})
-	generateDependsTreeCache.clear()
-	dumpTools.dumpobj(etpCache['generateDependsTree'],{})
-        for dbinfo in dbCacheStore:
-            dbCacheStore[dbinfo].clear()
-            dumpTools.dumpobj(dbinfo,{})
-        
-	# clean caches
-        import cacheTools
-        cacheTools.generateCache(depcache = True, configcache = False)
-        
-        # clean resume caches
-        dumpTools.dumpobj(etpCache['install'],{})
-        dumpTools.dumpobj(etpCache['world'],{})
-        dumpTools.dumpobj(etpCache['remove'],[])
-        
+        # download checksum
+        if (not etpUi['quiet']):
+            print_info(red("\tDownloading checksum ")+darkgreen(etpConst['etpdatabasehashfile'])+red(" ..."))
+        down_status = repoConn.downloadChecksum(repo)
+        if not down_status:
+            print_warning(red("\tCannot fetch checksum. Cannot verify database integrity !"))
+        else:
+            # verify checksum
+            if (not etpUi['quiet']):
+                print_info(red("\tChecking downloaded database ")+darkgreen(etpConst['etpdatabasefile'])+red(" ..."), back = True)
+            db_status = repoConn.verifyDatabaseChecksum(repo)
+            if db_status == -1:
+                print_warning(red("\tCannot open digest. Cannot verify database integrity !"))
+            elif db_status:
+                if (not etpUi['quiet']):
+                    print_info(red("\tDownloaded database status: ")+bold("OK"))
+            else:
+                if (not etpUi['quiet']):
+                    print_error(red("\tDownloaded database status: ")+darkred("ERROR"))
+                    print_error(red("\t An error occured while checking database integrity"))
+                # delete all
+                repoConn.removeRepositoryFiles(repo, cmethod[2])
+                repoConn.syncErrors = True
+                continue
+
+        # download revision
+        if (not etpUi['quiet']):
+            print_info(red("\tDownloading revision ")+darkgreen(etpConst['etpdatabaserevisionfile'])+red(" ..."))
+        rev_status = repoConn.downloadDatabaseRevision(repo)
+        if not rev_status:
+            print_warning(red("\tCannot download repository revision, don't ask me why !"))
+        else:
+            if not etpUi['quiet']: print_info(red("\tUpdated repository revision: ")+bold(str(getRepositoryRevision(repo))))
+
+        print_info(darkgreen("\tUpdate completed"))
+
+    repoConn.closeTransactions()
+
+    if repoConn.syncErrors:
+        if (not etpUi['quiet']):
+            print_warning(darkred(" @@ ")+red("Something bad happened. Please have a look."))
+        del repoConn
+        return 128
+
     # tell if a new equo release is available
     import equoTools
     from databaseTools import openClientDatabase
     try:
         clientDbconn = openClientDatabase(xcache = False)
     except exceptionTools.SystemDatabaseError:
+        del repoConn
         return 0
-    
+
     matches = clientDbconn.searchPackages("app-admin/equo")
     if matches:
         equo_match = "<="+matches[0][0]
@@ -291,7 +244,190 @@ def syncRepositories(reponames = [], forceUpdate = False):
             print_warning(darkred(" !! ")+blue("A new version of ")+bold("equo")+blue(" is available. Please ")+bold("install it")+blue(" before any other package."))
         del matches
         del equo_unsatisfied
+
     clientDbconn.closeDB()
     del clientDbconn
+    del repoConn
 
     return 0
+
+#
+# repository control class, that's it
+#
+class repositoryController:
+
+    def __init__(self, reponames = [], forceUpdate = False):
+
+        self.reponames = reponames
+        self.forceUpdate = forceUpdate
+        self.syncErrors = False
+        self.dbupdated = False
+
+        import remoteTools
+        import dumpTools
+        self.remoteTools = remoteTools
+        self.dumpTools = dumpTools
+
+        # check if I am root
+        if (not entropyTools.isRoot()):
+            raise exceptionTools.PermissionDenied("PermissionDenied: not allowed as user.")
+
+        # check etpRepositories
+        if not etpRepositories:
+            raise exceptionTools.MissingParameter("MissingParameter: no repositories specified in %s" % (etpConst['repositoriesconf'],))
+
+        # Test network connectivity
+        conntest = self.remoteTools.getOnlineContent("http://svn.sabayonlinux.org")
+        if not conntest:
+            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: you are not connected to the Internet. You should.")
+
+        if (not self.reponames):
+            for x in etpRepositories:
+                self.reponames.append(x)
+
+    def validateRepositoryId(self, repoid):
+        if repoid not in self.reponames:
+            raise exceptionTools.InvalidData("InvalidData: repository is not listed in self.reponames")
+
+    # @returns -1 if the file is not available
+    # @returns int>0 if the revision has been retrieved
+    def getOnlineRepositoryRevision(self, repo):
+
+        self.validateRepositoryId(repo)
+
+        url = etpRepositories[repo]['database']+"/"+etpConst['etpdatabaserevisionfile']
+        status = self.remoteTools.getOnlineContent(url)
+        if (status):
+            status = status[0].strip()
+            return int(status)
+        else:
+            return -1
+
+    def isRepositoryUpdatable(self, repo):
+
+        self.validateRepositoryId(repo)
+
+        onlinestatus = self.getOnlineRepositoryRevision(repo)
+        if (onlinestatus != -1):
+            localstatus = getRepositoryRevision(repo)
+            if (localstatus == onlinestatus) and (not self.forceUpdate):
+                return False
+        return True
+
+    def isRepositoryUnlocked(self, repo):
+
+        self.validateRepositoryId(repo)
+
+        rc = self.remoteTools.downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabasedownloadlockfile'],"/dev/null")
+        if rc != "-3": # cannot download database
+            self.syncErrors = True
+            return False
+        return True
+
+    def clearRepositoryCache(self, repo):
+
+        self.validateRepositoryId(repo)
+
+        self.dumpTools.dumpobj(etpCache['dbInfo']+repo,{})
+
+    def validateCompressionMethod(self, repo):
+
+        self.validateRepositoryId(repo)
+
+        cmethod = etpConst['etpdatabasecompressclasses'].get(etpRepositories[repo]['dbcformat'])
+        if cmethod == None:
+            raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
+        return cmethod
+
+    def ensureRepositoryPath(self, repo):
+
+        self.validateRepositoryId(repo)
+
+	# create dir if it doesn't exist
+	if not os.path.isdir(etpRepositories[repo]['dbpath']):
+	    os.makedirs(etpRepositories[repo]['dbpath'])
+
+    # this function can be reimplemented
+    def downloadDatabase(self, repo, dbfilenameid):
+
+        self.validateRepositoryId(repo)
+
+	rc = self.remoteTools.downloadData(etpRepositories[repo]['database'] +   "/" + etpConst[dbfilenameid], etpRepositories[repo]['dbpath'] + "/" + etpConst[dbfilenameid])
+        if rc in ("-1","-2","-3"):
+            return False
+        return True
+
+    def removeRepositoryFiles(self, repo, dbfilenameid):
+
+        self.validateRepositoryId(repo)
+
+        if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile']):
+            os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'])
+        if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst[dbfilenameid]):
+            os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[dbfilenameid])
+        if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']):
+            os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'])
+
+    def unpackDownloadedDatabase(self, repo, cmethod):
+
+        self.validateRepositoryId(repo)
+
+        import entropyTools
+        path = eval("entropyTools."+cmethod[1])(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
+        return path
+
+    def downloadChecksum(self, repo):
+
+        self.validateRepositoryId(repo)
+
+        rc = self.remoteTools.downloadData(etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasehashfile'], etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasehashfile'])
+        if rc in ("-1","-2","-3"):
+            return False
+        return True
+
+    def verifyDatabaseChecksum(self, repo):
+
+        self.validateRepositoryId(repo)
+
+        import entropyTools
+        try:
+            f = open(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
+            md5hash = f.readline().strip()
+            md5hash = md5hash.split()[0]
+            f.close()
+        except:
+            return -1
+	rc = entropyTools.compareMd5(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile'],md5hash)
+        return rc
+
+    def downloadDatabaseRevision(self, repo):
+
+        self.validateRepositoryId(repo)
+
+	rc = self.remoteTools.downloadData(etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaserevisionfile'], etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabaserevisionfile'])
+        if rc in ("-1","-2","-3"):
+            return False
+        return True
+
+    def closeTransactions(self):
+
+        if not self.dbupdated:
+            return
+
+        # safely clean ram caches
+        atomMatchCache.clear()
+        self.dumpTools.dumpobj(etpCache['atomMatch'],{})
+        generateDependsTreeCache.clear()
+        self.dumpTools.dumpobj(etpCache['generateDependsTree'],{})
+        for dbinfo in dbCacheStore:
+            dbCacheStore[dbinfo].clear()
+            self.dumpTools.dumpobj(dbinfo,{})
+    
+        # clean caches
+        import cacheTools
+        cacheTools.generateCache(depcache = True, configcache = False)
+    
+        # clean resume caches
+        self.dumpTools.dumpobj(etpCache['install'],{})
+        self.dumpTools.dumpobj(etpCache['world'],{})
+        self.dumpTools.dumpobj(etpCache['remove'],[])

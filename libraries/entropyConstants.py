@@ -344,6 +344,7 @@ etpFileTransfer = {
     'elapsed': 0.0,
     'transferpollingtime': float(1)/4 # 0.25secs = 4Hz
 }
+etpFileTransferMetadata = {}
 
 # disk caching dictionary
 etpCache = {
@@ -453,6 +454,7 @@ portageFakeDbApi = {}
 
 # Client packages/database repositories
 etpRepositories = {}
+etpRepositoriesExcluded = {}
 etpRepositoriesOrder = set()
 
 # remote section
@@ -781,16 +783,26 @@ def initConfig_entropyConstants(rootdir):
         f = open(etpConst['repositoriesconf'],"r")
         repositoriesconf = f.readlines()
         f.close()
-        
+
         # setup product first
         for line in repositoriesconf:
             if (line.strip().find("product|") != -1) and (not line.strip().startswith("#")) and (len(line.strip().split("|")) == 2):
                 etpConst['product'] = line.strip().split("|")[1]
-        
+
         for line in repositoriesconf:
             line = line.strip()
             # populate etpRepositories
-            if (line.find("repository|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 5):
+            if (line.find("repository|") != -1) and (len(line.split("|")) == 5):
+
+                excluded = False
+                myRepodata = etpRepositories
+                if line.startswith("##"):
+                    continue
+                elif line.startswith("#"):
+                    excluded = True
+                    myRepodata = etpRepositoriesExcluded
+                    line = line[1:]
+
                 reponame = line.split("|")[1]
                 repodesc = line.split("|")[2]
                 repopackages = line.split("|")[3]
@@ -804,24 +816,37 @@ def initConfig_entropyConstants(rootdir):
                         except:
                             pass
                     repodatabase = repodatabase[:dbformatcolon]
-                if (repopackages.startswith("http://") or repopackages.startswith("ftp://")) and (repodatabase.startswith("http://") or repodatabase.startswith("ftp://")):
-                    stated = etpRepositories.get(reponame)
-                    if stated == None:
-                        etpRepositories[reponame] = {}
-                        etpRepositories[reponame]['description'] = repodesc
-                        etpRepositories[reponame]['packages'] = []
-                        etpRepositories[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['product']+"/"+etpConst['currentarch']
-                        etpRepositories[reponame]['dbcformat'] = dbformat
-                        etpRepositories[reponame]['database'] = repodatabase+"/"+etpConst['product']+"/database/"+etpConst['currentarch']
+
+                if ((repopackages.startswith("http://") or repopackages.startswith("ftp://")) and \
+                        (repodatabase.startswith("http://") or repodatabase.startswith("ftp://"))) or \
+                         ((not repodatabase) and (myRepodata.has_key(reponame))):
+
+                    if not myRepodata.has_key(reponame):
+                        myRepodata[reponame] = {}
+                        myRepodata[reponame]['description'] = repodesc
+                        myRepodata[reponame]['packages'] = []
+                        myRepodata[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['product']+"/"+etpConst['currentarch']
+                        myRepodata[reponame]['dbcformat'] = dbformat
+                        myRepodata[reponame]['database'] = repodatabase+"/"+etpConst['product']+"/database/"+etpConst['currentarch']
+
+                        myRepodata[reponame]['dbrevision'] = "0"
+                        dbrevision_file = os.path.join(myRepodata[reponame]['dbpath'],etpConst['etpdatabaserevisionfile'])
+                        if os.path.isfile(dbrevision_file):
+                            rev_file = open(dbrevision_file,"r")
+                            myRepodata[reponame]['dbrevision'] = rev_file.readline().strip()
+                            rev_file.close()
+                            del rev_file
+
                         # initialize CONFIG_PROTECT - will be filled the first time the db will be opened
-                        etpRepositories[reponame]['configprotect'] = None
-                        etpRepositories[reponame]['configprotectmask'] = None
-                    
-                    ordercount += 1
-                    etpRepositoriesOrder.add((ordercount,reponame))
+                        myRepodata[reponame]['configprotect'] = None
+                        myRepodata[reponame]['configprotectmask'] = None
+
+                        if not excluded:
+                            ordercount += 1
+                            etpRepositoriesOrder.add((ordercount,reponame))
 
                     for x in repopackages.split():
-                        etpRepositories[reponame]['packages'].append(x+"/"+etpConst['product'])
+                        myRepodata[reponame]['packages'].append(x+"/"+etpConst['product'])
 
             elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 branch = line.split("|")[1]

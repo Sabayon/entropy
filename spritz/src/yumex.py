@@ -24,9 +24,13 @@ import logging
 import traceback
 
 # Entropy Imports
+sys.path.append("../../libraries")
+sys.path.append("../../client")
 sys.path.append("/usr/lib/entropy/libraries")
 sys.path.append("/usr/lib/entropy/client")
 from entropyConstants import *
+from clientConstants import *
+import exceptionTools
 
 # GTK Imports
 import gtk,gobject
@@ -38,7 +42,7 @@ from yumgui import *
 
 # yumex imports
 import filters
-from entropyapi import YumexYumHandler
+from entropyapi import YumexYumHandler, repositoryGuiController
 from gui import YumexGUI
 from dialogs import *
 from misc import const,YumexOptions,YumexProfile
@@ -105,7 +109,7 @@ class YumexController(Controller):
         repos = self.repoView.get_selected()
         self.setPage('output')
         self.logger.info( "Enabled repositories : %s" % ",".join(repos))
-        self.setupYum()
+        self.updateRepositories(repos)
 
     def on_repoDeSelect_clicked(self,widget):
         self.repoView.deselect_all()
@@ -116,13 +120,9 @@ class YumexController(Controller):
         self.queueView.deleteSelected()
 
     def on_queueQuickAdd_activate(self,widget):
-        if self.initYum: # Yum has to be initialised
-            txt = widget.get_text()
-            arglist = txt.split(' ')
-            self.doQuickAdd(arglist[0],arglist[1:])
-        else:
-            self.setStatus(_('Yum has not been initialized yet'))
-            widget.set_text('')
+        txt = widget.get_text()
+        arglist = txt.split(' ')
+        self.doQuickAdd(arglist[0],arglist[1:])
         
     def on_queueProcess_clicked( self, widget ):
         """ Process Queue Button Handler """
@@ -143,7 +143,7 @@ class YumexController(Controller):
             else:
                 self.queue.clear()       # Clear package queue    
                 self.queueView.refresh() # Refresh Package Queue 
-                self.setupYum()
+                #self.setupYum()
 
     def on_queueSave_clicked( self, widget ):
         dialog = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_SAVE,
@@ -399,11 +399,7 @@ class YumexApplication(YumexController,YumexGUI):
         # setup Repositories
         self.setupRepoView()
         self.firstTime = True
-        self.initYum = False
-        if self.settings.autorefresh:
-            self.setupYum()
-        else:
-            self.setPage('repos')
+        self.setPage('repos')
 
     def startWorking(self):
         self.isWorking = True
@@ -417,25 +413,65 @@ class YumexApplication(YumexController,YumexGUI):
         normalCursor(self.ui.main)
         gtkEventThread.endProcessing()
             
-    def setupYum(self):
+    def updateRepositories(self, repos):
         self.setPage('output')
         self.startWorking()
-        self.progress.total.setup( const.SETUP_PROGRESS_STEPS )        
-        # Run yum setup in background thread
+        
+        # set steps
+        self.progress.total.setup( range(len(repos)) )
+        self.progressLog(_('Initializing Repository module...'))
+        
+        # 1
+        import repositoriesTools
         try:
-            if self.firstTime:
-                self.yumbase._setupBase()
-                self.firstTime = False
-            else:
-                self.yumbase._setupAgain()
+            repoConn = repositoryGuiController(repos, forceUpdate = True)
+        except exceptionTools.PermissionDenied:
+            self.progressLog(_('You must run this application as root'))
+            return 1
+        except exceptionTools.MissingParameter:
+            self.progressLog(_('No repositories specified in %s') % (etpConst['repositoriesconf'],))
+            return 127
+        except exceptionTools.OnlineMirrorError:
+            self.progressLog(_('You are not connected to the Internet. You should.'))
+            return 126
         except Exception, e:
-            self.endWorking()
-            errorMessage( self.ui.main, _( "Error" ), _( "Error in Yum Setup" ), str(e) )
-            self.logger.error(str(e))
-            return         
-        # prepare package lists
-        self.progress.total.next() # -> List setup        
-        self.progressLog(_('Building Package Lists'))
+            self.progressLog(_('Unhandled exception: %s') % (str(e),))
+            return 2
+        
+        # 2
+        error = False
+        for repo in repoConn.reponames:
+
+            self.progressLog(_('Fetching repository id: %s') % (repo,))
+            update = repoConn.isRepositoryUpdatable(repo)
+            if not update:
+                self.progressLog(_('Attention: database already up to date for: %s') % (repo,))
+                time.sleep(1)
+                error = True
+                continue
+
+            unlocked = repoConn.isRepositoryUnlocked(repo)
+            if not unlocked:
+                self.progressLog(_('Attention: repository %s is being updated. Try again in a few minutes.') % (repo,))
+                time.sleep(1)
+                error = True
+                continue
+
+            # database is going to be updated
+            repoConn.dbupdated = True
+            # clear database interface cache belonging to this repository
+            repoConn.clearRepositoryCache(repo)
+            cmethod = repoConn.validateCompressionMethod(repo)
+            repoConn.ensureRepositoryPath(repo)
+
+            self.progressLog(_('Downloading database for %s') % (repo,))
+            # download
+            down_status = repoConn.downloadDatabase(repo, cmethod[2])
+            if not down_status:
+                self.progressLog(_('Attention: repository %s does not exist online.') % (repo,))
+                error = True
+                continue
+        
         #self.yumbase.populatePackages(['installed','updates','available'])
         self.progressLog(_('Building Package Lists Completed'))
         self.progressLog(_('Building Groups Lists'))
@@ -446,9 +482,10 @@ class YumexApplication(YumexController,YumexGUI):
         self.doProgress = True
         #self.addPackages()
         self.doProgress = False
-        self.setPage('packages')
-        self.initYum = True
+        if not error:
+            self.setPage('repos')
         self.endWorking()
+        initConfig_entropyConstants(etpSys['rootdir'])
         
     
     def setupRepoView(self):
@@ -465,7 +502,7 @@ class YumexApplication(YumexController,YumexGUI):
             masks = [action]
         self.pkgView.store.clear()
         allpkgs = []
-        if self.doProgress: self.progress.total.next() # -> Get lists                
+        if self.doProgress: self.progress.total.next() # -> Get lists
         for flt in masks:
             msg = _('Getting packages : %s' ) % flt
             self.progressLog(msg)
@@ -473,7 +510,7 @@ class YumexApplication(YumexController,YumexGUI):
             pkgs = self.yumbase.getPackages(flt)
             self.progressLog(_('Found %d %s packages') % (len(pkgs),flt))
             allpkgs.extend(pkgs)
-        if self.doProgress: self.progress.total.next() # -> Sort Lists        
+        if self.doProgress: self.progress.total.next() # -> Sort Lists
         self.progressLog(_('Sorting packages'))
         allpkgs.sort()
         self.progressLog(_('Population view with packages'))

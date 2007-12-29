@@ -85,10 +85,8 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
 
     # start scheduler
     if (showSpeed):
-	etpFileTransfer['datatransfer'] = 0
-	etpFileTransfer['gather'] = 0
-        etpFileTransfer['elapsed'] = 0.0
-	speedUpdater = entropyTools.TimeScheduled(__updateSpeedInfo,etpFileTransfer['transferpollingtime'])
+        etpFileTransferMetadata[url] = etpFileTransfer.copy()
+	speedUpdater = entropyTools.TimeScheduled(__updateSpeedInfo,etpFileTransferMetadata[url]['transferpollingtime'])
 	speedUpdater.setName("download")
 	speedUpdater.start()
     
@@ -133,6 +131,10 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
     if (showSpeed):
 	speedUpdater.kill()
         socket.setdefaulttimeout(2)
+        # remove status
+        # XXX: move this action somewhere else
+        del etpFileTransferMetadata[url]
+
     return rc
 
 # Get the content of an online page
@@ -218,8 +220,8 @@ def __downloadFileCommitData(f, buf, output = True, maxsize = 0, showSpeed = Tru
 	for y in range(diffbarsize):
 	    bartext += " "
 	if (showSpeed):
-	    etpFileTransfer['gather'] = f.tell()
-	    bartext += "] => "+str(entropyTools.bytesIntoHuman(etpFileTransfer['datatransfer']))+"/sec"
+	    etpFileTransferMetadata[url]['gather'] = f.tell()
+	    bartext += "] => "+str(entropyTools.bytesIntoHuman(etpFileTransferMetadata[url]['datatransfer']))+"/sec"
 	else:
 	    bartext += "]"
 	average = str(average)
@@ -231,6 +233,6 @@ def __downloadFileCommitData(f, buf, output = True, maxsize = 0, showSpeed = Tru
 
 
 def __updateSpeedInfo():
-    etpFileTransfer['elapsed'] += etpFileTransfer['transferpollingtime']
+    etpFileTransferMetadata[url]['elapsed'] += etpFileTransferMetadata[url]['transferpollingtime']
     # we have the diff size
-    etpFileTransfer['datatransfer'] = etpFileTransfer['gather'] / etpFileTransfer['elapsed']
+    etpFileTransferMetadata[url]['datatransfer'] = etpFileTransferMetadata[url]['gather'] / etpFileTransferMetadata[url]['elapsed']

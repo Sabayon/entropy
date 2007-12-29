@@ -225,7 +225,7 @@ class YumexProgress:
     def setTotal( self, now, total ):
         self.total.setProgress( now, total )
     
-    def set_progress( self, frac, text=None ): 
+    def set_progress( self, frac, text=None ):
         if self.parent.quitNow:
             self.parent.exitNow()
         # Skip if fraction not have changed

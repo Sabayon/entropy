@@ -19,10 +19,6 @@
 
 import logging
 
-#import yum
-#import yum.Errors as Errors
-#from yum.update_md import UpdateMetadata
-
 from misc import const,cleanMarkupSting
 from i18n import _
 from yumgui import format_number
@@ -31,6 +27,10 @@ from callbacks import *
 from dialogs import questionDialog
 from urlgrabber.grabber import URLGrabError
 
+# Entropy Imports
+from entropyConstants import *
+from clientConstants import *
+import repositoriesTools
 
 class YumexYumHandler:
     def __init__(self,recent,settings,progress,mainwin,parser):
@@ -487,3 +487,16 @@ class YumexYumHandler:
         
         return out
         
+class repositoryGuiController(repositoriesTools.repositoryController):
+    """ hello world """
+    
+    # reimplementing download function
+    # this function can be reimplemented
+    def downloadDatabase(self, repo, dbfilenameid):
+
+        self.validateRepositoryId(repo)
+
+	rc = self.remoteTools.downloadData(etpRepositories[repo]['database'] +   "/" + etpConst[dbfilenameid], etpRepositories[repo]['dbpath'] + "/" + etpConst[dbfilenameid])
+        if rc in ("-1","-2","-3"):
+            return False
+        return True

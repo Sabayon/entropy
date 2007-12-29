@@ -323,8 +323,8 @@
 		    <widget class="GtkScrolledWindow" id="scrolledwindow6">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="hscrollbar_policy">GTK_POLICY_ALWAYS</property>
-		      <property name="vscrollbar_policy">GTK_POLICY_ALWAYS</property>
+		      <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+		      <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
 		      <property name="shadow_type">GTK_SHADOW_IN</property>
 		      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
@@ -357,16 +357,16 @@
 		      <property name="spacing">6</property>
 
 		      <child>
-			<widget class="GtkButton" id="repoDeSelect">
+			<widget class="GtkButton" id="repoRefresh">
 			  <property name="visible">True</property>
 			  <property name="can_default">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="relief">GTK_RELIEF_NORMAL</property>
 			  <property name="focus_on_click">True</property>
-			  <signal name="clicked" handler="on_repoDeSelect_clicked"/>
+			  <signal name="clicked" handler="on_repoRefresh_clicked" last_modification_time="Sat, 29 Dec 2007 00:35:25 GMT"/>
 
 			  <child>
-			    <widget class="GtkAlignment" id="alignment7">
+			    <widget class="GtkAlignment" id="alignment54">
 			      <property name="visible">True</property>
 			      <property name="xalign">0.5</property>
 			      <property name="yalign">0.5</property>
@@ -378,15 +378,15 @@
 			      <property name="right_padding">0</property>
 
 			      <child>
-				<widget class="GtkHBox" id="hbox8">
+				<widget class="GtkHBox" id="hbox87">
 				  <property name="visible">True</property>
 				  <property name="homogeneous">False</property>
 				  <property name="spacing">2</property>
 
 				  <child>
-				    <widget class="GtkImage" id="image7">
+				    <widget class="GtkImage" id="image192">
 				      <property name="visible">True</property>
-				      <property name="stock">gtk-cancel</property>
+				      <property name="stock">gtk-refresh</property>
 				      <property name="icon_size">4</property>
 				      <property name="xalign">0.5</property>
 				      <property name="yalign">0.5</property>
@@ -401,9 +401,9 @@
 				  </child>
 
 				  <child>
-				    <widget class="GtkLabel" id="label13">
+				    <widget class="GtkLabel" id="label132">
 				      <property name="visible">True</property>
-				      <property name="label" translatable="yes">_Deselect All</property>
+				      <property name="label" translatable="yes">Update Repositories</property>
 				      <property name="use_underline">True</property>
 				      <property name="use_markup">False</property>
 				      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -428,19 +428,6 @@
 			      </child>
 			    </widget>
 			  </child>
-			</widget>
-		      </child>
-
-		      <child>
-			<widget class="GtkButton" id="repoRefresh">
-			  <property name="visible">True</property>
-			  <property name="can_default">True</property>
-			  <property name="can_focus">True</property>
-			  <property name="label">gtk-refresh</property>
-			  <property name="use_stock">True</property>
-			  <property name="relief">GTK_RELIEF_NORMAL</property>
-			  <property name="focus_on_click">True</property>
-			  <signal name="clicked" handler="on_repoRefresh_clicked"/>
 			</widget>
 		      </child>
 		    </widget>
