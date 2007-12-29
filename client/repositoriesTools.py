@@ -171,7 +171,7 @@ def syncRepositories(reponames = [], forceUpdate = False):
         if (not etpUi['quiet']):
             print_info(red("\tDownloading database ")+darkgreen(etpConst[cmethod[2]])+red(" ..."))
 
-        down_status = repoConn.downloadDatabase(repo, cmethod[2])
+        down_status = repoConn.downloadItem("db", repo, cmethod)
         if not down_status:
             print_info(bold("\tAttention: ")+red("database does not exist online."))
             continue
@@ -180,12 +180,12 @@ def syncRepositories(reponames = [], forceUpdate = False):
         if (not etpUi['quiet']):
             print_info(red("\tUnpacking database to ")+darkgreen(etpConst['etpdatabasefile'])+red(" ..."))
         # unpack database
-        repoConn.unpackDownloadedDatabase(repo,cmethod)
+        repoConn.unpackDownloadedDatabase(repo, cmethod)
 
         # download checksum
         if (not etpUi['quiet']):
             print_info(red("\tDownloading checksum ")+darkgreen(etpConst['etpdatabasehashfile'])+red(" ..."))
-        down_status = repoConn.downloadChecksum(repo)
+        down_status = repoConn.downloadItem("ck", repo)
         if not down_status:
             print_warning(red("\tCannot fetch checksum. Cannot verify database integrity !"))
         else:
@@ -210,7 +210,7 @@ def syncRepositories(reponames = [], forceUpdate = False):
         # download revision
         if (not etpUi['quiet']):
             print_info(red("\tDownloading revision ")+darkgreen(etpConst['etpdatabaserevisionfile'])+red(" ..."))
-        rev_status = repoConn.downloadDatabaseRevision(repo)
+        rev_status = repoConn.downloadItem("rev", repo)
         if not rev_status:
             print_warning(red("\tCannot download repository revision, don't ask me why !"))
         else:
@@ -318,8 +318,8 @@ class repositoryController:
 
         self.validateRepositoryId(repo)
 
-        rc = self.remoteTools.downloadData(etpRepositories[repo]['database']+"/"+etpConst['etpdatabasedownloadlockfile'],"/dev/null")
-        if rc != "-3": # cannot download database
+        rc = self.downloadItem("lock", repo)
+        if rc: # cannot download database
             self.syncErrors = True
             return False
         return True
@@ -347,14 +347,40 @@ class repositoryController:
 	if not os.path.isdir(etpRepositories[repo]['dbpath']):
 	    os.makedirs(etpRepositories[repo]['dbpath'])
 
+    def constructPaths(self, item, repo, cmethod):
+
+        if item not in ("db","rev","ck", "lock"):
+            raise exceptionTools.InvalidData("InvalidData: supported db, rev, ck, lock")
+
+        if item == "db":
+            if cmethod == None:
+                raise exceptionTools.InvalidData("InvalidData: for db, cmethod can't be None")
+            url = etpRepositories[repo]['database'] +   "/" + etpConst[cmethod[2]]
+            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst[cmethod[2]]
+        elif item == "rev":
+            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaserevisionfile']
+            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabaserevisionfile']
+        elif item == "ck":
+            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasehashfile']
+            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasehashfile']
+        elif item == "lock":
+            url = etpRepositories[repo]['database']+"/"+etpConst['etpdatabasedownloadlockfile']
+            filepath = "/dev/null"
+
+        return url, filepath
+
     # this function can be reimplemented
-    def downloadDatabase(self, repo, dbfilenameid):
+    def downloadItem(self, item, repo, cmethod = None):
 
         self.validateRepositoryId(repo)
+        url, filepath = self.constructPaths(item, repo, cmethod)
 
-	rc = self.remoteTools.downloadData(etpRepositories[repo]['database'] +   "/" + etpConst[dbfilenameid], etpRepositories[repo]['dbpath'] + "/" + etpConst[dbfilenameid])
+        fetchConn = self.remoteTools.urlFetcher(url, filepath)
+	rc = fetchConn.download()
         if rc in ("-1","-2","-3"):
+            del fetchConn
             return False
+        del fetchConn
         return True
 
     def removeRepositoryFiles(self, repo, dbfilenameid):
@@ -376,15 +402,6 @@ class repositoryController:
         path = eval("entropyTools."+cmethod[1])(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
         return path
 
-    def downloadChecksum(self, repo):
-
-        self.validateRepositoryId(repo)
-
-        rc = self.remoteTools.downloadData(etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasehashfile'], etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasehashfile'])
-        if rc in ("-1","-2","-3"):
-            return False
-        return True
-
     def verifyDatabaseChecksum(self, repo):
 
         self.validateRepositoryId(repo)
@@ -399,15 +416,6 @@ class repositoryController:
             return -1
 	rc = entropyTools.compareMd5(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile'],md5hash)
         return rc
-
-    def downloadDatabaseRevision(self, repo):
-
-        self.validateRepositoryId(repo)
-
-	rc = self.remoteTools.downloadData(etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaserevisionfile'], etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabaserevisionfile'])
-        if rc in ("-1","-2","-3"):
-            return False
-        return True
 
     def closeTransactions(self):
 

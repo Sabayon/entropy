@@ -27,22 +27,20 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 import entropyTools
+import random
 
 # Logging initialization
 import logTools
 remoteLog = logTools.LogFile(level=etpConst['remoteloglevel'],filename = etpConst['remotelogfile'], header = "[REMOTE/HTTP]")
-# example: mirrorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFuncton: called.")
 
 import socket
 import urllib2
-
 
 # Get checksum of a package by running md5sum remotely (using php helpers)
 # @returns hex: if the file exists
 # @returns None: if the server does not support HTTP handlers
 # @returns None: if the file is not found
 def getRemotePackageChecksum(servername, filename, branch):
-    remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getRemotePackageChecksum: called.")
     # etpHandlers['md5sum'] is the command
     # create the request
     try:
@@ -57,7 +55,6 @@ def getRemotePackageChecksum(servername, filename, branch):
     filename = filename.replace("+","%2b")
     
     request = url+etpHandlers['md5sum']+filename+"&branch="+branch
-    remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getRemotePackageChecksum: requested url -> "+request)
     
     # now pray the server
     try:
@@ -70,69 +67,6 @@ def getRemotePackageChecksum(servername, filename, branch):
         return result
     except: # no HTTP support?
 	return None
-
-###################################################
-# HTTP/FTP equo/download functions
-###################################################
-# ATTENTION: this functions fills global variable etpFileTransferMetadata !!
-# take care of that
-def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed = True):
-    remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadFile: called.")
-
-    socket.setdefaulttimeout(60)
-
-    # substitute tagged filenames with URL encoded code
-    url = url.replace("#","%23")
-
-    # start scheduler
-    if (showSpeed):
-        etpFileTransferMetadata[url] = etpFileTransfer.copy()
-	speedUpdater = entropyTools.TimeScheduled(__updateSpeedInfo,etpFileTransferMetadata[url]['transferpollingtime'], etpFileTransferMetadata[url])
-	speedUpdater.setName("download::"+url)
-	speedUpdater.start()
-    
-    rc = "-1"
-    try:
-        if etpConst['proxy']:
-            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
-            opener = urllib2.build_opener(proxy_support)
-            urllib2.install_opener(opener)
-        remotefile = urllib2.urlopen(url)
-    except KeyboardInterrupt:
-        if (showSpeed):
-	    speedUpdater.kill()
-            socket.setdefaulttimeout(2)
-	raise KeyboardInterrupt
-    except Exception, e:
-	if (showSpeed):
-	    speedUpdater.kill()
-	    socket.setdefaulttimeout(2)
-	return "-3"
-    try:
-	maxsize = remotefile.headers.get("content-length")
-    except:
-	maxsize = 0
-	pass
-    localfile = open(pathToSave,"w")
-    rsx = "x"
-    while rsx != '':
-	rsx = remotefile.read(bufferSize)
-	__downloadFileCommitData(localfile, rsx, maxsize = maxsize, showSpeed = showSpeed, url = url)
-    localfile.flush()
-    localfile.close()
-    #print_info("",back = True)
-    if checksum:
-	# return digest
-	rc = entropyTools.md5sum(pathToSave)
-    else:
-	# return -2
-	rc = "-2"
-
-    if (showSpeed):
-	speedUpdater.kill()
-        socket.setdefaulttimeout(2)
-
-    return rc
 
 # Get the content of an online page
 # @returns content: if the file exists
@@ -162,7 +96,6 @@ def getOnlineContent(url):
 # @returns bool: True if ok. False if not.
 # @returns False: if the file is not found
 def reportApplicationError(errorstring):
-    remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"reportApplicationError: called. Requested string -> "+str(errorstring))
     socket.setdefaulttimeout(60)
     outstring = ""
     for char in errorstring:
@@ -187,48 +120,144 @@ def reportApplicationError(errorstring):
 	return False
 
 ###################################################
-# HTTP/FTP equo INTERNAL FUNCTIONS
+# HTTP/FTP equo packages download class
 ###################################################
-def __downloadFileCommitData(f, buf, output = True, maxsize = 0, showSpeed = True, url = ""):
-    # writing file buffer
-    f.write(buf)
-    # update progress
-    if output:
-        kbytecount = float(f.tell())/1024
-	maxsize = int(maxsize)
-	if maxsize > 0:
-	    maxsize = float(int(maxsize))/1024
-	average = int((kbytecount/maxsize)*100)
-        # create text
-        currentText = darkred("    <-> Downloading: ")+darkgreen(str(round(kbytecount,1)))+"/"+red(str(round(maxsize,1)))+" kB"
-	# create progress bar
-	barsize = 10
-	bartext = "["
-	curbarsize = 1
-	#print average
-	averagesize = (average*barsize)/100
-	#print averagesize
-	for y in range(averagesize):
-	    curbarsize += 1
-	    bartext += "="
-	bartext += ">"
-	diffbarsize = barsize-curbarsize
-	for y in range(diffbarsize):
-	    bartext += " "
-	if (showSpeed):
-	    etpFileTransferMetadata[url]['gather'] = f.tell()
-	    bartext += "] => "+str(entropyTools.bytesIntoHuman(etpFileTransferMetadata[url]['datatransfer']))+"/sec"
-	else:
-	    bartext += "]"
-	average = str(average)
-	if len(average) < 2:
-	    average = " "+average
-	currentText += "    <->  "+average+"% "+bartext
+# ATTENTION: this functions fills global variable etpFileTransferMetadata !!
+# take care of that
+
+class urlFetcher:
+
+    def __init__(self, url, pathToSave, checksum = True, showSpeed = True):
+
+        self.url = url
+        self.url = self.encodeUrl(self.url)
+        self.pathToSave = pathToSave
+        self.checksum = checksum
+        self.showSpeed = showSpeed
+        self.bufferSize = 8192
+        self.status = None
+        self.remotefile = None
+        self.localfile = None
+        self.downloadedsize = 0
+        self.average = 0
+        self.remotesize = 0
+        # transfer status data
+        self.gather = 0
+        self.datatransfer = 0
+        self.elapsed = etpFileTransfer['elapsed']
+        self.transferpollingtime = etpFileTransfer['transferpollingtime']
+
+        # setup proxy, doing here because config is dynamic
+        if etpConst['proxy']:
+            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+            opener = urllib2.build_opener(proxy_support)
+            urllib2.install_opener(opener)
+        #FIXME else: unset opener??
+
+    def encodeUrl(self, url):
+        url = url.replace("#","%23")
+        return url
+
+    def download(self):
+        if self.showSpeed:
+            self.speedUpdater = entropyTools.TimeScheduled(
+                        self.updateSpeedInfo,
+                        self.transferpollingtime
+            )
+            self.speedUpdater.setName("download::"+self.url+str(random.random())) # set unique ID to thread, hopefully
+            self.speedUpdater.start()
+
+        # set timeout
+        socket.setdefaulttimeout(60)
+
+        # go download slave!
+
+        # handle user stupidity
+        try:
+            self.remotefile = urllib2.urlopen(self.url)
+        except KeyboardInterrupt:
+            self.close()
+            raise KeyboardInterrupt
+        except Exception, e:
+            self.close()
+            self.status = "-3"
+            return self.status
+
+        # get file size if available
+        try:
+            self.remotesize = self.remotefile.headers.get("content-length")
+        except:
+            pass
+
+        if self.remotesize > 0:
+            self.remotesize = float(int(self.remotesize))/1024
+
+        self.localfile = open(self.pathToSave,"w")
+        rsx = "x"
+        while rsx != '':
+            rsx = self.remotefile.read(self.bufferSize)
+            self.commitData(rsx)
+            if self.showSpeed:
+                self.updateProgress()
+        self.localfile.flush()
+        self.localfile.close()
+
+        # kill thread
+        self.close()
+
+        if self.checksum:
+            self.status = entropyTools.md5sum(self.pathToSave)
+            return self.status
+        else:
+            self.status = "-2"
+            return self.status
+
+    def commitData(self, mybuffer):
+        # writing file buffer
+        self.localfile.write(mybuffer)
+        # update progress info
+        self.downloadedsize = self.localfile.tell()
+        kbytecount = float(self.downloadedsize)/1024
+        self.average = int((kbytecount/self.remotesize)*100)
+
+    # this is the function which should be reimplemented
+    # to work with GUI apps
+    def updateProgress(self):
+
+        currentText = darkred("    <-> Downloading: ")+darkgreen(str(round(float(self.downloadedsize)/1024,1)))+"/"+red(str(round(self.remotesize,1)))+" kB"
+        # create progress bar
+        barsize = 10
+        bartext = "["
+        curbarsize = 1
+        #print average
+        averagesize = (self.average*barsize)/100
+        #print averagesize
+        for y in range(averagesize):
+            curbarsize += 1
+            bartext += "="
+        bartext += ">"
+        diffbarsize = barsize-curbarsize
+        for y in range(diffbarsize):
+            bartext += " "
+        if (self.showSpeed):
+            self.gather = self.downloadedsize
+            bartext += "] => "+str(entropyTools.bytesIntoHuman(self.datatransfer))+"/sec"
+        else:
+            bartext += "]"
+        average = str(self.average)
+        if len(average) < 2:
+            average = " "+average
+        currentText += "    <->  "+average+"% "+bartext
         # print !
         print_info(currentText,back = True)
 
+    def close(self):
+        if self.showSpeed:
+            self.speedUpdater.kill()
+        socket.setdefaulttimeout(2)
 
-def __updateSpeedInfo(tdata):
-    tdata['elapsed'] += tdata['transferpollingtime']
-    # we have the diff size
-    tdata['datatransfer'] = tdata['gather'] / tdata['elapsed']
+    def updateSpeedInfo(self):
+        self.elapsed += self.transferpollingtime
+        # we have the diff size
+        self.datatransfer = self.gather / self.elapsed
+

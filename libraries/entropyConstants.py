@@ -344,7 +344,6 @@ etpFileTransfer = {
     'elapsed': 0.0,
     'transferpollingtime': float(1)/4 # 0.25secs = 4Hz
 }
-etpFileTransferMetadata = {}
 
 # disk caching dictionary
 etpCache = {

@@ -31,6 +31,7 @@ from urlgrabber.grabber import URLGrabError
 from entropyConstants import *
 from clientConstants import *
 import repositoriesTools
+import remoteTools
 
 class YumexYumHandler:
     def __init__(self,recent,settings,progress,mainwin,parser):
@@ -486,17 +487,26 @@ class YumexYumHandler:
                     out += msg
         
         return out
-        
+
+class GuiUrlFetcher(remoteTools.urlFetcher):
+    """ hello my highness """
+    
+    # reimplementing updateProgress
+    
+
 class repositoryGuiController(repositoriesTools.repositoryController):
     """ hello world """
     
-    # reimplementing download function
-    # this function can be reimplemented
-    def downloadDatabase(self, repo, dbfilenameid):
+    # reimplementing
+    def downloadItem(self, item, repo, cmethod = None):
 
         self.validateRepositoryId(repo)
+        url, filepath = self.constructPaths(item, repo, cmethod)
 
-	rc = self.remoteTools.downloadData(etpRepositories[repo]['database'] +   "/" + etpConst[dbfilenameid], etpRepositories[repo]['dbpath'] + "/" + etpConst[dbfilenameid])
+        fetchConn = GuiUrlFetcher.urlFetcher(url, filepath)
+	rc = fetchConn.download()
         if rc in ("-1","-2","-3"):
+            del fetchConn
             return False
+        del fetchConn
         return True

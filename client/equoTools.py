@@ -930,13 +930,11 @@ def fetchFile(url, digest = None):
     if os.path.exists(filepath):
 	os.remove(filepath)
 
-    # check if file has the right checksum, otherwise skip
-    # XXX: problem is that mirrors don't support this (some because don't support php itself)
-    #print remoteTools.getRemotePackageChecksum(spliturl(url)[1],filename,etpConst['branch']) 
-
-    # now fetch the new one
+    # load class
+    fetchConn = remoteTools.urlFetcher(url, filepath)
+    # start to download
     try:
-        fetchChecksum = remoteTools.downloadData(url,filepath)
+        fetchChecksum = fetchConn.download()
     except KeyboardInterrupt:
 	return -4
     except:
@@ -947,9 +945,12 @@ def fetchFile(url, digest = None):
 	#print digest+" <--> "+fetchChecksum
 	if (fetchChecksum != digest):
 	    # not properly downloaded
+            del fetchConn
 	    return -2
 	else:
+            del fetchConn
 	    return 0
+    del fetchConn
     return 0
 
 def matchChecksum(infoDict):
