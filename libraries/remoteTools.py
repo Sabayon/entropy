@@ -74,7 +74,8 @@ def getRemotePackageChecksum(servername, filename, branch):
 ###################################################
 # HTTP/FTP equo/download functions
 ###################################################
-
+# ATTENTION: this functions fills global variable etpFileTransferMetadata !!
+# take care of that
 def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed = True):
     remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadFile: called.")
 
@@ -130,9 +131,6 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
     if (showSpeed):
 	speedUpdater.kill()
         socket.setdefaulttimeout(2)
-        # remove status
-        # XXX: move this action somewhere else
-        del etpFileTransferMetadata[url]
 
     return rc
 

@@ -125,7 +125,13 @@ def print_help():
     print_info(" \t\t"+darkgreen("depends")+red("\t\t\t regenerate/generate depends caching table"))
     print_info(" \t\t"+darkgreen("counters")+red("\t\t update/generate counters table (Portage <-> Entropy packages table)"))
     print_info(" \t\t"+darkgreen("gentoosync")+red("\t\t Have you used Portage and Equo together? Run this to let Equo know the changes"))
-    print_info(" \t"+blue("cache")+brown("\t\t handle Equo on-disk cache"))
+
+    print_info(" \t"+blue("packages")+brown("\t handle packages helper applications"))
+    print_info(" \t\t"+darkgreen("python-updater")+red("\t\t migrate all Python modules to the latest installed version"))
+    print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
+    print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
+
+    print_info(" \t"+blue("cache")+brown("\t\t handle Equo On-Disk cache"))
     print_info(" \t\t"+darkgreen("clean")+red("\t\t\t clean on-disk cache"))
     print_info(" \t\t"+darkgreen("generate")+red("\t\t generate on-disk cache (to speed up Equo)"))
     print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
@@ -277,6 +283,11 @@ try:
         entropyTools.applicationLockCheck("database")
         import rescueTools
         rc = rescueTools.database(options[1:])
+
+    elif (options[0] == "packages"):
+        entropyTools.applicationLockCheck("packages")
+        import rescueTools
+        rc = rescueTools.updater(options[1:])
 
     elif (options[0] == "cleanup"):
         entropyTools.applicationLockCheck("cleanup")

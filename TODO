@@ -4,11 +4,28 @@ TODO list:
   - add deptest check for every reagent run
   - implement client db sanity check
   - equo world: removal packages, first ask all, then do
+  - separate packages for license restrictions
+
+notice this:
+>>    ## Ebuild: pkg_prerm()
+>>    ## Ebuild: pkg_postrm()
+ * Cleaning orphaned Python bytecode from /usr/lib64/python2.4/site-packages ..
+find: paths must precede expression: confTools.pyc
+Usage: find [-H] [-L] [-P] [-Olevel] [-D help|tree|search|stat|rates|opt|exec] [path...] [expression]
+ * Cleaning orphaned Python bytecode from /usr/lib64/python2.5/site-packages ..
+find: paths must precede expression: confTools.pyc
+Usage: find [-H] [-L] [-P] [-Olevel] [-D help|tree|search|stat|rates|opt|exec] [path...] [expression]
+ * Cleaning orphaned Python bytecode from /usr/lib/python2.4/site-packages ..
+find: paths must precede expression: confTools.pyc
+Usage: find [-H] [-L] [-P] [-Olevel] [-D help|tree|search|stat|rates|opt|exec] [path...] [expression]
+ * Cleaning orphaned Python bytecode from /usr/lib/python2.5/site-packages ..
+find: paths must precede expression: confTools.pyc
+Usage: find [-H] [-L] [-P] [-Olevel] [-D help|tree|search|stat|rates|opt|exec] [path...] [expression]
 
 
 Project Status:
-- reagent: complete. Stabilization mode.
-- activator: complete. Stabilization mode.
+- reagent: complete.
+- activator: complete.
 ============
 - equo - out of alpha status: 90%
 

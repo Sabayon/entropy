@@ -889,7 +889,11 @@ def fetchFileOnMirrors(repository, filename, digest = False, verified = False):
 	print_info(red("   ## ")+mirrorCountText+blue("Downloading from: ")+red(spliturl(url)[1]))
 	rc = fetchFile(url, digest)
 	if rc == 0:
-	    print_info(red("   ## ")+mirrorCountText+blue("Successfully downloaded from: ")+red(spliturl(url)[1])+blue(" at "+str(bytesIntoHuman(etpFileTransfer['datatransfer']))+"/sec"))
+            try:
+                data_transfer = etpFileTransferMetadata[url]['datatransfer']
+            except KeyError:
+                data_transfer = 0
+	    print_info(red("   ## ")+mirrorCountText+blue("Successfully downloaded from: ")+red(spliturl(url)[1])+blue(" at "+str(bytesIntoHuman(data_transfer))+"/sec"))
 	    return 0
 	else:
 	    # something bad happened
@@ -908,6 +912,11 @@ def fetchFileOnMirrors(repository, filename, digest = False, verified = False):
                 addFailingMirror(uri, 5)
 		print_warning(red("   ## ")+mirrorCountText+blue("Error downloading from: ")+red(spliturl(url)[1])+" - unknown reason.")
 	    remaining.remove(uri)
+        # some cleanup
+        try:
+            del etpFileTransferMetadata[url]
+        except KeyError:
+            pass
 
 '''
    @description: download a package into etpConst['packagesbindir'] and check for digest if digest is not False

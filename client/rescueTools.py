@@ -25,7 +25,6 @@
 ##   Repositories Tools
 #
 
-import os
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
@@ -435,6 +434,81 @@ def database(options):
 
     else:
         return -10
+
+'''
+    @description: implementation of migration helper tools, like gentoo's python-updater
+'''
+def updater(options):
+
+    if len(options) < 1:
+        return -10
+
+    # check if I am root
+    if (not entropyTools.isRoot()):
+        print_error(red("You are not ")+bold("root")+red("."))
+        return 1
+
+    rc = 0
+    if options[0] == "python-updater":
+        rc = pythonUpdater()
+
+    return rc
+
+
+def pythonUpdater():
+    import re
+    import queryTools
+    import uiTools
+    pattern = re.compile(r'^(python)[0-9](.)[0-9]$')
+    print_info(brown(" @@ ")+blue("Looking for old Python directories..."), back = True)
+    dirs = [x for x in os.listdir("/usr/lib") if x.startswith("python") and pattern.match(x)]
+    if len(dirs) <= 1:
+        print_info(brown(" @@ ")+blue("Your Python installation seems fine."))
+        return 0
+    dirs.sort()
+    print_info(brown(" @@ ")+blue("Multiple Python directories found:"))
+    for pdir in dirs:
+        print_info(red("    # ")+blue("/usr/lib/%s" % (pdir,) ))
+
+    old_pdir = os.path.join("/usr/lib/",dirs[0])
+    print_info(brown(" @@ ")+blue("Scanning: %s" % (red(old_pdir),)))
+
+    clientDbconn = openClientDatabase()
+    old_pdir = old_pdir.replace("/usr/lib","/usr/lib*")
+    idpackages = queryTools.searchBelongs(files = [old_pdir], idreturn = True, dbconn = clientDbconn)
+    if not idpackages:
+        print_info(brown(" @@ ")+blue("There are no files in %s whose belong to your old Python." % (old_pdir,)))
+        return 0
+    print_info(brown(" @@ ")+blue("These are the installed packages whose have files in %s:" % (red(old_pdir),)))
+
+    atoms = set()
+    for idpackage in idpackages:
+        atom = clientDbconn.retrieveAtom(idpackage)
+        atoms.add((atom, idpackage))
+        print_info(red("    # ")+atom)
+
+    print_info(brown(" @@ ")+blue("Searching inside available repositories..."))
+    atoms = list(atoms)
+    atoms.sort()
+    matchedAtoms = set()
+    for meta in atoms:
+        atomkey = entropyTools.dep_getkey(meta[0])
+        slot = clientDbconn.retrieveSlot(meta[1])
+        print_info(brown("   @@ ")+red("Matching ")+bold(atomkey)+red(":")+darkgreen(slot), back = True)
+        match = equoTools.atomMatch(atomkey, matchSlot = slot)
+        if match[0] != -1:
+            matchedAtoms.add((atomkey+":"+slot,match))
+    del atoms
+    del idpackages
+
+    # now show, then ask or exit (if pretend)
+    if not matchedAtoms:
+        print_info(brown(" @@ ")+blue("There are no files in %s whose belong to your old Python and are stored in configured repositories." % (old_pdir,)))
+        return 0
+
+    # run uiTools
+    rc = uiTools.installPackages(atomsdata = matchedAtoms)
+    return rc
 
 
 '''
