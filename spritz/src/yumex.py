@@ -425,6 +425,7 @@ class YumexApplication(YumexController,YumexGUI):
         import repositoriesTools
         try:
             repoConn = repositoryGuiController(repos, forceUpdate = True)
+            repoConn.connectProgressObject(self.progress)
         except exceptionTools.PermissionDenied:
             self.progressLog(_('You must run this application as root'))
             return 1
@@ -466,7 +467,7 @@ class YumexApplication(YumexController,YumexGUI):
 
             self.progressLog(_('Downloading database for %s') % (repo,))
             # download
-            down_status = repoConn.downloadDatabase(repo, cmethod[2])
+            down_status = repoConn.downloadItem("db", repo, cmethod)
             if not down_status:
                 self.progressLog(_('Attention: repository %s does not exist online.') % (repo,))
                 error = True

@@ -30,6 +30,7 @@ from urlgrabber.grabber import URLGrabError
 # Entropy Imports
 from entropyConstants import *
 from clientConstants import *
+import entropyTools
 import repositoriesTools
 import remoteTools
 
@@ -491,19 +492,40 @@ class YumexYumHandler:
 class GuiUrlFetcher(remoteTools.urlFetcher):
     """ hello my highness """
     
-    # reimplementing updateProgress
+    def connectProgressObject(self, progress, item):
+        self.progress = progress
+        self.item = item
+        if self.item == "db":
+            self.item = _("repository database")
     
+    # reimplementing updateProgress
+    def updateProgress(self):
+
+        # create progress bar
+        self.gather = self.downloadedsize # needed ?
+        self.progress.set_progress(round(float(self.average)/100,1),
+                        _("Downloading %s: %s/%s kB @ %s") % (
+                                self.item,
+                                str(round(float(self.downloadedsize)/1024,1)),
+                                str(round(self.remotesize,1)),
+                                str(entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
+                                )
+        )
 
 class repositoryGuiController(repositoriesTools.repositoryController):
     """ hello world """
-    
+
+    def connectProgressObject(self, progress):
+        self.progress = progress
+
     # reimplementing
     def downloadItem(self, item, repo, cmethod = None):
 
         self.validateRepositoryId(repo)
         url, filepath = self.constructPaths(item, repo, cmethod)
 
-        fetchConn = GuiUrlFetcher.urlFetcher(url, filepath)
+        fetchConn = GuiUrlFetcher(url, filepath)
+        fetchConn.connectProgressObject(self.progress, item)
 	rc = fetchConn.download()
         if rc in ("-1","-2","-3"):
             del fetchConn
