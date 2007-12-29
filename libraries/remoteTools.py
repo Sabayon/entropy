@@ -86,8 +86,8 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
     # start scheduler
     if (showSpeed):
         etpFileTransferMetadata[url] = etpFileTransfer.copy()
-	speedUpdater = entropyTools.TimeScheduled(__updateSpeedInfo,etpFileTransferMetadata[url]['transferpollingtime'])
-	speedUpdater.setName("download")
+	speedUpdater = entropyTools.TimeScheduled(__updateSpeedInfo,etpFileTransferMetadata[url]['transferpollingtime'], etpFileTransferMetadata[url])
+	speedUpdater.setName("download::"+url)
 	speedUpdater.start()
     
     rc = "-1"
@@ -103,7 +103,6 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
             socket.setdefaulttimeout(2)
 	raise KeyboardInterrupt
     except Exception, e:
-	remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"downloadFile: Exception caught for: "+str(url)+" -> "+str(e))
 	if (showSpeed):
 	    speedUpdater.kill()
 	    socket.setdefaulttimeout(2)
@@ -117,7 +116,7 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
     rsx = "x"
     while rsx != '':
 	rsx = remotefile.read(bufferSize)
-	__downloadFileCommitData(localfile, rsx, maxsize = maxsize, showSpeed = showSpeed)
+	__downloadFileCommitData(localfile, rsx, maxsize = maxsize, showSpeed = showSpeed, url = url)
     localfile.flush()
     localfile.close()
     #print_info("",back = True)
@@ -141,7 +140,6 @@ def downloadData(url, pathToSave, bufferSize = 8192, checksum = True, showSpeed 
 # @returns content: if the file exists
 # @returns False: if the file is not found
 def getOnlineContent(url):
-    remoteLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getOnlineContent: called. Requested URL -> "+str(url))
 
     socket.setdefaulttimeout(60)
     # now pray the server
@@ -193,7 +191,7 @@ def reportApplicationError(errorstring):
 ###################################################
 # HTTP/FTP equo INTERNAL FUNCTIONS
 ###################################################
-def __downloadFileCommitData(f, buf, output = True, maxsize = 0, showSpeed = True):
+def __downloadFileCommitData(f, buf, output = True, maxsize = 0, showSpeed = True, url = ""):
     # writing file buffer
     f.write(buf)
     # update progress
@@ -232,7 +230,7 @@ def __downloadFileCommitData(f, buf, output = True, maxsize = 0, showSpeed = Tru
         print_info(currentText,back = True)
 
 
-def __updateSpeedInfo():
-    etpFileTransferMetadata[url]['elapsed'] += etpFileTransferMetadata[url]['transferpollingtime']
+def __updateSpeedInfo(tdata):
+    tdata['elapsed'] += tdata['transferpollingtime']
     # we have the diff size
-    etpFileTransferMetadata[url]['datatransfer'] = etpFileTransferMetadata[url]['gather'] / etpFileTransferMetadata[url]['elapsed']
+    tdata['datatransfer'] = tdata['gather'] / tdata['elapsed']

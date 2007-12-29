@@ -45,14 +45,18 @@ def isRoot():
     return False
 
 class TimeScheduled(threading.Thread):
-    def __init__(self, function, delay):
+    def __init__(self, function, delay, dictData = {}):
         threading.Thread.__init__(self)
         self.function = function
         self.delay = delay
+        self.data = dictData
     def run(self):
         self.alive = 1
         while self.alive:
-            self.function()
+            if self.data:
+                self.function(self.data)
+            else:
+                self.function()
 	    try:
                 time.sleep(self.delay)
 	    except:
