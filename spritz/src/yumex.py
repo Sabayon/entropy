@@ -42,7 +42,7 @@ from yumgui import *
 
 # yumex imports
 import filters
-from entropyapi import YumexYumHandler, repositoryGuiController
+from entropyapi import repositoryGuiController
 from gui import YumexGUI
 from dialogs import *
 from misc import const,YumexOptions,YumexProfile
@@ -54,7 +54,7 @@ class YumexController(Controller):
     
     
     def __init__( self ):
-         self.yumbase = None
+         #self.yumbase = None
          # Create and ui object contains the widgets.
          ui = UI( const.GLADE_FILE , 'main', 'yumex' )
          # init the Controller Class to connect signals.
@@ -66,15 +66,15 @@ class YumexController(Controller):
         if self.rpmTransactionIsRunning:
             self.logger.critical(_('Cant Quit while running RPM Transactions'))
             return True # Dont quit
-        gtkEventThread.doQuit()        
+        gtkEventThread.doQuit()
         if self.isWorking:
             self.quitNow = True
             self.logger.critical(_('Quiting, please wait !!!!!!'))
             time.sleep(3)
-            self.exitNow()               
+            self.exitNow()
             return False
         else:
-            self.exitNow()   
+            self.exitNow()
             return False
 
     def exitNow(self):
@@ -91,7 +91,7 @@ class YumexController(Controller):
     def on_pkgFilter_toggled(self,rb,action):
         ''' Package Type Selection Handler'''
         if rb.get_active(): # Only act on select, not deselect.
-            rb.grab_add()                    
+            rb.grab_add()
             self.packageInfo.clear()
             self.lastPkgPB = action
             # Only show add/remove all when showing updates
@@ -359,14 +359,8 @@ class YumexController(Controller):
                 self.setStatus( _( "Profile : %s creation failed" ) % name )
 
     def on_ToolsRepoCache( self, widget ):
-        if self.yumbase:
-            self.logger.info(_('Cleaning up all yum metadata'))
-            self.yumbase.cleanPackages()
-            self.yumbase.cleanHeaders()
-            self.yumbase.cleanMetadata()
-            self.yumbase.cleanSqlite()            
-            
-                        
+        self.logger.info(_('Cleaning up all yum metadata'))
+
 class YumexApplication(YumexController,YumexGUI):
 
     def __init__(self):
@@ -387,11 +381,8 @@ class YumexApplication(YumexController,YumexGUI):
             self.yumexOptions.dump()
             print self.yumexOptions.getArgs()
         self.logger.info(_('Yum Config Setup'))
-        self.yumbase = YumexYumHandler(self.getRecentTime(),self.settings,self.progress,self.ui.main,self.yumexOptions._optparser)
         self.yumexOptions.parseCmdOptions()
         
-        self.packageInfo.yumbase = self.yumbase
-        self.compsView.yumbase = self.yumbase
         # Setup GUI
         self.setupGUI()
         self.logger.info(_('GUI Setup Completed'))
@@ -493,8 +484,6 @@ class YumexApplication(YumexController,YumexGUI):
         self.repoView.populate()
                 
     def addPackages(self):
-        if not self.yumbase or not self.yumbase.isSetup:
-            return
         busyCursor(self.ui.main)
         action = self.lastPkgPB
         if action == 'all':
@@ -508,9 +497,9 @@ class YumexApplication(YumexController,YumexGUI):
             msg = _('Getting packages : %s' ) % flt
             self.progressLog(msg)
             self.setStatus(msg)
-            pkgs = self.yumbase.getPackages(flt)
-            self.progressLog(_('Found %d %s packages') % (len(pkgs),flt))
-            allpkgs.extend(pkgs)
+            #pkgs = self.yumbase.getPackages(flt)
+            #self.progressLog(_('Found %d %s packages') % (len(pkgs),flt))
+            #allpkgs.extend(pkgs)
         if self.doProgress: self.progress.total.next() # -> Sort Lists
         self.progressLog(_('Sorting packages'))
         allpkgs.sort()
@@ -531,16 +520,16 @@ class YumexApplication(YumexController,YumexGUI):
         self.setStatus(msg)
         busyCursor(self.ui.main)
         self.pkgView.store.clear()
-        pkgs = self.yumbase.getPackagesByCategory(cat)
-        if pkgs:
-            pkgs.sort()
-            self.ui.viewPkg.set_model(None)
-            for po in pkgs:
-                self.pkgView.store.append([po,str(po)])
-            self.ui.viewPkg.set_model(self.pkgView.store)
-            self.ui.viewPkg.set_search_column( 2 )
-            msg = _('Package View Population Completed')
-            self.setStatus(msg)
+        #pkgs = self.yumbase.getPackagesByCategory(cat)
+        #if pkgs:
+        #    pkgs.sort()
+        #    self.ui.viewPkg.set_model(None)
+        #    for po in pkgs:
+        #        self.pkgView.store.append([po,str(po)])
+        #    self.ui.viewPkg.set_model(self.pkgView.store)
+        #    self.ui.viewPkg.set_search_column( 2 )
+        #    msg = _('Package View Population Completed')
+        #    self.setStatus(msg)
         normalCursor(self.ui.main)
               
 
@@ -548,20 +537,19 @@ class YumexApplication(YumexController,YumexGUI):
         msg = _('Category View Population')
         self.setStatus(msg)
         busyCursor(self.ui.main)
-        getterfn = getattr( self.yumbase, fn )
-        if para != '':
-            lst, keys = getterfn( self.lastPkgPB, para )
-        else:
-            lst, keys = getterfn( self.lastPkgPB)
-        fkeys = [ key for key in keys if lst.has_key(key)]
-        if sortkeys:
-            fkeys.sort()
-        if not splitkeys:
-            self.catView.populate(fkeys)
-        else:
-            keydict = self.splitCategoryKeys(fkeys)
-            self.catView.populate(keydict,True)
-        self.yumbase.setCategoryPackages(lst)
+        #getterfn = getattr( self.yumbase, fn )
+        #if para != '':
+        #    lst, keys = getterfn( self.lastPkgPB, para )
+        #else:
+        #    lst, keys = getterfn( self.lastPkgPB)
+        #fkeys = [ key for key in keys if lst.has_key(key)]
+        #if sortkeys:
+        #    fkeys.sort()
+        #if not splitkeys:
+        #    self.catView.populate(fkeys)
+        #else:
+        #    keydict = self.splitCategoryKeys(fkeys)
+        #    self.catView.populate(keydict,True)
         self.catView.view.set_cursor((0,))
         normalCursor(self.ui.main)
         msg = _('Category View Population Completed')
@@ -590,23 +578,6 @@ class YumexApplication(YumexController,YumexGUI):
             self.startWorking()
             self.progress.show()
             self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
-            # build transaction and resolv dependencies.
-            rc, msg = self.yumbase._prepareTransaction(pkgs,doAll)        
-            self.endWorking()
-            if rc != 2:
-                m = '\n'.join(msg)
-                msg = _( "Error in Dependency Resolution" )
-                rc = errorMessage( self.ui.main, _( "Error" ), msg, m )
-                self.logger.error(msg)
-                self.logger.error(m)
-                state=False
-            else:
-                if self.get_confimation( "" ):
-                    quit = self.processTransaction()
-                    if quit == None: # Check if Transaction failed.
-                        state = False
-                else:
-                    state = False
             self.progress.hide()
             if quit:
                 return "QUIT"
@@ -617,12 +588,7 @@ class YumexApplication(YumexController,YumexGUI):
 
     def get_confimation( self, task ):
         self.progress.hide( False )
-        pkgs = self.yumbase._getTransactionList()
-        if len(pkgs) == 0:
-            okDialog(self.ui.main,_('No packages in transaction'))
-            return False 
-        size = self.yumbase._getTransactionSize()
-        dlg = ConfimationDialog(self.ui.main, pkgs, size )
+        dlg = ConfimationDialog(self.ui.main, [], size )
         rc = dlg.run()
         dlg.destroy()
         self.progress.show()
@@ -635,15 +601,15 @@ class YumexApplication(YumexController,YumexGUI):
             self.progress.show()
             self.progress.total.next() # -> Download
             self.enableSkipMirror()   # Enable SkipMirror
-            self.yumbase._downloadPackages()
+            #self.yumbase._downloadPackages()
             self.disableSkipMirror()   # Disable SkipMirror
             # Skip Transaction is downloadonly is set.
             if not self.settings.downloadonly:
                 self.progress.total.next() # -> Transaction Test
-                self.yumbase._doTransactionTest()
+                #self.yumbase._doTransactionTest()
                 self.progress.total.next() # -> Run  Transaction
                 self.rpmTransactionIsRunning = True # Disable Quit
-                self.yumbase._runTransaction()
+                #self.yumbase._runTransaction()
                 self.rpmTransactionIsRunning = False
             self.progress.hide()
             self.endWorking()
@@ -670,12 +636,12 @@ class YumexApplication(YumexController,YumexGUI):
             if repo in repos:
                 self.logger.debug('--> Repo : %s' % repo)
                 no += len(dict[repo])
-                pkgs = self.yumbase.findPackagesByTuples(pType,dict[repo])
-                found += len(pkgs)
-                for po in pkgs:
-                    self.logger.debug("---> %s " % str(po))
-                    self.queue.add(po)
-                    self.queueView.refresh()
+                #pkgs = self.yumbase.findPackagesByTuples(pType,dict[repo])
+                #found += len(pkgs)
+                #for po in pkgs:
+                #    self.logger.debug("---> %s " % str(po))
+                #    self.queue.add(po)
+                #    self.queueView.refresh()
             else:
                 self.logger.debug('--> Skipping Repo (Not Enabled): %s' % repo)
         self.logger.debug("-> found %i of %i" % (found,no))
@@ -689,36 +655,38 @@ class YumexApplication(YumexController,YumexGUI):
         elif cmd == 'remove' or cmd == 'erase' or cmd == 'delete':
             typ = 'installed'
         if typ:
-            found = self.yumbase.findPackages(arglist,typ)
-            self.setStatus(_('found %d packages, matching : %s') % (len(found)," ".join(arglist)))
-            for po in found:
+            #found = self.yumbase.findPackages(arglist,typ)
+            #self.setStatus(_('found %d packages, matching : %s') % (len(found)," ".join(arglist)))
+            #for po in found:
                 #print str(po),po.action
-                self.queue.add(po)
+            #    self.queue.add(po)
             self.queueView.refresh()
 
     def populateGroupCategories(self):
-        data = self.yumbase.getByCategory()
+        #data = self.yumbase.getByCategory()
+        data = []
         self.compsView.populate(data)
 
     def populateGroups(self,id):
-        for c in self.yumbase.comps.categories:
-            if c.categoryid == id:
-                break
-        grps = [self.yumbase.comps.return_group(g) for g in c.groups]
-        data = [(g.name,g.groupid,g.installed,) for g in grps]
+        #for c in self.yumbase.comps.categories:
+        #    if c.categoryid == id:
+        #        break
+        #grps = [self.yumbase.comps.return_group(g) for g in c.groups]
+        #data = [(g.name,g.groupid,g.installed,) for g in grps]
+        data = []
         self.grpGroups.populate(data,id)
         
     def populateGroupPackages(self,id):
-        grp = self.yumbase.comps.return_group(id)
+        #grp = self.yumbase.comps.return_group(id)
         self.grpDesc.clear()
-        if grp.description:
-            self.grpDesc.write_line(grp.description)
-        pkgs = self.yumbase._getByGroup(grp,['m','d','o'])
-        pkgs.sort()
+        #if grp.description:
+        #    self.grpDesc.write_line(grp.description)
+        #pkgs = self.yumbase._getByGroup(grp,['m','d','o'])
+        #pkgs.sort()
         self.grpPackages.store.clear()
         self.ui.tvGrpPackages.set_model(None)
-        for po in pkgs:
-            self.grpPackages.store.append([po,str(po)])
+        #for po in pkgs:
+        #    self.grpPackages.store.append([po,str(po)])
         self.ui.tvGrpPackages.set_model(self.grpPackages.store)
        
 

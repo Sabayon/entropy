@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Spritz
+Name[zh_TW]=Spritz
+Comment=GUI front end for Entropy
+Comment[zh_TW]=Spritz
+Categories=Application;System;
+Icon=/usr/share/pixmaps/spritz.png
+Exec=/usr/bin/spritz
+Type=Application
+Terminal=false
+Encoding=UTF-8
+X-Desktop-File-Install-Version=0.10

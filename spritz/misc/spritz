@@ -2,4 +2,4 @@
 #
 # Run yumex main python program.
 #
-/usr/bin/python /usr/share/yumex/yumex.pyc $*
+python /usr/lib/entropy/gui/spritz $@

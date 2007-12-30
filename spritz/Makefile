@@ -28,49 +28,11 @@ install:
 	install -m644 COPYING $(DESTDIR)/usr/share/yumex/.
 	install -m755 $(MISCDIR)/yumex $(DESTDIR)/usr/share/yumex/.
 	install -m644 $(PIXDIR)/*.png $(DESTDIR)/usr/share/pixmaps/yumex/.
-	install -m644 $(MISCDIR)/yumex.profiles.conf $(DESTDIR)/etc/.
-	install -m644 $(MISCDIR)/yumex.pam $(DESTDIR)/etc/pam.d/yumex
-	install -m600 $(MISCDIR)/yumex.conf.default $(DESTDIR)/etc/yumex.conf
-	install -m644 $(MISCDIR)/yumex.pam $(DESTDIR)/etc/pam.d/yumex
-	install -m644 $(MISCDIR)/yumex.console.app $(DESTDIR)/etc/security/console.apps/yumex
-	ln -s consolehelper $(DESTDIR)/usr/bin/yumex
-	chmod +x $(DESTDIR)/usr/share/yumex/yumex
-	install -m644 $(MISCDIR)/yumex.desktop $(DESTDIR)/usr/share/applications/.
+	install -m644 $(MISCDIR)/spritz.pam $(DESTDIR)/etc/pam.d/spritz
+	chmod +x $(DESTDIR)/usr/lib/entropy/gui/spritz
+	install -m644 $(MISCDIR)/spritz.desktop $(DESTDIR)/usr/share/applications/.
 	for d in $(SUBDIRS); do make DESTDIR=`cd $(DESTDIR); pwd` -C $$d install; [ $$? = 0 ] || exit 1; done
 
-
-archive:
-	@rm -rf ${PKGNAME}-${VERSION}.tar.gz
-	@git-archive --format=tar --prefix=$(PKGNAME)-$(VERSION)/ HEAD | gzip -9v >${PKGNAME}-$(VERSION).tar.gz
-	@cp ${PKGNAME}-$(VERSION).tar.gz $(shell rpm -E '%_sourcedir')
-	@rm -rf ${PKGNAME}-${VERSION}.tar.gz
-	@echo "The archive is in ${PKGNAME}-$(VERSION).tar.gz"
-
-rpm-centos5: 
-	rpmbuild -ba -D "dist .centos5" yumex.spec	
-
-rpm-fc6: 
-	rpmbuild -ba -D "dist .fc6" yumex.spec	
-
-rpm-fc7: 
-	rpmbuild -ba -D "dist .fc7" yumex.spec	
-
-changelog:
-	@git log --pretty --numstat --summary | tools/git2cl > ChangeLog.git
-	@cat ChangeLog.git ChangeLog.svn > ChangeLog
-	@rm ChangeLog.git
-	
-upload: FORCE
-	@scp ~/rpmbuild/SOURCES/${PKGNAME}-${VERSION}.tar.gz yum-extender.org:public_html/dnl/yumex/source/.
-    
-	
-release:
-	@git commit -a -m "bumped version to $(VERSION)"
-	@$(MAKE) changelog
-	@git commit -a -m "updated ChangeLog"
-	@git push
-	@git tag ${PKGNAME}-${VERSION} -m "Added ${PKGNAME}-${VERSION} release tag"
-	@git push --tags origin
 
 FORCE:
     
