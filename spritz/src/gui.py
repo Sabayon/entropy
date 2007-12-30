@@ -183,7 +183,7 @@ class ProgressTotal:
         if not now >= self.lastFrac and now < 1:
             return
         while gtk.events_pending():      # process gtk events
-           gtk.main_iteration()    
+           gtk.main_iteration()
         self.lastFrac = now+0.01
         procent = long( self._percent( 1, now ) )
         self.progress.set_fraction( now )
@@ -197,12 +197,12 @@ class YumexProgress:
     """ Progress Class """
     def __init__( self, ui, set_page_func,parent ):
         self.ui = ui
+        #self.output = TextViewConsole( self.ui.viewOutput )
         self.set_page_func = set_page_func
         self.parent = parent
         self.ui.progressMainLabel.set_text( "" )
         self.ui.progressSubLabel.set_text( "" )
         self.ui.progressExtraLabel.set_text( "" )
-        self.ui.progressETALabel.set_text( "" )
         self.total = ProgressTotal( self.ui.totalProgressBar )
         self.ui.progressBar.set_fraction( 0 )
         self.ui.progressBar.set_text( " " )
@@ -232,7 +232,7 @@ class YumexProgress:
         if not frac >= self.lastFrac and frac < 1:
             return
         while gtk.events_pending():      # process gtk events
-           gtk.main_iteration()    
+           gtk.main_iteration()
     
         self.lastFrac = frac + 0.01
         if frac >= 0 and frac <= 1:
@@ -255,16 +255,11 @@ class YumexProgress:
     def set_subLabel( self, text ):
         self.ui.progressSubLabel.set_markup( "%s" % text )
         self.ui.progressExtraLabel.set_text( "" )
-        self.ui.progressETALabel.set_text( "" )
 
     def set_extraLabel( self, text ):
         self.ui.progressExtraLabel.set_markup( "<span size=\"small\">%s</span>" % cleanMarkupSting(text) )
-        self.ui.progressETALabel.set_text( "" )
         self.lastFrac = -1
-        
-    def set_etaLabel( self, text ):
-        self.ui.progressETALabel.set_markup( "<span size=\"small\">%s</span>" % text )
-                             
+
         
 class YumexGUI:
     ''' This class contains GUI related methods '''
@@ -294,7 +289,7 @@ class YumexGUI:
 
     def setupGUI(self):
         ''' Setup the GUI'''
-        self.ui.main.set_title( "%s %s" % (self.settings.branding_title, const.__yumex_version__) )        
+        self.ui.main.set_title( "%s %s" % (self.settings.branding_title, const.__spritz_version__) )        
         self.ui.main.connect( "delete_event", self.quit )
         self.ui.notebook.set_show_tabs( False )        
         self.ui.main.present()
@@ -337,7 +332,6 @@ class YumexGUI:
         self.ui.leftEvent.modify_bg( gtk.STATE_NORMAL, style.base[0])
         # Setup Page Icons
         self.ui.pageImage0.set_from_file ( const.PIXMAPS_PATH + '/button-repo.png' )
-        self.ui.pageImage2.set_from_file ( const.PIXMAPS_PATH + '/button-output.png' )
         self.ui.pageImage3.set_from_file ( const.PIXMAPS_PATH + '/button-group.png' )
         self.ui.pageImage4.set_from_file ( const.PIXMAPS_PATH + '/button-group.png' )
 
@@ -382,10 +376,14 @@ class YumexGUI:
         context_id = self.ui.status.get_context_id( "Status" )
         self.ui.status.push( context_id, text )
 
-    def progressLog(self,msg):
+    def progressLog(self,msg, extra = None):
         self.logger.info(msg)
         self.progress.set_subLabel( msg )
         self.progress.set_progress( 0, " " ) # Blank the progress bar.
+        if extra:
+            self.output.write_line(extra+": "+msg+"\n")
+        else:
+            self.output.write_line(msg+"\n")
      
     def pkgInfoClear( self ):
         self.pkgDesc.clear()

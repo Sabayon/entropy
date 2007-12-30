@@ -251,8 +251,12 @@ def print_info(msg, back = False):
     writechar("\r"+stuff['cleanline']+"\r")
     print green(">>")+" "+msg
 
-def print_warning(msg):
+def print_warning(msg, back = False):
     if etpUi['mute']:
+        return
+    if back:
+        writechar("\r"+stuff['cleanline']+"\r")
+        writechar("\r"+red(">>")+" "+msg)
         return
     writechar("\r"+stuff['cleanline']+"\r")
     print red(">>")+" "+msg

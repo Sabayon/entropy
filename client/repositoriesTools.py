@@ -219,6 +219,11 @@ def syncRepositories(reponames = [], forceUpdate = False):
         print_info(darkgreen("\tUpdate completed"))
 
     repoConn.closeTransactions()
+    del repoConn
+
+    # clean caches
+    import cacheTools
+    cacheTools.generateCache(depcache = True, configcache = False)
 
     if repoConn.syncErrors:
         if (not etpUi['quiet']):
@@ -226,6 +231,13 @@ def syncRepositories(reponames = [], forceUpdate = False):
         del repoConn
         return 128
 
+    rc = checkEquoUpdates()
+    if rc:
+        print_warning(darkred(" !! ")+blue("A new version of ")+bold("equo")+blue(" is available. Please ")+bold("install it")+blue(" before any other package."))
+    
+    return 0
+
+def checkEquoUpdates():
     # tell if a new equo release is available
     import equoTools
     from databaseTools import openClientDatabase
@@ -233,23 +245,22 @@ def syncRepositories(reponames = [], forceUpdate = False):
         clientDbconn = openClientDatabase(xcache = False)
     except exceptionTools.SystemDatabaseError:
         del repoConn
-        return 0
+        return False
 
+    found = False
     matches = clientDbconn.searchPackages("app-admin/equo")
     if matches:
         equo_match = "<="+matches[0][0]
         equo_unsatisfied,x = equoTools.filterSatisfiedDependencies([equo_match])
         del x
         if equo_unsatisfied:
-            print_warning(darkred(" !! ")+blue("A new version of ")+bold("equo")+blue(" is available. Please ")+bold("install it")+blue(" before any other package."))
+            found = True
         del matches
         del equo_unsatisfied
 
     clientDbconn.closeDB()
     del clientDbconn
-    del repoConn
-
-    return 0
+    return found
 
 #
 # repository control class, that's it
@@ -430,10 +441,6 @@ class repositoryController:
         for dbinfo in dbCacheStore:
             dbCacheStore[dbinfo].clear()
             self.dumpTools.dumpobj(dbinfo,{})
-    
-        # clean caches
-        import cacheTools
-        cacheTools.generateCache(depcache = True, configcache = False)
     
         # clean resume caches
         self.dumpTools.dumpobj(etpCache['install'],{})

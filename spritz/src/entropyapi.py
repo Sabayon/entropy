@@ -30,6 +30,7 @@ from clientConstants import *
 import entropyTools
 import repositoriesTools
 import remoteTools
+import cacheTools
 
 '''
 
@@ -43,24 +44,21 @@ class GuiUrlFetcher(remoteTools.urlFetcher):
     def connectProgressObject(self, progress, item):
         self.progress = progress
         self.item = item
-        if self.item == "db":
-            self.item = _("repository database")
     
     # reimplementing updateProgress
     def updateProgress(self):
 
         # create progress bar
         self.gather = self.downloadedsize # needed ?
-        self.progress.set_progress(round(float(self.average)/100,1),
-                        _("Downloading %s: %s/%s kB @ %s") % (
-                                self.item,
-                                str(round(float(self.downloadedsize)/1024,1)),
-                                str(round(self.remotesize,1)),
-                                str(entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
-                                )
+        self.progress.set_progress( round(float(self.average)/100,1), str(int(round(float(self.average),1)))+"%" )
+        self.progress.set_extraLabel("%s/%s kB @ %s" % (
+                                        str(round(float(self.downloadedsize)/1024,1)),
+                                        str(round(self.remotesize,1)),
+                                        str(entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
+                                    )
         )
 
-class repositoryGuiController(repositoriesTools.repositoryController):
+class GuiRepositoryController(repositoriesTools.repositoryController):
     """ hello world """
 
     def connectProgressObject(self, progress):
@@ -80,3 +78,26 @@ class repositoryGuiController(repositoriesTools.repositoryController):
             return False
         del fetchConn
         return True
+
+class GuiCacheHelper(cacheTools.cacheHelper):
+    """ ich liebe dich """
+    
+    def connectProgressObject(self, progress):
+        self.progress = progress
+
+    def updateProgress(self, text, back = False, importance = 0, type = "info", count = []):
+
+        if importance == 0:
+            if count:
+                percent = float(count[0])/count[1]
+                self.progress.set_progress( round(percent,1), text)
+        elif importance == 1:
+            self.progress.set_subLabel(text)
+        else:
+            self.progress.set_mainLabel(text)
+
+        if count and importance > 0:
+            percent = float(count[0])/count[1]
+            self.progress.set_progress( round(percent,1), str(int(round(percent*100,1)))+"%")
+        #else:
+           # bouncing! 

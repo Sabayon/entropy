@@ -40,7 +40,7 @@ import packages
 
 class const:
     ''' This Class contains all the Constants in Yumex'''
-    __yumex_version__   = "2.0.2"
+    __spritz_version__   = "0.1"
     # Paths
     MAIN_PATH = os.path.abspath( os.path.dirname( sys.argv[0] ) );
     GLADE_FILE = MAIN_PATH+'/yumex.glade'  
@@ -112,10 +112,13 @@ class const:
 
 
     CREDITS = (
-           (('Yum Extender - %s' % __yumex_version__),
-           ('Copyright 2005-2007','Tim Lauridsen')),        
+           (('Spritz Package Manager - %s' % __spritz_version__),
+           ('Copyright 2008','Fabio Erculiani')),
 
            (_("Programming:"),
+           ("Fabio Erculiani",)),
+
+           (_("Yum Extender Programmers:"),
            ("Tim Lauridsen", "David Zamirski")),
 
            (_("Translation:"),
@@ -139,10 +142,10 @@ class const:
             "Hao Song (Chinese(Simplified))")),
 
 
-           (_("Special Thanks To:"),
-           ("Seth Vidal and the other",
-            "Yum developers","without yum there would","not be any Yum Extender",
-            "All Yum Extender users"))
+           (_("Dedicated to:"),
+                ("Sergio Erculiani",)
+           )
+
           )
     
 class YumexProfile:
@@ -394,7 +397,7 @@ class YumexConf:
     filelist = True
     changelog = False
     disable_repo_page = False
-    branding_title = 'Yum Extender'
+    branding_title = 'Spritz Package Manager'
     
     #
     # This routines are taken from config.py yum > 3.2.2
@@ -509,7 +512,7 @@ class YumexOptions:
         self.cmd_options = options
         self.cmd_args = args
         if options.version:
-            ver = "Yum Extender : %s " % const.__yumex_version__
+            ver = "Yum Extender : %s " % const.__spritz_version__
             print ver
             sys.exit(0)
 

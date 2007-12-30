@@ -335,7 +335,7 @@ class AboutDialog(gtk.Window):
         Mostly ripped from the one in gDesklets 
     """
 
-    def __init__(self, gfx,creditText,title="Yum Extender"):
+    def __init__(self, gfx,creditText,title="Spritz Package Manager"):
 
         self.__is_stopped = True
         self.__scroller_values = ()

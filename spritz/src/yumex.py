@@ -19,7 +19,6 @@
 
 # Base Python Imports
 import sys,os
-import time
 import logging
 import traceback
 
@@ -42,12 +41,12 @@ from yumgui import *
 
 # yumex imports
 import filters
-from entropyapi import repositoryGuiController
+from entropyapi import GuiRepositoryController, GuiCacheHelper
 from gui import YumexGUI
 from dialogs import *
 from misc import const,YumexOptions,YumexProfile
 from i18n import _
-from packages import RPMGroupTree
+import time
        
 class YumexController(Controller):
     ''' This class contains all glade signal callbacks '''
@@ -110,6 +109,12 @@ class YumexController(Controller):
         self.setPage('output')
         self.logger.info( "Enabled repositories : %s" % ",".join(repos))
         self.updateRepositories(repos)
+
+    def on_cacheButton_clicked(self,widget):
+        repos = self.repoView.get_selected()
+        self.setPage('output')
+        self.logger.info( "Cleaning cache")
+        self.cleanEntropyCaches()
 
     def on_repoDeSelect_clicked(self,widget):
         self.repoView.deselect_all()
@@ -394,7 +399,7 @@ class YumexApplication(YumexController,YumexGUI):
 
     def startWorking(self):
         self.isWorking = True
-        busyCursor(self.ui.main)        
+        busyCursor(self.ui.main)
         self.ui.progressVBox.grab_add()
         gtkEventThread.startProcessing()
         
@@ -403,48 +408,65 @@ class YumexApplication(YumexController,YumexGUI):
         self.ui.progressVBox.grab_remove()
         normalCursor(self.ui.main)
         gtkEventThread.endProcessing()
-            
+    
+    def cleanEntropyCaches(self):
+        cacheConn = GuiCacheHelper()
+        cacheConn.connectProgressObject(self.progress)
+        cacheConn.generate(depcache = True, configcache = False)
+        del cacheConn
+    
     def updateRepositories(self, repos):
         self.setPage('output')
         self.startWorking()
         
         # set steps
-        self.progress.total.setup( range(len(repos)) )
-        self.progressLog(_('Initializing Repository module...'))
+        self.progress.total.setup( range(len(repos)+2) )
+        self.progress.set_mainLabel(_('Initializing Repository module...'))
         
         # 1
         import repositoriesTools
         try:
-            repoConn = repositoryGuiController(repos, forceUpdate = True)
+            repoConn = GuiRepositoryController(repos, forceUpdate = True)
             repoConn.connectProgressObject(self.progress)
         except exceptionTools.PermissionDenied:
-            self.progressLog(_('You must run this application as root'))
+            self.progressLog(_('You must run this application as root'), extra = "repositories")
             return 1
         except exceptionTools.MissingParameter:
-            self.progressLog(_('No repositories specified in %s') % (etpConst['repositoriesconf'],))
+            self.progressLog(_('No repositories specified in %s') % (etpConst['repositoriesconf'],), extra = "repositories")
             return 127
         except exceptionTools.OnlineMirrorError:
-            self.progressLog(_('You are not connected to the Internet. You should.'))
+            self.progressLog(_('You are not connected to the Internet. You should.'), extra = "repositories")
             return 126
         except Exception, e:
-            self.progressLog(_('Unhandled exception: %s') % (str(e),))
+            self.progressLog(_('Unhandled exception: %s') % (str(e),), extra = "repositories")
             return 2
         
         # 2
         error = False
+        count = 0
+        self.progress.total.next()
         for repo in repoConn.reponames:
 
-            self.progressLog(_('Fetching repository id: %s') % (repo,))
+            count += 1
+            self.progress.set_mainLabel("(%s/%s) %s" % (
+                                                str(count),
+                                                str(len(repoConn.reponames)),
+                                                etpRepositories[repo]['description'],
+                                            )
+            )
+            self.progress.set_extraLabel("")
+
+            self.progressLog(_('Checking repository availability'), extra = repo)
             update = repoConn.isRepositoryUpdatable(repo)
             if not update:
-                self.progressLog(_('Attention: database already up to date for: %s') % (repo,))
+                self.progressLog(_('Database already up to date for: %s') % (repo,), extra = repo)
                 time.sleep(1)
                 error = True
                 continue
 
             unlocked = repoConn.isRepositoryUnlocked(repo)
             if not unlocked:
-                self.progressLog(_('Attention: repository %s is being updated. Try again in a few minutes.') % (repo,))
+                self.progressLog(_('Repository is being updated. Try again in a few minutes.'), extra = repo)
                 time.sleep(1)
                 error = True
                 continue
@@ -456,33 +478,91 @@ class YumexApplication(YumexController,YumexGUI):
             cmethod = repoConn.validateCompressionMethod(repo)
             repoConn.ensureRepositoryPath(repo)
 
-            self.progressLog(_('Downloading database for %s') % (repo,))
+            self.progressLog(_('Downloading repository database'), extra = repo)
             # download
             down_status = repoConn.downloadItem("db", repo, cmethod)
             if not down_status:
-                self.progressLog(_('Attention: repository %s does not exist online.') % (repo,))
+                self.progressLog(_('Repository does not exist online.'), extra = repo)
                 error = True
                 continue
         
-        #self.yumbase.populatePackages(['installed','updates','available'])
-        self.progressLog(_('Building Package Lists Completed'))
-        self.progressLog(_('Building Groups Lists'))
-        #self.yumbase.buildGroups()
-        #self.populateGroupCategories()
-        self.progressLog(_('Building Group Lists Completed'))
-        # populate the package view
-        self.doProgress = True
-        #self.addPackages()
-        self.doProgress = False
-        if not error:
-            self.setPage('repos')
-        self.endWorking()
+            # unpack database
+            self.progressLog(_('Unpacking database'), extra = repo)
+            repoConn.unpackDownloadedDatabase(repo, cmethod)
+    
+            # download checksum
+            self.progressLog(_('Downloading checksum'), extra = repo)
+            down_status = repoConn.downloadItem("ck", repo)
+            if not down_status:
+                self.progressLog(_('Cannot fetch checksum. Aborting.'), extra = repo)
+                error = True
+                repoConn.removeRepositoryFiles(repo, cmethod[2])
+                continue
+            else:
+                # verify checksum
+                self.progress.set_extraLabel("Downloaded checksum: %s" % (
+                                                    str(down_status),
+                                                )
+                )
+                self.progressLog(_('Verifying checksum'), extra = repo)
+                db_status = repoConn.verifyDatabaseChecksum(repo)
+                if db_status == -1:
+                    self.progressLog(_('Cannot open checksum. Cannot verify database integrity !'), extra = repo)
+                    error = True
+                    repoConn.removeRepositoryFiles(repo, cmethod[2])
+                    continue
+                elif db_status:
+                    self.progressLog(_('Database downloaded successfully.'), extra = repo)
+                else:
+                    self.progressLog(_('Database checksum does not match. Cannot validate.'), extra = repo)
+                    repoConn.removeRepositoryFiles(repo, cmethod[2])
+                    error = True
+                    repoConn.syncErrors = True
+                    continue
+
+            # download revision
+            self.progressLog(_('Downloading repository revision'), extra = repo)
+            rev_status = repoConn.downloadItem("rev", repo)
+            if not rev_status:
+                self.progressLog(_('Cannot download repository revision. Why ?!?'), extra = repo)
+            else:
+                self.progressLog(_('Repository revision now at %s.') % (
+                                                repositoriesTools.getRepositoryRevision(repo),
+                                            ), extra = repo
+                )
+
+            self.progressLog(_('Repository updated successfully'), extra = repo)
+
+            # at the end, update total progress
+            self.progress.total.next()
+
+        repoConn.closeTransactions()
+
+        self.progressLog(_('Updating Entropy Cache'))
+        # clean cache
+        self.cleanEntropyCaches()
+        
+        if error:
+            self.progress.set_mainLabel(_('Repositories updated with errors. Please check.'))
+            self.progressLog(_('Repositories updated with errors. Please check.'))
+        else:
+            self.progress.set_mainLabel(_('Repositories has been updated successfully.'))
+            self.progressLog(_('Repositories updated successfully.'))
+            rc = repositoriesTools.checkEquoUpdates()
+            if rc:
+                self.progressLog(_('A new "equo" release is available. Please update it before any other package.'))
+            else:
+                self.progressLog("")
+
+        del repoConn
         initConfig_entropyConstants(etpSys['rootdir'])
+        self.setupRepoView()
+        self.endWorking()
         
     
     def setupRepoView(self):
         self.repoView.populate()
-                
+
     def addPackages(self):
         busyCursor(self.ui.main)
         action = self.lastPkgPB
@@ -556,11 +636,11 @@ class YumexApplication(YumexController,YumexGUI):
         self.setStatus(msg)
        
     def splitCategoryKeys(self,keys,sep='/'):
-        tree = RPMGroupTree()
+        tree = set()
         for k in keys:
             lst = k.split(sep)
             tree.add(lst)
-        return tree    
+        return tree
         
     def getRecentTime(self,recentdays = 14):
         recentdays = float( recentdays )
