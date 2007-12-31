@@ -28,6 +28,7 @@ import entropyTools
 import equoTools
 import uiTools
 from databaseTools import openClientDatabase, openRepositoryDatabase, openGenericDatabase
+Equo = equoTools.Equo()
 
 def smart(options):
 
@@ -84,10 +85,9 @@ def QuickpkgHandler(mypackages, savedir = None):
             print_error(darkred(" * ")+red("--savedir ")+savedir+red(" does not exist."))
             return 4
     
-    clientDbconn = openClientDatabase()
     packages = []
     for opt in mypackages:
-        match = clientDbconn.atomMatch(opt)
+        match = Equo.clientDbconn.atomMatch(opt)
         if match[0] != -1:
             packages.append(match)
         else:
@@ -102,17 +102,15 @@ def QuickpkgHandler(mypackages, savedir = None):
     pkgInfo = {}
     pkgData = {}
     for pkg in packages:
-        atom = clientDbconn.retrieveAtom(pkg[0])
+        atom = Equo.clientDbconn.retrieveAtom(pkg[0])
         pkgInfo[pkg] = atom
-        pkgData[pkg] = clientDbconn.getPackageData(pkg[0])
+        pkgData[pkg] = Equo.clientDbconn.getPackageData(pkg[0])
         print_info(brown("\t[")+red("from:")+bold("installed")+brown("]")+" - "+atom)
 
     if (not etpUi['quiet']) or (etpUi['ask']):
         rc = entropyTools.askquestion(">>   Would you like to recompose the selected packages ?")
         if rc == "No":
             return 0
-
-    clientDbconn.closeDB()
 
     for pkg in packages:
         if not etpUi['quiet']: print_info(brown(" * ")+red("Compressing: ")+darkgreen(pkgInfo[pkg]))
@@ -223,7 +221,7 @@ def smartPackagesHandler(mypackages):
     
     packages = []
     for opt in mypackages:
-        match = equoTools.atomMatch(opt)
+        match = Equo.atomMatch(opt)
         if match[0] != -1:
             packages.append(match)
         else:
@@ -358,7 +356,7 @@ def smartappsHandler(mypackages, emptydeps = False):
     
     packages = set()
     for opt in mypackages:
-        match = equoTools.atomMatch(opt)
+        match = Equo.atomMatch(opt)
         if match[0] != -1:
             packages.add(match)
         else:
@@ -404,7 +402,7 @@ def smartgenerator(atomInfo, emptydeps = False):
     pkgfilename = os.path.basename(pkgfilepath)
     pkgname = pkgfilename.split(".tbz2")[0]
     
-    pkgdependencies, result = equoTools.getRequiredPackages([atomInfo], emptydeps = emptydeps)
+    pkgdependencies, result = Equo.getRequiredPackages([atomInfo], emptydeps = emptydeps)
     # flatten them
     pkgs = []
     if (result == 0):

@@ -31,6 +31,8 @@ import entropyTools
 import repositoriesTools
 import remoteTools
 import cacheTools
+import equoTools
+Equo = equoTools.Equo()
 
 '''
 

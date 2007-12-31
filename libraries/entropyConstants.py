@@ -398,7 +398,6 @@ generateDependsTreeCache = {}
 idpackageValidatorCache = {}
 filterSatisfiedDependenciesCache = {}
 filterSatisfiedDependenciesCmpResults = {}
-getDependenciesCache = {}
 generateDependencyTreeCache = {}
 ververifyCache = {}
 isjustnameCache = {}
@@ -428,7 +427,6 @@ def const_resetCache():
     idpackageValidatorCache.clear()
     filterSatisfiedDependenciesCache.clear()
     filterSatisfiedDependenciesCmpResults.clear()
-    getDependenciesCache.clear()
     generateDependencyTreeCache.clear()
     ververifyCache.clear()
     isjustnameCache.clear()

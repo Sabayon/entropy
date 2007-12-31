@@ -145,7 +145,7 @@ class cacheHelper(TextInterface):
             self.updateProgress(darkgreen("Resolving name: %s") % (
                                                 name
                                         ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
-            self.equoTools.atomMatch(name)
+            self.Equo.atomMatch(name)
         maxlen = len(keys)
         cnt = 0
         for key in keys:
@@ -153,7 +153,7 @@ class cacheHelper(TextInterface):
             self.updateProgress(darkgreen("Resolving key: %s") % (
                                                 key
                                         ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
-            self.equoTools.atomMatch(key)
+            self.Equo.atomMatch(key)
         maxlen = len(atoms)
         cnt = 0
         for atom in atoms:
@@ -161,7 +161,7 @@ class cacheHelper(TextInterface):
             self.updateProgress(darkgreen("Resolving atom: %s") % (
                                                 atom
                                         ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
-            self.equoTools.atomMatch(atom)
+            self.Equo.atomMatch(atom)
         maxlen = len(depends)
         cnt = 0
         for depend in depends:
@@ -169,6 +169,6 @@ class cacheHelper(TextInterface):
             self.updateProgress(darkgreen("Resolving dependency: %s") % (
                                                 depend
                                         ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
-            self.equoTools.atomMatch(depend)
+            self.Equo.atomMatch(depend)
         self.updateProgress(darkred("Dependencies filled. Flushing to disk."), importance = 2, type = "warning")
         self.Equo.save_cache()

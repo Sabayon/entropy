@@ -478,60 +478,55 @@ def searchOrphans():
 
 def searchRemoval(atoms, idreturn = False, deep = False):
     
-    from equoTools import generateDependsTree
+    import equoTools
+    Equo = equoTools.Equo()
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Removal Search..."))
 
-    try:
-        clientDbconn = openClientDatabase()
-    except Exception:
-        print_info(bold("\tAttention: ")+red("client database does not exist. Run ")+bold("equo database generate")+red(" or ")+bold("equo database resurrect"))
-        return 128
     foundAtoms = []
     for atom in atoms:
-	match = clientDbconn.atomMatch(atom)
-	if match[1] == 0:
-	    foundAtoms.append(match[0])
+        match = Equo.clientDbconn.atomMatch(atom)
+        if match[1] == 0:
+            foundAtoms.append(match[0])
 
     # are packages in foundAtoms?
     if (len(foundAtoms) == 0):
-	print_error(red("No packages found."))
-	return 127,-1
+        print_error(red("No packages found."))
+        return 127,-1
 
     choosenRemovalQueue = []
     if (not etpUi['quiet']):
         print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
-    treeview = generateDependsTree(foundAtoms, deep = deep)
+    treeview = Equo.generateDependsTree(foundAtoms, deep = deep)
     treelength = len(treeview[0])
     if treelength > 1:
-	treeview = treeview[0]
-	for x in range(treelength)[::-1]:
-	    for y in treeview[x]:
-		choosenRemovalQueue.append(y)
-	
-    if (choosenRemovalQueue):
-	if (not etpUi['quiet']):
-	    print_info(red(" @@ ")+blue("These are the packages that would added to the removal queue:"))
-	totalatoms = str(len(choosenRemovalQueue))
-	atomscounter = 0
-	
-	for idpackage in choosenRemovalQueue:
-	    atomscounter += 1
-	    rematom = clientDbconn.retrieveAtom(idpackage)
-	    if (not etpUi['quiet']):
-	        installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
-	        repositoryInfo = bold("[")+red("from: ")+brown(installedfrom)+bold("]")
-	        stratomscounter = str(atomscounter)
-	        while len(stratomscounter) < len(totalatoms):
-		    stratomscounter = " "+stratomscounter
-	        print_info("   # "+red("(")+bold(stratomscounter)+"/"+blue(str(totalatoms))+red(")")+repositoryInfo+" "+blue(rematom))
-	    else:
-		print rematom
+        treeview = treeview[0]
+        for x in range(treelength)[::-1]:
+            for y in treeview[x]:
+                choosenRemovalQueue.append(y)
 
+    if (choosenRemovalQueue):
+        if (not etpUi['quiet']):
+            print_info(red(" @@ ")+blue("These are the packages that would added to the removal queue:"))
+        totalatoms = str(len(choosenRemovalQueue))
+        atomscounter = 0
+
+        for idpackage in choosenRemovalQueue:
+            atomscounter += 1
+            rematom = Equo.clientDbconn.retrieveAtom(idpackage)
+            if (not etpUi['quiet']):
+                installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
+                repositoryInfo = bold("[")+red("from: ")+brown(installedfrom)+bold("]")
+                stratomscounter = str(atomscounter)
+                while len(stratomscounter) < len(totalatoms):
+                    stratomscounter = " "+stratomscounter
+                print_info("   # "+red("(")+bold(stratomscounter)+"/"+blue(str(totalatoms))+red(")")+repositoryInfo+" "+blue(rematom))
+            else:
+                print rematom
 
     if (idreturn):
-	return treeview
-    
+        return treeview
+
     return 0
 
 

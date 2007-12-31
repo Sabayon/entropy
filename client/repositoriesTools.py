@@ -231,10 +231,18 @@ def syncRepositories(reponames = [], forceUpdate = False):
         return 128
     del repoConn
 
-    rc = checkEquoUpdates()
+    rc = False
+    try:
+        import equoTools
+        Equo = equoTools.Equo()
+        rc = Equo.check_equo_updates()
+        del Equo
+    except:
+        pass
+
     if rc:
         print_warning(darkred(" !! ")+blue("A new version of ")+bold("equo")+blue(" is available. Please ")+bold("install it")+blue(" before any other package."))
-    
+
     return 0
 
 def checkEquoUpdates():

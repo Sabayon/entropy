@@ -142,7 +142,6 @@ def print_help():
 
 options = sys.argv[1:]
 
-import equoTools
 import entropyTools
 from clientConstants import *
 

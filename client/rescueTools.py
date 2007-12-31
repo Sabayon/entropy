@@ -495,7 +495,7 @@ def pythonUpdater():
         atomkey = entropyTools.dep_getkey(meta[0])
         slot = clientDbconn.retrieveSlot(meta[1])
         print_info(brown("   @@ ")+red("Matching ")+bold(atomkey)+red(":")+darkgreen(slot), back = True)
-        match = equoTools.atomMatch(atomkey, matchSlot = slot)
+        match = uiTools.Equo.atomMatch(atomkey, matchSlot = slot)
         if match[0] != -1:
             matchedAtoms.add((atomkey+":"+slot,match))
     del atoms

@@ -28,8 +28,9 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 import remoteTools
-from entropyTools import compareMd5, bytesIntoHuman, askquestion, getRandomNumber, dep_getkey, entropyCompareVersions, filterDuplicatedEntries, extractDuplicatedEntries, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, getNewerVersion, getNewerVersionTag, unpackXpak, lifobuffer, ebeep, parallelStep
-from databaseTools import openRepositoryDatabase, openClientDatabase, openGenericDatabase, fetchRepositoryIfNotAvailable, listAllAvailableBranches
+import exceptionTools
+from entropyTools import compareMd5, bytesIntoHuman, askquestion, getRandomNumber, dep_getkey, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, unpackXpak, lifobuffer, ebeep, parallelStep
+from databaseTools import openRepositoryDatabase, openClientDatabase, openGenericDatabase, listAllAvailableBranches
 import confTools
 import dumpTools
 import gc
@@ -54,13 +55,20 @@ class Equo(TextInterface):
         import dumpTools
         self.dumpTools = dumpTools
         import databaseTools
+        self.databaseTools = databaseTools
+        import entropyTools
+        self.entropyTools = entropyTools
         self.indexing = indexing
         self.noclientdb = noclientdb
         self.xcache = xcache
-        self.clientDbconn = databaseTools.openClientDatabase(indexing = self.indexing, 
-                                                                generate = noclientdb, 
-                                                                xcache = self.xcache
-                                                            )
+        try:
+            self.clientDbconn = self.databaseTools.openClientDatabase(indexing = self.indexing, 
+                                                                    generate = noclientdb, 
+                                                                    xcache = self.xcache
+                                                                )
+        except exceptionTools.SystemDatabaseError:
+            self.updateProgress(darkred("Installed Packages Database not found. Please generate it (at least!)"), importance = 2, type = "error")
+            raise
 
     def load_cache(self):
 
@@ -123,704 +131,646 @@ class Equo(TextInterface):
                         self.dumpTools.dumpobj(dbinfo,{})
 
 
-########################################################
-####
-##   Dependency handling functions
-#
+    # tell if a new equo release is available, returns True or False
+    def check_equo_updates(self):
+        found = False
+        matches = self.clientDbconn.searchPackages("app-admin/equo")
+        if matches:
+            equo_match = "<="+matches[0][0]
+            equo_unsatisfied,x = self.filterSatisfiedDependencies([equo_match])
+            del x
+            if equo_unsatisfied:
+                found = True
+            del matches
+            del equo_unsatisfied
+        return found
 
-'''
-   @description: matches the package that user chose, using dbconnection.atomMatch searching in all available repositories.
-   @input atom: user choosen package name
-   @output: the matched selection, list: [package id,repository name] | if nothing found, returns: ( -1,1 )
-   @ exit errors:
-	    -1 => repository cannot be fetched online
-'''
-def atomMatch(atom, caseSentitive = True, matchSlot = None, matchBranches = (), xcache = True):
+    '''
+    @description: matches the package that user chose, using dbconnection.atomMatch searching in all available repositories.
+    @input atom: user choosen package name
+    @output: the matched selection, list: [package id,repository name] | if nothing found, returns: ( -1,1 )
+    @ exit errors:
+                -1 => repository cannot be fetched online
+    '''
+    def atomMatch(self, atom, caseSentitive = True, matchSlot = None, matchBranches = ()):
 
-    if xcache:
-        cached = atomMatchCache.get(atom)
-        if cached:
-	    if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches) and (cached['etpRepositories'] == etpRepositories):
-	        return cached['result']
+        if self.xcache:
+            cached = atomMatchCache.get(atom)
+            if cached:
+                if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches) and (cached['etpRepositories'] == etpRepositories):
+                    return cached['result']
 
-    repoResults = {}
-    exitErrors = {}
-    for repo in etpRepositories:
-	# sync database if not available
-	rc = fetchRepositoryIfNotAvailable(repo)
-	if (rc != 0):
-	    exitErrors[repo] = -1
-	    continue
-	# open database
-	dbconn = openRepositoryDatabase(repo, xcache = xcache)
-	
-	# search
-	query = dbconn.atomMatch(atom, caseSensitive = caseSentitive, matchSlot = matchSlot, matchBranches = matchBranches)
-        #print "repo:",repo,"atom:",atom,"result:",query
-	if query[1] == 0:
-	    # package found, add to our dictionary
-	    repoResults[repo] = query[0]
-	
-	dbconn.closeDB()
-        del dbconn
-
-    # handle repoResults
-    packageInformation = {}
-
-    # nothing found
-    if not repoResults:
-	atomMatchCache[atom] = {}
-	atomMatchCache[atom]['result'] = -1,1
-	atomMatchCache[atom]['matchSlot'] = matchSlot
-	atomMatchCache[atom]['matchBranches'] = matchBranches
-	atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-	return -1,1
-    
-    elif len(repoResults) == 1:
-	# one result found
-	for repo in repoResults:
-	    atomMatchCache[atom] = {}
-	    atomMatchCache[atom]['result'] = repoResults[repo],repo
-	    atomMatchCache[atom]['matchSlot'] = matchSlot
-	    atomMatchCache[atom]['matchBranches'] = matchBranches
-            atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-	    return repoResults[repo],repo
-    
-    elif len(repoResults) > 1:
-	# we have to decide which version should be taken
-        
-        # .tbz2 repos have always the precedence, so if we find them, we should second what user wants, installing his tbz2
-        tbz2repos = [x for x in repoResults if x.endswith(".tbz2")]
-        if tbz2repos:
-            del tbz2repos
-            newrepos = repoResults.copy()
-            for x in newrepos:
-                if not x.endswith(".tbz2"):
-                    del repoResults[x]
-        
-	# get package information for all the entries
-	for repo in repoResults:
-	    
-	    # open database
-	    dbconn = openRepositoryDatabase(repo)
-	
-	    # search
-	    packageInformation[repo] = {}
-	    packageInformation[repo]['version'] = dbconn.retrieveVersion(repoResults[repo])
-	    packageInformation[repo]['versiontag'] = dbconn.retrieveVersionTag(repoResults[repo])
-	    packageInformation[repo]['revision'] = dbconn.retrieveRevision(repoResults[repo])
-	    dbconn.closeDB()
-            del dbconn
-
-	versions = []
-	repoNames = []
-	# compare versions
-	for repo in packageInformation:
-	    repoNames.append(repo)
-	    versions.append(packageInformation[repo]['version'])
-	
-	# found duplicates, this mean that we have to look at the revision and then, at the version tag
-	# if all this shait fails, get the uppest repository
-	# if no duplicates, we're done
-	#print versions
-	filteredVersions = filterDuplicatedEntries(versions)
-	if (len(versions) > len(filteredVersions)):
-	    # there are duplicated results, fetch them
-	    # get the newerVersion
-	    #print versions
-	    newerVersion = getNewerVersion(versions)
-	    newerVersion = newerVersion[0]
-	    # is newerVersion, the duplicated one?
-	    duplicatedEntries = extractDuplicatedEntries(versions)
-	    needFiltering = False
-	    if newerVersion in duplicatedEntries:
-		needFiltering = True
-	    
-	    if (needFiltering):
-		# we have to decide which one is good
-		#print "need filtering"
-		# we have newerVersion
-		conflictingEntries = {}
-		for repo in packageInformation:
-		    if packageInformation[repo]['version'] == newerVersion:
-			conflictingEntries[repo] = {}
-			#conflictingEntries[repo]['version'] = packageInformation[repo]['version']
-			conflictingEntries[repo]['versiontag'] = packageInformation[repo]['versiontag']
-			conflictingEntries[repo]['revision'] = packageInformation[repo]['revision']
-		
-		# at this point compare tags
-		tags = []
-		for repo in conflictingEntries:
-		    tags.append(conflictingEntries[repo]['versiontag'])
-		newerTag = getNewerVersionTag(tags)
-		newerTag = newerTag[0]
-		
-		# is the chosen tag duplicated?
-		duplicatedTags = extractDuplicatedEntries(tags)
-		needFiltering = False
-		if newerTag in duplicatedTags:
-		    needFiltering = True
-		
-		if (needFiltering):
-		    #print "also tags match"
-		    # yes, it is. we need to compare revisions
-		    conflictingTags = {}
-		    for repo in conflictingEntries:
-		        if conflictingEntries[repo]['versiontag'] == newerTag:
-			    conflictingTags[repo] = {}
-			    #conflictingTags[repo]['version'] = conflictingEntries[repo]['version']
-			    #conflictingTags[repo]['versiontag'] = conflictingEntries[repo]['versiontag']
-			    conflictingTags[repo]['revision'] = conflictingEntries[repo]['revision']
-		    
-		    #print tags
-		    #print conflictingTags
-		    revisions = []
-		    for repo in conflictingTags:
-			revisions.append(str(conflictingTags[repo]['revision']))
-		    newerRevision = max(revisions)
-		    duplicatedRevisions = extractDuplicatedEntries(revisions)
-		    needFiltering = False
-		    if newerRevision in duplicatedRevisions:
-			needFiltering = True
-		
-		    if (needFiltering):
-			# ok, we must get the repository with the biggest priority
-			#print "d'oh"
-		        # I'm pissed off, now I get the repository name and quit
-                        myrepoorder = list(etpRepositoriesOrder)
-                        myrepoorder.sort()
-			for repository in myrepoorder:
-			    for repo in conflictingTags:
-				if repository[1] == repo:
-				    # found it, WE ARE DOOONE!
-				    atomMatchCache[atom] = {}
-				    atomMatchCache[atom]['result'] = repoResults[repo],repo
-				    atomMatchCache[atom]['matchSlot'] = matchSlot
-				    atomMatchCache[atom]['matchBranches'] = matchBranches
-                                    atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-				    return repoResults[repo],repo
-		    
-		    else:
-			# we are done!!!
-		        reponame = ''
-			#print conflictingTags
-		        for x in conflictingTags:
-		            if str(conflictingTags[x]['revision']) == str(newerRevision):
-			        reponame = x
-			        break
-			atomMatchCache[atom] = {}
-			atomMatchCache[atom]['result'] = repoResults[reponame],reponame
-			atomMatchCache[atom]['matchSlot'] = matchSlot
-			atomMatchCache[atom]['matchBranches'] = matchBranches
-                        atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-		        return repoResults[reponame],reponame
-		
-		else:
-		    # we're finally done
-		    reponame = ''
-		    for x in conflictingEntries:
-		        if conflictingEntries[x]['versiontag'] == newerTag:
-			    reponame = x
-			    break
-		    atomMatchCache[atom] = {}
-		    atomMatchCache[atom]['result'] = repoResults[reponame],reponame
-		    atomMatchCache[atom]['matchSlot'] = matchSlot
-		    atomMatchCache[atom]['matchBranches'] = matchBranches
-                    atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-		    return repoResults[reponame],reponame
-
-	    else:
-		# we are fine, the newerVersion is not one of the duplicated ones
-		reponame = ''
-		for x in packageInformation:
-		    if packageInformation[x]['version'] == newerVersion:
-			reponame = x
-			break
-		atomMatchCache[atom] = {}
-		atomMatchCache[atom]['result'] = repoResults[reponame],reponame
-		atomMatchCache[atom]['matchSlot'] = matchSlot
-		atomMatchCache[atom]['matchBranches'] = matchBranches
-                atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-		return repoResults[reponame],reponame
-
-	    #print versions
-	
-	else:
-	    # yeah, we're done, just return the info
-	    #print versions
-	    newerVersion = getNewerVersion(versions)
-	    # get the repository name
-	    newerVersion = newerVersion[0]
-	    reponame = ''
-	    for x in packageInformation:
-		if packageInformation[x]['version'] == newerVersion:
-		    reponame = x
-		    break
-	    #print reponame
-	    atomMatchCache[atom] = {}
-	    atomMatchCache[atom]['result'] = repoResults[reponame],reponame
-	    atomMatchCache[atom]['matchSlot'] = matchSlot
-	    atomMatchCache[atom]['matchBranches'] = matchBranches
-            atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-	    return repoResults[reponame],reponame
-
-
-'''
-   @description: generates the dependencies of a [id,repository name] combo.
-   @input packageInfo: tuple composed by int(id) and str(repository name), if this one is int(0), the client database will be opened.
-   @output: ordered dependency list
-'''
-# FIXME: move this to database?
-def getDependencies(packageInfo):
-
-    ''' caching '''
-    cached = getDependenciesCache.get(tuple(packageInfo))
-    if cached:
-	return cached['result']
-
-    idpackage = packageInfo[0]
-    reponame = packageInfo[1]
-    if reponame == 0:
-	dbconn = openClientDatabase()
-    else:
-	dbconn = openRepositoryDatabase(reponame)
-    
-    # retrieve dependencies
-    depend = dbconn.retrieveDependencies(idpackage)
-    # and conflicts
-    conflicts = dbconn.retrieveConflicts(idpackage)
-    for x in conflicts:
-	depend.add("!"+x)
-    dbconn.closeDB()
-    del dbconn
-
-    ''' caching '''
-    getDependenciesCache[tuple(packageInfo)] = {}
-    getDependenciesCache[tuple(packageInfo)]['result'] = depend
-
-    return depend
-
-'''
-   @description: filter the already installed dependencies
-   @input dependencies: list of dependencies to check
-   @output: filtered list, aka the needed ones and the ones satisfied
-'''
-def filterSatisfiedDependencies(dependencies, deepdeps = False):
-
-    unsatisfiedDeps = set()
-    satisfiedDeps = set()
-    # now create a list with the unsatisfied ones
-    # query the installed packages database
-    #print etpConst['etpdatabaseclientfilepath']
-    clientDbconn = openClientDatabase()
-    for dependency in dependencies:
-
-        depsatisfied = set()
-        depunsatisfied = set()
-
-        ''' caching '''
-        cached = filterSatisfiedDependenciesCache.get(dependency)
-        if cached:
-            if (cached['deepdeps'] == deepdeps):
-                unsatisfiedDeps.update(cached['depunsatisfied'])
-                satisfiedDeps.update(cached['depsatisfied'])
+        repoResults = {}
+        exitErrors = {}
+        for repo in etpRepositories:
+            # sync database if not available
+            rc = self.databaseTools.fetchRepositoryIfNotAvailable(repo)
+            if (rc != 0):
+                exitErrors[repo] = -1
                 continue
+            # open database
+            dbconn = self.databaseTools.openRepositoryDatabase(repo, xcache = self.xcache)
 
-        ### conflict
-        if dependency[0] == "!":
-            testdep = dependency[1:]
-            xmatch = clientDbconn.atomMatch(testdep)
-            if xmatch[0] != -1:
-                unsatisfiedDeps.add(dependency)
-            else:
-                satisfiedDeps.add(dependency)
-            continue
+            # search
+            query = dbconn.atomMatch(atom, caseSensitive = caseSentitive, matchSlot = matchSlot, matchBranches = matchBranches)
+            #print "repo:",repo,"atom:",atom,"result:",query
+            if query[1] == 0:
+                # package found, add to our dictionary
+                repoResults[repo] = query[0]
 
-        repoMatch = atomMatch(dependency)
-        if repoMatch[0] != -1:
-            dbconn = openRepositoryDatabase(repoMatch[1])
-            repo_pkgver = dbconn.retrieveVersion(repoMatch[0])
-            repo_pkgtag = dbconn.retrieveVersionTag(repoMatch[0])
-            repo_pkgrev = dbconn.retrieveRevision(repoMatch[0])
             dbconn.closeDB()
             del dbconn
-        else:
-            # dependency does not exist in our database
-            unsatisfiedDeps.add(dependency)
-            continue
 
-        clientMatch = clientDbconn.atomMatch(dependency)
-        if clientMatch[0] != -1:
-            
-            installedVer = clientDbconn.retrieveVersion(clientMatch[0])
-            installedTag = clientDbconn.retrieveVersionTag(clientMatch[0])
-            installedRev = clientDbconn.retrieveRevision(clientMatch[0])
-            if installedRev == 9999: # any revision is fine
-                repo_pkgrev = 9999
-            
-            if (deepdeps):
-                vcmp = entropyCompareVersions((repo_pkgver,repo_pkgtag,repo_pkgrev),(installedVer,installedTag,installedRev))
-                if vcmp != 0:
-                    filterSatisfiedDependenciesCmpResults[dependency] = vcmp
-                    depunsatisfied.add(dependency)
+        # handle repoResults
+        packageInformation = {}
+
+        # nothing found
+        if not repoResults:
+            atomMatchCache[atom] = {}
+            atomMatchCache[atom]['result'] = -1,1
+            atomMatchCache[atom]['matchSlot'] = matchSlot
+            atomMatchCache[atom]['matchBranches'] = matchBranches
+            atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+            return -1,1
+
+        elif len(repoResults) == 1:
+            # one result found
+            for repo in repoResults:
+                atomMatchCache[atom] = {}
+                atomMatchCache[atom]['result'] = repoResults[repo],repo
+                atomMatchCache[atom]['matchSlot'] = matchSlot
+                atomMatchCache[atom]['matchBranches'] = matchBranches
+                atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+                return repoResults[repo],repo
+
+        elif len(repoResults) > 1:
+            # we have to decide which version should be taken
+
+            # .tbz2 repos have always the precedence, so if we find them, we should second what user wants, installing his tbz2
+            tbz2repos = [x for x in repoResults if x.endswith(".tbz2")]
+            if tbz2repos:
+                del tbz2repos
+                newrepos = repoResults.copy()
+                for x in newrepos:
+                    if not x.endswith(".tbz2"):
+                        del repoResults[x]
+
+            # get package information for all the entries
+            for repo in repoResults:
+
+                # open database
+                dbconn = self.databaseTools.openRepositoryDatabase(repo, xcache = self.xcache)
+                # search
+                packageInformation[repo] = {}
+                packageInformation[repo]['version'] = dbconn.retrieveVersion(repoResults[repo])
+                packageInformation[repo]['versiontag'] = dbconn.retrieveVersionTag(repoResults[repo])
+                packageInformation[repo]['revision'] = dbconn.retrieveRevision(repoResults[repo])
+                dbconn.closeDB()
+                del dbconn
+
+            versions = []
+            repoNames = []
+            # compare versions
+            for repo in packageInformation:
+                repoNames.append(repo)
+                versions.append(packageInformation[repo]['version'])
+
+            # found duplicates, this mean that we have to look at the revision and then, at the version tag
+            # if all this shait fails, get the uppest repository
+            # if no duplicates, we're done
+            #print versions
+            filteredVersions = self.entropyTools.filterDuplicatedEntries(versions)
+            if (len(versions) > len(filteredVersions)):
+                # there are duplicated results, fetch them
+                # get the newerVersion
+                #print versions
+                newerVersion = self.entropyTools.getNewerVersion(versions)
+                newerVersion = newerVersion[0]
+                # is newerVersion, the duplicated one?
+                duplicatedEntries = self.entropyTools.extractDuplicatedEntries(versions)
+                needFiltering = False
+                if newerVersion in duplicatedEntries:
+                    needFiltering = True
+
+                if (needFiltering):
+                    # we have to decide which one is good
+                    #print "need filtering"
+                    # we have newerVersion
+                    conflictingEntries = {}
+                    for repo in packageInformation:
+                        if packageInformation[repo]['version'] == newerVersion:
+                            conflictingEntries[repo] = {}
+                            conflictingEntries[repo]['versiontag'] = packageInformation[repo]['versiontag']
+                            conflictingEntries[repo]['revision'] = packageInformation[repo]['revision']
+
+                    # at this point compare tags
+                    tags = []
+                    for repo in conflictingEntries:
+                        tags.append(conflictingEntries[repo]['versiontag'])
+                    newerTag = self.entropyTools.getNewerVersionTag(tags)
+                    newerTag = newerTag[0]
+
+                    # is the chosen tag duplicated?
+                    duplicatedTags = self.entropyTools.extractDuplicatedEntries(tags)
+                    needFiltering = False
+                    if newerTag in duplicatedTags:
+                        needFiltering = True
+
+                    if (needFiltering):
+                        # yes, it is. we need to compare revisions
+                        conflictingTags = {}
+                        for repo in conflictingEntries:
+                            if conflictingEntries[repo]['versiontag'] == newerTag:
+                                conflictingTags[repo] = {}
+                                conflictingTags[repo]['revision'] = conflictingEntries[repo]['revision']
+
+                        revisions = []
+                        for repo in conflictingTags:
+                            revisions.append(str(conflictingTags[repo]['revision']))
+                        newerRevision = max(revisions)
+                        duplicatedRevisions = self.entropyTools.extractDuplicatedEntries(revisions)
+                        needFiltering = False
+                        if newerRevision in duplicatedRevisions:
+                            needFiltering = True
+
+                        if (needFiltering):
+                            # ok, we must get the repository with the biggest priority
+                            myrepoorder = list(etpRepositoriesOrder)
+                            myrepoorder.sort()
+                            for repository in myrepoorder:
+                                for repo in conflictingTags:
+                                    if repository[1] == repo:
+                                        # found it, WE ARE DOOONE!
+                                        atomMatchCache[atom] = {}
+                                        atomMatchCache[atom]['result'] = repoResults[repo],repo
+                                        atomMatchCache[atom]['matchSlot'] = matchSlot
+                                        atomMatchCache[atom]['matchBranches'] = matchBranches
+                                        atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+                                        return repoResults[repo],repo
+                        else:
+                            # we are done!!!
+                            reponame = ''
+                            #print conflictingTags
+                            for x in conflictingTags:
+                                if str(conflictingTags[x]['revision']) == str(newerRevision):
+                                    reponame = x
+                                    break
+                            atomMatchCache[atom] = {}
+                            atomMatchCache[atom]['result'] = repoResults[reponame],reponame
+                            atomMatchCache[atom]['matchSlot'] = matchSlot
+                            atomMatchCache[atom]['matchBranches'] = matchBranches
+                            atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+                            return repoResults[reponame],reponame
+                    else:
+                        # we're finally done
+                        reponame = ''
+                        for x in conflictingEntries:
+                            if conflictingEntries[x]['versiontag'] == newerTag:
+                                reponame = x
+                                break
+                        atomMatchCache[atom] = {}
+                        atomMatchCache[atom]['result'] = repoResults[reponame],reponame
+                        atomMatchCache[atom]['matchSlot'] = matchSlot
+                        atomMatchCache[atom]['matchBranches'] = matchBranches
+                        atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+                        return repoResults[reponame],reponame
+                else:
+                    # we are fine, the newerVersion is not one of the duplicated ones
+                    reponame = ''
+                    for x in packageInformation:
+                        if packageInformation[x]['version'] == newerVersion:
+                            reponame = x
+                            break
+                    atomMatchCache[atom] = {}
+                    atomMatchCache[atom]['result'] = repoResults[reponame],reponame
+                    atomMatchCache[atom]['matchSlot'] = matchSlot
+                    atomMatchCache[atom]['matchBranches'] = matchBranches
+                    atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+                    return repoResults[reponame],reponame
+            else:
+                # yeah, we're done, just return the info
+                newerVersion = self.entropyTools.getNewerVersion(versions)
+                # get the repository name
+                newerVersion = newerVersion[0]
+                reponame = ''
+                for x in packageInformation:
+                    if packageInformation[x]['version'] == newerVersion:
+                        reponame = x
+                        break
+                atomMatchCache[atom] = {}
+                atomMatchCache[atom]['result'] = repoResults[reponame],reponame
+                atomMatchCache[atom]['matchSlot'] = matchSlot
+                atomMatchCache[atom]['matchBranches'] = matchBranches
+                atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+                return repoResults[reponame],reponame
+
+    '''
+    @description: filter the already installed dependencies
+    @input dependencies: list of dependencies to check
+    @output: filtered list, aka the needed ones and the ones satisfied
+    '''
+    def filterSatisfiedDependencies(self, dependencies, deepdeps = False):
+
+        unsatisfiedDeps = set()
+        satisfiedDeps = set()
+
+        for dependency in dependencies:
+
+            depsatisfied = set()
+            depunsatisfied = set()
+
+            ''' caching '''
+            cached = filterSatisfiedDependenciesCache.get(dependency)
+            if cached:
+                if (cached['deepdeps'] == deepdeps):
+                    unsatisfiedDeps.update(cached['depunsatisfied'])
+                    satisfiedDeps.update(cached['depsatisfied'])
+                    continue
+
+            ### conflict
+            if dependency[0] == "!":
+                testdep = dependency[1:]
+                xmatch = self.clientDbconn.atomMatch(testdep)
+                if xmatch[0] != -1:
+                    unsatisfiedDeps.add(dependency)
+                else:
+                    satisfiedDeps.add(dependency)
+                continue
+
+            repoMatch = self.atomMatch(dependency)
+            if repoMatch[0] != -1:
+                dbconn = self.databaseTools.openRepositoryDatabase(repoMatch[1])
+                repo_pkgver = dbconn.retrieveVersion(repoMatch[0])
+                repo_pkgtag = dbconn.retrieveVersionTag(repoMatch[0])
+                repo_pkgrev = dbconn.retrieveRevision(repoMatch[0])
+                dbconn.closeDB()
+                del dbconn
+            else:
+                # dependency does not exist in our database
+                unsatisfiedDeps.add(dependency)
+                continue
+
+            clientMatch = self.clientDbconn.atomMatch(dependency)
+            if clientMatch[0] != -1:
+
+                installedVer = self.clientDbconn.retrieveVersion(clientMatch[0])
+                installedTag = self.clientDbconn.retrieveVersionTag(clientMatch[0])
+                installedRev = self.clientDbconn.retrieveRevision(clientMatch[0])
+                if installedRev == 9999: # any revision is fine
+                    repo_pkgrev = 9999
+
+                if (deepdeps):
+                    vcmp = self.entropyTools.entropyCompareVersions((repo_pkgver,repo_pkgtag,repo_pkgrev),(installedVer,installedTag,installedRev))
+                    if vcmp != 0:
+                        filterSatisfiedDependenciesCmpResults[dependency] = vcmp
+                        depunsatisfied.add(dependency)
+                    else:
+                        depsatisfied.add(dependency)
                 else:
                     depsatisfied.add(dependency)
             else:
-                depsatisfied.add(dependency)
-        else:
-            # not installed
-            filterSatisfiedDependenciesCmpResults[dependency] = 0
-            depunsatisfied.add(dependency)
-    
-        
-        unsatisfiedDeps.update(depunsatisfied)
-        satisfiedDeps.update(depsatisfied)
-        
+                # not installed
+                filterSatisfiedDependenciesCmpResults[dependency] = 0
+                depunsatisfied.add(dependency)
+
+            unsatisfiedDeps.update(depunsatisfied)
+            satisfiedDeps.update(depsatisfied)
+
+            ''' caching '''
+            filterSatisfiedDependenciesCache[dependency] = {}
+            filterSatisfiedDependenciesCache[dependency]['depunsatisfied'] = depunsatisfied
+            filterSatisfiedDependenciesCache[dependency]['depsatisfied'] = depsatisfied
+            filterSatisfiedDependenciesCache[dependency]['deepdeps'] = deepdeps
+
+        return unsatisfiedDeps, satisfiedDeps
+
+
+    '''
+    @description: generates a dependency tree using unsatisfied dependencies
+    @input package: atomInfo (idpackage,reponame)
+    @output: dependency tree dictionary, plus status code
+    '''
+    def generateDependencyTree(self, atomInfo, emptydeps = False, deepdeps = False, usefilter = False):
+
+        if (not usefilter):
+            matchFilter.clear()
+
         ''' caching '''
-        filterSatisfiedDependenciesCache[dependency] = {}
-        filterSatisfiedDependenciesCache[dependency]['depunsatisfied'] = depunsatisfied
-        filterSatisfiedDependenciesCache[dependency]['depsatisfied'] = depsatisfied
-        filterSatisfiedDependenciesCache[dependency]['deepdeps'] = deepdeps
+        cached = generateDependencyTreeCache.get(tuple(atomInfo))
+        if cached:
+            if (cached['emptydeps'] == emptydeps) and \
+                (cached['deepdeps'] == deepdeps) and \
+                (cached['usefilter'] == usefilter):
+                return cached['result']
+
+        #print atomInfo
+        mydbconn = self.databaseTools.openRepositoryDatabase(atomInfo[1])
+        myatom = mydbconn.retrieveAtom(atomInfo[0])
+        mydbconn.closeDB()
+        del mydbconn
+
+        # caches
+        treecache = set()
+        matchcache = set()
+        keyslotcache = set()
+        # special events
+        dependenciesNotFound = set()
+        conflicts = set()
+
+        mydep = (1,myatom)
+        mybuffer = lifobuffer()
+        deptree = set()
+        if not ((atomInfo in matchFilter) and (usefilter)):
+            mybuffer.push((1,myatom))
+            #mytree.append((1,myatom))
+            deptree.add((1,atomInfo))
+
+        while mydep != None:
+
+            # already analyzed in this call
+            if mydep[1] in treecache:
+                mydep = mybuffer.pop()
+                continue
+
+            # conflicts
+            if mydep[1][0] == "!":
+                xmatch = self.clientDbconn.atomMatch(mydep[1][1:])
+                if xmatch[0] != -1:
+                    conflicts.add(xmatch[0])
+                mydep = mybuffer.pop()
+                continue
+
+            # atom found?
+            match = self.atomMatch(mydep[1])
+            if match[0] == -1:
+                dependenciesNotFound.add(mydep[1])
+                mydep = mybuffer.pop()
+                continue
+
+            # check if atom has been already pulled in
+            matchdb = self.databaseTools.openRepositoryDatabase(match[1])
+            matchatom = matchdb.retrieveAtom(match[0])
+            matchslot = matchdb.retrieveSlot(match[0]) # used later
+            matchdb.closeDB()
+            del matchdb
+            if matchatom in treecache:
+                mydep = mybuffer.pop()
+                continue
+            else:
+                treecache.add(matchatom)
+
+            treecache.add(mydep[1])
+
+            # check if key + slot has been already pulled in
+            key = self.entropyTools.dep_getkey(matchatom)
+            if (matchslot,key) in keyslotcache:
+                mydep = mybuffer.pop()
+                continue
+            else:
+                keyslotcache.add((matchslot,key))
     
-    clientDbconn.closeDB()
-    del clientDbconn
+            # already analyzed by the calling function
+            if (match in matchFilter) and (usefilter):
+                mydep = mybuffer.pop()
+                continue
+            if usefilter: matchFilter.add(match)
+    
+            # result already analyzed?
+            if match in matchcache:
+                mydep = mybuffer.pop()
+                continue
+    
+            treedepth = mydep[0]+1
+    
+            # all checks passed, well done
+            matchcache.add(match)
+            deptree.add((mydep[0],match)) # add match
 
-    return unsatisfiedDeps, satisfiedDeps
+            matchdb = self.databaseTools.openRepositoryDatabase(match[1])
+            myundeps = matchdb.retrieveDependenciesList(match[0])
+            matchdb.closeDB()
+            del matchdb
+            # in this way filterSatisfiedDependenciesCmpResults is alway consistent
+            mytestdeps, xxx = self.filterSatisfiedDependencies(myundeps, deepdeps = deepdeps)
+            if (not emptydeps):
+                myundeps = mytestdeps
+            for x in myundeps:
+                mybuffer.push((treedepth,x))
+    
+            # handle possible library breakage
+            action = filterSatisfiedDependenciesCmpResults.get(mydep[1])
+            if action and ((action < 0) or (action > 0)): # do not use != 0 since action can be "None"
+                i = self.clientDbconn.atomMatch(self.entropyTools.dep_getkey(mydep[1]), matchSlot = matchslot)
+                if i[0] != -1:
+                    oldneeded = self.clientDbconn.retrieveNeeded(i[0])
+                    if oldneeded: # if there are needed
+                        ndbconn = self.databaseTools.openRepositoryDatabase(match[1])
+                        needed = ndbconn.retrieveNeeded(match[0])
+                        ndbconn.closeDB()
+                        del ndbconn
+                        oldneeded = oldneeded - needed
+                        if oldneeded:
+                            # reverse lookup to find belonging package
+                            for need in oldneeded:
+                                myidpackages = self.clientDbconn.searchNeeded(need)
+                                for myidpackage in myidpackages:
+                                    myname = self.clientDbconn.retrieveName(myidpackage)
+                                    mycategory = self.clientDbconn.retrieveCategory(myidpackage)
+                                    myslot = self.clientDbconn.retrieveSlot(myidpackage)
+                                    mykey = mycategory+"/"+myname
+                                    mymatch = self.atomMatch(mykey, matchSlot = myslot) # search in our repo
+                                    if mymatch[0] != -1:
+                                        mydbconn = self.databaseTools.openRepositoryDatabase(mymatch[1])
+                                        mynewatom = mydbconn.retrieveAtom(mymatch[0])
+                                        mydbconn.closeDB()
+                                        del mydbconn
+                                        if (mymatch not in matchcache) and (mynewatom not in treecache) and (mymatch not in matchFilter):
+                                            mybuffer.push((treedepth,mynewatom))
+                                    else:
+                                        # we bastardly ignore the missing library for now
+                                        continue
 
-'''
-   @description: generates a dependency tree using unsatisfied dependencies
-   @input package: atomInfo (idpackage,reponame)
-   @output: dependency tree dictionary, plus status code
-'''
-def generateDependencyTree(atomInfo, emptydeps = False, deepdeps = False, usefilter = False):
-
-    if (not usefilter):
-	matchFilter.clear()
-
-    ''' caching '''
-    cached = generateDependencyTreeCache.get(tuple(atomInfo))
-    if cached:
-	if (cached['emptydeps'] == emptydeps) and \
-	    (cached['deepdeps'] == deepdeps) and \
-	    (cached['usefilter'] == usefilter):
-	    return cached['result']
-
-    #print atomInfo
-    mydbconn = openRepositoryDatabase(atomInfo[1])
-    myatom = mydbconn.retrieveAtom(atomInfo[0])
-    mydbconn.closeDB()
-    del mydbconn
-
-    # caches
-    treecache = set()
-    matchcache = set()
-    keyslotcache = set()
-    # special events
-    dependenciesNotFound = set()
-    conflicts = set()
-
-    mydep = (1,myatom)
-    mybuffer = lifobuffer()
-    deptree = set()
-    if not ((atomInfo in matchFilter) and (usefilter)):
-        mybuffer.push((1,myatom))
-        #mytree.append((1,myatom))
-        deptree.add((1,atomInfo))
-    clientDbconn = openClientDatabase()
-
-    while mydep != None:
-
-        # already analyzed in this call
-        if mydep[1] in treecache:
             mydep = mybuffer.pop()
-            continue
+
+        newdeptree = {}
+        for x in deptree:
+            key = x[0]
+            item = x[1]
+            try:
+                newdeptree[key].add(item)
+            except:
+                newdeptree[key] = set()
+                newdeptree[key].add(item)
+        del deptree
+
+        if (dependenciesNotFound):
+            # Houston, we've got a problem
+            flatview = list(dependenciesNotFound)
+            return flatview,-2
 
         # conflicts
-        if mydep[1][0] == "!":
-            xmatch = clientDbconn.atomMatch(mydep[1][1:])
-            if xmatch[0] != -1:
-                conflicts.add(xmatch[0])
-            mydep = mybuffer.pop()
-            continue
+        newdeptree[0] = conflicts
 
-        # atom found?
-        match = atomMatch(mydep[1])
-        if match[0] == -1:
-            dependenciesNotFound.add(mydep[1])
-            mydep = mybuffer.pop()
-            continue
+        ''' caching '''
+        generateDependencyTreeCache[tuple(atomInfo)] = {}
+        generateDependencyTreeCache[tuple(atomInfo)]['result'] = newdeptree,0
+        generateDependencyTreeCache[tuple(atomInfo)]['emptydeps'] = emptydeps
+        generateDependencyTreeCache[tuple(atomInfo)]['deepdeps'] = deepdeps
+        generateDependencyTreeCache[tuple(atomInfo)]['usefilter'] = usefilter
+        treecache.clear()
+        matchcache.clear()
 
-        # check if atom has been already pulled in
-        matchdb = openRepositoryDatabase(match[1])
-        matchatom = matchdb.retrieveAtom(match[0])
-        matchslot = matchdb.retrieveSlot(match[0]) # used later
-        matchdb.closeDB()
-        del matchdb
-        if matchatom in treecache:
-            mydep = mybuffer.pop()
-            continue
-        else:
-            treecache.add(matchatom)
+        return newdeptree,0 # note: newtree[0] contains possible conflicts
 
-        treecache.add(mydep[1])
+    '''
+    @description: generates a list cotaining the needed dependencies of a list requested atoms
+    @input package: list of atoms that would be installed in list form, whose each element is composed by [idpackage,repository name]
+    @output: list containing, for each element: [idpackage,repository name]
+                    @ if dependencies couldn't be satisfied, the output will be -1
+    @note: this is the function that should be used for 3rd party applications after using atomMatch()
+    '''
+    def getRequiredPackages(self, foundAtoms, emptydeps = False, deepdeps = False, spinning = False):
 
-        # check if key + slot has been already pulled in
-        key = dep_getkey(matchatom)
-        if (matchslot,key) in keyslotcache:
-            mydep = mybuffer.pop()
-            continue
-        else:
-            keyslotcache.add((matchslot,key))
+        deptree = {}
+        deptree[0] = set()
 
-        # already analyzed by the calling function
-        if (match in matchFilter) and (usefilter):
-            mydep = mybuffer.pop()
-            continue
-        if usefilter: matchFilter.add(match)
+        if spinning: atomlen = len(foundAtoms); count = 0
+        matchFilter.clear() # clear generateDependencyTree global filter
 
-        # result already analyzed?
-        if match in matchcache:
-            mydep = mybuffer.pop()
-            continue
+        for atomInfo in foundAtoms:
 
-        treedepth = mydep[0]+1
+            if spinning: count += 1; self.updateProgress(":: "+str(round((float(count)/atomlen)*100,1))+"% ::", importance = 0, type = "info", back = True)
 
-        # all checks passed, well done
-        matchcache.add(match)
-        deptree.add((mydep[0],match)) # add match
+            newtree, result = self.generateDependencyTree(atomInfo, emptydeps, deepdeps, usefilter = True)
 
-        myundeps = getDependencies(match)
-        # in this way filterSatisfiedDependenciesCmpResults is alway consistent
-        mytestdeps, xxx = filterSatisfiedDependencies(myundeps, deepdeps = deepdeps)
-        if (not emptydeps):
-            myundeps = mytestdeps
-        for x in myundeps:
-            mybuffer.push((treedepth,x))
+            if (result != 0):
+                return newtree, result
+            elif (newtree):
+                parent_keys = deptree.keys()
+                # add conflicts
+                max_parent_key = parent_keys[-1]
+                deptree[0].update(newtree[0])
+                # reverse dict
+                levelcount = 0
+                reversetree = {}
+                for key in newtree.keys()[::-1]:
+                    if key == 0:
+                        continue
+                    levelcount += 1
+                    reversetree[levelcount] = newtree[key]
+                del newtree
+                for mylevel in reversetree.keys():
+                    deptree[max_parent_key+mylevel] = reversetree[mylevel].copy()
+                del reversetree
 
-        # handle possible library breakage
-        action = filterSatisfiedDependenciesCmpResults.get(mydep[1])
-        if action and ((action < 0) or (action > 0)): # do not use != 0 since action can be "None"
-            i = clientDbconn.atomMatch(dep_getkey(mydep[1]), matchSlot = matchslot)
-            if i[0] != -1:
-                oldneeded = clientDbconn.retrieveNeeded(i[0])
-                if oldneeded: # if there are needed
-                    ndbconn = openRepositoryDatabase(match[1])
-                    needed = ndbconn.retrieveNeeded(match[0])
-                    ndbconn.closeDB()
-                    del ndbconn
-                    oldneeded = oldneeded - needed
-                    if oldneeded:
-                        # reverse lookup to find belonging package
-                        for need in oldneeded:
-                            myidpackages = clientDbconn.searchNeeded(need)
-                            for myidpackage in myidpackages:
-                                myname = clientDbconn.retrieveName(myidpackage)
-                                mycategory = clientDbconn.retrieveCategory(myidpackage)
-                                myslot = clientDbconn.retrieveSlot(myidpackage)
-                                mykey = mycategory+"/"+myname
-                                mymatch = atomMatch(mykey, matchSlot = myslot) # search in our repo
-                                if mymatch[0] != -1:
-                                    mydbconn = openRepositoryDatabase(mymatch[1])
-                                    mynewatom = mydbconn.retrieveAtom(mymatch[0])
-                                    mydbconn.closeDB()
-                                    del mydbconn
-                                    if (mymatch not in matchcache) and (mynewatom not in treecache) and (mymatch not in matchFilter):
-                                        mybuffer.push((treedepth,mynewatom))
-                                else:
-                                    # we bastardly ignore the missing library for now
-                                    continue
+        matchFilter.clear()
+        return deptree,0
 
-        mydep = mybuffer.pop()
+    '''
+    @description: generates a depends tree using provided idpackages (from client database)
+                    !!! you can see it as the function that generates the removal tree
+    @input package: idpackages list
+    @output: 	depends tree dictionary, plus status code
+    '''
+    def generateDependsTree(self, idpackages, deep = False):
 
-    newdeptree = {}
-    for x in deptree:
-        key = x[0]
-        item = x[1]
-        try:
-            newdeptree[key].add(item)
-        except:
-            newdeptree[key] = set()
-            newdeptree[key].add(item)
-    del deptree
-    
-    clientDbconn.closeDB()
-    del clientDbconn
-    
-    if (dependenciesNotFound):
-	# Houston, we've got a problem
-	flatview = list(dependenciesNotFound)
-	return flatview,-2
+        ''' caching '''
+        cached = generateDependsTreeCache.get(tuple(idpackages))
+        if cached:
+            if (cached['deep'] == deep):
+                return cached['result']
 
-    # conflicts
-    newdeptree[0] = conflicts
+        dependscache = {}
+        dependsOk = False
+        treeview = set(idpackages)
+        treelevel = idpackages[:]
+        tree = {}
+        treedepth = 0 # I start from level 1 because level 0 is idpackages itself
+        tree[treedepth] = set(idpackages)
+        monotree = set(idpackages) # monodimensional tree
 
-    ''' caching '''
-    generateDependencyTreeCache[tuple(atomInfo)] = {}
-    generateDependencyTreeCache[tuple(atomInfo)]['result'] = newdeptree,0
-    generateDependencyTreeCache[tuple(atomInfo)]['emptydeps'] = emptydeps
-    generateDependencyTreeCache[tuple(atomInfo)]['deepdeps'] = deepdeps
-    generateDependencyTreeCache[tuple(atomInfo)]['usefilter'] = usefilter
-    treecache.clear()
-    matchcache.clear()
-    
-    return newdeptree,0 # note: newtree[0] contains possible conflicts
+        # check if dependstable is sane before beginning
+        rx = self.clientDbconn.retrieveDepends(idpackages[0])
 
+        while (not dependsOk):
+            treedepth += 1
+            tree[treedepth] = set()
+            for idpackage in treelevel:
 
-'''
-   @description: generates a list cotaining the needed dependencies of a list requested atoms
-   @input package: list of atoms that would be installed in list form, whose each element is composed by [idpackage,repository name]
-   @output: list containing, for each element: [idpackage,repository name]
-   		@ if dependencies couldn't be satisfied, the output will be -1
-   @note: this is the function that should be used for 3rd party applications after using atomMatch()
-'''
-def getRequiredPackages(foundAtoms, emptydeps = False, deepdeps = False, spinning = False):
-    deptree = {}
-    deptree[0] = set()
-    
-    if spinning: atomlen = len(foundAtoms); count = 0
-    matchFilter.clear() # clear generateDependencyTree global filter
-    for atomInfo in foundAtoms:
-	if spinning: count += 1; print_info(":: "+str(round((float(count)/atomlen)*100,1))+"% ::", back = True)
-	#print depcount
-	newtree, result = generateDependencyTree(atomInfo, emptydeps, deepdeps, usefilter = True)
-	if (result != 0):
-	    return newtree, result
-	elif (newtree):
-            parent_keys = deptree.keys()
-            # add conflicts
-            max_parent_key = parent_keys[-1]
-            deptree[0].update(newtree[0])
-            
-            # reverse dict
-            levelcount = 0
-            reversetree = {}
-            for key in newtree.keys()[::-1]:
-                if key == 0:
+                passed = dependscache.get(idpackage,None)
+                systempkg = self.clientDbconn.isSystemPackage(idpackage)
+                if passed or systempkg:
+                    try:
+                        while 1: treeview.remove(idpackage)
+                    except:
+                        pass
                     continue
-                levelcount += 1
-                reversetree[levelcount] = newtree[key]
-            del newtree
-            
-            for mylevel in reversetree.keys():
-                deptree[max_parent_key+mylevel] = reversetree[mylevel].copy()
-            del reversetree
 
-    matchFilter.clear()
-    
-    return deptree,0
+                # obtain its depends
+                depends = self.clientDbconn.retrieveDepends(idpackage)
+                # filter already satisfied ones
+                depends = [x for x in depends if x not in list(monotree)]
+                if (depends): # something depends on idpackage
+                    for x in depends:
+                        if x not in tree[treedepth]:
+                            tree[treedepth].add(x)
+                            monotree.add(x)
+                            treeview.add(x)
+                elif deep: # if deep, grab its dependencies and check
+                    mydeps = set(self.clientDbconn.retrieveDependencies(idpackage))
+                    _mydeps = set()
+                    for x in mydeps:
+                        match = self.clientDbconn.atomMatch(x)
+                        if match and match[1] == 0:
+                            _mydeps.add(match[0])
+                    mydeps = _mydeps
+                    # now filter them
+                    mydeps = [x for x in mydeps if x not in list(monotree)]
+                    for x in mydeps:
+                        #print clientDbconn.retrieveAtom(x)
+                        mydepends = self.clientDbconn.retrieveDepends(x)
+                        mydepends = [y for y in mydepends if y not in list(monotree)]
+                        if (not mydepends):
+                            tree[treedepth].add(x)
+                            monotree.add(x)
+                            treeview.add(x)
 
+                dependscache[idpackage] = True
+                try:
+                    while 1: treeview.remove(idpackage)
+                except:
+                    pass
 
-'''
-   @description: generates a depends tree using provided idpackages (from client database)
-   		 !!! you can see it as the function that generates the removal tree
-   @input package: idpackages list
-   @output: 	depends tree dictionary, plus status code
-'''
-def generateDependsTree(idpackages, deep = False):
+            treelevel = list(treeview)[:]
+            if (not treelevel):
+                if not tree[treedepth]:
+                    del tree[treedepth] # probably the last one is empty then
+                dependsOk = True
 
-    ''' caching '''
-    cached = generateDependsTreeCache.get(tuple(idpackages))
-    if cached:
-	if (cached['deep'] == deep):
-	    return cached['result']
+        newtree = tree.copy() # tree list
+        if (tree):
+            # now filter newtree
+            treelength = len(newtree)
+            for count in range(treelength)[::-1]:
+                x = 0
+                while x < count:
+                    # remove dups in this list
+                    for z in newtree[count]:
+                        try:
+                            while 1:
+                                newtree[x].remove(z)
+                                #print "removing "+str(z)
+                        except:
+                            pass
+                    x += 1
 
-    dependscache = {}
-    clientDbconn = openClientDatabase()
+        del tree
 
-    dependsOk = False
-    treeview = set(idpackages)
-    treelevel = idpackages[:]
-    tree = {}
-    treedepth = 0 # I start from level 1 because level 0 is idpackages itself
-    tree[treedepth] = set(idpackages)
-    monotree = set(idpackages) # monodimensional tree
-    
-    # check if dependstable is sane before beginning
-    rx = clientDbconn.retrieveDepends(idpackages[0])
-    
-    while (not dependsOk):
-	treedepth += 1
-	tree[treedepth] = set()
-        for idpackage in treelevel:
-
-	    passed = dependscache.get(idpackage,None)
-	    systempkg = clientDbconn.isSystemPackage(idpackage)
-	    if passed or systempkg:
-		try:
-		    while 1: treeview.remove(idpackage)
-		except:
-		    pass
-		continue
-
-	    # obtain its depends
-	    depends = clientDbconn.retrieveDepends(idpackage)
-	    # filter already satisfied ones
-	    depends = [x for x in depends if x not in list(monotree)]
-	    if (depends): # something depends on idpackage
-		for x in depends:
-		    if x not in tree[treedepth]:
-			tree[treedepth].add(x)
-			monotree.add(x)
-		        treeview.add(x)
-	    elif deep: # if deep, grab its dependencies and check
-		
-	        mydeps = set(clientDbconn.retrieveDependencies(idpackage))
-		_mydeps = set()
-		for x in mydeps:
-		    match = clientDbconn.atomMatch(x)
-		    if match and match[1] == 0:
-		        _mydeps.add(match[0])
-		mydeps = _mydeps
-		# now filter them
-		mydeps = [x for x in mydeps if x not in list(monotree)]
-		for x in mydeps:
-		    #print clientDbconn.retrieveAtom(x)
-		    mydepends = clientDbconn.retrieveDepends(x)
-		    mydepends = [y for y in mydepends if y not in list(monotree)]
-		    if (not mydepends):
-			tree[treedepth].add(x)
-			monotree.add(x)
-			treeview.add(x)
-
-	    dependscache[idpackage] = True
-	    try:
-		while 1: treeview.remove(idpackage)
-	    except:
-	        pass
-	
-	treelevel = list(treeview)[:]
-	if (not treelevel):
-	    if not tree[treedepth]:
-		del tree[treedepth] # probably the last one is empty then
-	    dependsOk = True
-
-    newtree = tree.copy() # tree list
-    if (tree):
-	# now filter newtree
-	treelength = len(newtree)
-	for count in range(treelength)[::-1]:
-	    x = 0
-	    while x < count:
-		# remove dups in this list
-		for z in newtree[count]:
-		    try:
-			while 1:
-			    newtree[x].remove(z)
-			    #print "removing "+str(z)
-		    except:
-			pass
-		x += 1
-    
-    del tree
-    
-    clientDbconn.closeDB()
-    del clientDbconn
-    
-    ''' caching '''
-    generateDependsTreeCache[tuple(idpackages)] = {}
-    generateDependsTreeCache[tuple(idpackages)]['result'] = newtree,0
-    generateDependsTreeCache[tuple(idpackages)]['deep'] = deep
-    return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
+        ''' caching '''
+        generateDependsTreeCache[tuple(idpackages)] = {}
+        generateDependsTreeCache[tuple(idpackages)]['result'] = newtree,0
+        generateDependsTreeCache[tuple(idpackages)]['deep'] = deep
+        return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
 
 ########################################################

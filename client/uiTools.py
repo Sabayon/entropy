@@ -29,7 +29,7 @@ from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 import equoTools
-from databaseTools import openRepositoryDatabase, openClientDatabase, openGenericDatabase, listAllAvailableBranches
+from databaseTools import openRepositoryDatabase, openGenericDatabase, listAllAvailableBranches
 import entropyTools
 import dumpTools
 import shutil
@@ -137,12 +137,6 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
         if not (etpUi['quiet'] or returnQueue): print_warning(red("Running with ")+bold("--pretend")+red("..."))
 	etpUi['pretend'] = True
 
-    try:
-        clientDbconn = openClientDatabase()
-    except:
-        if not (etpUi['quiet'] or returnQueue): print_error(red("You do not have a client database."))
-        return 128,-1
-
     if not resume:
 
         # verify selected release (branch)
@@ -164,20 +158,20 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
         fineList = set()
         removedList = set()
         # get all the installed packages
-        packages = clientDbconn.listAllPackages()
+        packages = Equo.clientDbconn.listAllPackages()
         
         if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("Calculating world packages..."))
         for package in packages:
             tainted = False
             atom = package[0]
             idpackage = package[1]
-            name = clientDbconn.retrieveName(idpackage)
-            category = clientDbconn.retrieveCategory(idpackage)
-            revision = clientDbconn.retrieveRevision(idpackage)
-            slot = clientDbconn.retrieveSlot(idpackage)
+            name = Equo.clientDbconn.retrieveName(idpackage)
+            category = Equo.clientDbconn.retrieveCategory(idpackage)
+            revision = Equo.clientDbconn.retrieveRevision(idpackage)
+            slot = Equo.clientDbconn.retrieveSlot(idpackage)
             atomkey = category+"/"+name
             # search in the packages
-            match = equoTools.atomMatch(atom)
+            match = Equo.atomMatch(atom)
             if match[0] == -1: # atom has been changed, or removed?
                 tainted = True
             else: # not changed, is the revision changed?
@@ -193,7 +187,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
                     tainted = True
             if (tainted):
                 # Alice! use the key! ... and the slot
-                matchresults = equoTools.atomMatch(atomkey, matchSlot = slot, matchBranches = branches)
+                matchresults = Equo.atomMatch(atomkey, matchSlot = slot, matchBranches = branches)
                 if matchresults[0] != -1:
                     mdbconn = openRepositoryDatabase(matchresults[1])
                     matchatom = mdbconn.retrieveAtom(matchresults[0])
@@ -203,14 +197,14 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
                 else:
                     removedList.add(idpackage)
                     # look for packages that would match key with any slot (for eg, gcc updates), slot changes handling
-                    matchresults = equoTools.atomMatch(atomkey, matchBranches = branches)
+                    matchresults = Equo.atomMatch(atomkey, matchBranches = branches)
                     if matchresults[0] != -1:
                         mdbconn = openRepositoryDatabase(matchresults[1])
                         matchatom = mdbconn.retrieveAtom(matchresults[0])
                         mdbconn.closeDB()
                         del mdbconn
                         # compare versions
-                        unsatisfied, satisfied = equoTools.filterSatisfiedDependencies((matchatom,))
+                        unsatisfied, satisfied = Equo.filterSatisfiedDependencies((matchatom,))
                         if unsatisfied:
                             updateList.add((matchatom,matchresults))
             else:
@@ -275,7 +269,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
     etpConst['collisionprotect'] = oldcollprotect
     
     # verify that client database idpackage still exist, validate here before passing removePackage() wrong info
-    removedList = [x for x in removedList if clientDbconn.isIDPackageAvailable(x)]
+    removedList = [x for x in removedList if Equo.clientDbconn.isIDPackageAvailable(x)]
     
     if (removedList):
 	removedList = list(removedList)
@@ -287,8 +281,6 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
             if human:
                 rc = entropyTools.askquestion("     Would you like to query them ?")
                 if rc == "No":
-                    clientDbconn.closeDB()
-                    del clientDbconn
                     return 0,0
 	
 	    # run removePackages with --nodeps
@@ -299,9 +291,6 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
     else:
 	if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("Nothing to remove."))
 
-    clientDbconn.closeDB()
-    del clientDbconn
-    
     if returnQueue:
         return worldQueue,0
     
@@ -322,12 +311,6 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             except:
                 pass
 
-    try:
-        clientDbconn = openClientDatabase()
-    except:
-        if not (etpUi['quiet'] or returnQueue): print_error(red("You do not have a client database."))
-        return 128,-1
-
     if not resume:
         
         if (atomsdata):
@@ -335,7 +318,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         else:
             foundAtoms = []
             for package in packages:
-                foundAtoms.append([package,equoTools.atomMatch(package)])
+                foundAtoms.append([package,Equo.atomMatch(package)])
             if tbz2:
                 for pkg in tbz2:
                     # create a repository for each database
@@ -422,15 +405,15 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 installedVer = "Not installed"
                 installedTag = "NoTag"
                 installedRev = "NoRev"
-                pkginstalled = clientDbconn.atomMatch(entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
+                pkginstalled = Equo.clientDbconn.atomMatch(entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
                 if (pkginstalled[1] == 0):
                     # found
                     idx = pkginstalled[0]
-                    installedVer = clientDbconn.retrieveVersion(idx)
-                    installedTag = clientDbconn.retrieveVersionTag(idx)
+                    installedVer = Equo.clientDbconn.retrieveVersion(idx)
+                    installedTag = Equo.clientDbconn.retrieveVersionTag(idx)
                     if not installedTag:
                         installedTag = "NoTag"
-                    installedRev = clientDbconn.retrieveRevision(idx)
+                    installedRev = Equo.clientDbconn.retrieveRevision(idx)
     
                 if not (etpUi['quiet'] or returnQueue): print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
                 if not (etpUi['quiet'] or returnQueue): print_info("\t"+red("Versioning:\t")+" "+blue(installedVer)+" / "+blue(installedTag)+" / "+blue(str(installedRev))+bold(" ===> ")+darkgreen(pkgver)+" / "+darkgreen(pkgtag)+" / "+darkgreen(str(pkgrev)))
@@ -471,7 +454,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         if (deps):
             spinning = False
             if not (etpUi['quiet'] or returnQueue): spinning = True
-            treepackages, result = equoTools.getRequiredPackages(foundAtoms, emptydeps, deepdeps, spinning = spinning)
+            treepackages, result = Equo.getRequiredPackages(foundAtoms, emptydeps, deepdeps, spinning = spinning)
             # add dependencies, explode them
             
             if (result == -2):
@@ -566,15 +549,15 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 installedVer = '0'
                 installedTag = ''
                 installedRev = 0
-                pkginstalled = clientDbconn.atomMatch(entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
+                pkginstalled = Equo.clientDbconn.atomMatch(entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
                 if (pkginstalled[1] == 0):
                     # found
                     idx = pkginstalled[0]
-                    installedVer = clientDbconn.retrieveVersion(idx)
-                    installedTag = clientDbconn.retrieveVersionTag(idx)
-                    installedRev = clientDbconn.retrieveRevision(idx)
+                    installedVer = Equo.clientDbconn.retrieveVersion(idx)
+                    installedTag = Equo.clientDbconn.retrieveVersionTag(idx)
+                    installedRev = Equo.clientDbconn.retrieveRevision(idx)
                     actionQueue[pkgatom]['removeidpackage'] = idx
-                    onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idx)
+                    onDiskFreedSize += Equo.clientDbconn.retrieveOnDiskSize(idx)
     
                 if not (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']):
                     continue
@@ -626,7 +609,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             #'''
             if runQueue:
                 myremmatch = {}
-                [myremmatch.update({(entropyTools.dep_getkey(clientDbconn.retrieveAtom(x)),clientDbconn.retrieveSlot(x)): x}) for x in removalQueue]
+                [myremmatch.update({(entropyTools.dep_getkey(Equo.clientDbconn.retrieveAtom(x)),Equo.clientDbconn.retrieveSlot(x)): x}) for x in removalQueue]
                 for packageInfo in runQueue:
                     dbconn = openRepositoryDatabase(packageInfo[1])
                     testtuple = (entropyTools.dep_getkey(dbconn.retrieveAtom(packageInfo[0])),dbconn.retrieveSlot(packageInfo[0]))
@@ -649,12 +632,12 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             # add depends to removalQueue that are not in runQueue
             dependQueue = set()
             for idpackage in removalQueue:
-                depends = clientDbconn.retrieveDepends(idpackage)
+                depends = Equo.clientDbconn.retrieveDepends(idpackage)
                 for depend in depends:
-                    dependkey = clientDbconn.retrieveCategory(depend)+"/"+clientDbconn.retrieveName(depend)
-                    dependslot = clientDbconn.retrieveSlot(depend)
+                    dependkey = Equo.clientDbconn.retrieveCategory(depend)+"/"+Equo.clientDbconn.retrieveName(depend)
+                    dependslot = Equo.clientDbconn.retrieveSlot(depend)
                     # match in repositories
-                    match = equoTools.atomMatch(dependkey, matchSlot = dependslot)
+                    match = Equo.atomMatch(dependkey, matchSlot = dependslot)
                     if match[0] != -1:
                         matchdbconn = openRepositoryDatabase(match[1])
                         matchatom = matchdbconn.retrieveAtom(match[0])
@@ -662,7 +645,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         del matchdbconn
                         if (matchatom not in actionQueue) and (depend not in removalQueue): # if the atom hasn't been pulled in, we need to remove depend
                             # check if the atom is already up to date
-                            mymatch = equoTools.atomMatch(matchatom)
+                            mymatch = Equo.atomMatch(matchatom)
                             print mymatch
                             #print matchatom
                             dependQueue.add(depend)
@@ -675,9 +658,9 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("removed")+blue(" (conflicting/substituted):"))
     
                 for idpackage in removalQueue:
-                    pkgatom = clientDbconn.retrieveAtom(idpackage)
-                    onDiskFreedSize += clientDbconn.retrieveOnDiskSize(idpackage)
-                    installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
+                    pkgatom = Equo.clientDbconn.retrieveAtom(idpackage)
+                    onDiskFreedSize += Equo.clientDbconn.retrieveOnDiskSize(idpackage)
+                    installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
                     repoinfo = red("[")+brown("from: ")+bold(installedfrom)+red("] ")
                     if not (etpUi['quiet'] or returnQueue): print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
         
@@ -747,7 +730,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         rdbconn.closeDB()
                         del rdbconn
                         for rconflict in rconflicts:
-                            rmatch = clientDbconn.atomMatch(rconflict)
+                            rmatch = Equo.clientDbconn.atomMatch(rconflict)
                             if rmatch[0] != -1:
                                 rconflicts_match.add(rmatch[0])
                     removalQueue = [x for x in rconflicts_match]
@@ -822,8 +805,6 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             for step in steps:
                 rc = equoTools.stepExecutor(step,infoDict,str(fetchqueue)+"/"+totalqueue)
                 if (rc != 0):
-                    clientDbconn.closeDB()
-                    del clientDbconn
                     dirscleanup()
                     return -1,rc
             
@@ -837,15 +818,15 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     for idpackage in removalQueue:
         currentremovalqueue += 1
 	infoDict = {}
-	infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
+	infoDict['removeatom'] = Equo.clientDbconn.retrieveAtom(idpackage)
 	infoDict['removeidpackage'] = idpackage
 	infoDict['diffremoval'] = False
 	infoDict['removeconfig'] = True # we need to completely wipe configuration of conflicts
         if not returnQueue: # must be loaded manually
-	    infoDict['removecontent'] = clientDbconn.retrieveContent(idpackage)
-	    etpRemovalTriggers[infoDict['removeatom']] = clientDbconn.getPackageData(idpackage)
+	    infoDict['removecontent'] = Equo.clientDbconn.retrieveContent(idpackage)
+	    etpRemovalTriggers[infoDict['removeatom']] = Equo.clientDbconn.getPackageData(idpackage)
 	    etpRemovalTriggers[infoDict['removeatom']]['removecontent'] = infoDict['removecontent'].copy()
-	    etpRemovalTriggers[infoDict['removeatom']]['trigger'] = clientDbconn.retrieveTrigger(idpackage)
+	    etpRemovalTriggers[infoDict['removeatom']]['trigger'] = Equo.clientDbconn.retrieveTrigger(idpackage)
 	steps = []
 	steps.append("preremove")
 	steps.append("remove")
@@ -864,8 +845,6 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             for step in steps:
                 rc = equoTools.stepExecutor(step,infoDict,str(currentremovalqueue)+"/"+totalremovalqueue)
                 if (rc != 0):
-                    clientDbconn.closeDB()
-                    del clientDbconn
                     dirscleanup()
                     return -1,rc
 
@@ -899,18 +878,18 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 	# differential remove list
 	if (actionQueue[pkgatom]['removeidpackage'] != -1):
             # is it still available?
-            if clientDbconn.isIDPackageAvailable(actionQueue[pkgatom]['removeidpackage']):
+            if Equo.clientDbconn.isIDPackageAvailable(actionQueue[pkgatom]['removeidpackage']):
                 actionQueue[pkgatom]['diffremoval'] = True
-                actionQueue[pkgatom]['removeatom'] = clientDbconn.retrieveAtom(actionQueue[pkgatom]['removeidpackage'])
+                actionQueue[pkgatom]['removeatom'] = Equo.clientDbconn.retrieveAtom(actionQueue[pkgatom]['removeidpackage'])
                 if not returnQueue: # must be loaded manually
-                    oldcontent = clientDbconn.retrieveContent(actionQueue[pkgatom]['removeidpackage'])
+                    oldcontent = Equo.clientDbconn.retrieveContent(actionQueue[pkgatom]['removeidpackage'])
                     newcontent = dbconn.retrieveContent(idpackage)
                     oldcontent = oldcontent - newcontent
                     del newcontent
                     actionQueue[pkgatom]['removecontent'] = oldcontent.copy()
-                    etpRemovalTriggers[actionQueue[pkgatom]['removeatom']] = clientDbconn.getPackageData(actionQueue[pkgatom]['removeidpackage'])
+                    etpRemovalTriggers[actionQueue[pkgatom]['removeatom']] = Equo.clientDbconn.getPackageData(actionQueue[pkgatom]['removeidpackage'])
                     etpRemovalTriggers[actionQueue[pkgatom]['removeatom']]['removecontent'] = actionQueue[pkgatom]['removecontent'].copy()
-                    etpRemovalTriggers[actionQueue[pkgatom]['removeatom']]['trigger'] = clientDbconn.retrieveTrigger(actionQueue[pkgatom]['removeidpackage'])
+                    etpRemovalTriggers[actionQueue[pkgatom]['removeatom']]['trigger'] = Equo.clientDbconn.retrieveTrigger(actionQueue[pkgatom]['removeidpackage'])
             else:
                 actionQueue[pkgatom]['removeidpackage'] = -1
 
@@ -981,8 +960,6 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             for step in steps:
                 rc = equoTools.stepExecutor(step,actionQueue[pkgatom],str(currentqueue)+"/"+totalqueue)
                 if (rc != 0):
-                    clientDbconn.closeDB()
-                    del clientDbconn
                     dirscleanup()
                     return -1,rc
 
@@ -1010,8 +987,6 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     # clear resume information
     dumpTools.dumpobj(etpCache['install'],{})
     
-    clientDbconn.closeDB()
-    del clientDbconn
     dirscleanup()
     
     if returnQueue:
@@ -1027,21 +1002,15 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         if not (etpUi['quiet'] or returnQueue): print_warning(red("Running with ")+bold("--pretend")+red("..."))
 	etpUi['pretend'] = True
 
-    try:
-        clientDbconn = openClientDatabase()
-    except:
-        if not (etpUi['quiet'] or returnQueue): print_error(red("You do not have a client database."))
-        return 128,-1
-
     if not resume:
 
         foundAtoms = []
         if (atomsdata):
             for idpackage in atomsdata:
-                foundAtoms.append([clientDbconn.retrieveAtom(idpackage),(idpackage,0)])
+                foundAtoms.append([Equo.clientDbconn.retrieveAtom(idpackage),(idpackage,0)])
         else:
             for package in packages:
-                foundAtoms.append([package,clientDbconn.atomMatch(package)])
+                foundAtoms.append([package,Equo.clientDbconn.atomMatch(package)])
     
         # filter packages not found
         _foundAtoms = []
@@ -1069,19 +1038,19 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         for atomInfo in foundAtoms:
             atomscounter += 1
             idpackage = atomInfo[0]
-            systemPackage = clientDbconn.isSystemPackage(idpackage)
+            systemPackage = Equo.clientDbconn.isSystemPackage(idpackage)
     
             # get needed info
-            pkgatom = clientDbconn.retrieveAtom(idpackage)
-            installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
+            pkgatom = Equo.clientDbconn.retrieveAtom(idpackage)
+            installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
     
             if (systemPackage) and (systemPackagesCheck):
                 # check if the package is slotted and exist more than one installed first
-                sysresults = clientDbconn.atomMatch(entropyTools.dep_getkey(pkgatom), multiMatch = True)
+                sysresults = Equo.clientDbconn.atomMatch(entropyTools.dep_getkey(pkgatom), multiMatch = True)
                 slots = set()
                 if sysresults[1] == 0:
                     for x in sysresults[0]:
-                        slots.add(clientDbconn.retrieveSlot(x))
+                        slots.add(Equo.clientDbconn.retrieveSlot(x))
                     if len(slots) < 2:
                         if not (etpUi['quiet'] or returnQueue): print_warning(darkred("   # !!! ")+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+red(" is a vital package. Removal forbidden."))
                         continue
@@ -1107,8 +1076,6 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             if rc == "No":
                 lookForOrphanedPackages = False
                 if (not deps):
-                    clientDbconn.closeDB()
-                    del clientDbconn
                     return 0,0
     
         if (not plainRemovalQueue):
@@ -1120,7 +1087,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         if (lookForOrphanedPackages):
             choosenRemovalQueue = []
             if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("Calculating..."))
-            treeview = equoTools.generateDependsTree(plainRemovalQueue, deep = deep)
+            treeview = Equo.generateDependsTree(plainRemovalQueue, deep = deep)
             treelength = len(treeview[0])
             if treelength > 1:
                 treeview = treeview[0]
@@ -1135,8 +1102,8 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                 
                     for idpackage in choosenRemovalQueue:
                         atomscounter += 1
-                        rematom = clientDbconn.retrieveAtom(idpackage)
-                        installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
+                        rematom = Equo.clientDbconn.retrieveAtom(idpackage)
+                        installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
                         repositoryInfo = bold("[")+red("from: ")+brown(installedfrom)+bold("]")
                         stratomscounter = str(atomscounter)
                         while len(stratomscounter) < len(totalatoms):
@@ -1154,8 +1121,6 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                 question = "     Would you like to proceed with a selective removal ?"
             rc = entropyTools.askquestion(question)
             if rc == "No":
-                clientDbconn.closeDB()
-                del clientDbconn
                 return 0,0
         elif (deps):
             if not (etpUi['quiet'] or returnQueue): entropyTools.countdown(what = red(" @@ ")+blue("Starting removal in "),back = True)
@@ -1191,7 +1156,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
     invalid = set()
     for idpackage in removalQueue:
         try:
-            clientDbconn.retrieveAtom(idpackage)
+            Equo.clientDbconn.retrieveAtom(idpackage)
         except TypeError:
             invalid.add(idpackage)
     removalQueue = [x for x in removalQueue if x not in invalid]
@@ -1208,13 +1173,13 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 	infoDict = {}
 	infoDict['removeidpackage'] = idpackage
         try:
-            infoDict['removeatom'] = clientDbconn.retrieveAtom(idpackage)
+            infoDict['removeatom'] = Equo.clientDbconn.retrieveAtom(idpackage)
         except TypeError: # resume cache issues?
             try:
                 # force database removal and forget about the rest
                 if not (etpUi['quiet'] or returnQueue): print "DEBUG: attention! entry broken probably due to a resume cache issue, forcing removal from database"
-                clientDbconn.removePackage(idpackage)
-                clientDbconn.removePackageFromInstalledTable(idpackage)
+                Equo.clientDbconn.removePackage(idpackage)
+                Equo.clientDbconn.removePackageFromInstalledTable(idpackage)
             except:
                 pass
             # update resume cache
@@ -1226,10 +1191,10 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 	infoDict['removeconfig'] = configFiles
 
         if not returnQueue: # must be loaded manually
-	    infoDict['removecontent'] = clientDbconn.retrieveContent(idpackage)
-	    etpRemovalTriggers[infoDict['removeatom']] = clientDbconn.getPackageData(idpackage)
+	    infoDict['removecontent'] = Equo.clientDbconn.retrieveContent(idpackage)
+	    etpRemovalTriggers[infoDict['removeatom']] = Equo.clientDbconn.getPackageData(idpackage)
 	    etpRemovalTriggers[infoDict['removeatom']]['removecontent'] = infoDict['removecontent'].copy()
-	    etpRemovalTriggers[infoDict['removeatom']]['trigger'] = clientDbconn.retrieveTrigger(idpackage)
+	    etpRemovalTriggers[infoDict['removeatom']]['trigger'] = Equo.clientDbconn.retrieveTrigger(idpackage)
 
 	steps = []
 	steps.append("preremove")
@@ -1260,8 +1225,6 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             for step in steps:
                 rc = equoTools.stepExecutor(step,infoDict,str(currentqueue)+"/"+str(len(removalQueue)))
                 if (rc != 0):
-                    clientDbconn.closeDB()
-                    del clientDbconn
                     return -1,rc
 
         # update resume cache
@@ -1274,9 +1237,6 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 
     if not (etpUi['quiet'] or returnQueue): print_info(red(" @@ ")+blue("All done."))
     
-    clientDbconn.closeDB()
-    del clientDbconn
-    
     if returnQueue:
         return returnActionQueue,0
     
@@ -1288,10 +1248,8 @@ def dependenciesTest(clientDbconn = None, reagent = False):
     if (not etpUi['quiet']):
         print_info(red(" @@ ")+blue("Running dependency test..."))
     
-    closedb = True
     if clientDbconn == None:
-        closedb = False
-        clientDbconn = openClientDatabase()
+        clientDbconn = Equo.clientDbconn
     # get all the installed packages
     installedPackages = clientDbconn.listAllIdpackages()
     
@@ -1305,7 +1263,8 @@ def dependenciesTest(clientDbconn = None, reagent = False):
 	if (not etpUi['quiet']):
 	    print_info(darkred(" @@ ")+bold("(")+blue(str(count))+"/"+red(length)+bold(")")+darkgreen(" Checking ")+bold(atom), back = True)
         
-        xdeps = equoTools.getDependencies((xidpackage,0))
+        
+        xdeps = clientDbconn.retrieveDependenciesList(xidpackage)
         needed_deps = set()
         for xdep in xdeps:
             if xdep[0] == "!": # filter conflicts
@@ -1330,7 +1289,7 @@ def dependenciesTest(clientDbconn = None, reagent = False):
                 if reagent:
                     match = clientDbconn.atomMatch(dep)
                 else:
-                    match = equoTools.atomMatch(dep)
+                    match = Equo.atomMatch(dep)
                 if match[0] == -1:
                     # FIXME
                     if (not etpUi['quiet']):
@@ -1351,16 +1310,12 @@ def dependenciesTest(clientDbconn = None, reagent = False):
 		packagesNeeded.add((depatom,dep))
 
     if (etpUi['pretend']):
-	clientDbconn.closeDB()
-        del clientDbconn
 	return 0, packagesNeeded
 
     if (packagesNeeded) and (not etpUi['quiet']) and (not reagent):
         if (etpUi['ask']):
             rc = entropyTools.askquestion("     Would you like to install the available packages?")
             if rc == "No":
-		clientDbconn.closeDB()
-                del clientDbconn
 	        return 0,packagesNeeded
 	else:
 	    print_info(red(" @@ ")+blue("Installing available packages in ")+red("10 seconds")+blue("..."))
@@ -1374,9 +1329,6 @@ def dependenciesTest(clientDbconn = None, reagent = False):
 	installPackages(packages, deps = False)
 
     if not etpUi['quiet']: print_info(red(" @@ ")+blue("All done."))
-    if closedb:
-        clientDbconn.closeDB()
-        del clientDbconn
     return 0,packagesNeeded
 
 def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
@@ -1389,10 +1341,8 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
     if (not etpUi['quiet']):
         print_info(red(" @@ ")+blue("Running libraries test..."))
     
-    closedb = True
     if clientDbconn == None:
-        closedb = False
-        clientDbconn = openClientDatabase()
+        clientDbconn = Equo.clientDbconn
 
     if (not etpUi['quiet']):
         print_info(red(" @@ ")+blue("Collecting linker paths..."))
@@ -1519,21 +1469,15 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
             print myatom
             dbconn.closeDB()
             del dbconn
-        clientDbconn.closeDB()
-        del clientDbconn
         return 0,atomsdata
 
     if (etpUi['pretend']):
-	clientDbconn.closeDB()
-        del clientDbconn
 	return 0,atomsdata
 
     if (atomsdata) and (not reagent):
         if (etpUi['ask']):
             rc = entropyTools.askquestion("     Would you like to install them?")
             if rc == "No":
-		clientDbconn.closeDB()
-                del clientDbconn
 	        return 0,atomsdata
 	else:
 	    print_info(red(" @@ ")+blue("Installing found packages in ")+red("10 seconds")+blue("..."))
@@ -1542,15 +1486,9 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
         
 	entropyTools.applicationLockCheck("install")
         rc = installPackages(atomsdata = list(atomsdata))
-        if closedb:
-            clientDbconn.closeDB()
-            del clientDbconn
         if rc[0] == 0:
             return 0,atomsdata
         else:
             return rc[0],atomsdata
 
-    if closedb:
-        clientDbconn.closeDB()
-        del clientDbconn
     return 0,atomsdata

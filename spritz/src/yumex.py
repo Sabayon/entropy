@@ -42,7 +42,7 @@ from yumgui import *
 
 # yumex imports
 import filters
-from entropyapi import GuiRepositoryController, GuiCacheHelper
+from entropyapi import GuiRepositoryController, GuiCacheHelper, Equo
 from gui import YumexGUI
 from dialogs import *
 from misc import const, YumexOptions, YumexProfile
@@ -425,6 +425,7 @@ class YumexApplication(YumexController,YumexGUI):
         self.firstTime = True
         #self.addPackages()
         self.setPage('repos')
+        self.Equo = Equo
 
     def startWorking(self):
         self.isWorking = True
@@ -579,7 +580,7 @@ class YumexApplication(YumexController,YumexGUI):
         else:
             self.progress.set_mainLabel(_('Repositories updated successfully.'))
             self.progressLog(_('Repositories updated successfully.'))
-            rc = repositoriesTools.checkEquoUpdates()
+            rc = self.Equo.check_equo_updates()
             if rc:
                 self.progressLog(_('A new "equo" release is available. Please update it before any other package.'))
             else:

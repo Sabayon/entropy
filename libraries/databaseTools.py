@@ -2310,6 +2310,20 @@ class etpDatabase:
 	self.storeInfoCache(idpackage,'retrieveProvide',provide)
 	return provide
 
+    def retrieveDependenciesList(self, idpackage):
+
+        cache = self.fetchInfoCache(idpackage,'retrieveDependenciesList')
+        if cache != None: return cache
+
+        deps = self.retrieveDependencies(idpackage)
+        conflicts = self.retrieveConflicts(idpackage)
+        for x in conflicts:
+            deps.add("!"+x)
+        del conflicts
+
+        self.storeInfoCache(idpackage,'retrieveDependenciesList',deps)
+        return deps
+
     def retrieveDependencies(self, idpackage):
 
 	cache = self.fetchInfoCache(idpackage,'retrieveDependencies')
