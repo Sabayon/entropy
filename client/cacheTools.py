@@ -22,6 +22,7 @@
 
 from entropyConstants import *
 from clientConstants import *
+from outputTools import *
 import exceptionTools
 
 def cache(options):
@@ -64,13 +65,15 @@ def generateCache(depcache = True, configcache = True):
             - handles on-disk cache status
             - handles dictionary cache status
 '''
-class cacheHelper:
+class cacheHelper(TextInterface):
 
     def __init__(self):
         import confTools
         self.confTools = confTools
         import equoTools
         self.equoTools = equoTools
+        # instantiate Equo handling class
+        self.Equo = self.equoTools.Equo()
         import entropyTools
         self.entropyTools = entropyTools
         from databaseTools import openRepositoryDatabase
@@ -81,13 +84,13 @@ class cacheHelper:
         if not dumpdir.endswith("/"): dumpdir = dumpdir+"/"
         for key in etpCache:
             cachefile = dumpdir+etpCache[key]+"*.dmp"
-            self.updateProgress("Cleaning %s..." % (cachefile,), importance = 1, type = "warning", back = True)
+            self.updateProgress(darkred("Cleaning %s...") % (cachefile,), importance = 1, type = "warning", back = True)
             try:
                 os.system("rm -f "+cachefile)
             except:
                 pass
         # reset dict cache
-        self.updateProgress("Cache is now empty.", importance = 2, type = "info")
+        self.updateProgress(darkgreen("Cache is now empty."), importance = 2, type = "info")
         const_resetCache()
 
     def generate(self, depcache = True, configcache = True):
@@ -99,25 +102,25 @@ class cacheHelper:
             self.do_configcache()
 
     def do_configcache(self):
-        self.updateProgress("Configuration files", importance = 2, type = "warning")
-        self.updateProgress("Scanning hard disk", importance = 1, type = "warning")
+        self.updateProgress(darkred("Configuration files"), importance = 2, type = "warning")
+        self.updateProgress(red("Scanning hard disk"), importance = 1, type = "warning")
         self.confTools.scanfs(dcache = False)
-        self.updateProgress("Cache generation complete.", importance = 2, type = "info")
+        self.updateProgress(darkred("Cache generation complete."), importance = 2, type = "info")
 
     def do_depcache(self):
-        self.updateProgress("Dependencies", importance = 2, type = "warning")
-        self.updateProgress("Scanning repositories", importance = 2, type = "warning")
+        self.updateProgress(darkred("Dependencies"), importance = 2, type = "warning")
+        self.updateProgress(darkred("Scanning repositories"), importance = 2, type = "warning")
         names = set()
         keys = set()
         depends = set()
         atoms = set()
         for reponame in etpRepositories:
-            self.updateProgress("Scanning %s" % (etpRepositories[reponame]['description'],) , importance = 1, type = "info", back = True)
+            self.updateProgress(darkgreen("Scanning %s" % (etpRepositories[reponame]['description'],)) , importance = 1, type = "info", back = True)
             # get all packages keys
             try:
                 dbconn = self.openRepositoryDatabase(reponame)
             except exceptionTools.RepositoryError:
-                self.updateProgress("Cannot download/access: %s" % (etpRepositories[reponame]['description'],) , importance = 2, type = "error")
+                self.updateProgress(darkred("Cannot download/access: %s" % (etpRepositories[reponame]['description'],)) , importance = 2, type = "error")
                 continue
             pkgdata = dbconn.listAllPackages()
             pkgdata = set(pkgdata)
@@ -133,13 +136,13 @@ class cacheHelper:
             dbconn.closeDB()
             del dbconn
 
-        self.updateProgress("Resolving metadata", importance = 1, type = "warning")
+        self.updateProgress(darkgreen("Resolving metadata"), importance = 1, type = "warning")
         atomMatchCache.clear()
         maxlen = len(names)
         cnt = 0
         for name in names:
             cnt += 1
-            self.updateProgress("Resolving name: %s" % (
+            self.updateProgress(darkgreen("Resolving name: %s") % (
                                                 name
                                         ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
             self.equoTools.atomMatch(name)
@@ -147,7 +150,7 @@ class cacheHelper:
         cnt = 0
         for key in keys:
             cnt += 1
-            self.updateProgress("Resolving key: %s" % (
+            self.updateProgress(darkgreen("Resolving key: %s") % (
                                                 key
                                         ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
             self.equoTools.atomMatch(key)
@@ -155,7 +158,7 @@ class cacheHelper:
         cnt = 0
         for atom in atoms:
             cnt += 1
-            self.updateProgress("Resolving atom: %s" % (
+            self.updateProgress(darkgreen("Resolving atom: %s") % (
                                                 atom
                                         ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
             self.equoTools.atomMatch(atom)
@@ -163,33 +166,9 @@ class cacheHelper:
         cnt = 0
         for depend in depends:
             cnt += 1
-            self.updateProgress("Resolving dependency: %s" % (
+            self.updateProgress(darkgreen("Resolving dependency: %s") % (
                                                 depend
                                         ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
             self.equoTools.atomMatch(depend)
-        self.updateProgress("Dependencies filled. Flushing to disk.", importance = 2, type = "warning")
-        self.equoTools.saveCaches()
-
-
-    # @input text: text to write
-    # @input back: write on on the same line?
-    # @input importance:
-    #           values: 0,1,2
-    #           used to specify information importance, 0<important<2
-    # @input type:
-    #           values: "info, warning, error"
-    #
-    # feel free to reimplement this
-    def updateProgress(self, text, back = False, importance = 0, type = "info", count = []):
-        if (etpUi['quiet']):
-            return
-        import outputTools
-        count_str = ""
-        if count:
-            count_str = " (%s/%s) " % (outputTools.red(str(count[0])),outputTools.blue(str(count[1])),)
-        if importance == 0:
-            eval("outputTools.print_"+type)(outputTools.darkgreen("(")+outputTools.bold("*")+outputTools.darkgreen(") ")+count_str+outputTools.darkgreen(text), back = back)
-        elif importance == 1:
-            eval("outputTools.print_"+type)(outputTools.blue("(")+outputTools.bold("*")+outputTools.blue(") ")+count_str+outputTools.blue(text), back = back)
-        elif importance == 2:
-            eval("outputTools.print_"+type)(outputTools.red("(")+outputTools.bold("@@")+outputTools.red(") ")+count_str+outputTools.darkred(text), back = back)
+        self.updateProgress(darkred("Dependencies filled. Flushing to disk."), importance = 2, type = "warning")
+        self.Equo.save_cache()

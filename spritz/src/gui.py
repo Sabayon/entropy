@@ -269,9 +269,9 @@ class YumexGUI:
         # Package & Queue Views
         self.queue = YumexQueue()
         self.queueView = YumexQueueView(self.ui.queueView,self.queue)
-        self.pkgView = YumexPackageView(self.ui.viewPkg,self.queueView) 
+        self.pkgView = EntropyPackageView(self.ui.viewPkg,self.queueView) 
         self.compsView = YumexCompsView(self.ui.tvComps,self.queueView)
-        self.grpPackages = YumexPackageView(self.ui.tvGrpPackages,self.queueView) 
+        self.grpPackages = EntropyPackageView(self.ui.tvGrpPackages,self.queueView) 
         self.grpDesc = TextViewConsole(self.ui.grpDesc)
         self.repoView = YumexRepoView(self.ui.viewRepo)
         # Left Side Toolbar      

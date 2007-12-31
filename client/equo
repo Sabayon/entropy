@@ -246,11 +246,6 @@ try:
                 etpUi['pretend'] = True
         rc = uiTools.package(options)
         loadconfcache()
-	# save caches
-        try:
-            equoTools.saveCaches()
-        except IOError:
-            pass
 
     elif (options[0] == "query"):
 	import queryTools

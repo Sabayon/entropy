@@ -125,7 +125,7 @@ def reportApplicationError(errorstring):
 # ATTENTION: this functions fills global variable etpFileTransferMetadata !!
 # take care of that
 
-class urlFetcher:
+class urlFetcher(TextInterface):
 
     def __init__(self, url, pathToSave, checksum = True, showSpeed = True):
 
@@ -220,8 +220,7 @@ class urlFetcher:
         kbytecount = float(self.downloadedsize)/1024
         self.average = int((kbytecount/self.remotesize)*100)
 
-    # this is the function which should be reimplemented
-    # to work with GUI apps
+    # reimplemented from TextInterface
     def updateProgress(self):
 
         currentText = darkred("    <-> Downloading: ")+darkgreen(str(round(float(self.downloadedsize)/1024,1)))+"/"+red(str(round(self.remotesize,1)))+" kB"

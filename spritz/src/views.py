@@ -56,7 +56,7 @@ class YumexCategoryView:
                 self.model.append(None,[el,el])
     
 
-class YumexPackageView:
+class EntropyPackageView:
     def __init__( self, treeview,qview ):
         self.view = treeview
         self.headers = [_( "Package" ), _( "Ver" ), _( "Summary" ), _( "Repo" ), _( "Architecture" ), _( "Size" )]
@@ -65,7 +65,7 @@ class YumexPackageView:
         self.queueView = qview
         
     def setupView( self ):
-        store = gtk.ListStore( gobject.TYPE_PYOBJECT,str)
+        store = gtk.ListStore( gobject.TYPE_PYOBJECT, str)
         self.view.set_model( store )
         # Setup selection column
         cell1 = gtk.CellRendererToggle()    # Selection
@@ -74,9 +74,9 @@ class YumexPackageView:
         column1.set_cell_data_func( cell1, self.get_data_bool, 'selected' )
         column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column1.set_fixed_width( 20 )
-        column1.set_sort_column_id( -1 )            
+        column1.set_sort_column_id( -1 )
         self.view.append_column( column1 )
-        cell1.connect( "toggled", self.on_toggled )            
+        cell1.connect( "toggled", self.on_toggled )
         column1.set_clickable( True )
         # Setup resent column
         cell2 = gtk.CellRendererPixbuf()    # new
@@ -85,7 +85,7 @@ class YumexPackageView:
         column2.set_cell_data_func( cell2, self.new_pixbuf )
         column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column2.set_fixed_width( 20 )
-        column2.set_sort_column_id( -1 )            
+        column2.set_sort_column_id( -1 )
         self.view.append_column( column2 )
         column2.set_clickable( True )
 
@@ -112,8 +112,8 @@ class YumexPackageView:
         column.set_cell_data_func( cell, self.get_data_text, property )
         column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column.set_fixed_width( size )
-        column.set_sort_column_id( -1 )            
-        self.view.append_column( column )        
+        column.set_sort_column_id( -1 )
+        self.view.append_column( column )
         return column
         
     def get_data_text( self, column, cell, model, iter,property ):

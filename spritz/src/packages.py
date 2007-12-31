@@ -60,7 +60,7 @@ class YumexPackage( PackageWrapper ):
 
 
         
-class YumexPackages:
+class EntropyPackages:
     def __init__(self):
         self.logger = logging.getLogger('yumex.Packages')
         self.filterCallback = None
@@ -161,8 +161,8 @@ class YumexPackages:
         self.populatePackages([flt])
         return self._packages[flt]
         
-    def _getPackages(self,mask): 
-        global color_install,color_update,color_obsolete           
+    def _getPackages(self,mask):
+        global color_install,color_update,color_obsolete
         if mask == 'installed':
             for po in self.rpmdb:
                 yp = YumexPackage(po,self.recent,False)
@@ -178,10 +178,11 @@ class YumexPackages:
                     yp.action = 'i'
                     yield yp
         elif mask == 'updates':
+            # get updates
             obsoletes = self.up.getObsoletesTuples( newest=1 )
             for ( obsoleting, installed ) in obsoletes:
                 obsoleting_pkg = self.getPackageObject( obsoleting )
-                installed_pkg =  self.rpmdb.searchPkgTuple( installed )[0]                           
+                installed_pkg =  self.rpmdb.searchPkgTuple( installed )[0]
                 yp = YumexPackage(obsoleting_pkg,self.recent,True)
                 yp.action = 'u'
                 yp.obsolete = True

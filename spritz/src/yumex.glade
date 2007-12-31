@@ -7,12 +7,13 @@
   <property name="visible">True</property>
   <property name="title" translatable="yes">Spritz Package Manager</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
-  <property name="window_position">GTK_WIN_POS_NONE</property>
+  <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">False</property>
   <property name="default_width">800</property>
   <property name="default_height">600</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
+  <property name="icon_name">system-installer</property>
   <property name="decorated">True</property>
   <property name="skip_taskbar_hint">False</property>
   <property name="skip_pager_hint">False</property>
@@ -1793,7 +1794,7 @@
 				  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
 				</widget>
 				<packing>
-				  <property name="padding">3</property>
+				  <property name="padding">8</property>
 				  <property name="expand">False</property>
 				  <property name="fill">False</property>
 				</packing>
@@ -1818,7 +1819,7 @@
 			  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
 			</widget>
 			<packing>
-			  <property name="padding">9</property>
+			  <property name="padding">18</property>
 			  <property name="expand">False</property>
 			  <property name="fill">False</property>
 			</packing>
@@ -1849,7 +1850,7 @@
 		      <property name="visible">True</property>
 		    </widget>
 		    <packing>
-		      <property name="padding">0</property>
+		      <property name="padding">5</property>
 		      <property name="expand">False</property>
 		      <property name="fill">True</property>
 		    </packing>
@@ -1916,7 +1917,7 @@
 		      </child>
 		    </widget>
 		    <packing>
-		      <property name="padding">10</property>
+		      <property name="padding">18</property>
 		      <property name="expand">True</property>
 		      <property name="fill">True</property>
 		    </packing>

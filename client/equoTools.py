@@ -38,68 +38,89 @@ import gc
 import logTools
 equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[Equo]")
 
-### Caching functions
 
-def loadCaches():
-    
-    if os.getuid() != 0: # don't load cache as user
-        return
-    
-    if not etpUi['quiet']: print_info(darkred(" @@ ")+blue("Loading On-Disk Cache..."))
-    # atomMatch
-    try:
-        mycache = dumpTools.loadobj(etpCache['atomMatch'])
-	if isinstance(mycache, dict):
+'''
+    Main Entropy (client side) package management class
+'''
+class Equo(TextInterface):
+
+    '''
+        @input indexing(bool): enable/disable database tables indexing
+        @input noclientdb(bool): if enabled, client database non-existance will be ignored
+        @input xcache(bool): enable/disable database caching
+    '''
+    def __init__(self, indexing = True, noclientdb = False, xcache = True):
+
+        import dumpTools
+        self.dumpTools = dumpTools
+        import databaseTools
+        self.indexing = indexing
+        self.noclientdb = noclientdb
+        self.xcache = xcache
+        self.clientDbconn = databaseTools.openClientDatabase(indexing = self.indexing, 
+                                                                generate = noclientdb, 
+                                                                xcache = self.xcache
+                                                            )
+
+    def load_cache(self):
+
+        if (etpConst['uid'] != 0) or (not self.xcache): # don't load cache as user
+            return
+
+        self.updateProgress(blue("Loading On-Disk Cache..."), importance = 2, type = "info")
+        # atomMatch
+        try:
+            mycache = self.dumpTools.loadobj(etpCache['atomMatch'])
+            if isinstance(mycache, dict):
+                atomMatchCache.clear()
+                atomMatchCache.update(mycache)
+                del mycache
+        except:
             atomMatchCache.clear()
-            atomMatchCache.update(mycache)
-	    del mycache
-    except:
-	atomMatchCache.clear()
-	dumpTools.dumpobj(etpCache['atomMatch'],{})
+            self.dumpTools.dumpobj(etpCache['atomMatch'],{})
 
-    # removal dependencies
-    try:
-        mycache3 = dumpTools.loadobj(etpCache['generateDependsTree'])
-	if isinstance(mycache3, dict):
+        # removal dependencies
+        try:
+            mycache3 = self.dumpTools.loadobj(etpCache['generateDependsTree'])
+            if isinstance(mycache3, dict):
+                generateDependsTreeCache.clear()
+                generateDependsTreeCache.update(mycache3)
+                del mycache3
+        except:
             generateDependsTreeCache.clear()
-            generateDependsTreeCache.update(mycache3)
-            del mycache3
-    except:
-	generateDependsTreeCache.clear()
-	dumpTools.dumpobj(etpCache['generateDependsTree'],{})
+            self.dumpTools.dumpobj(etpCache['generateDependsTree'],{})
 
+    def save_cache(self):
 
-def saveCaches():
-    
-    if os.getuid() != 0: # don't save cache as user
-        return
-    
-    dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
-    if os.path.isfile(etpConst['dumpstoragedir']+"/"+etpCache['atomMatch']+".dmp"):
-	if os.stat(etpConst['dumpstoragedir']+"/"+etpCache['atomMatch']+".dmp")[6] > etpCacheSizes['atomMatch']:
-	    # clean cache
-	    dumpTools.dumpobj(etpCache['atomMatch'],{})
-    dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
-    if os.path.isfile(etpConst['dumpstoragedir']+"/"+etpCache['generateDependsTree']+".dmp"):
-	if os.stat(etpConst['dumpstoragedir']+"/"+etpCache['generateDependsTree']+".dmp")[6] > etpCacheSizes['generateDependsTree']:
-	    # clean cache
-	    dumpTools.dumpobj(etpCache['generateDependsTree'],{})
-    for dbinfo in dbCacheStore:
-	dumpTools.dumpobj(dbinfo,dbCacheStore[dbinfo])
-	# check size
-	if os.path.isfile(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp"):
-	    if dbinfo.startswith(etpCache['dbMatch']):
-	        if os.stat(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp")[6] > etpCacheSizes['dbMatch']:
-		    # clean cache
-		    dumpTools.dumpobj(dbinfo,{})
-	    elif dbinfo.startswith(etpCache['dbInfo']):
-	        if os.stat(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp")[6] > etpCacheSizes['dbInfo']:
-		    # clean cache
-		    dumpTools.dumpobj(dbinfo,{})
-	    elif dbinfo.startswith(etpCache['dbSearch']):
-	        if os.stat(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp")[6] > etpCacheSizes['dbSearch']:
-		    # clean cache
-		    dumpTools.dumpobj(dbinfo,{})
+        if (etpConst['uid'] != 0): # don't save cache as user
+            return
+
+        self.dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
+        if os.path.isfile(etpConst['dumpstoragedir']+"/"+etpCache['atomMatch']+".dmp"):
+            if os.stat(etpConst['dumpstoragedir']+"/"+etpCache['atomMatch']+".dmp")[6] > etpCacheSizes['atomMatch']:
+                # clean cache
+                self.dumpTools.dumpobj(etpCache['atomMatch'],{})
+        self.dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
+        if os.path.isfile(etpConst['dumpstoragedir']+"/"+etpCache['generateDependsTree']+".dmp"):
+            if os.stat(etpConst['dumpstoragedir']+"/"+etpCache['generateDependsTree']+".dmp")[6] > etpCacheSizes['generateDependsTree']:
+                # clean cache
+                self.dumpTools.dumpobj(etpCache['generateDependsTree'],{})
+        for dbinfo in dbCacheStore:
+            self.dumpTools.dumpobj(dbinfo,dbCacheStore[dbinfo])
+            # check size
+            if os.path.isfile(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp"):
+                if dbinfo.startswith(etpCache['dbMatch']):
+                    if os.stat(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp")[6] > etpCacheSizes['dbMatch']:
+                        # clean cache
+                        self.dumpTools.dumpobj(dbinfo,{})
+                elif dbinfo.startswith(etpCache['dbInfo']):
+                    if os.stat(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp")[6] > etpCacheSizes['dbInfo']:
+                        # clean cache
+                        self.dumpTools.dumpobj(dbinfo,{})
+                elif dbinfo.startswith(etpCache['dbSearch']):
+                    if os.stat(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp")[6] > etpCacheSizes['dbSearch']:
+                        # clean cache
+                        self.dumpTools.dumpobj(dbinfo,{})
 
 
 ########################################################

@@ -219,7 +219,6 @@ def syncRepositories(reponames = [], forceUpdate = False):
         print_info(darkgreen("\tUpdate completed"))
 
     repoConn.closeTransactions()
-    del repoConn
 
     # clean caches
     import cacheTools
@@ -230,6 +229,7 @@ def syncRepositories(reponames = [], forceUpdate = False):
             print_warning(darkred(" @@ ")+red("Something bad happened. Please have a look."))
         del repoConn
         return 128
+    del repoConn
 
     rc = checkEquoUpdates()
     if rc:
@@ -265,7 +265,7 @@ def checkEquoUpdates():
 #
 # repository control class, that's it
 #
-class repositoryController:
+class repositoryController(TextInterface):
 
     def __init__(self, reponames = [], forceUpdate = False):
 

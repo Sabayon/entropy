@@ -275,3 +275,33 @@ def readtext(request):
     xtermTitle("Entropy needs your attention")
     text = raw_input(request) # using readline module
     return text
+
+class TextInterface:
+
+    # @input text: text to write
+    # @input back: write on on the same line?
+    # @input importance:
+    #           values: 0,1,2
+    #           used to specify information importance, 0<important<2
+    # @input type:
+    #           values: "info, warning, error"
+    #
+    # feel free to reimplement this
+    def updateProgress(self, text, back = False, importance = 0, type = "info", count = []):
+        if (etpUi['quiet']) or (etpUi['mute']):
+            return
+        count_str = ""
+        if count:
+            count_str = " (%s/%s) " % (red(str(count[0])),blue(str(count[1])),)
+        if importance == 0:
+            eval("print_"+type)(count_str+text, back = back)
+        elif importance == 1:
+            eval("print_"+type)(count_str+text, back = back)
+        elif importance == 2:
+            eval("print_"+type)(count_str+text, back = back)
+
+    def nocolor(self):
+        nocolor()
+
+    def notitles(self):
+        notitles()
