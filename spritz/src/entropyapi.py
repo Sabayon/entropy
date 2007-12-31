@@ -32,7 +32,7 @@ import repositoriesTools
 import remoteTools
 import cacheTools
 import equoTools
-Equo = equoTools.Equo()
+Equo = equoTools.EquoInterface()
 
 '''
 

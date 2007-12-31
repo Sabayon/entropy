@@ -28,7 +28,7 @@
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
-from databaseTools import etpDatabase, openRepositoryDatabase, openClientDatabase, backupClientDatabase
+from databaseTools import backupClientDatabase
 import entropyTools
 import equoTools
 import exceptionTools
@@ -42,6 +42,8 @@ def database(options):
     if (not entropyTools.isRoot()):
         print_error(red("You are not ")+bold("root")+red("."))
 	return 1
+
+    Equo = equoTools.EquoInterface(noclientdb = True)
 
     if (options[0] == "generate"):
 
@@ -74,14 +76,11 @@ def database(options):
         # try to collect current installed revisions if possible
         revisionsMatch = {}
         try:
-            clientDbconn = openClientDatabase()
-            myids = clientDbconn.listAllIdpackages()
+            myids = Equo.clientDbconn.listAllIdpackages()
             for myid in myids:
-                myatom = clientDbconn.retrieveAtom(myid)
-                myrevision = clientDbconn.retrieveRevision(myid)
+                myatom = Equo.clientDbconn.retrieveAtom(myid)
+                myrevision = Equo.clientDbconn.retrieveRevision(myid)
                 revisionsMatch[myatom] = myrevision
-            clientDbconn.closeDB()
-            del clientDbconn
         except:
             pass
         
@@ -94,8 +93,8 @@ def database(options):
 	
 	# Now reinitialize it
 	print_info(darkred("  Initializing the new database at "+bold(etpConst['etpdatabaseclientfilepath'])), back = True)
-	clientDbconn = openClientDatabase(generate = True)
-	clientDbconn.initializeDatabase()
+        Equo.reopenClientDbconn()
+	Equo.clientDbconn.initializeDatabase()
 	print_info(darkgreen("  Database reinitialized correctly at "+bold(etpConst['etpdatabaseclientfilepath'])))
 	
 	# now collect packages in the system
@@ -144,17 +143,15 @@ def database(options):
                 except:
                     pass
             
-            idpk, rev, xx, status = clientDbconn.addPackage(etpData = mydata, revision = mydata['revision'])
-            clientDbconn.addPackageToInstalledTable(idpk,"gentoo-db")
+            idpk, rev, xx, status = Equo.clientDbconn.addPackage(etpData = mydata, revision = mydata['revision'])
+            Equo.clientDbconn.addPackageToInstalledTable(idpk,"gentoo-db")
             os.remove(temptbz2)
 	
 	print_info(red("  All the Gentoo packages have been injected into Entropy database."))
 
 	print_info(red("  Now generating depends caching table..."))
-	clientDbconn.regenerateDependsTable()
+	Equo.clientDbconn.regenerateDependsTable()
 	print_info(red("  Database reinitialized successfully."))
-	clientDbconn.closeDB()
-        del clientDbconn
         return 0
 
     elif (options[0] == "resurrect"):
@@ -185,8 +182,7 @@ def database(options):
 	
 	# Now reinitialize it
 	print_info(darkred("  Initializing the new database at "+bold(etpConst['etpdatabaseclientfilepath'])), back = True)
-	clientDbconn = openClientDatabase()
-	clientDbconn.initializeDatabase()
+	Equo.clientDbconn.initializeDatabase()
 	print_info(darkgreen("  Database reinitialized correctly at "+bold(etpConst['etpdatabaseclientfilepath'])))
 	
 	print_info(red("  Collecting installed files. Writing: "+etpConst['packagestmpfile']+" Please wait..."), back = True)
@@ -221,7 +217,7 @@ def database(options):
 	for repo in etpRepositories:
 	    print_info(red("  Matching in repository: ")+etpRepositories[repo]['description'])
 	    # get all idpackages
-	    dbconn = openRepositoryDatabase(repo)
+	    dbconn = Equo.openRepositoryDatabase(repo)
 	    idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'])
 	    count = str(len(idpackages))
 	    cnt = 0
@@ -237,8 +233,6 @@ def database(options):
 			atoms[(idpackage,repo)] = idpackageatom
 			filelist.difference_update(set([etpConst['systemroot']+x for x in content]))
 			break
-	    dbconn.closeDB()
-            del clientDbconn
 	
 	print_info(red("  Found "+str(len(pkgsfound))+" packages. Filling database..."))
 	count = str(len(pkgsfound))
@@ -256,10 +250,7 @@ def database(options):
 
     elif (options[0] == "depends"):
 	print_info(red("  Regenerating depends caching table..."))
-	clientDbconn = openClientDatabase()
-	clientDbconn.regenerateDependsTable()
-	clientDbconn.closeDB()
-        del clientDbconn
+	Equo.clientDbconn.regenerateDependsTable()
 	print_info(red("  Depends caching table regenerated successfully."))
         return 0
 
@@ -272,10 +263,7 @@ def database(options):
             return 1
         
 	print_info(red("  Regenerating counters table. Please wait..."))
-	clientDbconn = openClientDatabase()
-	clientDbconn.regenerateCountersTable(output = True)
-	clientDbconn.closeDB()
-        del clientDbconn
+	Equo.clientDbconn.regenerateCountersTable(output = True)
 	print_info(red("  Counters table regenerated. Check above for errors."))
         return 0
 
@@ -289,19 +277,14 @@ def database(options):
         
 	print_info(red(" Scanning Portage and Entropy databases for differences..."))
 
-        try:
-            clientDbconn = openClientDatabase()
-        except exceptionTools.SystemDatabaseError:
-            # damn
-            print_error(darkred(" * ")+bold("Entropy database")+red(" does not exist. So, you can't run this unless you run '")+bold("equo database generate")+red("' first. Sorry."))
-            return 1
+        # make it crash
+        Equo.noclientdb = False
+        Equo.reopenClientDbconn()
 
         # test if counters table exists, because if not, it's useless to run the diff scan
         try:
-            clientDbconn.isCounterAvailable(1)
+            Equo.clientDbconn.isCounterAvailable(1)
         except:
-            clientDbconn.closeDB()
-            del clientDbconn
             print_error(darkred(" * ")+bold("Entropy database")+red(" has never been in sync with Portage one. So, you can't run this unless you run '")+bold("equo database generate")+red("' first. Sorry."))
             return 1
 
@@ -318,12 +301,12 @@ def database(options):
         # packages to be added/updated (handle add/update later)
         for x in installedPackages[0]:
             installedCounters.add(x[1])
-            counter = clientDbconn.isCounterAvailable(x[1])
+            counter = Equo.clientDbconn.isCounterAvailable(x[1])
             if (not counter):
                 toBeAdded.add(tuple(x))
 
         # packages to be removed from the database
-        databaseCounters = clientDbconn.listAllCounters()
+        databaseCounters = Equo.clientDbconn.listAllCounters()
         for x in databaseCounters:
             if x[0] < 0: # skip packages without valid counter
                 continue
@@ -331,7 +314,7 @@ def database(options):
                 # check if the package is in toBeAdded
                 if (toBeAdded):
                     atomkey = entropyTools.dep_getkey(clientDbconn.retrieveAtom(x[1]))
-                    atomslot = clientDbconn.retrieveSlot(x[1])
+                    atomslot = Equo.clientDbconn.retrieveSlot(x[1])
                     add = True
                     for pkgdata in toBeAdded:
                         addslot = getPackageSlot(pkgdata[0])
@@ -351,15 +334,13 @@ def database(options):
         if (not toBeRemoved) and (not toBeAdded):
             print_info(red(" Databases already synced."))
             # then exit gracefully
-            clientDbconn.closeDB()
-            del clientDbconn
             return 0
         
         if (toBeRemoved):
             print_info(brown(" @@ ")+blue("Someone removed these packages. Would be removed from the Entropy database:"))
 
             for x in toBeRemoved:
-                atom = clientDbconn.retrieveAtom(x)
+                atom = Equo.clientDbconn.retrieveAtom(x)
                 print_info(brown("    # ")+red(atom))
             rc = "Yes"
             if etpUi['ask']: rc = entropyTools.askquestion(">>   Continue with removal?")
@@ -368,9 +349,9 @@ def database(options):
                 totalqueue = str(len(toBeRemoved))
                 for x in toBeRemoved:
                     queue += 1
-                    atom = clientDbconn.retrieveAtom(x)
+                    atom = Equo.clientDbconn.retrieveAtom(x)
                     print_info(red(" ++ ")+bold("(")+blue(str(queue))+"/"+red(totalqueue)+bold(") ")+">>> Removing "+darkgreen(atom))
-                    clientDbconn.removePackage(x)
+                    Equo.clientDbconn.removePackage(x)
                 print_info(brown(" @@ ")+blue("Database removal complete."))
 
         if (toBeAdded):
@@ -415,21 +396,19 @@ def database(options):
                     myatom += "#"+mydata['versiontag']
 
                 # look for atom in client database
-                oldidpackage = clientDbconn.getIDPackage(myatom)
+                oldidpackage = Equo.clientDbconn.getIDPackage(myatom)
                 if oldidpackage != -1:
-                    mydata['revision'] = clientDbconn.retrieveRevision(oldidpackage)
+                    mydata['revision'] = Equo.clientDbconn.retrieveRevision(oldidpackage)
                 else:
                     mydata['revision'] = 9999 # can't do much more
 
-                idpk, rev, xx, status = clientDbconn.handlePackage(etpData = mydata, forcedRevision = mydata['revision'])
-                clientDbconn.removePackageFromInstalledTable(idpk)
-                clientDbconn.addPackageToInstalledTable(idpk,"gentoo-db")
+                idpk, rev, xx, status = Equo.clientDbconn.handlePackage(etpData = mydata, forcedRevision = mydata['revision'])
+                Equo.clientDbconn.removePackageFromInstalledTable(idpk)
+                Equo.clientDbconn.addPackageToInstalledTable(idpk,"gentoo-db")
                 os.remove(temptbz2)
-            
+
             print_info(brown(" @@ ")+blue("Database update completed."))
-        
-        clientDbconn.closeDB()
-        del clientDbconn
+
         return 0
 
     else:
@@ -473,9 +452,8 @@ def pythonUpdater():
     old_pdir = os.path.join("/usr/lib/",dirs[0])
     print_info(brown(" @@ ")+blue("Scanning: %s" % (red(old_pdir),)))
 
-    clientDbconn = openClientDatabase()
     old_pdir = old_pdir.replace("/usr/lib","/usr/lib*")
-    idpackages = queryTools.searchBelongs(files = [old_pdir], idreturn = True, dbconn = clientDbconn)
+    idpackages = queryTools.searchBelongs(files = [old_pdir], idreturn = True, dbconn = Equo.clientDbconn)
     if not idpackages:
         print_info(brown(" @@ ")+blue("There are no files in %s whose belong to your old Python." % (old_pdir,)))
         return 0
@@ -483,7 +461,7 @@ def pythonUpdater():
 
     atoms = set()
     for idpackage in idpackages:
-        atom = clientDbconn.retrieveAtom(idpackage)
+        atom = Equo.clientDbconn.retrieveAtom(idpackage)
         atoms.add((atom, idpackage))
         print_info(red("    # ")+atom)
 
@@ -493,9 +471,9 @@ def pythonUpdater():
     matchedAtoms = set()
     for meta in atoms:
         atomkey = entropyTools.dep_getkey(meta[0])
-        slot = clientDbconn.retrieveSlot(meta[1])
+        slot = Equo.clientDbconn.retrieveSlot(meta[1])
         print_info(brown("   @@ ")+red("Matching ")+bold(atomkey)+red(":")+darkgreen(slot), back = True)
-        match = uiTools.Equo.atomMatch(atomkey, matchSlot = slot)
+        match = Equo.atomMatch(atomkey, matchSlot = slot)
         if match[0] != -1:
             matchedAtoms.add((atomkey+":"+slot,match))
     del atoms
@@ -551,7 +529,7 @@ def getinfo(dict = False):
     # client database info
     conn = False
     try:
-	clientDbconn = openClientDatabase()
+	Equo.clientDbconn.listAllIdPackages()
 	conn = True
     except:
 	pass
@@ -561,8 +539,6 @@ def getinfo(dict = False):
 	info['Removal internal protected directories'] = clientDbconn.listConfigProtectDirectories()
 	info['Removal internal protected directory masks'] = clientDbconn.listConfigProtectDirectories(mask = True)
 	info['Total installed packages'] = len(clientDbconn.listAllIdpackages())
-	clientDbconn.closeDB()
-        del clientDbconn
     
     # repository databases info (if found on the system)
     info['Repository databases'] = {}
@@ -570,15 +546,13 @@ def getinfo(dict = False):
 	dbfile = etpRepositories[x]['dbpath']+"/"+etpConst['etpdatabasefile']
 	if os.path.isfile(dbfile):
 	    # print info about this database
-	    dbconn = openRepositoryDatabase(x)
+	    dbconn = Equo.openRepositoryDatabase(x)
 	    info['Repository databases'][x] = {}
 	    info['Repository databases'][x]['Installation internal protected directories'] = dbconn.listConfigProtectDirectories()
 	    info['Repository databases'][x]['Installation internal protected directory masks'] = dbconn.listConfigProtectDirectories(mask = True)
 	    info['Repository databases'][x]['Total available packages'] = len(dbconn.listAllIdpackages())
 	    info['Repository databases'][x]['Database revision'] = repositoriesTools.getRepositoryRevision(x)
 	    info['Repository databases'][x]['Database hash'] = repositoriesTools.getRepositoryDbFileHash(x)
-	    dbconn.closeDB()
-            del dbconn
     
     if (dict):
 	return info

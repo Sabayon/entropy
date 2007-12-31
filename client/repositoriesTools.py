@@ -234,7 +234,7 @@ def syncRepositories(reponames = [], forceUpdate = False):
     rc = False
     try:
         import equoTools
-        Equo = equoTools.Equo()
+        Equo = equoTools.EquoInterface()
         rc = Equo.check_equo_updates()
         del Equo
     except:
@@ -244,31 +244,6 @@ def syncRepositories(reponames = [], forceUpdate = False):
         print_warning(darkred(" !! ")+blue("A new version of ")+bold("equo")+blue(" is available. Please ")+bold("install it")+blue(" before any other package."))
 
     return 0
-
-def checkEquoUpdates():
-    # tell if a new equo release is available
-    import equoTools
-    from databaseTools import openClientDatabase
-    try:
-        clientDbconn = openClientDatabase(xcache = False)
-    except exceptionTools.SystemDatabaseError:
-        del repoConn
-        return False
-
-    found = False
-    matches = clientDbconn.searchPackages("app-admin/equo")
-    if matches:
-        equo_match = "<="+matches[0][0]
-        equo_unsatisfied,x = equoTools.filterSatisfiedDependencies([equo_match])
-        del x
-        if equo_unsatisfied:
-            found = True
-        del matches
-        del equo_unsatisfied
-
-    clientDbconn.closeDB()
-    del clientDbconn
-    return found
 
 #
 # repository control class, that's it

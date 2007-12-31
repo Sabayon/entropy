@@ -144,6 +144,7 @@ options = sys.argv[1:]
 
 import entropyTools
 from clientConstants import *
+import exceptionTools
 
 # preliminary options parsing
 _options = []
@@ -304,6 +305,9 @@ try:
         if thread.getName() == "download": # equo current download speed thread
             thread.kill()
     sys.exit(rc)
+except exceptionTools.SystemDatabaseError:
+    print_error(darkred(" * ")+red("Installed Packages Database not found. Please generate it (at least!)"))
+    sys.exit(100)
 except SystemExit:
     pass
 except KeyboardInterrupt:
@@ -336,7 +340,6 @@ except Exception:
 	f = open("/tmp/equoerror.txt","r")
 	errorText = f.readlines()
 	f.close()
-	errorText = ' '.join(errorText)
     except Exception, e:
 	print
 	print_error(darkred("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org."))
@@ -362,8 +365,9 @@ except Exception:
     print_error(darkgreen("If you want to be contacted back (and actively supported), also answer the questions below:"))
     fullname = readtext("Your Full name: ")
     mail = readtext("Your E-Mail address: ")
-    errorText += "\n\nFull name: "+str(fullname)+"\n"
-    errorText += "E-mail: "+str(mail)+"\n"
+    errorText.insert(0,"Full name: "+str(fullname)+"\n")
+    errorText.insert(1,"E-mail: "+str(mail)+"\n\n")
+    errorText = ' '.join(errorText)
 
     # ok, come on!
     result = reportApplicationError(errorText)

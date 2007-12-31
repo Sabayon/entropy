@@ -1462,7 +1462,7 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
             # convert path into utf8
             path = string_to_utf8(path)
             if path == None:
-                path.decode("utf8") # will raise the exception
+                path.decode("utf-8") # will raise the exception
                 # otherwise, force it
                 raise Exception, "something is broken here!"
             try:
@@ -2126,7 +2126,7 @@ def string_to_utf8(string):
     
     # try utf8
     try:
-        newstring = string.decode("utf8").encode(sys.getfilesystemencoding())
+        newstring = string.decode("utf-8").encode(sys.getfilesystemencoding())
         done = True
     except:
         pass
@@ -2134,7 +2134,7 @@ def string_to_utf8(string):
         return newstring
     
     try:
-        newstring = string.encode("utf8").decode(sys.getfilesystemencoding())
+        newstring = string.encode("utf-8").decode(sys.getfilesystemencoding())
         done = True
     except:
         pass
@@ -2167,10 +2167,10 @@ def listToUtf8(mylist):
     mynewlist = []
     for item in mylist:
         try:
-            mynewlist.append(item.decode("utf8"))
+            mynewlist.append(item.decode("utf-8"))
         except UnicodeDecodeError:
             try:
-                mynewlist.append(item.decode("latin1").decode("utf8"))
+                mynewlist.append(item.decode("latin1").decode("utf-8"))
             except:
                 raise
     return mynewlist

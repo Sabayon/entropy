@@ -21,13 +21,12 @@
 '''
 
 from commands import getoutput
+import shutil
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
 import entropyTools
 import dumpTools
-import equoTools
-import shutil
 import exceptionTools
 
 # test if diff is installed
@@ -310,13 +309,6 @@ def scanfs(dcache = True):
 	except:
 	    pass
 
-    # load etpConst['dbconfigprotect']
-    try:
-        clientDbconn = equoTools.openClientDatabase()
-        clientDbconn.closeDB()
-    except exceptionTools.SystemDatabaseError:
-        if (not etpUi['quiet']): print_error(darkred("System database error. Does it exist?"))
-        return
     # etpConst['dbconfigprotect']
     if (not etpUi['quiet']): print_info(yellow(" @@ ")+darkgreen("Scanning filesystem..."))
     scandata = {}

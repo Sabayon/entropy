@@ -30,7 +30,7 @@ from outputTools import *
 import remoteTools
 import exceptionTools
 from entropyTools import compareMd5, bytesIntoHuman, askquestion, getRandomNumber, dep_getkey, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, unpackXpak, lifobuffer, ebeep, parallelStep
-from databaseTools import openRepositoryDatabase, openClientDatabase, openGenericDatabase, listAllAvailableBranches
+from databaseTools import openRepositoryDatabase, openClientDatabase, openGenericDatabase
 import confTools
 import dumpTools
 import gc
@@ -43,7 +43,7 @@ equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst[
 '''
     Main Entropy (client side) package management class
 '''
-class Equo(TextInterface):
+class EquoInterface(TextInterface):
 
     '''
         @input indexing(bool): enable/disable database tables indexing
@@ -61,14 +61,39 @@ class Equo(TextInterface):
         self.indexing = indexing
         self.noclientdb = noclientdb
         self.xcache = xcache
-        try:
-            self.clientDbconn = self.databaseTools.openClientDatabase(indexing = self.indexing, 
-                                                                    generate = noclientdb, 
+        self.openClientDatatabase()
+        self.repoDbCache = {}
+
+    def reopenClientDbconn(self):
+        self.clientDbconn.closeDB()
+        self.openClientDatatabase()
+
+    def closeAllRepositoryDatabases(self):
+        for item in self.repoDbCache:
+            self.repoDbCache[item].closeDB()
+            del self.repoDbCache[item]
+        self.repoDbCache.clear()
+
+    def openClientDatatabase(self):
+        self.clientDbconn = self.databaseTools.openClientDatabase(indexing = self.indexing, 
+                                                                    generate = self.noclientdb, 
                                                                     xcache = self.xcache
                                                                 )
-        except exceptionTools.SystemDatabaseError:
-            self.updateProgress(darkred("Installed Packages Database not found. Please generate it (at least!)"), importance = 2, type = "error")
-            raise
+
+    def openRepositoryDatabase(self, repoid):
+        if not self.repoDbCache.has_key((repoid,etpConst['systemroot'])):
+            dbconn = self.databaseTools.openRepositoryDatabase(repoid, xcache = self.xcache, indexing = self.indexing)
+            self.repoDbCache[(repoid,etpConst['systemroot'])] = dbconn
+            return dbconn
+        else:
+            return self.repoDbCache.get((repoid,etpConst['systemroot']))
+
+    def listAllAvailableBranches(self):
+        branches = set()
+        for repo in etpRepositories:
+            dbconn = self.openRepositoryDatabase(repo)
+            branches.update(dbconn.listAllBranches())
+        return branches
 
     def load_cache(self):
 
@@ -528,20 +553,20 @@ class Equo(TextInterface):
                 continue
             else:
                 keyslotcache.add((matchslot,key))
-    
+
             # already analyzed by the calling function
             if (match in matchFilter) and (usefilter):
                 mydep = mybuffer.pop()
                 continue
             if usefilter: matchFilter.add(match)
-    
+
             # result already analyzed?
             if match in matchcache:
                 mydep = mybuffer.pop()
                 continue
-    
+
             treedepth = mydep[0]+1
-    
+
             # all checks passed, well done
             matchcache.add(match)
             deptree.add((mydep[0],match)) # add match
@@ -556,7 +581,7 @@ class Equo(TextInterface):
                 myundeps = mytestdeps
             for x in myundeps:
                 mybuffer.push((treedepth,x))
-    
+
             # handle possible library breakage
             action = filterSatisfiedDependenciesCmpResults.get(mydep[1])
             if action and ((action < 0) or (action > 0)): # do not use != 0 since action can be "None"
@@ -773,6 +798,7 @@ class Equo(TextInterface):
         return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
 
+
 ########################################################
 ####
 ##   Files handling
@@ -786,17 +812,17 @@ class Equo(TextInterface):
 def checkNeededDownload(filepath,checksum = None):
     # is the file available
     if os.path.isfile(etpConst['entropyworkdir']+"/"+filepath):
-	if checksum is None:
-	    return 0
-	else:
-	    # check digest
-	    md5res = compareMd5(etpConst['entropyworkdir']+"/"+filepath,checksum)
-	    if (md5res):
-		return 0
-	    else:
-		return -2
+        if checksum is None:
+            return 0
+        else:
+            # check digest
+            md5res = compareMd5(etpConst['entropyworkdir']+"/"+filepath,checksum)
+            if (md5res):
+                return 0
+            else:
+                return -2
     else:
-	return -1
+        return -1
 
 
 def addFailingMirror(mirrorname,increment = 1):

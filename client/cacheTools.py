@@ -73,7 +73,7 @@ class cacheHelper(TextInterface):
         import equoTools
         self.equoTools = equoTools
         # instantiate Equo handling class
-        self.Equo = self.equoTools.Equo()
+        self.Equo = self.equoTools.EquoInterface()
         import entropyTools
         self.entropyTools = entropyTools
         from databaseTools import openRepositoryDatabase
