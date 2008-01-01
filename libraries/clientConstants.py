@@ -22,14 +22,6 @@
 
 from entropyConstants import *
 
-### Equo triggering functions for pre/post-install scripts
-### index: package atom, content: name of the function to call
-etpInstallTriggers = {}
-
-### Equo triggering functions for pre/post-remove scripts
-### structure same as above
-etpRemovalTriggers = {}
-
 def initConfig_clientConstants():
     # equo section
     if (os.path.isfile(etpConst['equoconf'])):

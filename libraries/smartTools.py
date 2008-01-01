@@ -26,7 +26,6 @@ from clientConstants import *
 from outputTools import *
 import equoTools
 import uiTools
-from databaseTools import openGenericDatabase
 Equo = equoTools.EquoInterface()
 
 def smart(options):
@@ -175,7 +174,7 @@ def InflateHandler(mytbz2s, savedir):
         while os.path.isfile(dbpath):
             dbpath = etpConst['packagestmpdir']+"/"+str(Equo.entropyTools.getRandomNumber())
         # create
-        mydbconn = openGenericDatabase(dbpath)
+        mydbconn = Equo.openGenericDatabase(dbpath)
         mydbconn.initializeDatabase()
         mydbconn.addPackage(mydata, revision = mydata['revision'])
         mydbconn.closeDB()
@@ -282,7 +281,7 @@ def smartpackagegenerator(matchedPackages):
     os.mkdir(unpackdir+"/db")
     # create master database
     dbfile = unpackdir+"/db/merged.db"
-    mergeDbconn = openGenericDatabase(dbfile, dbname = "client")
+    mergeDbconn = Equo.openGenericDatabase(dbfile, dbname = "client")
     mergeDbconn.initializeDatabase()
     mergeDbconn.createXpakTable()
     tmpdbfile = dbfile+"--readingdata"
@@ -290,7 +289,7 @@ def smartpackagegenerator(matchedPackages):
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red("collecting Entropy metadata"))
         Equo.entropyTools.extractEdb(etpConst['entropyworkdir']+"/"+matchedAtoms[package]['download'],tmpdbfile)
         # read db and add data to mergeDbconn
-        mydbconn = openGenericDatabase(tmpdbfile)
+        mydbconn = Equo.openGenericDatabase(tmpdbfile)
         idpackages = mydbconn.listAllIdpackages()
         
         for myidpackage in idpackages:
@@ -398,7 +397,7 @@ def smartgenerator(atomInfo, emptydeps = False):
     pkgfilename = os.path.basename(pkgfilepath)
     pkgname = pkgfilename.split(".tbz2")[0]
     
-    pkgdependencies, result = Equo.getRequiredPackages([atomInfo], emptydeps = emptydeps)
+    pkgdependencies, removal, result = Equo.retrieveInstallQueue([atomInfo], empty_deps = emptydeps)
     # flatten them
     pkgs = []
     if (result == 0):

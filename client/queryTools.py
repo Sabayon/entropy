@@ -424,7 +424,7 @@ def searchRemoval(atoms, idreturn = False, deep = False):
     choosenRemovalQueue = []
     if (not etpUi['quiet']):
         print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
-    treeview = Equo.generateDependsTree(foundAtoms, deep = deep)
+    treeview = Equo.generate_depends_tree(foundAtoms, deep = deep)
     treelength = len(treeview[0])
     if treelength > 1:
         treeview = treeview[0]

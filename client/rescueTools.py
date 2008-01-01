@@ -68,9 +68,7 @@ def database(options):
 	    return 0
 
 	# clean caches
-	import cacheTools
-	cacheTools.cleanCache()
-	const_resetCache()
+	Equo.purge_cache()
         import shutil
 	
         # try to collect current installed revisions if possible
@@ -169,9 +167,7 @@ def database(options):
 	    return 0
 	
 	# clean caches
-	import cacheTools
-	cacheTools.cleanCache()
-	const_resetCache()
+	Equo.purge_cache()
 
 	# ok, he/she knows it... hopefully
 	# if exist, copy old database

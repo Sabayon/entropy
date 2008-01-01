@@ -426,6 +426,7 @@ class YumexApplication(YumexController,YumexGUI):
         #self.addPackages()
         self.setPage('repos')
         self.Equo = Equo
+        self.Equo.connectProgressObject(self.progress)
 
     def startWorking(self):
         self.isWorking = True
@@ -440,11 +441,7 @@ class YumexApplication(YumexController,YumexGUI):
         gtkEventThread.endProcessing()
     
     def cleanEntropyCaches(self):
-        cacheConn = GuiCacheHelper()
-        cacheConn.nocolor()
-        cacheConn.connectProgressObject(self.progress)
-        cacheConn.generate(depcache = True, configcache = False)
-        del cacheConn
+        self.Equo.generate_cache(depcache = True, configcache = False)
     
     def updateRepositories(self, repos):
         self.setPage('output')

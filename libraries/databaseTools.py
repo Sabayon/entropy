@@ -32,8 +32,9 @@ import dumpTools
 import exceptionTools
 
 # Logging initialization
-import logTools
-dbLog = logTools.LogFile(level = etpConst['databaseloglevel'],filename = etpConst['databaselogfile'], header = "[DBase]")
+# FIXME: remove database logging
+# import logTools
+# dbLog = logTools.LogFile(level = etpConst['databaseloglevel'],filename = etpConst['databaselogfile'], header = "[DBase]")
 _treeUpdatesCalled = False
 
 
@@ -42,9 +43,10 @@ _treeUpdatesCalled = False
 #####################################################################################
 
 '''
-   @description: open the repository database and returns the pointer
+   @description: open the repository database
    @input repositoryName: name of the client database
-   @output: database pointer or, -1 if error
+   @output: database class instance
+   NOTE: if you are interested using it client side, please USE equoTools.Equo() class instead
 '''
 def openRepositoryDatabase(repositoryName, xcache = True, indexing = True):
     dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
@@ -78,27 +80,28 @@ def fetchRepositoryIfNotAvailable(reponame):
     return rc
 
 '''
-   @description: open the installed packages database and returns the pointer
-   @output: database pointer or, -1 if error
+   @description: open the installed packages database
+   @output: database class instance
+   NOTE: if you are interested using it client side, please USE equoTools.Equo() class instead
 '''
 def openClientDatabase(xcache = True, generate = False, indexing = True):
     if (not generate) and (not os.path.isfile(etpConst['etpdatabaseclientfilepath'])):
         raise exceptionTools.SystemDatabaseError("SystemDatabaseError: system database not found. Either does not exist or corrupted.")
     else:
         conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = 'client', xcache = xcache, indexing = indexing)
-	if (not etpConst['dbconfigprotect']):
-	    # config protect not prepared
+        if (not etpConst['dbconfigprotect']):
+            # config protect not prepared
             if (not generate):
-                
+
                 etpConst['dbconfigprotect'] = conn.listConfigProtectDirectories()
                 etpConst['dbconfigprotectmask'] = conn.listConfigProtectDirectories(mask = True)
                 etpConst['dbconfigprotect'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
                 etpConst['dbconfigprotectmask'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
-                
+
                 etpConst['dbconfigprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpConst['dbconfigprotect']]
                 etpConst['dbconfigprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpConst['dbconfigprotectmask']]
-                
-	return conn
+
+        return conn
 
 '''
    @description: open the entropy server database and returns the pointer. This function must be used only by reagent or activator
@@ -113,7 +116,7 @@ def openServerDatabase(readOnly = True, noUpload = True):
 
 '''
    @description: open a generic client database and returns the pointer.
-   @output: database pointer
+   @output: database class instance
 '''
 def openGenericDatabase(dbfile, dbname = None, xcache = False, indexing = True, readOnly = False):
     if dbname == None: dbname = "generic"
@@ -141,10 +144,10 @@ def doServerDatabaseSyncLock(noUpload):
 
     # check if the database is locked locally
     if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
-        print_info(red(" * ")+red("Entropy database is already locked by you :-)"))
+        self.updateProgress(red("Entropy database is already locked by you :-)"), importance = 1, type = "info", header = red(" * "))
     else:
         # check if the database is locked REMOTELY
-        print_info(red(" * ")+red(" Locking and Syncing Entropy database ..."), back = True)
+        self.updateProgress(red("Locking and Syncing Entropy database..."), importance = 1, type = "info", header = red(" * "), back = True)
         for uri in etpConst['activatoruploaduris']:
             ftp = mirrorTools.handlerFTP(uri)
             try:
@@ -163,34 +166,40 @@ def doServerDatabaseSyncLock(noUpload):
                 ftp.setCWD(etpConst['etpurirelativepath'])
             if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
                 import time
-                print_info(red(" * ")+bold("WARNING")+red(": online database is already locked. Waiting up to 2 minutes..."), back = True)
+                self.updateProgress(bold("WARNING")+red(": online database is already locked. Waiting up to 2 minutes..."), importance = 1, type = "info", header = red(" * "), back = True)
                 unlocked = False
                 count = 120
                 while count:
                     time.sleep(1)
                     count -= 1
                     if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
-                        print_info(red(" * ")+bold("HOORAY")+red(": online database has been unlocked. Locking back and syncing..."))
+                        self.updateProgress(bold("HOORAY")+red(": online database has been unlocked. Locking back and syncing..."), importance = 1, type = "info", header = red(" * "))
                         unlocked = True
                         break
                 if (unlocked):
                     break
 
-                print_info(yellow(" * ")+green("Mirrors status table:"))
+                self.updateProgress(darkgreen("Mirrors status table:"), importance = 1, type = "info", header = brown(" * "))
                 dbstatus = activatorTools.getMirrorsLock()
                 for db in dbstatus:
-                    
+
                     db[1] = green("Unlocked")
                     if (db[1]):
                         db[1] = red("Locked")
                     db[2] = green("Unlocked")
                     if (db[2]):
                         db[2] = red("Locked")
-                    
-                    print_info(bold("\t"+entropyTools.extractFTPHostFromUri(db[0])+": ")+red("[")+yellow("DATABASE: ")+db[1]+red("] [")+yellow("DOWNLOAD: ")+db[2]+red("]"))
-        
+
+                    p_uri = entropyTools.extractFTPHostFromUri(db[0])
+                    self.updateProgress(
+                                            bold("%s: ")+red("[")+brown("DATABASE: %s")+red("] [")+brown("DOWNLOAD: %s")+red("]") % (p_uri,db[1],db[2],),
+                                            importance = 1,
+                                            type = "info",
+                                            header = "\t"
+                                        )
+                    del p_uri
+
                 ftp.closeConnection()
-                print
                 raise exceptionTools.OnlineMirrorError("OnlineMirrorError: cannot lock mirror "+entropyTools.extractFTPHostFromUri(uri))
 
         # if we arrive here, it is because all the mirrors are unlocked so... damn, LOCK!
@@ -199,7 +208,7 @@ def doServerDatabaseSyncLock(noUpload):
         # ok done... now sync the new db, if needed
         activatorTools.syncRemoteDatabases(noUpload)
 
-class etpDatabase:
+class etpDatabase(TextInterface):
 
     def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = 'etpdb', indexing = True):
         
@@ -271,7 +280,7 @@ class etpDatabase:
             import activatorTools
             activatorTools.lockDatabases(False)
         else:
-            print_info(yellow(" * ")+green("Mirrors have not been unlocked. Run activator."))
+            self.updateProgress(darkgreen("Mirrors have not been unlocked. Run activator."), importance = 1, type = "info", header = brown(" * "))
         
         # run vacuum cleaner
         self.cursor.execute("vacuum")
@@ -380,7 +389,6 @@ class etpDatabase:
                 del portageTools
 
         if doRescan or (str(stored_digest) != str(portage_dirs_digest)):
-            #print stored_digest, portage_dirs_digest
 
             # force parameters
             self.readOnly = False
@@ -405,10 +413,12 @@ class etpDatabase:
             update_actions = self.filterTreeUpdatesActions(update_actions)
             if update_actions:
 
-                # print information
-                print_warning("")
-                print_warning(darkred(" * ")+bold("ATTENTION: ")+red("forcing package updates. Syncing with %s" % (blue(updates_dir),)))
-                print_warning("")
+                self.updateProgress(
+                                        bold("ATTENTION: ")+red("forcing package updates. Syncing with %s") % (blue(updates_dir),),
+                                        importance = 1,
+                                        type = "info",
+                                        header = brown(" * ")
+                                    )
                 # lock database
                 doServerDatabaseSyncLock(self.noUpload)
                 # now run queue
@@ -459,7 +469,6 @@ class etpDatabase:
                 client_digest = clientDbconn.retrieveRepositoryUpdatesDigest(repository)
 
         if doRescan or (str(stored_digest) != str(client_digest)):
-            #print stored_digest, portage_dirs_digest
 
             # reset database tables
             clientDbconn.clearTreeupdatesEntries(repository)
@@ -471,12 +480,14 @@ class etpDatabase:
 
             if update_actions:
 
-                # print information
-                print_warning("")
-                print_warning(darkred(" * ")+bold("ATTENTION: ")+red("forcing packages metadata update. Updating system database using repository id: %s" % (blue(repository),)))
+                self.updateProgress(
+                                        bold("ATTENTION: ")+red("forcing packages metadata update. Updating system database using repository id: %s") % (blue(repository),),
+                                        importance = 1,
+                                        type = "info",
+                                        header = darkred(" * ")
+                                    )
                 # run stuff
                 clientDbconn.runTreeUpdatesActions(update_actions)
-                print_warning("")
 
             # store new digest into database
             clientDbconn.setRepositoryUpdatesDigest(repository, stored_digest)
@@ -524,7 +535,12 @@ class etpDatabase:
         # just run fixpackages if gentoo-compat is enabled
         if etpConst['gentoo-compat']:
             ## FIXME: beautify
-            print_warning(darkred(" * ")+bold("GENTOO: ")+red("Running fixpackages, could take a while."))
+            self.updateProgress(
+                                    bold("GENTOO: ")+red("Running fixpackages, could take a while."),
+                                    importance = 1,
+                                    type = "warning",
+                                    header = darkred(" * ")
+                                )
             if self.clientDatabase:
                 os.system("fixpackages &> /dev/null")
             else:
@@ -532,11 +548,15 @@ class etpDatabase:
 
         for action in actions:
             command = action.split()
+            self.updateProgress(
+                                    bold("ENTROPY: ")+red("action: %s") % (blue(action),),
+                                    importance = 1,
+                                    type = "warning",
+                                    header = darkred(" * ")
+                                )
             if command[0] == "move":
-                print_warning(darkred(" * ")+bold("ENTROPY: ")+red("action: %s" % (blue(action),)))
                 self.runTreeUpdatesMoveAction(command[1:])
             elif command[0] == "slotmove":
-                print_warning(darkred(" * ")+bold("ENTROPY: ")+red("action: %s" % (blue(action),)))
                 self.runTreeUpdatesSlotmoveAction(command[1:])
 
         # discard cache
@@ -598,7 +618,12 @@ class etpDatabase:
                 # check for injection and warn the developer
                 injected = self.isInjected(idpackage)
                 if injected:
-                    print_warning(darkred(" * ")+bold("INJECT: ")+red("Package %s has been injected. You need to quickpkg it manually to update embedded database !!! Repository database will be updated anyway." % (blue(new_atom),)))
+                    self.updateProgress(
+                                            bold("INJECT: ")+red("Package %s has been injected. You need to quickpkg it manually to update embedded database !!! Repository database will be updated anyway.") % (blue(new_atom),),
+                                            importance = 1,
+                                            type = "warning",
+                                            header = darkred(" * ")
+                                        )
 
                 # quickpkg package and packages owning it as a dependency
                 self.runTreeUpdatesQuickpkgAction(quickpkg_queue)
@@ -652,7 +677,12 @@ class etpDatabase:
                 # check for injection and warn the developer
                 injected = self.isInjected(idpackage)
                 if injected:
-                    print_warning(darkred(" * ")+bold("INJECT: ")+red("Package %s has been injected. You need to quickpkg it manually to update embedded database !!! Repository database will be updated anyway." % (blue(atom),)))
+                    self.updateProgress(
+                                            bold("INJECT: ")+red("Package %s has been injected. You need to quickpkg it manually to update embedded database !!! Repository database will be updated anyway.") % (blue(atom),),
+                                            importance = 1,
+                                            type = "warning",
+                                            header = darkred(" * ")
+                                        )
 
                 # quickpkg package and packages owning it as a dependency
                 self.runTreeUpdatesQuickpkgAction(quickpkg_queue)
@@ -673,7 +703,12 @@ class etpDatabase:
             while 1:
                 mybranch = readtext("Type your branch: ")
                 if mybranch not in self.listAllBranches():
-                    print_warning(darkred(" * ")+bold("ATTENTION: ")+red("Specified branch %s does not exist." % (blue(mybranch),)))
+                    self.updateProgress(
+                                            bold("ATTENTION: ")+red("Specified branch %s does not exist.") % (blue(mybranch),),
+                                            importance = 1,
+                                            type = "warning",
+                                            header = darkred(" * ")
+                                        )
                     continue
                 # ask to confirm
                 rc = entropyTools.askquestion("     Confirm %s ?" % (mybranch,))
@@ -683,8 +718,12 @@ class etpDatabase:
         
         rc = reagentTools.update(reagent_cmds)
         if rc != 0:
-            print_warning(darkred(" * ")+bold("ATTENTION: ")+red("reagent update did not run properly. Update packages manually"))
-
+            self.updateProgress(
+                                    bold("ATTENTION: ")+red("reagent update did not run properly. Please update packages manually"),
+                                    importance = 1,
+                                    type = "warning",
+                                    header = darkred(" * ")
+                                )
 
     def loadDatabaseCache(self):
 
@@ -2528,7 +2567,7 @@ class etpDatabase:
 
 	# sanity check on the table
 	sanity = self.isDependsTableSane()
-	if (not sanity): # is empty, need generation
+	if not sanity: # is empty, need generation
             self.regenerateDependsTable(output = False)
 
 	self.cursor.execute('SELECT dependencies.idpackage FROM dependstable,dependencies WHERE dependstable.idpackage = (?) and dependstable.iddependency = dependencies.iddependency', (idpackage,))
@@ -3244,21 +3283,15 @@ class etpDatabase:
         if status:
             return False
         
-        # also check that dependenciesreference length matches dependstable length
-        self.cursor.execute('select count(*) from dependenciesreference')
-        dependenciesreference_count = self.cursor.fetchone()
+        # dependstable should always be bigger than baseinfo on a sane system
+        # XXX: maybe finding a better way to really verify dependstable sanity?
+        self.cursor.execute('select count(*) from baseinfo')
+        baseinfo_count = self.cursor.fetchone()
         self.cursor.execute('select count(*) from dependstable')
         dependstable_count = self.cursor.fetchone()
-        if dependenciesreference_count and dependstable_count:
-            try:
-                if dependenciesreference_count[0] == dependstable_count[0]:
-                    return True
-                else:
-                    return False
-            except:
-                return False
-
-        return False
+        if dependstable_count < baseinfo_count:
+            return False
+        return True
 
     def createXpakTable(self):
         self.cursor.execute('CREATE TABLE xpakdata ( idpackage INTEGER PRIMARY KEY, data BLOB );')
@@ -3329,7 +3362,7 @@ class etpDatabase:
                     counter = int(f.readline().strip())
                     f.close()
                 except:
-                    if output: print "Attention: Cannot open Gentoo counter file for: "+myatom
+                    if output: self.updateProgress(red("ATTENTION: cannot open Gentoo counter file for: %s") % (bold(myatom),), importance = 1, type = "warning")
                     continue
                 # insert id+counter
                 try:
@@ -3338,7 +3371,7 @@ class etpDatabase:
                             '(?,?)', ( counter, myid, )
                     )
                 except:
-                    if output: print "Attention: counter for atom "+str(myatom)+" is duplicated. Ignoring."
+                    if output: self.updateProgress(red("ATTENTION: counter for atom %s")+red(" is duplicated. Ignoring.") % (bold(myatom),), importance = 1, type = "warning")
                     continue # don't trust counters, they might not be unique
         self.commitChanges()
 
@@ -3443,13 +3476,19 @@ class etpDatabase:
         self.createDependsTable()
         depends = self.listAllDependencies()
         count = 0
-        total = str(len(depends))
+        total = len(depends)
         for depend in depends:
 	    count += 1
 	    atom = depend[1]
 	    iddep = depend[0]
 	    if output:
-	        print_info("  "+bold("(")+darkgreen(str(count))+"/"+blue(total)+bold(")")+red(" Resolving ")+bold(atom), back = True)
+                self.updateProgress(
+                                        red("Resolving %s") % (darkgreen(atom),),
+                                        importance = 0,
+                                        type = "info",
+                                        back = True,
+                                        count = (count,total)
+                                    )
 	    match = self.atomMatch(atom)
 	    if (match[0] != -1):
 	        self.addDependRelationToDependsTable(iddep,match[0])
@@ -3479,7 +3518,6 @@ class etpDatabase:
 
     def atomMatchStoreCache(self, result, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter):
         try:
-            #print "CACHING",result,atom,self.dbname
             cache_tuple = (atom,matchSlot,matchTag,multiMatch,caseSensitive,matchBranches,packagesFilter)
             dbCacheStore[etpCache['dbMatch']+self.dbname][cache_tuple] = result
         except KeyError: # againnn, issues with dicts??
@@ -3545,7 +3583,6 @@ class etpDatabase:
         for keyword in etpConst['packagemasking']['keywords']['packages']:
             # first of all check if keyword is in mykeywords
             if keyword in mykeywords:
-                #print "found",keyword
                 keyword_data = etpConst['packagemasking']['keywords']['packages'].get(keyword)
                 # check for relation
                 for atom in keyword_data:
@@ -3735,7 +3772,6 @@ class etpDatabase:
 	    if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
 	        # check if direction is used with justname, in this case, return an error
 	        if (justname):
-		    #print "justname"
                     self.atomMatchStoreCache((-1,3), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
 		    return -1,3 # error, cannot use directions when not specifying version
 	    
@@ -3744,7 +3780,6 @@ class etpDatabase:
 		    if (direction == '' and not justname):
 		        direction = "="
 		
-		    #print direction+" direction"
 		    # remove revision (-r0 if none)
 		    if (direction == "="):
 		        if (pkgversion.split("-")[-1] == "r0"):
@@ -3752,7 +3787,6 @@ class etpDatabase:
 		    if (direction == "~"):
 		        pkgversion = entropyTools.remove_revision(pkgversion)
 		
-		    #print pkgversion
 		    dbpkginfo = []
 		    for data in foundIDs:
 		        idpackage = data[1]
@@ -3808,8 +3842,6 @@ class etpDatabase:
                         self.atomMatchStoreCache((similarPackages,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
 			return similarPackages,0
 		    
-		    #print newerPackage
-		    #print similarPackages
 	            if (len(similarPackages) > 1):
 		        # gosh, there are packages with the same name, version, category
 		        # we need to parse version tag
@@ -3826,7 +3858,6 @@ class etpDatabase:
 
 	        elif (direction.find(">") != -1) or (direction.find("<") != -1):
 		
-		    #print direction+" direction"
 		    # remove revision (-r0 if none)
 		    if pkgversion.split("-")[-1] == "r0":
 		        # remove
@@ -3900,8 +3931,6 @@ class etpDatabase:
                         self.atomMatchStoreCache((similarPackages,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
 			return similarPackages,0
 
-		    #print newerPackage
-		    #print similarPackages
 	            if (len(similarPackages) > 1):
 		        # gosh, there are packages with the same name, version, category
 		        # we need to parse version tag
@@ -3924,7 +3953,6 @@ class etpDatabase:
 	    
 	        # not set, just get the newer version, matching slot choosen if matchSlot != None
 	        versionIDs = []
-		#print foundIDs
 		multiMatchList = set()
 		_foundIDs = []
 	        for data in foundIDs:

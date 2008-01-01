@@ -41,8 +41,10 @@ def dumpobj(name, object, completePath = False):
             cPickle.dump(object,f)
             f.flush()
             f.close()
-        except:
+        except IOError, e:
             raise IOError,"can't write to file "+name
+        except:
+            raise
         break
 
 

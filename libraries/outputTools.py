@@ -281,24 +281,32 @@ class TextInterface:
     # @input text: text to write
     # @input back: write on on the same line?
     # @input importance:
-    #           values: 0,1,2
+    #           values: 0,1,2,3 (latter is a blocker - popup menu on a GUI env)
     #           used to specify information importance, 0<important<2
     # @input type:
     #           values: "info, warning, error"
     #
+    # @input count:
+    #           if you need to print an incremental count ( 100/250...101/251..)
+    #           just pass count = [first integer,second integer] or even a tuple!
+    #
+    #
+    # @input items:
+    #           if you need to pass a list of items to print
+    #
     # feel free to reimplement this
-    def updateProgress(self, text, back = False, importance = 0, type = "info", count = []):
+    def updateProgress(self, text, header = "", back = False, importance = 0, type = "info", count = []):
         if (etpUi['quiet']) or (etpUi['mute']):
             return
         count_str = ""
         if count:
             count_str = " (%s/%s) " % (red(str(count[0])),blue(str(count[1])),)
         if importance == 0:
-            eval("print_"+type)(count_str+text, back = back)
+            eval("print_"+type)(header+count_str+text, back = back)
         elif importance == 1:
-            eval("print_"+type)(count_str+text, back = back)
-        elif importance == 2:
-            eval("print_"+type)(count_str+text, back = back)
+            eval("print_"+type)(header+count_str+text, back = back)
+        elif importance in (2,3):
+            eval("print_"+type)(header+count_str+text, back = back)
 
     def nocolor(self):
         nocolor()

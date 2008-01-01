@@ -30,7 +30,7 @@ from outputTools import *
 import remoteTools
 import exceptionTools
 from entropyTools import compareMd5, bytesIntoHuman, askquestion, getRandomNumber, dep_getkey, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, unpackXpak, lifobuffer, ebeep, parallelStep
-from databaseTools import openRepositoryDatabase, openClientDatabase, openGenericDatabase
+from databaseTools import openRepositoryDatabase, openClientDatabase
 import confTools
 import dumpTools
 import gc
@@ -58,11 +58,27 @@ class EquoInterface(TextInterface):
         self.databaseTools = databaseTools
         import entropyTools
         self.entropyTools = entropyTools
+        import confTools
+        self.confTools = confTools
         self.indexing = indexing
         self.noclientdb = noclientdb
         self.xcache = xcache
         self.openClientDatatabase()
         self.repoDbCache = {}
+        # Packages installation stuff
+        self.transaction_ready = False
+        self.steps = []
+        self.transaction_running = False
+
+    def switchChroot(self, chroot = ""):
+        # clean caches
+        self.purge_cache()
+        const_resetCache()
+        if chroot.endswith("/"):
+            chroot = chroot[:-1]
+        etpSys['rootdir'] = chroot
+        initConfig_entropyConstants(etpSys['rootdir'])
+        initConfig_clientConstants()
 
     def reopenClientDbconn(self):
         self.clientDbconn.closeDB()
@@ -88,12 +104,120 @@ class EquoInterface(TextInterface):
         else:
             return self.repoDbCache.get((repoid,etpConst['systemroot']))
 
+    def openGenericDatabase(self, dbfile, dbname = None, xcache = None, readOnly = False):
+        if xcache == None:
+            xcache = self.xcache
+        dbconn = self.databaseTools.openGenericDatabase(dbfile, 
+                                                        dbname = dbname, 
+                                                        xcache = xcache, 
+                                                        indexing = self.indexing,
+                                                        readOnly = readOnly
+                                                    )
+
     def listAllAvailableBranches(self):
         branches = set()
         for repo in etpRepositories:
             dbconn = self.openRepositoryDatabase(repo)
             branches.update(dbconn.listAllBranches())
         return branches
+
+
+    '''
+       Cache stuff :: begin
+    '''
+    def purge_cache(self):
+        dumpdir = etpConst['dumpstoragedir']
+        if not dumpdir.endswith("/"): dumpdir = dumpdir+"/"
+        for key in etpCache:
+            cachefile = dumpdir+etpCache[key]+"*.dmp"
+            self.updateProgress(darkred("Cleaning %s...") % (cachefile,), importance = 1, type = "warning", back = True)
+            try:
+                os.system("rm -f "+cachefile)
+            except:
+                pass
+        # reset dict cache
+        self.updateProgress(darkgreen("Cache is now empty."), importance = 2, type = "info")
+        const_resetCache()
+
+    def generate_cache(self, depcache = True, configcache = True):
+        # clean first of all
+        self.purge_cache()
+        if depcache:
+            self.do_depcache()
+        if configcache:
+            self.do_configcache()
+
+    def do_configcache(self):
+        self.updateProgress(darkred("Configuration files"), importance = 2, type = "warning")
+        self.updateProgress(red("Scanning hard disk"), importance = 1, type = "warning")
+        self.confTools.scanfs(dcache = False)
+        self.updateProgress(darkred("Cache generation complete."), importance = 2, type = "info")
+
+    def do_depcache(self):
+        self.updateProgress(darkred("Dependencies"), importance = 2, type = "warning")
+        self.updateProgress(darkred("Scanning repositories"), importance = 2, type = "warning")
+        names = set()
+        keys = set()
+        depends = set()
+        atoms = set()
+        for reponame in etpRepositories:
+            self.updateProgress(darkgreen("Scanning %s" % (etpRepositories[reponame]['description'],)) , importance = 1, type = "info", back = True)
+            # get all packages keys
+            try:
+                dbconn = self.openRepositoryDatabase(reponame)
+            except exceptionTools.RepositoryError:
+                self.updateProgress(darkred("Cannot download/access: %s" % (etpRepositories[reponame]['description'],)) , importance = 2, type = "error")
+                continue
+            pkgdata = dbconn.listAllPackages()
+            pkgdata = set(pkgdata)
+            for info in pkgdata:
+                key = self.entropyTools.dep_getkey(info[0])
+                keys.add(key)
+                names.add(key.split("/")[1])
+                atoms.add(info[0])
+            # dependencies
+            pkgdata = dbconn.listAllDependencies()
+            for info in pkgdata:
+                depends.add(info[1])
+            dbconn.closeDB()
+            del dbconn
+
+        self.updateProgress(darkgreen("Resolving metadata"), importance = 1, type = "warning")
+        atomMatchCache.clear()
+        maxlen = len(names)
+        cnt = 0
+        for name in names:
+            cnt += 1
+            self.updateProgress(darkgreen("Resolving name: %s") % (
+                                                name
+                                        ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
+            self.atomMatch(name)
+        maxlen = len(keys)
+        cnt = 0
+        for key in keys:
+            cnt += 1
+            self.updateProgress(darkgreen("Resolving key: %s") % (
+                                                key
+                                        ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
+            self.atomMatch(key)
+        maxlen = len(atoms)
+        cnt = 0
+        for atom in atoms:
+            cnt += 1
+            self.updateProgress(darkgreen("Resolving atom: %s") % (
+                                                atom
+                                        ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
+            self.atomMatch(atom)
+        maxlen = len(depends)
+        cnt = 0
+        for depend in depends:
+            cnt += 1
+            self.updateProgress(darkgreen("Resolving dependency: %s") % (
+                                                depend
+                                        ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
+            self.atomMatch(depend)
+        self.updateProgress(darkred("Dependencies filled. Flushing to disk."), importance = 2, type = "warning")
+        self.save_cache()
 
     def load_cache(self):
 
@@ -155,6 +279,9 @@ class EquoInterface(TextInterface):
                         # clean cache
                         self.dumpTools.dumpobj(dbinfo,{})
 
+    '''
+       Cache stuff :: end
+    '''
 
     # tell if a new equo release is available, returns True or False
     def check_equo_updates(self):
@@ -263,12 +390,10 @@ class EquoInterface(TextInterface):
             # found duplicates, this mean that we have to look at the revision and then, at the version tag
             # if all this shait fails, get the uppest repository
             # if no duplicates, we're done
-            #print versions
             filteredVersions = self.entropyTools.filterDuplicatedEntries(versions)
             if (len(versions) > len(filteredVersions)):
                 # there are duplicated results, fetch them
                 # get the newerVersion
-                #print versions
                 newerVersion = self.entropyTools.getNewerVersion(versions)
                 newerVersion = newerVersion[0]
                 # is newerVersion, the duplicated one?
@@ -279,7 +404,6 @@ class EquoInterface(TextInterface):
 
                 if (needFiltering):
                     # we have to decide which one is good
-                    #print "need filtering"
                     # we have newerVersion
                     conflictingEntries = {}
                     for repo in packageInformation:
@@ -335,7 +459,6 @@ class EquoInterface(TextInterface):
                         else:
                             # we are done!!!
                             reponame = ''
-                            #print conflictingTags
                             for x in conflictingTags:
                                 if str(conflictingTags[x]['revision']) == str(newerRevision):
                                     reponame = x
@@ -394,7 +517,7 @@ class EquoInterface(TextInterface):
     @input dependencies: list of dependencies to check
     @output: filtered list, aka the needed ones and the ones satisfied
     '''
-    def filterSatisfiedDependencies(self, dependencies, deepdeps = False):
+    def filterSatisfiedDependencies(self, dependencies, deep_deps = False):
 
         unsatisfiedDeps = set()
         satisfiedDeps = set()
@@ -407,7 +530,7 @@ class EquoInterface(TextInterface):
             ''' caching '''
             cached = filterSatisfiedDependenciesCache.get(dependency)
             if cached:
-                if (cached['deepdeps'] == deepdeps):
+                if (cached['deep_deps'] == deep_deps):
                     unsatisfiedDeps.update(cached['depunsatisfied'])
                     satisfiedDeps.update(cached['depsatisfied'])
                     continue
@@ -444,7 +567,7 @@ class EquoInterface(TextInterface):
                 if installedRev == 9999: # any revision is fine
                     repo_pkgrev = 9999
 
-                if (deepdeps):
+                if (deep_deps):
                     vcmp = self.entropyTools.entropyCompareVersions((repo_pkgver,repo_pkgtag,repo_pkgrev),(installedVer,installedTag,installedRev))
                     if vcmp != 0:
                         filterSatisfiedDependenciesCmpResults[dependency] = vcmp
@@ -465,7 +588,7 @@ class EquoInterface(TextInterface):
             filterSatisfiedDependenciesCache[dependency] = {}
             filterSatisfiedDependenciesCache[dependency]['depunsatisfied'] = depunsatisfied
             filterSatisfiedDependenciesCache[dependency]['depsatisfied'] = depsatisfied
-            filterSatisfiedDependenciesCache[dependency]['deepdeps'] = deepdeps
+            filterSatisfiedDependenciesCache[dependency]['deep_deps'] = deep_deps
 
         return unsatisfiedDeps, satisfiedDeps
 
@@ -475,7 +598,7 @@ class EquoInterface(TextInterface):
     @input package: atomInfo (idpackage,reponame)
     @output: dependency tree dictionary, plus status code
     '''
-    def generateDependencyTree(self, atomInfo, emptydeps = False, deepdeps = False, usefilter = False):
+    def generate_dependency_tree(self, atomInfo, empty_deps = False, deep_deps = False, usefilter = False):
 
         if (not usefilter):
             matchFilter.clear()
@@ -483,8 +606,8 @@ class EquoInterface(TextInterface):
         ''' caching '''
         cached = generateDependencyTreeCache.get(tuple(atomInfo))
         if cached:
-            if (cached['emptydeps'] == emptydeps) and \
-                (cached['deepdeps'] == deepdeps) and \
+            if (cached['empty_deps'] == empty_deps) and \
+                (cached['deep_deps'] == deep_deps) and \
                 (cached['usefilter'] == usefilter):
                 return cached['result']
 
@@ -576,8 +699,8 @@ class EquoInterface(TextInterface):
             matchdb.closeDB()
             del matchdb
             # in this way filterSatisfiedDependenciesCmpResults is alway consistent
-            mytestdeps, xxx = self.filterSatisfiedDependencies(myundeps, deepdeps = deepdeps)
-            if (not emptydeps):
+            mytestdeps, xxx = self.filterSatisfiedDependencies(myundeps, deep_deps = deep_deps)
+            if (not empty_deps):
                 myundeps = mytestdeps
             for x in myundeps:
                 mybuffer.push((treedepth,x))
@@ -639,34 +762,28 @@ class EquoInterface(TextInterface):
         ''' caching '''
         generateDependencyTreeCache[tuple(atomInfo)] = {}
         generateDependencyTreeCache[tuple(atomInfo)]['result'] = newdeptree,0
-        generateDependencyTreeCache[tuple(atomInfo)]['emptydeps'] = emptydeps
-        generateDependencyTreeCache[tuple(atomInfo)]['deepdeps'] = deepdeps
+        generateDependencyTreeCache[tuple(atomInfo)]['empty_deps'] = empty_deps
+        generateDependencyTreeCache[tuple(atomInfo)]['deep_deps'] = deep_deps
         generateDependencyTreeCache[tuple(atomInfo)]['usefilter'] = usefilter
         treecache.clear()
         matchcache.clear()
 
         return newdeptree,0 # note: newtree[0] contains possible conflicts
 
-    '''
-    @description: generates a list cotaining the needed dependencies of a list requested atoms
-    @input package: list of atoms that would be installed in list form, whose each element is composed by [idpackage,repository name]
-    @output: list containing, for each element: [idpackage,repository name]
-                    @ if dependencies couldn't be satisfied, the output will be -1
-    @note: this is the function that should be used for 3rd party applications after using atomMatch()
-    '''
-    def getRequiredPackages(self, foundAtoms, emptydeps = False, deepdeps = False, spinning = False):
+
+    def get_required_packages(self, matched_atoms, empty_deps = False, deep_deps = False):
 
         deptree = {}
         deptree[0] = set()
 
-        if spinning: atomlen = len(foundAtoms); count = 0
+        if not etpUi['quiet']: atomlen = len(matched_atoms); count = 0
         matchFilter.clear() # clear generateDependencyTree global filter
 
-        for atomInfo in foundAtoms:
+        for atomInfo in matched_atoms:
 
-            if spinning: count += 1; self.updateProgress(":: "+str(round((float(count)/atomlen)*100,1))+"% ::", importance = 0, type = "info", back = True)
+            if not etpUi['quiet']: count += 1; self.updateProgress(":: "+str(round((float(count)/atomlen)*100,1))+"% ::", importance = 0, type = "info", back = True)
 
-            newtree, result = self.generateDependencyTree(atomInfo, emptydeps, deepdeps, usefilter = True)
+            newtree, result = self.generate_dependency_tree(atomInfo, empty_deps, deep_deps, usefilter = True)
 
             if (result != 0):
                 return newtree, result
@@ -697,7 +814,7 @@ class EquoInterface(TextInterface):
     @input package: idpackages list
     @output: 	depends tree dictionary, plus status code
     '''
-    def generateDependsTree(self, idpackages, deep = False):
+    def generate_depends_tree(self, idpackages, deep = False):
 
         ''' caching '''
         cached = generateDependsTreeCache.get(tuple(idpackages))
@@ -796,6 +913,142 @@ class EquoInterface(TextInterface):
         generateDependsTreeCache[tuple(idpackages)]['result'] = newtree,0
         generateDependsTreeCache[tuple(idpackages)]['deep'] = deep
         return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
+
+    def calculate_world_updates(self, empty_deps = False, branch = etpConst['branch']):
+
+        update = set()
+        remove = set()
+        fine = set()
+
+        # get all the installed packages
+        packages = self.clientDbconn.listAllPackages()
+        maxlen = len(packages)
+        count = 0
+        for package in packages:
+            count += 1
+            self.updateProgress(":: "+str(round((float(count)/maxlen)*100,1))+"% ::", importance = 0, type = "info", back = True)
+            tainted = False
+            atom = package[0]
+            idpackage = package[1]
+            name = self.clientDbconn.retrieveName(idpackage)
+            category = self.clientDbconn.retrieveCategory(idpackage)
+            revision = self.clientDbconn.retrieveRevision(idpackage)
+            slot = self.clientDbconn.retrieveSlot(idpackage)
+            atomkey = category+"/"+name
+            # search in the packages
+            match = self.atomMatch(atom)
+            if match[0] == -1: # atom has been changed, or removed?
+                tainted = True
+            else: # not changed, is the revision changed?
+                adbconn = self.openRepositoryDatabase(match[1])
+                arevision = adbconn.retrieveRevision(match[0])
+                # if revision is 9999, then any revision is fine
+                if revision == 9999: arevision = 9999
+                if revision != arevision:
+                    tainted = True
+                elif (empty_deps):
+                    tainted = True
+            if (tainted):
+                # Alice! use the key! ... and the slot
+                matchresults = self.atomMatch(atomkey, matchSlot = slot, matchBranches = (branch,))
+                if matchresults[0] != -1:
+                    mdbconn = self.openRepositoryDatabase(matchresults[1])
+                    matchatom = mdbconn.retrieveAtom(matchresults[0])
+                    update.add((matchatom,matchresults))
+                else:
+                    remove.add(idpackage)
+                    # look for packages that would match key with any slot (for eg, gcc updates), slot changes handling
+                    matchresults = self.atomMatch(atomkey, matchBranches = (branch,))
+                    if matchresults[0] != -1:
+                        mdbconn = self.openRepositoryDatabase(matchresults[1])
+                        matchatom = mdbconn.retrieveAtom(matchresults[0])
+                        # compare versions
+                        unsatisfied, satisfied = self.filterSatisfiedDependencies((matchatom,))
+                        if unsatisfied:
+                            update.add((matchatom,matchresults))
+            else:
+                fine.add(atom)
+
+        del packages
+        return update, remove, fine
+
+    # This is the function that should be used by third party applications
+    # to retrieve a list of available updates, along with conflicts (removalQueue) and obsoletes
+    # (removed)
+    def retrieveWorldQueue(self, empty_deps = False, branch = etpConst['branch']):
+        update, remove, fine = self.calculate_world_updates(empty_deps = empty_deps, branch = branch)
+        del fine
+        data = {}
+        data['removed'] = list(remove)
+        data['runQueue'] = []
+        data['removalQueue'] = []
+        status = -1
+        if update:
+            # calculate install+removal queues
+            matched_atoms = [x[1] for x in update]
+            install, removal, status = self.retrieveInstallQueue(matched_atoms, empty_deps, deep_deps = False)
+            # update data['removed']
+            data['removed'] = [x for x in data['removed'] if x not in removal]
+            data['runQueue'] += install
+            data['removalQueue'] += removal
+        return data,status
+
+    def retrieveInstallQueue(self, matched_atoms, empty_deps, deep_deps):
+
+        install = []
+        removal = []
+        treepackages, result = self.get_required_packages(matched_atoms, empty_deps, deep_deps)
+
+        if result == -2:
+            return treepackages,removal,result
+
+        # format
+        for x in range(len(treepackages)):
+            if x == 0:
+                # conflicts
+                for a in treepackages[x]:
+                    removal.append(a)
+            else:
+                for a in treepackages[x]:
+                    install.append(a)
+
+        # filter out packages that are in actionQueue comparing key + slot
+        if install and removal:
+            myremmatch = {}
+            [myremmatch.update({(self.entropyTools.dep_getkey(self.clientDbconn.retrieveAtom(x)),self.clientDbconn.retrieveSlot(x)): x}) for x in removal]
+            for packageInfo in install:
+                dbconn = self.openRepositoryDatabase(packageInfo[1])
+                testtuple = (self.entropyTools.dep_getkey(dbconn.retrieveAtom(packageInfo[0])),dbconn.retrieveSlot(packageInfo[0]))
+                if testtuple in myremmatch:
+                    # remove from removalQueue
+                    if myremmatch[testtuple] in removalQueue:
+                        removal.remove(myremmatch[testtuple])
+                del testtuple
+            del myremmatch
+
+        del treepackages
+        return install, removal, 0
+
+    # this function searches into client database for a package matching provided key + slot
+    # and returns its idpackage or -1 if none found
+    def retrieveInstalledIdPackage(self, pkgkey, pkgslot):
+        match = self.clientDbconn.atomMatch(pkgkey, matchSlot = pkgslot)
+        if match[1] == 0:
+            return match[0]
+        return -1
+
+    '''
+        Package actions interface :: begin
+    '''
+    # @input pkgdata(dict): dictionary containing all the information needed to run the steps
+    # @input steps(list): list of steps to run
+    def prepare_steps(self, pkgdata, steps):
+        self.infoDict = pkgdata.copy()
+        self.steps = steps[:]
+        self.transaction_ready = True
+
+    
+    
 
 
 
@@ -1658,10 +1911,11 @@ def stepExecutor(step, infoDict, loopString = None):
     
     elif step == "postinstall":
 	# analyze atom
-	pkgdata = etpInstallTriggers.get(infoDict['atom'])
+	pkgdata = infoDict['triggers'].get('install')
 	if pkgdata:
+            pkgdata.update(infoDict)
 	    triggers = triggerTools.postinstall(pkgdata)
-	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
+	    for trigger in triggers:
                 if trigger not in etpUi['postinstall_triggers_disable']:
                     eval("triggerTools."+trigger)(pkgdata)
             del triggers
@@ -1669,20 +1923,21 @@ def stepExecutor(step, infoDict, loopString = None):
 
     elif step == "preinstall":
 	# analyze atom
-	pkgdata = etpInstallTriggers.get(infoDict['atom'])
+	pkgdata = infoDict['triggers'].get('install')
 	if pkgdata:
+            pkgdata.update(infoDict)
 	    triggers = triggerTools.preinstall(pkgdata)
             
 	    if (infoDict.get("diffremoval") != None): # diffremoval is true only when the remove action is triggered by installPackages()
                 if infoDict['diffremoval']:
-                    remdata = etpRemovalTriggers.get(infoDict['removeatom'])
+                    remdata = infoDict['triggers'].get('remove')
                     if remdata:
                         itriggers = triggerTools.preremove(remdata) # remove duplicated triggers
                         triggers = triggers - itriggers
                         del itriggers
                     del remdata
             
-	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
+	    for trigger in triggers:
                 if trigger not in etpUi['preinstall_triggers_disable']:
                     eval("triggerTools."+trigger)(pkgdata)
             del triggers
@@ -1690,10 +1945,11 @@ def stepExecutor(step, infoDict, loopString = None):
 
     elif step == "preremove":
 	# analyze atom
-	remdata = etpRemovalTriggers.get(infoDict['removeatom'])
+	remdata = infoDict['triggers'].get('remove')
 	if remdata:
+            remdata.update(infoDict)
 	    triggers = triggerTools.preremove(remdata)
-	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
+	    for trigger in triggers:
                 if trigger not in etpUi['preremove_triggers_disable']:
                     eval("triggerTools."+trigger)(remdata)
             del triggers
@@ -1701,19 +1957,19 @@ def stepExecutor(step, infoDict, loopString = None):
 
     elif step == "postremove":
 	# analyze atom
-	remdata = etpRemovalTriggers.get(infoDict['removeatom'])
+	remdata = infoDict['triggers'].get('remove')
 	if remdata:
+            remdata.update(infoDict)
 	    triggers = triggerTools.postremove(remdata)
-	    
 	    if infoDict['diffremoval'] and (infoDict.get("atom") != None): # diffremoval is true only when the remove action is triggered by installPackages()
-		pkgdata = etpInstallTriggers.get(infoDict['atom']) # remove duplicated triggers
+		pkgdata = infoDict['triggers'].get('install')
 		if pkgdata:
 		    itriggers = triggerTools.postinstall(pkgdata)
 		    triggers = triggers - itriggers
                     del itriggers
                 del pkgdata
 	    
-	    for trigger in triggers: # code reuse, we'll fetch triggers list on the GUI client and run each trigger by itself
+	    for trigger in triggers:
                 if trigger not in etpUi['postremove_triggers_disable']:
                     eval("triggerTools."+trigger)(remdata)
             del triggers

@@ -87,7 +87,7 @@ class GuiCacheHelper(cacheTools.cacheHelper):
     def connectProgressObject(self, progress):
         self.progress = progress
 
-    def updateProgress(self, text, back = False, importance = 0, type = "info", count = []):
+    def updateProgress(self, text, header = "", back = False, importance = 0, type = "info", count = []):
 
         if importance == 0:
             if count:
