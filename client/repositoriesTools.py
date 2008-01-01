@@ -28,7 +28,6 @@
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
-import entropyTools
 import exceptionTools
 
 def repositories(options):
@@ -224,12 +223,12 @@ def syncRepositories(reponames = [], forceUpdate = False):
     import cacheTools
     cacheTools.generateCache(depcache = True, configcache = False)
 
-    if repoConn.syncErrors:
+    syncErrors = repoConn.syncErrors
+    del repoConn
+    if syncErrors:
         if (not etpUi['quiet']):
             print_warning(darkred(" @@ ")+red("Something bad happened. Please have a look."))
-        del repoConn
         return 128
-    del repoConn
 
     rc = False
     try:
@@ -259,11 +258,13 @@ class repositoryController(TextInterface):
 
         import remoteTools
         import dumpTools
+        import entropyTools
         self.remoteTools = remoteTools
         self.dumpTools = dumpTools
+        self.entropyTools = entropyTools
 
         # check if I am root
-        if (not entropyTools.isRoot()):
+        if (not self.entropyTools.isRoot()):
             raise exceptionTools.PermissionDenied("PermissionDenied: not allowed as user.")
 
         # check etpRepositories
@@ -371,10 +372,9 @@ class repositoryController(TextInterface):
 
         fetchConn = self.remoteTools.urlFetcher(url, filepath)
 	rc = fetchConn.download()
-        if rc in ("-1","-2","-3"):
-            del fetchConn
-            return False
         del fetchConn
+        if rc in ("-1","-2","-3"):
+            return False
         return True
 
     def removeRepositoryFiles(self, repo, dbfilenameid):
@@ -392,15 +392,13 @@ class repositoryController(TextInterface):
 
         self.validateRepositoryId(repo)
 
-        import entropyTools
-        path = eval("entropyTools."+cmethod[1])(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
+        path = eval("self.entropyTools."+cmethod[1])(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
         return path
 
     def verifyDatabaseChecksum(self, repo):
 
         self.validateRepositoryId(repo)
 
-        import entropyTools
         try:
             f = open(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
             md5hash = f.readline().strip()
@@ -408,7 +406,7 @@ class repositoryController(TextInterface):
             f.close()
         except:
             return -1
-	rc = entropyTools.compareMd5(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile'],md5hash)
+	rc = self.entropyTools.compareMd5(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile'],md5hash)
         return rc
 
     def closeTransactions(self):

@@ -31,19 +31,17 @@ from outputTools import *
 from databaseTools import backupClientDatabase
 import entropyTools
 import equoTools
-import exceptionTools
+Equo = equoTools.EquoInterface(noclientdb = True)
 
 def database(options):
 
     if len(options) < 1:
-	return -10
+        return -10
 
     # check if I am root
     if (not entropyTools.isRoot()):
         print_error(red("You are not ")+bold("root")+red("."))
-	return 1
-
-    Equo = equoTools.EquoInterface(noclientdb = True)
+        return 1
 
     if (options[0] == "generate"):
 
@@ -57,13 +55,13 @@ def database(options):
         
 	print_warning(bold("ATTENTION: ")+red("The installed package database will be generated again using Gentoo one."))
 	print_warning(red("If you dont know what you're doing just, don't do this. Really. I'm not joking."))
-	rc = entropyTools.askquestion("  Understood?")
+	rc = Equo.askQuestion("  Understood?")
 	if rc == "No":
 	    return 0
-	rc = entropyTools.askquestion("  Really?")
+	rc = Equo.askQuestion("  Really?")
 	if rc == "No":
 	    return 0
-	rc = entropyTools.askquestion("  This is your last chance. Ok?")
+	rc = Equo.askQuestion("  This is your last chance. Ok?")
 	if rc == "No":
 	    return 0
 
@@ -156,13 +154,13 @@ def database(options):
         
 	print_warning(bold("####### ATTENTION -> ")+red("The installed package database will be resurrected, this will take a LOT of time."))
 	print_warning(bold("####### ATTENTION -> ")+red("Please use this function ONLY if you are using an Entropy-enabled Sabayon distribution."))
-	rc = entropyTools.askquestion("     Can I continue ?")
+	rc = Equo.askQuestion("     Can I continue ?")
 	if rc == "No":
 	    return 0
-	rc = entropyTools.askquestion("     Are you REALLY sure ?")
+	rc = Equo.askQuestion("     Are you REALLY sure ?")
 	if rc == "No":
 	    return 0
-	rc = entropyTools.askquestion("     Do you even know what you're doing ?")
+	rc = Equo.askQuestion("     Do you even know what you're doing ?")
 	if rc == "No":
 	    return 0
 	
@@ -309,7 +307,7 @@ def database(options):
             if x[0] not in installedCounters:
                 # check if the package is in toBeAdded
                 if (toBeAdded):
-                    atomkey = entropyTools.dep_getkey(clientDbconn.retrieveAtom(x[1]))
+                    atomkey = entropyTools.dep_getkey(Equo.clientDbconn.retrieveAtom(x[1]))
                     atomslot = Equo.clientDbconn.retrieveSlot(x[1])
                     add = True
                     for pkgdata in toBeAdded:
@@ -339,7 +337,7 @@ def database(options):
                 atom = Equo.clientDbconn.retrieveAtom(x)
                 print_info(brown("    # ")+red(atom))
             rc = "Yes"
-            if etpUi['ask']: rc = entropyTools.askquestion(">>   Continue with removal?")
+            if etpUi['ask']: rc = Equo.askQuestion(">>   Continue with removal?")
             if rc == "Yes":
                 queue = 0
                 totalqueue = str(len(toBeRemoved))
@@ -355,7 +353,7 @@ def database(options):
             for x in toBeAdded:
                 print_info(darkgreen("   # ")+red(x[0]))
             rc = "Yes"
-            if etpUi['ask']: rc = entropyTools.askquestion(">>   Continue with adding?")
+            if etpUi['ask']: rc = Equo.askQuestion(">>   Continue with adding?")
             if rc == "No":
                 return 0
             # now analyze
@@ -532,9 +530,9 @@ def getinfo(dict = False):
     info['Installed database'] = conn
     if (conn):
 	# print db info
-	info['Removal internal protected directories'] = clientDbconn.listConfigProtectDirectories()
-	info['Removal internal protected directory masks'] = clientDbconn.listConfigProtectDirectories(mask = True)
-	info['Total installed packages'] = len(clientDbconn.listAllIdpackages())
+	info['Removal internal protected directories'] = Equo.clientDbconn.listConfigProtectDirectories()
+	info['Removal internal protected directory masks'] = Equo.clientDbconn.listConfigProtectDirectories(mask = True)
+	info['Total installed packages'] = len(Equo.clientDbconn.listAllIdpackages())
     
     # repository databases info (if found on the system)
     info['Repository databases'] = {}

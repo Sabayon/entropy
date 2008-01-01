@@ -221,7 +221,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
 
         if (not etpUi['pretend']):
             if human:
-                rc = Equo.entropyTools.askquestion("     Would you like to query them ?")
+                rc = Equo.askQuestion("     Would you like to query them ?")
                 if rc == "No":
                     return 0,0
 
@@ -376,7 +376,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 
             if (deps):
                 if (etpUi['ask']):
-                    rc = Equo.entropyTools.askquestion("     Would you like to continue with dependencies calculation ?")
+                    rc = Equo.askQuestion("     Would you like to continue with dependencies calculation ?")
                     if rc == "No":
                         dirscleanup()
                         return 0,0
@@ -423,14 +423,12 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         pkgsToReinstall = 0
         pkgsToDowngrade = 0
         pkgsToRemove = len(removalQueue)
-        actionQueue = {}
 
         if (runQueue):
             if (etpUi['ask'] or etpUi['pretend']):
                 if not (etpUi['quiet']): print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("merged:"))
 
             count = 0
-            atomlen = len(runQueue)
             for packageInfo in runQueue:
                 count += 1
 
@@ -525,7 +523,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 print_info(red(" @@ ")+blue("Freed disk space:\t\t")+bold(str(Equo.entropyTools.bytesIntoHuman(abs(deltaSize)))))
 
         if (etpUi['ask']):
-            rc = Equo.entropyTools.askquestion("     Would you like to run the queue ?")
+            rc = Equo.askQuestion("     Would you like to run the queue ?")
             if rc == "No":
                 dirscleanup()
                 return 0,0
@@ -855,7 +853,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             lookForOrphanedPackages = False
 
         if (etpUi['ask']):
-            rc = Equo.entropyTools.askquestion(question)
+            rc = Equo.askQuestion(question)
             if rc == "No":
                 lookForOrphanedPackages = False
                 if (not deps):
@@ -902,7 +900,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             question = "     Would you like to proceed?"
             if human:
                 question = "     Would you like to proceed with a selective removal ?"
-            rc = Equo.entropyTools.askquestion(question)
+            rc = Equo.askQuestion(question)
             if rc == "No":
                 return 0,0
         elif (deps):
@@ -979,7 +977,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         # if human
         if not (etpUi['quiet']): print_info(red(" -- ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(infoDict['removeatom']))
         if human:
-            rc = Equo.entropyTools.askquestion("     Remove this one ?")
+            rc = Equo.askQuestion("     Remove this one ?")
             if rc == "No":
                 # update resume cache
                 resume_cache['removalQueue'].remove(idpackage)
@@ -1074,7 +1072,7 @@ def dependenciesTest(clientDbconn = None, reagent = False):
 
     if (packagesNeeded) and (not etpUi['quiet']) and (not reagent):
         if (etpUi['ask']):
-            rc = Equo.entropyTools.askquestion("     Would you like to install the available packages?")
+            rc = Equo.askQuestion("     Would you like to install the available packages?")
             if rc == "No":
                 return 0,packagesNeeded
         else:
@@ -1229,7 +1227,7 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
 
     if (atomsdata) and (not reagent):
         if (etpUi['ask']):
-            rc = Equo.entropyTools.askquestion("     Would you like to install them?")
+            rc = Equo.askQuestion("     Would you like to install them?")
             if rc == "No":
                 return 0,atomsdata
         else:

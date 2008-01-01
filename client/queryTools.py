@@ -112,8 +112,6 @@ def searchInstalledPackages(packages, idreturn = False, dbconn = None):
         if (result):
             for pkg in result:
                 idpackage = pkg[1]
-                atom = pkg[0]
-                branch = clientDbconn.retrieveBranch(idpackage)
                 if (idreturn):
                     dataInfo.add(idpackage)
                 else:
@@ -141,24 +139,22 @@ def searchBelongs(files, idreturn = False, dbconn = None):
     dataInfo = set() # when idreturn is True
     results = {}
     flatresults = {}
-    for file in files:
+    for xfile in files:
         like = False
-        if file.find("*") != -1:
-            import re
-            out = re.subn("\*","%",file)
-            file = out[0]
+        if xfile.find("*") != -1:
+            xfile.replace("*","%")
             like = True
-        results[file] = set()
-        idpackages = clientDbconn.searchBelongs(file, like)
+        results[xfile] = set()
+        idpackages = clientDbconn.searchBelongs(xfile, like)
         for idpackage in idpackages:
             if not flatresults.get(idpackage):
-                results[file].add(idpackage)
+                results[xfile].add(idpackage)
                 flatresults[idpackage] = True
 
     if (results):
         for result in results:
             # print info
-            file = result
+            xfile = result
             result = results[result]
             for idpackage in result:
                 if (idreturn):
@@ -168,7 +164,7 @@ def searchBelongs(files, idreturn = False, dbconn = None):
                 else:
                     printPackageInfo(idpackage, clientDbconn, clientSearch = True)
             if (not idreturn) and (not etpUi['quiet']):
-                print_info(blue(" Keyword: ")+bold("\t"+file))
+                print_info(blue(" Keyword: ")+bold("\t"+xfile))
                 print_info(blue(" Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
 
     if (idreturn):
@@ -191,9 +187,9 @@ def searchDepends(atoms, idreturn = False, dbconn = None):
     for atom in atoms:
         result = clientDbconn.atomMatch(atom)
         matchInRepo = False
-        if (result[0] == -1) and dbclose:
+        if (result[0] == -1):
             matchInRepo = True
-            result = atomMatch(atom)
+            result = Equo.atomMatch(atom)
         if (result[0] != -1):
             if (matchInRepo):
                 dbconn = Equo.openRepositoryDatabase(result[1])
@@ -316,11 +312,11 @@ def searchFiles(atoms, idreturn = False, dbconn = None):
                 dataInfo.add((result,files))
             else:
                 if etpUi['quiet']:
-                    for file in files:
-                        print file
+                    for xfile in files:
+                        print xfile
                 else:
-                    for file in files:
-                        print_info(blue(" ### ")+red(file))
+                    for xfile in files:
+                        print_info(blue(" ### ")+red(xfile))
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue(" Package: ")+bold("\t"+atom))
                 print_info(blue(" Found:   ")+bold("\t"+str(len(files)))+red(" files"))
@@ -341,10 +337,9 @@ def searchOrphans():
     # start to list all files on the system:
     dirs = etpConst['filesystemdirs']
     foundFiles = set()
-    for dir in dirs:
-        for currentdir,subdirs,files in os.walk(dir):
+    for xdir in dirs:
+        for currentdir,subdirs,files in os.walk(xdir):
             for filename in files:
-                file = currentdir+"/"+filename
                 # filter python compiled objects?
                 if filename.endswith(".pyo") or filename.startswith(".pyc") or filename == '.keep':
                     continue
@@ -466,7 +461,7 @@ def searchInstalled(idreturn = False):
 
     installedPackages = clientDbconn.listAllPackages()
     installedPackages.sort()
-    if (not idreturn):
+    if not idreturn:
         if (not etpUi['quiet']):
             print_info(red(" @@ ")+blue("These are the installed packages:"))
         for package in installedPackages:
@@ -485,7 +480,7 @@ def searchInstalled(idreturn = False):
     else:
         idpackages = set()
         for x in installedPackages:
-            idpackages.add(package[1])
+            idpackages.add(x[1])
         return list(idpackages)
 
 
@@ -498,7 +493,6 @@ def searchPackage(packages, idreturn = False):
         print_info(darkred(" @@ ")+darkgreen("Searching..."))
     # search inside each available database
     repoNumber = 0
-    searchError = False
     for repo in etpRepositories:
         foundPackages[repo] = {}
         repoNumber += 1
@@ -522,8 +516,6 @@ def searchPackage(packages, idreturn = False):
                 # print info
                 for pkg in foundPackages[repo][package]:
                     idpackage = pkg[1]
-                    atom = pkg[0]
-                    branch = dbconn.retrieveBranch(idpackage)
                     if (idreturn):
                         dataInfo.add((idpackage,repo))
                     else:
@@ -634,7 +626,7 @@ def searchDescription(descriptions, idreturn = False):
    Internal functions
 '''
 def __searchDescriptions(descriptions, dbconn, idreturn = False):
-    dataInfo = [] # when idreturn is True
+    dataInfo = set() # when idreturn is True
     mydescdata = {}
 
     for desc in descriptions:
@@ -643,9 +635,8 @@ def __searchDescriptions(descriptions, dbconn, idreturn = False):
             mydescdata[desc] = result
             for pkg in mydescdata[desc]:
                 idpackage = pkg[1]
-                atom = pkg[0]
                 if (idreturn):
-                    dataInfo.append([idpackage,repo])
+                    dataInfo.add(idpackage)
                 elif (etpUi['quiet']):
                     print dbconn.retrieveAtom(idpackage)
                 else:

@@ -1368,25 +1368,6 @@ def umountProc():
     else:
 	return True
 
-def askquestion(prompt):
-    xtermTitle("Entropy got a question for you")
-    responses, colours = ["Yes", "No"], [green, red]
-    print darkgreen(prompt),
-    try:
-	while True:
-	    response=raw_input("["+"/".join([colours[i](responses[i]) for i in range(len(responses))])+"] ")
-	    for key in responses:
-		# An empty response will match the first value in responses.
-		if response.upper()==key[:len(response)].upper():
-                    xtermTitleReset()
-		    return key
-		    print "I cannot understand '%s'" % response,
-    except (EOFError, KeyboardInterrupt):
-	print "Interrupted."
-        xtermTitleReset()
-	sys.exit(100)
-    xtermTitleReset()
-
 class lifobuffer:
     
     def __init__(self):

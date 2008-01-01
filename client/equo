@@ -315,8 +315,9 @@ except KeyboardInterrupt:
 #except Timeout:
 #    pass
 except Exception:
-    from entropyTools import askquestion, printException
+    from entropyTools import printException
     from remoteTools import getOnlineContent, reportApplicationError
+    Text = TextInterface()
     print_error(darkred("Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. Well, you know, shit happens."))
     print_error(darkred("But there's something you could do to help Equo to be a better application."))
     print_error(darkred("-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"))
@@ -352,7 +353,7 @@ except Exception:
     conntest = getOnlineContent("http://svn.sabayonlinux.org")
     if (conntest != False):
 	print_error(darkgreen("Of course you are on the Internet..."))
-	rc = askquestion("   Erm... Can I send the error to my creators so they can fix me?")
+        rc = Text.askQuestion("   Erm... Can I send the error to my creators so they can fix me?")
 	if rc == "No":
 	    print_error(darkgreen("Ok, ok ok ok... Sorry!"))
             loadconfcache()

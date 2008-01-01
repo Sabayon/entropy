@@ -61,6 +61,7 @@ def configurator(options):
 '''
 def update():
     cache_status = False
+    Text = TextInterface()
     while 1:
 	scandata = scanfs(dcache = cache_status)
 	if (cache_status):
@@ -93,7 +94,7 @@ def update():
 		    continue
 		print_info(darkred("Configuration file: ")+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
 		if cmd == -3:
-		    rc = entropyTools.askquestion(">>   Overwrite ?")
+                    rc = Text.askQuestion(">>   Overwrite ?")
 		    if rc == "No":
 			continue
 		print_info(darkred("Moving ")+darkgreen(etpConst['systemroot']+scandata[key]['source'])+darkred(" to ")+brown(etpConst['systemroot']+scandata[key]['destination']))
@@ -120,7 +121,7 @@ def update():
 		    continue
 		print_info(darkred("Configuration file: ")+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
 		if cmd == -7:
-		    rc = entropyTools.askquestion(">>   Discard ?")
+		    rc = Text.askQuestion(">>   Discard ?")
 		    if rc == "No":
 			continue
 		print_info(darkred("Discarding ")+darkgreen(etpConst['systemroot']+scandata[key]['source']))

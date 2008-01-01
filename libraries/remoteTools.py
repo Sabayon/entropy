@@ -111,8 +111,8 @@ def reportApplicationError(errorstring):
             proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
             opener = urllib2.build_opener(proxy_support)
             urllib2.install_opener(opener)
-        file = urllib2.urlopen(url)
-        result = file.readlines()
+        xfile = urllib2.urlopen(url)
+        result = xfile.readlines()
 	socket.setdefaulttimeout(2)
         return result
     except:
@@ -125,7 +125,7 @@ def reportApplicationError(errorstring):
 # ATTENTION: this functions fills global variable etpFileTransferMetadata !!
 # take care of that
 
-class urlFetcher(TextInterface):
+class urlFetcher:
 
     def __init__(self, url, pathToSave, checksum = True, showSpeed = True):
 
@@ -177,8 +177,8 @@ class urlFetcher(TextInterface):
             self.remotefile = urllib2.urlopen(self.url)
         except KeyboardInterrupt:
             self.close()
-            raise KeyboardInterrupt
-        except Exception, e:
+            raise
+        except:
             self.close()
             self.status = "-3"
             return self.status

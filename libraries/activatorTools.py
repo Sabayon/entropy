@@ -20,9 +20,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-# Never do "import portage" here, please use entropyTools binding
-# EXIT STATUSES: 400-499
-
+import os
+import time
+import shutil
 from entropyConstants import *
 from serverConstants import *
 from entropyTools import *
@@ -30,14 +30,9 @@ from outputTools import *
 import mirrorTools
 import dumpTools
 import exceptionTools
+import databaseTools
 import remoteTools
-
-import os
-import commands
-import string
-import time
-import shutil
-
+Text = TextInterface()
 
 # Logging initialization
 import logTools
@@ -79,7 +74,7 @@ def sync(options, justTidy = False):
 	    database(["sync"])
 	    if (not activatorRequestNoAsk):
 	        # ask question
-	        rc = askquestion("     Should I continue with the tidy procedure ?")
+	        rc = Text.askQuestion("     Should I continue with the tidy procedure ?")
 	        if rc == "No":
 		    sys.exit(0)
     
@@ -92,7 +87,6 @@ def sync(options, justTidy = False):
     
         # now it's time to do some tidy
         # collect all the binaries in the database
-        import databaseTools
         dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
         dbBinaries = dbconn.listBranchPackagesTbz2(mybranch)
         dbconn.closeDB()
@@ -129,12 +123,12 @@ def sync(options, justTidy = False):
 	    continue
     
         print_info(green(" * ")+red("This is the list of files that would be removed from the mirrors: "))
-        for file in removeList:
-	    print_info(green("\t* ")+brown(file))
+        for xfile in removeList:
+	    print_info(green("\t* ")+brown(xfile))
 	
         # ask question
         if (not activatorRequestNoAsk):
-            rc = askquestion("     Would you like to continue ?")
+            rc = Text.askQuestion("     Would you like to continue ?")
             if rc == "No":
 	        sys.exit(0)
 
@@ -145,38 +139,38 @@ def sync(options, justTidy = False):
 	    print_info(green(" * ")+red("Connecting to: ")+bold(extractFTPHostFromUri(uri)))
 	    ftp = mirrorTools.handlerFTP(uri)
 	    ftp.setCWD(etpConst['binaryurirelativepath']+"/"+mybranch)
-	    for file in removeList:
+	    for xfile in removeList:
 	
-	        activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (remote) file "+file)
-	        print_info(green(" * ")+red("Removing file: ")+bold(file), back = True)
+	        activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (remote) file "+xfile)
+	        print_info(green(" * ")+red("Removing file: ")+bold(xfile), back = True)
 	        # remove remotely
-	        if (ftp.isFileAvailable(file)):
-	            rc = ftp.deleteFile(file)
+	        if (ftp.isFileAvailable(xfile)):
+	            rc = ftp.deleteFile(xfile)
 	            if (rc):
-		        print_info(green(" * ")+red("Package file: ")+bold(file)+red(" removed successfully from ")+bold(extractFTPHostFromUri(uri)))
+		        print_info(green(" * ")+red("Package file: ")+bold(xfile)+red(" removed successfully from ")+bold(extractFTPHostFromUri(uri)))
 	            else:
-		        print_warning(brown(" * ")+red("ATTENTION: remote file ")+bold(file)+red(" cannot be removed."))
+		        print_warning(brown(" * ")+red("ATTENTION: remote file ")+bold(xfile)+red(" cannot be removed."))
 	        # checksum
-	        if (ftp.isFileAvailable(file+etpConst['packageshashfileext'])):
-	            rc = ftp.deleteFile(file+etpConst['packageshashfileext'])
+	        if (ftp.isFileAvailable(xfile+etpConst['packageshashfileext'])):
+	            rc = ftp.deleteFile(xfile+etpConst['packageshashfileext'])
 	            if (rc):
-		        print_info(green(" * ")+red("Checksum file: ")+bold(file+etpConst['packageshashfileext'])+red(" removed successfully from ")+bold(extractFTPHostFromUri(uri)))
+		        print_info(green(" * ")+red("Checksum file: ")+bold(xfile+etpConst['packageshashfileext'])+red(" removed successfully from ")+bold(extractFTPHostFromUri(uri)))
 	            else:
-		        print_warning(brown(" * ")+red("ATTENTION: remote checksum file ")+bold(file)+red(" cannot be removed."))
+		        print_warning(brown(" * ")+red("ATTENTION: remote checksum file ")+bold(xfile)+red(" cannot be removed."))
 	        # remove locally
-	        if os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+file):
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+file)
-		    print_info(green(" * ")+red("Package file: ")+bold(file)+red(" removed successfully from ")+bold(etpConst['packagesbindir']+"/"+mybranch))
-		    os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+file)
+	        if os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile):
+		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+xfile)
+		    print_info(green(" * ")+red("Package file: ")+bold(xfile)+red(" removed successfully from ")+bold(etpConst['packagesbindir']+"/"+mybranch))
+		    os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile)
                     try:
-                        os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+file+etpConst['packagesexpirationfileext'])
+                        os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile+etpConst['packagesexpirationfileext'])
                     except OSError:
                         pass
 	        # checksum
-	        if os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+file+etpConst['packageshashfileext']):
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+file+etpConst['packageshashfileext'])
-		    print_info(green(" * ")+red("Checksum file: ")+bold(file+etpConst['packageshashfileext'])+red(" removed successfully from ")+bold(etpConst['packagesbindir']+"/"+mybranch))
-		    os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+file+etpConst['packageshashfileext'])
+	        if os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile+etpConst['packageshashfileext']):
+		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+xfile+etpConst['packageshashfileext'])
+		    print_info(green(" * ")+red("Checksum file: ")+bold(xfile+etpConst['packageshashfileext'])+red(" removed successfully from ")+bold(etpConst['packagesbindir']+"/"+mybranch))
+		    os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile+etpConst['packageshashfileext'])
 	    ftp.closeConnection()
 	
     print_info(green(" * ")+red("Syncronization across mirrors completed."))
@@ -316,9 +310,9 @@ def packages(options):
 			    # it's already on the mirror, but... is its size correct??
 			    localSize = int(os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+localPackage)[6])
 			    remoteSize = 0
-			    for file in remotePackagesInfo:
-			        if file.split()[8] == localPackage:
-				    remoteSize = int(file.split()[4])
+			    for xfile in remotePackagesInfo:
+			        if xfile.split()[8] == localPackage:
+				    remoteSize = int(xfile.split()[4])
 			    if (localSize != remoteSize) and (localSize != 0):
 			        # size does not match, adding to the upload queue
 				if localPackage not in finePackages:
@@ -334,9 +328,9 @@ def packages(options):
 			    # it's already on the mirror, but... is its size correct??
 			    localSize = int(os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+remotePackage)[6])
 			    remoteSize = 0
-			    for file in remotePackagesInfo:
-			        if file.split()[8] == remotePackage:
-				    remoteSize = int(file.split()[4])
+			    for xfile in remotePackagesInfo:
+			        if xfile.split()[8] == remotePackage:
+				    remoteSize = int(xfile.split()[4])
 			    if (localSize != remoteSize) and (localSize != 0):
 			        # size does not match, remove first
 				#print "removal of "+localPackage+" because its size differ"
@@ -465,7 +459,7 @@ def packages(options):
 	            if (etpUi['pretend']):
 		        continue
                     if (etpUi['ask']):
-                        rc = askquestion("\n     Would you like to run the steps above ?")
+                        rc = Text.askQuestion("\n     Would you like to run the steps above ?")
                         if rc == "No":
                             print "\n"
                             continue
@@ -701,12 +695,12 @@ def packages(options):
 	    pkgbranches = [x for x in pkgbranches if os.path.isdir(etpConst['packagessuploaddir']+"/"+x)]
 	    for branch in pkgbranches:
 		branchcontent = os.listdir(etpConst['packagessuploaddir']+"/"+branch)
-		for file in branchcontent:
-		    source = etpConst['packagessuploaddir']+"/"+branch+"/"+file
+		for xfile in branchcontent:
+		    source = etpConst['packagessuploaddir']+"/"+branch+"/"+xfile
 		    destdir = etpConst['packagesbindir']+"/"+branch
 		    if not os.path.isdir(destdir):
 		        os.makedirs(destdir)
-		    dest = destdir+"/"+file
+		    dest = destdir+"/"+xfile
 		    shutil.move(source,dest)
                     if os.path.isfile(dest+etpConst['packagesexpirationfileext']): # clear expiration file
                         os.remove(dest+etpConst['packagesexpirationfileext'])
@@ -980,8 +974,8 @@ def syncRemoteDatabases(noUpload = False, justStats = False):
 	print_info(green(" * ")+red("Starting to update the needed mirrors ..."))
 	_uploadList = []
 	for uri in etpConst['activatoruploaduris']:
-	    for list in uploadList:
-		if list[0].startswith(uri):
+	    for xlist in uploadList:
+		if xlist[0].startswith(uri):
 		    _uploadList.append(uri)
 		    break
 	

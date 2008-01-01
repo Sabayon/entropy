@@ -29,7 +29,7 @@ from clientConstants import *
 from outputTools import *
 import remoteTools
 import exceptionTools
-from entropyTools import compareMd5, bytesIntoHuman, askquestion, getRandomNumber, dep_getkey, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, unpackXpak, lifobuffer, ebeep, parallelStep
+from entropyTools import compareMd5, bytesIntoHuman, getRandomNumber, dep_getkey, uncompressTarBz2, extractXpak, applicationLockCheck, countdown, isRoot, spliturl, remove_tag, dep_striptag, md5sum, allocateMaskedFile, istextfile, isnumber, extractEdb, unpackXpak, lifobuffer, ebeep, parallelStep
 from databaseTools import openRepositoryDatabase, openClientDatabase
 import confTools
 import dumpTools
@@ -50,7 +50,7 @@ class EquoInterface(TextInterface):
         @input noclientdb(bool): if enabled, client database non-existance will be ignored
         @input xcache(bool): enable/disable database caching
     '''
-    def __init__(self, indexing = True, noclientdb = False, xcache = True):
+    def __init__(self, indexing = True, noclientdb = False, xcache = True, server = False, server_readonly = True, server_noupload = True):
 
         import dumpTools
         self.dumpTools = dumpTools
@@ -63,7 +63,12 @@ class EquoInterface(TextInterface):
         self.indexing = indexing
         self.noclientdb = noclientdb
         self.xcache = xcache
-        self.openClientDatatabase()
+        if server:
+            self.server_readonly = server_readonly
+            self.server_noupload = server_noupload
+            self.openServerDatabase()
+        else:
+            self.openClientDatabase()
         self.repoDbCache = {}
         # Packages installation stuff
         self.transaction_ready = False
@@ -84,16 +89,27 @@ class EquoInterface(TextInterface):
         self.clientDbconn.closeDB()
         self.openClientDatatabase()
 
+    def reopenServerDbconn(self, readonly = True, noupload = True):
+        self.serverDbconn.closeDB()
+        self.server_readonly = readonly
+        self.server_noupload = noupload
+        self.openServerDatabase()
+
     def closeAllRepositoryDatabases(self):
         for item in self.repoDbCache:
             self.repoDbCache[item].closeDB()
             del self.repoDbCache[item]
         self.repoDbCache.clear()
 
-    def openClientDatatabase(self):
+    def openClientDatabase(self):
         self.clientDbconn = self.databaseTools.openClientDatabase(indexing = self.indexing, 
                                                                     generate = self.noclientdb, 
                                                                     xcache = self.xcache
+                                                                )
+
+    def openServerDatabase(self):
+        self.serverDbconn = self.databaseTools.openServerDatabase(readOnly = self.server_readonly,
+                                                                    noUpload = self.server_noupload
                                                                 )
 
     def openRepositoryDatabase(self, repoid):
@@ -113,6 +129,7 @@ class EquoInterface(TextInterface):
                                                         indexing = self.indexing,
                                                         readOnly = readOnly
                                                     )
+        return dbconn
 
     def listAllAvailableBranches(self):
         branches = set()
@@ -832,7 +849,7 @@ class EquoInterface(TextInterface):
         monotree = set(idpackages) # monodimensional tree
 
         # check if dependstable is sane before beginning
-        rx = self.clientDbconn.retrieveDepends(idpackages[0])
+        self.clientDbconn.retrieveDepends(idpackages[0])
 
         while (not dependsOk):
             treedepth += 1
@@ -1015,13 +1032,14 @@ class EquoInterface(TextInterface):
         # filter out packages that are in actionQueue comparing key + slot
         if install and removal:
             myremmatch = {}
-            [myremmatch.update({(self.entropyTools.dep_getkey(self.clientDbconn.retrieveAtom(x)),self.clientDbconn.retrieveSlot(x)): x}) for x in removal]
+            for x in removal:
+                myremmatch.update({(self.entropyTools.dep_getkey(self.clientDbconn.retrieveAtom(x)),self.clientDbconn.retrieveSlot(x)): x})
             for packageInfo in install:
                 dbconn = self.openRepositoryDatabase(packageInfo[1])
                 testtuple = (self.entropyTools.dep_getkey(dbconn.retrieveAtom(packageInfo[0])),dbconn.retrieveSlot(packageInfo[0]))
                 if testtuple in myremmatch:
                     # remove from removalQueue
-                    if myremmatch[testtuple] in removalQueue:
+                    if myremmatch[testtuple] in removal:
                         removal.remove(myremmatch[testtuple])
                 del testtuple
             del myremmatch
@@ -1169,7 +1187,7 @@ def fetchFile(url, digest = None):
     filename = os.path.basename(url)
     filepath = etpConst['packagesbindir']+"/"+etpConst['branch']+"/"+filename
     if os.path.exists(filepath):
-	os.remove(filepath)
+        os.remove(filepath)
 
     # load class
     fetchConn = remoteTools.urlFetcher(url, filepath)
@@ -1179,21 +1197,20 @@ def fetchFile(url, digest = None):
         fetchChecksum = fetchConn.download()
         data_transfer = fetchConn.datatransfer
     except KeyboardInterrupt:
-	return -4, data_transfer
+        return -4, data_transfer
     except:
-	return -1, data_transfer
+        return -1, data_transfer
     if fetchChecksum == "-3":
-	return -3, data_transfer
-    if (digest):
-	#print digest+" <--> "+fetchChecksum
-	if (fetchChecksum != digest):
-	    # not properly downloaded
-            del fetchConn
-	    return -2, data_transfer
-	else:
-            del fetchConn
-	    return 0, data_transfer
+        return -3, data_transfer
+
     del fetchConn
+    if (digest):
+        #print digest+" <--> "+fetchChecksum
+        if (fetchChecksum != digest):
+            # not properly downloaded
+            return -2, data_transfer
+        else:
+            return 0, data_transfer
     return 0, data_transfer
 
 def matchChecksum(infoDict):
@@ -1365,7 +1382,6 @@ def removePackage(infoDict):
 '''
 def unpackPackage(infoDict):
 
-    package = infoDict['download']
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Unpacking package: "+str(infoDict['atom']))
 
     if os.path.isdir(infoDict['unpackdir']):
@@ -1978,7 +1994,7 @@ def stepExecutor(step, infoDict, loopString = None):
     elif step == "cleanup":
 	print_info(red("   ## ")+blue("Cleaning temporary files for: ")+red(os.path.basename(infoDict['atom'])))
         xtermTitle(loopString+' Cleaning temporary files for: '+os.path.basename(infoDict['atom']))
-        parallelClean = parallelStep(cleanupPackage,infoDict)
+        parallelStep(cleanupPackage,infoDict)
         # we don't care if cleanupPackage fails since it's not critical
         '''
 	output = cleanupPackage(infoDict)

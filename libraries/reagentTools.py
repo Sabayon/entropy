@@ -19,24 +19,18 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
-
-# Never do "import portage" here, please use entropyTools binding
-
-# EXIT STATUSES: 500-599
-
+import os
+import shutil
 from entropyConstants import *
 from serverConstants import *
 from entropyTools import *
 import exceptionTools
-import os
-import shutil
 import databaseTools
+Text = TextInterface()
 
 # Logging initialization
 import logTools
 reagentLog = logTools.LogFile(level=etpConst['reagentloglevel'],filename = etpConst['reagentlogfile'], header = "[Reagent]")
-
-# reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"testFunction: example. ")
 
 def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['branch'], inject = False):
 
@@ -45,49 +39,47 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
     # check if the package provided is valid
     validFile = False
     if os.path.isfile(package) and package.endswith(".tbz2"):
-	validFile = True
+        validFile = True
     if (not validFile):
-	print_warning(package+" does not exist !")
+        print_warning(package+" does not exist !")
 
     packagename = os.path.basename(package)
     print_info(brown(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
     mydata = extractPkgData(package, enzymeRequestBranch, inject = inject)
-    
+
     if dbconnection is None:
-	dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+        dbconn = databaseTools.openServerDatabase(readOnly = False, noUpload = True)
     else:
-	dbconn = dbconnection
-    
+        dbconn = dbconnection
+
     idpk, revision, etpDataUpdated, accepted = dbconn.handlePackage(mydata)
-    
+
     # add package info to our official repository etpConst['officialrepositoryname']
     if (accepted):
         dbconn.removePackageFromInstalledTable(idpk)
-	dbconn.addPackageToInstalledTable(idpk,etpConst['officialrepositoryname'])
-    
+        dbconn.addPackageToInstalledTable(idpk,etpConst['officialrepositoryname'])
+
     if dbconnection is None:
-	dbconn.commitChanges()
-	dbconn.closeDB()
+        dbconn.commitChanges()
+        dbconn.closeDB()
 
     packagename = packagename[:-5]+"~"+str(revision)+".tbz2"
 
     if (accepted) and (revision != 0):
-	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(os.path.basename(etpDataUpdated['download']))+" has been updated to revision: "+str(revision))
-	print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" entry has been updated. Revision: ")+bold(str(revision)))
-	return True, idpk
+        reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(os.path.basename(etpDataUpdated['download']))+" has been updated to revision: "+str(revision))
+        print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" entry has been updated. Revision: ")+bold(str(revision)))
+        return True, idpk
     elif (accepted) and (revision == 0):
-	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(os.path.basename(etpDataUpdated['download']))+" newly created or version bumped.")
-	print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" entry newly created."))
-	return True, idpk
+        reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(os.path.basename(etpDataUpdated['download']))+" newly created or version bumped.")
+        print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" entry newly created."))
+        return True, idpk
     else:
-	reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(os.path.basename(etpDataUpdated['download']))+" kept intact, no updates needed.")
-	print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
-	return False, idpk
-
-
+        reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(os.path.basename(etpDataUpdated['download']))+" kept intact, no updates needed.")
+        print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
+        return False, idpk
 
 def inject(options):
-    
+
     requestedBranch = etpConst['branch']
     mytbz2s = []
     for opt in options:
@@ -204,7 +196,7 @@ def update(options):
 	            atom = dbconn.retrieveAtom(x)
 	            print_info(brown("    # ")+red(atom))
                 if reagentRequestAsk:
-                    rc = askquestion(">>   Would you like to remove them now ?")
+                    rc = Text.askQuestion(">>   Would you like to remove them now ?")
                 else:
                     rc = "Yes"
 	        if rc == "Yes":
@@ -221,7 +213,7 @@ def update(options):
 	        for x in toBeAdded:
 	            print_info(brown("    # ")+red(x[0]))
                 if reagentRequestAsk:
-	            rc = askquestion(">>   Would you like to package them now ?")
+	            rc = Text.askQuestion(">>   Would you like to package them now ?")
                     if rc == "No":
                         return 0
 
@@ -437,7 +429,7 @@ def database(options):
 		    pass
 	    dbconn.closeDB()
 	    print_info(red(" * ")+bold("WARNING")+red(": database file already exists. Overwriting."))
-	    rc = askquestion("\n     Do you want to continue ?")
+	    rc = Text.askQuestion("\n     Do you want to continue ?")
 	    if rc == "No":
 	        return 0
 	    os.remove(etpConst['etpdatabasefilepath'])
@@ -462,7 +454,7 @@ def database(options):
             f.flush()
             f.close()
 
-	rc = askquestion("     Would you like to sync packages first (important if you don't have them synced) ?")
+	rc = Text.askQuestion("     Would you like to sync packages first (important if you don't have them synced) ?")
         if rc == "Yes":
             activatorTools.packages(["sync","--ask"])
 	
@@ -561,7 +553,7 @@ def database(options):
 	    print_error(green(" * ")+red("Supplied directory does not exist."))
 	    return 5
 	print_info(green(" * ")+red("Initializing an empty database file with Entropy structure ..."),back = True)
-	connection = databaseTools.sqlite.connect(mypath[0])
+	connection = databaseTools.dbapi2.connect(mypath[0])
 	cursor = connection.cursor()
 	for sql in etpSQLInitDestroyAll.split(";"):
 	    if sql:
@@ -617,7 +609,7 @@ def database(options):
 	    atom = dbconn.retrieveAtom(pkg)
 	    print_info(red("  (*) ")+bold(atom))
 
-	rc = askquestion("     Would you like to continue ?")
+	rc = Text.askQuestion("     Would you like to continue ?")
 	if rc == "No":
 	    return 9
 	
@@ -723,7 +715,7 @@ def database(options):
 	    print_info(red("\t (*) ")+bold(pkgatom)+blue(" [")+red(branch)+blue("]"))
 
 	# ask to continue
-	rc = askquestion("     Would you like to continue ?")
+	rc = Text.askQuestion("     Would you like to continue ?")
 	if rc == "No":
 	    return 0
 	
@@ -785,7 +777,7 @@ def database(options):
 	    print_info(darkred("    (*) ")+blue("[")+red(branch)+blue("] ")+brown(pkgatom))
 
 	# ask to continue
-	rc = askquestion("     Would you like to continue ?")
+	rc = Text.askQuestion("     Would you like to continue ?")
 	if rc == "No":
 	    return 0
 
@@ -867,7 +859,7 @@ def database(options):
 		toBeDownloaded.append([idpackage,pkgfile,pkgbranch])
 	
 	if (not databaseRequestNoAsk):
-	    rc = askquestion("     Would you like to continue ?")
+	    rc = Text.askQuestion("     Would you like to continue ?")
 	    if rc == "No":
 	        return 0
 
@@ -984,7 +976,7 @@ def database(options):
                 print_info(green("   - ")+red(pkgatom)+" -> "+bold(str(pkgbranch)+"/"+pkgfile))
 	
 	if (not databaseRequestNoAsk):
-	    rc = askquestion("     Would you like to continue ?")
+	    rc = Text.askQuestion("     Would you like to continue ?")
 	    if rc == "No":
 	        return 0
 

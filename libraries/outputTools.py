@@ -22,10 +22,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-__docformat__ = "epytext"
-
-from sys import stderr, stdout, modules
-from os import environ, getenv
+import sys, os
 import curses
 import readline
 from entropyConstants import etpUi
@@ -162,33 +159,33 @@ codes["UNMERGE_WARN"] = codes["red"]
 codes["MERGE_LIST_PROGRESS"] = codes["yellow"]
 
 def xtermTitle(mystr, raw=False):
-        if dotitles and "TERM" in environ and stderr.isatty():
-                myt=environ["TERM"]
+        if dotitles and "TERM" in os.environ and sys.stderr.isatty():
+                myt=os.environ["TERM"]
                 legal_terms = ["xterm","Eterm","aterm","rxvt","screen","kterm","rxvt-unicode","gnome"]
                 if myt in legal_terms:
                         if not raw:
                                 mystr = "\x1b]0;%s\x07" % mystr
-                        stderr.write(mystr)
-                        stderr.flush()
+                        sys.stderr.write(mystr)
+                        sys.stderr.flush()
 
 default_xterm_title = None
 
 def xtermTitleReset():
         global default_xterm_title
         if default_xterm_title is None:
-                prompt_command = getenv('PROMPT_COMMAND')
+                prompt_command = os.getenv('PROMPT_COMMAND')
                 if prompt_command == "":
                         default_xterm_title = ""
                 elif prompt_command is not None:
                         import commands
                         default_xterm_title = commands.getoutput(prompt_command)
                 else:
-                        pwd = getenv('PWD','')
-                        home = getenv('HOME', '')
+                        pwd = os.getenv('PWD','')
+                        home = os.getenv('HOME', '')
                         if home != '' and pwd.startswith(home):
                                 pwd = '~' + pwd[len(home):]
                         default_xterm_title = '\x1b]0;%s@%s:%s\x07' % (
-                                getenv('LOGNAME', ''), getenv('HOSTNAME', '').split('.', 1)[0], pwd)
+                                os.getenv('LOGNAME', ''), os.getenv('HOSTNAME', '').split('.', 1)[0], pwd)
         xtermTitle(default_xterm_title, raw=True)
 
 def notitles():
@@ -225,7 +222,7 @@ def create_color_func(color_key):
     return derived_func
 
 for c in compat_functions_colors:
-    setattr(modules[__name__], c, create_color_func(c))
+    setattr(sys.modules[__name__], c, create_color_func(c))
 
 def enlightenatom(atom):
     out = atom.split("/")
@@ -269,7 +266,7 @@ def print_generic(msg): # here we'll wrap any nice formatting
 def writechar(char):
     if etpUi['mute']:
         return
-    stdout.write(char); stdout.flush()
+    sys.stdout.write(char); sys.stdout.flush()
 
 def readtext(request):
     xtermTitle("Entropy needs your attention")
@@ -307,6 +304,38 @@ class TextInterface:
             eval("print_"+type)(header+count_str+text, back = back)
         elif importance in (2,3):
             eval("print_"+type)(header+count_str+text, back = back)
+
+    # @input question: question to do
+    #
+    # @input importance:
+    #           values: 0,1,2 (latter is a blocker - popup menu on a GUI env)
+    #           used to specify information importance, 0<important<2
+    #
+    # @input responses:
+    #           list of options whose users can choose between
+    #
+    # feel free to reimplement this
+    def askQuestion(self, question, importance = 0, responses = ["Yes","No"]):
+        colours = [green, red, blue, darkgreen, darkred, darkblue, brown, purple]
+        if len(responses) > len(colours):
+            import exceptionTools
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: maximum responses length = %s" % (len(colours),))
+        print darkgreen(question),
+        try:
+            while True:
+                xtermTitle("Entropy got a question for you")
+                response = raw_input("["+"/".join([colours[i](responses[i]) for i in range(len(responses))])+"] ")
+                for key in responses:
+                    # An empty response will match the first value in responses.
+                    if response.upper()==key[:len(response)].upper():
+                        xtermTitleReset()
+                        return key
+                        print "I cannot understand '%s'" % response,
+        except (EOFError, KeyboardInterrupt):
+            print "Interrupted."
+            xtermTitleReset()
+            sys.exit(100)
+        xtermTitleReset()
 
     def nocolor(self):
         nocolor()
