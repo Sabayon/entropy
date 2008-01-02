@@ -286,24 +286,41 @@ class TextInterface:
     # @input count:
     #           if you need to print an incremental count ( 100/250...101/251..)
     #           just pass count = [first integer,second integer] or even a tuple!
+    # @input header:
+    #           text header (decoration?), that's it
     #
+    # @input footer:
+    #           text footer (decoration?), that's it
     #
-    # @input items:
-    #           if you need to pass a list of items to print
+    # @input percent:
+    #           if percent is True: count will be treating as a percentual count[0]/count[1]*100
     #
     # feel free to reimplement this
-    def updateProgress(self, text, header = "", back = False, importance = 0, type = "info", count = []):
+    def updateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
         if (etpUi['quiet']) or (etpUi['mute']):
             return
+
+        myfunc = print_info
+        if type == "warning":
+            myfunc = print_warning
+        elif type == "error":
+            myfunc = print_error
+
         count_str = ""
         if count:
-            count_str = " (%s/%s) " % (red(str(count[0])),blue(str(count[1])),)
+            if len(count) < 2:
+                import exceptionTools
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: count length must be >= 2")
+            if percent:
+                count_str = " ("+str(round((float(count[0])/count[1])*100,1))+"%) "
+            else:
+                count_str = " (%s/%s) " % (red(str(count[0])),blue(str(count[1])),)
         if importance == 0:
-            eval("print_"+type)(header+count_str+text, back = back)
+            myfunc(header+count_str+text+footer, back = back)
         elif importance == 1:
-            eval("print_"+type)(header+count_str+text, back = back)
+            myfunc(header+count_str+text+footer, back = back)
         elif importance in (2,3):
-            eval("print_"+type)(header+count_str+text, back = back)
+            myfunc(header+count_str+text+footer, back = back)
 
     # @input question: question to do
     #

@@ -22,8 +22,6 @@
 
 from entropyConstants import *
 
-
-
 def initConfig_serverConstants():
     
     # activator section
@@ -58,11 +56,11 @@ def initConfig_serverConstants():
                 try:
                     loglevel = int(loglevel)
                 except:
-                    print "WARNING: invalid loglevel in: "+etpConst['activatorconf']
+                    pass
                 if (loglevel > -1) and (loglevel < 3):
                     etpConst['activatorloglevel'] = loglevel
                 else:
-                    print "WARNING: invalid loglevel in: "+etpConst['activatorconf']
+                    pass
     
     # reagent section
     if (os.path.isfile(etpConst['reagentconf'])):
@@ -75,11 +73,11 @@ def initConfig_serverConstants():
                 try:
                     loglevel = int(loglevel)
                 except:
-                    print "WARNING: invalid loglevel in: "+etpConst['reagentconf']
+                    pass
                 if (loglevel > -1) and (loglevel < 3):
                     etpConst['reagentloglevel'] = loglevel
                 else:
-                    print "WARNING: invalid loglevel in: "+etpConst['reagentconf']
+                    pass
             elif line.startswith("rss-feed|") and (len(line.split("rss-feed|")) == 2):
                 feed = line.split("rss-feed|")[1]
                 if feed in ("enable","enabled","true","1"):
@@ -115,11 +113,11 @@ def initConfig_serverConstants():
                 try:
                     loglevel = int(loglevel)
                 except:
-                    print "WARNING: invalid loglevel in: "+etpConst['mirrorsconf']
+                    pass
                 if (loglevel > -1) and (loglevel < 3):
                     etpConst['mirrorsloglevel'] = loglevel
                 else:
-                    print "WARNING: invalid loglevel in: "+etpConst['mirrorsconf']
+                    pass
     
     
     # generic settings section

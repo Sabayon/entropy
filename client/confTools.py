@@ -106,7 +106,10 @@ def update():
                     while os.path.lexists(backupfile):
                         bcount += 1
                         backupfile = etpConst['systemroot']+os.path.dirname(scandata[key]['destination'])+"/._equo_backup."+unicode(bcount)+"_"+os.path.basename(scandata[key]['destination'])
-                    shutil.copy2(etpConst['systemroot']+scandata[key]['destination'],backupfile)
+                    try:
+                        shutil.copy2(etpConst['systemroot']+scandata[key]['destination'],backupfile)
+                    except IOError:
+                        pass
 
 		shutil.move(etpConst['systemroot']+scandata[key]['source'],etpConst['systemroot']+scandata[key]['destination'])
 		# remove from cache
@@ -178,7 +181,10 @@ def update():
                             while os.path.lexists(backupfile):
                                 bcount += 1
                                 backupfile = etpConst['systemroot']+os.path.dirname(scandata[cmd]['destination'])+"/._equo_backup."+unicode(bcount)+"_"+os.path.basename(scandata[cmd]['destination'])
-                            shutil.copy2(etpConst['systemroot']+scandata[cmd]['destination'],backupfile)
+                            try:
+                                shutil.copy2(etpConst['systemroot']+scandata[cmd]['destination'],backupfile)
+                            except IOError:
+                                pass
                         
 			shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
 			scandata = removefromcache(scandata,cmd)

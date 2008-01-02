@@ -31,6 +31,9 @@ equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst[
 if etpConst['gentoo-compat']:
     import portageTools
 
+global Equo
+Equo = None
+
 '''
    @ description: Gentoo toolchain variables
 '''
@@ -40,8 +43,11 @@ INITSERVICES_DIR="/var/lib/init.d/"
 '''
    @description: pkgdata parser that collects post-install scripts that would be run
 '''
-def postinstall(pkgdata):
-    
+def postinstall(pkgdata, EquoInterface):
+
+    global Equo
+    Equo = EquoInterface
+
     functions = set()
 
     # Gentoo hook
@@ -53,12 +59,12 @@ def postinstall(pkgdata):
 
     # triggers that are not needed when gentoo-compat is enabled
     if not etpConst['gentoo-compat']:
-        
+
         if "gnome2" in pkgdata['eclasses']:
             functions.add('iconscache')
             functions.add('gconfinstallschemas')
             functions.add('gconfreload')
-        
+
         if pkgdata['name'] == "pygobject":
             functions.add('pygtksetup')
 
@@ -69,7 +75,7 @@ def postinstall(pkgdata):
         # gcc configuration
         if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/gcc":
             functions.add("gccswitch")
-    
+
         # binutils configuration
         if pkgdata['category']+"/"+pkgdata['name'] == "sys-devel/binutils":
             functions.add("binutilsswitch")
@@ -77,10 +83,10 @@ def postinstall(pkgdata):
         # kde package ?
         if "kde" in pkgdata['eclasses']:
             functions.add("kbuildsycoca")
-    
+
         if "kde4-base" in pkgdata['eclasses'] or "kde4-meta" in pkgdata['eclasses']:
             functions.add("kbuildsycoca4")
-        
+
         # update mime
         if "fdo-mime" in pkgdata['eclasses']:
             functions.add('mimeupdate')
@@ -99,7 +105,7 @@ def postinstall(pkgdata):
             functions.remove("ebuild_postinstall") # disabling gentoo postinstall since we reimplemented it
         except:
             pass
-	functions.add("openglsetup")
+        functions.add("openglsetup")
 
     # load linker paths
     ldpaths = entropyTools.collectLinkerPaths()
@@ -137,17 +143,20 @@ def postinstall(pkgdata):
             if os.path.dirname(x) in ldpaths:
                 if x.find(".so") > -1:
                     functions.add('run_ldconfig')
-    
+
     del ldpaths
     return functions
 
 '''
    @description: pkgdata parser that collects pre-install scripts that would be run
 '''
-def preinstall(pkgdata):
-    
+def preinstall(pkgdata, EquoInterface):
+
+    global Equo
+    Equo = EquoInterface
+
     functions = set()
-    
+
     if pkgdata['trigger']:
         functions.add('call_ext_preinstall')
 
@@ -166,8 +175,11 @@ def preinstall(pkgdata):
 '''
    @description: pkgdata parser that collects post-remove scripts that would be run
 '''
-def postremove(pkgdata):
-    
+def postremove(pkgdata, EquoInterface):
+
+    global Equo
+    Equo = EquoInterface
+
     functions = set()
 
     if pkgdata['trigger']:
@@ -178,20 +190,20 @@ def postremove(pkgdata):
         # kde package ?
         if "kde" in pkgdata['eclasses']:
             functions.add("kbuildsycoca")
-    
+
         if "kde4-base" in pkgdata['eclasses'] or "kde4-meta" in pkgdata['eclasses']:
             functions.add("kbuildsycoca4")
-    
+
         if pkgdata['name'] == "pygtk":
             functions.add('pygtkremove')
-    
+
         if pkgdata['category']+"/"+pkgdata['name'] == "dev-db/sqlite":
             functions.add('sqliteinst')
-    
+
         # python configuration
         if pkgdata['category']+"/"+pkgdata['name'] == "dev-lang/python":
             functions.add("pythoninst")
-    
+
         # fonts configuration
         if pkgdata['category'] == "media-fonts":
             functions.add("fontconfig")
@@ -223,15 +235,18 @@ def postremove(pkgdata):
             if os.path.dirname(x) in ldpaths:
                 if x.find(".so") > -1:
                     functions.add('run_ldconfig')
-    
+
     del ldpaths
     return functions
 
 '''
    @description: pkgdata parser that collects pre-remove scripts that would be run
 '''
-def preremove(pkgdata):
-    
+def preremove(pkgdata, EquoInterface):
+
+    global Equo
+    Equo = EquoInterface
+
     functions = set()
 
     if pkgdata['trigger']:
@@ -249,13 +264,13 @@ def preremove(pkgdata):
             functions.remove("ebuild_postremove")
         except:
             pass
-	functions.add("openglsetup_xorg")
+        functions.add("openglsetup_xorg")
 
     for x in pkgdata['removecontent']:
-	if x.startswith("/etc/init.d/"):
-	    functions.add('initdisable')
-	if x.startswith("/boot"):
-	    functions.add('mountboot')
+        if x.startswith("/etc/init.d/"):
+            functions.add('initdisable')
+        if x.startswith("/boot"):
+            functions.add('mountboot')
 
     return functions
 
@@ -304,11 +319,11 @@ def call_ext_generic(pkgdata, stage):
         sys.stdout = oldsysstdout
         stdfile.close()
 
-    
+
     my_ext_status = 0
-    
+
     execfile(triggerfile)
-    
+
     os.remove(triggerfile)
     return my_ext_status
 
@@ -321,19 +336,23 @@ def fontconfig(pkgdata):
     fontdirs = set()
     for xdir in pkgdata['content']:
         xdir = etpConst['systemroot']+xdir
-	if xdir.startswith(etpConst['systemroot']+"/usr/share/fonts"):
-	    origdir = xdir[len(etpConst['systemroot'])+16:]
-	    if origdir:
-		if origdir.startswith("/"):
-		    origdir = origdir.split("/")[1]
-		    if os.path.isdir(xdir[:16]+"/"+origdir):
-		        fontdirs.add(xdir[:16]+"/"+origdir)
+        if xdir.startswith(etpConst['systemroot']+"/usr/share/fonts"):
+            origdir = xdir[len(etpConst['systemroot'])+16:]
+            if origdir:
+                if origdir.startswith("/"):
+                    origdir = origdir.split("/")[1]
+                    if os.path.isdir(xdir[:16]+"/"+origdir):
+                        fontdirs.add(xdir[:16]+"/"+origdir)
     if (fontdirs):
-	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring fonts directory...")
-	print_info(red("   ##")+brown(" Configuring fonts directory..."))
+        equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring fonts directory...")
+        Equo.updateProgress(
+                                brown(" Configuring fonts directory..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
     for fontdir in fontdirs:
-	setup_font_dir(fontdir)
-	setup_font_cache(fontdir)
+        setup_font_dir(fontdir)
+        setup_font_cache(fontdir)
 
 def gccswitch(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GCC Profile...")
@@ -718,7 +737,11 @@ def ebuild_postinstall(pkgdata):
     if myebuild:
         myebuild = myebuild[0]
         portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
-        print_info(red("   ##")+brown(" Ebuild: pkg_postinst()"))
+        Equo.updateProgress(
+                                brown(" Ebuild: pkg_postinst()"),
+                                importance = 0,
+                                header = red("   ##")
+                            )
         try:
             if not os.path.isfile(pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"): # if environment is not yet created, we need to run pkg_setup()
                 # if linux-mod is found, we just disable doebuild output since will surely fail
@@ -740,7 +763,11 @@ def ebuild_postinstall(pkgdata):
                 equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_postinst()) trigger for "+str(portage_atom)+". Something bad happened.")
         except Exception, e:
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
-            print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo postint trigger for ")+bold(portage_atom)+brown(". Please report."))
+            Equo.updateProgress(
+                                    bold(" QA Warning: ")+brown("Cannot run Gentoo postint trigger for ")+bold(portage_atom)+brown(". Please report."),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
     return 0
 
 def ebuild_preinstall(pkgdata):
@@ -748,7 +775,11 @@ def ebuild_preinstall(pkgdata):
     if myebuild:
         myebuild = myebuild[0]
         portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
-        print_info(red("   ##")+brown(" Ebuild: pkg_preinst()"))
+        Equo.updateProgress(
+                                brown(" Ebuild: pkg_preinst()"),
+                                importance = 0,
+                                header = red("   ##")
+                            )
         try:
             if "linux-mod" in pkgdata['eclasses'] \
                 or "linux-info" in pkgdata['eclasses']:
@@ -768,21 +799,33 @@ def ebuild_preinstall(pkgdata):
                 equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_preinst()) trigger for "+str(portage_atom)+". Something bad happened.")
         except Exception, e:
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
-            print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo preinst trigger for ")+bold(portage_atom)+brown(". Please report."))
+            Equo.updateProgress(
+                                    bold(" QA Warning: ")+brown("Cannot run Gentoo preinst trigger for ")+bold(portage_atom)+brown(". Please report."),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
     return 0
 
 def ebuild_preremove(pkgdata):
     portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
     myebuild = portageTools.getPortageAppDbPath()+portage_atom+"/"+pkgdata['name']+"-"+pkgdata['version']+".ebuild"
     if os.path.isfile(myebuild):
-        print_info(red("   ##")+brown(" Ebuild: pkg_prerm()"))
+        Equo.updateProgress(
+                                brown(" Ebuild: pkg_prerm()"),
+                                importance = 0,
+                                header = red("   ##")
+                            )
         try:
             rc = portageTools.portage_doebuild(myebuild, mydo = "prerm", tree = "bintree", cpv = portage_atom, portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom)
             if rc == 1:
                 equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preremove trigger for "+str(portage_atom)+". Something bad happened.")
         except Exception, e:
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo preremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
-            print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo preremove trigger for ")+bold(portage_atom)+brown(". Please report."))
+            Equo.updateProgress(
+                                    bold(" QA Warning: ")+brown("Cannot run Gentoo preremove trigger for ")+bold(portage_atom)+brown(". Please report."),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
     return 0
 
 def ebuild_postremove(pkgdata):
@@ -790,14 +833,22 @@ def ebuild_postremove(pkgdata):
     portage_atom = pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
     myebuild = getPortageAppDbPath()+portage_atom+"/"+pkgdata['name']+"-"+pkgdata['version']+".ebuild"
     if os.path.isfile(myebuild):
-        print_info(red("   ##")+brown(" Ebuild: pkg_postrm()"))
+        Equo.updateProgress(
+                                brown(" Ebuild: pkg_postrm()"),
+                                importance = 0,
+                                header = red("   ##")
+                            )
         try:
             rc = portage_doebuild(myebuild, mydo = "postrm", tree = "bintree", cpv = portage_atom, portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom)
             if rc == 1:
                 equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo postremove trigger for "+str(portage_atom)+". Something bad happened.")
         except Exception, e:
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo postremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
-            print_warning(red("   ##")+bold(" QA Warning: ")+brown("Cannot run Gentoo postremove trigger for ")+bold(portage_atom)+brown(". Please report."))
+            Equo.updateProgress(
+                                    bold(" QA Warning: ")+brown("Cannot run Gentoo postremove trigger for ")+bold(portage_atom)+brown(". Please report."),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
     return 0
 
 ########################################################

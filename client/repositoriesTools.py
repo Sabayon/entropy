@@ -232,8 +232,8 @@ def syncRepositories(reponames = [], forceUpdate = False):
 
     rc = False
     try:
-        import equoTools
-        Equo = equoTools.EquoInterface()
+        from equoInterface import EquoInterface
+        Equo = EquoInterface()
         rc = Equo.check_equo_updates()
         del Equo
     except:

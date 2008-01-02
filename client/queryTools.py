@@ -24,8 +24,8 @@ import os
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
-import equoTools
-Equo = equoTools.EquoInterface()
+from equoInterface import EquoInterface
+Equo = EquoInterface()
 
 ########################################################
 ####

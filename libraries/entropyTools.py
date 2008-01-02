@@ -64,8 +64,8 @@ class TimeScheduled(threading.Thread):
     def kill(self):
         self.alive = 0
 
-class parallelStep(threading.Thread):
-    def __init__(self, function, dictData):
+class parallelTask(threading.Thread):
+    def __init__(self, function, dictData = {}):
         threading.Thread.__init__(self)
         self.function = function
         self.data = dictData.copy()
@@ -74,7 +74,10 @@ class parallelStep(threading.Thread):
         del self.data
     
     def run(self):
-        self.function(self.data)
+        if self.data:
+            self.function(self.data)
+        else:
+            self.function()
     '''
     def destroy(self):
         del self.function

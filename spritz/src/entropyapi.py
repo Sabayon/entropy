@@ -31,8 +31,8 @@ import entropyTools
 import repositoriesTools
 import remoteTools
 import cacheTools
-import equoTools
-Equo = equoTools.EquoInterface()
+from equoInterface import EquoInterface
+Equo = EquoInterface()
 
 '''
 
@@ -87,7 +87,7 @@ class GuiCacheHelper(cacheTools.cacheHelper):
     def connectProgressObject(self, progress):
         self.progress = progress
 
-    def updateProgress(self, text, header = "", back = False, importance = 0, type = "info", count = []):
+    def updateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
 
         if importance == 0:
             if count:

@@ -30,8 +30,8 @@ from clientConstants import *
 from outputTools import *
 from databaseTools import backupClientDatabase
 import entropyTools
-import equoTools
-Equo = equoTools.EquoInterface(noclientdb = True)
+from equoInterface import EquoInterface
+Equo = EquoInterface(noclientdb = True)
 
 def database(options):
 
@@ -236,7 +236,11 @@ def database(options):
 	for pkgfound in pkgsfound:
 	    cnt += 1
 	    print_info("  ("+str(cnt)+"/"+count+") "+red("Adding: ")+atoms[pkgfound], back = True)
-	    equoTools.installPackageIntoDatabase(pkgfound[0],pkgfound[1])
+            Package = Equo.Package()
+            Package.prepare(tuple(pkgfound),"install", {})
+            Package.__install_package_into_database()
+            Package.kill()
+            del Package
 
 	print_info(red("  Database resurrected successfully."))
 	print_warning(red("  Keep in mind that virtual/meta packages couldn't be matched. They don't own any files."))
