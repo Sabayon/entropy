@@ -220,8 +220,10 @@ def syncRepositories(reponames = [], forceUpdate = False):
     repoConn.closeTransactions()
 
     # clean caches
-    import cacheTools
-    cacheTools.generateCache(depcache = True, configcache = False)
+    from equoInterface import EquoInterface
+    Equo = EquoInterface(noclientdb = True)
+    if repoConn.dbupdated:
+        Equo.generate_cache(depcache = True, configcache = False)
 
     syncErrors = repoConn.syncErrors
     del repoConn
@@ -232,10 +234,7 @@ def syncRepositories(reponames = [], forceUpdate = False):
 
     rc = False
     try:
-        from equoInterface import EquoInterface
-        Equo = EquoInterface()
         rc = Equo.check_equo_updates()
-        del Equo
     except:
         pass
 

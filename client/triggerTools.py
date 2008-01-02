@@ -356,7 +356,11 @@ def fontconfig(pkgdata):
 
 def gccswitch(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GCC Profile...")
-    print_info(red("   ##")+brown(" Configuring GCC Profile..."))
+    Equo.updateProgress(
+                            brown(" Configuring GCC Profile..."),
+                            importance = 0,
+                            header = red("   ##")
+                        )
     # get gcc profile
     pkgsplit = entropyTools.catpkgsplit(pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version'])
     profile = pkgdata['chost']+"-"+pkgsplit[2]
@@ -364,36 +368,60 @@ def gccswitch(pkgdata):
 
 def iconscache(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating icons cache...")
-    print_info(red("   ##")+brown(" Updating icons cache..."))
+    Equo.updateProgress(
+                            brown(" Updating icons cache..."),
+                            importance = 0,
+                            header = red("   ##")
+                        )
     for item in pkgdata['content']:
         item = etpConst['systemroot']+item
-	if item.startswith(etpConst['systemroot']+"/usr/share/icons") and item.endswith("index.theme"):
-	    cachedir = os.path.dirname(item)
-	    generate_icons_cache(cachedir)
+        if item.startswith(etpConst['systemroot']+"/usr/share/icons") and item.endswith("index.theme"):
+            cachedir = os.path.dirname(item)
+            generate_icons_cache(cachedir)
 
 def mimeupdate(pkgdata = None):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating shared mime info database...")
-    print_info(red("   ##")+brown(" Updating shared mime info database..."))
+    Equo.updateProgress(
+                            brown(" Updating shared mime info database..."),
+                            importance = 0,
+                            header = red("   ##")
+                        )
     update_mime_db()
 
 def mimedesktopupdate(pkgdata = None):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating desktop mime database...")
-    print_info(red("   ##")+brown(" Updating desktop mime database..."))
+    Equo.updateProgress(
+                            brown(" Updating desktop mime database..."),
+                            importance = 0,
+                            header = red("   ##")
+                        )
     update_mime_desktop_db()
 
 def scrollkeeper(pkgdata = None):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating scrollkeeper database...")
-    print_info(red("   ##")+brown(" Updating scrollkeeper database..."))
+    Equo.updateProgress(
+                            brown(" Updating scrollkeeper database..."),
+                            importance = 0,
+                            header = red("   ##")
+                        )
     update_scrollkeeper_db()
 
 def gconfreload(pkgdata = None):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reloading GConf2 database...")
-    print_info(red("   ##")+brown(" Reloading GConf2 database..."))
+    Equo.updateProgress(
+                            brown(" Reloading GConf2 database..."),
+                            importance = 0,
+                            header = red("   ##")
+                        )
     reload_gconf_db()
 
 def binutilsswitch(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Binutils Profile...")
-    print_info(red("   ##")+brown(" Configuring Binutils Profile..."))
+    Equo.updateProgress(
+                            brown(" Configuring Binutils Profile..."),
+                            importance = 0,
+                            header = red("   ##")
+                        )
     # get binutils profile
     pkgsplit = entropyTools.catpkgsplit(pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version'])
     profile = pkgdata['chost']+"-"+pkgsplit[2]
@@ -402,10 +430,18 @@ def binutilsswitch(pkgdata):
 def kernelmod(pkgdata):
     if pkgdata['category'] != "sys-kernel":
         equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating moduledb...")
-        print_info(red("   ##")+brown(" Updating moduledb..."))
+        Equo.updateProgress(
+                                brown(" Updating moduledb..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
         item = 'a:1:'+pkgdata['category']+"/"+pkgdata['name']+"-"+pkgdata['version']
         update_moduledb(item)
-    print_info(red("   ##")+brown(" Running depmod..."))
+    Equo.updateProgress(
+                            brown(" Running depmod..."),
+                            importance = 0,
+                            header = red("   ##")
+                        )
     # get kernel modules dir name
     name = ''
     for item in pkgdata['content']:
@@ -419,60 +455,80 @@ def kernelmod(pkgdata):
 
 def pythoninst(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Python...")
-    print_info(red("   ##")+brown(" Configuring Python..."))
+    Equo.updateProgress(
+                            brown(" Configuring Python..."),
+                            importance = 0,
+                            header = red("   ##")
+                        )
     python_update_symlink()
 
 def sqliteinst(pkgdata):
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring SQLite...")
-    print_info(red("   ##")+brown(" Configuring SQLite..."))
+    Equo.updateProgress(
+                            brown(" Configuring SQLite..."),
+                            importance = 0,
+                            header = red("   ##")
+                        )
     sqlite_update_symlink()
 
 def initdisable(pkgdata):
     for item in pkgdata['removecontent']:
         item = etpConst['systemroot']+item
-	if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
-	    # running?
-	    running = os.path.isfile(etpConst['systemroot']+INITSERVICES_DIR+'/started/'+os.path.basename(item))
+        if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
+            # running?
+            running = os.path.isfile(etpConst['systemroot']+INITSERVICES_DIR+'/started/'+os.path.basename(item))
             if not etpConst['systemroot']:
                 myroot = "/"
             else:
                 myroot = etpConst['systemroot']+"/"
-	    scheduled = not os.system('ROOT="'+myroot+'" rc-update show | grep '+os.path.basename(item)+'&> /dev/null')
-	    initdeactivate(item, running, scheduled)
+            scheduled = not os.system('ROOT="'+myroot+'" rc-update show | grep '+os.path.basename(item)+'&> /dev/null')
+            initdeactivate(item, running, scheduled)
 
 def initinform(pkgdata):
     for item in pkgdata['content']:
         item = etpConst['systemroot']+item
-	if item.startswith(etpConst['systemroot']+"/etc/init.d/") and not os.path.isfile(etpConst['systemroot']+item):
+        if item.startswith(etpConst['systemroot']+"/etc/init.d/") and not os.path.isfile(etpConst['systemroot']+item):
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+item)
-	    print_info(red("   ##")+brown(" A new service will be installed: ")+item)
+            Equo.updateProgress(
+                                    brown(" A new service will be installed: ")+item,
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
 
 def removeinit(pkgdata):
     for item in pkgdata['removecontent']:
         item = etpConst['systemroot']+item
-	if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
+        if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Removing boot service: "+os.path.basename(item))
-	    print_info(red("   ##")+brown(" Removing boot service: ")+os.path.basename(item))
+            Equo.updateProgress(
+                                    brown(" Removing boot service: ")+os.path.basename(item),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
             if not etpConst['systemroot']:
                 myroot = "/"
             else:
                 myroot = etpConst['systemroot']+"/"
-	    try:
-		os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(item)+' &> /dev/null')
-	    except:
-		pass
+            try:
+                os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(item)+' &> /dev/null')
+            except:
+                pass
 
 def openglsetup(pkgdata):
     opengl = "xorg-x11"
     if pkgdata['name'] == "nvidia-drivers":
-	opengl = "nvidia"
+        opengl = "nvidia"
     elif pkgdata['name'] == "ati-drivers":
-	opengl = "ati"
+        opengl = "ati"
     # is there eselect ?
     eselect = os.system("eselect opengl &> /dev/null")
     if eselect == 0:
-	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to "+opengl+" ...")
-	print_info(red("   ##")+brown(" Reconfiguring OpenGL..."))
+        equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to "+opengl+" ...")
+        Equo.updateProgress(
+                                brown(" Reconfiguring OpenGL..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
         quietstring = ''
         if etpUi['quiet']: quietstring = " &>/dev/null"
         if etpConst['systemroot']:
@@ -480,14 +536,22 @@ def openglsetup(pkgdata):
         else:
             os.system('eselect opengl set --use-old '+opengl+quietstring)
     else:
-	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
-	print_info(red("   ##")+brown(" Eselect NOT found, cannot run OpenGL trigger"))
+        equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
+        Equo.updateProgress(
+                                brown(" Eselect NOT found, cannot run OpenGL trigger"),
+                                importance = 0,
+                                header = red("   ##")
+                            )
 
 def openglsetup_xorg(pkgdata):
     eselect = os.system("eselect opengl &> /dev/null")
     if eselect == 0:
-	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to fallback xorg-x11 ...")
-	print_info(red("   ##")+brown(" Reconfiguring OpenGL..."))
+        equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to fallback xorg-x11 ...")
+        Equo.updateProgress(
+                                brown(" Reconfiguring OpenGL..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
         quietstring = ''
         if etpUi['quiet']: quietstring = " &>/dev/null"
         if etpConst['systemroot']:
@@ -495,33 +559,45 @@ def openglsetup_xorg(pkgdata):
         else:
             os.system('eselect opengl set xorg-x11'+quietstring)
     else:
-	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
-	print_info(red("   ##")+brown(" Eselect NOT found, cannot run OpenGL trigger"))
+        equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
+        Equo.updateProgress(
+                                brown(" Eselect NOT found, cannot run OpenGL trigger"),
+                                importance = 0,
+                                header = red("   ##")
+                            )
 
 # FIXME: this only supports grub (no lilo support)
 def addbootablekernel(pkgdata):
     kernels = [x for x in pkgdata['content'] if x.startswith("/boot/kernel-")]
     for kernel in kernels:
-	initramfs = "/boot/initramfs-"+kernel[13:]
-	if initramfs not in pkgdata['content']:
-	    initramfs = ''
-	# configure GRUB
-	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Adding the new kernel...")
-	print_info(red("   ##")+brown(" Configuring GRUB bootloader. Adding the new kernel..."))
-	configure_boot_grub(kernel,initramfs)
+        initramfs = "/boot/initramfs-"+kernel[13:]
+        if initramfs not in pkgdata['content']:
+            initramfs = ''
+        # configure GRUB
+        equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Adding the new kernel...")
+        Equo.updateProgress(
+                                brown(" Configuring GRUB bootloader. Adding the new kernel..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        configure_boot_grub(kernel,initramfs)
 	
 
 # FIXME: this only supports grub (no lilo support)
 def removebootablekernel(pkgdata):
     kernels = [x for x in pkgdata['content'] if x.startswith("/boot/kernel-")]
     for kernel in kernels:
-	initramfs = "/boot/initramfs-"+kernel[13:]
-	if initramfs not in pkgdata['content']:
-	    initramfs = ''
-	# configure GRUB
-	equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Removing the selected kernel...")
-	print_info(red("   ##")+brown(" Configuring GRUB bootloader. Removing the selected kernel..."))
-	remove_boot_grub(kernel,initramfs)
+        initramfs = "/boot/initramfs-"+kernel[13:]
+        if initramfs not in pkgdata['content']:
+            initramfs = ''
+        # configure GRUB
+        equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Removing the selected kernel...")
+        Equo.updateProgress(
+                                brown(" Configuring GRUB bootloader. Removing the selected kernel..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        remove_boot_grub(kernel,initramfs)
 
 def mountboot(pkgdata):
     # is in fstab?
@@ -541,10 +617,18 @@ def mountboot(pkgdata):
                         rc = os.system("mount /boot &> /dev/null")
                         if rc == 0:
                             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Mounted /boot successfully")
-                            print_info(red("   ##")+brown(" Mounted /boot successfully"))
+                            Equo.updateProgress(
+                                                    brown(" Mounted /boot successfully"),
+                                                    importance = 0,
+                                                    header = red("   ##")
+                                                )
                         elif rc != 8192: # already mounted
                             equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Cannot mount /boot automatically !!")
-                            print_info(red("   ##")+brown(" Cannot mount /boot automatically !!"))
+                            Equo.updateProgress(
+                                                    brown(" Cannot mount /boot automatically !!"),
+                                                    importance = 0,
+                                                    header = red("   ##")
+                                                )
                         break
 
 def kbuildsycoca(pkgdata):
@@ -552,62 +636,74 @@ def kbuildsycoca(pkgdata):
         return
     kdedirs = ''
     try:
-	kdedirs = os.environ['KDEDIRS']
+        kdedirs = os.environ['KDEDIRS']
     except:
-	pass
+        pass
     if kdedirs:
-	dirs = kdedirs.split(":")
-	for builddir in dirs:
-	    if os.access(builddir+"/bin/kbuildsycoca",os.X_OK):
-		if not os.path.isdir("/usr/share/services"):
-		    os.makedirs("/usr/share/services")
-		os.chown("/usr/share/services",0,0)
-		os.chmod("/usr/share/services",0755)
-		equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca to build global KDE database")
-		print_info(red("   ##")+brown(" Running kbuildsycoca to build global KDE database"))
-		os.system(builddir+"/bin/kbuildsycoca --global --noincremental &> /dev/null")
+        dirs = kdedirs.split(":")
+        for builddir in dirs:
+            if os.access(builddir+"/bin/kbuildsycoca",os.X_OK):
+                if not os.path.isdir("/usr/share/services"):
+                    os.makedirs("/usr/share/services")
+                os.chown("/usr/share/services",0,0)
+                os.chmod("/usr/share/services",0755)
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca to build global KDE database")
+                Equo.updateProgress(
+                                        brown(" Running kbuildsycoca to build global KDE database"),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
+                os.system(builddir+"/bin/kbuildsycoca --global --noincremental &> /dev/null")
 
 def kbuildsycoca4(pkgdata):
     if etpConst['systemroot']:
         return
     kdedirs = ''
     try:
-	kdedirs = os.environ['KDEDIRS']
+        kdedirs = os.environ['KDEDIRS']
     except:
-	pass
+        pass
     if kdedirs:
-	dirs = kdedirs.split(":")
-	for builddir in dirs:
-	    if os.access(builddir+"/bin/kbuildsycoca4",os.X_OK):
-		if not os.path.isdir("/usr/share/services"):
-		    os.makedirs("/usr/share/services")
-		os.chown("/usr/share/services",0,0)
-		os.chmod("/usr/share/services",0755)
-		equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca4 to build global KDE4 database")
-		print_info(red("   ##")+brown(" Running kbuildsycoca to build global KDE database"))
+        dirs = kdedirs.split(":")
+        for builddir in dirs:
+            if os.access(builddir+"/bin/kbuildsycoca4",os.X_OK):
+                if not os.path.isdir("/usr/share/services"):
+                    os.makedirs("/usr/share/services")
+                os.chown("/usr/share/services",0,0)
+                os.chmod("/usr/share/services",0755)
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca4 to build global KDE4 database")
+                Equo.updateProgress(
+                                        brown(" Running kbuildsycoca to build global KDE database"),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
                 # do it
                 kbuild4cmd = """
-                
+
                 # Thanks to the hard work of kde4 gentoo overlay maintainers
-                
+
                 for i in $(dbus-launch); do
                         export "$i"
                 done
-                
+
                 # This is needed because we support multiple kde versions installed together.
                 XDG_DATA_DIRS="/usr/share:${KDEDIRS}/share:/usr/local/share"
                 """+builddir+"""/bin/kbuildsycoca4 --global --noincremental &> /dev/null
                 kill ${DBUS_SESSION_BUS_PID}
 
                 """
-		os.system(kbuild4cmd)
+                os.system(kbuild4cmd)
 
 def gconfinstallschemas(pkgdata):
     gtest = os.system("which gconftool-2 &> /dev/null")
     if gtest == 0 or etpConst['systemroot']:
-	schemas = [x for x in pkgdata['content'] if x.startswith("/etc/gconf/schemas") and x.endswith(".schemas")]
-	print_info(red("   ##")+brown(" Installing GConf2 schemas..."))
-	for schema in schemas:
+        schemas = [x for x in pkgdata['content'] if x.startswith("/etc/gconf/schemas") and x.endswith(".schemas")]
+        Equo.updateProgress(
+                                brown(" Installing GConf2 schemas..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        for schema in schemas:
             if not etpConst['systemroot']:
                 os.system("""
                 unset GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL
@@ -627,7 +723,7 @@ def pygtksetup(pkgdata):
         item = etpConst['systemroot']+item
         filepath = item[:-4]
         sympath = os.path.basename(item)
-	if os.path.isfile(item):
+        if os.path.isfile(item):
             try:
                 if os.path.lexists(filepath):
                     os.remove(filepath)
@@ -639,12 +735,16 @@ def pygtkremove(pkgdata):
     python_sym_files = [x for x in pkgdata['content'] if x.startswith("/usr/lib/python") and (x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0"))]
     for item in python_sym_files:
         item = etpConst['systemroot']+item
-	if os.path.isfile(item[:-4]):
-	    os.remove(item[:-4])
+        if os.path.isfile(item[:-4]):
+            os.remove(item[:-4])
 
 def susetuid(pkgdata):
     if os.path.isfile(etpConst['systemroot']+"/bin/su"):
-        print_info(red("   ##")+brown(" Configuring '"+etpConst['systemroot']+"/bin/su' executable SETUID"))
+        Equo.updateProgress(
+                                brown(" Configuring '"+etpConst['systemroot']+"/bin/su' executable SETUID"),
+                                importance = 0,
+                                header = red("   ##")
+                            )
         os.chown(etpConst['systemroot']+"/bin/su",0,0)
         os.system("chmod 4755 "+etpConst['systemroot']+"/bin/su")
         #os.chmod("/bin/su",4755) #FIXME: probably there's something I don't know here since, masks?
@@ -672,8 +772,12 @@ def createkernelsym(pkgdata):
                 continue
             if os.path.isdir(etpConst['systemroot']+"/usr/src/"+todir):
                 # link to /usr/src/linux
-		equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir)
-		print_info(red("   ##")+brown(" Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir))
+                equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir)
+                Equo.updateProgress(
+                                        brown(" Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
                 if os.path.isfile(etpConst['systemroot']+"/usr/src/linux") or os.path.islink(etpConst['systemroot']+"/usr/src/linux"):
                     os.remove(etpConst['systemroot']+"/usr/src/linux")
                 if os.path.isdir(etpConst['systemroot']+"/usr/src/linux"):
@@ -693,7 +797,11 @@ def run_ldconfig(pkgdata):
     else:
         myroot = etpConst['systemroot']+"/"
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running ldconfig")
-    print_info(red("   ##")+brown(" Regenerating /etc/ld.so.cache"))
+    Equo.updateProgress(
+                            brown(" Regenerating /etc/ld.so.cache"),
+                            importance = 0,
+                            header = red("   ##")
+                        )
     os.system("ldconfig -r "+myroot+" &> /dev/null")
 
 def env_update(pkgdata):
@@ -701,7 +809,11 @@ def env_update(pkgdata):
     linkerPaths.clear()
     equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running env-update")
     if os.access(etpConst['systemroot']+"/usr/sbin/env-update",os.X_OK):
-        print_info(red("   ##")+brown(" Updating environment using env-update"))
+        Equo.updateProgress(
+                                brown(" Updating environment using env-update"),
+                                importance = 0,
+                                header = red("   ##")
+                            )
         if etpConst['systemroot']:
             os.system("echo 'env-update --no-ldconfig' | chroot "+etpConst['systemroot']+" &> /dev/null")
         else:
@@ -722,14 +834,22 @@ def add_java_config_2(pkgdata):
             if os.access(etpConst['systemroot']+"/usr/bin/java-config",os.X_OK):
                 equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring JAVA using java-config with VM: "+myvm)
                 # set
-                print_info(red("   ##")+brown(" Setting system VM to ")+bold(myvm)+brown("..."))
+                Equo.updateProgress(
+                                        brown(" Setting system VM to ")+bold(myvm)+brown("..."),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
                 if not etpConst['systemroot']:
                     os.system("java-config -S "+myvm)
                 else:
                     os.system("echo 'java-config -S "+myvm+"' | chroot "+etpConst['systemroot']+" &> /dev/null")
             else:
                 equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION /usr/bin/java-config does not exist. I was about to set JAVA VM: "+myvm)
-                print_info(red("   ##")+bold(" Attention: ")+brown("/usr/bin/java-config does not exist. Cannot set JAVA VM."))
+                Equo.updateProgress(
+                                        bold(" Attention: ")+brown("/usr/bin/java-config does not exist. Cannot set JAVA VM."),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
     del vms
 
 def ebuild_postinstall(pkgdata):
@@ -1178,64 +1298,83 @@ def get_grub_boot_dev():
     import re
     df_avail = os.system("which df &> /dev/null")
     if df_avail != 0:
-	print_generic("DEBUG: cannot find df!! Cannot properly configure kernel! Defaulting to (hd0,0)")
-	return "(hd0,0)"
+        Equo.updateProgress(
+                                bold(" QA Warning: ")+brown("cannot find df!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        return "(hd0,0)"
     grub_avail = os.system("which grub &> /dev/null")
     if grub_avail != 0:
-	print_generic("DEBUG: cannot find grub!! Cannot properly configure kernel! Defaulting to (hd0,0)")
-	return "(hd0,0)"
-    
+        Equo.updateProgress(
+                                bold(" QA Warning: ")+brown("cannot find grub!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        return "(hd0,0)"
+
     gboot = getoutput("df /boot").split("\n")[-1].split()[0]
     if gboot.startswith("/dev/"):
-	# it's ok - handle /dev/md
-	if gboot.startswith("/dev/md"):
-	    md = os.path.basename(gboot)
-	    if not md.startswith("md"):
-		md = "md"+md
-	    f = open("/proc/mdstat","r")
-	    mdstat = f.readlines()
-	    mdstat = [x for x in mdstat if x.startswith(md)]
-	    f.close()
-	    if mdstat:
-		mdstat = mdstat[0].strip().split()
-		mddevs = []
-		for x in mdstat:
-		    if x.startswith("sd"):
-			mddevs.append(x[:-3])
-		mddevs.sort()
-		if mddevs:
-		    gboot = "/dev/"+mddevs[0]
-		else:
-		    gboot = "/dev/sda1"
-	    else:
-		gboot = "/dev/sda1"
-	# get disk
-	match = re.subn("[0-9]","",gboot)
-	gdisk = match[0]
-	match = re.subn("[a-z/]","",gboot)
-	gpartnum = str(int(match[0])-1)
-	# now match with grub
-	device_map = etpConst['packagestmpdir']+"/grub.map"
-	if os.path.isfile(device_map):
-	    os.remove(device_map)
-	# generate device.map
-	os.system('echo "quit" | grub --device-map='+device_map+' --no-floppy --batch &> /dev/null')
-	if os.path.isfile(device_map):
-	    f = open(device_map,"r")
-	    device_map_file = f.readlines()
-	    f.close()
-	    grub_dev = [x for x in device_map_file if (x.find(gdisk) != -1)]
-	    if grub_dev:
-		grub_disk = grub_dev[0].strip().split()[0]
-		grub_dev = grub_disk[:-1]+","+gpartnum+")"
-		return grub_dev
-	    else:
-		print_generic("DEBUG: cannot match grub device with linux one!! Cannot properly configure kernel! Defaulting to (hd0,0)")
-		return "(hd0,0)"
-	else:
-	    print_generic("DEBUG: cannot find generated device.map!! Cannot properly configure kernel! Defaulting to (hd0,0)")
-	    return "(hd0,0)"
+        # it's ok - handle /dev/md
+        if gboot.startswith("/dev/md"):
+            md = os.path.basename(gboot)
+            if not md.startswith("md"):
+                md = "md"+md
+            f = open("/proc/mdstat","r")
+            mdstat = f.readlines()
+            mdstat = [x for x in mdstat if x.startswith(md)]
+            f.close()
+            if mdstat:
+                mdstat = mdstat[0].strip().split()
+                mddevs = []
+                for x in mdstat:
+                    if x.startswith("sd"):
+                        mddevs.append(x[:-3])
+                mddevs.sort()
+                if mddevs:
+                    gboot = "/dev/"+mddevs[0]
+                else:
+                    gboot = "/dev/sda1"
+            else:
+                gboot = "/dev/sda1"
+        # get disk
+        match = re.subn("[0-9]","",gboot)
+        gdisk = match[0]
+        match = re.subn("[a-z/]","",gboot)
+        gpartnum = str(int(match[0])-1)
+        # now match with grub
+        device_map = etpConst['packagestmpdir']+"/grub.map"
+        if os.path.isfile(device_map):
+            os.remove(device_map)
+        # generate device.map
+        os.system('echo "quit" | grub --device-map='+device_map+' --no-floppy --batch &> /dev/null')
+        if os.path.isfile(device_map):
+            f = open(device_map,"r")
+            device_map_file = f.readlines()
+            f.close()
+            grub_dev = [x for x in device_map_file if (x.find(gdisk) != -1)]
+            if grub_dev:
+                grub_disk = grub_dev[0].strip().split()[0]
+                grub_dev = grub_disk[:-1]+","+gpartnum+")"
+                return grub_dev
+            else:
+                Equo.updateProgress(
+                                        bold(" QA Warning: ")+brown("cannot match grub device with linux one!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
+                return "(hd0,0)"
+        else:
+            Equo.updateProgress(
+                                    bold(" QA Warning: ")+brown("cannot find generated device.map!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            return "(hd0,0)"
     else:
-	print_generic("DEBUG: cannot run df /boot!! Cannot properly configure kernel! Defaulting to (hd0,0)")
-	return "(hd0,0)"
-	
+        Equo.updateProgress(
+                                bold(" QA Warning: ")+brown("cannot run df /boot!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        return "(hd0,0)"
