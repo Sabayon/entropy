@@ -42,7 +42,7 @@ from yumgui import *
 
 # yumex imports
 import filters
-from entropyapi import GuiRepositoryController, GuiCacheHelper, Equo
+from entropyapi import GuiRepositoryController, Equo
 from gui import YumexGUI
 from dialogs import *
 from misc import const, YumexOptions, YumexProfile
@@ -425,8 +425,8 @@ class YumexApplication(YumexController,YumexGUI):
         self.firstTime = True
         #self.addPackages()
         self.setPage('repos')
-        self.Equo = Equo
-        self.Equo.connectProgressObject(self.progress)
+        self.Equo = Equo()
+        self.Equo.connect_to_gui(self.progress)
 
     def startWorking(self):
         self.isWorking = True
@@ -455,7 +455,7 @@ class YumexApplication(YumexController,YumexGUI):
         import repositoriesTools
         try:
             repoConn = GuiRepositoryController(repos, forceUpdate = True)
-            repoConn.connectProgressObject(self.progress)
+            repoConn.connect_to_gui(self.progress)
             repoConn.nocolor()
         except exceptionTools.PermissionDenied:
             self.progressLog(_('You must run this application as root'), extra = "repositories")

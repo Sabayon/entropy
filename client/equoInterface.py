@@ -57,6 +57,8 @@ class EquoInterface(TextInterface):
         self.triggerTools = triggerTools
         from remoteTools import urlFetcher
         self.urlFetcher = urlFetcher # in this way, can be reimplemented (so you can override updateProgress)
+        self.progress = None # supporting external updateProgress stuff, you can point self.progress to your progress bar
+                             # and reimplement updateProgress
         self.indexing = indexing
         self.noclientdb = noclientdb
         self.xcache = xcache
@@ -983,6 +985,17 @@ class EquoInterface(TextInterface):
             data['removalQueue'] += removal
         return data,status
 
+    def retrieveRemovalQueue(self, idpackages, deep = False):
+        queue = []
+        treeview = self.generate_depends_tree(idpackages, deep = deep)
+        treelength = len(treeview[0])
+        if treelength > 1:
+            treeview = treeview[0]
+            for x in range(treelength)[::-1]:
+                for y in treeview[x]:
+                    queue.append(y)
+        return queue
+
     def retrieveInstallQueue(self, matched_atoms, empty_deps, deep_deps):
 
         install = []
@@ -1066,6 +1079,8 @@ class EquoInterface(TextInterface):
     
         # load class
         fetchConn = self.urlFetcher(url, filepath)
+        fetchConn.progress = self.progress
+
         # start to download
         data_transfer = 0
         try:

@@ -29,10 +29,6 @@ from outputTools import *
 import entropyTools
 import random
 
-# Logging initialization
-import logTools
-remoteLog = logTools.LogFile(level=etpConst['remoteloglevel'],filename = etpConst['remotelogfile'], header = "[REMOTE/HTTP]")
-
 import socket
 import urllib2
 

@@ -1,4 +1,5 @@
 TODO list:
+  - move all print_* to EquoInterface.updateProgress in confTools
   - GUI
   - server part rewrite ala EquoInterface
   - Community repositories
@@ -6,30 +7,11 @@ TODO list:
   - add deptest check for every reagent run
   - implement client db sanity check
   - equo world: removal packages, first ask all, then do
-  - separate packages for license restrictions
+  - separate packages by license restrictions
   - add a check when installing a package from a different arch
-
-notice this:
->>    ## Ebuild: pkg_prerm()
->>    ## Ebuild: pkg_postrm()
- * Cleaning orphaned Python bytecode from /usr/lib64/python2.4/site-packages ..
-find: paths must precede expression: confTools.pyc
-Usage: find [-H] [-L] [-P] [-Olevel] [-D help|tree|search|stat|rates|opt|exec] [path...] [expression]
- * Cleaning orphaned Python bytecode from /usr/lib64/python2.5/site-packages ..
-find: paths must precede expression: confTools.pyc
-Usage: find [-H] [-L] [-P] [-Olevel] [-D help|tree|search|stat|rates|opt|exec] [path...] [expression]
- * Cleaning orphaned Python bytecode from /usr/lib/python2.4/site-packages ..
-find: paths must precede expression: confTools.pyc
-Usage: find [-H] [-L] [-P] [-Olevel] [-D help|tree|search|stat|rates|opt|exec] [path...] [expression]
- * Cleaning orphaned Python bytecode from /usr/lib/python2.5/site-packages ..
-find: paths must precede expression: confTools.pyc
-Usage: find [-H] [-L] [-P] [-Olevel] [-D help|tree|search|stat|rates|opt|exec] [path...] [expression]
-
 
 Project Status:
 - reagent: complete.
 - activator: complete.
 ============
 - equo - out of alpha status: 90%
-
-- EAPI1+ info: http://www.pkgcore.org/trac/pkgcore/doc/doc/extended-atom-syntax.rst

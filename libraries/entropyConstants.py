@@ -456,7 +456,8 @@ etpRepositoriesOrder = set()
 
 # remote section
 etpRemoteSupport = {}
-etpRemoteFailures = {} # dict of excluded mirrors due to failures, it contains mirror name and failure count | > 5 == ignore mirror
+etpRemoteFailures = {}  # dict of excluded mirrors due to failures, 
+                        # it contains mirror name and failure count | > 5 == ignore mirror
 
 # your bible
 etpConst = {}
@@ -544,8 +545,6 @@ def initConfig_entropyConstants(rootdir):
         'activatorconf': ETP_CONF_DIR+"/activator.conf", # activator.conf file
         'serverconf': ETP_CONF_DIR+"/server.conf", # server.conf file (generic server side settings)
         'reagentconf': ETP_CONF_DIR+"/reagent.conf", # reagent.conf file
-        'databaseconf': ETP_CONF_DIR+"/database.conf", # database.conf file
-        'mirrorsconf': ETP_CONF_DIR+"/mirrors.conf", # mirrors.conf file
         'remoteconf': ETP_CONF_DIR+"/remote.conf", # remote.conf file
         'equoconf': ETP_CONF_DIR+"/equo.conf", # equo.conf file
         'activatoruploaduris': [], # list of URIs that activator can use to upload files (parsed from activator.conf)
@@ -588,9 +587,6 @@ def initConfig_entropyConstants(rootdir):
         'triggername': "trigger", # name of the trigger file that would be executed by equo inside triggerTools
         'proxy': {}, # proxy configuration information, used system wide
         
-        'databaseloglevel': 1, # Database log level (default: 1 - see database.conf for more info)
-        'mirrorsloglevel': 1, # Mirrors log level (default: 1 - see mirrors.conf for more info)
-        'remoteloglevel': 1, # Remote handlers (/handlers) log level (default: 1 - see remote.conf for more info)
         'reagentloglevel': 1 , # Reagent log level (default: 1 - see reagent.conf for more info)
         'activatorloglevel': 1, # # Activator log level (default: 1 - see activator.conf for more info)
         'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
@@ -598,9 +594,6 @@ def initConfig_entropyConstants(rootdir):
         'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their stuff
         
         'syslogdir': ETP_SYSLOG_DIR, # Entropy system tools log directory
-        'mirrorslogfile': ETP_SYSLOG_DIR+"mirrors.log", # Mirrors operations log file
-        'remotelogfile': ETP_SYSLOG_DIR+"remote.log", # Mirrors operations log file
-        'databaselogfile': ETP_SYSLOG_DIR+"database.log", # Database operations log file
         'reagentlogfile': ETP_SYSLOG_DIR+"reagent.log", # Reagent operations log file
         'activatorlogfile': ETP_SYSLOG_DIR+"activator.log", # Activator operations log file
         'entropylogfile': ETP_SYSLOG_DIR+"entropy.log", # Activator operations log file
@@ -868,23 +861,6 @@ def initConfig_entropyConstants(rootdir):
             if not os.path.isdir(etpConst['packagessuploaddir']+"/"+x):
                 os.makedirs(etpConst['packagessuploaddir']+"/"+x)
     
-    # database section
-    if os.path.isfile(etpConst['databaseconf']):
-        f = open(etpConst['databaseconf'],"r")
-        databaseconf = f.readlines()
-        f.close()
-        for line in databaseconf:
-            if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
-                loglevel = line.split("loglevel|")[1]
-                try:
-                    loglevel = int(loglevel)
-                except:
-                    print "ERROR: invalid loglevel in: "+etpConst['databaseconf']
-                if (loglevel > -1) and (loglevel < 3):
-                    etpConst['databaseloglevel'] = loglevel
-                else:
-                    print "WARNING: invalid loglevel in: "+etpConst['databaseconf']
-    
     etpRemoteSupport.clear()
     etpRemoteFailures.clear()
     if (os.path.isfile(etpConst['remoteconf'])):
@@ -892,17 +868,6 @@ def initConfig_entropyConstants(rootdir):
         remoteconf = f.readlines()
         f.close()
         for line in remoteconf:
-            if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
-                loglevel = line.split("loglevel|")[1]
-                try:
-                    loglevel = int(loglevel)
-                except:
-                    print "WARNING: invalid loglevel in: "+etpConst['remoteconf']
-                if (loglevel > -1) and (loglevel < 3):
-                    etpConst['remoteloglevel'] = loglevel
-                else:
-                    print "WARNING: invalid loglevel in: "+etpConst['remoteconf']
-    
             if line.startswith("handler|") and (len(line.split("|")) > 2):
                 servername = line.split("|")[1].strip()
                 url = line.split("|")[2].strip()

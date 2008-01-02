@@ -25,14 +25,15 @@ import shutil
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *
-import entropyTools
-import dumpTools
 import exceptionTools
+from equoInterface import EquoInterface
+# FIXME: move all print_* to EquoInterface.updateProgress
+Equo = EquoInterface(noclientdb = True)
 
 # test if diff is installed
-difftest = entropyTools.spawnCommand("diff -v", redirect = "&> /dev/null")
+difftest = Equo.entropyTools.spawnCommand("diff -v", redirect = "&> /dev/null")
 if (difftest):
-    print "ERROR: diff not found, cannot continue"
+    raise exceptionTools.FileNotFound("FileNotFound: can't find diff")
 
 ########################################################
 ####
@@ -43,12 +44,12 @@ def configurator(options):
 
     rc = 0
     if len(options) < 1:
-	return -10
+        return -10
 
     if options[0] == "info":
-	rc = confinfo()
+        rc = confinfo()
     elif options[0] == "update":
-	rc = update()
+        rc = update()
     else:
         rc = -10
 
@@ -63,41 +64,40 @@ def update():
     cache_status = False
     Text = TextInterface()
     while 1:
-	scandata = scanfs(dcache = cache_status)
-	if (cache_status):
-	    for x in scandata:
-		print_info("("+blue(str(x))+") "+red(" file: ")+etpConst['systemroot']+scandata[x]['destination'])
-	cache_status = True
-	
-	if (not scandata):
-	    print_info(darkred("All fine baby. Nothing to do!"))
-	    break
-	
-	keys = scandata.keys()
-	cmd = selfile()
-	try:
-	    cmd = int(cmd)
-	except:
-	    print_error("You don't have typed a number.")
-	    continue
-	
-	# actions
-	
-	if cmd == -1:
-	    # exit
-	    return -1
-	elif cmd in (-3,-5):
-	    # automerge files asking one by one
-	    for key in keys:
-		if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
-		    scandata = removefromcache(scandata,key)
-		    continue
-		print_info(darkred("Configuration file: ")+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
-		if cmd == -3:
+        scandata = scanfs(dcache = cache_status)
+        if (cache_status):
+            for x in scandata:
+                print_info("("+blue(str(x))+") "+red(" file: ")+etpConst['systemroot']+scandata[x]['destination'])
+        cache_status = True
+
+        if (not scandata):
+            print_info(darkred("All fine baby. Nothing to do!"))
+            break
+
+        keys = scandata.keys()
+        cmd = selfile()
+        try:
+            cmd = int(cmd)
+        except:
+            print_error("You don't have typed a number.")
+            continue
+
+        # actions
+        if cmd == -1:
+            # exit
+            return -1
+        elif cmd in (-3,-5):
+            # automerge files asking one by one
+            for key in keys:
+                if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
+                    scandata = removefromcache(scandata,key)
+                    continue
+                print_info(darkred("Configuration file: ")+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
+                if cmd == -3:
                     rc = Text.askQuestion(">>   Overwrite ?")
-		    if rc == "No":
-			continue
-		print_info(darkred("Moving ")+darkgreen(etpConst['systemroot']+scandata[key]['source'])+darkred(" to ")+brown(etpConst['systemroot']+scandata[key]['destination']))
+                    if rc == "No":
+                        continue
+                print_info(darkred("Moving ")+darkgreen(etpConst['systemroot']+scandata[key]['source'])+darkred(" to ")+brown(etpConst['systemroot']+scandata[key]['destination']))
 
                 # old file backup
                 if etpConst['filesbackup'] and os.path.isfile(etpConst['systemroot']+scandata[key]['destination']):
@@ -111,69 +111,69 @@ def update():
                     except IOError:
                         pass
 
-		shutil.move(etpConst['systemroot']+scandata[key]['source'],etpConst['systemroot']+scandata[key]['destination'])
-		# remove from cache
-		scandata = removefromcache(scandata,key)
-	    break
-	
-	elif cmd in (-7,-9):
-	    for key in keys:
-		
-		if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
-		    scandata = removefromcache(scandata,key)
-		    continue
-		print_info(darkred("Configuration file: ")+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
-		if cmd == -7:
-		    rc = Text.askQuestion(">>   Discard ?")
-		    if rc == "No":
-			continue
-		print_info(darkred("Discarding ")+darkgreen(etpConst['systemroot']+scandata[key]['source']))
-		try:
-		    os.remove(etpConst['systemroot']+scandata[key]['source'])
-		except:
-		    pass
-		scandata = removefromcache(scandata,key)
-		
-	    break
-	
-	elif cmd > 0:
-	    if scandata.get(cmd):
-		
-		# do files exist?
-		if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['source']):
-		    scandata = removefromcache(scandata,key)
-		    continue
-		if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['destination']):
-		    print_info(darkred("Automerging file: ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
-		    shutil.move(etpConst['systemroot']+scandata[key]['source'],etpConst['systemroot']+scandata[key]['destination'])
-		    scandata = removefromcache(scandata,key)
-		    continue
-		# end check
-		
-		diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],etpConst['systemroot']+scandata[cmd]['source'])
-		if (not diff):
-		    print_info(darkred("Automerging file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
-		    shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
-		    scandata = removefromcache(scandata,key)
-		    continue
-	        print_info(darkred("Selected file: ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+                shutil.move(etpConst['systemroot']+scandata[key]['source'],etpConst['systemroot']+scandata[key]['destination'])
+                # remove from cache
+                scandata = removefromcache(scandata,key)
+            break
 
-		comeback = False
-		while 1:
-		    action = selaction()
-		    try:
-			action = int(action)
-		    except:
-			print_error("You don't have typed a number.")
-			continue
-		    
-		    # actions handling
-		    if action == -1:
-			comeback = True
-			break
-		    elif action == 1:
-			print_info(darkred("Replacing ")+darkgreen(etpConst['systemroot']+scandata[cmd]['destination'])+darkred(" with ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
-                        
+        elif cmd in (-7,-9):
+            for key in keys:
+
+                if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
+                    scandata = removefromcache(scandata,key)
+                    continue
+                print_info(darkred("Configuration file: ")+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
+                if cmd == -7:
+                    rc = Text.askQuestion(">>   Discard ?")
+                    if rc == "No":
+                        continue
+                print_info(darkred("Discarding ")+darkgreen(etpConst['systemroot']+scandata[key]['source']))
+                try:
+                    os.remove(etpConst['systemroot']+scandata[key]['source'])
+                except:
+                    pass
+                scandata = removefromcache(scandata,key)
+
+            break
+
+        elif cmd > 0:
+            if scandata.get(cmd):
+
+                # do files exist?
+                if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['source']):
+                    scandata = removefromcache(scandata,key)
+                    continue
+                if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['destination']):
+                    print_info(darkred("Automerging file: ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+                    shutil.move(etpConst['systemroot']+scandata[key]['source'],etpConst['systemroot']+scandata[key]['destination'])
+                    scandata = removefromcache(scandata,key)
+                    continue
+                # end check
+
+                diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],etpConst['systemroot']+scandata[cmd]['source'])
+                if (not diff):
+                    print_info(darkred("Automerging file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+                    shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
+                    scandata = removefromcache(scandata,key)
+                    continue
+                print_info(darkred("Selected file: ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+
+                comeback = False
+                while 1:
+                    action = selaction()
+                    try:
+                        action = int(action)
+                    except:
+                        print_error("You don't have typed a number.")
+                        continue
+
+                    # actions handling
+                    if action == -1:
+                        comeback = True
+                        break
+                    elif action == 1:
+                        print_info(darkred("Replacing ")+darkgreen(etpConst['systemroot']+scandata[cmd]['destination'])+darkred(" with ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+
                         # old file backup
                         if etpConst['filesbackup'] and os.path.isfile(etpConst['systemroot']+scandata[cmd]['destination']):
                             bcount = 0
@@ -185,60 +185,60 @@ def update():
                                 shutil.copy2(etpConst['systemroot']+scandata[cmd]['destination'],backupfile)
                             except IOError:
                                 pass
-                        
-			shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
-			scandata = removefromcache(scandata,cmd)
-			comeback = True
-			break
-		
-		    elif action == 2:
-			print_info(darkred("Deleting file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
-			try:
-			    os.remove(etpConst['systemroot']+scandata[cmd]['source'])
-			except:
-			    pass
-			scandata = removefromcache(scandata,cmd)
-			comeback = True
-			break
-		
-		    elif action == 3:
-			print_info(darkred("Editing file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
-			if os.getenv("EDITOR"):
-			    os.system("$EDITOR "+etpConst['systemroot']+scandata[cmd]['source'])
-			elif os.access("/bin/nano",os.X_OK):
-			    os.system("/bin/nano "+etpConst['systemroot']+scandata[cmd]['source'])
-			elif os.access("/bin/vi",os.X_OK):
-			    os.system("/bin/vi "+etpConst['systemroot']+scandata[cmd]['source'])
-			elif os.access("/usr/bin/vi",os.X_OK):
-			    os.system("/usr/bin/vi "+etpConst['systemroot']+scandata[cmd]['source'])
-			elif os.access("/usr/bin/emacs",os.X_OK):
-			    os.system("/usr/bin/emacs "+etpConst['systemroot']+scandata[cmd]['source'])
-			elif os.access("/bin/emacs",os.X_OK):
-			    os.system("/bin/emacs "+etpConst['systemroot']+scandata[cmd]['source'])
-			else:
-			    print_error(" Cannot find a suitable editor. Can't edit file directly.")
-			    comeback = True
-			    break
-			print_info(darkred("Edited file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source'])+darkred(" - showing differencies:"))
-			diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],etpConst['systemroot']+scandata[cmd]['source'])
-			if (not diff):
-			    print_info(darkred("Automerging file ")+darkgreen(scandata[cmd]['source']))
-			    shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
-			    scandata = removefromcache(scandata, cmd)
-			    comeback = True
-			    break
-			
-			continue
 
-		    elif action == 4:
-			# show diffs again
-			diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],etpConst['systemroot']+scandata[cmd]['source'])
-			continue
-		
-		if (comeback):
-		    continue
-		
-		break
+                        shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
+                        scandata = removefromcache(scandata,cmd)
+                        comeback = True
+                        break
+
+                    elif action == 2:
+                        print_info(darkred("Deleting file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+                        try:
+                            os.remove(etpConst['systemroot']+scandata[cmd]['source'])
+                        except:
+                            pass
+                        scandata = removefromcache(scandata,cmd)
+                        comeback = True
+                        break
+
+                    elif action == 3:
+                        print_info(darkred("Editing file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+                        if os.getenv("EDITOR"):
+                            os.system("$EDITOR "+etpConst['systemroot']+scandata[cmd]['source'])
+                        elif os.access("/bin/nano",os.X_OK):
+                            os.system("/bin/nano "+etpConst['systemroot']+scandata[cmd]['source'])
+                        elif os.access("/bin/vi",os.X_OK):
+                            os.system("/bin/vi "+etpConst['systemroot']+scandata[cmd]['source'])
+                        elif os.access("/usr/bin/vi",os.X_OK):
+                            os.system("/usr/bin/vi "+etpConst['systemroot']+scandata[cmd]['source'])
+                        elif os.access("/usr/bin/emacs",os.X_OK):
+                            os.system("/usr/bin/emacs "+etpConst['systemroot']+scandata[cmd]['source'])
+                        elif os.access("/bin/emacs",os.X_OK):
+                            os.system("/bin/emacs "+etpConst['systemroot']+scandata[cmd]['source'])
+                        else:
+                            print_error(" Cannot find a suitable editor. Can't edit file directly.")
+                            comeback = True
+                            break
+                        print_info(darkred("Edited file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source'])+darkred(" - showing differencies:"))
+                        diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],etpConst['systemroot']+scandata[cmd]['source'])
+                        if (not diff):
+                            print_info(darkred("Automerging file ")+darkgreen(scandata[cmd]['source']))
+                            shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
+                            scandata = removefromcache(scandata, cmd)
+                            comeback = True
+                            break
+
+                        continue
+
+                    elif action == 4:
+                        # show diffs again
+                        diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],etpConst['systemroot']+scandata[cmd]['source'])
+                        continue
+
+                if (comeback):
+                    continue
+
+                break
 
 '''
    @description: show files commands and let the user to choose
@@ -366,7 +366,7 @@ def scanfs(dcache = True):
 			pass # possible encoding issues
     # store data
     try:
-        dumpTools.dumpobj(etpCache['configfiles'],scandata)
+        Equo.dumpTools.dumpobj(etpCache['configfiles'],scandata)
     except:
 	pass
     return scandata
@@ -374,7 +374,7 @@ def scanfs(dcache = True):
 
 def loadcache():
     try:
-	sd = dumpTools.loadobj(etpCache['configfiles'])
+	sd = Equo.dumpTools.loadobj(etpCache['configfiles'])
 	# check for corruption?
 	if isinstance(sd, dict):
 	    # quick test if data is reliable
@@ -469,7 +469,7 @@ def addtocache(filepath):
     mydata = generatedict(filepath)
     scandata[index] = mydata.copy()
     try:
-        dumpTools.dumpobj(etpCache['configfiles'],scandata)
+        Equo.dumpTools.dumpobj(etpCache['configfiles'],scandata)
     except:
 	pass
 
@@ -478,7 +478,7 @@ def removefromcache(sd,key):
         del sd[key]
     except:
 	pass
-    dumpTools.dumpobj(etpCache['configfiles'],sd)
+    Equo.dumpTools.dumpobj(etpCache['configfiles'],sd)
     return sd
 
 '''

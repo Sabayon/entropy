@@ -101,25 +101,7 @@ def initConfig_serverConstants():
                     etpConst['rss-max-entries'] = entries
                 except:
                     pass
-    
-    # mirrors section
-    if (os.path.isfile(etpConst['mirrorsconf'])):
-        f = open(etpConst['mirrorsconf'],"r")
-        databaseconf = f.readlines()
-        f.close()
-        for line in databaseconf:
-            if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
-                loglevel = line.split("loglevel|")[1]
-                try:
-                    loglevel = int(loglevel)
-                except:
-                    pass
-                if (loglevel > -1) and (loglevel < 3):
-                    etpConst['mirrorsloglevel'] = loglevel
-                else:
-                    pass
-    
-    
+
     # generic settings section
     if (os.path.isfile(etpConst['serverconf'])):
         f = open(etpConst['serverconf'],"r")

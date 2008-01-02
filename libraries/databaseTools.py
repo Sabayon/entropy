@@ -31,11 +31,6 @@ except ImportError: # fallback to embedded pysqlite
 import dumpTools
 import exceptionTools
 Text = TextInterface()
-
-# Logging initialization
-# FIXME: remove database logging
-# import logTools
-# dbLog = logTools.LogFile(level = etpConst['databaseloglevel'],filename = etpConst['databaselogfile'], header = "[DBase]")
 _treeUpdatesCalled = False
 
 

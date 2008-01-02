@@ -688,7 +688,6 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                 _foundAtoms.append(result[1])
             else:
                 print_warning(red("## ATTENTION -> package")+bold(" "+result[0]+" ")+red("is not installed."))
-
         foundAtoms = _foundAtoms
 
         # are packages in foundAtoms?
@@ -732,6 +731,10 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         if (etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']):
             print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
 
+        if (not plainRemovalQueue):
+            print_error(red("Nothing to do."))
+            return 126,-1
+
         if (deps):
             question = "     Would you like to look for packages that can be removed along with the selected above?"
         else:
@@ -745,43 +748,32 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                 if (not deps):
                     return 0,0
 
-        if (not plainRemovalQueue):
-            print_error(red("Nothing to do."))
-            return 126,-1
-
         removalQueue = []
 
         if (lookForOrphanedPackages):
             choosenRemovalQueue = []
             print_info(red(" @@ ")+blue("Calculating..."))
-            treeview = Equo.generate_depends_tree(plainRemovalQueue, deep = deep)
-            treelength = len(treeview[0])
-            if treelength > 1:
-                treeview = treeview[0]
-                for x in range(treelength)[::-1]:
-                    for y in treeview[x]:
-                        choosenRemovalQueue.append(y)
+            choosenRemovalQueue = Equo.retrieveRemovalQueue(idpackages, deep = deep)
+            if choosenRemovalQueue:
+                print_info(red(" @@ ")+blue("This is the new removal queue:"))
+                totalatoms = str(len(choosenRemovalQueue))
+                atomscounter = 0
 
-                if (choosenRemovalQueue):
-                    print_info(red(" @@ ")+blue("This is the new removal queue:"))
-                    totalatoms = str(len(choosenRemovalQueue))
-                    atomscounter = 0
+                for idpackage in choosenRemovalQueue:
+                    atomscounter += 1
+                    rematom = Equo.clientDbconn.retrieveAtom(idpackage)
+                    installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
+                    repositoryInfo = bold("[")+red("from: ")+brown(installedfrom)+bold("]")
+                    stratomscounter = str(atomscounter)
+                    while len(stratomscounter) < len(totalatoms):
+                        stratomscounter = " "+stratomscounter
+                    print_info("   # "+red("(")+bold(stratomscounter)+"/"+blue(str(totalatoms))+red(")")+repositoryInfo+" "+blue(rematom))
 
-                    for idpackage in choosenRemovalQueue:
-                        atomscounter += 1
-                        rematom = Equo.clientDbconn.retrieveAtom(idpackage)
-                        installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
-                        repositoryInfo = bold("[")+red("from: ")+brown(installedfrom)+bold("]")
-                        stratomscounter = str(atomscounter)
-                        while len(stratomscounter) < len(totalatoms):
-                            stratomscounter = " "+stratomscounter
-                        print_info("   # "+red("(")+bold(stratomscounter)+"/"+blue(str(totalatoms))+red(")")+repositoryInfo+" "+blue(rematom))
+                removalQueue += choosenRemovalQueue
 
-                    for x in choosenRemovalQueue:
-                        removalQueue.append(x)
+            else:
+                writechar("\n")
 
-                else:
-                    writechar("\n")
         if (etpUi['ask']) or human:
             question = "     Would you like to proceed?"
             if human:
@@ -866,7 +858,6 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         del Package
 
     print_info(red(" @@ ")+blue("All done."))
-
     return 0,0
 
 

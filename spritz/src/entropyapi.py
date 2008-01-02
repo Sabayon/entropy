@@ -30,9 +30,8 @@ from clientConstants import *
 import entropyTools
 import repositoriesTools
 import remoteTools
-import cacheTools
+import exceptionTools
 from equoInterface import EquoInterface
-Equo = EquoInterface()
 
 '''
 
@@ -40,17 +39,46 @@ Equo = EquoInterface()
 
 '''
 
+class Equo(EquoInterface):
+
+    def connect_to_gui(self, progress):
+        self.progress = progress
+        self.urlFetcher = GuiUrlFetcher
+        self.nocolor()
+
+    def updateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
+
+        count_str = ""
+        if count:
+            if len(count) < 2:
+                import exceptionTools
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: count length must be >= 2")
+            count_str = " (%s/%s) " % (str(count[0]),str(count[1]),)
+            self.progress.set_progress( round((float(count[0])/count[1]),1), str(int(round((float(count[0])/count[1])*100,1)))+"%" )
+
+        myfunc = self.progress.set_extraLabel
+        if importance == 1:
+            myfunc = self.progress.set_subLabel
+        elif importance == 2:
+            myfunc = self.progress.set_mainLabel
+        elif importance == 3:
+            # show warning popup
+            # FIXME: interface with popup !
+            myfunc = self.progress.set_extraLabel
+        myfunc(count_str+text)
+
+
+
 class GuiUrlFetcher(remoteTools.urlFetcher):
     """ hello my highness """
     
-    def connectProgressObject(self, progress, item):
+    def connect_to_gui(self, progress):
         self.progress = progress
-        self.item = item
     
     # reimplementing updateProgress
     def updateProgress(self):
 
-        # create progress bar
+        # use progress bar
         self.gather = self.downloadedsize # needed ?
         self.progress.set_progress( round(float(self.average)/100,1), str(int(round(float(self.average),1)))+"%" )
         self.progress.set_extraLabel("%s/%s kB @ %s" % (
@@ -63,7 +91,7 @@ class GuiUrlFetcher(remoteTools.urlFetcher):
 class GuiRepositoryController(repositoriesTools.repositoryController):
     """ hello world """
 
-    def connectProgressObject(self, progress):
+    def connect_to_gui(self, progress):
         self.progress = progress
 
     # reimplementing
@@ -73,33 +101,10 @@ class GuiRepositoryController(repositoriesTools.repositoryController):
         url, filepath = self.constructPaths(item, repo, cmethod)
 
         fetchConn = GuiUrlFetcher(url, filepath)
-        fetchConn.connectProgressObject(self.progress, item)
-	rc = fetchConn.download()
+        fetchConn.connect_to_gui(self.progress)
+        rc = fetchConn.download()
         if rc in ("-1","-2","-3"):
             del fetchConn
             return False
         del fetchConn
         return True
-
-class GuiCacheHelper(cacheTools.cacheHelper):
-    """ ich liebe dich """
-    
-    def connectProgressObject(self, progress):
-        self.progress = progress
-
-    def updateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
-
-        if importance == 0:
-            if count:
-                percent = float(count[0])/count[1]
-                self.progress.set_progress( round(percent,1), text)
-        elif importance == 1:
-            self.progress.set_subLabel(text)
-        else:
-            self.progress.set_mainLabel(text)
-
-        if count and importance > 0:
-            percent = float(count[0])/count[1]
-            self.progress.set_progress( round(percent,1), str(int(round(percent*100,1)))+"%")
-        #else:
-           # bouncing! 

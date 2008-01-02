@@ -24,13 +24,13 @@ from equoInterface import EquoInterface
 def cache(options):
     rc = 0
     if len(options) < 1:
-	return -10
+        return -10
 
-    Equo = EquoInterface(noclientdb = True, xcache = False)
+    Equo = EquoInterface(noclientdb = True)
     if options[0] == "clean":
-	Equo.purge_cache()
+        Equo.purge_cache()
     elif options[0] == "generate":
-	Equo.generate_cache()
+        Equo.generate_cache()
     else:
         rc = -10
 
