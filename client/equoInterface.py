@@ -175,8 +175,6 @@ class EquoInterface(TextInterface):
             pkgdata = dbconn.listAllDependencies()
             for info in pkgdata:
                 depends.add(info[1])
-            dbconn.closeDB()
-            del dbconn
 
         self.updateProgress(darkgreen("Resolving metadata"), importance = 1, type = "warning")
         atomMatchCache.clear()
@@ -324,9 +322,6 @@ class EquoInterface(TextInterface):
             if query[1] == 0:
                 # package found, add to our dictionary
                 repoResults[repo] = query[0]
-
-            dbconn.closeDB()
-            del dbconn
 
         # handle repoResults
         packageInformation = {}
@@ -546,8 +541,6 @@ class EquoInterface(TextInterface):
                 repo_pkgver = dbconn.retrieveVersion(repoMatch[0])
                 repo_pkgtag = dbconn.retrieveVersionTag(repoMatch[0])
                 repo_pkgrev = dbconn.retrieveRevision(repoMatch[0])
-                dbconn.closeDB()
-                del dbconn
             else:
                 # dependency does not exist in our database
                 unsatisfiedDeps.add(dependency)
@@ -572,8 +565,8 @@ class EquoInterface(TextInterface):
                 else:
                     depsatisfied.add(dependency)
             else:
-                # not installed
-                filterSatisfiedDependenciesCmpResults[dependency] = 0
+                # not the same version installed
+                filterSatisfiedDependenciesCmpResults[dependency] = 10
                 depunsatisfied.add(dependency)
 
             unsatisfiedDeps.update(depunsatisfied)
@@ -608,8 +601,6 @@ class EquoInterface(TextInterface):
 
         mydbconn = self.databaseTools.openRepositoryDatabase(atomInfo[1])
         myatom = mydbconn.retrieveAtom(atomInfo[0])
-        mydbconn.closeDB()
-        del mydbconn
 
         # caches
         treecache = set()
@@ -653,8 +644,6 @@ class EquoInterface(TextInterface):
             matchdb = self.databaseTools.openRepositoryDatabase(match[1])
             matchatom = matchdb.retrieveAtom(match[0])
             matchslot = matchdb.retrieveSlot(match[0]) # used later
-            matchdb.closeDB()
-            del matchdb
             if matchatom in treecache:
                 mydep = mybuffer.pop()
                 continue
@@ -690,16 +679,14 @@ class EquoInterface(TextInterface):
 
             matchdb = self.databaseTools.openRepositoryDatabase(match[1])
             myundeps = matchdb.retrieveDependenciesList(match[0])
-            matchdb.closeDB()
-            del matchdb
-            # in this way filterSatisfiedDependenciesCmpResults is alway consistent
-            mytestdeps, xxx = self.filterSatisfiedDependencies(myundeps, deep_deps = deep_deps)
             if (not empty_deps):
-                myundeps = mytestdeps
+                myundeps, xxx = self.filterSatisfiedDependencies(myundeps, deep_deps = deep_deps)
+                del xxx
             for x in myundeps:
                 mybuffer.push((treedepth,x))
 
             # handle possible library breakage
+            self.filterSatisfiedDependencies([mydep[1]], deep_deps = deep_deps)
             action = filterSatisfiedDependenciesCmpResults.get(mydep[1])
             if action and ((action < 0) or (action > 0)): # do not use != 0 since action can be "None"
                 i = self.clientDbconn.atomMatch(self.entropyTools.dep_getkey(mydep[1]), matchSlot = matchslot)
@@ -708,8 +695,6 @@ class EquoInterface(TextInterface):
                     if oldneeded: # if there are needed
                         ndbconn = self.databaseTools.openRepositoryDatabase(match[1])
                         needed = ndbconn.retrieveNeeded(match[0])
-                        ndbconn.closeDB()
-                        del ndbconn
                         oldneeded = oldneeded - needed
                         if oldneeded:
                             # reverse lookup to find belonging package
@@ -724,8 +709,6 @@ class EquoInterface(TextInterface):
                                     if mymatch[0] != -1:
                                         mydbconn = self.databaseTools.openRepositoryDatabase(mymatch[1])
                                         mynewatom = mydbconn.retrieveAtom(mymatch[0])
-                                        mydbconn.closeDB()
-                                        del mydbconn
                                         if (mymatch not in matchcache) and (mynewatom not in treecache) and (mymatch not in matchFilter):
                                             mybuffer.push((treedepth,mynewatom))
                                     else:
@@ -925,6 +908,7 @@ class EquoInterface(TextInterface):
             name = self.clientDbconn.retrieveName(idpackage)
             category = self.clientDbconn.retrieveCategory(idpackage)
             revision = self.clientDbconn.retrieveRevision(idpackage)
+            needed = self.clientDbconn.retrieveNeeded(idpackage)
             slot = self.clientDbconn.retrieveSlot(idpackage)
             atomkey = category+"/"+name
             # search in the packages
@@ -938,6 +922,13 @@ class EquoInterface(TextInterface):
                 if revision == 9999: arevision = 9999
                 if revision != arevision:
                     tainted = True
+                elif (revision == arevision):
+                    # check if "needed" are the same, otherwise, pull
+                    # this will avoid having old packages installed just because user ran equo database generate (migrating from gentoo)
+                    # also this helps in environments with multiple repositories, to avoid messing with libraries
+                    aneeded = adbconn.retrieveNeeded(match[0])
+                    if needed != aneeded:
+                        tainted = True
                 elif (empty_deps):
                     tainted = True
             if (tainted):
@@ -1042,7 +1033,7 @@ class EquoInterface(TextInterface):
         return -1
 
     '''
-        Package instantiation interface :: begin
+        Package interface :: begin
     '''
 
     '''
@@ -1214,6 +1205,10 @@ class EquoInterface(TextInterface):
 
     def instanceTest(self):
         return
+
+    '''
+        Package interface :: end
+    '''
 
 '''
     Real package actions (install/remove) interface
@@ -2177,33 +2172,27 @@ class PackageInterface:
             self.xterm_title = xterm_header+' '
 
             if step == "fetch":
-                self.xterm_title += 'Fetching archive: '+os.path.basename(self.infoDict['download'])
+                self.xterm_title += 'Fetching: '+os.path.basename(self.infoDict['download'])
                 xtermTitle(self.xterm_title)
                 rc = self.fetch_step()
 
             elif step == "checksum":
-                self.xterm_title += 'Verifying archive: '+os.path.basename(self.infoDict['download'])
+                self.xterm_title += 'Verifying: '+os.path.basename(self.infoDict['download'])
                 xtermTitle(self.xterm_title)
                 rc = self.checksum_step()
 
             elif step == "unpack":
-                self.xterm_title += 'Unpacking archive: '+os.path.basename(self.infoDict['download'])
+                self.xterm_title += 'Unpacking: '+os.path.basename(self.infoDict['download'])
                 xtermTitle(self.xterm_title)
                 rc = self.unpack_step()
 
             elif step == "install":
-                compatstring = ''
-                if etpConst['gentoo-compat']:
-                    compatstring = " ## w/Gentoo compatibility"
-                self.xterm_title += 'Installing archive: '+self.infoDict['atom']+compatstring
+                self.xterm_title += 'Installing: '+self.infoDict['atom']
                 xtermTitle(self.xterm_title)
                 rc = self.install_step()
 
             elif step == "remove":
-                compatstring = ''
-                if etpConst['gentoo-compat']:
-                    compatstring = " ## w/Gentoo compatibility"
-                self.xterm_title += 'Removing archive: '+self.infoDict['removeatom']+compatstring
+                self.xterm_title += 'Removing: '+self.infoDict['removeatom']
                 xtermTitle(self.xterm_title)
                 rc = self.remove_step()
 
@@ -2211,27 +2200,27 @@ class PackageInterface:
                 rc = self.messages_step()
 
             elif step == "cleanup":
-                self.xterm_title += 'Cleaning archive: '+self.infoDict['atom']
+                self.xterm_title += 'Cleaning: '+self.infoDict['atom']
                 xtermTitle(self.xterm_title)
                 rc = self.cleanup_step()
 
             elif step == "postinstall":
-                self.xterm_title += 'Postinstall archive: '+self.infoDict['atom']
+                self.xterm_title += 'Postinstall: '+self.infoDict['atom']
                 xtermTitle(self.xterm_title)
                 rc = self.postinstall_step()
 
             elif step == "preinstall":
-                self.xterm_title += 'Preinstall archive: '+self.infoDict['atom']
+                self.xterm_title += 'Preinstall: '+self.infoDict['atom']
                 xtermTitle(self.xterm_title)
                 rc = self.preinstall_step()
 
             elif step == "preremove":
-                self.xterm_title += 'Preremove archive: '+self.infoDict['removeatom']
+                self.xterm_title += 'Preremove: '+self.infoDict['removeatom']
                 xtermTitle(self.xterm_title)
                 rc = self.preremove_step()
 
             elif step == "postremove":
-                self.xterm_title += 'Postremove archive: '+self.infoDict['removeatom']
+                self.xterm_title += 'Postremove: '+self.infoDict['removeatom']
                 xtermTitle(self.xterm_title)
                 rc = self.postremove_step()
 

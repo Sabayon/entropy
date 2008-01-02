@@ -20,9 +20,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-# Never do "import portage" here, please use entropyTools binding
-# EXIT STATUSES: 700-799
-
 from entropyConstants import *
 from clientConstants import *
 from outputTools import *

@@ -753,7 +753,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         if (lookForOrphanedPackages):
             choosenRemovalQueue = []
             print_info(red(" @@ ")+blue("Calculating..."))
-            choosenRemovalQueue = Equo.retrieveRemovalQueue(idpackages, deep = deep)
+            choosenRemovalQueue = Equo.retrieveRemovalQueue(plainRemovalQueue, deep = deep)
             if choosenRemovalQueue:
                 print_info(red(" @@ ")+blue("This is the new removal queue:"))
                 totalatoms = str(len(choosenRemovalQueue))
@@ -997,6 +997,7 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
         print_info(red(" @@ Attention: ")+blue("don't worry about libraries that are shown here but not later."))
 
     brokenlibs = set()
+    brokenexecs = {}
     total = len(executables)
     count = 0
     for executable in executables:
@@ -1024,6 +1025,7 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
                     alllibs = blue(' :: ').join(list(mylibs))
                     print_info("  ["+str((round(float(count)/total*100,1)))+"%] "+red(etpConst['systemroot']+executable)+" [ "+alllibs+" ]")
             brokenlibs.update(mylibs)
+            brokenexecs[executable] = mylibs.copy()
     del executables
 
     if (not etpUi['quiet']):
@@ -1033,6 +1035,8 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
     # now search packages that contain the found libs
     orderedRepos = list(etpRepositoriesOrder)
     orderedRepos.sort()
+
+    # match libraries
     for repodata in orderedRepos:
         if not etpUi['quiet']: print_info(red(" @@ ")+blue("Repository: ")+darkgreen(etpRepositories[repodata[1]]['description'])+" ["+red(repodata[1])+"]")
         dbconn = Equo.openRepositoryDatabase(repodata[1])
@@ -1048,6 +1052,28 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
                     if matching_libs:
                         packagesMatched.add((idpackage,repodata[1],lib))
         brokenlibs.difference_update(libsfound)
+
+    '''
+    FIXME: b0000rked, do we really have to do this?
+    # match executables
+    for executable in brokenexecs:
+        libsfound = set()
+        for brokenlib in brokenlibs:
+            if brokenlib in brokenexecs[executable]:
+                matches = Equo.clientDbconn.searchBelongs(executable)
+                for idpackage in matches:
+                    # get key and slot
+                    cat = Equo.clientDbconn.retrieveCategory(idpackage)
+                    name = Equo.clientDbconn.retrieveName(idpackage)
+                    slot = Equo.clientDbconn.retrieveSlot(idpackage)
+                    key = cat+"/"+name
+                    # search into repositories
+                    match = Equo.atomMatch(key, matchSlot = slot)
+                    if match[0] != -1:
+                        packagesMatched.add((idpackage,match[1],brokenlib))
+                        libsfound.add(brokenlib)
+        brokenlibs.difference_update(libsfound)
+    '''
 
     if listfiles:
         etpUi['quiet'] = qstat

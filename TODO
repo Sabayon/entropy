@@ -1,5 +1,6 @@
 TODO list:
   - move all print_* to EquoInterface.updateProgress in confTools
+  - move librariesTest, dependenciesTest from uiTools to EquoInterface
   - GUI
   - server part rewrite ala EquoInterface
   - Community repositories
