@@ -315,7 +315,7 @@ class EquoInterface(TextInterface):
                 exitErrors[repo] = -1
                 continue
             # open database
-            dbconn = self.openRepositoryDatabase(repo, xcache = self.xcache)
+            dbconn = self.openRepositoryDatabase(repo)
 
             # search
             query = dbconn.atomMatch(atom, caseSensitive = caseSentitive, matchSlot = matchSlot, matchBranches = matchBranches)
@@ -361,7 +361,7 @@ class EquoInterface(TextInterface):
             for repo in repoResults:
 
                 # open database
-                dbconn = self.openRepositoryDatabase(repo, xcache = self.xcache)
+                dbconn = self.openRepositoryDatabase(repo)
                 # search
                 packageInformation[repo] = {}
                 packageInformation[repo]['version'] = dbconn.retrieveVersion(repoResults[repo])
