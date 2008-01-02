@@ -159,23 +159,24 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
         del fine
 
         # clear old resume information
-        Equo.dumpTools.dumpobj(etpCache['world'],{})
-        Equo.dumpTools.dumpobj(etpCache['install'],{})
-        Equo.dumpTools.dumpobj(etpCache['remove'],[])
-        if (not etpUi['pretend']):
-            # store resume information
-            resume_cache = {}
-            resume_cache['ask'] = etpUi['ask']
-            resume_cache['verbose'] = etpUi['verbose']
-            resume_cache['onlyfetch'] = onlyfetch
-            resume_cache['remove'] = remove
-            Equo.dumpTools.dumpobj(etpCache['world'],resume_cache)
+        if etpConst['uid'] == 0:
+            Equo.dumpTools.dumpobj(etpCache['world'],{})
+            Equo.dumpTools.dumpobj(etpCache['install'],{})
+            Equo.dumpTools.dumpobj(etpCache['remove'],[])
+            if (not etpUi['pretend']):
+                # store resume information
+                resume_cache = {}
+                resume_cache['ask'] = etpUi['ask']
+                resume_cache['verbose'] = etpUi['verbose']
+                resume_cache['onlyfetch'] = onlyfetch
+                resume_cache['remove'] = remove
+                Equo.dumpTools.dumpobj(etpCache['world'],resume_cache)
 
     else: # if resume, load cache if possible
 
         # check if there's something to resume
         resume_cache = Equo.dumpTools.loadobj(etpCache['world'])
-        if not resume_cache: # None or {}
+        if (not resume_cache) or (etpConst['uid'] != 0): # None or {}
             print_error(red("Nothing to resume."))
             return 128,-1
         else:

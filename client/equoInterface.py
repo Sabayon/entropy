@@ -315,7 +315,7 @@ class EquoInterface(TextInterface):
                 exitErrors[repo] = -1
                 continue
             # open database
-            dbconn = self.databaseTools.openRepositoryDatabase(repo, xcache = self.xcache)
+            dbconn = self.openRepositoryDatabase(repo, xcache = self.xcache)
 
             # search
             query = dbconn.atomMatch(atom, caseSensitive = caseSentitive, matchSlot = matchSlot, matchBranches = matchBranches)
@@ -361,14 +361,12 @@ class EquoInterface(TextInterface):
             for repo in repoResults:
 
                 # open database
-                dbconn = self.databaseTools.openRepositoryDatabase(repo, xcache = self.xcache)
+                dbconn = self.openRepositoryDatabase(repo, xcache = self.xcache)
                 # search
                 packageInformation[repo] = {}
                 packageInformation[repo]['version'] = dbconn.retrieveVersion(repoResults[repo])
                 packageInformation[repo]['versiontag'] = dbconn.retrieveVersionTag(repoResults[repo])
                 packageInformation[repo]['revision'] = dbconn.retrieveRevision(repoResults[repo])
-                dbconn.closeDB()
-                del dbconn
 
             versions = []
             repoNames = []
@@ -537,7 +535,7 @@ class EquoInterface(TextInterface):
 
             repoMatch = self.atomMatch(dependency)
             if repoMatch[0] != -1:
-                dbconn = self.databaseTools.openRepositoryDatabase(repoMatch[1])
+                dbconn = self.openRepositoryDatabase(repoMatch[1])
                 repo_pkgver = dbconn.retrieveVersion(repoMatch[0])
                 repo_pkgtag = dbconn.retrieveVersionTag(repoMatch[0])
                 repo_pkgrev = dbconn.retrieveRevision(repoMatch[0])
@@ -599,7 +597,7 @@ class EquoInterface(TextInterface):
                 (cached['usefilter'] == usefilter):
                 return cached['result']
 
-        mydbconn = self.databaseTools.openRepositoryDatabase(atomInfo[1])
+        mydbconn = self.openRepositoryDatabase(atomInfo[1])
         myatom = mydbconn.retrieveAtom(atomInfo[0])
 
         # caches
@@ -641,7 +639,7 @@ class EquoInterface(TextInterface):
                 continue
 
             # check if atom has been already pulled in
-            matchdb = self.databaseTools.openRepositoryDatabase(match[1])
+            matchdb = self.openRepositoryDatabase(match[1])
             matchatom = matchdb.retrieveAtom(match[0])
             matchslot = matchdb.retrieveSlot(match[0]) # used later
             if matchatom in treecache:
@@ -677,7 +675,7 @@ class EquoInterface(TextInterface):
             matchcache.add(match)
             deptree.add((mydep[0],match)) # add match
 
-            matchdb = self.databaseTools.openRepositoryDatabase(match[1])
+            matchdb = self.openRepositoryDatabase(match[1])
             myundeps = matchdb.retrieveDependenciesList(match[0])
             if (not empty_deps):
                 myundeps, xxx = self.filterSatisfiedDependencies(myundeps, deep_deps = deep_deps)
@@ -693,7 +691,7 @@ class EquoInterface(TextInterface):
                 if i[0] != -1:
                     oldneeded = self.clientDbconn.retrieveNeeded(i[0])
                     if oldneeded: # if there are needed
-                        ndbconn = self.databaseTools.openRepositoryDatabase(match[1])
+                        ndbconn = self.openRepositoryDatabase(match[1])
                         needed = ndbconn.retrieveNeeded(match[0])
                         oldneeded = oldneeded - needed
                         if oldneeded:
@@ -707,7 +705,7 @@ class EquoInterface(TextInterface):
                                     mykey = mycategory+"/"+myname
                                     mymatch = self.atomMatch(mykey, matchSlot = myslot) # search in our repo
                                     if mymatch[0] != -1:
-                                        mydbconn = self.databaseTools.openRepositoryDatabase(mymatch[1])
+                                        mydbconn = self.openRepositoryDatabase(mymatch[1])
                                         mynewatom = mydbconn.retrieveAtom(mymatch[0])
                                         if (mymatch not in matchcache) and (mynewatom not in treecache) and (mymatch not in matchFilter):
                                             mybuffer.push((treedepth,mynewatom))
@@ -1356,8 +1354,6 @@ class PackageInterface:
                     )
                 else:
                     self.infoDict['xpakstatus'] = None
-                xdbconn.closeDB()
-                del xdbconn
                 del xpakdata
             else:
                 self.infoDict['xpakstatus'] = self.Entropy.entropyTools.extractXpak(
