@@ -319,7 +319,6 @@ class EquoInterface(TextInterface):
 
             # search
             query = dbconn.atomMatch(atom, caseSensitive = caseSentitive, matchSlot = matchSlot, matchBranches = matchBranches)
-            #print "repo:",repo,"atom:",atom,"result:",query
             if query[1] == 0:
                 # package found, add to our dictionary
                 repoResults[repo] = query[0]
@@ -605,7 +604,6 @@ class EquoInterface(TextInterface):
                 (cached['usefilter'] == usefilter):
                 return cached['result']
 
-        #print atomInfo
         mydbconn = self.databaseTools.openRepositoryDatabase(atomInfo[1])
         myatom = mydbconn.retrieveAtom(atomInfo[0])
         mydbconn.closeDB()
@@ -863,7 +861,6 @@ class EquoInterface(TextInterface):
                     # now filter them
                     mydeps = [x for x in mydeps if x not in list(monotree)]
                     for x in mydeps:
-                        #print clientDbconn.retrieveAtom(x)
                         mydepends = self.clientDbconn.retrieveDepends(x)
                         mydepends = [y for y in mydepends if y not in list(monotree)]
                         if (not mydepends):
@@ -895,7 +892,6 @@ class EquoInterface(TextInterface):
                         try:
                             while 1:
                                 newtree[x].remove(z)
-                                #print "removing "+str(z)
                         except:
                             pass
                     x += 1
@@ -1084,7 +1080,6 @@ class EquoInterface(TextInterface):
     
         del fetchConn
         if (digest):
-            #print digest+" <--> "+fetchChecksum
             if (fetchChecksum != digest):
                 # not properly downloaded
                 return -2, data_transfer
@@ -1471,24 +1466,19 @@ class PackageInterface:
 
                 if os.path.isdir(etpConst['systemroot']+item) and os.path.islink(etpConst['systemroot']+item): # S_ISDIR returns False for directory symlinks, so using os.path.isdir
                     # valid directory symlink
-                    #print "symlink dir",file
                     directories.add((etpConst['systemroot']+item,"link"))
                 elif os.path.isdir(etpConst['systemroot']+item):
                     # plain directory
-                    #print "plain dir",file
                     directories.add((etpConst['systemroot']+item,"dir"))
                 else: # files, symlinks or not
                     # just a file or symlink or broken directory symlink (remove now)
                     try:
-                        #print "plain file",file
                         os.remove(etpConst['systemroot']+item)
                         # add its parent directory
                         dirfile = os.path.dirname(etpConst['systemroot']+item)
                         if os.path.isdir(dirfile) and os.path.islink(dirfile):
-                            #print "symlink dir2",dirfile
                             directories.add((dirfile,"link"))
                         elif os.path.isdir(dirfile):
-                            #print "plain dir2",dirfile
                             directories.add((dirfile,"dir"))
                     except OSError:
                         pass
@@ -1546,7 +1536,6 @@ class PackageInterface:
         if (_portage_avail):
             portDbDir = _portage_getPortageAppDbPath()
             removePath = portDbDir+atom
-            #print removePath
             try:
                 shutil.rmtree(removePath,True)
             except:
@@ -1642,9 +1631,9 @@ class PackageInterface:
 
     '''
     @description: inject the database information into the Gentoo database
-    @output: 0 = all fine, >0 = error!
+    @output: 0 = all fine, !=0 = error!
     '''
-    def __install_package_into_gentoo_database(self, newidpackage = -1):
+    def __install_package_into_gentoo_database(self, newidpackage):
 
         # handle gentoo-compat
         _portage_avail = False
@@ -1657,7 +1646,6 @@ class PackageInterface:
             portDbDir = portageTools.getPortageAppDbPath()
             # extract xpak from unpackDir+etpConst['packagecontentdir']+"/"+package
             key = self.infoDict['category']+"/"+self.infoDict['name']
-            #print portageTools.getInstalledAtom(key)
             atomsfound = set()
             dbdirs = os.listdir(portDbDir)
             if self.infoDict['category'] in dbdirs:
@@ -1673,7 +1661,6 @@ class PackageInterface:
                     atomslot = portageTools.getPackageSlot(atom)
                     # get slot from gentoo db
                     if atomslot == self.infoDict['slot']:
-                        #print "match slot, remove -> "+str(atomslot)
                         pkgToRemove = atom
                         break
                 if (pkgToRemove):
@@ -1683,7 +1670,6 @@ class PackageInterface:
                         os.rmdir(removePath)
                     except OSError:
                         pass
-                    #print "removing -> "+removePath
             del atomsfound
 
             # xpakstatus is perpared by unpackPackage()
@@ -1726,7 +1712,14 @@ class PackageInterface:
                     # update counter inside clientDatabase
                     self.Entropy.clientDbconn.setCounter(newidpackage,counter)
                 else:
-                    print "DEBUG: WARNING!! "+destination+" DOES NOT EXIST, CANNOT UPDATE COUNTER!!"
+                    self.Entropy.updateProgress(
+                                                red("QA: ")+brown("cannot update Gentoo counter, destination %s does not exist." % 
+                                                        (destination,)
+                                                ),
+                                                importance = 1,
+                                                type = "warning",
+                                                header = darkred("   ## ")
+                                        )
 
         return 0
 
@@ -1755,7 +1748,6 @@ class PackageInterface:
         # update dependstable
         try:
             depends = self.Entropy.clientDbconn.listIdpackageDependencies(idpk)
-            #print depends
             for depend in depends:
                 atom = depend[1]
                 iddep = depend[0]
@@ -1784,7 +1776,6 @@ class PackageInterface:
 
                 imagepathDir = currentdir + "/" + subdir
                 rootdir = etpConst['systemroot']+imagepathDir[len(imageDir):]
-                #print rootdir
 
                 # handle broken symlinks
                 if os.path.islink(rootdir) and not os.path.exists(rootdir):# broken symlink
@@ -1810,7 +1801,6 @@ class PackageInterface:
                         os.remove(rootdir)
                     os.symlink(tolink,rootdir)
                 elif (not os.path.isdir(rootdir)) and (not os.access(rootdir,os.R_OK)):
-                    #print "creating dir "+rootdir
                     os.makedirs(rootdir)
 
                 if not os.path.islink(rootdir): # symlink don't need permissions, also until os.walk ends they might be broken
@@ -1822,7 +1812,6 @@ class PackageInterface:
             for item in files:
                 fromfile = currentdir+"/"+item
                 tofile = etpConst['systemroot']+fromfile[len(imageDir):]
-                #print tofile
 
                 if etpConst['collisionprotect'] > 1:
                     todbfile = fromfile[len(imageDir):]
@@ -1888,8 +1877,17 @@ class PackageInterface:
 
                     # -- CONFIGURATION FILE PROTECTION --
 
-                except:
-                    print "DEBUG !!!!: error in __move_image_to_system ?"
+                except Exception, e:
+                    self.Entropy.updateProgress(
+                                                red("QA: ")+brown("cannot check CONFIG PROTECTION. Exception: %s :: error: %s" % (
+                                                        str(Exception),
+                                                        str(e),
+                                                        )
+                                                ),
+                                                importance = 1,
+                                                type = "warning",
+                                                header = darkred("   ## ")
+                                        )
                     pass # some files are buggy encoded
 
                 try:
