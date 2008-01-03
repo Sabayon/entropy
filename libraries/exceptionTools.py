@@ -25,7 +25,7 @@
 '''
 
 class EntropyException(Exception):
-    """General superclass for portage exceptions"""
+    """General superclass for Entropy exceptions"""
     def __init__(self,value):
         self.value = value[:]
         

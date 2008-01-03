@@ -26,15 +26,15 @@ import os
 '''
 
 class parser:
-    
+
     def __init__(self,etpConst,etpCache):
-        
+
         self.etpConst = etpConst
         self.etpCache = etpCache
-        
+
 
     def parse(self):
-    
+
         self.etpMaskFiles = {
             'keywords': self.etpConst['confdir']+"/packages/package.keywords", # keywording configuration files
             'unmask': self.etpConst['confdir']+"/packages/package.unmask", # unmasking configuration files
@@ -45,7 +45,7 @@ class parser:
             'unmask_mtime': self.etpConst['dumpstoragedir']+"/unmask.mtime", # unmasking configuration files mtime
             'mask_mtime': self.etpConst['dumpstoragedir']+"/mask.mtime", # masking configuration files mtime
         }
-    
+
         data = {}
         for item in self.etpMaskFiles:
             data[item] = eval('self.'+item+'_parser')()
@@ -56,9 +56,9 @@ class parser:
     parser of package.keywords file
     '''
     def keywords_parser(self):
-        
+
         self.__validateEntropyCache(self.etpMaskFiles['keywords'],self.etpMtimeFiles['keywords_mtime'])
-        
+
         data = {
                 'universal': set(),
                 'packages': {},
@@ -119,11 +119,11 @@ class parser:
                             data['packages'][keywordinfo[0]] = set()
                         data['packages'][keywordinfo[0]].add(items[0])
         return data
-    
-    
+
+
     def unmask_parser(self):
         self.__validateEntropyCache(self.etpMaskFiles['unmask'],self.etpMtimeFiles['unmask_mtime'])
-        
+
         data = set()
         if os.path.isfile(self.etpMaskFiles['unmask']):
             f = open(self.etpMaskFiles['unmask'],"r")
@@ -136,10 +136,10 @@ class parser:
                 # and doesn't care about badly formatted atoms
                 data.add(line)
         return data
-    
+
     def mask_parser(self):
         self.__validateEntropyCache(self.etpMaskFiles['mask'],self.etpMtimeFiles['mask_mtime'])
-        
+
         data = set()
         if os.path.isfile(self.etpMaskFiles['mask']):
             f = open(self.etpMaskFiles['mask'],"r")
@@ -152,11 +152,11 @@ class parser:
                 # and doesn't care about badly formatted atoms
                 data.add(line)
         return data
-    
+
     '''
     internal functions
     '''
-    
+
     def __removeRepoCache(self):
         if os.path.isdir(self.etpConst['dumpstoragedir']):
             content = os.listdir(self.etpConst['dumpstoragedir'])
@@ -167,23 +167,23 @@ class parser:
                     os.remove(self.etpConst['dumpstoragedir']+"/"+item)
         else:
             os.makedirs(self.etpConst['dumpstoragedir'])
-    
+
     def __saveFileMtime(self,toread,tosaveinto):
-        
+
         if not os.path.isfile(toread):
             currmtime = 0.0
         else:
             currmtime = os.path.getmtime(toread)
-        
+
         if not os.path.isdir(self.etpConst['dumpstoragedir']):
             os.makedirs(self.etpConst['dumpstoragedir'])
-        
+
         f = open(tosaveinto,"w")
         f.write(str(currmtime))
         f.flush()
         f.close()
-        
-    
+
+
     def __validateEntropyCache(self,maskfile,mtimefile):
 
         if os.getuid() != 0: # can't validate if running as user, thus cache shouldn't be loaded either

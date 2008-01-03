@@ -1,8 +1,6 @@
 TODO list:
   - move dumpTools to entropy.py
   - move rssTools to entropy.py
-  - move maskingparser to entropy.py
-  - move exceptionTools to entropy.py
   - GUI
   - server part rewrite ala EquoInterface
   - Community repositories
