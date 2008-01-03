@@ -115,6 +115,17 @@ def getRepositoryDbFileHash(reponame):
         mhash = "-1"
     return mhash
 
+def fetchRepositoryIfNotAvailable(reponame):
+    # open database
+    rc = 0
+    dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
+    if not os.path.isfile(dbfile):
+	# sync
+	rc = syncRepositories([reponame])
+    if not os.path.isfile(dbfile):
+        raise exceptionTools.RepositoryError("RepositoryError: cannot fetch database for repo id: "+reponame)
+    return rc
+
 def syncRepositories(reponames = [], forceUpdate = False):
 
     # load repository class

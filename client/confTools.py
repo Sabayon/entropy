@@ -28,7 +28,7 @@ from outputTools import *
 import exceptionTools
 from equoInterface import EquoInterface
 # FIXME: move all print_* to EquoInterface.updateProgress
-Equo = EquoInterface(noclientdb = True)
+Equo = EquoInterface()
 
 # test if diff is installed
 difftest = Equo.entropyTools.spawnCommand("diff -v", redirect = "&> /dev/null")
@@ -316,7 +316,8 @@ def scanfs(dcache = True):
 	except:
 	    pass
 
-    # etpConst['dbconfigprotect']
+    # open client database to fill etpConst['dbconfigprotect']
+    Equo
     if (not etpUi['quiet']): print_info(yellow(" @@ ")+darkgreen("Scanning filesystem..."))
     scandata = {}
     counter = 0

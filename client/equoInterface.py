@@ -55,6 +55,8 @@ class EquoInterface(TextInterface):
         self.confTools = confTools
         import triggerTools
         self.triggerTools = triggerTools
+        import repositoriesTools
+        self.repositoriesTools = repositoriesTools
         from remoteTools import urlFetcher
         self.urlFetcher = urlFetcher # in this way, can be reimplemented (so you can override updateProgress)
         self.progress = None # supporting external updateProgress stuff, you can point self.progress to your progress bar
@@ -298,19 +300,22 @@ class EquoInterface(TextInterface):
     @ exit errors:
                 -1 => repository cannot be fetched online
     '''
-    def atomMatch(self, atom, caseSentitive = True, matchSlot = None, matchBranches = ()):
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, matchBranches = ()):
 
         if self.xcache:
             cached = atomMatchCache.get(atom)
             if cached:
-                if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches) and (cached['etpRepositories'] == etpRepositories):
-                    return cached['result']
+                try:
+                    if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches) and (cached['etpRepositories'] == etpRepositories) and (cached['caseSensitive'] == caseSensitive):
+                        return cached['result']
+                except KeyError:
+                    pass
 
         repoResults = {}
         exitErrors = {}
         for repo in etpRepositories:
             # sync database if not available
-            rc = self.databaseTools.fetchRepositoryIfNotAvailable(repo)
+            rc = self.repositoriesTools.fetchRepositoryIfNotAvailable(repo)
             if (rc != 0):
                 exitErrors[repo] = -1
                 continue
@@ -318,7 +323,7 @@ class EquoInterface(TextInterface):
             dbconn = self.openRepositoryDatabase(repo)
 
             # search
-            query = dbconn.atomMatch(atom, caseSensitive = caseSentitive, matchSlot = matchSlot, matchBranches = matchBranches)
+            query = dbconn.atomMatch(atom, caseSensitive = caseSensitive, matchSlot = matchSlot, matchBranches = matchBranches)
             if query[1] == 0:
                 # package found, add to our dictionary
                 repoResults[repo] = query[0]
@@ -332,6 +337,7 @@ class EquoInterface(TextInterface):
             atomMatchCache[atom]['result'] = -1,1
             atomMatchCache[atom]['matchSlot'] = matchSlot
             atomMatchCache[atom]['matchBranches'] = matchBranches
+            atomMatchCache[atom]['caseSensitive'] = caseSensitive
             atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
             return -1,1
 
@@ -342,6 +348,7 @@ class EquoInterface(TextInterface):
                 atomMatchCache[atom]['result'] = repoResults[repo],repo
                 atomMatchCache[atom]['matchSlot'] = matchSlot
                 atomMatchCache[atom]['matchBranches'] = matchBranches
+                atomMatchCache[atom]['caseSensitive'] = caseSensitive
                 atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
                 return repoResults[repo],repo
 
@@ -401,9 +408,7 @@ class EquoInterface(TextInterface):
                             conflictingEntries[repo]['revision'] = packageInformation[repo]['revision']
 
                     # at this point compare tags
-                    tags = []
-                    for repo in conflictingEntries:
-                        tags.append(conflictingEntries[repo]['versiontag'])
+                    tags = [conflictingEntries[x]['versiontag'] for x in conflictingEntries]
                     newerTag = self.entropyTools.getNewerVersionTag(tags)
                     newerTag = newerTag[0]
 
@@ -442,6 +447,7 @@ class EquoInterface(TextInterface):
                                         atomMatchCache[atom]['result'] = repoResults[repo],repo
                                         atomMatchCache[atom]['matchSlot'] = matchSlot
                                         atomMatchCache[atom]['matchBranches'] = matchBranches
+                                        atomMatchCache[atom]['caseSensitive'] = caseSensitive
                                         atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
                                         return repoResults[repo],repo
                         else:
@@ -455,6 +461,7 @@ class EquoInterface(TextInterface):
                             atomMatchCache[atom]['result'] = repoResults[reponame],reponame
                             atomMatchCache[atom]['matchSlot'] = matchSlot
                             atomMatchCache[atom]['matchBranches'] = matchBranches
+                            atomMatchCache[atom]['caseSensitive'] = caseSensitive
                             atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
                             return repoResults[reponame],reponame
                     else:
@@ -468,6 +475,7 @@ class EquoInterface(TextInterface):
                         atomMatchCache[atom]['result'] = repoResults[reponame],reponame
                         atomMatchCache[atom]['matchSlot'] = matchSlot
                         atomMatchCache[atom]['matchBranches'] = matchBranches
+                        atomMatchCache[atom]['caseSensitive'] = caseSensitive
                         atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
                         return repoResults[reponame],reponame
                 else:
@@ -481,6 +489,7 @@ class EquoInterface(TextInterface):
                     atomMatchCache[atom]['result'] = repoResults[reponame],reponame
                     atomMatchCache[atom]['matchSlot'] = matchSlot
                     atomMatchCache[atom]['matchBranches'] = matchBranches
+                    atomMatchCache[atom]['caseSensitive'] = caseSensitive
                     atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
                     return repoResults[reponame],reponame
             else:
@@ -497,6 +506,7 @@ class EquoInterface(TextInterface):
                 atomMatchCache[atom]['result'] = repoResults[reponame],reponame
                 atomMatchCache[atom]['matchSlot'] = matchSlot
                 atomMatchCache[atom]['matchBranches'] = matchBranches
+                atomMatchCache[atom]['caseSensitive'] = caseSensitive
                 atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
                 return repoResults[reponame],reponame
 
@@ -903,11 +913,11 @@ class EquoInterface(TextInterface):
             tainted = False
             atom = package[0]
             idpackage = package[1]
-            name = self.clientDbconn.retrieveName(idpackage)
-            category = self.clientDbconn.retrieveCategory(idpackage)
-            revision = self.clientDbconn.retrieveRevision(idpackage)
-            needed = self.clientDbconn.retrieveNeeded(idpackage)
-            slot = self.clientDbconn.retrieveSlot(idpackage)
+            myscopedata = self.clientDbconn.getScopeData(idpackage)
+            category = myscopedata[0]
+            name = myscopedata[1]
+            slot = myscopedata[3]
+            revision = myscopedata[5]
             atomkey = category+"/"+name
             # search in the packages
             match = self.atomMatch(atom)
@@ -925,6 +935,7 @@ class EquoInterface(TextInterface):
                     # this will avoid having old packages installed just because user ran equo database generate (migrating from gentoo)
                     # also this helps in environments with multiple repositories, to avoid messing with libraries
                     aneeded = adbconn.retrieveNeeded(match[0])
+                    needed = self.clientDbconn.retrieveNeeded(idpackage)
                     if needed != aneeded:
                         tainted = True
                 elif (empty_deps):

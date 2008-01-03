@@ -30,6 +30,7 @@ except ImportError: # fallback to embedded pysqlite
     from pysqlite2 import dbapi2
 import dumpTools
 import exceptionTools
+import repositoriesTools
 Text = TextInterface()
 _treeUpdatesCalled = False
 
@@ -47,7 +48,7 @@ _treeUpdatesCalled = False
 def openRepositoryDatabase(repositoryName, xcache = True, indexing = True):
     dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
     if not os.path.isfile(dbfile):
-	fetchRepositoryIfNotAvailable(repositoryName)
+	repositoriesTools.fetchRepositoryIfNotAvailable(repositoryName)
     conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = etpConst['dbnamerepoprefix']+repositoryName, xcache = xcache, indexing = indexing)
     # initialize CONFIG_PROTECT
     if (etpRepositories[repositoryName]['configprotect'] == None) or (etpRepositories[repositoryName]['configprotectmask'] == None):
@@ -62,18 +63,6 @@ def openRepositoryDatabase(repositoryName, xcache = True, indexing = True):
     if not _treeUpdatesCalled and (etpConst['uid'] == 0):
         conn.clientUpdatePackagesData()
     return conn
-
-def fetchRepositoryIfNotAvailable(reponame):
-    # open database
-    rc = 0
-    dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
-    if not os.path.isfile(dbfile):
-	# sync
-        import repositoriesTools
-	rc = repositoriesTools.syncRepositories([reponame])
-    if not os.path.isfile(dbfile):
-        raise exceptionTools.RepositoryError("RepositoryError: cannot fetch database for repo id: "+reponame)
-    return rc
 
 '''
    @description: open the installed packages database
@@ -1810,33 +1799,53 @@ class etpDatabase(TextInterface):
         return result
 
     def getIDPackagesFromFile(self, file):
-	self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
-	idpackages = []
-	for row in self.cursor:
-	    idpackages.append(row[0])
-	return idpackages
+        self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
+        idpackages = []
+        for row in self.cursor:
+            idpackages.append(row[0])
+        return idpackages
 
     def getIDCategory(self, category):
-	self.cursor.execute('SELECT "idcategory" FROM categories WHERE category = "'+str(category)+'"')
-	idcat = -1
-	for row in self.cursor:
-	    idcat = int(row[0])
-	    break
-	return idcat
+        self.cursor.execute('SELECT "idcategory" FROM categories WHERE category = "'+str(category)+'"')
+        idcat = -1
+        for row in self.cursor:
+            idcat = int(row[0])
+            break
+        return idcat
 
     def getIDPackageFromBinaryPackage(self,packageName):
-	self.cursor.execute('SELECT "IDPACKAGE" FROM baseinfo WHERE download = "'+etpConst['binaryurirelativepath']+packageName+'"')
-	idpackage = -1
-	for row in self.cursor:
-	    idpackage = int(row[0])
-	    break
-	return idpackage
+        self.cursor.execute('SELECT "IDPACKAGE" FROM baseinfo WHERE download = "'+etpConst['binaryurirelativepath']+packageName+'"')
+        idpackage = -1
+        for row in self.cursor:
+            idpackage = int(row[0])
+            break
+        return idpackage
+
+    def getScopeData(self, idpackage):
+
+        self.createBaseinfoIndex()
+        self.cursor.execute("""
+                SELECT 
+                        categories.category,
+                        baseinfo.name,
+                        baseinfo.version,
+                        baseinfo.slot,
+                        baseinfo.versiontag,
+                        baseinfo.revision
+                FROM 
+                        baseinfo,
+                        categories
+                WHERE 
+                        baseinfo.idpackage = (?) 
+                        and baseinfo.idcategory = categories.idcategory 
+        """, (idpackage,))
+        return self.cursor.fetchone()
 
     def getBaseData(self,idpackage):
-        
+
         self.createBaseinfoIndex()
         self.createExtrainfoIndex()
-        
+
 	sql = """
 		SELECT 
 			baseinfo.atom,
