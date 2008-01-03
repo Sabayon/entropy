@@ -28,7 +28,6 @@ sys.path.append("../../client")
 sys.path.append("/usr/lib/entropy/libraries")
 sys.path.append("/usr/lib/entropy/client")
 from entropyConstants import *
-from clientConstants import *
 import exceptionTools
 from packages import EntropyPackages
 
@@ -42,7 +41,7 @@ from yumgui import *
 
 # yumex imports
 import filters
-from entropyapi import GuiRepositoryController, Equo
+from entropyapi import Equo
 from gui import YumexGUI
 from dialogs import *
 from misc import const, YumexOptions, YumexProfile
@@ -446,17 +445,13 @@ class YumexApplication(YumexController,YumexGUI):
     def updateRepositories(self, repos):
         self.setPage('output')
         self.startWorking()
-        
+
         # set steps
         self.progress.total.setup( range(len(repos)+2) )
         self.progress.set_mainLabel(_('Initializing Repository module...'))
-        
-        # 1
-        import repositoriesTools
+
         try:
-            repoConn = GuiRepositoryController(repos, forceUpdate = True)
-            repoConn.connect_to_gui(self.progress)
-            repoConn.nocolor()
+            repoConn = self.Equo.Repositories(repos, forceUpdate = True) # FIXME: disable forceUpdate == True
         except exceptionTools.PermissionDenied:
             self.progressLog(_('You must run this application as root'), extra = "repositories")
             return 1
@@ -469,125 +464,12 @@ class YumexApplication(YumexController,YumexGUI):
         except Exception, e:
             self.progressLog(_('Unhandled exception: %s') % (str(e),), extra = "repositories")
             return 2
-        
-        # 2
-        error = False
-        count = 0
-        self.progress.total.next()
-        for repo in repoConn.reponames:
+        repoConn.sync()
 
-            count += 1
-            self.progress.set_mainLabel("(%s/%s) %s" % (
-                                                str(count),
-                                                str(len(repoConn.reponames)),
-                                                etpRepositories[repo]['description'],
-                                            )
-            )
-            self.progress.set_extraLabel("")
-
-            self.progressLog(_('Checking repository availability'), extra = repo)
-            update = repoConn.isRepositoryUpdatable(repo)
-            if not update:
-                self.progressLog(_('Database already up to date for: %s') % (repo,), extra = repo)
-                time.sleep(1)
-                error = True
-                continue
-
-            unlocked = repoConn.isRepositoryUnlocked(repo)
-            if not unlocked:
-                self.progressLog(_('Repository is being updated. Try again in a few minutes.'), extra = repo)
-                time.sleep(1)
-                error = True
-                continue
-
-            # database is going to be updated
-            repoConn.dbupdated = True
-            # clear database interface cache belonging to this repository
-            repoConn.clearRepositoryCache(repo)
-            cmethod = repoConn.validateCompressionMethod(repo)
-            repoConn.ensureRepositoryPath(repo)
-
-            self.progressLog(_('Downloading repository database'), extra = repo)
-            # download
-            down_status = repoConn.downloadItem("db", repo, cmethod)
-            if not down_status:
-                self.progressLog(_('Repository does not exist online.'), extra = repo)
-                error = True
-                continue
-        
-            # unpack database
-            self.progressLog(_('Unpacking database'), extra = repo)
-            repoConn.unpackDownloadedDatabase(repo, cmethod)
-    
-            # download checksum
-            self.progressLog(_('Downloading checksum'), extra = repo)
-            down_status = repoConn.downloadItem("ck", repo)
-            if not down_status:
-                self.progressLog(_('Cannot fetch checksum. Aborting.'), extra = repo)
-                error = True
-                repoConn.removeRepositoryFiles(repo, cmethod[2])
-                continue
-            else:
-                # verify checksum
-                self.progress.set_extraLabel("Downloaded checksum: %s" % (
-                                                    str(down_status),
-                                                )
-                )
-                self.progressLog(_('Verifying checksum'), extra = repo)
-                db_status = repoConn.verifyDatabaseChecksum(repo)
-                if db_status == -1:
-                    self.progressLog(_('Cannot open checksum. Cannot verify database integrity !'), extra = repo)
-                    error = True
-                    repoConn.removeRepositoryFiles(repo, cmethod[2])
-                    continue
-                elif db_status:
-                    self.progressLog(_('Database downloaded successfully.'), extra = repo)
-                else:
-                    self.progressLog(_('Database checksum does not match. Cannot validate.'), extra = repo)
-                    repoConn.removeRepositoryFiles(repo, cmethod[2])
-                    error = True
-                    repoConn.syncErrors = True
-                    continue
-
-            # download revision
-            self.progressLog(_('Downloading repository revision'), extra = repo)
-            rev_status = repoConn.downloadItem("rev", repo)
-            if not rev_status:
-                self.progressLog(_('Cannot download repository revision. Why ?!?'), extra = repo)
-            else:
-                self.progressLog(_('Repository revision now at %s.') % (
-                                                repositoriesTools.getRepositoryRevision(repo),
-                                            ), extra = repo
-                )
-
-            self.progressLog(_('Repository updated successfully'), extra = repo)
-
-            # at the end, update total progress
-            self.progress.total.next()
-
-        repoConn.closeTransactions()
-
-        self.progressLog(_('Updating Entropy Cache'))
-        # clean cache
-        self.cleanEntropyCaches()
-        
-        if error:
-            self.progress.set_mainLabel(_('Repositories updated with errors. Please check.'))
-            self.progressLog(_('Repositories updated with errors. Please check.'))
-        else:
-            self.progress.set_mainLabel(_('Repositories updated successfully.'))
-            self.progressLog(_('Repositories updated successfully.'))
-            rc = self.Equo.check_equo_updates()
-            if rc:
-                self.progressLog(_('A new "equo" release is available. Please update it before any other package.'))
-            else:
-                self.progressLog("")
-
-        del repoConn
         initConfig_entropyConstants(etpSys['rootdir'])
         self.setupRepoView()
         self.endWorking()
-        
+
     
     def setupRepoView(self):
         self.repoView.populate()

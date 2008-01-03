@@ -448,7 +448,7 @@ def questionDialog(parent, msg):
         return True
     else:
         return False
-        
+
 def okDialog(parent, msg):
     dlg = gtk.MessageDialog(parent=parent,
                             type=gtk.MESSAGE_INFO,

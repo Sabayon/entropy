@@ -26,12 +26,9 @@ from dialogs import questionDialog
 
 # Entropy Imports
 from entropyConstants import *
-from clientConstants import *
 import entropyTools
-import repositoriesTools
-import remoteTools
 import exceptionTools
-from equoInterface import EquoInterface
+from entropy import EquoInterface, urlFetcher
 
 '''
 
@@ -43,7 +40,7 @@ class Equo(EquoInterface):
 
     def connect_to_gui(self, progress):
         self.progress = progress
-        self.urlFetcher = GuiUrlFetcher
+        self.urlFetcher = urlFetcher
         self.nocolor()
 
     def updateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
@@ -67,9 +64,11 @@ class Equo(EquoInterface):
             myfunc = self.progress.set_extraLabel
         myfunc(count_str+text)
 
+    def cycleDone(self):
+        self.progress.total.next()
 
 
-class GuiUrlFetcher(remoteTools.urlFetcher):
+class GuiUrlFetcher(urlFetcher):
     """ hello my highness """
     
     def connect_to_gui(self, progress):
@@ -88,23 +87,3 @@ class GuiUrlFetcher(remoteTools.urlFetcher):
                                     )
         )
 
-class GuiRepositoryController(repositoriesTools.repositoryController):
-    """ hello world """
-
-    def connect_to_gui(self, progress):
-        self.progress = progress
-
-    # reimplementing
-    def downloadItem(self, item, repo, cmethod = None):
-
-        self.validateRepositoryId(repo)
-        url, filepath = self.constructPaths(item, repo, cmethod)
-
-        fetchConn = GuiUrlFetcher(url, filepath)
-        fetchConn.connect_to_gui(self.progress)
-        rc = fetchConn.download()
-        if rc in ("-1","-2","-3"):
-            del fetchConn
-            return False
-        del fetchConn
-        return True

@@ -5,7 +5,7 @@
 
     Copyright 1998-2004 Gentoo Foundation
     # $Id: output.py 4906 2006-11-01 23:55:29Z zmedico $
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2007-2008 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -86,10 +86,10 @@ g_attr["bg_default"]   = 49
 
 # make_seq("blue", "black", "normal")
 def color(fg, bg="default", attr=["normal"]):
-	mystr = esc_seq[:] + "%02d" % g_attr[fg]
-	for x in [bg]+attr:
-		mystr += ";%02d" % g_attr[x]
-	return mystr+"m"
+        mystr = esc_seq[:] + "%02d" % g_attr[fg]
+        for x in [bg]+attr:
+                mystr += ";%02d" % g_attr[x]
+        return mystr+"m"
 
 
 
@@ -105,15 +105,15 @@ codes["overline"]  = esc_seq + "06m"  # Who made this up? Seriously.
 
 ansi_color_codes = []
 for x in xrange(30, 38):
-	ansi_color_codes.append("%im" % x)
-	ansi_color_codes.append("%i;01m" % x)
+        ansi_color_codes.append("%im" % x)
+        ansi_color_codes.append("%i;01m" % x)
 
 rgb_ansi_colors = ['0x000000', '0x555555', '0xAA0000', '0xFF5555', '0x00AA00',
-	'0x55FF55', '0xAA5500', '0xFFFF55', '0x0000AA', '0x5555FF', '0xAA00AA',
-	'0xFF55FF', '0x00AAAA', '0x55FFFF', '0xAAAAAA', '0xFFFFFF']
+        '0x55FF55', '0xAA5500', '0xFFFF55', '0x0000AA', '0x5555FF', '0xAA00AA',
+        '0xFF55FF', '0x00AAAA', '0x55FFFF', '0xAAAAAA', '0xFFFFFF']
 
 for x in xrange(len(rgb_ansi_colors)):
-	codes[rgb_ansi_colors[x]] = esc_seq + ansi_color_codes[x]
+        codes[rgb_ansi_colors[x]] = esc_seq + ansi_color_codes[x]
 
 del x
 
@@ -353,6 +353,14 @@ class TextInterface:
             xtermTitleReset()
             sys.exit(100)
         xtermTitleReset()
+
+    # useful for reimplementation
+    # in this wait you can send a signal to a widget (total progress bar?)
+    def cycleDone(self):
+        return
+
+    def outputInstanceTest(self):
+        return
 
     def nocolor(self):
         nocolor()

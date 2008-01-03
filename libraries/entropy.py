@@ -1,9 +1,9 @@
 #!/usr/bin/python
 '''
     # DESCRIPTION:
-    # Equo Library used by Python frontends
+    # Entropy Object Oriented Interface
 
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2007-2008 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,14 +20,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import time
 import shutil
-import gc
+import commands
+import urllib2
+import random
 from entropyConstants import *
-from clientConstants import *
 from outputTools import *
 import exceptionTools
-
 
 '''
     Main Entropy (client side) package management class
@@ -51,20 +50,19 @@ class EquoInterface(TextInterface):
         self.databaseTools = databaseTools
         import entropyTools
         self.entropyTools = entropyTools
-        import confTools
-        self.confTools = confTools
         import triggerTools
+        import gc
+        self.gcTool = gc
         self.triggerTools = triggerTools
-        import repositoriesTools
-        self.repositoriesTools = repositoriesTools
-        from remoteTools import urlFetcher
         self.urlFetcher = urlFetcher # in this way, can be reimplemented (so you can override updateProgress)
         self.progress = None # supporting external updateProgress stuff, you can point self.progress to your progress bar
                              # and reimplement updateProgress
+        self.FtpInterface = FtpInterface # for convenience
         self.indexing = indexing
         self.noclientdb = noclientdb
         self.xcache = xcache
         self.openClientDatabase()
+        self.FileUpdates = self.__FileUpdates()
         self.repoDbCache = {}
 
     def switchChroot(self, chroot = ""):
@@ -88,18 +86,45 @@ class EquoInterface(TextInterface):
         self.repoDbCache.clear()
 
     def openClientDatabase(self):
-        self.clientDbconn = self.databaseTools.openClientDatabase(indexing = self.indexing, 
-                                                                    generate = self.noclientdb, 
-                                                                    xcache = self.xcache
-                                                                )
+        self.clientDbconn = self.databaseTools.openClientDatabase(indexing = self.indexing, generate = self.noclientdb, xcache = self.xcache)
+        return self.clientDbconn # just for reference
+
 
     def openRepositoryDatabase(self, repoid):
         if not self.repoDbCache.has_key((repoid,etpConst['systemroot'])):
-            dbconn = self.databaseTools.openRepositoryDatabase(repoid, xcache = self.xcache, indexing = self.indexing)
+            dbconn = self.loadRepositoryDatabase(repoid, xcache = self.xcache, indexing = self.indexing)
             self.repoDbCache[(repoid,etpConst['systemroot'])] = dbconn
             return dbconn
         else:
             return self.repoDbCache.get((repoid,etpConst['systemroot']))
+
+    '''
+    @description: open the repository database
+    @input repositoryName: name of the client database
+    @input xcache: loads on-disk cache
+    @input indexing: indexes SQL tables
+    @output: database class instance
+    NOTE: DO NOT USE THIS DIRECTLY, BUT USE EquoInterface.openRepositoryDatabase
+    '''
+    def loadRepositoryDatabase(self, repositoryName, xcache = True, indexing = True):
+        dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
+        if not os.path.isfile(dbfile):
+            self.fetch_repository_if_not_available(repositoryName)
+        conn = self.databaseTools.etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = etpConst['dbnamerepoprefix']+repositoryName, xcache = xcache, indexing = indexing)
+        # initialize CONFIG_PROTECT
+        if (etpRepositories[repositoryName]['configprotect'] == None) or \
+            (etpRepositories[repositoryName]['configprotectmask'] == None):
+
+            etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
+            etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectDirectories(mask = True)
+            etpRepositories[repositoryName]['configprotect'] = [etpConst['systemroot']+x for x in etpRepositories[repositoryName]['configprotect']]
+            etpRepositories[repositoryName]['configprotectmask'] = [etpConst['systemroot']+x for x in etpRepositories[repositoryName]['configprotectmask']]
+
+            etpRepositories[repositoryName]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotect']]
+            etpRepositories[repositoryName]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotectmask']]
+        if not etpConst['treeupdatescalled'] and (etpConst['uid'] == 0):
+            conn.clientUpdatePackagesData()
+        return conn
 
     def openGenericDatabase(self, dbfile, dbname = None, xcache = None, readOnly = False):
         if xcache == None:
@@ -148,7 +173,7 @@ class EquoInterface(TextInterface):
     def do_configcache(self):
         self.updateProgress(darkred("Configuration files"), importance = 2, type = "warning")
         self.updateProgress(red("Scanning hard disk"), importance = 1, type = "warning")
-        self.confTools.scanfs(dcache = False)
+        self.FileUpdates.scanfs(dcache = False)
         self.updateProgress(darkred("Cache generation complete."), importance = 2, type = "info")
 
     def do_depcache(self):
@@ -279,6 +304,203 @@ class EquoInterface(TextInterface):
        Cache stuff :: end
     '''
 
+    def dependencies_test(self, dbconn = None):
+
+        if dbconn == None:
+            dbconn = self.clientDbconn
+        # get all the installed packages
+        installedPackages = dbconn.listAllIdpackages()
+
+        depsNotSatisfied = {}
+        # now look
+        length = str((len(installedPackages)))
+        count = 0
+        for xidpackage in installedPackages:
+            count += 1
+            atom = dbconn.retrieveAtom(xidpackage)
+            self.updateProgress(
+                                    darkgreen(" Checking ")+bold(atom),
+                                    importance = 0,
+                                    type = "info",
+                                    back = True,
+                                    count = (count,length),
+                                    header = darkred(" @@ ")
+                                )
+
+            xdeps = dbconn.retrieveDependenciesList(xidpackage)
+            needed_deps = set()
+            for xdep in xdeps:
+                if xdep[0] == "!": # filter conflicts
+                    continue
+                xmatch = dbconn.atomMatch(xdep)
+                if xmatch[0] == -1:
+                    needed_deps.add(xdep)
+
+            if needed_deps:
+                depsNotSatisfied[xidpackage] = set()
+                depsNotSatisfied[xidpackage].update(needed_deps)
+
+        depsNotMatched = set()
+        if (depsNotSatisfied):
+            for xidpackage in depsNotSatisfied:
+                for dep in depsNotSatisfied[xidpackage]:
+                    match = dbconn.atomMatch(dep)
+                    if match[0] == -1: # ????
+                        depsNotMatched.add(dep)
+                        continue
+
+        return depsNotMatched
+
+    def libraries_test(self, dbconn = None, reagent = False):
+
+        if dbconn == None:
+            dbconn = self.clientDbconn
+
+        self.updateProgress(
+                                blue("Dependencies test"),
+                                importance = 2,
+                                type = "info",
+                                header = red(" @@ ")
+                            )
+
+        if not etpConst['systemroot']:
+            myroot = "/"
+        else:
+            myroot = etpConst['systemroot']+"/"
+        # run ldconfig first
+        os.system("ldconfig -r "+myroot+" &> /dev/null")
+        # open /etc/ld.so.conf
+        if not os.path.isfile(etpConst['systemroot']+"/etc/ld.so.conf"):
+            self.updateProgress(
+                                    blue("Cannot find ")+red(etpConst['systemroot']+"/etc/ld.so.conf"),
+                                    importance = 1,
+                                    type = "error",
+                                    header = red(" @@ ")
+                                )
+            return (),(),-1
+
+        ldpaths = self.entropyTools.collectLinkerPaths()
+
+        executables = set()
+        total = len(ldpaths)
+        count = 0
+        for ldpath in ldpaths:
+            count += 1
+            self.updateProgress(
+                                    blue("Tree: ")+red(etpConst['systemroot']+ldpath),
+                                    importance = 0,
+                                    type = "info",
+                                    count = (count,total),
+                                    back = True,
+                                    percent = True,
+                                    header = "  "
+                                )
+            ldpath = ldpath.encode(sys.getfilesystemencoding())
+            for currentdir,subdirs,files in os.walk(etpConst['systemroot']+ldpath):
+                for item in files:
+                    filepath = currentdir+"/"+item
+                    if os.access(filepath,os.X_OK):
+                        executables.add(filepath[len(etpConst['systemroot']):])
+
+        self.updateProgress(
+                                blue("Collecting broken executables"),
+                                importance = 2,
+                                type = "info",
+                                header = red(" @@ ")
+                            )
+        self.updateProgress(
+                                red("Attention: ")+blue("don't worry about libraries that are shown here but not later."),
+                                importance = 1,
+                                type = "info",
+                                header = red(" @@ ")
+                            )
+
+        brokenlibs = set()
+        brokenexecs = {}
+        total = len(executables)
+        count = 0
+        for executable in executables:
+            count += 1
+            self.updateProgress(
+                                    red(etpConst['systemroot']+executable),
+                                    importance = 0,
+                                    type = "info",
+                                    count = (count,total),
+                                    back = True,
+                                    percent = True,
+                                    header = "  "
+                                )
+            if not etpConst['systemroot']:
+                stdin, stdouterr = os.popen4("ldd "+executable)
+            else:
+                if not os.access(etpConst['systemroot']+"/bin/sh",os.X_OK):
+                    raise exceptionTools.FileNotFound("FileNotFound: /bin/sh not found.")
+                stdin, stdouterr = os.popen4("echo 'ldd "+executable+"' | chroot "+etpConst['systemroot'])
+            output = stdouterr.readlines()
+            if '\n'.join(output).find("not found") != -1:
+                # investigate
+                mylibs = set()
+                for row in output:
+                    if row.find("not found") != -1:
+                        try:
+                            row = row.strip().split("=>")[0].strip()
+                            mylibs.add(row)
+                        except:
+                            continue
+                if mylibs:
+                    alllibs = blue(' :: ').join(list(mylibs))
+                    self.updateProgress(
+                                            red(etpConst['systemroot']+executable)+" [ "+alllibs+" ]",
+                                            importance = 1,
+                                            type = "info",
+                                            percent = True,
+                                            count = (count,total),
+                                            header = "  "
+                                        )
+                brokenlibs.update(mylibs)
+                brokenexecs[executable] = mylibs.copy()
+        del executables
+
+        self.updateProgress(
+                                blue("Trying to match packages"),
+                                importance = 1,
+                                type = "info",
+                                header = red(" @@ ")
+                            )
+
+
+        packagesMatched = set()
+        # now search packages that contain the found libs
+        orderedRepos = list(etpRepositoriesOrder)
+        orderedRepos.sort()
+
+        # match libraries
+        for repodata in orderedRepos:
+            self.updateProgress(
+                                    blue("Repository: ")+darkgreen(etpRepositories[repodata[1]]['description'])+" ["+red(repodata[1])+"]",
+                                    importance = 1,
+                                    type = "info",
+                                    header = red(" @@ ")
+                                )
+            if reagent:
+                rdbconn = dbconn
+            else:
+                rdbconn = self.openRepositoryDatabase(repodata[1])
+            libsfound = set()
+            for lib in brokenlibs:
+                packages = rdbconn.searchBelongs(file = "%"+lib, like = True, branch = etpConst['branch'])
+                if packages:
+                    for idpackage in packages:
+                        # retrieve content and really look if library is in ldpath
+                        mycontent = rdbconn.retrieveContent(idpackage)
+                        matching_libs = [x for x in mycontent if x.endswith(lib) and (os.path.dirname(x) in ldpaths)]
+                        libsfound.add(lib)
+                        if matching_libs:
+                            packagesMatched.add((idpackage,repodata[1],lib))
+            brokenlibs.difference_update(libsfound)
+
+        return packagesMatched,brokenlibs,0
+
     # tell if a new equo release is available, returns True or False
     def check_equo_updates(self):
         found = False
@@ -292,6 +514,49 @@ class EquoInterface(TextInterface):
             del matches
             del equo_unsatisfied
         return found
+
+    # @returns -1 if the file does not exist or contains bad data
+    # @returns int>0 if the file exists
+    def get_repository_revision(self, reponame):
+        if os.path.isfile(etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']):
+            f = open(etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'],"r")
+            try:
+                revision = int(f.readline().strip())
+            except:
+                revision = -1
+            f.close()
+        else:
+            revision = -1
+        return revision
+
+    # @returns -1 if the file does not exist
+    # @returns int>0 if the file exists
+    def get_repository_db_file_checksum(self, reponame):
+        if os.path.isfile(etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasehashfile']):
+            f = open(etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
+            try:
+                mhash = f.readline().strip().split()[0]
+            except:
+                mhash = "-1"
+            f.close()
+        else:
+            mhash = "-1"
+        return mhash
+
+    def fetch_repository_if_not_available(self, reponame):
+        # open database
+        rc = 0
+        dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
+        if not os.path.isfile(dbfile):
+            # sync
+            repoConn = self.Repositories(reponames = [reponame])
+            rc = repoConn.sync()
+            if rc != 0:
+                raise exceptionTools.RepositoryError("RepositoryError: cannot fetch database for repo id: "+reponame)
+            del repoConn
+        if not os.path.isfile(dbfile):
+            raise exceptionTools.RepositoryError("RepositoryError: cannot fetch database for repo id: "+reponame)
+        return rc
 
     '''
     @description: matches the package that user chose, using dbconnection.atomMatch searching in all available repositories.
@@ -315,7 +580,7 @@ class EquoInterface(TextInterface):
         exitErrors = {}
         for repo in etpRepositories:
             # sync database if not available
-            rc = self.repositoriesTools.fetchRepositoryIfNotAvailable(repo)
+            rc = self.fetch_repository_if_not_available(repo)
             if (rc != 0):
                 exitErrors[repo] = -1
                 continue
@@ -1045,6 +1310,40 @@ class EquoInterface(TextInterface):
         Package interface :: begin
     '''
 
+    # Get checksum of a package by running md5sum remotely (using php helpers)
+    # @returns hex: if the file exists
+    # @returns None: if the server does not support HTTP handlers
+    # @returns None: if the file is not found
+    # mainly used server side
+    def get_remote_package_checksum(self, servername, filename, branch):
+
+        # etpHandlers['md5sum'] is the command
+        # create the request
+        try:
+            url = etpRemoteSupport[servername]
+        except:
+            # not found, does not support HTTP handlers
+            return None
+
+        # does the package has "#" (== tag) ? hackish thing that works
+        filename = filename.replace("#","%23")
+        # "+"
+        filename = filename.replace("+","%2b")
+
+        request = url+etpHandlers['md5sum']+filename+"&branch="+branch
+
+        # now pray the server
+        try:
+            if etpConst['proxy']:
+                proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+                opener = urllib2.build_opener(proxy_support)
+                urllib2.install_opener(opener)
+            item = urllib2.urlopen(request)
+            result = item.readline().strip()
+            return result
+        except: # no HTTP support?
+            return None
+
     '''
     @description: check if Equo has to download the given package
     @input package: filename to check inside the packages directory -> file, checksum of the package -> checksum
@@ -1209,7 +1508,7 @@ class EquoInterface(TextInterface):
 
 
     def Package(self):
-        conn = PackageInterface(EntropyInstance = self)
+        conn = PackageInterface(EquoInstance = self)
         return conn
 
     def instanceTest(self):
@@ -1219,13 +1518,33 @@ class EquoInterface(TextInterface):
         Package interface :: end
     '''
 
+    '''
+        Repository interface :: begin
+    '''
+    def Repositories(self, reponames = [], forceUpdate = False):
+        conn = RepoInterface(EquoInstance = self, reponames = reponames, forceUpdate = forceUpdate)
+        return conn
+    '''
+        Repository interface :: end
+    '''
+    
+    '''
+        Configuration files (updates, not entropy related) interface :: begin
+    '''
+    def __FileUpdates(self):
+        conn = FileUpdatesInterface(EquoInstance = self)
+        return conn
+    '''
+        Configuration files (updates, not entropy related) interface :: end
+    '''
+
 '''
     Real package actions (install/remove) interface
 '''
 class PackageInterface:
 
-    def __init__(self, EntropyInstance):
-        self.Entropy = EntropyInstance
+    def __init__(self, EquoInstance):
+        self.Entropy = EquoInstance
         try:
             self.Entropy.instanceTest()
         except:
@@ -1574,11 +1893,11 @@ class PackageInterface:
     @description: function that runs at the end of the package installation process, just removes data left by other steps
     @output: 0 = all fine, >0 = error!
     '''
-    def __cleanup_package(self):
+    def __cleanup_package(self, data):
         # remove unpack dir
-        shutil.rmtree(self.infoDict['unpackdir'],True)
+        shutil.rmtree(data['unpackdir'],True)
         try:
-            os.rmdir(self.infoDict['unpackdir'])
+            os.rmdir(data['unpackdir'])
         except OSError:
             pass
         return 0
@@ -1808,6 +2127,7 @@ class PackageInterface:
                                             header = red(" *** ")
                                         )
                     self.Entropy.entropyTools.ebeep(10)
+                    import time
                     time.sleep(20)
                     os.remove(rootdir)
 
@@ -1931,6 +2251,7 @@ class PackageInterface:
                                                 header = red(" *** ")
                                             )
                         self.Entropy.entropyTools.ebeep(10)
+                        import time
                         time.sleep(20)
                         try:
                             shutil.rmtree(tofile, True)
@@ -1962,7 +2283,7 @@ class PackageInterface:
 
                 if (protected):
                     # add to disk cache
-                    self.Entropy.confTools.addtocache(tofile)
+                    self.Entropy.FileUpdates.add_to_cache(tofile)
 
         return 0
 
@@ -2069,7 +2390,10 @@ class PackageInterface:
                                         type = "info",
                                         header = red("   ## ")
                                     )
-        self.Entropy.entropyTools.parallelTask(self.__cleanup_package)
+        tdict = {}
+        tdict['unpackdir'] = self.infoDict['unpackdir']
+        task = self.Entropy.entropyTools.parallelTask(self.__cleanup_package, tdict)
+        task.start()
         # we don't care if cleanupPackage fails since it's not critical
         return 0
 
@@ -2244,13 +2568,13 @@ class PackageInterface:
             return rc
 
         # clear garbage
-        gc.collect()
+        self.Entropy.gcTool.collect()
         return rc
 
     '''
        Install/Removal process preparation function
        - will generate all the metadata needed to run the action steps, creating infoDict automatically
-       @input matched_atom(tuple): is what is returned by EntropyInstance.atomMatch:
+       @input matched_atom(tuple): is what is returned by EquoInstance.atomMatch:
             (idpackage,repoid):
             (2000,u'sabayonlinux.org')
             NOTE: in case of remove action, matched_atom must be:
@@ -2426,3 +2750,1030 @@ class PackageInterface:
         # if file exists, first checksum then fetch
         if os.path.isfile(os.path.join(etpConst['entropyworkdir'],self.infoDict['download'])):
             self.infoDict['steps'].reverse()
+
+class FileUpdatesInterface:
+
+    def __init__(self, EquoInstance = None):
+
+        if EquoInstance == None:
+            self.Entropy = TextInterface()
+            import dumpTools
+            self.Entropy.dumpTools = dumpTools
+        else:
+            self.Entropy = EquoInstance
+            try:
+                self.Entropy.instanceTest()
+            except:
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+
+    '''
+    @description: scan for files that need to be merged
+    @output: dictionary using filename as key
+    '''
+    def scanfs(self, dcache = True):
+
+        if (dcache):
+            # can we load cache?
+            try:
+                z = self.load_cache()
+                if z != None:
+                    return z
+            except:
+                pass
+
+        # open client database to fill etpConst['dbconfigprotect']
+        scandata = {}
+        counter = 0
+        for path in etpConst['dbconfigprotect']:
+            # it's a file?
+            scanfile = False
+            if os.path.isfile(path):
+                # find inside basename
+                path = os.path.dirname(path)
+                scanfile = True
+
+            for currentdir,subdirs,files in os.walk(path):
+                for item in files:
+
+                    if (scanfile):
+                        if path != item:
+                            continue
+
+                    filepath = currentdir+"/"+item
+                    if item.startswith("._cfg"):
+
+                        # further check then
+                        number = item[5:9]
+                        try:
+                            int(number)
+                        except:
+                            continue # not a valid etc-update file
+                        if item[9] != "_": # no valid format provided
+                            continue
+
+                        mydict = self.generate_dict(filepath)
+                        if mydict['automerge']:
+                            self.updateProgress(
+                                                    darkred("Automerging file: %s") % ( darkgreen(etpConst['systemroot']+mydict['source']) ),
+                                                    importance = 0,
+                                                    type = "info"
+                                                )
+                            if os.path.isfile(etpConst['systemroot']+mydict['source']):
+                                try:
+                                    shutil.move(etpConst['systemroot']+mydict['source'],etpConst['systemroot']+mydict['destination'])
+                                except IOError:
+                                    self.updateProgress(
+                                                    darkred("I/O Error :: Cannot automerge file: %s") % ( darkgreen(etpConst['systemroot']+mydict['source']) ),
+                                                    importance = 1,
+                                                    type = "warning"
+                                                )
+                            continue
+                        else:
+                            counter += 1
+                            scandata[counter] = mydict.copy()
+
+                        try:
+                            self.updateProgress(
+                                            "("+blue(str(counter))+") "+red(" file: ")+os.path.dirname(filepath)+"/"+os.path.basename(filepath)[10:],
+                                            importance = 1,
+                                            type = "info"
+                                        )
+                        except:
+                            pass # possible encoding issues
+        # store data
+        try:
+            self.Entropy.dumpTools.dumpobj(etpCache['configfiles'],scandata)
+        except:
+            pass
+        return scandata
+
+    def load_cache(self):
+        try:
+            sd = self.Entropy.dumpTools.loadobj(etpCache['configfiles'])
+            # check for corruption?
+            if isinstance(sd, dict):
+                # quick test if data is reliable
+                try:
+                    taint = False
+                    for x in sd:
+                        if not os.path.isfile(etpConst['systemroot']+sd[x]['source']):
+                            taint = True
+                            break
+                    if (not taint):
+                        return sd
+                    else:
+                        raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
+                except:
+                    raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
+            else:
+                raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
+        except:
+            raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
+
+    '''
+    @description: prints information about config files that should be updated
+    @attention: please be sure that filepath is properly formatted before using this function
+    '''
+    def add_to_cache(self, filepath):
+        try:
+            scandata = self.load_cache()
+        except:
+            scandata = self.scanfs(dcache = False)
+        keys = scandata.keys()
+        try:
+            for key in keys:
+                if scandata[key]['source'] == filepath[len(etpConst['systemroot']):]:
+                    del scandata[key]
+        except:
+            pass
+        # get next counter
+        if keys:
+            keys.sort()
+            index = keys[-1]
+        else:
+            index = 0
+        index += 1
+        mydata = self.generate_dict(filepath)
+        scandata[index] = mydata.copy()
+        try:
+            self.Entropy.dumpTools.dumpobj(etpCache['configfiles'],scandata)
+        except:
+            pass
+
+    def remove_from_cache(self, sd, key):
+        try:
+            del sd[key]
+        except:
+            pass
+        self.Entropy.dumpTools.dumpobj(etpCache['configfiles'],sd)
+        return sd
+
+    def generate_dict(self, filepath):
+
+        item = os.path.basename(filepath)
+        currentdir = os.path.dirname(filepath)
+        tofile = item[10:]
+        number = item[5:9]
+        try:
+            int(number)
+        except:
+            raise exceptionTools.InvalidDataType("InvalidDataType: invalid config file number '0000->9999'.")
+        tofilepath = currentdir+"/"+tofile
+        mydict = {}
+        mydict['revision'] = number
+        mydict['destination'] = tofilepath[len(etpConst['systemroot']):]
+        mydict['source'] = filepath[len(etpConst['systemroot']):]
+        mydict['automerge'] = False
+        if not os.path.isfile(tofilepath):
+            mydict['automerge'] = True
+        if (not mydict['automerge']):
+            # is it trivial?
+            try:
+                if not os.path.lexists(filepath): # if file does not even exist
+                    return mydict
+                if os.path.islink(filepath):
+                    # if it's broken, skip diff and automerge
+                    if not os.path.exists(filepath):
+                        return mydict
+                result = commands.getoutput('diff -Nua '+filepath+' '+tofilepath+' | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'')
+                if not result:
+                    mydict['automerge'] = True
+            except:
+                pass
+            # another test
+            if (not mydict['automerge']):
+                try:
+                    if not os.path.lexists(filepath): # if file does not even exist
+                        return mydict
+                    if os.path.islink(filepath):
+                        # if it's broken, skip diff and automerge
+                        if not os.path.exists(filepath):
+                            return mydict
+                    result = os.system('diff -Bbua '+filepath+' '+tofilepath+' | egrep \'^[+-]\' | egrep -v \'^[+-][\t ]*#|^--- |^\+\+\+ \' | egrep -qv \'^[-+][\t ]*$\'')
+                    if result == 1:
+                        mydict['automerge'] = True
+                except:
+                    pass
+        return mydict
+
+#
+# repository control class, that's it
+#
+class RepoInterface:
+
+    def __init__(self, EquoInstance, reponames = [], forceUpdate = False):
+
+        self.Entropy = EquoInstance
+        try:
+            self.Entropy.instanceTest()
+        except:
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+
+        self.reponames = reponames
+        self.forceUpdate = forceUpdate
+        self.syncErrors = False
+        self.dbupdated = False
+
+        # check if I am root
+        if (not self.Entropy.entropyTools.isRoot()):
+            raise exceptionTools.PermissionDenied("PermissionDenied: not allowed as user.")
+
+        # check etpRepositories
+        if not etpRepositories:
+            raise exceptionTools.MissingParameter("MissingParameter: no repositories specified in %s" % (etpConst['repositoriesconf'],))
+
+        # Test network connectivity
+        conntest = self.Entropy.entropyTools.get_remote_data("http://svn.sabayonlinux.org")
+        if not conntest:
+            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: you are not connected to the Internet. You should.")
+
+        if not self.reponames:
+            for x in etpRepositories:
+                self.reponames.append(x)
+
+    def __validate_repository_id(self, repoid):
+        if repoid not in self.reponames:
+            raise exceptionTools.InvalidData("InvalidData: repository is not listed in self.reponames")
+
+    def __validate_compression_method(self, repo):
+
+        self.__validate_repository_id(repo)
+
+        cmethod = etpConst['etpdatabasecompressclasses'].get(etpRepositories[repo]['dbcformat'])
+        if cmethod == None:
+            raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
+        return cmethod
+
+    def __ensure_repository_path(self, repo):
+
+        self.__validate_repository_id(repo)
+
+	# create dir if it doesn't exist
+	if not os.path.isdir(etpRepositories[repo]['dbpath']):
+	    os.makedirs(etpRepositories[repo]['dbpath'])
+
+    def __construct_paths(self, item, repo, cmethod):
+
+        if item not in ("db","rev","ck", "lock"):
+            raise exceptionTools.InvalidData("InvalidData: supported db, rev, ck, lock")
+
+        if item == "db":
+            if cmethod == None:
+                raise exceptionTools.InvalidData("InvalidData: for db, cmethod can't be None")
+            url = etpRepositories[repo]['database'] +   "/" + etpConst[cmethod[2]]
+            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst[cmethod[2]]
+        elif item == "rev":
+            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaserevisionfile']
+            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabaserevisionfile']
+        elif item == "ck":
+            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasehashfile']
+            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasehashfile']
+        elif item == "lock":
+            url = etpRepositories[repo]['database']+"/"+etpConst['etpdatabasedownloadlockfile']
+            filepath = "/dev/null"
+
+        return url, filepath
+
+    def __remove_repository_files(self, repo, dbfilenameid):
+
+        self.__validate_repository_id(repo)
+
+        if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile']):
+            os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'])
+        if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst[dbfilenameid]):
+            os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[dbfilenameid])
+        if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']):
+            os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'])
+
+    def __unpack_downloaded_database(self, repo, cmethod):
+
+        self.__validate_repository_id(repo)
+
+        path = eval("self.Entropy.entropyTools."+cmethod[1])(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
+        return path
+
+    def __verify_database_checksum(self, repo):
+
+        self.__validate_repository_id(repo)
+
+        try:
+            f = open(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
+            md5hash = f.readline().strip()
+            md5hash = md5hash.split()[0]
+            f.close()
+        except:
+            return -1
+        rc = self.Entropy.entropyTools.compareMd5(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile'],md5hash)
+        return rc
+
+    # @returns -1 if the file is not available
+    # @returns int>0 if the revision has been retrieved
+    def get_online_repository_revision(self, repo):
+
+        self.__validate_repository_id(repo)
+
+        url = etpRepositories[repo]['database']+"/"+etpConst['etpdatabaserevisionfile']
+        status = self.Entropy.entropyTools.get_remote_data(url)
+        if (status):
+            status = status[0].strip()
+            return int(status)
+        else:
+            return -1
+
+    def is_repository_updatable(self, repo):
+
+        self.__validate_repository_id(repo)
+
+        onlinestatus = self.get_online_repository_revision(repo)
+        if (onlinestatus != -1):
+            localstatus = self.Entropy.get_repository_revision(repo)
+            if (localstatus == onlinestatus) and (not self.forceUpdate):
+                return False
+        return True
+
+    def is_repository_unlocked(self, repo):
+
+        self.__validate_repository_id(repo)
+
+        rc = self.download_item("lock", repo)
+        if rc: # cannot download database
+            self.syncErrors = True
+            return False
+        return True
+
+    def clear_repository_cache(self, repo):
+        self.__validate_repository_id(repo)
+        self.Entropy.dumpTools.dumpobj(etpCache['dbInfo']+repo,{})
+
+    # this function can be reimplemented
+    def download_item(self, item, repo, cmethod = None):
+
+        self.__validate_repository_id(repo)
+        url, filepath = self.__construct_paths(item, repo, cmethod)
+
+        fetchConn = self.Entropy.urlFetcher(url, filepath)
+        fetchConn.progress = self.Entropy.progress
+	rc = fetchConn.download()
+        del fetchConn
+        if rc in ("-1","-2","-3"):
+            return False
+        return True
+
+    def close_transactions(self):
+
+        if not self.dbupdated:
+            return
+
+        # safely clean ram caches
+        atomMatchCache.clear()
+        self.Entropy.dumpTools.dumpobj(etpCache['atomMatch'],{})
+        generateDependsTreeCache.clear()
+        self.Entropy.dumpTools.dumpobj(etpCache['generateDependsTree'],{})
+        for dbinfo in dbCacheStore:
+            dbCacheStore[dbinfo].clear()
+            self.Entropy.dumpTools.dumpobj(dbinfo,{})
+
+        # clean resume caches
+        self.Entropy.dumpTools.dumpobj(etpCache['install'],{})
+        self.Entropy.dumpTools.dumpobj(etpCache['world'],{})
+        self.Entropy.dumpTools.dumpobj(etpCache['remove'],[])
+
+    def sync(self):
+
+        # let's dance!
+        print_info(darkred(" @@ ")+darkgreen("Repositories syncronization..."))
+
+        repocount = 0
+        repolength = len(self.reponames)
+        for repo in self.reponames:
+
+            repocount += 1
+
+            self.Entropy.updateProgress(    bold("%s") % ( etpRepositories[repo]['description'] ),
+                                            importance = 2,
+                                            type = "info",
+                                            count = (repocount, repolength),
+                                            header = blue("  # ")
+                               )
+            self.Entropy.updateProgress(    red("Database URL:") + darkgreen(etpRepositories[repo]['database']),
+                                            importance = 1,
+                                            type = "info",
+                                            header = blue("  # ")
+                               )
+            self.Entropy.updateProgress(    red("Database local path: ") + darkgreen(etpRepositories[repo]['dbpath']),
+                                            importance = 0,
+                                            type = "info",
+                                            header = "\t"
+                               )
+
+            # check if database is already updated to the latest revision
+            update = self.is_repository_updatable(repo)
+            if not update:
+                self.Entropy.updateProgress(    bold("Attention: ") + red("database is already up to date."),
+                                                importance = 1,
+                                                type = "info",
+                                                header = "\t"
+                                )
+                self.cycleDone()
+                continue
+
+            # get database lock
+            unlocked = self.is_repository_unlocked(repo)
+            if not unlocked:
+                self.Entropy.updateProgress(    bold("Attention: ") + red("repository is being updated. Try again in a few minutes."),
+                                                importance = 1,
+                                                type = "warning",
+                                                header = "\t"
+                                )
+                self.cycleDone()
+                continue
+
+            # database is going to be updated
+            self.dbupdated = True
+            # clear database interface cache belonging to this repository
+            self.clear_repository_cache(repo)
+            cmethod = self.__validate_compression_method(repo)
+            self.__ensure_repository_path(repo)
+
+            # starting to download
+            self.Entropy.updateProgress(    red("Downloading database ") + darkgreen(etpConst[cmethod[2]])+red(" ..."),
+                                            importance = 1,
+                                            type = "info",
+                                            header = "\t"
+                            )
+
+            down_status = self.download_item("db", repo, cmethod)
+            if not down_status:
+                self.Entropy.updateProgress(    bold("Attention: ") + red("database does not exist online."),
+                                                importance = 1,
+                                                type = "warning",
+                                                header = "\t"
+                                )
+                self.cycleDone()
+                continue
+
+            # unpack database
+            self.Entropy.updateProgress(    red("Unpacking database to ") + darkgreen(etpConst['etpdatabasefile'])+red(" ..."),
+                                            importance = 0,
+                                            type = "info",
+                                            header = "\t"
+                            )
+            # unpack database
+            self.__unpack_downloaded_database(repo, cmethod)
+
+            # download checksum
+            self.Entropy.updateProgress(    red("Downloading checksum ") + darkgreen(etpConst['etpdatabasehashfile'])+red(" ..."),
+                                            importance = 0,
+                                            type = "info",
+                                            header = "\t"
+                            )
+            down_status = self.download_item("ck", repo)
+            if not down_status:
+                self.Entropy.updateProgress(    red("Cannot fetch checksum. Cannot verify database integrity !"),
+                                                importance = 1,
+                                                type = "warning",
+                                                header = "\t"
+                                )
+            else:
+                # verify checksum
+                self.Entropy.updateProgress(    red("Checking downloaded database ") + darkgreen(etpConst['etpdatabasefile'])+red(" ..."),
+                                                importance = 0,
+                                                back = True,
+                                                type = "info",
+                                                header = "\t"
+                                )
+                db_status = self.__verify_database_checksum(repo)
+                if db_status == -1:
+                    self.Entropy.updateProgress(    red("Cannot open digest. Cannot verify database integrity !"),
+                                                    importance = 1,
+                                                    type = "warning",
+                                                    header = "\t"
+                                    )
+                elif db_status:
+                    self.Entropy.updateProgress(    red("Downloaded database status: ")+bold("OK"),
+                                                    importance = 1,
+                                                    type = "info",
+                                                    header = "\t"
+                                    )
+                else:
+                    self.Entropy.updateProgress(    red("Downloaded database status: ")+darkred("ERROR"),
+                                                    importance = 1,
+                                                    type = "error",
+                                                    header = "\t"
+                                    )
+                    self.Entropy.updateProgress(    red("An error occured while checking database integrity. Giving up."),
+                                                    importance = 1,
+                                                    type = "error",
+                                                    header = "\t"
+                                    )
+                    # delete all
+                    self.__remove_repository_files(repo, cmethod[2])
+                    self.syncErrors = True
+                    self.cycleDone()
+                    continue
+
+            # download revision
+            self.Entropy.updateProgress(    red("Downloading revision ")+darkgreen(etpConst['etpdatabaserevisionfile'])+red(" ..."),
+                                            importance = 0,
+                                            type = "info",
+                                            header = "\t"
+                            )
+            rev_status = self.download_item("rev", repo)
+            if not rev_status:
+                self.Entropy.updateProgress(    red("Cannot download repository revision, don't ask me why !"),
+                                                importance = 1,
+                                                type = "warning",
+                                                header = "\t"
+                                )
+            else:
+                self.Entropy.updateProgress(    red("Updated repository revision: ")+bold(str(self.Entropy.get_repository_revision(repo))),
+                                                importance = 1,
+                                                type = "info",
+                                                header = "\t"
+                                )
+
+            self.cycleDone()
+
+        self.close_transactions()
+
+        # clean caches
+        if self.dbupdated:
+            self.Entropy.generate_cache(depcache = True, configcache = False)
+
+        if self.syncErrors:
+            self.Entropy.updateProgress(    red("Something bad happened. Please have a look."),
+                                            importance = 1,
+                                            type = "warning",
+                                            header = darkred(" @@ ")
+                            )
+            return 128
+
+        rc = False
+        try:
+            rc = self.Entropy.check_equo_updates()
+        except:
+            pass
+
+        if rc:
+            self.Entropy.updateProgress(    blue("A new ")+bold("Equo")+blue(" release is available. Please ")+bold("install it")+blue(" before any other package."),
+                                            importance = 1,
+                                            type = "info",
+                                            header = darkred(" !! ")
+                            )
+
+        return 0
+
+'''
+   Entropy FTP interface
+'''
+class FtpInterface:
+
+    # this must be run before calling the other functions
+    def __init__(self, ftpuri, EntropyInterface):
+
+        self.Entropy = EntropyInterface
+        try:
+            self.Entropy.outputInstanceTest()
+        except:
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid TextInterface based Instance is needed")
+
+        import entropyTools
+        self.entropyTools = entropyTools
+        import socket
+        self.socket = socket
+        import ftplib
+        self.ftplib = ftplib
+
+        # import FTP modules
+        self.socket.setdefaulttimeout(60)
+
+        self.ftpuri = ftpuri
+        self.ftphost = self.entropyTools.extractFTPHostFromUri(self.ftpuri)
+
+        self.ftpuser = ftpuri.split("ftp://")[len(ftpuri.split("ftp://"))-1].split(":")[0]
+        if (self.ftpuser == ""):
+            self.ftpuser = "anonymous@"
+            self.ftppassword = "anonymous"
+        else:
+            self.ftppassword = ftpuri.split("@")[:len(ftpuri.split("@"))-1]
+            if len(self.ftppassword) > 1:
+                self.ftppassword = '@'.join(self.ftppassword)
+                self.ftppassword = self.ftppassword.split(":")[len(self.ftppassword.split(":"))-1]
+                if (self.ftppassword == ""):
+                    self.ftppassword = "anonymous"
+            else:
+                self.ftppassword = self.ftppassword[0]
+                self.ftppassword = self.ftppassword.split(":")[len(self.ftppassword.split(":"))-1]
+                if (self.ftppassword == ""):
+                    self.ftppassword = "anonymous"
+
+        self.ftpport = ftpuri.split(":")[len(ftpuri.split(":"))-1]
+        try:
+            self.ftpport = int(self.ftpport)
+        except:
+            self.ftpport = 21
+
+        self.ftpdir = ftpuri.split("ftp://")[len(ftpuri.split("ftp://"))-1]
+        self.ftpdir = self.ftpdir.split("/")[len(self.ftpdir.split("/"))-1]
+        self.ftpdir = self.ftpdir.split(":")[0]
+        if self.ftpdir.endswith("/"):
+            self.ftpdir = self.ftpdir[:len(self.ftpdir)-1]
+        if self.ftpdir == "":
+            self.ftpdir = "/"
+
+        count = 10
+        while 1:
+            count -= 1
+            try:
+                self.ftpconn = self.ftplib.FTP(self.ftphost)
+                break
+            except:
+                if not count:
+                    raise
+                continue
+
+        self.ftpconn.login(self.ftpuser,self.ftppassword)
+        # change to our dir
+        self.ftpconn.cwd(self.ftpdir)
+        self.currentdir = self.ftpdir
+
+    # this can be used in case of exceptions
+    def reconnectHost(self):
+        # import FTP modules
+        self.socket.setdefaulttimeout(60)
+        counter = 10
+        while 1:
+            counter -= 1
+            try:
+                self.ftpconn = self.ftplib.FTP(self.ftphost)
+                break
+            except:
+                if not counter:
+                    raise
+                continue
+        self.ftpconn.login(self.ftpuser,self.ftppassword)
+        # save curr dir
+        #cur = self.currentdir
+        #self.setCWD(self.ftpdir)
+        self.setCWD(self.currentdir)
+
+    def getHost(self):
+        return self.ftphost
+
+    def getPort(self):
+        return self.ftpport
+
+    def getDir(self):
+        return self.ftpdir
+
+    def getCWD(self):
+        pwd = self.ftpconn.pwd()
+        return pwd
+
+    def setCWD(self,dir):
+        self.ftpconn.cwd(dir)
+        self.currentdir = self.getCWD()
+
+    def setPASV(self,bool):
+        self.ftpconn.set_pasv(bool)
+
+    def setChmod(self,chmodvalue,file):
+        return self.ftpconn.voidcmd("SITE CHMOD "+str(chmodvalue)+" "+str(file))
+
+    def getFileMtime(self,path):
+        rc = self.ftpconn.sendcmd("mdtm "+path)
+        return rc.split()[len(rc.split())-1]
+
+    def spawnCommand(self,cmd):
+        return self.ftpconn.sendcmd(cmd)
+
+    # list files and directory of a FTP
+    # @returns a list
+    def listDir(self):
+        # directory is: self.ftpdir
+        try:
+            rc = self.ftpconn.nlst()
+            _rc = []
+            for i in rc:
+                _rc.append(i.split("/")[len(i.split("/"))-1])
+            rc = _rc
+        except:
+            return []
+        return rc
+
+    # list if the file is available
+    # @returns True or False
+    def isFileAvailable(self,filename):
+        # directory is: self.ftpdir
+        try:
+            rc = self.ftpconn.nlst()
+            _rc = []
+            for i in rc:
+                _rc.append(i.split("/")[len(i.split("/"))-1])
+            rc = _rc
+            for i in rc:
+                if i == filename:
+                    return True
+            return False
+        except:
+            return False
+
+    def deleteFile(self,file):
+        try:
+            rc = self.ftpconn.delete(file)
+            if rc.startswith("250"):
+                return True
+            else:
+                return False
+        except:
+            return False
+
+    def mkdir(self,directory):
+        # FIXME: add rc
+        self.ftpconn.mkd(directory)
+
+    # this function also supports callback, because storbinary doesn't
+    def advancedStorBinary(self, cmd, fp, callback=None):
+        ''' Store a file in binary mode. Our version supports a callback function'''
+        self.ftpconn.voidcmd('TYPE I')
+        conn = self.ftpconn.transfercmd(cmd)
+        while 1:
+            buf = fp.readline()
+            if not buf: break
+            conn.sendall(buf)
+            if callback: callback(buf)
+        conn.close()
+
+        # that's another workaround
+        #return "226"
+        try:
+            rc = self.ftpconn.voidresp()
+        except:
+            self.reconnectHost()
+            return "226"
+        return rc
+
+    def uploadFile(self,file,ascii = False):
+
+        def uploadFileAndUpdateProgress(buf):
+            # get the buffer size
+            self.mykByteCount += float(len(buf))/1024
+            # create percentage
+            myUploadPercentage = round((round(self.mykByteCount,1)/self.myFileSize)*100,1)
+            myUploadSize = round(self.mykByteCount,1)
+            if (myUploadPercentage < 100.1) and (myUploadSize <= self.myFileSize):
+                myUploadPercentage = str(myUploadPercentage)+"%"
+
+                # create text
+                currentText = brown("    <-> Upload status: ")+green(str(myUploadSize))+"/"+red(str(self.myFileSize))+" kB "+yellow("[")+str(myUploadPercentage)+yellow("]")
+                self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True)
+                # print !
+                print_info(currentText,back = True)
+
+        for i in range(10): # ten tries
+            filename = file.split("/")[len(file.split("/"))-1]
+            try:
+                f = open(file,"r")
+                # get file size
+                self.myFileSize = round(float(os.stat(file)[6])/1024,1)
+                self.mykByteCount = 0
+
+                if self.isFileAvailable(filename+".tmp"):
+                    self.deleteFile(filename+".tmp")
+
+                if (ascii):
+                    rc = self.ftpconn.storlines("STOR "+filename+".tmp",f)
+                else:
+                    rc = self.advancedStorBinary("STOR "+filename+".tmp", f, callback = uploadFileAndUpdateProgress )
+
+                # now we can rename the file with its original name
+                self.renameFile(filename+".tmp",filename)
+                f.close()
+
+                if rc.find("226") != -1: # upload complete
+                    return True
+                else:
+                    return False
+
+            except Exception, e: # connection reset by peer
+                import traceback
+                traceback.print_exc()
+                self.Entropy.updateProgress("", importance = 0, type = "info")
+                self.Entropy.updateProgress(red("Upload issue: %s, retrying... #%s") % (str(e),str(i+1)),
+                                    importance = 1,
+                                    type = "warning",
+                                    header = "  "
+                                   )
+                self.reconnectHost() # reconnect
+                if self.isFileAvailable(filename):
+                    self.deleteFile(filename)
+                if self.isFileAvailable(filename+".tmp"):
+                    self.deleteFile(filename+".tmp")
+                pass
+
+    def downloadFile(self,filepath,downloaddir,ascii = False):
+
+        def downloadFileStoreAndUpdateProgress(buf):
+            # writing file buffer
+            f.write(buf)
+            # update progress
+            self.mykByteCount += float(len(buf))/1024
+            # create text
+            cnt = round(self.mykByteCount,1)
+            currentText = brown("    <-> Download status: ")+green(str(cnt))+"/"+red(str(self.myFileSize))+" kB"
+            # print !
+            self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True, count = (cnt, self.myFileSize), percent = True )
+
+        item = filepath.split("/")[len(filepath.split("/"))-1]
+        # look if the file exist
+        if self.isFileAvailable(item):
+            self.mykByteCount = 0
+            # get the file size
+            self.myFileSize = self.getFileSizeCompat(item)
+            if (self.myFileSize):
+                self.myFileSize = round(float(int(self.myFileSize))/1024,1)
+                if (self.myFileSize == 0):
+                    self.myFileSize = 1
+            else:
+                self.myFileSize = 0
+            if (not ascii):
+                f = open(downloaddir+"/"+item,"wb")
+                rc = self.ftpconn.retrbinary('RETR '+item, downloadFileStoreAndUpdateProgress, 1024)
+            else:
+                f = open(downloaddir+"/"+item,"w")
+                rc = self.ftpconn.retrlines('RETR '+item, f.write)
+            f.flush()
+            f.close()
+            if rc.find("226") != -1: # upload complete
+                return True
+            else:
+                return False
+        else:
+            return None
+
+    # also used to move files
+    def renameFile(self,fromfile,tofile):
+        rc = self.ftpconn.rename(fromfile,tofile)
+        return rc
+
+    # not supported by dreamhost.com
+    def getFileSize(self,file):
+        return self.ftpconn.size(file)
+
+    def getFileSizeCompat(self,file):
+        data = self.getRoughList()
+        for item in data:
+            if item.find(file) != -1:
+                # extact the size
+                return item.split()[4]
+        return ""
+
+    def bufferizer(self,buf):
+        self.FTPbuffer.append(buf)
+
+    def getRoughList(self):
+        self.FTPbuffer = []
+        self.ftpconn.dir(self.bufferizer)
+        return self.FTPbuffer
+
+    def closeConnection(self):
+        self.ftpconn.quit()
+
+
+'''
+   Entropy FTP/HTTP download interface
+'''
+class urlFetcher:
+
+    def __init__(self, url, pathToSave, checksum = True, showSpeed = True):
+
+        self.url = url
+        self.url = self.encodeUrl(self.url)
+        self.pathToSave = pathToSave
+        self.checksum = checksum
+        self.showSpeed = showSpeed
+        self.bufferSize = 8192
+        self.status = None
+        self.remotefile = None
+        self.localfile = None
+        self.downloadedsize = 0
+        self.average = 0
+        self.remotesize = 0
+        # transfer status data
+        self.gather = 0
+        self.datatransfer = 0
+        self.elapsed = etpFileTransfer['elapsed']
+        self.transferpollingtime = etpFileTransfer['transferpollingtime']
+
+        # setup proxy, doing here because config is dynamic
+        if etpConst['proxy']:
+            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+            opener = urllib2.build_opener(proxy_support)
+            urllib2.install_opener(opener)
+        #FIXME else: unset opener??
+
+    def encodeUrl(self, url):
+        url = url.replace("#","%23")
+        return url
+
+    def download(self):
+        if self.showSpeed:
+            self.speedUpdater = entropyTools.TimeScheduled(
+                        self.updateSpeedInfo,
+                        self.transferpollingtime
+            )
+            self.speedUpdater.setName("download::"+self.url+str(random.random())) # set unique ID to thread, hopefully
+            self.speedUpdater.start()
+
+        # set timeout
+        socket.setdefaulttimeout(60)
+
+        # go download slave!
+
+        # handle user stupidity
+        try:
+            self.remotefile = urllib2.urlopen(self.url)
+        except KeyboardInterrupt:
+            self.close()
+            raise
+        except:
+            self.close()
+            self.status = "-3"
+            return self.status
+
+        # get file size if available
+        try:
+            self.remotesize = self.remotefile.headers.get("content-length")
+        except:
+            pass
+
+        if self.remotesize > 0:
+            self.remotesize = float(int(self.remotesize))/1024
+
+        self.localfile = open(self.pathToSave,"w")
+        rsx = "x"
+        while rsx != '':
+            rsx = self.remotefile.read(self.bufferSize)
+            self.commitData(rsx)
+            if self.showSpeed:
+                self.updateProgress()
+        self.localfile.flush()
+        self.localfile.close()
+
+        # kill thread
+        self.close()
+
+        if self.checksum:
+            self.status = entropyTools.md5sum(self.pathToSave)
+            return self.status
+        else:
+            self.status = "-2"
+            return self.status
+
+    def commitData(self, mybuffer):
+        # writing file buffer
+        self.localfile.write(mybuffer)
+        # update progress info
+        self.downloadedsize = self.localfile.tell()
+        kbytecount = float(self.downloadedsize)/1024
+        self.average = int((kbytecount/self.remotesize)*100)
+
+    # reimplemented from TextInterface
+    def updateProgress(self):
+
+        currentText = darkred("    <-> Downloading: ")+darkgreen(str(round(float(self.downloadedsize)/1024,1)))+"/"+red(str(round(self.remotesize,1)))+" kB"
+        # create progress bar
+        barsize = 10
+        bartext = "["
+        curbarsize = 1
+        #print average
+        averagesize = (self.average*barsize)/100
+        #print averagesize
+        for y in range(averagesize):
+            curbarsize += 1
+            bartext += "="
+        bartext += ">"
+        diffbarsize = barsize-curbarsize
+        for y in range(diffbarsize):
+            bartext += " "
+        if (self.showSpeed):
+            self.gather = self.downloadedsize
+            bartext += "] => "+str(entropyTools.bytesIntoHuman(self.datatransfer))+"/sec"
+        else:
+            bartext += "]"
+        average = str(self.average)
+        if len(average) < 2:
+            average = " "+average
+        currentText += "    <->  "+average+"% "+bartext
+        # print !
+        print_info(currentText,back = True)
+
+    def close(self):
+        if self.showSpeed:
+            self.speedUpdater.kill()
+        socket.setdefaulttimeout(2)
+
+    def updateSpeedInfo(self):
+        self.elapsed += self.transferpollingtime
+        # we have the diff size
+        self.datatransfer = self.gather / self.elapsed

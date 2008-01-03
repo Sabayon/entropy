@@ -3,7 +3,7 @@
     # DESCRIPTION:
     # Entropy exceptions class
 
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2007-2008 Fabio Erculiani
     
     structure inspired from portage_exception.py
     Copyright 1998-2004 Gentoo Foundation

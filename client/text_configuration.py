@@ -1,9 +1,10 @@
+
 #!/usr/bin/python
 '''
     # DESCRIPTION:
     # Packages configuration files handling function (etc-update alike)
 
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2007-2008 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,15 +21,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-from commands import getoutput
 import shutil
+import commands
 from entropyConstants import *
-from clientConstants import *
 from outputTools import *
 import exceptionTools
-from equoInterface import EquoInterface
-# FIXME: move all print_* to EquoInterface.updateProgress
-Equo = EquoInterface()
+from entropy import EquoInterface
+Equo = EquoInterface() # client db must be available, it is for a reason!
 
 # test if diff is installed
 difftest = Equo.entropyTools.spawnCommand("diff -v", redirect = "&> /dev/null")
@@ -62,9 +61,9 @@ def configurator(options):
 '''
 def update():
     cache_status = False
-    Text = TextInterface()
     while 1:
-        scandata = scanfs(dcache = cache_status)
+        print_info(yellow(" @@ ")+darkgreen("Scanning filesystem..."))
+        scandata = Equo.FileUpdates.scanfs(dcache = cache_status)
         if (cache_status):
             for x in scandata:
                 print_info("("+blue(str(x))+") "+red(" file: ")+etpConst['systemroot']+scandata[x]['destination'])
@@ -79,7 +78,7 @@ def update():
         try:
             cmd = int(cmd)
         except:
-            print_error("You don't have typed a number.")
+            print_error("Type a number.")
             continue
 
         # actions
@@ -90,11 +89,11 @@ def update():
             # automerge files asking one by one
             for key in keys:
                 if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
-                    scandata = removefromcache(scandata,key)
+                    scandata = Equo.FileUpdates.remove_from_cache(scandata,key)
                     continue
                 print_info(darkred("Configuration file: ")+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
                 if cmd == -3:
-                    rc = Text.askQuestion(">>   Overwrite ?")
+                    rc = Equo.askQuestion(">>   Overwrite ?")
                     if rc == "No":
                         continue
                 print_info(darkred("Moving ")+darkgreen(etpConst['systemroot']+scandata[key]['source'])+darkred(" to ")+brown(etpConst['systemroot']+scandata[key]['destination']))
@@ -113,18 +112,18 @@ def update():
 
                 shutil.move(etpConst['systemroot']+scandata[key]['source'],etpConst['systemroot']+scandata[key]['destination'])
                 # remove from cache
-                scandata = removefromcache(scandata,key)
+                scandata = Equo.FileUpdates.remove_from_cache(scandata,key)
             break
 
         elif cmd in (-7,-9):
             for key in keys:
 
                 if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
-                    scandata = removefromcache(scandata,key)
+                    scandata = Equo.FileUpdates.remove_from_cache(scandata,key)
                     continue
                 print_info(darkred("Configuration file: ")+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
                 if cmd == -7:
-                    rc = Text.askQuestion(">>   Discard ?")
+                    rc = Equo.askQuestion(">>   Discard ?")
                     if rc == "No":
                         continue
                 print_info(darkred("Discarding ")+darkgreen(etpConst['systemroot']+scandata[key]['source']))
@@ -132,7 +131,7 @@ def update():
                     os.remove(etpConst['systemroot']+scandata[key]['source'])
                 except:
                     pass
-                scandata = removefromcache(scandata,key)
+                scandata = Equo.FileUpdates.remove_from_cache(scandata,key)
 
             break
 
@@ -141,12 +140,12 @@ def update():
 
                 # do files exist?
                 if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['source']):
-                    scandata = removefromcache(scandata,key)
+                    scandata = Equo.FileUpdates.remove_from_cache(scandata,key)
                     continue
                 if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['destination']):
                     print_info(darkred("Automerging file: ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
                     shutil.move(etpConst['systemroot']+scandata[key]['source'],etpConst['systemroot']+scandata[key]['destination'])
-                    scandata = removefromcache(scandata,key)
+                    scandata = Equo.FileUpdates.remove_from_cache(scandata,key)
                     continue
                 # end check
 
@@ -154,7 +153,7 @@ def update():
                 if (not diff):
                     print_info(darkred("Automerging file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
                     shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
-                    scandata = removefromcache(scandata,key)
+                    scandata = Equo.FileUpdates.remove_from_cache(scandata,key)
                     continue
                 print_info(darkred("Selected file: ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 
@@ -187,7 +186,7 @@ def update():
                                 pass
 
                         shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
-                        scandata = removefromcache(scandata,cmd)
+                        scandata = Equo.FileUpdates.remove_from_cache(scandata,cmd)
                         comeback = True
                         break
 
@@ -197,7 +196,7 @@ def update():
                             os.remove(etpConst['systemroot']+scandata[cmd]['source'])
                         except:
                             pass
-                        scandata = removefromcache(scandata,cmd)
+                        scandata = Equo.FileUpdates.remove_from_cache(scandata,cmd)
                         comeback = True
                         break
 
@@ -224,7 +223,7 @@ def update():
                         if (not diff):
                             print_info(darkred("Automerging file ")+darkgreen(scandata[cmd]['source']))
                             shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
-                            scandata = removefromcache(scandata, cmd)
+                            scandata = Equo.FileUpdates.remove_from_cache(scandata, cmd)
                             comeback = True
                             break
 
@@ -274,7 +273,7 @@ def selaction():
 def showdiff(fromfile,tofile):
     # run diff
     diffcmd = "diff -Nu "+fromfile+" "+tofile #+" | less --no-init --QUIT-AT-EOF"
-    output = getoutput(diffcmd).split("\n")
+    output = commands.getoutput(diffcmd).split("\n")
     coloured = []
     for line in output:
 	if line.startswith("---"):
@@ -301,193 +300,13 @@ def showdiff(fromfile,tofile):
     if output == ['']: output = [] #FIXME beautify
     return output
 
-'''
-   @description: scan for files that need to be merged
-   @output: dictionary using filename as key
-'''
-def scanfs(dcache = True):
-
-    if (dcache):
-	# can we load cache?
-	try:
-	    z = loadcache()
-	    if z != None:
-	        return z
-	except:
-	    pass
-
-    # open client database to fill etpConst['dbconfigprotect']
-    Equo
-    if (not etpUi['quiet']): print_info(yellow(" @@ ")+darkgreen("Scanning filesystem..."))
-    scandata = {}
-    counter = 0
-    for path in etpConst['dbconfigprotect']:
-	# it's a file?
-	scanfile = False
-	if os.path.isfile(path):
-	    # find inside basename
-	    path = os.path.dirname(path)
-	    scanfile = True
-	
-	for currentdir,subdirs,files in os.walk(path):
-	    for item in files:
-		
-		if (scanfile):
-		    if path != item:
-			continue
-		
-		filepath = currentdir+"/"+item
-		if item.startswith("._cfg"):
-		    
-		    # further check then
-		    number = item[5:9]
-		    try:
-			int(number)
-		    except:
-			continue # not a valid etc-update file
-		    if item[9] != "_": # no valid format provided
-			continue
-		    
-		    mydict = generatedict(filepath)
-		    if mydict['automerge']:
-		        if (not etpUi['quiet']): print_info(darkred("Automerging file: ")+darkgreen(etpConst['systemroot']+mydict['source']))
-			if os.path.isfile(etpConst['systemroot']+mydict['source']):
-                            try:
-                                shutil.move(etpConst['systemroot']+mydict['source'],etpConst['systemroot']+mydict['destination'])
-                            except IOError:
-                                if (not etpUi['quiet']): print_info(darkred("I/O Error :: Cannot automerge file: ")+darkgreen(etpConst['systemroot']+mydict['source']))
-			continue
-		    else:
-			counter += 1
-		        scandata[counter] = mydict.copy()
-
-		    try:
-		        if (not etpUi['quiet']): print_info("("+blue(str(counter))+") "+red(" file: ")+os.path.dirname(filepath)+"/"+os.path.basename(filepath)[10:])
-		    except:
-			pass # possible encoding issues
-    # store data
-    try:
-        Equo.dumpTools.dumpobj(etpCache['configfiles'],scandata)
-    except:
-	pass
-    return scandata
-
-
-def loadcache():
-    try:
-	sd = Equo.dumpTools.loadobj(etpCache['configfiles'])
-	# check for corruption?
-	if isinstance(sd, dict):
-	    # quick test if data is reliable
-	    try:
-		taint = False
-		for x in sd:
-		    if not os.path.isfile(etpConst['systemroot']+sd[x]['source']):
-			taint = True
-			break
-		if (not taint):
-		    return sd
-		else:
-		    raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
-	    except:
-		raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
-	else:
-	    raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
-    except:
-	raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
-
-
-def generatedict(filepath):
-    item = os.path.basename(filepath)
-    currentdir = os.path.dirname(filepath)
-    tofile = item[10:]
-    number = item[5:9]
-    try:
-	int(number)
-    except:
-	raise exceptionTools.InvalidDataType("InvalidDataType: invalid config file number '0000->9999'.")
-    tofilepath = currentdir+"/"+tofile
-    mydict = {}
-    mydict['revision'] = number
-    mydict['destination'] = tofilepath[len(etpConst['systemroot']):]
-    mydict['source'] = filepath[len(etpConst['systemroot']):]
-    mydict['automerge'] = False
-    if not os.path.isfile(tofilepath):
-        mydict['automerge'] = True
-    if (not mydict['automerge']):
-        # is it trivial?
-        try:
-            if not os.path.lexists(filepath): # if file does not even exist
-                return mydict
-	    if os.path.islink(filepath):
-		# if it's broken, skip diff and automerge
-		if not os.path.exists(filepath):
-		    return mydict
-	    result = getoutput('diff -Nua '+filepath+' '+tofilepath+' | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'')
-	    if not result:
-	        mydict['automerge'] = True
-        except:
-	    pass
-	# another test
-	if (not mydict['automerge']):
-	    try:
-                if not os.path.lexists(filepath): # if file does not even exist
-                    return mydict
-	        if os.path.islink(filepath):
-		    # if it's broken, skip diff and automerge
-		    if not os.path.exists(filepath):
-		        return mydict
-		result = os.system('diff -Bbua '+filepath+' '+tofilepath+' | egrep \'^[+-]\' | egrep -v \'^[+-][\t ]*#|^--- |^\+\+\+ \' | egrep -qv \'^[-+][\t ]*$\'')
-		if result == 1:
-		    mydict['automerge'] = True
-	    except:
-		pass
-    return mydict
-
-'''
-   @description: prints information about config files that should be updated
-   @attention: please be sure that filepath is properly formatted before using this function
-'''
-def addtocache(filepath):
-    try:
-	scandata = loadcache()
-    except:
-	scandata = scanfs(dcache = False)
-    keys = scandata.keys()
-    try:
-	for key in keys:
-	    if scandata[key]['source'] == filepath[len(etpConst['systemroot']):]:
-		del scandata[key]
-    except:
-	pass
-    # get next counter
-    if keys:
-        keys.sort()
-        index = keys[-1]
-    else:
-	index = 0
-    index += 1
-    mydata = generatedict(filepath)
-    scandata[index] = mydata.copy()
-    try:
-        Equo.dumpTools.dumpobj(etpCache['configfiles'],scandata)
-    except:
-	pass
-
-def removefromcache(sd,key):
-    try:
-        del sd[key]
-    except:
-	pass
-    Equo.dumpTools.dumpobj(etpCache['configfiles'],sd)
-    return sd
 
 '''
    @description: prints information about config files that should be updated
 '''
 def confinfo():
     print_info(yellow(" @@ ")+darkgreen("These are the files that would be updated:"))
-    data = scanfs(dcache = False)
+    data = Equo.FileUpdates.scanfs(dcache = False)
     counter = 0
     for item in data:
 	counter += 1

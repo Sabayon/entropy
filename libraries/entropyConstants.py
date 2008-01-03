@@ -3,7 +3,7 @@
     # DESCRIPTION:
     # Variables container
 
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2007-2008 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -314,6 +314,8 @@ etpSys = {
     'api': '1',
     'arch': ETP_ARCH_CONST,
     'rootdir': "",
+    'maxthreads': 5,
+    'threads': 0,
 }
 
 etpUi = {
@@ -551,14 +553,14 @@ def initConfig_entropyConstants(rootdir):
         'activatordownloaduris': [], # list of URIs that activator can use to fetch data
         'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
         'etpurirelativepath': "database/"+ETP_ARCH_CONST+"/", # database relative path
-    
+
         'entropyworkdir': ETP_DIR, # Entropy workdir
         'entropyunpackdir': ETP_VAR_DIR, # Entropy unpack directory
         'entropyimagerelativepath': "image", # Entropy packages image directory
         'entropyxpakrelativepath': "xpak", # Gentoo xpak temp directory path
         'entropyxpakdatarelativepath': "data", # Gentoo xpak metadata directory path
         'entropyxpakfilename': "metadata.xpak", # Gentoo xpak metadata file name
-    
+
         'etpdatabaserevisionfile': ETP_DBFILE+".revision", # the local/remote database revision file
         'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum
         'etpdatabaselockfile': ETP_DBFILE+".lock", # the remote database lock file
@@ -580,36 +582,36 @@ def initConfig_entropyConstants(rootdir):
         'rss-dump-name': "rss_database_actions", # xml file where will be dumped etpRSSMessages dictionary
         'rss-max-entries': 10000, # maximum rss entries
         'rss-managing-editor': "lxnay@sabayonlinux.org", # updates submitter
-    
+
         'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
         'packagesexpirationfileext': ".expired", # Extension of the file that "contains" expiration mtime
         'packagesexpirationdays': 15, # number of days after a package will be removed from mirrors
         'triggername': "trigger", # name of the trigger file that would be executed by equo inside triggerTools
         'proxy': {}, # proxy configuration information, used system wide
-        
+
         'reagentloglevel': 1 , # Reagent log level (default: 1 - see reagent.conf for more info)
         'activatorloglevel': 1, # # Activator log level (default: 1 - see activator.conf for more info)
         'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
         'equologlevel': 1, # # Equo log level (default: 1 - see equo.conf for more info)
         'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their stuff
-        
+
         'syslogdir': ETP_SYSLOG_DIR, # Entropy system tools log directory
         'reagentlogfile': ETP_SYSLOG_DIR+"reagent.log", # Reagent operations log file
         'activatorlogfile': ETP_SYSLOG_DIR+"activator.log", # Activator operations log file
         'entropylogfile': ETP_SYSLOG_DIR+"entropy.log", # Activator operations log file
         'equologfile': ETP_SYSLOG_DIR+"equo.log", # Activator operations log file
-        
+
         'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file FIXME: remove this?
         'etpdatabasedir': ETP_DIR+ETP_DBDIR,
         'etpdatabasefilepath': ETP_DIR+ETP_DBDIR+"/"+ETP_DBFILE,
         'etpdatabaseclientdir': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR,
         'etpdatabaseclientfilepath': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR+"/"+ETP_DBCLIENTFILE, # path to equo.db - client side database file
         'dbnamerepoprefix': "repo_", # prefix of the name of self.dbname in etpDatabase class for the repositories
-        
+
         'etpapi': etpSys['api'], # Entropy database API revision
         'currentarch': etpSys['arch'], # contains the current running architecture
         'supportedarchs': etpSys['archs'], # Entropy supported Archs
-        
+
         'branches': [], # available branches, this only exists for the server part, these settings will be overridden by server.conf ones
         'branch': "3.5", # default choosen branch (overridden by setting in repositories.conf)
         'keywords': set([etpSys['arch'],"~"+etpSys['arch']]), # default allowed package keywords
@@ -639,16 +641,17 @@ def initConfig_entropyConstants(rootdir):
         'errorstatus': ETP_CONF_DIR+"/code",
         'systemroot': rootdir, # default system root
         'uid': os.getuid(), # current running UID
-        
+        'treeupdatescalled': False, # to avoid running tree updates functions multiple times
+
         'dumpstoragedir': ETP_DIR+ETP_CACHESDIR, # data storage directory, useful to speed up equo across multiple issued commands
-    
+
         # packages keywords/mask/unmask settings
         'packagemasking': {}, # package masking information dictionary filled by maskingparser.py
-    
+
     }
     etpConst.update(myConst)
     del myConst
-    
+
     # load server database status
     myDatabase = {
         etpConst['etpdatabasefilepath']: {
@@ -661,7 +664,7 @@ def initConfig_entropyConstants(rootdir):
         myDatabase[etpConst['etpdatabasefilepath']]['bumped'] = True
     etpDbStatus.update(myDatabase)
     del myDatabase
-    
+
     # handle Entropy Version
     ETP_REVISION_FILE = "../libraries/revision"
     if os.path.isfile(ETP_REVISION_FILE):
@@ -713,16 +716,16 @@ def initConfig_entropyConstants(rootdir):
         else:
             import exceptionTools
             raise exceptionTools.FileNotFound("FileNotFound: pid not found. please run this application as root at least once.")
-    
+
     # Create paths
     if not os.path.isdir(etpConst['entropyworkdir']):
         if etpConst['uid'] == 0:
             for x in etpConst:
                 if (type(etpConst[x]) is str):
-                    
+
                     if (not etpConst[x]) or (etpConst[x].endswith(".conf")) or (not etpConst[x].startswith("/")) or (etpConst[x].endswith(".cfg")) or (etpConst[x].endswith(".tmp")) or (etpConst[x].find(".db") != -1) or (etpConst[x].find(".log") != -1):
                         continue
-                    
+
                     try:
                         os.makedirs(etpConst[x],0755)
                         os.chown(etpConst[x],0,0)
@@ -731,8 +734,8 @@ def initConfig_entropyConstants(rootdir):
         else:
             import exceptionTools
             raise exceptionTools.DirectoryNotFound("DirectoryNotFound: pid not found. please run this application as root at least once or create: "+etpConst['entropyworkdir'])
-    
-    
+
+
     # entropy section
     if os.path.isfile(etpConst['entropyconf']):
         f = open(etpConst['entropyconf'],"r")
@@ -749,7 +752,7 @@ def initConfig_entropyConstants(rootdir):
                     etpConst['entropyloglevel'] = loglevel
                 else:
                     print "WARNING: invalid loglevel in: "+etpConst['entropyconf']
-            
+
             elif line.startswith("ftp-proxy|") and (len(line.split("|")) == 2):
                 ftpproxy = line.split("|")[1].strip()
                 for x in ftpproxy.split():
@@ -760,12 +763,12 @@ def initConfig_entropyConstants(rootdir):
                     etpConst['proxy']['http'] = httpproxy
             elif line.startswith("system-name|") and (len(line.split("|")) == 2):
                 etpConst['systemname'] = line.split("|")[1].strip()
-        
-    
+
+
     etpHandlers.clear()
     etpHandlers['md5sum'] = "md5sum.php?arch="+etpConst['currentarch']+"&package=" # md5sum handler
     etpHandlers['errorsend'] = "http://svn.sabayonlinux.org/entropy/"+etpConst['product']+"/handlers/error_report.php?arch="+etpConst['currentarch']+"&stacktrace="
-    
+
     etpRepositories.clear()
     etpRepositoriesOrder.clear()
     ordercount = 0
@@ -848,11 +851,11 @@ def initConfig_entropyConstants(rootdir):
                     else:
                         import exceptionTools
                         raise exceptionTools.DirectoryNotFound("DirectoryNotFound: please run this as root at least once or create: "+etpConst['packagesbindir']+"/"+branch)
-    
+
     # align etpConst['binaryurirelativepath'] and etpConst['etpurirelativepath'] with etpConst['product']
     etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['binaryurirelativepath']
     etpConst['etpurirelativepath'] = etpConst['product']+"/"+etpConst['etpurirelativepath']
-    
+
     # check for packages and upload directories
     if etpConst['uid'] == 0:
         for x in etpConst['branches']:
@@ -860,7 +863,7 @@ def initConfig_entropyConstants(rootdir):
                 os.makedirs(etpConst['packagesbindir']+"/"+x)
             if not os.path.isdir(etpConst['packagessuploaddir']+"/"+x):
                 os.makedirs(etpConst['packagessuploaddir']+"/"+x)
-    
+
     etpRemoteSupport.clear()
     etpRemoteFailures.clear()
     if (os.path.isfile(etpConst['remoteconf'])):
@@ -875,7 +878,7 @@ def initConfig_entropyConstants(rootdir):
                     url = url+"/"
                 url += etpConst['product']+"/handlers/"
                 etpRemoteSupport[servername] = url
-    
+
     # generate masking dictionary
     myparser = maskingparser.parser(etpConst,etpCache)
     etpConst['packagemasking'] = myparser.parse()
@@ -886,5 +889,56 @@ def initConfig_entropyConstants(rootdir):
 
     gc.collect()
 
+def initConfig_clientConstants():
+    # equo section
+    if (os.path.isfile(etpConst['equoconf'])):
+        f = open(etpConst['equoconf'],"r")
+        equoconf = f.readlines()
+        f.close()
+        for line in equoconf:
+            if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
+                loglevel = line.split("loglevel|")[1]
+                try:
+                    loglevel = int(loglevel)
+                except:
+                    pass
+                if (loglevel > -1) and (loglevel < 3):
+                    etpConst['equologlevel'] = loglevel
+
+            if line.startswith("gentoo-compat|") and (len(line.split("|")) == 2):
+                compatopt = line.split("|")[1].strip()
+                if compatopt == "disable":
+                    etpConst['gentoo-compat'] = False
+                else:
+                    etpConst['gentoo-compat'] = True
+
+            if line.startswith("filesbackup|") and (len(line.split("|")) == 2):
+                compatopt = line.split("|")[1].strip()
+                if compatopt == "disable":
+                    etpConst['filesbackup'] = False
+
+            if line.startswith("collisionprotect|") and (len(line.split("|")) == 2):
+                collopt = line.split("|")[1].strip()
+                if collopt == "0" or collopt == "1" or collopt == "2":
+                    etpConst['collisionprotect'] = int(collopt)
+
+            if line.startswith("configprotect|") and (len(line.split("|")) == 2):
+                configprotect = line.split("|")[1].strip()
+                for x in configprotect.split():
+                    etpConst['configprotect'].append(x)
+
+            if line.startswith("configprotectmask|") and (len(line.split("|")) == 2):
+                configprotect = line.split("|")[1].strip()
+                for x in configprotect.split():
+                    etpConst['configprotectmask'].append(x)
+
+            if line.startswith("configprotectskip|") and (len(line.split("|")) == 2):
+                configprotect = line.split("|")[1].strip()
+                for x in configprotect.split():
+                    etpConst['configprotectskip'].append(etpConst['systemroot']+x)
+
+
+
 # load config
 initConfig_entropyConstants(etpSys['rootdir'])
+initConfig_clientConstants()

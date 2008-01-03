@@ -3,7 +3,7 @@
     # DESCRIPTION:
     # generic tools for enzyme application
 
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2007-2008 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,19 +20,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import os
 import time
 import shutil
 from entropyConstants import *
 from serverConstants import *
-from entropyTools import *
 from outputTools import *
-import mirrorTools
-import dumpTools
+from entropy import FtpInterface, EquoInterface
 import exceptionTools
-import databaseTools
-import remoteTools
-Text = TextInterface()
+Entropy = EquoInterface(noclientdb = True)
 
 # Logging initialization
 import logTools
@@ -41,28 +36,26 @@ activatorLog = logTools.LogFile(level=etpConst['activatorloglevel'],filename = e
 
 def sync(options, justTidy = False):
 
-    import sys
-
     activatorRequestNoAsk = False
     myopts = []
     for i in options:
         if ( i == "--noask" ):
-	    activatorRequestNoAsk = True
-	else:
-	    myopts.append(i)
+            activatorRequestNoAsk = True
+        else:
+            myopts.append(i)
     options = myopts
-	
+
     activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: called with justTidy -> "+str(justTidy))
     print_info(green(" * ")+red("Starting to sync data across mirrors (packages/database) ..."))
-    
+
     if (not justTidy):
         # firstly sync the packages
-	if (activatorRequestNoAsk):
-	    rc = packages(["sync"])
-	else:
+        if (activatorRequestNoAsk):
+            rc = packages(["sync"])
+        else:
             ask = etpUi['ask']
             etpUi['ask'] = True
-	    rc = packages(["sync"])
+            rc = packages(["sync"])
             etpUi['ask'] = ask
         # then sync the database, if the packages sync completed successfully
         if rc:
@@ -71,108 +64,108 @@ def sync(options, justTidy = False):
             elif etpConst['rss-feed']:
                 etpRSSMessages['commitmessage'] = "Autodriven Update"
             # if packages are ok, we can sync the database
-	    database(["sync"])
-	    if (not activatorRequestNoAsk):
-	        # ask question
-	        rc = Text.askQuestion("     Should I continue with the tidy procedure ?")
-	        if rc == "No":
-		    sys.exit(0)
-    
+            database(["sync"])
+            if (not activatorRequestNoAsk):
+                # ask question
+                rc = Entropy.askQuestion("     Should I continue with the tidy procedure ?")
+                if rc == "No":
+                    sys.exit(0)
+
     print_info(green(" * ")+red("Starting to collect packages that would be removed from the repository ..."), back = True)
-    
-    
+
+
     for mybranch in etpConst['branches']:
-    
+
         print_info(red(" * ")+blue("Switching to branch: ")+bold(mybranch))
-    
+
         # now it's time to do some tidy
         # collect all the binaries in the database
-        dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
         dbBinaries = dbconn.listBranchPackagesTbz2(mybranch)
         dbconn.closeDB()
-    
+
         # list packages in the packages directory
-	repoBinaries = os.listdir(etpConst['packagesbindir']+"/"+mybranch)
+        repoBinaries = os.listdir(etpConst['packagesbindir']+"/"+mybranch)
 
         removeList = []
         # select packages
         for repoBin in repoBinaries:
-	    if (repoBin.endswith(".tbz2")):
-	        if repoBin not in dbBinaries:
+            if (repoBin.endswith(".tbz2")):
+                if repoBin not in dbBinaries:
                     # check if it's expired
                     filepath = etpConst['packagesbindir']+"/"+mybranch+"/"+repoBin
-		    if os.path.isfile(filepath+etpConst['packagesexpirationfileext']):
-			# check mtime
-			mtime = getFileUnixMtime(filepath+etpConst['packagesexpirationfileext'])
-			delta = int(etpConst['packagesexpirationdays'])*24*3600
-			currmtime = time.time()
-			if currmtime - mtime > delta: # if it's expired
-			    removeList.append(repoBin)
-		    else:
-			# create expiration file
-			f = open(filepath+etpConst['packagesexpirationfileext'],"w")
-			f.write("\n")
-			f.flush()
-			f.close()
-			# not expired.
+                    if os.path.isfile(filepath+etpConst['packagesexpirationfileext']):
+                        # check mtime
+                        mtime = Entropy.entropyTools.getFileUnixMtime(filepath+etpConst['packagesexpirationfileext'])
+                        delta = int(etpConst['packagesexpirationdays'])*24*3600
+                        currmtime = time.time()
+                        if currmtime - mtime > delta: # if it's expired
+                            removeList.append(repoBin)
+                    else:
+                        # create expiration file
+                        f = open(filepath+etpConst['packagesexpirationfileext'],"w")
+                        f.write("\n")
+                        f.flush()
+                        f.close()
+                        # not expired.
 
         if (not removeList):
-	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: no packages to remove from the lirrors.")
-	    print_info(green(" * ")+red("No packages to remove from the mirrors."))
-	    print_info(green(" * ")+red("Syncronization across mirrors completed."))
-	    continue
-    
+            activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: no packages to remove from the lirrors.")
+            print_info(green(" * ")+red("No packages to remove from the mirrors."))
+            print_info(green(" * ")+red("Syncronization across mirrors completed."))
+            continue
+
         print_info(green(" * ")+red("This is the list of files that would be removed from the mirrors: "))
         for xfile in removeList:
-	    print_info(green("\t* ")+brown(xfile))
-	
+            print_info(green("\t* ")+brown(xfile))
+
         # ask question
         if (not activatorRequestNoAsk):
-            rc = Text.askQuestion("     Would you like to continue ?")
+            rc = Entropy.askQuestion("     Would you like to continue ?")
             if rc == "No":
-	        sys.exit(0)
+                sys.exit(0)
 
         # remove them!
         activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: starting to remove packages from mirrors.")
         for uri in etpConst['activatoruploaduris']:
-	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: connecting to mirror "+extractFTPHostFromUri(uri))
-	    print_info(green(" * ")+red("Connecting to: ")+bold(extractFTPHostFromUri(uri)))
-	    ftp = mirrorTools.handlerFTP(uri)
-	    ftp.setCWD(etpConst['binaryurirelativepath']+"/"+mybranch)
-	    for xfile in removeList:
-	
-	        activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (remote) file "+xfile)
-	        print_info(green(" * ")+red("Removing file: ")+bold(xfile), back = True)
-	        # remove remotely
-	        if (ftp.isFileAvailable(xfile)):
-	            rc = ftp.deleteFile(xfile)
-	            if (rc):
-		        print_info(green(" * ")+red("Package file: ")+bold(xfile)+red(" removed successfully from ")+bold(extractFTPHostFromUri(uri)))
-	            else:
-		        print_warning(brown(" * ")+red("ATTENTION: remote file ")+bold(xfile)+red(" cannot be removed."))
-	        # checksum
-	        if (ftp.isFileAvailable(xfile+etpConst['packageshashfileext'])):
-	            rc = ftp.deleteFile(xfile+etpConst['packageshashfileext'])
-	            if (rc):
-		        print_info(green(" * ")+red("Checksum file: ")+bold(xfile+etpConst['packageshashfileext'])+red(" removed successfully from ")+bold(extractFTPHostFromUri(uri)))
-	            else:
-		        print_warning(brown(" * ")+red("ATTENTION: remote checksum file ")+bold(xfile)+red(" cannot be removed."))
-	        # remove locally
-	        if os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile):
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+xfile)
-		    print_info(green(" * ")+red("Package file: ")+bold(xfile)+red(" removed successfully from ")+bold(etpConst['packagesbindir']+"/"+mybranch))
-		    os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile)
+            activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: connecting to mirror "+Entropy.entropyTools.extractFTPHostFromUri(uri))
+            print_info(green(" * ")+red("Connecting to: ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
+            ftp = FtpInterface(uri, Entropy)
+            ftp.setCWD(etpConst['binaryurirelativepath']+"/"+mybranch)
+            for xfile in removeList:
+
+                activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (remote) file "+xfile)
+                print_info(green(" * ")+red("Removing file: ")+bold(xfile), back = True)
+                # remove remotely
+                if (ftp.isFileAvailable(xfile)):
+                    rc = ftp.deleteFile(xfile)
+                    if (rc):
+                        print_info(green(" * ")+red("Package file: ")+bold(xfile)+red(" removed successfully from ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
+                    else:
+                        print_warning(brown(" * ")+red("ATTENTION: remote file ")+bold(xfile)+red(" cannot be removed."))
+                # checksum
+                if (ftp.isFileAvailable(xfile+etpConst['packageshashfileext'])):
+                    rc = ftp.deleteFile(xfile+etpConst['packageshashfileext'])
+                    if (rc):
+                        print_info(green(" * ")+red("Checksum file: ")+bold(xfile+etpConst['packageshashfileext'])+red(" removed successfully from ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
+                    else:
+                        print_warning(brown(" * ")+red("ATTENTION: remote checksum file ")+bold(xfile)+red(" cannot be removed."))
+                # remove locally
+                if os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile):
+                    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+xfile)
+                    print_info(green(" * ")+red("Package file: ")+bold(xfile)+red(" removed successfully from ")+bold(etpConst['packagesbindir']+"/"+mybranch))
+                    os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile)
                     try:
                         os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile+etpConst['packagesexpirationfileext'])
                     except OSError:
                         pass
-	        # checksum
-	        if os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile+etpConst['packageshashfileext']):
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+xfile+etpConst['packageshashfileext'])
-		    print_info(green(" * ")+red("Checksum file: ")+bold(xfile+etpConst['packageshashfileext'])+red(" removed successfully from ")+bold(etpConst['packagesbindir']+"/"+mybranch))
-		    os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile+etpConst['packageshashfileext'])
-	    ftp.closeConnection()
-	
+                # checksum
+                if os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile+etpConst['packageshashfileext']):
+                    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+xfile+etpConst['packageshashfileext'])
+                    print_info(green(" * ")+red("Checksum file: ")+bold(xfile+etpConst['packageshashfileext'])+red(" removed successfully from ")+bold(etpConst['packagesbindir']+"/"+mybranch))
+                    os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile+etpConst['packageshashfileext'])
+            ftp.closeConnection()
+
     print_info(green(" * ")+red("Syncronization across mirrors completed."))
 
 
@@ -206,7 +199,7 @@ def packages(options):
 	    uriSuccessfulSync = 0
 	    currentUri += 1
 	    try:
-	        print_info(green(" * ")+brown("Working on ")+bold(extractFTPHostFromUri(uri)+red(" mirror.")))
+	        print_info(green(" * ")+brown("Working on ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)+red(" mirror.")))
 		
 		pkgbranches = os.listdir(etpConst['packagessuploaddir'])
 		pkgbranches = [x for x in pkgbranches if os.path.isdir(etpConst['packagessuploaddir']+"/"+x)]
@@ -242,7 +235,7 @@ def packages(options):
 	            print_info(green(" * ")+red("Packages directory:\t")+bold(str(packageCounter))+red(" files ready."))
 	    
 	            print_info(green(" * ")+brown("Fetching remote statistics..."), back = True)
-	            ftp = mirrorTools.handlerFTP(uri)
+	            ftp = FtpInterface(uri, Entropy)
                     try:
                         ftp.setCWD(etpConst['binaryurirelativepath'])
                     except:
@@ -348,8 +341,7 @@ def packages(options):
 		    # so we can filter them out from the download queue
 		    # Why downloading something that will be removed??
 		    # the same thing for the uploadQueue...
-		    import databaseTools
-		    dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+		    dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
 		    dbFiles = dbconn.listBranchPackagesTbz2(mybranch)
     		    dbconn.closeDB()
 		
@@ -381,7 +373,7 @@ def packages(options):
 		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: upload queue -> "+str(uploadQueue))
 
 	            if (not uploadQueue) and (not downloadQueue) and (not removalQueue):
-		        print_info(green(" * ")+red("Nothing to syncronize for ")+bold(extractFTPHostFromUri(uri)+red(". Queue empty.")))
+		        print_info(green(" * ")+red("Nothing to syncronize for ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)+red(". Queue empty.")))
 		        uriSuccessfulSync += 1
 			if (uriSuccessfulSync == len(pkgbranches)):
 			    totalSuccessfulUri += 1
@@ -402,7 +394,7 @@ def packages(options):
 	            for item in removalQueue:
 		        fileSize = os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+item)[6]
 		        totalRemovalSize += int(fileSize)
-		        print_info(bold("\t[") + red("LOCAL REMOVAL") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
+		        print_info(bold("\t[") + red("LOCAL REMOVAL") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(Entropy.entropyTools.bytesIntoHuman(fileSize)))
 		        detailedRemovalQueue.append([item,fileSize])
 
 	            for item in downloadQueue:
@@ -415,12 +407,12 @@ def packages(options):
 			            break
 			    if not item.endswith(etpConst['packageshashfileext']): # do not show .md5 to upload
 		                totalDownloadSize += int(fileSize)
-		                print_info(bold("\t[") + brown("REMOTE DOWNLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
+		                print_info(bold("\t[") + brown("REMOTE DOWNLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(Entropy.entropyTools.bytesIntoHuman(fileSize)))
 		            detailedDownloadQueue.append([item,fileSize])
 		        else:
 			    if (not item.endswith(etpConst['packageshashfileext'])):
 			        fileSize = os.stat(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item)[6]
-			        print_info(bold("\t[") + green("LOCAL COPY") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
+			        print_info(bold("\t[") + green("LOCAL COPY") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(Entropy.entropyTools.bytesIntoHuman(fileSize)))
 			    # file exists locally and remotely (where is fine == fully uploaded)
 			    simpleCopyQueue.append(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item)
 
@@ -431,7 +423,7 @@ def packages(options):
 		        else: # otherwise it is in the packages dir
 			    fileSize = os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+item)[6]
 		        if not item.endswith(etpConst['packageshashfileext']): # do not show .md5 to upload
-		            print_info(bold("\t[") + red("REMOTE UPLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(bytesIntoHuman(fileSize)))
+		            print_info(bold("\t[") + red("REMOTE UPLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(Entropy.entropyTools.bytesIntoHuman(fileSize)))
 		            totalUploadSize += int(fileSize)
 		            detailedUploadQueue.append([item,fileSize])
 
@@ -452,14 +444,14 @@ def packages(options):
 	            print_info(red(" * ")+blue("Packages that would be ")+red("removed:\t\t\t")+bold(str(removalQueueLength)))
 	            print_info(red(" * ")+blue("Packages that would be ")+brown("downloaded/moved locally:\t")+bold(str(downloadQueueLength)))
 	            print_info(red(" * ")+blue("Packages that would be ")+green("uploaded:\t\t\t")+bold(str(uploadQueueLength)))
-	            print_info(red(" * ")+blue("Total removal ")+red("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalRemovalSize))))
-	            print_info(red(" * ")+blue("Total download ")+brown("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalDownloadSize))))
-	            print_info(red(" * ")+blue("Total upload ")+green("size:\t\t\t\t")+bold(bytesIntoHuman(str(totalUploadSize))))
+	            print_info(red(" * ")+blue("Total removal ")+red("size:\t\t\t\t")+bold(Entropy.entropyTools.bytesIntoHuman(str(totalRemovalSize))))
+	            print_info(red(" * ")+blue("Total download ")+brown("size:\t\t\t\t")+bold(Entropy.entropyTools.bytesIntoHuman(str(totalDownloadSize))))
+	            print_info(red(" * ")+blue("Total upload ")+green("size:\t\t\t\t")+bold(Entropy.entropyTools.bytesIntoHuman(str(totalUploadSize))))
 
 	            if (etpUi['pretend']):
 		        continue
                     if (etpUi['ask']):
-                        rc = Text.askQuestion("\n     Would you like to run the steps above ?")
+                        rc = Entropy.askQuestion("\n     Would you like to run the steps above ?")
                         if rc == "No":
                             print "\n"
                             continue
@@ -479,7 +471,7 @@ def packages(options):
 	            # removal queue
 	            if (detailedRemovalQueue):
 		        for item in detailedRemovalQueue:
-		            print_info(red(" * Removing file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(etpConst['packagesbindir']+"/"+mybranch)+red(" ..."))
+		            print_info(red(" * Removing file ")+bold(item[0]) + red(" [")+blue(Entropy.entropyTools.bytesIntoHuman(item[1]))+red("] from ")+ bold(etpConst['packagesbindir']+"/"+mybranch)+red(" ..."))
                             try:
                                 os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+item[0])
                             except OSError:
@@ -506,14 +498,14 @@ def packages(options):
 	            # upload queue
 	            if (detailedUploadQueue):
                         mirrorsTainted = True
-	                ftp = mirrorTools.handlerFTP(uri)
+	                ftp = FtpInterface(uri, Entropy)
 	                ftp.setCWD(etpConst['binaryurirelativepath']+"/"+mybranch)
 		        uploadCounter = str(len(detailedUploadQueue))
 		        currentCounter = 0
 		        for item in detailedUploadQueue:
 		            currentCounter += 1
 		            counterInfo = bold(" (")+blue(str(currentCounter))+"/"+red(uploadCounter)+bold(")")
-		            print_info(counterInfo+red(" Uploading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] to ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."))
+		            print_info(counterInfo+red(" Uploading file ")+bold(item[0]) + red(" [")+blue(Entropy.entropyTools.bytesIntoHuman(item[1]))+red("] to ")+ bold(Entropy.entropyTools.extractFTPHostFromUri(uri)) +red(" ..."))
 			    # is the package in the upload queue?
 			    if os.path.isfile(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item[0]):
 			        uploadItem = etpConst['packagessuploaddir']+"/"+mybranch+"/"+item[0]
@@ -523,9 +515,8 @@ def packages(options):
 			    ckOk = False
 			    while not ckOk:
 			        rc = ftp.uploadFile(uploadItem)
-			        # verify upload using remoteTools
 			        print_info("    "+red("   -> Verifying ")+green(item[0])+bold(" checksum")+red(" (if supported)"), back = True)
-			        ck = remoteTools.getRemotePackageChecksum(extractFTPHostFromUri(uri),item[0], mybranch)
+			        ck = Entropy.get_remote_package_checksum(Entropy.entropyTools.extractFTPHostFromUri(uri),item[0], mybranch)
 			        if (ck == None):
 				    print_warning("    "+red("   -> Digest verification of ")+green(item[0])+bold(" not supported"))
 				    ckOk = True
@@ -536,7 +527,7 @@ def packages(options):
 				    else:
 				        if len(ck) == 32:
 					    # valid checksum, checking
-					    ckres = compareMd5(uploadItem,ck)
+					    ckres = Entropy.entropyTools.compareMd5(uploadItem,ck)
 					    if (ckres):
 					        print_info("    "+red("   -> Package ")+bold(item[0])+red(" has been uploaded correctly."))
 					        ckOk = True
@@ -547,18 +538,17 @@ def packages(options):
 					    print_warning("    "+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum: "+str(ck)+". Reuploading..."))
 			
 			    if not os.path.isfile(uploadItem+etpConst['packageshashfileext']):
-			        hashfile = createHashFile(uploadItem)
+			        hashfile = Entropy.entropyTools.createHashFile(uploadItem)
 			    else:
 			        hashfile = uploadItem+etpConst['packageshashfileext']
 
 			    # upload md5 hash
-			    print_info("    "+red("   -> Uploading checksum of ")+bold(item[0]) + red(" to ") + bold(extractFTPHostFromUri(uri)) +red(" ..."))
+			    print_info("    "+red("   -> Uploading checksum of ")+bold(item[0]) + red(" to ") + bold(Entropy.entropyTools.extractFTPHostFromUri(uri)) +red(" ..."))
 			    ckOk = False
 			    while not ckOk:
 			        rcmd5 = ftp.uploadFile(hashfile,ascii = True)
-			        # verify upload using remoteTools
 			        print_info("    "+red("   -> Verifying ")+green(item[0]+etpConst['packageshashfileext'])+bold(" checksum")+red(" (if supported)"), back = True)
-			        ck = remoteTools.getRemotePackageChecksum(extractFTPHostFromUri(uri),item[0]+etpConst['packageshashfileext'], mybranch)
+			        ck = Entropy.get_remote_package_checksum(Entropy.entropyTools.extractFTPHostFromUri(uri),item[0]+etpConst['packageshashfileext'], mybranch)
 			        if (ck == None):
 				    print_warning("    "+red("   -> Digest verification of ")+green(item[0]+etpConst['packageshashfileext'])+bold(" not supported"))
 				    ckOk = True
@@ -569,7 +559,7 @@ def packages(options):
 				    else:
 				        if len(ck) == 32:
 					    # valid checksum, checking
-					    ckres = compareMd5(hashfile,ck)
+					    ckres = Entropy.entropyTools.compareMd5(hashfile,ck)
 					    if (ckres):
 					        print_info("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" has been uploaded correctly."))
 					        ckOk = True
@@ -582,12 +572,12 @@ def packages(options):
 			    # now check
 			    if (rc) and (rcmd5):
 			        successfulUploadCounter += 1
-		        print_info(red(" * Upload completed for ")+bold(extractFTPHostFromUri(uri)))
+		        print_info(red(" * Upload completed for ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
 		        ftp.closeConnection()
 
 	            # download queue
 	            if (detailedDownloadQueue):
-	                ftp = mirrorTools.handlerFTP(uri)
+	                ftp = FtpInterface(uri, Entropy)
 	                ftp.setCWD(etpConst['binaryurirelativepath']+"/"+mybranch)
 		        downloadCounter = str(len(detailedDownloadQueue))
 		        currentCounter = 0
@@ -600,7 +590,7 @@ def packages(options):
 			        if localSize == remoteSize:
 			            # skip that, we'll move at the end of the mirrors sync
 			            continue
-		            print_info(counterInfo+red(" Downloading file ")+bold(item[0]) + red(" [")+blue(bytesIntoHuman(item[1]))+red("] from ")+ bold(extractFTPHostFromUri(uri)) +red(" ..."))
+		            print_info(counterInfo+red(" Downloading file ")+bold(item[0]) + red(" [")+blue(Entropy.entropyTools.bytesIntoHuman(item[1]))+red("] from ")+ bold(Entropy.entropyTools.extractFTPHostFromUri(uri)) +red(" ..."))
 			
 			    ckOk = False
 			    while not ckOk:
@@ -610,10 +600,9 @@ def packages(options):
 			        else:
 				    rc = ftp.downloadFile(item[0],etpConst['packagesbindir']+"/"+mybranch+"/")
 
-			        # verify upload using remoteTools
 				if not item[0].endswith(etpConst['packageshashfileext']):
 			            print_info(counterInfo+red("   -> Verifying ")+green(item[0])+bold(" checksum")+red(" (if supported)"), back = True)
-			            ck = remoteTools.getRemotePackageChecksum(extractFTPHostFromUri(uri),item[0], mybranch)
+			            ck = Entropy.get_remote_package_checksum(Entropy.entropyTools.extractFTPHostFromUri(uri),item[0], mybranch)
 			            if (ck == None):
 				        print_warning(counterInfo+red("   -> Digest verification of ")+green(item[0])+bold(" not supported"))
 				        ckOk = True
@@ -626,7 +615,7 @@ def packages(options):
 				            if len(ck) == 32:
 					        # valid checksum, checking
 					        filepath = etpConst['packagesbindir']+"/"+mybranch+"/"+item[0]
-					        ckres = compareMd5(filepath,ck)
+					        ckres = Entropy.entropyTools.compareMd5(filepath,ck)
 					        if (ckres):
 					            print_info(counterInfo+red("   -> Package ")+bold(item[0])+red(" has been downloaded correctly."))
 					            ckOk = True
@@ -641,7 +630,7 @@ def packages(options):
 			    if (rc):
 			        successfulDownloadCounter += 1
 			
-		        print_info(red(" * Download completed for ")+bold(extractFTPHostFromUri(uri)))
+		        print_info(red(" * Download completed for ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
 		        ftp.closeConnection()
 
 		    uploadCounter = int(uploadCounter)
@@ -665,10 +654,10 @@ def packages(options):
 		    sys.exit(0)
 		
 		activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: Exception caught: "+str(e)+" . Trying to continue if possible.")
-		activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: cannot properly syncronize "+extractFTPHostFromUri(uri)+". Trying to continue if possible.")
+		activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: cannot properly syncronize "+Entropy.entropyTools.extractFTPHostFromUri(uri)+". Trying to continue if possible.")
 		
 		# print warning cannot sync uri
-		print_warning(brown(" * ")+red("ATTENTION: cannot properly syncronize ")+bold(extractFTPHostFromUri(uri))+red(". Continuing if possible..."))
+		print_warning(brown(" * ")+red("ATTENTION: cannot properly syncronize ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Continuing if possible..."))
 		
 		# decide what to do
 		if (totalSuccessfulUri > 0) or (etpUi['pretend']):
@@ -775,7 +764,7 @@ def database(options):
                 db[2] = red("Locked")
             else:
                 db[2] = green("Unlocked")
-            print_info(bold("\t"+extractFTPHostFromUri(db[0])+": ")+red("[")+brown("DATABASE: ")+db[1]+red("] [")+brown("DOWNLOAD: ")+db[2]+red("]"))
+            print_info(bold("\t"+Entropy.entropyTools.extractFTPHostFromUri(db[0])+": ")+red("[")+brown("DATABASE: ")+db[1]+red("] [")+brown("DOWNLOAD: ")+db[2]+red("]"))
 
     # database sync tool
     elif (options[0] == "sync"):
@@ -792,7 +781,7 @@ def database(options):
         # are online mirrors locked?
         mirrorsLocked = False
         for uri in etpConst['activatoruploaduris']:
-            ftp = mirrorTools.handlerFTP(uri)
+            ftp = FtpInterface(uri, Entropy)
             try:
                 ftp.setCWD(etpConst['etpurirelativepath'])
             except:
@@ -851,12 +840,10 @@ def database(options):
 
 def syncRemoteDatabases(noUpload = False, justStats = False):
 
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"syncRemoteDatabases: called.")
-
     remoteDbsStatus = getEtpRemoteDatabaseStatus()
     print_info(green(" * ")+red("Remote Entropy Database Repository Status:"))
     for dbstat in remoteDbsStatus:
-	print_info(green("\t Host:\t")+bold(extractFTPHostFromUri(dbstat[0])))
+	print_info(green("\t Host:\t")+bold(Entropy.entropyTools.extractFTPHostFromUri(dbstat[0])))
 	print_info(red("\t  * Database revision: ")+blue(str(dbstat[1])))
 
     # check if the local DB or the revision file exist
@@ -898,7 +885,7 @@ def syncRemoteDatabases(noUpload = False, justStats = False):
 	    for dbstat in etpDbRemotePaths:
 		revisions.append(dbstat[1])
 	    if len(revisions) > 1:
-		latestrevision = alphaSorter(revisions)[len(revisions)-1]
+		latestrevision = Entropy.entropyTools.alphaSorter(revisions)[len(revisions)-1]
 	    else:
 		latestrevision = revisions[0]
 	    for dbstat in etpDbRemotePaths:
@@ -932,7 +919,7 @@ def syncRemoteDatabases(noUpload = False, justStats = False):
 	    for dbstat in etpDbRemotePaths:
 		revisions.append(str(dbstat[1]))
 	    
-	    latestrevision = int(alphaSorter(revisions)[len(revisions)-1])
+	    latestrevision = int(Entropy.entropyTools.alphaSorter(revisions)[len(revisions)-1])
 	    for dbstat in etpDbRemotePaths:
 		if dbstat[1] == latestrevision:
 		    # found !
@@ -956,13 +943,11 @@ def syncRemoteDatabases(noUpload = False, justStats = False):
 		        uploadList.append(dbstat)
     
     if (downloadLatest == []) and (not uploadLatest):
-	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"syncRemoteDatabases: online database does not need to be updated.")
 	print_info(green(" * ")+red("Online database does not need to be updated."))
         return
 
     # now run the selected task!
     if (downloadLatest != []):
-	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"syncRemoteDatabases: download latest database needed.")
 	# match the proper URI
 	for uri in etpConst['activatoruploaduris']:
 	    if downloadLatest[0].startswith(uri):
@@ -970,7 +955,6 @@ def syncRemoteDatabases(noUpload = False, justStats = False):
 	downloadDatabase(downloadLatest[0])
 	
     if (uploadLatest) and (not noUpload):
-	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"syncRemoteDatabases: some mirrors don't have the latest database.")
 	print_info(green(" * ")+red("Starting to update the needed mirrors ..."))
 	_uploadList = []
 	for uri in etpConst['activatoruploaduris']:
@@ -985,13 +969,11 @@ def syncRemoteDatabases(noUpload = False, justStats = False):
     remoteDbsStatus = getEtpRemoteDatabaseStatus()
     print_info(green(" * ")+red("Remote Entropy Database Repository Status:"))
     for dbstat in remoteDbsStatus:
-	print_info(green("\t Host:\t")+bold(extractFTPHostFromUri(dbstat[0])))
+	print_info(green("\t Host:\t")+bold(Entropy.entropyTools.extractFTPHostFromUri(dbstat[0])))
 	print_info(red("\t  * Database revision: ")+blue(str(dbstat[1])))
 
 
 def uploadDatabase(uris):
-
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"uploadDatabase: called.")
 
     import gzip
     import bz2
@@ -1001,7 +983,7 @@ def uploadDatabase(uris):
         import rssTools
         rssClass = rssTools.rssFeed(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'], maxentries = etpConst['rss-max-entries'])
         # load dump
-        db_actions = dumpTools.loadobj(etpConst['rss-dump-name'])
+        db_actions = Entropy.dumpTools.loadobj(etpConst['rss-dump-name'])
         if db_actions:
             try:
                 f = open(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])
@@ -1027,155 +1009,143 @@ def uploadDatabase(uris):
                 for atom in removed_items:
                     description = atom+": "+removed_items[atom]['description']
                     rssClass.addItem(title = "Removed"+title, link = link, description = description)
-            
+
         rssClass.writeChanges()
         # clean global vars
         etpRSSMessages.clear()
-        dumpTools.removeobj(etpConst['rss-dump-name'])
-    
-    for uri in uris:
-	downloadLockDatabases(True,[uri])
-	
-	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"uploadDatabase: uploading data to: "+extractFTPHostFromUri(uri))
-	
-	print_info(green(" * ")+red("Uploading database to ")+bold(extractFTPHostFromUri(uri))+red(" ..."))
-	print_info(green(" * ")+red("Connecting to ")+bold(extractFTPHostFromUri(uri))+red(" ..."), back = True)
-	ftp = mirrorTools.handlerFTP(uri)
-	print_info(green(" * ")+red("Changing directory to ")+bold(etpConst['etpurirelativepath'])+red(" ..."), back = True)
-	ftp.setCWD(etpConst['etpurirelativepath'])
-	
-	cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
-	if cmethod == None: raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
-	print_info(green(" * ")+red("Uploading file ")+bold(etpConst[cmethod[2]])+red(" ..."), back = True)
-	
-	dbfilec = eval(cmethod[0])(etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[2]], "wb")
-	# compress the database file first
-	dbfile = open(etpConst['etpdatabasefilepath'],"rb")
-	dbcont = dbfile.readlines()
-	dbfile.close()
-	for i in dbcont:
-	    dbfilec.write(i)
-	dbfilec.close()
-	del dbcont
-	
-	# uploading database file
-	rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[2]])
-	if (rc == True):
-	    print_info(green(" * ")+red("Upload of ")+bold(etpConst[cmethod[2]])+red(" completed."))
-	else:
-	    print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
-	
-	# remove the compressed file
-	os.remove(etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[2]])
-	
-	# generate digest
-	hexdigest = md5sum(etpConst['etpdatabasefilepath'])
-	f = open(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'],"w")
-	f.write(hexdigest+"  "+etpConst['etpdatabasefile']+"\n")
-	f.flush()
-	f.close()
+        Entropy.dumpTools.removeobj(etpConst['rss-dump-name'])
 
-	# upload digest
-	print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'])+red(" ..."), back = True)
-	rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'],True)
-	if (rc == True):
-	    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"uploadDatabase: uploading to: "+extractFTPHostFromUri(uri)+" successfull.")
-	    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'])+red(" completed."))
-	else:
-	    entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"uploadDatabase: uploading to: "+extractFTPHostFromUri(uri)+" UNSUCCESSFUL! ERROR!.")
-	    print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
-	
-	# uploading revision file
-	print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" ..."), back = True)
-	rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'],True)
-	if (rc == True):
-	    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" completed."))
-	else:
-	    print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
-	
-	# uploading rss file (if enabled)
+    for uri in uris:
+        downloadLockDatabases(True,[uri])
+
+        print_info(green(" * ")+red("Uploading database to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" ..."))
+        print_info(green(" * ")+red("Connecting to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" ..."), back = True)
+        ftp = FtpInterface(uri, Entropy)
+        print_info(green(" * ")+red("Changing directory to ")+bold(etpConst['etpurirelativepath'])+red(" ..."), back = True)
+        ftp.setCWD(etpConst['etpurirelativepath'])
+
+        cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
+        if cmethod == None: raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
+        print_info(green(" * ")+red("Uploading file ")+bold(etpConst[cmethod[2]])+red(" ..."), back = True)
+
+        dbfilec = eval(cmethod[0])(etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[2]], "wb")
+        # compress the database file first
+        dbfile = open(etpConst['etpdatabasefilepath'],"rb")
+        dbcont = dbfile.readlines()
+        dbfile.close()
+        for i in dbcont:
+            dbfilec.write(i)
+        dbfilec.close()
+        del dbcont
+
+        # uploading database file
+        rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[2]])
+        if (rc == True):
+            print_info(green(" * ")+red("Upload of ")+bold(etpConst[cmethod[2]])+red(" completed."))
+        else:
+            print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
+
+        # remove the compressed file
+        os.remove(etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[2]])
+
+        # generate digest
+        hexdigest = Entropy.entropyTools.md5sum(etpConst['etpdatabasefilepath'])
+        f = open(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'],"w")
+        f.write(hexdigest+"  "+etpConst['etpdatabasefile']+"\n")
+        f.flush()
+        f.close()
+
+        # upload digest
+        print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'])+red(" ..."), back = True)
+        rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'],True)
+        if (rc == True):
+            print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'])+red(" completed."))
+        else:
+            print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
+
+        # uploading revision file
+        print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" ..."), back = True)
+        rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'],True)
+        if (rc == True):
+            print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'])+red(" completed."))
+        else:
+            print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
+
+        # uploading rss file (if enabled)
         if etpConst['rss-feed'] and os.path.isfile(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name']):
             print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'])+red(" ..."), back = True)
             rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'],True)
             if (rc == True):
                 print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'])+red(" completed."))
             else:
-                print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
-        
-	# close connection
-	ftp.closeConnection()
-	# unlock database
-	downloadLockDatabases(False,[uri])
+                print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
+
+        # close connection
+        ftp.closeConnection()
+        # unlock database
+        downloadLockDatabases(False,[uri])
 
 def downloadDatabase(uri):
-    
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: downloading from -> "+extractFTPHostFromUri(uri))
-    
+
     import gzip
     import bz2
-    
-    print_info(green(" * ")+red("Downloading database from ")+bold(extractFTPHostFromUri(uri))+red(" ..."))
-    print_info(green(" * ")+red("Connecting to ")+bold(extractFTPHostFromUri(uri))+red(" ..."), back = True)
-    ftp = mirrorTools.handlerFTP(uri)
+
+    print_info(green(" * ")+red("Downloading database from ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" ..."))
+    print_info(green(" * ")+red("Connecting to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" ..."), back = True)
+    ftp = FtpInterface(uri, Entropy)
     print_info(green(" * ")+red("Changing directory to ")+bold(etpConst['etpurirelativepath'])+red(" ..."), back = True)
     ftp.setCWD(etpConst['etpurirelativepath'])
-    
+
     cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
     if cmethod == None: raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
-    
+
     unpackFunction = cmethod[1]
     dbfilename = etpConst[cmethod[2]]
-    
+
     # downloading database file
     print_info(green(" * ")+red("Downloading file to ")+bold(dbfilename)+red(" ..."), back = True)
     rc = ftp.downloadFile(etpConst['etpdatabasedir'] + "/" + dbfilename,os.path.dirname(etpConst['etpdatabasefilepath']))
     if (rc == True):
-	print_info(green(" * ")+red("Download of ")+bold(dbfilename)+red(" completed."))
+        print_info(green(" * ")+red("Download of ")+bold(dbfilename)+red(" completed."))
     else:
-	print_warning(brown(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+        print_warning(brown(" * ")+red("Cannot properly download to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
 
     # On the fly decompression
     print_info(green(" * ")+red("Decompressing ")+bold(dbfilename)+red(" ..."), back = True)
-    
+
     eval(unpackFunction)(etpConst['etpdatabasedir'] + "/" + dbfilename)
-    
+
     print_info(green(" * ")+red("Decompression of ")+bold(dbfilename)+red(" completed."))
-    
+
     # downloading revision file
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: downloading revision file for "+extractFTPHostFromUri(uri))
     print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['etpdatabaserevisionfile'])+red(" ..."), back = True)
     rc = ftp.downloadFile(etpConst['etpdatabaserevisionfile'],os.path.dirname(etpConst['etpdatabasefilepath']),True)
     if (rc == True):
-	print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabaserevisionfile'])+red(" completed."))
+        print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabaserevisionfile'])+red(" completed."))
     else:
-	print_warning(brown(" * ")+red("Cannot properly download to ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
-    
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: downloading digest file for "+extractFTPHostFromUri(uri))
+        print_warning(brown(" * ")+red("Cannot properly download to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
+
     # downlading digest -> FIXME: add digest comparation
     print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['etpdatabasehashfile'])+red(" ..."), back = True)
     rc = ftp.downloadFile(etpConst['etpdatabasehashfile'],os.path.dirname(etpConst['etpdatabasefilepath']),True)
     if (rc == True):
-	print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabasehashfile'])+red(" completed."))
+        print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabasehashfile'])+red(" completed."))
     else:
-	entropyLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: Cannot properly download from "+extractFTPHostFromUri(uri)+". Please check.")
-	print_warning(brown(" * ")+red("Cannot properly download from ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+        print_warning(brown(" * ")+red("Cannot properly download from ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
 
     # download RSS
     if etpConst['rss-feed']:
-        entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: downloading RSS file for "+extractFTPHostFromUri(uri))
-        
+
         print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['rss-name'])+red(" ..."), back = True)
         try:
             rc = ftp.downloadFile(etpConst['rss-name'],etpConst['etpdatabasedir'],True)
             if (rc == True):
                 print_info(green(" * ")+red("Download of ")+bold(etpConst['rss-name'])+red(" completed."))
             else:
-                entropyLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: Cannot properly download from "+extractFTPHostFromUri(uri)+". Please check.")
-                print_warning(brown(" * ")+red("Cannot properly download from ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+                print_warning(brown(" * ")+red("Cannot properly download from ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
         except:
-            print_warning(brown(" * ")+red("Cannot properly download RSS file: "+etpConst['rss-name']+" for: ")+bold(extractFTPHostFromUri(uri))+red(". Please check."))
+            print_warning(brown(" * ")+red("Cannot properly download RSS file: "+etpConst['rss-name']+" for: ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
 
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadDatabase: do some tidy.")
     try:
         os.remove(etpConst['etpdatabasedir'] + "/" + dbfilename)
     except OSError:
@@ -1188,13 +1158,11 @@ def downloadDatabase(uri):
 # @ the second parameter is referred to upload locks, while the second to download ones
 def getMirrorsLock():
 
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getMirrorsLock: called.")
-
     # parse etpConst['activatoruploaduris']
     dbstatus = []
     for uri in etpConst['activatoruploaduris']:
 	data = [ uri, False , False ]
-	ftp = mirrorTools.handlerFTP(uri)
+	ftp = FtpInterface(uri, Entropy)
 	ftp.setCWD(etpConst['etpurirelativepath'])
 	if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
 	    # Upload is locked
@@ -1209,11 +1177,9 @@ def getMirrorsLock():
 # This function check the Entropy online database status
 def getEtpRemoteDatabaseStatus():
 
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getEtpRemoteDatabaseStatus: called.")
-
     uriDbInfo = []
     for uri in etpConst['activatoruploaduris']:
-	ftp = mirrorTools.handlerFTP(uri)
+	ftp = FtpInterface(uri, Entropy)
 	ftp.setCWD(etpConst['etpurirelativepath'])
 	cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
 	if cmethod == None: raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
@@ -1228,7 +1194,7 @@ def getEtpRemoteDatabaseStatus():
 		f = open( etpConst['packagestmpdir'] + "/" + etpConst['etpdatabaserevisionfile'],"r")
 		revision = int(f.readline().strip())
 		f.close()
-		spawnCommand("rm -f "+etpConst['packagestmpdir']+etpConst['etpdatabaserevisionfile'])
+		Entropy.entropyTools.spawnCommand("rm -f "+etpConst['packagestmpdir']+etpConst['etpdatabaserevisionfile'])
 	    else:
 		revision = 0
 	else:
@@ -1242,45 +1208,38 @@ def getEtpRemoteDatabaseStatus():
 
 def downloadPackageFromMirror(uri,pkgfile,branch):
 
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: called for "+extractFTPHostFromUri(uri)+" and file -> "+str(pkgfile))
-
     tries = 0
     maxtries = 5
     for i in range(maxtries):
 	
-	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+str(tries)+"/"+str(maxtries)+") downloading -> "+pkgfile)
 	
-        print_info(red("  * Connecting to ")+bold(extractFTPHostFromUri(uri)), back = True)
+        print_info(red("  * Connecting to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)), back = True)
         # connect
-        ftp = mirrorTools.handlerFTP(uri)
+        ftp = FtpInterface(uri, Entropy)
         ftp.setCWD(etpConst['binaryurirelativepath']+"/"+branch)
         # get the files
-        print_info(red("  * Downloading ")+brown(pkgfile)+red(" from ")+bold(extractFTPHostFromUri(uri)))
+        print_info(red("  * Downloading ")+brown(pkgfile)+red(" from ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
         rc = ftp.downloadFile(pkgfile,etpConst['packagesbindir']+"/"+branch)
 	if (rc is None):
-	    entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+str(tries)+"/"+str(maxtries)+") Error. File not found. -> "+pkgfile)
 	    # file does not exist
-	    print_warning(red("  * File ")+brown(pkgfile)+red(" does not exist remotely on ")+bold(extractFTPHostFromUri(uri)))
+	    print_warning(red("  * File ")+brown(pkgfile)+red(" does not exist remotely on ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
 	    ftp.closeConnection()
 	    return None
-	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: ("+str(tries)+"/"+str(maxtries)+") checking md5 for -> "+pkgfile)
         # check md5
-	dbconn = databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+	dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
 	idpackage = dbconn.getIDPackageFromFileInBranch(pkgfile,branch)
 	storedmd5 = dbconn.retrieveDigest(idpackage)
 	dbconn.closeDB()
 	print_info(red("  * Checking MD5 of ")+brown(pkgfile)+red(": should be ")+bold(storedmd5), back = True)
-	md5check = compareMd5(etpConst['packagesbindir']+"/"+branch+"/"+pkgfile,storedmd5)
+	md5check = Entropy.entropyTools.compareMd5(etpConst['packagesbindir']+"/"+branch+"/"+pkgfile,storedmd5)
 	if (md5check):
 	    print_info(red("  * Package ")+brown(pkgfile)+red("downloaded successfully."))
 	    return True
 	else:
 	    if (tries == maxtries):
-		entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: Max tries limit reached. Checksum does not match. Please consider to download or repackage again. Giving up.")
 		print_warning(red("  * Package ")+brown(pkgfile)+red(" checksum does not match. Please consider to download or repackage again. Giving up."))
 		return False
 	    else:
-		entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"downloadPackageFromMirror: Checksum does not match. Trying to download it again...")
 		print_warning(red("  * Package ")+brown(pkgfile)+red(" checksum does not match. Trying to download it again..."))
 		tries += 1
 		if os.path.isfile(etpConst['packagesbindir']+"/"+branch+"/"+pkgfile):
@@ -1288,33 +1247,28 @@ def downloadPackageFromMirror(uri,pkgfile,branch):
 
 def lockDatabases(lock = True, mirrorList = []):
 
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"lockDatabases: called. ")
-
     outstat = False
     if (mirrorList == []):
 	mirrorList = etpConst['activatoruploaduris']
     for uri in mirrorList:
 	
-	entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"lockDatabases: locking? "+str(lock)+" for: "+extractFTPHostFromUri(uri))
 	
 	if (lock):
-	    print_info(brown(" * ")+red("Locking ")+bold(extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
+	    print_info(brown(" * ")+red("Locking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
 	else:
-	    print_info(brown(" * ")+red("Unlocking ")+bold(extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
-	ftp = mirrorTools.handlerFTP(uri)
+	    print_info(brown(" * ")+red("Unlocking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
+	ftp = FtpInterface(uri, Entropy)
 	# upload the lock file to database/%ARCH% directory
 	ftp.setCWD(etpConst['etpurirelativepath'])
 	# check if the lock is already there
 	if (lock):
 	    if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
-		entropyLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"lockDatabases: mirror "+extractFTPHostFromUri(uri)+" already locked.")
-	        print_info(green(" * ")+red("Mirror database at ")+bold(extractFTPHostFromUri(uri))+red(" already locked."))
+	        print_info(green(" * ")+red("Mirror database at ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" already locked."))
 	        ftp.closeConnection()
 	        continue
 	else:
 	    if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
-		entropyLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"lockDatabases: mirror "+extractFTPHostFromUri(uri)+" already unlocked.")
-	        print_info(green(" * ")+red("Mirror database at ")+bold(extractFTPHostFromUri(uri))+red(" already unlocked."))
+	        print_info(green(" * ")+red("Mirror database at ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" already unlocked."))
 	        ftp.closeConnection()
 	        continue
 	if (lock):
@@ -1324,57 +1278,48 @@ def lockDatabases(lock = True, mirrorList = []):
 	    f.close()
 	    rc = ftp.uploadFile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'],ascii= True)
 	    if (rc == True):
-		entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"lockDatabases: mirror "+extractFTPHostFromUri(uri)+" successfully locked.")
-	        print_info(green(" * ")+red("Succesfully locked ")+bold(extractFTPHostFromUri(uri))+red(" mirror."))
+	        print_info(green(" * ")+red("Succesfully locked ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" mirror."))
 	    else:
 	        outstat = True
 	        print "\n"
-		entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"lockDatabases: mirror "+extractFTPHostFromUri(uri)+" had an unknown issue while locking.")
-	        print_warning(red(" * ")+red("A problem occured while locking ")+bold(extractFTPHostFromUri(uri))+red(" mirror. Please have a look."))
+	        print_warning(red(" * ")+red("A problem occured while locking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" mirror. Please have a look."))
 	        if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
 		    os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
 	else:
 	    rc = ftp.deleteFile(etpConst['etpdatabaselockfile'])
 	    if (rc):
-		entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"lockDatabases: mirror "+extractFTPHostFromUri(uri)+" successfully unlocked.")
-		print_info(green(" * ")+red("Succesfully unlocked ")+bold(extractFTPHostFromUri(uri))+red(" mirror."))
+		print_info(green(" * ")+red("Succesfully unlocked ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" mirror."))
 	        if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
 		    os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
 	    else:
-		entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"lockDatabases: mirror "+extractFTPHostFromUri(uri)+" had an unknown issue while unlocking.")
 	        outstat = True
 	        print "\n"
-	        print_warning(red(" * ")+red("A problem occured while unlocking ")+bold(extractFTPHostFromUri(uri))+red(" mirror. Please have a look."))
+	        print_warning(red(" * ")+red("A problem occured while unlocking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" mirror. Please have a look."))
 	ftp.closeConnection()
     return outstat
 
 def downloadLockDatabases(lock = True, mirrorList = []):
-
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadLockDatabases: called. ")
 
     outstat = False
     if (mirrorList == []):
 	mirrorList = etpConst['activatoruploaduris']
     for uri in mirrorList:
 	if (lock):
-	    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadLockDatabases: download locking -> "+extractFTPHostFromUri(uri))
-	    print_info(brown(" * ")+red("Locking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
+	    print_info(brown(" * ")+red("Locking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
 	else:
-	    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadLockDatabases: download unlocking -> "+extractFTPHostFromUri(uri))
-	    print_info(brown(" * ")+red("Unlocking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
-	ftp = mirrorTools.handlerFTP(uri)
+	    print_info(brown(" * ")+red("Unlocking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
+	ftp = FtpInterface(uri, Entropy)
 	# upload the lock file to database/%ARCH% directory
 	ftp.setCWD(etpConst['etpurirelativepath'])
 	# check if the lock is already there
 	if (lock):
 	    if (ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
-	        print_info(green(" * ")+red("Download mirror at ")+bold(extractFTPHostFromUri(uri))+red(" already locked."))
+	        print_info(green(" * ")+red("Download mirror at ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" already locked."))
 	        ftp.closeConnection()
 	        continue
 	else:
 	    if (not ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
-		entropyLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_VERBOSE,"downloadLockDatabases: already unlocked -> "+extractFTPHostFromUri(uri))
-	        print_info(green(" * ")+red("Download mirror at ")+bold(extractFTPHostFromUri(uri))+red(" already unlocked."))
+	        print_info(green(" * ")+red("Download mirror at ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" already unlocked."))
 	        ftp.closeConnection()
 	        continue
 	if (lock):
@@ -1384,28 +1329,23 @@ def downloadLockDatabases(lock = True, mirrorList = []):
 	    f.close()
 	    rc = ftp.uploadFile(etpConst['packagestmpdir']+"/"+etpConst['etpdatabasedownloadlockfile'],ascii= True)
 	    if (rc == True):
-		entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadLockDatabases: successfully locked -> "+extractFTPHostFromUri(uri))
-	        print_info(green(" * ")+red("Succesfully locked ")+bold(extractFTPHostFromUri(uri))+red(" download mirror."))
+	        print_info(green(" * ")+red("Succesfully locked ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" download mirror."))
 	    else:
-		entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"downloadLockDatabases: a problem occured while trying to download lock -> "+extractFTPHostFromUri(uri))
 	        outstat = True
 	        print "\n"
-	        print_warning(red(" * ")+red("A problem occured while locking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror. Please have a look."))
+	        print_warning(red(" * ")+red("A problem occured while locking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" download mirror. Please have a look."))
 	else:
 	    rc = ftp.deleteFile(etpConst['etpdatabasedownloadlockfile'])
 	    if (rc):
-		entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"downloadLockDatabases: successfully unlocked -> "+extractFTPHostFromUri(uri))
-		print_info(green(" * ")+red("Succesfully unlocked ")+bold(extractFTPHostFromUri(uri))+red(" download mirror."))
+		print_info(green(" * ")+red("Succesfully unlocked ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" download mirror."))
 	    else:
-		entropyLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_VERBOSE,"downloadLockDatabases: a problem occured while trying to download unlock -> "+extractFTPHostFromUri(uri))
 	        outstat = True
 	        print "\n"
-	        print_warning(red(" * ")+red("A problem occured while unlocking ")+bold(extractFTPHostFromUri(uri))+red(" download mirror. Please have a look."))
+	        print_warning(red(" * ")+red("A problem occured while unlocking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" download mirror. Please have a look."))
 	ftp.closeConnection()
     return outstat
 
 def getLocalDatabaseRevision():
-    entropyLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"getLocalDatabaseRevision: called. ")
     if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile']):
 	f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'])
 	rev = f.readline().strip()

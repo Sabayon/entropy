@@ -3,7 +3,7 @@
     # DESCRIPTION:
     # Entropy Portage Interface
 
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2007-2008 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,10 +19,6 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
-
-# EXIT STATUSES: 600-699
-
-
 
 ############
 # Portage initialization
@@ -49,10 +45,10 @@ def getPackagesInSystem():
     system = portage.settings.packages
     sysoutput = []
     for x in system:
-	y = getInstalledAtoms(x)
-	if (y != None):
-	    for z in y:
-	        sysoutput.append(z)
+        y = getInstalledAtoms(x)
+        if (y != None):
+            for z in y:
+                sysoutput.append(z)
     sysoutput.append("sys-kernel/linux-sabayon") # our kernel
     sysoutput.append("dev-db/sqlite") # our interface
     sysoutput.append("dev-python/pysqlite") # our python interface to our interface (lol)
@@ -70,14 +66,14 @@ def getConfigProtectAndMask():
     # explode
     protect = []
     for x in config_protect:
-	if x.startswith("$"): #FIXME: small hack
-	    x = commands.getoutput("echo "+x).split("\n")[0]
-	protect.append(x)
+        if x.startswith("$"): #FIXME: small hack
+            x = commands.getoutput("echo "+x).split("\n")[0]
+        protect.append(x)
     mask = []
     for x in config_protect_mask:
-	if x.startswith("$"): #FIXME: small hack
-	    x = commands.getoutput("echo "+x).split("\n")[0]
-	mask.append(x)
+        if x.startswith("$"): #FIXME: small hack
+            x = commands.getoutput("echo "+x).split("\n")[0]
+        mask.append(x)
     return ' '.join(protect),' '.join(mask)
 
 # resolve atoms automagically (best, not current!)
@@ -89,7 +85,7 @@ def getBestAtom(atom):
         gc.collect() # XXX: temp workaround for a python bug with portage
         return rc
     except ValueError:
-	return "!!conflicts"
+        return "!!conflicts"
 
 # same as above but includes masked ebuilds
 def getBestMaskedAtom(atom):
@@ -109,7 +105,7 @@ def getAtomCategory(atom):
         gc.collect() # XXX: temp workaround for a python bug with portage
         return rc
     except:
-	return None
+        return None
 
 # please always force =pkgcat/pkgname-ver if possible
 def getInstalledAtom(atom):
@@ -125,9 +121,9 @@ def getInstalledAtom(atom):
         mytree = portage.vartree(root=mypath)
     rc = mytree.dep_match(str(atom))
     if (rc != []):
-	if (len(rc) == 1):
-	    return rc[0]
-	else:
+        if (len(rc) == 1):
+            return rc[0]
+        else:
             return rc[len(rc)-1]
     else:
         return None
@@ -144,12 +140,12 @@ def getPackageSlot(atom):
     except NameError:
         mytree = portage.vartree(root=mypath)
     if atom.startswith("="):
-	atom = atom[1:]
+        atom = atom[1:]
     rc = mytree.getslot(atom)
     if rc != "":
-	return rc
+        return rc
     else:
-	return None
+        return None
 
 def getInstalledAtoms(atom):
     mypath = etpConst['systemroot']+"/"
@@ -173,40 +169,40 @@ def parseElogFile(atom):
     import commands
 
     if atom.startswith("="):
-	atom = atom[1:]
+        atom = atom[1:]
     if atom.startswith(">"):
-	atom = atom[1:]
+        atom = atom[1:]
     if atom.startswith("<"):
-	atom = atom[1:]
+        atom = atom[1:]
     if (atom.find("/") != -1):
-	pkgcat = atom.split("/")[0]
-	pkgnamever = atom.split("/")[1]+"*.log"
+        pkgcat = atom.split("/")[0]
+        pkgnamever = atom.split("/")[1]+"*.log"
     else:
-	pkgcat = "*"
-	pkgnamever = atom+"*.log"
+        pkgcat = "*"
+        pkgnamever = atom+"*.log"
     elogfile = pkgcat+":"+pkgnamever
     reallogfile = commands.getoutput("find "+etpConst['logdir']+"/elog/ -name '"+elogfile+"'").split("\n")[0].strip()
     if os.path.isfile(reallogfile):
-	# FIXME: improve this part
-	logline = False
-	logoutput = []
-	f = open(reallogfile,"r")
-	reallog = f.readlines()
-	f.close()
-	for line in reallog:
-	    if line.startswith("INFO: postinst") or line.startswith("LOG: postinst"):
-		logline = True
-		continue
-		# disable all the others
-	    elif line.startswith("INFO:") or line.startswith("LOG:"):
-		logline = False
-		continue
-	    if (logline) and (line.strip() != ""):
-		# trap !
-		logoutput.append(line.strip())
-	return logoutput
+        # FIXME: improve this part
+        logline = False
+        logoutput = []
+        f = open(reallogfile,"r")
+        reallog = f.readlines()
+        f.close()
+        for line in reallog:
+            if line.startswith("INFO: postinst") or line.startswith("LOG: postinst"):
+                logline = True
+                continue
+                # disable all the others
+            elif line.startswith("INFO:") or line.startswith("LOG:"):
+                logline = False
+                continue
+            if (logline) and (line.strip() != ""):
+                # trap !
+                logoutput.append(line.strip())
+        return logoutput
     else:
-	return []
+        return []
 
 # create a .tbz2 file in the specified path
 def quickpkg(atom,dirpath):
@@ -232,46 +228,46 @@ def quickpkg(atom,dirpath):
     id_strings = {}
     paths = contents.keys()
     paths.sort()
-    
+
     for path in paths:
-	try:
-	    exist = os.lstat(path)
-	except OSError:
-	    continue # skip file
-	ftype = contents[path][0]
-	lpath = path
-	arcname = path[1:]
-	if 'dir' == ftype and \
-	    not stat.S_ISDIR(exist.st_mode) and \
-	    os.path.isdir(lpath):
-	    lpath = os.path.realpath(lpath)
-	tarinfo = tar.gettarinfo(lpath, arcname)
-	tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
-	tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
-	
-	if stat.S_ISREG(exist.st_mode):
-	    tarinfo.type = tarfile.REGTYPE
-	    f = open(path)
-	    try:
-		tar.addfile(tarinfo, f)
-	    finally:
-		f.close()
-	else:
-	    tar.addfile(tarinfo)
+        try:
+            exist = os.lstat(path)
+        except OSError:
+            continue # skip file
+        ftype = contents[path][0]
+        lpath = path
+        arcname = path[1:]
+        if 'dir' == ftype and \
+            not stat.S_ISDIR(exist.st_mode) and \
+            os.path.isdir(lpath):
+            lpath = os.path.realpath(lpath)
+        tarinfo = tar.gettarinfo(lpath, arcname)
+        tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
+        tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
+
+        if stat.S_ISREG(exist.st_mode):
+            tarinfo.type = tarfile.REGTYPE
+            f = open(path)
+            try:
+                tar.addfile(tarinfo, f)
+            finally:
+                f.close()
+        else:
+            tar.addfile(tarinfo)
 
     tar.close()
-    
+
     # appending xpak informations
     import etpXpak
     tbz2 = etpXpak.tbz2(dirpath)
     tbz2.recompose(dbdir)
-    
+
     dblnk.unlockdb()
-    
+
     if os.path.isfile(dirpath):
-	return dirpath
+        return dirpath
     else:
-	return False
+        return False
 
 def getUSEFlags():
     return portage.settings['USE']
@@ -297,10 +293,10 @@ def getPackageIUSE(atom):
 
 def getPackageVar(atom,var):
     if atom.startswith("="):
-	atom = atom[1:]
+        atom = atom[1:]
     # can't check - return error
     if (atom.find("/") == -1):
-	return 1
+        return 1
     return portage.portdb.aux_get(atom,[var])[0]
 
 def synthetizeRoughDependencies(roughDependencies, useflags = None):
@@ -413,15 +409,15 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
 		    conflicts += dbOR
                 else:
 		    conflicts += " "
-    
+
 
     # format properly
     tmpConflicts = list(set(conflicts.split()))
     conflicts = ''
     tmpData = []
     for i in tmpConflicts:
-	i = i[1:] # remove "!"
-	tmpData.append(i)
+        i = i[1:] # remove "!"
+        tmpData.append(i)
     conflicts = ' '.join(tmpData)
 
     tmpData = []
@@ -433,34 +429,34 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
     # now filter |or| and |and|
     _tmpData = []
     for dep in tmpData:
-	
-	if dep.find("|or|") != -1:
-	    deps = dep.split("|or|")
-	    # find the best
-	    results = []
-	    for x in deps:
-		if x.find("|and|") != -1:
-		    anddeps = x.split("|and|")
-		    results.append(anddeps)
-		else:
-		    if x:
-		        results.append([x])
-	
-	    # now parse results
-	    for result in results:
-		outdeps = result[:]
-		for y in result:
-		    yresult = getInstalledAtoms(y)
-		    if (yresult != None):
-			outdeps.remove(y)
-		if (not outdeps):
-		    # find it
-		    for y in result:
-			_tmpData.append(y)
-		    break
-	
-	else:
-	    _tmpData.append(dep)
+
+        if dep.find("|or|") != -1:
+            deps = dep.split("|or|")
+            # find the best
+            results = []
+            for x in deps:
+                if x.find("|and|") != -1:
+                    anddeps = x.split("|and|")
+                    results.append(anddeps)
+                else:
+                    if x:
+                        results.append([x])
+
+            # now parse results
+            for result in results:
+                outdeps = result[:]
+                for y in result:
+                    yresult = getInstalledAtoms(y)
+                    if (yresult != None):
+                        outdeps.remove(y)
+                if (not outdeps):
+                    # find it
+                    for y in result:
+                        _tmpData.append(y)
+                    break
+
+        else:
+            _tmpData.append(dep)
 
     dependencies = ' '.join(_tmpData)
 
@@ -470,7 +466,7 @@ def getPortageAppDbPath():
     import portage_const
     rc = etpConst['systemroot']+"/"+portage_const.VDB_PATH
     if (not rc.endswith("/")):
-	return rc+"/"
+        return rc+"/"
     return rc
 
 # Collect installed packages
@@ -482,13 +478,13 @@ def getInstalledPackages(dbdir = None):
     dbDirs = os.listdir(appDbDir)
     installedAtoms = []
     for pkgsdir in dbDirs:
-	if os.path.isdir(appDbDir+pkgsdir):
-	    pkgdir = os.listdir(appDbDir+pkgsdir)
-	    for pdir in pkgdir:
-	        pkgcat = pkgsdir.split("/")[len(pkgsdir.split("/"))-1]
-	        pkgatom = pkgcat+"/"+pdir
-	        if pkgatom.find("-MERGING-") == -1:
-	            installedAtoms.append(pkgatom)
+        if os.path.isdir(appDbDir+pkgsdir):
+            pkgdir = os.listdir(appDbDir+pkgsdir)
+            for pdir in pkgdir:
+                pkgcat = pkgsdir.split("/")[len(pkgsdir.split("/"))-1]
+                pkgatom = pkgcat+"/"+pdir
+                if pkgatom.find("-MERGING-") == -1:
+                    installedAtoms.append(pkgatom)
     return installedAtoms, len(installedAtoms)
 
 def getInstalledPackagesCounters():
@@ -498,19 +494,19 @@ def getInstalledPackagesCounters():
     for pkgsdir in dbDirs:
         if not os.path.isdir(appDbDir+pkgsdir):
             continue
-	pkgdir = os.listdir(appDbDir+pkgsdir)
-	for pdir in pkgdir:
-	    pkgcat = pkgsdir.split("/")[len(pkgsdir.split("/"))-1]
-	    pkgatom = pkgcat+"/"+pdir
-	    if pkgatom.find("-MERGING-") == -1:
-		# get counter
+        pkgdir = os.listdir(appDbDir+pkgsdir)
+        for pdir in pkgdir:
+            pkgcat = pkgsdir.split("/")[len(pkgsdir.split("/"))-1]
+            pkgatom = pkgcat+"/"+pdir
+            if pkgatom.find("-MERGING-") == -1:
+                # get counter
                 try:
                     f = open(appDbDir+pkgsdir+"/"+pdir+"/"+dbCOUNTER,"r")
                 except IOError:
                     continue
-		counter = f.readline().strip()
-		f.close()
-	        installedAtoms.add((pkgatom,int(counter)))
+                counter = f.readline().strip()
+                f.close()
+                installedAtoms.add((pkgatom,int(counter)))
     return installedAtoms, len(installedAtoms)
 
 def refillCounter():
@@ -590,7 +586,7 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
     myebuilddir = os.path.dirname(myebuild)
     keys = portage.auxdbkeys
     metadata = {}
-    
+
     for key in keys:
         mykeypath = os.path.join(myebuilddir,key)
         if os.path.isfile(mykeypath) and os.access(mykeypath,os.R_OK):
@@ -599,7 +595,7 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
             f.close()
 
     ### END SETUP ENVIRONMENT
-    
+
     mypath = etpConst['systemroot']+"/"
     mysettings = portage.config(config_root="/", target_root=mypath, config_incrementals=portage_const.INCREMENTALS)
     mysettings._environ_whitelist = set(mysettings._environ_whitelist)
@@ -618,7 +614,7 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
             portage_tmpdir_created = True
         mysettings['PORTAGE_TMPDIR'] = str(portage_tmpdir)
         mysettings.backup_changes("PORTAGE_TMPDIR")
-    
+
     mydbapi = portage.fakedbapi(settings=mysettings)
     mydbapi.cpv_inject(cpv, metadata = metadata)
 
@@ -637,11 +633,11 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
         sys.stderr = oldsystderr
         sys.stdout = oldsysstdout
         f.close()
-    
+
     if portage_tmpdir_created:
         import shutil
         shutil.rmtree(portage_tmpdir,True)
-    
+
     del mydbapi
     del metadata
     del keys

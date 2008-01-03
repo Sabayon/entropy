@@ -3,7 +3,7 @@
     # DESCRIPTION:
     # generic tools for all the handlers applications
 
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2007-2008 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -69,15 +69,16 @@ class parallelTask(threading.Thread):
         threading.Thread.__init__(self)
         self.function = function
         self.data = dictData.copy()
-        self.run()
-        del self.function
-        del self.data
-    
+
     def run(self):
+        while etpSys['threads'] > etpSys['maxthreads']:
+            time.sleep(0.01)
+        etpSys['threads'] += 1
         if self.data:
             self.function(self.data)
         else:
             self.function()
+        etpSys['threads'] -= 1
     '''
     def destroy(self):
         del self.function
@@ -118,6 +119,61 @@ def printException(returndata = False):
             except:
                 if not returndata: print "<ERROR WHILE PRINTING VALUE>"
     return data
+
+# Get the content of an online page
+# @returns content: if the file exists
+# @returns False: if the file is not found
+def get_remote_data(url):
+
+    import socket
+    import urllib2
+    socket.setdefaulttimeout(60)
+    # now pray the server
+    try:
+        if etpConst['proxy']:
+            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+            opener = urllib2.build_opener(proxy_support)
+            urllib2.install_opener(opener)
+        item = urllib2.urlopen(url)
+        result = item.readlines()
+        if (not result):
+            socket.setdefaulttimeout(2)
+            return False
+        socket.setdefaulttimeout(2)
+        return result
+    except:
+        socket.setdefaulttimeout(2)
+        return False
+
+# Error reporting function
+# @input: error string (please use repr())
+# @returns bool: True if ok. False if not.
+# @returns False: if the file is not found
+def report_application_error(errorstring):
+    import socket
+    import urllib2
+    socket.setdefaulttimeout(60)
+    outstring = ""
+    for char in errorstring:
+        if char == " ":
+	    char = "%20"
+	outstring += char
+    outstring = outstring.split("\n")
+    outstring = '<br>'.join(outstring)
+    url = etpHandlers['errorsend']+outstring
+    # now pray the server
+    try:
+        if etpConst['proxy']:
+            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+            opener = urllib2.build_opener(proxy_support)
+            urllib2.install_opener(opener)
+        xfile = urllib2.urlopen(url)
+        result = xfile.readlines()
+	socket.setdefaulttimeout(2)
+        return result
+    except:
+	socket.setdefaulttimeout(2)
+	return False
 
 def ebeep(count = 5):
     for x in range(count):

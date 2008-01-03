@@ -3,7 +3,7 @@
     # DESCRIPTION:
     # Entropy database query tools and library
 
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2007-2008 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,9 +22,8 @@
 
 import os
 from entropyConstants import *
-from clientConstants import *
 from outputTools import *
-from equoInterface import EquoInterface
+from entropy import EquoInterface
 Equo = EquoInterface()
 
 ########################################################

@@ -3,7 +3,7 @@
     # DESCRIPTION:
     # Entropy Database Interface
 
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2007-2008 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,39 +30,13 @@ except ImportError: # fallback to embedded pysqlite
     from pysqlite2 import dbapi2
 import dumpTools
 import exceptionTools
-import repositoriesTools
 Text = TextInterface()
-_treeUpdatesCalled = False
 
 
 ############
 # Functions and Classes
 #####################################################################################
 
-'''
-   @description: open the repository database
-   @input repositoryName: name of the client database
-   @output: database class instance
-   NOTE: if you are interested using it client side, please USE equoTools.Equo() class instead
-'''
-def openRepositoryDatabase(repositoryName, xcache = True, indexing = True):
-    dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
-    if not os.path.isfile(dbfile):
-	repositoriesTools.fetchRepositoryIfNotAvailable(repositoryName)
-    conn = etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = etpConst['dbnamerepoprefix']+repositoryName, xcache = xcache, indexing = indexing)
-    # initialize CONFIG_PROTECT
-    if (etpRepositories[repositoryName]['configprotect'] == None) or (etpRepositories[repositoryName]['configprotectmask'] == None):
-        
-        etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
-        etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectDirectories(mask = True)
-        etpRepositories[repositoryName]['configprotect'] = [etpConst['systemroot']+x for x in etpRepositories[repositoryName]['configprotect']]
-        etpRepositories[repositoryName]['configprotectmask'] = [etpConst['systemroot']+x for x in etpRepositories[repositoryName]['configprotectmask']]
-        
-	etpRepositories[repositoryName]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotect']]
-	etpRepositories[repositoryName]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotectmask']]
-    if not _treeUpdatesCalled and (etpConst['uid'] == 0):
-        conn.clientUpdatePackagesData()
-    return conn
 
 '''
    @description: open the installed packages database
@@ -95,7 +69,7 @@ def openClientDatabase(xcache = True, generate = False, indexing = True):
 def openServerDatabase(readOnly = True, noUpload = True):
     conn = etpDatabase(readOnly = readOnly, dbFile = etpConst['etpdatabasefilepath'], noUpload = noUpload)
     # verify if we need to update the database to sync with portage updates, we just ignore being readonly in the case
-    if not _treeUpdatesCalled:
+    if not etpConst['treeupdatescalled']:
         conn.serverUpdatePackagesData()
     return conn
 
@@ -125,7 +99,7 @@ def backupClientDatabase():
 class etpDatabase(TextInterface):
 
     def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = 'etpdb', indexing = True):
-        
+
         self.readOnly = readOnly
         self.noUpload = noUpload
         self.packagesRemoved = False
@@ -137,7 +111,7 @@ class etpDatabase(TextInterface):
         if etpConst['uid'] > 0: # forcing since we won't have write access to db
             self.indexing = False
         self.dbFile = dbFile
-        
+
         # load db on disk cache?
         self.loadDatabaseCache()
 
@@ -152,7 +126,7 @@ class etpDatabase(TextInterface):
 
     def doServerDatabaseSyncLock(self, noUpload):
 
-        import mirrorTools
+        from entropy import FtpInterface
         import activatorTools
 
         # check if the database is locked locally
@@ -162,7 +136,7 @@ class etpDatabase(TextInterface):
             # check if the database is locked REMOTELY
             self.updateProgress(red("Locking and Syncing Entropy database..."), importance = 1, type = "info", header = red(" * "), back = True)
             for uri in etpConst['activatoruploaduris']:
-                ftp = mirrorTools.handlerFTP(uri)
+                ftp = FtpInterface(uri, self)
                 try:
                     ftp.setCWD(etpConst['etpurirelativepath'])
                 except:
@@ -236,7 +210,7 @@ class etpDatabase(TextInterface):
             self.cursor.close()
             self.connection.close()
             return
-    
+
         # Cleanups if at least one package has been removed
         # Please NOTE: the client database does not need it
         if (self.packagesRemoved):
@@ -253,23 +227,23 @@ class etpDatabase(TextInterface):
                 self.createNeededTable()
                 self.cleanupNeeded()
             self.cleanupDependencies()
-        
+
         if (etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']) and (not etpDbStatus[etpConst['etpdatabasefilepath']]['bumped']):
             # bump revision, setting DatabaseBump causes the session to just bump once
             etpDbStatus[etpConst['etpdatabasefilepath']]['bumped'] = True
             self.revisionBump()
-        
+
         if (not etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']):
             # we can unlock it, no changes were made
             import activatorTools
             activatorTools.lockDatabases(False)
         else:
             self.updateProgress(darkgreen("Mirrors have not been unlocked. Run activator."), importance = 1, type = "info", header = brown(" * "))
-        
+
         # run vacuum cleaner
         self.cursor.execute("vacuum")
         self.connection.commit()
-        
+
         self.cursor.close()
         self.connection.close()
 
@@ -340,8 +314,7 @@ class etpDatabase(TextInterface):
     # check for /usr/portage/profiles/updates changes
     def serverUpdatePackagesData(self):
 
-        global _treeUpdatesCalled
-        _treeUpdatesCalled = True
+        etpConst['treeupdatescalled'] = True
 
         repository = etpConst['officialrepositoryname']
         doRescan = False
@@ -423,8 +396,7 @@ class etpDatabase(TextInterface):
     # changes required if running as root.
     def clientUpdatePackagesData(self):
 
-        global _treeUpdatesCalled
-        _treeUpdatesCalled = True
+        etpConst['treeupdatescalled'] = True
 
         repository = self.dbname[len(etpConst['dbnamerepoprefix']):]
         doRescan = False
@@ -567,7 +539,7 @@ class etpDatabase(TextInterface):
             slot = self.retrieveSlot(idpackage)
             old_atom = self.retrieveAtom(idpackage)
             new_atom = old_atom.replace(key_from,key_to)
-            
+
             ### UPDATE DATABASE
             # update category
             self.setCategory(idpackage, cat_to)
@@ -678,7 +650,7 @@ class etpDatabase(TextInterface):
         import reagentTools
         reagent_cmds = ["--repackage"]
         reagent_cmds += atoms
-        
+
         # ask branch question
         rc = self.askQuestion("     Would you like to continue with the default branch \"%s\" ?" % (etpConst['branch'],))
         if rc == "No":
@@ -699,7 +671,7 @@ class etpDatabase(TextInterface):
                 if rc == "Yes":
                     break
             reagent_cmds.append("--branch=%s" % (mybranch,))
-        
+
         rc = reagentTools.update(reagent_cmds)
         if rc != 0:
             self.updateProgress(
@@ -725,7 +697,7 @@ class etpDatabase(TextInterface):
                 except:
                     broken1 = True
                     pass
-    
+
             ''' database atom dependencies cache '''
             dbmatch = dbCacheStore.get(etpCache['dbMatch']+self.dbname)
             broken2 = False
@@ -738,7 +710,7 @@ class etpDatabase(TextInterface):
                 except:
                     broken2 = True
                     pass
-    
+
             ''' database search cache '''
             dbmatch = dbCacheStore.get(etpCache['dbSearch']+self.dbname)
             broken3 = False
@@ -751,7 +723,7 @@ class etpDatabase(TextInterface):
                 except:
                     broken3 = True
                     pass
-    
+
             if (broken1 or broken2 or broken3):
                 # discard both caches
                 dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
@@ -759,7 +731,7 @@ class etpDatabase(TextInterface):
                 dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
                 dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
                 self.clearInfoCache()
-                
+
         else:
             self.xcache = False # setting this to be safe
             dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
@@ -1846,142 +1818,142 @@ class etpDatabase(TextInterface):
         self.createBaseinfoIndex()
         self.createExtrainfoIndex()
 
-	sql = """
-		SELECT 
-			baseinfo.atom,
-			baseinfo.name,
-			baseinfo.version,
-			baseinfo.versiontag,
-			extrainfo.description,
-			categories.category,
-			flags.chost,
-			flags.cflags,
-			flags.cxxflags,
-			extrainfo.homepage,
-			licenses.license,
-			baseinfo.branch,
-			extrainfo.download,
-			extrainfo.digest,
-			baseinfo.slot,
-			baseinfo.etpapi,
-			extrainfo.datecreation,
-			extrainfo.size,
-			baseinfo.revision
-		FROM 
-			baseinfo,
-			extrainfo,
-			categories,
-			flags,
-			licenses
-		WHERE 
-			baseinfo.idpackage = '"""+str(idpackage)+"""' 
-			and baseinfo.idpackage = extrainfo.idpackage 
-			and baseinfo.idcategory = categories.idcategory 
-			and extrainfo.idflags = flags.idflags
-			and baseinfo.idlicense = licenses.idlicense
-	"""
-	self.cursor.execute(sql)
-	return self.cursor.fetchone()
-	
+        sql = """
+                SELECT 
+                        baseinfo.atom,
+                        baseinfo.name,
+                        baseinfo.version,
+                        baseinfo.versiontag,
+                        extrainfo.description,
+                        categories.category,
+                        flags.chost,
+                        flags.cflags,
+                        flags.cxxflags,
+                        extrainfo.homepage,
+                        licenses.license,
+                        baseinfo.branch,
+                        extrainfo.download,
+                        extrainfo.digest,
+                        baseinfo.slot,
+                        baseinfo.etpapi,
+                        extrainfo.datecreation,
+                        extrainfo.size,
+                        baseinfo.revision
+                FROM 
+                        baseinfo,
+                        extrainfo,
+                        categories,
+                        flags,
+                        licenses
+                WHERE 
+                        baseinfo.idpackage = '"""+str(idpackage)+"""' 
+                        and baseinfo.idpackage = extrainfo.idpackage 
+                        and baseinfo.idcategory = categories.idcategory 
+                        and extrainfo.idflags = flags.idflags
+                        and baseinfo.idlicense = licenses.idlicense
+        """
+        self.cursor.execute(sql)
+        return self.cursor.fetchone()
+
 
     def getPackageData(self, idpackage):
-	data = {}
+        data = {}
 
-	mydata = self.getBaseData(idpackage)
-	
-	data['name'] = mydata[1]
-	data['version'] = mydata[2]
-	data['versiontag'] = mydata[3]
-	data['description'] = mydata[4]
-	data['category'] = mydata[5]
-	
-	data['chost'] = mydata[6]
-	data['cflags'] = mydata[7]
-	data['cxxflags'] = mydata[8]
-	
-	data['homepage'] = mydata[9]
-	data['useflags'] = self.retrieveUseflags(idpackage)
-	data['license'] = mydata[10]
-	
-	data['keywords'] = self.retrieveKeywords(idpackage)
-	
-	data['branch'] = mydata[11]
-	data['download'] = mydata[12]
-	data['digest'] = mydata[13]
-	data['sources'] = self.retrieveSources(idpackage)
-	data['counter'] = self.retrieveCounter(idpackage) # cannot insert into the sql above
-	data['messages'] = self.retrieveMessages(idpackage)
-	data['trigger'] = self.retrieveTrigger(idpackage) #FIXME: needed for now because of new column
-	
-	if (self.isSystemPackage(idpackage)):
-	    data['systempackage'] = 'xxx'
-	else:
-	    data['systempackage'] = ''
-	
-	# FIXME: this will be removed when 1.0 will be out
-	try:
-	    data['config_protect'] = self.retrieveProtect(idpackage)
-	    data['config_protect_mask'] = self.retrieveProtectMask(idpackage)
-	except:
-	    self.createProtectTable()
-	    data['config_protect'] = self.retrieveProtect(idpackage)
-	    data['config_protect_mask'] = self.retrieveProtectMask(idpackage)
-	try:
-	    data['eclasses'] = self.retrieveEclasses(idpackage)
-	except:
-	    self.createEclassesTable()
-	    data['eclasses'] = self.retrieveEclasses(idpackage)
-	try:
-	    data['needed'] = self.retrieveNeeded(idpackage)
-	except:
-	    self.createNeededTable()
-	    data['needed'] = self.retrieveNeeded(idpackage)
-	
-	mirrornames = set()
-	for x in data['sources']:
-	    if x.startswith("mirror://"):
-		mirrorname = x.split("/")[2]
-		mirrornames.add(mirrorname)
-	data['mirrorlinks'] = []
-	for mirror in mirrornames:
-	    mirrorlinks = self.retrieveMirrorInfo(mirror)
-	    data['mirrorlinks'].append([mirror,mirrorlinks])
-	
-	data['slot'] = mydata[14]
+        mydata = self.getBaseData(idpackage)
+
+        data['name'] = mydata[1]
+        data['version'] = mydata[2]
+        data['versiontag'] = mydata[3]
+        data['description'] = mydata[4]
+        data['category'] = mydata[5]
+
+        data['chost'] = mydata[6]
+        data['cflags'] = mydata[7]
+        data['cxxflags'] = mydata[8]
+
+        data['homepage'] = mydata[9]
+        data['useflags'] = self.retrieveUseflags(idpackage)
+        data['license'] = mydata[10]
+
+        data['keywords'] = self.retrieveKeywords(idpackage)
+
+        data['branch'] = mydata[11]
+        data['download'] = mydata[12]
+        data['digest'] = mydata[13]
+        data['sources'] = self.retrieveSources(idpackage)
+        data['counter'] = self.retrieveCounter(idpackage) # cannot insert into the sql above
+        data['messages'] = self.retrieveMessages(idpackage)
+        data['trigger'] = self.retrieveTrigger(idpackage) #FIXME: needed for now because of new column
+
+        if (self.isSystemPackage(idpackage)):
+            data['systempackage'] = 'xxx'
+        else:
+            data['systempackage'] = ''
+
+        # FIXME: this will be removed when 1.0 will be out
+        try:
+            data['config_protect'] = self.retrieveProtect(idpackage)
+            data['config_protect_mask'] = self.retrieveProtectMask(idpackage)
+        except:
+            self.createProtectTable()
+            data['config_protect'] = self.retrieveProtect(idpackage)
+            data['config_protect_mask'] = self.retrieveProtectMask(idpackage)
+        try:
+            data['eclasses'] = self.retrieveEclasses(idpackage)
+        except:
+            self.createEclassesTable()
+            data['eclasses'] = self.retrieveEclasses(idpackage)
+        try:
+            data['needed'] = self.retrieveNeeded(idpackage)
+        except:
+            self.createNeededTable()
+            data['needed'] = self.retrieveNeeded(idpackage)
+
+        mirrornames = set()
+        for x in data['sources']:
+            if x.startswith("mirror://"):
+                mirrorname = x.split("/")[2]
+                mirrornames.add(mirrorname)
+        data['mirrorlinks'] = []
+        for mirror in mirrornames:
+            mirrorlinks = self.retrieveMirrorInfo(mirror)
+            data['mirrorlinks'].append([mirror,mirrorlinks])
+
+        data['slot'] = mydata[14]
         data['injected'] = self.isInjected(idpackage)
         mycontent = self.retrieveContent(idpackage, extended = True)
         data['content'] = {}
         for cdata in mycontent:
             data['content'][cdata[0]] = cdata[1]
-	
-	data['dependencies'] = self.retrieveDependencies(idpackage)
-	data['provide'] = self.retrieveProvide(idpackage)
-	data['conflicts'] = self.retrieveConflicts(idpackage)
-	
-	data['etpapi'] = mydata[15]
-	data['datecreation'] = mydata[16]
-	data['size'] = mydata[17]
-	data['revision'] = mydata[18]
-	data['disksize'] = self.retrieveOnDiskSize(idpackage) # cannot do this too, for backward compat
-	return data
+
+        data['dependencies'] = self.retrieveDependencies(idpackage)
+        data['provide'] = self.retrieveProvide(idpackage)
+        data['conflicts'] = self.retrieveConflicts(idpackage)
+
+        data['etpapi'] = mydata[15]
+        data['datecreation'] = mydata[16]
+        data['size'] = mydata[17]
+        data['revision'] = mydata[18]
+        data['disksize'] = self.retrieveOnDiskSize(idpackage) # cannot do this too, for backward compat
+        return data
 
     def fetchall2set(self, item):
-	mycontent = set()
-	for x in item:
+        mycontent = set()
+        for x in item:
             mycontent |= set(x)
-	return mycontent
+        return mycontent
 
     def fetchall2list(self, item):
-	content = []
-	for x in item:
+        content = []
+        for x in item:
             content += list(x)
-	return content
+        return content
 
     def fetchone2list(self, item):
-	return list(item)
+        return list(item)
 
     def fetchone2set(self, item):
-	return set(item)
+        return set(item)
 
     def clearInfoCache(self):
         # clear caches
@@ -1990,31 +1962,31 @@ class etpDatabase(TextInterface):
         dumpTools.dumpobj(etpCache['dbInfo']+self.dbname,{})
 
     def fetchInfoCache(self,idpackage,function):
-	if (self.xcache):
+        if (self.xcache):
             try:
                 cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage))
             except KeyError: # dict does not exist?
                 self.clearInfoCache()
                 return None
-	    if cached != None:
-		rslt = cached.get(function)
-		if rslt != None:
+            if cached != None:
+                rslt = cached.get(function)
+                if rslt != None:
                     if (type(rslt) is dict) or (type(rslt) is set): # needed ?
                         return rslt.copy()
                     elif (type(rslt) is list):
                         return rslt[:]
                     else:
                         return rslt
-	return None
+        return None
 
     def storeInfoCache(self,idpackage,function,info_cache_data):
-	if (self.xcache):
+        if (self.xcache):
             try:
                 cache = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage))
             except KeyError: # something bad happened even here, reset cache
                 self.clearInfoCache()
                 cache = None
-	    if cache == None: dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
+            if cache == None: dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
             if (type(info_cache_data) is set) or (type(info_cache_data) is dict):
                 dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)][function] = info_cache_data.copy()
             elif (type(info_cache_data) is list):
@@ -2023,27 +1995,27 @@ class etpDatabase(TextInterface):
                 dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)][function] = info_cache_data
 
     def fetchSearchCache(self,searchdata,function):
-	if (self.xcache):
-	    cached = dbCacheStore[etpCache['dbSearch']+self.dbname].get(function)
-	    if cached != None:
-		rslt = cached.get(searchdata)
-		if rslt != None:
+        if (self.xcache):
+            cached = dbCacheStore[etpCache['dbSearch']+self.dbname].get(function)
+            if cached != None:
+                rslt = cached.get(searchdata)
+                if rslt != None:
                     if (type(rslt) is dict) or (type(rslt) is set): # needed ?
                         return rslt.copy()
                     elif (type(rslt) is list):
                         return rslt[:]
                     else:
                         return rslt
-	return None
+        return None
 
     def storeSearchCache(self,searchdata,function,data):
-	if (self.xcache):
-	    cache = dbCacheStore[etpCache['dbSearch']+self.dbname].get(function)
-	    if cache == None: dbCacheStore[etpCache['dbSearch']+self.dbname][function] = {}
+        if (self.xcache):
+            cache = dbCacheStore[etpCache['dbSearch']+self.dbname].get(function)
+            if cache == None: dbCacheStore[etpCache['dbSearch']+self.dbname][function] = {}
             if (type(data) is set) or (type(data) is dict):
-	        dbCacheStore[etpCache['dbSearch']+self.dbname][function][searchdata] = data.copy()
+                dbCacheStore[etpCache['dbSearch']+self.dbname][function][searchdata] = data.copy()
             else:
-	        dbCacheStore[etpCache['dbSearch']+self.dbname][function][searchdata] = data
+                dbCacheStore[etpCache['dbSearch']+self.dbname][function][searchdata] = data
 
     def retrieveRepositoryUpdatesDigest(self, repository):
         try:
@@ -2056,7 +2028,7 @@ class etpDatabase(TextInterface):
             return mydigest[0]
         else:
             return -1
-    
+
     def listAllTreeUpdatesActions(self):
         try:
             self.cursor.execute('SELECT * FROM treeupdatesactions')
@@ -2064,7 +2036,7 @@ class etpDatabase(TextInterface):
             self.createTreeupdatesactionsTable()
             self.cursor.execute('SELECT * FROM treeupdatesactions')
         return self.cursor.fetchall()
-    
+
     def retrieveTreeUpdatesActions(self, repository):
         try:
             self.cursor.execute('SELECT command FROM treeupdatesactions where repository = (?)', (repository,))
@@ -2072,7 +2044,7 @@ class etpDatabase(TextInterface):
         except:
             self.createTreeupdatesactionsTable()
             return set()
-    
+
     # mainly used to restore a previous table, used by reagent in --initialize
     def addTreeUpdatesActions(self, updates):
         for update in updates:
@@ -2080,15 +2052,15 @@ class etpDatabase(TextInterface):
             repository = update[1]
             command = update[2]
             self.cursor.execute('INSERT INTO treeupdatesactions VALUES (?,?,?)', (idupdate,repository,command,))
-    
+
     def setRepositoryUpdatesDigest(self, repository, digest):
         try:
             self.cursor.execute('DELETE FROM treeupdates where repository = (?)', (repository,)) # doing it for safety
         except:
             self.createTreeupdatesTable()
         self.cursor.execute('INSERT INTO treeupdates VALUES (?,?)', (repository,digest,))
-	self.commitChanges()
-    
+        self.commitChanges()
+
     def addRepositoryUpdatesActions(self, repository, actions):
         for command in actions:
             try:
@@ -2099,203 +2071,203 @@ class etpDatabase(TextInterface):
 
     def retrieveAtom(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveAtom')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveAtom')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT atom FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-	atom = self.cursor.fetchone()[0]
+        self.cursor.execute('SELECT atom FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        atom = self.cursor.fetchone()[0]
 
-	self.storeInfoCache(idpackage,'retrieveAtom',atom)
-	return atom
+        self.storeInfoCache(idpackage,'retrieveAtom',atom)
+        return atom
 
     def retrieveBranch(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveBranch')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveBranch')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT branch FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-	br = self.cursor.fetchone()[0]
+        self.cursor.execute('SELECT branch FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        br = self.cursor.fetchone()[0]
 
-	self.storeInfoCache(idpackage,'retrieveBranch',br)
-	return br
+        self.storeInfoCache(idpackage,'retrieveBranch',br)
+        return br
 
     def retrieveTrigger(self, idpackage):
 
-	#cache = self.fetchInfoCache(idpackage,'retrieveTrigger')
-	#if cache != None: return cache
-	
-	try:
-	    self.cursor.execute('SELECT data FROM triggers WHERE idpackage = (?)', (idpackage,))
-	    trigger = self.cursor.fetchone()
+        #cache = self.fetchInfoCache(idpackage,'retrieveTrigger')
+        #if cache != None: return cache
+
+        try:
+            self.cursor.execute('SELECT data FROM triggers WHERE idpackage = (?)', (idpackage,))
+            trigger = self.cursor.fetchone()
             if trigger:
                 trigger = trigger[0]
             else:
                 trigger = ''
-	except:
-	    # generate trigger column
-	    self.createTriggerTable()
-	    trigger = ''
-	    pass
-	
-	#self.storeInfoCache(idpackage,'retrieveTrigger',trigger)
-	return trigger
+        except:
+            # generate trigger column
+            self.createTriggerTable()
+            trigger = ''
+            pass
+
+        #self.storeInfoCache(idpackage,'retrieveTrigger',trigger)
+        return trigger
 
     def retrieveDownloadURL(self, idpackage):
-	
-	cache = self.fetchInfoCache(idpackage,'retrieveDownloadURL')
-	if cache != None: return cache
 
-	self.cursor.execute('SELECT download FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-	download = self.cursor.fetchone()[0]
+        cache = self.fetchInfoCache(idpackage,'retrieveDownloadURL')
+        if cache != None: return cache
 
-	self.storeInfoCache(idpackage,'retrieveDownloadURL',download)
-	return download
+        self.cursor.execute('SELECT download FROM extrainfo WHERE idpackage = (?)', (idpackage,))
+        download = self.cursor.fetchone()[0]
+
+        self.storeInfoCache(idpackage,'retrieveDownloadURL',download)
+        return download
 
     def retrieveDescription(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveDescription')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveDescription')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT description FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-	description = self.cursor.fetchone()[0]
+        self.cursor.execute('SELECT description FROM extrainfo WHERE idpackage = (?)', (idpackage,))
+        description = self.cursor.fetchone()[0]
 
-	self.storeInfoCache(idpackage,'retrieveDescription',description)
-	return description
+        self.storeInfoCache(idpackage,'retrieveDescription',description)
+        return description
 
     def retrieveHomepage(self, idpackage):
-	
-	cache = self.fetchInfoCache(idpackage,'retrieveHomepage')
-	if cache != None: return cache
 
-	self.cursor.execute('SELECT homepage FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-	home = self.cursor.fetchone()[0]
+        cache = self.fetchInfoCache(idpackage,'retrieveHomepage')
+        if cache != None: return cache
 
-	self.storeInfoCache(idpackage,'retrieveHomepage',home)
-	return home
+        self.cursor.execute('SELECT homepage FROM extrainfo WHERE idpackage = (?)', (idpackage,))
+        home = self.cursor.fetchone()[0]
+
+        self.storeInfoCache(idpackage,'retrieveHomepage',home)
+        return home
 
     def retrieveCounter(self, idpackage):
-	
-	cache = self.fetchInfoCache(idpackage,'retrieveCounter')
-	if cache != None: return cache
-	
-	counter = -1
-	try:
-	    self.cursor.execute('SELECT counter FROM counters WHERE idpackage = (?)', (idpackage,))
-	    mycounter = self.cursor.fetchone()
-	    if mycounter:
-	        counter = mycounter[0]
-	except:
+
+        cache = self.fetchInfoCache(idpackage,'retrieveCounter')
+        if cache != None: return cache
+
+        counter = -1
+        try:
+            self.cursor.execute('SELECT counter FROM counters WHERE idpackage = (?)', (idpackage,))
+            mycounter = self.cursor.fetchone()
+            if mycounter:
+                counter = mycounter[0]
+        except:
             if self.dbname == "client":
                 self.createCountersTable()
                 counter = self.retrieveCounter(idpackage)
-	
-	self.storeInfoCache(idpackage,'retrieveCounter',int(counter))
-	return int(counter)
+
+        self.storeInfoCache(idpackage,'retrieveCounter',int(counter))
+        return int(counter)
 
     def retrieveMessages(self, idpackage):
-	
-	cache = self.fetchInfoCache(idpackage,'retrieveMessages')
-	if cache != None: return cache
 
-	messages = []
-	try:
-	    self.cursor.execute('SELECT message FROM messages WHERE idpackage = (?)', (idpackage,))
-	    messages = self.fetchall2list(self.cursor.fetchall())
-	except:
-	    pass
+        cache = self.fetchInfoCache(idpackage,'retrieveMessages')
+        if cache != None: return cache
 
-	self.storeInfoCache(idpackage,'retrieveMessages',messages)
-	return messages
+        messages = []
+        try:
+            self.cursor.execute('SELECT message FROM messages WHERE idpackage = (?)', (idpackage,))
+            messages = self.fetchall2list(self.cursor.fetchall())
+        except:
+            pass
+
+        self.storeInfoCache(idpackage,'retrieveMessages',messages)
+        return messages
 
     # in bytes
     def retrieveSize(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveSize')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveSize')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT size FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-	size = self.cursor.fetchone()[0]
+        self.cursor.execute('SELECT size FROM extrainfo WHERE idpackage = (?)', (idpackage,))
+        size = self.cursor.fetchone()[0]
 
-	self.storeInfoCache(idpackage,'retrieveSize',size)
-	return size
+        self.storeInfoCache(idpackage,'retrieveSize',size)
+        return size
 
     # in bytes
     def retrieveOnDiskSize(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveOnDiskSize')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveOnDiskSize')
+        if cache != None: return cache
 
-	try:
-	    self.cursor.execute('SELECT size FROM sizes WHERE idpackage = (?)', (idpackage,))
-	except:
-	    self.createSizesTable()
-	    # table does not exist?
-	    return 0
-	size = self.cursor.fetchone() # do not use [0]!
-	if not size:
-	    size = 0
-	else:
-	    size = size[0]
+        try:
+            self.cursor.execute('SELECT size FROM sizes WHERE idpackage = (?)', (idpackage,))
+        except:
+            self.createSizesTable()
+            # table does not exist?
+            return 0
+        size = self.cursor.fetchone() # do not use [0]!
+        if not size:
+            size = 0
+        else:
+            size = size[0]
 
-	self.storeInfoCache(idpackage,'retrieveOnDiskSize',size)
-	return size
+        self.storeInfoCache(idpackage,'retrieveOnDiskSize',size)
+        return size
 
     def retrieveDigest(self, idpackage):
-	
-	cache = self.fetchInfoCache(idpackage,'retrieveDigest')
-	if cache != None: return cache
 
-	self.cursor.execute('SELECT "digest" FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-	digest = self.cursor.fetchone()[0]
+        cache = self.fetchInfoCache(idpackage,'retrieveDigest')
+        if cache != None: return cache
 
-	self.storeInfoCache(idpackage,'retrieveDigest',digest)
-	return digest
+        self.cursor.execute('SELECT "digest" FROM extrainfo WHERE idpackage = (?)', (idpackage,))
+        digest = self.cursor.fetchone()[0]
+
+        self.storeInfoCache(idpackage,'retrieveDigest',digest)
+        return digest
 
     def retrieveName(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveName')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveName')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT "name" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-	name = self.cursor.fetchone()[0]
+        self.cursor.execute('SELECT "name" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        name = self.cursor.fetchone()[0]
 
-	self.storeInfoCache(idpackage,'retrieveName',name)
-	return name
+        self.storeInfoCache(idpackage,'retrieveName',name)
+        return name
 
     def retrieveVersion(self, idpackage):
-	
-	cache = self.fetchInfoCache(idpackage,'retrieveVersion')
-	if cache != None: return cache
-	
-	self.cursor.execute('SELECT "version" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-	ver = self.cursor.fetchone()[0]
 
-	self.storeInfoCache(idpackage,'retrieveVersion',ver)
-	return ver
+        cache = self.fetchInfoCache(idpackage,'retrieveVersion')
+        if cache != None: return cache
+
+        self.cursor.execute('SELECT "version" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        ver = self.cursor.fetchone()[0]
+
+        self.storeInfoCache(idpackage,'retrieveVersion',ver)
+        return ver
 
     def retrieveRevision(self, idpackage):
-	
-	cache = self.fetchInfoCache(idpackage,'retrieveRevision')
-	if cache != None: return cache
 
-	self.cursor.execute('SELECT "revision" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-	rev = self.cursor.fetchone()[0]
+        cache = self.fetchInfoCache(idpackage,'retrieveRevision')
+        if cache != None: return cache
 
-	self.storeInfoCache(idpackage,'retrieveRevision',rev)
-	return rev
+        self.cursor.execute('SELECT "revision" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        rev = self.cursor.fetchone()[0]
+
+        self.storeInfoCache(idpackage,'retrieveRevision',rev)
+        return rev
 
     def retrieveDateCreation(self, idpackage):
-	
-	cache = self.fetchInfoCache(idpackage,'retrieveDateCreation')
-	if cache != None: return cache
 
-	self.cursor.execute('SELECT "datecreation" FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-	date = self.cursor.fetchone()[0]
-	if not date:
-	    date = "N/A" #FIXME: to be removed?
+        cache = self.fetchInfoCache(idpackage,'retrieveDateCreation')
+        if cache != None: return cache
 
-	self.storeInfoCache(idpackage,'retrieveDateCreation',date)
-	return date
+        self.cursor.execute('SELECT "datecreation" FROM extrainfo WHERE idpackage = (?)', (idpackage,))
+        date = self.cursor.fetchone()[0]
+        if not date:
+            date = "N/A" #FIXME: to be removed?
+
+        self.storeInfoCache(idpackage,'retrieveDateCreation',date)
+        return date
 
     def retrieveApi(self, idpackage):
 
@@ -2466,16 +2438,16 @@ class etpDatabase(TextInterface):
     def retrieveContent(self, idpackage, extended = False, contentType = None):
 
         self.createContentIndex() # FIXME: remove this with 1.0
-        
+
         # protect user from having a bad day
         # developers can solve bad utf-8 data (and MUST), so we won't skip bad chars for them
         if self.clientDatabase:
             self.connection.text_factory = lambda x: unicode(x, "utf-8", "ignore")
-        
+
         extstring = ''
         if extended:
             extstring = ",type"
-        
+
         searchkeywords = [idpackage]
         contentstring = ''
         if contentType:
@@ -3632,380 +3604,380 @@ class etpDatabase(TextInterface):
         cached = self.atomMatchFetchCache(atom,caseSensitive,matchSlot,multiMatch,matchBranches,matchTag,packagesFilter)
         if cached != None:
             return cached
-	
-	# check if tag is provided -> app-foo/foo-1.2.3:SLOT|TAG or app-foo/foo-1.2.3|TAG
-	atomTag = entropyTools.dep_gettag(atom)
-	atomSlot = entropyTools.dep_getslot(atom)
 
-	scan_atom = entropyTools.remove_tag(atom)
-	if (matchTag == None) and (atomTag != None):
-	    matchTag = atomTag
-	
-	# check if slot is provided -> app-foo/foo-1.2.3:SLOT
-	scan_atom = entropyTools.remove_slot(scan_atom)
-	if (matchSlot == None) and (atomSlot != None):
-	    matchSlot = atomSlot
+        # check if tag is provided -> app-foo/foo-1.2.3:SLOT|TAG or app-foo/foo-1.2.3|TAG
+        atomTag = entropyTools.dep_gettag(atom)
+        atomSlot = entropyTools.dep_getslot(atom)
+
+        scan_atom = entropyTools.remove_tag(atom)
+        if (matchTag == None) and (atomTag != None):
+            matchTag = atomTag
+
+        # check if slot is provided -> app-foo/foo-1.2.3:SLOT
+        scan_atom = entropyTools.remove_slot(scan_atom)
+        if (matchSlot == None) and (atomSlot != None):
+            matchSlot = atomSlot
 
         # check for direction
         strippedAtom = entropyTools.dep_getcpv(scan_atom)
         if scan_atom[-1] == "*":
-	    strippedAtom += "*"
+            strippedAtom += "*"
         direction = scan_atom[0:len(scan_atom)-len(strippedAtom)]
-	
+
         justname = entropyTools.isjustname(strippedAtom)
         pkgversion = ''
         if (not justname):
-	    
-	    # FIXME: deprecated - will be removed soonly
+
+            # FIXME: deprecated - will be removed soonly
             if strippedAtom.split("-")[-1][0] == "t":
                 strippedAtom = '-t'.join(strippedAtom.split("-t")[:-1])
-	    
-	    # get version
-	    data = entropyTools.catpkgsplit(strippedAtom)
-	    if data == None:
-	        return -1,3 # atom is badly formatted
-	    pkgversion = data[2]+"-"+data[3]
-	    
-	    # FIXME: deprecated - will be removed soonly
-	    if not matchTag:
-	        if scan_atom.split("-")[-1].startswith("t"):
-	            matchTag = scan_atom.split("-")[-1]
-	
+
+            # get version
+            data = entropyTools.catpkgsplit(strippedAtom)
+            if data == None:
+                return -1,3 # atom is badly formatted
+            pkgversion = data[2]+"-"+data[3]
+
+            # FIXME: deprecated - will be removed soonly
+            if not matchTag:
+                if scan_atom.split("-")[-1].startswith("t"):
+                    matchTag = scan_atom.split("-")[-1]
+
         pkgkey = entropyTools.dep_getkey(strippedAtom)
-	splitkey = pkgkey.split("/")
+        splitkey = pkgkey.split("/")
         if (len(splitkey) == 2):
             pkgname = splitkey[1]
             pkgcat = splitkey[0]
         else:
             pkgname = splitkey[0]
-	    pkgcat = "null"
+            pkgcat = "null"
 
-	if (matchBranches):
-	    myBranchIndex = tuple(matchBranches) # force to tuple for security
-	else:
-	    if (self.dbname == 'client'):
-		# collect all available branches
-		myBranchIndex = tuple(self.listAllBranches())
-	    else:
-	        myBranchIndex = (etpConst['branch'],)
+        if (matchBranches):
+            myBranchIndex = tuple(matchBranches) # force to tuple for security
+        else:
+            if (self.dbname == 'client'):
+                # collect all available branches
+                myBranchIndex = tuple(self.listAllBranches())
+            else:
+                myBranchIndex = (etpConst['branch'],)
 
         # IDs found in the database that match our search
         foundIDs = []
-        
+
         for idx in myBranchIndex:
-	    results = self.searchPackagesByName(pkgname, sensitive = caseSensitive, branch = idx)
-	    
+            results = self.searchPackagesByName(pkgname, sensitive = caseSensitive, branch = idx)
+
             mypkgcat = pkgcat
-	    mypkgname = pkgname
-            
+            mypkgname = pkgname
+
             virtual = False
-	    # if it's a PROVIDE, search with searchProvide
+            # if it's a PROVIDE, search with searchProvide
             # there's no package with that name
-	    if (not results) and (mypkgcat == "virtual"):
-	        virtuals = self.searchProvide(pkgkey, branch = idx)
-		if (virtuals):
+            if (not results) and (mypkgcat == "virtual"):
+                virtuals = self.searchProvide(pkgkey, branch = idx)
+                if (virtuals):
                     virtual = True
-		    mypkgname = self.retrieveName(virtuals[0][1])
-		    mypkgcat = self.retrieveCategory(virtuals[0][1])
-		    results = virtuals
+                    mypkgname = self.retrieveName(virtuals[0][1])
+                    mypkgcat = self.retrieveCategory(virtuals[0][1])
+                    results = virtuals
 
-	    # now validate
-	    if (not results):
-	        continue # search into a stabler branch
-	
-	    elif (len(results) > 1):
+            # now validate
+            if (not results):
+                continue # search into a stabler branch
 
-	        # if it's because category differs, it's a problem
-	        foundCat = ""
-	        cats = set()
-	        for result in results:
-		    idpackage = result[1]
-		    cat = self.retrieveCategory(idpackage)
-		    cats.add(cat)
-		    if (cat == mypkgcat) or ((not virtual) and (mypkgcat == "virtual") and (cat == mypkgcat)): # in case of virtual packages only (that they're not stored as provide)
-		        foundCat = cat
+            elif (len(results) > 1):
+
+                # if it's because category differs, it's a problem
+                foundCat = ""
+                cats = set()
+                for result in results:
+                    idpackage = result[1]
+                    cat = self.retrieveCategory(idpackage)
+                    cats.add(cat)
+                    if (cat == mypkgcat) or ((not virtual) and (mypkgcat == "virtual") and (cat == mypkgcat)): # in case of virtual packages only (that they're not stored as provide)
+                        foundCat = cat
 
                 # if we found something at least...
-	        if (not foundCat) and (len(cats) == 1) and (mypkgcat in ("virtual","null")):
-		    foundCat = list(cats)[0]
-	        if (not foundCat):
-		    # got the issue
-		    # gosh, return and complain
+                if (not foundCat) and (len(cats) == 1) and (mypkgcat in ("virtual","null")):
+                    foundCat = list(cats)[0]
+                if (not foundCat):
+                    # got the issue
+                    # gosh, return and complain
                     self.atomMatchStoreCache((-1,2), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-		    return -1,2
-	
-	        # we can use foundCat
-	        mypkgcat = foundCat
+                    return -1,2
 
-	        # we need to search using the category
-		if (not multiMatch):
-	            results = self.searchPackagesByNameAndCategory(name = mypkgname, category = mypkgcat, branch = idx, sensitive = caseSensitive)
-	        # validate again
-	        if (not results):
-		    continue  # search into another branch
-	
-	        # if we get here, we have found the needed IDs
-	        foundIDs = results
-	        break
+                # we can use foundCat
+                mypkgcat = foundCat
 
-	    else:
-                
+                # we need to search using the category
+                if (not multiMatch):
+                    results = self.searchPackagesByNameAndCategory(name = mypkgname, category = mypkgcat, branch = idx, sensitive = caseSensitive)
+                # validate again
+                if (not results):
+                    continue  # search into another branch
+
+                # if we get here, we have found the needed IDs
+                foundIDs = results
+                break
+
+            else:
+
                 # if mypkgcat is virtual, we can force
                 if (mypkgcat == "virtual") and (not virtual): # in case of virtual packages only (that they're not stored as provide)
                     mypkgcat = entropyTools.dep_getkey(results[0][0]).split("/")[0]
-                
-		# check if category matches
-		if mypkgcat != "null":
-		    foundCat = self.retrieveCategory(results[0][1])
-		    if mypkgcat == foundCat:
-			foundIDs.append(results[0])
-		    else:
-			continue
-		else:
-	            foundIDs.append(results[0])
-	            break
-        
+
+                # check if category matches
+                if mypkgcat != "null":
+                    foundCat = self.retrieveCategory(results[0][1])
+                    if mypkgcat == foundCat:
+                        foundIDs.append(results[0])
+                    else:
+                        continue
+                else:
+                    foundIDs.append(results[0])
+                    break
+
         if packagesFilter: # keyword filtering
             foundIDs = self.packagesFilter(foundIDs)
 
         if (foundIDs):
-	    # now we have to handle direction
-	    if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
-	        # check if direction is used with justname, in this case, return an error
-	        if (justname):
+            # now we have to handle direction
+            if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
+                # check if direction is used with justname, in this case, return an error
+                if (justname):
                     self.atomMatchStoreCache((-1,3), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-		    return -1,3 # error, cannot use directions when not specifying version
-	    
-	        if (direction == "~") or (direction == "=") or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")): # any revision within the version specified OR the specified version
-		
-		    if (direction == '' and not justname):
-		        direction = "="
-		
-		    # remove revision (-r0 if none)
-		    if (direction == "="):
-		        if (pkgversion.split("-")[-1] == "r0"):
-                            pkgversion = "-".join(pkgversion.split("-")[:-1])
-		    if (direction == "~"):
-		        pkgversion = entropyTools.remove_revision(pkgversion)
-		
-		    dbpkginfo = []
-		    for data in foundIDs:
-		        idpackage = data[1]
-		        dbver = self.retrieveVersion(idpackage)
-		        if (direction == "~"):
-			    myver = entropyTools.remove_revision(dbver)
-                            if myver == pkgversion:
-			        # found
-			        dbpkginfo.append([idpackage,dbver])
-		        else:
-			    # media-libs/test-1.2* support
-			    if pkgversion[-1] == "*":
-			        if dbver.startswith(pkgversion[:-1]):
-				    dbpkginfo.append([idpackage,dbver])
-			    else:
-				# do versions matches?
-				if pkgversion == dbver:
-				    dbpkginfo.append([idpackage,dbver])
+                    return -1,3 # error, cannot use directions when not specifying version
 
-		    if (not dbpkginfo):
+                if (direction == "~") or (direction == "=") or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")): # any revision within the version specified OR the specified version
+
+                    if (direction == '' and not justname):
+                        direction = "="
+
+                    # remove revision (-r0 if none)
+                    if (direction == "="):
+                        if (pkgversion.split("-")[-1] == "r0"):
+                            pkgversion = "-".join(pkgversion.split("-")[:-1])
+                    if (direction == "~"):
+                        pkgversion = entropyTools.remove_revision(pkgversion)
+
+                    dbpkginfo = []
+                    for data in foundIDs:
+                        idpackage = data[1]
+                        dbver = self.retrieveVersion(idpackage)
+                        if (direction == "~"):
+                            myver = entropyTools.remove_revision(dbver)
+                            if myver == pkgversion:
+                                # found
+                                dbpkginfo.append([idpackage,dbver])
+                        else:
+                            # media-libs/test-1.2* support
+                            if pkgversion[-1] == "*":
+                                if dbver.startswith(pkgversion[:-1]):
+                                    dbpkginfo.append([idpackage,dbver])
+                            else:
+                                # do versions matches?
+                                if pkgversion == dbver:
+                                    dbpkginfo.append([idpackage,dbver])
+
+                    if (not dbpkginfo):
                         self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-		        return -1,1
-		
-		    versions = []
-		    for x in dbpkginfo:
-			if (matchSlot != None):
-			    mslot = self.retrieveSlot(x[0])
-			    if (str(mslot) != str(matchSlot)):
-				continue
-			if (matchTag != None):
-			    if matchTag != self.retrieveVersionTag(x[0]):
-				continue
-		        versions.append(x[1])
-		
-		    if (not versions):
+                        return -1,1
+
+                    versions = []
+                    for x in dbpkginfo:
+                        if (matchSlot != None):
+                            mslot = self.retrieveSlot(x[0])
+                            if (str(mslot) != str(matchSlot)):
+                                continue
+                        if (matchTag != None):
+                            if matchTag != self.retrieveVersionTag(x[0]):
+                                continue
+                        versions.append(x[1])
+
+                    if (not versions):
                         self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-			return -1,1
-		
-		    # who is newer ?
-		    versionlist = entropyTools.getNewerVersion(versions)
-		    newerPackage = dbpkginfo[versions.index(versionlist[0])]
-		
-	            # now look if there's another package with the same category, name, version, but different tag
-	            newerPkgName = self.retrieveName(newerPackage[0])
-	            newerPkgCategory = self.retrieveCategory(newerPackage[0])
-	            newerPkgVersion = self.retrieveVersion(newerPackage[0])
-		    newerPkgBranch = self.retrieveBranch(newerPackage[0])
-	            similarPackages = self.searchPackagesByNameAndVersionAndCategory(name = newerPkgName, version = newerPkgVersion, category = newerPkgCategory, branch = newerPkgBranch)
-		    
-		    if (multiMatch):
+                        return -1,1
+
+                    # who is newer ?
+                    versionlist = entropyTools.getNewerVersion(versions)
+                    newerPackage = dbpkginfo[versions.index(versionlist[0])]
+
+                    # now look if there's another package with the same category, name, version, but different tag
+                    newerPkgName = self.retrieveName(newerPackage[0])
+                    newerPkgCategory = self.retrieveCategory(newerPackage[0])
+                    newerPkgVersion = self.retrieveVersion(newerPackage[0])
+                    newerPkgBranch = self.retrieveBranch(newerPackage[0])
+                    similarPackages = self.searchPackagesByNameAndVersionAndCategory(name = newerPkgName, version = newerPkgVersion, category = newerPkgCategory, branch = newerPkgBranch)
+
+                    if (multiMatch):
                         # filter only valid keywords
                         similarPackages = set([x[1] for x in similarPackages])
                         self.atomMatchStoreCache((similarPackages,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-			return similarPackages,0
-		    
-	            if (len(similarPackages) > 1):
-		        # gosh, there are packages with the same name, version, category
-		        # we need to parse version tag
-		        versionTags = []
-		        for pkg in similarPackages:
-		            versionTags.append(self.retrieveVersionTag(pkg[1]))
-			versiontaglist = entropyTools.getNewerVersionTag(versionTags)
-		        newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
+                        return similarPackages,0
+
+                    if (len(similarPackages) > 1):
+                        # gosh, there are packages with the same name, version, category
+                        # we need to parse version tag
+                        versionTags = []
+                        for pkg in similarPackages:
+                            versionTags.append(self.retrieveVersionTag(pkg[1]))
+                        versiontaglist = entropyTools.getNewerVersionTag(versionTags)
+                        newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
                         newerPackage = newerPackage[1],None # so will return correctly
-		
+
                     # filter only valid keywords
                     self.atomMatchStoreCache((newerPackage[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-		    return newerPackage[0],0
+                    return newerPackage[0],0
 
-	        elif (direction.find(">") != -1) or (direction.find("<") != -1):
-		
-		    # remove revision (-r0 if none)
-		    if pkgversion.split("-")[-1] == "r0":
-		        # remove
+                elif (direction.find(">") != -1) or (direction.find("<") != -1):
+
+                    # remove revision (-r0 if none)
+                    if pkgversion.split("-")[-1] == "r0":
+                        # remove
                         pkgversion = '-'.join(pkgversion.split("-")[:-1])
 
-		    dbpkginfo = []
-		    for data in foundIDs:
-		        idpackage = data[1]
-		        dbver = self.retrieveVersion(idpackage)
-		        pkgcmp = entropyTools.compareVersions(pkgversion,dbver)
-		        if direction == ">": # the --deep mode should really act on this
-		            if (pkgcmp < 0):
-			        # found
-			        dbpkginfo.append([idpackage,dbver])
-		        elif direction == "<":
-		            if (pkgcmp > 0):
-			        # found
-			        dbpkginfo.append([idpackage,dbver])
-		        elif direction == ">=": # the --deep mode should really act on this
-		            if (pkgcmp <= 0):
-			        # found
-			        dbpkginfo.append([idpackage,dbver])
-		        elif direction == "<=":
-		            if (pkgcmp >= 0):
-			        # found
-			        dbpkginfo.append([idpackage,dbver])
-		
-		    if (not dbpkginfo):
-		        # this version is not available
+                    dbpkginfo = []
+                    for data in foundIDs:
+                        idpackage = data[1]
+                        dbver = self.retrieveVersion(idpackage)
+                        pkgcmp = entropyTools.compareVersions(pkgversion,dbver)
+                        if direction == ">": # the --deep mode should really act on this
+                            if (pkgcmp < 0):
+                                # found
+                                dbpkginfo.append([idpackage,dbver])
+                        elif direction == "<":
+                            if (pkgcmp > 0):
+                                # found
+                                dbpkginfo.append([idpackage,dbver])
+                        elif direction == ">=": # the --deep mode should really act on this
+                            if (pkgcmp <= 0):
+                                # found
+                                dbpkginfo.append([idpackage,dbver])
+                        elif direction == "<=":
+                            if (pkgcmp >= 0):
+                                # found
+                                dbpkginfo.append([idpackage,dbver])
+
+                    if (not dbpkginfo):
+                        # this version is not available
                         self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-		        return -1,1
-		
-		    versions = []
-		    multiMatchList = set()
-		    _dbpkginfo = []
-		    for x in dbpkginfo:
-			if (matchSlot != None):
-			    mslot = self.retrieveSlot(x[0])
-			    if (str(matchSlot) != str(mslot)):
-				continue
-			if (matchTag != None):
-			    if matchTag != self.retrieveVersionTag(x[0]):
-				continue
-			if (multiMatch):
-			    multiMatchList.add(x[0])
-		        versions.append(x[1])
-			_dbpkginfo.append(x)
-		    dbpkginfo = _dbpkginfo
-		    
-		    if (multiMatch):
+                        return -1,1
+
+                    versions = []
+                    multiMatchList = set()
+                    _dbpkginfo = []
+                    for x in dbpkginfo:
+                        if (matchSlot != None):
+                            mslot = self.retrieveSlot(x[0])
+                            if (str(matchSlot) != str(mslot)):
+                                continue
+                        if (matchTag != None):
+                            if matchTag != self.retrieveVersionTag(x[0]):
+                                continue
+                        if (multiMatch):
+                            multiMatchList.add(x[0])
+                        versions.append(x[1])
+                        _dbpkginfo.append(x)
+                    dbpkginfo = _dbpkginfo
+
+                    if (multiMatch):
                         self.atomMatchStoreCache((multiMatchList,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-			return multiMatchList,0
+                        return multiMatchList,0
 
-		    if (not versions):
+                    if (not versions):
                         self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-			return -1,1
+                        return -1,1
 
-		    # who is newer ?
-		    versionlist = entropyTools.getNewerVersion(versions)
-		    newerPackage = dbpkginfo[versions.index(versionlist[0])]
-		
-	            # now look if there's another package with the same category, name, version, but different tag
-	            newerPkgName = self.retrieveName(newerPackage[0])
-	            newerPkgCategory = self.retrieveCategory(newerPackage[0])
-	            newerPkgVersion = self.retrieveVersion(newerPackage[0])
-		    newerPkgBranch = self.retrieveBranch(newerPackage[0])
-	            similarPackages = self.searchPackagesByNameAndVersionAndCategory(name = newerPkgName, version = newerPkgVersion, category = newerPkgCategory, branch = newerPkgBranch)
+                    # who is newer ?
+                    versionlist = entropyTools.getNewerVersion(versions)
+                    newerPackage = dbpkginfo[versions.index(versionlist[0])]
 
-		    if (multiMatch):
+                    # now look if there's another package with the same category, name, version, but different tag
+                    newerPkgName = self.retrieveName(newerPackage[0])
+                    newerPkgCategory = self.retrieveCategory(newerPackage[0])
+                    newerPkgVersion = self.retrieveVersion(newerPackage[0])
+                    newerPkgBranch = self.retrieveBranch(newerPackage[0])
+                    similarPackages = self.searchPackagesByNameAndVersionAndCategory(name = newerPkgName, version = newerPkgVersion, category = newerPkgCategory, branch = newerPkgBranch)
+
+                    if (multiMatch):
                         similarPackages = set([x[1] for x in similarPackages])
                         self.atomMatchStoreCache((similarPackages,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-			return similarPackages,0
+                        return similarPackages,0
 
-	            if (len(similarPackages) > 1):
-		        # gosh, there are packages with the same name, version, category
-		        # we need to parse version tag
-		        versionTags = []
-		        for pkg in similarPackages:
-		            versionTags.append(self.retrieveVersionTag(pkg[1]))
-		        versiontaglist = entropyTools.getNewerVersionTag(versionTags)
-		        newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
+                    if (len(similarPackages) > 1):
+                        # gosh, there are packages with the same name, version, category
+                        # we need to parse version tag
+                        versionTags = []
+                        for pkg in similarPackages:
+                            versionTags.append(self.retrieveVersionTag(pkg[1]))
+                        versiontaglist = entropyTools.getNewerVersionTag(versionTags)
+                        newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
                         newerPackage = newerPackage[1],None
-		
+
 
                     self.atomMatchStoreCache((newerPackage[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-		    return newerPackage[0],0
+                    return newerPackage[0],0
 
-	        else:
+                else:
                     self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-		    return -1,1
-		
-	    else:
-	    
-	        # not set, just get the newer version, matching slot choosen if matchSlot != None
-	        versionIDs = []
-		multiMatchList = set()
-		_foundIDs = []
-	        for data in foundIDs:
-		    if (matchSlot == None) and (matchTag == None):
-		        versionIDs.append(self.retrieveVersion(data[1]))
-			if (multiMatch):
-			    multiMatchList.add(data[1])
-		    else:
-			if (matchSlot != None):
-			    foundslot = self.retrieveSlot(data[1])
-			    if (str(foundslot) != str(matchSlot)):
-			        continue
-			if (matchTag != None):
-			    if matchTag != self.retrieveVersionTag(data[1]):
-				continue
-			versionIDs.append(self.retrieveVersion(data[1]))
-			if (multiMatch):
-			    multiMatchList.add(data[1])
-		    _foundIDs.append(data)
-		foundIDs = _foundIDs
+                    return -1,1
 
-		if (multiMatch):
+            else:
+
+                # not set, just get the newer version, matching slot choosen if matchSlot != None
+                versionIDs = []
+                multiMatchList = set()
+                _foundIDs = []
+                for data in foundIDs:
+                    if (matchSlot == None) and (matchTag == None):
+                        versionIDs.append(self.retrieveVersion(data[1]))
+                        if (multiMatch):
+                            multiMatchList.add(data[1])
+                    else:
+                        if (matchSlot != None):
+                            foundslot = self.retrieveSlot(data[1])
+                            if (str(foundslot) != str(matchSlot)):
+                                continue
+                        if (matchTag != None):
+                            if matchTag != self.retrieveVersionTag(data[1]):
+                                continue
+                        versionIDs.append(self.retrieveVersion(data[1]))
+                        if (multiMatch):
+                            multiMatchList.add(data[1])
+                    _foundIDs.append(data)
+                foundIDs = _foundIDs
+
+                if (multiMatch):
                     self.atomMatchStoreCache((multiMatchList,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-		    return multiMatchList,0
-		
-		if (not versionIDs):
-                    self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-		    return -1,1
-		
-	        versionlist = entropyTools.getNewerVersion(versionIDs)
-	        newerPackage = foundIDs[versionIDs.index(versionlist[0])]
-	    
-	        # now look if there's another package with the same category, name, version, tag
-	        newerPkgName = self.retrieveName(newerPackage[1])
-	        newerPkgCategory = self.retrieveCategory(newerPackage[1])
-	        newerPkgVersion = self.retrieveVersion(newerPackage[1])
-	        newerPkgBranch = self.retrieveBranch(newerPackage[1])
-	        similarPackages = self.searchPackagesByNameAndVersionAndCategory(name = newerPkgName, version = newerPkgVersion, category = newerPkgCategory, branch = newerPkgBranch)
+                    return multiMatchList,0
 
-	        if (len(similarPackages) > 1):
-		    # gosh, there are packages with the same name, version, category
-		    # we need to parse version tag
-		    versionTags = []
-		    for pkg in similarPackages:
-		        versionTags.append(self.retrieveVersionTag(pkg[1]))
-		    versiontaglist = entropyTools.getNewerVersionTag(versionTags)
-		    newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
+                if (not versionIDs):
+                    self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
+                    return -1,1
+
+                versionlist = entropyTools.getNewerVersion(versionIDs)
+                newerPackage = foundIDs[versionIDs.index(versionlist[0])]
+
+                # now look if there's another package with the same category, name, version, tag
+                newerPkgName = self.retrieveName(newerPackage[1])
+                newerPkgCategory = self.retrieveCategory(newerPackage[1])
+                newerPkgVersion = self.retrieveVersion(newerPackage[1])
+                newerPkgBranch = self.retrieveBranch(newerPackage[1])
+                similarPackages = self.searchPackagesByNameAndVersionAndCategory(name = newerPkgName, version = newerPkgVersion, category = newerPkgCategory, branch = newerPkgBranch)
+
+                if (len(similarPackages) > 1):
+                    # gosh, there are packages with the same name, version, category
+                    # we need to parse version tag
+                    versionTags = []
+                    for pkg in similarPackages:
+                        versionTags.append(self.retrieveVersionTag(pkg[1]))
+                    versiontaglist = entropyTools.getNewerVersionTag(versionTags)
+                    newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
 
                 self.atomMatchStoreCache((newerPackage[1],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-	        return newerPackage[1],0
+                return newerPackage[1],0
 
         else:
-	    # package not found in any branch
+            # package not found in any branch
             self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-	    return -1,1
+            return -1,1

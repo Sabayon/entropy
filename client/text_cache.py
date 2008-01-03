@@ -3,7 +3,7 @@
     # DESCRIPTION:
     # Equo on-disk caching tools
 
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2007-2008 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-from equoInterface import EquoInterface
+from entropy import EquoInterface
 def cache(options):
     rc = 0
     if len(options) < 1:

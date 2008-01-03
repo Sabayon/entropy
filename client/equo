@@ -3,7 +3,7 @@
     # DESCRIPTION:
     # Entropy Package Manager client
 
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2007-2008 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,10 +28,8 @@ from entropyConstants import *
 from outputTools import *
 
 
-# CONSTANTS
-APPNAME = "Equo"
 def print_help():
-    print_info("Sabayon Linux "+darkred(APPNAME+" Package Manager")+" (C - 2007)")
+    print_info("Sabayon Linux "+darkred("Equo Package Manager")+" (C - 2007)")
     print_info("General Options:")
     print_info("  --help\t\tthis output")
     print_info("  --version\t\tprint version")
@@ -138,12 +136,11 @@ def print_help():
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
     print_info(" \t"+blue("cleanup")+brown("\t\t remove downloaded packages and clean temporary directories (not cache)"))
     print_info(" \t"+blue("--info")+brown("\t\t show system information"))
-    
+
 
 options = sys.argv[1:]
 
 import entropyTools
-from clientConstants import *
 import exceptionTools
 
 # preliminary options parsing
@@ -177,11 +174,11 @@ if (not options) or ("--help" in options):
 
 # print version
 if (options[0] == "--version"):
-    print_generic(APPNAME+": v"+etpConst['entropyversion'])
+    print_generic("Equo: v"+etpConst['entropyversion'])
     sys.exit(0)
 elif (options[0] == "--info"):
-    import rescueTools
-    rescueTools.getinfo()
+    import text_rescue
+    text_rescue.getinfo()
     sys.exit(0)
 
 def readerrorstatus():
@@ -205,10 +202,10 @@ def writeerrorstatus(status):
 
 def loadconfcache():
     if not etpUi['quiet']: print_info(red(" @@ ")+blue("Caching equo conf"), back = True)
-    import confTools
+    import text_configuration
     try:
-        scandata = confTools.scanfs(dcache = True)
-    except: # FIXME: create specific exception, client database does not exist
+        scandata = text_configuration.Equo.FileUpdates.scanfs(dcache = True)
+    except:
         if not etpUi['quiet']: print_info(red(" @@ ")+blue("Caching not run."))
         return
     if not etpUi['quiet']: print_info(red(" @@ ")+blue("Caching complete."))
@@ -224,32 +221,32 @@ try:
     if (options[0] == "update") or (options[0] == "repoinfo") or (options[0] == "status"):
         if options[0] == "update":
             entropyTools.applicationLockCheck("update")
-        import repositoriesTools
-        rc = repositoriesTools.repositories(options)
+        import text_repositories
+        rc = text_repositories.repositories(options)
 
     elif options[0] in ["install","remove","world","deptest","libtest"]:
-        import uiTools
+        import text_ui
         if options[0] == "install":
             cr = entropyTools.applicationLockCheck("install", gentle = True)
-	    if (cr):
-		print_warning(red("Running with ")+bold("--pretend")+red("..."))
+            if (cr):
+                print_warning(red("Running with ")+bold("--pretend")+red("..."))
                 etpUi['pretend'] = True
         elif options[0] == "remove":
             cr = entropyTools.applicationLockCheck("remove", gentle = True)
-	    if (cr):
-		print_warning(red("Running with ")+bold("--pretend")+red("..."))
+            if (cr):
+                print_warning(red("Running with ")+bold("--pretend")+red("..."))
                 etpUi['pretend'] = True
-	elif options[0] == "world":
-	    cr = entropyTools.applicationLockCheck("world", gentle = True)
-	    if (cr):
-		print_warning(red("Running with ")+bold("--pretend")+red("..."))
+        elif options[0] == "world":
+            cr = entropyTools.applicationLockCheck("world", gentle = True)
+            if (cr):
+                print_warning(red("Running with ")+bold("--pretend")+red("..."))
                 etpUi['pretend'] = True
-        rc = uiTools.package(options)
+        rc = text_ui.package(options)
         loadconfcache()
 
     elif (options[0] == "query"):
-	import queryTools
-        rc = queryTools.query(options[1:])
+        import text_query
+        rc = text_query.query(options[1:])
 
     # smartapps tool
     elif (options[0] == "smart"):
@@ -259,30 +256,30 @@ try:
             rc = smartTools.smart(options[1:])
 
     elif (options[0] == "conf"):
-	import confTools
-        rc = confTools.configurator(options[1:])
+        import text_configuration
+        rc = text_configuration.configurator(options[1:])
 
     elif (options[0] == "cache"):
-	import cacheTools
-        rc = cacheTools.cache(options[1:])
+        import text_cache
+        rc = text_cache.cache(options[1:])
 
     elif (options[0] == "search"):
-	rc = 0
-	if len(options) > 1:
-	    import queryTools
-            rc = queryTools.searchPackage(options[1:])
+        rc = 0
+        if len(options) > 1:
+            import text_query
+            rc = text_query.searchPackage(options[1:])
         else:
             rc = -10
 
     elif (options[0] == "database"):
         entropyTools.applicationLockCheck("database")
-        import rescueTools
-        rc = rescueTools.database(options[1:])
+        import text_rescue
+        rc = text_rescue.database(options[1:])
 
     elif (options[0] == "packages"):
         entropyTools.applicationLockCheck("packages")
-        import rescueTools
-        rc = rescueTools.updater(options[1:])
+        import text_rescue
+        rc = text_rescue.updater(options[1:])
 
     elif (options[0] == "cleanup"):
         entropyTools.applicationLockCheck("cleanup")
@@ -302,7 +299,7 @@ try:
     # kill threads
     threads = entropyTools.threading.enumerate()
     for thread in threads:
-        if thread.getName() == "download": # equo current download speed thread
+        if thread.getName().startswith("download::"): # equo current download speed thread
             thread.kill()
     sys.exit(rc)
 except exceptionTools.SystemDatabaseError:
@@ -315,53 +312,47 @@ except KeyboardInterrupt:
 #except Timeout:
 #    pass
 except Exception:
-    from entropyTools import printException
-    from remoteTools import getOnlineContent, reportApplicationError
+
     Text = TextInterface()
     print_error(darkred("Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. Well, you know, shit happens."))
     print_error(darkred("But there's something you could do to help Equo to be a better application."))
     print_error(darkred("-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"))
     print_error(darkgreen("Now I am showing you what happened. Don't panic, I'm here to help you."))
-    
-    printException()
-    
-    #import pdb
-    #pdb.pm()
+
+    entropyTools.printException()
+
     import traceback
     try:
         ferror = open("/tmp/equoerror.txt","w")
         traceback.print_exc(file = ferror)
-	ferror.write("\nRevision: "+etpConst['entropyversion']+"\n\n")
-        data = printException(True)
-        for x in data:
-            ferror.write(str(x)+"\n")
+        ferror.write("\nRevision: "+etpConst['entropyversion']+"\n\n")
+        #data = entropyTools.printException(True)
+        #for x in data:
+        #    ferror.write(str(x)+"\n")
         ferror.write("\n")
         ferror.flush()
         ferror.close()
-	f = open("/tmp/equoerror.txt","r")
-	errorText = f.readlines()
-	f.close()
+        f = open("/tmp/equoerror.txt","r")
+        errorText = f.readlines()
+        f.close()
     except Exception, e:
-	print
-	print_error(darkred("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org."))
-        loadconfcache()
-	sys.exit(1)
+        print
+        print_error(darkred("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org."))
+        sys.exit(1)
 
     print
     print_error(darkred("!!! If the error is about missing tables in the database, just run 'equo database generate' again !!!"))
     print_error(blue("Ok, back here. Let me see if you are connected to the Internet. Yes, I am blue now, so?"))
-    conntest = getOnlineContent("http://svn.sabayonlinux.org")
+    conntest = entropyTools.get_remote_data("http://svn.sabayonlinux.org")
     if (conntest != False):
-	print_error(darkgreen("Of course you are on the Internet..."))
+        print_error(darkgreen("Of course you are on the Internet..."))
         rc = Text.askQuestion("   Erm... Can I send the error to my creators so they can fix me?")
-	if rc == "No":
-	    print_error(darkgreen("Ok, ok ok ok... Sorry!"))
-            loadconfcache()
-	    sys.exit(2)
+        if rc == "No":
+            print_error(darkgreen("Ok, ok ok ok... Sorry!"))
+            sys.exit(2)
     else:
-	print_error(darkgreen("Gosh, you aren't! Well, I wrote the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
-        loadconfcache()
-	sys.exit(3)
+        print_error(darkgreen("Gosh, you aren't! Well, I wrote the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
+        sys.exit(3)
 
     print_error(darkgreen("If you want to be contacted back (and actively supported), also answer the questions below:"))
     fullname = readtext("Your Full name: ")
@@ -371,11 +362,9 @@ except Exception:
     errorText = ' '.join(errorText)
 
     # ok, come on!
-    result = reportApplicationError(errorText)
+    result = entropyTools.report_application_error(errorText)
     if (result != False):
-	print_error(darkgreen("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible."))
+        print_error(darkgreen("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible."))
     else:
-	print_error(darkred("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
-        loadconfcache()
-	sys.exit(4)
-    loadconfcache()
+        print_error(darkred("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
+        sys.exit(4)

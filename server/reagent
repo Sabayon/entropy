@@ -4,7 +4,7 @@
     # this application gets a .tbz2 file as input and creates a database entry
     # with all the information needed by the Entropy client
 
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2007-2008 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -138,7 +138,7 @@ elif (options[0] == "database"):
 
 # deptest tool
 elif (options[0] == "deptest"):
-    rc = reagentTools.dependenciesTest(options[1:])
+    rc = reagentTools.dependenciesTest()
     exit(rc)
 
 # deptest tool

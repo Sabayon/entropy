@@ -3,7 +3,7 @@
     # DESCRIPTION:
     # Entropy log facility
 
-    Copyright (C) 2007 Fabio Erculiani <lxnay@sabayonlinux.org>
+    Copyright (C) 2007-2008 Fabio Erculiani <lxnay@sabayonlinux.org>
     # Most of the code taken from Anaconda, copyrighted by:
     # Alexander Larsson <alexl@redhat.com>
     # Matt Wilson <msw@redhat.com>

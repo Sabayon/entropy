@@ -1,9 +1,6 @@
 #!/usr/bin/python
 '''
-    # DESCRIPTION:
-    # Equo User interface library and functions
-
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2007-2008 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,9 +24,8 @@
 
 import shutil
 from entropyConstants import *
-from clientConstants import *
 from outputTools import *
-from equoInterface import EquoInterface
+from entropy import EquoInterface
 Equo = EquoInterface()
 
 def package(options):
@@ -576,7 +572,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     totalremovalqueue = str(len(removalQueue))
     currentqueue = 0
     currentremovalqueue = 0
-    
+
     ### Before starting the real install, fetch packages and verify checksum.
     fetchqueue = 0
     for packageInfo in runQueue:
@@ -862,228 +858,55 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
     return 0,0
 
 
-def dependenciesTest(clientDbconn = None, reagent = False):
+def dependenciesTest():
 
-    if (not etpUi['quiet']):
-        print_info(red(" @@ ")+blue("Running dependency test..."))
+    print_info(red(" @@ ")+blue("Running dependency test..."))
+    depsNotMatched = Equo.dependencies_test()
 
-    if clientDbconn == None:
-        clientDbconn = Equo.clientDbconn
-    # get all the installed packages
-    installedPackages = clientDbconn.listAllIdpackages()
-
-    depsNotSatisfied = {}
-    # now look
-    length = str((len(installedPackages)))
-    count = 0
-    for xidpackage in installedPackages:
-        count += 1
-        atom = clientDbconn.retrieveAtom(xidpackage)
-        if (not etpUi['quiet']):
-            print_info(darkred(" @@ ")+bold("(")+blue(str(count))+"/"+red(length)+bold(")")+darkgreen(" Checking ")+bold(atom), back = True)
-
-
-        xdeps = clientDbconn.retrieveDependenciesList(xidpackage)
-        needed_deps = set()
-        for xdep in xdeps:
-            if xdep[0] == "!": # filter conflicts
-                continue
-            xmatch = clientDbconn.atomMatch(xdep)
-            if xmatch[0] == -1:
-                needed_deps.add(xdep)
-
-        if needed_deps:
-            depsNotSatisfied[xidpackage] = set()
-            depsNotSatisfied[xidpackage].update(needed_deps)
-
-    packagesNeeded = set()
-    if (depsNotSatisfied):
-        if (not etpUi['quiet']):
-            print_info(red(" @@ ")+blue("These are the packages that lack dependencies: "))
-        for xidpackage in depsNotSatisfied:
-            pkgatom = clientDbconn.retrieveAtom(xidpackage)
-            if (not etpUi['quiet']):
-                print_info(darkred("   ### ")+blue(pkgatom))
-            for dep in depsNotSatisfied[xidpackage]:
-                if reagent:
-                    match = clientDbconn.atomMatch(dep)
-                else:
-                    match = Equo.atomMatch(dep)
-                if match[0] == -1:
-                    # FIXME
-                    if (not etpUi['quiet']):
-                        print_info(bold("       :x: NOT FOUND ")+red(dep))
-                    else:
-                        print dep,"--"
-                    continue
-                iddep = match[0]
-                repo = match[1]
-                dbconn = Equo.openRepositoryDatabase(repo)
-                depatom = dbconn.retrieveAtom(iddep)
-                if (not etpUi['quiet']):
-                    print_info(bold("       :o: ")+red(depatom))
-                else:
-                    print pkgatom+" -> "+depatom
-                packagesNeeded.add((depatom,dep))
-
-    if (etpUi['pretend']):
-        return 0, packagesNeeded
-
-    if (packagesNeeded) and (not etpUi['quiet']) and (not reagent):
+    if depsNotMatched:
+        print_info(red(" @@ ")+blue("These are the dependencies not found:"))
+        for dep in depsNotMatched:
+            print_info("   # "+red(dep))
         if (etpUi['ask']):
             rc = Equo.askQuestion("     Would you like to install the available packages?")
             if rc == "No":
-                return 0,packagesNeeded
+                return 0,0
         else:
             print_info(red(" @@ ")+blue("Installing available packages in ")+red("10 seconds")+blue("..."))
             import time
             time.sleep(10)
 
-        # organize
-        packages = set([x[0] for x in packagesNeeded])
-
         Equo.entropyTools.applicationLockCheck("install")
-        installPackages(packages, deps = False)
+        installPackages(depsNotMatched)
 
-    if not etpUi['quiet']: print_info(red(" @@ ")+blue("All done."))
-    return 0,packagesNeeded
+    return 0,0
 
-def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
+def librariesTest(listfiles = False):
 
-    qstat = etpUi['quiet']
+    def restore_qstats():
+        etpUi['mute'] = mstat
+        etpUi['quiet'] = mquiet
+
+    mstat = etpUi['mute']
+    mquiet = etpUi['quiet']
     if listfiles:
+        etpUi['mute'] = True
         etpUi['quiet'] = True
 
-    if (not etpUi['quiet']):
-        print_info(red(" @@ ")+blue("Running libraries test..."))
-
-    if clientDbconn == None:
-        clientDbconn = Equo.clientDbconn
-
-    if (not etpUi['quiet']):
-        print_info(red(" @@ ")+blue("Collecting linker paths..."))
-
-    if not etpConst['systemroot']:
-        myroot = "/"
-    else:
-        myroot = etpConst['systemroot']+"/"
-    # run ldconfig first
-    os.system("ldconfig -r "+myroot+" &> /dev/null")
-    # open /etc/ld.so.conf
-    if not os.path.isfile(etpConst['systemroot']+"/etc/ld.so.conf"):
-        if not etpUi['quiet']:
-            print_error(red(" @@ ")+blue("Cannot find ")+red(etpConst['systemroot']+"/etc/ld.so.conf"))
-        return 1,-1
-
-    ldpaths = Equo.entropyTools.collectLinkerPaths()
-
-    if (not etpUi['quiet']):
-        print_info(red(" @@ ")+blue("Collecting executables files..."))
-
-    executables = set()
-    total = len(ldpaths)
-    count = 0
-    for ldpath in ldpaths:
-        count += 1
-        if not etpUi['quiet']: print_info("  ["+str((round(float(count)/total*100,1)))+"%] "+blue("Tree: ")+red(etpConst['systemroot']+ldpath), back = True)
-        ldpath = ldpath.encode(sys.getfilesystemencoding())
-        for currentdir,subdirs,files in os.walk(etpConst['systemroot']+ldpath):
-            for item in files:
-                filepath = currentdir+"/"+item
-                if os.access(filepath,os.X_OK):
-                    executables.add(filepath[len(etpConst['systemroot']):])
-
-    if (not etpUi['quiet']):
-        print_info(red(" @@ ")+blue("Collecting broken executables..."))
-        print_info(red(" @@ Attention: ")+blue("don't worry about libraries that are shown here but not later."))
-
-    brokenlibs = set()
-    brokenexecs = {}
-    total = len(executables)
-    count = 0
-    for executable in executables:
-        count += 1
-        if not etpUi['quiet']: print_info("  ["+str((round(float(count)/total*100,1)))+"%] "+red(etpConst['systemroot']+executable), back = True)
-        if not etpConst['systemroot']:
-            stdin, stdouterr = os.popen4("ldd "+executable)
-        else:
-            if not os.access(etpConst['systemroot']+"/bin/sh",os.X_OK):
-                raise exceptionTools.FileNotFound("FileNotFound: /bin/sh not found.")
-            stdin, stdouterr = os.popen4("echo 'ldd "+executable+"' | chroot "+etpConst['systemroot'])
-        output = stdouterr.readlines()
-        if '\n'.join(output).find("not found") != -1:
-            # investigate
-            mylibs = set()
-            for row in output:
-                if row.find("not found") != -1:
-                    try:
-                        row = row.strip().split("=>")[0].strip()
-                        mylibs.add(row)
-                    except:
-                        continue
-            if not etpUi['quiet']:
-                if mylibs:
-                    alllibs = blue(' :: ').join(list(mylibs))
-                    print_info("  ["+str((round(float(count)/total*100,1)))+"%] "+red(etpConst['systemroot']+executable)+" [ "+alllibs+" ]")
-            brokenlibs.update(mylibs)
-            brokenexecs[executable] = mylibs.copy()
-    del executables
-
-    if (not etpUi['quiet']):
-        print_info(red(" @@ ")+blue("Trying to match packages..."))
-
-    packagesMatched = set()
-    # now search packages that contain the found libs
-    orderedRepos = list(etpRepositoriesOrder)
-    orderedRepos.sort()
-
-    # match libraries
-    for repodata in orderedRepos:
-        if not etpUi['quiet']: print_info(red(" @@ ")+blue("Repository: ")+darkgreen(etpRepositories[repodata[1]]['description'])+" ["+red(repodata[1])+"]")
-        dbconn = Equo.openRepositoryDatabase(repodata[1])
-        libsfound = set()
-        for lib in brokenlibs:
-            packages = dbconn.searchBelongs(file = "%"+lib, like = True, branch = etpConst['branch'])
-            if packages:
-                for idpackage in packages:
-                    # retrieve content and really look if library is in ldpath
-                    mycontent = dbconn.retrieveContent(idpackage)
-                    matching_libs = [x for x in mycontent if x.endswith(lib) and (os.path.dirname(x) in ldpaths)]
-                    libsfound.add(lib)
-                    if matching_libs:
-                        packagesMatched.add((idpackage,repodata[1],lib))
-        brokenlibs.difference_update(libsfound)
-
-    '''
-    FIXME: b0000rked, do we really have to do this?
-    # match executables
-    for executable in brokenexecs:
-        libsfound = set()
-        for brokenlib in brokenlibs:
-            if brokenlib in brokenexecs[executable]:
-                matches = Equo.clientDbconn.searchBelongs(executable)
-                for idpackage in matches:
-                    # get key and slot
-                    cat = Equo.clientDbconn.retrieveCategory(idpackage)
-                    name = Equo.clientDbconn.retrieveName(idpackage)
-                    slot = Equo.clientDbconn.retrieveSlot(idpackage)
-                    key = cat+"/"+name
-                    # search into repositories
-                    match = Equo.atomMatch(key, matchSlot = slot)
-                    if match[0] != -1:
-                        packagesMatched.add((idpackage,match[1],brokenlib))
-                        libsfound.add(brokenlib)
-        brokenlibs.difference_update(libsfound)
-    '''
+    packagesMatched, brokenlibs, status = Equo.libraries_test()
+    if status != 0:
+        restore_qstats()
+        return -1,1
 
     if listfiles:
-        etpUi['quiet'] = qstat
         for x in brokenlibs:
             print x
+        restore_qstats()
         return 0,0
 
     if (not brokenlibs) and (not packagesMatched):
         if not etpUi['quiet']: print_info(red(" @@ ")+blue("System is healthy."))
+        restore_qstats()
         return 0,0
 
     atomsdata = set()
@@ -1105,15 +928,18 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
             myatom = dbconn.retrieveAtom(packagedata[0])
             atomsdata.add((myatom,(packagedata[0],packagedata[1])))
             print myatom
+        restore_qstats()
         return 0,atomsdata
 
     if (etpUi['pretend']):
+        restore_qstats()
         return 0,atomsdata
 
-    if (atomsdata) and (not reagent):
+    if (atomsdata):
         if (etpUi['ask']):
             rc = Equo.askQuestion("     Would you like to install them?")
             if rc == "No":
+                restore_qstats()
                 return 0,atomsdata
         else:
             print_info(red(" @@ ")+blue("Installing found packages in ")+red("10 seconds")+blue("..."))
@@ -1123,8 +949,11 @@ def librariesTest(clientDbconn = None, reagent = False, listfiles = False):
         Equo.entropyTools.applicationLockCheck("install")
         rc = installPackages(atomsdata = list(atomsdata))
         if rc[0] == 0:
+            restore_qstats()
             return 0,atomsdata
         else:
+            restore_qstats()
             return rc[0],atomsdata
 
+    restore_qstats()
     return 0,atomsdata
