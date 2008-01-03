@@ -25,7 +25,7 @@ import shutil
 from entropyConstants import *
 from serverConstants import *
 from outputTools import *
-from entropy import FtpInterface, EquoInterface
+from entropy import FtpInterface, EquoInterface, rssFeed
 import exceptionTools
 Entropy = EquoInterface(noclientdb = True)
 
@@ -980,8 +980,7 @@ def uploadDatabase(uris):
 
     ### PREPARE RSS FEED
     if etpConst['rss-feed']:
-        import rssTools
-        rssClass = rssTools.rssFeed(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'], maxentries = etpConst['rss-max-entries'])
+        rssClass = rssFeed(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'], maxentries = etpConst['rss-max-entries'])
         # load dump
         db_actions = Entropy.dumpTools.loadobj(etpConst['rss-dump-name'])
         if db_actions:

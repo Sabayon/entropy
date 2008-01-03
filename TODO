@@ -1,5 +1,4 @@
 TODO list:
-  - move dumpTools to entropy.py
   - move rssTools to entropy.py
   - GUI
   - server part rewrite ala EquoInterface
