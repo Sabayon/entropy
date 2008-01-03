@@ -31,14 +31,14 @@ feed_editor = etpConst['rss-managing-editor']
 feed_copyright = etpConst['systemname']+" (C) 2007-2009"
 
 class rssFeed:
-    
+
     def __init__(self, filename, maxentries = 100):
-        
+
         self.file = filename
         self.items = {}
         self.itemscounter = 0
         self.maxentries = maxentries
-        
+
         # sanity check
         broken = False
         if os.path.isfile(self.file):
@@ -48,7 +48,7 @@ class rssFeed:
                 #print "DEBUG: RSS broken, recreating in 5 seconds."
                 #time.sleep(5)
                 broken = True
-        
+
         if not os.path.isfile(self.file) or broken:
             self.title = feed_title
             self.description = feed_description
@@ -105,17 +105,17 @@ class rssFeed:
         else:
             self.items[self.itemscounter]['guid'] = "sabayonlinux.org~"+description+str(self.itemscounter)
         return self.itemscounter
-    
+
     def removeEntry(self, id):
         del self.items[id]
         self.itemscounter -= 1
         return len(self.itemscounter)
-    
+
     def getEntries(self):
         return self.items, self.itemscounter
 
     def writeChanges(self):
-        
+
         # filter entries to fit in maxentries
         if self.itemscounter > self.maxentries:
             tobefiltered = self.itemscounter - self.maxentries
@@ -124,15 +124,15 @@ class rssFeed:
                     del self.items[index]
                 except KeyError:
                     pass
-        
+
         doc = minidom.Document()
-        
+
         rss = doc.createElement("rss")
         rss.setAttribute("version","2.0")
         rss.setAttribute("xmlns:atom","http://www.w3.org/2005/Atom")
-        
+
         channel = doc.createElement("channel")
-        
+
         # title
         title = doc.createElement("title")
         title_text = doc.createTextNode(unicode(self.title))
@@ -167,7 +167,7 @@ class rssFeed:
         keys = self.items.keys()
         keys.reverse()
         for key in keys:
-            
+
             # sanity check, you never know
             try:
                 self.items[key]['title']
@@ -178,7 +178,7 @@ class rssFeed:
             except KeyError:
                 self.removeEntry(key)
                 continue
-            
+
             # item
             item = doc.createElement("item")
             # title
