@@ -288,6 +288,10 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     if len(myidpackages) > 1:
                         etpRepositories[basefile]['smartpackage'] = True
                     for myidpackage in myidpackages:
+                        compiled_arch = mydbconn.retrieveDownloadURL(myidpackage)
+                        if compiled_arch.find("/"+etpSys['arch']+"/") == -1:
+                            print_error(red("## ATTENTION:")+bold(" "+basefile+" ")+red(" is not compiled with the same architecture of the system. Cannot continue."))
+                            return -1,1
                         foundAtoms.append([pkg,(int(myidpackage),basefile)])
                     mydbconn.closeDB()
                     del mydbconn

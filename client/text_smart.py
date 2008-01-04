@@ -96,6 +96,7 @@ def QuickpkgHandler(mypackages, savedir = None):
     pkgInfo = {}
     for pkg in packages:
         atom = text_ui.Equo.clientDbconn.retrieveAtom(pkg[0])
+        pkgInfo[pkg] = {}
         pkgInfo[pkg]['atom'] = atom
         pkgInfo[pkg]['idpackage'] = pkg[0]
         print_info(brown("\t[")+red("from:")+bold("installed")+brown("]")+" - "+atom)

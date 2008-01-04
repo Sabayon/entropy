@@ -888,6 +888,7 @@ def initConfig_entropyConstants(rootdir):
     del myparser
 
     gc.collect()
+    initConfig_clientConstants()
 
 def initConfig_clientConstants():
     # equo section
@@ -941,4 +942,3 @@ def initConfig_clientConstants():
 
 # load config
 initConfig_entropyConstants(etpSys['rootdir'])
-initConfig_clientConstants()
