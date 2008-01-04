@@ -17,7 +17,7 @@
 	- will be issued:
 	 	stage = 'postinstall' # this can be postinstall, preinstall, postremove, preremove
 		execfile(etpConst['entropyunpackdir']+...+"trigger")
-	- code will have access to the entropy package dictionary and will be executed inside triggerTools (postinstall(),preinstall(),postremove(),preremove())
+	- code will have access to the entropy package dictionary and will be executed inside TriggersInterface (postinstall(),preinstall(),postremove(),preremove())
 
     Example of pkgdata:
 	{

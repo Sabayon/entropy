@@ -1,9 +1,9 @@
 TODO list:
   - GUI
   - Community repositories
-  - find a way to better handle real smartapps deps
+  - find a way to better handle real smartapps deps (need split PDEPEND?)
   - add deptest check for every reagent run
-  - separate packages by license restrictions
+  - separate packages by license restrictions (find a way?)
   - server side code rewrite ala EquoInterface?
 
 Project Status:

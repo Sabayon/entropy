@@ -51,10 +51,8 @@ class EquoInterface(TextInterface):
         self.databaseTools = databaseTools
         import entropyTools
         self.entropyTools = entropyTools
-        import triggerTools
         import gc
         self.gcTool = gc
-        self.triggerTools = triggerTools
         self.urlFetcher = urlFetcher # in this way, can be reimplemented (so you can override updateProgress)
         self.progress = None # supporting external updateProgress stuff, you can point self.progress to your progress bar
                              # and reimplement updateProgress
@@ -1624,6 +1622,16 @@ class EquoInterface(TextInterface):
     '''
 
     '''
+        Triggers interface :: begin
+    '''
+    def Triggers(self, phase, pkgdata):
+        conn = TriggerInterface(EquoInstance = self, phase = phase, pkgdata = pkgdata)
+        return conn
+    '''
+        Triggers interface :: end
+    '''
+
+    '''
         Repository interface :: begin
     '''
     def Repositories(self, reponames = [], forceUpdate = False):
@@ -2528,11 +2536,11 @@ class PackageInterface:
         self.error_on_not_prepared()
         pkgdata = self.infoDict['triggers'].get('install')
         if pkgdata:
-            triggers = self.Entropy.triggerTools.postinstall(pkgdata, self.Entropy)
-            for trigger in triggers:
-                if trigger not in etpUi['postinstall_triggers_disable']:
-                    eval("self.Entropy.triggerTools."+trigger)(pkgdata)
-            del triggers
+            Trigger = self.Entropy.Triggers('postinstall',pkgdata)
+            Trigger.prepare()
+            Trigger.run()
+            Trigger.kill()
+            del Trigger
         del pkgdata
         return 0
 
@@ -2540,21 +2548,22 @@ class PackageInterface:
         self.error_on_not_prepared()
         pkgdata = self.infoDict['triggers'].get('install')
         if pkgdata:
-            triggers = self.Entropy.triggerTools.preinstall(pkgdata, self.Entropy)
 
+            Trigger = self.Entropy.Triggers('preinstall',pkgdata)
+            Trigger.prepare()
             if (self.infoDict.get("diffremoval") != None): # diffremoval is true only when the remove action is triggered by installPackages()
                 if self.infoDict['diffremoval']:
                     remdata = self.infoDict['triggers'].get('remove')
                     if remdata:
-                        itriggers = self.Entropy.triggerTools.preremove(remdata, self.Entropy) # remove duplicated triggers
-                        triggers = triggers - itriggers
-                        del itriggers
+                        rTrigger = self.Entropy.Triggers('preremove',remdata)
+                        rTrigger.prepare()
+                        Trigger.triggers = Trigger.triggers - rTrigger.triggers
+                        rTrigger.kill()
+                        del rTrigger
                     del remdata
-
-            for trigger in triggers:
-                if trigger not in etpUi['preinstall_triggers_disable']:
-                    eval("self.Entropy.triggerTools."+trigger)(pkgdata)
-            del triggers
+            Trigger.run()
+            Trigger.kill()
+            del Trigger
 
         del pkgdata
         return 0
@@ -2563,11 +2572,11 @@ class PackageInterface:
         self.error_on_not_prepared()
         remdata = self.infoDict['triggers'].get('remove')
         if remdata:
-            triggers = self.Entropy.triggerTools.preremove(remdata, self.Entropy)
-            for trigger in triggers:
-                if trigger not in etpUi['preremove_triggers_disable']:
-                    eval("self.Entropy.triggerTools."+trigger)(remdata)
-            del triggers
+            Trigger = self.Entropy.Triggers('preremove',remdata)
+            Trigger.prepare()
+            Trigger.run()
+            Trigger.kill()
+            del Trigger
         del remdata
         return 0
 
@@ -2575,19 +2584,22 @@ class PackageInterface:
         self.error_on_not_prepared()
         remdata = self.infoDict['triggers'].get('remove')
         if remdata:
-            triggers = self.Entropy.triggerTools.postremove(remdata, self.Entropy)
-            if self.infoDict['diffremoval'] and (self.infoDict.get("atom") != None): # diffremoval is true only when the remove action is triggered by installPackages()
+
+            Trigger = self.Entropy.Triggers('postremove',remdata)
+            Trigger.prepare()
+            if self.infoDict['diffremoval'] and (self.infoDict.get("atom") != None):
+                # diffremoval is true only when the remove action is triggered by installPackages()
                 pkgdata = self.infoDict['triggers'].get('install')
                 if pkgdata:
-                    itriggers = self.Entropy.triggerTools.postinstall(pkgdata, self.Entropy)
-                    triggers = triggers - itriggers
-                    del itriggers
+                    iTrigger = self.Entropy.Triggers('postinstall',pkgdata)
+                    iTrigger.prepare()
+                    Trigger.triggers = Trigger.triggers - iTrigger.triggers
+                    iTrigger.kill()
+                    del iTrigger
                 del pkgdata
-
-            for trigger in triggers:
-                if trigger not in etpUi['postremove_triggers_disable']:
-                    eval("self.Entropy.triggerTools."+trigger)(remdata)
-            del triggers
+            Trigger.run()
+            Trigger.kill()
+            del Trigger
 
         del remdata
         return 0
@@ -2935,7 +2947,7 @@ class FileUpdatesInterface:
 
                         mydict = self.generate_dict(filepath)
                         if mydict['automerge']:
-                            self.updateProgress(
+                            self.Entropy.updateProgress(
                                                     darkred("Automerging file: %s") % ( darkgreen(etpConst['systemroot']+mydict['source']) ),
                                                     importance = 0,
                                                     type = "info"
@@ -2944,7 +2956,7 @@ class FileUpdatesInterface:
                                 try:
                                     shutil.move(etpConst['systemroot']+mydict['source'],etpConst['systemroot']+mydict['destination'])
                                 except IOError:
-                                    self.updateProgress(
+                                    self.Entropy.updateProgress(
                                                     darkred("I/O Error :: Cannot automerge file: %s") % ( darkgreen(etpConst['systemroot']+mydict['source']) ),
                                                     importance = 1,
                                                     type = "warning"
@@ -2955,7 +2967,7 @@ class FileUpdatesInterface:
                             scandata[counter] = mydict.copy()
 
                         try:
-                            self.updateProgress(
+                            self.Entropy.updateProgress(
                                             "("+blue(str(counter))+") "+red(" file: ")+os.path.dirname(filepath)+"/"+os.path.basename(filepath)[10:],
                                             importance = 1,
                                             type = "info"
@@ -3296,7 +3308,7 @@ class RepoInterface:
                                                 type = "info",
                                                 header = "\t"
                                 )
-                self.cycleDone()
+                self.Entropy.cycleDone()
                 continue
 
             # get database lock
@@ -3307,7 +3319,7 @@ class RepoInterface:
                                                 type = "warning",
                                                 header = "\t"
                                 )
-                self.cycleDone()
+                self.Entropy.cycleDone()
                 continue
 
             # database is going to be updated
@@ -3331,7 +3343,7 @@ class RepoInterface:
                                                 type = "warning",
                                                 header = "\t"
                                 )
-                self.cycleDone()
+                self.Entropy.cycleDone()
                 continue
 
             # unpack database
@@ -3391,7 +3403,7 @@ class RepoInterface:
                     # delete all
                     self.__remove_repository_files(repo, cmethod[2])
                     self.syncErrors = True
-                    self.cycleDone()
+                    self.Entropy.cycleDone()
                     continue
 
             # download revision
@@ -3414,7 +3426,7 @@ class RepoInterface:
                                                 header = "\t"
                                 )
 
-            self.cycleDone()
+            self.Entropy.cycleDone()
 
         self.close_transactions()
 
@@ -4127,3 +4139,1348 @@ class rssFeed:
         f.writelines(doc.toprettyxml(indent="    "))
         f.flush()
         f.close()
+
+class TriggerInterface:
+
+    def __init__(self, EquoInstance, phase, pkgdata):
+        self.Entropy = EquoInstance
+        try:
+            self.Entropy.instanceTest()
+        except:
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+
+        self.equoLog = self.Entropy.equoLog
+        self.validPhases = ("preinstall","postinstall","preremove","postremove")
+        self.pkgdata = pkgdata
+        self.prepared = False
+        self.triggers = set()
+
+        '''
+        @ description: Gentoo toolchain variables
+        '''
+        self.MODULEDB_DIR="/var/lib/module-rebuild/"
+        self.INITSERVICES_DIR="/var/lib/init.d/"
+
+        ''' portage stuff '''
+        self.portageTools = None
+        if etpConst['gentoo-compat']:
+            import portageTools
+            self.portageTools = portageTools
+
+        self.phase = phase
+        # validate phase
+        self.phaseValidation()
+
+    def phaseValidation(self):
+        if self.phase not in self.validPhases:
+            raise exceptionTools.InvalidData("InvalidData: valid phases are %s" % (self.validPhases,))
+
+    def prepare(self):
+        self.triggers = eval("self."+self.phase)()
+        remove = set()
+        for trigger in self.triggers:
+            if trigger in etpUi[self.phase+'_triggers_disable']:
+                remove.add(trigger)
+        self.triggers.difference_update(remove)
+        del remove
+        self.prepared = True
+
+    def run(self):
+        for trigger in self.triggers:
+            eval("self.trigger_"+trigger)()
+
+    def kill(self):
+        self.prepared = False
+        self.triggers.clear()
+
+    def postinstall(self):
+
+        functions = set()
+        # Gentoo hook
+        if etpConst['gentoo-compat']:
+            functions.add('ebuild_postinstall')
+
+        if self.pkgdata['trigger']:
+            functions.add('call_ext_postinstall')
+
+        # triggers that are not needed when gentoo-compat is enabled
+        if not etpConst['gentoo-compat']:
+
+            if "gnome2" in self.pkgdata['eclasses']:
+                functions.add('iconscache')
+                functions.add('gconfinstallschemas')
+                functions.add('gconfreload')
+
+            if self.pkgdata['name'] == "pygobject":
+                functions.add('pygtksetup')
+
+            # fonts configuration
+            if self.pkgdata['category'] == "media-fonts":
+                functions.add("fontconfig")
+
+            # gcc configuration
+            if self.pkgdata['category']+"/"+self.pkgdata['name'] == "sys-devel/gcc":
+                functions.add("gccswitch")
+
+            # binutils configuration
+            if self.pkgdata['category']+"/"+self.pkgdata['name'] == "sys-devel/binutils":
+                functions.add("binutilsswitch")
+
+            # kde package ?
+            if "kde" in self.pkgdata['eclasses']:
+                functions.add("kbuildsycoca")
+
+            if "kde4-base" in self.pkgdata['eclasses'] or "kde4-meta" in self.pkgdata['eclasses']:
+                functions.add("kbuildsycoca4")
+
+            # update mime
+            if "fdo-mime" in self.pkgdata['eclasses']:
+                functions.add('mimeupdate')
+                functions.add('mimedesktopupdate')
+
+            if self.pkgdata['category']+"/"+self.pkgdata['name'] == "dev-db/sqlite":
+                functions.add('sqliteinst')
+
+            # python configuration
+            if self.pkgdata['category']+"/"+self.pkgdata['name'] == "dev-lang/python":
+                functions.add("pythoninst")
+
+        # opengl configuration
+        if (self.pkgdata['category'] == "x11-drivers") and (self.pkgdata['name'].startswith("nvidia-") or self.pkgdata['name'].startswith("ati-")):
+            try:
+                functions.remove("ebuild_postinstall") # disabling gentoo postinstall since we reimplemented it
+            except:
+                pass
+            functions.add("openglsetup")
+
+        # load linker paths
+        ldpaths = self.Entropy.entropyTools.collectLinkerPaths()
+        # prepare content
+        for x in self.pkgdata['content']:
+            if not etpConst['gentoo-compat']:
+                if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
+                    functions.add('iconscache')
+                if x.startswith("/usr/share/mime"):
+                    functions.add('mimeupdate')
+                if x.startswith("/usr/share/applications"):
+                    functions.add('mimedesktopupdate')
+                if x.startswith("/usr/share/omf"):
+                    functions.add('scrollkeeper')
+                if x.startswith("/etc/gconf/schemas"):
+                    functions.add('gconfreload')
+                if x == '/bin/su':
+                    functions.add("susetuid")
+                if x.startswith('/usr/share/java-config-2/vm/'):
+                    functions.add('add_java_config_2')
+            else:
+                if x.startswith('/lib/modules/'):
+                    try:
+                        functions.remove("ebuild_postinstall") # disabling gentoo postinstall since we reimplemented it
+                    except:
+                        pass
+                    functions.add('kernelmod')
+                if x.startswith('/boot/kernel-'):
+                    functions.add('addbootablekernel')
+                if x.startswith('/usr/src/'):
+                    functions.add('createkernelsym')
+                if x.startswith('/etc/env.d/'):
+                    functions.add('env_update')
+                if os.path.dirname(x) in ldpaths:
+                    if x.find(".so") > -1:
+                        functions.add('run_ldconfig')
+        del ldpaths
+        return functions
+
+    def preinstall(self):
+
+        functions = set()
+        if self.pkgdata['trigger']:
+            functions.add('call_ext_preinstall')
+
+        # Gentoo hook
+        if etpConst['gentoo-compat']:
+            functions.add('ebuild_preinstall')
+
+        for x in self.pkgdata['content']:
+            if x.startswith("/etc/init.d/"):
+                functions.add('initinform')
+            if x.startswith("/boot"):
+                functions.add('mountboot')
+        return functions
+
+    def postremove(self):
+
+        functions = set()
+
+        if self.pkgdata['trigger']:
+            functions.add('call_ext_postremove')
+
+        if not etpConst['gentoo-compat']:
+
+            # kde package ?
+            if "kde" in self.pkgdata['eclasses']:
+                functions.add("kbuildsycoca")
+
+            if "kde4-base" in self.pkgdata['eclasses'] or "kde4-meta" in self.pkgdata['eclasses']:
+                functions.add("kbuildsycoca4")
+
+            if self.pkgdata['name'] == "pygtk":
+                functions.add('pygtkremove')
+
+            if self.pkgdata['category']+"/"+self.pkgdata['name'] == "dev-db/sqlite":
+                functions.add('sqliteinst')
+
+            # python configuration
+            if self.pkgdata['category']+"/"+self.pkgdata['name'] == "dev-lang/python":
+                functions.add("pythoninst")
+
+            # fonts configuration
+            if self.pkgdata['category'] == "media-fonts":
+                functions.add("fontconfig")
+
+        # load linker paths
+        ldpaths = self.Entropy.entropyTools.collectLinkerPaths()
+
+        for x in self.pkgdata['removecontent']:
+            if not etpConst['gentoo-compat']:
+                if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
+                    functions.add('iconscache')
+                if x.startswith("/usr/share/mime"):
+                    functions.add('mimeupdate')
+                if x.startswith("/usr/share/applications"):
+                    functions.add('mimedesktopupdate')
+                if x.startswith("/usr/share/omf"):
+                    functions.add('scrollkeeper')
+                if x.startswith("/etc/gconf/schemas"):
+                    functions.add('gconfreload')
+            else:
+                if x.startswith('/boot/kernel-'):
+                    functions.add('removebootablekernel')
+                if x.startswith('/etc/init.d/'):
+                    functions.add('removeinit')
+                if x.endswith('.py'):
+                    functions.add('cleanpy')
+                if x.startswith('/etc/env.d/'):
+                    functions.add('env_update')
+                if os.path.dirname(x) in ldpaths:
+                    if x.find(".so") > -1:
+                        functions.add('run_ldconfig')
+        del ldpaths
+        return functions
+
+
+    def preremove(self):
+
+        functions = set()
+
+        if self.pkgdata['trigger']:
+            functions.add('call_ext_preremove')
+
+        # Gentoo hook
+        if etpConst['gentoo-compat']:
+            functions.add('ebuild_preremove')
+            functions.add('ebuild_postremove') # doing here because we need /var/db/pkg stuff in place and also because doesn't make any difference
+
+        # opengl configuration
+        if (self.pkgdata['category'] == "x11-drivers") and (self.pkgdata['name'].startswith("nvidia-") or self.pkgdata['name'].startswith("ati-")):
+            try:
+                functions.remove("ebuild_preremove") # disabling gentoo postinstall since we reimplemented it
+                functions.remove("ebuild_postremove")
+            except:
+                pass
+            functions.add("openglsetup_xorg")
+
+        for x in self.pkgdata['removecontent']:
+            if x.startswith("/etc/init.d/"):
+                functions.add('initdisable')
+            if x.startswith("/boot"):
+                functions.add('mountboot')
+
+        return functions
+
+
+    '''
+        Real triggers
+    '''
+    def trigger_call_ext_preinstall(self):
+        rc = self.trigger_call_ext_generic()
+        return rc
+
+    def call_ext_postinstall(self):
+        rc = self.trigger_call_ext_generic()
+        return rc
+
+    def trigger_call_ext_preremove(self):
+        rc = self.trigger_call_ext_generic()
+        return rc
+
+    def trigger_call_ext_postremove(self):
+        rc = self.trigger_call_ext_generic()
+        return rc
+
+    def trigger_call_ext_generic(self):
+
+        # if mute, supress portage output
+        if etpUi['mute']:
+            oldsystderr = sys.stderr
+            oldsysstdout = sys.stdout
+            stdfile = open("/dev/null","w")
+            sys.stdout = stdfile
+            sys.stderr = stdfile
+
+        triggerfile = etpConst['entropyunpackdir']+"/trigger-"+str(self.Entropy.entropyTools.getRandomNumber())
+        while os.path.isfile(triggerfile):
+            triggerfile = etpConst['entropyunpackdir']+"/trigger-"+str(self.Entropy.entropyTools.getRandomNumber())
+        f = open(triggerfile,"w")
+        for x in self.pkgdata['trigger']:
+            f.write(x)
+        f.close()
+
+        # if mute, restore old stdout/stderr
+        if etpUi['mute']:
+            sys.stderr = oldsystderr
+            sys.stdout = oldsysstdout
+            stdfile.close()
+
+        stage = self.phase
+        my_ext_status = 0
+        execfile(triggerfile)
+        os.remove(triggerfile)
+        return my_ext_status
+
+
+    def trigger_fontconfig(self):
+        fontdirs = set()
+        for xdir in self.pkgdata['content']:
+            xdir = etpConst['systemroot']+xdir
+            if xdir.startswith(etpConst['systemroot']+"/usr/share/fonts"):
+                origdir = xdir[len(etpConst['systemroot'])+16:]
+                if origdir:
+                    if origdir.startswith("/"):
+                        origdir = origdir.split("/")[1]
+                        if os.path.isdir(xdir[:16]+"/"+origdir):
+                            fontdirs.add(xdir[:16]+"/"+origdir)
+        if (fontdirs):
+            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring fonts directory...")
+            self.Entropy.updateProgress(
+                                    brown(" Configuring fonts directory..."),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+        for fontdir in fontdirs:
+            self.trigger_setup_font_dir(fontdir)
+            self.trigger_setup_font_cache(fontdir)
+        del fontdirs
+
+    def trigger_gccswitch(self):
+        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GCC Profile...")
+        self.Entropy.updateProgress(
+                                brown(" Configuring GCC Profile..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        # get gcc profile
+        pkgsplit = self.Entropy.entropyTools.catpkgsplit(self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version'])
+        profile = self.pkgdata['chost']+"-"+pkgsplit[2]
+        self.trigger_set_gcc_profile(profile)
+
+    def trigger_iconscache(self):
+        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating icons cache...")
+        self.Entropy.updateProgress(
+                                brown(" Updating icons cache..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        for item in self.pkgdata['content']:
+            item = etpConst['systemroot']+item
+            if item.startswith(etpConst['systemroot']+"/usr/share/icons") and item.endswith("index.theme"):
+                cachedir = os.path.dirname(item)
+                self.trigger_generate_icons_cache(cachedir)
+
+    def trigger_mimeupdate(self):
+        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating shared mime info database...")
+        self.Entropy.updateProgress(
+                                brown(" Updating shared mime info database..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        self.trigger_update_mime_db()
+
+    def trigger_mimedesktopupdate(self):
+        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating desktop mime database...")
+        self.Entropy.updateProgress(
+                                brown(" Updating desktop mime database..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        self.trigger_update_mime_desktop_db()
+
+    def trigger_scrollkeeper(self):
+        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating scrollkeeper database...")
+        self.Entropy.updateProgress(
+                                brown(" Updating scrollkeeper database..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        self.trigger_update_scrollkeeper_db()
+
+    def trigger_gconfreload(self):
+        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reloading GConf2 database...")
+        self.Entropy.updateProgress(
+                                brown(" Reloading GConf2 database..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        self.trigger_reload_gconf_db()
+
+    def trigger_binutilsswitch(self):
+        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Binutils Profile...")
+        self.Entropy.updateProgress(
+                                brown(" Configuring Binutils Profile..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        # get binutils profile
+        pkgsplit = self.Entropy.entropyTools.catpkgsplit(self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version'])
+        profile = self.pkgdata['chost']+"-"+pkgsplit[2]
+        self.trigger_set_binutils_profile(profile)
+
+    def trigger_kernelmod(self):
+        if self.pkgdata['category'] != "sys-kernel":
+            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating moduledb...")
+            self.Entropy.updateProgress(
+                                    brown(" Updating moduledb..."),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            item = 'a:1:'+self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
+            self.trigger_update_moduledb(item)
+        self.Entropy.updateProgress(
+                                brown(" Running depmod..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        # get kernel modules dir name
+        name = ''
+        for item in self.pkgdata['content']:
+            item = etpConst['systemroot']+item
+            if item.startswith(etpConst['systemroot']+"/lib/modules/"):
+                name = item[len(etpConst['systemroot']):]
+                name = name.split("/")[3]
+                break
+        if name:
+            self.trigger_run_depmod(name)
+
+    def trigger_pythoninst(self):
+        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Python...")
+        self.Entropy.updateProgress(
+                                brown(" Configuring Python..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        self.trigger_python_update_symlink()
+
+    def trigger_sqliteinst(self):
+        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring SQLite...")
+        self.Entropy.updateProgress(
+                                brown(" Configuring SQLite..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        self.trigger_sqlite_update_symlink()
+
+    def trigger_initdisable(self):
+        for item in self.pkgdata['removecontent']:
+            item = etpConst['systemroot']+item
+            if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
+                # running?
+                running = os.path.isfile(etpConst['systemroot']+self.INITSERVICES_DIR+'/started/'+os.path.basename(item))
+                if not etpConst['systemroot']:
+                    myroot = "/"
+                else:
+                    myroot = etpConst['systemroot']+"/"
+                scheduled = not os.system('ROOT="'+myroot+'" rc-update show | grep '+os.path.basename(item)+'&> /dev/null')
+                self.trigger_initdeactivate(item, running, scheduled)
+
+    def trigger_initinform(self):
+        for item in self.pkgdata['content']:
+            item = etpConst['systemroot']+item
+            if item.startswith(etpConst['systemroot']+"/etc/init.d/") and not os.path.isfile(etpConst['systemroot']+item):
+                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+item)
+                self.Entropy.updateProgress(
+                                        brown(" A new service will be installed: ")+item,
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
+
+    def trigger_removeinit(self):
+        for item in self.pkgdata['removecontent']:
+            item = etpConst['systemroot']+item
+            if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
+                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Removing boot service: "+os.path.basename(item))
+                self.Entropy.updateProgress(
+                                        brown(" Removing boot service: ")+os.path.basename(item),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
+                if not etpConst['systemroot']:
+                    myroot = "/"
+                else:
+                    myroot = etpConst['systemroot']+"/"
+                try:
+                    os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(item)+' &> /dev/null')
+                except:
+                    pass
+
+    def trigger_openglsetup(self):
+        opengl = "xorg-x11"
+        if self.pkgdata['name'] == "nvidia-drivers":
+            opengl = "nvidia"
+        elif self.pkgdata['name'] == "ati-drivers":
+            opengl = "ati"
+        # is there eselect ?
+        eselect = os.system("eselect opengl &> /dev/null")
+        if eselect == 0:
+            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to "+opengl+" ...")
+            self.Entropy.updateProgress(
+                                    brown(" Reconfiguring OpenGL..."),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            quietstring = ''
+            if etpUi['quiet']: quietstring = " &>/dev/null"
+            if etpConst['systemroot']:
+                os.system('echo "eselect opengl set --use-old '+opengl+'" | chroot '+etpConst['systemroot']+quietstring)
+            else:
+                os.system('eselect opengl set --use-old '+opengl+quietstring)
+        else:
+            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
+            self.Entropy.updateProgress(
+                                    brown(" Eselect NOT found, cannot run OpenGL trigger"),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+
+    def openglsetup_xorg(self):
+        eselect = os.system("eselect opengl &> /dev/null")
+        if eselect == 0:
+            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to fallback xorg-x11 ...")
+            self.Entropy.updateProgress(
+                                    brown(" Reconfiguring OpenGL..."),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            quietstring = ''
+            if etpUi['quiet']: quietstring = " &>/dev/null"
+            if etpConst['systemroot']:
+                os.system('echo "eselect opengl set xorg-x11" | chroot '+etpConst['systemroot']+quietstring)
+            else:
+                os.system('eselect opengl set xorg-x11'+quietstring)
+        else:
+            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
+            self.Entropy.updateProgress(
+                                    brown(" Eselect NOT found, cannot run OpenGL trigger"),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+
+    # FIXME: this only supports grub (no lilo support)
+    def trigger_addbootablekernel(self):
+        kernels = [x for x in self.pkgdata['content'] if x.startswith("/boot/kernel-")]
+        for kernel in kernels:
+            initramfs = "/boot/initramfs-"+kernel[13:]
+            if initramfs not in self.pkgdata['content']:
+                initramfs = ''
+            # configure GRUB
+            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Adding the new kernel...")
+            self.Entropy.updateProgress(
+                                    brown(" Configuring GRUB bootloader. Adding the new kernel..."),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            self.trigger_configure_boot_grub(kernel,initramfs)
+	
+
+    # FIXME: this only supports grub (no lilo support)
+    def trigger_removebootablekernel(self):
+        kernels = [x for x in self.pkgdata['content'] if x.startswith("/boot/kernel-")]
+        for kernel in kernels:
+            initramfs = "/boot/initramfs-"+kernel[13:]
+            if initramfs not in self.pkgdata['content']:
+                initramfs = ''
+            # configure GRUB
+            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Removing the selected kernel...")
+            self.Entropy.updateProgress(
+                                    brown(" Configuring GRUB bootloader. Removing the selected kernel..."),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            self.trigger_remove_boot_grub(kernel,initramfs)
+
+    def trigger_mountboot(self):
+        # is in fstab?
+        if etpConst['systemroot']:
+            return
+        if os.path.isfile("/etc/fstab"):
+            f = open("/etc/fstab","r")
+            fstab = f.readlines()
+            fstab = self.Entropy.entropyTools.listToUtf8(fstab)
+            f.close()
+            for line in fstab:
+                fsline = line.split()
+                if len(fsline) > 1:
+                    if fsline[1] == "/boot":
+                        if not os.path.ismount("/boot"):
+                            # trigger mount /boot
+                            rc = os.system("mount /boot &> /dev/null")
+                            if rc == 0:
+                                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Mounted /boot successfully")
+                                self.Entropy.updateProgress(
+                                                        brown(" Mounted /boot successfully"),
+                                                        importance = 0,
+                                                        header = red("   ##")
+                                                    )
+                            elif rc != 8192: # already mounted
+                                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Cannot mount /boot automatically !!")
+                                self.Entropy.updateProgress(
+                                                        brown(" Cannot mount /boot automatically !!"),
+                                                        importance = 0,
+                                                        header = red("   ##")
+                                                    )
+                            break
+
+    def trigger_kbuildsycoca(self):
+        if etpConst['systemroot']:
+            return
+        kdedirs = ''
+        try:
+            kdedirs = os.environ['KDEDIRS']
+        except:
+            pass
+        if kdedirs:
+            dirs = kdedirs.split(":")
+            for builddir in dirs:
+                if os.access(builddir+"/bin/kbuildsycoca",os.X_OK):
+                    if not os.path.isdir("/usr/share/services"):
+                        os.makedirs("/usr/share/services")
+                    os.chown("/usr/share/services",0,0)
+                    os.chmod("/usr/share/services",0755)
+                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca to build global KDE database")
+                    self.Entropy.updateProgress(
+                                            brown(" Running kbuildsycoca to build global KDE database"),
+                                            importance = 0,
+                                            header = red("   ##")
+                                        )
+                    os.system(builddir+"/bin/kbuildsycoca --global --noincremental &> /dev/null")
+
+    def trigger_kbuildsycoca4(self):
+        if etpConst['systemroot']:
+            return
+        kdedirs = ''
+        try:
+            kdedirs = os.environ['KDEDIRS']
+        except:
+            pass
+        if kdedirs:
+            dirs = kdedirs.split(":")
+            for builddir in dirs:
+                if os.access(builddir+"/bin/kbuildsycoca4",os.X_OK):
+                    if not os.path.isdir("/usr/share/services"):
+                        os.makedirs("/usr/share/services")
+                    os.chown("/usr/share/services",0,0)
+                    os.chmod("/usr/share/services",0755)
+                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca4 to build global KDE4 database")
+                    self.Entropy.updateProgress(
+                                            brown(" Running kbuildsycoca to build global KDE database"),
+                                            importance = 0,
+                                            header = red("   ##")
+                                        )
+                    # do it
+                    kbuild4cmd = """
+
+                    # Thanks to the hard work of kde4 gentoo overlay maintainers
+
+                    for i in $(dbus-launch); do
+                            export "$i"
+                    done
+
+                    # This is needed because we support multiple kde versions installed together.
+                    XDG_DATA_DIRS="/usr/share:${KDEDIRS}/share:/usr/local/share"
+                    """+builddir+"""/bin/kbuildsycoca4 --global --noincremental &> /dev/null
+                    kill ${DBUS_SESSION_BUS_PID}
+
+                    """
+                    os.system(kbuild4cmd)
+
+    def trigger_gconfinstallschemas(self):
+        gtest = os.system("which gconftool-2 &> /dev/null")
+        if gtest == 0 or etpConst['systemroot']:
+            schemas = [x for x in self.pkgdata['content'] if x.startswith("/etc/gconf/schemas") and x.endswith(".schemas")]
+            self.Entropy.updateProgress(
+                                    brown(" Installing GConf2 schemas..."),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            for schema in schemas:
+                if not etpConst['systemroot']:
+                    os.system("""
+                    unset GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL
+                    export GCONF_CONFIG_SOURCE=$(gconftool-2 --get-default-source)
+                    gconftool-2 --makefile-install-rule """+schema+""" 1>/dev/null
+                    """)
+                else:
+                    os.system(""" echo "
+                    unset GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL
+                    export GCONF_CONFIG_SOURCE=$(gconftool-2 --get-default-source)
+                    gconftool-2 --makefile-install-rule """+schema+""" " | chroot """+etpConst['systemroot']+""" &>/dev/null
+                    """)
+
+    def trigger_pygtksetup(self):
+        python_sym_files = [x for x in self.pkgdata['content'] if x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0")]
+        for item in python_sym_files:
+            item = etpConst['systemroot']+item
+            filepath = item[:-4]
+            sympath = os.path.basename(item)
+            if os.path.isfile(item):
+                try:
+                    if os.path.lexists(filepath):
+                        os.remove(filepath)
+                    os.symlink(sympath,filepath)
+                except OSError:
+                    pass
+
+    def trigger_pygtkremove(self):
+        python_sym_files = [x for x in self.pkgdata['content'] if x.startswith("/usr/lib/python") and (x.endswith("pygtk.py-2.0") or x.endswith("pygtk.pth-2.0"))]
+        for item in python_sym_files:
+            item = etpConst['systemroot']+item
+            if os.path.isfile(item[:-4]):
+                os.remove(item[:-4])
+
+    def trigger_susetuid(self):
+        if os.path.isfile(etpConst['systemroot']+"/bin/su"):
+            self.Entropy.updateProgress(
+                                    brown(" Configuring '"+etpConst['systemroot']+"/bin/su' executable SETUID"),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            os.chown(etpConst['systemroot']+"/bin/su",0,0)
+            os.system("chmod 4755 "+etpConst['systemroot']+"/bin/su")
+            #os.chmod("/bin/su",4755) #FIXME: probably there's something I don't know here since, masks?
+
+    def trigger_cleanpy(self):
+        pyfiles = [x for x in self.pkgdata['content'] if x.endswith(".py")]
+        for item in pyfiles:
+            item = etpConst['systemroot']+item
+            if os.path.isfile(item+"o"):
+                try: os.remove(item+"o")
+                except OSError: pass
+            if os.path.isfile(item+"c"):
+                try: os.remove(item+"c")
+                except OSError: pass
+
+    def trigger_createkernelsym(self):
+        for item in self.pkgdata['content']:
+            item = etpConst['systemroot']+item
+            if item.startswith(etpConst['systemroot']+"/usr/src/"):
+                # extract directory
+                try:
+                    todir = item[len(etpConst['systemroot']):]
+                    todir = todir.split("/")[3]
+                except:
+                    continue
+                if os.path.isdir(etpConst['systemroot']+"/usr/src/"+todir):
+                    # link to /usr/src/linux
+                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir)
+                    self.Entropy.updateProgress(
+                                            brown(" Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir),
+                                            importance = 0,
+                                            header = red("   ##")
+                                        )
+                    if os.path.isfile(etpConst['systemroot']+"/usr/src/linux") or os.path.islink(etpConst['systemroot']+"/usr/src/linux"):
+                        os.remove(etpConst['systemroot']+"/usr/src/linux")
+                    if os.path.isdir(etpConst['systemroot']+"/usr/src/linux"):
+                        mydir = etpConst['systemroot']+"/usr/src/linux."+str(self.Entropy.entropyTools.getRandomNumber())
+                        while os.path.isdir(mydir):
+                            mydir = etpConst['systemroot']+"/usr/src/linux."+str(self.Entropy.entropyTools.getRandomNumber())
+                        shutil.move(etpConst['systemroot']+"/usr/src/linux",mydir)
+                    try:
+                        os.symlink(todir,etpConst['systemroot']+"/usr/src/linux")
+                    except OSError: # not important in the end
+                        pass
+                    break
+
+    def trigger_run_ldconfig(self):
+        if not etpConst['systemroot']:
+            myroot = "/"
+        else:
+            myroot = etpConst['systemroot']+"/"
+        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running ldconfig")
+        self.Entropy.updateProgress(
+                                brown(" Regenerating /etc/ld.so.cache"),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        os.system("ldconfig -r "+myroot+" &> /dev/null")
+
+    def trigger_env_update(self):
+        # clear linker paths cache
+        linkerPaths.clear()
+        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running env-update")
+        if os.access(etpConst['systemroot']+"/usr/sbin/env-update",os.X_OK):
+            self.Entropy.updateProgress(
+                                    brown(" Updating environment using env-update"),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            if etpConst['systemroot']:
+                os.system("echo 'env-update --no-ldconfig' | chroot "+etpConst['systemroot']+" &> /dev/null")
+            else:
+                os.system('env-update --no-ldconfig &> /dev/null')
+
+    def add_java_config_2(self):
+        vms = set()
+        for vm in self.pkgdata['content']:
+            vm = etpConst['systemroot']+vm
+            if vm.startswith(etpConst['systemroot']+"/usr/share/java-config-2/vm/") and os.path.isfile(vm):
+                vms.add(vm)
+        # sort and get the latter
+        if vms:
+            vms = list(vms)
+            vms.reverse()
+            myvm = vms[0].split("/")[-1]
+            if myvm:
+                if os.access(etpConst['systemroot']+"/usr/bin/java-config",os.X_OK):
+                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring JAVA using java-config with VM: "+myvm)
+                    # set
+                    self.Entropy.updateProgress(
+                                            brown(" Setting system VM to ")+bold(myvm)+brown("..."),
+                                            importance = 0,
+                                            header = red("   ##")
+                                        )
+                    if not etpConst['systemroot']:
+                        os.system("java-config -S "+myvm)
+                    else:
+                        os.system("echo 'java-config -S "+myvm+"' | chroot "+etpConst['systemroot']+" &> /dev/null")
+                else:
+                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION /usr/bin/java-config does not exist. I was about to set JAVA VM: "+myvm)
+                    self.Entropy.updateProgress(
+                                            bold(" Attention: ")+brown("/usr/bin/java-config does not exist. Cannot set JAVA VM."),
+                                            importance = 0,
+                                            header = red("   ##")
+                                        )
+        del vms
+
+    def trigger_ebuild_postinstall(self):
+        myebuild = [self.pkgdata['xpakdir']+"/"+x for x in os.listdir(self.pkgdata['xpakdir']) if x.endswith(".ebuild")]
+        if myebuild:
+            myebuild = myebuild[0]
+            portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
+            self.Entropy.updateProgress(
+                                    brown(" Ebuild: pkg_postinst()"),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            try:
+                if not os.path.isfile(self.pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"): # if environment is not yet created, we need to run pkg_setup()
+                    # if linux-mod is found, we just disable doebuild output since will surely fail
+                    if "linux-mod" in self.pkgdata['eclasses'] \
+                        or "linux-info" in self.pkgdata['eclasses']:
+                        oldsysstdout = sys.stdout
+                        oldsysstderr = sys.stderr
+                        sys.stdout = open("/dev/null","w")
+                        sys.stdout = open("/dev/null","w")
+                    rc = self.portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'])
+                    if rc == 1:
+                        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
+                    if "linux-mod" in self.pkgdata['eclasses'] \
+                        or "linux-info" in self.pkgdata['eclasses']:
+                        sys.stdout = oldsysstdout
+                        sys.stderr = oldsysstderr
+                rc = self.portageTools.portage_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'])
+                if rc == 1:
+                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_postinst()) trigger for "+str(portage_atom)+". Something bad happened.")
+            except Exception, e:
+                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+                self.Entropy.updateProgress(
+                                        bold(" QA Warning: ")+brown("Cannot run Gentoo postint trigger for ")+bold(portage_atom)+brown(". Please report."),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
+        return 0
+
+    def trigger_ebuild_preinstall(self):
+        myebuild = [self.pkgdata['xpakdir']+"/"+x for x in os.listdir(self.pkgdata['xpakdir']) if x.endswith(".ebuild")]
+        if myebuild:
+            myebuild = myebuild[0]
+            portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
+            self.Entropy.updateProgress(
+                                    brown(" Ebuild: pkg_preinst()"),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            try:
+                if "linux-mod" in self.pkgdata['eclasses'] \
+                    or "linux-info" in self.pkgdata['eclasses']:
+                    oldsysstdout = sys.stdout
+                    oldsysstderr = sys.stderr
+                    sys.stdout = open("/dev/null","w")
+                    sys.stdout = open("/dev/null","w")
+                rc = self.portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir']) # create mysettings["T"]+"/environment"
+                if rc == 1:
+                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
+                if "linux-mod" in self.pkgdata['eclasses'] \
+                    or "linux-info" in self.pkgdata['eclasses']:
+                    sys.stdout = oldsysstdout
+                    sys.stderr = oldsysstderr
+                rc = self.portageTools.portage_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'])
+                if rc == 1:
+                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_preinst()) trigger for "+str(portage_atom)+". Something bad happened.")
+            except Exception, e:
+                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+                self.Entropy.updateProgress(
+                                        bold(" QA Warning: ")+brown("Cannot run Gentoo preinst trigger for ")+bold(portage_atom)+brown(". Please report."),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
+        return 0
+
+    def trigger_ebuild_preremove(self):
+        portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
+        myebuild = self.portageTools.getPortageAppDbPath()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
+        if os.path.isfile(myebuild):
+            self.Entropy.updateProgress(
+                                    brown(" Ebuild: pkg_prerm()"),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            try:
+                rc = self.portageTools.portage_doebuild(myebuild, mydo = "prerm", tree = "bintree", cpv = portage_atom, portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom)
+                if rc == 1:
+                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preremove trigger for "+str(portage_atom)+". Something bad happened.")
+            except Exception, e:
+                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo preremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+                self.Entropy.updateProgress(
+                                        bold(" QA Warning: ")+brown("Cannot run Gentoo preremove trigger for ")+bold(portage_atom)+brown(". Please report."),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
+        return 0
+
+    def trigger_ebuild_postremove(self):
+        portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
+        myebuild = self.portageTools.getPortageAppDbPath()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
+        if os.path.isfile(myebuild):
+            self.Entropy.updateProgress(
+                                    brown(" Ebuild: pkg_postrm()"),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            try:
+                rc = self.portageTools.portage_doebuild(myebuild, mydo = "postrm", tree = "bintree", cpv = portage_atom, portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom)
+                if rc == 1:
+                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo postremove trigger for "+str(portage_atom)+". Something bad happened.")
+            except Exception, e:
+                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo postremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+                self.Entropy.updateProgress(
+                                        bold(" QA Warning: ")+brown("Cannot run Gentoo postremove trigger for ")+bold(portage_atom)+brown(". Please report."),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
+        return 0
+
+    '''
+        Internal ones
+    '''
+
+    '''
+    @description: creates Xfont files
+    @output: returns int() as exit status
+    '''
+    def trigger_setup_font_dir(self, fontdir):
+        # mkfontscale
+        if os.access('/usr/bin/mkfontscale',os.X_OK):
+            os.system('/usr/bin/mkfontscale '+unicode(fontdir))
+        # mkfontdir
+        if os.access('/usr/bin/mkfontdir',os.X_OK):
+            os.system('/usr/bin/mkfontdir -e '+etpConst['systemroot']+'/usr/share/fonts/encodings -e '+etpConst['systemroot']+'/usr/share/fonts/encodings/large '+unicode(fontdir))
+        return 0
+
+    '''
+    @description: creates font cache
+    @output: returns int() as exit status
+    '''
+    def trigger_setup_font_cache(self, fontdir):
+        # fc-cache -f gooooo!
+        if os.access('/usr/bin/fc-cache',os.X_OK):
+            os.system('/usr/bin/fc-cache -f '+unicode(fontdir))
+        return 0
+
+    '''
+    @description: set chosen gcc profile
+    @output: returns int() as exit status
+    '''
+    def trigger_set_gcc_profile(self, profile):
+        if os.access(etpConst['systemroot']+'/usr/bin/gcc-config',os.X_OK):
+            redirect = ""
+            if etpUi['quiet']:
+                redirect = " &> /dev/null"
+            if etpConst['systemroot']:
+                os.system("echo '/usr/bin/gcc-config "+profile+"' | chroot "+etpConst['systemroot']+redirect)
+            else:
+                os.system('/usr/bin/gcc-config '+profile+redirect)
+        return 0
+
+    '''
+    @description: set chosen binutils profile
+    @output: returns int() as exit status
+    '''
+    def trigger_set_binutils_profile(self, profile):
+        if os.access(etpConst['systemroot']+'/usr/bin/binutils-config',os.X_OK):
+            redirect = ""
+            if etpUi['quiet']:
+                redirect = " &> /dev/null"
+            if etpConst['systemroot']:
+                os.system("echo '/usr/bin/binutils-config "+profile+"' | chroot "+etpConst['systemroot']+redirect)
+            else:
+                os.system('/usr/bin/binutils-config '+profile+redirect)
+        return 0
+
+    '''
+    @description: creates/updates icons cache
+    @output: returns int() as exit status
+    '''
+    def trigger_generate_icons_cache(self, cachedir):
+        if not etpConst['systemroot']:
+            myroot = "/"
+        else:
+            myroot = etpConst['systemroot']+"/"
+        if os.access('/usr/bin/gtk-update-icon-cache',os.X_OK):
+            os.system('ROOT="'+myroot+'" /usr/bin/gtk-update-icon-cache -qf '+cachedir)
+        return 0
+
+    '''
+    @description: updates /usr/share/mime database
+    @output: returns int() as exit status
+    '''
+    def trigger_update_mime_db(self):
+        if os.access(etpConst['systemroot']+'/usr/bin/update-mime-database',os.X_OK):
+            if not etpConst['systemroot']:
+                os.system('/usr/bin/update-mime-database /usr/share/mime')
+            else:
+                os.system("echo '/usr/bin/update-mime-database /usr/share/mime' | chroot "+etpConst['systemroot']+" &> /dev/null")
+        return 0
+
+    '''
+    @description: updates /usr/share/applications database
+    @output: returns int() as exit status
+    '''
+    def trigger_update_mime_desktop_db(self):
+        if os.access(etpConst['systemroot']+'/usr/bin/update-desktop-database',os.X_OK):
+            if not etpConst['systemroot']:
+                os.system('/usr/bin/update-desktop-database -q /usr/share/applications')
+            else:
+                os.system("echo '/usr/bin/update-desktop-database -q /usr/share/applications' | chroot "+etpConst['systemroot']+" &> /dev/null")
+        return 0
+
+    '''
+    @description: updates /var/lib/scrollkeeper database
+    @output: returns int() as exit status
+    '''
+    def trigger_update_scrollkeeper_db(self):
+        if os.access(etpConst['systemroot']+'/usr/bin/scrollkeeper-update',os.X_OK):
+            if not os.path.isdir(etpConst['systemroot']+'/var/lib/scrollkeeper'):
+                os.makedirs(etpConst['systemroot']+'/var/lib/scrollkeeper')
+            if not etpConst['systemroot']:
+                os.system('/usr/bin/scrollkeeper-update -q -p /var/lib/scrollkeeper')
+            else:
+                os.system("echo '/usr/bin/scrollkeeper-update -q -p /var/lib/scrollkeeper' | chroot "+etpConst['systemroot']+" &> /dev/null")
+        return 0
+
+    '''
+    @description: respawn gconfd-2 if found
+    @output: returns int() as exit status
+    '''
+    def trigger_reload_gconf_db(self):
+        if etpConst['systemroot']:
+            return 0
+        rc = os.system('pgrep -x gconfd-2')
+        if (rc == 0):
+            pids = commands.getoutput('pgrep -x gconfd-2').split("\n")
+            pidsstr = ''
+            for pid in pids:
+                if pid:
+                    pidsstr += pid+' '
+            pidsstr = pidsstr.strip()
+            if pidsstr:
+                os.system('kill -HUP '+pidsstr)
+        return 0
+
+    '''
+    @description: updates moduledb
+    @output: returns int() as exit status
+    '''
+    def trigger_update_moduledb(self, item):
+        if os.access(etpConst['systemroot']+'/usr/sbin/module-rebuild',os.X_OK):
+            if os.path.isfile(etpConst['systemroot']+self.MODULEDB_DIR+'moduledb'):
+                f = open(etpConst['systemroot']+self.MODULEDB_DIR+'moduledb',"r")
+                moduledb = f.readlines()
+                moduledb = self.Entropy.entropyTools.listToUtf8(moduledb)
+                f.close()
+                avail = [x for x in moduledb if x.strip() == item]
+                if (not avail):
+                    f = open(etpConst['systemroot']+self.MODULEDB_DIR+'moduledb',"aw")
+                    f.write(item+"\n")
+                    f.flush()
+                    f.close()
+        return 0
+
+    '''
+    @description: insert kernel object into kernel modules db
+    @output: returns int() as exit status
+    '''
+    def trigger_run_depmod(self, name):
+        if os.access('/sbin/depmod',os.X_OK):
+            if not etpConst['systemroot']:
+                myroot = "/"
+            else:
+                myroot = etpConst['systemroot']+"/"
+            os.system('/sbin/depmod -a -b '+myroot+' -r '+name+' &> /dev/null')
+        return 0
+
+    '''
+    @description: update /usr/bin/python and /usr/bin/python2 symlink
+    @output: returns int() as exit status
+    '''
+    def trigger_python_update_symlink(self):
+        bins = [x for x in os.listdir("/usr/bin") if x.startswith("python2.")]
+        if bins: # don't ask me why but it happened...
+            bins.sort()
+            latest = bins[-1]
+
+            latest = etpConst['systemroot']+"/usr/bin/"+latest
+            filepath = os.path.dirname(latest)+"/python"
+            sympath = os.path.basename(latest)
+            if os.path.isfile(latest):
+                try:
+                    if os.path.lexists(filepath):
+                        os.remove(filepath)
+                    os.symlink(sympath,filepath)
+                except OSError:
+                    pass
+        return 0
+
+    '''
+    @description: update /usr/bin/lemon symlink
+    @output: returns int() as exit status
+    '''
+    def trigger_sqlite_update_symlink(self):
+        bins = [x for x in os.listdir("/usr/bin") if x.startswith("lemon-")]
+        if bins:
+            bins.sort()
+            latest = bins[-1]
+            latest = etpConst['systemroot']+"/usr/bin/"+latest
+
+            filepath = os.path.dirname(latest)+"/lemon"
+            sympath = os.path.basename(latest)
+            if os.path.isfile(latest):
+                try:
+                    if os.path.lexists(filepath):
+                        os.remove(filepath)
+                    os.symlink(sympath,filepath)
+                except OSError:
+                    pass
+        return 0
+
+    '''
+    @description: shuts down selected init script, and remove from runlevel
+    @output: returns int() as exit status
+    '''
+    def trigger_initdeactivate(self, item, running, scheduled):
+        if not etpConst['systemroot']:
+            myroot = "/"
+            if (running):
+                os.system(item+' stop --quiet')
+        else:
+            myroot = etpConst['systemroot']+"/"
+        if (scheduled):
+            os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(item))
+        return 0
+
+    '''
+    @description: append kernel entry to grub.conf
+    @output: returns int() as exit status
+    '''
+    def trigger_configure_boot_grub(self, kernel,initramfs):
+
+        if not os.path.isdir(etpConst['systemroot']+"/boot/grub"):
+            os.makedirs(etpConst['systemroot']+"/boot/grub")
+        if os.path.isfile(etpConst['systemroot']+"/boot/grub/grub.conf"):
+            # open in append
+            grub = open(etpConst['systemroot']+"/boot/grub/grub.conf","aw")
+            # get boot dev
+            boot_dev = self.trigger_get_grub_boot_dev()
+            # test if entry has been already added
+            grubtest = open(etpConst['systemroot']+"/boot/grub/grub.conf","r")
+            content = grubtest.readlines()
+            content = self.Entropy.entropyTools.listToUtf8(content)
+            for line in content:
+                try: # handle stupidly encoded text
+                    if line.find("title="+etpConst['systemname']+" ("+os.path.basename(kernel)+")\n") != -1:
+                        grubtest.close()
+                        return
+                except UnicodeDecodeError:
+                    continue
+        else:
+            # create
+            boot_dev = "(hd0,0)"
+            grub = open(etpConst['systemroot']+"/boot/grub/grub.conf","w")
+            # write header - guess (hd0,0)... since it is weird having a running system without a bootloader, at least, grub.
+            grub_header = '''
+default=0
+timeout=10
+            '''
+            grub.write(grub_header)
+        cmdline = ' '
+        if os.path.isfile("/proc/cmdline"):
+            f = open("/proc/cmdline","r")
+            cmdline = " "+f.readline().strip()
+            params = cmdline.split()
+            if "dolvm" not in params: # support new kernels >= 2.6.23
+                cmdline += " dolvm "
+            f.close()
+        grub.write("title="+etpConst['systemname']+" ("+os.path.basename(kernel)+")\n")
+        grub.write("\troot "+boot_dev+"\n")
+        grub.write("\tkernel "+kernel+cmdline+"\n")
+        if initramfs:
+            grub.write("\tinitrd "+initramfs+"\n")
+        grub.write("\n")
+        grub.flush()
+        grub.close()
+
+    def trigger_remove_boot_grub(self, kernel,initramfs):
+        if os.path.isdir(etpConst['systemroot']+"/boot/grub") and os.path.isfile(etpConst['systemroot']+"/boot/grub/grub.conf"):
+            f = open(etpConst['systemroot']+"/boot/grub/grub.conf","r")
+            grub_conf = f.readlines()
+            grub_conf = self.Entropy.entropyTools.listToUtf8(grub_conf)
+            # validate file encodings - damn what a crap
+            kernel, initramfs = self.Entropy.entropyTools.listToUtf8([kernel,initramfs])
+            kernelname = os.path.basename(kernel)
+            new_conf = []
+            found = False
+            for count in range(len(grub_conf)):
+                line = grub_conf[count].strip()
+                if (line.find(kernelname) != -1) or (line.find(kernelname) != -1):
+                    found = True
+                    # remove previous content up to title
+                    rlines = 0
+                    for x in range(len(new_conf))[::-1]:
+                        rlines += 1
+                        if new_conf[x].strip().startswith("title"):
+                            break
+                    new_conf = new_conf[::-1][rlines:][::-1]
+                if (found):
+                    # check if the parameter belongs to title or it is something else
+                    try:
+                        line = grub_conf[count].strip().split()[0]
+                    except IndexError: # in case of weird stuff (happened...)
+                        new_conf.append(grub_conf[count])
+                        continue
+                    if line: # skip empty lines
+                        if line in ["root","kernel","initrd","hide","unhide","chainloader","makeactive","rootnoverify"]:
+                            # skip write
+                            continue
+                        else:
+                            # skip completed
+                            found = False
+                new_conf.append(grub_conf[count])
+            f = open(etpConst['systemroot']+"/boot/grub/grub.conf","w")
+            f.writelines(new_conf)
+            f.flush()
+            f.close()
+
+    def trigger_get_grub_boot_dev(self):
+        if etpConst['systemroot']:
+            return "(hd0,0)"
+        import re
+        df_avail = os.system("which df &> /dev/null")
+        if df_avail != 0:
+            self.Entropy.updateProgress(
+                                    bold(" QA Warning: ")+brown("cannot find df!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            return "(hd0,0)"
+        grub_avail = os.system("which grub &> /dev/null")
+        if grub_avail != 0:
+            self.Entropy.updateProgress(
+                                    bold(" QA Warning: ")+brown("cannot find grub!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            return "(hd0,0)"
+
+        gboot = commands.getoutput("df /boot").split("\n")[-1].split()[0]
+        if gboot.startswith("/dev/"):
+            # it's ok - handle /dev/md
+            if gboot.startswith("/dev/md"):
+                md = os.path.basename(gboot)
+                if not md.startswith("md"):
+                    md = "md"+md
+                f = open("/proc/mdstat","r")
+                mdstat = f.readlines()
+                mdstat = [x for x in mdstat if x.startswith(md)]
+                f.close()
+                if mdstat:
+                    mdstat = mdstat[0].strip().split()
+                    mddevs = []
+                    for x in mdstat:
+                        if x.startswith("sd"):
+                            mddevs.append(x[:-3])
+                    mddevs.sort()
+                    if mddevs:
+                        gboot = "/dev/"+mddevs[0]
+                    else:
+                        gboot = "/dev/sda1"
+                else:
+                    gboot = "/dev/sda1"
+            # get disk
+            match = re.subn("[0-9]","",gboot)
+            gdisk = match[0]
+            match = re.subn("[a-z/]","",gboot)
+            gpartnum = str(int(match[0])-1)
+            # now match with grub
+            device_map = etpConst['packagestmpdir']+"/grub.map"
+            if os.path.isfile(device_map):
+                os.remove(device_map)
+            # generate device.map
+            os.system('echo "quit" | grub --device-map='+device_map+' --no-floppy --batch &> /dev/null')
+            if os.path.isfile(device_map):
+                f = open(device_map,"r")
+                device_map_file = f.readlines()
+                f.close()
+                grub_dev = [x for x in device_map_file if (x.find(gdisk) != -1)]
+                if grub_dev:
+                    grub_disk = grub_dev[0].strip().split()[0]
+                    grub_dev = grub_disk[:-1]+","+gpartnum+")"
+                    return grub_dev
+                else:
+                    self.Entropy.updateProgress(
+                                            bold(" QA Warning: ")+brown("cannot match grub device with linux one!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
+                                            importance = 0,
+                                            header = red("   ##")
+                                        )
+                    return "(hd0,0)"
+            else:
+                self.Entropy.updateProgress(
+                                        bold(" QA Warning: ")+brown("cannot find generated device.map!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
+                return "(hd0,0)"
+        else:
+            self.Entropy.updateProgress(
+                                    bold(" QA Warning: ")+brown("cannot run df /boot!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            return "(hd0,0)"

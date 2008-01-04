@@ -22,7 +22,6 @@
 ##   Packages user handling function
 #
 
-import shutil
 from entropyConstants import *
 from outputTools import *
 from entropy import EquoInterface
@@ -239,7 +238,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     def dirscleanup():
         for x in etpSys['dirstoclean']:
             try:
-                if os.path.isdir(x): shutil.rmtree(x)
+                if os.path.isdir(x): Equo.shutil.rmtree(x)
             except:
                 pass
         etpSys['dirstoclean'].clear()
