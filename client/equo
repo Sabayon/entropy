@@ -118,6 +118,7 @@ def print_help():
     print_info(" \t\t\t"+red("--savedir")+"\t save new metadata to the specified directory")
 
     print_info(" \t"+blue("database")+brown("\t handle installed packages database"))
+    print_info(" \t\t"+darkgreen("check")+red("\t\t\t Check System Database for errors"))
     print_info(" \t\t"+darkgreen("generate")+red("\t\t generate installed packages database using Portage database (Portage needed)"))
     print_info(" \t\t"+darkgreen("resurrect")+red("\t\t generate installed packages database using system content [last hope]"))
     print_info(" \t\t"+darkgreen("depends")+red("\t\t\t regenerate/generate depends caching table"))

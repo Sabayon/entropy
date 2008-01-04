@@ -308,7 +308,7 @@ if os.uname()[4] == "x86_64":
     ETP_ARCH_CONST = "amd64"
 else:
     ETP_ARCH_CONST = "x86"
-# the ARCHs that we support
+
 etpSys = {
     'archs': ["x86", "amd64"],
     'api': '1',
@@ -338,13 +338,6 @@ ETP_LOGLEVEL_VERBOSE = 2
 ETP_LOGPRI_INFO = "[ INFO ]"
 ETP_LOGPRI_WARNING = "[ WARNING ]"
 ETP_LOGPRI_ERROR = "[ ERROR ]"
-
-### file transfer settings
-etpFileTransfer = {
-    'datatransfer': 0,
-    'elapsed': 0.0,
-    'transferpollingtime': float(1)/4 # 0.25secs = 4Hz
-}
 
 # disk caching dictionary
 etpCache = {

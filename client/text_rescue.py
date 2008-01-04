@@ -147,6 +147,9 @@ def database(options):
         print_info(red("  Database reinitialized successfully."))
         return 0
 
+    elif (options[0] == "check"):
+        Equo.clientDatabaseSanityCheck()
+
     elif (options[0] == "resurrect"):
 
         print_warning(bold("####### ATTENTION -> ")+red("The installed package database will be resurrected, this will take a LOT of time."))

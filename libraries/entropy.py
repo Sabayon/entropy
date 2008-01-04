@@ -90,6 +90,38 @@ class EquoInterface(TextInterface):
         self.clientDbconn = self.databaseTools.openClientDatabase(indexing = self.indexing, generate = self.noclientdb, xcache = self.xcache)
         return self.clientDbconn # just for reference
 
+    def clientDatabaseSanityCheck(self):
+        self.updateProgress(darkred("Sanity Check: system database"), importance = 2, type = "warning")
+        idpkgs = self.clientDbconn.listAllIdpackages()
+        length = len(idpkgs)
+        count = 0
+        errors = False
+        for x in idpkgs:
+            count += 1
+            self.updateProgress(
+                                    darkgreen("Scanning..."),
+                                    importance = 0,
+                                    type = "info",
+                                    back = True,
+                                    count = (count,length),
+                                    percent = True
+                                )
+            try:
+                self.clientDbconn.getPackageData(x)
+            except Exception ,e:
+                errors = True
+                self.updateProgress(
+                                        darkred("Errors on idpackage %s, exception: %s, error: %s") %  (str(x), str(Exception),str(e)),
+                                        importance = 0,
+                                        type = "warning"
+                                   )
+
+        if not errors:
+            self.updateProgress(darkred("Sanity Check: %s") % (bold("PASSED"),), importance = 2, type = "warning")
+            return 0
+        else:
+            self.updateProgress(darkred("Sanity Check: %s") % (bold("CORRUPUTED"),), importance = 2, type = "warning")
+            return -1
 
     def openRepositoryDatabase(self, repoid):
         if not self.repoDbCache.has_key((repoid,etpConst['systemroot'])):
@@ -3752,8 +3784,8 @@ class urlFetcher:
         self.startingposition = 0
         self.datatransfer = 0
         self.time_remaining = "(infinite)"
-        self.elapsed = etpFileTransfer['elapsed']
-        self.transferpollingtime = etpFileTransfer['transferpollingtime']
+        self.elapsed = 0.0
+        self.transferpollingtime = float(1)/4
         import entropyTools
         self.entropyTools = entropyTools
 
