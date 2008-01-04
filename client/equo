@@ -252,8 +252,8 @@ try:
     elif (options[0] == "smart"):
         rc = 0
         if len(options) > 1:
-            import smartTools
-            rc = smartTools.smart(options[1:])
+            import text_smart
+            rc = text_smart.smart(options[1:])
 
     elif (options[0] == "conf"):
         import text_configuration

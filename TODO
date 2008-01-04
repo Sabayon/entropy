@@ -1,9 +1,7 @@
 TODO list:
-  - move rssTools to entropy.py
   - GUI
   - server part rewrite ala EquoInterface
   - Community repositories
-  - move smartTools to entropy.py ?
   - find a way to better handle real smartapps deps
   - add deptest check for every reagent run
   - implement client db sanity check

@@ -438,6 +438,16 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 if dl < 0:
                     pkgsize = dbconn.retrieveSize(packageInfo[0])
                     downloadSize += int(pkgsize)
+                else:
+                    try:
+                        f = open(etpConst['entropyworkdir']+"/"+pkgfile,"r")
+                        f.seek(0,2)
+                        currsize = f.tell()
+                        pkgsize = dbconn.retrieveSize(packageInfo[0])
+                        downloadSize += int(pkgsize)-int(currsize)
+                        f.close()
+                    except:
+                        pass
 
                 # get installed package data
                 installedVer = '0'

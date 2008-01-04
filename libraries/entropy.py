@@ -23,6 +23,7 @@
 import shutil
 import commands
 import urllib2
+import socket
 import random
 from entropyConstants import *
 from outputTools import *
@@ -1369,37 +1370,39 @@ class EquoInterface(TextInterface):
     @input package: url -> HTTP/FTP url, digest -> md5 hash of the file
     @output: -1 = download error (cannot find the file), -2 = digest error, 0 = all fine
     '''
-    def fetch_file(self, url, digest = None):
+    def fetch_file(self, url, digest = None, resume = True):
         # remove old
         filename = os.path.basename(url)
         filepath = etpConst['packagesbindir']+"/"+etpConst['branch']+"/"+filename
-        if os.path.exists(filepath):
-            os.remove(filepath)
-    
+
         # load class
-        fetchConn = self.urlFetcher(url, filepath)
+        fetchConn = self.urlFetcher(url, filepath, resume = resume)
         fetchConn.progress = self.progress
 
         # start to download
         data_transfer = 0
+        resumed = False
         try:
             fetchChecksum = fetchConn.download()
             data_transfer = fetchConn.datatransfer
+            resumed = fetchConn.resumed
         except KeyboardInterrupt:
-            return -4, data_transfer
+            return -4, data_transfer, resumed
+        except NameError:
+            raise
         except:
-            return -1, data_transfer
+            return -1, data_transfer, resumed
         if fetchChecksum == "-3":
-            return -3, data_transfer
+            return -3, data_transfer, resumed
     
         del fetchConn
         if (digest):
             if (fetchChecksum != digest):
                 # not properly downloaded
-                return -2, data_transfer
+                return -2, data_transfer, resumed
             else:
-                return 0, data_transfer
-        return 0, data_transfer
+                return 0, data_transfer, resumed
+        return 0, data_transfer, resumed
 
     def add_failing_mirror(self, mirrorname,increment = 1):
         item = etpRemoteFailures.get(mirrorname)
@@ -1464,48 +1467,75 @@ class EquoInterface(TextInterface):
                 remaining.remove(uri)
                 continue
 
-            # now fetch the new one
-            self.updateProgress(
-                                    mirrorCountText+blue("Downloading from: ")+red(self.entropyTools.spliturl(url)[1]),
-                                    importance = 1,
-                                    type = "warning",
-                                    header = red("   ## ")
-                                )
-            rc, data_transfer = self.fetch_file(url, digest)
-            if rc == 0:
-                self.updateProgress(
-                                    mirrorCountText+blue("Successfully downloaded from: ")+red(self.entropyTools.spliturl(url)[1])+blue(" at "+str(self.entropyTools.bytesIntoHuman(data_transfer))+"/sec"),
-                                    importance = 1,
-                                    type = "info",
-                                    header = red("   ## ")
-                                )
-                return 0
-            else:
-                error_message = mirrorCountText+blue("Error downloading from: ")+red(self.entropyTools.spliturl(url)[1])
-                # something bad happened
-                if rc == -1:
-                    error_message += " - file not available on this mirror."
-                elif rc == -2:
-                    self.add_failing_mirror(uri,1)
-                    error_message += " - wrong checksum."
-                elif rc == -3:
-                    self.add_failing_mirror(uri,2)
-                    error_message += " - not found."
-                elif rc == -4:
-                    error_message += blue(" - discarded download.")
-                else:
-                    self.add_failing_mirror(uri, 5)
-                    error_message += " - unknown reason."
-                self.updateProgress(
-                                    error_message,
-                                    importance = 1,
-                                    type = "warning",
-                                    header = red("   ## ")
-                                )
-                if rc == -4: # user discarded fetch
-                    return 1
-                remaining.remove(uri)
+            do_resume = True
+            while 1:
+                try:
+                    # now fetch the new one
+                    self.updateProgress(
+                                            mirrorCountText+blue("Downloading from: ")+red(self.entropyTools.spliturl(url)[1]),
+                                            importance = 1,
+                                            type = "warning",
+                                            header = red("   ## ")
+                                        )
+                    rc, data_transfer, resumed = self.fetch_file(url, digest, do_resume)
+                    if rc == 0:
+                        self.updateProgress(
+                                            mirrorCountText+blue("Successfully downloaded from: ")+red(self.entropyTools.spliturl(url)[1])+blue(" at "+str(self.entropyTools.bytesIntoHuman(data_transfer))+"/sec"),
+                                            importance = 1,
+                                            type = "info",
+                                            header = red("   ## ")
+                                        )
+                        return 0
+                    elif resumed:
+                        do_resume = False
+                        continue
+                    else:
+                        error_message = mirrorCountText+blue("Error downloading from: ")+red(self.entropyTools.spliturl(url)[1])
+                        # something bad happened
+                        if rc == -1:
+                            error_message += " - file not available on this mirror."
+                        elif rc == -2:
+                            self.add_failing_mirror(uri,1)
+                            error_message += " - wrong checksum."
+                        elif rc == -3:
+                            self.add_failing_mirror(uri,2)
+                            error_message += " - not found."
+                        elif rc == -4:
+                            error_message += blue(" - discarded download.")
+                        else:
+                            self.add_failing_mirror(uri, 5)
+                            error_message += " - unknown reason."
+                        self.updateProgress(
+                                            error_message,
+                                            importance = 1,
+                                            type = "warning",
+                                            header = red("   ## ")
+                                        )
+                        if rc == -4: # user discarded fetch
+                            return 1
+                        remaining.remove(uri)
+                        break
+                except KeyboardInterrupt:
+                    break
+                except:
+                    raise
 
+    def quickpkg(self, atomstring, savedir = None):
+        if savedir == None:
+            savedir = etpConst['packagestmpdir']
+            if not os.path.isdir(etpConst['packagestmpdir']):
+                os.makedirs(etpConst['packagestmpdir'])
+        # match package
+        match = self.clientDbconn.atomMatch(atomstring)
+        if match[0] == -1:
+            return -1,None,None
+        atom = self.clientDbconn.atomMatch(match[0])
+        pkgdata = self.clientDbconn.getPackageData(match[0])
+        resultfile = self.entropyTools.quickpkg(pkgdata = pkgdata, dirpath = savedir)
+        if resultfile == None:
+            return -1,atom,None
+        else:
+            return 0,atom,resultfile
 
     def Package(self):
         conn = PackageInterface(EquoInstance = self)
@@ -2749,7 +2779,14 @@ class PackageInterface:
                 self.infoDict['steps'].append("checksum")
         # if file exists, first checksum then fetch
         if os.path.isfile(os.path.join(etpConst['entropyworkdir'],self.infoDict['download'])):
-            self.infoDict['steps'].reverse()
+            # check size first
+            repo_size = dbconn.retrieveSize(idpackage)
+            f = open(os.path.join(etpConst['entropyworkdir'],self.infoDict['download']),"r")
+            f.seek(0,2)
+            disk_size = f.tell()
+            f.close()
+            if repo_size == disk_size:
+                self.infoDict['steps'].reverse()
 
 class FileUpdatesInterface:
 
@@ -3339,13 +3376,11 @@ class FtpInterface:
 
         import entropyTools
         self.entropyTools = entropyTools
-        import socket
-        self.socket = socket
         import ftplib
         self.ftplib = ftplib
 
         # import FTP modules
-        self.socket.setdefaulttimeout(60)
+        socket.setdefaulttimeout(60)
 
         self.ftpuri = ftpuri
         self.ftphost = self.entropyTools.extractFTPHostFromUri(self.ftpuri)
@@ -3400,7 +3435,7 @@ class FtpInterface:
     # this can be used in case of exceptions
     def reconnectHost(self):
         # import FTP modules
-        self.socket.setdefaulttimeout(60)
+        socket.setdefaulttimeout(60)
         counter = 10
         while 1:
             counter -= 1
@@ -3645,25 +3680,38 @@ class FtpInterface:
 '''
 class urlFetcher:
 
-    def __init__(self, url, pathToSave, checksum = True, showSpeed = True):
+    def __init__(self, url, pathToSave, checksum = True, showSpeed = True, resume = True):
 
         self.url = url
+        self.resume = resume
         self.url = self.encodeUrl(self.url)
         self.pathToSave = pathToSave
         self.checksum = checksum
+        self.resumed = False
         self.showSpeed = showSpeed
         self.bufferSize = 8192
         self.status = None
         self.remotefile = None
-        self.localfile = None
         self.downloadedsize = 0
         self.average = 0
         self.remotesize = 0
         # transfer status data
-        self.gather = 0
+        self.startingposition = 0
         self.datatransfer = 0
+        self.time_remaining = "(infinite)"
         self.elapsed = etpFileTransfer['elapsed']
         self.transferpollingtime = etpFileTransfer['transferpollingtime']
+        import entropyTools
+        self.entropyTools = entropyTools
+
+        # resume support
+        if os.path.isfile(self.pathToSave) and os.access(self.pathToSave,os.R_OK) and self.resume:
+            self.localfile = open(self.pathToSave,"awb")
+            self.localfile.seek(0,2)
+            self.startingposition = int(self.localfile.tell())
+            self.resumed = True
+        else:
+            self.localfile = open(self.pathToSave,"wb")
 
         # setup proxy, doing here because config is dynamic
         if etpConst['proxy']:
@@ -3678,7 +3726,7 @@ class urlFetcher:
 
     def download(self):
         if self.showSpeed:
-            self.speedUpdater = entropyTools.TimeScheduled(
+            self.speedUpdater = self.entropyTools.TimeScheduled(
                         self.updateSpeedInfo,
                         self.transferpollingtime
             )
@@ -3688,11 +3736,27 @@ class urlFetcher:
         # set timeout
         socket.setdefaulttimeout(60)
 
-        # go download slave!
+        # get file size if available
+        try:
+            self.remotefile = urllib2.urlopen(self.url)
+            self.remotesize = int(self.remotefile.headers.get("content-length"))
+            self.remotefile.close()
+        except:
+            pass
 
         # handle user stupidity
         try:
-            self.remotefile = urllib2.urlopen(self.url)
+            request = self.url
+            if ((self.startingposition > 0) and (self.remotesize > 0)) and (self.startingposition < self.remotesize):
+                try:
+                    request = urllib2.Request(self.url, headers = { "Range" : "bytes=" + str(self.startingposition) + "-" + str(self.remotesize) })
+                except:
+                    pass
+            elif (self.startingposition == self.remotesize):
+                return self.prepare_return()
+            else:
+                self.localfile = open(self.pathToSave,"wb")
+            self.remotefile = urllib2.urlopen(request)
         except KeyboardInterrupt:
             self.close()
             raise
@@ -3701,16 +3765,9 @@ class urlFetcher:
             self.status = "-3"
             return self.status
 
-        # get file size if available
-        try:
-            self.remotesize = self.remotefile.headers.get("content-length")
-        except:
-            pass
-
         if self.remotesize > 0:
             self.remotesize = float(int(self.remotesize))/1024
 
-        self.localfile = open(self.pathToSave,"w")
         rsx = "x"
         while rsx != '':
             rsx = self.remotefile.read(self.bufferSize)
@@ -3723,8 +3780,12 @@ class urlFetcher:
         # kill thread
         self.close()
 
+        return self.prepare_return()
+
+
+    def prepare_return(self):
         if self.checksum:
-            self.status = entropyTools.md5sum(self.pathToSave)
+            self.status = self.entropyTools.md5sum(self.pathToSave)
             return self.status
         else:
             self.status = "-2"
@@ -3741,7 +3802,7 @@ class urlFetcher:
     # reimplemented from TextInterface
     def updateProgress(self):
 
-        currentText = darkred("    <-> Downloading: ")+darkgreen(str(round(float(self.downloadedsize)/1024,1)))+"/"+red(str(round(self.remotesize,1)))+" kB"
+        currentText = darkred("    <-> Downloading: ")+darkgreen(str(round(float(self.downloadedsize)/1024,1)))+"/"+red(str(round(self.remotesize,1))) + " kB"
         # create progress bar
         barsize = 10
         bartext = "["
@@ -3757,8 +3818,7 @@ class urlFetcher:
         for y in range(diffbarsize):
             bartext += " "
         if (self.showSpeed):
-            self.gather = self.downloadedsize
-            bartext += "] => "+str(entropyTools.bytesIntoHuman(self.datatransfer))+"/sec"
+            bartext += "] => "+str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec ~ ETA: "+str(self.time_remaining)
         else:
             bartext += "]"
         average = str(self.average)
@@ -3776,7 +3836,12 @@ class urlFetcher:
     def updateSpeedInfo(self):
         self.elapsed += self.transferpollingtime
         # we have the diff size
-        self.datatransfer = self.gather / self.elapsed
+        self.datatransfer = (self.downloadedsize-self.startingposition) / self.elapsed
+        try:
+            self.time_remaining = int(round((int(round(self.remotesize*1024,0))-int(round(self.downloadedsize,0)))/self.datatransfer,0))
+            self.time_remaining = self.entropyTools.convertSecondsToFancyOutput(self.time_remaining)
+        except:
+            self.time_remaining = "(infinite)"
 
 
 class rssFeed:

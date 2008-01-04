@@ -169,11 +169,11 @@ def report_application_error(errorstring):
             urllib2.install_opener(opener)
         xfile = urllib2.urlopen(url)
         result = xfile.readlines()
-	socket.setdefaulttimeout(2)
+        socket.setdefaulttimeout(2)
         return result
     except:
-	socket.setdefaulttimeout(2)
-	return False
+        socket.setdefaulttimeout(2)
+        return False
 
 def ebeep(count = 5):
     for x in range(count):
@@ -181,12 +181,12 @@ def ebeep(count = 5):
 
 def applicationLockCheck(option = None, gentle = False):
     if (etpConst['applicationlock']):
-	print_error(red("Another instance of Equo is running. Action: ")+bold(str(option))+red(" denied."))
-	print_error(red("If I am lying (maybe). Please remove ")+bold(etpConst['pidfile']))
-	if (not gentle):
-	    sys.exit(10)
-	else:
-	    return True
+        print_error(red("Another instance of Equo is running. Action: ")+bold(str(option))+red(" denied."))
+        print_error(red("If I am lying (maybe). Please remove ")+bold(etpConst['pidfile']))
+        if (not gentle):
+            sys.exit(10)
+        else:
+            return True
     return False
 
 def getRandomNumber():
@@ -195,22 +195,22 @@ def getRandomNumber():
 
 def countdown(secs=5,what="Counting...", back = False):
     if secs:
-	if back:
-	    sys.stdout.write(red(">> ")+what)
-	else:
-	    print what
+        if back:
+            sys.stdout.write(red(">> ")+what)
+        else:
+            print what
         for i in range(secs)[::-1]:
             sys.stdout.write(red(str(i+1)+" "))
             sys.stdout.flush()
-	    time.sleep(1)
+            time.sleep(1)
 
 def spinner(rotations, interval, message=''):
-	for x in xrange(rotations):
-		writechar(message + '|/-\\'[x%4] + '\r')
-		time.sleep(interval)
-	writechar(' ')
-	for i in xrange(len(message)): print ' ',
-	writechar('\r')
+    for x in xrange(rotations):
+        writechar(message + '|/-\\'[x%4] + '\r')
+        time.sleep(interval)
+    writechar(' ')
+    for i in xrange(len(message)): print ' ',
+    writechar('\r')
 
 def md5sum(filepath):
     import md5
@@ -239,7 +239,7 @@ def md5sum_directory(directory):
                 m.update(block)
                 block = readfile.read(1024)
     return m.hexdigest()
-    
+
 def unpackGzip(gzipfilepath):
     import gzip
     filepath = gzipfilepath[:-3] # remove .gz
@@ -1363,6 +1363,38 @@ def convertUnixTimeToHumanTime(unixtime):
     from datetime import datetime
     humantime = str(datetime.fromtimestamp(unixtime))
     return humantime
+
+def convertSecondsToFancyOutput(seconds):
+
+    mysecs = seconds
+    myminutes = 0
+    myhours = 0
+    mydays = 0
+
+    while mysecs >= 60:
+        mysecs -= 60
+        myminutes += 1
+
+    while myminutes >= 60:
+        myminutes -= 60
+        myhours += 1
+
+    while myhours >= 24:
+        myhours -= 24
+        mydays += 1
+
+    output = []
+    output.append(str(mysecs)+"s")
+    if myminutes > 0 or myhours > 0:
+        output.append(str(myminutes)+"m")
+    if myhours > 0 or mydays > 0:
+        output.append(str(myhours)+"h")
+    if mydays > 0:
+        output.append(str(mydays)+"d")
+    output.reverse()
+    return ':'.join(output)
+
+
 
 # get a list, returns a sorted list
 def alphaSorter(seq):

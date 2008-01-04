@@ -19,7 +19,6 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
-import os
 import shutil
 from entropyConstants import *
 from outputTools import *
@@ -95,11 +94,10 @@ def QuickpkgHandler(mypackages, savedir = None):
     # print the list
     if (not etpUi['quiet']) or (etpUi['ask']): print_info(darkgreen(" * ")+red("This is the list of the packages that would be quickpkg'd:"))
     pkgInfo = {}
-    pkgData = {}
     for pkg in packages:
         atom = text_ui.Equo.clientDbconn.retrieveAtom(pkg[0])
-        pkgInfo[pkg] = atom
-        pkgData[pkg] = text_ui.Equo.clientDbconn.getPackageData(pkg[0])
+        pkgInfo[pkg]['atom'] = atom
+        pkgInfo[pkg]['idpackage'] = pkg[0]
         print_info(brown("\t[")+red("from:")+bold("installed")+brown("]")+" - "+atom)
 
     if (not etpUi['quiet']) or (etpUi['ask']):
@@ -108,8 +106,9 @@ def QuickpkgHandler(mypackages, savedir = None):
             return 0
 
     for pkg in packages:
-        if not etpUi['quiet']: print_info(brown(" * ")+red("Compressing: ")+darkgreen(pkgInfo[pkg]))
-        resultfile = text_ui.Equo.entropyTools.quickpkg(pkgdata = pkgData[pkg], dirpath = savedir)
+        if not etpUi['quiet']: print_info(brown(" * ")+red("Compressing: ")+darkgreen(pkgInfo[pkg]['atom']))
+        pkgdata = text_ui.Equo.clientDbconn.getPackageData(pkgInfo[pkg]['idpackage'])
+        resultfile = text_ui.Equo.entropyTools.quickpkg(pkgdata = pkgdata, dirpath = savedir)
         if resultfile == None:
             if not etpUi['quiet']: print_error(darkred(" * ")+red("Error creating package for: ")+bold(pkgInfo[pkg])+darkred(". Cannot continue."))
             return 3
