@@ -1230,6 +1230,49 @@ class EquoInterface(TextInterface):
         del packages
         return update, remove, fine
 
+    # every tbz2 file that would be installed must pass from here
+    def add_tbz2_to_repos(self, tbz2file):
+        atoms_contained = []
+        basefile = os.path.basename(tbz2file)
+        if os.path.isdir(etpConst['entropyunpackdir']+"/"+basefile[:-5]):
+            shutil.rmtree(etpConst['entropyunpackdir']+"/"+basefile[:-5])
+        os.makedirs(etpConst['entropyunpackdir']+"/"+basefile[:-5])
+        dbfile = self.entropyTools.extractEdb(tbz2file, dbpath = etpConst['entropyunpackdir']+"/"+basefile[:-5]+"/packages.db")
+        if dbfile == None:
+            return -1,atoms_contained
+        etpSys['dirstoclean'].add(os.path.dirname(dbfile))
+        # add dbfile
+        etpRepositories[basefile] = {}
+        etpRepositories[basefile]['description'] = "Dynamic database from "+basefile
+        etpRepositories[basefile]['packages'] = []
+        etpRepositories[basefile]['dbpath'] = os.path.dirname(dbfile)
+        etpRepositories[basefile]['pkgpath'] = os.path.realpath(tbz2file) # extra info added
+        etpRepositories[basefile]['configprotect'] = set()
+        etpRepositories[basefile]['configprotectmask'] = set()
+        etpRepositories[basefile]['smartpackage'] = False # extra info added
+        # put at top priority, shift others
+        myrepo_order = set([(x[0]+1,x[1]) for x in etpRepositoriesOrder])
+        etpRepositoriesOrder.clear()
+        etpRepositoriesOrder.update(myrepo_order)
+        etpRepositoriesOrder.add((1,basefile))
+        mydbconn = self.openGenericDatabase(dbfile)
+        # read all idpackages
+        try:
+            myidpackages = mydbconn.listAllIdpackages() # all branches admitted from external files
+        except:
+            del etpRepositories[basefile]
+            return -2,atoms_contained
+        if len(myidpackages) > 1:
+            etpRepositories[basefile]['smartpackage'] = True
+        for myidpackage in myidpackages:
+            compiled_arch = mydbconn.retrieveDownloadURL(myidpackage)
+            if compiled_arch.find("/"+etpSys['arch']+"/") == -1:
+                return -3,atoms_contained
+            atoms_contained.append([tbz2file,(int(myidpackage),basefile)])
+        mydbconn.closeDB()
+        del mydbconn
+        return 0,atoms_contained
+
     # This is the function that should be used by third party applications
     # to retrieve a list of available updates, along with conflicts (removalQueue) and obsoletes
     # (removed)
@@ -2651,6 +2694,7 @@ class PackageInterface:
         self.infoDict['steps'].append("preremove")
         self.infoDict['steps'].append("remove")
         self.infoDict['steps'].append("postremove")
+        return 0
 
     def __generate_install_metadata(self):
         self.infoDict.clear()
@@ -2689,6 +2733,12 @@ class PackageInterface:
         self.infoDict['smartpackage'] = False
         # set unpack dir and image dir
         if self.infoDict['repository'].endswith(".tbz2"):
+            # do arch check
+            compiled_arch = dbconn.retrieveDownloadURL(idpackage)
+            if compiled_arch.find("/"+etpSys['arch']+"/") == -1:
+                self.infoDict.clear()
+                self.prepared = False
+                return -1
             self.infoDict['smartpackage'] = etpRepositories[self.infoDict['repository']]['smartpackage']
             self.infoDict['pkgpath'] = etpRepositories[self.infoDict['repository']]['pkgpath']
         else:
@@ -2755,6 +2805,8 @@ class PackageInterface:
             self.infoDict['triggers']['install']['xpakpath'] = self.infoDict['xpakpath']
             self.infoDict['triggers']['install']['xpakdir'] = self.infoDict['xpakdir']
 
+        return 0
+
 
     def __generate_fetch_metadata(self):
         self.infoDict.clear()
@@ -2787,6 +2839,7 @@ class PackageInterface:
             f.close()
             if repo_size == disk_size:
                 self.infoDict['steps'].reverse()
+        return 0
 
 class FileUpdatesInterface:
 

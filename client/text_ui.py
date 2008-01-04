@@ -235,13 +235,14 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         print_warning(red("Running with ")+bold("--pretend")+red("..."))
         etpUi['pretend'] = True
 
-    dirsCleanup = set()
+    etpSys['dirstoclean'].clear()
     def dirscleanup():
-        for x in dirsCleanup:
+        for x in etpSys['dirstoclean']:
             try:
                 if os.path.isdir(x): shutil.rmtree(x)
             except:
                 pass
+        etpSys['dirstoclean'].clear()
 
     if not resume:
 
@@ -253,48 +254,22 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 foundAtoms.append([package,Equo.atomMatch(package)])
             if tbz2:
                 for pkg in tbz2:
-                    # create a repository for each database
-                    basefile = os.path.basename(pkg)
-                    if os.path.isdir(etpConst['entropyunpackdir']+"/"+basefile[:-5]):
-                        shutil.rmtree(etpConst['entropyunpackdir']+"/"+basefile[:-5])
-                    os.makedirs(etpConst['entropyunpackdir']+"/"+basefile[:-5])
-                    dbfile = Equo.entropyTools.extractEdb(pkg,dbpath = etpConst['entropyunpackdir']+"/"+basefile[:-5]+"/packages.db")
-                    if dbfile == None:
-                        print_warning(red("## ATTENTION:")+bold(" "+basefile+" ")+red(" is not a valid Entropy package. Skipping..."))
+                    status, atomsfound = Equo.add_tbz2_to_repos(pkg)
+                    if status == 0:
+                        foundAtoms += atomsfound[:]
+                        del atomsfound
+                    elif status == -1:
+                        print_warning(red("## ATTENTION:")+bold(" "+os.path.basename(pkg)+" ")+red(" is not a valid Entropy package. Skipping..."))
                         continue
-                    dirsCleanup.add(os.path.dirname(dbfile))
-                    # add dbfile
-                    etpRepositories[basefile] = {}
-                    etpRepositories[basefile]['description'] = "Dynamic database from "+basefile
-                    etpRepositories[basefile]['packages'] = []
-                    etpRepositories[basefile]['dbpath'] = os.path.dirname(dbfile)
-                    etpRepositories[basefile]['pkgpath'] = os.path.realpath(pkg) # extra info added
-                    etpRepositories[basefile]['configprotect'] = set()
-                    etpRepositories[basefile]['configprotectmask'] = set()
-                    etpRepositories[basefile]['smartpackage'] = False # extra info added
-                    # put at top priority, shift others
-                    myrepo_order = set([(x[0]+1,x[1]) for x in etpRepositoriesOrder])
-                    etpRepositoriesOrder.clear()
-                    etpRepositoriesOrder.update(myrepo_order)
-                    etpRepositoriesOrder.add((1,basefile))
-                    mydbconn = Equo.openGenericDatabase(dbfile)
-                    # read all idpackages
-                    try:
-                        myidpackages = mydbconn.listAllIdpackages() # all branches admitted from external files
-                    except:
-                        print_warning(red("## ATTENTION:")+bold(" "+basefile+" ")+red(" is not a valid Entropy package. Skipping..."))
-                        del etpRepositories[basefile]
+                    elif status == -2:
+                        print_warning(red("## ATTENTION:")+bold(" "+os.path.basename(pkg)+" ")+red(" is not a valid Entropy package. Skipping..."))
                         continue
-                    if len(myidpackages) > 1:
-                        etpRepositories[basefile]['smartpackage'] = True
-                    for myidpackage in myidpackages:
-                        compiled_arch = mydbconn.retrieveDownloadURL(myidpackage)
-                        if compiled_arch.find("/"+etpSys['arch']+"/") == -1:
-                            print_error(red("## ATTENTION:")+bold(" "+basefile+" ")+red(" is not compiled with the same architecture of the system. Cannot continue."))
-                            return -1,1
-                        foundAtoms.append([pkg,(int(myidpackage),basefile)])
-                    mydbconn.closeDB()
-                    del mydbconn
+                    elif status == -3:
+                        print_warning(red("## ATTENTION:")+bold(" "+basefile+" ")+red(" is not compiled with the same architecture of the system. Skipping..."))
+                        continue
+                    else:
+                        raise exceptionTools.InvalidDataType("InvalidDataType: ??????")
+
 
         # filter packages not found
         _foundAtoms = []
