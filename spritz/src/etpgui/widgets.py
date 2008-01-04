@@ -19,7 +19,7 @@
 
 import gtk.glade
 import pango
-import yumgui
+import etpgui
 import gobject
 import types
 
@@ -35,8 +35,8 @@ class TextViewConsole:
         self.style_banner.set_property( "foreground", "saddle brown" )
         self.style_banner.set_property( "family", "Monospace" )
         self.style_banner.set_property( "size_points", 8 )
-        
-            
+
+
         self.style_ps1 = gtk.TextTag( "ps1" )
         self.style_ps1.set_property( "editable", False )
         if color:

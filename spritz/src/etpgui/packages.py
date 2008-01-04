@@ -17,7 +17,7 @@
 # Authors:
 #    Tim Lauridsen <tla@rasmil.dk>
 
-from yumgui import format_number
+from etpgui import format_number
 import time
 import types
 

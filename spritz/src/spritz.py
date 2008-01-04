@@ -36,8 +36,8 @@ import gtk,gobject
 from threading import Thread,Event
 import thread
 import exceptions
-from yumgui.widgets import UI, Controller
-from yumgui import *
+from etpgui.widgets import UI, Controller
+from etpgui import *
 
 # yumex imports
 import filters
@@ -367,7 +367,7 @@ class YumexController(Controller):
         self.settings = self.yumexOptions.settings       
         
     def on_HelpAbout( self, widget ):
-        about = AboutDialog(const.PIXMAPS_PATH+'/yumex-about.png',const.CREDITS,self.settings.branding_title)
+        about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,self.settings.branding_title)
         about.show()
         
     def on_ProfileSave( self, widget ):
@@ -711,7 +711,7 @@ if __name__ == "__main__":
     try:
         gtkEventThread = ProcessGtkEventsThread()
         gtkEventThread.start()
-        gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/yumex-icon.png")
+        gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/spritz-icon.png")
         mainApp = YumexApplication()
         gtk.main()
     except SystemExit, e:

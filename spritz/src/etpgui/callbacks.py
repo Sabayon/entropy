@@ -22,9 +22,9 @@ import os
 import sys
 import yum
 import logging
-from yum.constants import *
+#from yum.constants import *
 
-from yumgui import doGtkEvents
+from etpgui import doGtkEvents
 
 # yum callback handlers
 

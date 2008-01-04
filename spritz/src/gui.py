@@ -17,10 +17,10 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-from yumgui import *
+from etpgui import *
 from misc import YumexQueue,YumexConf,const,cleanMarkupSting
 from views import *
-from yumgui.widgets import TextViewConsole
+from etpgui.widgets import TextViewConsole
 from i18n import _
 
 
