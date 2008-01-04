@@ -38,10 +38,11 @@ from entropy import EquoInterface, urlFetcher
 
 class Equo(EquoInterface):
 
-    def connect_to_gui(self, progress):
+    def connect_to_gui(self, progress, progressLog):
         self.progress = progress
-        self.urlFetcher = urlFetcher
+        self.urlFetcher = GuiUrlFetcher
         self.nocolor()
+        self.progressLog = progressLog
 
     def updateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
 
@@ -63,6 +64,8 @@ class Equo(EquoInterface):
             # FIXME: interface with popup !
             myfunc = self.progress.set_extraLabel
         myfunc(count_str+text)
+        if not back:
+            self.progressLog(count_str+text)
 
     def cycleDone(self):
         self.progress.total.next()

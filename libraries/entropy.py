@@ -3245,9 +3245,9 @@ class RepoInterface:
         self.__validate_repository_id(repo)
         url, filepath = self.__construct_paths(item, repo, cmethod)
 
-        fetchConn = self.Entropy.urlFetcher(url, filepath)
+        fetchConn = self.Entropy.urlFetcher(url, filepath, resume = False)
         fetchConn.progress = self.Entropy.progress
-	rc = fetchConn.download()
+        rc = fetchConn.download()
         del fetchConn
         if rc in ("-1","-2","-3"):
             return False
@@ -3275,7 +3275,11 @@ class RepoInterface:
     def sync(self):
 
         # let's dance!
-        print_info(darkred(" @@ ")+darkgreen("Repositories syncronization..."))
+        self.Entropy.updateProgress(    darkgreen("Repositories syncronization..."),
+                                        importance = 2,
+                                        type = "info",
+                                        header = darkred(" @@ ")
+                            )
 
         repocount = 0
         repolength = len(self.reponames)
@@ -3289,7 +3293,7 @@ class RepoInterface:
                                             count = (repocount, repolength),
                                             header = blue("  # ")
                                )
-            self.Entropy.updateProgress(    red("Database URL:") + darkgreen(etpRepositories[repo]['database']),
+            self.Entropy.updateProgress(    red("Database URL: ") + darkgreen(etpRepositories[repo]['database']),
                                             importance = 1,
                                             type = "info",
                                             header = blue("  # ")
@@ -3297,7 +3301,7 @@ class RepoInterface:
             self.Entropy.updateProgress(    red("Database local path: ") + darkgreen(etpRepositories[repo]['dbpath']),
                                             importance = 0,
                                             type = "info",
-                                            header = "\t"
+                                            header = blue("  # ")
                                )
 
             # check if database is already updated to the latest revision
@@ -3836,6 +3840,12 @@ class urlFetcher:
         # get file size if available
         try:
             self.remotefile = urllib2.urlopen(self.url)
+        except:
+            self.close()
+            self.status = "-3"
+            return self.status
+
+        try:
             self.remotesize = int(self.remotefile.headers.get("content-length"))
             self.remotefile.close()
         except:

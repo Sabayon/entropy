@@ -376,7 +376,7 @@ class YumexGUI:
         context_id = self.ui.status.get_context_id( "Status" )
         self.ui.status.push( context_id, text )
 
-    def progressLog(self,msg, extra = None):
+    def progressLog(self, msg, extra = None):
         self.logger.info(msg)
         self.progress.set_subLabel( msg )
         self.progress.set_progress( 0, " " ) # Blank the progress bar.
@@ -384,7 +384,13 @@ class YumexGUI:
             self.output.write_line(extra+": "+msg+"\n")
         else:
             self.output.write_line(msg+"\n")
-     
+
+    def progressLogWrite(self, msg, extra = None):
+        if extra:
+            self.output.write_line(extra+": "+msg+"\n")
+        else:
+            self.output.write_line(msg+"\n")
+
     def pkgInfoClear( self ):
         self.pkgDesc.clear()
         self.pkgInfo.clear()

@@ -425,7 +425,7 @@ class YumexApplication(YumexController,YumexGUI):
         #self.addPackages()
         self.setPage('repos')
         self.Equo = Equo()
-        self.Equo.connect_to_gui(self.progress)
+        self.Equo.connect_to_gui(self.progress, self.progressLogWrite)
 
     def startWorking(self):
         self.isWorking = True
@@ -470,7 +470,7 @@ class YumexApplication(YumexController,YumexGUI):
         self.setupRepoView()
         self.endWorking()
 
-    
+
     def setupRepoView(self):
         self.repoView.populate()
 
