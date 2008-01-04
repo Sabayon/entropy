@@ -808,6 +808,22 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 
     totalqueue = str(len(removalQueue))
     currentqueue = 0
+
+    # ask which ones to remove
+    if human:
+        ignored = []
+        for idpackage in removalQueue:
+            currentqueue += 1
+            atom = Equo.clientDbconn.retrieveAtom(idpackage)
+            print_info(red(" -- ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(atom))
+            rc = Equo.askQuestion("     Remove this one ?")
+            if rc == "No":
+                # update resume cache
+                ignored.append(idpackage)
+        removalQueue = [x for x in removalQueue if x not in ignored]
+
+    totalqueue = str(len(removalQueue))
+    currentqueue = 0
     for idpackage in removalQueue:
         currentqueue += 1
 
@@ -818,18 +834,6 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 
         xterm_header = "Equo (remove) :: "+str(currentqueue)+" of "+totalqueue+" ::"
         print_info(red(" -- ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['removeatom']))
-
-        # if human
-        if human:
-            rc = Equo.askQuestion("     Remove this one ?")
-            if rc == "No":
-                # update resume cache
-                resume_cache['removalQueue'].remove(Package.infoDict['idpackage'])
-                Equo.dumpTools.dumpobj(etpCache['remove'],resume_cache)
-                Package.kill()
-                del metaopts
-                del Package
-                continue
 
         rc = Package.run(xterm_header = xterm_header)
         if rc != 0:

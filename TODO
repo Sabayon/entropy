@@ -3,7 +3,6 @@ TODO list:
   - Community repositories
   - find a way to better handle real smartapps deps
   - add deptest check for every reagent run
-  - equo world: removal packages, first ask all, then do
   - separate packages by license restrictions
   - server side code rewrite ala EquoInterface?
 
