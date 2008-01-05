@@ -10,7 +10,5 @@ clean:
 
 install:
 	mkdir -p $(DESTDIR)/usr/lib/entropy/spritz
-	mkdir -p $(DESTDIR)/usr/lib/entropy/spritz
-	install -m755 *.pyc $(DESTDIR)/$(PKGDIR)/.
 	install -m755 *.py $(DESTDIR)/$(PKGDIR)/.
 	install -m644 spritz.glade $(DESTDIR)/$(PKGDIR)/.
