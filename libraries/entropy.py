@@ -3111,6 +3111,7 @@ class RepoInterface:
         self.forceUpdate = forceUpdate
         self.syncErrors = False
         self.dbupdated = False
+        self.newEquo = False
 
         # check if I am root
         if (not self.Entropy.entropyTools.isRoot()):
@@ -3448,6 +3449,7 @@ class RepoInterface:
                                             type = "warning",
                                             header = darkred(" @@ ")
                             )
+            self.syncErrors = True
             return 128
 
         rc = False
@@ -3457,6 +3459,7 @@ class RepoInterface:
             pass
 
         if rc:
+            self.newEquo = True
             self.Entropy.updateProgress(    blue("A new ")+bold("Equo")+blue(" release is available. Please ")+bold("install it")+blue(" before any other package."),
                                             importance = 1,
                                             type = "info",
@@ -4676,7 +4679,7 @@ class TriggerInterface:
                                     header = red("   ##")
                                 )
 
-    def openglsetup_xorg(self):
+    def trigger_openglsetup_xorg(self):
         eselect = os.system("eselect opengl &> /dev/null")
         if eselect == 0:
             self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to fallback xorg-x11 ...")
@@ -4952,7 +4955,7 @@ class TriggerInterface:
             else:
                 os.system('env-update --no-ldconfig &> /dev/null')
 
-    def add_java_config_2(self):
+    def trigger_add_java_config_2(self):
         vms = set()
         for vm in self.pkgdata['content']:
             vm = etpConst['systemroot']+vm

@@ -1,4 +1,5 @@
 TODO list:
+  - cache world calculation results
   - GUI
   - Community repositories
   - find a way to better handle real smartapps deps (need split PDEPEND?)
