@@ -39,21 +39,23 @@ import exceptions
 from etpgui.widgets import UI, Controller
 from etpgui import *
 
+
 # yumex imports
 import filters
-from entropyapi import Equo
+from entropyapi import EquoConnection
 from gui import YumexGUI
 from dialogs import *
 from misc import const, YumexOptions, YumexProfile
 from i18n import _
 import time
-       
+
+
 class YumexController(Controller):
     ''' This class contains all glade signal callbacks '''
-    
-    
+
+
     def __init__( self ):
-         self.etpbase = EntropyPackages()
+         self.etpbase = EntropyPackages(EquoConnection)
          # Create and ui object contains the widgets.
          ui = UI( const.GLADE_FILE , 'main', 'yumex' )
          # init the Controller Class to connect signals.
@@ -141,7 +143,7 @@ class YumexController(Controller):
         repos = self.repoView.get_selected()
         self.setPage('output')
         self.logger.info( "Cleaning cache")
-        self.cleanEntropyCaches()
+        self.cleanEntropyCaches(alone = True)
 
     def on_repoDeSelect_clicked(self,widget):
         self.repoView.deselect_all()
@@ -312,10 +314,10 @@ class YumexController(Controller):
             flt.activate(False)
         action = self.lastPkgPB  
         rb = self.packageRB[action]
-        self.on_pkgFilter_toggled(rb,action)      
-            
-            
-    def on_schArchText_activate(self,entry):      
+        self.on_pkgFilter_toggled(rb,action)
+
+
+    def on_schArchText_activate(self,entry):
         ''' Search Arch Entry handler'''
         txt = entry.get_text()
         flt = filters.yumexFilter.get('ArchFilter')
@@ -346,9 +348,9 @@ class YumexController(Controller):
             pkg = model.get_value( iterator, 0 )
             if pkg:
                 self.grpDesc.clear()
-                self.grpDesc.write_line(pkg.description)            
- 
-            
+                self.grpDesc.write_line(pkg.description)
+
+
 # Menu Handlers
 
     def on_profile( self, data ):
@@ -360,25 +362,25 @@ class YumexController(Controller):
 
     def on_FileQuit( self, widget ):
         self.quit()
-    
+
     def on_EditPreferences( self, widget ):
         Preferences()
         self.yumexOptions.reload()
         self.settings = self.yumexOptions.settings       
-        
+
     def on_HelpAbout( self, widget ):
         about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,self.settings.branding_title)
         about.show()
-        
+
     def on_ProfileSave( self, widget ):
         repos = self.repoView.get_selected()
         if self.profile.writeProfile(repos):
             self.setStatus( _( "Profile : %s saved ok" ) % self.profile.getActive() )
         else:
             self.setStatus( _( "Profile : %s save failed" ) % self.profile.getActive() )
-            
-        
-            
+
+
+
     def on_ProfileNew( self, widget ):
         name = inputBox(self.ui.main,_("Create New Profile"),_("Name of new profile"))
         if name:
@@ -414,7 +416,7 @@ class YumexApplication(YumexController,YumexGUI):
         self.logger.info(_('Yum Config Setup'))
         self.yumexOptions.parseCmdOptions()
         #self.lastPkgPB = "updates"
-        
+
         # Setup GUI
         self.setupGUI()
         self.logger.info(_('GUI Setup Completed'))
@@ -424,7 +426,7 @@ class YumexApplication(YumexController,YumexGUI):
         self.firstTime = True
         #self.addPackages()
         self.setPage('repos')
-        self.Equo = Equo()
+        self.Equo = EquoConnection
         self.Equo.connect_to_gui(self.progress, self.progressLogWrite)
 
     def startWorking(self):
@@ -438,10 +440,14 @@ class YumexApplication(YumexController,YumexGUI):
         self.ui.progressVBox.grab_remove()
         normalCursor(self.ui.main)
         gtkEventThread.endProcessing()
-    
-    def cleanEntropyCaches(self):
+
+    def cleanEntropyCaches(self, alone = False):
+        if alone:
+            self.progress.total.hide()
         self.Equo.generate_cache(depcache = True, configcache = False)
-    
+        if alone:
+            self.progress.total.show()
+
     def updateRepositories(self, repos):
         self.setPage('output')
         self.startWorking()

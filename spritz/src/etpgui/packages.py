@@ -17,75 +17,113 @@
 # Authors:
 #    Tim Lauridsen <tla@rasmil.dk>
 
-from etpgui import format_number
-import time
+from entropyConstants import *
+from entropyapi import EquoConnection
 import types
 
-
 class PackageWrapper:
-    def __init__(self,pkg,avail):
-        self.__pkg = pkg
-        self.available = avail
+    def __init__(self, matched_atom, avail):
 
-    def __str__( self ):
-        return str(self.__pkg)
-
-    def __cmp__( self,pkg):
-        n1 = str(self.__pkg)
-        n2 = str(pkg)
-        if n1 > n2:
-            return 1
-        elif n1 == n2:
-            return 0
+        if matched_atom[1] == 0:
+            self.dbconn = EquoConnection.clientDbconn
         else:
-            return -1
-        
-    
+            self.dbconn = EquoConnection.openRepositoryDatabase(matched_atom[1])
+        self.matched_atom = matched_atom
+        self.idpackage = self.matched_atom[0]
+        self.repository = self.matched_atom[1]
+        self.atom = self.dbconn.retrieveAtom(self.idpackage)
+        self.version = self.dbconn.retrieveVersion(self.idpackage)
+        self.versiontag = self.dbconn.retrieveVersionTag(self.idpackage)
+        self.revision = self.dbconn.retrieveRevision(self.idpackage)
+        self.pkgtuple = (self.version,self.versiontag,self.revision)
+        match = self.dbconn.atomMatch(self.atom)
+        if match[0] != -1:
+            self.available = True
+        else:
+            self.available = False
+
+    def __str__(self):
+        return str(self.atom)
+
+    def __cmp__(self, pkg):
+        pkgcmp = EquoConnection.entropyTools.entropyCompareVersions(self.pkgtuple,pkg.pkgtuple)
+        return pkgcmp
 
     def getPkg(self):
-        return self.__pkg
-        
+        return self.matched_atom
+
     def getName(self):
-        return self.__pkg.name
-        
+        return self.atom
+
     def getTup(self):
-        return self.__pkg.pkgtup
+        return self.pkgtuple
 
     def getRepoId(self):
-        return self.__pkg.repoid
-        
+        return self.repository
+
+    def getIdpackage(self):
+        return self.idpackage
+
     def getVer(self):
-        return self.__pkg.printVer()
-        
+        tag = ""
+        if self.versiontag:
+            tag = "#"+self.versiontag
+        tag += "~"+str(self.revision)
+        return self.version+tag
+
+
     def getSummaryFirst(self):
-        summary = self.__pkg.returnSimple( 'summary' )
-        if summary:
-            return self._toUTF(summary.splitlines()[0])
-        else:
-            return ''
+        return str(self.dbconn.getBaseData(self.idpackage))
 
     def getSummary(self):
-        return self.__pkg.returnSimple( 'summary' )
+        return str(self.dbconn.getScopeData(self.idpackage))
 
     def getDescription(self):
-        return self.__pkg.returnSimple( 'description' )
-        
+        return self.dbconn.retrieveDescription(self.idpackage)
+
     def getSize(self):
-        return float(self.__pkg.size)
-    
+        return self.dbconn.retrieveSize(self.idpackage)
+
     def getSizeFmt(self):
-        return format_number(float(self.__pkg.size))
-        
-        
+        return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveSize(self.idpackage))
+
+
     def getArch(self):
-        return self.__pkg.arch
-        
+        return etpConst['currentarch']
+
     def getEpoch(self):
-        return self.__pkg.epoch
+        return self.dbconn.retrieveDateCreation(self.idpackage)
 
     def getRel(self):
-        return self.__pkg.release
-        
+        return self.dbconn.retrieveBranch(self.idpackage)
+
+    def _toUTF( self, txt ):
+        """ this function convert a string to unicode to make gtk happy"""
+        rc=""
+        if isinstance(txt,types.UnicodeType):
+            return txt
+        else:
+            try:
+                rc = unicode( txt, 'utf-8' )
+            except UnicodeDecodeError, e:
+                rc = unicode( txt, 'iso-8859-1' )
+            return rc
+
+    def getAttr(self,attr): # XXX
+        return eval("self.dbconn.retrieve"+attr)(self.idpackage)
+
+    def _get_time( self ):
+        return self.dbconn.retrieveDateCreation(self.idpackage)
+
+    def get_changelog( self ):
+        return "No ChangeLog"
+
+    def get_filelist( self ):
+        return self.dbconn.retrieveContent(self.idpackage)
+
+    def get_fullname( self ):
+        return self.atom # XXX
+
     pkg =  property(fget=getPkg)
     name =  property(fget=getName)
     repoid =  property(fget=getRepoId)
@@ -100,90 +138,3 @@ class PackageWrapper:
     arch = property(fget=getArch)
     epoch = property(fget=getEpoch)
     pkgtup = property(fget=getTup)
-    
-    def _toUTF( self, txt ):
-        """ this function convert a string to unicode to make gtk happy"""
-        rc=""
-        if isinstance(txt,types.UnicodeType):
-            return txt
-        else:
-            try:
-                rc = unicode( txt, 'utf-8' )
-            except UnicodeDecodeError, e:
-                rc = unicode( txt, 'iso-8859-1' )
-            return rc
-    
-
-    def getAttr(self,attr):
-        # Check for attributes, contained in the pkg object 
-        if self.available:
-            return self._get_available_attr(attr)
-        else:
-            return self._get_installed_attr(attr)
-
-    def _get_available_attr(self,attr):
-        if attr in self.__pkg.__dict__.keys(): # pkg attribute ?
-           return getattr(self.__pkg,attr)        
-        else:
-           return self.__pkg.returnSimple(attr)   
-    
-    def _dumpAttrs(self,obj):
-        attrList = [attr for attr in dir(obj) if not callable(getattr(self.__pkg, attr))] 
-        print "\n".join(["%s =  %s" % (attr,getattr(obj,attr)) for attr in attrList])
-                      
-        
-    def _get_installed_attr(self,attr):
-        # we can't test for member so just try to get it.
-        try: 
-            return self.__pkg.returnSimple(attr)
-        except KeyError:
-           # We want a AttributeError Exception, if not found 
-           raise AttributeError, attr
-        
-    def _get_time( self ):
-        if not self.available: # Installed packages dont have filetime
-            ftime = int( self.__pkg.returnSimple( 'installtime' ) )
-        else:
-            ftime = int( self.__pkg.returnSimple( 'filetime' ) )
-        return ftime
-        
-    def get_changelog( self ):    
-        """ Get changelog from package object"""
-        cl = []
-        if self.available: # YumAvailablePackage
-            clog = self.__pkg.returnChangelog()
-            for tim, name, text in clog:
-                cl.append( str( time.ctime( float( tim ) ) )+" "+name+"\n"+text )
-        else:  # YumInstalledPackage, get files from rpm header.
-            cltime = self.__pkg.hdr['changelogtime']
-            clname = self.__pkg.hdr['changelogname']
-            cltext = self.__pkg.hdr['changelogtext']
-            if not isinstance(cltime, types.ListType): # cltime should always be a list
-                cltime = [cltime]
-            for tim, name, text in zip( cltime, clname, cltext ):
-                cl.append( str( time.ctime( tim ) )+" "+name+"\n"+text )
-        return cl
-        
-    def get_filelist( self ):    
-        """ Get filelist from package object"""
-        if self.available: # YumAvailablePackage
-            files = self.__pkg.returnFileEntries()
-        else:  # YumInstalledPackage, get files from rpm header.
-            files = []
-            fn = self.__pkg.hdr['basenames']
-            dn = self.__pkg.hdr['dirnames']
-            for d, n in zip( dn, fn ):
-                files.append( d+n )
-        return files    
-        
-    def get_fullname( self ):
-        """ return fullpackage name in format : <epoch>:<name>-<ver>.<arch>"""
-        fe = self.ver.find( ":" )
-        if fe > -1:
-            epoch = self.ver[0:fe]
-            ver = self.ver[fe+1:]
-            add = "%s:%s-%s.%s" % ( epoch, self.name, ver, self.arch )
-        else:
-            add = "%s:%s-%s.%s" % ( '0', self.name, self.ver, self.arch )
-        return add
-        

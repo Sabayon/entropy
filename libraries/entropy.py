@@ -268,7 +268,7 @@ class EquoInterface(TextInterface):
                                                 depend
                                         ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
             self.atomMatch(depend)
-        self.updateProgress(darkred("Dependencies filled. Flushing to disk."), importance = 2, type = "warning")
+        self.updateProgress(darkred("Dependencies cache filled."), importance = 2, type = "warning")
         self.save_cache()
 
     def load_cache(self):
@@ -2190,6 +2190,10 @@ class PackageInterface:
         del x
         del data
         del status # if operation isn't successful, an error will be surely raised
+
+        # update datecreation
+        ctime = self.Entropy.entropyTools.getCurrentUnixTime()
+        self.Entropy.clientDbconn.setDateCreation(idpk, str(ctime))
 
         # add idpk to the installedtable
         self.Entropy.clientDbconn.removePackageFromInstalledTable(idpk)
@@ -4416,7 +4420,7 @@ class TriggerInterface:
         rc = self.trigger_call_ext_generic()
         return rc
 
-    def call_ext_postinstall(self):
+    def trigger_call_ext_postinstall(self):
         rc = self.trigger_call_ext_generic()
         return rc
 
@@ -4453,6 +4457,7 @@ class TriggerInterface:
             stdfile.close()
 
         stage = self.phase
+        pkgdata = self.pkgdata
         my_ext_status = 0
         execfile(triggerfile)
         os.remove(triggerfile)

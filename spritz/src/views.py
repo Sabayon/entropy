@@ -101,7 +101,7 @@ class EntropyPackageView:
         self.view.set_reorderable( False )
         return store
    
-    def create_text_column( self, hdr, property, size,sortcol = None):
+    def create_text_column( self, hdr, property, size, sortcol = None):
         """ 
         Create a TreeViewColumn with text and set
         the sorting properties and add it to the view
@@ -116,7 +116,7 @@ class EntropyPackageView:
         self.view.append_column( column )
         return column
         
-    def get_data_text( self, column, cell, model, iter,property ):
+    def get_data_text( self, column, cell, model, iter, property ):
         obj = model.get_value( iter, 0 )
         if obj:
             cell.set_property( 'text', getattr( obj, property ) )
@@ -127,24 +127,24 @@ class EntropyPackageView:
         cell.set_property( "visible", True )
         if obj:
             cell.set_property( "active", getattr( obj, property ) )
-    
+
     def on_toggled( self, widget, path ):
         """ Package selection handler """
         iter = self.store.get_iter( path )
         obj = self.store.get_value( iter, 0 )
         self.togglePackage(obj)
         self.queueView.refresh()
-        
+
     def togglePackage(self,obj):
         if obj.queued == obj.action:
             obj.queued = None
             self.queue.remove(obj)
         else:
-           obj.queued = obj.action      
-           self.queue.add(obj)
+            obj.queued = obj.action
+            self.queue.add(obj)
         obj.set_select( not obj.selected )
-        
-                
+
+
     def selectAll(self):
         for el in self.store:
             obj = el[0]
@@ -185,7 +185,6 @@ class EntropyPackageView:
                 cell.set_property( 'icon-name', 'document-new' )
         else:
             cell.set_property( 'visible', False )
-            
 
     def get_selected( self, package=True ):
         """ Get selected packages in current packageList """
@@ -198,7 +197,7 @@ class EntropyPackageView:
                     selected.append( pkg )
         return selected
 
-        
+
 class YumexQueueView:
     """ Queue View Class"""
     def __init__( self, widget,queue ):
@@ -270,8 +269,8 @@ class YumexQueueView:
     def populate_list( self, label, list ):
         parent = self.model.append( None, [label, ""] )
         for pkg in list:
-            self.model.append( parent, [str( pkg ), pkg.summaryFirst] )
-            
+            self.model.append( parent, [str( pkg ), pkg.atom] )
+
 
 class YumexCompsView:
     def __init__( self, treeview,qview):
@@ -289,8 +288,8 @@ class YumexCompsView:
         model = gtk.TreeStore(gobject.TYPE_BOOLEAN, # Installed
                               gobject.TYPE_STRING,  # Group Name
                               gobject.TYPE_STRING,  # Group Id
-                              gobject.TYPE_BOOLEAN, # In queue          
-                              gobject.TYPE_BOOLEAN) # isCategory          
+                              gobject.TYPE_BOOLEAN, # In queue
+                              gobject.TYPE_BOOLEAN) # isCategory
 
 
         self.view.set_model( model )
@@ -300,7 +299,7 @@ class YumexCompsView:
         selection.set_property( 'activatable', True )
         column.pack_start(selection, False)
         column.set_cell_data_func( selection, self.setCheckbox )
-        selection.connect( "toggled", self.on_toggled )            
+        selection.connect( "toggled", self.on_toggled )
         self.view.append_column( column )
 
         column = gtk.TreeViewColumn(None, None)
@@ -438,18 +437,18 @@ class YumexRepoView:
         self.view = widget
         self.headers = [_('Repository'),_('Filename')]
         self.store = self.setup_view()
-    
+
     def on_toggled( self, widget, path):
         """ Repo select/unselect handler """
         iter = self.store.get_iter( path )
         state = self.store.get_value(iter,0)
         self.store.set_value(iter,0, not state)
-                     
+
     def setup_view( self ):
         """ Create models and columns for the Repo TextView  """
         store = gtk.ListStore( 'gboolean', gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING)
         self.view.set_model( store )
-        
+
         # Setup Selection Column
         cell1 = gtk.CellRendererToggle()    # Selection
         cell1.set_property( 'activatable', True )
@@ -459,17 +458,17 @@ class YumexRepoView:
         column1.set_sort_column_id( -1 )
         self.view.append_column( column1 )
         cell1.connect( "toggled", self.on_toggled )
-        
+
         # Setup revision column
         self.create_text_column( _('Revision'),1 )
-        
+
         # Setup reponame & repofile column's
         self.create_text_column( _('Repository Identifier'),2 )
         self.create_text_column( _('Description'),3 )
         self.view.set_search_column( 1 )
         self.view.set_reorderable( False )
         return store
-    
+
     def create_text_column( self, hdr,colno):
         cell = gtk.CellRendererText()    # Size Column
         column = gtk.TreeViewColumn( hdr, cell, text=colno )

@@ -114,7 +114,7 @@ class YumexPackageInfo:
             print msg
 
 class ProgressTotal:
-    def __init__( self, widget ): 
+    def __init__( self, widget ):
         self.progress = widget
         self.steps = []
         self.nowProgres = 0.0
@@ -123,7 +123,7 @@ class ProgressTotal:
         self.stepError = False
         self.lastFrac = -1
         self.clear()
-    
+
     def setup( self, steps ):
         self.steps = steps
         self.numSteps=len( steps )
@@ -131,6 +131,12 @@ class ProgressTotal:
         self.nowProgress = 0.0
         self.stepError = False
         self.clear()
+
+    def hide( self ):
+        self.progress.hide()
+
+    def show( self ):
+        self.progress.show()
 
     def next( self ):
         now = 0.0
@@ -150,12 +156,12 @@ class ProgressTotal:
        else:
            percent = ( now*100L )/total
        return percent
-       
+
     def clear( self ):
         self.progress.set_fraction( 0 )
         self.progress.set_text( " " )
         self.lastFrac = -1
-            
+
     def setProgress( self, now, total, prefix=None ):
         relStep = float( now )/float( total )
         if self.currentStep < self.numSteps:
@@ -178,7 +184,7 @@ class ProgressTotal:
                 print "=" * 60
                 self.stepError = True # Only dump vars first time.
         return False
-        
+
     def setAbsProgress( self, now, prefix=None ):
         if not now >= self.lastFrac and now < 1:
             return
@@ -192,7 +198,7 @@ class ProgressTotal:
         else:
             text = "%3i%%" % procent
         self.progress.set_text( text )
-                     
+
 class YumexProgress:
     """ Progress Class """
     def __init__( self, ui, set_page_func,parent ):
@@ -207,12 +213,12 @@ class YumexProgress:
         self.ui.progressBar.set_fraction( 0 )
         self.ui.progressBar.set_text( " " )
         self.lastFrac = -1
-            
+
     def show( self ):
         self.ui.progressBox.show()
         self.set_page_func( 'output' )
         self.lastFrac = -1
-        
+
     def hide( self, clean=False ):
         self.ui.progressBox.hide()
         if clean:
@@ -221,7 +227,7 @@ class YumexProgress:
             self.ui.progressExtraLabel.set_text( "" )
             self.ui.progressBar.set_fraction( 0 )
             self.ui.progressBar.set_text( " " )
-        
+
     def setTotal( self, now, total ):
         self.total.setProgress( now, total )
     
@@ -233,7 +239,7 @@ class YumexProgress:
             return
         while gtk.events_pending():      # process gtk events
            gtk.main_iteration()
-    
+
         self.lastFrac = frac + 0.01
         if frac >= 0 and frac <= 1:
             self.ui.progressBar.set_fraction( frac )
@@ -245,13 +251,13 @@ class YumexProgress:
         if self.parent.skipMirrorNow:
             self.parent.skipMirrorNow = False
             self.parent.yumbase._interrupt_callback(None)
-            
-       
+
+
     def set_mainLabel( self, text ):
         self.ui.progressMainLabel.set_markup( "<span size=\"large\"><b>%s</b></span>" % text )
         self.ui.progressSubLabel.set_text( "" )
         self.ui.progressExtraLabel.set_text( "" )
-           
+
     def set_subLabel( self, text ):
         self.ui.progressSubLabel.set_markup( "%s" % text )
         self.ui.progressExtraLabel.set_text( "" )
@@ -260,7 +266,7 @@ class YumexProgress:
         self.ui.progressExtraLabel.set_markup( "<span size=\"small\">%s</span>" % cleanMarkupSting(text) )
         self.lastFrac = -1
 
-        
+
 class YumexGUI:
     ''' This class contains GUI related methods '''
     def __init__(self):
@@ -269,7 +275,7 @@ class YumexGUI:
         # Package & Queue Views
         self.queue = YumexQueue()
         self.queueView = YumexQueueView(self.ui.queueView,self.queue)
-        self.pkgView = EntropyPackageView(self.ui.viewPkg,self.queueView) 
+        self.pkgView = EntropyPackageView(self.ui.viewPkg,self.queueView)
         self.compsView = YumexCompsView(self.ui.tvComps,self.queueView)
         self.grpPackages = EntropyPackageView(self.ui.tvGrpPackages,self.queueView) 
         self.grpDesc = TextViewConsole(self.ui.grpDesc)
@@ -296,14 +302,14 @@ class YumexGUI:
         self.setupPageButtons()        # Setup left side toolbar
         self.setPage(self.activePage)
         self.setupPkgFilter()
-        
+
     def loggerSetup(self,logroot,loglvl=None):
         logger = logging.getLogger(logroot)
         if loglvl:
             logger.setLevel(loglvl)
         logger.addHandler(self.logHandler)
         return logger
-        
+
     def setupPkgFilter(self):
         ''' set callbacks for package radio buttons (all,updates, ...)'''
         self.setupPkgRadio(self.ui.rbAll,"all",_('Show All Packages'))
@@ -325,7 +331,7 @@ class YumexGUI:
             self.createButton( _( "Repository Selection View" ), "button-repo.png", 'repos' )
         self.createButton( _( "Output View" ), "button-output.png", 'output' )    
         style = self.ui.leftEvent.get_style()
-        
+
         # Set the background of the horisontal buttonbar to the same as the views.
         # To make it look good on other than default gtk themes.
         style = self.ui.viewOutput.get_style()
@@ -369,8 +375,8 @@ class YumexGUI:
 
     def setNotebookPage(self,page):
         ''' Switch to Page in GUI'''
-        self.ui.notebook.set_current_page(page)        
-        
+        self.ui.notebook.set_current_page(page)
+
     def setStatus( self, text ):
         ''' Write Message to Statusbar'''
         context_id = self.ui.status.get_context_id( "Status" )
@@ -404,7 +410,7 @@ class YumexGUI:
         self.pkgFiles.goTop()
         self.pkgChangeLog.goTop()
         self.pkgOther.goTop()
-        
+
     def enableSkipMirror(self):
         self.ui.skipMirror.show()
         self.skipMirror = True
@@ -412,4 +418,3 @@ class YumexGUI:
     def disableSkipMirror(self):
         self.ui.skipMirror.hide()
         self.skipMirror = False
-    

@@ -18,6 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from etpgui.packages import PackageWrapper
+import exceptionTools
 import logging
 import time
 
@@ -32,22 +33,22 @@ color_install = 'darkgreen'
 color_update = 'blue'
 color_obsolete = 'red'
 
-class YumexPackage( PackageWrapper ):
+class EntropyPackage( PackageWrapper ):
     """ This class contains a yumPackage and some extra features used by
     yumex """
-    
-    def __init__( self, pkg, recentlimit, avail=True ):
+
+    def __init__( self, matched_atom, recentlimit, avail=True ):
         global color_normal
-        PackageWrapper.__init__( self, pkg, avail )
+        PackageWrapper.__init__( self, matched_atom, avail )
         self.selected = False
         self.visible = True
-        self.queued = None 
+        self.queued = None
         self.action = None
         self.obsolete = False
         self.obsolete_tup = None
         self.color = color_normal
         self.time = self._get_time()
-        if self.time > recentlimit:
+        if float(self.time) > float(recentlimit):
             self.recent = True
         else:
             self.recent = False
@@ -59,20 +60,26 @@ class YumexPackage( PackageWrapper ):
         self.visible = state
 
 
-        
+
 class EntropyPackages:
-    def __init__(self):
+    def __init__(self, EquoInstance):
+        self.Entropy = EquoInstance
+        try:
+            self.Entropy.instanceTest()
+        except:
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
         self.logger = logging.getLogger('yumex.Packages')
         self.filterCallback = None
         self._packages = {}
         self.currentCategory = None
         self._categoryPackages = {}
         self.pkgInGrps = PkgInGroupList()
-        
+        self.recent = self.Entropy.entropyTools.getCurrentUnixTime()
+
 
     def clearPackages(self):
         self._packages = {}
-        
+
     def populatePackages(self,masks):
         for flt in masks:
             if self._packages.has_key(flt):
@@ -84,7 +91,7 @@ class EntropyPackages:
 
     def setCategoryPackages(self,pkgdict = {}):
         self._categoryPackages = pkgdict
-        
+
     def getPackagesByCategory(self,cat=None):
         if not cat:
            cat =  self.currentCategory
@@ -103,7 +110,7 @@ class EntropyPackages:
 
     def getAvailable(self):
         if not self._packages.has_key('updates'):
-            self.populatePackages('updates')
+            self.populatePackages(['updates'])
         polist = []
         updlist = []
         for po in self._packages['updates']:
@@ -164,8 +171,8 @@ class EntropyPackages:
     def _getPackages(self,mask):
         global color_install,color_update,color_obsolete
         if mask == 'installed':
-            for po in self.rpmdb:
-                yp = YumexPackage(po,self.recent,False)
+            for idpackage in self.Entropy.clientDbconn.listAllIdpackages():
+                yp = EntropyPackage((idpackage,0), self.recent, False)
                 yp.selected = True
                 yp.action = 'r'
                 yp.color = color_install
@@ -174,7 +181,7 @@ class EntropyPackages:
             # Get the rest of the available packages.
             for po in self.pkgSack.returnNewestByNameArch():
                 if not self.isInst(po.name):
-                    yp = YumexPackage(po,self.recent,True)
+                    yp = EntropyPackage(po,self.recent,True)
                     yp.action = 'i'
                     yield yp
         elif mask == 'updates':
@@ -183,7 +190,7 @@ class EntropyPackages:
             for ( obsoleting, installed ) in obsoletes:
                 obsoleting_pkg = self.getPackageObject( obsoleting )
                 installed_pkg =  self.rpmdb.searchPkgTuple( installed )[0]
-                yp = YumexPackage(obsoleting_pkg,self.recent,True)
+                yp = EntropyPackage(obsoleting_pkg,self.recent,True)
                 yp.action = 'u'
                 yp.obsolete = True
                 yp.obsolete_tup = installed_pkg.pkgtup
@@ -197,7 +204,7 @@ class EntropyPackages:
                 matches = self.pkgSack.searchNevra( name=n, arch=a, epoch=e, 
                                                ver=v, rel=r )
                 if len( matches ) > 0:
-                    yp = YumexPackage(matches[0],self.recent,True)
+                    yp = EntropyPackage(matches[0],self.recent,True)
                     yp.action = 'u'
                     yp.color = color_update
                     yield yp

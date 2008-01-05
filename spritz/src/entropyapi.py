@@ -17,16 +17,12 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#import logging
-
 from misc import const,cleanMarkupSting
 from i18n import _
 from dialogs import questionDialog
-#from urlgrabber.grabber import URLGrabError
 
 # Entropy Imports
 from entropyConstants import *
-import entropyTools
 import exceptionTools
 from entropy import EquoInterface, urlFetcher
 
@@ -52,9 +48,12 @@ class Equo(EquoInterface):
                 import exceptionTools
                 raise exceptionTools.IncorrectParameter("IncorrectParameter: count length must be >= 2")
             count_str = " (%s/%s) " % (str(count[0]),str(count[1]),)
-            self.progress.set_progress( round((float(count[0])/count[1]),1), str(int(round((float(count[0])/count[1])*100,1)))+"%" )
+            if importance == 0:
+                progress_text = text
+            else:
+                progress_text = str(int(round((float(count[0])/count[1])*100,1)))+"%"
+            self.progress.set_progress( round((float(count[0])/count[1]),1), progress_text )
 
-        myfunc = self.progress.set_extraLabel
         if importance == 1:
             myfunc = self.progress.set_subLabel
         elif importance == 2:
@@ -63,7 +62,8 @@ class Equo(EquoInterface):
             # show warning popup
             # FIXME: interface with popup !
             myfunc = self.progress.set_extraLabel
-        myfunc(count_str+text)
+        if importance > 0:
+            myfunc(count_str+text)
         if not back:
             self.progressLog(count_str+text)
 
@@ -73,10 +73,10 @@ class Equo(EquoInterface):
 
 class GuiUrlFetcher(urlFetcher):
     """ hello my highness """
-    
+
     def connect_to_gui(self, progress):
         self.progress = progress
-    
+
     # reimplementing updateProgress
     def updateProgress(self):
 
@@ -86,7 +86,9 @@ class GuiUrlFetcher(urlFetcher):
         self.progress.set_extraLabel("%s/%s kB @ %s" % (
                                         str(round(float(self.downloadedsize)/1024,1)),
                                         str(round(self.remotesize,1)),
-                                        str(entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
+                                        str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
                                     )
         )
 
+
+EquoConnection = Equo()

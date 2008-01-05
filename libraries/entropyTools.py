@@ -1364,6 +1364,10 @@ def convertUnixTimeToHumanTime(unixtime):
     humantime = str(datetime.fromtimestamp(unixtime))
     return humantime
 
+def getCurrentUnixTime():
+    import time
+    return time.time()
+
 def convertSecondsToFancyOutput(seconds):
 
     mysecs = seconds
@@ -1647,10 +1651,10 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 	pkgver = package[len(package)-1]
 	pkglen -= 1
     for i in range(pkglen):
-	if i == pkglen-1:
-	    pkgname += package[i]
-	else:
-	    pkgname += package[i]+"-"
+        if i == pkglen-1:
+            pkgname += package[i]
+        else:
+            pkgname += package[i]+"-"
     pkgname = pkgname.split("/")[len(pkgname.split("/"))-1]
 
     # Fill Package name and version
@@ -1664,11 +1668,11 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package mtime..."),back = True)
     # .tbz2 md5
     data['datecreation'] = str(getFileUnixMtime(tbz2File))
-    
+
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package size..."),back = True)
     # .tbz2 byte size
     data['size'] = str(os.stat(tbz2File)[6])
-    
+
     if not silent: print_info(yellow(" * ")+red(info_package+"Unpacking package data..."),back = True)
     # unpack file
     tbz2TmpDir = etpConst['packagestmpdir']+"/"+data['name']+"-"+data['version']+"/"

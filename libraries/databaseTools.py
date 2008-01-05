@@ -1543,6 +1543,11 @@ class etpDatabase(TextInterface):
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert compile flags but then, fetching it returned -1. There's something broken.")
         self.commitChanges()
 
+    # date expressed the unix way
+    def setDateCreation(self, idpackage, date):
+        self.cursor.execute('UPDATE extrainfo SET datecreation = (?) WHERE idpackage = (?)', (str(date),idpackage,))
+        self.commitChanges()
+
     def setDigest(self, idpackage, digest):
         self.cursor.execute('UPDATE extrainfo SET digest = (?) WHERE idpackage = (?)', (digest,idpackage,))
         self.commitChanges()
