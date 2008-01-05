@@ -1,7 +1,7 @@
 PYTHON=python
 PACKAGE = $(shell basename `pwd`)
 PYFILES = $(wildcard *.py)
-PKGDIR = etpgui
+PKGDIR = /usr/lib/entropy/spritz/etpgui
 
 all: 
 	echo "Nothing to do"
