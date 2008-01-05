@@ -147,16 +147,16 @@ class const:
            )
 
           )
-    
+
 class YumexProfile:
     """ Class for handling repo selection Profile """
     def __init__( self ):
         self.profiles = ConfigParser()
         self.filename = '/etc/yumex.profiles.conf'
         self.profiles.read( self.filename )
-        self.active=self.profiles.get( "main", "LastProfile" )    
-        self.proDict = {}    
-        self.load()        
+        self.active=self.profiles.get( "main", "LastProfile" )
+        self.proDict = {}
+        self.load()
 
     
     def save( self ):

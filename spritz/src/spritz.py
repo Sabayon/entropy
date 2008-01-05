@@ -353,13 +353,6 @@ class YumexController(Controller):
 
 # Menu Handlers
 
-    def on_profile( self, data ):
-        """ Profiles Menu Handler """
-        self.setStatus( _( "Selected the %s profile" ) % data )
-        self.profile.setActive(data)
-        self.setupRepoView()
-
-
     def on_FileQuit( self, widget ):
         self.quit()
 
@@ -371,25 +364,6 @@ class YumexController(Controller):
     def on_HelpAbout( self, widget ):
         about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,self.settings.branding_title)
         about.show()
-
-    def on_ProfileSave( self, widget ):
-        repos = self.repoView.get_selected()
-        if self.profile.writeProfile(repos):
-            self.setStatus( _( "Profile : %s saved ok" ) % self.profile.getActive() )
-        else:
-            self.setStatus( _( "Profile : %s save failed" ) % self.profile.getActive() )
-
-
-
-    def on_ProfileNew( self, widget ):
-        name = inputBox(self.ui.main,_("Create New Profile"),_("Name of new profile"))
-        if name:
-            repos = self.repoView.get_selected()
-            if self.profile.addProfile(name,repos):
-                self.setStatus( _( "Profile : %s created ok" ) % name )
-                self._addToProfileMenu(name,group=self.firstProfile)
-            else:
-                self.setStatus( _( "Profile : %s creation failed" ) % name )
 
     def on_ToolsRepoCache( self, widget ):
         self.logger.info(_('Cleaning up all yum metadata'))
@@ -421,7 +395,8 @@ class YumexApplication(YumexController,YumexGUI):
         # Setup GUI
         self.setupGUI()
         self.logger.info(_('GUI Setup Completed'))
-        self.profile = YumexProfile()
+        # XXX
+        #self.profile = YumexProfile()
         # setup Repositories
         self.setupRepoView()
         self.firstTime = True
