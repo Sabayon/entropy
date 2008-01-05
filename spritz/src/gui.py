@@ -48,7 +48,7 @@ class YumexPackageInfo:
         self.pkgFiles.goTop()
         self.pkgChangeLog.goTop()
         self.pkgOther.goTop()
-        
+
     def showInfo(self,pkg):
         self.clear()
         self.writePkg( self.pkgDesc, pkg, "%s", "description" )
@@ -69,26 +69,28 @@ class YumexPackageInfo:
                 obsoletes = self.yumbase.up.getObsoletesTuples( newest=1 )
                 for ( obsoleting, installed ) in obsoletes:
                     if obsoleting[0] == pkg.name:
-                        po =  self.yumbase.rpmdb.searchPkgTuple( installed )[0]                           
+                        po =  self.yumbase.rpmdb.searchPkgTuple( installed )[0]
                         txt = _( "Obsoleting : %s\n\n" ) % str(po)
                         self.pkgInfo.write_line( txt ) 
                         break
 
-        self.writePkg( self.pkgInfo, pkg, 'RPM Group    : %s\n', "group", True )
-        self.writePkg( self.pkgInfo, pkg, 'Source       : %s\n', "sourcerpm" )
-        gp = self.yumbase.pkgInGrps.get(pkg.name)
-        if gp:
-            self.pkgInfo.write_line('Yum Group    : %s/%s\n' % (gp[0].category.name,gp[0].group.name))        
-            gpType = const.GROUP_PACKAGE_TYPE[gp[0].typ]
-            self.pkgInfo.write_line(' -> Type     : %s\n' % (gpType))        
-        self.writePkgTime( self.pkgInfo, pkg, 'Build Time   : %s\n', "buildtime" )
-        if pkg.action =='r':
-            self.writePkgTime( self.pkgInfo, pkg, 'Install Time : %s\n', "installtime" )
-            self.writePkg( self.pkgInfo, pkg, 'License      : %s\n', 'license' )
-            self.pkgOther.write_line( _( "Requires:\n\n" ) ) 
-            reqList = pkg.pkg.requiresList()
-            for req in reqList:
-                self.pkgOther.write_line( "%s\n" % req )                     
+        self.writePkg( self.pkgInfo, pkg, 'Category      : %s\n', "category", True )
+        self.writePkg( self.pkgInfo, pkg, 'Name          : %s\n', "name" )
+        if not pkg.from_installed:
+            self.writePkg( self.pkgInfo, pkg, 'Branch          : %s\n', "branch" )
+        self.writePkg( self.pkgInfo, pkg, 'Slot          : %s\n', "slot" )
+        self.writePkg( self.pkgInfo, pkg, 'Version       : %s\n', "version" )
+        self.writePkg( self.pkgInfo, pkg, 'Kernel Tag    : %s\n', "versiontag" )
+        self.writePkg( self.pkgInfo, pkg, 'Revision      : %s\n', "revision" )
+        if pkg.from_installed:
+            self.writePkgTime( self.pkgInfo, pkg, 'Install time  : %s\n', "creationdate" )
+        else:
+            self.writePkgTime( self.pkgInfo, pkg, 'Install time  : %s\n', "creationdate" )
+        self.writePkg( self.pkgInfo, pkg, 'License       : %s\n', 'license' )
+
+        #if pkg.action =='r':
+        #    self.writePkgTime( self.pkgInfo, pkg, 'Install Time : %s\n', "installtime" )
+        #    self.pkgOther.write_line( _( "Requires:\n\n" ) )
         self.goTop()
 
     def writePkg( self, outobj, pkg, markup, attr, remove_newline=False ):

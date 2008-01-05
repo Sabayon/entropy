@@ -26,67 +26,72 @@ class PackageWrapper:
 
         if matched_atom[1] == 0:
             self.dbconn = EquoConnection.clientDbconn
+            self.from_installed = True
         else:
             self.dbconn = EquoConnection.openRepositoryDatabase(matched_atom[1])
+            self.from_installed = False
         self.matched_atom = matched_atom
         self.idpackage = self.matched_atom[0]
-        self.repository = self.matched_atom[1]
-        self.atom = self.dbconn.retrieveAtom(self.idpackage)
-        self.version = self.dbconn.retrieveVersion(self.idpackage)
-        self.versiontag = self.dbconn.retrieveVersionTag(self.idpackage)
-        self.revision = self.dbconn.retrieveRevision(self.idpackage)
-        self.pkgtuple = (self.version,self.versiontag,self.revision)
-        match = self.dbconn.atomMatch(self.atom)
-        if match[0] != -1:
-            self.available = True
-        else:
-            self.available = False
 
     def __str__(self):
-        return str(self.atom)
+        return str(self.dbconn.retrieveAtom(self.idpackage))
 
     def __cmp__(self, pkg):
-        pkgcmp = EquoConnection.entropyTools.entropyCompareVersions(self.pkgtuple,pkg.pkgtuple)
+        pkgcmp = EquoConnection.entropyTools.entropyCompareVersions(self.getTup(),pkg.getTup())
         return pkgcmp
 
     def getPkg(self):
         return self.matched_atom
 
     def getName(self):
-        return self.atom
+        return self.dbconn.retrieveAtom(self.idpackage)
 
     def getTup(self):
-        return self.pkgtuple
+        return (self.dbconn.retrieveVersion(self.idpackage),self.dbconn.retrieveVersionTag(self.idpackage),self.dbconn.retrieveRevision(self.idpackage))
 
     def getRepoId(self):
-        return self.repository
+        if self.matched_atom[1] == 0:
+            return self.dbconn.retrievePackageFromInstalledTable(self.idpackage)
+        else:
+            return self.matched_atom[1]
 
     def getIdpackage(self):
         return self.idpackage
 
+    def getRevision(self):
+        return self.dbconn.retrieveRevision(self.idpackage)
+
     def getVer(self):
         tag = ""
-        if self.versiontag:
-            tag = "#"+self.versiontag
-        tag += "~"+str(self.revision)
-        return self.version+tag
+        vtag = self.dbconn.retrieveVersionTag(self.idpackage)
+        if vtag:
+            tag = "#"+vtag
+        tag += "~"+str(self.dbconn.retrieveRevision(self.idpackage))
+        return self.dbconn.retrieveVersion(self.idpackage)+tag
 
-
-    def getSummaryFirst(self):
-        return str(self.dbconn.getBaseData(self.idpackage))
-
-    def getSummary(self):
-        return str(self.dbconn.getScopeData(self.idpackage))
+    def getSlot(self):
+        return self.dbconn.retrieveSlot(self.idpackage)
 
     def getDescription(self):
         return self.dbconn.retrieveDescription(self.idpackage)
 
-    def getSize(self):
+    def getDownSize(self):
         return self.dbconn.retrieveSize(self.idpackage)
 
-    def getSizeFmt(self):
+    def getDiskSize(self):
+        return self.dbconn.retrieveOnDiskSize(self.idpackage)
+
+    def getIntelligentSize(self):
+        if self.from_installed:
+            return self.getDiskSizeFmt()
+        else:
+            return self.getDownSizeFmt()
+
+    def getDownSizeFmt(self):
         return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveSize(self.idpackage))
 
+    def getDiskSizeFmt(self):
+        return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveOnDiskSize(self.idpackage))
 
     def getArch(self):
         return etpConst['currentarch']
@@ -109,8 +114,29 @@ class PackageWrapper:
                 rc = unicode( txt, 'iso-8859-1' )
             return rc
 
-    def getAttr(self,attr): # XXX
-        return eval("self.dbconn.retrieve"+attr)(self.idpackage)
+    def getAttr(self,attr):
+        if attr == "description":
+            return self.dbconn.retrieveDescription(self.idpackage)
+        elif attr == "category":
+            return self.dbconn.retrieveCategory(self.idpackage)
+        elif attr == "license":
+            return self.dbconn.retrieveLicense(self.idpackage)
+        elif attr == "creationdate":
+            return self.dbconn.retrieveDateCreation(self.idpackage)
+        elif attr == "version":
+            return self.dbconn.retrieveVersion(self.idpackage)
+        elif attr == "revision":
+            return self.dbconn.retrieveRevision(self.idpackage)
+        elif attr == "versiontag":
+            t = self.dbconn.retrieveVersionTag(self.idpackage)
+            if not t: return "None"
+            return t
+        elif attr == "branch":
+            return self.dbconn.retrieveBranch(self.idpackage)
+        elif attr == "name":
+            return self.dbconn.retrieveName(self.idpackage)
+        elif attr == "slot":
+            return self.dbconn.retrieveSlot(self.idpackage)
 
     def _get_time( self ):
         return self.dbconn.retrieveDateCreation(self.idpackage)
@@ -119,22 +145,27 @@ class PackageWrapper:
         return "No ChangeLog"
 
     def get_filelist( self ):
-        return self.dbconn.retrieveContent(self.idpackage)
+        c = list(self.dbconn.retrieveContent(self.idpackage))
+        c.sort()
+        return c
 
     def get_fullname( self ):
-        return self.atom # XXX
+        return self.dbconn.retrieveAtom(self.idpackage)
 
     pkg =  property(fget=getPkg)
     name =  property(fget=getName)
     repoid =  property(fget=getRepoId)
     ver =  property(fget=getVer)
+    revision = property(fget=getRevision)
     version = property(fget=getVer)
     release = property(fget=getRel)
-    summary =  property(fget=getSummary)
+    slot = property(fget=getSlot)
     description =  property(fget=getDescription)
-    summaryFirst =  property(fget=getSummaryFirst)
-    size =  property(fget=getSize)
-    sizeFmt =  property(fget=getSizeFmt)
+    size =  property(fget=getDownSize)
+    intelligentsizeFmt = property(fget=getIntelligentSize)
+    sizeFmt =  property(fget=getDownSizeFmt)
+    disksize =  property(fget=getDiskSize)
+    disksizeFmt =  property(fget=getDiskSizeFmt)
     arch = property(fget=getArch)
     epoch = property(fget=getEpoch)
     pkgtup = property(fget=getTup)

@@ -35,7 +35,7 @@ class YumexCategoryView:
 
     def setup_view( self ):
         """ Setup Category View  """
-        model = gtk.TreeStore( gobject.TYPE_STRING,gobject.TYPE_STRING )           
+        model = gtk.TreeStore( gobject.TYPE_STRING,gobject.TYPE_STRING )
         self.view.set_model( model )
         cell1 = gtk.CellRendererText()
         column1= gtk.TreeViewColumn( _( "Categories" ), cell1, markup=0 )
@@ -46,7 +46,7 @@ class YumexCategoryView:
         self.view.append_column( column1 )
         self.view.set_headers_visible(False)
         return model
-        
+
     def populate(self,data,tree=False):
         self.model.clear()
         if tree:
@@ -54,7 +54,7 @@ class YumexCategoryView:
         else:
             for el in data:
                 self.model.append(None,[el,el])
-    
+
 
 class EntropyPackageView:
     def __init__( self, treeview,qview ):
@@ -63,7 +63,7 @@ class EntropyPackageView:
         self.store = self.setupView()
         self.queue = qview.queue
         self.queueView = qview
-        
+
     def setupView( self ):
         store = gtk.ListStore( gobject.TYPE_PYOBJECT, str)
         self.view.set_model( store )
@@ -89,18 +89,18 @@ class EntropyPackageView:
         self.view.append_column( column2 )
         column2.set_clickable( True )
 
-        self.create_text_column( _( "Package" ), 'name' , size=240)
-        self.create_text_column( _( "Arch." ), 'arch' , size = 50 )
-        self.create_text_column( _( "Ver." ), 'ver', size = 100 )
-        self.create_text_column( _( "Summary" ), 'summaryFirst', size=400 )
-        self.create_text_column( _( "Repo." ), 'repoid' , size=100 )
-        self.create_text_column( _( "Size." ), 'sizeFmt' , size=100 )
+        self.create_text_column( _( "Package" ), 'name' , size=360)
+        self.create_text_column( _( "Rev." ), 'revision' , size=50 )
+        self.create_text_column( _( "Slot" ), 'slot' , size = 50 )
+        self.create_text_column( _( "Repository" ), 'repoid', size = 130 )
+        self.create_text_column( _( "Size" ), 'intelligentsizeFmt', size=80 )
+        #self.create_text_column( _( "Download" ), 'sizeFmt' , size=80 )
         self.view.set_search_column( 1 )
         self.view.set_enable_search(True)
-        #store.set_sort_column_id(1, gtk.SORT_ASCENDING)
-        self.view.set_reorderable( False )
+        store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+        self.view.set_reorderable( True )
         return store
-   
+
     def create_text_column( self, hdr, property, size, sortcol = None):
         """ 
         Create a TreeViewColumn with text and set

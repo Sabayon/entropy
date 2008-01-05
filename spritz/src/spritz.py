@@ -129,7 +129,7 @@ class YumexController(Controller):
             else:
                 self.ui.pkgSelect.hide()
                 self.ui.pkgDeSelect.hide()
-                
+
             self.addPackages()
             rb.grab_remove()
 
@@ -276,13 +276,13 @@ class YumexController(Controller):
             flt.activate(False)
         action = self.lastPkgPB
         rb = self.packageRB[action]
-        self.on_pkgFilter_toggled(rb,action)      
+        self.on_pkgFilter_toggled(rb,action)
 
     def on_clear_clicked(self,widget):
         ''' Search Clear button handler'''
         self.ui.pkgFilter.set_text("")
         self.on_search_clicked(None)
-        
+
     def on_schRepo_toggled(self,rb):  
         ''' Search Repo Checkbox handler'''
         if rb.get_active():
@@ -301,7 +301,7 @@ class YumexController(Controller):
             self.ui.schArchText.set_sensitive(False)
             self.on_schArchText_activate(self.ui.schArchText)
 
-    def on_schRepoText_activate(self,entry):      
+    def on_schRepoText_activate(self,entry):
         ''' Search Repo Entry handler'''
         txt = entry.get_text()
         flt = filters.yumexFilter.get('RepoFilter')
@@ -330,7 +330,7 @@ class YumexController(Controller):
             flt.activate(False)
         action = self.lastPkgPB  
         rb = self.packageRB[action]
-        self.on_pkgFilter_toggled(rb,action)      
+        self.on_pkgFilter_toggled(rb,action)
 
     def on_comps_cursor_changed(self, widget):
         """ Handle selection of row in Comps Category  view  """
@@ -415,7 +415,8 @@ class YumexApplication(YumexController,YumexGUI):
             print self.yumexOptions.getArgs()
         self.logger.info(_('Yum Config Setup'))
         self.yumexOptions.parseCmdOptions()
-        #self.lastPkgPB = "updates"
+        self.lastPkgPB = "installed" # FIXME: change this in updates
+        self.etpbase.setFilter(filters.yumexFilter.processFilters)
 
         # Setup GUI
         self.setupGUI()
@@ -470,7 +471,15 @@ class YumexApplication(YumexController,YumexGUI):
         except Exception, e:
             self.progressLog(_('Unhandled exception: %s') % (str(e),), extra = "repositories")
             return 2
-        repoConn.sync()
+        rc = repoConn.sync()
+        if repoConn.syncErrors:
+            self.progress.set_mainLabel(_('Errors updating repositories.'))
+            self.progress.set_subLabel(_('Please check logs below for more info'))
+        else:
+            self.progress.set_mainLabel(_('Repositories updated successfully'))
+            self.progress.set_subLabel(_('Have fun :-)'))
+            if repoConn.newEquo:
+                self.progress.set_extraLabel(_('app-admin/equo needs to be updated as soon as possible.'))
 
         initConfig_entropyConstants(etpSys['rootdir'])
         self.setupRepoView()
@@ -505,12 +514,12 @@ class YumexApplication(YumexController,YumexGUI):
         for po in allpkgs:
             self.pkgView.store.append([po,str(po)])
         self.ui.viewPkg.set_model(self.pkgView.store)
-        
+
         msg = _('Population Completed')
         self.progressLog(msg)
         self.setStatus(msg)
         normalCursor(self.ui.main)
-        if self.doProgress: self.progress.hide() #Hide Progress        
+        if self.doProgress: self.progress.hide() #Hide Progress
 
     def addCategoryPackages(self,cat = None):
         msg = _('Package View Population')
