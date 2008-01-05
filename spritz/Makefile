@@ -25,7 +25,7 @@ install:
 	mkdir -p $(DESTDIR)/etc
 	mkdir -p $(DESTDIR)/etc/pam.d
 	install -m644 COPYING $(DESTDIR)/usr/lib/entropy/spritz/.
-	install -m755 $(MISCDIR)/spritz $(DESTDIR)/usr/bin/spritz/.
+	install -m755 $(MISCDIR)/spritz $(DESTDIR)/usr/bin/.
 	install -m644 $(PIXDIR)/*.png $(DESTDIR)/usr/share/pixmaps/spritz/.
 	install -m644 $(MISCDIR)/spritz.pam $(DESTDIR)/etc/pam.d/spritz
 	chmod +x $(DESTDIR)/usr/bin/spritz
