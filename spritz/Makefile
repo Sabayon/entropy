@@ -1,6 +1,6 @@
 SUBDIRS = src po src/etpgui 
 PYFILES = $(wildcard *.py)
-PKGNAME = yumex
+PKGNAME = spritz
 VERSION=$(shell awk '/Version:/ { print $$2 }' ${PKGNAME}.spec)
 PYTHON=python
 SRCDIR=src
@@ -26,7 +26,7 @@ install:
 	mkdir -p $(DESTDIR)/etc/pam.d
 	mkdir -p $(DESTDIR)/etc/security/console.apps
 	install -m644 COPYING $(DESTDIR)/usr/lib/entropy/spritz/.
-	install -m755 $(MISCDIR)/yumex $(DESTDIR)/usr/lib/entropy/spritz/.
+	install -m755 $(MISCDIR)/spritz $(DESTDIR)/usr/lib/entropy/spritz/.
 	install -m644 $(PIXDIR)/*.png $(DESTDIR)/usr/share/pixmaps/spritz/.
 	install -m644 $(MISCDIR)/spritz.pam $(DESTDIR)/etc/pam.d/spritz
 	chmod +x $(DESTDIR)/usr/lib/entropy/spritz
