@@ -598,12 +598,15 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
 
     mypath = etpConst['systemroot']+"/"
     mysettings = portage.config(config_root="/", target_root=mypath, config_incrementals=portage_const.INCREMENTALS)
-    mysettings._environ_whitelist = set(mysettings._environ_whitelist)
-    # put our vars into whitelist
-    mysettings._environ_whitelist.add("SKIP_EQUO_SYNC")
-    mysettings._environ_whitelist.add("ACCEPT_LICENSE")
-    mysettings._environ_whitelist.add("CD_ROOT")
-    mysettings._environ_whitelist = frozenset(mysettings._environ_whitelist)
+    try: # this is a >portage-2.1.4_rc11 feature
+        mysettings._environ_whitelist = set(mysettings._environ_whitelist)
+        # put our vars into whitelist
+        mysettings._environ_whitelist.add("SKIP_EQUO_SYNC")
+        mysettings._environ_whitelist.add("ACCEPT_LICENSE")
+        mysettings._environ_whitelist.add("CD_ROOT")
+        mysettings._environ_whitelist = frozenset(mysettings._environ_whitelist)
+    except:
+        pass
 
     cpv = str(cpv)
     mysettings.setcpv(cpv)
