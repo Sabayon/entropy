@@ -44,8 +44,8 @@ class const:
     # Paths
     MAIN_PATH = os.path.abspath( os.path.dirname( sys.argv[0] ) );
     GLADE_FILE = MAIN_PATH+'/spritz.glade'
-    if MAIN_PATH == '/usr/share/yumex':
-        PIXMAPS_PATH = '/usr/share/pixmaps/yumex'
+    if MAIN_PATH == '/usr/lib/entropy/spritz':
+        PIXMAPS_PATH = '/usr/share/pixmaps/spritz'
     else:
         PIXMAPS_PATH = MAIN_PATH+'/../gfx'
     
