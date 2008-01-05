@@ -45,6 +45,11 @@ def configurator(options):
     if len(options) < 1:
         return -10
 
+    # check if I am root
+    if (not Equo.entropyTools.isRoot()):
+        print_error(red("You are not ")+bold("root")+red("."))
+        return 1
+
     if options[0] == "info":
         rc = confinfo()
     elif options[0] == "update":
