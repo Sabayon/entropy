@@ -1,5 +1,2 @@
 #!/bin/bash
-#
-# Run yumex main python program.
-#
-python /usr/lib/entropy/gui/spritz $@
+python /usr/lib/entropy/spritz/spritz.py $@

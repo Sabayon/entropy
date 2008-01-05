@@ -24,12 +24,11 @@ install:
 	mkdir -p $(DESTDIR)/usr/bin
 	mkdir -p $(DESTDIR)/etc
 	mkdir -p $(DESTDIR)/etc/pam.d
-	mkdir -p $(DESTDIR)/etc/security/console.apps
 	install -m644 COPYING $(DESTDIR)/usr/lib/entropy/spritz/.
-	install -m755 $(MISCDIR)/spritz $(DESTDIR)/usr/lib/entropy/spritz/.
+	install -m755 $(MISCDIR)/spritz $(DESTDIR)/usr/bin/spritz/.
 	install -m644 $(PIXDIR)/*.png $(DESTDIR)/usr/share/pixmaps/spritz/.
 	install -m644 $(MISCDIR)/spritz.pam $(DESTDIR)/etc/pam.d/spritz
-	chmod +x $(DESTDIR)/usr/lib/entropy/spritz
+	chmod +x $(DESTDIR)/usr/bin/spritz
 	install -m644 $(MISCDIR)/spritz.desktop $(DESTDIR)/usr/share/applications/.
 	for d in $(SUBDIRS); do make DESTDIR=`cd $(DESTDIR); pwd` -C $$d install; [ $$? = 0 ] || exit 1; done
 
