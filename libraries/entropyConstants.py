@@ -350,6 +350,7 @@ etpCache = {
     'install': 'resume_install', # resume cache (install)
     'remove': 'resume_remove', # resume cache (remove)
     'world': 'resume_world', # resume cache (world)
+    'world_update': 'world_cache'
 }
 
 # byte sizes of disk caches

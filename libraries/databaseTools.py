@@ -2313,9 +2313,6 @@ class etpDatabase(TextInterface):
 
     def retrieveNeeded(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveNeeded')
-	if cache != None: return cache
-
         try:
             self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
         except:
@@ -2323,7 +2320,6 @@ class etpDatabase(TextInterface):
             self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
         needed = self.fetchall2set(self.cursor.fetchall())
 
-	self.storeInfoCache(idpackage,'retrieveNeeded',needed)
 	return needed
 
     def retrieveConflicts(self, idpackage):
@@ -3201,6 +3197,17 @@ class etpDatabase(TextInterface):
         rslt = self.cursor.fetchone()
         if rslt == None:
             raise exceptionTools.SystemDatabaseError("SystemDatabaseError: table extrainfo not found. Either does not exist or corrupted.")
+
+    def tablesChecksum(self):
+        import md5
+        self.cursor.execute('select * from baseinfo')
+        m = md5.new()
+        for row in self.cursor:
+            m.update(str(row))
+        self.cursor.execute('select * from dependenciesreference')
+        for row in self.cursor:
+            m.update(str(row))
+        return m.hexdigest()
 
 
 ########################################################

@@ -268,6 +268,9 @@ class EquoInterface(TextInterface):
                                                 depend
                                         ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
             self.atomMatch(depend)
+
+        self.calculate_world_updates()
+
         self.updateProgress(darkred("Dependencies cache filled."), importance = 2, type = "warning")
         self.save_cache()
 
@@ -1199,13 +1202,28 @@ class EquoInterface(TextInterface):
         remove = set()
         fine = set()
 
+        if self.xcache:
+            db_digest = self.clientDbconn.tablesChecksum()
+            disk_cache = self.dumpTools.loadobj(etpCache['world_update'])
+            try:
+                if disk_cache != None:
+                    if disk_cache['db_digest'] == db_digest and \
+                        disk_cache['empty_deps'] == empty_deps and \
+                        disk_cache['branch'] == branch:
+                        return disk_cache['update'],disk_cache['remove'],disk_cache['fine']
+            except:
+                try:
+                    self.dumpTools.dumpobj(etpCache['world_update'], {})
+                except IOError:
+                    pass
+
         # get all the installed packages
         packages = self.clientDbconn.listAllPackages()
         maxlen = len(packages)
         count = 0
         for package in packages:
             count += 1
-            self.updateProgress("", importance = 0, type = "info", back = True, header = "::", count = (count,maxlen), percent = True, footer = "::")
+            self.updateProgress("Calculating world dependencies", importance = 0, type = "info", back = True, header = "::", count = (count,maxlen), percent = True, footer = "::")
             tainted = False
             atom = package[0]
             idpackage = package[1]
@@ -1258,6 +1276,22 @@ class EquoInterface(TextInterface):
                 fine.add(atom)
 
         del packages
+
+        if self.xcache:
+            try:
+                mycache = {}
+                mycache['db_digest'] = db_digest
+                mycache['update'] = update.copy()
+                mycache['remove'] = remove.copy()
+                mycache['fine'] = fine.copy()
+                mycache['empty_deps'] = empty_deps
+                mycache['branch'] = branch
+                # save cache
+                self.dumpTools.dumpobj(etpCache['world_update'], mycache)
+                mycache.clear()
+                del mycache
+            except:
+                self.dumpTools.dumpobj(etpCache['world_update'], {})
         return update, remove, fine
 
     # every tbz2 file that would be installed must pass from here
