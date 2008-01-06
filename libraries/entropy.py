@@ -3886,7 +3886,13 @@ class urlFetcher:
 
         rsx = "x"
         while rsx != '':
-            rsx = self.remotefile.read(self.bufferSize)
+            try:
+                rsx = self.remotefile.read(self.bufferSize)
+            except:
+                # python 2.4 timeouts go here
+                self.close()
+                self.status = "-3"
+                return self.status
             self.commitData(rsx)
             if self.showSpeed:
                 self.updateProgress()
