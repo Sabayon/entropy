@@ -3199,6 +3199,8 @@ class etpDatabase(TextInterface):
             raise exceptionTools.SystemDatabaseError("SystemDatabaseError: table extrainfo not found. Either does not exist or corrupted.")
 
     def tablesChecksum(self):
+        # NOTE: if you will add dependstable to the validation
+        # please have a look at EquoInterface.__install_package_into_database world calculation cache stuff
         import md5
         self.cursor.execute('select * from baseinfo')
         m = md5.new()

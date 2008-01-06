@@ -488,7 +488,7 @@ def searchPackage(packages, idreturn = False):
     foundPackages = {}
     dataInfo = set() # when idreturn is True
 
-    if (not idreturn) or (etpUi['quiet']):
+    if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Searching..."))
     # search inside each available database
     repoNumber = 0

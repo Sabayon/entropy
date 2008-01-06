@@ -2058,7 +2058,32 @@ class PackageInterface:
     '''
     def __remove_package_from_database(self):
         self.error_on_not_prepared()
+
+        find = False
+        disk_cache = self.Entropy.dumpTools.loadobj(etpCache['world_update'])
+        if disk_cache != None:
+            try:
+                slot = self.Entropy.clientDbconn.retrieveSlot(self.infoDict['removeidpackage'])
+                key = self.Entropy.entropyTools.dep_getkey(self.infoDict['removeatom'])
+                matched = self.Entropy.atomMatch(key, matchSlot = slot)
+                if matched[0] != -1:
+                    dbconn = self.Entropy.openRepositoryDatabase(matched[1])
+                    atom = dbconn.retrieveAtom(matched[0])
+                    cached_item = (atom,matched)
+                    if cached_item in disk_cache['update']:
+                        find = True
+            except Exception,e:
+                self.Entropy.dumpTools.dumpobj(etpCache['world_update'], {})
+                print "DEBUG-rm: please REPORT %s: %s" % (str(Exception),str(e),)
+
         self.Entropy.clientDbconn.removePackage(self.infoDict['removeidpackage'])
+
+        if find:
+            disk_cache['update'].remove(cached_item)
+            db_digest = self.Entropy.clientDbconn.tablesChecksum()
+            disk_cache['db_digest'] = db_digest
+            self.Entropy.dumpTools.dumpobj(etpCache['world_update'], disk_cache)
+
         return 0
 
     '''
@@ -2230,6 +2255,40 @@ class PackageInterface:
         # update datecreation
         ctime = self.Entropy.entropyTools.getCurrentUnixTime()
         self.Entropy.clientDbconn.setDateCreation(idpk, str(ctime))
+
+        # update world calculation cache
+        disk_cache = self.Entropy.dumpTools.loadobj(etpCache['world_update'])
+        if disk_cache != None:
+            try:
+                atom = self.Entropy.clientDbconn.retrieveAtom(idpk)
+                slot = self.Entropy.clientDbconn.retrieveSlot(idpk)
+                cached_item = (atom,(self.infoDict['idpackage'],self.infoDict['repository']))
+                if cached_item in disk_cache['update']:
+                    disk_cache['update'].remove(cached_item)
+                    db_digest = self.Entropy.clientDbconn.tablesChecksum()
+                    disk_cache['db_digest'] = db_digest
+                    self.Entropy.dumpTools.dumpobj(etpCache['world_update'], disk_cache)
+                else:
+                    # add it, because can happen that a user firstly removes the package, then
+                    # decides to install a specific version which is not the latest
+                    key = self.Entropy.entropyTools.dep_getkey(atom)
+                    match = self.Entropy.atomMatch(key, matchSlot = slot)
+                    if (match[0] != -1) and (match != cached_item[1]):
+                        ldbconn = self.Entropy.openRepositoryDatabase(match[1])
+                        latest_atom = ldbconn.retrieveAtom(match[0])
+                        disk_cache['update'].add(latest_atom,match)
+                        # if you came from databaseTools.validateDatabase, this is the reason:
+                        # db_digest is the checksum of baseinfo and extrainfo, if you add dependstable
+                        # then you'll have to move this at the bottom of this function because, if you
+                        # read below, dependstable will be updated, so checksum won't never match,
+                        # the same for the condition above
+                        db_digest = self.Entropy.clientDbconn.tablesChecksum()
+                        disk_cache['db_digest'] = db_digest
+                        self.Entropy.dumpTools.dumpobj(etpCache['world_update'], disk_cache)
+            except Exception,e:
+                # invalidate cache
+                self.Entropy.dumpTools.dumpobj(etpCache['world_update'],{})
+                print "DEBUG: please REPORT %s: %s" % (str(Exception),str(e),)
 
         # add idpk to the installedtable
         self.Entropy.clientDbconn.removePackageFromInstalledTable(idpk)
