@@ -2313,8 +2313,12 @@ class etpDatabase(TextInterface):
 	cache = self.fetchInfoCache(idpackage,'retrieveNeeded')
 	if cache != None: return cache
 
-	self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
-	needed = self.fetchall2set(self.cursor.fetchall())
+        try:
+            self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
+        except:
+            self.createNeededTable()
+            self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
+        needed = self.fetchall2set(self.cursor.fetchall())
 
 	self.storeInfoCache(idpackage,'retrieveNeeded',needed)
 	return needed
