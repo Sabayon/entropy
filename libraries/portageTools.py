@@ -255,6 +255,7 @@ def quickpkg(atom,dirpath):
         else:
             tar.addfile(tarinfo)
 
+    tar.flush()
     tar.close()
 
     # appending xpak informations
@@ -527,6 +528,7 @@ def refillCounter():
                 f = open(counterfile,"r")
                 counter = int(f.readline().strip())
                 counters.add(counter)
+                f.close()
             except:
                 continue
     newcounter = max(counters)

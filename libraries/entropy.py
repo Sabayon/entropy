@@ -1414,6 +1414,8 @@ class EquoInterface(TextInterface):
                 urllib2.install_opener(opener)
             item = urllib2.urlopen(request)
             result = item.readline().strip()
+            item.close()
+            del item
             return result
         except: # no HTTP support?
             return None
@@ -3946,6 +3948,10 @@ class urlFetcher:
             self.localfile.close()
         except:
             pass
+        try:
+            self.remotefile.close()
+        except:
+            pass
         if self.showSpeed:
             self.speedUpdater.kill()
         socket.setdefaulttimeout(2)
@@ -5386,6 +5392,7 @@ timeout=10
         if os.path.isdir(etpConst['systemroot']+"/boot/grub") and os.path.isfile(etpConst['systemroot']+"/boot/grub/grub.conf"):
             f = open(etpConst['systemroot']+"/boot/grub/grub.conf","r")
             grub_conf = f.readlines()
+            f.close()
             grub_conf = self.Entropy.entropyTools.listToUtf8(grub_conf)
             # validate file encodings - damn what a crap
             kernel, initramfs = self.Entropy.entropyTools.listToUtf8([kernel,initramfs])

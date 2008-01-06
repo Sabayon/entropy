@@ -136,6 +136,8 @@ def get_remote_data(url):
             urllib2.install_opener(opener)
         item = urllib2.urlopen(url)
         result = item.readlines()
+        item.close()
+        del item
         if (not result):
             socket.setdefaulttimeout(2)
             return False
@@ -169,6 +171,8 @@ def report_application_error(errorstring):
             urllib2.install_opener(opener)
         xfile = urllib2.urlopen(url)
         result = xfile.readlines()
+        xfile.close()
+        del xfile
         socket.setdefaulttimeout(2)
         return result
     except:
@@ -361,10 +365,12 @@ def aggregateEdb(tbz2file,dbfile):
     f = open(tbz2file,"abw")
     g = open(dbfile,"rb")
     dbx = g.readlines()
+    g.close()
+    del g
     # append tag
     f.write(etpConst['databasestarttag'])
     for x in dbx:
-	f.write(x)
+        f.write(x)
     f.flush()
     f.close()
 
@@ -373,24 +379,24 @@ def extractEdb(tbz2file, dbpath = None):
     if not dbpath:
         dbpath = tbz2file[:-5]+".db"
     db = open(dbpath,"wb")
-    
+
     # position old to the end
     old.seek(0,2)
     # read backward until we find
     bytes = old.tell()
     counter = bytes
     dbcontent = []
-    
+
     while counter >= 0:
-	old.seek(counter-bytes,2)
-	byte = old.read(1)
-	if byte == "|":
-	    old.seek(counter-bytes-31,2)
-	    chunk = old.read(31)+byte
-	    if chunk == etpConst['databasestarttag']:
-		break
-	dbcontent.append(byte)
-	counter -= 1
+        old.seek(counter-bytes,2)
+        byte = old.read(1)
+        if byte == "|":
+            old.seek(counter-bytes-31,2)
+            chunk = old.read(31)+byte
+            if chunk == etpConst['databasestarttag']:
+                break
+        dbcontent.append(byte)
+        counter -= 1
     if not dbcontent:
         old.close()
         db.close()
@@ -401,8 +407,8 @@ def extractEdb(tbz2file, dbpath = None):
         return None
     dbcontent.reverse()
     for x in dbcontent:
-	db.write(x)
-    
+        db.write(x)
+
     db.flush()
     db.close()
     old.close()
@@ -411,23 +417,23 @@ def extractEdb(tbz2file, dbpath = None):
 def removeEdb(tbz2file, savedir):
     old = open(tbz2file,"rb")
     new = open(savedir+"/"+os.path.basename(tbz2file),"wb")
-    
+
     # position old to the end
     old.seek(0,2)
     # read backward until we find
     bytes = old.tell()
     counter = bytes
-    
+
     while counter >= 0:
-	old.seek(counter-bytes,2)
-	byte = old.read(1)
-	if byte == "|":
-	    old.seek(counter-bytes-31,2) # wth I can't use len(etpConst['databasestarttag']) ???
-	    chunk = old.read(31)+byte
-	    if chunk == etpConst['databasestarttag']:
+        old.seek(counter-bytes,2)
+        byte = old.read(1)
+        if byte == "|":
+            old.seek(counter-bytes-31,2) # wth I can't use len(etpConst['databasestarttag']) ???
+            chunk = old.read(31)+byte
+            if chunk == etpConst['databasestarttag']:
                 old.seek(counter-bytes-32,2)
                 break
-	counter -= 1
+        counter -= 1
 
     endingbyte = old.tell()
     old.seek(0)
@@ -435,7 +441,7 @@ def removeEdb(tbz2file, savedir):
         byte = old.read(1)
         new.write(byte)
         counter += 1
-    
+
     new.flush()
     new.close()
     old.close()
@@ -458,7 +464,7 @@ def compareMd5(filepath,checksum):
     result = md5sum(filepath)
     result = str(result)
     if checksum == result:
-	return True
+        return True
     return False
 
 def md5string(string):
@@ -543,18 +549,18 @@ def extractElog(file):
     f = open(file,"r")
     reallog = f.readlines()
     f.close()
-    
+
     for line in reallog:
-	if line.startswith("INFO: postinst") or line.startswith("LOG: postinst"):
-	    logline = True
-	    continue
-	    # disable all the others
-	elif line.startswith("LOG:"):
-	    logline = False
-	    continue
-	if (logline) and (line.strip()):
-	    # trap !
-	    logoutput.append(line.strip())
+        if line.startswith("INFO: postinst") or line.startswith("LOG: postinst"):
+            logline = True
+            continue
+            # disable all the others
+        elif line.startswith("LOG:"):
+            logline = False
+            continue
+        if (logline) and (line.strip()):
+            # trap !
+            logoutput.append(line.strip())
     return logoutput
 
 # Imported from Gentoo portage_dep.py
@@ -1103,16 +1109,19 @@ def isnumber(x):
 
 
 def istextfile(filename, blocksize = 512):
-    return istext(open(filename).read(blocksize))
+    f = open(filename)
+    r = istext(f.read(blocksize))
+    f.close()
+    return r
 
 def istext(s):
     import string
     _null_trans = string.maketrans("", "")
     text_characters = "".join(map(chr, range(32, 127)) + list("\n\r\t\b"))
-    
+
     if "\0" in s:
         return False
-    
+
     if not s:  # Empty files are considered text
         return True
 
@@ -1234,11 +1243,11 @@ def compat_uncompressTarBz2(filepath, extractPath = None):
 
 # tar* uncompress function...
 def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
-    
+
     import tarfile
-    
+
     if extractPath is None:
-	extractPath = os.path.dirname(filepath)
+        extractPath = os.path.dirname(filepath)
     if not os.path.isfile(filepath):
         raise OSError
 
@@ -1309,12 +1318,12 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
 def bytesIntoHuman(bytes):
     size = str(round(float(bytes)/1024,1))
     if bytes < 1024:
-	size = str(bytes)+"b"
+        size = str(bytes)+"b"
     elif bytes < 1023999:
-	size += "kB"
+        size += "kB"
     elif bytes > 1023999:
-	size = str(round(float(size)/1024,1))
-	size += "MB"
+        size = str(round(float(size)/1024,1))
+        size += "MB"
     return size
 
 # hide password from full ftp URI
@@ -1480,21 +1489,34 @@ class lifobuffer:
         return self.buf[self.counter+1]
 
 def writeNewBranch(branch):
+
+    content = []
     if os.path.isfile(etpConst['repositoriesconf']):
         f = open(etpConst['repositoriesconf'])
         content = f.readlines()
-        branchline = [x for x in content if x.startswith("branch|")]
-        if branchline:
-            # update
-            f = open(etpConst['repositoriesconf'],"w")
-            for line in content:
-                if line.startswith("branch|"):
-                    line = "branch|"+str(branch)+"\n"
-                f.write(line)
-        else:
-            # append
-            f.seek(0,2)
-            f.write("\nbranch|"+str(branch)+"\n")
+        f.close()
+
+    found = False
+    new_content = []
+    for line in content:
+        if line.strip().startswith("branch|"):
+            line = line.replace(line.strip(),"branch|"+str(branch))
+            found = True
+        new_content.append(line)
+    if found:
+        f = open(etpConst['repositoriesconf'],"w")
+        f.writelines(new_content)
+        f.flush()
+        f.close()
+    elif not new_content:
+        f = open(etpConst['repositoriesconf'],"w")
+        f.write("branch|"+str(branch)+"\n")
+        f.flush()
+        f.close()
+    else:
+        f = open(etpConst['repositoriesconf'],"aw")
+        f.seek(0,2)
+        f.write("\nbranch|"+str(branch)+"\n")
         f.flush()
         f.close()
 
@@ -1553,7 +1575,7 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
                 not stat.S_ISDIR(exist.st_mode) and \
                 os.path.isdir(lpath): # workaround for directory symlink issues
                 lpath = os.path.realpath(lpath)
-            
+
             try:
                 arcname = str(arcname)
             except UnicodeEncodeError:
@@ -1562,11 +1584,11 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
                 except:
                     print "DEBUG: python cannot encode path: "+unicode(arcname)+" properly to get it working with tarfile module. Please report."
                     continue
-            
+
             tarinfo = tar.gettarinfo(lpath, arcname) # FIXME: casting to str() cause of python <2.5.1 bug, if exception raised, I'm gonna try this
             tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
             tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
-            
+
             if stat.S_ISREG(exist.st_mode):
                 tarinfo.type = tarfile.REGTYPE
                 f = open(path)
@@ -1577,8 +1599,9 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
             else:
                 tar.addfile(tarinfo)
 
+    tar.flush()
     tar.close()
-    
+
     # appending xpak metadata
     if etpConst['gentoo-compat']:
         import etpXpak
@@ -2188,7 +2211,7 @@ def collectLinkerPaths():
 # this is especially used to try to guess portage bytecoded entries in CONTENTS
 def string_to_utf8(string):
     done = False
-    
+
     # simple unicode?
     '''
     try:
