@@ -3888,8 +3888,6 @@ class urlFetcher:
             self.commitData(rsx)
             if self.showSpeed:
                 self.updateProgress()
-        self.localfile.flush()
-        self.localfile.close()
 
         # kill thread
         self.close()
@@ -3943,6 +3941,11 @@ class urlFetcher:
         print_info(currentText,back = True)
 
     def close(self):
+        try:
+            self.localfile.flush()
+            self.localfile.close()
+        except:
+            pass
         if self.showSpeed:
             self.speedUpdater.kill()
         socket.setdefaulttimeout(2)
@@ -4989,6 +4992,7 @@ class TriggerInterface:
         del vms
 
     def trigger_ebuild_postinstall(self):
+        stdfile = open("/dev/null","w")
         myebuild = [self.pkgdata['xpakdir']+"/"+x for x in os.listdir(self.pkgdata['xpakdir']) if x.endswith(".ebuild")]
         if myebuild:
             myebuild = myebuild[0]
@@ -5005,8 +5009,8 @@ class TriggerInterface:
                         or "linux-info" in self.pkgdata['eclasses']:
                         oldsysstdout = sys.stdout
                         oldsysstderr = sys.stderr
-                        sys.stdout = open("/dev/null","w")
-                        sys.stdout = open("/dev/null","w")
+                        sys.stdout = stdfile
+                        sys.stdout = stdfile
                     rc = self.portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'])
                     if rc == 1:
                         self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
@@ -5024,9 +5028,11 @@ class TriggerInterface:
                                         importance = 0,
                                         header = red("   ##")
                                     )
+        stdfile.close()
         return 0
 
     def trigger_ebuild_preinstall(self):
+        stdfile = open("/dev/null","w")
         myebuild = [self.pkgdata['xpakdir']+"/"+x for x in os.listdir(self.pkgdata['xpakdir']) if x.endswith(".ebuild")]
         if myebuild:
             myebuild = myebuild[0]
@@ -5041,8 +5047,8 @@ class TriggerInterface:
                     or "linux-info" in self.pkgdata['eclasses']:
                     oldsysstdout = sys.stdout
                     oldsysstderr = sys.stderr
-                    sys.stdout = open("/dev/null","w")
-                    sys.stdout = open("/dev/null","w")
+                    sys.stdout = stdfile
+                    sys.stdout = stdfile
                 rc = self.portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir']) # create mysettings["T"]+"/environment"
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
@@ -5060,6 +5066,7 @@ class TriggerInterface:
                                         importance = 0,
                                         header = red("   ##")
                                     )
+        stdfile.close()
         return 0
 
     def trigger_ebuild_preremove(self):

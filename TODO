@@ -1,10 +1,10 @@
 TODO list:
   - cache world calculation results
+  - migrate server code to ServerInterface
   - Community repositories
   - find a way to better handle real smartapps deps (need split PDEPEND?)
   - add deptest check for every reagent run
   - separate packages by license restrictions (find a way?)
-  - server side code rewrite ala EquoInterface?
 
   Spritz:
     - wrap root password request
