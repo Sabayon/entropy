@@ -283,7 +283,7 @@ class YumexController(Controller):
         self.ui.pkgFilter.set_text("")
         self.on_search_clicked(None)
 
-    def on_schRepo_toggled(self,rb):  
+    def on_schRepo_toggled(self,rb):
         ''' Search Repo Checkbox handler'''
         if rb.get_active():
             self.ui.schRepoText.set_sensitive(True)
@@ -291,15 +291,15 @@ class YumexController(Controller):
             self.ui.schRepoText.set_text("")
             self.ui.schRepoText.set_sensitive(False)
             self.on_schRepoText_activate(self.ui.schRepoText)
-            
-    def on_schArch_toggled(self,rb):      
+
+    def on_schSlot_toggled(self,rb):
         ''' Search Arch Checkbox handler'''
         if rb.get_active():
-            self.ui.schArchText.set_sensitive(True)
+            self.ui.schSlotText.set_sensitive(True)
         else:
-            self.ui.schArchText.set_text("")
-            self.ui.schArchText.set_sensitive(False)
-            self.on_schArchText_activate(self.ui.schArchText)
+            self.ui.schSlotText.set_text("")
+            self.ui.schSlotText.set_sensitive(False)
+            self.on_schSlotText_activate(self.ui.schSlotText)
 
     def on_schRepoText_activate(self,entry):
         ''' Search Repo Entry handler'''
@@ -317,14 +317,14 @@ class YumexController(Controller):
         self.on_pkgFilter_toggled(rb,action)
 
 
-    def on_schArchText_activate(self,entry):
+    def on_schSlotText_activate(self,entry):
         ''' Search Arch Entry handler'''
         txt = entry.get_text()
-        flt = filters.yumexFilter.get('ArchFilter')
+        flt = filters.yumexFilter.get('SlotFilter')
         if txt != '':
             flt.activate()
             lst = txt.split(',')
-            self.logger.debug('Search Arch : %s' % ','.join(lst))
+            self.logger.debug('Search Slot : %s' % ','.join(lst))
             flt.setFilterList(lst)
         else:
             flt.activate(False)

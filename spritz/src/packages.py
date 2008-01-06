@@ -121,8 +121,8 @@ class EntropyPackages:
             if not po.pkgtup in updlist:
                 polist.append(po)
         return polist
-        
-                
+
+
     def getAllPackages(self):
         pkgs = []
         pkgs.extend(self.getPackages('installed'))
@@ -163,11 +163,11 @@ class EntropyPackages:
             if tup in tuplist:
                 foundlst.append(pkg)
         return foundlst
-            
+
     def getRawPackages(self,flt):
         self.populatePackages([flt])
         return self._packages[flt]
-        
+
     def _getPackages(self,mask):
         global color_install,color_update,color_obsolete
         if mask == 'installed':
@@ -186,28 +186,15 @@ class EntropyPackages:
                     yield yp
         elif mask == 'updates':
             # get updates
-            obsoletes = self.up.getObsoletesTuples( newest=1 )
-            for ( obsoleting, installed ) in obsoletes:
-                obsoleting_pkg = self.getPackageObject( obsoleting )
-                installed_pkg =  self.rpmdb.searchPkgTuple( installed )[0]
-                yp = EntropyPackage(obsoleting_pkg,self.recent,True)
-                yp.action = 'u'
-                yp.obsolete = True
-                yp.obsolete_tup = installed_pkg.pkgtup
-                yp.color = color_obsolete
+            #XXX add empty_deps and branch switching support
+            updates, remove, fine = self.Entropy.calculate_world_updates()
+            del remove, fine
+            for pkgdata in updates:
+                yp = EntropyPackage(pkgdata[1], self.recent, False)
+                yp.selected = True
+                yp.action = 'r'
+                yp.color = color_install
                 yield yp
-            updates = self.up.getUpdatesList()
-            obsoletes = self.up.getObsoletesList()
-            for ( n, a, e, v, r ) in updates:
-                if ( n, a, e, v, r ) in obsoletes:
-                    continue
-                matches = self.pkgSack.searchNevra( name=n, arch=a, epoch=e, 
-                                               ver=v, rel=r )
-                if len( matches ) > 0:
-                    yp = EntropyPackage(matches[0],self.recent,True)
-                    yp.action = 'u'
-                    yp.color = color_update
-                    yield yp
 
     def getByProperty( self, type, category ):
         list = self.getPackages(type)

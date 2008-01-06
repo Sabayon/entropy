@@ -161,12 +161,12 @@ class RepoFilter(ListFilter):
     def process(self,po):
         return self.isInList(po.repoid)
 
-class ArchFilter(ListFilter):
+class SlotFilter(ListFilter):
     def getName(self):
-        return "ArchFilter"
+        return "SlotFilter"
 
     def process(self,po):
-        return self.isInList(po.arch)
+        return self.isInList(po.slot)
 
 class ActionFilter(ListFilter):
     def getName(self):
@@ -182,5 +182,5 @@ class QueuedFilter(BoolFilter):
 
 yumexFilter = YumexFiltering()
 yumexFilter.registerFilter(RepoFilter())
-yumexFilter.registerFilter(ArchFilter())
+yumexFilter.registerFilter(SlotFilter())
 yumexFilter.registerFilter(KeywordFilter())
