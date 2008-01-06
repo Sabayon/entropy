@@ -48,6 +48,9 @@ def openClientDatabase(xcache = True, generate = False, indexing = True):
         raise exceptionTools.SystemDatabaseError("SystemDatabaseError: system database not found. Either does not exist or corrupted.")
     else:
         conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = 'client', xcache = xcache, indexing = indexing)
+        # validate database
+        if not generate:
+            conn.validateDatabase()
         if (not etpConst['dbconfigprotect']):
             # config protect not prepared
             if (not generate):
@@ -3170,25 +3173,34 @@ class etpDatabase(TextInterface):
     
     def switchBranch(self, idpackage, tobranch):
 
-	mycat = self.retrieveCategory(idpackage)
-	myname = self.retrieveName(idpackage)
-	myslot = self.retrieveSlot(idpackage)
-	mybranch = self.retrieveBranch(idpackage)
-	mydownload = self.retrieveDownloadURL(idpackage)
-	import re
-	out = re.subn('/'+mybranch+'/','/'+tobranch+'/',mydownload)
-	newdownload = out[0]
-	
-	# remove package with the same key+slot and tobranch if exists
-	match = self.atomMatch(mycat+"/"+myname, matchSlot = myslot, matchBranches = (tobranch,))
-	if match[0] != -1:
-	    self.removePackage(match[0])
-	
-	# now switch selected idpackage to the new branch
-	self.cursor.execute('UPDATE baseinfo SET branch = (?) WHERE idpackage = (?)', (tobranch,idpackage,))
-	self.cursor.execute('UPDATE extrainfo SET download = (?) WHERE idpackage = (?)', (newdownload,idpackage,))
-	self.commitChanges()
-        
+        mycat = self.retrieveCategory(idpackage)
+        myname = self.retrieveName(idpackage)
+        myslot = self.retrieveSlot(idpackage)
+        mybranch = self.retrieveBranch(idpackage)
+        mydownload = self.retrieveDownloadURL(idpackage)
+        import re
+        out = re.subn('/'+mybranch+'/','/'+tobranch+'/',mydownload)
+        newdownload = out[0]
+
+        # remove package with the same key+slot and tobranch if exists
+        match = self.atomMatch(mycat+"/"+myname, matchSlot = myslot, matchBranches = (tobranch,))
+        if match[0] != -1:
+            self.removePackage(match[0])
+
+        # now switch selected idpackage to the new branch
+        self.cursor.execute('UPDATE baseinfo SET branch = (?) WHERE idpackage = (?)', (tobranch,idpackage,))
+        self.cursor.execute('UPDATE extrainfo SET download = (?) WHERE idpackage = (?)', (newdownload,idpackage,))
+        self.commitChanges()
+
+    def validateDatabase(self):
+        self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table","baseinfo"))
+        rslt = self.cursor.fetchone()
+        if rslt == None:
+            raise exceptionTools.SystemDatabaseError("SystemDatabaseError: table baseinfo not found. Either does not exist or corrupted.")
+        self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table","extrainfo"))
+        rslt = self.cursor.fetchone()
+        if rslt == None:
+            raise exceptionTools.SystemDatabaseError("SystemDatabaseError: table extrainfo not found. Either does not exist or corrupted.")
 
 
 ########################################################

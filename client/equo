@@ -304,7 +304,7 @@ try:
             thread.kill()
     sys.exit(rc)
 except exceptionTools.SystemDatabaseError:
-    print_error(darkred(" * ")+red("Installed Packages Database not found. Please generate it (at least!)"))
+    print_error(darkred(" * ")+red("Installed Packages Database not found or is corrupted. Please generate it using 'equo database' tools"))
     sys.exit(100)
 except SystemExit:
     pass

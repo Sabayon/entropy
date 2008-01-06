@@ -1,0 +1,5 @@
+post_pkg_postrm() {
+        if [ "$SKIP_EQUO_SYNC" != "1" ]; then
+                equo database gentoosync
+        fi
+}
