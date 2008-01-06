@@ -394,7 +394,8 @@ def smartgenerator(atomInfo, emptydeps = False):
     pkgfilename = os.path.basename(pkgfilepath)
     pkgname = pkgfilename.split(".tbz2")[0]
 
-    pkgdependencies, removal, result = text_ui.Equo.retrieveInstallQueue([atomInfo], empty_deps = emptydeps)
+    pkgdependencies, removal, result = text_ui.Equo.retrieveInstallQueue([atomInfo], empty_deps = emptydeps, deep_deps = False)
+    #FIXME: fix dependencies stuff
     # flatten them
     pkgs = []
     if (result == 0):
