@@ -61,7 +61,7 @@ class YumexController(Controller):
          # init the Controller Class to connect signals.
          Controller.__init__( self, ui )
 
-         
+
     def quit(self, widget=None, event=None ):
         ''' Main destroy Handler '''
         if self.rpmTransactionIsRunning:
@@ -84,7 +84,7 @@ class YumexController(Controller):
         except RuntimeError,e:
             pass
         sys.exit( 1 )         # Terminate Program
-        
+
     def on_PageButton_changed( self, widget, page ):
         ''' Left Side Toolbar Handler'''
         self.setNotebookPage(const.PAGES[page])
@@ -98,8 +98,8 @@ class YumexController(Controller):
                 self.addCategoryPackages(category)
             else:
                 self.pkgView.store.clear()
-                
-        
+
+
     def on_Category_changed(self,widget):
         ''' Category Type Change Handler'''
         ndx = self.ui.cbCategory.get_active()
@@ -148,7 +148,7 @@ class YumexController(Controller):
     def on_repoDeSelect_clicked(self,widget):
         self.repoView.deselect_all()
 
-        
+
     def on_queueDel_clicked( self, widget ):
         """ Delete from Queue Button Handler """
         self.queueView.deleteSelected()
@@ -157,7 +157,7 @@ class YumexController(Controller):
         txt = widget.get_text()
         arglist = txt.split(' ')
         self.doQuickAdd(arglist[0],arglist[1:])
-        
+
     def on_queueProcess_clicked( self, widget ):
         """ Process Queue Button Handler """
         if self.queue.total() == 0: # Check there are any packages in the queue
@@ -225,7 +225,7 @@ class YumexController(Controller):
             found += f
             total += t
             self.logger.info(' Loaded : %i of %i' % (found,total))
-                
+
     def on_view_cursor_changed( self, widget ):
         """ Handle selection of row in package view (Show Descriptions) """
         ( model, iterator ) = widget.get_selection().get_selected()
@@ -245,7 +245,7 @@ class YumexController(Controller):
         busyCursor(self.ui.main)
         self.pkgView.selectAll()
         normalCursor(self.ui.main)
-        
+
     def on_deselect_clicked(self,widget):
         ''' Package Remove All button handler '''
         if len(self.pkgView.store) > 50:
@@ -389,7 +389,7 @@ class YumexApplication(YumexController,YumexGUI):
             print self.yumexOptions.getArgs()
         self.logger.info(_('Yum Config Setup'))
         self.yumexOptions.parseCmdOptions()
-        self.lastPkgPB = "installed" # FIXME: change this in updates
+        self.lastPkgPB = "updates"
         self.etpbase.setFilter(filters.yumexFilter.processFilters)
 
         # Setup GUI
@@ -400,8 +400,8 @@ class YumexApplication(YumexController,YumexGUI):
         # setup Repositories
         self.setupRepoView()
         self.firstTime = True
-        #self.addPackages()
-        self.setPage('repos')
+        # calculate updates
+        self.addPackages()
         self.Equo = EquoConnection
         self.Equo.connect_to_gui(self.progress, self.progressLogWrite)
 
@@ -465,6 +465,7 @@ class YumexApplication(YumexController,YumexGUI):
         self.repoView.populate()
 
     def addPackages(self):
+        self.setPage('output')
         busyCursor(self.ui.main)
         action = self.lastPkgPB
         if action == 'all':
@@ -495,6 +496,7 @@ class YumexApplication(YumexController,YumexGUI):
         self.setStatus(msg)
         normalCursor(self.ui.main)
         if self.doProgress: self.progress.hide() #Hide Progress
+        self.setPage('packages')
 
     def addCategoryPackages(self,cat = None):
         msg = _('Package View Population')

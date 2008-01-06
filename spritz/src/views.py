@@ -265,11 +265,11 @@ class YumexQueueView:
         if len( list ) > 0:
             self.populate_list( label, list )
         self.view.expand_all()
-            
+
     def populate_list( self, label, list ):
         parent = self.model.append( None, [label, ""] )
         for pkg in list:
-            self.model.append( parent, [str( pkg ), pkg.atom] )
+            self.model.append( parent, [str( pkg ), pkg.description] )
 
 
 class YumexCompsView:
@@ -281,7 +281,7 @@ class YumexCompsView:
         self.yumbase = None # it will se set later 
         self.currentCategory = None
         self.icon_theme = gtk.icon_theme_get_default()
-        
+
 
     def setup_view( self ):
         """ Setup Group View  """

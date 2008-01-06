@@ -191,9 +191,8 @@ class EntropyPackages:
             del remove, fine
             for pkgdata in updates:
                 yp = EntropyPackage(pkgdata[1], self.recent, False)
-                yp.selected = True
-                yp.action = 'r'
-                yp.color = color_install
+                yp.action = 'u'
+                yp.color = color_update
                 yield yp
 
     def getByProperty( self, type, category ):
