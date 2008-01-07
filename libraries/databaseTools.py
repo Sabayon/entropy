@@ -2249,6 +2249,17 @@ class etpDatabase(TextInterface):
         self.storeInfoCache(idpackage,'retrieveName',name)
         return name
 
+    def retrieveKeySlot(self, idpackage):
+
+        cache = self.fetchInfoCache(idpackage,'retrieveKey')
+        if cache != None: return cache
+
+        self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
+        data = self.cursor.fetchone()
+
+        self.storeInfoCache(idpackage,'retrieveKey',data)
+        return data
+
     def retrieveVersion(self, idpackage):
 
         cache = self.fetchInfoCache(idpackage,'retrieveVersion')

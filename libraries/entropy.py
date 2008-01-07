@@ -1196,6 +1196,62 @@ class EquoInterface(TextInterface):
         generateDependsTreeCache[tuple(idpackages)]['deep'] = deep
         return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
+    def all_repositories_checksum(self):
+        sum_hashes = ''
+        for repo in etpRepositories:
+            dbconn = self.openRepositoryDatabase(repo)
+            sum_hashes += dbconn.tablesChecksum()
+        return sum_hashes
+
+    # this function searches all the not installed packages available in the repositories
+    def calculate_available_packages(self, branch = etpConst['branch']):
+
+        if self.xcache:
+            repo_digest = self.all_repositories_checksum()
+            disk_cache = self.dumpTools.loadobj(etpCache['world_available'])
+            try:
+                if disk_cache != None:
+                    if disk_cache['repo_digest'] == repo_digest and \
+                        disk_cache['branch'] == branch:
+                        return disk_cache['available']
+            except:
+                try:
+                    self.dumpTools.dumpobj(etpCache['world_available'], {})
+                except IOError:
+                    pass
+
+        available = set()
+        self.setTotalCycles(len(etpRepositories))
+        for repo in etpRepositories:
+            dbconn = self.openRepositoryDatabase(repo)
+            idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'])
+            count = 0
+            maxlen = len(idpackages)
+            for idpackage in idpackages:
+                count += 1
+                self.updateProgress("Calculating updates for %s" % (repo,), importance = 0, type = "info", back = True, header = "::", count = (count,maxlen), percent = True, footer = "::")
+                # get key + slot
+                key, slot = dbconn.retrieveKeySlot(idpackage)
+                match = self.clientDbconn.atomMatch(key, matchSlot = slot)
+                if match[0] == -1:
+                    available.add((idpackage,repo))
+            self.cycleDone()
+
+        if self.xcache:
+            try:
+                mycache = {}
+                mycache['repo_digest'] = repo_digest
+                mycache['available'] = available.copy()
+                mycache['branch'] = branch
+                # save cache
+                self.dumpTools.dumpobj(etpCache['world_available'], mycache)
+                mycache.clear()
+                del mycache
+            except:
+                self.dumpTools.dumpobj(etpCache['world_available'], {})
+
+        return available
+
     def calculate_world_updates(self, empty_deps = False, branch = etpConst['branch']):
 
         update = set()
@@ -1258,8 +1314,8 @@ class EquoInterface(TextInterface):
                 matchresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchSlot = myscopedata[4], matchBranches = (branch,))
                 if matchresults[0] != -1:
                     mdbconn = self.openRepositoryDatabase(matchresults[1])
-                    matchatom = mdbconn.retrieveAtom(matchresults[0])
-                    update.add((matchatom,matchresults))
+                    #matchatom = mdbconn.retrieveAtom(matchresults[0])
+                    update.add(matchresults)
                 else:
                     remove.add(idpackage)
                     # look for packages that would match key with any slot (for eg, gcc updates), slot changes handling
@@ -1270,7 +1326,7 @@ class EquoInterface(TextInterface):
                         # compare versions
                         unsatisfied, satisfied = self.filterSatisfiedDependencies((matchatom,))
                         if unsatisfied:
-                            update.add((matchatom,matchresults))
+                            update.add(matchresults)
             else:
                 fine.add(myscopedata[0])
 
@@ -1331,7 +1387,7 @@ class EquoInterface(TextInterface):
             compiled_arch = mydbconn.retrieveDownloadURL(myidpackage)
             if compiled_arch.find("/"+etpSys['arch']+"/") == -1:
                 return -3,atoms_contained
-            atoms_contained.append([tbz2file,(int(myidpackage),basefile)])
+            atoms_contained.append((int(myidpackage),basefile))
         mydbconn.closeDB()
         del mydbconn
         return 0,atoms_contained
@@ -1349,8 +1405,7 @@ class EquoInterface(TextInterface):
         status = -1
         if update:
             # calculate install+removal queues
-            matched_atoms = [x[1] for x in update]
-            install, removal, status = self.retrieveInstallQueue(matched_atoms, empty_deps, deep_deps = False)
+            install, removal, status = self.retrieveInstallQueue(update, empty_deps, deep_deps = False)
             # update data['removed']
             data['removed'] = [x for x in data['removed'] if x not in removal]
             data['runQueue'] += install

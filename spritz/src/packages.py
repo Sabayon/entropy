@@ -179,18 +179,18 @@ class EntropyPackages:
                 yield yp
         elif mask == 'available':
             # Get the rest of the available packages.
-            for po in self.pkgSack.returnNewestByNameArch():
-                if not self.isInst(po.name):
-                    yp = EntropyPackage(po,self.recent,True)
-                    yp.action = 'i'
-                    yield yp
+            available = self.Entropy.calculate_available_packages()
+            for pkgdata in available:
+                yp = EntropyPackage(pkgdata, self.recent, False)
+                yp.action = 'i'
+                yield yp
         elif mask == 'updates':
             # get updates
             #XXX add empty_deps and branch switching support
             updates, remove, fine = self.Entropy.calculate_world_updates()
             del remove, fine
             for pkgdata in updates:
-                yp = EntropyPackage(pkgdata[1], self.recent, False)
+                yp = EntropyPackage(pkgdata, self.recent, False)
                 yp.action = 'u'
                 yp.color = color_update
                 yield yp

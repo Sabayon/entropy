@@ -359,6 +359,9 @@ class TextInterface:
     def cycleDone(self):
         return
 
+    def setTotalCycles(self, total):
+        return
+
     def outputInstanceTest(self):
         return
 

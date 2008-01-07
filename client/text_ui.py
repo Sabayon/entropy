@@ -250,7 +250,12 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         else:
             foundAtoms = []
             for package in packages:
-                foundAtoms.append([package,Equo.atomMatch(package)])
+                match = Equo.atomMatch(package)
+                if match[0] == -1:
+                    print_warning(bold("!!!")+red(" No match for ")+bold(package)+red(" in database. If you omitted the category, try adding it."))
+                    print_warning(red("    Also, if package is masked, you need to unmask it. See ")+bold(etpConst['confdir']+"/packages/*")+red(" files for help."))
+                    continue
+                foundAtoms.append(match)
             if tbz2:
                 for pkg in tbz2:
                     status, atomsfound = Equo.add_tbz2_to_repos(pkg)
@@ -268,19 +273,6 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         continue
                     else:
                         raise exceptionTools.InvalidDataType("InvalidDataType: ??????")
-
-
-        # filter packages not found
-        _foundAtoms = []
-        for result in foundAtoms:
-            exitcode = result[1][0]
-            if (exitcode != -1):
-                _foundAtoms.append(result[1])
-            else:
-                print_warning(bold("!!!")+red(" No match for ")+bold(result[0])+red(" in database. If you omitted the category, try adding it."))
-                print_warning(red("    Also, if package is masked, you need to unmask it. See ")+bold(etpConst['confdir']+"/packages/*")+red(" files for help."))
-
-        foundAtoms = _foundAtoms
 
         # are there packages in foundAtoms?
         if (not foundAtoms):

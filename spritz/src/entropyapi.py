@@ -70,6 +70,8 @@ class Equo(EquoInterface):
     def cycleDone(self):
         self.progress.total.next()
 
+    def setTotalCycles(self, total):
+        self.progress.total.setup( range(total) )
 
 class GuiUrlFetcher(urlFetcher):
     """ hello my highness """

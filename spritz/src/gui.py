@@ -60,19 +60,10 @@ class YumexPackageInfo:
             cl = pkg.get_changelog()
             for l in cl:
                 self.pkgChangeLog.write_line( "%s\n" % l ) 
-        if pkg.action == 'u':
-            if not pkg.obsolete:
-                lst = self.yumbase.rpmdb.searchNevra(name=pkg.name)
-                txt = _( "Updating : %s\n\n" ) % str(lst[0])
-                self.pkgInfo.write_line( txt ) 
-            else:
-                obsoletes = self.yumbase.up.getObsoletesTuples( newest=1 )
-                for ( obsoleting, installed ) in obsoletes:
-                    if obsoleting[0] == pkg.name:
-                        po =  self.yumbase.rpmdb.searchPkgTuple( installed )[0]
-                        txt = _( "Obsoleting : %s\n\n" ) % str(po)
-                        self.pkgInfo.write_line( txt ) 
-                        break
+        #if pkg.action == 'u':
+        #    lst = self.yumbase.rpmdb.searchNevra(name=pkg.name)
+        #    txt = _( "Updating : %s\n\n" ) % str(lst[0])
+        #    self.pkgInfo.write_line( txt )
 
         self.writePkg( self.pkgInfo, pkg, 'Category      : %s\n', "category", True )
         self.writePkg( self.pkgInfo, pkg, 'Name          : %s\n', "name" )
