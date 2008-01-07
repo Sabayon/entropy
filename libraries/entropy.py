@@ -1218,33 +1218,32 @@ class EquoInterface(TextInterface):
                     pass
 
         # get all the installed packages
-        packages = self.clientDbconn.listAllPackages()
-        maxlen = len(packages)
+        idpackages = self.clientDbconn.listAllIdpackages()
+        maxlen = len(idpackages)
         count = 0
-        for package in packages:
+        for idpackage in idpackages:
             count += 1
             self.updateProgress("Calculating world dependencies", importance = 0, type = "info", back = True, header = "::", count = (count,maxlen), percent = True, footer = "::")
             tainted = False
-            atom = package[0]
-            idpackage = package[1]
             myscopedata = self.clientDbconn.getScopeData(idpackage)
-            category = myscopedata[0]
-            name = myscopedata[1]
-            slot = myscopedata[3]
-            revision = myscopedata[5]
-            atomkey = category+"/"+name
+            #atom = myscopedata[0]
+            #category = myscopedata[1]
+            #name = myscopedata[2]
+            #slot = myscopedata[4]
+            #revision = myscopedata[6]
+            #atomkey = myscopedata[1]+"/"+myscopedata[2]
             # search in the packages
-            match = self.atomMatch(atom)
+            match = self.atomMatch(myscopedata[0])
             if match[0] == -1: # atom has been changed, or removed?
                 tainted = True
             else: # not changed, is the revision changed?
                 adbconn = self.openRepositoryDatabase(match[1])
                 arevision = adbconn.retrieveRevision(match[0])
                 # if revision is 9999, then any revision is fine
-                if revision == 9999: arevision = 9999
-                if revision != arevision:
+                if myscopedata[6] == 9999: arevision = 9999
+                if myscopedata[6] != arevision:
                     tainted = True
-                elif (revision == arevision):
+                elif (myscopedata[6] == arevision):
                     # check if "needed" are the same, otherwise, pull
                     # this will avoid having old packages installed just because user ran equo database generate (migrating from gentoo)
                     # also this helps in environments with multiple repositories, to avoid messing with libraries
@@ -1256,7 +1255,7 @@ class EquoInterface(TextInterface):
                     tainted = True
             if (tainted):
                 # Alice! use the key! ... and the slot
-                matchresults = self.atomMatch(atomkey, matchSlot = slot, matchBranches = (branch,))
+                matchresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchSlot = myscopedata[4], matchBranches = (branch,))
                 if matchresults[0] != -1:
                     mdbconn = self.openRepositoryDatabase(matchresults[1])
                     matchatom = mdbconn.retrieveAtom(matchresults[0])
@@ -1264,7 +1263,7 @@ class EquoInterface(TextInterface):
                 else:
                     remove.add(idpackage)
                     # look for packages that would match key with any slot (for eg, gcc updates), slot changes handling
-                    matchresults = self.atomMatch(atomkey, matchBranches = (branch,))
+                    matchresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchBranches = (branch,))
                     if matchresults[0] != -1:
                         mdbconn = self.openRepositoryDatabase(matchresults[1])
                         matchatom = mdbconn.retrieveAtom(matchresults[0])
@@ -1273,9 +1272,9 @@ class EquoInterface(TextInterface):
                         if unsatisfied:
                             update.add((matchatom,matchresults))
             else:
-                fine.add(atom)
+                fine.add(myscopedata[0])
 
-        del packages
+        del idpackages
 
         if self.xcache:
             try:
@@ -3373,6 +3372,9 @@ class RepoInterface:
         self.Entropy.dumpTools.dumpobj(etpCache['remove'],[])
 
     def sync(self):
+
+        # clse them
+        self.Entropy.closeAllRepositoryDatabases()
 
         # let's dance!
         self.Entropy.updateProgress(    darkgreen("Repositories syncronization..."),

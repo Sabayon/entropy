@@ -70,6 +70,12 @@ def openClientDatabase(xcache = True, generate = False, indexing = True):
    @output: database class instance
 '''
 def openServerDatabase(readOnly = True, noUpload = True):
+    if not os.path.isdir(os.path.dirname(etpConst['etpdatabasefilepath'])):
+        try:
+            os.remove(os.path.dirname(etpConst['etpdatabasefilepath']))
+        except OSError:
+            pass
+        os.makedirs(os.path.dirname(etpConst['etpdatabasefilepath']))
     conn = etpDatabase(readOnly = readOnly, dbFile = etpConst['etpdatabasefilepath'], noUpload = noUpload)
     # verify if we need to update the database to sync with portage updates, we just ignore being readonly in the case
     if not etpConst['treeupdatescalled']:
@@ -1806,6 +1812,7 @@ class etpDatabase(TextInterface):
         self.createBaseinfoIndex()
         self.cursor.execute("""
                 SELECT 
+                        baseinfo.atom,
                         categories.category,
                         baseinfo.name,
                         baseinfo.version,
