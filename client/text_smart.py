@@ -397,12 +397,8 @@ def smartgenerator(atomInfo, emptydeps = False):
     pkgdependencies, removal, result = text_ui.Equo.retrieveInstallQueue([atomInfo], empty_deps = emptydeps, deep_deps = False)
     #FIXME: fix dependencies stuff
     # flatten them
-    pkgs = []
     if (result == 0):
-        for x in range(len(pkgdependencies)):
-            #print x
-            for a in pkgdependencies[x]:
-                pkgs.append(a)
+        pkgs = pkgdependencies
     else:
         print_error(darkgreen(" * ")+red("Missing dependencies: "))
         for x in pkgdependencies:
@@ -529,7 +525,7 @@ def smartgenerator(atomInfo, emptydeps = False):
 
     # now list files in /sh and create .desktop files
     for item in binaryExecs:
-        item = file.split("/")[len(item.split("/"))-1]
+        item = item.split("/")[len(item.split("/"))-1]
         runFile = []
         runFile.append(
                         '#include <cstdlib>\n'
