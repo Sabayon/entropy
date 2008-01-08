@@ -22,6 +22,7 @@ import sys,os
 import logging
 import traceback
 
+
 # Entropy Imports
 sys.path.append("../../libraries")
 sys.path.append("../../client")
@@ -30,6 +31,7 @@ sys.path.append("/usr/lib/entropy/client")
 from entropyConstants import *
 import exceptionTools
 from packages import EntropyPackages
+from entropyapi import EquoConnection
 
 # GTK Imports
 import gtk,gobject
@@ -42,7 +44,6 @@ from etpgui import *
 
 # yumex imports
 import filters
-from entropyapi import EquoConnection
 from gui import YumexGUI
 from dialogs import *
 from misc import const, YumexOptions, YumexProfile
@@ -55,18 +56,16 @@ class YumexController(Controller):
 
 
     def __init__( self ):
-         self.etpbase = EntropyPackages(EquoConnection)
-         # Create and ui object contains the widgets.
-         ui = UI( const.GLADE_FILE , 'main', 'yumex' )
-         # init the Controller Class to connect signals.
-         Controller.__init__( self, ui )
+        self.etpbase = EntropyPackages(EquoConnection)
+        # Create and ui object contains the widgets.
+        ui = UI( const.GLADE_FILE , 'main', 'yumex' )
+        # init the Controller Class to connect signals.
+        Controller.__init__( self, ui )
 
 
     def quit(self, widget=None, event=None ):
+        EquoConnection.save_cache()
         ''' Main destroy Handler '''
-        if self.rpmTransactionIsRunning:
-            self.logger.critical(_('Cant Quit while running RPM Transactions'))
-            return True # Dont quit
         gtkEventThread.doQuit()
         if self.isWorking:
             self.quitNow = True
@@ -107,14 +106,14 @@ class YumexController(Controller):
            self.categoryOn = False
            self.packageInfo.clear()
            self.ui.swCategory.hide()
-           #self.addPackages()
+           self.addPackages()
         else:
            self.categoryOn = True
            self.ui.swCategory.show()
            self.packageInfo.clear()
            tub = const.PACKAGE_CATEGORY_DICT[ndx]
            (label,fn,attr,sortcat,splitcat) = tub
-           #self.addCategories(fn,attr,sortcat,splitcat)
+           self.addCategories(fn,attr,sortcat,splitcat)
 
     def on_pkgFilter_toggled(self,rb,action):
         ''' Package Type Selection Handler'''
@@ -138,6 +137,7 @@ class YumexController(Controller):
         self.setPage('output')
         self.logger.info( "Enabled repositories : %s" % ",".join(repos))
         self.updateRepositories(repos)
+        self.setupSpritz()
 
     def on_cacheButton_clicked(self,widget):
         repos = self.repoView.get_selected()
@@ -338,8 +338,8 @@ class YumexController(Controller):
         if model != None and iterator != None:
             id = model.get_value( iterator, 2 )
             isCategory = model.get_value( iterator, 4 )
-            if not isCategory:
-                self.populateGroupPackages(id)
+            if isCategory:
+                self.populateCategoryPackages(id)
 
     def on_compsPkg_cursor_changed(self, widget):
         """ Handle selection of row in Comps Category  view  """
@@ -347,8 +347,8 @@ class YumexController(Controller):
         if model != None and iterator != None:
             pkg = model.get_value( iterator, 0 )
             if pkg:
-                self.grpDesc.clear()
-                self.grpDesc.write_line(pkg.description)
+                self.catDesc.clear()
+                self.catDesc.write_line(pkg.description)
 
 
 # Menu Handlers
@@ -359,7 +359,7 @@ class YumexController(Controller):
     def on_EditPreferences( self, widget ):
         Preferences()
         self.yumexOptions.reload()
-        self.settings = self.yumexOptions.settings       
+        self.settings = self.yumexOptions.settings
 
     def on_HelpAbout( self, widget ):
         about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,self.settings.branding_title)
@@ -387,10 +387,12 @@ class YumexApplication(YumexController,YumexGUI):
         if self.settings.debug:
             self.yumexOptions.dump()
             print self.yumexOptions.getArgs()
-        self.logger.info(_('Yum Config Setup'))
+        self.logger.info(_('Entropy Config Setuo'))
         self.yumexOptions.parseCmdOptions()
+        self.catsView.etpbase = self.etpbase
         self.lastPkgPB = "updates"
         self.etpbase.setFilter(filters.yumexFilter.processFilters)
+        self.Equo = EquoConnection
 
         # Setup GUI
         self.setupGUI()
@@ -401,21 +403,32 @@ class YumexApplication(YumexController,YumexGUI):
         self.setupRepoView()
         self.firstTime = True
         # calculate updates
-        self.addPackages()
-        self.Equo = EquoConnection
         self.Equo.connect_to_gui(self.progress, self.progressLogWrite)
+        self.setupSpritz()
 
     def startWorking(self):
         self.isWorking = True
         busyCursor(self.ui.main)
         self.ui.progressVBox.grab_add()
         gtkEventThread.startProcessing()
-        
+
     def endWorking(self):
         self.isWorking = False
         self.ui.progressVBox.grab_remove()
         normalCursor(self.ui.main)
         gtkEventThread.endProcessing()
+
+    def setupSpritz(self):
+        msg = _('Loading information')
+        self.setStatus(msg)
+        self.progressLog(_('Building Package Lists'))
+        self.addPackages()
+        self.progressLog(_('Building Package Lists Completed'))
+        self.progressLog(_('Building Category Lists'))
+        self.populateCategories()
+        self.progressLog(_('Building Category Lists Completed'))
+        msg = _('Ready')
+        self.setStatus(msg)
 
     def cleanEntropyCaches(self, alone = False):
         if alone:
@@ -493,7 +506,6 @@ class YumexApplication(YumexController,YumexGUI):
 
         msg = _('Population Completed')
         self.progressLog(msg)
-        self.setStatus(msg)
         normalCursor(self.ui.main)
         if self.doProgress: self.progress.hide() #Hide Progress
         self.setPage('packages')
@@ -503,57 +515,58 @@ class YumexApplication(YumexController,YumexGUI):
         self.setStatus(msg)
         busyCursor(self.ui.main)
         self.pkgView.store.clear()
-        #pkgs = self.etpbase.getPackagesByCategory(cat)
-        #if pkgs:
-        #    pkgs.sort()
-        #    self.ui.viewPkg.set_model(None)
-        #    for po in pkgs:
-        #        self.pkgView.store.append([po,str(po)])
-        #    self.ui.viewPkg.set_model(self.pkgView.store)
-        #    self.ui.viewPkg.set_search_column( 2 )
-        #    msg = _('Package View Population Completed')
-        #    self.setStatus(msg)
+        pkgs = self.yumbase.getPackagesByCategory(cat)
+        if pkgs:
+            pkgs.sort()
+            self.ui.viewPkg.set_model(None)
+            for po in pkgs:
+                self.pkgView.store.append([po,str(po)])
+            self.ui.viewPkg.set_model(self.pkgView.store)
+            self.ui.viewPkg.set_search_column( 2 )
+            msg = _('Package View Population Completed')
+            self.setStatus(msg)
         normalCursor(self.ui.main)
-              
+
 
     def addCategories(self, fn, para, sortkeys,splitkeys ):
         msg = _('Category View Population')
         self.setStatus(msg)
         busyCursor(self.ui.main)
-        #getterfn = getattr( self.etpbase, fn )
-        #if para != '':
-        #    lst, keys = getterfn( self.lastPkgPB, para )
-        #else:
-        #    lst, keys = getterfn( self.lastPkgPB)
-        #fkeys = [ key for key in keys if lst.has_key(key)]
-        #if sortkeys:
-        #    fkeys.sort()
-        #if not splitkeys:
-        #    self.catView.populate(fkeys)
-        #else:
-        #    keydict = self.splitCategoryKeys(fkeys)
-        #    self.catView.populate(keydict,True)
+        getterfn = getattr( self.etpbase, fn )
+        if para != '':
+            lst, keys = getterfn( self.lastPkgPB, para )
+        else:
+            lst, keys = getterfn( self.lastPkgPB )
+        fkeys = [ key for key in keys if lst.has_key(key)]
+        if sortkeys:
+            fkeys.sort()
+        if not splitkeys:
+            self.catView.populate(fkeys)
+        else:
+            keydict = self.splitCategoryKeys(fkeys)
+            self.catView.populate(keydict,True)
+        self.etpbase.setCategoryPackages(lst)
         self.catView.view.set_cursor((0,))
         normalCursor(self.ui.main)
         msg = _('Category View Population Completed')
         self.setStatus(msg)
-       
+
     def splitCategoryKeys(self,keys,sep='/'):
-        tree = set()
+        tree = RPMGroupTree()
         for k in keys:
             lst = k.split(sep)
             tree.add(lst)
         return tree
-        
+
     def getRecentTime(self,recentdays = 14):
         recentdays = float( recentdays )
         now = time.time()
-        return now-( recentdays*const.DAY_IN_SECONDS )   
+        return now-( recentdays*const.DAY_IN_SECONDS )
 
     def processPackageQueue( self, pkgs, doAll=False):
         """ Workflow for processing package queue """
         self.setStatus( _( "Preparing for install/remove/update" ) )
-        self.progress.total.setup( const.PACKAGE_PROGRESS_STEPS )        
+        self.progress.total.setup( const.PACKAGE_PROGRESS_STEPS )
         total = len( pkgs['i'] )+len( pkgs['u'] )+len( pkgs['r'] )
         state = True
         quit = False
@@ -575,7 +588,7 @@ class YumexApplication(YumexController,YumexGUI):
         rc = dlg.run()
         dlg.destroy()
         self.progress.show()
-        return rc == gtk.RESPONSE_OK        
+        return rc == gtk.RESPONSE_OK
 
     def processTransaction( self ):
         self.setStatus( _( "Processing packages (See output for details)" ) )
@@ -601,9 +614,9 @@ class YumexApplication(YumexController,YumexGUI):
         except Errors.YumBaseError, e:
             self.endWorking()
             errorMessage( self.ui.main, _( "Error" ), _( "Error in Transaction" ), str(e) )   
-            self.logger.error(str(e))         
+            self.logger.error(str(e))
             return None
-                   
+
     def doQueueAdd(self,parser,qType):
         self.logger.debug( _("Parsing packages to %s ") % qType)
         pTypeDict = {'install':'available',
@@ -619,12 +632,12 @@ class YumexApplication(YumexController,YumexGUI):
             if repo in repos:
                 self.logger.debug('--> Repo : %s' % repo)
                 no += len(dict[repo])
-                #pkgs = self.etpbase.findPackagesByTuples(pType,dict[repo])
-                #found += len(pkgs)
-                #for po in pkgs:
-                #    self.logger.debug("---> %s " % str(po))
-                #    self.queue.add(po)
-                #    self.queueView.refresh()
+                pkgs = self.etpbase.findPackagesByTuples(pType,dict[repo])
+                found += len(pkgs)
+                for po in pkgs:
+                    self.logger.debug("---> %s " % str(po))
+                    self.queue.add(po)
+                    self.queueView.refresh()
             else:
                 self.logger.debug('--> Skipping Repo (Not Enabled): %s' % repo)
         self.logger.debug("-> found %i of %i" % (found,no))
@@ -638,40 +651,33 @@ class YumexApplication(YumexController,YumexGUI):
         elif cmd == 'remove' or cmd == 'erase' or cmd == 'delete':
             typ = 'installed'
         if typ:
-            #found = self.etpbase.findPackages(arglist,typ)
-            #self.setStatus(_('found %d packages, matching : %s') % (len(found)," ".join(arglist)))
-            #for po in found:
-                #print str(po),po.action
-            #    self.queue.add(po)
+            found = self.etpbase.findPackages(arglist,typ)
+            self.setStatus(_('found %d packages, matching : %s') % (len(found)," ".join(arglist)))
+            for po in found:
+                print str(po),po.action
+                self.queue.add(po)
             self.queueView.refresh()
 
-    def populateGroupCategories(self):
-        #data = self.etpbase.getByCategory()
-        data = []
-        self.compsView.populate(data)
+    def populateCategories(self):
+        busyCursor(self.ui.main)
+        self.etpbase.populateCategories()
+        self.catsView.populate(self.etpbase.getCategories())
+        normalCursor(self.ui.main)
 
-    def populateGroups(self,id):
-        #for c in self.etpbase.comps.categories:
-        #    if c.categoryid == id:
-        #        break
-        #grps = [self.etpbase.comps.return_group(g) for g in c.groups]
-        #data = [(g.name,g.groupid,g.installed,) for g in grps]
-        data = []
-        self.grpGroups.populate(data,id)
-        
-    def populateGroupPackages(self,id):
+    def populateCategoryPackages(self, cat):
         #grp = self.etpbase.comps.return_group(id)
-        self.grpDesc.clear()
+        self.catDesc.clear()
         #if grp.description:
-        #    self.grpDesc.write_line(grp.description)
+        #    self.catDesc.write_line(grp.description)
         #pkgs = self.etpbase._getByGroup(grp,['m','d','o'])
         #pkgs.sort()
-        self.grpPackages.store.clear()
-        self.ui.tvGrpPackages.set_model(None)
-        #for po in pkgs:
-        #    self.grpPackages.store.append([po,str(po)])
-        self.ui.tvGrpPackages.set_model(self.grpPackages.store)
-       
+        pkgs = self.etpbase.getPackagesByCategory(cat) 
+        self.catPackages.store.clear()
+        self.ui.tvCatPackages.set_model(None)
+        for po in pkgs:
+            self.catPackages.store.append([po,str(po)])
+        self.ui.tvCatPackages.set_model(self.catPackages.store)
+
 
 class ProcessGtkEventsThread(Thread):
     def __init__(self):
@@ -679,26 +685,26 @@ class ProcessGtkEventsThread(Thread):
         self.__quit = False
         self.__active = Event()
         self.__active.clear()
-        
-    def run(self):      
+
+    def run(self):
         while self.__quit == False:
             while not self.__active.isSet():
                 self.__active.wait()
             time.sleep(0.1)
             while gtk.events_pending():      # process gtk events
-                gtk.main_iteration()    
+                gtk.main_iteration()
             time.sleep(0.1)
-            
+
     def doQuit(self):
         self.__quit = True
         self.__active.set()
-        
+
     def startProcessing(self):
         self.__active.set()
 
     def endProcessing(self):
         self.__active.clear()
-            
+
 if __name__ == "__main__":
     try:
         gtkEventThread = ProcessGtkEventsThread()
@@ -709,7 +715,7 @@ if __name__ == "__main__":
     except SystemExit, e:
         print "Quit by User"
         gtkEventThread.doQuit()
-        sys.exit(1)        
+        sys.exit(1)
     except: # catch other exception and write it to the logger.
         logger = logging.getLogger('yumex.main')
         etype = sys.exc_info()[0]
@@ -729,4 +735,3 @@ if __name__ == "__main__":
         errorMessage(None, _( "Error" ), _( "Error in Yumex" ), errmsg )  
         gtkEventThread.doQuit()
         sys.exit(1)
-        

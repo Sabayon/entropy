@@ -32,13 +32,21 @@ class PackageWrapper:
             self.from_installed = False
         self.matched_atom = matched_atom
         self.idpackage = self.matched_atom[0]
+        self.Entropy = EquoConnection
+        self.available = avail
 
     def __str__(self):
         return str(self.dbconn.retrieveAtom(self.idpackage))
 
     def __cmp__(self, pkg):
-        pkgcmp = EquoConnection.entropyTools.entropyCompareVersions(self.getTup(),pkg.getTup())
-        return pkgcmp
+        n1 = str(self)
+        n2 = str(pkg)
+        if n1 > n2:
+            return 1
+        elif n1 == n2:
+            return 0
+        else:
+            return -1
 
     def getPkg(self):
         return self.matched_atom
@@ -47,6 +55,9 @@ class PackageWrapper:
         return self.dbconn.retrieveAtom(self.idpackage)
 
     def getTup(self):
+        return (self.getName(),self.getRepoId(),self.dbconn.retrieveVersion(self.idpackage),self.dbconn.retrieveVersionTag(self.idpackage),self.dbconn.retrieveRevision(self.idpackage))
+
+    def versionData(self):
         return (self.dbconn.retrieveVersion(self.idpackage),self.dbconn.retrieveVersionTag(self.idpackage),self.dbconn.retrieveRevision(self.idpackage))
 
     def getRepoId(self):
@@ -60,6 +71,24 @@ class PackageWrapper:
 
     def getRevision(self):
         return self.dbconn.retrieveRevision(self.idpackage)
+
+    # 0: from installed db, so it's installed for sure
+    # 1: not installed
+    # 2: updatable
+    # 3: already updated to the latest
+    def getInstallStatus(self):
+        if self.from_installed:
+            return 0
+        key, slot = self.dbconn.retrieveKeySlot(self.idpackage)
+        matches = self.Entropy.clientDbconn.searchKeySlot(key,slot)
+        if not matches:
+            return 1
+        else:
+            rc = self.Entropy.check_package_update(key+":"+slot)
+            if rc:
+                return 2
+            else:
+                return 3
 
     def getVer(self):
         tag = ""
@@ -169,3 +198,4 @@ class PackageWrapper:
     arch = property(fget=getArch)
     epoch = property(fget=getEpoch)
     pkgtup = property(fget=getTup)
+    install_status = property(fget=getInstallStatus)

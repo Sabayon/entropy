@@ -57,7 +57,7 @@ class YumexCategoryView:
 
 
 class EntropyPackageView:
-    def __init__( self, treeview,qview ):
+    def __init__( self, treeview, qview ):
         self.view = treeview
         self.headers = [_( "Package" ), _( "Ver" ), _( "Summary" ), _( "Repo" ), _( "Architecture" ), _( "Size" )]
         self.store = self.setupView()
@@ -65,7 +65,7 @@ class EntropyPackageView:
         self.queueView = qview
 
     def setupView( self ):
-        store = gtk.ListStore( gobject.TYPE_PYOBJECT, str)
+        store = gtk.ListStore( gobject.TYPE_PYOBJECT, str )
         self.view.set_model( store )
         # Setup selection column
         cell1 = gtk.CellRendererToggle()    # Selection
@@ -115,7 +115,7 @@ class EntropyPackageView:
         column.set_sort_column_id( -1 )
         self.view.append_column( column )
         return column
-        
+
     def get_data_text( self, column, cell, model, iter, property ):
         obj = model.get_value( iter, 0 )
         if obj:
@@ -142,18 +142,26 @@ class EntropyPackageView:
         else:
             obj.queued = obj.action
             self.queue.add(obj)
-        obj.set_select( not obj.selected )
+        if obj.action == 'u':
+            if obj.selected == None:
+                obj.set_select(True)
+            elif obj.selected == True:
+                obj.set_select(False)
+            else:
+                obj.set_inconsistent()
+        else:
+            obj.set_select( not obj.selected )
 
 
     def selectAll(self):
         for el in self.store:
             obj = el[0]
             if not obj.queued == obj.action:
-                obj.queued = obj.action      
+                obj.queued = obj.action
                 self.queue.add(obj)
                 obj.set_select( not obj.selected )
         self.queueView.refresh()
-        self.view.queue_draw() 
+        self.view.queue_draw()
 
     def deselectAll(self):
         for el in self.store:
@@ -163,7 +171,7 @@ class EntropyPackageView:
                 self.queue.remove(obj)
                 obj.set_select( not obj.selected )
         self.queueView.refresh()
-        self.view.queue_draw() 
+        self.view.queue_draw()
 
     def new_pixbuf( self, column, cell, model, iter ):
         """ 
@@ -173,7 +181,7 @@ class EntropyPackageView:
         pkg = model.get_value( iter, 0 )
         if pkg:
             action = pkg.queued
-            if action:            
+            if action:
                 if action in ( 'u', 'i' ):
                     icon = 'network-server'
                 else:
@@ -207,7 +215,7 @@ class YumexQueueView:
 
     def setup_view( self ):
         """ Create Notebook list for single page  """
-        model = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_STRING )           
+        model = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_STRING )
         self.view.set_model( model )
         cell1 = gtk.CellRendererText()
         column1= gtk.TreeViewColumn( _( "Packages" ), cell1, markup=0 )
@@ -248,7 +256,7 @@ class YumexQueueView:
             if list:
                 rclist += filter( f, list )
         return rclist
-        
+
     def refresh ( self ):
         """ Populate view with data from queue """
         self.model.clear()
@@ -272,13 +280,13 @@ class YumexQueueView:
             self.model.append( parent, [str( pkg ), pkg.description] )
 
 
-class YumexCompsView:
+class CategoriesView:
     def __init__( self, treeview,qview):
         self.view = treeview
         self.model = self.setup_view()
         self.queue = qview.queue
         self.queueView = qview
-        self.yumbase = None # it will se set later 
+        self.etpbase = None # it will se set later
         self.currentCategory = None
         self.icon_theme = gtk.icon_theme_get_default()
 
@@ -310,11 +318,11 @@ class YumexCompsView:
         column.set_cell_data_func( state, self.queue_pixbuf )
 
         # category/group icons 
-        icon = gtk.CellRendererPixbuf()   
+        icon = gtk.CellRendererPixbuf()
         icon.set_property('stock-size', 1)
         column.pack_start(icon, False)
         column.set_cell_data_func( icon, self.grp_pixbuf )
-        
+
         category = gtk.CellRendererText()
         column.pack_start(category, False)
         column.add_attribute(category, 'markup', 1)
@@ -322,7 +330,7 @@ class YumexCompsView:
         self.view.append_column( column )
         self.view.set_headers_visible(False)
         return model
-    
+
     def setCheckbox( self, column, cell, model, iter ):
         isCategory = model.get_value( iter, 4 )
         state = model.get_value( iter, 0 )
@@ -344,30 +352,30 @@ class YumexCompsView:
             self.model.set_value( iter, 3,False )
         else:
             if inst:
-                self.queue.addGroup(grpid,'r') # Add for remove           
+                self.queue.addGroup(grpid,'r') # Add for remove
                 self._updatePackages(grpid,True,'r')
             else:
                 self.queue.addGroup(grpid,'i') # Add for install
                 self._updatePackages(grpid,True,'i')
             self.model.set_value( iter, 3,True )
         self.model.set_value( iter, 0, not inst )
-        
-        
+
+
     def _updatePackages(self,id,add,action):
-        grp = self.yumbase.comps.return_group(id)
-        pkgs = self.yumbase._getByGroup(grp,['m','d'])
+        grp = self.etpbase.comps.return_group(id)
+        pkgs = self.etpbase._getByGroup(grp,['m','d'])
         # Add group packages to queue
         if add: 
             for po in pkgs:
                 if not po.queued: 
                     if action == 'i' and po.available : # Install
-                            po.queued = po.action      
+                            po.queued = po.action
                             self.queue.add(po)
                             po.set_select( True )
                     elif action == 'r' and not po.available: # Remove
-                            po.queued = po.action      
+                            po.queued = po.action 
                             self.queue.add(po)
-                            po.set_select( False )                        
+                            po.set_select( False )
         # Remove group packages from queue
         else:
             for po in pkgs:
@@ -376,16 +384,12 @@ class YumexCompsView:
                     self.queue.remove(po)
                     po.set_select( not po.selected )
         self.queueView.refresh()
-        
+
     def populate(self,data):
         self.model.clear()
-        for cat,grps in data:
-            cName,cId = cat
-            node = self.model.append(None,[None,cName,cId,False,True])          
-            for grp in grps:
-                (gName,gId,gInst) = grp
-                self.model.append(node,[gInst,gName,gId,False,False])
-            
+        for cat in data:
+            self.model.append(None,[None,cat,cat,False,True])
+
     def queue_pixbuf( self, column, cell, model, iter ):
         """ 
         Cell Data function for recent Column, shows pixmap
@@ -418,7 +422,7 @@ class YumexCompsView:
             cell.set_property( 'pixbuf', pix )
         else:
             cell.set_property( 'visible', False )
-            
+
 
     def _get_pix(self, fn):
         imgsize = 24
@@ -427,9 +431,9 @@ class YumexCompsView:
             pix = pix.scale_simple(imgsize, imgsize,
                                    gtk.gdk.INTERP_BILINEAR)
         return pix
-        
-        
-class YumexRepoView:
+
+
+class EntropyRepoView:
     """ 
     This class controls the repo TreeView
     """
@@ -493,7 +497,7 @@ class YumexRepoView:
             cell.set_property( 'visible', True )
         else:
             cell.set_property( 'visible',False)
-            
+
     def get_selected( self ):
         selected = []
         for elem in self.store:
@@ -502,7 +506,7 @@ class YumexRepoView:
             if state:
                 selected.append( name )
         return selected
-        
+
     def get_notselected( self ):
         notselected = []
         for elem in self.store:
@@ -511,7 +515,7 @@ class YumexRepoView:
             if not state:
                 notselected.append( name )
         return notselected
-            
+
     def deselect_all( self ):
         iterator = self.store.get_iter_first()
         while iterator != None:    
@@ -523,7 +527,7 @@ class YumexRepoView:
         while iterator != None:    
             self.store.set_value( iterator, 0, True )
             iterator = self.store.iter_next( iterator )
-            
+
 
     def select_by_keys( self, keys):
         self.store 
@@ -535,14 +539,14 @@ class YumexRepoView:
             else:
                 self.store.set_value( iterator, 0, False)
             iterator = self.store.iter_next( iterator )
-        
+
 class YumexPluginView:
     def __init__( self, widget ):
         self.view = widget
         self.model = self.setup_view()
         self.plugins = self.load()
         self.populate_view()
-    
+
     def on_toggled( self, cell, path, model ):
         newstate = not model[path][0]
         model[path][0] = newstate

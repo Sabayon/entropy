@@ -1818,7 +1818,8 @@ class etpDatabase(TextInterface):
                         baseinfo.version,
                         baseinfo.slot,
                         baseinfo.versiontag,
-                        baseinfo.revision
+                        baseinfo.revision,
+                        baseinfo.branch
                 FROM 
                         baseinfo,
                         categories
@@ -2780,12 +2781,25 @@ class etpDatabase(TextInterface):
 
     ''' search packages whose slot matches the one provided '''
     def searchSlottedPackages(self, slot, atoms = False): # atoms = return atoms directly
-	if atoms:
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE slot in (?)', (slot,))
-	    return self.cursor.fetchall()
-	else:
-	    self.cursor.execute('SELECT idpackage FROM baseinfo WHERE slot = in (?)', (slot,))
-	    return self.fetchall2set(self.cursor.fetchall())
+        if atoms:
+            self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE slot in (?)', (slot,))
+            return self.cursor.fetchall()
+        else:
+            self.cursor.execute('SELECT idpackage FROM baseinfo WHERE slot = in (?)', (slot,))
+            return self.fetchall2set(self.cursor.fetchall())
+
+    def searchKeySlot(self, key, slot, branch = None):
+
+        branchstring = ''
+        params = [key,slot]
+        if branch:
+            params.append(branch)
+            branchstring = ' and baseinfo.branch = (?)'
+
+        self.cursor.execute('SELECT idpackage FROM baseinfo,categories WHERE categories.category || "/" || baseinfo.name = (?) and baseinfo.slot = (?) and baseinfo.idcategory = categories.idcategory'+branchstring, params)
+        data = self.cursor.fetchall()
+
+        return data
 
     ''' search packages that need the specified library (in neededreference table) specified by keyword '''
     def searchNeeded(self, keyword, like = False):
@@ -2988,42 +3002,33 @@ class etpDatabase(TextInterface):
 	    self.storeSearchCache((name,category,sensitive,branch),'searchPackagesByNameAndCategory',results)
 	return results
 
-    def searchPackagesByNameAndVersionAndCategory(self, name, version, category, branch = None, sensitive = False):
-	
-	if (self.xcache):
-	    cached = self.fetchSearchCache((name,version,category,branch,sensitive),'searchPackagesByNameAndVersionAndCategory')
-	    if cached != None: return cached
-	
-	# get category id
-	self.cursor.execute('SELECT idcategory FROM categories WHERE category = (?)', (category,))
-	idcat = self.cursor.fetchone()
-	if not idcat:
-	    return ()
-	else:
-	    idcat = idcat[0]
+    def searchPackagesKeyVersion(self, key, version, branch = None, sensitive = False):
+
+        if (self.xcache):
+            cached = self.fetchSearchCache((key,version,branch,sensitive),'searchPackagesKeyVersion')
+            if cached != None: return cached
 
         searchkeywords = []
         if sensitive:
-            searchkeywords.append(name)
+            searchkeywords.append(key)
         else:
-            searchkeywords.append(name.lower())
-        
+            searchkeywords.append(key.lower())
+
         searchkeywords.append(version)
-        searchkeywords.append(idcat)
 
-	branchstring = ''
-	if branch:
+        branchstring = ''
+        if branch:
             searchkeywords.append(branch)
-	    branchstring = ' and branch = (?)'
+            branchstring = ' and branch = (?)'
 
-	if (sensitive):
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = (?) and version = (?) and idcategory = (?) '+branchstring, searchkeywords)
-	else:
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = (?) and version = (?) and idcategory =  (?) '+branchstring, searchkeywords)
+        if (sensitive):
+            self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE categories.category || "/" || baseinfo.name = (?) and version = (?) and baseinfo.idcategory = categories.idcategory '+branchstring, searchkeywords)
+        else:
+            self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE LOWER(categories.category) || "/" || LOWER(baseinfo.name) = (?) and version = (?) and baseinfo.idcategory = categories.idcategory '+branchstring, searchkeywords)
 
-	results = self.cursor.fetchall()
-	if (self.xcache):
-	    self.storeSearchCache((name,version,category,branch,sensitive),'searchPackagesByNameAndVersionAndCategory',results)
+        results = self.cursor.fetchall()
+        if (self.xcache):
+            self.storeSearchCache((key,version,branch,sensitive),'searchPackagesKeyVersion',results)
 	return results
 
     def listAllPackages(self):
@@ -3615,7 +3620,7 @@ class etpDatabase(TextInterface):
                         # valid!
                         idpackageValidatorCache[(idpackage,reponame)] = idpackage
                         return idpackage
-        
+
         # holy crap, can't validate
         idpackageValidatorCache[(idpackage,reponame)] = -1
         return -1
@@ -3623,7 +3628,6 @@ class etpDatabase(TextInterface):
     # packages filter used by atomMatch, input must me foundIDs, a list like this:
     # [(u'x11-libs/qt-4.3.2', 608), (u'x11-libs/qt-3.3.8-r4', 1867)]
     def packagesFilter(self,results):
-        
         # keywordsFilter ONLY FILTERS results if self.dbname.startswith(etpConst['dbnamerepoprefix']), repository database is open
         if not self.dbname.startswith(etpConst['dbnamerepoprefix']):
             return results
@@ -3633,7 +3637,6 @@ class etpDatabase(TextInterface):
             rc = self.idpackageValidator(item[1])
             if rc != -1:
                 newresults.append(item)
-        
         return newresults
 
     '''
@@ -3851,11 +3854,10 @@ class etpDatabase(TextInterface):
                     newerPackage = dbpkginfo[versions.index(versionlist[0])]
 
                     # now look if there's another package with the same category, name, version, but different tag
-                    newerPkgName = self.retrieveName(newerPackage[0])
-                    newerPkgCategory = self.retrieveCategory(newerPackage[0])
-                    newerPkgVersion = self.retrieveVersion(newerPackage[0])
-                    newerPkgBranch = self.retrieveBranch(newerPackage[0])
-                    similarPackages = self.searchPackagesByNameAndVersionAndCategory(name = newerPkgName, version = newerPkgVersion, category = newerPkgCategory, branch = newerPkgBranch)
+
+                    scope_data = self.getScopeData(newerPackage[0])
+                    similarPackages = self.searchPackagesKeyVersion(key = scope_data[1]+"/"+scope_data[2], version = scope_data[3], branch = scope_data[7])
+                    del scope_data
 
                     if (multiMatch):
                         # filter only valid keywords
@@ -3941,11 +3943,8 @@ class etpDatabase(TextInterface):
                     newerPackage = dbpkginfo[versions.index(versionlist[0])]
 
                     # now look if there's another package with the same category, name, version, but different tag
-                    newerPkgName = self.retrieveName(newerPackage[0])
-                    newerPkgCategory = self.retrieveCategory(newerPackage[0])
-                    newerPkgVersion = self.retrieveVersion(newerPackage[0])
-                    newerPkgBranch = self.retrieveBranch(newerPackage[0])
-                    similarPackages = self.searchPackagesByNameAndVersionAndCategory(name = newerPkgName, version = newerPkgVersion, category = newerPkgCategory, branch = newerPkgBranch)
+                    scope_data = self.getScopeData(newerPackage[0])
+                    similarPackages = self.searchPackagesKeyVersion(key = scope_data[1]+"/"+scope_data[2], version = scope_data[3], branch = scope_data[7])
 
                     if (multiMatch):
                         similarPackages = set([x[1] for x in similarPackages])
@@ -4007,11 +4006,8 @@ class etpDatabase(TextInterface):
                 newerPackage = foundIDs[versionIDs.index(versionlist[0])]
 
                 # now look if there's another package with the same category, name, version, tag
-                newerPkgName = self.retrieveName(newerPackage[1])
-                newerPkgCategory = self.retrieveCategory(newerPackage[1])
-                newerPkgVersion = self.retrieveVersion(newerPackage[1])
-                newerPkgBranch = self.retrieveBranch(newerPackage[1])
-                similarPackages = self.searchPackagesByNameAndVersionAndCategory(name = newerPkgName, version = newerPkgVersion, category = newerPkgCategory, branch = newerPkgBranch)
+                scope_data = self.getScopeData(newerPackage[1])
+                similarPackages = self.searchPackagesKeyVersion(key = scope_data[1]+"/"+scope_data[2], version = scope_data[3], branch = scope_data[7])
 
                 if (len(similarPackages) > 1):
                     # gosh, there are packages with the same name, version, category

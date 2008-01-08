@@ -351,7 +351,8 @@ etpCache = {
     'remove': 'resume_remove', # resume cache (remove)
     'world': 'resume_world', # resume cache (world)
     'world_update': 'world_cache',
-    'world_available': 'available_cache'
+    'world_available': 'available_cache',
+    'check_package_update': 'package_update'
 }
 
 # byte sizes of disk caches
@@ -395,6 +396,7 @@ idpackageValidatorCache = {}
 filterSatisfiedDependenciesCache = {}
 filterSatisfiedDependenciesCmpResults = {}
 generateDependencyTreeCache = {}
+check_package_update_cache = {}
 ververifyCache = {}
 isjustnameCache = {}
 catpkgsplitCache = {}
@@ -439,6 +441,7 @@ def const_resetCache():
     linkerPaths.clear()
     repositoryUpdatesDigestCache_db.clear()
     repositoryUpdatesDigestCache_disk.clear()
+    check_package_update_cache.clear()
 
 # Inside it you'll find instantiated vartree classes
 portageRoots = {}

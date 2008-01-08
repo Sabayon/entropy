@@ -52,9 +52,12 @@ class EntropyPackage( PackageWrapper ):
             self.recent = True
         else:
             self.recent = False
- 
+
     def set_select( self, state ):
         self.selected = state
+
+    def set_inconsistent( self ):
+        self.selected = None
 
     def set_visible( self, state ):
         self.visible = state
@@ -73,9 +76,8 @@ class EntropyPackages:
         self._packages = {}
         self.currentCategory = None
         self._categoryPackages = {}
-        self.pkgInGrps = PkgInGroupList()
         self.recent = self.Entropy.entropyTools.getCurrentUnixTime()
-
+        self.pkgInCats = PkgInCategoryList()
 
     def clearPackages(self):
         self._packages = {}
@@ -100,7 +102,43 @@ class EntropyPackages:
         if self._categoryPackages.has_key(cat):
             return self._categoryPackages[cat]
         else:
-            return False
+            return []
+
+    def populateCategories(self):
+        global color_install,color_update,color_obsolete # FIXME: rename color_obsolete
+        self.categories = self.Entropy.list_repo_categories()
+        for category in self.categories:
+            catsdata = self.Entropy.list_repo_packages_in_category(category)
+            catsdata.update(set([(x,0) for x in self.Entropy.list_installed_packages_in_category(category)]))
+            pkgsdata = []
+            for pkgdata in catsdata:
+                yp = EntropyPackage(pkgdata, self.recent, True)
+                install_status = yp.install_status
+                ok = False
+                # FIXME: handle obsoletes in install_status == 3 whose are never install_status == 0
+                if install_status == 0: # becomes from installed packages
+                    yp.selected = True
+                    yp.action = 'r'
+                    yp.color = color_install
+                    #ok = True
+                elif install_status == 1:
+                    yp.action = 'i'
+                    yp.available = True
+                    ok = True
+                elif install_status == 2:
+                    yp.action = 'u'
+                    yp.color = color_update
+                    yp.selected = None
+                    # XXX: change to tri-state
+                    ok = True
+                elif install_status == 3:
+                    yp.action = 'r'
+                    yp.color = color_install
+                    yp.selected = True
+                    ok = True
+                if ok: pkgsdata.append(yp)
+            del catsdata
+            self._categoryPackages[category] = pkgsdata
 
     def getPackages(self,flt):
         if flt == 'all':
@@ -128,23 +166,23 @@ class EntropyPackages:
         pkgs.extend(self.getPackages('installed'))
         pkgs.extend(self.getPackages('available'))
         return pkgs
-    
+
     def setFilter(self,fn = None):
         self.filterCallback = fn
-        
+
     def doFiltering(self,pkgs):
         if self.filterCallback:
             return filter(self.filterCallback,pkgs)
         else:
             return pkgs
 
-    def isInst(self,name): # fast check for if package is installed
-        mi = self.ts.ts.dbMatch('name', name)
-        if mi.count() > 0:
+    def isInst(self,atom): # fast check for if package is installed
+        m = self.Entropy.clientDbconn.atomMatch(atom)
+        if m[0] != -1:
             return True
-        return False     
-        
-    def findPackages(self,userlist,typ): 
+        return False
+
+    def findPackages(self,userlist,typ):
         pkgs = self.getRawPackages(typ)
         foundlst = []
         for arg in userlist:
@@ -154,8 +192,8 @@ class EntropyPackages:
             foundlst.extend(exactmatch)
             foundlst.extend(matched)
         return foundlst
-            
-    def findPackagesByTuples(self,typ,tuplist): 
+
+    def findPackagesByTuples(self,typ,tuplist):
         pkgs = self.getRawPackages(typ)
         foundlst = []
         for pkg in pkgs:
@@ -181,7 +219,7 @@ class EntropyPackages:
             # Get the rest of the available packages.
             available = self.Entropy.calculate_available_packages()
             for pkgdata in available:
-                yp = EntropyPackage(pkgdata, self.recent, False)
+                yp = EntropyPackage(pkgdata, self.recent, True)
                 yp.action = 'i'
                 yield yp
         elif mask == 'updates':
@@ -222,7 +260,7 @@ class EntropyPackages:
             else:
                 dict[val] = [pkg]
         return dict, dict.keys()
-        
+
     def getBySizes( self, type):
         list = self.getPackages(type)
         keys = [
@@ -231,7 +269,7 @@ class EntropyPackages:
             '1 MB - 10 MB' , 
             '10 MB - 50 MB', 
             '50+ MB']
-        
+
         dict = {}
         for pkg in list:
             val = self._getSizeKey( pkg.size )
@@ -239,8 +277,8 @@ class EntropyPackages:
                 dict[val].append( pkg )
             else:
                 dict[val] = [pkg]
-        return dict , keys       
-        
+        return dict , keys
+
     def _getSizeKey( self, size ):
         kb = 1024
         mb = 1024*1024
@@ -271,9 +309,8 @@ class EntropyPackages:
                 dict[val].append( pkg )
             else:
                 dict[val] = [pkg]
-        return dict , keys       
+        return dict , keys
 
-            
     def _getAgeKey( self, date ):
         now = time.time()
         days = 86400 # Seconds
@@ -289,92 +326,43 @@ class EntropyPackages:
             return '30 - 90 days'
         else:
             return '90+ days'
-        
-        
-    def getByCategory(self):        
+
+    def getCategories(self):
         catlist = []
-        catkeys = [ (c.name,c.categoryid) for c in self.comps.categories]
-        catkeys.sort()
-        for name,id in catkeys:
-            grps = self._getGroupsInCategory(id)
-            elem = ([name,id],grps)
-            catlist.append(elem)
+        for cat in self.categories:
+            catlist.append(cat)
+        catlist.sort()
         return catlist
-            
-    def _getGroupsInCategory(self,category):
-        for c in self.comps.categories:
-            if c.categoryid == category:
-                break
-        grps = [self.comps.return_group(g) for g in c.groups if self.comps.return_group(g) != None]
-        data = [(g.name,g.groupid,g.installed,) for g in grps]
-        return data
-        
-    
 
-    def _getByGroup(self,grp,flt):
-        list = []
-        list.extend(self.getRawPackages('installed'))
-        list.extend(self.getRawPackages('available'))
-        gpkgs = grp.packages
-        pkgs = []        
-        for pkg in list:
-            if pkg.name in gpkgs:
-                pkginfo = self.pkgInGrps.get(pkg.name)
-                if pkginfo[0].typ in flt:
-                    pkgs.append(pkg)
-        return pkgs
+    def buildCategoryPackages(self,cat):
+        for pkg in self.getPackagesByCategory(cat):
+            self.pkgInCats.add(pkg,cat)
 
-    def buildGroups(self):
-        cats = self.comps.categories
-        catDict = {}
-        for cat in cats:
-            grps = map( lambda x: self.comps.return_group( x ), 
-               filter( lambda x: self.comps.has_group( x ), cat.groups ) )
-            grplist = []
-            for grp in grps:
-                grplist.append( grp.name )
-                self.buildGroupPackages(grp,cat)
-            catDict[cat.categoryid] = grplist
-        #self.pkgInGrps.dump()
-
-    def buildGroupPackages(self,group,cat):
-        for pkg in group.mandatory_packages.keys():
-            self.pkgInGrps.add(pkg,'m',group,cat)
-        for pkg in group.default_packages.keys():
-            self.pkgInGrps.add(pkg,'d',group,cat)
-        for pkg in group.optional_packages.keys():
-            self.pkgInGrps.add(pkg,'o',group,cat)
-        for pkg in group.conditional_packages.keys():
-            self.pkgInGrps.add(pkg,'c',group,cat)
-
-
-class PkgInGroup:
-    def __init__(self, pkg, typ, grp, cat):
+class PkgInCategory:
+    def __init__(self, pkg, cat):
         self.name = pkg
-        self.typ = typ
-        self.group = grp
         self.category = cat
-        
+
     def __str__(self):
         return self.name
 
-class PkgInGroupList:
+class PkgInCategoryList:
     def __init__(self):
         self._pkgDict = {}
-        
-    def add(self, pkg, typ, grp, cat):
-        gpkg = PkgInGroup(pkg,typ,grp,cat)
+
+    def add(self, pkg, cat):
+        gpkg = PkgInGroup(pkg,cat)
         if self._pkgDict.has_key(pkg):
             self._pkgDict[pkg].append(gpkg)
         else:
             self._pkgDict[pkg] = [gpkg]
-            
+
     def get(self,pkg):
         if self._pkgDict.has_key(pkg):
             return self._pkgDict[pkg]
         else:
             return None
-            
+
     def getAll(self):
         lst = []
         for key in self._pkgDict.keys():
@@ -386,105 +374,9 @@ class PkgInGroupList:
         if pkg:
             return "%s/%s" % (pkg[0].category.name,pkg[0].group.name)
         else:
-            return "!No Category/No Group"
-        
-        
+            return "No Category"
+
+
     def dump(self):
         for pkg in self.getAll():
             print "%-40s %s -> %s/%s" % (pkg.name,pkg.typ,pkg.category.name,pkg.group.name)
-        
-class RPMGroupElement:
-    '''
-        This class handles a node in a tree of RPM Groups
-        it contains a dictinary with subgroups and child objects
-    '''
-    def __init__(self):
-        self.children = {}
-        
-    def addChild(self,key):
-        '''
-        add a subgroup to current node if it not exist already
-        @param key: subgroup name 
-        @return: the subgroup child object.
-        '''
-        if not self.children.has_key(key):
-            self.children[key] = RPMGroupElement()
-        return self.children[key]     
-            
-    def getKeys(self):
-        '''
-        Return a list of subgroup names for the current node.
-        @return: list of subgroup names.
-        '''
-        return self.children.keys()
-    
-    def dump(self,prefix,sep = '->'):
-        '''
-        Dump all subgroups from the current node
-        '''
-        keys = self.getKeys()
-        keys.sort()
-        if keys: # has childen
-            for key in keys:
-                child = self.children[key]
-                if prefix:
-                    newprefix = '%s%s%s' % (prefix,sep,key)
-                else:
-                    newprefix = key
-                child.dump(newprefix)
-        else: # leaf node
-            print prefix
-
-    def addToModel(self,model,node,parent):
-        '''
-        Add all subgroups to a gtk.TreeStore model
-        '''
-        keys = self.getKeys()
-        keys.sort()
-        if keys: # has childen
-            for key in keys:
-                if parent:
-                    newparent = '%s/%s' % (parent,key)
-                else:
-                    newparent = key
-                child = self.children[key]
-                if child.getKeys():
-                    newnode = model.append(node,[key,''])
-                    child.addToModel(model,newnode,newparent)
-                else:
-                    newnode = model.append(node,[key,newparent])
-                    
-        else: # leaf node
-            pass
-
-            
-class RPMGroupTree:
-    '''
-    Container class containing the root node of the RPM Groups Tree 
-    '''
-    def __init__(self):
-        self.root = RPMGroupElement()
-
-    def add(self,keys):
-        '''
-        Add a the subgroup nodes to the tree
-        @param keys: a list containing the ordered subgroups. ('level0','level1',...,'leveln')
-        '''
-        root = self.root
-        for key in keys:
-            root = root.addChild(key)
-            
-    def dump(self):
-        '''
-        dump all nodes on the screen
-        '''
-        self.root.dump(None)
-            
-    def populate(self,model):
-        '''
-        Populate a gtk.TreeStore model with all the subgroups in the tree.
-        '''
-        self.root.addToModel(model,None,None)
-            
-                    
-                        

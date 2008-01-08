@@ -269,11 +269,12 @@ class YumexGUI:
         self.queue = YumexQueue()
         self.queueView = YumexQueueView(self.ui.queueView,self.queue)
         self.pkgView = EntropyPackageView(self.ui.viewPkg,self.queueView)
-        self.compsView = YumexCompsView(self.ui.tvComps,self.queueView)
-        self.grpPackages = EntropyPackageView(self.ui.tvGrpPackages,self.queueView) 
-        self.grpDesc = TextViewConsole(self.ui.grpDesc)
-        self.repoView = YumexRepoView(self.ui.viewRepo)
-        # Left Side Toolbar      
+        #self.catView = YumexCategoryView(self.ui.tvCategory)
+        self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
+        self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView)
+        self.catDesc = TextViewConsole(self.ui.catDesc)
+        self.repoView = EntropyRepoView(self.ui.viewRepo)
+        # Left Side Toolbar
         self.pageButtons = {}    # Dict with page buttons
         self.firstButton = None  # first button
         self.activePage = 'packages'

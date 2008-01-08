@@ -180,6 +180,7 @@ class EquoInterface(TextInterface):
        Cache stuff :: begin
     '''
     def purge_cache(self):
+        const_resetCache()
         dumpdir = etpConst['dumpstoragedir']
         if not dumpdir.endswith("/"): dumpdir = dumpdir+"/"
         for key in etpCache:
@@ -279,7 +280,11 @@ class EquoInterface(TextInterface):
         if (etpConst['uid'] != 0) or (not self.xcache): # don't load cache as user
             return
 
-        self.updateProgress(blue("Loading On-Disk Cache..."), importance = 2, type = "info")
+        try:
+            self.updateProgress(blue("Loading On-Disk Cache..."), importance = 2, type = "info")
+        except:
+            pass
+
         # atomMatch
         try:
             mycache = self.dumpTools.loadobj(etpCache['atomMatch'])
@@ -293,19 +298,32 @@ class EquoInterface(TextInterface):
 
         # removal dependencies
         try:
-            mycache3 = self.dumpTools.loadobj(etpCache['generateDependsTree'])
-            if isinstance(mycache3, dict):
+            mycache = self.dumpTools.loadobj(etpCache['generateDependsTree'])
+            if isinstance(mycache, dict):
                 generateDependsTreeCache.clear()
-                generateDependsTreeCache.update(mycache3)
-                del mycache3
+                generateDependsTreeCache.update(mycache)
+                del mycache
         except:
             generateDependsTreeCache.clear()
             self.dumpTools.dumpobj(etpCache['generateDependsTree'],{})
+
+        # check_package_update cache
+        try:
+            mycache = self.dumpTools.loadobj(etpCache['check_package_update'])
+            if isinstance(mycache, dict):
+                check_package_update_cache.clear()
+                check_package_update_cache.update(mycache)
+                del mycache
+        except:
+            check_package_update_cache.clear()
+            self.dumpTools.dumpobj(etpCache['check_package_update'],{})
 
     def save_cache(self):
 
         if (etpConst['uid'] != 0): # don't save cache as user
             return
+
+        self.dumpTools.dumpobj(etpCache['check_package_update'],check_package_update_cache)
 
         self.dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
         if os.path.isfile(etpConst['dumpstoragedir']+"/"+etpCache['atomMatch']+".dmp"):
@@ -537,17 +555,29 @@ class EquoInterface(TextInterface):
 
     # tell if a new equo release is available, returns True or False
     def check_equo_updates(self):
+        return self.check_package_update("app-admin/equo")
+
+    def check_package_update(self, atom):
+
+        if check_package_update_cache.has_key(atom):
+            return check_package_update_cache[atom]
+
         found = False
-        matches = self.clientDbconn.searchPackages("app-admin/equo")
-        if matches:
-            equo_match = "<="+matches[0][0]
-            equo_unsatisfied,x = self.filterSatisfiedDependencies([equo_match])
+        match = self.clientDbconn.atomMatch(atom)
+        if match[0] != -1:
+            myatom = self.clientDbconn.retrieveAtom(match[0])
+            pkg_match = ">="+myatom
+            pkg_unsatisfied,x = self.filterSatisfiedDependencies([pkg_match])
             del x
-            if equo_unsatisfied:
+            if pkg_unsatisfied:
                 found = True
-            del matches
-            del equo_unsatisfied
+            del pkg_unsatisfied
+        del match
+
+        # cache
+        check_package_update_cache[atom] = found
         return found
+
 
     # @returns -1 if the file does not exist or contains bad data
     # @returns int>0 if the file exists
@@ -868,6 +898,7 @@ class EquoInterface(TextInterface):
                         filterSatisfiedDependenciesCmpResults[dependency] = vcmp
                         depunsatisfied.add(dependency)
                     else:
+                        # check if needed is the same?
                         depsatisfied.add(dependency)
                 else:
                     depsatisfied.add(dependency)
@@ -875,6 +906,14 @@ class EquoInterface(TextInterface):
                 # not the same version installed
                 filterSatisfiedDependenciesCmpResults[dependency] = 10
                 depunsatisfied.add(dependency)
+
+            if depsatisfied:
+                # check if it's really satisfied by looking at needed
+                installedNeeded = self.clientDbconn.retrieveNeeded(clientMatch[0])
+                repo_needed = dbconn.retrieveNeeded(repoMatch[0])
+                if installedNeeded != repo_needed:
+                    depunsatisfied.update(depsatisfied)
+                    depsatisfied.clear()
 
             unsatisfiedDeps.update(depunsatisfied)
             satisfiedDeps.update(depsatisfied)
@@ -1196,6 +1235,26 @@ class EquoInterface(TextInterface):
         generateDependsTreeCache[tuple(idpackages)]['deep'] = deep
         return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
+    def list_repo_categories(self):
+        categories = set()
+        for repo in etpRepositories:
+            dbconn = self.openRepositoryDatabase(repo)
+            catsdata = dbconn.listAllCategories()
+            categories.update(set([x[1] for x in catsdata]))
+        return categories
+
+    def list_repo_packages_in_category(self, category):
+        pkg_matches = set()
+        for repo in etpRepositories:
+            dbconn = self.openRepositoryDatabase(repo)
+            catsdata = dbconn.searchPackagesByCategory(category, branch = etpConst['branch'])
+            pkg_matches.update(set([(x[1],repo) for x in catsdata]))
+        return pkg_matches
+
+    def list_installed_packages_in_category(self, category):
+        pkg_matches = set([x[1] for x in self.clientDbconn.searchPackagesByCategory(category)])
+        return pkg_matches
+
     def all_repositories_checksum(self):
         sum_hashes = ''
         for repo in etpRepositories:
@@ -1232,8 +1291,8 @@ class EquoInterface(TextInterface):
                 self.updateProgress("Calculating updates for %s" % (repo,), importance = 0, type = "info", back = True, header = "::", count = (count,maxlen), percent = True, footer = "::")
                 # get key + slot
                 key, slot = dbconn.retrieveKeySlot(idpackage)
-                match = self.clientDbconn.atomMatch(key, matchSlot = slot)
-                if match[0] == -1:
+                matches = self.clientDbconn.searchKeySlot(key, slot)
+                if not matches:
                     available.add((idpackage,repo))
             self.cycleDone()
 
@@ -1908,10 +1967,13 @@ class PackageInterface:
 
     def __remove_package(self):
 
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package: "+str(self.infoDict['removeatom']))
         # clear on-disk cache
         generateDependsTreeCache.clear()
         self.Entropy.dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
+        check_package_update_cache.clear()
+        self.Entropy.dumpTools.dumpobj(etpCache['check_package_update'],{})
+
+        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package: "+str(self.infoDict['removeatom']))
 
         # remove from database
         if self.infoDict['removeidpackage'] != -1:
@@ -2149,6 +2211,9 @@ class PackageInterface:
         # clear on-disk cache
         generateDependsTreeCache.clear()
         self.Entropy.dumpTools.dumpobj(etpCache['generateDependsTree'],{})
+        check_package_update_cache.clear()
+        self.Entropy.dumpTools.dumpobj(etpCache['check_package_update'],{})
+
         self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing package: "+str(self.infoDict['atom']))
 
         # copy files over - install
