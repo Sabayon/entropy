@@ -25,6 +25,7 @@ import random
 import gc
 import sys
 import os
+import stat
 import maskingparser
 import exceptionTools
 
@@ -764,7 +765,7 @@ def initConfig_entropyConstants(rootdir):
 
     etpHandlers.clear()
     etpHandlers['md5sum'] = "md5sum.php?arch="+etpConst['currentarch']+"&package=" # md5sum handler
-    etpHandlers['errorsend'] = "http://svn.sabayonlinux.org/entropy/"+etpConst['product']+"/handlers/error_report.php?arch="+etpConst['currentarch']+"&stacktrace="
+    etpHandlers['errorsend'] = "http://svn.sabayonlinux.org/entropy/%s/handlers/http_error_report.php" % (etpConst['product'],)
 
     etpRepositories.clear()
     etpRepositoriesOrder.clear()

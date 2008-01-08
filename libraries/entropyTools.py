@@ -147,38 +147,6 @@ def get_remote_data(url):
         socket.setdefaulttimeout(2)
         return False
 
-# Error reporting function
-# @input: error string (please use repr())
-# @returns bool: True if ok. False if not.
-# @returns False: if the file is not found
-def report_application_error(errorstring):
-    import socket
-    import urllib2
-    socket.setdefaulttimeout(60)
-    outstring = ""
-    for char in errorstring:
-        if char == " ":
-	    char = "%20"
-	outstring += char
-    outstring = outstring.split("\n")
-    outstring = '<br>'.join(outstring)
-    url = etpHandlers['errorsend']+outstring
-    # now pray the server
-    try:
-        if etpConst['proxy']:
-            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
-            opener = urllib2.build_opener(proxy_support)
-            urllib2.install_opener(opener)
-        xfile = urllib2.urlopen(url)
-        result = xfile.readlines()
-        xfile.close()
-        del xfile
-        socket.setdefaulttimeout(2)
-        return result
-    except:
-        socket.setdefaulttimeout(2)
-        return False
-
 def ebeep(count = 5):
     for x in range(count):
         os.system("sleep 0.35; echo -ne \"\a\"; sleep 0.35")

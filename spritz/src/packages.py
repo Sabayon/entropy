@@ -56,9 +56,6 @@ class EntropyPackage( PackageWrapper ):
     def set_select( self, state ):
         self.selected = state
 
-    def set_inconsistent( self ):
-        self.selected = None
-
     def set_visible( self, state ):
         self.visible = state
 

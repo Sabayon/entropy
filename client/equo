@@ -323,6 +323,7 @@ except Exception:
     entropyTools.printException()
 
     import traceback
+    from entropy import ErrorReportInterface
     try:
         ferror = open("/tmp/equoerror.txt","w")
         traceback.print_exc(file = ferror)
@@ -356,15 +357,13 @@ except Exception:
         sys.exit(3)
 
     print_error(darkgreen("If you want to be contacted back (and actively supported), also answer the questions below:"))
-    fullname = readtext("Your Full name: ")
-    mail = readtext("Your E-Mail address: ")
-    errorText.insert(0,"Full name: "+str(fullname)+"\n")
-    errorText.insert(1,"E-mail: "+str(mail)+"\n\n")
-    errorText = ' '.join(errorText)
-
-    # ok, come on!
-    result = entropyTools.report_application_error(errorText)
-    if (result != False):
+    name = readtext("Your Full name: ")
+    email = readtext("Your E-Mail address: ")
+    errorText = ''.join(errorText)
+    error = ErrorReportInterface()
+    error.prepare(errorText,name,email)
+    result = error.submit()
+    if (result):
         print_error(darkgreen("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible."))
     else:
         print_error(darkred("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
