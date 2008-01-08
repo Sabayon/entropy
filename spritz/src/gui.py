@@ -319,7 +319,8 @@ class YumexGUI:
     def setupPageButtons(self):
         # Setup Vertical Toolbar
         self.createButton( _( "Package View" ), "button-packages.png", 'packages',True )
-        self.createButton( _( "Group View" ), "button-group.png", 'group')
+        # XXX: if we'll re-enable categories listing, uncomment this
+        #self.createButton( _( "Group View" ), "button-group.png", 'group')
         self.createButton( _( "Package Queue View" ), "button-queue.png", 'queue' )
         if not self.settings.disable_repo_page:
             self.createButton( _( "Repository Selection View" ), "button-repo.png", 'repos' )

@@ -118,7 +118,7 @@
 	<widget class="GtkHPaned" id="hpaned1">
 	  <property name="visible">True</property>
 	  <property name="can_focus">True</property>
-	  <property name="position">50</property>
+	  <property name="position">54</property>
 
 	  <child>
 	    <widget class="GtkEventBox" id="leftEvent">

@@ -424,9 +424,10 @@ class YumexApplication(YumexController,YumexGUI):
         self.progressLog(_('Building Package Lists'))
         self.addPackages()
         self.progressLog(_('Building Package Lists Completed'))
-        self.progressLog(_('Building Category Lists'))
-        self.populateCategories()
-        self.progressLog(_('Building Category Lists Completed'))
+        # XXX: if we'll re-enable categories listing, uncomment this
+        #self.progressLog(_('Building Category Lists'))
+        #self.populateCategories()
+        #self.progressLog(_('Building Category Lists Completed'))
         msg = _('Ready')
         self.setStatus(msg)
 
@@ -671,7 +672,7 @@ class YumexApplication(YumexController,YumexGUI):
         #    self.catDesc.write_line(grp.description)
         #pkgs = self.etpbase._getByGroup(grp,['m','d','o'])
         #pkgs.sort()
-        pkgs = self.etpbase.getPackagesByCategory(cat) 
+        pkgs = self.etpbase.getPackagesByCategory(cat)
         self.catPackages.store.clear()
         self.ui.tvCatPackages.set_model(None)
         for po in pkgs:

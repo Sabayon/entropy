@@ -142,15 +142,7 @@ class EntropyPackageView:
         else:
             obj.queued = obj.action
             self.queue.add(obj)
-        if obj.action == 'u':
-            if obj.selected == None:
-                obj.set_select(True)
-            elif obj.selected == True:
-                obj.set_select(False)
-            else:
-                obj.set_inconsistent()
-        else:
-            obj.set_select( not obj.selected )
+        obj.set_select( not obj.selected )
 
 
     def selectAll(self):
