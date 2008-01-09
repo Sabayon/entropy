@@ -251,53 +251,72 @@ class YumexQueue:
     def total(self):
         return len(self.packages['i'])+len(self.packages['u'])+len(self.packages['r'])
 
-    def add(self, pkg):
-        action = pkg.action
-        if action in ("u","i"): # update/install
+    def add(self, pkgs):
 
-            tmpqueue = []
-            if not pkg in self.packages[action]:
-                tmpqueue.append( pkg )
-            list = [x.matched_atom for x in self.packages[action]+tmpqueue]
-            status = self.elaborateInstall(pkg,list,action,False)
+        one = False
+        if type(pkgs) is not list:
+            one = True
+            pkgs = [pkgs]
+
+        action = [pkgs[0].action]
+        if action[0] in ("u","i"): # update/install
+
+            action = ["u","i"]
+            tmpqueue = [x for x in pkgs if x not in self.packages['u']+self.packages['i']]
+            xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+tmpqueue]
+            status = self.elaborateInstall(pkgs,xlist,action,False)
             return status,0
 
         else: # remove
 
-            status = self.checkSystemPackage(pkg)
-            if not status:
-                return -2,1
+            if one:
+                status = self.checkSystemPackage(pkgs[0])
+                if not status:
+                    return -2,1
 
-            tmpqueue = []
-            if not pkg in self.packages[action]:
-                tmpqueue.append( pkg )
-            list = [x.matched_atom[0] for x in self.packages[action]+tmpqueue]
-            self.elaborateRemoval(pkg,list,action,False)
+            tmpqueue = [x for x in pkgs if x not in self.packages[action[0]]]
+            xlist = [x.matched_atom[0] for x in self.packages[action[0]]+tmpqueue]
+            self.elaborateRemoval(pkgs,xlist,action[0],False)
             return 0,1
 
-    def elaborateInstall(self, pkg, list, action, deep_deps):
-        (runQueue, removalQueue, status) = self.Entropy.retrieveInstallQueue(list,False,deep_deps)
+    def elaborateInstall(self, pkgs, xlist, actions, deep_deps):
+        (runQueue, removalQueue, status) = self.Entropy.retrieveInstallQueue(xlist,False,deep_deps)
         if status == 0:
             # runQueue
             if runQueue:
                 for dep_pkg in self.etpbase.getPackages('updates')+self.etpbase.getPackages('available'):
                     for matched_atom in runQueue:
-                        if (dep_pkg.matched_atom == matched_atom) and (dep_pkg not in self.packages[action]):
-                            if str(pkg) != str(dep_pkg):
+                        if (dep_pkg.matched_atom == matched_atom) and (dep_pkg not in self.packages[actions[0]]+self.packages[actions[1]]):
+                            if dep_pkg not in pkgs:
                                 dep_pkg.set_select(True)
                                 dep_pkg.queued = dep_pkg.action
-                            self.packages[action].append(dep_pkg)
+                            self.packages[dep_pkg.action].append(dep_pkg)
             # removalQueue
             if removalQueue:
                 for rem_pkg in self.etpbase.getPackages('installed'):
                     for matched_atom in removalQueue:
                         if rem_pkg.matched_atom == (matched_atom,0):
-                            if str(pkg) != str(rem_pkg):
+                            if rem_pkg not in pkgs:
                                 rem_pkg.set_select(False)
                                 rem_pkg.queued = rem_pkg.action
                             self.packages['r'].append(rem_pkg)
         self.queueView.refresh()
         return status
+
+    def elaborateRemoval(self, pkgs, list, action, nodeps):
+        if nodeps:
+            return
+        removalQueue = self.Entropy.retrieveRemovalQueue(list)
+        if removalQueue:
+            for rem_pkg in self.etpbase.getPackages('installed'):
+                for matched_atom in removalQueue:
+                    if rem_pkg.matched_atom == (matched_atom,0):
+                        if rem_pkg not in pkgs:
+                            rem_pkg.set_select(False)
+                            rem_pkg.queued = rem_pkg.action
+                        self.packages[rem_pkg.action].append(rem_pkg)
+        self.queueView.refresh()
+
 
     def checkSystemPackage(self, pkg):
         # check if it's a system package
@@ -307,49 +326,45 @@ class YumexQueue:
             pkg.queued = None
         return valid
 
+    def remove(self, pkgs):
 
-    def elaborateRemoval(self, pkg, list, action, nodeps):
-        if nodeps:
-            return
-        removalQueue = self.Entropy.retrieveRemovalQueue(list)
-        if removalQueue:
-            for rem_pkg in self.etpbase.getPackages('installed'):
-                for matched_atom in removalQueue:
-                    if rem_pkg.matched_atom == (matched_atom,0):
-                        if str(pkg) != str(rem_pkg):
-                            rem_pkg.set_select(False)
-                            rem_pkg.queued = rem_pkg.action
-                        self.packages[action].append(rem_pkg)
-        self.queueView.refresh()
+        one = False
+        if type(pkgs) is not list:
+            one = True
+            pkgs = [pkgs]
 
+        action = [pkgs[0].action]
+        if action[0] in ("u","i"): # update/install
 
-    def remove(self, pkg):
-        # we need to remove packages, recalculating lists
-        action = pkg.action
-        if action in ("u","i"): # update/install
+            action = ["u","i"]
 
-            if pkg in self.packages[action]:
-                self.packages[action].remove( pkg )
-            list = [x.matched_atom for x in self.packages[action]]
-            print self.packages[action]
-            self.packages[action] = []
-            status = self.elaborateInstall(pkg,list,action,False)
-            if pkg in self.packages[action]:
-                pkg.set_select(not pkg.selected)
-                pkg.queued = pkg.action
-            print self.packages[action]
+            for r_pkg in pkgs:
+                if r_pkg in self.packages['u']:
+                    self.packages['u'].remove( r_pkg )
+                elif r_pkg in self.packages['i']:
+                    self.packages['i'].remove( r_pkg )
+            xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']]
+            self.packages['u'] = []
+            self.packages['i'] = []
+            status = self.elaborateInstall(pkgs,xlist,action,False)
+            for r_pkg in pkgs:
+                if r_pkg in self.packages['u']+self.packages['i']:
+                    r_pkg.set_select(not r_pkg.selected)
+                    r_pkg.queued = r_pkg.action
+
             return status,0
 
         else:
 
-            if pkg in self.packages[action]:
-                self.packages[action].remove( pkg )
-            tmpdata = self.packages[action][:]
-            list = [x.matched_atom[0] for x in self.packages[action]]
-            self.packages[action] = []
-            self.elaborateRemoval(pkg,list,action,False)
+            for r_pkg in pkgs:
+                if r_pkg in self.packages[action[0]]:
+                    self.packages[action[0]].remove( pkgs[0] )
+            tmpdata = self.packages[action[0]][:]
+            xlist = [x.matched_atom[0] for x in self.packages[action[0]]]
+            self.packages[action[0]] = []
+            self.elaborateRemoval(pkgs,xlist,action[0],False)
             for rem_pkg in tmpdata:
-                if rem_pkg not in self.packages[action]:
+                if rem_pkg not in self.packages[action[0]]:
                     # disable
                     rem_pkg.set_select(not rem_pkg.selected)
                     rem_pkg.action = None

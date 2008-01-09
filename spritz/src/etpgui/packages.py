@@ -101,6 +101,9 @@ class PackageWrapper:
     def getSlot(self):
         return self.dbconn.retrieveSlot(self.idpackage)
 
+    def getKeySlot(self):
+        return self.dbconn.retrieveKeySlot(self.idpackage)
+
     def getDescription(self):
         return self.dbconn.retrieveDescription(self.idpackage)
 
@@ -189,6 +192,7 @@ class PackageWrapper:
     version = property(fget=getVer)
     release = property(fget=getRel)
     slot = property(fget=getSlot)
+    keyslot = property(fget=getKeySlot)
     description =  property(fget=getDescription)
     size =  property(fget=getDownSize)
     intelligentsizeFmt = property(fget=getIntelligentSize)

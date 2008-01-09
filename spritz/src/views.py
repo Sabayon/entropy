@@ -146,22 +146,38 @@ class EntropyPackageView:
 
 
     def selectAll(self):
+        list = [x[0] for x in self.store if not x[0].queued == x[0].action]
+        for obj in list:
+            obj.queued = obj.action
+        self.queue.add(list)
+        for obj in list:
+            obj.set_select( not obj.selected )
+        '''
         for el in self.store:
             obj = el[0]
             if not obj.queued == obj.action:
                 obj.queued = obj.action
                 self.queue.add(obj)
                 obj.set_select( not obj.selected )
+        '''
         self.queueView.refresh()
         self.view.queue_draw()
 
     def deselectAll(self):
+        list = [x[0] for x in self.store if x[0].queued == x[0].action]
+        for obj in list:
+            obj.queued = None
+        self.queue.remove(list)
+        for obj in list:
+            obj.set_select( not obj.selected )
+        '''
         for el in self.store:
             obj = el[0]
             if obj.queued == obj.action:
                 obj.queued = None
                 self.queue.remove(obj)
                 obj.set_select( not obj.selected )
+        '''
         self.queueView.refresh()
         self.view.queue_draw()
 

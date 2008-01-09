@@ -164,7 +164,7 @@ class SpritzController(Controller):
             self.setStatus(_('No packages in queue'))
             return
         self.queue.dump()
-        fn = '/tmp/last-queue.yumex'
+        fn = '/tmp/last-queue.spritz'
         cp = self.queue.getParser()
         fp = open(fn,"w")
         cp.save(fp)
@@ -182,7 +182,7 @@ class SpritzController(Controller):
         dialog = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_SAVE,
                                   buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE,gtk.RESPONSE_OK))
         dialog.set_current_folder("/tmp")
-        dialog.set_current_name('queue.yumex')
+        dialog.set_current_name('queue.spritz')
         response = dialog.run()
         if response == gtk.RESPONSE_OK:
             fn = dialog.get_filename()
