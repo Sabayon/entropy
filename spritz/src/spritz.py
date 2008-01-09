@@ -44,14 +44,14 @@ from etpgui import *
 
 # yumex imports
 import filters
-from gui import YumexGUI
+from gui import SpritzGUI
 from dialogs import *
 from misc import const, YumexOptions, YumexProfile
 from i18n import _
 import time
 
 
-class YumexController(Controller):
+class SpritzController(Controller):
     ''' This class contains all glade signal callbacks '''
 
 
@@ -368,17 +368,16 @@ class YumexController(Controller):
     def on_ToolsRepoCache( self, widget ):
         self.logger.info(_('Cleaning up all yum metadata'))
 
-class YumexApplication(YumexController,YumexGUI):
+class SpritzApplication(SpritzController,SpritzGUI):
 
     def __init__(self):
-        YumexController.__init__( self )
+        SpritzController.__init__( self )
         self.yumexOptions = YumexOptions()
         self.yumexOptions.parseCmdOptions()
         self.Equo = EquoConnection
-        YumexGUI.__init__(self, self.Equo, self.etpbase)
+        SpritzGUI.__init__(self, self.Equo, self.etpbase)
         self.logger = logging.getLogger("yumex.main")
         # init flags
-        self.rpmTransactionIsRunning = False
         self.skipMirror = False
         self.skipMirrorNow = False
         self.doProgress = False
@@ -605,11 +604,7 @@ class YumexApplication(YumexController,YumexGUI):
             # Skip Transaction is downloadonly is set.
             if not self.settings.downloadonly:
                 self.progress.total.next() # -> Transaction Test
-                #self.etpbase._doTransactionTest()
                 self.progress.total.next() # -> Run  Transaction
-                self.rpmTransactionIsRunning = True # Disable Quit
-                #self.etpbase._runTransaction()
-                self.rpmTransactionIsRunning = False
             self.progress.hide()
             self.endWorking()
             rc = infoMessage( self.ui.main, _( "Packages Processing" ), _( "Packages Processing completed ok" ) )
@@ -713,7 +708,7 @@ if __name__ == "__main__":
         gtkEventThread = ProcessGtkEventsThread()
         gtkEventThread.start()
         gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/spritz-icon.png")
-        mainApp = YumexApplication()
+        mainApp = SpritzApplication()
         gtk.main()
     except SystemExit, e:
         print "Quit by User"

@@ -260,7 +260,7 @@ class YumexProgress:
         self.lastFrac = -1
 
 
-class YumexGUI:
+class SpritzGUI:
     ''' This class contains GUI related methods '''
     def __init__(self, EquoConnection, etpbase):
         self.settings = YumexConf()
