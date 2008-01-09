@@ -422,7 +422,7 @@ class YumexApplication(YumexController,YumexGUI):
         msg = _('Loading information')
         self.setStatus(msg)
         self.progressLog(_('Building Package Lists'))
-        self.addPackages()
+        self.addPackages(bootstrap = True)
         self.progressLog(_('Building Package Lists Completed'))
         # XXX: if we'll re-enable categories listing, uncomment this
         #self.progressLog(_('Building Category Lists'))
@@ -478,8 +478,9 @@ class YumexApplication(YumexController,YumexGUI):
     def setupRepoView(self):
         self.repoView.populate()
 
-    def addPackages(self):
-        self.setPage('output')
+    def addPackages(self, bootstrap = False):
+        if bootstrap:
+            self.setPage('output')
         busyCursor(self.ui.main)
         action = self.lastPkgPB
         if action == 'all':
@@ -509,7 +510,8 @@ class YumexApplication(YumexController,YumexGUI):
         self.progressLog(msg)
         normalCursor(self.ui.main)
         if self.doProgress: self.progress.hide() #Hide Progress
-        self.setPage('packages')
+        if bootstrap:
+            self.setPage('packages')
 
     def addCategoryPackages(self,cat = None):
         msg = _('Package View Population')
@@ -614,7 +616,7 @@ class YumexApplication(YumexController,YumexGUI):
             return rc
         except Errors.YumBaseError, e:
             self.endWorking()
-            errorMessage( self.ui.main, _( "Error" ), _( "Error in Transaction" ), str(e) )   
+            errorMessage( self.ui.main, _( "Error" ), _( "Error in Transaction" ), str(e) )
             self.logger.error(str(e))
             return None
 

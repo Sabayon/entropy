@@ -289,12 +289,14 @@ class YumexGUI:
 
     def setupGUI(self):
         ''' Setup the GUI'''
-        self.ui.main.set_title( "%s %s" % (self.settings.branding_title, const.__spritz_version__) )        
+        self.ui.main.set_title( "%s %s" % (self.settings.branding_title, const.__spritz_version__) )
         self.ui.main.connect( "delete_event", self.quit )
-        self.ui.notebook.set_show_tabs( False )        
+        self.ui.notebook.set_show_tabs( False )
         self.ui.main.present()
         self.setupPageButtons()        # Setup left side toolbar
         self.setPage(self.activePage)
+        # hide All Packages radio button, useless
+        self.ui.rbAll.hide()
         self.setupPkgFilter()
 
     def loggerSetup(self,logroot,loglvl=None):

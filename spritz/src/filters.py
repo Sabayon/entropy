@@ -19,9 +19,8 @@
 
 # Filtering action class
 
-import sre_constants
 import re
-
+import exceptionTools
 
 class YumexFiltering:
     def __init__(self):
@@ -122,7 +121,7 @@ class KeywordFilter(YumexFilter):
     def __init__(self):
         YumexFilter.__init__(self)
         self.reList = []
-        self.fields = ['name', 'summary', 'description']
+        self.fields = ['name', 'description']
 
     def setKeys(self,criteria):
         self.reList = []
@@ -130,9 +129,8 @@ class KeywordFilter(YumexFilter):
             try:
                 crit_re = re.compile(string, flags=re.I)
                 self.reList.append(crit_re)
-            except sre_constants.error, e:
-                raise Errors.MiscError, \
-                 'Search Expression: %s is an invalid Regular Expression.\n' % string
+            except:
+                pass
 
     def getName(self):
         return "KeywordFilter"
