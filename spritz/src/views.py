@@ -221,7 +221,7 @@ class YumexQueueView:
         model.set_sort_column_id( 0, gtk.SORT_ASCENDING )
         self.view.get_selection().set_mode( gtk.SELECTION_MULTIPLE )
         return model
-    
+
     def deleteSelected( self ):
         rmvlist = []
         model, paths = self.view.get_selection().get_selected_rows()
@@ -238,7 +238,6 @@ class YumexQueueView:
             if list:
                 self.queue.packages[action] = filter( f, list )
         self.refresh()
-
 
     def getPkgsFromList( self, rlist ):
         rclist = []

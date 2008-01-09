@@ -18,7 +18,6 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from etpgui.packages import PackageWrapper
-import exceptionTools
 import logging
 import time
 
@@ -64,10 +63,6 @@ class EntropyPackage( PackageWrapper ):
 class EntropyPackages:
     def __init__(self, EquoInstance):
         self.Entropy = EquoInstance
-        try:
-            self.Entropy.instanceTest()
-        except:
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
         self.logger = logging.getLogger('yumex.Packages')
         self.filterCallback = None
         self._packages = {}

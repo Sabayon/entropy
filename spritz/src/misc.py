@@ -158,14 +158,14 @@ class YumexProfile:
         self.proDict = {}
         self.load()
 
-    
+
     def save( self ):
         if self.profiles.has_section('yum-enabled'):
             self.profiles.remove_section('yum-enabled')
         f=open( self.filename, "w" )
         self.profiles.write( f )
         f.close()
-        
+
     def load( self ):
         self.profiles.read( self.filename )
         self.active=self.profiles.get( "main", "LastProfile" )        
@@ -183,9 +183,9 @@ class YumexProfile:
             return None
 
     def writeProfile( self, repos ):
-        self.profiles.remove_section( self.active)    
-        return self.addProfile(self.active, repos )                
-        
+        self.profiles.remove_section( self.active)
+        return self.addProfile(self.active, repos )
+
 
     def getList( self ):
         return self.proDict.keys()
@@ -196,7 +196,7 @@ class YumexProfile:
     def setActive( self, name ):
         if self.profiles.has_section( name ) or name == "yum-enabled":
             self.active = name
-            self.profiles.set( "main", "LastProfile", name )        
+            self.profiles.set( "main", "LastProfile", name )
             self.save()
 
     def addProfile( self, name, repos ):
@@ -210,7 +210,7 @@ class YumexProfile:
         else:
             return False
 
-                
+
 class YumexQueue:
     def __init__(self):
         self.logger = logging.getLogger('yumex.YumexQueue')
@@ -221,6 +221,16 @@ class YumexQueue:
         self.groups = {}
         self.groups['i'] = []
         self.groups['r'] = []
+        self.Entropy = None
+        self.etpbase = None
+        self.pkgView = None
+        self.queueView = None
+
+    def connect_objects(self, EquoConnection, etpbase, pkgView, queueView):
+        self.Entropy = EquoConnection
+        self.etpbase = etpbase
+        self.pkgView = pkgView
+        self.queueView = queueView
 
     def clear( self ):
         del self.packages
@@ -231,23 +241,81 @@ class YumexQueue:
         self.groups = {}
         self.groups['i'] = []
         self.groups['r'] = []
-        
-    def get( self, action = None ):        
+
+    def get( self, action = None ):
         if action == None:
             return self.packages
         else:
             return self.packages[action]
-            
+
     def total(self):
         return len(self.packages['i'])+len(self.packages['u'])+len(self.packages['r'])
-        
-    def add( self, pkg):
-        list = self.packages[pkg.action]
-        if not pkg in list:
-            list.append( pkg )
-        self.packages[pkg.action] = list
 
-    def remove( self, pkg):
+    def add(self, pkg):
+        action = pkg.action
+        if action in ("u","i"): # update/install
+
+            # XXX add support for deep_deps?
+            # XXX handle status
+            tmpqueue = []
+            if not pkg in self.packages[action]:
+                tmpqueue.append( pkg )
+
+            list = [x.matched_atom for x in self.packages[action]+tmpqueue]
+            (runQueue, removalQueue, status) = self.Entropy.retrieveInstallQueue(list,False,False)
+            if status == 0:
+                # runQueue
+                if runQueue:
+                    for dep_pkg in self.etpbase.getPackages('updates')+self.etpbase.getPackages('available'):
+                        for matched_atom in runQueue:
+                            if (dep_pkg.matched_atom == matched_atom) and (dep_pkg not in self.packages[action]):
+                                if str(pkg) != str(dep_pkg):
+                                    dep_pkg.set_select(True)
+                                    dep_pkg.queued = dep_pkg.action
+                                self.packages[action].append(dep_pkg)
+                # removalQueue
+                if removalQueue:
+                    for rem_pkg in self.etpbase.getPackages('installed'):
+                        for matched_atom in removalQueue:
+                            if rem_pkg.matched_atom == (matched_atom,0):
+                                if str(pkg) != str(rem_pkg):
+                                    rem_pkg.set_select(False)
+                                    rem_pkg.queued = rem_pkg.action
+                                self.packages['r'].append(rem_pkg)
+
+            self.queueView.refresh()
+            return status,0
+
+        else: # remove
+
+            # check if it's a system package
+            valid = self.Entropy.validatePackageRemoval(pkg.matched_atom[0])
+            if not valid:
+                pkg.set_select(not pkg.selected)
+                pkg.queued = None
+                return -2,1
+
+            # XXX handle --nodeps
+            # XXX handle status
+            tmpqueue = []
+            if not pkg in self.packages[action]:
+                tmpqueue.append( pkg )
+            list = [x.matched_atom[0] for x in self.packages[action]+tmpqueue]
+
+            removalQueue = self.Entropy.retrieveRemovalQueue(list)
+            if removalQueue:
+                for rem_pkg in self.etpbase.getPackages('installed'):
+                    for matched_atom in removalQueue:
+                        if rem_pkg.matched_atom == (matched_atom,0):
+                            if str(pkg) != str(rem_pkg):
+                                rem_pkg.set_select(False)
+                                rem_pkg.queued = rem_pkg.action
+                            self.packages[action].append(rem_pkg)
+
+            self.queueView.refresh()
+            return 0,1
+
+    def remove(self, pkg):
         list = self.packages[pkg.action]
         if pkg in list:
             list.remove( pkg )
@@ -270,7 +338,7 @@ class YumexQueue:
             if grp in self.groups[action]:
                 return action
         return None
-        
+
     def dump(self):
         self.logger.info(_("Package Queue:"))
         for action in ['install','update','remove']:
@@ -287,7 +355,7 @@ class YumexQueue:
                 self.logger.info(_(" Groups to %s" % action))
                 for grp in list:
                     self.logger.info(" ---> %s " % grp)
-            
+
     def getParser(self):
         cp = YumexQueueFile()
         for action in ['install','update','remove']:

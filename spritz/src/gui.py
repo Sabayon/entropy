@@ -34,7 +34,7 @@ class YumexPackageInfo:
         self.pkgChangeLog = TextViewConsole( self.ui.pkgCLog, font=self.settings.font_pkgdesc, color=self.settings.color_pkgdesc )
         self.pkgOther = TextViewConsole( self.ui.pkgOther, font=self.settings.font_pkgdesc, color=self.settings.color_pkgdesc )
         self.yumbase = None
-        
+
     def clear( self ):
         self.pkgDesc.clear()
         self.pkgInfo.clear()
@@ -223,7 +223,7 @@ class YumexProgress:
 
     def setTotal( self, now, total ):
         self.total.setProgress( now, total )
-    
+
     def set_progress( self, frac, text=None ):
         if self.parent.quitNow:
             self.parent.exitNow()
@@ -262,13 +262,16 @@ class YumexProgress:
 
 class YumexGUI:
     ''' This class contains GUI related methods '''
-    def __init__(self):
+    def __init__(self, EquoConnection, etpbase):
         self.settings = YumexConf()
         self.output = TextViewConsole( self.ui.viewOutput )
         # Package & Queue Views
+        self.Entropy = EquoConnection
+        self.etpbase = etpbase
         self.queue = YumexQueue()
         self.queueView = YumexQueueView(self.ui.queueView,self.queue)
         self.pkgView = EntropyPackageView(self.ui.viewPkg,self.queueView)
+        self.queue.connect_objects(self.Entropy, self.etpbase, self.pkgView, self.queueView)
         #self.catView = YumexCategoryView(self.ui.tvCategory)
         self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
         self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView)

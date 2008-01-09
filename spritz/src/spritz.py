@@ -374,7 +374,8 @@ class YumexApplication(YumexController,YumexGUI):
         YumexController.__init__( self )
         self.yumexOptions = YumexOptions()
         self.yumexOptions.parseCmdOptions()
-        YumexGUI.__init__(self)
+        self.Equo = EquoConnection
+        YumexGUI.__init__(self, self.Equo, self.etpbase)
         self.logger = logging.getLogger("yumex.main")
         # init flags
         self.rpmTransactionIsRunning = False
@@ -392,7 +393,6 @@ class YumexApplication(YumexController,YumexGUI):
         self.catsView.etpbase = self.etpbase
         self.lastPkgPB = "updates"
         self.etpbase.setFilter(filters.yumexFilter.processFilters)
-        self.Equo = EquoConnection
 
         # Setup GUI
         self.setupGUI()
