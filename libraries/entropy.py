@@ -1471,6 +1471,25 @@ class EquoInterface(TextInterface):
             data['removalQueue'] += removal
         return data,status
 
+    def validatePackageRemoval(self, idpackage):
+        system_pkg = self.clientDbconn.isSystemPackage(idpackage)
+        if not system_pkg:
+            return True # valid
+
+        pkgatom = self.clientDbconn.retrieveAtom(idpackage)
+        # check if the package is slotted and exist more than one installed first
+        sysresults = self.clientDbconn.atomMatch(self.entropyTools.dep_getkey(pkgatom), multiMatch = True)
+        slots = set()
+        if sysresults[1] == 0:
+            for x in sysresults[0]:
+                slots.add(self.clientDbconn.retrieveSlot(x))
+            if len(slots) < 2:
+                return False
+            return True # valid
+        else:
+            return False
+
+
     def retrieveRemovalQueue(self, idpackages, deep = False):
         queue = []
         treeview = self.generate_depends_tree(idpackages, deep = deep)

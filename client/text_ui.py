@@ -682,25 +682,17 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         for atomInfo in foundAtoms:
             atomscounter += 1
             idpackage = atomInfo[0]
-            systemPackage = Equo.clientDbconn.isSystemPackage(idpackage)
 
             # get needed info
             pkgatom = Equo.clientDbconn.retrieveAtom(idpackage)
             installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
 
-            if (systemPackage) and (systemPackagesCheck):
-                # check if the package is slotted and exist more than one installed first
-                sysresults = Equo.clientDbconn.atomMatch(Equo.entropyTools.dep_getkey(pkgatom), multiMatch = True)
-                slots = set()
-                if sysresults[1] == 0:
-                    for x in sysresults[0]:
-                        slots.add(Equo.clientDbconn.retrieveSlot(x))
-                    if len(slots) < 2:
-                        print_warning(darkred("   # !!! ")+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+red(" is a vital package. Removal forbidden."))
-                        continue
-                else:
+            if (systemPackagesCheck):
+                valid = Equo.validatePackageRemoval(idpackage)
+                if not valid:
                     print_warning(darkred("   # !!! ")+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+red(" is a vital package. Removal forbidden."))
                     continue
+
             plainRemovalQueue.append(idpackage)
 
             print_info("   # "+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+" | Installed from: "+red(installedfrom))
