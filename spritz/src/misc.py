@@ -300,7 +300,6 @@ class YumexQueue:
                                 rem_pkg.set_select(False)
                                 rem_pkg.queued = rem_pkg.action
                             self.packages['r'].append(rem_pkg)
-        self.queueView.refresh()
         return status
 
     def elaborateRemoval(self, pkgs, list, action, nodeps):
@@ -315,7 +314,6 @@ class YumexQueue:
                             rem_pkg.set_select(False)
                             rem_pkg.queued = rem_pkg.action
                         self.packages[rem_pkg.action].append(rem_pkg)
-        self.queueView.refresh()
 
 
     def checkSystemPackage(self, pkg):
@@ -341,16 +339,15 @@ class YumexQueue:
             for r_pkg in pkgs:
                 if r_pkg in self.packages['u']:
                     self.packages['u'].remove( r_pkg )
-                elif r_pkg in self.packages['i']:
+                if r_pkg in self.packages['i']:
                     self.packages['i'].remove( r_pkg )
             xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']]
-            self.packages['u'] = []
-            self.packages['i'] = []
             status = self.elaborateInstall(pkgs,xlist,action,False)
             for r_pkg in pkgs:
                 if r_pkg in self.packages['u']+self.packages['i']:
                     r_pkg.set_select(not r_pkg.selected)
                     r_pkg.queued = r_pkg.action
+
 
             return status,0
 
@@ -361,7 +358,6 @@ class YumexQueue:
                     self.packages[action[0]].remove( pkgs[0] )
             tmpdata = self.packages[action[0]][:]
             xlist = [x.matched_atom[0] for x in self.packages[action[0]]]
-            self.packages[action[0]] = []
             self.elaborateRemoval(pkgs,xlist,action[0],False)
             for rem_pkg in tmpdata:
                 if rem_pkg not in self.packages[action[0]]:

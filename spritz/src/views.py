@@ -63,6 +63,7 @@ class EntropyPackageView:
         self.store = self.setupView()
         self.queue = qview.queue
         self.queueView = qview
+        self.clearUpdates()
 
     def setupView( self ):
         store = gtk.ListStore( gobject.TYPE_PYOBJECT, str )
@@ -147,11 +148,20 @@ class EntropyPackageView:
 
     def selectAll(self):
         list = [x[0] for x in self.store if not x[0].queued == x[0].action]
+        if not list:
+            return
         for obj in list:
             obj.queued = obj.action
+        self.clearUpdates()
+        self.updates['u'] = self.queue.packages['u'][:]
+        self.updates['i'] = self.queue.packages['i'][:]
+        self.updates['r'] = self.queue.packages['r'][:]
         self.queue.add(list)
         for obj in list:
             obj.set_select( not obj.selected )
+        self.updates['u'] = [x for x in self.queue.packages['u'] if x not in self.updates['u']]
+        self.updates['i'] = [x for x in self.queue.packages['i'] if x not in self.updates['i']]
+        self.updates['r'] = [x for x in self.queue.packages['r'] if x not in self.updates['r']]
         '''
         for el in self.store:
             obj = el[0]
@@ -163,13 +173,25 @@ class EntropyPackageView:
         self.queueView.refresh()
         self.view.queue_draw()
 
+    def clearUpdates(self):
+        self.updates = {}
+        self.updates['u'] = []
+        self.updates['r'] = []
+        self.updates['i'] = []
+
     def deselectAll(self):
         list = [x[0] for x in self.store if x[0].queued == x[0].action]
+        list += [x for x in self.updates['u']+self.updates['i']+self.updates['r'] if x not in list]
+        if not list:
+            return
         for obj in list:
             obj.queued = None
         self.queue.remove(list)
         for obj in list:
+            print str(obj),obj.queued,obj.action,obj.matched_atom
             obj.set_select( not obj.selected )
+        self.clearUpdates()
+        
         '''
         for el in self.store:
             obj = el[0]

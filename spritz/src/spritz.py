@@ -237,9 +237,8 @@ class SpritzController(Controller):
     def on_select_clicked(self,widget):
         ''' Package Add All button handler '''
         if len(self.pkgView.store) > 50:
-            msg = _('You are about to add %s packages\n') % len(self.pkgView.store)
-            msg += _('It will take some time\n')
-            msg += _('do you want to continue ?')
+            msg = _('You are about to add %s packages and their dependencies\n') % len(self.pkgView.store)
+            msg += _('Do you want to continue ?')
             if not questionDialog(self.ui.main,msg):
                 return
         busyCursor(self.ui.main)
@@ -248,10 +247,10 @@ class SpritzController(Controller):
 
     def on_deselect_clicked(self,widget):
         ''' Package Remove All button handler '''
+        self.on_clear_clicked(widget)
         if len(self.pkgView.store) > 50:
-            msg = _('You are about to remove %s packages\n') % len(self.pkgView.store)
-            msg += _('It will take some time\n')
-            msg += _('do you want to continue ?')
+            msg = _('You are about to remove %s packages and their depends\n') % len(self.pkgView.store)
+            msg += _('Do you want to continue ?')
             if not questionDialog(self.ui.main,msg):
                 return
         busyCursor(self.ui.main)

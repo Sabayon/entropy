@@ -293,17 +293,17 @@ class infoDialog:
         self.text = self.xml.get_widget( "msgText" )
         self.dialog.set_modal( True )
         self.set_text( text )
-        
+
     def set_text( self, text ):
         self.text.set_markup( "<span size='large'>%s</span>" % text )
-    
+
     def run( self ):
         self.dialog.show_all()
         return self.dialog.run()
 
     def destroy( self ):
-        return self.dialog.destroy()  
-                 
+        return self.dialog.destroy() 
+
 
 class EntryDialog:
     def __init__( self, parent, title, text ):
@@ -317,7 +317,7 @@ class EntryDialog:
         self.entry = self.xml.get_widget( "inputEntry" )
         self.dialog.set_modal( True )
         self.text.set_text( text )
-        
+
     def run( self ):
         self.dialog.show_all()
         rc = self.dialog.run()
@@ -339,7 +339,7 @@ class AboutDialog(gtk.Window):
 
         self.__is_stopped = True
         self.__scroller_values = ()
-  
+
 
         gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
         self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG)
@@ -437,11 +437,12 @@ def infoMessage( parent, title, text ):
     dlg.destroy()
     return not rc == gtk.RESPONSE_OK
 
-def questionDialog(parent, msg):
+def questionDialog(parent, msg, message_format = _("Hey!")):
     dlg = gtk.MessageDialog(parent=parent,
                             type=gtk.MESSAGE_QUESTION,
-                            buttons=gtk.BUTTONS_YES_NO)
-    dlg.set_markup(cleanMarkupSting(msg))
+                            buttons=gtk.BUTTONS_YES_NO, message_format = message_format)
+    dlg.set_title( _("Spritz Question") )
+    dlg.format_secondary_markup(cleanMarkupSting(msg))
     rc = dlg.run()
     dlg.destroy()
     if rc == gtk.RESPONSE_YES:
@@ -454,6 +455,7 @@ def okDialog(parent, msg):
                             type=gtk.MESSAGE_INFO,
                             buttons=gtk.BUTTONS_OK)
     dlg.set_markup(cleanMarkupSting(msg))
+    dlg.set_title( _("Attention") )
     rc = dlg.run()
     dlg.destroy()
     
