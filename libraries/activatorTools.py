@@ -843,134 +843,134 @@ def syncRemoteDatabases(noUpload = False, justStats = False):
     remoteDbsStatus = getEtpRemoteDatabaseStatus()
     print_info(green(" * ")+red("Remote Entropy Database Repository Status:"))
     for dbstat in remoteDbsStatus:
-	print_info(green("\t Host:\t")+bold(Entropy.entropyTools.extractFTPHostFromUri(dbstat[0])))
-	print_info(red("\t  * Database revision: ")+blue(str(dbstat[1])))
+        print_info(green("\t Host:\t")+bold(Entropy.entropyTools.extractFTPHostFromUri(dbstat[0])))
+        print_info(red("\t  * Database revision: ")+blue(str(dbstat[1])))
 
     # check if the local DB or the revision file exist
     # in this way we can regenerate the db without messing the --initialize function with a new unwanted download
-    if os.path.isfile(etpConst['etpdatabasefilepath']) or os.path.isfile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile']):
-	# file exist, get revision
-	f = open(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'],"r")
-	etpDbLocalRevision = int(f.readline().strip())
-	f.close()
-    else:
-	etpDbLocalRevision = 0
+    etpDbLocalRevision = 0
+    if os.path.isfile(etpConst['etpdatabasefilepath']):
+        # file exist, get revision if we can
+        if os.path.isfile(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile']):
+            f = open(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile'],"r")
+            etpDbLocalRevision = int(f.readline().strip())
+            f.close()
 
     print_info(red("\t  * Database local revision currently at: ")+blue(str(etpDbLocalRevision)))
-    
+
     if (justStats):
-	return
-    
+        return
+
     downloadLatest = []
     uploadLatest = False
     uploadList = []
-    
+
     # if the local DB does not exist, get the latest
     if (etpDbLocalRevision == 0):
-	# seek mirrors
-	latestRemoteDb = []
-	etpDbRemotePaths = []
-	for dbstat in remoteDbsStatus:
-	    if ( dbstat[1] != 0 ):
-		# collect
-		etpDbRemotePaths.append(dbstat)
-	if etpDbRemotePaths == []:
-	    #print "DEBUG: generate and upload"
-	    # (to all!)
-	    uploadLatest = True
-	    uploadList = remoteDbsStatus
-	else:
-	    #print "DEBUG: get the latest ?"
-	    revisions = []
-	    for dbstat in etpDbRemotePaths:
-		revisions.append(dbstat[1])
-	    if len(revisions) > 1:
-		latestrevision = Entropy.entropyTools.alphaSorter(revisions)[len(revisions)-1]
-	    else:
-		latestrevision = revisions[0]
-	    for dbstat in etpDbRemotePaths:
-		if dbstat[1] == latestrevision:
-		    # found !
-		    downloadLatest = dbstat
-		    break
-	    # Now check if we need to upload back the files to the other mirrors
-	    #print "DEBUG: check the others, if they're also updated, quit"
-	    for dbstat in remoteDbsStatus:
-		if (downloadLatest[1] != dbstat[1]):
-		    uploadLatest = True
-		    uploadList.append(dbstat)
+        # seek mirrors
+        latestRemoteDb = []
+        etpDbRemotePaths = []
+        for dbstat in remoteDbsStatus:
+            if ( dbstat[1] != 0 ):
+                # collect
+                etpDbRemotePaths.append(dbstat)
+        if etpDbRemotePaths == []:
+            #print "DEBUG: generate and upload"
+            # (to all!)
+            uploadLatest = True
+            uploadList = remoteDbsStatus
+        else:
+            #print "DEBUG: get the latest ?"
+            revisions = []
+            for dbstat in etpDbRemotePaths:
+                revisions.append(dbstat[1])
+            if len(revisions) > 1:
+                latestrevision = Entropy.entropyTools.alphaSorter(revisions)[len(revisions)-1]
+            else:
+                latestrevision = revisions[0]
+            for dbstat in etpDbRemotePaths:
+                if dbstat[1] == latestrevision:
+                    # found !
+                    downloadLatest = dbstat
+                    break
+            # Now check if we need to upload back the files to the other mirrors
+            #print "DEBUG: check the others, if they're also updated, quit"
+            for dbstat in remoteDbsStatus:
+                if (downloadLatest[1] != dbstat[1]):
+                    uploadLatest = True
+                    uploadList.append(dbstat)
     else:
-	# while if it exists
-	# seek mirrors
-	latestRemoteDb = []
-	etpDbRemotePaths = []
-	for dbstat in remoteDbsStatus:
-	    if ( dbstat[1] != 0 ):
-		# collect
-		etpDbRemotePaths.append(dbstat)
-	if etpDbRemotePaths == []:
-	    #print "DEBUG: upload our version"
-	    uploadLatest = True
-	    # upload to all !
-	    uploadList = remoteDbsStatus
-	else:
-	    #print "DEBUG: get the latest?"
-	    revisions = []
-	    for dbstat in etpDbRemotePaths:
-		revisions.append(str(dbstat[1]))
-	    
-	    latestrevision = int(Entropy.entropyTools.alphaSorter(revisions)[len(revisions)-1])
-	    for dbstat in etpDbRemotePaths:
-		if dbstat[1] == latestrevision:
-		    # found !
-		    latestRemoteDb = dbstat
-		    break
-	    # now compare downloadLatest with our local db revision
-	    if (etpDbLocalRevision < latestRemoteDb[1]):
-		# download !
-		#print "appending a download"
-		downloadLatest = latestRemoteDb
-	    elif (etpDbLocalRevision > latestRemoteDb[1]):
-		# upload to all !
-		uploadLatest = True
-		uploadList = remoteDbsStatus
+        # while if it exists
+        # seek mirrors
+        latestRemoteDb = []
+        etpDbRemotePaths = []
+        for dbstat in remoteDbsStatus:
+            if ( dbstat[1] != 0 ):
+                # collect
+                etpDbRemotePaths.append(dbstat)
+        if etpDbRemotePaths == []:
+            #print "DEBUG: upload our version"
+            uploadLatest = True
+            # upload to all !
+            uploadList = remoteDbsStatus
+        else:
+            #print "DEBUG: get the latest?"
+            revisions = []
+            for dbstat in etpDbRemotePaths:
+                revisions.append(str(dbstat[1]))
 
-	    # If the uploadList is not filled, this means that the other mirror might need an update
-	    if (not uploadLatest):
-	        for dbstat in remoteDbsStatus:
-		    if (latestRemoteDb[1] != dbstat[1]):
-		        uploadLatest = True
-		        uploadList.append(dbstat)
-    
+            latestrevision = int(Entropy.entropyTools.alphaSorter(revisions)[len(revisions)-1])
+            for dbstat in etpDbRemotePaths:
+                if dbstat[1] == latestrevision:
+                    # found !
+                    latestRemoteDb = dbstat
+                    break
+            # now compare downloadLatest with our local db revision
+            if (etpDbLocalRevision < latestRemoteDb[1]):
+                # download !
+                #print "appending a download"
+                downloadLatest = latestRemoteDb
+            elif (etpDbLocalRevision > latestRemoteDb[1]):
+                # upload to all !
+                uploadLatest = True
+                uploadList = remoteDbsStatus
+
+            # If the uploadList is not filled, this means that the other mirror might need an update
+            if (not uploadLatest):
+                for dbstat in remoteDbsStatus:
+                    if (latestRemoteDb[1] != dbstat[1]):
+                        uploadLatest = True
+                        uploadList.append(dbstat)
+
     if (downloadLatest == []) and (not uploadLatest):
-	print_info(green(" * ")+red("Online database does not need to be updated."))
+        print_info(green(" * ")+red("Online database does not need to be updated."))
         return
 
     # now run the selected task!
     if (downloadLatest != []):
-	# match the proper URI
-	for uri in etpConst['activatoruploaduris']:
-	    if downloadLatest[0].startswith(uri):
-		downloadLatest[0] = uri
-	downloadDatabase(downloadLatest[0])
-	
+        # match the proper URI
+        for uri in etpConst['activatoruploaduris']:
+            if downloadLatest[0].startswith(uri):
+                downloadLatest[0] = uri
+        downloadDatabase(downloadLatest[0])
+
     if (uploadLatest) and (not noUpload):
-	print_info(green(" * ")+red("Starting to update the needed mirrors ..."))
-	_uploadList = []
-	for uri in etpConst['activatoruploaduris']:
-	    for xlist in uploadList:
-		if xlist[0].startswith(uri):
-		    _uploadList.append(uri)
-		    break
-	
-	uploadDatabase(_uploadList)
-	print_info(green(" * ")+red("All the mirrors have been updated."))
+        print_info(green(" * ")+red("Starting to update the needed mirrors ..."))
+        _uploadList = []
+        for uri in etpConst['activatoruploaduris']:
+            for xlist in uploadList:
+                if xlist[0].startswith(uri):
+                    _uploadList.append(uri)
+                    break
+
+        uploadDatabase(_uploadList)
+        print_info(green(" * ")+red("All the mirrors have been updated."))
 
     remoteDbsStatus = getEtpRemoteDatabaseStatus()
     print_info(green(" * ")+red("Remote Entropy Database Repository Status:"))
     for dbstat in remoteDbsStatus:
-	print_info(green("\t Host:\t")+bold(Entropy.entropyTools.extractFTPHostFromUri(dbstat[0])))
-	print_info(red("\t  * Database revision: ")+blue(str(dbstat[1])))
+        print_info(green("\t Host:\t")+bold(Entropy.entropyTools.extractFTPHostFromUri(dbstat[0])))
+        print_info(red("\t  * Database revision: ")+blue(str(dbstat[1])))
 
 
 def uploadDatabase(uris):
