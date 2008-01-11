@@ -168,9 +168,9 @@ class etpDatabase(TextInterface):
                             try:
                                 ftp.mkdir(bdir)
                             except Exception, e:
-                                if str(e).find("550") != -1:
-                                    pass
-                                raise
+                                error = str(e)
+                                if error.find("550") == -1 and error.find("File exist") == -1:
+                                    raise
                     ftp.setCWD(etpConst['etpurirelativepath'])
                 if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
                     import time
