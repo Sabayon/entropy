@@ -44,6 +44,9 @@ Text = TextInterface()
    NOTE: if you are interested using it client side, please USE equoTools.Equo() class instead
 '''
 def openClientDatabase(xcache = True, generate = False, indexing = True):
+    # extra check for directory existance
+    if not os.path.isdir(os.path.dirname(etpConst['etpdatabaseclientfilepath'])):
+        os.makedirs(os.path.dirname(etpConst['etpdatabaseclientfilepath']))
     if (not generate) and (not os.path.isfile(etpConst['etpdatabaseclientfilepath'])):
         raise exceptionTools.SystemDatabaseError("SystemDatabaseError: system database not found. Either does not exist or corrupted.")
     else:
@@ -79,7 +82,16 @@ def openServerDatabase(readOnly = True, noUpload = True):
     conn = etpDatabase(readOnly = readOnly, dbFile = etpConst['etpdatabasefilepath'], noUpload = noUpload)
     # verify if we need to update the database to sync with portage updates, we just ignore being readonly in the case
     if not etpConst['treeupdatescalled']:
-        conn.serverUpdatePackagesData()
+        # sometimes, when filling a new server db, we need to avoid tree updates
+        valid = True
+        try:
+            conn.validateDatabase()
+        except exceptionTools.SystemDatabaseError:
+            valid = False
+        if valid:
+            conn.serverUpdatePackagesData()
+        else:
+            Text.updateProgress(red("Entropy database is probably empty. If you don't agree with what I'm saying, then it's probably corrupted! I won't stop you here btw..."), importance = 1, type = "info", header = red(" * "))
     return conn
 
 '''

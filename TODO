@@ -11,6 +11,7 @@ TODO list:
     - empty_deps and branch switching support to Updates list
     - show progress when calculating updates
     - re-do error notification stuff
+    - ability to mark packages for reinstall
 
 Project Status:
 - reagent: complete.

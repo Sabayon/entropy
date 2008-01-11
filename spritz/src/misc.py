@@ -48,15 +48,15 @@ class const:
         PIXMAPS_PATH = '/usr/share/pixmaps/spritz'
     else:
         PIXMAPS_PATH = MAIN_PATH+'/../gfx'
-    
+
     # package categories
     PACKAGE_CATEGORIES = [
         "None",
         "Groups",
         "RPM Groups",
-        "Age"]   
-        
-    YUM_PID_FILE = '/var/run/yum.pid'
+        "Age"]
+
+    YUM_PID_FILE = '/var/run/equo.pid'
     DAY_IN_SECONDS = 86400
     # Page -> Notebook page numbers
     PAGE_REPOS = 0

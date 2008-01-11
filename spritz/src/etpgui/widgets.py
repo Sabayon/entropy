@@ -22,12 +22,100 @@ import pango
 import etpgui
 import gobject
 import types
+import sys
+from misc import const
+
+class gtkoutfile:
+    """
+    A fake output file object.  It sends output to a GTK TextView widget,
+    and if asked for a file number, returns one set on instance creation
+    """
+
+    def __init__(self, console, fn, font):
+        self.fn = fn
+        self.console = console
+        self.font = font
+
+    def close(self):
+        pass
+
+    def flush(self):
+        self.close()
+
+    def fileno(self):
+        return self.fn
+
+    def isatty(self):
+        return False
+
+    def read(self, a):
+        return ''
+
+    def readline(self):
+        return ''
+
+    def readlines(self):
+        return []
+
+    def write(self, s):
+        self.console.write (s, self.font)
+
+    def writelines(self, l):
+        for s in l:
+            self.console.write (s, self.font)
+
+    def seek(self, a):
+        raise IOError, (29, 'Illegal seek')
+
+    def tell(self):
+        raise IOError, (29, 'Illegal seek')
+
+    def truncate(self):
+        self.tell()
+
+
+# =============================================================================
+class gtkinfile:
+    """
+    A fake input file object.  It receives input from a GTK TextView widget,
+    and if asked for a file number, returns one set on instance creation
+    """
+
+    def __init__(self, console, fn):
+        self.fn = fn
+        self.console = console
+    def close(self): pass
+    flush = close
+    def fileno(self):    return self.fn
+    def isatty(self):    return False
+    def read(self, a):   return self.readline()
+    def readline(self):
+        self.console.input_mode = True
+        while self.console.input_mode:
+            while gtk.events_pending():
+                gtk.main_iteration()
+        s = self.console.input
+        self.console.input = ''
+        return s+'\n'
+    def readlines(self): return []
+    def write(self, s):  return None
+    def writelines(self, l): return None
+    def seek(self, a):   raise IOError, (29, 'Illegal seek')
+    def tell(self):      raise IOError, (29, 'Illegal seek')
+    truncate = tell
+
 
 class TextViewConsole:
     '''  Encapsulate a gtk.TextView'''
     def __init__(self,textview,default_style=None,font=None,color=None):
         self.textview = textview
         self.buffer = self.textview.get_buffer()
+
+        # Setup hooks for standard output.
+        self.stdout = gtkoutfile (self, sys.stdout.fileno(), 'normal')
+        self.stderr = gtkoutfile (self, sys.stderr.fileno(), 'error')
+        self.stdin  = gtkinfile (self, sys.stdin.fileno())
+
         self.endMark = self.buffer.create_mark( "End", self.buffer.get_end_iter(), False )
         self.startMark = self.buffer.create_mark( "Start", self.buffer.get_start_iter(), False )
         #setup styles.
@@ -74,12 +162,12 @@ class TextViewConsole:
         self.buffer.get_tag_table().add( self.style_ps2 )
         self.buffer.get_tag_table().add( self.style_out )
         self.buffer.get_tag_table().add( self.style_err )
-        
+
         if default_style:
             self.default_style=default_style
         else:
             self.default_style=self.style_ps1
-    
+
     def changeStyle(self,color,font,style=None):
         if not style:
             self.default_style.set_property( "foreground", color )
@@ -87,7 +175,9 @@ class TextViewConsole:
         else:
             style.set_property( "foreground", color )
             style.set_property( "font", font )
-    
+
+
+
     def write_line( self, txt, style=None):
         """ write a line to button of textview and scoll to end
         @param txt: Text to write to textview
@@ -101,6 +191,18 @@ class TextViewConsole:
         else:
             self.buffer.insert_with_tags( end, txt, style )
         self.textview.scroll_to_iter( self.buffer.get_end_iter(), 0.0 )
+
+    def write(self, txt):
+        self.write_line(txt)
+
+    def isatty(self):
+        return False
+
+    def fileno(self):
+        return 1
+
+    def flush(self):
+        return
 
     def _toUTF( self, txt ):
         rc=""

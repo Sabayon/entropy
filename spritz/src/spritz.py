@@ -31,7 +31,7 @@ sys.path.append("/usr/lib/entropy/client")
 from entropyConstants import *
 import exceptionTools
 from packages import EntropyPackages
-from entropyapi import EquoConnection
+from entropyapi import EquoConnection,QueueExecutor
 
 # GTK Imports
 import gtk,gobject
@@ -163,12 +163,6 @@ class SpritzController(Controller):
         if self.queue.total() == 0: # Check there are any packages in the queue
             self.setStatus(_('No packages in queue'))
             return
-        self.queue.dump()
-        fn = '/tmp/last-queue.spritz'
-        cp = self.queue.getParser()
-        fp = open(fn,"w")
-        cp.save(fp)
-        fp.close()
 
         rc = self.processPackageQueue(self.queue.packages)
         if rc:
@@ -401,7 +395,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.setupRepoView()
         self.firstTime = True
         # calculate updates
-        self.Equo.connect_to_gui(self.progress, self.progressLogWrite)
+        self.Equo.connect_to_gui(self.progress, self.progressLogWrite, self.output)
         self.setupSpritz()
 
     def startWorking(self):
@@ -566,16 +560,29 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
     def processPackageQueue( self, pkgs, doAll=False):
         """ Workflow for processing package queue """
-        self.setStatus( _( "Preparing for install/remove/update" ) )
-        self.progress.total.setup( const.PACKAGE_PROGRESS_STEPS )
+        self.setStatus( _( "Running tasks" ) )
         total = len( pkgs['i'] )+len( pkgs['u'] )+len( pkgs['r'] )
+        self.progress.total.setup( range(total*2+1) )
         state = True
         quit = False
         if total > 0:
             self.startWorking()
             self.progress.show()
             self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
-            self.progress.hide()
+
+            # calculate removal (again)
+
+            # XXX handle return codes
+            # calculate install+update (again)
+            queue = pkgs['i']+pkgs['u']
+            install_queue = [x.matched_atom for x in queue]
+            removal_queue = [x.matched_atom[0] for x in pkgs['r']]
+            if install_queue or removal_queue:
+                controller = QueueExecutor(self)
+                e,i = controller.run(install_queue, removal_queue)
+                print e,i
+            self.endWorking()
+            #self.progress.hide()
             if quit:
                 return "QUIT"
             return state

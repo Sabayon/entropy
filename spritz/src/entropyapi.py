@@ -32,13 +32,121 @@ from entropy import EquoInterface, urlFetcher
 
 '''
 
+class QueueExecutor:
+    def __init__(self, SpritzApplication):
+        self.Spritz = SpritzApplication
+        self.Entropy = SpritzApplication.Equo
+
+    def run(self, install_queue, removal_queue):
+        removalQueue = []
+        if install_queue:
+            runQueue, removalQueue, status = self.Entropy.retrieveInstallQueue(install_queue,False,False)
+            removalQueue = [(x,True) for x in removalQueue]
+            # XXX handle status
+        if removal_queue:
+            removalQueue += [(x,False) for x in removal_queue if (x,True) not in removalQueue]
+
+        # first fetch all
+        totalqueue = len(runQueue)
+        fetchqueue = 0
+        for packageInfo in runQueue:
+            fetchqueue += 1
+            Package = self.Entropy.Package()
+            Package.prepare(packageInfo,"fetch")
+            self.Entropy.updateProgress(
+                                            "Fetching: "+Package.infoDict['atom'],
+                                            importance = 2,
+                                            count = (fetchqueue,totalqueue)
+                                        )
+            # XXX handle status
+            rc = Package.run()
+            if rc != 0:
+                self.close_stdout_stderr()
+                return -1,rc
+            Package.kill()
+            del Package
+            self.Entropy.cycleDone()
+
+        self.open_stdout_stderr()
+        # then removalQueue
+        totalremovalqueue = len(removalQueue)
+        currentremovalqueue = 0
+        for rem_data in removalQueue:
+            idpackage = rem_data[0]
+            currentremovalqueue += 1
+
+            metaopts = {}
+            metaopts['removeconfig'] = rem_data[1]
+            Package = self.Entropy.Package()
+            Package.prepare((idpackage,),"remove", metaopts)
+
+            self.Entropy.updateProgress(
+                                            "Removing: "+Package.infoDict['removeatom'],
+                                            importance = 2,
+                                            count = (currentremovalqueue,totalremovalqueue)
+                                        )
+
+            # XXX handle status
+            rc = Package.run()
+            if rc != 0:
+                self.close_stdout_stderr()
+                return -1,rc
+
+            Package.kill()
+            del metaopts
+            del Package
+
+        # then runQueue
+        totalqueue = len(runQueue)
+        currentqueue = 0
+        for packageInfo in runQueue:
+            currentqueue += 1
+
+            metaopts = {}
+            metaopts['removeconfig'] = False
+            Package = self.Entropy.Package()
+            Package.prepare(packageInfo,"install", metaopts)
+
+            self.Entropy.updateProgress(
+                                            "Installing: "+Package.infoDict['atom'],
+                                            importance = 2,
+                                            count = (currentqueue,totalqueue)
+                                        )
+
+            # XXX handle status
+            rc = Package.run()
+            if rc != 0:
+                self.close_stdout_stderr()
+                return -1,rc
+
+            Package.kill()
+            del metaopts
+            del Package
+
+        self.close_stdout_stderr()
+        return 0,0
+
+
+    def open_stdout_stderr(self):
+        # redirecting stdout,stderr to the viewOutput
+        sys.stdout, self.Entropy.output.stdout = self.Entropy.output.stdout, sys.stdout
+        sys.stderr, self.Entropy.output.stderr = self.Entropy.output.stderr, sys.stderr
+        sys.stdin,  self.Entropy.output.stdin  = self.Entropy.output.stdin,  sys.stdin
+
+    def close_stdout_stderr(self):
+        # do the contrary
+        sys.stdout, self.Entropy.output.stdout = self.Entropy.output.stdout, sys.stdout
+        sys.stderr, self.Entropy.output.stderr = self.Entropy.output.stderr, sys.stderr
+        sys.stdin,  self.Entropy.output.stdin  = self.Entropy.output.stdin,  sys.stdin
+
 class Equo(EquoInterface):
 
-    def connect_to_gui(self, progress, progressLog):
+    def connect_to_gui(self, progress, progressLog, viewOutput):
         self.progress = progress
         self.urlFetcher = GuiUrlFetcher
         self.nocolor()
         self.progressLog = progressLog
+        self.output = viewOutput
 
     def updateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
 

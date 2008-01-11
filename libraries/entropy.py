@@ -36,10 +36,12 @@ class EquoInterface(TextInterface):
 
     '''
         @input indexing(bool): enable/disable database tables indexing
-        @input noclientdb(bool): if enabled, client database non-existance will be ignored
+        @input noclientdb(int/bool): 0 (or False): normal operation, every check on the client db will be done
+                                1 (or True): openClientDatabase won't raise an exception if client database does not exist
+                                2: client database won't be opened at all
         @input xcache(bool): enable/disable database caching
     '''
-    def __init__(self, indexing = True, noclientdb = False, xcache = True):
+    def __init__(self, indexing = True, noclientdb = 0, xcache = True):
 
         # Logging initialization
         import logTools
@@ -58,9 +60,18 @@ class EquoInterface(TextInterface):
                              # and reimplement updateProgress
         self.FtpInterface = FtpInterface # for convenience
         self.indexing = indexing
-        self.noclientdb = noclientdb
+        self.noclientdb = False
+        self.openclientdb = True
+        if not noclientdb:
+            self.noclientdb = False
+        elif noclientdb == True:
+            self.noclientdb = True
+        else:
+            self.noclientdb = True
+            self.openclientdb = False
         self.xcache = xcache
-        self.openClientDatabase()
+        if self.openclientdb:
+            self.openClientDatabase()
         self.FileUpdates = self.__FileUpdates()
         self.repoDbCache = {}
 
