@@ -25,7 +25,7 @@ from serverConstants import *
 from outputTools import *
 import exceptionTools
 from entropy import EquoInterface
-Entropy = EquoInterface(noclientdb = True)
+Entropy = EquoInterface(noclientdb = 2)
 
 # Logging initialization
 import logTools

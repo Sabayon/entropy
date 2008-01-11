@@ -62,11 +62,11 @@ class EquoInterface(TextInterface):
         self.indexing = indexing
         self.noclientdb = False
         self.openclientdb = True
-        if not noclientdb:
+        if noclientdb in (False,0):
             self.noclientdb = False
-        elif noclientdb == True:
+        elif noclientdb in (True,1):
             self.noclientdb = True
-        else:
+        elif noclientdb == 2:
             self.noclientdb = True
             self.openclientdb = False
         self.xcache = xcache
