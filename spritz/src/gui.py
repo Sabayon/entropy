@@ -20,7 +20,7 @@
 from etpgui import *
 from misc import YumexQueue,YumexConf,const,cleanMarkupSting
 from views import *
-from etpgui.widgets import TextViewConsole
+from etpgui.widgets import TextViewConsole, SpritzConsole
 from i18n import _
 
 
@@ -196,7 +196,6 @@ class YumexProgress:
     """ Progress Class """
     def __init__( self, ui, set_page_func,parent ):
         self.ui = ui
-        #self.output = TextViewConsole( self.ui.viewOutput )
         self.set_page_func = set_page_func
         self.parent = parent
         self.ui.progressMainLabel.set_text( "" )
@@ -264,7 +263,6 @@ class SpritzGUI:
     ''' This class contains GUI related methods '''
     def __init__(self, EquoConnection, etpbase):
         self.settings = YumexConf()
-        self.output = TextViewConsole( self.ui.viewOutput )
         # Package & Queue Views
         self.Entropy = EquoConnection
         self.etpbase = etpbase
@@ -288,7 +286,7 @@ class SpritzGUI:
         # Package Radiobuttons
         self.packageRB = {}
         self.lastPkgPB = 'updates'
-        self.tooltip =  gtk.Tooltips()   
+        self.tooltip =  gtk.Tooltips()
 
     def setupGUI(self):
         ''' Setup the GUI'''
@@ -298,6 +296,17 @@ class SpritzGUI:
         self.ui.main.present()
         self.setupPageButtons()        # Setup left side toolbar
         self.setPage(self.activePage)
+
+        # put self.console in place
+        self.console = SpritzConsole()
+        self.console.set_scrollback_lines(1024)
+        self.console.set_scroll_on_output(True)
+        #self.console.connect("button-press-event", self.cb_right_click)
+        termScroll = gtk.VScrollbar(self.console.get_adjustment())
+        self.ui.vteBox.pack_start(self.console, True, True)
+        self.ui.termScrollBox.pack_start(termScroll, False)
+        self.ui.termHBox.show_all()
+
         # hide All Packages radio button, useless
         self.ui.rbAll.hide()
         self.setupPkgFilter()
@@ -332,10 +341,6 @@ class SpritzGUI:
         self.createButton( _( "Output View" ), "button-output.png", 'output' )    
         style = self.ui.leftEvent.get_style()
 
-        # Set the background of the horisontal buttonbar to the same as the views.
-        # To make it look good on other than default gtk themes.
-        style = self.ui.viewOutput.get_style()
-        self.ui.leftEvent.modify_bg( gtk.STATE_NORMAL, style.base[0])
         # Setup Page Icons
         self.ui.pageImage0.set_from_file ( const.PIXMAPS_PATH + '/button-repo.png' )
         self.ui.pageImage3.set_from_file ( const.PIXMAPS_PATH + '/button-group.png' )

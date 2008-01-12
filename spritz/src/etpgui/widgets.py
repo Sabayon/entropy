@@ -24,85 +24,18 @@ import gobject
 import types
 import sys
 from misc import const
+import vte
 
-class gtkoutfile:
-    """
-    A fake output file object.  It sends output to a GTK TextView widget,
-    and if asked for a file number, returns one set on instance creation
-    """
+# XXX hook font and colors ?
+class SpritzConsole(vte.Terminal):
 
-    def __init__(self, console, fn, font):
-        self.fn = fn
-        self.console = console
-        self.font = font
+    def __init__(self, default_style = None):
+        vte.Terminal.__init__(self)
+        #if defaulty_style:
+            #self.console.set_font_from_string(self.cfg.get("consolefont", "GTK"))
 
-    def close(self):
-        pass
-
-    def flush(self):
-        self.close()
-
-    def fileno(self):
-        return self.fn
-
-    def isatty(self):
-        return False
-
-    def read(self, a):
-        return ''
-
-    def readline(self):
-        return ''
-
-    def readlines(self):
-        return []
-
-    def write(self, s):
-        self.console.write (s, self.font)
-
-    def writelines(self, l):
-        for s in l:
-            self.console.write (s, self.font)
-
-    def seek(self, a):
-        raise IOError, (29, 'Illegal seek')
-
-    def tell(self):
-        raise IOError, (29, 'Illegal seek')
-
-    def truncate(self):
-        self.tell()
-
-
-# =============================================================================
-class gtkinfile:
-    """
-    A fake input file object.  It receives input from a GTK TextView widget,
-    and if asked for a file number, returns one set on instance creation
-    """
-
-    def __init__(self, console, fn):
-        self.fn = fn
-        self.console = console
-    def close(self): pass
-    flush = close
-    def fileno(self):    return self.fn
-    def isatty(self):    return False
-    def read(self, a):   return self.readline()
-    def readline(self):
-        self.console.input_mode = True
-        while self.console.input_mode:
-            while gtk.events_pending():
-                gtk.main_iteration()
-        s = self.console.input
-        self.console.input = ''
-        return s+'\n'
-    def readlines(self): return []
-    def write(self, s):  return None
-    def writelines(self, l): return None
-    def seek(self, a):   raise IOError, (29, 'Illegal seek')
-    def tell(self):      raise IOError, (29, 'Illegal seek')
-    truncate = tell
+    def reset (self):
+        vte.Terminal.reset(self, True, True)
 
 
 class TextViewConsole:
@@ -110,11 +43,6 @@ class TextViewConsole:
     def __init__(self,textview,default_style=None,font=None,color=None):
         self.textview = textview
         self.buffer = self.textview.get_buffer()
-
-        # Setup hooks for standard output.
-        self.stdout = gtkoutfile (self, sys.stdout.fileno(), 'normal')
-        self.stderr = gtkoutfile (self, sys.stderr.fileno(), 'error')
-        self.stdin  = gtkinfile (self, sys.stdin.fileno())
 
         self.endMark = self.buffer.create_mark( "End", self.buffer.get_end_iter(), False )
         self.startMark = self.buffer.create_mark( "Start", self.buffer.get_start_iter(), False )
@@ -192,18 +120,6 @@ class TextViewConsole:
             self.buffer.insert_with_tags( end, txt, style )
         self.textview.scroll_to_iter( self.buffer.get_end_iter(), 0.0 )
 
-    def write(self, txt):
-        self.write_line(txt)
-
-    def isatty(self):
-        return False
-
-    def fileno(self):
-        return 1
-
-    def flush(self):
-        return
-
     def _toUTF( self, txt ):
         rc=""
         if isinstance(txt,types.UnicodeType):
@@ -214,26 +130,25 @@ class TextViewConsole:
             except UnicodeDecodeError, e:
                 rc = unicode( txt, 'iso-8859-1' )
             return rc
-            
 
     def clear(self):
         self.buffer.set_text('')
-        
+
     def goTop(self):
         self.textview.scroll_to_iter( self.buffer.get_start_iter(), 0.0 )
-        
-    
 
-#        
+
+
+#
 # These classes come from the article
 # http://www.linuxjournal.com/article/4702
 #
 # They have been modified a little to support domain
-#       
-        
+#
+
 class UI(gtk.glade.XML):
     """Base class for UIs loaded from glade."""
-    
+
     def __init__(self, filename, rootname,domain=None):
         """Initialize a new instance.
         `filename' is the name of the .glade file containing the UI hierarchy.
@@ -253,7 +168,7 @@ class UI(gtk.glade.XML):
         if result is None:
             raise AttributeError("Can't find widget %s in %s.\n" %
                                  (`name`, `self.filename`))
-        
+
         # Cache the widget to speed up future lookups.  If multiple
         # widgets in a hierarchy have the same name, the lookup
         # behavior is non-deterministic just as for libglade.

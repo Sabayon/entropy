@@ -40,7 +40,7 @@ import packages
 
 class const:
     ''' This Class contains all the Constants in Yumex'''
-    __spritz_version__   = "0.1"
+    __spritz_version__   = "0.2"
     # Paths
     MAIN_PATH = os.path.abspath( os.path.dirname( sys.argv[0] ) );
     GLADE_FILE = MAIN_PATH+'/spritz.glade'
@@ -665,8 +665,57 @@ class YumexOptions:
 def cleanMarkupSting(msg):
     msg = str(msg) # make sure it is a string
     msg = gobject.markup_escape_text(msg)
-    #msg = msg.replace('@',' AT ')                        
-    #msg = msg.replace('<','[')                        
-    #msg = msg.replace('>',']')                        
+    #msg = msg.replace('@',' AT ')
+    #msg = msg.replace('<','[')
+    #msg = msg.replace('>',']')
     return msg
-    
+
+class fakeoutfile:
+    """
+    A fake output file object.  It sends output to a GTK TextView widget,
+    and if asked for a file number, returns one set on instance creation
+    """
+
+    def __init__(self, fn):
+        self.fn = fn
+
+    def close(self):
+        pass
+
+    def flush(self):
+        self.close()
+
+    def fileno(self):
+        return self.fn
+
+    def isatty(self):
+        return False
+
+    def read(self, a):
+        return ''
+
+    def readline(self):
+        return ''
+
+    def readlines(self):
+        return []
+
+    def write(self, s):
+        os.write(self.fn,s)
+        #sys.stdout.write(s+"\n")
+
+    def write_line(self, s):
+        self.write(s)
+
+    def writelines(self, l):
+        for s in l:
+            self.write(s)
+
+    def seek(self, a):
+        raise IOError, (29, 'Illegal seek')
+
+    def tell(self):
+        raise IOError, (29, 'Illegal seek')
+
+    def truncate(self):
+        self.tell()

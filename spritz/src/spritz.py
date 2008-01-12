@@ -18,7 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 # Base Python Imports
-import sys,os
+import sys, os, pty
 import logging
 import traceback
 
@@ -46,7 +46,7 @@ from etpgui import *
 import filters
 from gui import SpritzGUI
 from dialogs import *
-from misc import const, YumexOptions, YumexProfile
+from misc import const, YumexOptions, YumexProfile, fakeoutfile
 from i18n import _
 import time
 
@@ -61,6 +61,11 @@ class SpritzController(Controller):
         ui = UI( const.GLADE_FILE , 'main', 'yumex' )
         # init the Controller Class to connect signals.
         Controller.__init__( self, ui )
+
+        self.pty = pty.openpty()
+        self.output = fakeoutfile(self.pty[1])
+        sys.stdout = self.output
+        sys.stderr = self.output
 
 
     def quit(self, widget=None, event=None ):
@@ -388,15 +393,18 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
         # Setup GUI
         self.setupGUI()
+
         self.logger.info(_('GUI Setup Completed'))
-        # XXX
-        #self.profile = YumexProfile()
         # setup Repositories
         self.setupRepoView()
         self.firstTime = True
         # calculate updates
         self.Equo.connect_to_gui(self.progress, self.progressLogWrite, self.output)
         self.setupSpritz()
+
+        self.console.set_pty(self.pty[0])
+        # setup pty
+
 
     def startWorking(self):
         self.isWorking = True

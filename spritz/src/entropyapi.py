@@ -61,13 +61,11 @@ class QueueExecutor:
             # XXX handle status
             rc = Package.run()
             if rc != 0:
-                self.close_stdout_stderr()
                 return -1,rc
             Package.kill()
             del Package
             self.Entropy.cycleDone()
 
-        self.open_stdout_stderr()
         # then removalQueue
         totalremovalqueue = len(removalQueue)
         currentremovalqueue = 0
@@ -89,7 +87,6 @@ class QueueExecutor:
             # XXX handle status
             rc = Package.run()
             if rc != 0:
-                self.close_stdout_stderr()
                 return -1,rc
 
             Package.kill()
@@ -116,28 +113,14 @@ class QueueExecutor:
             # XXX handle status
             rc = Package.run()
             if rc != 0:
-                self.close_stdout_stderr()
                 return -1,rc
 
             Package.kill()
             del metaopts
             del Package
 
-        self.close_stdout_stderr()
         return 0,0
 
-
-    def open_stdout_stderr(self):
-        # redirecting stdout,stderr to the viewOutput
-        sys.stdout, self.Entropy.output.stdout = self.Entropy.output.stdout, sys.stdout
-        sys.stderr, self.Entropy.output.stderr = self.Entropy.output.stderr, sys.stderr
-        sys.stdin,  self.Entropy.output.stdin  = self.Entropy.output.stdin,  sys.stdin
-
-    def close_stdout_stderr(self):
-        # do the contrary
-        sys.stdout, self.Entropy.output.stdout = self.Entropy.output.stdout, sys.stdout
-        sys.stderr, self.Entropy.output.stderr = self.Entropy.output.stderr, sys.stderr
-        sys.stdin,  self.Entropy.output.stdin  = self.Entropy.output.stdin,  sys.stdin
 
 class Equo(EquoInterface):
 
