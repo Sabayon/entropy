@@ -7,11 +7,14 @@ TODO list:
   - separate packages by license restrictions (find a way?)
 
   Spritz:
+    - add add/remove repositories buttons menu
+    - add branch switching menu+stuff
     - wrap root password request
     - empty_deps and branch switching support to Updates list
     - ability to mark packages for reinstall
     - handle queue errors
     - handle config files stuff
+    - when choosing a package that is a multipackage one, mark the installed one for removal?
     - clear some cache after running packages install
 
 Project Status:

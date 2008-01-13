@@ -1362,7 +1362,7 @@ class EquoInterface(TextInterface):
         count = 0
         for idpackage in idpackages:
             count += 1
-            self.updateProgress("Calculating world dependencies", importance = 0, type = "info", back = True, header = "::", count = (count,maxlen), percent = True, footer = "::")
+            self.updateProgress("Calculating world dependencies", importance = 0, type = "info", back = True, header = "::", count = (count,maxlen), percent = True, footer = " ::")
             tainted = False
             myscopedata = self.clientDbconn.getScopeData(idpackage)
             #atom = myscopedata[0]
@@ -1390,6 +1390,13 @@ class EquoInterface(TextInterface):
                     needed = self.clientDbconn.retrieveNeeded(idpackage)
                     if needed != aneeded:
                         tainted = True
+                    else:
+                        # check use flags too
+                        # it helps for the same reason above and when doing upgrades to different branches
+                        auseflags = adbconn.retrieveUseflags(match[0])
+                        useflags = self.clientDbconn.retrieveUseflags(idpackage)
+                        if auseflags != useflags:
+                            tainted = True
                 elif (empty_deps):
                     tainted = True
             if (tainted):

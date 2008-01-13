@@ -1567,7 +1567,6 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
             else:
                 tar.addfile(tarinfo)
 
-    tar.flush()
     tar.close()
 
     # appending xpak metadata
