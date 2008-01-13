@@ -1291,11 +1291,13 @@ class EquoInterface(TextInterface):
 
         if self.xcache:
             repo_digest = self.all_repositories_checksum()
+            client_digest = self.clientDbconn.tablesChecksum()
             disk_cache = self.dumpTools.loadobj(etpCache['world_available'])
             try:
                 if disk_cache != None:
                     if disk_cache['repo_digest'] == repo_digest and \
-                        disk_cache['branch'] == branch:
+                        disk_cache['branch'] == branch and \
+                        disk_cache['client_digest'] == client_digest:
                         return disk_cache['available']
             except:
                 try:
@@ -1324,6 +1326,7 @@ class EquoInterface(TextInterface):
             try:
                 mycache = {}
                 mycache['repo_digest'] = repo_digest
+                mycache['client_digest'] = client_digest
                 mycache['available'] = available.copy()
                 mycache['branch'] = branch
                 # save cache

@@ -248,9 +248,7 @@ class SpritzQueue:
         removalQueue = self.Entropy.retrieveRemovalQueue(list)
         if removalQueue:
             for rem_pkg in self.etpbase.getPackages('installed'):
-                print rem_pkg
                 for matched_atom in removalQueue:
-                    print matched_atom
                     if rem_pkg.matched_atom == (matched_atom,0):
                         if rem_pkg not in pkgs:
                             rem_pkg.set_select(False)

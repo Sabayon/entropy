@@ -39,6 +39,7 @@ class QueueExecutor:
 
     def run(self, install_queue, removal_queue):
         removalQueue = []
+        runQueue = []
         if install_queue:
             runQueue, removalQueue, status = self.Entropy.retrieveInstallQueue(install_queue,False,False)
             removalQueue = [(x,True) for x in removalQueue]
@@ -149,7 +150,7 @@ class Equo(EquoInterface):
             if len(count) < 2:
                 import exceptionTools
                 raise exceptionTools.IncorrectParameter("IncorrectParameter: count length must be >= 2")
-            count_str = " (%s/%s) " % (str(count[0]),str(count[1]),)
+            count_str = "(%s/%s) " % (str(count[0]),str(count[1]),)
             if importance == 0:
                 progress_text = text
             else:

@@ -525,6 +525,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
             pkgs = self.etpbase.getPackages(flt)
             #self.progressLog(_('Found %d %s') % (len(pkgs),flt))
             allpkgs.extend(pkgs)
+            self.setStatus(_("Ready"))
         if self.doProgress: self.progress.total.next() # -> Sort Lists
         allpkgs.sort()
         self.ui.viewPkg.set_model(None)
