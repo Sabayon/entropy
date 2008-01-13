@@ -99,3 +99,5 @@ class CommandNotFound(EntropyException):
 class EntropyPackageException(EntropyException):
         """Malformed or missing package data"""
 
+class SystemError(EntropyException):
+        """General System Error"""

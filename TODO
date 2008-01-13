@@ -1,4 +1,5 @@
 TODO list:
+  - filterSatisfiedDependencies: add USE flags check
   - migrate server code to ServerInterface
   - Community repositories
   - find a way to better handle real smartapps deps (need split PDEPEND?)
@@ -10,8 +11,9 @@ TODO list:
     - add forceUpdate option to repo sync
     - empty_deps and branch switching support to Updates list
     - show progress when calculating updates
-    - re-do error notification stuff
     - ability to mark packages for reinstall
+    - handle queue errors
+    - handle config files stuff
 
 Project Status:
 - reagent: complete.

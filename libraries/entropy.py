@@ -283,7 +283,12 @@ class EquoInterface(TextInterface):
                                         ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
             self.atomMatch(depend)
 
-        self.calculate_world_updates()
+        # we can barely ignore any exception from here
+        # especially cases where client db does not exist
+        try:
+            self.calculate_world_updates()
+        except:
+            pass
 
         self.updateProgress(darkred("Dependencies cache filled."), importance = 2, type = "warning")
         self.save_cache()

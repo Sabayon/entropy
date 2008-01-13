@@ -23,14 +23,17 @@
 from entropyConstants import *
 import entropyTools
 from outputTools import *
-# FIXME: add more python db apis
+import exceptionTools
+Text = TextInterface()
 try: # try with sqlite3 from python 2.5 - default one
     from sqlite3 import dbapi2
 except ImportError: # fallback to embedded pysqlite
-    from pysqlite2 import dbapi2
+    try:
+        from pysqlite2 import dbapi2
+    except ImportError:
+        raise exceptionTools.SystemError("Entropy needs sqlite+pysqlite or Python compiled with sqlite support. Cannot continue.")
 import dumpTools
-import exceptionTools
-Text = TextInterface()
+
 
 
 ############

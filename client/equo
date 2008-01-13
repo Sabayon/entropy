@@ -305,7 +305,13 @@ try:
     sys.exit(rc)
 except exceptionTools.SystemDatabaseError:
     print_error(darkred(" * ")+red("Installed Packages Database not found or is corrupted. Please generate it using 'equo database' tools"))
-    sys.exit(100)
+    sys.exit(101)
+except exceptionTools.OnlineMirrorError, e:
+    print_error(darkred(" * ")+red(str(e)+". Cannot continue."))
+    sys.exit(101)
+except exceptionTools.RepositoryError, e:
+    print_error(darkred(" * ")+red(str(e)+". Cannot continue."))
+    sys.exit(101)
 except SystemExit:
     pass
 except KeyboardInterrupt:
