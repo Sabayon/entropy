@@ -28,6 +28,8 @@ import random
 from entropyConstants import *
 from outputTools import *
 import exceptionTools
+global _garbage_cycle
+_garbage_cycle = 0
 
 '''
     Main Entropy (client side) package management class
@@ -1322,14 +1324,10 @@ class EquoInterface(TextInterface):
 
         return available
 
-    def calculate_world_updates(self, empty_deps = False, branch = etpConst['branch']):
-
-        update = set()
-        remove = set()
-        fine = set()
-
+    def get_world_update_cache(self, empty_deps, branch = etpConst['branch'], db_digest = None):
         if self.xcache:
-            db_digest = self.clientDbconn.tablesChecksum()
+            if db_digest == None:
+                db_digest = self.clientDbconn.tablesChecksum()
             disk_cache = self.dumpTools.loadobj(etpCache['world_update'])
             try:
                 if disk_cache != None:
@@ -1342,6 +1340,17 @@ class EquoInterface(TextInterface):
                     self.dumpTools.dumpobj(etpCache['world_update'], {})
                 except IOError:
                     pass
+
+    def calculate_world_updates(self, empty_deps = False, branch = etpConst['branch']):
+
+        update = set()
+        remove = set()
+        fine = set()
+
+        db_digest = self.clientDbconn.tablesChecksum()
+        cached = self.get_world_update_cache(empty_deps = empty_deps, branch = branch, db_digest = db_digest)
+        if cached != None:
+            return cached
 
         # get all the installed packages
         idpackages = self.clientDbconn.listAllIdpackages()
@@ -2932,8 +2941,12 @@ class PackageInterface:
                                         )
             return rc
 
-        # clear garbage
-        self.Entropy.gcTool.collect()
+        # XXX workaround for portage memleak - clear garbage
+        global _garbage_cycle
+        _garbage_cycle += 1
+        if _garbage_cycle > 15:
+            self.Entropy.gcTool.collect()
+            _garbage_cycle = 0
         return rc
 
     '''

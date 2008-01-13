@@ -46,7 +46,7 @@ from etpgui import *
 import filters
 from gui import SpritzGUI
 from dialogs import *
-from misc import const, YumexOptions, YumexProfile, fakeoutfile
+from misc import const, SpritzOptions, fakeoutfile, fakeinfile
 from i18n import _
 import time
 
@@ -64,8 +64,10 @@ class SpritzController(Controller):
 
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
+        self.input = fakeinfile(self.pty[1])
         sys.stdout = self.output
         sys.stderr = self.output
+        sys.stdin = self.input
 
 
     def quit(self, widget=None, event=None ):
@@ -356,8 +358,8 @@ class SpritzController(Controller):
 
     def on_EditPreferences( self, widget ):
         Preferences()
-        self.yumexOptions.reload()
-        self.settings = self.yumexOptions.settings
+        self.spritzOptions.reload()
+        self.settings = self.spritzOptions.settings
 
     def on_HelpAbout( self, widget ):
         about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,self.settings.branding_title)
@@ -370,8 +372,8 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
     def __init__(self):
         SpritzController.__init__( self )
-        self.yumexOptions = YumexOptions()
-        self.yumexOptions.parseCmdOptions()
+        self.spritzOptions = SpritzOptions()
+        self.spritzOptions.parseCmdOptions()
         self.Equo = EquoConnection
         SpritzGUI.__init__(self, self.Equo, self.etpbase)
         self.logger = logging.getLogger("yumex.main")
@@ -383,16 +385,17 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.quitNow = False
         self.isWorking = False
         if self.settings.debug:
-            self.yumexOptions.dump()
-            print self.yumexOptions.getArgs()
+            self.spritzOptions.dump()
+            print self.spritzOptions.getArgs()
         self.logger.info(_('Entropy Config Setuo'))
-        self.yumexOptions.parseCmdOptions()
+        self.spritzOptions.parseCmdOptions()
         self.catsView.etpbase = self.etpbase
         self.lastPkgPB = "updates"
         self.etpbase.setFilter(filters.yumexFilter.processFilters)
 
         # Setup GUI
         self.setupGUI()
+        self.setPage("packages")
 
         self.logger.info(_('GUI Setup Completed'))
         # setup Repositories
@@ -422,7 +425,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         msg = _('Loading information')
         self.setStatus(msg)
         self.progressLog(_('Building Package Lists'))
-        self.addPackages(bootstrap = True)
+        self.addPackages()
         self.progressLog(_('Building Package Lists Completed'))
         # XXX: if we'll re-enable categories listing, uncomment this
         #self.progressLog(_('Building Category Lists'))
@@ -443,7 +446,15 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.startWorking()
 
         # set steps
-        self.progress.total.setup( range(len(repos)+2) )
+        progress_step = float(1)/(len(repos)+2)
+        step = progress_step
+        myrange = []
+        while progress_step < 1.0:
+            myrange.append(step)
+            progress_step += step
+        myrange.append(step)
+
+        self.progress.total.setup( myrange )
         self.progress.set_mainLabel(_('Initializing Repository module...'))
 
         try:
@@ -478,9 +489,12 @@ class SpritzApplication(SpritzController,SpritzGUI):
     def setupRepoView(self):
         self.repoView.populate()
 
-    def addPackages(self, bootstrap = False):
-        if bootstrap:
+    def addPackages(self):
+        bootstrap = False
+        if (self.Equo.get_world_update_cache(empty_deps = False) == None):
+            bootstrap = True
             self.setPage('output')
+        self.progress.total.hide()
         busyCursor(self.ui.main)
         action = self.lastPkgPB
         if action == 'all':
@@ -491,11 +505,11 @@ class SpritzApplication(SpritzController,SpritzGUI):
         allpkgs = []
         if self.doProgress: self.progress.total.next() # -> Get lists
         for flt in masks:
-            msg = _('Getting packages : %s' ) % flt
+            msg = _('Calculating %s' ) % flt
             self.progressLog(msg)
             self.setStatus(msg)
             pkgs = self.etpbase.getPackages(flt)
-            self.progressLog(_('Found %d %s packages') % (len(pkgs),flt))
+            self.progressLog(_('Found %d %s') % (len(pkgs),flt))
             allpkgs.extend(pkgs)
         if self.doProgress: self.progress.total.next() # -> Sort Lists
         self.progressLog(_('Sorting packages'))
@@ -505,6 +519,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         for po in allpkgs:
             self.pkgView.store.append([po,str(po)])
         self.ui.viewPkg.set_model(self.pkgView.store)
+        self.progress.total.show()
 
         msg = _('Population Completed')
         self.progressLog(msg)
@@ -570,18 +585,13 @@ class SpritzApplication(SpritzController,SpritzGUI):
         """ Workflow for processing package queue """
         self.setStatus( _( "Running tasks" ) )
         total = len( pkgs['i'] )+len( pkgs['u'] )+len( pkgs['r'] )
-        self.progress.total.setup( range(total*2+1) )
         state = True
         quit = False
         if total > 0:
             self.startWorking()
             self.progress.show()
             self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
-
-            # calculate removal (again)
-
             # XXX handle return codes
-            # calculate install+update (again)
             queue = pkgs['i']+pkgs['u']
             install_queue = [x.matched_atom for x in queue]
             removal_queue = [x.matched_atom[0] for x in pkgs['r']]
@@ -589,6 +599,9 @@ class SpritzApplication(SpritzController,SpritzGUI):
                 controller = QueueExecutor(self)
                 e,i = controller.run(install_queue, removal_queue)
                 print e,i
+            # regenerate packages information
+            self.etpbase.clearPackages()
+            self.setupSpritz()
             self.endWorking()
             #self.progress.hide()
             if quit:
@@ -666,7 +679,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
             found = self.etpbase.findPackages(arglist,typ)
             self.setStatus(_('found %d packages, matching : %s') % (len(found)," ".join(arglist)))
             for po in found:
-                print str(po),po.action
                 self.queue.add(po)
             self.queueView.refresh()
 

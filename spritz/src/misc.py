@@ -76,15 +76,15 @@ class const:
                                0.5, # Download
                                0.1, # Transaction Test
                                0.3 ) # Running Transaction
-    
+
     SETUP_PROGRESS_STEPS = ( 0.1, # Yum Config
                              0.2, # Repo Setup
                              0.1, # Sacksetup  
                              0.2, # Updates 
                              0.1, # Group 
-                             0.3) # get package Lists   
+                             0.3) # get package Lists
     PACKAGE_CATEGORY_NO = 5
-    
+
 # Package Category Control Dict.    
     PACKAGE_CATEGORY_DICT = { 
 #
@@ -148,70 +148,7 @@ class const:
 
           )
 
-class YumexProfile:
-    """ Class for handling repo selection Profile """
-    def __init__( self ):
-        self.profiles = ConfigParser()
-        self.filename = '/etc/yumex.profiles.conf'
-        self.profiles.read( self.filename )
-        self.active=self.profiles.get( "main", "LastProfile" )
-        self.proDict = {}
-        self.load()
-
-
-    def save( self ):
-        if self.profiles.has_section('yum-enabled'):
-            self.profiles.remove_section('yum-enabled')
-        f=open( self.filename, "w" )
-        self.profiles.write( f )
-        f.close()
-
-    def load( self ):
-        self.profiles.read( self.filename )
-        self.active=self.profiles.get( "main", "LastProfile" )        
-        for p in self.profiles.sections():
-            if p != 'main':
-                opts = self.profiles.options( p )
-                self.proDict[p] = opts
-
-    def getProfile( self, name = None ):
-        if not name:
-            name = self.active
-        if name in self.proDict.keys():
-            return self.proDict[name]
-        else:
-            return None
-
-    def writeProfile( self, repos ):
-        self.profiles.remove_section( self.active)
-        return self.addProfile(self.active, repos )
-
-
-    def getList( self ):
-        return self.proDict.keys()
-
-    def getActive( self ):
-        return self.active
-
-    def setActive( self, name ):
-        if self.profiles.has_section( name ) or name == "yum-enabled":
-            self.active = name
-            self.profiles.set( "main", "LastProfile", name )
-            self.save()
-
-    def addProfile( self, name, repos ):
-        if not self.profiles.has_section( name ):
-            self.profiles.add_section( name )
-            for r in repos:
-                self.profiles.set( name, r, "1" )
-            self.save()
-            self.load()
-            return True
-        else:
-            return False
-
-
-class YumexQueue:
+class SpritzQueue:
     def __init__(self):
         self.logger = logging.getLogger('yumex.YumexQueue')
         self.packages = {}
@@ -411,7 +348,7 @@ class YumexQueue:
             list = self.packages[a]
             if len(list) > 0:
                 for pkg in list:
-                    cp.setPO(action,pkg)      
+                    cp.setPO(action,pkg)
         return cp
 
 class YumexSaveFile:
@@ -424,7 +361,7 @@ class YumexSaveFile:
         self.parser.set("main","application","yumex")
         self.parser.set("main","type",self.saveType)
         self.parser.set("main","version",YumexSaveFile.__version__)
-    
+
     def setPO(self,section,pkg):
         (n, a, e, v, r) = pkg.pkgtup
         item = "%s.%s" % (n,a)
@@ -434,19 +371,19 @@ class YumexSaveFile:
             e = 0
         repo = pkg.repoid
         value = "%s,%s,%s,%s,%s,%s" % (n,a,e,v,r,repo)
-        self.set(section,item ,value)       
+        self.set(section,item ,value)
 
     def getPO(self,section,opt):
         value = self.get(section,opt)
         n,a,e,v,r,repo = value.split(',')
         tup = (n,a,e,v,r)
-        return tup,repo      
-    
+        return tup,repo
+
     def set(self,section,option,value):
         if not self.parser.has_section(section):
             self.parser.add_section(section)
         self.parser.set(section, option, value)
-        
+
     def get(self,section,option):
         try:
             return self.parser.get(section,option)
@@ -472,11 +409,12 @@ class YumexSaveFile:
             return 0, "file ok"
         except NoSectionError,NoOptionError:
             return -1,"Error in fileformat"
-        
+
+
 class YumexQueueFile(YumexSaveFile):
     def __init__(self):
         YumexSaveFile.__init__(self,'queue')
-        
+
     def getList(self,action):
         dict = {}
         try:
@@ -514,13 +452,13 @@ class YumexConf:
     changelog = False
     disable_repo_page = False
     branding_title = 'Spritz Package Manager'
-    
+
     #
     # This routines are taken from config.py yum > 3.2.2
     # They are because we want the config save to work
     # better with older Yum version (EL5 & FC6)
     #
-    
+
     def write(self, fileobj, section=None, always=()):
         '''Write out the configuration to a file-like object
 
@@ -553,84 +491,44 @@ class YumexConf:
         if hasattr(self, option):
             return getattr(self, option)
         return default
-    
-    
 
-class YumexOptions:
+
+class SpritzOptions:
 
     def __init__(self):
         self.logger = logging.getLogger('yumex.YumexOptions')
         self._optparser = OptionParser()
         self.setupParser()
-        
+
     def parseCmdOptions(self):
         self.getCmdlineOptions()
 
-    def getYumexConfig(self,configfile='/etc/yumex.conf', sec='yumex' ):
+    def getYumexConfig(self,configfile='/etc/spritz.conf', sec='spritz' ):
         conf = YumexConf()
         parser = ConfigParser()    
         parser.read( configfile )
         conf.populate( parser, sec )
         return conf
-    
+
     def reload(self):
         self.settings = self.getYumexConfig()
-    
+
     def getArgs(self):
         return self.cmd_args
-    
+
     def setupParser(self):
         parser = self._optparser
         parser.add_option( "-d", "--debug", 
                         action="store_true", dest="debug", default=False, 
                         help="Debug mode" )
-        parser.add_option( "-n", "--noauto", 
-                        action="store_false", dest="autorefresh", default=True, 
-                        help="No automatic refresh af program start" )
-        parser.add_option( "", "--noplugins", 
-                        action="store_false", dest="plugins", default=True, 
-                        help="Disable yum plugins" )
-        parser.add_option( "-C", "--usecache", 
-                        action="store_true", dest="usecache", default=False, 
-                        help="Use Yum cache only, dont update metadata" )
-
-        parser.add_option("-c", "", dest="conffile", action="store", 
-                default='/etc/yum.conf', help="yum config file location",
-                metavar=' [config file]')
-                        
-        parser.add_option( "-O", "--fullobsoletion", 
-                        action="store_true", dest="fullobsoletion", default=False, 
-                        help="Do full obsoletion every time" )
-        parser.add_option( "-v", "--version", 
-                        action="store_true", dest="version", default=False, 
-                        help="Show Yum Extender Version" )
-        parser.add_option( "", "--debuglevel", dest="yumdebuglevel", action="store", 
-                default=None, help="yum debugging output level", type='int', 
-                metavar='[level]' )      
-        parser.add_option( "", "--downloadonly", 
-                        action="store_true", dest="downloadonly", default=False, 
-                        help="Only download packages, dont process them" )
-        parser.add_option( "", "--filelist", 
-                        action="store_true", dest="filelist", default=False, 
-                        help="Download and show filelists for available packages" )
-        parser.add_option( "", "--changelog", 
-                        action="store_true", dest="changelog", default=False, 
-                        help="Download and show changelogs for available packages" )
-        parser.add_option( "", "--nothreads", 
-                        action="store_true", dest="nothreads", default=False, 
-                        help="DEBUG: Option to disable threads in yumex" )
         self.parserInit = True
-        
+
     def getCmdlineOptions( self ):
-        """ Handle commmand line options """  
+        """ Handle commmand line options """
         parser = self._optparser
         ( options, args ) = parser.parse_args()
         self.cmd_options = options
         self.cmd_args = args
-        if options.version:
-            ver = "Yum Extender : %s " % const.__spritz_version__
-            print ver
-            sys.exit(0)
 
     def dump(self):
         self.logger.info( _( "Current Settings :" ) )
@@ -638,30 +536,15 @@ class YumexOptions:
         for s in settings:
             if not s.startswith( '[' ):
                 self.logger.info("    %s" % s )
-        
+
     def check_option( self, option ):
         """ Check options in settings or command line"""
         rc = False
         if option == "debug":
             if self.settings.debug or self.cmd_options.debug:
                 rc = True
-        elif option == "autorefresh":
-            if self.settings.autorefresh and not self.cmd_options.noauto:
-                rc = True
-        elif option == "filelists":
-            if self.settings.filelists:
-                rc = True
-        elif option == "autocleanup":
-            if self.settings.autocleanup:
-                rc = True
-        elif option == "noplugins":
-            if self.settings.noplugins or self.cmd_options.noplugins:
-                rc = True        
-        elif option == "usecache":
-            if self.settings.usecache or self.cmd_options.usecache:
-                rc = True        
-        return rc       
-        
+        return rc
+
 def cleanMarkupSting(msg):
     msg = str(msg) # make sure it is a string
     msg = gobject.markup_escape_text(msg)
@@ -719,3 +602,26 @@ class fakeoutfile:
 
     def truncate(self):
         self.tell()
+
+class fakeinfile:
+    """
+    A fake input file object.  It receives input from a GTK TextView widget,
+    and if asked for a file number, returns one set on instance creation
+    """
+
+    def __init__(self, fn):
+        self.fn = fn
+    def close(self): pass
+    flush = close
+    def fileno(self):    return self.fn
+    def isatty(self):    return False
+    def read(self, a):   return self.readline()
+    def readline(self): ## just a fake
+        return os.read(self.fn,2048)
+    def readlines(self): return []
+    def write(self, s):  return None
+    def writelines(self, l): return None
+    def seek(self, a):   raise IOError, (29, 'Illegal seek')
+    def tell(self):      raise IOError, (29, 'Illegal seek')
+    truncate = tell
+

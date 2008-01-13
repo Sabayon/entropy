@@ -46,8 +46,17 @@ class QueueExecutor:
         if removal_queue:
             removalQueue += [(x,False) for x in removal_queue if (x,True) not in removalQueue]
 
-        # first fetch all
         totalqueue = len(runQueue)
+        progress_step = float(1)/((totalqueue*2)+len(removalQueue))
+        step = progress_step
+        myrange = []
+        while progress_step < 1.0:
+            myrange.append(step)
+            progress_step += step
+        myrange.append(step)
+        self.Entropy.progress.total.setup( myrange )
+
+        # first fetch all
         fetchqueue = 0
         for packageInfo in runQueue:
             fetchqueue += 1
@@ -90,6 +99,7 @@ class QueueExecutor:
                 return -1,rc
 
             Package.kill()
+            self.Entropy.cycleDone()
             del metaopts
             del Package
 
@@ -116,6 +126,7 @@ class QueueExecutor:
                 return -1,rc
 
             Package.kill()
+            self.Entropy.cycleDone()
             del metaopts
             del Package
 

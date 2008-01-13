@@ -188,7 +188,6 @@ class EntropyPackageView:
             obj.queued = None
         self.queue.remove(list)
         for obj in list:
-            print str(obj),obj.queued,obj.action,obj.matched_atom
             obj.set_select( not obj.selected )
         self.clearUpdates()
         

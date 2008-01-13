@@ -18,7 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from etpgui import *
-from misc import YumexQueue,YumexConf,const,cleanMarkupSting
+from misc import SpritzQueue,YumexConf,const,cleanMarkupSting
 from views import *
 from etpgui.widgets import TextViewConsole, SpritzConsole
 from i18n import _
@@ -244,6 +244,8 @@ class YumexProgress:
             self.parent.skipMirrorNow = False
             self.parent.yumbase._interrupt_callback(None)
 
+    def set_text(self, text):
+        self.ui.progressBar.set_text( text )
 
     def set_mainLabel( self, text ):
         self.ui.progressMainLabel.set_markup( "<span size=\"large\"><b>%s</b></span>" % text )
@@ -266,7 +268,7 @@ class SpritzGUI:
         # Package & Queue Views
         self.Entropy = EquoConnection
         self.etpbase = etpbase
-        self.queue = YumexQueue()
+        self.queue = SpritzQueue()
         self.queueView = YumexQueueView(self.ui.queueView,self.queue)
         self.pkgView = EntropyPackageView(self.ui.viewPkg,self.queueView)
         self.queue.connect_objects(self.Entropy, self.etpbase, self.pkgView, self.queueView)
@@ -278,7 +280,7 @@ class SpritzGUI:
         # Left Side Toolbar
         self.pageButtons = {}    # Dict with page buttons
         self.firstButton = None  # first button
-        self.activePage = 'packages'
+        self.activePage = 'repos'
         # Package info notebook
         self.packageInfo = YumexPackageInfo(self.ui,self.settings)
         # Progress bars
