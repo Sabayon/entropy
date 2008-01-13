@@ -931,6 +931,13 @@ class EquoInterface(TextInterface):
                 if installedNeeded != repo_needed:
                     depunsatisfied.update(depsatisfied)
                     depsatisfied.clear()
+                else:
+                    # also check useflags
+                    installedUseflags = self.clientDbconn.retrieveUseflags(clientMatch[0])
+                    repo_useflags = dbconn.retrieveUseflags(repoMatch[0])
+                    if installedUseflags != repo_useflags:
+                        depunsatisfied.update(depsatisfied)
+                        depsatisfied.clear()
 
             unsatisfiedDeps.update(depunsatisfied)
             satisfiedDeps.update(depsatisfied)

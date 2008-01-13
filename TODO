@@ -1,5 +1,4 @@
 TODO list:
-  - filterSatisfiedDependencies: add USE flags check
   - migrate server code to ServerInterface
   - Community repositories
   - find a way to better handle real smartapps deps (need split PDEPEND?)
