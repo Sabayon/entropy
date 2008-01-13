@@ -92,6 +92,12 @@ class SpritzController(Controller):
             pass
         sys.exit( 1 )         # Terminate Program
 
+    def on_addRepo_clicked( self, widget ):
+        print "add repo"
+
+    def on_removeRepo_clicked( self, widget ):
+        print "remove repo"
+
     def on_terminal_clear_activate(self, widget):
         self.output.text_written = []
         self.console.reset()
@@ -150,6 +156,9 @@ class SpritzController(Controller):
 
     def on_repoRefresh_clicked(self,widget):
         repos = self.repoView.get_selected()
+        if not repos:
+            okDialog( self.ui.main, _("Please select at least one repository") )
+            return
         self.setPage('output')
         self.logger.info( "Enabled repositories : %s" % ",".join(repos))
         self.updateRepositories(repos)

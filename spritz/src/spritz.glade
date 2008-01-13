@@ -300,6 +300,7 @@
 			  <property name="can_focus">True</property>
 			  <property name="relief">GTK_RELIEF_NORMAL</property>
 			  <property name="focus_on_click">True</property>
+			  <signal name="clicked" handler="on_addRepo_clicked" last_modification_time="Sun, 13 Jan 2008 23:50:23 GMT"/>
 
 			  <child>
 			    <widget class="GtkAlignment" id="alignment75">
@@ -374,6 +375,7 @@
 			  <property name="can_focus">True</property>
 			  <property name="relief">GTK_RELIEF_NORMAL</property>
 			  <property name="focus_on_click">True</property>
+			  <signal name="clicked" handler="on_removeRepo_clicked" last_modification_time="Sun, 13 Jan 2008 23:52:03 GMT"/>
 
 			  <child>
 			    <widget class="GtkAlignment" id="alignment76">
