@@ -741,7 +741,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                         stratomscounter = " "+stratomscounter
                     print_info("   # "+red("(")+bold(stratomscounter)+"/"+blue(str(totalatoms))+red(")")+repositoryInfo+" "+blue(rematom))
 
-                removalQueue += choosenRemovalQueue
+                removalQueue = choosenRemovalQueue
 
             else:
                 writechar("\n")

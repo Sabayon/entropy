@@ -1531,12 +1531,9 @@ class EquoInterface(TextInterface):
     def retrieveRemovalQueue(self, idpackages, deep = False):
         queue = []
         treeview = self.generate_depends_tree(idpackages, deep = deep)
-        treelength = len(treeview[0])
-        if treelength > 1:
-            treeview = treeview[0]
-            for x in range(treelength)[::-1]:
-                for y in treeview[x]:
-                    queue.append(y)
+        for x in range(len(treeview[0]))[::-1]:
+            for y in treeview[0][x]:
+                queue.append(y)
         return queue
 
     def retrieveInstallQueue(self, matched_atoms, empty_deps, deep_deps):

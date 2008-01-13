@@ -190,9 +190,7 @@ class SpritzQueue:
 
     def add(self, pkgs):
 
-        one = False
         if type(pkgs) is not list:
-            one = True
             pkgs = [pkgs]
 
         action = [pkgs[0].action]
@@ -206,14 +204,19 @@ class SpritzQueue:
 
         else: # remove
 
-            if one:
-                status = self.checkSystemPackage(pkgs[0])
-                if not status:
-                    return -2,1
+            mypkgs = []
+            for pkg in pkgs:
+                status = self.checkSystemPackage(pkg)
+                if status:
+                    mypkgs.append(pkg)
+            pkgs = mypkgs
 
-            tmpqueue = [x for x in pkgs if x not in self.packages[action[0]]]
-            xlist = [x.matched_atom[0] for x in self.packages[action[0]]+tmpqueue]
-            self.elaborateRemoval(pkgs,xlist,action[0],False)
+            if not pkgs:
+                return -2,1
+
+            tmpqueue = [x for x in pkgs if x not in self.packages['r']]
+            xlist = [x.matched_atom[0] for x in self.packages['r']+tmpqueue]
+            self.elaborateRemoval(pkgs,xlist,False)
             return 0,1
 
     def elaborateInstall(self, pkgs, xlist, actions, deep_deps):
@@ -239,13 +242,15 @@ class SpritzQueue:
                             self.packages['r'].append(rem_pkg)
         return status
 
-    def elaborateRemoval(self, pkgs, list, action, nodeps):
+    def elaborateRemoval(self, pkgs, list, nodeps):
         if nodeps:
             return
         removalQueue = self.Entropy.retrieveRemovalQueue(list)
         if removalQueue:
             for rem_pkg in self.etpbase.getPackages('installed'):
+                print rem_pkg
                 for matched_atom in removalQueue:
+                    print matched_atom
                     if rem_pkg.matched_atom == (matched_atom,0):
                         if rem_pkg not in pkgs:
                             rem_pkg.set_select(False)
@@ -295,7 +300,7 @@ class SpritzQueue:
                     self.packages[action[0]].remove( pkgs[0] )
             tmpdata = self.packages[action[0]][:]
             xlist = [x.matched_atom[0] for x in self.packages[action[0]]]
-            self.elaborateRemoval(pkgs,xlist,action[0],False)
+            self.elaborateRemoval(pkgs,xlist,False)
             for rem_pkg in tmpdata:
                 if rem_pkg not in self.packages[action[0]]:
                     # disable
