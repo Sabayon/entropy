@@ -117,8 +117,10 @@ def database(options):
             # now extract info
             try:
                 mydata = Equo.entropyTools.extractPkgData(temptbz2, silent = True)
-            except:
+            except Exception, e:
+                Equo.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Database generation: Exception caught: %s: %s" % (str(Exception),str(e),))
                 print_warning(red("!!! An error occured while analyzing: ")+blue(portagePackage))
+                print_warning("Exception: %s: %s" % (str(Exception),str(e),))
                 continue
 
             # Try to see if it's possible to use the revision of a possible old db
@@ -384,8 +386,10 @@ def database(options):
                 # now extract info
                 try:
                     mydata = Equo.entropyTools.extractPkgData(temptbz2, silent = True)
-                except:
+                except Exception, e:
+                    Equo.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Database gentoosync: Exception caught: %s: %s" % (str(Exception),str(e),))
                     print_warning(red("!!! An error occured while analyzing: ")+blue(atom))
+                    print_warning("Exception: %s: %s" % (str(Exception),str(e),))
                     continue
 
                 # create atom string
