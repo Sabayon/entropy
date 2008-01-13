@@ -561,6 +561,7 @@ class fakeoutfile:
 
     def __init__(self, fn):
         self.fn = fn
+        self.text_written = []
 
     def close(self):
         pass
@@ -585,6 +586,10 @@ class fakeoutfile:
 
     def write(self, s):
         os.write(self.fn,s)
+        self.text_written.append(s)
+        # cut at 1024 entries
+        if len(self.text_written) > 1024:
+            self.text_written = self.text_written[-1024:]
         #sys.stdout.write(s+"\n")
 
     def write_line(self, s):

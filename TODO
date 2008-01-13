@@ -8,12 +8,11 @@ TODO list:
 
   Spritz:
     - wrap root password request
-    - add forceUpdate option to repo sync
     - empty_deps and branch switching support to Updates list
-    - show progress when calculating updates
     - ability to mark packages for reinstall
     - handle queue errors
     - handle config files stuff
+    - clear some cache after running packages install
 
 Project Status:
 - reagent: complete.

@@ -461,7 +461,6 @@ etpRemoteFailures = {}  # dict of excluded mirrors due to failures,
 
 # your bible
 etpConst = {}
-
 # database status dict
 etpDbStatus = {}
 

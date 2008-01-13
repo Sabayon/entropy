@@ -94,7 +94,6 @@ class EquoInterface(TextInterface):
     def closeAllRepositoryDatabases(self):
         for item in self.repoDbCache:
             self.repoDbCache[item].closeDB()
-            del self.repoDbCache[item]
         self.repoDbCache.clear()
 
     def openClientDatabase(self):
@@ -1688,7 +1687,7 @@ class EquoInterface(TextInterface):
     '''
     @description: download a package into etpConst['packagesbindir'] passing all the available mirrors
     @input package: repository -> name of the repository, filename -> name of the file to download, digest -> md5 hash of the file
-    @output: 0 = all fine, -3 = error on all the available mirrors
+    @output: 0 = all fine, !=0 = error on all the available mirrors
     '''
     def fetch_file_on_mirrors(self, repository, filename, digest = False, verified = False):
 
@@ -1703,7 +1702,7 @@ class EquoInterface(TextInterface):
 
             if not remaining:
                 # tried all the mirrors, quitting for error
-                return -3
+                return 3
 
             mirrorcount += 1
             mirrorCountText = "( mirror #"+str(mirrorcount)+" ) "
@@ -1785,6 +1784,7 @@ class EquoInterface(TextInterface):
                     break
                 except:
                     raise
+        return 0
 
     def quickpkg(self, atomstring, savedir = None):
         if savedir == None:
@@ -1924,7 +1924,7 @@ class PackageInterface:
                                         type = "info",
                                         header = red("   ## ")
                                     )
-                    return 1
+                    return fetch
                 else:
                     self.infoDict['verified'] = True
         if (not match):
@@ -2677,7 +2677,7 @@ class PackageInterface:
                                                     self.infoDict['checksum'],
                                                     self.infoDict['verified']
                                                 )
-        if rc < 0:
+        if rc != 0:
             self.Entropy.updateProgress(
                                             red("Package cannot be fetched. Try to update repositories and retry. Error: %s" % (str(rc),)),
                                             importance = 1,
@@ -3374,6 +3374,7 @@ class RepoInterface:
         self.syncErrors = False
         self.dbupdated = False
         self.newEquo = False
+        self.alreadyUpdated = 0
 
         # check if I am root
         if (not self.Entropy.entropyTools.isRoot()):
@@ -3583,6 +3584,7 @@ class RepoInterface:
                                                 header = "\t"
                                 )
                 self.Entropy.cycleDone()
+                self.alreadyUpdated += 1
                 continue
 
             # get database lock

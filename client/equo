@@ -295,6 +295,7 @@ try:
         # increment
         if status < len(etpExitMessages)-1:
             writeerrorstatus(status+1)
+        rc = 10
     else:
         writeerrorstatus(0)
     # kill threads

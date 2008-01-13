@@ -289,6 +289,9 @@ class SpritzGUI:
         self.packageRB = {}
         self.lastPkgPB = 'updates'
         self.tooltip =  gtk.Tooltips()
+        self.console_menu_xml = gtk.glade.XML( const.GLADE_FILE, "terminalMenu",domain="yumex" )
+        self.console_menu = self.console_menu_xml.get_widget( "terminalMenu" )
+        self.console_menu_xml.signal_autoconnect(self)
 
     def setupGUI(self):
         ''' Setup the GUI'''
@@ -303,7 +306,7 @@ class SpritzGUI:
         self.console = SpritzConsole()
         self.console.set_scrollback_lines(1024)
         self.console.set_scroll_on_output(True)
-        #self.console.connect("button-press-event", self.cb_right_click)
+        self.console.connect("button-press-event", self.console_click)
         termScroll = gtk.VScrollbar(self.console.get_adjustment())
         self.ui.vteBox.pack_start(self.console, True, True)
         self.ui.termScrollBox.pack_start(termScroll, False)
@@ -312,6 +315,10 @@ class SpritzGUI:
         # hide All Packages radio button, useless
         self.ui.rbAll.hide()
         self.setupPkgFilter()
+
+    def console_click(self, widget, event):
+        self.console_menu.popup( None, None, None, event.button, event.time )
+        return True
 
     def loggerSetup(self,logroot,loglvl=None):
         logger = logging.getLogger(logroot)

@@ -62,6 +62,7 @@ class SpritzController(Controller):
         # init the Controller Class to connect signals.
         Controller.__init__( self, ui )
 
+        self.clipboard = gtk.Clipboard()
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
@@ -90,6 +91,14 @@ class SpritzController(Controller):
         except RuntimeError,e:
             pass
         sys.exit( 1 )         # Terminate Program
+
+    def on_terminal_clear_activate(self, widget):
+        self.output.text_written = []
+        self.console.reset()
+
+    def on_terminal_copy_activate(self, widget):
+        self.clipboard.clear()
+        self.clipboard.set_text(''.join(self.output.text_written))
 
     def on_PageButton_changed( self, widget, page ):
         ''' Left Side Toolbar Handler'''
@@ -422,11 +431,9 @@ class SpritzApplication(SpritzController,SpritzGUI):
         gtkEventThread.endProcessing()
 
     def setupSpritz(self):
-        msg = _('Loading information')
+        msg = _('Generating metadata. Please wait.')
         self.setStatus(msg)
-        self.progressLog(_('Building Package Lists'))
         self.addPackages()
-        self.progressLog(_('Building Package Lists Completed'))
         # XXX: if we'll re-enable categories listing, uncomment this
         #self.progressLog(_('Building Category Lists'))
         #self.populateCategories()
@@ -446,7 +453,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.startWorking()
 
         # set steps
-        progress_step = float(1)/(len(repos)+2)
+        progress_step = float(1)/(len(repos))
         step = progress_step
         myrange = []
         while progress_step < 1.0:
@@ -456,9 +463,10 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
         self.progress.total.setup( myrange )
         self.progress.set_mainLabel(_('Initializing Repository module...'))
+        forceUpdate = self.ui.forceRepoUpdate.get_active()
 
         try:
-            repoConn = self.Equo.Repositories(repos, forceUpdate = True) # FIXME: disable forceUpdate == True
+            repoConn = self.Equo.Repositories(repos, forceUpdate = forceUpdate)
         except exceptionTools.PermissionDenied:
             self.progressLog(_('You must run this application as root'), extra = "repositories")
             return 1
@@ -476,8 +484,13 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.progress.set_mainLabel(_('Errors updating repositories.'))
             self.progress.set_subLabel(_('Please check logs below for more info'))
         else:
-            self.progress.set_mainLabel(_('Repositories updated successfully'))
-            self.progress.set_subLabel(_('Have fun :-)'))
+            if repoConn.alreadyUpdated == 0:
+                self.progress.set_mainLabel(_('Repositories updated successfully'))
+            else:
+                if len(repos) == repoConn.alreadyUpdated:
+                    self.progress.set_mainLabel(_('All the repositories were already up to date.'))
+                else:
+                    self.progress.set_mainLabel(_('%s repositories were already up to date. Others have been updated.' % (str(repoConn.alreadyUpdated),)))
             if repoConn.newEquo:
                 self.progress.set_extraLabel(_('app-admin/equo needs to be updated as soon as possible.'))
 
@@ -502,27 +515,24 @@ class SpritzApplication(SpritzController,SpritzGUI):
         else:
             masks = [action]
         self.pkgView.store.clear()
+        self.etpbase.clearPackages()
         allpkgs = []
         if self.doProgress: self.progress.total.next() # -> Get lists
         for flt in masks:
             msg = _('Calculating %s' ) % flt
-            self.progressLog(msg)
+            #self.progressLog(msg)
             self.setStatus(msg)
             pkgs = self.etpbase.getPackages(flt)
-            self.progressLog(_('Found %d %s') % (len(pkgs),flt))
+            #self.progressLog(_('Found %d %s') % (len(pkgs),flt))
             allpkgs.extend(pkgs)
         if self.doProgress: self.progress.total.next() # -> Sort Lists
-        self.progressLog(_('Sorting packages'))
         allpkgs.sort()
-        self.progressLog(_('Population view with packages'))
         self.ui.viewPkg.set_model(None)
         for po in allpkgs:
             self.pkgView.store.append([po,str(po)])
         self.ui.viewPkg.set_model(self.pkgView.store)
         self.progress.total.show()
 
-        msg = _('Population Completed')
-        self.progressLog(msg)
         normalCursor(self.ui.main)
         if self.doProgress: self.progress.hide() #Hide Progress
         if bootstrap:
