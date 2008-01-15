@@ -419,9 +419,10 @@ class AboutDialog(gtk.Window):
         gobject.timeout_add(0, self.__scroll, begin)
 
 
-                 
-def inputBox( parent, title, text):
+def inputBox( parent, title, text, input_text = None):
     dlg = EntryDialog( parent, title, text)
+    if input_text:
+        dlg.entry.set_text(input_text)
     rc = dlg.run()
     dlg.destroy()
     return rc

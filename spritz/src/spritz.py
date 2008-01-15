@@ -59,8 +59,9 @@ class SpritzController(Controller):
         self.etpbase = EntropyPackages(EquoConnection)
         # Create and ui object contains the widgets.
         ui = UI( const.GLADE_FILE , 'main', 'yumex' )
+        addrepo_ui = UI( const.GLADE_FILE , 'addRepoWin', 'yumex' )
         # init the Controller Class to connect signals.
-        Controller.__init__( self, ui )
+        Controller.__init__( self, ui, addrepo_ui )
 
         self.clipboard = gtk.Clipboard()
         self.pty = pty.openpty()
@@ -92,11 +93,84 @@ class SpritzController(Controller):
             pass
         sys.exit( 1 )         # Terminate Program
 
+    def on_repoMirrorAdd_clicked( self, widget ):
+        text = inputBox(self.addrepo_ui.addRepoWin, _("Insert URL"), _("Enter a download mirror, HTTP or FTP")+"   ")
+        # call liststore and tell to add
+        if text:
+            # validate url
+            if not (text.startswith("http://") or text.startswith("ftp://")):
+                okDialog( self.addrepo_ui.addRepoWin, _("You must enter either a HTTP or a FTP url.") )
+            else:
+                self.repoMirrorsView.add(text)
+
+    def on_repoMirrorRemove_clicked( self, widget ):
+        selection = self.repoMirrorsView.view.get_selection()
+        urldata = selection.get_selected()
+        if urldata:
+            self.repoMirrorsView.remove(urldata)
+
+    def on_repoMirrorEdit_clicked( self, widget ):
+        selection = self.repoMirrorsView.view.get_selection()
+        urldata = selection.get_selected()
+        # get text
+        if urldata[1] != None:
+            text = self.repoMirrorsView.get_text(urldata)
+            self.repoMirrorsView.remove(urldata)
+            text = inputBox(self.addrepo_ui.addRepoWin, _("Insert URL"), _("Enter a download mirror, HTTP or FTP")+"   ", input_text = text)
+            # call liststore and tell to add
+            self.repoMirrorsView.add(text)
+
     def on_addRepo_clicked( self, widget ):
-        print "add repo"
+        self.addrepo_ui.repodbcformatEntry.set_active(0)
+        self.addrepo_ui.repoidEntry.set_text("")
+        self.addrepo_ui.repoDescEntry.set_text("")
+        self.addrepo_ui.repodbEntry.set_text("")
+        self.addrepo_ui.addRepoWin.show()
+        self.repoMirrorsView.populate()
+
+    def on_repoSubmit_clicked( self, widget ):
+        repodata = {}
+        repodata['repoid'] = self.addrepo_ui.repoidEntry.get_text()
+        repodata['description'] = self.addrepo_ui.repoDescEntry.get_text()
+        repodata['packages'] = self.repoMirrorsView.get_all()
+        repodata['dbcformat'] = self.addrepo_ui.repodbcformatEntry.get_active_text()
+        repodata['database'] = self.addrepo_ui.repodbEntry.get_text()
+        # validate
+        errors = []
+        if not repodata['repoid']:
+            errors.append(_('No Repository Identifier'))
+        if repodata['repoid'] and etpRepositories.has_key(repodata['repoid']):
+            errors.append(_('Duplicated Repository Identifier'))
+        if not repodata['description']:
+            repodata['description'] = "No description"
+        if not repodata['packages']:
+            errors.append(_("No download mirrors"))
+        if not repodata['database'] or not (repodata['database'].endswith("http://") or (not repodata['database'].endswith("ftp://"))):
+            errors.append(_("Database URL must be HTTP or FTP"))
+        if not errors:
+            self.Equo.addRepository(repodata)
+            initConfig_entropyConstants(etpSys['rootdir'])
+            self.setupRepoView()
+            self.addrepo_ui.addRepoWin.hide()
+        else:
+            okDialog( self.addrepo_ui.addRepoWin, _("Wrong entries, errors: %s") % (', '.join(errors),) )
+
+    def on_addRepoWin_delete_event(self, widget, path):
+        return True
+
+    def on_repoCancel_clicked( self, widget ):
+        self.addrepo_ui.addRepoWin.hide()
 
     def on_removeRepo_clicked( self, widget ):
-        print "remove repo"
+        # get selected repo
+        selection = self.repoView.view.get_selection()
+        repodata = selection.get_selected()
+        # get text
+        if repodata[1] != None:
+            repoid = self.repoView.get_repoid(repodata)
+            self.Equo.removeRepository(repoid)
+            initConfig_entropyConstants(etpSys['rootdir'])
+            self.setupRepoView()
 
     def on_terminal_clear_activate(self, widget):
         self.output.text_written = []

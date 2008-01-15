@@ -277,6 +277,7 @@ class SpritzGUI:
         self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView)
         self.catDesc = TextViewConsole(self.ui.catDesc)
         self.repoView = EntropyRepoView(self.ui.viewRepo)
+        self.repoMirrorsView = EntropyRepositoryMirrorsView(self.addrepo_ui.mirrorsView)
         # Left Side Toolbar
         self.pageButtons = {}    # Dict with page buttons
         self.firstButton = None  # first button
@@ -289,9 +290,9 @@ class SpritzGUI:
         self.packageRB = {}
         self.lastPkgPB = 'updates'
         self.tooltip =  gtk.Tooltips()
+
+        # setup add repository window
         self.console_menu_xml = gtk.glade.XML( const.GLADE_FILE, "terminalMenu",domain="yumex" )
-        self.console_menu = self.console_menu_xml.get_widget( "terminalMenu" )
-        self.console_menu_xml.signal_autoconnect(self)
 
     def setupGUI(self):
         ''' Setup the GUI'''
@@ -306,7 +307,7 @@ class SpritzGUI:
         self.console = SpritzConsole()
         self.console.set_scrollback_lines(1024)
         self.console.set_scroll_on_output(True)
-        self.console.connect("button-press-event", self.console_click)
+        self.console.connect("button-press-event", self.on_console_click)
         termScroll = gtk.VScrollbar(self.console.get_adjustment())
         self.ui.vteBox.pack_start(self.console, True, True)
         self.ui.termScrollBox.pack_start(termScroll, False)
@@ -316,7 +317,7 @@ class SpritzGUI:
         self.ui.rbAll.hide()
         self.setupPkgFilter()
 
-    def console_click(self, widget, event):
+    def on_console_click(self, widget, event):
         self.console_menu.popup( None, None, None, event.button, event.time )
         return True
 

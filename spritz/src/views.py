@@ -252,7 +252,7 @@ class YumexQueueView:
         self.view.append_column( column1 )
 
         cell2 = gtk.CellRendererText()
-        column2= gtk.TreeViewColumn( _( "Summary" ), cell2, text=1 )
+        column2= gtk.TreeViewColumn( _( "Description" ), cell2, text=1 )
         column2.set_resizable( True )
         self.view.append_column( column2 )
         model.set_sort_column_id( 0, gtk.SORT_ASCENDING )
@@ -484,7 +484,7 @@ class EntropyRepoView:
         # Setup Selection Column
         cell1 = gtk.CellRendererToggle()    # Selection
         cell1.set_property( 'activatable', True )
-        column1 = gtk.TreeViewColumn( "Active", cell1 )
+        column1 = gtk.TreeViewColumn( "Selected", cell1 )
         column1.add_attribute( cell1, "active", 0 )
         column1.set_resizable( True )
         column1.set_sort_column_id( -1 )
@@ -546,27 +546,88 @@ class EntropyRepoView:
 
     def deselect_all( self ):
         iterator = self.store.get_iter_first()
-        while iterator != None:    
+        while iterator != None:
             self.store.set_value( iterator, 0, False )
             iterator = self.store.iter_next( iterator )
 
     def select_all( self ):
         iterator = self.store.get_iter_first()
-        while iterator != None:    
+        while iterator != None:
             self.store.set_value( iterator, 0, True )
             iterator = self.store.iter_next( iterator )
 
+    def get_repoid(self, iterdata):
+        model, iter = iterdata
+        return model.get_value( iter, 2 )
 
     def select_by_keys( self, keys):
-        self.store 
         iterator = self.store.get_iter_first()
-        while iterator != None:    
+        while iterator != None:
             repoid = self.store.get_value( iterator, 1 )
             if repoid in keys:
                 self.store.set_value( iterator, 0, True )
             else:
                 self.store.set_value( iterator, 0, False)
             iterator = self.store.iter_next( iterator )
+
+class EntropyRepositoryMirrorsView:
+    """ 
+    This class controls the repo TreeView
+    """
+    def __init__( self, widget):
+        self.view = widget
+        self.headers = [""]
+        self.store = self.setup_view()
+
+    def setup_view( self ):
+        """ Create models and columns for the Repo TextView  """
+        store = gtk.ListStore(str)
+        self.view.set_model( store )
+
+        # Setup Repository URL column
+        self.create_text_column( "", 0 )
+
+        # Setup reponame & repofile column's
+        self.view.set_search_column( 1 )
+        self.view.set_reorderable( False )
+        return store
+
+    def create_text_column( self, hdr, colno):
+        cell = gtk.CellRendererText()    # Size Column
+        column = gtk.TreeViewColumn( hdr, cell, text=colno )
+        column.set_resizable( True )
+        self.view.append_column( column )
+
+    def populate(self):
+        """ Populate a repo liststore with data """
+        self.store.clear()
+
+    def get_selected( self ):
+        selected = []
+        for elem in self.store:
+            name = elem[0]
+            if name:
+                selected.append( name )
+        return selected
+
+    def get_all( self ):
+        all = [x[0] for x in self.store]
+        return all
+
+    def add(self, url):
+        self.store.append([str(url)])
+
+    def remove_selected(self):
+        urls = self.get_selected()
+        self.remove(urls)
+
+    def get_text(self, urldata):
+        model, iter = urldata
+        return model.get_value( iter, 0 )
+
+    def remove(self, urldata):
+        model, iter = urldata
+        self.store.remove(iter)
 
 class YumexPluginView:
     def __init__( self, widget ):
