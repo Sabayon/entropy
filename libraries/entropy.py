@@ -869,7 +869,6 @@ class EquoInterface(TextInterface):
         try:
             etpRepositories[repodata['repoid']] = {}
             etpRepositories[repodata['repoid']]['description'] = repodata['description']
-            etpRepositories[repodata['repoid']]['packages'] = repodata['packages'][:]
             etpRepositories[repodata['repoid']]['configprotect'] = None
             etpRepositories[repodata['repoid']]['configprotectmask'] = None
         except KeyError:
@@ -877,6 +876,7 @@ class EquoInterface(TextInterface):
 
         if repodata['repoid'].endswith(".tbz2"): # dynamic repository
             try:
+                etpRepositories[repodata['repoid']]['packages'] = repodata['packages'][:]
                 etpRepositories[repodata['repoid']]['smartpackage'] = repodata['smartpackage']
                 etpRepositories[repodata['repoid']]['dbpath'] = repodata['dbpath']
                 etpRepositories[repodata['repoid']]['pkgpath'] = repodata['pkgpath']
@@ -889,7 +889,8 @@ class EquoInterface(TextInterface):
             etpRepositoriesOrder.add((1,repodata['repoid']))
         else:
             # XXX it's boring to keep this in sync with entropyConstants stuff, solutions?
-            etpRepositories[repodata['repoid']]['database'] = repodata['database']
+            etpRepositories[repodata['repoid']]['packages'] = [x+"/"+etpConst['product'] for x in repodata['packages']]
+            etpRepositories[repodata['repoid']]['database'] = repodata['database'] + "/" + etpConst['product'] + "/database/" + etpConst['currentarch']
             etpRepositories[repodata['repoid']]['dbcformat'] = repodata['dbcformat']
             etpRepositories[repodata['repoid']]['dbpath'] = etpConst['etpdatabaseclientdir'] + "/" + repodata['repoid'] + "/" + etpConst['product'] + "/" + etpConst['currentarch']
             # set dbrevision
@@ -897,7 +898,10 @@ class EquoInterface(TextInterface):
             if myrev == -1:
                 myrev = 0
             etpRepositories[repodata['repoid']]['dbrevision'] = str(myrev)
-            myrepocount = max([x[0] for x in etpRepositoriesOrder])+1
+            if etpRepositoriesOrder:
+                myrepocount = max([x[0] for x in etpRepositoriesOrder])+1
+            else:
+                myrepocount = 1
             etpRepositoriesOrder.add((myrepocount,repodata['repoid']))
             # clean world_available cache
             self.dumpTools.dumpobj(etpCache['world_available'], {})
@@ -906,8 +910,20 @@ class EquoInterface(TextInterface):
             # clean check_update_package_cache
             check_package_update_cache.clear()
             self.dumpTools.dumpobj(etpCache['check_package_update'],{})
+            # clear atomMatchCache
+            atomMatchCache.clear()
+            self.dumpTools.dumpobj(etpCache['atomMatch'],{})
+            generateDependsTreeCache.clear()
+            self.dumpTools.dumpobj(etpCache['generateDependsTree'],{})
+            for dbinfo in dbCacheStore:
+                if dbinfo == (etpCache['dbMatch']+etpConst['dbnamerepoprefix']+repodata['repoid']) or \
+                        dbinfo == (etpCache['dbSearch']+etpConst['dbnamerepoprefix']+repodata['repoid']) or \
+                        dbinfo == (etpCache['dbInfo']+etpConst['dbnamerepoprefix']+repodata['repoid']):
+                    dbCacheStore[dbinfo].clear()
+                    self.dumpTools.dumpobj(dbinfo,{})
+
             # save new etpRepositories to file
-            self.entropyTools.saveRepositoriesSettings(etpRepositories)
+            self.entropyTools.saveRepositorySettings(repodata)
 
     def removeRepository(self, repoid):
         # update etpRepositories
@@ -934,7 +950,9 @@ class EquoInterface(TextInterface):
             check_package_update_cache.clear()
             self.dumpTools.dumpobj(etpCache['check_package_update'],{})
             # save new etpRepositories to file
-            self.entropyTools.saveRepositoriesSettings(etpRepositories)
+            repodata = {}
+            repodata['repoid'] = repoid
+            self.entropyTools.saveRepositorySettings(repodata, remove = True)
 
 
     '''
@@ -1363,7 +1381,10 @@ class EquoInterface(TextInterface):
     def all_repositories_checksum(self):
         sum_hashes = ''
         for repo in etpRepositories:
-            dbconn = self.openRepositoryDatabase(repo)
+            try:
+                dbconn = self.openRepositoryDatabase(repo)
+            except exceptionTools.RepositoryError:
+                continue # repo not available
             sum_hashes += dbconn.tablesChecksum()
         return sum_hashes
 
@@ -1390,7 +1411,11 @@ class EquoInterface(TextInterface):
         available = set()
         self.setTotalCycles(len(etpRepositories))
         for repo in etpRepositories:
-            dbconn = self.openRepositoryDatabase(repo)
+            try:
+                dbconn = self.openRepositoryDatabase(repo)
+            except exceptionTools.RepositoryError:
+                self.cycleDone()
+                continue
             idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'])
             count = 0
             maxlen = len(idpackages)

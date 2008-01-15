@@ -1465,20 +1465,30 @@ def read_repositories_conf():
         f.close()
     return content
 
-def saveRepositoriesSettings(repodata):
+def getRepositorySettings(repoid):
+    repodata = etpRepositories[repoid].copy()
+    repodata['repoid'] = repoid
+    # remove extra paths from database and packages
+    repodata['packages'] = [x[:-len("/"+etpConst['product'])] for x in repodata['packages']]
+    repodata['database'] = repodata['database'][:-len("/"+etpConst['product']+"/database/"+etpConst['currentarch'])]
+    return repodata
+
+
+def saveRepositorySettings(repodata, remove = False):
+
+    if repodata['repoid'].endswith(".tbz2"):
+        return
 
     import shutil
     content = read_repositories_conf()
-    content = [x for x in content if not x.startswith("repository|")]
-    # inject new repodata
-    for repoid in repodata:
-        if repoid.endswith(".tbz2"): # skip live repositories
-            continue
-        line = "repository|%s|%s|%s|%s#%s\n" % (   repoid,
-                                                repodata[repoid]['description'],
-                                                ' '.join(repodata[repoid]['packages']),
-                                                repodata[repoid]['database'],
-                                                repodata[repoid]['dbcformat'],
+    content = [x for x in content if not x.startswith("repository|"+repodata['repoid'])]
+    if not remove:
+        # inject new repodata
+        line = "\nrepository|%s|%s|%s|%s#%s\n" % (   repodata['repoid'],
+                                                repodata['description'],
+                                                ' '.join(repodata['packages']),
+                                                repodata['database'],
+                                                repodata['dbcformat'],
                                             )
         content.append(line)
     if os.path.isfile(etpConst['repositoriesconf']):

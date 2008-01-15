@@ -67,9 +67,9 @@ class SpritzController(Controller):
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
-        #sys.stdout = self.output
-        #sys.stderr = self.output
-        #sys.stdin = self.input
+        sys.stdout = self.output
+        sys.stderr = self.output
+        sys.stdin = self.input
 
 
     def quit(self, widget=None, event=None ):
@@ -106,7 +106,7 @@ class SpritzController(Controller):
     def on_repoMirrorRemove_clicked( self, widget ):
         selection = self.repoMirrorsView.view.get_selection()
         urldata = selection.get_selected()
-        if urldata:
+        if urldata[1] != None:
             self.repoMirrorsView.remove(urldata)
 
     def on_repoMirrorEdit_clicked( self, widget ):
@@ -121,6 +121,9 @@ class SpritzController(Controller):
             self.repoMirrorsView.add(text)
 
     def on_addRepo_clicked( self, widget ):
+        self.addrepo_ui.repoSubmit.show()
+        self.addrepo_ui.repoSubmitEdit.hide()
+        self.addrepo_ui.repoidEntry.set_editable(True)
         self.addrepo_ui.repodbcformatEntry.set_active(0)
         self.addrepo_ui.repoidEntry.set_text("")
         self.addrepo_ui.repoDescEntry.set_text("")
@@ -128,30 +131,70 @@ class SpritzController(Controller):
         self.addrepo_ui.addRepoWin.show()
         self.repoMirrorsView.populate()
 
-    def on_repoSubmit_clicked( self, widget ):
-        repodata = {}
-        repodata['repoid'] = self.addrepo_ui.repoidEntry.get_text()
-        repodata['description'] = self.addrepo_ui.repoDescEntry.get_text()
-        repodata['packages'] = self.repoMirrorsView.get_all()
-        repodata['dbcformat'] = self.addrepo_ui.repodbcformatEntry.get_active_text()
-        repodata['database'] = self.addrepo_ui.repodbEntry.get_text()
-        # validate
+    def __loadRepodata(self, repodata):
+        self.addrepo_ui.repoidEntry.set_text(repodata['repoid'])
+        self.addrepo_ui.repoDescEntry.set_text(repodata['description'])
+        self.repoMirrorsView.store.clear()
+        for x in repodata['packages']:
+            self.repoMirrorsView.add(x)
+        idx = 0
+        # XXX hackish way fix it
+        while idx < 100:
+            self.addrepo_ui.repodbcformatEntry.set_active(idx)
+            if repodata['dbcformat'] == self.addrepo_ui.repodbcformatEntry.get_active_text():
+                break
+            idx += 1
+        self.addrepo_ui.repodbEntry.set_text(repodata['database'])
+
+    def on_repoSubmitEdit_clicked( self, widget ):
+        repodata = self.__getRepodata()
+        errors = self.__validateRepoSubmit(repodata, edit = True)
+        if errors:
+            okDialog( self.addrepo_ui.addRepoWin, _("Wrong entries, errors: %s") % (', '.join(errors),) )
+            return True
+        else:
+            self.Equo.removeRepository(repodata['repoid'])
+            initConfig_entropyConstants(etpSys['rootdir'])
+            self.Equo.addRepository(repodata)
+            initConfig_entropyConstants(etpSys['rootdir'])
+            self.setupRepoView()
+            self.addrepo_ui.addRepoWin.hide()
+            okDialog( self.ui.main, _("You should press %s button") % (_("Regenerate Cache")) )
+
+    def __validateRepoSubmit(self, repodata, edit = False):
         errors = []
         if not repodata['repoid']:
             errors.append(_('No Repository Identifier'))
         if repodata['repoid'] and etpRepositories.has_key(repodata['repoid']):
-            errors.append(_('Duplicated Repository Identifier'))
+            if not edit:
+                errors.append(_('Duplicated Repository Identifier'))
         if not repodata['description']:
             repodata['description'] = "No description"
         if not repodata['packages']:
             errors.append(_("No download mirrors"))
         if not repodata['database'] or not (repodata['database'].endswith("http://") or (not repodata['database'].endswith("ftp://"))):
             errors.append(_("Database URL must be HTTP or FTP"))
+        return errors
+
+    def __getRepodata(self):
+        repodata = {}
+        repodata['repoid'] = self.addrepo_ui.repoidEntry.get_text()
+        repodata['description'] = self.addrepo_ui.repoDescEntry.get_text()
+        repodata['packages'] = self.repoMirrorsView.get_all()
+        repodata['dbcformat'] = self.addrepo_ui.repodbcformatEntry.get_active_text()
+        repodata['database'] = self.addrepo_ui.repodbEntry.get_text()
+        return repodata
+
+    def on_repoSubmit_clicked( self, widget ):
+        repodata = self.__getRepodata()
+        # validate
+        errors = self.__validateRepoSubmit(repodata)
         if not errors:
             self.Equo.addRepository(repodata)
             initConfig_entropyConstants(etpSys['rootdir'])
             self.setupRepoView()
             self.addrepo_ui.addRepoWin.hide()
+            okDialog( self.ui.main, _("You must now press %s button") % (_("Update Repositories"),) )
         else:
             okDialog( self.addrepo_ui.addRepoWin, _("Wrong entries, errors: %s") % (', '.join(errors),) )
 
@@ -178,20 +221,7 @@ class SpritzController(Controller):
                 else:
                     repodata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
                 # fill window
-                self.addrepo_ui.repoidEntry.set_text(repodata['repoid'])
-                self.addrepo_ui.repoDescEntry.set_text(repodata['description'])
-                self.repoMirrorsView.store.clear()
-                for x in repodata['packages']:
-                    self.repoMirrorsView.add(x)
-                idx = 0
-                # XXX hackish way fix it
-                while idx < 100:
-                    self.addrepo_ui.repodbcformatEntry.set_active(idx)
-                    if repodata['dbcformat'] == self.addrepo_ui.repodbcformatEntry.get_active_text():
-                        break
-                    idx += 1
-                self.addrepo_ui.repodbEntry.set_text(repodata['database'])
-
+                self.__loadRepodata(repodata)
             else:
                 okDialog( self.addrepo_ui.addRepoWin, _("This Repository identification string is malformed") )
 
@@ -202,9 +232,26 @@ class SpritzController(Controller):
         # get text
         if repodata[1] != None:
             repoid = self.repoView.get_repoid(repodata)
+            if repoid == etpConst['officialrepositoryid']:
+                okDialog( self.ui.main, _("You! Why do you want to remove the main repository ?"))
+                return True
             self.Equo.removeRepository(repoid)
             initConfig_entropyConstants(etpSys['rootdir'])
             self.setupRepoView()
+            okDialog( self.ui.main, _("You must now either press %s or %s button") % (_("Regenerate Cache"),_("Update Repositories")) )
+
+    def on_repoEdit_clicked( self, widget ):
+        self.addrepo_ui.repoSubmit.hide()
+        self.addrepo_ui.repoSubmitEdit.show()
+        self.addrepo_ui.repoidEntry.set_editable(False)
+        # get selection
+        selection = self.repoView.view.get_selection()
+        repostuff = selection.get_selected()
+        if repostuff[1] != None:
+            repoid = self.repoView.get_repoid(repostuff)
+            repodata = self.Equo.entropyTools.getRepositorySettings(repoid)
+            self.__loadRepodata(repodata)
+            self.addrepo_ui.addRepoWin.show()
 
     def on_terminal_clear_activate(self, widget):
         self.output.text_written = []
@@ -562,6 +609,9 @@ class SpritzApplication(SpritzController,SpritzGUI):
         if alone:
             self.progress.total.hide()
         self.Equo.generate_cache(depcache = True, configcache = False)
+        # clear views
+        self.etpbase.clearPackages()
+        self.setupSpritz()
         if alone:
             self.progress.total.show()
 

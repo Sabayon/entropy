@@ -4330,14 +4330,14 @@
 </widget>
 
 <widget class="GtkWindow" id="addRepoWin">
-  <property name="width_request">550</property>
+  <property name="width_request">570</property>
   <property name="height_request">380</property>
   <property name="has_focus">True</property>
-  <property name="title" translatable="yes">Add Repository</property>
+  <property name="title" translatable="yes">Add/Edit Repository</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
   <property name="modal">True</property>
-  <property name="default_width">550</property>
+  <property name="default_width">570</property>
   <property name="default_height">380</property>
   <property name="resizable">False</property>
   <property name="destroy_with_parent">False</property>
@@ -4915,6 +4915,19 @@ gz</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
 	      <signal name="clicked" handler="on_repoSubmit_clicked" last_modification_time="Mon, 14 Jan 2008 22:15:25 GMT"/>
+	    </widget>
+	  </child>
+
+	  <child>
+	    <widget class="GtkButton" id="repoSubmitEdit">
+	      <property name="visible">True</property>
+	      <property name="can_default">True</property>
+	      <property name="can_focus">True</property>
+	      <property name="label">gtk-edit</property>
+	      <property name="use_stock">True</property>
+	      <property name="relief">GTK_RELIEF_NORMAL</property>
+	      <property name="focus_on_click">True</property>
+	      <signal name="clicked" handler="on_repoSubmitEdit_clicked" last_modification_time="Tue, 15 Jan 2008 17:10:20 GMT"/>
 	    </widget>
 	  </child>
 	</widget>
