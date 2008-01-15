@@ -293,6 +293,8 @@ class SpritzGUI:
 
         # setup add repository window
         self.console_menu_xml = gtk.glade.XML( const.GLADE_FILE, "terminalMenu",domain="yumex" )
+        self.console_menu = self.console_menu_xml.get_widget( "terminalMenu" )
+        self.console_menu_xml.signal_autoconnect(self)
 
     def setupGUI(self):
         ''' Setup the GUI'''
