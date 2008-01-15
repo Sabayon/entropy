@@ -67,9 +67,9 @@ class SpritzController(Controller):
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
-        sys.stdout = self.output
-        sys.stderr = self.output
-        sys.stdin = self.input
+        #sys.stdout = self.output
+        #sys.stderr = self.output
+        #sys.stdin = self.input
 
 
     def quit(self, widget=None, event=None ):
@@ -165,7 +165,33 @@ class SpritzController(Controller):
         text = inputBox(self.addrepo_ui.addRepoWin, _("Insert Repository"), _("Insert Repository identification string")+"   ")
         if text:
             if (text.startswith("repository|")) and (len(text.split("|")) == 5):
-                print text,"is valid"
+                # filling dict
+                textdata = text.split("|")
+                repodata = {}
+                repodata['repoid'] = textdata[1]
+                repodata['description'] = textdata[2]
+                repodata['packages'] = textdata[3].split()
+                repodata['database'] = textdata[4].split("#")[0]
+                dbcformat = textdata[4].split("#")[-1]
+                if dbcformat in etpConst['etpdatabasesupportedcformats']:
+                    repodata['dbcformat'] = dbcformat
+                else:
+                    repodata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
+                # fill window
+                self.addrepo_ui.repoidEntry.set_text(repodata['repoid'])
+                self.addrepo_ui.repoDescEntry.set_text(repodata['description'])
+                self.repoMirrorsView.store.clear()
+                for x in repodata['packages']:
+                    self.repoMirrorsView.add(x)
+                idx = 0
+                # XXX hackish way fix it
+                while idx < 100:
+                    self.addrepo_ui.repodbcformatEntry.set_active(idx)
+                    if repodata['dbcformat'] == self.addrepo_ui.repodbcformatEntry.get_active_text():
+                        break
+                    idx += 1
+                self.addrepo_ui.repodbEntry.set_text(repodata['database'])
+
             else:
                 okDialog( self.addrepo_ui.addRepoWin, _("This Repository identification string is malformed") )
 

@@ -143,7 +143,7 @@ class etpDatabase(TextInterface):
         self.connection = dbapi2.connect(dbFile,timeout=300.0)
         self.cursor = self.connection.cursor()
 
-        if not ((self.clientDatabase) or (self.readOnly)):
+        if not self.clientDatabase and not self.readOnly:
             # server side is calling
             # lock mirror remotely and ensure to have latest database revision
             self.doServerDatabaseSyncLock(self.noUpload)
@@ -223,7 +223,6 @@ class etpDatabase(TextInterface):
 
         # if the class is opened readOnly, close and forget
         if (self.readOnly):
-            #self.connection.rollback()
             self.cursor.close()
             self.connection.close()
             return
@@ -245,11 +244,7 @@ class etpDatabase(TextInterface):
             except:
                 self.createEclassesTable()
                 self.cleanupEclasses()
-            try:
-                self.cleanupNeeded()
-            except:
-                self.createNeededTable()
-                self.cleanupNeeded()
+            self.cleanupNeeded()
             self.cleanupDependencies()
 
         if (etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']) and (not etpDbStatus[etpConst['etpdatabasefilepath']]['bumped']):
@@ -278,8 +273,6 @@ class etpDatabase(TextInterface):
             except:
                 pass
             self.taintDatabase()
-        else:
-            self.discardChanges() # is it ok?
 
     def taintDatabase(self):
         if (self.clientDatabase): # if it's equo to open it, this should be avoided
@@ -317,11 +310,9 @@ class etpDatabase(TextInterface):
             return True
         return False
 
-    def discardChanges(self):
-        self.connection.rollback()
-
     # never use this unless you know what you're doing
     def initializeDatabase(self):
+        self.checkReadOnly()
         for sql in etpSQLInitDestroyAll.split(";"):
             if sql:
                 self.cursor.execute(sql+";")
@@ -1041,11 +1032,7 @@ class etpDatabase(TextInterface):
         # needed table
         for var in etpData['needed']:
 
-            try:
-                idneeded = self.isNeededAvailable(var)
-            except:
-                self.createNeededTable()
-                idneeded = self.isNeededAvailable(var)
+            idneeded = self.isNeededAvailable(var)
 
             if (idneeded == -1):
                 # create eclass
@@ -1419,10 +1406,12 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def removeMirrorEntries(self,mirrorname):
+        self.checkReadOnly()
         self.cursor.execute('DELETE FROM mirrorlinks WHERE mirrorname = "'+mirrorname+'"')
         self.commitChanges()
 
     def addMirrors(self,mirrorname,mirrorlist):
+        self.checkReadOnly()
         for x in mirrorlist:
             self.cursor.execute(
                 'INSERT into mirrorlinks VALUES '
@@ -1431,6 +1420,7 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def addCategory(self,category):
+        self.checkReadOnly()
         self.cursor.execute(
                 'INSERT into categories VALUES '
                 '(NULL,?)', (category,)
@@ -1444,6 +1434,7 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def addProtect(self,protect):
+        self.checkReadOnly()
         self.cursor.execute(
                 'INSERT into configprotectreference VALUES '
                 '(NULL,?)', (protect,)
@@ -1460,6 +1451,7 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def addSource(self,source):
+        self.checkReadOnly()
         self.cursor.execute(
                 'INSERT into sourcesreference VALUES '
                 '(NULL,?)', (source,)
@@ -1472,6 +1464,7 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def addDependency(self,dependency):
+        self.checkReadOnly()
         self.cursor.execute(
                 'INSERT into dependenciesreference VALUES '
                 '(NULL,?)', (dependency,)
@@ -1484,6 +1477,7 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def addKeyword(self,keyword):
+        self.checkReadOnly()
         self.cursor.execute(
                 'INSERT into keywordsreference VALUES '
                 '(NULL,?)', (keyword,)
@@ -1496,6 +1490,7 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def addUseflag(self,useflag):
+        self.checkReadOnly()
         self.cursor.execute(
                 'INSERT into useflagsreference VALUES '
                 '(NULL,?)', (useflag,)
@@ -1508,6 +1503,7 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def addEclass(self,eclass):
+        self.checkReadOnly()
         self.cursor.execute(
                 'INSERT into eclassesreference VALUES '
                 '(NULL,?)', (eclass,)
@@ -1524,22 +1520,20 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def addNeeded(self,needed):
+        self.checkReadOnly()
         self.cursor.execute(
                 'INSERT into neededreference VALUES '
                 '(NULL,?)', (needed,)
         )
         # get info about inserted value and return
-        try:
-            myneeded = self.isNeededAvailable(needed)
-        except:
-            self.createNeededTable()
-            myneeded = self.isNeededAvailable(needed)
+        myneeded = self.isNeededAvailable(needed)
         if myneeded != -1:
             return myneeded
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a needed library but then, fetching it returned -1. There's something broken.")
         self.commitChanges()
 
     def addLicense(self,pkglicense):
+        self.checkReadOnly()
         if not pkglicense:
             pkglicense = ' ' # workaround for broken license entries
         self.cursor.execute(
@@ -1555,6 +1549,7 @@ class etpDatabase(TextInterface):
 
     #addCompileFlags(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
     def addCompileFlags(self,chost,cflags,cxxflags):
+        self.checkReadOnly()
         self.cursor.execute(
                 'INSERT into flags VALUES '
                 '(NULL,?,?,?)', (chost,cflags,cxxflags,)
@@ -1569,18 +1564,22 @@ class etpDatabase(TextInterface):
 
     # date expressed the unix way
     def setDateCreation(self, idpackage, date):
+        self.checkReadOnly()
         self.cursor.execute('UPDATE extrainfo SET datecreation = (?) WHERE idpackage = (?)', (str(date),idpackage,))
         self.commitChanges()
 
     def setDigest(self, idpackage, digest):
+        self.checkReadOnly()
         self.cursor.execute('UPDATE extrainfo SET digest = (?) WHERE idpackage = (?)', (digest,idpackage,))
         self.commitChanges()
 
     def setDownloadURL(self, idpackage, url):
+        self.checkReadOnly()
         self.cursor.execute('UPDATE extrainfo SET download = (?) WHERE idpackage = (?)', (url,idpackage,))
         self.commitChanges()
 
     def setCategory(self, idpackage, category):
+        self.checkReadOnly()
         # create new category if it doesn't exist
         catid = self.isCategoryAvailable(category)
         if (catid == -1):
@@ -1590,22 +1589,27 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def setName(self, idpackage, name):
+        self.checkReadOnly()
         self.cursor.execute('UPDATE baseinfo SET name = (?) WHERE idpackage = (?)', (name,idpackage,))
         self.commitChanges()
 
     def setDependency(self, iddependency, dependency):
+        self.checkReadOnly()
         self.cursor.execute('UPDATE dependenciesreference SET dependency = (?) WHERE iddependency = (?)', (dependency,iddependency,))
         self.commitChanges()
 
     def setAtom(self, idpackage, atom):
+        self.checkReadOnly()
         self.cursor.execute('UPDATE baseinfo SET atom = (?) WHERE idpackage = (?)', (atom,idpackage,))
         self.commitChanges()
 
     def setSlot(self, idpackage, slot):
+        self.checkReadOnly()
         self.cursor.execute('UPDATE baseinfo SET slot = (?) WHERE idpackage = (?)', (slot,idpackage,))
         self.commitChanges()
 
     def setCounter(self, idpackage, counter):
+        self.checkReadOnly()
         try:
             self.cursor.execute('UPDATE counters SET counter = (?) WHERE idpackage = (?)', (counter,idpackage,))
         except:
@@ -1618,6 +1622,7 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def cleanupUseflags(self):
+        self.checkReadOnly()
         self.cursor.execute('SELECT idflag FROM useflagsreference')
         idflags = self.fetchall2set(self.cursor.fetchall())
         # now parse them into useflags table
@@ -1650,6 +1655,7 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def cleanupSources(self):
+        self.checkReadOnly()
         self.cursor.execute('SELECT idsource FROM sourcesreference')
         idsources = self.fetchall2set(self.cursor.fetchall())
         # now parse them into useflags table
@@ -1682,6 +1688,7 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def cleanupEclasses(self):
+        self.checkReadOnly()
         self.cursor.execute('SELECT idclass FROM eclassesreference')
         idclasses = self.fetchall2set(self.cursor.fetchall())
         # now parse them into useflags table
@@ -1714,6 +1721,7 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def cleanupNeeded(self):
+        self.checkReadOnly()
         self.cursor.execute('SELECT idneeded FROM neededreference')
         idneededs = self.fetchall2set(self.cursor.fetchall())
         # now parse them into useflags table
@@ -1746,6 +1754,7 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def cleanupDependencies(self):
+        self.checkReadOnly()
         self.cursor.execute('SELECT iddependency FROM dependenciesreference')
         iddeps = self.fetchall2set(self.cursor.fetchall())
         # now parse them into useflags table
@@ -1934,11 +1943,7 @@ class etpDatabase(TextInterface):
         except:
             self.createEclassesTable()
             data['eclasses'] = self.retrieveEclasses(idpackage)
-        try:
-            data['needed'] = self.retrieveNeeded(idpackage)
-        except:
-            self.createNeededTable()
-            data['needed'] = self.retrieveNeeded(idpackage)
+        data['needed'] = self.retrieveNeeded(idpackage)
 
         mirrornames = set()
         for x in data['sources']:
@@ -2313,70 +2318,65 @@ class etpDatabase(TextInterface):
 
     def retrieveApi(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveApi')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveApi')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT "etpapi" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-	api = self.cursor.fetchone()[0]
+        self.cursor.execute('SELECT "etpapi" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        api = self.cursor.fetchone()[0]
 
-	self.storeInfoCache(idpackage,'retrieveApi',api)
-	return api
+        self.storeInfoCache(idpackage,'retrieveApi',api)
+        return api
 
     def retrieveUseflags(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveUseflags')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveUseflags')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT flagname FROM useflags,useflagsreference WHERE useflags.idpackage = (?) and useflags.idflag = useflagsreference.idflag', (idpackage,))
-	flags = self.fetchall2set(self.cursor.fetchall())
-	
+        self.cursor.execute('SELECT flagname FROM useflags,useflagsreference WHERE useflags.idpackage = (?) and useflags.idflag = useflagsreference.idflag', (idpackage,))
+        flags = self.fetchall2set(self.cursor.fetchall())
 
-	self.storeInfoCache(idpackage,'retrieveUseflags',flags)
-	return flags
+        self.storeInfoCache(idpackage,'retrieveUseflags',flags)
+        return flags
 
     def retrieveEclasses(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveEclasses')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveEclasses')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT classname FROM eclasses,eclassesreference WHERE eclasses.idpackage = (?) and eclasses.idclass = eclassesreference.idclass', (idpackage,))
-	classes = self.fetchall2set(self.cursor.fetchall())
+        self.cursor.execute('SELECT classname FROM eclasses,eclassesreference WHERE eclasses.idpackage = (?) and eclasses.idclass = eclassesreference.idclass', (idpackage,))
+        classes = self.fetchall2set(self.cursor.fetchall())
 
-	self.storeInfoCache(idpackage,'retrieveEclasses',classes)
-	return classes
+        self.storeInfoCache(idpackage,'retrieveEclasses',classes)
+        return classes
 
     def retrieveNeeded(self, idpackage):
 
-        try:
-            self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
-        except:
-            self.createNeededTable()
-            self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
+        self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
         needed = self.fetchall2set(self.cursor.fetchall())
 
-	return needed
+        return needed
 
     def retrieveConflicts(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveConflicts')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveConflicts')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT "conflict" FROM conflicts WHERE idpackage = (?)', (idpackage,))
-	confl = self.fetchall2set(self.cursor.fetchall())
+        self.cursor.execute('SELECT "conflict" FROM conflicts WHERE idpackage = (?)', (idpackage,))
+        confl = self.fetchall2set(self.cursor.fetchall())
 
-	self.storeInfoCache(idpackage,'retrieveConflicts',confl)
-	return confl
+        self.storeInfoCache(idpackage,'retrieveConflicts',confl)
+        return confl
 
     def retrieveProvide(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveProvide')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveProvide')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT "atom" FROM provide WHERE idpackage = (?)', (idpackage,))
-	provide = self.fetchall2set(self.cursor.fetchall())
-	
-	self.storeInfoCache(idpackage,'retrieveProvide',provide)
-	return provide
+        self.cursor.execute('SELECT "atom" FROM provide WHERE idpackage = (?)', (idpackage,))
+        provide = self.fetchall2set(self.cursor.fetchall())
+
+        self.storeInfoCache(idpackage,'retrieveProvide',provide)
+        return provide
 
     def retrieveDependenciesList(self, idpackage):
 
@@ -3072,140 +3072,141 @@ class etpDatabase(TextInterface):
             return self.cursor.fetchall()
 
     def listAllIdpackages(self, branch = None):
-	branchstring = ''
+        branchstring = ''
         searchkeywords = []
-	if branch:
+        if branch:
             searchkeywords.append(branch)
-	    branchstring = ' where branch = (?)'
-	self.cursor.execute('SELECT idpackage FROM baseinfo'+branchstring, searchkeywords)
-	return self.fetchall2set(self.cursor.fetchall())
+            branchstring = ' where branch = (?)'
+        self.cursor.execute('SELECT idpackage FROM baseinfo'+branchstring, searchkeywords)
+        return self.fetchall2set(self.cursor.fetchall())
 
     def listAllDependencies(self):
-	self.cursor.execute('SELECT * FROM dependenciesreference')
-	return self.cursor.fetchall()
+        self.cursor.execute('SELECT * FROM dependenciesreference')
+        return self.cursor.fetchall()
 
     def listAllBranches(self):
 
-	if (self.xcache):
-	    cached = self.fetchSearchCache((None,),'listAllBranches')
-	    if cached != None: return cached
+        if (self.xcache):
+            cached = self.fetchSearchCache((None,),'listAllBranches')
+            if cached != None: return cached
 
-	self.cursor.execute('SELECT branch FROM baseinfo')
+        self.cursor.execute('SELECT branch FROM baseinfo')
         results = self.fetchall2set(self.cursor.fetchall())
 
-	if (self.xcache):
-	    self.storeSearchCache((None,),'listAllBranches',results)
-	return results
+        if (self.xcache):
+            self.storeSearchCache((None,),'listAllBranches',results)
+        return results
 
     def listIdPackagesInIdcategory(self,idcategory):
-	self.cursor.execute('SELECT idpackage FROM baseinfo where idcategory = (?)', (idcategory,))
-	return self.fetchall2set(self.cursor.fetchall())
+        self.cursor.execute('SELECT idpackage FROM baseinfo where idcategory = (?)', (idcategory,))
+        return self.fetchall2set(self.cursor.fetchall())
 
     def listIdpackageDependencies(self, idpackage):
-	self.cursor.execute('SELECT iddependency FROM dependencies where idpackage = (?)', (idpackage,))
-	iddeps = self.fetchall2set(self.cursor.fetchall())
-	if not iddeps:
-	    return ()
-	
-	result = set()
-	query = 'WHERE iddependency = '
-	counter = 0
-	run = False
-	for iddep in iddeps:
-	    run = True
-	    counter += 1
-	    query += str(iddep)+' OR iddependency = '
-	    if counter > 25:
-		counter = 0
-		query = query[:-19]
-		self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference '+query)
-		qry = self.cursor.fetchall()
-		for x in qry:
-		    result.add(x)
-		query = 'WHERE iddependency = '
-		run = False
-	
-	if (run):
-	    query = query[:-19]
-	    self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference '+query)
-	    qry = self.cursor.fetchall()
-	    for x in qry:
-		result.add(x)
+        self.cursor.execute('SELECT iddependency FROM dependencies where idpackage = (?)', (idpackage,))
+        iddeps = self.fetchall2set(self.cursor.fetchall())
+        if not iddeps:
+            return ()
 
-	return result
+        result = set()
+        query = 'WHERE iddependency = '
+        counter = 0
+        run = False
+        for iddep in iddeps:
+            run = True
+            counter += 1
+            query += str(iddep)+' OR iddependency = '
+            if counter > 25:
+                counter = 0
+                query = query[:-19]
+                self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference '+query)
+                qry = self.cursor.fetchall()
+                for x in qry:
+                    result.add(x)
+                query = 'WHERE iddependency = '
+                run = False
+
+        if (run):
+            query = query[:-19]
+            self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference '+query)
+            qry = self.cursor.fetchall()
+            for x in qry:
+                result.add(x)
+
+        return result
 
     def listBranchPackagesTbz2(self, branch):
         result = set()
         pkglist = self.listBranchPackages(branch)
         for pkg in pkglist:
-	    idpackage = pkg[1]
-	    url = self.retrieveDownloadURL(idpackage)
-	    if url:
-		result.add(os.path.basename(url))
-	if (result):
+            idpackage = pkg[1]
+            url = self.retrieveDownloadURL(idpackage)
+            if url:
+                result.add(os.path.basename(url))
+        if (result):
             result = list(result)
-	    result.sort()
-	return result
+            result.sort()
+        return result
 
     def listBranchPackages(self, branch):
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE branch = (?)', (branch,))
-	return self.cursor.fetchall()
+        self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE branch = (?)', (branch,))
+        return self.cursor.fetchall()
 
     def listAllFiles(self, clean = False):
-	self.cursor.execute('SELECT file FROM content')
-	if clean:
-	    return self.fetchall2set(self.cursor.fetchall())
-	else:
-	    return self.fetchall2list(self.cursor.fetchall())
+        self.cursor.execute('SELECT file FROM content')
+        if clean:
+            return self.fetchall2set(self.cursor.fetchall())
+        else:
+            return self.fetchall2list(self.cursor.fetchall())
 
     def listAllCategories(self):
-	self.cursor.execute('SELECT idcategory,category FROM categories')
-	return self.cursor.fetchall()
+        self.cursor.execute('SELECT idcategory,category FROM categories')
+        return self.cursor.fetchall()
 
     def listConfigProtectDirectories(self, mask = False):
-	dirs = set()
-	query = 'SELECT idprotect FROM configprotect'
-	if mask:
-	    query += 'mask'
-	try:
-	    self.cursor.execute(query)
-	except:
-	    self.createProtectTable()
-	    self.cursor.execute(query)
-	idprotects = self.fetchall2set(self.cursor.fetchall())
-	
-	if not idprotects:
-	    return []
-	
-	results = set()
-	query = 'WHERE idprotect = '
-	counter = 0
-	run = False
-	for idprotect in idprotects:
-	    run = True
-	    counter += 1
-	    query += str(idprotect)+' OR idprotect = '
-	    if counter > 25:
-		counter = 0
-		query = query[:-16]
-		self.cursor.execute('SELECT protect FROM configprotectreference '+query)
-		results.update(self.fetchall2set(self.cursor.fetchall()))
-		query = 'WHERE idprotect = '
-		run = False
-	
-	if (run):
-	    query = query[:-16]
-	    self.cursor.execute('SELECT protect FROM configprotectreference '+query)
-	    results.update(self.fetchall2set(self.cursor.fetchall()))
-	
-	for result in results:
-	    for x in result.split():
-		dirs.add(x)
-	dirs = list(dirs)
-	dirs.sort()
-	return dirs
-    
+        dirs = set()
+        query = 'SELECT idprotect FROM configprotect'
+        if mask:
+            query += 'mask'
+        try:
+            self.cursor.execute(query)
+        except:
+            self.createProtectTable()
+            self.cursor.execute(query)
+        idprotects = self.fetchall2set(self.cursor.fetchall())
+
+        if not idprotects:
+            return []
+
+        results = set()
+        query = 'WHERE idprotect = '
+        counter = 0
+        run = False
+        for idprotect in idprotects:
+            run = True
+            counter += 1
+            query += str(idprotect)+' OR idprotect = '
+            if counter > 25:
+                counter = 0
+                query = query[:-16]
+                self.cursor.execute('SELECT protect FROM configprotectreference '+query)
+                results.update(self.fetchall2set(self.cursor.fetchall()))
+                query = 'WHERE idprotect = '
+                run = False
+
+        if (run):
+            query = query[:-16]
+            self.cursor.execute('SELECT protect FROM configprotectreference '+query)
+            results.update(self.fetchall2set(self.cursor.fetchall()))
+
+        for result in results:
+            for x in result.split():
+                dirs.add(x)
+        dirs = list(dirs)
+        dirs.sort()
+        return dirs
+
     def switchBranch(self, idpackage, tobranch):
+        self.checkReadOnly()
 
         mycat = self.retrieveCategory(idpackage)
         myname = self.retrieveName(idpackage)
@@ -3256,74 +3257,80 @@ class etpDatabase(TextInterface):
 #
 
     def addPackageToInstalledTable(self, idpackage, repositoryName):
-	self.cursor.execute(
-		'INSERT into installedtable VALUES '
-		'(?,?)'
-		, (	idpackage,
-			repositoryName,
-			)
-	)
-	self.commitChanges()
+        self.checkReadOnly()
+        self.cursor.execute(
+                'INSERT into installedtable VALUES '
+                '(?,?)'
+                , (	idpackage,
+                        repositoryName,
+                        )
+        )
+        self.commitChanges()
 
     def retrievePackageFromInstalledTable(self, idpackage):
-	result = 'Not available'
-	try:
-	    self.cursor.execute('SELECT repositoryname FROM installedtable WHERE idpackage = (?)', (idpackage,))
-	    return self.cursor.fetchone()[0] # it's ok because it's inside try/except
-	except:
-	    pass
-	return result
+        self.checkReadOnly()
+        result = 'Not available'
+        try:
+            self.cursor.execute('SELECT repositoryname FROM installedtable WHERE idpackage = (?)', (idpackage,))
+            return self.cursor.fetchone()[0] # it's ok because it's inside try/except
+        except:
+            pass
+        return result
 
     def removePackageFromInstalledTable(self, idpackage):
-	try:
-	    self.cursor.execute('DELETE FROM installedtable WHERE idpackage = (?)', (idpackage,))
-	    self.commitChanges()
-	except:
-	    self.createInstalledTable()
+        self.checkReadOnly()
+        try:
+            self.cursor.execute('DELETE FROM installedtable WHERE idpackage = (?)', (idpackage,))
+            self.commitChanges()
+        except:
+            self.createInstalledTable()
 
     def removePackageFromDependsTable(self, idpackage):
-	try:
-	    self.cursor.execute('DELETE FROM dependstable WHERE idpackage = (?)', (idpackage,))
-	    self.commitChanges()
-	    return 0
-	except:
-	    return 1 # need reinit
+        self.checkReadOnly()
+        try:
+            self.cursor.execute('DELETE FROM dependstable WHERE idpackage = (?)', (idpackage,))
+            self.commitChanges()
+            return 0
+        except:
+            return 1 # need reinit
 
     def removeDependencyFromDependsTable(self, iddependency):
-	try:
-	    self.cursor.execute('DELETE FROM dependstable WHERE iddependency = (?)',(iddependency,))
-	    self.commitChanges()
-	    return 0
-	except:
-	    return 1 # need reinit
+        self.checkReadOnly()
+        try:
+            self.cursor.execute('DELETE FROM dependstable WHERE iddependency = (?)',(iddependency,))
+            self.commitChanges()
+            return 0
+        except:
+            return 1 # need reinit
 
     # temporary/compat functions
     def createDependsTable(self):
-	self.cursor.execute('DROP TABLE IF EXISTS dependstable;')
-	self.cursor.execute('CREATE TABLE dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );')
-	# this will be removed when dependstable is refilled properly
-	self.cursor.execute(
-		'INSERT into dependstable VALUES '
-		'(?,?)'
-		, (	-1,
-			-1,
-			)
-	)
-	self.commitChanges()
+        self.checkReadOnly()
+        self.cursor.execute('DROP TABLE IF EXISTS dependstable;')
+        self.cursor.execute('CREATE TABLE dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );')
+        # this will be removed when dependstable is refilled properly
+        self.cursor.execute(
+                'INSERT into dependstable VALUES '
+                '(?,?)'
+                , (	-1,
+                        -1,
+                        )
+        )
+        self.commitChanges()
 
     def sanitizeDependsTable(self):
-	self.cursor.execute('DELETE FROM dependstable where iddependency = -1')
-	self.commitChanges()
+        self.cursor.execute('DELETE FROM dependstable where iddependency = -1')
+        self.commitChanges()
 
     def isDependsTableSane(self):
-	try:
-	    self.cursor.execute('SELECT iddependency FROM dependstable WHERE iddependency = -1')
-	except:
-	    return False # table does not exist, please regenerate and re-run
+        try:
+            self.cursor.execute('SELECT iddependency FROM dependstable WHERE iddependency = -1')
+        except:
+            return False # table does not exist, please regenerate and re-run
         status = self.cursor.fetchone()
         if status:
             return False
-        
+
         # dependstable should always be bigger than baseinfo on a sane system
         # XXX: maybe finding a better way to really verify dependstable sanity?
         self.cursor.execute('select count(*) from baseinfo')
@@ -3339,9 +3346,9 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def storeXpakMetadata(self, idpackage, blob):
-	self.cursor.execute(
-		'INSERT into xpakdata VALUES '
-		'(?,?)', ( int(idpackage), buffer(blob), )
+        self.cursor.execute(
+                'INSERT into xpakdata VALUES '
+                '(?,?)', ( int(idpackage), buffer(blob), )
         )
         self.commitChanges()
 
@@ -3422,26 +3429,26 @@ class etpDatabase(TextInterface):
             self.cursor.execute("DELETE FROM treeupdates WHERE repository = (?)", (repository,))
         except:
             self.createTreeupdatesTable()
-	self.commitChanges()
+        self.commitChanges()
 
     #
     # FIXME: remove these when 1.0 will be out
     #
-    
+
     def createTreeupdatesTable(self):
-	self.cursor.execute('DROP TABLE IF EXISTS treeupdates;')
-	self.cursor.execute('CREATE TABLE treeupdates ( repository VARCHAR PRIMARY KEY, digest VARCHAR );')
-	self.commitChanges()
-    
+        self.cursor.execute('DROP TABLE IF EXISTS treeupdates;')
+        self.cursor.execute('CREATE TABLE treeupdates ( repository VARCHAR PRIMARY KEY, digest VARCHAR );')
+        self.commitChanges()
+
     def createTreeupdatesactionsTable(self):
-	self.cursor.execute('DROP TABLE IF EXISTS treeupdatesactions;')
-	self.cursor.execute('CREATE TABLE treeupdatesactions ( idupdate INTEGER PRIMARY KEY, repository VARCHAR, command VARCHAR );')
-	self.commitChanges()
-    
+        self.cursor.execute('DROP TABLE IF EXISTS treeupdatesactions;')
+        self.cursor.execute('CREATE TABLE treeupdatesactions ( idupdate INTEGER PRIMARY KEY, repository VARCHAR, command VARCHAR );')
+        self.commitChanges()
+
     def createSizesTable(self):
-	self.cursor.execute('DROP TABLE IF EXISTS sizes;')
-	self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
-	self.commitChanges()
+        self.cursor.execute('DROP TABLE IF EXISTS sizes;')
+        self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
+        self.commitChanges()
 
     def createContentTypeColumn(self):
         try: # if database disk image is malformed, won't raise exception here
@@ -3449,61 +3456,59 @@ class etpDatabase(TextInterface):
             self.cursor.execute('UPDATE content SET type = "0"')
         except:
             pass
-	self.commitChanges()
+        self.commitChanges()
 
     def createTriggerTable(self):
-	self.cursor.execute('CREATE TABLE triggers ( idpackage INTEGER PRIMARY KEY, data BLOB );')
-	self.commitChanges()
+        self.cursor.execute('CREATE TABLE triggers ( idpackage INTEGER PRIMARY KEY, data BLOB );')
+        self.commitChanges()
 
     def createTriggerColumn(self):
-	self.cursor.execute('ALTER TABLE baseinfo ADD COLUMN trigger INTEGER;')
-	self.cursor.execute('UPDATE baseinfo SET trigger = 0')
-	self.commitChanges()
+        self.cursor.execute('ALTER TABLE baseinfo ADD COLUMN trigger INTEGER;')
+        self.cursor.execute('UPDATE baseinfo SET trigger = 0')
+        self.commitChanges()
 
     def createEclassesTable(self):
-	self.cursor.execute('DROP TABLE IF EXISTS eclasses;')
-	self.cursor.execute('DROP TABLE IF EXISTS eclassesreference;')
-	self.cursor.execute('CREATE TABLE eclasses ( idpackage INTEGER, idclass INTEGER );')
-	self.cursor.execute('CREATE TABLE eclassesreference ( idclass INTEGER PRIMARY KEY, classname VARCHAR );')
-	self.commitChanges()
+        self.cursor.execute('DROP TABLE IF EXISTS eclasses;')
+        self.cursor.execute('DROP TABLE IF EXISTS eclassesreference;')
+        self.cursor.execute('CREATE TABLE eclasses ( idpackage INTEGER, idclass INTEGER );')
+        self.cursor.execute('CREATE TABLE eclassesreference ( idclass INTEGER PRIMARY KEY, classname VARCHAR );')
+        self.commitChanges()
 
     def createNeededTable(self):
-	self.cursor.execute('DROP TABLE IF EXISTS needed;')
-	self.cursor.execute('DROP TABLE IF EXISTS neededreference;')
-	self.cursor.execute('CREATE TABLE needed ( idpackage INTEGER, idneeded INTEGER );')
-	self.cursor.execute('CREATE TABLE neededreference ( idneeded INTEGER PRIMARY KEY, library VARCHAR );')
-	self.commitChanges()
-    
+        self.cursor.execute('CREATE TABLE needed ( idpackage INTEGER, idneeded INTEGER );')
+        self.cursor.execute('CREATE TABLE neededreference ( idneeded INTEGER PRIMARY KEY, library VARCHAR );')
+        self.commitChanges()
+
     def createSystemPackagesTable(self):
         self.cursor.execute('CREATE TABLE systempackages ( idpackage INTEGER PRIMARY KEY );')
-	self.commitChanges()
-    
+        self.commitChanges()
+
     def createInjectedTable(self):
         self.cursor.execute('CREATE TABLE injected ( idpackage INTEGER PRIMARY KEY );')
-	self.commitChanges()
-    
+        self.commitChanges()
+
     def createProtectTable(self):
-	self.cursor.execute('DROP TABLE IF EXISTS configprotect;')
-	self.cursor.execute('DROP TABLE IF EXISTS configprotectmask;')
-	self.cursor.execute('DROP TABLE IF EXISTS configprotectreference;')
-	self.cursor.execute('CREATE TABLE configprotect ( idpackage INTEGER PRIMARY KEY, idprotect INTEGER );')
-	self.cursor.execute('CREATE TABLE configprotectmask ( idpackage INTEGER PRIMARY KEY, idprotect INTEGER );')
-	self.cursor.execute('CREATE TABLE configprotectreference ( idprotect INTEGER PRIMARY KEY, protect VARCHAR );')
-	self.commitChanges()
+        self.cursor.execute('DROP TABLE IF EXISTS configprotect;')
+        self.cursor.execute('DROP TABLE IF EXISTS configprotectmask;')
+        self.cursor.execute('DROP TABLE IF EXISTS configprotectreference;')
+        self.cursor.execute('CREATE TABLE configprotect ( idpackage INTEGER PRIMARY KEY, idprotect INTEGER );')
+        self.cursor.execute('CREATE TABLE configprotectmask ( idpackage INTEGER PRIMARY KEY, idprotect INTEGER );')
+        self.cursor.execute('CREATE TABLE configprotectreference ( idprotect INTEGER PRIMARY KEY, protect VARCHAR );')
+        self.commitChanges()
 
     def createInstalledTable(self):
-	self.cursor.execute('DROP TABLE IF EXISTS installedtable;')
-	self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER PRIMARY KEY, repositoryname VARCHAR );')
-	self.commitChanges()
+        self.cursor.execute('DROP TABLE IF EXISTS installedtable;')
+        self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER PRIMARY KEY, repositoryname VARCHAR );')
+        self.commitChanges()
 
     def addDependRelationToDependsTable(self, iddependency, idpackage):
-	self.cursor.execute(
-		'INSERT into dependstable VALUES '
-		'(?,?)'
-		, (	iddependency,
-			idpackage,
-			)
-	)
+        self.cursor.execute(
+                'INSERT into dependstable VALUES '
+                '(?,?)'
+                , (	iddependency,
+                        idpackage,
+                        )
+        )
         if etpConst['uid'] == 0 and self.dbname == "etpdb": # force commit even if readonly, this will allow to automagically fix dependstable server side
             self.connection.commit()                        # we don't care much about syncing the database since it's quite trivial
 	self.commitChanges()
@@ -3519,10 +3524,10 @@ class etpDatabase(TextInterface):
         count = 0
         total = len(depends)
         for depend in depends:
-	    count += 1
-	    atom = depend[1]
-	    iddep = depend[0]
-	    if output:
+            count += 1
+            atom = depend[1]
+            iddep = depend[0]
+            if output:
                 self.updateProgress(
                                         red("Resolving %s") % (darkgreen(atom),),
                                         importance = 0,
@@ -3530,9 +3535,9 @@ class etpDatabase(TextInterface):
                                         back = True,
                                         count = (count,total)
                                     )
-	    match = self.atomMatch(atom)
-	    if (match[0] != -1):
-	        self.addDependRelationToDependsTable(iddep,match[0])
+            match = self.atomMatch(atom)
+            if (match[0] != -1):
+                self.addDependRelationToDependsTable(iddep,match[0])
         del depends
         # now validate dependstable
         self.sanitizeDependsTable()
@@ -3567,11 +3572,11 @@ class etpDatabase(TextInterface):
     # function that validate one atom by reading keywords settings
     # idpackageValidatorCache = {} >> function cache
     def idpackageValidator(self,idpackage):
-        
+
         reponame = self.dbname[5:]
         cached = idpackageValidatorCache.get((idpackage,reponame))
         if cached != None: return cached
-        
+
         # check if package.mask need it masked
         for atom in etpConst['packagemasking']['mask']:
             matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
@@ -3581,7 +3586,7 @@ class etpDatabase(TextInterface):
                 # sorry, masked
                 idpackageValidatorCache[(idpackage,reponame)] = -1
                 return -1
-        
+
         mykeywords = self.retrieveKeywords(idpackage)
         # XXX WORKAROUND
         if not mykeywords: mykeywords = [''] # ** is fine then
@@ -3591,9 +3596,9 @@ class etpDatabase(TextInterface):
                 # found! all fine
                 idpackageValidatorCache[(idpackage,reponame)] = idpackage
                 return idpackage
-        
+
         #### IT IS MASKED!!
-        
+
         # see if we can unmask by just lookin into package.unmask stuff -> etpConst['packagemasking']['unmask']
         for atom in etpConst['packagemasking']['unmask']:
             matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
@@ -3602,7 +3607,7 @@ class etpDatabase(TextInterface):
             if idpackage in matches[0]:
                 idpackageValidatorCache[(idpackage,reponame)] = idpackage
                 return idpackage
-        
+
         # if we get here, it means we didn't find mykeywords in etpConst['keywords'], we need to seek etpConst['packagemasking']['keywords']
         # seek in repository first
         if reponame in etpConst['packagemasking']['keywords']['repositories']:

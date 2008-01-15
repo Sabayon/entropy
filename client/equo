@@ -352,14 +352,8 @@ except Exception:
     print
     print_error(darkred("!!! If the error is about missing tables in the database, just run 'equo database generate' again !!!"))
     print_error(blue("Ok, back here. Let me see if you are connected to the Internet. Yes, I am blue now, so?"))
-    testlink = "http://www.google.com"
-    if etpRepositories.has_key(etpConst['officialrepositoryid']):
-        try:
-            testlink = etpRepositories[etpConst['officialrepositoryid']]['database']
-        except KeyError:
-            pass
 
-    conntest = entropyTools.get_remote_data(testlink)
+    conntest = entropyTools.get_remote_data(etpConst['conntestlink'])
     if (conntest != False):
         print_error(darkgreen("Of course you are on the Internet..."))
         rc = Text.askQuestion("   Erm... Can I send the error to my creators so they can fix me?")

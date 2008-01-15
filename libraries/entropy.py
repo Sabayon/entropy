@@ -152,9 +152,10 @@ class EquoInterface(TextInterface):
     def loadRepositoryDatabase(self, repositoryName, xcache = True, indexing = True):
         dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
         if not os.path.isfile(dbfile):
-            rc = self.fetch_repository_if_not_available(repositoryName)
-            if rc != 0:
-                raise exceptionTools.RepositoryError("RepositoryError: problems fetching database for repo id: "+reponame)
+            if repositoryName not in repo_error_messages_cache:
+                self.updateProgress(darkred("Repository %s hasn't been downloaded yet !!!") % (repositoryName,), importance = 2, type = "warning")
+                repo_error_messages_cache.add(repositoryName)
+            raise exceptionTools.RepositoryError("RepositoryError: repository %s hasn't been downloaded yet." % (repositoryName,))
         conn = self.databaseTools.etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = etpConst['dbnamerepoprefix']+repositoryName, xcache = xcache, indexing = indexing)
         # initialize CONFIG_PROTECT
         if (etpRepositories[repositoryName]['configprotect'] == None) or \
@@ -635,7 +636,7 @@ class EquoInterface(TextInterface):
         dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
         if not os.path.isfile(dbfile):
             # sync
-            repoConn = self.Repositories(reponames = [reponame])
+            repoConn = self.Repositories(reponames = [reponame], noEquoCheck = True)
             rc = repoConn.sync()
             del repoConn
             if os.path.isfile(dbfile):
@@ -663,12 +664,17 @@ class EquoInterface(TextInterface):
 
         repoResults = {}
         for repo in etpRepositories:
-            # sync database if not available
-            rc = self.fetch_repository_if_not_available(repo)
-            if (rc != 0):
-                continue
+
+            # check if repo exists
+            fetch = self.fetch_repository_if_not_available(repo)
+            if fetch != 0:
+                continue # cannot fetch repo, excluding
+
             # open database
-            dbconn = self.openRepositoryDatabase(repo)
+            try:
+                dbconn = self.openRepositoryDatabase(repo)
+            except exceptionTools.RepositoryError:
+                continue # repo not available
 
             # search
             query = dbconn.atomMatch(atom, caseSensitive = caseSensitive, matchSlot = matchSlot, matchBranches = matchBranches)
@@ -1372,7 +1378,8 @@ class EquoInterface(TextInterface):
                 if disk_cache != None:
                     if disk_cache['repo_digest'] == repo_digest and \
                         disk_cache['branch'] == branch and \
-                        disk_cache['client_digest'] == client_digest:
+                        disk_cache['client_digest'] == client_digest and \
+                        disk_cache['etpRepositories_keys'] == etpRepositories.keys():
                         return disk_cache['available']
             except:
                 try:
@@ -1404,6 +1411,7 @@ class EquoInterface(TextInterface):
                 mycache['client_digest'] = client_digest
                 mycache['available'] = available.copy()
                 mycache['branch'] = branch
+                mycache['etpRepositories_keys'] = etpRepositories.keys()[:]
                 # save cache
                 self.dumpTools.dumpobj(etpCache['world_available'], mycache)
                 mycache.clear()
@@ -1422,6 +1430,7 @@ class EquoInterface(TextInterface):
                 if disk_cache != None:
                     if disk_cache['db_digest'] == db_digest and \
                         disk_cache['empty_deps'] == empty_deps and \
+                        disk_cache['etpRepositories_keys'] == etpRepositories.keys() and \
                         disk_cache['branch'] == branch:
                         return disk_cache['update'],disk_cache['remove'],disk_cache['fine']
             except:
@@ -1516,6 +1525,7 @@ class EquoInterface(TextInterface):
                 mycache['fine'] = fine.copy()
                 mycache['empty_deps'] = empty_deps
                 mycache['branch'] = branch
+                mycache['etpRepositories_keys'] = etpRepositories.keys()[:]
                 # save cache
                 self.dumpTools.dumpobj(etpCache['world_update'], mycache)
                 mycache.clear()
@@ -1911,8 +1921,8 @@ class EquoInterface(TextInterface):
     '''
         Repository interface :: begin
     '''
-    def Repositories(self, reponames = [], forceUpdate = False):
-        conn = RepoInterface(EquoInstance = self, reponames = reponames, forceUpdate = forceUpdate)
+    def Repositories(self, reponames = [], forceUpdate = False, noEquoCheck = False):
+        conn = RepoInterface(EquoInstance = self, reponames = reponames, forceUpdate = forceUpdate, noEquoCheck = noEquoCheck)
         return conn
     '''
         Repository interface :: end
@@ -3445,7 +3455,7 @@ class FileUpdatesInterface:
 #
 class RepoInterface:
 
-    def __init__(self, EquoInstance, reponames = [], forceUpdate = False):
+    def __init__(self, EquoInstance, reponames = [], forceUpdate = False, noEquoCheck = False):
 
         self.Entropy = EquoInstance
         try:
@@ -3458,6 +3468,7 @@ class RepoInterface:
         self.syncErrors = False
         self.dbupdated = False
         self.newEquo = False
+        self.noEquoCheck = noEquoCheck
         self.alreadyUpdated = 0
         self.notAvailable = 0
 
@@ -3470,9 +3481,9 @@ class RepoInterface:
             raise exceptionTools.MissingParameter("MissingParameter: no repositories specified in %s" % (etpConst['repositoriesconf'],))
 
         # Test network connectivity
-        conntest = self.Entropy.entropyTools.get_remote_data("http://svn.sabayonlinux.org")
+        conntest = self.Entropy.entropyTools.get_remote_data(etpConst['conntestlink'])
         if not conntest:
-            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: you are not connected to the Internet. You should.")
+            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: Cannot connect to ")
 
         if not self.reponames:
             for x in etpRepositories:
@@ -3808,10 +3819,11 @@ class RepoInterface:
             return 128
 
         rc = False
-        try:
-            rc = self.Entropy.check_equo_updates()
-        except:
-            pass
+        if not self.noEquoCheck:
+            try:
+                rc = self.Entropy.check_equo_updates()
+            except:
+                pass
 
         if rc:
             self.newEquo = True
@@ -3821,10 +3833,11 @@ class RepoInterface:
                                             header = darkred(" !! ")
                             )
 
-        if (self.notAvailable > 0):
-            return 1
-        elif (self.notAvailable >= len(self.reponames)):
+        if (self.notAvailable >= len(self.reponames)):
             return 2
+        elif (self.notAvailable > 0):
+            return 1
+
         return 0
 
 '''

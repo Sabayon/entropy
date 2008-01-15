@@ -417,6 +417,7 @@ repositoryUpdatesDigestCache_db = {}
 repositoryUpdatesDigestCache_disk = {}
 
 fetch_repository_if_not_available_cache = {}
+repo_error_messages_cache = set()
 
 ### Application disk cache
 def const_resetCache():
@@ -446,6 +447,7 @@ def const_resetCache():
     repositoryUpdatesDigestCache_disk.clear()
     check_package_update_cache.clear()
     fetch_repository_if_not_available_cache.clear()
+    repo_error_messages_cache.clear()
 
 # Inside it you'll find instantiated vartree classes
 portageRoots = {}
@@ -624,6 +626,7 @@ def initConfig_entropyConstants(rootdir):
                                     '/lib/modules', '/etc/env.d', '/etc/gconf', '/etc/runlevels', '/lib/splash/cache', '/usr/share/mime', '/etc/portage'
         ],
         'officialrepositoryid': "sabayonlinux.org", # our official repository name
+        'conntestlink': "http://www.google.com", 
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|", # tag to append to .tbz2 file before entropy database (must be 32bytes)
         'pidfile': "/var/run/equo.pid",
         'applicationlock': False,
@@ -855,6 +858,10 @@ def initConfig_entropyConstants(rootdir):
             elif (line.find("officialrepositoryid|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 officialreponame = line.split("|")[1]
                 etpConst['officialrepositoryid'] = officialreponame
+
+            elif (line.find("conntestlink|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+                conntestlink = line.split("|")[1]
+                etpConst['conntestlink'] = conntestlink
 
     # align etpConst['binaryurirelativepath'] and etpConst['etpurirelativepath'] with etpConst['product']
     etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['binaryurirelativepath']
