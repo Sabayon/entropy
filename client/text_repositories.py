@@ -64,7 +64,7 @@ def showRepositories():
             sourcecount += 1
             print_info(red("\t\tPackages Mirror #"+str(sourcecount)+" : ")+darkgreen(pkgrepo))
         print_info(red("\t\tDatabase URL: ")+darkgreen(etpRepositories[repo]['database']))
-        print_info(red("\t\tRepository name: ")+bold(repo))
+        print_info(red("\t\tRepository identifier: ")+bold(repo))
         print_info(red("\t\tRepository database path: ")+blue(etpRepositories[repo]['dbpath']))
     return 0
 

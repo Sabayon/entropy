@@ -161,6 +161,14 @@ class SpritzController(Controller):
     def on_repoCancel_clicked( self, widget ):
         self.addrepo_ui.addRepoWin.hide()
 
+    def on_repoInsert_clicked( self, widget ):
+        text = inputBox(self.addrepo_ui.addRepoWin, _("Insert Repository"), _("Insert Repository identification string")+"   ")
+        if text:
+            if (text.startswith("repository|")) and (len(text.split("|")) == 5):
+                print text,"is valid"
+            else:
+                okDialog( self.addrepo_ui.addRepoWin, _("This Repository identification string is malformed") )
+
     def on_removeRepo_clicked( self, widget ):
         # get selected repo
         selection = self.repoView.view.get_selection()

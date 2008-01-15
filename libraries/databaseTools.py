@@ -340,7 +340,7 @@ class etpDatabase(TextInterface):
 
         etpConst['treeupdatescalled'] = True
 
-        repository = etpConst['officialrepositoryname']
+        repository = etpConst['officialrepositoryid']
         doRescan = False
 
         if repositoryUpdatesDigestCache_db.has_key(repository):

@@ -152,7 +152,9 @@ class EquoInterface(TextInterface):
     def loadRepositoryDatabase(self, repositoryName, xcache = True, indexing = True):
         dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
         if not os.path.isfile(dbfile):
-            self.fetch_repository_if_not_available(repositoryName)
+            rc = self.fetch_repository_if_not_available(repositoryName)
+            if rc != 0:
+                raise exceptionTools.RepositoryError("RepositoryError: problems fetching database for repo id: "+reponame)
         conn = self.databaseTools.etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = etpConst['dbnamerepoprefix']+repositoryName, xcache = xcache, indexing = indexing)
         # initialize CONFIG_PROTECT
         if (etpRepositories[repositoryName]['configprotect'] == None) or \
@@ -624,7 +626,10 @@ class EquoInterface(TextInterface):
             mhash = "-1"
         return mhash
 
+
     def fetch_repository_if_not_available(self, reponame):
+        if fetch_repository_if_not_available_cache.has_key(reponame):
+            return fetch_repository_if_not_available_cache.get(reponame)
         # open database
         rc = 0
         dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
@@ -632,11 +637,10 @@ class EquoInterface(TextInterface):
             # sync
             repoConn = self.Repositories(reponames = [reponame])
             rc = repoConn.sync()
-            if rc != 0:
-                raise exceptionTools.RepositoryError("RepositoryError: cannot fetch database for repo id: "+reponame)
             del repoConn
-        if not os.path.isfile(dbfile):
-            raise exceptionTools.RepositoryError("RepositoryError: cannot fetch database for repo id: "+reponame)
+            if os.path.isfile(dbfile):
+                rc = 0
+        fetch_repository_if_not_available_cache[reponame] = rc
         return rc
 
     '''
@@ -658,12 +662,10 @@ class EquoInterface(TextInterface):
                     pass
 
         repoResults = {}
-        exitErrors = {}
         for repo in etpRepositories:
             # sync database if not available
             rc = self.fetch_repository_if_not_available(repo)
             if (rc != 0):
-                exitErrors[repo] = -1
                 continue
             # open database
             dbconn = self.openRepositoryDatabase(repo)
@@ -855,6 +857,79 @@ class EquoInterface(TextInterface):
                 atomMatchCache[atom]['caseSensitive'] = caseSensitive
                 atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
                 return repoResults[reponame],reponame
+
+    def addRepository(self, repodata):
+        # update etpRepositories
+        try:
+            etpRepositories[repodata['repoid']] = {}
+            etpRepositories[repodata['repoid']]['description'] = repodata['description']
+            etpRepositories[repodata['repoid']]['packages'] = repodata['packages'][:]
+            etpRepositories[repodata['repoid']]['configprotect'] = None
+            etpRepositories[repodata['repoid']]['configprotectmask'] = None
+        except KeyError:
+            raise exceptionTools.InvalidData("InvalidData: repodata dictionary is corrupted")
+
+        if repodata['repoid'].endswith(".tbz2"): # dynamic repository
+            try:
+                etpRepositories[repodata['repoid']]['smartpackage'] = repodata['smartpackage']
+                etpRepositories[repodata['repoid']]['dbpath'] = repodata['dbpath']
+                etpRepositories[repodata['repoid']]['pkgpath'] = repodata['pkgpath']
+            except KeyError:
+                raise exceptionTools.InvalidData("InvalidData: repodata dictionary is corrupted")
+            # put at top priority, shift others
+            myrepo_order = set([(x[0]+1,x[1]) for x in etpRepositoriesOrder])
+            etpRepositoriesOrder.clear()
+            etpRepositoriesOrder.update(myrepo_order)
+            etpRepositoriesOrder.add((1,repodata['repoid']))
+        else:
+            # XXX it's boring to keep this in sync with entropyConstants stuff, solutions?
+            etpRepositories[repodata['repoid']]['database'] = repodata['database']
+            etpRepositories[repodata['repoid']]['dbcformat'] = repodata['dbcformat']
+            etpRepositories[repodata['repoid']]['dbpath'] = etpConst['etpdatabaseclientdir'] + "/" + repodata['repoid'] + "/" + etpConst['product'] + "/" + etpConst['currentarch']
+            # set dbrevision
+            myrev = self.get_repository_revision(repodata['repoid'])
+            if myrev == -1:
+                myrev = 0
+            etpRepositories[repodata['repoid']]['dbrevision'] = str(myrev)
+            myrepocount = max([x[0] for x in etpRepositoriesOrder])+1
+            etpRepositoriesOrder.add((myrepocount,repodata['repoid']))
+            # clean world_available cache
+            self.dumpTools.dumpobj(etpCache['world_available'], {})
+            # clean world_update cache
+            self.dumpTools.dumpobj(etpCache['world_update'], {})
+            # clean check_update_package_cache
+            check_package_update_cache.clear()
+            self.dumpTools.dumpobj(etpCache['check_package_update'],{})
+            # save new etpRepositories to file
+            self.entropyTools.saveRepositoriesSettings(etpRepositories)
+
+    def removeRepository(self, repoid):
+        # update etpRepositories
+        done = False
+        try:
+            del etpRepositories[repoid]
+            done = True
+        except:
+            pass
+
+        if done:
+            diff = set()
+            for data in etpRepositoriesOrder:
+                if data[1] == repoid:
+                    diff.add(data)
+            etpRepositoriesOrder.difference_update(diff)
+            # it's not vital to reset etpRepositoriesOrder counters
+
+            # clean world_available cache
+            self.dumpTools.dumpobj(etpCache['world_available'], {})
+            # clean world_update cache
+            self.dumpTools.dumpobj(etpCache['world_update'], {})
+            # clean check_update_package_cache
+            check_package_update_cache.clear()
+            self.dumpTools.dumpobj(etpCache['check_package_update'],{})
+            # save new etpRepositories to file
+            self.entropyTools.saveRepositoriesSettings(etpRepositories)
+
 
     '''
     @description: filter the already installed dependencies
@@ -1461,19 +1536,14 @@ class EquoInterface(TextInterface):
             return -1,atoms_contained
         etpSys['dirstoclean'].add(os.path.dirname(dbfile))
         # add dbfile
-        etpRepositories[basefile] = {}
-        etpRepositories[basefile]['description'] = "Dynamic database from "+basefile
-        etpRepositories[basefile]['packages'] = []
-        etpRepositories[basefile]['dbpath'] = os.path.dirname(dbfile)
-        etpRepositories[basefile]['pkgpath'] = os.path.realpath(tbz2file) # extra info added
-        etpRepositories[basefile]['configprotect'] = set()
-        etpRepositories[basefile]['configprotectmask'] = set()
-        etpRepositories[basefile]['smartpackage'] = False # extra info added
-        # put at top priority, shift others
-        myrepo_order = set([(x[0]+1,x[1]) for x in etpRepositoriesOrder])
-        etpRepositoriesOrder.clear()
-        etpRepositoriesOrder.update(myrepo_order)
-        etpRepositoriesOrder.add((1,basefile))
+        repodata = {}
+        repodata['repoid'] = basefile
+        repodata['description'] = "Dynamic database from "+basefile
+        repodata['packages'] = []
+        repodata['dbpath'] = os.path.dirname(dbfile)
+        repodata['pkgpath'] = os.path.realpath(tbz2file) # extra info added
+        repodata['smartpackage'] = False # extra info added
+        self.addRepository(repodata)
         mydbconn = self.openGenericDatabase(dbfile)
         # read all idpackages
         try:
@@ -3389,6 +3459,7 @@ class RepoInterface:
         self.dbupdated = False
         self.newEquo = False
         self.alreadyUpdated = 0
+        self.notAvailable = 0
 
         # check if I am root
         if (not self.Entropy.entropyTools.isRoot()):
@@ -3556,7 +3627,7 @@ class RepoInterface:
 
     def sync(self):
 
-        # clse them
+        # close them
         self.Entropy.closeAllRepositoryDatabases()
 
         # let's dance!
@@ -3566,6 +3637,7 @@ class RepoInterface:
                                         header = darkred(" @@ ")
                             )
 
+        self.dbupdated = False
         repocount = 0
         repolength = len(self.reponames)
         for repo in self.reponames:
@@ -3612,8 +3684,6 @@ class RepoInterface:
                 self.Entropy.cycleDone()
                 continue
 
-            # database is going to be updated
-            self.dbupdated = True
             # clear database interface cache belonging to this repository
             self.clear_repository_cache(repo)
             cmethod = self.__validate_compression_method(repo)
@@ -3634,7 +3704,11 @@ class RepoInterface:
                                                 header = "\t"
                                 )
                 self.Entropy.cycleDone()
+                self.notAvailable += 1
                 continue
+
+            # database is going to be updated
+            self.dbupdated = True
 
             # unpack database
             self.Entropy.updateProgress(    red("Unpacking database to ") + darkgreen(etpConst['etpdatabasefile'])+red(" ..."),
@@ -3747,6 +3821,10 @@ class RepoInterface:
                                             header = darkred(" !! ")
                             )
 
+        if (self.notAvailable > 0):
+            return 1
+        elif (self.notAvailable >= len(self.reponames)):
+            return 2
         return 0
 
 '''
@@ -4123,7 +4201,7 @@ class urlFetcher:
             self.speedUpdater.start()
 
         # set timeout
-        socket.setdefaulttimeout(60)
+        socket.setdefaulttimeout(20)
 
         # get file size if available
         try:

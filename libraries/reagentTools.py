@@ -53,10 +53,10 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
 
     idpk, revision, etpDataUpdated, accepted = dbconn.handlePackage(mydata)
 
-    # add package info to our official repository etpConst['officialrepositoryname']
+    # add package info to our official repository etpConst['officialrepositoryid']
     if (accepted):
         dbconn.removePackageFromInstalledTable(idpk)
-        dbconn.addPackageToInstalledTable(idpk,etpConst['officialrepositoryname'])
+        dbconn.addPackageToInstalledTable(idpk,etpConst['officialrepositoryid'])
 
     if dbconnection is None:
         dbconn.commitChanges()

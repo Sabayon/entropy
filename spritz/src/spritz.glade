@@ -4816,12 +4816,13 @@ gz</property>
 	  <property name="spacing">10</property>
 
 	  <child>
-	    <widget class="GtkButton" id="repoCancel">
+	    <widget class="GtkButton" id="repoInsert">
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
+	      <signal name="clicked" handler="on_repoInsert_clicked" last_modification_time="Tue, 15 Jan 2008 11:28:20 GMT"/>
 
 	      <child>
 		<widget class="GtkAlignment" id="alignment79">

@@ -191,7 +191,7 @@ def md5sum(filepath):
     block = readfile.read(1024)
     while block:
         m.update(block)
-	block = readfile.read(1024)
+        block = readfile.read(1024)
     return m.hexdigest()
 
 def md5sum_directory(directory):
@@ -273,38 +273,39 @@ def unpackXpak(xpakfile, tmpdir = None):
     except:
         return None
     return tmpdir
-    
+
+
 def suckXpak(tbz2file, outputpath):
-    
+
     xpakpath = outputpath+"/"+os.path.basename(tbz2file)[:-5]+".xpak"
     old = open(tbz2file,"rb")
     db = open(xpakpath,"wb")
     db_tmp = open(xpakpath+".reverse","wb")
     allowWrite = False
-    
+
     # position old to the end
     old.seek(0,2)
     # read backward until we find
     bytes = old.tell()
     counter = bytes
-    
+
     while counter >= 0:
-	old.seek(counter-bytes,2)
-	byte = old.read(1)
-	if byte == "P" or byte == "K":
-	    old.seek(counter-bytes-7,2)
-	    chunk = old.read(7)+byte
-	    if chunk == "XPAKPACK":
-		allowWrite = False
+        old.seek(counter-bytes,2)
+        byte = old.read(1)
+        if byte == "P" or byte == "K":
+            old.seek(counter-bytes-7,2)
+            chunk = old.read(7)+byte
+            if chunk == "XPAKPACK":
+                allowWrite = False
                 db_tmp.write(chunk[::-1])
-		break
-	    elif chunk == "XPAKSTOP":
-		allowWrite = True
-		old.seek(counter-bytes,2)
-	if (allowWrite):
-	    db_tmp.write(byte)
-	counter -= 1
-    
+                break
+            elif chunk == "XPAKSTOP":
+                allowWrite = True
+                old.seek(counter-bytes,2)
+        if (allowWrite):
+            db_tmp.write(byte)
+        counter -= 1
+
     db_tmp.flush()
     db_tmp.close()
     db_tmp = open(xpakpath+".reverse","rb")
@@ -317,7 +318,7 @@ def suckXpak(tbz2file, outputpath):
         byte = db_tmp.read(1)
         db.write(byte)
         counter -= 1
-     
+
     db.flush()
     db.close()
     db_tmp.close()
@@ -477,37 +478,37 @@ def allocateMaskedFile(file, fromfile):
     previousfile = ""
 
     while 1:
-	counter += 1
-	txtcounter = str(counter)
-	oldtxtcounter = str(counter-1)
-	for x in range(4-len(txtcounter)):
-	    txtcounter = "0"+txtcounter
-	    oldtxtcounter = "0"+oldtxtcounter
-	newfile = os.path.dirname(file)+"/"+"._cfg"+txtcounter+"_"+os.path.basename(file)
-	if counter > 0:
-	    previousfile = os.path.dirname(file)+"/"+"._cfg"+oldtxtcounter+"_"+os.path.basename(file)
-	else:
-	    previousfile = os.path.dirname(file)+"/"+"._cfg0000_"+os.path.basename(file)
-	if not os.path.exists(newfile):
-	    break
+        counter += 1
+        txtcounter = str(counter)
+        oldtxtcounter = str(counter-1)
+        for x in range(4-len(txtcounter)):
+            txtcounter = "0"+txtcounter
+            oldtxtcounter = "0"+oldtxtcounter
+        newfile = os.path.dirname(file)+"/"+"._cfg"+txtcounter+"_"+os.path.basename(file)
+        if counter > 0:
+            previousfile = os.path.dirname(file)+"/"+"._cfg"+oldtxtcounter+"_"+os.path.basename(file)
+        else:
+            previousfile = os.path.dirname(file)+"/"+"._cfg0000_"+os.path.basename(file)
+        if not os.path.exists(newfile):
+            break
     if not newfile:
-	newfile = os.path.dirname(file)+"/"+"._cfg0000_"+os.path.basename(file)
+        newfile = os.path.dirname(file)+"/"+"._cfg0000_"+os.path.basename(file)
     else:
-	
+
         if os.path.exists(previousfile):
-            
+
             # compare fromfile with previousfile
             new = md5sum(fromfile)
             old = md5sum(previousfile)
             if new == old:
                 return previousfile, False
-            
-	    # compare old and new, if they match, suggest previousfile directly
-	    new = md5sum(file)
-	    old = md5sum(previousfile)
-	    if (new == old):
-		return previousfile, False
-            
+
+            # compare old and new, if they match, suggest previousfile directly
+            new = md5sum(file)
+            old = md5sum(previousfile)
+            if (new == old):
+                return previousfile, False
+
     return newfile, True
 
 def extractElog(file):
@@ -1441,28 +1442,57 @@ def umountProc():
 	return True
 
 class lifobuffer:
-    
+
     def __init__(self):
         self.counter = -1
         self.buf = {}
-    
+
     def push(self,item):
         self.counter += 1
         self.buf[self.counter] = item
-    
+
     def pop(self):
         if self.counter == -1:
             return None
         self.counter -= 1
         return self.buf[self.counter+1]
 
-def writeNewBranch(branch):
-
+def read_repositories_conf():
     content = []
     if os.path.isfile(etpConst['repositoriesconf']):
         f = open(etpConst['repositoriesconf'])
         content = f.readlines()
         f.close()
+    return content
+
+def saveRepositoriesSettings(repodata):
+
+    import shutil
+    content = read_repositories_conf()
+    content = [x for x in content if not x.startswith("repository|")]
+    # inject new repodata
+    for repoid in repodata:
+        if repoid.endswith(".tbz2"): # skip live repositories
+            continue
+        line = "repository|%s|%s|%s|%s#%s\n" % (   repoid,
+                                                repodata[repoid]['description'],
+                                                ' '.join(repodata[repoid]['packages']),
+                                                repodata[repoid]['database'],
+                                                repodata[repoid]['dbcformat'],
+                                            )
+        content.append(line)
+    if os.path.isfile(etpConst['repositoriesconf']):
+        if os.path.isfile(etpConst['repositoriesconf']+".old"):
+            os.remove(etpConst['repositoriesconf']+".old")
+        shutil.copy2(etpConst['repositoriesconf'],etpConst['repositoriesconf']+".old")
+    f = open(etpConst['repositoriesconf'],"w")
+    f.writelines(content)
+    f.flush()
+    f.close()
+
+def writeNewBranch(branch):
+
+    content = read_repositories_conf()
 
     found = False
     new_content = []

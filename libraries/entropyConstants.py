@@ -416,6 +416,8 @@ linkerPaths = set()
 repositoryUpdatesDigestCache_db = {}
 repositoryUpdatesDigestCache_disk = {}
 
+fetch_repository_if_not_available_cache = {}
+
 ### Application disk cache
 def const_resetCache():
     for item in dbCacheStore:
@@ -443,6 +445,7 @@ def const_resetCache():
     repositoryUpdatesDigestCache_db.clear()
     repositoryUpdatesDigestCache_disk.clear()
     check_package_update_cache.clear()
+    fetch_repository_if_not_available_cache.clear()
 
 # Inside it you'll find instantiated vartree classes
 portageRoots = {}
@@ -620,7 +623,7 @@ def initConfig_entropyConstants(rootdir):
                                     '/var/lib/scrollkeeper', '/usr/src', '/etc/skel', '/etc/ssh', '/etc/ssl', '/var/run', '/var/spool/cron', '/var/lib/init.d',
                                     '/lib/modules', '/etc/env.d', '/etc/gconf', '/etc/runlevels', '/lib/splash/cache', '/usr/share/mime', '/etc/portage'
         ],
-        'officialrepositoryname': "sabayonlinux.org", # our official repository name
+        'officialrepositoryid': "sabayonlinux.org", # our official repository name
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|", # tag to append to .tbz2 file before entropy database (must be 32bytes)
         'pidfile': "/var/run/equo.pid",
         'applicationlock': False,
@@ -848,6 +851,10 @@ def initConfig_entropyConstants(rootdir):
                     else:
                         import exceptionTools
                         raise exceptionTools.DirectoryNotFound("DirectoryNotFound: please run this as root at least once or create: "+etpConst['packagesbindir']+"/"+branch)
+
+            elif (line.find("officialrepositoryid|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+                officialreponame = line.split("|")[1]
+                etpConst['officialrepositoryid'] = officialreponame
 
     # align etpConst['binaryurirelativepath'] and etpConst['etpurirelativepath'] with etpConst['product']
     etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['binaryurirelativepath']
