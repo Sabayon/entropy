@@ -230,7 +230,7 @@ class EquoInterface(TextInterface):
         keys = set()
         depends = set()
         atoms = set()
-        for reponame in etpRepositories:
+        for reponame in etpRepositoriesOrder:
             self.updateProgress(darkgreen("Scanning %s" % (etpRepositories[reponame]['description'],)) , importance = 1, type = "info", back = True)
             # get all packages keys
             try:
@@ -543,13 +543,11 @@ class EquoInterface(TextInterface):
 
         packagesMatched = set()
         # now search packages that contain the found libs
-        orderedRepos = list(etpRepositoriesOrder)
-        orderedRepos.sort()
 
         # match libraries
-        for repodata in orderedRepos:
+        for repoid in etpRepositoriesOrder:
             self.updateProgress(
-                                    blue("Repository: ")+darkgreen(etpRepositories[repodata[1]]['description'])+" ["+red(repodata[1])+"]",
+                                    blue("Repository: ")+darkgreen(etpRepositories[repoid]['description'])+" ["+red(repoid)+"]",
                                     importance = 1,
                                     type = "info",
                                     header = red(" @@ ")
@@ -557,7 +555,7 @@ class EquoInterface(TextInterface):
             if reagent:
                 rdbconn = dbconn
             else:
-                rdbconn = self.openRepositoryDatabase(repodata[1])
+                rdbconn = self.openRepositoryDatabase(repoid)
             libsfound = set()
             for lib in brokenlibs:
                 packages = rdbconn.searchBelongs(file = "%"+lib, like = True, branch = etpConst['branch'])
@@ -568,7 +566,7 @@ class EquoInterface(TextInterface):
                         matching_libs = [x for x in mycontent if x.endswith(lib) and (os.path.dirname(x) in ldpaths)]
                         libsfound.add(lib)
                         if matching_libs:
-                            packagesMatched.add((idpackage,repodata[1],lib))
+                            packagesMatched.add((idpackage,repoid,lib))
             brokenlibs.difference_update(libsfound)
 
         return packagesMatched,brokenlibs,0
@@ -657,7 +655,7 @@ class EquoInterface(TextInterface):
             cached = atomMatchCache.get(atom)
             if cached:
                 try:
-                    if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches) and (cached['etpRepositories'] == etpRepositories) and (cached['caseSensitive'] == caseSensitive):
+                    if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches) and (cached['etpRepositories'] == etpRepositories) and (cached['caseSensitive'] == caseSensitive) and (cached['etpRepositoriesOrder'] == etpRepositoriesOrder):
                         return cached['result']
                 except KeyError:
                     pass
@@ -693,6 +691,7 @@ class EquoInterface(TextInterface):
             atomMatchCache[atom]['matchBranches'] = matchBranches
             atomMatchCache[atom]['caseSensitive'] = caseSensitive
             atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+            atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
             return -1,1
 
         elif len(repoResults) == 1:
@@ -704,6 +703,7 @@ class EquoInterface(TextInterface):
                 atomMatchCache[atom]['matchBranches'] = matchBranches
                 atomMatchCache[atom]['caseSensitive'] = caseSensitive
                 atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+                atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                 return repoResults[repo],repo
 
         elif len(repoResults) > 1:
@@ -791,19 +791,17 @@ class EquoInterface(TextInterface):
 
                         if (needFiltering):
                             # ok, we must get the repository with the biggest priority
-                            myrepoorder = list(etpRepositoriesOrder)
-                            myrepoorder.sort()
-                            for repository in myrepoorder:
-                                for repo in conflictingTags:
-                                    if repository[1] == repo:
-                                        # found it, WE ARE DOOONE!
-                                        atomMatchCache[atom] = {}
-                                        atomMatchCache[atom]['result'] = repoResults[repo],repo
-                                        atomMatchCache[atom]['matchSlot'] = matchSlot
-                                        atomMatchCache[atom]['matchBranches'] = matchBranches
-                                        atomMatchCache[atom]['caseSensitive'] = caseSensitive
-                                        atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-                                        return repoResults[repo],repo
+                            for repository in etpRepositoriesOrder:
+                                if repository in conflictingTags:
+                                    # found it, WE ARE DOOONE!
+                                    atomMatchCache[atom] = {}
+                                    atomMatchCache[atom]['result'] = repoResults[repository],repository
+                                    atomMatchCache[atom]['matchSlot'] = matchSlot
+                                    atomMatchCache[atom]['matchBranches'] = matchBranches
+                                    atomMatchCache[atom]['caseSensitive'] = caseSensitive
+                                    atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+                                    atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
+                                    return repoResults[repository],repository
                         else:
                             # we are done!!!
                             reponame = ''
@@ -817,6 +815,7 @@ class EquoInterface(TextInterface):
                             atomMatchCache[atom]['matchBranches'] = matchBranches
                             atomMatchCache[atom]['caseSensitive'] = caseSensitive
                             atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+                            atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                             return repoResults[reponame],reponame
                     else:
                         # we're finally done
@@ -831,6 +830,7 @@ class EquoInterface(TextInterface):
                         atomMatchCache[atom]['matchBranches'] = matchBranches
                         atomMatchCache[atom]['caseSensitive'] = caseSensitive
                         atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+                        atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                         return repoResults[reponame],reponame
                 else:
                     # we are fine, the newerVersion is not one of the duplicated ones
@@ -845,6 +845,7 @@ class EquoInterface(TextInterface):
                     atomMatchCache[atom]['matchBranches'] = matchBranches
                     atomMatchCache[atom]['caseSensitive'] = caseSensitive
                     atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+                    atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                     return repoResults[reponame],reponame
             else:
                 # yeah, we're done, just return the info
@@ -862,6 +863,7 @@ class EquoInterface(TextInterface):
                 atomMatchCache[atom]['matchBranches'] = matchBranches
                 atomMatchCache[atom]['caseSensitive'] = caseSensitive
                 atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+                atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                 return repoResults[reponame],reponame
 
     def addRepository(self, repodata):
@@ -883,10 +885,7 @@ class EquoInterface(TextInterface):
             except KeyError:
                 raise exceptionTools.InvalidData("InvalidData: repodata dictionary is corrupted")
             # put at top priority, shift others
-            myrepo_order = set([(x[0]+1,x[1]) for x in etpRepositoriesOrder])
-            etpRepositoriesOrder.clear()
-            etpRepositoriesOrder.update(myrepo_order)
-            etpRepositoriesOrder.add((1,repodata['repoid']))
+            etpRepositoriesOrder.insert(0,repodata['repoid'])
         else:
             # XXX it's boring to keep this in sync with entropyConstants stuff, solutions?
             etpRepositories[repodata['repoid']]['packages'] = [x+"/"+etpConst['product'] for x in repodata['packages']]
@@ -898,11 +897,10 @@ class EquoInterface(TextInterface):
             if myrev == -1:
                 myrev = 0
             etpRepositories[repodata['repoid']]['dbrevision'] = str(myrev)
-            if etpRepositoriesOrder:
-                myrepocount = max([x[0] for x in etpRepositoriesOrder])+1
+            if repodata.has_key("position"):
+                etpRepositoriesOrder.insert(repodata['position'],repodata['repoid'])
             else:
-                myrepocount = 1
-            etpRepositoriesOrder.add((myrepocount,repodata['repoid']))
+                etpRepositoriesOrder.append(repodata['repoid'])
             # clean world_available cache
             self.dumpTools.dumpobj(etpCache['world_available'], {})
             # clean world_update cache
@@ -935,11 +933,10 @@ class EquoInterface(TextInterface):
             pass
 
         if done:
-            diff = set()
-            for data in etpRepositoriesOrder:
-                if data[1] == repoid:
-                    diff.add(data)
-            etpRepositoriesOrder.difference_update(diff)
+            try:
+                etpRepositoriesOrder.remove(repoid)
+            except:
+                pass
             # it's not vital to reset etpRepositoriesOrder counters
 
             # clean world_available cache
@@ -1400,7 +1397,8 @@ class EquoInterface(TextInterface):
                     if disk_cache['repo_digest'] == repo_digest and \
                         disk_cache['branch'] == branch and \
                         disk_cache['client_digest'] == client_digest and \
-                        disk_cache['etpRepositories_keys'] == etpRepositories.keys():
+                        disk_cache['etpRepositories_keys'] == etpRepositories.keys() and \
+                        disk_cache['etpRepositoriesOrder'] == etpRepositoriesOrder:
                         return disk_cache['available']
             except:
                 try:
@@ -1437,6 +1435,7 @@ class EquoInterface(TextInterface):
                 mycache['available'] = available.copy()
                 mycache['branch'] = branch
                 mycache['etpRepositories_keys'] = etpRepositories.keys()[:]
+                mycache['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                 # save cache
                 self.dumpTools.dumpobj(etpCache['world_available'], mycache)
                 mycache.clear()
@@ -1456,6 +1455,7 @@ class EquoInterface(TextInterface):
                     if disk_cache['db_digest'] == db_digest and \
                         disk_cache['empty_deps'] == empty_deps and \
                         disk_cache['etpRepositories_keys'] == etpRepositories.keys() and \
+                        disk_cache['etpRepositoriesOrder'] == etpRepositoriesOrder and \
                         disk_cache['branch'] == branch:
                         return disk_cache['update'],disk_cache['remove'],disk_cache['fine']
             except:
@@ -1551,6 +1551,7 @@ class EquoInterface(TextInterface):
                 mycache['empty_deps'] = empty_deps
                 mycache['branch'] = branch
                 mycache['etpRepositories_keys'] = etpRepositories.keys()[:]
+                mycache['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                 # save cache
                 self.dumpTools.dumpobj(etpCache['world_update'], mycache)
                 mycache.clear()

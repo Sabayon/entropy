@@ -457,7 +457,7 @@ portageFakeDbApi = {}
 # Client packages/database repositories
 etpRepositories = {}
 etpRepositoriesExcluded = {}
-etpRepositoriesOrder = set()
+etpRepositoriesOrder = []
 
 # remote section
 etpRemoteSupport = {}
@@ -773,8 +773,7 @@ def initConfig_entropyConstants(rootdir):
     etpHandlers['errorsend'] = "http://svn.sabayonlinux.org/entropy/%s/handlers/http_error_report.php" % (etpConst['product'],)
 
     etpRepositories.clear()
-    etpRepositoriesOrder.clear()
-    ordercount = 0
+    del etpRepositoriesOrder[:]
     if os.path.isfile(etpConst['repositoriesconf']):
         f = open(etpConst['repositoriesconf'],"r")
         repositoriesconf = f.readlines()
@@ -838,8 +837,7 @@ def initConfig_entropyConstants(rootdir):
                         myRepodata[reponame]['configprotectmask'] = None
 
                         if not excluded:
-                            ordercount += 1
-                            etpRepositoriesOrder.add((ordercount,reponame))
+                            etpRepositoriesOrder.append(reponame)
 
                     for x in repopackages.split():
                         myRepodata[reponame]['packages'].append(x+"/"+etpConst['product'])

@@ -1474,6 +1474,7 @@ def getRepositorySettings(repoid):
     return repodata
 
 
+# etpRepositories and etpRepositoriesOrder must be already configured, see where this function is used
 def saveRepositorySettings(repodata, remove = False):
 
     if repodata['repoid'].endswith(".tbz2"):
@@ -1481,22 +1482,36 @@ def saveRepositorySettings(repodata, remove = False):
 
     import shutil
     content = read_repositories_conf()
-    content = [x for x in content if not x.startswith("repository|"+repodata['repoid'])]
+    content = [x.strip() for x in content if not x.startswith("repository|"+repodata['repoid'])]
     if not remove:
-        # inject new repodata
-        line = "\nrepository|%s|%s|%s|%s#%s\n" % (   repodata['repoid'],
+
+        repolines = [x for x in content if x.startswith("repository|")]
+        content = [x.strip() for x in content if x not in repolines] # exclude lines from repolines
+        # filter sane repolines lines
+        repolines = [x for x in repolines if (len(x.split("|")) == 5)]
+        repolines = [(x,x.split("|")[1]) for x in repolines]
+        line = "repository|%s|%s|%s|%s#%s" % (   repodata['repoid'],
                                                 repodata['description'],
                                                 ' '.join(repodata['packages']),
                                                 repodata['database'],
                                                 repodata['dbcformat'],
                                             )
-        content.append(line)
+        repolines.append((line,repodata['repoid']))
+
+        # inject new repodata
+        for repoid in etpRepositoriesOrder:
+            # write the first
+            for linedata in repolines:
+                if linedata[1] == repoid:
+                    content.append(linedata[0])
+
     if os.path.isfile(etpConst['repositoriesconf']):
         if os.path.isfile(etpConst['repositoriesconf']+".old"):
             os.remove(etpConst['repositoriesconf']+".old")
         shutil.copy2(etpConst['repositoriesconf'],etpConst['repositoriesconf']+".old")
     f = open(etpConst['repositoriesconf'],"w")
-    f.writelines(content)
+    for x in content:
+        f.write(x+"\n")
     f.flush()
     f.close()
 

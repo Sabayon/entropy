@@ -194,7 +194,7 @@ class SpritzController(Controller):
             initConfig_entropyConstants(etpSys['rootdir'])
             self.setupRepoView()
             self.addrepo_ui.addRepoWin.hide()
-            okDialog( self.ui.main, _("You must now press %s button") % (_("Update Repositories"),) )
+            okDialog( self.ui.main, _("You should now press the %s button") % (_("Update Repositories"),) )
         else:
             okDialog( self.addrepo_ui.addRepoWin, _("Wrong entries, errors: %s") % (', '.join(errors),) )
 
@@ -238,7 +238,7 @@ class SpritzController(Controller):
             self.Equo.removeRepository(repoid)
             initConfig_entropyConstants(etpSys['rootdir'])
             self.setupRepoView()
-            okDialog( self.ui.main, _("You must now either press %s or %s button") % (_("Regenerate Cache"),_("Update Repositories")) )
+            okDialog( self.ui.main, _("You must now either press the %s or the %s button") % (_("Regenerate Cache"),_("Update Repositories")) )
 
     def on_repoEdit_clicked( self, widget ):
         self.addrepo_ui.repoSubmit.hide()

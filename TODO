@@ -6,7 +6,9 @@ TODO list:
   - separate packages by license restrictions (find a way?)
 
   Spritz:
-    - add add/remove repositories buttons menu
+    - repositories exclusion, non-exclusion stuff
+    - fix removal queue stuff
+    - add repositories priority handling
     - add branch switching menu+stuff
     - wrap root password request
     - empty_deps and branch switching support to Updates list
@@ -20,4 +22,4 @@ Project Status:
 - reagent: complete.
 - activator: complete.
 ============
-- equo - out of alpha status: 90%
+- equo - beta stage: 50%

@@ -478,25 +478,38 @@ class EntropyRepoView:
 
     def setup_view( self ):
         """ Create models and columns for the Repo TextView  """
-        store = gtk.ListStore( 'gboolean', gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING)
+        store = gtk.ListStore( 'gboolean', 'gboolean', 'gboolean', gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING)
         self.view.set_model( store )
 
-        # Setup Selection Column
-        cell1 = gtk.CellRendererToggle()    # Selection
-        cell1.set_property( 'activatable', True )
-        column1 = gtk.TreeViewColumn( "Selected", cell1 )
-        column1.add_attribute( cell1, "active", 0 )
-        column1.set_resizable( True )
-        column1.set_sort_column_id( -1 )
+        # Setup Up button
+        cell0 = gtk.CellRendererSpin()    # Selection
+        #cell0.set_property( 'activatable', True )
+        column0 = gtk.TreeViewColumn( "", cell0 )
+        #column2.add_attribute( cell2, "active", 2 )
+        self.view.append_column( column0 )
+        #cell0.connect( "clicked", self.on_up_clicked )
+        # Setup Down button
+        cell1 = gtk.CellRendererSpin()    # Selection
+        column1 = gtk.TreeViewColumn( "", cell1 )
         self.view.append_column( column1 )
-        cell1.connect( "toggled", self.on_toggled )
+        #cell1.connect( "clicked", self.on_down_clicked )
+
+        # Setup Selection Column
+        cell2 = gtk.CellRendererToggle()    # Selection
+        cell2.set_property( 'activatable', True )
+        column2 = gtk.TreeViewColumn( "Selected", cell2 )
+        column2.add_attribute( cell2, "active", 2 )
+        column2.set_resizable( True )
+        column2.set_sort_column_id( -1 )
+        self.view.append_column( column2 )
+        cell2.connect( "toggled", self.on_toggled )
 
         # Setup revision column
-        self.create_text_column( _('Revision'),1 )
+        self.create_text_column( _('Revision'),3 )
 
         # Setup reponame & repofile column's
-        self.create_text_column( _('Repository Identifier'),2 )
-        self.create_text_column( _('Description'),3 )
+        self.create_text_column( _('Repository Identifier'),4 )
+        self.create_text_column( _('Description'),5 )
         self.view.set_search_column( 1 )
         self.view.set_reorderable( False )
         return store
@@ -508,16 +521,17 @@ class EntropyRepoView:
         self.view.append_column( column )
 
     def populate(self):
-        """ Populate a repo liststore with data """
         self.store.clear()
-        repos = list(etpRepositoriesOrder)
-        repos.sort()
+        """ Populate a repo liststore with data """
+        first = 0
         for repo in etpRepositoriesOrder:
-            repodata = etpRepositories[repo[1]]
-            self.store.append([1,repodata['dbrevision'],repo[1],repodata['description']])
+            repodata = etpRepositories[repo]
+            self.store.append([first,1,1,repodata['dbrevision'],repo,repodata['description']])
+            first = 1
         # excluded ones
         for repo in etpRepositoriesExcluded:
-            self.store.append([0,etpRepositoriesExcluded['dbrevision'],repo,etpRepositoriesExcluded['description']])
+            self.store.append([first,1,0,etpRepositoriesExcluded['dbrevision'],repo,etpRepositoriesExcluded['description']])
+            first = 1
 
     def new_pixbuf( self, column, cell, model, iter ):
         gpg = model.get_value( iter, 3 )
