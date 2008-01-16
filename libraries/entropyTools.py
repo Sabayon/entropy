@@ -1473,6 +1473,19 @@ def getRepositorySettings(repoid):
     repodata['database'] = repodata['database'][:-len("/"+etpConst['product']+"/database/"+etpConst['currentarch'])]
     return repodata
 
+def writeOrderedRepositoriesEntries():
+    repoOrder = [x for x in etpRepositoriesOrder if not x.endswith(".tbz2")]
+    content = read_repositories_conf()
+    content = [x.strip() for x in content]
+    repolines = [x for x in content if x.startswith("repository|") and (len(x.split("|")) == 5)]
+    content = [x for x in content if x not in repolines]
+    for repoid in etpRepositoriesOrder:
+        # get repoid from repolines
+        for x in repolines:
+            repoidline = x.split("|")[1]
+            if repoid == repoidline:
+                content.append(x)
+    _saveRepositoriesContent(content)
 
 # etpRepositories and etpRepositoriesOrder must be already configured, see where this function is used
 def saveRepositorySettings(repodata, remove = False, disable = False, enable = False):
@@ -1480,11 +1493,10 @@ def saveRepositorySettings(repodata, remove = False, disable = False, enable = F
     if repodata['repoid'].endswith(".tbz2"):
         return
 
-    import shutil
     content = read_repositories_conf()
     content = [x.strip() for x in content]
     if not disable and not enable:
-        content = [x.strip() for x in content if not x.strip().startswith("repository|"+repodata['repoid'])]
+        content = [x for x in content if not x.startswith("repository|"+repodata['repoid'])]
         if remove:
             # also remove possible disable repo
             content = [x for x in content if not (x.startswith("#") and not x.startswith("##") and (x.find("repository|"+repodata['repoid']) != -1))]
@@ -1538,6 +1550,10 @@ def saveRepositorySettings(repodata, remove = False, disable = False, enable = F
             line = repolines_data[c]['line']
             content.append(line)
 
+    _saveRepositoriesContent(content)
+
+def _saveRepositoriesContent(content):
+    import shutil
     if os.path.isfile(etpConst['repositoriesconf']):
         if os.path.isfile(etpConst['repositoriesconf']+".old"):
             os.remove(etpConst['repositoriesconf']+".old")

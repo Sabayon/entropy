@@ -93,6 +93,35 @@ class SpritzController(Controller):
             pass
         sys.exit( 1 )         # Terminate Program
 
+    def __getSelectedRepoIndex( self ):
+        selection = self.repoView.view.get_selection()
+        repodata = selection.get_selected()
+        # get text
+        if repodata[1] != None:
+            repoid = self.repoView.get_repoid(repodata)
+            # do it if it's enabled
+            if repoid in etpRepositoriesOrder:
+                idx = etpRepositoriesOrder.index(repoid)
+                return idx, repoid
+        return None, None
+
+    def on_shiftUp_clicked( self, widget ):
+        idx, repoid = self.__getSelectedRepoIndex()
+        if idx != None:
+            if idx > 0:
+                idx -= 1
+                self.Equo.shiftRepository(repoid, idx)
+                self.setupRepoView()
+
+    def on_shiftDown_clicked( self, widget ):
+        idx, repoid = self.__getSelectedRepoIndex()
+        if idx != None:
+            maxidx = len(etpRepositoriesOrder)-1
+            if idx < maxidx:
+                idx += 1
+                self.Equo.shiftRepository(repoid, idx)
+                self.setupRepoView()
+
     def on_repoMirrorAdd_clicked( self, widget ):
         text = inputBox(self.addrepo_ui.addRepoWin, _("Insert URL"), _("Enter a download mirror, HTTP or FTP")+"   ")
         # call liststore and tell to add
@@ -155,9 +184,7 @@ class SpritzController(Controller):
             return True
         else:
             self.Equo.removeRepository(repodata['repoid'])
-            initConfig_entropyConstants(etpSys['rootdir'])
             self.Equo.addRepository(repodata)
-            initConfig_entropyConstants(etpSys['rootdir'])
             self.setupRepoView()
             self.addrepo_ui.addRepoWin.hide()
             okDialog( self.ui.main, _("You should press the %s button now") % (_("Regenerate Cache")) )

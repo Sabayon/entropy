@@ -954,6 +954,14 @@ class EquoInterface(TextInterface):
             self.entropyTools.saveRepositorySettings(repodata, remove = True)
             initConfig_entropyConstants(etpSys['rootdir'])
 
+    def shiftRepository(self, repoid, toidx):
+        # update etpRepositoriesOrder
+        etpRepositoriesOrder.remove(repoid)
+        etpRepositoriesOrder.insert(toidx,repoid)
+        self.entropyTools.writeOrderedRepositoriesEntries()
+        initConfig_entropyConstants(etpSys['rootdir'])
+        self.__repository_move_clear_cache(repoid)
+
     def enableRepository(self, repoid):
         self.__repository_move_clear_cache(repoid)
         # save new etpRepositories to file

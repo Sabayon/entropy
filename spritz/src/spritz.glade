@@ -301,11 +301,12 @@
 			  <property name="spacing">0</property>
 
 			  <child>
-			    <widget class="GtkButton" id="button31">
+			    <widget class="GtkButton" id="shiftUp">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
 			      <property name="relief">GTK_RELIEF_NORMAL</property>
 			      <property name="focus_on_click">True</property>
+			      <signal name="clicked" handler="on_shiftUp_clicked" last_modification_time="Wed, 16 Jan 2008 21:58:24 GMT"/>
 
 			      <child>
 				<widget class="GtkImage" id="image223">
@@ -327,11 +328,12 @@
 			  </child>
 
 			  <child>
-			    <widget class="GtkButton" id="button32">
+			    <widget class="GtkButton" id="shiftDown">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
 			      <property name="relief">GTK_RELIEF_NORMAL</property>
 			      <property name="focus_on_click">True</property>
+			      <signal name="clicked" handler="on_shiftDown_clicked" last_modification_time="Wed, 16 Jan 2008 21:58:45 GMT"/>
 
 			      <child>
 				<widget class="GtkImage" id="image224">
