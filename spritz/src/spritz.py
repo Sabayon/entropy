@@ -123,6 +123,7 @@ class SpritzController(Controller):
     def on_addRepo_clicked( self, widget ):
         self.addrepo_ui.repoSubmit.show()
         self.addrepo_ui.repoSubmitEdit.hide()
+        self.addrepo_ui.repoInsert.show()
         self.addrepo_ui.repoidEntry.set_editable(True)
         self.addrepo_ui.repodbcformatEntry.set_active(0)
         self.addrepo_ui.repoidEntry.set_text("")
@@ -241,6 +242,7 @@ class SpritzController(Controller):
     def on_repoEdit_clicked( self, widget ):
         self.addrepo_ui.repoSubmit.hide()
         self.addrepo_ui.repoSubmitEdit.show()
+        self.addrepo_ui.repoInsert.hide()
         self.addrepo_ui.repoidEntry.set_editable(False)
         # get selection
         selection = self.repoView.view.get_selection()
