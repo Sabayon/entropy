@@ -1475,35 +1475,68 @@ def getRepositorySettings(repoid):
 
 
 # etpRepositories and etpRepositoriesOrder must be already configured, see where this function is used
-def saveRepositorySettings(repodata, remove = False):
+def saveRepositorySettings(repodata, remove = False, disable = False, enable = False):
 
     if repodata['repoid'].endswith(".tbz2"):
         return
 
     import shutil
     content = read_repositories_conf()
-    content = [x.strip() for x in content if not x.startswith("repository|"+repodata['repoid'])]
+    content = [x.strip() for x in content]
+    if not disable and not enable:
+        content = [x.strip() for x in content if not x.strip().startswith("repository|"+repodata['repoid'])]
+        if remove:
+            # also remove possible disable repo
+            content = [x for x in content if not (x.startswith("#") and not x.startswith("##") and (x.find("repository|"+repodata['repoid']) != -1))]
     if not remove:
 
-        repolines = [x for x in content if x.startswith("repository|")]
-        content = [x.strip() for x in content if x not in repolines] # exclude lines from repolines
+        repolines = [x for x in content if x.startswith("repository|") or (x.startswith("#") and not x.startswith("##") and (x.find("repository|") != -1))]
+        content = [x for x in content if x not in repolines] # exclude lines from repolines
         # filter sane repolines lines
         repolines = [x for x in repolines if (len(x.split("|")) == 5)]
-        repolines = [(x,x.split("|")[1]) for x in repolines]
-        line = "repository|%s|%s|%s|%s#%s" % (   repodata['repoid'],
-                                                repodata['description'],
-                                                ' '.join(repodata['packages']),
-                                                repodata['database'],
-                                                repodata['dbcformat'],
-                                            )
-        repolines.append((line,repodata['repoid']))
+        repolines_data = {}
+        repocount = 0
+        for x in repolines:
+            repolines_data[repocount] = {}
+            repolines_data[repocount]['repoid'] = x.split("|")[1]
+            repolines_data[repocount]['line'] = x
+            if disable and x.split("|")[1] == repodata['repoid']:
+                repolines_data[repocount]['line'] = "#"+x
+            elif enable and x.split("|")[1] == repodata['repoid'] and x.startswith("#"):
+                repolines_data[repocount]['line'] = x[1:]
+            repocount += 1
+
+        if not disable and not enable: # so it's a add
+
+            line = "repository|%s|%s|%s|%s#%s" % (   repodata['repoid'],
+                                                    repodata['description'],
+                                                    ' '.join(repodata['packages']),
+                                                    repodata['database'],
+                                                    repodata['dbcformat'],
+                                                )
+
+            # seek in repolines_data for a disabled entry and remove
+            to_remove = set()
+            for c in repolines_data:
+                if repolines_data[c]['line'].startswith("#") and \
+                    (repolines_data[c]['line'].find("repository|"+repodata['repoid']) != -1):
+                    # then remove
+                    to_remove.add(c)
+            for x in to_remove:
+                del repolines_data[x]
+
+            repolines_data[repocount] = {}
+            repolines_data[repocount]['repoid'] = repodata['repoid']
+            repolines_data[repocount]['line'] = line
 
         # inject new repodata
-        for repoid in etpRepositoriesOrder:
+        keys = repolines_data.keys()
+        keys.sort()
+        for c in keys:
+            repoid = repolines_data[c]['repoid']
             # write the first
-            for linedata in repolines:
-                if linedata[1] == repoid:
-                    content.append(linedata[0])
+            line = repolines_data[c]['line']
+            content.append(line)
 
     if os.path.isfile(etpConst['repositoriesconf']):
         if os.path.isfile(etpConst['repositoriesconf']+".old"):

@@ -866,6 +866,25 @@ class EquoInterface(TextInterface):
                 atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                 return repoResults[reponame],reponame
 
+    def __repository_move_clear_cache(self, repoid):
+        # clean world_available cache
+        self.dumpTools.dumpobj(etpCache['world_available'], {})
+        # clean world_update cache
+        self.dumpTools.dumpobj(etpCache['world_update'], {})
+        # clean check_update_package_cache
+        check_package_update_cache.clear()
+        self.dumpTools.dumpobj(etpCache['check_package_update'],{})
+        # clear atomMatchCache
+        atomMatchCache.clear()
+        self.dumpTools.dumpobj(etpCache['atomMatch'],{})
+        dbCacheStore[etpCache['dbMatch']+etpConst['dbnamerepoprefix']+repoid] = {}
+        dbCacheStore[etpCache['dbSearch']+etpConst['dbnamerepoprefix']+repoid] = {}
+        dbCacheStore[etpCache['dbInfo']+etpConst['dbnamerepoprefix']+repoid] = {}
+        self.dumpTools.dumpobj(etpCache['dbMatch']+etpConst['dbnamerepoprefix']+repoid,{})
+        self.dumpTools.dumpobj(etpCache['dbSearch']+etpConst['dbnamerepoprefix']+repoid,{})
+        self.dumpTools.dumpobj(etpCache['dbInfo']+etpConst['dbnamerepoprefix']+repoid,{})
+
+
     def addRepository(self, repodata):
         # update etpRepositories
         try:
@@ -901,29 +920,49 @@ class EquoInterface(TextInterface):
                 etpRepositoriesOrder.insert(repodata['position'],repodata['repoid'])
             else:
                 etpRepositoriesOrder.append(repodata['repoid'])
-            # clean world_available cache
-            self.dumpTools.dumpobj(etpCache['world_available'], {})
-            # clean world_update cache
-            self.dumpTools.dumpobj(etpCache['world_update'], {})
-            # clean check_update_package_cache
-            check_package_update_cache.clear()
-            self.dumpTools.dumpobj(etpCache['check_package_update'],{})
-            # clear atomMatchCache
-            atomMatchCache.clear()
-            self.dumpTools.dumpobj(etpCache['atomMatch'],{})
-            generateDependsTreeCache.clear()
-            self.dumpTools.dumpobj(etpCache['generateDependsTree'],{})
-            for dbinfo in dbCacheStore:
-                if dbinfo == (etpCache['dbMatch']+etpConst['dbnamerepoprefix']+repodata['repoid']) or \
-                        dbinfo == (etpCache['dbSearch']+etpConst['dbnamerepoprefix']+repodata['repoid']) or \
-                        dbinfo == (etpCache['dbInfo']+etpConst['dbnamerepoprefix']+repodata['repoid']):
-                    dbCacheStore[dbinfo].clear()
-                    self.dumpTools.dumpobj(dbinfo,{})
-
+            self.__repository_move_clear_cache(repodata['repoid'])
             # save new etpRepositories to file
             self.entropyTools.saveRepositorySettings(repodata)
+            initConfig_entropyConstants(etpSys['rootdir'])
 
     def removeRepository(self, repoid):
+
+        done = False
+        try:
+            del etpRepositories[repoid]
+            done = True
+        except:
+            pass
+
+        try:
+            del etpRepositoriesExcluded[repoid]
+            done = True
+        except:
+            pass
+
+        if done:
+            try:
+                etpRepositoriesOrder.remove(repoid)
+            except:
+                pass
+            # it's not vital to reset etpRepositoriesOrder counters
+
+            self.__repository_move_clear_cache(repoid)
+            # save new etpRepositories to file
+            repodata = {}
+            repodata['repoid'] = repoid
+            self.entropyTools.saveRepositorySettings(repodata, remove = True)
+            initConfig_entropyConstants(etpSys['rootdir'])
+
+    def enableRepository(self, repoid):
+        self.__repository_move_clear_cache(repoid)
+        # save new etpRepositories to file
+        repodata = {}
+        repodata['repoid'] = repoid
+        self.entropyTools.saveRepositorySettings(repodata, enable = True)
+        initConfig_entropyConstants(etpSys['rootdir'])
+
+    def disableRepository(self, repoid):
         # update etpRepositories
         done = False
         try:
@@ -939,17 +978,12 @@ class EquoInterface(TextInterface):
                 pass
             # it's not vital to reset etpRepositoriesOrder counters
 
-            # clean world_available cache
-            self.dumpTools.dumpobj(etpCache['world_available'], {})
-            # clean world_update cache
-            self.dumpTools.dumpobj(etpCache['world_update'], {})
-            # clean check_update_package_cache
-            check_package_update_cache.clear()
-            self.dumpTools.dumpobj(etpCache['check_package_update'],{})
+            self.__repository_move_clear_cache(repoid)
             # save new etpRepositories to file
             repodata = {}
             repodata['repoid'] = repoid
-            self.entropyTools.saveRepositorySettings(repodata, remove = True)
+            self.entropyTools.saveRepositorySettings(repodata, disable = True)
+            initConfig_entropyConstants(etpSys['rootdir'])
 
 
     '''

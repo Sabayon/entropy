@@ -276,7 +276,7 @@ class SpritzGUI:
         self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
         self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView)
         self.catDesc = TextViewConsole(self.ui.catDesc)
-        self.repoView = EntropyRepoView(self.ui.viewRepo)
+        self.repoView = EntropyRepoView(self.ui.viewRepo, self.Entropy, self.ui)
         self.repoMirrorsView = EntropyRepositoryMirrorsView(self.addrepo_ui.mirrorsView)
         # Left Side Toolbar
         self.pageButtons = {}    # Dict with page buttons
