@@ -4,6 +4,7 @@ TODO list:
   - find a way to better handle real smartapps deps (need split PDEPEND?)
   - add deptest check for every reagent run
   - separate packages by license restrictions (find a way?)
+  - handle multiuser on entropy server using equo interface
 
   Spritz:
     - fix removal queue stuff

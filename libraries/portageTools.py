@@ -255,7 +255,6 @@ def quickpkg(atom,dirpath):
         else:
             tar.addfile(tarinfo)
 
-    tar.flush()
     tar.close()
 
     # appending xpak informations
