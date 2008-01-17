@@ -2170,11 +2170,13 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package dependencies..."),back = True)
     # Fill runtime dependencies
     f = open(tbz2TmpDir+dbRDEPEND,"r")
-    rdepend = f.readline.strip().split()
+    rdepend = f.readline.strip()
+    rdepend = rdepend.split()
     f.close()
     # Fill post dependencies
     f = open(tbz2TmpDir+dbPDEPEND,"r")
-    pdepend = f.readline().strip().split()
+    pdepend = f.readline().strip()
+    pdepend = pdepend.split()
     f.close()
     dependencies = rdepend+pdepend
 
