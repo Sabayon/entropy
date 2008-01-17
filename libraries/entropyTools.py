@@ -2168,23 +2168,18 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 	pass
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package dependencies..."),back = True)
-    # Fill dependencies
-    # to fill dependencies we use *DEPEND files
+    # Fill runtime dependencies
     f = open(tbz2TmpDir+dbRDEPEND,"r")
-    roughDependencies = f.readline().strip()
+    rdepend = f.readline.strip().split()
     f.close()
-    if (not roughDependencies):
-        f = open(tbz2TmpDir+dbDEPEND,"r")
-        roughDependencies = f.readline().strip()
-        f.close()
+    # Fill post dependencies
     f = open(tbz2TmpDir+dbPDEPEND,"r")
-    roughDependencies += " "+f.readline().strip()
+    pdepend = f.readline().strip().split()
     f.close()
-    roughDependencies = roughDependencies.split()
-    
-    # variables filled
+    dependencies = rdepend+pdepend
+
     # data['dependencies'], data['conflicts']
-    deps,conflicts = synthetizeRoughDependencies(roughDependencies,' '.join(PackageFlags))
+    deps,conflicts = synthetizeRoughDependencies(dependencies,' '.join(PackageFlags))
     data['dependencies'] = []
     for i in deps.split():
 	data['dependencies'].append(i)
