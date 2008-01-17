@@ -24,7 +24,6 @@ import os
 from entropyConstants import *
 from outputTools import *
 from entropy import EquoInterface
-Equo = EquoInterface()
 
 ########################################################
 ####
@@ -37,6 +36,9 @@ def query(options):
 
     if len(options) < 1:
         return -10
+
+    global Equo
+    Equo = EquoInterface()
 
     equoRequestDeep = False
     myopts = []
