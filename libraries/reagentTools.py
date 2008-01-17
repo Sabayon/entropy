@@ -114,7 +114,7 @@ def update(options):
 
     # differential checking
     # collect differences between the packages in the database and the ones on the system
-    
+
     reagentRequestSeekStore = False
     reagentRequestRepackage = False
     reagentRequestAsk = True
@@ -512,59 +512,64 @@ def database(options):
 
     # used by reagent
     elif (options[0] == "search"):
-	mykeywords = options[1:]
-	if (len(mykeywords) == 0):
-	    print_error(brown(" * ")+red("Not enough parameters"))
-	    return 2
-	if (not os.path.isfile(etpConst['etpdatabasefilepath'])):
-	    print_error(brown(" * ")+red("Entropy Datbase does not exist"))
-	    return 3
-	
-	# search tool
-	print_info(green(" * ")+red("Searching ..."))
-	# open read only
-	dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
-        
-	from text_query import printPackageInfo
-	foundCounter = 0
-	for mykeyword in mykeywords:
-	    results = dbconn.searchPackages(mykeyword)
-	    
-	    for result in results:
-		foundCounter += 1
-		print
-		printPackageInfo(result[1],dbconn, clientSearch = True, extended = True)
-		
-	dbconn.closeDB()
-	if (foundCounter == 0):
-	    print_warning(red(" * ")+red("Nothing found."))
-	else:
-	    print
+
+        # so text_query works fine
+        global Equo
+        Equo = Entropy
+
+        mykeywords = options[1:]
+        if (len(mykeywords) == 0):
+            print_error(brown(" * ")+red("Not enough parameters"))
+            return 2
+        if (not os.path.isfile(etpConst['etpdatabasefilepath'])):
+            print_error(brown(" * ")+red("Entropy Datbase does not exist"))
+            return 3
+
+        # search tool
+        print_info(green(" * ")+red("Searching ..."))
+        # open read only
+        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+
+        from text_query import printPackageInfo
+        foundCounter = 0
+        for mykeyword in mykeywords:
+            results = dbconn.searchPackages(mykeyword)
+
+            for result in results:
+                foundCounter += 1
+                print
+                printPackageInfo(result[1],dbconn, clientSearch = True, extended = True)
+
+        dbconn.closeDB()
+        if (foundCounter == 0):
+            print_warning(red(" * ")+red("Nothing found."))
+        else:
+            print
         return 0
 
     elif (options[0] == "create-empty-database"):
-	
+
         mypath = options[1:]
-	if len(mypath) == 0:
-	    print_error(brown(" * ")+red("Not enough parameters"))
-	    return 4
-	if (os.path.dirname(mypath[0]) != '') and (not os.path.isdir(os.path.dirname(mypath[0]))):
-	    print_error(green(" * ")+red("Supplied directory does not exist."))
-	    return 5
-	print_info(green(" * ")+red("Initializing an empty database file with Entropy structure ..."),back = True)
-	connection = Entropy.databaseTools.dbapi2.connect(mypath[0])
-	cursor = connection.cursor()
-	for sql in etpSQLInitDestroyAll.split(";"):
-	    if sql:
-	        cursor.execute(sql+";")
-	del sql
-	for sql in etpSQLInit.split(";"):
-	    if sql:
-		cursor.execute(sql+";")
-	connection.commit()
-	cursor.close()
-	connection.close()
-	print_info(green(" * ")+red("Entropy database file ")+bold(mypath[0])+red(" successfully initialized."))
+        if len(mypath) == 0:
+            print_error(brown(" * ")+red("Not enough parameters"))
+            return 4
+        if (os.path.dirname(mypath[0]) != '') and (not os.path.isdir(os.path.dirname(mypath[0]))):
+            print_error(green(" * ")+red("Supplied directory does not exist."))
+            return 5
+        print_info(green(" * ")+red("Initializing an empty database file with Entropy structure ..."),back = True)
+        connection = Entropy.databaseTools.dbapi2.connect(mypath[0])
+        cursor = connection.cursor()
+        for sql in etpSQLInitDestroyAll.split(";"):
+            if sql:
+                cursor.execute(sql+";")
+        del sql
+        for sql in etpSQLInit.split(";"):
+            if sql:
+                cursor.execute(sql+";")
+        connection.commit()
+        cursor.close()
+        connection.close()
+        print_info(green(" * ")+red("Entropy database file ")+bold(mypath[0])+red(" successfully initialized."))
         return 0
 
     elif (options[0] == "switchbranch"):
