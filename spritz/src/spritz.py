@@ -102,25 +102,48 @@ class SpritzController(Controller):
             # do it if it's enabled
             if repoid in etpRepositoriesOrder:
                 idx = etpRepositoriesOrder.index(repoid)
-                return idx, repoid
-        return None, None
+                return idx, repoid, repodata
+        return None, None, None
 
     def on_shiftUp_clicked( self, widget ):
-        idx, repoid = self.__getSelectedRepoIndex()
+        idx, repoid, iterdata = self.__getSelectedRepoIndex()
         if idx != None:
-            if idx > 0:
+            path = iterdata[0].get_path(iterdata[1])[0]
+            if path > 0 and idx > 0:
                 idx -= 1
                 self.Equo.shiftRepository(repoid, idx)
-                self.setupRepoView()
+                # get next iter
+                prev = iterdata[0].get_iter(path-1)
+                self.repoView.store.swap(iterdata[1],prev)
 
     def on_shiftDown_clicked( self, widget ):
-        idx, repoid = self.__getSelectedRepoIndex()
+        idx, repoid, iterdata = self.__getSelectedRepoIndex()
         if idx != None:
-            maxidx = len(etpRepositoriesOrder)-1
-            if idx < maxidx:
+            next = iterdata[0].iter_next(iterdata[1])
+            if next:
                 idx += 1
                 self.Equo.shiftRepository(repoid, idx)
-                self.setupRepoView()
+                self.repoView.store.swap(iterdata[1],next)
+
+    def on_mirrorDown_clicked( self, widget ):
+        selection = self.repoMirrorsView.view.get_selection()
+        urldata = selection.get_selected()
+        # get text
+        if urldata[1] != None:
+            next = urldata[0].iter_next(urldata[1])
+            if next:
+                self.repoMirrorsView.store.swap(urldata[1],next)
+
+    def on_mirrorUp_clicked( self, widget ):
+        selection = self.repoMirrorsView.view.get_selection()
+        urldata = selection.get_selected()
+        # get text
+        if urldata[1] != None:
+            path = urldata[0].get_path(urldata[1])[0]
+            if path > 0:
+                # get next iter
+                prev = urldata[0].get_iter(path-1)
+                self.repoMirrorsView.store.swap(urldata[1],prev)
 
     def on_repoMirrorAdd_clicked( self, widget ):
         text = inputBox(self.addrepo_ui.addRepoWin, _("Insert URL"), _("Enter a download mirror, HTTP or FTP")+"   ")
