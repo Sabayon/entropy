@@ -513,9 +513,7 @@ def database(options):
     # used by reagent
     elif (options[0] == "search"):
 
-        # so text_query works fine
-        global Equo
-        Equo = Entropy
+        from text_query import printPackageInfo
 
         mykeywords = options[1:]
         if (len(mykeywords) == 0):
@@ -530,7 +528,6 @@ def database(options):
         # open read only
         dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
 
-        from text_query import printPackageInfo
         foundCounter = 0
         for mykeyword in mykeywords:
             results = dbconn.searchPackages(mykeyword)
@@ -538,7 +535,7 @@ def database(options):
             for result in results:
                 foundCounter += 1
                 print
-                printPackageInfo(result[1],dbconn, clientSearch = True, extended = True)
+                printPackageInfo(result[1],dbconn, clientSearch = True, extended = True, EquoConnection = Entropy)
 
         dbconn.closeDB()
         if (foundCounter == 0):

@@ -648,7 +648,11 @@ def __searchDescriptions(descriptions, dbconn, idreturn = False):
                 print_info(blue(" Found:   ")+bold("\t"+str(len(mydescdata[desc])))+red(" entries"))
     return dataInfo,mydescdata
 
-def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, extended = False):
+def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, extended = False, EquoConnection = None):
+
+    if EquoConnection:
+        Equo = EquoConnection
+
     # now fetch essential info
     pkgatom = dbconn.retrieveAtom(idpackage)
     if (etpUi['quiet']):
