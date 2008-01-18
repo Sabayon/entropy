@@ -2690,6 +2690,7 @@ class PackageInterface:
                     shutil.copystat(imagepathDir,rootdir)
 
             for item in files:
+
                 fromfile = currentdir+"/"+item
                 tofile = etpConst['systemroot']+fromfile[len(imageDir):]
                 fromfile_encoded = fromfile
@@ -2814,7 +2815,10 @@ class PackageInterface:
                             pass
 
                     # this also handles symlinks
-                    shutil.move(fromfile_encoded,tofile_encoded)
+                    # XXX
+                    # XXX moving file using the raw format like portage does
+                    # XXX
+                    shutil.move(fromfile_encoded,tofile)
 
                 except IOError,(errno,strerror):
                     if errno == 2:
@@ -2823,6 +2827,7 @@ class PackageInterface:
                     else:
                         rc = os.system("mv "+fromfile+" "+tofile)
                         if (rc != 0):
+                            print "ERRRRRRRRRROR"
                             return 4
                 if (protected):
                     # add to disk cache

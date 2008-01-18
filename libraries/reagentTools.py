@@ -121,18 +121,18 @@ def update(options):
     repackageItems = []
     _options = []
     for opt in options:
-	if opt.startswith("--seekstore"):
-	    reagentRequestSeekStore = True
-	elif opt.startswith("--repackage"):
-	    reagentRequestRepackage = True
-	elif opt.startswith("--noask"):
-	    reagentRequestAsk = False
-	else:
-	    if (reagentRequestRepackage) and (not opt.startswith("--")):
-		if not opt in repackageItems:
-		    repackageItems.append(opt)
-		continue
-	    _options.append(opt)
+        if opt.startswith("--seekstore"):
+            reagentRequestSeekStore = True
+        elif opt.startswith("--repackage"):
+            reagentRequestRepackage = True
+        elif opt.startswith("--noask"):
+            reagentRequestAsk = False
+        else:
+            if (reagentRequestRepackage) and (not opt.startswith("--")):
+                if not opt in repackageItems:
+                    repackageItems.append(opt)
+                continue
+            _options.append(opt)
     options = _options
 
     if (not reagentRequestSeekStore):

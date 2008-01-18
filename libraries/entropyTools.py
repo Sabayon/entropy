@@ -1629,29 +1629,29 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
 
         # collect files
         for path in contents:
+            import pdb; pdb.set_trace()
             # convert back to filesystem str
             encoded_path = path
             path = path.encode('raw_unicode_escape')
             try:
-                exist = os.lstat(path)
+                exist = os.lstat(encoded_path)
             except OSError, e:
                 continue # skip file
-            lpath = path
             arcname = path[1:] # remove trailing /
             ftype = pkgdata['content'][encoded_path]
             if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
             if 'dir' == ftype and \
                 not stat.S_ISDIR(exist.st_mode) and \
-                os.path.isdir(lpath): # workaround for directory symlink issues
-                lpath = os.path.realpath(lpath)
+                os.path.isdir(encoded_path): # workaround for directory symlink issues
+                lpath = os.path.realpath(encoded_path)
 
-            tarinfo = tar.gettarinfo(lpath, arcname)
+            tarinfo = tar.gettarinfo(encoded_path, arcname)
             tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
             tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
 
             if stat.S_ISREG(exist.st_mode):
                 tarinfo.type = tarfile.REGTYPE
-                f = open(path)
+                f = open(encoded_path)
                 try:
                     tar.addfile(tarinfo, f)
                 finally:
@@ -1718,20 +1718,20 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     package = package.split(".tbz2")[0]
     package = remove_entropy_revision(package)
     package = remove_tag(package)
-    
+
     # FIXME: deprecated - will be removed soonly
     if package.split("-")[len(package.split("-"))-1].startswith("t"):
         package = '-t'.join(package.split("-t")[:-1])
-    
+
     package = package.split("-")
     pkgname = ""
     pkglen = len(package)
     if package[pkglen-1].startswith("r"):
         pkgver = package[pkglen-2]+"-"+package[pkglen-1]
-	pkglen -= 2
+        pkglen -= 2
     else:
-	pkgver = package[len(package)-1]
-	pkglen -= 1
+        pkgver = package[len(package)-1]
+        pkglen -= 1
     for i in range(pkglen):
         if i == pkglen-1:
             pkgname += package[i]
@@ -1872,7 +1872,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
         outcontent.sort()
         for i in outcontent:
             data['content'][i[0]] = i[1]
-
+ 
     except IOError:
         if inject: # CONTENTS is not generated when a package is emerged with portage and the option -B
             # we have to unpack the tbz2 and generate content dict
@@ -1882,7 +1882,6 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
                 shutil.rmtree(mytempdir)
             if not os.path.isdir(mytempdir):
                 os.makedirs(mytempdir)
-            mytempdir = mytempdir.encode(sys.getfilesystemencoding())
             uncompressTarBz2(filepath, extractPath = mytempdir, catchEmpty = True)
 
             for currentdir, subdirs, files in os.walk(mytempdir):
@@ -1900,7 +1899,6 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
                 os.rmdir(mytempdir)
             except:
                 pass
-        pass
 
     # files size on disk
     if (data['content']):

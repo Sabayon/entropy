@@ -2464,27 +2464,25 @@ class etpDatabase(TextInterface):
 
     def retrieveSources(self, idpackage):
 
-	''' caching 
-	cache = self.fetchInfoCache(idpackage,'retrieveSources')
-	if cache != None: return cache
-	'''
+        ''' caching 
+        cache = self.fetchInfoCache(idpackage,'retrieveSources')
+        if cache != None: return cache
+        '''
 
-	self.cursor.execute('SELECT sourcesreference.source FROM sources,sourcesreference WHERE idpackage = (?) and sources.idsource = sourcesreference.idsource', (idpackage,))
-	sources = self.fetchall2set(self.cursor.fetchall())
+        self.cursor.execute('SELECT sourcesreference.source FROM sources,sourcesreference WHERE idpackage = (?) and sources.idsource = sourcesreference.idsource', (idpackage,))
+        sources = self.fetchall2set(self.cursor.fetchall())
 
-	''' caching
-	self.storeInfoCache(idpackage,'retrieveSources',sources)
-	'''
-	return sources
+        ''' caching
+        self.storeInfoCache(idpackage,'retrieveSources',sources)
+        '''
+        return sources
 
     def retrieveContent(self, idpackage, extended = False, contentType = None):
 
         self.createContentIndex() # FIXME: remove this with 1.0
 
-        # protect user from having a bad day
-        # developers can solve bad utf-8 data (and MUST), so we won't skip bad chars for them
-        if self.clientDatabase:
-            self.connection.text_factory = lambda x: unicode(x, "utf-8", "ignore")
+        # like portage does
+        self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
 
         extstring = ''
         if extended:
@@ -2553,92 +2551,93 @@ class etpDatabase(TextInterface):
 
     def retrieveLicense(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveLicense')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveLicense')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT license FROM baseinfo,licenses WHERE baseinfo.idpackage = (?) and baseinfo.idlicense = licenses.idlicense', (idpackage,))
-	licname = self.cursor.fetchone()[0]
+        self.cursor.execute('SELECT license FROM baseinfo,licenses WHERE baseinfo.idpackage = (?) and baseinfo.idlicense = licenses.idlicense', (idpackage,))
+        licname = self.cursor.fetchone()[0]
 
-	self.storeInfoCache(idpackage,'retrieveLicense',licname)
-	return licname
+        self.storeInfoCache(idpackage,'retrieveLicense',licname)
+        return licname
 
     def retrieveCompileFlags(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveCompileFlags')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveCompileFlags')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT "idflags" FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-	idflag = self.cursor.fetchone()[0]
-	# now get the flags
-	self.cursor.execute('SELECT chost,cflags,cxxflags FROM flags WHERE idflags = (?)', (idflag,))
+        self.cursor.execute('SELECT "idflags" FROM extrainfo WHERE idpackage = (?)', (idpackage,))
+        idflag = self.cursor.fetchone()[0]
+        # now get the flags
+        self.cursor.execute('SELECT chost,cflags,cxxflags FROM flags WHERE idflags = (?)', (idflag,))
         flags = self.cursor.fetchone()
         if not flags:
             flags = ("N/A","N/A","N/A")
 
-	self.storeInfoCache(idpackage,'retrieveCompileFlags',flags)
-	return flags
+        self.storeInfoCache(idpackage,'retrieveCompileFlags',flags)
+        return flags
 
     def retrieveDepends(self, idpackage):
 
-	# sanity check on the table
-	sanity = self.isDependsTableSane()
-	if not sanity: # is empty, need generation
+        # sanity check on the table
+        sanity = self.isDependsTableSane()
+        if not sanity: # is empty, need generation
             self.regenerateDependsTable(output = False)
 
-	self.cursor.execute('SELECT dependencies.idpackage FROM dependstable,dependencies WHERE dependstable.idpackage = (?) and dependstable.iddependency = dependencies.iddependency', (idpackage,))
-	result = self.fetchall2set(self.cursor.fetchall())
+        self.cursor.execute('SELECT dependencies.idpackage FROM dependstable,dependencies WHERE dependstable.idpackage = (?) and dependstable.iddependency = dependencies.iddependency', (idpackage,))
+        result = self.fetchall2set(self.cursor.fetchall())
 
-	return result
+        return result
 
     # You must provide the full atom to this function
     # WARNING: this function does not support branches
     # NOTE: server side uses this regardless branch specification because it already handles it in updatePackage()
     def isPackageAvailable(self,pkgatom):
-	pkgatom = entropyTools.removePackageOperators(pkgatom)
-	self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?)', (pkgatom,))
-	result = self.cursor.fetchone()
-	if result:
-	    return result[0]
-	return -1
+        pkgatom = entropyTools.removePackageOperators(pkgatom)
+        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?)', (pkgatom,))
+        result = self.cursor.fetchone()
+        if result:
+            return result[0]
+        return -1
 
     def isIDPackageAvailable(self,idpackage):
-	self.cursor.execute('SELECT idpackage FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-	result = self.cursor.fetchone()
-	if not result:
-	    return False
-	return True
+        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        result = self.cursor.fetchone()
+        if not result:
+            return False
+        return True
 
     # This version is more specific and supports branches
     def isSpecificPackageAvailable(self, pkgkey, branch):
-	pkgkey = entropyTools.removePackageOperators(pkgkey)
-	self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?) AND branch = (?)', (pkgkey,branch,))
-	result = self.cursor.fetchone()
-	if not result:
-	    return False
-	return True
+        pkgkey = entropyTools.removePackageOperators(pkgkey)
+        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?) AND branch = (?)', (pkgkey,branch,))
+        result = self.cursor.fetchone()
+        if not result:
+            return False
+        return True
 
     def isCategoryAvailable(self,category):
-	self.cursor.execute('SELECT idcategory FROM categories WHERE category = (?)', (category,))
-	result = self.cursor.fetchone()
-	if not result:
-	    return -1
-	return result[0]
+        self.cursor.execute('SELECT idcategory FROM categories WHERE category = (?)', (category,))
+        result = self.cursor.fetchone()
+        if not result:
+            return -1
+        return result[0]
 
     def isProtectAvailable(self,protect):
-	self.cursor.execute('SELECT idprotect FROM configprotectreference WHERE protect = (?)', (protect,))
-	result = self.cursor.fetchone()
-	if not result:
-	    return -1
-	return result[0]
+        self.cursor.execute('SELECT idprotect FROM configprotectreference WHERE protect = (?)', (protect,))
+        result = self.cursor.fetchone()
+        if not result:
+            return -1
+        return result[0]
 
     def isFileAvailable(self, file, extended = False):
         self.createContentIndex() # FIXME: remove this with 1.0
+
         if extended:
             self.cursor.execute('SELECT * FROM content WHERE file = (?)', (file,))
         else:
             self.cursor.execute('SELECT idpackage FROM content WHERE file = (?)', (file,))
-	result = self.cursor.fetchone()
-	if not result:
+        result = self.cursor.fetchone()
+        if not result:
             if extended:
                 return False,()
             else:
