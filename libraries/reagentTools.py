@@ -1041,31 +1041,31 @@ def database(options):
 
         if myopts[0] == "tags":
             if (len(myopts) > 1):
-                rc = text_query.searchTaggedPackages(myopts[1:], dbconn = dbconn)
+                rc = text_query.searchTaggedPackages(myopts[1:], dbconn = dbconn, EquoConnection = Entropy)
 
         if myopts[0] == "files":
             if (len(myopts) > 1):
-                rc = text_query.searchFiles(myopts[1:], dbconn = dbconn)
+                rc = text_query.searchFiles(myopts[1:], dbconn = dbconn, EquoConnection = Entropy)
 
         if myopts[0] == "belongs":
             if (len(myopts) > 1):
-                rc = text_query.searchBelongs(myopts[1:], dbconn = dbconn)
+                rc = text_query.searchBelongs(myopts[1:], dbconn = dbconn, EquoConnection = Entropy)
 
         if myopts[0] == "description":
             if (len(myopts) > 1):
-                text_query.__searchDescriptions(myopts[1:], dbconn = dbconn)
+                text_query.__searchDescriptions(myopts[1:], dbconn = dbconn, EquoConnection = Entropy)
 
         if myopts[0] == "needed":
             if (len(myopts) > 1):
-                text_query.searchNeeded(myopts[1:], dbconn = dbconn)
+                text_query.searchNeeded(myopts[1:], dbconn = dbconn, EquoConnection = Entropy)
 
         if myopts[0] == "depends":
             if (len(myopts) > 1):
-                text_query.searchDepends(myopts[1:], dbconn = dbconn)
+                text_query.searchDepends(myopts[1:], dbconn = dbconn, EquoConnection = Entropy)
 
         if myopts[0] == "eclass":
             if (len(myopts) > 1):
-                text_query.searchEclass(myopts[1:], dbconn = dbconn)
+                text_query.searchEclass(myopts[1:], dbconn = dbconn, EquoConnection = Entropy)
 
         dbconn.closeDB()
         return rc
