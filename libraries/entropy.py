@@ -661,17 +661,18 @@ class EquoInterface(TextInterface):
                     pass
 
         repoResults = {}
-        for repo in etpRepositories:
+        for repo in etpRepositoriesOrder:
 
             # check if repo exists
-            fetch = self.fetch_repository_if_not_available(repo)
-            if fetch != 0:
-                continue # cannot fetch repo, excluding
+            if not repo.endswith(".tbz2"):
+                fetch = self.fetch_repository_if_not_available(repo)
+                if fetch != 0:
+                    continue # cannot fetch repo, excluding
 
             # open database
             try:
                 dbconn = self.openRepositoryDatabase(repo)
-            except exceptionTools.RepositoryError:
+            except exceptionTools.RepositoryError, e:
                 continue # repo not available
 
             # search
@@ -1102,10 +1103,14 @@ class EquoInterface(TextInterface):
         ''' caching '''
         cached = generateDependencyTreeCache.get(tuple(atomInfo))
         if cached:
-            if (cached['empty_deps'] == empty_deps) and \
-                (cached['deep_deps'] == deep_deps) and \
-                (cached['usefilter'] == usefilter):
-                return cached['result']
+            try:
+                if (cached['empty_deps'] == empty_deps) and \
+                    (cached['deep_deps'] == deep_deps) and \
+                    (cached['usefilter'] == usefilter) and \
+                    (cached['etpRepositoriesOrder'] == etpRepositoriesOrder):
+                    return cached['result']
+            except:
+                pass
 
         mydbconn = self.openRepositoryDatabase(atomInfo[1])
         myatom = mydbconn.retrieveAtom(atomInfo[0])
@@ -1122,7 +1127,7 @@ class EquoInterface(TextInterface):
         mybuffer = self.entropyTools.lifobuffer()
         deptree = set()
         if not ((atomInfo in matchFilter) and (usefilter)):
-            mybuffer.push((1,myatom))
+            #mybuffer.push((1,myatom))
             #mytree.append((1,myatom))
             deptree.add((1,atomInfo))
 
@@ -1250,6 +1255,7 @@ class EquoInterface(TextInterface):
         generateDependencyTreeCache[tuple(atomInfo)]['empty_deps'] = empty_deps
         generateDependencyTreeCache[tuple(atomInfo)]['deep_deps'] = deep_deps
         generateDependencyTreeCache[tuple(atomInfo)]['usefilter'] = usefilter
+        generateDependencyTreeCache[tuple(atomInfo)]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
         treecache.clear()
         matchcache.clear()
 
@@ -2640,7 +2646,7 @@ class PackageInterface:
         protect = etpRepositories[self.infoDict['repository']]['configprotect']
         mask = etpRepositories[self.infoDict['repository']]['configprotectmask']
         # setup imageDir properly
-        imageDir = self.infoDict['imagedir'].encode(sys.getfilesystemencoding())
+        imageDir = self.infoDict['imagedir']
 
         # merge data into system
         for currentdir,subdirs,files in os.walk(imageDir):
@@ -2686,6 +2692,11 @@ class PackageInterface:
             for item in files:
                 fromfile = currentdir+"/"+item
                 tofile = etpConst['systemroot']+fromfile[len(imageDir):]
+                fromfile_encoded = fromfile
+                tofile_encoded = tofile
+                # redecode to bytestring
+                fromfile = fromfile.encode('raw_unicode_escape')
+                tofile = tofile.encode('raw_unicode_escape')
 
                 if etpConst['collisionprotect'] > 1:
                     todbfile = fromfile[len(imageDir):]
@@ -2704,11 +2715,13 @@ class PackageInterface:
 
                 try:
                     for x in protect:
+                        x = x.encode('raw_unicode_escape')
                         if tofile.startswith(x):
                             protected = True
                             break
                     if (protected): # check if perhaps, file is masked, so unprotected
                         for x in mask:
+                            x = x.encode('raw_unicode_escape')
                             if tofile.startswith(x):
                                 protected = False
                                 break
@@ -2801,7 +2814,8 @@ class PackageInterface:
                             pass
 
                     # this also handles symlinks
-                    shutil.move(fromfile,tofile)
+                    shutil.move(fromfile_encoded,tofile_encoded)
+
                 except IOError,(errno,strerror):
                     if errno == 2:
                         # better to pass away, sometimes gentoo packages are fucked up and contain broken things
@@ -2810,14 +2824,6 @@ class PackageInterface:
                         rc = os.system("mv "+fromfile+" "+tofile)
                         if (rc != 0):
                             return 4
-                try:
-                    user = os.stat(fromfile)[4]
-                    group = os.stat(fromfile)[5]
-                    os.chown(tofile,user,group)
-                    shutil.copystat(fromfile,tofile)
-                except:
-                    pass # sometimes, gentoo packages are fucked up and contain broken symlinks
-
                 if (protected):
                     # add to disk cache
                     self.Entropy.FileUpdates.add_to_cache(tofile)

@@ -1629,35 +1629,23 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
 
         # collect files
         for path in contents:
-            # convert path into utf8
-            path = string_to_utf8(path)
-            if path == None:
-                path.decode("utf-8") # will raise the exception
-                # otherwise, force it
-                raise Exception, "something is broken here!"
+            # convert back to filesystem str
+            encoded_path = path
+            path = path.encode('raw_unicode_escape')
             try:
                 exist = os.lstat(path)
-            except OSError:
+            except OSError, e:
                 continue # skip file
             lpath = path
             arcname = path[1:] # remove trailing /
-            ftype = pkgdata['content'][path]
+            ftype = pkgdata['content'][encoded_path]
             if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
             if 'dir' == ftype and \
                 not stat.S_ISDIR(exist.st_mode) and \
                 os.path.isdir(lpath): # workaround for directory symlink issues
                 lpath = os.path.realpath(lpath)
 
-            try:
-                arcname = str(arcname)
-            except UnicodeEncodeError:
-                try:
-                    arcname = arcname.encode("latin1")
-                except:
-                    print "DEBUG: python cannot encode path: "+unicode(arcname)+" properly to get it working with tarfile module. Please report."
-                    continue
-
-            tarinfo = tar.gettarinfo(lpath, arcname) # FIXME: casting to str() cause of python <2.5.1 bug, if exception raised, I'm gonna try this
+            tarinfo = tar.gettarinfo(lpath, arcname)
             tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
             tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
 
@@ -1833,17 +1821,17 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     data['needed'] = set()
     try:
         f = open(tbz2TmpDir+dbNEEDED,"r")
-	lines = f.readlines()
-	f.close()
-	for line in lines:
-	    line = line.strip()
-	    if line:
-	        needed = line.split()
-		if len(needed) == 2:
-		    libs = needed[1].split(",")
-		    for lib in libs:
-			if (lib.find(".so") != -1):
-			    data['needed'].add(lib)
+        lines = f.readlines()
+        f.close()
+        for line in lines:
+            line = line.strip()
+            if line:
+                needed = line.split()
+                if len(needed) == 2:
+                    libs = needed[1].split(",")
+                    for lib in libs:
+                        if (lib.find(".so") != -1):
+                            data['needed'].add(lib)
     except IOError:
         pass
     data['needed'] = list(data['needed'])
@@ -1855,9 +1843,9 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
         f = open(tbz2TmpDir+dbCONTENTS,"r")
         content = f.readlines()
         f.close()
-	outcontent = set()
-	for line in content:
-	    line = line.strip().split()
+        outcontent = set()
+        for line in content:
+            line = line.strip().split()
             try:
                 datatype = line[0]
                 datafile = line[1:]
@@ -1874,23 +1862,17 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
                 outcontent.add((datafile,datatype))
             except:
                 pass
-	
-        # convert to plain str() since it's that's used by portage
-        # when portage will use utf, test utf-8 encoding
-	_outcontent = set()
-	for i in outcontent:
+
+        _outcontent = set()
+        for i in outcontent:
             i = list(i)
             datatype = i[1]
-            string = string_to_utf8(i[0])
-            if string == None:
-                continue
-            i[0] = string
             _outcontent.add((i[0],i[1]))
         outcontent = list(_outcontent)
         outcontent.sort()
-	for i in outcontent:
-            data['content'][str(i[0])] = i[1]
-	
+        for i in outcontent:
+            data['content'][i[0]] = i[1]
+
     except IOError:
         if inject: # CONTENTS is not generated when a package is emerged with portage and the option -B
             # we have to unpack the tbz2 and generate content dict
@@ -1902,24 +1884,16 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
                 os.makedirs(mytempdir)
             mytempdir = mytempdir.encode(sys.getfilesystemencoding())
             uncompressTarBz2(filepath, extractPath = mytempdir, catchEmpty = True)
-            
+
             for currentdir, subdirs, files in os.walk(mytempdir):
                 data['content'][currentdir[len(mytempdir):]] = "dir"
                 for item in files:
-                    try:
-                        item = item.encode(sys.getfilesystemencoding())
-                    except:
-                        try:
-                            item = item.decode("latin1").decode("iso-8859-1").encode(sys.getfilesystemencoding())
-                        except:
-                            print "DEBUG: extractPkgData-2: cannot encode into filesystem encoding -> "+str(item)
-                            continue
                     item = currentdir+"/"+item
                     if os.path.islink(item):
                         data['content'][item[len(mytempdir):]] = "sym"
                     else:
                         data['content'][item[len(mytempdir):]] = "obj"
-            
+
             # now remove
             shutil.rmtree(mytempdir,True)
             try:
@@ -1930,55 +1904,55 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 
     # files size on disk
     if (data['content']):
-	data['disksize'] = 0
-	for item in data['content']:
-	    try:
-		size = os.stat(item)[6]
-		data['disksize'] += size
-	    except:
-		pass
+        data['disksize'] = 0
+        for item in data['content']:
+            try:
+                size = os.stat(item)[6]
+                data['disksize'] += size
+            except:
+                pass
     else:
-	data['disksize'] = 0
+        data['disksize'] = 0
 
     # [][][] Kernel dependent packages hook [][][]
     data['versiontag'] = ''
     kernelDependentModule = False
     kernelItself = False
     for item in data['content']:
-	if item.startswith("/lib/modules/"):
-	    kernelDependentModule = True
-	    # get the version of the modules
-	    kmodver = item.split("/lib/modules/")[1]
-	    kmodver = kmodver.split("/")[0]
+        if item.startswith("/lib/modules/"):
+            kernelDependentModule = True
+            # get the version of the modules
+            kmodver = item.split("/lib/modules/")[1]
+            kmodver = kmodver.split("/")[0]
 
-	    lp = kmodver.split("-")[len(kmodver.split("-"))-1]
-	    if lp.startswith("r"):
-	        kname = kmodver.split("-")[len(kmodver.split("-"))-2]
-	        kver = kmodver.split("-")[0]+"-"+kmodver.split("-")[len(kmodver.split("-"))-1]
-	    else:
-	        kname = kmodver.split("-")[len(kmodver.split("-"))-1]
-	        kver = kmodver.split("-")[0]
-	    break
+            lp = kmodver.split("-")[len(kmodver.split("-"))-1]
+            if lp.startswith("r"):
+                kname = kmodver.split("-")[len(kmodver.split("-"))-2]
+                kver = kmodver.split("-")[0]+"-"+kmodver.split("-")[len(kmodver.split("-"))-1]
+            else:
+                kname = kmodver.split("-")[len(kmodver.split("-"))-1]
+                kver = kmodver.split("-")[0]
+            break
     # validate the results above
     if (kernelDependentModule):
-	matchatom = "linux-"+kname+"-"+kver
-	if (matchatom == data['name']+"-"+data['version']):
-	    # discard, it's the kernel itself, add other deps instead
-	    kernelItself = True
-	    kernelDependentModule = False
+        matchatom = "linux-"+kname+"-"+kver
+        if (matchatom == data['name']+"-"+data['version']):
+            # discard, it's the kernel itself, add other deps instead
+            kernelItself = True
+            kernelDependentModule = False
 
     # add strict kernel dependency
     # done below
-    
+
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package download URL..."),back = True)
     # Fill download relative URI
     if (kernelDependentModule):
-	data['versiontag'] = kmodver
-	# force slot == tag:
-	data['slot'] = kmodver # if you change this behaviour, you must change "reagent update" and "equo database gentoosync" consequentially
-	versiontag = "#"+data['versiontag']
+        data['versiontag'] = kmodver
+        # force slot == tag:
+        data['slot'] = kmodver # if you change this behaviour, you must change "reagent update" and "equo database gentoosync" consequentially
+        versiontag = "#"+data['versiontag']
     else:
-	versiontag = ""
+        versiontag = ""
     # remove etpConst['product'] from etpConst['binaryurirelativepath']
     downloadrelative = etpConst['binaryurirelativepath'][len(etpConst['product'])+1:]
     data['download'] = downloadrelative+data['branch']+"/"+data['name']+"-"+data['version']+versiontag+".tbz2"
@@ -1998,7 +1972,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     f = open(tbz2TmpDir+dbCATEGORY,"r")
     data['category'] = f.readline().strip()
     f.close()
-    
+
     data['trigger'] = ""
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package external trigger availability..."),back = True)
     if os.path.isfile(etpConst['triggersdir']+"/"+data['category']+"/"+data['name']+"/"+etpConst['triggername']):
@@ -2281,7 +2255,6 @@ def string_to_utf8(string):
     done = False
 
     # simple unicode?
-    '''
     try:
         newstring = unicode(string)
         done = True
@@ -2289,19 +2262,10 @@ def string_to_utf8(string):
         pass
     if done:
         return newstring
-    '''
-    
+
     # try utf8
     try:
-        newstring = string.decode("utf-8").encode(sys.getfilesystemencoding())
-        done = True
-    except:
-        pass
-    if done:
-        return newstring
-    
-    try:
-        newstring = string.encode("utf-8").decode(sys.getfilesystemencoding())
+        newstring = string.decode("iso-8859-1")
         done = True
     except:
         pass
@@ -2310,22 +2274,13 @@ def string_to_utf8(string):
 
     # try latin1 + iso-8859-1
     try:
-        newstring = string.decode("latin1").decode("iso-8859-1").encode(sys.getfilesystemencoding())
+        newstring = string.decode("latin1")
         done = True
     except:
         pass
     if done:
         return newstring
 
-    # try just latin1
-    try:
-        newstring = string.decode("latin1").encode(sys.getfilesystemencoding())
-        done = True
-    except:
-        pass
-    if done:
-        return newstring
-    
     # otherwise return None
     print "DEBUG: cannot encode into filesystem encoding -> "+unicode(string)
     return None

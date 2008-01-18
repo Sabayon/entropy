@@ -24,6 +24,7 @@ import os
 from entropyConstants import *
 from outputTools import *
 from entropy import EquoInterface
+Equo = None
 
 ########################################################
 ####
@@ -94,6 +95,10 @@ def query(options):
 
 def searchInstalledPackages(packages, idreturn = False, dbconn = None):
 
+    global Equo
+    if Equo == None:
+        Equo = EquoInterface()
+
     if (not idreturn) and (not etpUi['quiet']):
         print_info(brown(" @@ ")+darkgreen("Searching..."))
 
@@ -128,6 +133,10 @@ def searchInstalledPackages(packages, idreturn = False, dbconn = None):
 
 
 def searchBelongs(files, idreturn = False, dbconn = None):
+
+    global Equo
+    if Equo == None:
+        Equo = EquoInterface()
 
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Belong Search..."))
@@ -175,6 +184,10 @@ def searchBelongs(files, idreturn = False, dbconn = None):
 
 
 def searchDepends(atoms, idreturn = False, dbconn = None):
+
+    global Equo
+    if Equo == None:
+        Equo = EquoInterface()
 
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Depends Search..."))
@@ -225,6 +238,10 @@ def searchDepends(atoms, idreturn = False, dbconn = None):
 
 def searchNeeded(atoms, idreturn = False, dbconn = None):
 
+    global Equo
+    if Equo == None:
+        Equo = EquoInterface()
+
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Needed Search..."))
 
@@ -256,6 +273,10 @@ def searchNeeded(atoms, idreturn = False, dbconn = None):
     return 0
 
 def searchEclass(eclasses, idreturn = False, dbconn = None):
+
+    global Equo
+    if Equo == None:
+        Equo = EquoInterface()
 
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Eclass Search..."))
@@ -290,6 +311,10 @@ def searchEclass(eclasses, idreturn = False, dbconn = None):
     return 0
 
 def searchFiles(atoms, idreturn = False, dbconn = None):
+
+    global Equo
+    if Equo == None:
+        Equo = EquoInterface()
 
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Files Search..."))
@@ -329,6 +354,10 @@ def searchFiles(atoms, idreturn = False, dbconn = None):
 
 
 def searchOrphans():
+
+    global Equo
+    if Equo == None:
+        Equo = EquoInterface()
 
     if (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Orphans Search..."))
@@ -401,6 +430,10 @@ def searchOrphans():
 
 def searchRemoval(atoms, idreturn = False, deep = False):
 
+    global Equo
+    if Equo == None:
+        Equo = EquoInterface()
+
     clientDbconn = Equo.clientDbconn
 
     if (not idreturn) and (not etpUi['quiet']):
@@ -455,6 +488,10 @@ def searchRemoval(atoms, idreturn = False, deep = False):
 
 def searchInstalled(idreturn = False):
 
+    global Equo
+    if Equo == None:
+        Equo = EquoInterface()
+
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Installed Search..."))
 
@@ -486,6 +523,10 @@ def searchInstalled(idreturn = False):
 
 
 def searchPackage(packages, idreturn = False):
+
+    global Equo
+    if Equo == None:
+        Equo = EquoInterface()
 
     foundPackages = {}
     dataInfo = set() # when idreturn is True
@@ -532,6 +573,10 @@ def searchPackage(packages, idreturn = False):
 
 def searchSlottedPackages(slots, datareturn = False, dbconn = None):
 
+    global Equo
+    if Equo == None:
+        Equo = EquoInterface()
+
     foundPackages = {}
     dbclose = True
     if dbconn:
@@ -567,6 +612,10 @@ def searchSlottedPackages(slots, datareturn = False, dbconn = None):
 
 def searchTaggedPackages(tags, datareturn = False, dbconn = None):
 
+    global Equo
+    if Equo == None:
+        Equo = EquoInterface()
+
     foundPackages = {}
     dbclose = True
     if dbconn:
@@ -601,6 +650,10 @@ def searchTaggedPackages(tags, datareturn = False, dbconn = None):
     return 0
 
 def searchDescription(descriptions, idreturn = False):
+
+    global Equo
+    if Equo == None:
+        Equo = EquoInterface()
 
     foundPackages = {}
 
@@ -650,8 +703,14 @@ def __searchDescriptions(descriptions, dbconn, idreturn = False):
 
 def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, extended = False, EquoConnection = None):
 
-    if EquoConnection:
+    if EquoConnection != None:
         Equo = EquoConnection
+    else:
+        try:
+            if Equo == None:
+                Equo = EquoInterface()
+        except NameError:
+            Equo = EquoInterface()
 
     # now fetch essential info
     pkgatom = dbconn.retrieveAtom(idpackage)
