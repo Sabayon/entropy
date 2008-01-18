@@ -1629,29 +1629,29 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
 
         # collect files
         for path in contents:
-            import pdb; pdb.set_trace()
             # convert back to filesystem str
             encoded_path = path
             path = path.encode('raw_unicode_escape')
             try:
-                exist = os.lstat(encoded_path)
+                exist = os.lstat(path)
             except OSError, e:
+                print e
                 continue # skip file
             arcname = path[1:] # remove trailing /
             ftype = pkgdata['content'][encoded_path]
             if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
             if 'dir' == ftype and \
                 not stat.S_ISDIR(exist.st_mode) and \
-                os.path.isdir(encoded_path): # workaround for directory symlink issues
-                lpath = os.path.realpath(encoded_path)
+                os.path.isdir(path): # workaround for directory symlink issues
+                path = os.path.realpath(path)
 
-            tarinfo = tar.gettarinfo(encoded_path, arcname)
+            tarinfo = tar.gettarinfo(path, arcname)
             tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
             tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
 
             if stat.S_ISREG(exist.st_mode):
                 tarinfo.type = tarfile.REGTYPE
-                f = open(encoded_path)
+                f = open(path)
                 try:
                     tar.addfile(tarinfo, f)
                 finally:

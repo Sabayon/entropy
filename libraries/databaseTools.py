@@ -913,6 +913,8 @@ class etpDatabase(TextInterface):
         # content, a list
         for xfile in etpData['content']:
             contenttype = etpData['content'][xfile]
+            if type(xfile) is unicode:
+                xfile = xfile.encode('raw_unicode_escape')
             try:
                 self.cursor.execute(
                     'INSERT into content VALUES '
