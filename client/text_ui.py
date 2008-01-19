@@ -269,7 +269,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         print_warning(red("## ATTENTION:")+bold(" "+os.path.basename(pkg)+" ")+red(" is not a valid Entropy package. Skipping..."))
                         continue
                     elif status == -3:
-                        print_warning(red("## ATTENTION:")+bold(" "+basefile+" ")+red(" is not compiled with the same architecture of the system. Skipping..."))
+                        print_warning(red("## ATTENTION:")+bold(" "+os.path.basename(pkg)+" ")+red(" is not compiled with the same architecture of the system. Skipping..."))
                         continue
                     else:
                         raise exceptionTools.InvalidDataType("InvalidDataType: ??????")
@@ -899,13 +899,13 @@ def librariesTest(listfiles = False):
         for packagedata in packagesMatched:
             dbconn = Equo.openRepositoryDatabase(packagedata[1])
             myatom = dbconn.retrieveAtom(packagedata[0])
-            atomsdata.add((myatom,(packagedata[0],packagedata[1])))
+            atomsdata.add((packagedata[0],packagedata[1]))
             print_info("   "+red(packagedata[2])+" => "+brown(myatom)+" ["+red(packagedata[1])+"]")
     else:
         for packagedata in packagesMatched:
             dbconn = Equo.openRepositoryDatabase(packagedata[1])
             myatom = dbconn.retrieveAtom(packagedata[0])
-            atomsdata.add((myatom,(packagedata[0],packagedata[1])))
+            atomsdata.add((packagedata[0],packagedata[1]))
             print myatom
         restore_qstats()
         return 0,atomsdata
