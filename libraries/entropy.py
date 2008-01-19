@@ -2690,7 +2690,10 @@ class PackageInterface:
                 elif (not os.path.isdir(rootdir)) and (not os.access(rootdir,os.R_OK)):
                     os.makedirs(rootdir)
 
-                if not os.path.islink(rootdir): # symlink don't need permissions, also until os.walk ends they might be broken
+                if not os.path.islink(rootdir) and os.access(rootdir,os.W_OK):
+                    # symlink don't need permissions, also until os.walk ends they might be broken
+                    # XXX also, added os.access() check because there might be directories/files unwriteable
+                    # what to do otherwise?
                     user = os.stat(imagepathDir)[4]
                     group = os.stat(imagepathDir)[5]
                     os.chown(rootdir,user,group)
