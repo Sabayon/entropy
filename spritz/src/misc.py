@@ -216,6 +216,9 @@ class SpritzQueue:
 
             tmpqueue = [x for x in pkgs if x not in self.packages['r']]
             xlist = [x.matched_atom[0] for x in self.packages['r']+tmpqueue]
+            #print "pkgs",pkgs
+            #print "tmpqueue",tmpqueue
+            #print "xlist",xlist
             self.elaborateRemoval(pkgs,xlist,False)
             return 0,1
 
@@ -253,7 +256,8 @@ class SpritzQueue:
                         if rem_pkg not in pkgs:
                             rem_pkg.set_select(False)
                             rem_pkg.queued = rem_pkg.action
-                        self.packages[rem_pkg.action].append(rem_pkg)
+                        if rem_pkg not in self.packages[rem_pkg.action]:
+                            self.packages[rem_pkg.action].append(rem_pkg)
 
 
     def checkSystemPackage(self, pkg):
@@ -265,6 +269,8 @@ class SpritzQueue:
         return valid
 
     def remove(self, pkgs):
+
+        print pkgs
 
         one = False
         if type(pkgs) is not list:

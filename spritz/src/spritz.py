@@ -825,11 +825,13 @@ class SpritzApplication(SpritzController,SpritzGUI):
             removal_queue = [x.matched_atom[0] for x in pkgs['r']]
             if install_queue or removal_queue:
                 controller = QueueExecutor(self)
-                e,i = controller.run(install_queue, removal_queue)
+                e,i = controller.run(install_queue[:], removal_queue[:])
                 print e,i
+            self.Equo.closeAllRepositoryDatabases()
             # regenerate packages information
             self.etpbase.clearPackages()
             self.setupSpritz()
+            self.Equo.save_cache()
             self.endWorking()
             #self.progress.hide()
             if quit:

@@ -41,6 +41,7 @@ class QueueExecutor:
         removalQueue = []
         runQueue = []
         if install_queue:
+            #import pdb; pdb.set_trace()
             runQueue, removalQueue, status = self.Entropy.retrieveInstallQueue(install_queue,False,False)
             removalQueue = [(x,True) for x in removalQueue]
             # XXX handle status

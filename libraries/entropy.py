@@ -31,6 +31,21 @@ import exceptionTools
 global _garbage_cycle
 _garbage_cycle = 0
 
+class matchContainer:
+    def __init__(self):
+        self.data = set()
+
+    def inside(self, match):
+        if match in self.data:
+            return True
+        return False
+
+    def add(self, match):
+        self.data.add(match)
+
+    def clear(self):
+        self.data.clear()
+
 '''
     Main Entropy (client side) package management class
 '''
@@ -1095,22 +1110,11 @@ class EquoInterface(TextInterface):
     @input package: atomInfo (idpackage,reponame)
     @output: dependency tree dictionary, plus status code
     '''
-    def generate_dependency_tree(self, atomInfo, empty_deps = False, deep_deps = False, usefilter = False):
+    def generate_dependency_tree(self, atomInfo, empty_deps = False, deep_deps = False, matchfilter = None):
 
-        if (not usefilter):
-            matchFilter.clear()
-
-        ''' caching '''
-        cached = generateDependencyTreeCache.get(tuple(atomInfo))
-        if cached:
-            try:
-                if (cached['empty_deps'] == empty_deps) and \
-                    (cached['deep_deps'] == deep_deps) and \
-                    (cached['usefilter'] == usefilter) and \
-                    (cached['etpRepositoriesOrder'] == etpRepositoriesOrder):
-                    return cached['result']
-            except:
-                pass
+        usefilter = False
+        if matchfilter != None:
+            usefilter = True
 
         mydbconn = self.openRepositoryDatabase(atomInfo[1])
         myatom = mydbconn.retrieveAtom(atomInfo[0])
@@ -1126,10 +1130,16 @@ class EquoInterface(TextInterface):
         mydep = (1,myatom)
         mybuffer = self.entropyTools.lifobuffer()
         deptree = set()
-        if not ((atomInfo in matchFilter) and (usefilter)):
-            #mybuffer.push((1,myatom))
-            #mytree.append((1,myatom))
+        if usefilter:
+            if not matchfilter.inside(atomInfo):
+                deptree.add((1,atomInfo))
+        else:
             deptree.add((1,atomInfo))
+
+        ''' these ones ? not needed anymore?
+        #mybuffer.push((1,myatom))
+        #mytree.append((1,myatom))
+        '''
 
         while mydep != None:
 
@@ -1174,10 +1184,11 @@ class EquoInterface(TextInterface):
                 keyslotcache.add((matchslot,key))
 
             # already analyzed by the calling function
-            if (match in matchFilter) and (usefilter):
-                mydep = mybuffer.pop()
-                continue
-            if usefilter: matchFilter.add(match)
+            if usefilter:
+                if matchfilter.inside(match):
+                    mydep = mybuffer.pop()
+                    continue
+                matchfilter.add(match)
 
             # result already analyzed?
             if match in matchcache:
@@ -1222,7 +1233,7 @@ class EquoInterface(TextInterface):
                                     if mymatch[0] != -1:
                                         mydbconn = self.openRepositoryDatabase(mymatch[1])
                                         mynewatom = mydbconn.retrieveAtom(mymatch[0])
-                                        if (mymatch not in matchcache) and (mynewatom not in treecache) and (mymatch not in matchFilter):
+                                        if (mymatch not in matchcache) and (mynewatom not in treecache) and (mymatch not in self.matchFilter):
                                             mybuffer.push((treedepth,mynewatom))
                                     else:
                                         # we bastardly ignore the missing library for now
@@ -1249,13 +1260,6 @@ class EquoInterface(TextInterface):
         # conflicts
         newdeptree[0] = conflicts
 
-        ''' caching '''
-        generateDependencyTreeCache[tuple(atomInfo)] = {}
-        generateDependencyTreeCache[tuple(atomInfo)]['result'] = newdeptree,0
-        generateDependencyTreeCache[tuple(atomInfo)]['empty_deps'] = empty_deps
-        generateDependencyTreeCache[tuple(atomInfo)]['deep_deps'] = deep_deps
-        generateDependencyTreeCache[tuple(atomInfo)]['usefilter'] = usefilter
-        generateDependencyTreeCache[tuple(atomInfo)]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
         treecache.clear()
         matchcache.clear()
 
@@ -1268,13 +1272,15 @@ class EquoInterface(TextInterface):
         deptree[0] = set()
 
         if not etpUi['quiet']: atomlen = len(matched_atoms); count = 0
-        matchFilter.clear() # clear generateDependencyTree global filter
+        matchfilter = matchContainer()
 
         for atomInfo in matched_atoms:
 
             if not etpUi['quiet']: count += 1; self.updateProgress(":: "+str(round((float(count)/atomlen)*100,1))+"% ::", importance = 0, type = "info", back = True)
 
-            newtree, result = self.generate_dependency_tree(atomInfo, empty_deps, deep_deps, usefilter = True)
+            # check if atomInfo is in matchfilter 
+
+            newtree, result = self.generate_dependency_tree(atomInfo, empty_deps, deep_deps, matchfilter = matchfilter)
 
             if (result != 0):
                 return newtree, result
@@ -1296,7 +1302,8 @@ class EquoInterface(TextInterface):
                     deptree[max_parent_key+mylevel] = reversetree[mylevel].copy()
                 del reversetree
 
-        matchFilter.clear()
+        matchfilter.clear()
+        del matchfilter
         return deptree,0
 
     '''
@@ -2827,7 +2834,6 @@ class PackageInterface:
                     else:
                         rc = os.system("mv "+fromfile+" "+tofile)
                         if (rc != 0):
-                            print "ERRRRRRRRRROR"
                             return 4
                 if (protected):
                     # add to disk cache

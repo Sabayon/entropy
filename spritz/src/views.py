@@ -17,12 +17,13 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-from entropyConstants import *
 import gtk
 import gobject
 import logging
 import glob
 import ConfigParser
+from etpgui import *
+from entropyConstants import *
 
 from i18n import _
 
@@ -56,12 +57,13 @@ class YumexCategoryView:
 
 
 class EntropyPackageView:
-    def __init__( self, treeview, qview ):
+    def __init__( self, treeview, qview, ui ):
         self.view = treeview
         self.headers = [_( "Package" ), _( "Ver" ), _( "Summary" ), _( "Repo" ), _( "Architecture" ), _( "Size" )]
         self.store = self.setupView()
         self.queue = qview.queue
         self.queueView = qview
+        self.ui = ui
         self.clearUpdates()
 
     def setupView( self ):
@@ -129,11 +131,13 @@ class EntropyPackageView:
             cell.set_property( "active", getattr( obj, property ) )
 
     def on_toggled( self, widget, path ):
+        busyCursor(self.ui.main)
         """ Package selection handler """
         iter = self.store.get_iter( path )
         obj = self.store.get_value( iter, 0 )
         self.togglePackage(obj)
         self.queueView.refresh()
+        normalCursor(self.ui.main)
 
     def togglePackage(self,obj):
         if obj.queued == obj.action:

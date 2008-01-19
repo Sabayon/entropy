@@ -396,7 +396,6 @@ generateDependsTreeCache = {}
 idpackageValidatorCache = {}
 filterSatisfiedDependenciesCache = {}
 filterSatisfiedDependenciesCmpResults = {}
-generateDependencyTreeCache = {}
 check_package_update_cache = {}
 ververifyCache = {}
 isjustnameCache = {}
@@ -409,8 +408,6 @@ dep_gettagCache = {}
 removePackageOperatorsCache = {}
 compareVersionsCache = {}
 getNewerVersionCache = {}
-# generateDependencyTree match filter
-matchFilter = set()
 linkerPaths = set()
 # repository atoms updates digest cache
 repositoryUpdatesDigestCache_db = {}
@@ -429,7 +426,6 @@ def const_resetCache():
     idpackageValidatorCache.clear()
     filterSatisfiedDependenciesCache.clear()
     filterSatisfiedDependenciesCmpResults.clear()
-    generateDependencyTreeCache.clear()
     ververifyCache.clear()
     isjustnameCache.clear()
     catpkgsplitCache.clear()
@@ -441,7 +437,6 @@ def const_resetCache():
     removePackageOperatorsCache.clear()
     compareVersionsCache.clear()
     getNewerVersionCache.clear()
-    matchFilter.clear()
     linkerPaths.clear()
     repositoryUpdatesDigestCache_db.clear()
     repositoryUpdatesDigestCache_disk.clear()
