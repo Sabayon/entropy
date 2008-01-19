@@ -1246,8 +1246,13 @@ class EquoInterface(TextInterface):
                                     if mymatch[0] != -1:
                                         mydbconn = self.openRepositoryDatabase(mymatch[1])
                                         mynewatom = mydbconn.retrieveAtom(mymatch[0])
-                                        if (mymatch not in matchcache) and (mynewatom not in treecache) and (mymatch not in self.matchFilter):
-                                            mybuffer.push((treedepth,mynewatom))
+                                        if (mymatch not in matchcache) and (mynewatom not in treecache):
+                                            if usefilter:
+                                                if not matchfilter.inside(mymatch):
+                                                    matchfilter.add(match)
+                                                    mybuffer.push((treedepth,mynewatom))
+                                            else:
+                                                mybuffer.push((treedepth,mynewatom))
                                     else:
                                         # we bastardly ignore the missing library for now
                                         continue

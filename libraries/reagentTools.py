@@ -367,9 +367,28 @@ def dependenciesTest():
     depsNotMatched = Entropy.dependencies_test(dbconn = dbconn)
 
     if depsNotMatched:
+
+        crying_atoms = {}
+        for atom in depsNotMatched:
+            riddep = dbconn.searchDependency(atom)
+            if riddep != -1:
+                ridpackages = dbconn.searchIdpackageFromIddependency(riddep)
+                for i in ridpackages:
+                    iatom = dbconn.retrieveAtom(i)
+                    if not crying_atoms.has_key(atom):
+                        crying_atoms[atom] = set()
+                    crying_atoms[atom].add(iatom)
+
         print_info(red(" @@ ")+blue("These are the dependencies not found:"))
-        for dep in depsNotMatched:
-            print_info("   # "+red(dep))
+        for atom in depsNotMatched:
+            print_info("   # "+red(atom))
+            if crying_atoms.has_key(atom):
+                print_info(blue("      # ")+red("Needed by:"))
+                for x in crying_atoms[atom]:
+                    print_info(blue("      # ")+darkgreen(x))
+
+    else:
+        print
 
     return 0
 
