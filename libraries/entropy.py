@@ -438,6 +438,19 @@ class EquoInterface(TextInterface):
 
         return depsNotMatched
 
+    def find_belonging_dependency(self, matched_atoms):
+        crying_atoms = set()
+        for atom in matched_atoms:
+            for repo in etpRepositories:
+                rdbconn = self.openRepositoryDatabase(repo)
+                riddep = rdbconn.searchDependency(atom)
+                if riddep != -1:
+                    ridpackages = rdbconn.searchIdpackageFromIddependency(riddep)
+                    for i in ridpackages:
+                        iatom = rdbconn.retrieveAtom(i)
+                        crying_atoms.add((iatom,repo))
+        return crying_atoms
+
     def libraries_test(self, dbconn = None, reagent = False):
 
         if dbconn == None:

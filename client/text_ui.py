@@ -352,16 +352,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             runQueue, removalQueue, status = Equo.retrieveInstallQueue(foundAtoms, emptydeps, deepdeps)
             if status == -2:
                 print_error(red(" @@ ")+blue("Cannot find needed dependencies: ")+str(runQueue))
-                crying_atoms = set()
-                for atom in runQueue:
-                    for repo in etpRepositories:
-                        rdbconn = Equo.openRepositoryDatabase(repo)
-                        riddep = rdbconn.searchDependency(atom)
-                        if riddep != -1:
-                            ridpackages = rdbconn.searchIdpackageFromIddependency(riddep)
-                            for i in ridpackages:
-                                iatom = rdbconn.retrieveAtom(i)
-                                crying_atoms.add((iatom,repo))
+                crying_atoms = Equo.find_belonging_dependency(runQueue)
                 if crying_atoms:
                     print_error(red(" @@ ")+blue("Probably needed by:"))
                     for crying_atomdata in crying_atoms:
