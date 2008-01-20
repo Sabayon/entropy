@@ -1,5 +1,5 @@
 TODO list:
-  - treeupdates: clear match cache before doing slotmove
+  - change package naming format adding category
   - migrate server code to ServerInterface
   - Community repositories
   - find a way to better handle real smartapps deps (need split PDEPEND?)

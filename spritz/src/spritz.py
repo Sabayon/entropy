@@ -67,9 +67,9 @@ class SpritzController(Controller):
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
-        sys.stdout = self.output
-        sys.stderr = self.output
-        sys.stdin = self.input
+        #sys.stdout = self.output
+        #sys.stderr = self.output
+        #sys.stdin = self.input
 
 
     def quit(self, widget=None, event=None ):
@@ -578,11 +578,6 @@ class SpritzController(Controller):
 
     def on_FileQuit( self, widget ):
         self.quit()
-
-    def on_EditPreferences( self, widget ):
-        Preferences()
-        self.spritzOptions.reload()
-        self.settings = self.spritzOptions.settings
 
     def on_HelpAbout( self, widget ):
         about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,self.settings.branding_title)
