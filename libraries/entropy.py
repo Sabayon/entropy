@@ -1222,41 +1222,6 @@ class EquoInterface(TextInterface):
             for x in myundeps:
                 mybuffer.push((treedepth,x))
 
-            # handle possible library breakage
-            self.filterSatisfiedDependencies([mydep[1]], deep_deps = deep_deps)
-            action = filterSatisfiedDependenciesCmpResults.get(mydep[1])
-            if action and ((action < 0) or (action > 0)): # do not use != 0 since action can be "None"
-                i = self.clientDbconn.atomMatch(self.entropyTools.dep_getkey(mydep[1]), matchSlot = matchslot)
-                if i[0] != -1:
-                    oldneeded = self.clientDbconn.retrieveNeeded(i[0])
-                    if oldneeded: # if there are needed
-                        ndbconn = self.openRepositoryDatabase(match[1])
-                        needed = ndbconn.retrieveNeeded(match[0])
-                        oldneeded = oldneeded - needed
-                        if oldneeded:
-                            # reverse lookup to find belonging package
-                            for need in oldneeded:
-                                myidpackages = self.clientDbconn.searchNeeded(need)
-                                for myidpackage in myidpackages:
-                                    myname = self.clientDbconn.retrieveName(myidpackage)
-                                    mycategory = self.clientDbconn.retrieveCategory(myidpackage)
-                                    myslot = self.clientDbconn.retrieveSlot(myidpackage)
-                                    mykey = mycategory+"/"+myname
-                                    mymatch = self.atomMatch(mykey, matchSlot = myslot) # search in our repo
-                                    if mymatch[0] != -1:
-                                        mydbconn = self.openRepositoryDatabase(mymatch[1])
-                                        mynewatom = mydbconn.retrieveAtom(mymatch[0])
-                                        if (mymatch not in matchcache) and (mynewatom not in treecache):
-                                            if usefilter:
-                                                if not matchfilter.inside(mymatch):
-                                                    matchfilter.add(match)
-                                                    mybuffer.push((treedepth,mynewatom))
-                                            else:
-                                                mybuffer.push((treedepth,mynewatom))
-                                    else:
-                                        # we bastardly ignore the missing library for now
-                                        continue
-
             mydep = mybuffer.pop()
 
         newdeptree = {}
