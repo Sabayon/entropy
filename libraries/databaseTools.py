@@ -485,19 +485,25 @@ class etpDatabase(TextInterface):
                 atom = doaction[1]
                 from_slot = doaction[2]
                 to_slot = doaction[3]
+                category = atom.split("/")[0]
                 matches = self.atomMatch(atom, multiMatch = True)
                 if matches[1] == 0:
-                    # found atom, check slot
+                    # found atom, check slot and category
                     for idpackage in matches[0]:
                         myslot = str(self.retrieveSlot(idpackage))
-                        if (myslot == from_slot) and (myslot != to_slot):
-                            new_actions.append(action)
+                        mycategory = self.retrieveCategory(idpackage)
+                        if mycategory == category:
+                            if (myslot == from_slot) and (myslot != to_slot):
+                                new_actions.append(action)
             elif doaction[0] == "move":
                 atom = doaction[1]
+                category = atom.split("/")[0]
                 matches = self.atomMatch(atom, multiMatch = True)
                 if matches[1] == 0:
                     for idpackage in matches[0]:
-                        new_actions.append(action)
+                        mycategory = self.retrieveCategory(idpackage)
+                        if mycategory == category:
+                            new_actions.append(action)
         return new_actions
 
     # this is the place to add extra actions support
