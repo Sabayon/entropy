@@ -1303,7 +1303,7 @@ class EquoInterface(TextInterface):
             if (cached['deep'] == deep):
                 return cached['result']
 
-        dependscache = {}
+        dependscache = set()
         dependsOk = False
         treeview = set(idpackages)
         treelevel = idpackages[:]
@@ -1320,9 +1320,8 @@ class EquoInterface(TextInterface):
             tree[treedepth] = set()
             for idpackage in treelevel:
 
-                passed = dependscache.get(idpackage,None)
                 systempkg = self.clientDbconn.isSystemPackage(idpackage)
-                if passed or systempkg:
+                if (idpackage in dependscache) or systempkg:
                     try:
                         while 1: treeview.remove(idpackage)
                     except:
@@ -1332,7 +1331,7 @@ class EquoInterface(TextInterface):
                 # obtain its depends
                 depends = self.clientDbconn.retrieveDepends(idpackage)
                 # filter already satisfied ones
-                depends = [x for x in depends if x not in list(monotree)]
+                depends = [x for x in depends if x not in list(monotree) and not self.clientDbconn.isSystemPackage(x)]
                 if (depends): # something depends on idpackage
                     for x in depends:
                         if x not in tree[treedepth]:
@@ -1348,7 +1347,7 @@ class EquoInterface(TextInterface):
                             _mydeps.add(match[0])
                     mydeps = _mydeps
                     # now filter them
-                    mydeps = [x for x in mydeps if x not in list(monotree)]
+                    mydeps = [x for x in mydeps if x not in list(monotree) and not self.clientDbconn.isSystemPackage(x)]
                     for x in mydeps:
                         mydepends = self.clientDbconn.retrieveDepends(x)
                         mydepends = [y for y in mydepends if y not in list(monotree)]
@@ -1357,7 +1356,7 @@ class EquoInterface(TextInterface):
                             monotree.add(x)
                             treeview.add(x)
 
-                dependscache[idpackage] = True
+                dependscache.add(idpackage)
                 try:
                     while 1: treeview.remove(idpackage)
                 except:
@@ -2184,7 +2183,7 @@ class PackageInterface:
         # remove from database
         if self.infoDict['removeidpackage'] != -1:
             self.Entropy.updateProgress(
-                                    blue("Removing from database: ")+red(self.infoDict['removeatom']),
+                                    blue("Removing from Entropy: ")+red(self.infoDict['removeatom']),
                                     importance = 1,
                                     type = "info",
                                     header = red("   ## ")
@@ -2196,7 +2195,7 @@ class PackageInterface:
             gentooAtom = self.Entropy.entropyTools.dep_striptag(
                                         self.Entropy.entropyTools.remove_tag(self.infoDict['removeatom'])
             )
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package from Gentoo database: "+str(gentooAtom))
+            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing from Portage: "+str(gentooAtom))
             self.__remove_package_from_gentoo_database(gentooAtom)
             del gentooAtom
 
@@ -2394,9 +2393,8 @@ class PackageInterface:
                     cached_item = (atom,matched)
                     if cached_item in disk_cache['update']:
                         find = True
-            except Exception,e:
+            except:
                 self.Entropy.dumpTools.dumpobj(etpCache['world_update'], {})
-                print "DEBUG-rm: please REPORT %s: %s" % (str(Exception),str(e),)
 
         self.Entropy.clientDbconn.removePackage(self.infoDict['removeidpackage'])
 
@@ -2910,7 +2908,7 @@ class PackageInterface:
         if etpConst['gentoo-compat']:
             compatstring = " ## w/Gentoo compatibility"
         self.Entropy.updateProgress(
-                                            blue("Removing installed package: ")+red(self.infoDict['removeatom'])+compatstring,
+                                            blue("Removing data: ")+red(self.infoDict['removeatom'])+compatstring,
                                             importance = 1,
                                             type = "info",
                                             header = red("   ## ")

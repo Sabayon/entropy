@@ -1,14 +1,16 @@
 TODO list:
+  - check mail error (*)
+  - update progress in calculating removal (*)
+  - add deptest check for every reagent run (*)
   - change package naming format adding category
   - migrate server code to ServerInterface
   - Community repositories
   - find a way to better handle real smartapps deps (need split PDEPEND?)
-  - add deptest check for every reagent run
   - separate packages by license restrictions (find a way?)
   - handle multiuser on entropy server using equo interface
 
   Spritz:
-    - fix removal queue stuff
+    - handle queue dependencies in the queue tab too
     - add branch switching menu+stuff
     - wrap root password request
     - ability to mark packages for reinstall

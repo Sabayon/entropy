@@ -140,13 +140,20 @@ class EntropyPackageView:
         normalCursor(self.ui.main)
 
     def togglePackage(self,obj):
+        oldqueued = obj.queued
+        oldselected = obj.selected
         if obj.queued == obj.action:
             obj.queued = None
-            self.queue.remove(obj)
+            status, myaction = self.queue.remove(obj)
+            if status != 0:
+                obj.queued = oldqueued
+                obj.set_select(oldselected)
         else:
             obj.queued = obj.action
-            self.queue.add(obj)
-        obj.set_select( not obj.selected )
+            status, myaction = self.queue.add(obj)
+            if status != 0:
+                obj.queued = oldqueued
+                obj.set_select(oldselected)
 
 
     def selectAll(self):
@@ -159,20 +166,14 @@ class EntropyPackageView:
         self.updates['u'] = self.queue.packages['u'][:]
         self.updates['i'] = self.queue.packages['i'][:]
         self.updates['r'] = self.queue.packages['r'][:]
-        self.queue.add(list)
-        for obj in list:
-            obj.set_select( not obj.selected )
-        self.updates['u'] = [x for x in self.queue.packages['u'] if x not in self.updates['u']]
-        self.updates['i'] = [x for x in self.queue.packages['i'] if x not in self.updates['i']]
-        self.updates['r'] = [x for x in self.queue.packages['r'] if x not in self.updates['r']]
-        '''
-        for el in self.store:
-            obj = el[0]
-            if not obj.queued == obj.action:
-                obj.queued = obj.action
-                self.queue.add(obj)
-                obj.set_select( not obj.selected )
-        '''
+        status, myaction = self.queue.add(list)
+        if status == 0:
+            self.updates['u'] = [x for x in self.queue.packages['u'] if x not in self.updates['u']]
+            self.updates['i'] = [x for x in self.queue.packages['i'] if x not in self.updates['i']]
+            self.updates['r'] = [x for x in self.queue.packages['r'] if x not in self.updates['r']]
+        else:
+            for obj in list:
+                obj.queued = None
         self.queueView.refresh()
         self.view.queue_draw()
 
@@ -183,15 +184,15 @@ class EntropyPackageView:
         self.updates['i'] = []
 
     def deselectAll(self):
-        list = [x[0] for x in self.store if x[0].queued == x[0].action]
-        list += [x for x in self.updates['u']+self.updates['i']+self.updates['r'] if x not in list]
-        if not list:
+        xlist = [x[0] for x in self.store if x[0].queued == x[0].action]
+        xlist += [x for x in self.updates['u']+self.updates['i']+self.updates['r'] if x not in xlist]
+        if not xlist:
             return
-        for obj in list:
+        for obj in xlist:
             obj.queued = None
-        self.queue.remove(list)
-        for obj in list:
-            obj.set_select( not obj.selected )
+        self.queue.remove(xlist)
+        for obj in xlist:
+            obj.set_select( False )
         self.clearUpdates()
         
         '''

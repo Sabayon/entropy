@@ -26,13 +26,10 @@ import sys
 from misc import const
 import vte
 
-# XXX hook font and colors ?
 class SpritzConsole(vte.Terminal):
 
     def __init__(self, default_style = None):
         vte.Terminal.__init__(self)
-        #if defaulty_style:
-            #self.console.set_font_from_string(self.cfg.get("consolefont", "GTK"))
 
     def reset (self):
         vte.Terminal.reset(self, True, True)

@@ -822,7 +822,13 @@ class SpritzApplication(SpritzController,SpritzGUI):
                 controller = QueueExecutor(self)
                 e,i = controller.run(install_queue[:], removal_queue[:])
                 print e,i
+                # XXX let it sleep a bit to allow all other threads to flush
+                while gtk.events_pending():
+                    time.sleep(0.1)
+                time.sleep(20) # FIXME, still happens on a big queue
+            self.progress.reset_progress()
             self.Equo.closeAllRepositoryDatabases()
+            self.Equo.reopenClientDbconn()
             # regenerate packages information
             self.etpbase.clearPackages()
             self.setupSpritz()

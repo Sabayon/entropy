@@ -194,7 +194,7 @@ class ProgressTotal:
 
 class YumexProgress:
     """ Progress Class """
-    def __init__( self, ui, set_page_func,parent ):
+    def __init__( self, ui, set_page_func, parent ):
         self.ui = ui
         self.set_page_func = set_page_func
         self.parent = parent
@@ -210,6 +210,10 @@ class YumexProgress:
         self.ui.progressBox.show()
         self.set_page_func( 'output' )
         self.lastFrac = -1
+
+    def reset_progress( self ):
+        self.lastFrac = -1
+        self.set_progress(0.0)
 
     def hide( self, clean=False ):
         self.ui.progressBox.hide()
@@ -271,7 +275,7 @@ class SpritzGUI:
         self.queue = SpritzQueue()
         self.queueView = YumexQueueView(self.ui.queueView,self.queue)
         self.pkgView = EntropyPackageView(self.ui.viewPkg,self.queueView, self.ui)
-        self.queue.connect_objects(self.Entropy, self.etpbase, self.pkgView, self.queueView)
+        self.queue.connect_objects(self.Entropy, self.etpbase, self.pkgView, self.ui)
         #self.catView = YumexCategoryView(self.ui.tvCategory)
         self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
         self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView, self.ui)

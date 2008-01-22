@@ -32,32 +32,39 @@ from misc import const,cleanMarkupSting,YumexConf
 from i18n import _
 
 class ConfimationDialog:
-    def __init__( self, parent, pkgs, size ):
+    def __init__( self, parent, pkgs, top_text = None, bottom_text = None, bottom_data = None ):
+
         self.xml = gtk.glade.XML( const.GLADE_FILE, 'confirmation',domain="yumex" )
         self.dialog = self.xml.get_widget( "confirmation" )
         self.dialog.set_transient_for( parent )
         self.action = self.xml.get_widget( "confAction" )
-        tit = "<span size='x-large'>%s</span>" % _("Packages to Process")
+        self.bottomTitle = self.xml.get_widget( "bottomTitle" )
+        self.bottomData = self.xml.get_widget( "bottomData" )
+
+        # setup text
+        if top_text == None:
+            top_text = _("Please confirm the actions above")
+
+        tit = "<span size='x-large'>%s</span>" % (top_text,)
         self.action.set_markup( tit )
+        if bottom_text != None: self.bottomTitle.set_markup( bottom_text )
+        if bottom_data != None: self.bottomData.set_text( bottom_data )
+
+        self.pkgs = pkgs
         self.pkg = self.xml.get_widget( "confPkg" )
         self.pkgModel = self.setup_view( self.pkg )
         self.show_data( self.pkgModel, pkgs )
-        self.size = self.xml.get_widget( "confSize" )
-        self.size.set_text( str( size ) )
         self.pkg.expand_all()
 
     def run( self ):
         self.dialog.show_all()
         return self.dialog.run()
-             
+
     def setup_view( self, view ):
-        model = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING )
+        model = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_STRING )
         view.set_model( model )
-        self.create_text_column( _( "Name" ), view, 0 )
-        self.create_text_column( _( "Arch" ), view, 1 )
-        self.create_text_column( _( "Ver" ), view, 2 )
-        self.create_text_column( _( "Repository" ), view, 3 )
-        self.create_text_column( _( "Size" ), view, 4 )
+        self.create_text_column( _( "Package" ), view, 0 )
+        self.create_text_column( _( "Description" ), view, 1 )
         return model
 
     def create_text_column( self, hdr, view, colno, min_width=0 ):
@@ -66,26 +73,44 @@ class ConfimationDialog:
          column.set_resizable( True )
          if not min_width == 0:
              column.set_min_width( min_width )
-         view.append_column( column )        
-             
-             
-    def show_data( self, model, pkglist ):
-        model.clear()       
-        for sub, lvl1 in pkglist:
-            label = "<b>%s</b>" % sub
-            level1 = model.append( None, [label, "", "", "", ""] )
-            for name, arch, ver, repo, size, replaces in lvl1:
-                level2 = model.append( level1, [name, arch, ver, repo, size] )
-                for r in replaces:
-                    level3 = model.append( level2, [ r, "", "", "", ""] )
+         view.append_column( column )
 
-    def run( self ):
-        self.dialog.show_all()
-        return self.dialog.run()
+
+    def show_data( self, model, pkgs ):
+        model.clear()
+        for pkg in pkgs:
+            label = "<b>%s</b>" % str(pkg)
+            model.append( None, [label, pkg.description] )
+
+    def show_data( self, model, pkgs ):
+        model.clear()
+        install = [x for x in pkgs if x.action == "i"]
+        update = [x for x in pkgs if x.action == "u"]
+        remove = [x for x in pkgs if x.action == "r"]
+        # install
+        if install:
+            label = "<b>%s</b>" % _("To be installed")
+            level1 = model.append( None, [label, " "] )
+            for pkg in install:
+                desc = pkg.description
+                if not desc.strip():
+                    desc = _("No description")
+                level2 = model.append( level1, [str(pkg), desc ] )
+        if update:
+            label = "<b>%s</b>" % _("To be updated")
+            level1 = model.append( None, [label, " "] )
+            for pkg in update:
+                level2 = model.append( level1, [str(pkg), pkg.description] )
+        if remove:
+            print "qui 3"
+            label = "<b>%s</b>" % _("To be removed")
+            level1 = model.append( None, [label, " "] )
+            for pkg in remove:
+                level2 = model.append( level1, [str(pkg), pkg.description] )
 
     def destroy( self ):
         return self.dialog.destroy()
-        
+
 class ErrorDialog:
     def __init__( self, parent, title, text, longtext, modal ):
         self.xml = gtk.glade.XML( const.GLADE_FILE, "errDialog",domain="yumex" )
