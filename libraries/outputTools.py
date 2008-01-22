@@ -27,15 +27,20 @@ import curses
 import readline
 from entropyConstants import etpUi
 stuff = {}
-stuff['cleanline'] = ''
 stuff['cols'] = 30
 try:
     curses.setupterm()
     stuff['cols'] = curses.tigetnum('cols')
 except:
     pass
-for x in range(stuff['cols']):
-    stuff['cleanline'] += ' '
+stuff['cleanline'] = ""
+def setcols():
+    stuff['cleanline'] = ""
+    for x in range(stuff['cols']):
+        stuff['cleanline'] += ' '
+setcols()
+stuff['cursor'] = False
+stuff['ESC'] = chr(27)
 
 havecolor=1
 global dotitles
@@ -228,13 +233,17 @@ def enlightenatom(atom):
     out = atom.split("/")
     return blue(out[0])+"/"+red(out[1])
 
+def reset_cursor():
+    sys.stdout.write(stuff['ESC'] + '[2K')
+
 def print_error(msg, back = False):
     if etpUi['mute']:
         return
     if (back):
-        writechar("\r   "+stuff['cleanline']+"\r")
+        reset_cursor()
         writechar("\r"+red(">>")+" "+msg)
         return
+    setcols()
     writechar("\r"+stuff['cleanline']+"\r")
     print darkred(">>")+" "+msg
 
@@ -242,9 +251,10 @@ def print_info(msg, back = False):
     if etpUi['mute']:
         return
     if back:
-        writechar("\r"+stuff['cleanline']+"\r")
+        reset_cursor()
         writechar("\r"+green(">>")+" "+msg)
         return
+    setcols()
     writechar("\r"+stuff['cleanline']+"\r")
     print green(">>")+" "+msg
 
@@ -252,9 +262,10 @@ def print_warning(msg, back = False):
     if etpUi['mute']:
         return
     if back:
-        writechar("\r"+stuff['cleanline']+"\r")
+        reset_cursor()
         writechar("\r"+red(">>")+" "+msg)
         return
+    setcols()
     writechar("\r"+stuff['cleanline']+"\r")
     print red(">>")+" "+msg
 

@@ -3932,6 +3932,8 @@ class FtpInterface:
         import ftplib
         self.ftplib = ftplib
 
+        self.currentText = ""
+
         # import FTP modules
         socket.setdefaulttimeout(60)
 
@@ -4101,22 +4103,29 @@ class FtpInterface:
             return "226"
         return rc
 
+    def updateProgress(self, buf_len):
+        # get the buffer size
+        self.mykByteCount += float(buf_len)/1024
+        # create percentage
+        myUploadPercentage = round((round(self.mykByteCount,1)/self.myFileSize)*100,1)
+        myUploadSize = round(self.mykByteCount,1)
+        if (myUploadPercentage < 100.1) and (myUploadSize <= self.myFileSize):
+            myUploadPercentage = str(myUploadPercentage)+"%"
+
+            # create text
+            self.currentText = brown("    <-> Upload status: ")+green(str(myUploadSize))+"/"+red(str(self.myFileSize))+" kB "+yellow("[")+str(myUploadPercentage)+yellow("]")
+            #self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True)
+            # print !
+            task = self.entropyTools.parallelTask(self.updateText)
+            task.start()
+
+    def updateText(self):
+        print_info(self.currentText, back = True)
+
     def uploadFile(self,file,ascii = False):
 
         def uploadFileAndUpdateProgress(buf):
-            # get the buffer size
-            self.mykByteCount += float(len(buf))/1024
-            # create percentage
-            myUploadPercentage = round((round(self.mykByteCount,1)/self.myFileSize)*100,1)
-            myUploadSize = round(self.mykByteCount,1)
-            if (myUploadPercentage < 100.1) and (myUploadSize <= self.myFileSize):
-                myUploadPercentage = str(myUploadPercentage)+"%"
-
-                # create text
-                currentText = brown("    <-> Upload status: ")+green(str(myUploadSize))+"/"+red(str(self.myFileSize))+" kB "+yellow("[")+str(myUploadPercentage)+yellow("]")
-                self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True)
-                # print !
-                print_info(currentText,back = True)
+            self.updateProgress(len(buf))
 
         for i in range(10): # ten tries
             filename = file.split("/")[len(file.split("/"))-1]
@@ -4365,6 +4374,11 @@ class urlFetcher:
     # reimplemented from TextInterface
     def updateProgress(self):
 
+        task = self.entropyTools.parallelTask(self.updateText)
+        task.start()
+
+    def updateText(self):
+
         currentText = darkred("    <-> Downloading: ")+darkgreen(str(round(float(self.downloadedsize)/1024,1)))+"/"+red(str(round(self.remotesize,1))) + " kB"
         # create progress bar
         barsize = 10
@@ -4390,6 +4404,7 @@ class urlFetcher:
         currentText += "    <->  "+average+"% "+bartext
         # print !
         print_info(currentText,back = True)
+
 
     def close(self):
         try:
