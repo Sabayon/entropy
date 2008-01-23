@@ -967,7 +967,10 @@ class etpDatabase(TextInterface):
                 )
             except:
                 if self.dbname == "client": # force only for client database
-                    self.createCountersTable()
+                    if not self.doesTableExist("counters"):
+                        self.createCountersTable()
+                    else:
+                        raise
                     self.cursor.execute(
                     'INSERT into counters VALUES '
                     '(?,?)'
@@ -989,7 +992,10 @@ class etpDatabase(TextInterface):
             )
         except:
             # create sizes table, temp hack
-            self.createSizesTable()
+            if not self.doesTableExist("sizes"):
+                self.createSizesTable()
+            else:
+                raise
             self.cursor.execute(
             'INSERT into sizes VALUES '
             '(?,?)'
@@ -1369,7 +1375,12 @@ class etpDatabase(TextInterface):
             self.cursor.execute('DELETE FROM counters WHERE idpackage = '+idpackage)
         except:
             if self.dbname == "client":
-                self.createCountersTable()
+                if not self.doesTableExist("counters"):
+                    self.createCountersTable()
+                else:
+                    raise
+            elif self.dbname == "etpdb":
+                raise
         try:
             # on disk sizes
             self.cursor.execute('DELETE FROM sizes WHERE idpackage = '+idpackage)
@@ -1622,7 +1633,10 @@ class etpDatabase(TextInterface):
             self.cursor.execute('UPDATE counters SET counter = (?) WHERE idpackage = (?)', (counter,idpackage,))
         except:
             if self.dbname == "client":
-                self.createCountersTable()
+                if not self.doesTableExist("counters"):
+                    self.createCountersTable()
+                else:
+                    raise
                 self.cursor.execute(
                     'INSERT into counters VALUES '
                     '(?,?)', (counter,idpackage,)
@@ -2202,7 +2216,10 @@ class etpDatabase(TextInterface):
                 counter = mycounter[0]
         except:
             if self.dbname == "client":
-                self.createCountersTable()
+                if not self.doesTableExist("counters"):
+                    self.createCountersTable()
+                else:
+                    raise
                 counter = self.retrieveCounter(idpackage)
 
         self.storeInfoCache(idpackage,'retrieveCounter',int(counter))
@@ -2244,7 +2261,10 @@ class etpDatabase(TextInterface):
         try:
             self.cursor.execute('SELECT size FROM sizes WHERE idpackage = (?)', (idpackage,))
         except:
-            self.createSizesTable()
+            if not self.doesTableExist("sizes"):
+                self.createSizesTable()
+            else:
+                raise
             # table does not exist?
             return 0
         size = self.cursor.fetchone() # do not use [0]!
@@ -2359,7 +2379,7 @@ class etpDatabase(TextInterface):
 
     def retrieveNeeded(self, idpackage):
 
-        if not self.doesNeededExist():
+        if not self.doesTableExist("needed"):
             self.createNeededTable()
 
         self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
@@ -3247,8 +3267,9 @@ class etpDatabase(TextInterface):
         if rslt == None:
             raise exceptionTools.SystemDatabaseError("SystemDatabaseError: table extrainfo not found. Either does not exist or corrupted.")
 
-    def doesNeededExist(self):
-        self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table","needed"))
+    # FIXME: this is only compatible with SQLITE
+    def doesTableExist(self, table):
+        self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table",table))
         rslt = self.cursor.fetchone()
         if rslt == None:
             return False

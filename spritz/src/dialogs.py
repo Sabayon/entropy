@@ -102,7 +102,6 @@ class ConfimationDialog:
             for pkg in update:
                 level2 = model.append( level1, [str(pkg), pkg.description] )
         if remove:
-            print "qui 3"
             label = "<b>%s</b>" % _("To be removed")
             level1 = model.append( None, [label, " "] )
             for pkg in remove:

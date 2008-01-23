@@ -1314,11 +1314,16 @@ class EquoInterface(TextInterface):
 
         # check if dependstable is sane before beginning
         self.clientDbconn.retrieveDepends(idpackages[0])
+        count = 0
 
         while (not dependsOk):
             treedepth += 1
             tree[treedepth] = set()
             for idpackage in treelevel:
+
+                count += 1
+                p_atom = self.clientDbconn.retrieveAtom(idpackage)
+                self.updateProgress(blue("Calculating removable depends of %s") % (red(p_atom),), importance = 0, type = "info", back = True, header = '|/-\\'[count%4]+" ")
 
                 systempkg = self.clientDbconn.isSystemPackage(idpackage)
                 if (idpackage in dependscache) or systempkg:
@@ -2569,6 +2574,7 @@ class PackageInterface:
         # always set data['injected'] to False
         # installed packages database SHOULD never have more than one package for scope (key+slot)
         data['injected'] = False
+        data['counter'] = -1 # gentoo counter will be set in self.__install_package_into_gentoo_database()
 
         idpk, rev, x, status = self.Entropy.clientDbconn.handlePackage(etpData = data, forcedRevision = data['revision'])
         del x

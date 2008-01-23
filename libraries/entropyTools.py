@@ -2167,12 +2167,14 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 	# add kname to the dependency
 	data['dependencies'].append("=sys-kernel/linux-"+kname+"-"+kver)
 
+    '''
     if (kernelItself):
-	# it's the kernel, add dependency on all tagged packages
-	try:
-	    data['dependencies'].append("=sys-kernel/linux-"+kname+"-modules-"+kver)
-	except:
-	    pass
+        # it's the kernel, add dependency on all tagged packages
+        try:
+            data['dependencies'].append("=sys-kernel/linux-"+kname+"-modules-"+kver)
+        except:
+            pass
+    '''
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting System package List..."),back = True)
     # write only if it's a systempackage

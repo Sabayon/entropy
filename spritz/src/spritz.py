@@ -67,9 +67,9 @@ class SpritzController(Controller):
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
-        #sys.stdout = self.output
-        #sys.stderr = self.output
-        #sys.stdin = self.input
+        sys.stdout = self.output
+        sys.stderr = self.output
+        sys.stdin = self.input
 
 
     def quit(self, widget=None, event=None ):

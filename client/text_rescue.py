@@ -110,7 +110,6 @@ def database(options):
             elif os.path.isdir(temptbz2):
                 shutil.rmtree(temptbz2)
             f = open(temptbz2,"wb")
-            f.write("this is a fake ")
             f.flush()
             f.close()
             Equo.entropyTools.appendXpak(temptbz2,portagePackage)
