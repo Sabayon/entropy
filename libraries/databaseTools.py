@@ -2359,6 +2359,9 @@ class etpDatabase(TextInterface):
 
     def retrieveNeeded(self, idpackage):
 
+        if not self.doesNeededExist():
+            self.createNeededTable()
+
         self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
         needed = self.fetchall2set(self.cursor.fetchall())
 
@@ -3243,6 +3246,13 @@ class etpDatabase(TextInterface):
         rslt = self.cursor.fetchone()
         if rslt == None:
             raise exceptionTools.SystemDatabaseError("SystemDatabaseError: table extrainfo not found. Either does not exist or corrupted.")
+
+    def doesNeededExist(self):
+        self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table","needed"))
+        rslt = self.cursor.fetchone()
+        if rslt == None:
+            return False
+        return True
 
     def tablesChecksum(self):
         # NOTE: if you will add dependstable to the validation

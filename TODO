@@ -1,5 +1,4 @@
 TODO list:
-  - check mail error (*)
   - update progress in calculating removal (*)
   - change package naming format adding category
   - migrate server code to ServerInterface

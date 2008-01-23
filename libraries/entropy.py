@@ -2708,6 +2708,7 @@ class PackageInterface:
 
                 # -- CONFIGURATION FILE PROTECTION --
                 protected = False
+                tofile_before_protect = tofile
 
                 try:
                     for x in protect:
@@ -2761,6 +2762,8 @@ class PackageInterface:
                     # -- CONFIGURATION FILE PROTECTION --
 
                 except Exception, e:
+                    protected = False # safely revert to false
+                    tofile = tofile_before_protect
                     self.Entropy.updateProgress(
                                                 red("QA: ")+brown("cannot check CONFIG PROTECTION. Exception: %s :: error: %s" % (
                                                         str(Exception),
