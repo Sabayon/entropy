@@ -296,6 +296,10 @@ def update(options):
     dbconn.commitChanges()
     # regen dependstable
     dependsTableInitialize(dbconn, False)
+    dbconn.commitChanges()
+
+    # checking dependencies and print issues
+    dependenciesTest()
 
     dbconn.closeDB()
 

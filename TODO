@@ -1,7 +1,6 @@
 TODO list:
   - check mail error (*)
   - update progress in calculating removal (*)
-  - add deptest check for every reagent run (*)
   - change package naming format adding category
   - migrate server code to ServerInterface
   - Community repositories
@@ -10,6 +9,8 @@ TODO list:
   - handle multiuser on entropy server using equo interface
 
   Spritz:
+    - handle config files updates interface
+    - add masking interface
     - handle queue dependencies in the queue tab too
     - add branch switching menu+stuff
     - wrap root password request

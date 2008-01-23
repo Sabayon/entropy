@@ -30,8 +30,8 @@ try: # try with sqlite3 from python 2.5 - default one
 except ImportError: # fallback to embedded pysqlite
     try:
         from pysqlite2 import dbapi2
-    except ImportError:
-        raise exceptionTools.SystemError("Entropy needs sqlite+pysqlite or Python compiled with sqlite support. Cannot continue.")
+    except ImportError, e:
+        raise exceptionTools.SystemError("Entropy needs a working sqlite+pysqlite or Python compiled with sqlite support. Error: %s" % (str(e),))
 import dumpTools
 
 
