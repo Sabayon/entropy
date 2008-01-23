@@ -4113,7 +4113,7 @@ class FtpInterface:
             myUploadPercentage = str(myUploadPercentage)+"%"
 
             # create text
-            self.currentText = brown("    <-> Upload status: ")+green(str(myUploadSize))+"/"+red(str(self.myFileSize))+" kB "+yellow("[")+str(myUploadPercentage)+yellow("]")
+            currentText = brown("    <-> Upload status: ")+green(str(myUploadSize))+"/"+red(str(self.myFileSize))+" kB "+yellow("[")+str(myUploadPercentage)+yellow("]")
             # print !
             self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True)
 
