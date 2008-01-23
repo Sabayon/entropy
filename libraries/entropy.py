@@ -4115,7 +4115,9 @@ class FtpInterface:
             # create text
             currentText = brown("    <-> Upload status: ")+green(str(myUploadSize))+"/"+red(str(self.myFileSize))+" kB "+yellow("[")+str(myUploadPercentage)+yellow("]")
             # print !
-            self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True)
+            print_info(currentText, back = True)
+            # XXX too slow, reimplement self.updateProgress and do whatever you want
+            #self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True)
 
     def uploadFile(self,file,ascii = False):
 

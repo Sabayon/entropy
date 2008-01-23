@@ -325,6 +325,7 @@ class TextInterface:
         task = self.entropyTools.parallelTask(self.__TextInterface_updateText, data)
         task.parallel_wait()
         task.start()
+        del data
 
 
     # in this case, we run a separate thread
