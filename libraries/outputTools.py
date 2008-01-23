@@ -286,6 +286,8 @@ def readtext(request):
 
 class TextInterface:
 
+    import entropyTools
+
     # @input text: text to write
     # @input back: write on on the same line?
     # @input importance:
@@ -311,27 +313,42 @@ class TextInterface:
         if (etpUi['quiet']) or (etpUi['mute']):
             return
 
+        data = {}
+        data['text'] = text
+        data['header'] = header
+        data['footer'] = footer
+        data['back'] = back
+        data['importance'] = importance
+        data['type'] = type
+        data['count'] = count[:]
+        data['percent'] = percent
+        task = self.entropyTools.parallelTask(self.__TextInterface_updateText, data)
+        task.parallel_wait()
+        task.start()
+
+
+    # in this case, we run a separate thread
+    def __TextInterface_updateText(self, data):
+
         myfunc = print_info
-        if type == "warning":
+        if data['type'] == "warning":
             myfunc = print_warning
-        elif type == "error":
+        elif data['type'] == "error":
             myfunc = print_error
 
         count_str = ""
-        if count:
-            if len(count) < 2:
-                import exceptionTools
-                raise exceptionTools.IncorrectParameter("IncorrectParameter: count length must be >= 2")
-            if percent:
-                count_str = " ("+str(round((float(count[0])/count[1])*100,1))+"%) "
-            else:
-                count_str = " (%s/%s) " % (red(str(count[0])),blue(str(count[1])),)
-        if importance == 0:
-            myfunc(header+count_str+text+footer, back = back)
-        elif importance == 1:
-            myfunc(header+count_str+text+footer, back = back)
-        elif importance in (2,3):
-            myfunc(header+count_str+text+footer, back = back)
+        if data['count']:
+            if len(data['count']) > 1:
+                if data['percent']:
+                    count_str = " ("+str(round((float(data['count'][0])/data['count'][1])*100,1))+"%) "
+                else:
+                    count_str = " (%s/%s) " % (red(str(data['count'][0])),blue(str(data['count'][1])),)
+        if data['importance'] == 0:
+            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'])
+        elif data['importance'] == 1:
+            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'])
+        elif data['importance'] in (2,3):
+            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'])
 
     # @input question: question to do
     #

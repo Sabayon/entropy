@@ -4114,13 +4114,8 @@ class FtpInterface:
 
             # create text
             self.currentText = brown("    <-> Upload status: ")+green(str(myUploadSize))+"/"+red(str(self.myFileSize))+" kB "+yellow("[")+str(myUploadPercentage)+yellow("]")
-            #self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True)
             # print !
-            task = self.entropyTools.parallelTask(self.updateText)
-            task.start()
-
-    def updateText(self):
-        print_info(self.currentText, back = True)
+            self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True)
 
     def uploadFile(self,file,ascii = False):
 
@@ -4371,13 +4366,7 @@ class urlFetcher:
         kbytecount = float(self.downloadedsize)/1024
         self.average = int((kbytecount/self.remotesize)*100)
 
-    # reimplemented from TextInterface
     def updateProgress(self):
-
-        task = self.entropyTools.parallelTask(self.updateText)
-        task.start()
-
-    def updateText(self):
 
         currentText = darkred("    <-> Downloading: ")+darkgreen(str(round(float(self.downloadedsize)/1024,1)))+"/"+red(str(round(self.remotesize,1))) + " kB"
         # create progress bar

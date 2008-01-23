@@ -315,8 +315,7 @@ etpSys = {
     'api': '1',
     'arch': ETP_ARCH_CONST,
     'rootdir': "",
-    'maxthreads': 5,
-    'threads': 0,
+    'maxthreads': 50,
     'dirstoclean': set(),
 }
 

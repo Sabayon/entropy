@@ -70,15 +70,15 @@ class parallelTask(threading.Thread):
         self.function = function
         self.data = dictData.copy()
 
+    def parallel_wait(self):
+        while len(threading.enumerate()) > etpSys['maxthreads']:
+            time.sleep(0.001)
+
     def run(self):
-        while etpSys['threads'] > etpSys['maxthreads']:
-            time.sleep(0.01)
-        etpSys['threads'] += 1
         if self.data:
             self.function(self.data)
         else:
             self.function()
-        etpSys['threads'] -= 1
     '''
     def destroy(self):
         del self.function
