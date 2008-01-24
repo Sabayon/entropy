@@ -4132,6 +4132,8 @@ class FtpInterface:
 
     def uploadFile(self,file,ascii = False):
 
+        self.oldprogress = 0.0
+
         def uploadFileAndUpdateProgress(buf):
             self.updateProgress(len(buf))
 
@@ -4177,6 +4179,8 @@ class FtpInterface:
                 pass
 
     def downloadFile(self,filepath,downloaddir,ascii = False):
+
+        self.oldprogress = 0.0
 
         def downloadFileStoreAndUpdateProgress(buf):
             # writing file buffer
