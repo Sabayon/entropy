@@ -539,27 +539,27 @@ ver_regexp = re.compile("^(cvs\\.)?(\\d+)((\\.\\d+)*)([a-z]?)((_(pre|p|beta|alph
 def isjustpkgname(mypkg):
     myparts = mypkg.split('-')
     for x in myparts:
-	if ververify(x):
-	    return 0
+        if ververify(x):
+            return 0
     return 1
 
 def ververify(myverx, silent=1):
-    
+
     cached = ververifyCache.get(myverx)
     if cached != None:
-	return cached
-    
+        return cached
+
     ververifyCache[myverx] = 1
     myver = myverx[:]
     if myver.endswith("*"):
-	myver = myver[:len(myver)-1]
+        myver = myver[:len(myver)-1]
     if ver_regexp.match(myver):
-	return 1
+        return 1
     else:
-	if not silent:
-	    print "!!! syntax error in version: %s" % myver
-	ververifyCache[myverx] = 0
-	return 0
+        if not silent:
+            print "!!! syntax error in version: %s" % myver
+        ververifyCache[myverx] = 0
+        return 0
 
 
 def isjustname(mypkg):
@@ -567,31 +567,31 @@ def isjustname(mypkg):
     Checks to see if the depstring is only the package name (no version parts)
 
     Example usage:
-	>>> isjustname('media-libs/test-3.0')
-	0
-	>>> isjustname('test')
-	1
-	>>> isjustname('media-libs/test')
-	1
+        >>> isjustname('media-libs/test-3.0')
+        0
+        >>> isjustname('test')
+        1
+        >>> isjustname('media-libs/test')
+        1
 
     @param mypkg: The package atom to check
     @param mypkg: String
     @rtype: Integer
     @return: One of the following:
-	1) 0 if the package string is not just the package name
-	2) 1 if it is
+        1) 0 if the package string is not just the package name
+        2) 1 if it is
     """
-    
+
     cached = isjustnameCache.get(mypkg)
     if cached != None:
-	return cached
-    
+        return cached
+
     isjustnameCache[mypkg] = 1
     myparts = mypkg.split('-')
     for x in myparts:
-	if ververify(x):
-	    isjustnameCache[mypkg] = 0
-	    return 0
+        if ververify(x):
+            isjustnameCache[mypkg] = 0
+            return 0
     return 1
 
 def isspecific(mypkg):
@@ -600,17 +600,17 @@ def isspecific(mypkg):
     possibly returning a cached result.
 
     Example usage:
-	>>> isspecific('media-libs/test')
-	0
-	>>> isspecific('media-libs/test-3.0')
-	1
+        >>> isspecific('media-libs/test')
+        0
+        >>> isspecific('media-libs/test-3.0')
+        1
 
     @param mypkg: The package depstring to check against
     @type mypkg: String
     @rtype: Integer
     @return: One of the following:
-	1) 0 if the package string is not specific
-	2) 1 if it is
+        1) 0 if the package string is not specific
+        2) 1 if it is
     """
     mysplit = mypkg.split("/")
     if not isjustname(mysplit[-1]):
@@ -628,29 +628,29 @@ def catpkgsplit(mydata,silent=1):
     @type silent: Boolean (integer)
     @rype: list
     @return:
-	1.  If each exists, it returns [cat, pkgname, version, rev]
-	2.  If cat is not specificed in mydata, cat will be "null"
-	3.  if rev does not exist it will be '-r0'
-	4.  If cat is invalid (specified but has incorrect syntax)
- 		an InvalidData Exception will be thrown
+        1.  If each exists, it returns [cat, pkgname, version, rev]
+        2.  If cat is not specificed in mydata, cat will be "null"
+        3.  if rev does not exist it will be '-r0'
+        4.  If cat is invalid (specified but has incorrect syntax)
+                an InvalidData Exception will be thrown
     """
-    
+
     cached = catpkgsplitCache.get(mydata)
     if cached != None:
-	return cached
-    
+        return cached
+
     # Categories may contain a-zA-z0-9+_- but cannot start with -
     mysplit=mydata.split("/")
     p_split=None
     if len(mysplit)==1:
-	retval=["null"]
-	p_split=pkgsplit(mydata,silent=silent)
+        retval=["null"]
+        p_split=pkgsplit(mydata,silent=silent)
     elif len(mysplit)==2:
-	retval=[mysplit[0]]
-	p_split=pkgsplit(mysplit[1],silent=silent)
+        retval=[mysplit[0]]
+        p_split=pkgsplit(mysplit[1],silent=silent)
     if not p_split:
-	catpkgsplitCache[mydata] = None
-	return None
+        catpkgsplitCache[mydata] = None
+        return None
     retval.extend(p_split)
     catpkgsplitCache[mydata] = retval
     return retval
@@ -659,59 +659,58 @@ def pkgsplit(mypkg,silent=1):
     myparts=mypkg.split("-")
 
     if len(myparts)<2:
-	if not silent:
-	    print "!!! Name error in",mypkg+": missing a version or name part."
-	    return None
+        if not silent:
+            print "!!! Name error in",mypkg+": missing a version or name part."
+            return None
     for x in myparts:
-	if len(x)==0:
-	    if not silent:
-		print "!!! Name error in",mypkg+": empty \"-\" part."
-		return None
-	
+        if len(x)==0:
+            if not silent:
+                print "!!! Name error in",mypkg+": empty \"-\" part."
+                return None
+
     #verify rev
     revok=0
     myrev=myparts[-1]
-    
+
     if len(myrev) and myrev[0]=="r":
-	try:
-	    int(myrev[1:])
-	    revok=1
-	except ValueError: # from int()
-	    pass
+        try:
+            int(myrev[1:])
+            revok=1
+        except ValueError: # from int()
+            pass
     if revok:
-	verPos = -2
-	revision = myparts[-1]
+        verPos = -2
+        revision = myparts[-1]
     else:
-	verPos = -1
-	revision = "r0"
+        verPos = -1
+        revision = "r0"
 
     if ververify(myparts[verPos]):
-	if len(myparts)== (-1*verPos):
-	    return None
-	else:
-	    for x in myparts[:verPos]:
-		if ververify(x):
-		    return None
-		    #names can't have versiony looking parts
-	    myval=["-".join(myparts[:verPos]),myparts[verPos],revision]
-	    return myval
+        if len(myparts)== (-1*verPos):
+            return None
+        else:
+            for x in myparts[:verPos]:
+                if ververify(x):
+                    return None
+                    #names can't have versiony looking parts
+            myval=["-".join(myparts[:verPos]),myparts[verPos],revision]
+            return myval
     else:
-	return None
+        return None
 
 # FIXME: deprecated, use remove_tag - will be removed soonly
-
 def dep_striptag(mydepx):
 
     cached = dep_striptagCache.get(mydepx)
     if cached != None:
-	return cached
+        return cached
 
     mydep = mydepx[:]
     if not (isjustname(mydep)):
-	if mydep.split("-")[len(mydep.split("-"))-1].startswith("t"): # tag -> remove
-	    tag = mydep.split("-")[len(mydep.split("-"))-1]
-	    mydep = mydep[:len(mydep)-len(tag)-1]
-    
+        if mydep.split("-")[len(mydep.split("-"))-1].startswith("t"): # tag -> remove
+            tag = mydep.split("-")[len(mydep.split("-"))-1]
+            mydep = mydep[:len(mydep)-len(tag)-1]
+
     dep_striptagCache[mydepx] = mydep
     return mydep
 
@@ -721,8 +720,8 @@ def dep_getkey(mydepx):
     Return the category/package-name of a depstring.
 
     Example usage:
-	>>> dep_getkey('media-libs/test-3.0')
-	'media-libs/test'
+        >>> dep_getkey('media-libs/test-3.0')
+        'media-libs/test'
 
     @param mydep: The depstring to retrieve the category/package-name of
     @type mydep: String
@@ -1718,10 +1717,9 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     package = package.split(".tbz2")[0]
     package = remove_entropy_revision(package)
     package = remove_tag(package)
-
-    # FIXME: deprecated - will be removed soonly
-    if package.split("-")[len(package.split("-"))-1].startswith("t"):
-        package = '-t'.join(package.split("-t")[:-1])
+    # remove category
+    if package.find(":") != -1:
+        package = ':'.join(package.split(":")[1:])
 
     package = package.split("-")
     pkgname = ""
@@ -1730,14 +1728,14 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
         pkgver = package[pkglen-2]+"-"+package[pkglen-1]
         pkglen -= 2
     else:
-        pkgver = package[len(package)-1]
+        pkgver = package[-1]
         pkglen -= 1
     for i in range(pkglen):
         if i == pkglen-1:
             pkgname += package[i]
         else:
             pkgname += package[i]+"-"
-    pkgname = pkgname.split("/")[len(pkgname.split("/"))-1]
+    pkgname = pkgname.split("/")[-1]
 
     # Fill Package name and version
     data['name'] = pkgname
@@ -1939,8 +1937,11 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
             kernelItself = True
             kernelDependentModule = False
 
-    # add strict kernel dependency
-    # done below
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package category..."),back = True)
+    # Fill category
+    f = open(tbz2TmpDir+dbCATEGORY,"r")
+    data['category'] = f.readline().strip()
+    f.close()
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package download URL..."),back = True)
     # Fill download relative URI
@@ -1953,7 +1954,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
         versiontag = ""
     # remove etpConst['product'] from etpConst['binaryurirelativepath']
     downloadrelative = etpConst['binaryurirelativepath'][len(etpConst['product'])+1:]
-    data['download'] = downloadrelative+data['branch']+"/"+data['name']+"-"+data['version']+versiontag+".tbz2"
+    data['download'] = downloadrelative+data['branch']+"/"+data['category']+":"+data['name']+"-"+data['version']+versiontag+".tbz2"
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package counter..."),back = True)
     # Fill counter
@@ -1964,12 +1965,6 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     except IOError:
         data['counter'] = -2 # -2 values will be insterted as incremental negative values into the database
 
-
-    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package category..."),back = True)
-    # Fill category
-    f = open(tbz2TmpDir+dbCATEGORY,"r")
-    data['category'] = f.readline().strip()
-    f.close()
 
     data['trigger'] = ""
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package external trigger availability..."),back = True)
@@ -2137,7 +2132,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
                     data['keywords'].append(i)
         f.close()
     except IOError:
-	pass
+        pass
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package dependencies..."),back = True)
     # Fill runtime dependencies
@@ -2156,16 +2151,16 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     deps,conflicts = synthetizeRoughDependencies(dependencies,' '.join(PackageFlags))
     data['dependencies'] = []
     for i in deps.split():
-	data['dependencies'].append(i)
+        data['dependencies'].append(i)
     data['conflicts'] = []
     for i in conflicts.split():
-	# check if i == PROVIDE
-	if i not in data['provide']: # we handle these conflicts using emerge, so we can just filter them out
-	    data['conflicts'].append(i)
-    
+        # check if i == PROVIDE
+        if i not in data['provide']: # we handle these conflicts using emerge, so we can just filter them out
+            data['conflicts'].append(i)
+
     if (kernelDependentModule):
-	# add kname to the dependency
-	data['dependencies'].append("=sys-kernel/linux-"+kname+"-"+kver)
+        # add kname to the dependency
+        data['dependencies'].append("=sys-kernel/linux-"+kname+"-"+kver)
 
     '''
     if (kernelItself):
@@ -2176,24 +2171,24 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
             pass
     '''
 
-    if not silent: print_info(yellow(" * ")+red(info_package+"Getting System package List..."),back = True)
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting System Packages List..."),back = True)
     # write only if it's a systempackage
     data['systempackage'] = ''
     systemPackages = getPackagesInSystem()
     for x in systemPackages:
-	x = dep_getkey(x)
-	y = data['category']+"/"+data['name']
-	if x == y:
-	    # found
-	    data['systempackage'] = "xxx"
-	    break
+        x = dep_getkey(x)
+        y = data['category']+"/"+data['name']
+        if x == y:
+            # found
+            data['systempackage'] = "xxx"
+            break
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting CONFIG_PROTECT/CONFIG_PROTECT_MASK List..."),back = True)
     # write only if it's a systempackage
     protect, mask = getConfigProtectAndMask()
     data['config_protect'] = protect
     data['config_protect_mask'] = mask
-    
+
     # fill data['messages']
     # etpConst['logdir']+"/elog"
     if not os.path.isdir(etpConst['logdir']+"/elog"):
@@ -2201,33 +2196,39 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     data['messages'] = []
     if os.path.isdir(etpConst['logdir']+"/elog"):
         elogfiles = os.listdir(etpConst['logdir']+"/elog")
-	myelogfile = data['category']+":"+data['name']+"-"+data['version']
-	foundfiles = []
-	for item in elogfiles:
-	    if item.startswith(myelogfile):
-		foundfiles.append(item)
-	if foundfiles:
-	    elogfile = foundfiles[0]
-	    if len(foundfiles) > 1:
-		# get the latest
-		mtimes = []
-		for item in foundfiles:
-		    mtimes.append((getFileUnixMtime(etpConst['logdir']+"/elog/"+item),item))
-		mtimes.sort()
-		elogfile = mtimes[len(mtimes)-1][1]
-	    messages = extractElog(etpConst['logdir']+"/elog/"+elogfile)
-	    for message in messages:
-		message = message.replace("emerge","equo install")
-		data['messages'].append(message)
+        myelogfile = data['category']+":"+data['name']+"-"+data['version']
+        foundfiles = []
+        for item in elogfiles:
+            if item.startswith(myelogfile):
+                foundfiles.append(item)
+        if foundfiles:
+            elogfile = foundfiles[0]
+            if len(foundfiles) > 1:
+                # get the latest
+                mtimes = []
+                for item in foundfiles:
+                    mtimes.append((getFileUnixMtime(etpConst['logdir']+"/elog/"+item),item))
+                mtimes.sort()
+                elogfile = mtimes[len(mtimes)-1][1]
+            messages = extractElog(etpConst['logdir']+"/elog/"+elogfile)
+            for message in messages:
+                message = message.replace("emerge","equo install")
+                data['messages'].append(message)
     else:
-	if not silent: print_warning(red(etpConst['logdir']+"/elog")+" not set, have you configured make.conf properly?")
+        if not silent: print_warning(red(etpConst['logdir']+"/elog")+" not set, have you configured make.conf properly?")
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting Entropy API version..."),back = True)
     # write API info
     data['etpapi'] = etpConst['etpapi']
-    
+
     # removing temporary directory
-    os.system("rm -rf "+tbz2TmpDir)
+    import shutil
+    shutil.rmtree(tbz2TmpDir,True)
+    if os.path.isdir(tbz2TmpDir):
+        try:
+            os.remove(tbz2TmpDir)
+        except OSError:
+            pass
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Done"),back = True)
     return data

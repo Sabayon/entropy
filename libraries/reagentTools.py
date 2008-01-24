@@ -33,16 +33,11 @@ reagentLog = logTools.LogFile(level=etpConst['reagentloglevel'],filename = etpCo
 
 def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['branch'], inject = False):
 
-    reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: called -> Package: "+str(package)+" | dbconnection: "+str(dbconnection))
-
-    # check if the package provided is valid
-    validFile = False
-    if os.path.isfile(package) and package.endswith(".tbz2"):
-        validFile = True
-    if (not validFile):
-        print_warning(package+" does not exist !")
-
+    # check if the provided package is valid
+    if not os.path.isfile(package) or not package.endswith(".tbz2"):
+        return False, -1
     packagename = os.path.basename(package)
+
     print_info(brown(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
     mydata = Entropy.entropyTools.extractPkgData(package, enzymeRequestBranch, inject = inject)
 
@@ -62,19 +57,14 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
         dbconn.commitChanges()
         dbconn.closeDB()
 
-    packagename = packagename[:-5]+"~"+str(revision)+".tbz2"
-
     if (accepted) and (revision != 0):
-        reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(os.path.basename(etpDataUpdated['download']))+" has been updated to revision: "+str(revision))
         print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" entry has been updated. Revision: ")+bold(str(revision)))
         return True, idpk
     elif (accepted) and (revision == 0):
-        reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(os.path.basename(etpDataUpdated['download']))+" newly created or version bumped.")
         print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" entry newly created."))
         return True, idpk
     else:
-        reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"generator: entry for "+str(os.path.basename(etpDataUpdated['download']))+" kept intact, no updates needed.")
-        print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" does not need to be updated. Current revision: ")+bold(str(revision)))
+        print_error(red(" * Package ")+bold(packagename)+red(": something bad happened !!!"))
         return False, idpk
 
 def inject(options):
@@ -506,7 +496,7 @@ def database(options):
                 print_info(darkgreen(" [")+red(mybranch)+darkgreen("] ")+red("Analyzing: ")+bold(pkg), back = True)
                 currCounter += 1
                 print_info(darkgreen(" [")+red(mybranch)+darkgreen("] ")+green("(")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(" ..."), back = True)
-            
+
                 doinject = False
                 if os.path.join(etpConst['binaryurirelativepath'],mybranch+"/"+pkg) in injectedPackages:
                     doinject = True
@@ -524,13 +514,13 @@ def database(options):
 
                 print_info(darkgreen(" [")+red(mybranch)+darkgreen("] ")+green("(")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(". Revision: ")+blue(str(addRevision)))
 
-	    dbconn.commitChanges()
-	
-	# regen dependstable
+            dbconn.commitChanges()
+
+        # regen dependstable
         dependsTableInitialize(dbconn, False)
-	
-	dbconn.closeDB()
-	print_info(green(" * ")+red("Entropy database has been reinitialized using binary packages available"))
+
+        dbconn.closeDB()
+        print_info(green(" * ")+red("Entropy database has been reinitialized using binary packages available"))
         return 0
 
     # used by reagent

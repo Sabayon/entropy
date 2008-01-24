@@ -4289,8 +4289,8 @@ class urlFetcher:
         #FIXME else: unset opener??
 
     def encodeUrl(self, url):
-        url = url.replace("#","%23")
-        return url
+        import urllib
+        return urllib.quote(url)
 
     def download(self):
         if self.showSpeed:

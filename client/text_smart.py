@@ -166,6 +166,11 @@ def InflateHandler(mytbz2s, savedir):
         mydata = text_ui.Equo.entropyTools.extractPkgData(etptbz2path)
         # append arbitrary revision
         mydata['revision'] = 9999
+        mydata['download'] = mydata['download'][:-5]+"~9999.tbz2"
+        # migrate to the proper format
+        final_tbz2path = os.path.join(os.path.dirname(etptbz2path),os.path.basename(mydata['download']))
+        shutil.move(etptbz2path,final_tbz2path)
+        etptbz2path = final_tbz2path
         # create temp database
         dbpath = etpConst['packagestmpdir']+"/"+str(text_ui.Equo.entropyTools.getRandomNumber())
         while os.path.isfile(dbpath):

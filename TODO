@@ -1,5 +1,5 @@
 TODO list:
-  - change package naming format adding category (*)
+  - check downgrades (*)
   - remove linux-sabayon-modules dependency from sys-kernel/linux-sabayon (* - repackage needed)
   - migrate server code to ServerInterface
   - Community repositories
