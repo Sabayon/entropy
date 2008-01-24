@@ -262,8 +262,8 @@ CREATE TABLE messages (
 );
 
 CREATE TABLE counters (
-    counter INTEGER PRIMARY KEY,
-    idpackage INTEGER
+    counter INTEGER,
+    idpackage INTEGER PRIMARY KEY
 );
 
 CREATE TABLE eclasses (
