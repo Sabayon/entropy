@@ -2293,7 +2293,7 @@ class PackageInterface:
                             directories.add((dirfile,"dir"))
                     except OSError:
                         pass
-    
+
         # now handle directories
         directories = list(directories)
         directories.reverse()
@@ -3238,21 +3238,6 @@ class PackageInterface:
             self.infoDict['xpakpath'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']+"/"+etpConst['entropyxpakrelativepath']
             self.infoDict['xpakdir'] = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
 
-        # set steps
-        self.infoDict['steps'] = []
-        # install
-        if (self.infoDict['removeidpackage'] != -1):
-            self.infoDict['steps'].append("preremove")
-        self.infoDict['steps'].append("unpack")
-        self.infoDict['steps'].append("preinstall")
-        self.infoDict['steps'].append("install")
-        if (self.infoDict['removeidpackage'] != -1):
-            self.infoDict['steps'].append("postremove")
-        self.infoDict['steps'].append("postinstall")
-        if not etpConst['gentoo-compat']: # otherwise gentoo triggers will show that
-            self.infoDict['steps'].append("showmessages")
-        self.infoDict['steps'].append("cleanup")
-
         # compare both versions and if they match, disable removeidpackage
         if self.infoDict['removeidpackage'] != -1:
             installedVer = self.Entropy.clientDbconn.retrieveVersion(self.infoDict['removeidpackage'])
@@ -3267,11 +3252,12 @@ class PackageInterface:
             del pkgcmp
 
         # differential remove list
-        if (self.infoDict['removeidpackage'] != -1):
+        if self.infoDict['removeidpackage'] != -1:
             # is it still available?
             if self.Entropy.clientDbconn.isIDPackageAvailable(self.infoDict['removeidpackage']):
                 self.infoDict['diffremoval'] = True
                 self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(self.infoDict['removeidpackage'])
+                # XXX: too much memory
                 oldcontent = self.Entropy.clientDbconn.retrieveContent(self.infoDict['removeidpackage'])
                 newcontent = dbconn.retrieveContent(idpackage)
                 oldcontent = oldcontent - newcontent
@@ -3283,6 +3269,21 @@ class PackageInterface:
                 self.infoDict['triggers']['remove']['removecontent'] = self.infoDict['removecontent']
             else:
                 self.infoDict['removeidpackage'] = -1
+
+        # set steps
+        self.infoDict['steps'] = []
+        # install
+        if (self.infoDict['removeidpackage'] != -1):
+            self.infoDict['steps'].append("preremove")
+        self.infoDict['steps'].append("unpack")
+        self.infoDict['steps'].append("preinstall")
+        self.infoDict['steps'].append("install")
+        if (self.infoDict['removeidpackage'] != -1):
+            self.infoDict['steps'].append("postremove")
+        self.infoDict['steps'].append("postinstall")
+        if not etpConst['gentoo-compat']: # otherwise gentoo triggers will show that
+            self.infoDict['steps'].append("showmessages")
+        self.infoDict['steps'].append("cleanup")
 
         # XXX: too much memory used for this
         self.infoDict['triggers']['install'] = dbconn.getPackageData(idpackage)
