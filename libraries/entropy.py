@@ -3941,7 +3941,7 @@ class FtpInterface:
         import ftplib
         self.ftplib = ftplib
 
-        self.currentText = ""
+        self.oldprogress = 0.0
 
         # import FTP modules
         socket.setdefaulttimeout(60)
@@ -4118,7 +4118,7 @@ class FtpInterface:
         # create percentage
         myUploadPercentage = round((round(self.mykByteCount,1)/self.myFileSize)*100,1)
         myUploadSize = round(self.mykByteCount,1)
-        if (myUploadPercentage < 100.1) and (myUploadSize <= self.myFileSize):
+        if (myUploadPercentage > self.oldprogress+0.5) and (myUploadPercentage < 100.1) and (myUploadSize <= self.myFileSize):
             myUploadPercentage = str(myUploadPercentage)+"%"
 
             # create text
@@ -4127,6 +4127,8 @@ class FtpInterface:
             print_info(currentText, back = True)
             # XXX too slow, reimplement self.updateProgress and do whatever you want
             #self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True)
+
+        self.oldprogress = myUploadPercentage
 
     def uploadFile(self,file,ascii = False):
 
@@ -4255,20 +4257,8 @@ class urlFetcher:
         self.url = self.encodeUrl(self.url)
         self.pathToSave = pathToSave
         self.checksum = checksum
-        self.resumed = False
         self.showSpeed = showSpeed
-        self.bufferSize = 8192
-        self.status = None
-        self.remotefile = None
-        self.downloadedsize = 0
-        self.average = 0
-        self.remotesize = 0
-        # transfer status data
-        self.startingposition = 0
-        self.datatransfer = 0
-        self.time_remaining = "(infinite)"
-        self.elapsed = 0.0
-        self.transferpollingtime = float(1)/4
+        self.initVars()
         import entropyTools
         self.entropyTools = entropyTools
 
@@ -4293,7 +4283,25 @@ class urlFetcher:
         url = os.path.join(os.path.dirname(url),urllib.quote(os.path.basename(url)))
         return url
 
+    def initVars(self):
+        self.resumed = False
+        self.bufferSize = 8192
+        self.status = None
+        self.remotefile = None
+        self.downloadedsize = 0
+        self.average = 0
+        self.remotesize = 0
+        self.oldaverage = 0.0
+        # transfer status data
+        self.startingposition = 0
+        self.datatransfer = 0
+        self.time_remaining = "(infinite)"
+        self.elapsed = 0.0
+        self.updatestep = 0.2
+        self.transferpollingtime = float(1)/4
+
     def download(self):
+        self.initVars()
         if self.showSpeed:
             self.speedUpdater = self.entropyTools.TimeScheduled(
                         self.updateSpeedInfo,
@@ -4308,6 +4316,9 @@ class urlFetcher:
         # get file size if available
         try:
             self.remotefile = urllib2.urlopen(self.url)
+        except KeyboardInterrupt:
+            self.close()
+            raise
         except:
             self.close()
             self.status = "-3"
@@ -4316,6 +4327,9 @@ class urlFetcher:
         try:
             self.remotesize = int(self.remotefile.headers.get("content-length"))
             self.remotefile.close()
+        except KeyboardInterrupt:
+            self.close()
+            raise
         except:
             pass
 
@@ -4325,6 +4339,9 @@ class urlFetcher:
             if ((self.startingposition > 0) and (self.remotesize > 0)) and (self.startingposition < self.remotesize):
                 try:
                     request = urllib2.Request(self.url, headers = { "Range" : "bytes=" + str(self.startingposition) + "-" + str(self.remotesize) })
+                except KeyboardInterrupt:
+                    self.close()
+                    raise
                 except:
                     pass
             elif (self.startingposition == self.remotesize):
@@ -4347,6 +4364,9 @@ class urlFetcher:
         while rsx != '':
             try:
                 rsx = self.remotefile.read(self.bufferSize)
+            except KeyboardInterrupt:
+                self.close()
+                raise
             except:
                 # python 2.4 timeouts go here
                 self.close()
@@ -4385,26 +4405,26 @@ class urlFetcher:
         barsize = 10
         bartext = "["
         curbarsize = 1
-        #print average
-        averagesize = (self.average*barsize)/100
-        #print averagesize
-        for y in range(averagesize):
-            curbarsize += 1
-            bartext += "="
-        bartext += ">"
-        diffbarsize = barsize-curbarsize
-        for y in range(diffbarsize):
-            bartext += " "
-        if (self.showSpeed):
-            bartext += "] => "+str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec ~ ETA: "+str(self.time_remaining)
-        else:
-            bartext += "]"
-        average = str(self.average)
-        if len(average) < 2:
-            average = " "+average
-        currentText += "    <->  "+average+"% "+bartext
-        # print !
-        print_info(currentText,back = True)
+        if self.average > self.oldaverage+self.updatestep:
+            averagesize = (self.average*barsize)/100
+            for y in range(averagesize):
+                curbarsize += 1
+                bartext += "="
+            bartext += ">"
+            diffbarsize = barsize-curbarsize
+            for y in range(diffbarsize):
+                bartext += " "
+            if (self.showSpeed):
+                bartext += "] => "+str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec ~ ETA: "+str(self.time_remaining)
+            else:
+                bartext += "]"
+            average = str(self.average)
+            if len(average) < 2:
+                average = " "+average
+            currentText += "    <->  "+average+"% "+bartext
+            # print !
+            print_info(currentText,back = True)
+        self.oldaverage = self.average
 
 
     def close(self):
