@@ -4290,7 +4290,8 @@ class urlFetcher:
 
     def encodeUrl(self, url):
         import urllib
-        return urllib.quote(url)
+        url = os.path.join(os.path.dirname(url),urllib.quote(os.path.basename(url)))
+        return url
 
     def download(self):
         if self.showSpeed:

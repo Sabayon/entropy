@@ -1,6 +1,5 @@
 TODO list:
   - check downgrades (*)
-  - remove linux-sabayon-modules dependency from sys-kernel/linux-sabayon (* - repackage needed)
   - migrate server code to ServerInterface
   - Community repositories
   - find a way to better handle real smartapps deps (need split PDEPEND?)
