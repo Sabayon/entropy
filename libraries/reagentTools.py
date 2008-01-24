@@ -1082,3 +1082,36 @@ def database(options):
 
         dbconn.closeDB()
         return rc
+
+def spm(options):
+
+    if len(options) < 2:
+        return 0
+    import portageTools
+    options = options[1:]
+
+    opts = []
+    do_list = False
+    for opt in options:
+        if opt == "--list":
+            do_list = True
+        else:
+            opts.append(opt)
+    options = opts[:]
+    del opts
+
+    action = options[0]
+
+    if action == "categories":
+        if len(options) < 2:
+            return 0
+        categories = list(set(options[1:]))
+        categories.sort()
+        packages = portageTools.getAvailablePackages(categories)
+        packages = list(packages)
+        packages.sort()
+        if do_list:
+            print ' '.join(["="+x for x in packages])
+        else:
+            os.system(etpConst['spm']['exec']+" "+etpConst['spm']['ask_cmd']+" "+etpConst['spm']['verbose_cmd']+" "+" ".join(["="+x for x in packages]))
+

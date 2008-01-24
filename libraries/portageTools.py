@@ -78,20 +78,16 @@ def getConfigProtectAndMask():
 
 # resolve atoms automagically (best, not current!)
 # sys-libs/application --> sys-libs/application-1.2.3-r1
-def getBestAtom(atom):
-    import gc
+def getBestAtom(atom, match = "bestmatch-visible"):
     try:
-        rc = portage.portdb.xmatch("bestmatch-visible",str(atom))
-        gc.collect() # XXX: temp workaround for a python bug with portage
+        rc = portage.portdb.xmatch(match,str(atom))
         return rc
     except ValueError:
         return "!!conflicts"
 
 # same as above but includes masked ebuilds
 def getBestMaskedAtom(atom):
-    import gc
     atoms = portage.portdb.xmatch("match-all",str(atom))
-    gc.collect() # XXX: temp workaround for a python bug with portage
     # find the best
     from portage_versions import best
     rc = best(atoms)
@@ -99,10 +95,8 @@ def getBestMaskedAtom(atom):
 
 # should be only used when a pkgcat/pkgname <-- is not specified (example: db, amarok, AND NOT media-sound/amarok)
 def getAtomCategory(atom):
-    import gc
     try:
         rc = portage.portdb.xmatch("match-all",str(atom))[0].split("/")[0]
-        gc.collect() # XXX: temp workaround for a python bug with portage
         return rc
     except:
         return None
@@ -312,103 +306,103 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
     dependencies = ""
     conflicts = ""
     useflags = useflags.split()
-    
+
     length = len(roughDependencies)
     atomcount = -1
 
     while atomcount < length:
-	
-	atomcount += 1
-	try:
-	    atom = roughDependencies[atomcount]
-	except:
-	    break
-	
-        if atom.startswith("("):
-	    if (openOr):
-		openParenthesisFromOr += 1
-	    openParenthesis += 1
-	    curparenthesis = openParenthesis # 2
-	    if (useFlagQuestion) and (not useMatch):
-		skip = True
-		while (skip):
-		    atomcount += 1
-		    atom = roughDependencies[atomcount]
-		    if atom.startswith("("):
-			curparenthesis += 1
-		    elif atom.startswith(")"):
-		        if (curparenthesis == openParenthesis):
-			    skip = False
-			curparenthesis -= 1
-		useFlagQuestion = False
 
-	elif atom.endswith("?"):
-	    
-	    #if (useFlagQuestion) and (not useMatch): # if we're already in a question and the question is not accepted, skip the cycle
-	    #    continue
-	    # we need to see if that useflag is enabled
-	    useFlag = atom.split("?")[0]
-	    useFlagQuestion = True # V
-	    #openParenthesisFromLastUseFlagQuestion = 0
-	    if useFlag.startswith("!"):
-		checkFlag = useFlag[1:]
-		try:
-		    useflags.index(checkFlag)
-		    useMatch = False
-		except:
-		    useMatch = True
-	    else:
-		try:
-		    useflags.index(useFlag)
-		    useMatch = True # V
-		except:
-		    useMatch = False
-	
+        atomcount += 1
+        try:
+            atom = roughDependencies[atomcount]
+        except:
+            break
+
+        if atom.startswith("("):
+            if (openOr):
+                openParenthesisFromOr += 1
+            openParenthesis += 1
+            curparenthesis = openParenthesis # 2
+            if (useFlagQuestion) and (not useMatch):
+                skip = True
+                while (skip):
+                    atomcount += 1
+                    atom = roughDependencies[atomcount]
+                    if atom.startswith("("):
+                        curparenthesis += 1
+                    elif atom.startswith(")"):
+                        if (curparenthesis == openParenthesis):
+                            skip = False
+                        curparenthesis -= 1
+                useFlagQuestion = False
+
+        elif atom.endswith("?"):
+
+            #if (useFlagQuestion) and (not useMatch): # if we're already in a question and the question is not accepted, skip the cycle
+            #    continue
+            # we need to see if that useflag is enabled
+            useFlag = atom.split("?")[0]
+            useFlagQuestion = True # V
+            #openParenthesisFromLastUseFlagQuestion = 0
+            if useFlag.startswith("!"):
+                checkFlag = useFlag[1:]
+                try:
+                    useflags.index(checkFlag)
+                    useMatch = False
+                except:
+                    useMatch = True
+            else:
+                try:
+                    useflags.index(useFlag)
+                    useMatch = True # V
+                except:
+                    useMatch = False
+
         elif atom.startswith(")"):
-	
-	    openParenthesis -= 1
-	    if (openParenthesis == 0):
-		useFlagQuestion = False
-		useMatch = False
-	    
-	    if (openOr):
-		# remove last "_or_" from dependencies
-		if (openParenthesisFromOr == 1):
-		    openOr = False
-		    if dependencies.endswith(dbOR):
-		        dependencies = dependencies[:len(dependencies)-len(dbOR)]
-		        dependencies += " "
-		elif (openParenthesisFromOr == 2):
-		    if dependencies.endswith("|and|"):
-		        dependencies = dependencies[:len(dependencies)-len("|and|")]
-		        dependencies += dbOR
-		openParenthesisFromOr -= 1
+
+            openParenthesis -= 1
+            if (openParenthesis == 0):
+                useFlagQuestion = False
+                useMatch = False
+
+            if (openOr):
+                # remove last "_or_" from dependencies
+                if (openParenthesisFromOr == 1):
+                    openOr = False
+                    if dependencies.endswith(dbOR):
+                        dependencies = dependencies[:len(dependencies)-len(dbOR)]
+                        dependencies += " "
+                elif (openParenthesisFromOr == 2):
+                    if dependencies.endswith("|and|"):
+                        dependencies = dependencies[:len(dependencies)-len("|and|")]
+                        dependencies += dbOR
+                openParenthesisFromOr -= 1
 
         elif atom.startswith("||"):
-	    openOr = True # V
-	
-	elif (atom.find("/") != -1) and (not atom.startswith("!")) and (not atom.endswith("?")):
-	    # it's a package name <pkgcat>/<pkgname>-???
-	    if (useFlagQuestion == useMatch):
-	        # check if there's an OR
-		if (openOr):
-		    dependencies += atom
-		    # check if the or is fucked up
-		    if openParenthesisFromOr > 1:
-			dependencies += "|and|" # !!
-		    else:
-		        dependencies += dbOR
+            openOr = True # V
+
+        elif (atom.find("/") != -1) and (not atom.startswith("!")) and (not atom.endswith("?")):
+            # it's a package name <pkgcat>/<pkgname>-???
+            if (useFlagQuestion == useMatch):
+                # check if there's an OR
+                if (openOr):
+                    dependencies += atom
+                    # check if the or is fucked up
+                    if openParenthesisFromOr > 1:
+                        dependencies += "|and|" # !!
+                    else:
+                        dependencies += dbOR
                 else:
-		    dependencies += atom
-		    dependencies += " "
+                    dependencies += atom
+                    dependencies += " "
 
         elif atom.startswith("!") and (not atom.endswith("?")):
-	    if ((useFlagQuestion) and (useMatch)) or ((not useFlagQuestion) and (not useMatch)):
-		conflicts += atom
-		if (openOr):
-		    conflicts += dbOR
+            if ((useFlagQuestion) and (useMatch)) or ((not useFlagQuestion) and (not useMatch)):
+                conflicts += atom
+                if (openOr):
+                    conflicts += dbOR
                 else:
-		    conflicts += " "
+                    conflicts += " "
 
 
     # format properly
@@ -468,6 +462,41 @@ def getPortageAppDbPath():
     if (not rc.endswith("/")):
         return rc+"/"
     return rc
+
+def getAvailablePackages(categories = [], filter_reinstalls = True):
+    import portage_const
+    mypath = etpConst['systemroot']+"/"
+    mysettings = portage.config(config_root="/", target_root=mypath, config_incrementals=portage_const.INCREMENTALS)
+    portdb = portage.portdbapi(mysettings["PORTDIR"], mysettings = mysettings)
+    cps = portdb.cp_all()
+    visibles = set()
+    for cp in cps:
+        if categories and cp.split("/")[0] not in categories:
+            continue
+        # get slots
+        slots = set()
+        atoms = getBestAtom(cp, "match-visible")
+        for atom in atoms:
+            slots.add(portdb.aux_get(atom, ["SLOT"])[0])
+        for slot in slots:
+            visibles.add(cp+":"+slot)
+    del cps
+
+    # now match visibles
+    available = set()
+    for visible in visibles:
+        match = getBestAtom(visible)
+        if filter_reinstalls:
+            installed = getInstalledAtom(visible)
+            # if not installed, installed == None
+            if installed != match:
+                available.add(match)
+        else:
+            available.add(match)
+    del visibles
+
+    return available
+
 
 # Collect installed packages
 def getInstalledPackages(dbdir = None):

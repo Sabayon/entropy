@@ -639,6 +639,12 @@ def initConfig_entropyConstants(rootdir):
         'systemroot': rootdir, # default system root
         'uid': os.getuid(), # current running UID
         'treeupdatescalled': False, # to avoid running tree updates functions multiple times
+        'spm': {
+                    'exec': "/usr/bin/emerge", # source package manager executable
+                    'ask_cmd': "--ask",
+                    'pretend_cmd': "--pretend",
+                    'verbose_cmd': "--verbose"
+        },
 
         'dumpstoragedir': ETP_DIR+ETP_CACHESDIR, # data storage directory, useful to speed up equo across multiple issued commands
 
