@@ -4117,6 +4117,7 @@ class FtpInterface:
         self.mykByteCount += float(buf_len)/1024
         # create percentage
         myUploadPercentage = round((round(self.mykByteCount,1)/self.myFileSize)*100,1)
+        currentprogress = myUploadPercentage
         myUploadSize = round(self.mykByteCount,1)
         if (myUploadPercentage > self.oldprogress+0.5) and (myUploadPercentage < 100.1) and (myUploadSize <= self.myFileSize):
             myUploadPercentage = str(myUploadPercentage)+"%"
@@ -4128,7 +4129,7 @@ class FtpInterface:
             # XXX too slow, reimplement self.updateProgress and do whatever you want
             #self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True)
 
-        self.oldprogress = myUploadPercentage
+        self.oldprogress = currentprogress
 
     def uploadFile(self,file,ascii = False):
 
