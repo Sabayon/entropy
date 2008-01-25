@@ -148,7 +148,7 @@ elif (options[0] == "deptest"):
 
 # deptest tool
 elif (options[0] == "depends"):
-    rc = reagentTools.dependsTableInitialize()
+    rc = reagentTools.dependsTableInitialize(runActivator = False)
     exit(rc)
 
 # cleanup

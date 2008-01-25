@@ -1,18 +1,20 @@
 TODO list:
-  - complete reagent spm interface
   - migrate server code to ServerInterface
+  - treeupdates should take care of branches too
   - Community repositories
   - find a way to better handle real smartapps deps (need split PDEPEND?)
   - separate packages by license restrictions (find a way?)
   - handle multiuser on entropy server using equo interface
+  - complete reagent spm interface
 
   Spritz:
-    - handle config files updates interface
+    - ability to mark packages for reinstall (*)
+    - handle queue dependencies in the queue tab too (*)
+    - handle config files updates interface (*)
     - add masking interface
-    - handle queue dependencies in the queue tab too
     - add branch switching menu+stuff
     - wrap root password request
-    - ability to mark packages for reinstall
+
     - handle queue errors
     - handle config files stuff
     - when choosing a package that is a multipackage one, mark the installed one for removal?
