@@ -277,7 +277,13 @@ def print_generic(msg): # here we'll wrap any nice formatting
 def writechar(char):
     if etpUi['mute']:
         return
-    sys.stdout.write(char); sys.stdout.flush()
+    try:
+        sys.stdout.write(char)
+        #sys.stdout.flush()
+    except IOError, (errno,strerror):
+        if errno == 32:
+            return
+        raise
 
 def readtext(request):
     xtermTitle("Entropy needs your attention")

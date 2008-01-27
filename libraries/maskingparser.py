@@ -165,6 +165,12 @@ class parser:
                     os.remove(self.etpConst['dumpstoragedir']+"/"+item)
                 elif item.startswith(self.etpCache['atomMatch']) and item.endswith(".dmp"):
                     os.remove(self.etpConst['dumpstoragedir']+"/"+item)
+                elif item.startswith(self.etpCache['world_update']) and item.endswith(".dmp"):
+                    os.remove(self.etpConst['dumpstoragedir']+"/"+item)
+                elif item.startswith(self.etpCache['world_available']) and item.endswith(".dmp"):
+                    os.remove(self.etpConst['dumpstoragedir']+"/"+item)
+                elif item.startswith(self.etpCache['check_package_update']) and item.endswith(".dmp"):
+                    os.remove(self.etpConst['dumpstoragedir']+"/"+item)
         else:
             os.makedirs(self.etpConst['dumpstoragedir'])
 

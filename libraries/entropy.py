@@ -601,7 +601,8 @@ class EquoInterface(TextInterface):
 
     # tell if a new equo release is available, returns True or False
     def check_equo_updates(self):
-        return self.check_package_update("app-admin/equo")
+        found, match = self.check_package_update("app-admin/equo")
+        return found
 
     def check_package_update(self, atom):
 
@@ -610,6 +611,7 @@ class EquoInterface(TextInterface):
 
         found = False
         match = self.clientDbconn.atomMatch(atom)
+        matched = None
         if match[0] != -1:
             myatom = self.clientDbconn.retrieveAtom(match[0])
             pkg_match = ">="+myatom
@@ -618,11 +620,12 @@ class EquoInterface(TextInterface):
             if pkg_unsatisfied:
                 found = True
             del pkg_unsatisfied
+            matched = self.atomMatch(pkg_match)
         del match
 
         # cache
-        check_package_update_cache[atom] = found
-        return found
+        check_package_update_cache[atom] = (found,matched)
+        return found, matched
 
 
     # @returns -1 if the file does not exist or contains bad data

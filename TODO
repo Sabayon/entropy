@@ -1,18 +1,19 @@
 TODO list:
+  - equo should save cache when raising an exception
+  - rethink portage bashrc script
   - migrate server code to ServerInterface
-  - treeupdates should take care of branches too
+  - treeupdates should take care of branches client side too
   - Community repositories
   - find a way to better handle real smartapps deps (need split PDEPEND?)
-  - separate packages by license restrictions (find a way?)
+  - separate packages by license restrictions
   - handle multiuser on entropy server using equo interface
   - complete reagent spm interface
 
   Spritz:
-    - ability to mark packages for reinstall (*)
     - handle queue dependencies in the queue tab too (*)
     - handle config files updates interface (*)
     - add masking interface
-    - add branch switching menu+stuff
+    - add branch switching menu (for upgrades)
     - wrap root password request
 
     - handle queue errors

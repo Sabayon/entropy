@@ -27,7 +27,6 @@ sys.path.append('/usr/lib/entropy/libraries')
 from entropyConstants import *
 from outputTools import *
 
-
 def print_help():
     print_info("Sabayon Linux "+darkred("Equo Package Manager")+" (C - 2007)")
     print_info("General Options:")
@@ -315,6 +314,9 @@ except exceptionTools.RepositoryError, e:
     sys.exit(101)
 except SystemExit:
     pass
+except IOError, (errno,errstr):
+    if errno != 32:
+        raise
 except KeyboardInterrupt:
     sys.exit(0)
 #except Timeout:
