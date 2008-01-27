@@ -64,7 +64,7 @@ def configurator(options):
    @description: scan for files that need to be merged
    @output: dictionary using filename as key
 '''
-def update():
+def update(cmd = None):
     cache_status = False
     while 1:
         print_info(yellow(" @@ ")+darkgreen("Scanning filesystem..."))
@@ -79,7 +79,8 @@ def update():
             break
 
         keys = scandata.keys()
-        cmd = selfile()
+        if not cmd:
+            cmd = selfile()
         try:
             cmd = int(cmd)
         except:
