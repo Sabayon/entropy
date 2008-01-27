@@ -596,14 +596,15 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
     # mydbapi = portage.fakedbapi(settings=portage.settings)
     # vartree = portage.vartree(root=myroot)
 
+    oldsystderr = sys.stderr
+    f = open("/dev/null","w")
+    sys.stderr = f
+
     ### SETUP ENVIRONMENT
     # if mute, supress portage output
     if etpUi['mute']:
-        oldsystderr = sys.stderr
         oldsysstdout = sys.stdout
-        f = open("/dev/null","w")
         sys.stdout = f
-        sys.stderr = f
 
     # XXX? always accept license if etpUi['mute']
     if etpUi['mute']:
@@ -627,7 +628,13 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
     ### END SETUP ENVIRONMENT
 
     mypath = etpConst['systemroot']+"/"
-    mysettings = portage.config(config_root="/", target_root=mypath, config_incrementals=portage_const.INCREMENTALS)
+    # find config
+    if portageConfigs.has_key(mypath):
+        mysettings = portageConfigs.get(mypath)
+    else:
+        mysettings = portage.config(config_root="/", target_root=mypath, config_incrementals=portage_const.INCREMENTALS)
+        portageConfigs[mypath] = mysettings
+
     try: # this is a >portage-2.1.4_rc11 feature
         mysettings._environ_whitelist = set(mysettings._environ_whitelist)
         # put our vars into whitelist
@@ -652,20 +659,22 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
     mydbapi.cpv_inject(cpv, metadata = metadata)
 
     # cached vartree class
-    cached = portageRoots.get(mypath)
-    if cached == None:
+    if portageRoots.has_key(mypath):
+        vartree = portageRoots.get(mypath)
+    else:
         vartree = portage.vartree(root=mypath)
         portageRoots[mypath] = vartree
-    else:
-        vartree = cached
 
     rc = portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = mypath, tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree, use_cache = 0) ### FIXME: add support for cache_overlay
+    # avoid python/portage memleaks
+    import gc; gc.collect()
 
     # if mute, restore old stdout/stderr
     if etpUi['mute']:
-        sys.stderr = oldsystderr
         sys.stdout = oldsysstdout
-        f.close()
+
+    sys.stderr = oldsystderr
+    f.close()
 
     if portage_tmpdir_created:
         import shutil

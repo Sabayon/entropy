@@ -5489,6 +5489,9 @@ class TriggerInterface:
 
     def trigger_ebuild_postinstall(self):
         stdfile = open("/dev/null","w")
+        oldstderr = sys.stderr
+        sys.stderr = stdfile
+
         myebuild = [self.pkgdata['xpakdir']+"/"+x for x in os.listdir(self.pkgdata['xpakdir']) if x.endswith(".ebuild")]
         if myebuild:
             myebuild = myebuild[0]
@@ -5500,20 +5503,9 @@ class TriggerInterface:
                                 )
             try:
                 if not os.path.isfile(self.pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"): # if environment is not yet created, we need to run pkg_setup()
-                    # if linux-mod is found, we just disable doebuild output since will surely fail
-                    if "linux-mod" in self.pkgdata['eclasses'] \
-                        or "linux-info" in self.pkgdata['eclasses']:
-                        oldsysstdout = sys.stdout
-                        oldsysstderr = sys.stderr
-                        sys.stdout = stdfile
-                        sys.stdout = stdfile
                     rc = self.portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'])
                     if rc == 1:
                         self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
-                    if "linux-mod" in self.pkgdata['eclasses'] \
-                        or "linux-info" in self.pkgdata['eclasses']:
-                        sys.stdout = oldsysstdout
-                        sys.stderr = oldsysstderr
                 rc = self.portageTools.portage_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'])
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_postinst()) trigger for "+str(portage_atom)+". Something bad happened.")
@@ -5524,11 +5516,15 @@ class TriggerInterface:
                                         importance = 0,
                                         header = red("   ##")
                                     )
+        sys.stderr = oldstderr
         stdfile.close()
         return 0
 
     def trigger_ebuild_preinstall(self):
         stdfile = open("/dev/null","w")
+        oldstderr = sys.stderr
+        sys.stderr = stdfile
+
         myebuild = [self.pkgdata['xpakdir']+"/"+x for x in os.listdir(self.pkgdata['xpakdir']) if x.endswith(".ebuild")]
         if myebuild:
             myebuild = myebuild[0]
@@ -5539,19 +5535,9 @@ class TriggerInterface:
                                     header = red("   ##")
                                 )
             try:
-                if "linux-mod" in self.pkgdata['eclasses'] \
-                    or "linux-info" in self.pkgdata['eclasses']:
-                    oldsysstdout = sys.stdout
-                    oldsysstderr = sys.stderr
-                    sys.stdout = stdfile
-                    sys.stdout = stdfile
                 rc = self.portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir']) # create mysettings["T"]+"/environment"
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
-                if "linux-mod" in self.pkgdata['eclasses'] \
-                    or "linux-info" in self.pkgdata['eclasses']:
-                    sys.stdout = oldsysstdout
-                    sys.stderr = oldsysstderr
                 rc = self.portageTools.portage_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'])
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_preinst()) trigger for "+str(portage_atom)+". Something bad happened.")
@@ -5562,6 +5548,7 @@ class TriggerInterface:
                                         importance = 0,
                                         header = red("   ##")
                                     )
+        sys.stderr = oldstderr
         stdfile.close()
         return 0
 
@@ -5847,6 +5834,10 @@ class TriggerInterface:
             for line in content:
                 try: # handle stupidly encoded text
                     if line.find("title="+etpConst['systemname']+" ("+os.path.basename(kernel)+")\n") != -1:
+                        grubtest.close()
+                        return
+                    # also check if we have the same kernel listed
+                    if (line.find("kernel") != 1) and (line.find(os.path.basename(kernel)) != -1) and not line.strip().startswith("#"):
                         grubtest.close()
                         return
                 except UnicodeDecodeError:
