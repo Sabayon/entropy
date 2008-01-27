@@ -274,11 +274,11 @@ class SpritzGUI:
         self.etpbase = etpbase
         self.queue = SpritzQueue()
         self.queueView = YumexQueueView(self.ui.queueView,self.queue)
-        self.pkgView = EntropyPackageView(self.ui.viewPkg,self.queueView, self.ui)
+        self.pkgView = EntropyPackageView(self.ui.viewPkg,self.queueView, self.ui, self.etpbase)
         self.queue.connect_objects(self.Entropy, self.etpbase, self.pkgView, self.ui)
         #self.catView = YumexCategoryView(self.ui.tvCategory)
         self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
-        self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView, self.ui)
+        self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView, self.ui, self.etpbase)
         self.catDesc = TextViewConsole(self.ui.catDesc)
         self.repoView = EntropyRepoView(self.ui.viewRepo, self.Entropy, self.ui)
         self.repoMirrorsView = EntropyRepositoryMirrorsView(self.addrepo_ui.mirrorsView)

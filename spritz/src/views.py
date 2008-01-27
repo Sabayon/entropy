@@ -22,11 +22,14 @@ import gobject
 import logging
 import glob
 import ConfigParser
+from misc import const
+from etpgui.widgets import UI
 from etpgui import *
 from entropyConstants import *
 
 from i18n import _
 
+TOGGLE_WIDTH = 12
 
 class YumexCategoryView:
     def __init__( self, treeview):
@@ -55,41 +58,328 @@ class YumexCategoryView:
             for el in data:
                 self.model.append(None,[el,el])
 
-
 class EntropyPackageView:
-    def __init__( self, treeview, qview, ui ):
+    def __init__( self, treeview, qview, ui, etpbase ):
+
+        self.selection_width = 20
+        self.loaded_widget = None
+        self.loaded_reinstallable = None
+        self.loaded_event = None
+        self.event_click_pos = 0,0
+        # default for installed packages
+        self.pkg_install_ok = "package-installed-updated.png"
+        self.pkg_install_updatable = "package-installed-outdated.png"
+        self.pkg_install_new = "package-available.png"
+        self.pkg_remove = "package-remove.png"
+        self.pkg_purge = "package-purge.png"
+        self.pkg_reinstall = "package-reinstall.png"
+        self.pkg_install = "package-install.png"
+        self.pkg_update = "package-upgrade.png"
+        self.pkg_downgrade = "package-downgrade.png"
+        self.pkg_undoinstall = "package-undoinstall.png"
+
+        self.img_pkg_install_ok = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_install_ok,self.pkg_install_ok)
+        self.img_pkg_install_updatable = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_install_updatable,self.pkg_install_updatable)
+        self.img_pkg_update = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_update,self.pkg_update)
+        self.img_pkg_downgrade = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_downgrade,self.pkg_downgrade)
+
+        self.img_pkg_install_new = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_install_new,self.pkg_install_new)
+
+        self.img_pkg_remove = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_remove,self.pkg_remove)
+        self.img_pkg_undoremove = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_undoremove,self.pkg_remove)
+        self.img_pkg_purge = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_purge,self.pkg_purge)
+        self.img_pkg_undopurge = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_undopurge,self.pkg_purge)
+        self.img_pkg_reinstall = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_reinstall,self.pkg_reinstall)
+        self.img_pkg_undoreinstall = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_undoreinstall,self.pkg_reinstall)
+
+        self.img_pkg_install = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_install,self.pkg_install)
+        self.img_pkg_undoinstall = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_undoinstall,self.pkg_undoinstall)
+
         self.view = treeview
+        self.view.connect("button-release-event", self.load_menu)
         self.headers = [_( "Package" ), _( "Ver" ), _( "Summary" ), _( "Repo" ), _( "Architecture" ), _( "Size" )]
         self.store = self.setupView()
         self.queue = qview.queue
         self.queueView = qview
         self.ui = ui
+        self.etpbase = etpbase
         self.clearUpdates()
+
+        # installed packages right click menu
+        self.installed_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageInstalled",domain="yumex" )
+        self.installed_menu = self.installed_menu_xml.get_widget( "packageInstalled" )
+        self.installed_menu_xml.signal_autoconnect(self)
+
+        self.installed_reinstall = self.installed_menu_xml.get_widget( "reinstall" )
+        self.installed_undoreinstall = self.installed_menu_xml.get_widget( "undoreinstall" )
+        self.installed_purge = self.installed_menu_xml.get_widget( "purge" )
+        self.installed_undopurge = self.installed_menu_xml.get_widget( "undopurge" )
+        self.installed_remove = self.installed_menu_xml.get_widget( "remove" )
+        self.installed_undoremove = self.installed_menu_xml.get_widget( "undoremove" )
+        self.installed_reinstall.set_image(self.img_pkg_reinstall)
+        self.installed_undoreinstall.set_image(self.img_pkg_undoreinstall)
+        self.installed_remove.set_image(self.img_pkg_remove)
+        self.installed_undoremove.set_image(self.img_pkg_undoremove)
+        self.installed_purge.set_image(self.img_pkg_purge)
+        self.installed_undopurge.set_image(self.img_pkg_undopurge)
+
+        # updates right click menu
+        self.updates_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageUpdates",domain="yumex" )
+        self.updates_menu = self.updates_menu_xml.get_widget( "packageUpdates" )
+        self.updates_menu_xml.signal_autoconnect(self)
+        self.updates_update = self.updates_menu_xml.get_widget( "update" )
+        self.updates_undoupdate = self.updates_menu_xml.get_widget( "undoupdate" )
+        self.updates_update.set_image(self.img_pkg_update)
+        self.updates_undoupdate.set_image(self.img_pkg_downgrade)
+
+        # install right click menu
+        self.install_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageInstall",domain="yumex" )
+        self.install_menu = self.install_menu_xml.get_widget( "packageInstall" )
+        self.install_menu_xml.signal_autoconnect(self)
+        self.install_install = self.install_menu_xml.get_widget( "install" )
+        self.install_undoinstall = self.install_menu_xml.get_widget( "undoinstall" )
+        self.install_install.set_image(self.img_pkg_install)
+        self.updates_undoupdate.set_image(self.img_pkg_undoinstall)
+
+    def reset_install_menu(self):
+        self.install_install.show()
+        self.install_undoinstall.hide()
+
+    def hide_install_menu(self):
+        self.install_install.hide()
+        self.install_undoinstall.hide()
+
+    def reset_updates_menu(self):
+        self.updates_undoupdate.hide()
+        self.updates_update.show()
+
+    def hide_updates_menu(self):
+        self.updates_undoupdate.hide()
+        self.updates_update.hide()
+
+    def reset_installed_packages_menu(self):
+        self.installed_undoremove.hide()
+        self.installed_undoreinstall.hide()
+        self.installed_undopurge.hide()
+        self.installed_remove.show()
+        self.installed_reinstall.show()
+        self.installed_purge.show()
+
+    def hide_installed_packages_menu(self):
+        self.installed_undoremove.hide()
+        self.installed_undoreinstall.hide()
+        self.installed_undopurge.hide()
+        self.installed_remove.hide()
+        self.installed_reinstall.hide()
+        self.installed_purge.hide()
+
+    def load_menu(self, widget, event):
+        self.loaded_widget = widget
+        self.loaded_event = event
+        #if event.button != 3:
+        #    return True
+        row,column, x, y = widget.get_path_at_pos(int(event.x),int(event.y))
+        self.event_click_pos = x,y
+        if column.get_title() != "S":
+            return True
+        model, iter = widget.get_selection().get_selected()
+        if iter:
+            obj = model.get_value( iter, 0 )
+            if obj.action in ["r"]: # installed packages listing
+                self.run_installed_menu_stuff(obj)
+            elif obj.action in ["u"]: # updatable packages listing
+                self.run_updates_menu_stuff(obj)
+            elif obj.action in ["i"]:
+                self.run_install_menu_stuff(obj)
+
+    def reposition_menu(self, menu):
+        # devo tradurre x=0,y=20 in posizioni assolute
+        abs_x, abs_y = self.loaded_event.get_root_coords()
+        #print abs_x,abs_y
+        #print self.loaded_event.x,self.loaded_event.y
+        abs_x -= self.loaded_event.x
+        event_y = self.loaded_event.y
+        # FIXME: find a better way to properly position menu
+        while event_y > self.selection_width+5:
+            event_y -= self.selection_width+4
+        abs_y += (self.selection_width-event_y)
+        return int(abs_x),int(abs_y),True
+
+    def run_install_menu_stuff(self, obj):
+        do_show = True
+        self.reset_install_menu()
+        if obj.queued:
+            self.hide_install_menu()
+            self.install_undoinstall.show()
+        self.install_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time )
+
+    def run_updates_menu_stuff(self, obj):
+        do_show = True
+        self.reset_updates_menu()
+        if obj.queued:
+            self.hide_updates_menu()
+            self.updates_undoupdate.show()
+        self.updates_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time)
+
+    def run_installed_menu_stuff(self, obj):
+        do_show = True
+        self.reset_installed_packages_menu()
+        if obj.queued:
+            self.hide_installed_packages_menu()
+            if obj.queued == "r" and not obj.do_purge:
+                self.installed_undoremove.show()
+            elif obj.queued == "rr":
+                self.installed_undoreinstall.show()
+                self.set_loaded_reinstallable(obj)
+            elif obj.queued == "r" and obj.do_purge:
+                self.installed_undopurge.show()
+        else:
+            # is it a system package ?
+            if obj.syspkg:
+                self.installed_remove.hide()
+                self.installed_purge.hide()
+
+            if str(obj) not in self.etpbase.getPackages("reinstallable"):
+                if obj.syspkg:
+                    do_show = False
+                self.installed_reinstall.hide()
+            else:
+                self.set_loaded_reinstallable(obj)
+                if not self.loaded_reinstallable:
+                    self.installed_reinstall.hide()
+        if do_show: self.installed_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time )
+
+    def set_loaded_reinstallable(self, obj):
+        reinstallables = self.etpbase.getPackages("reinstallable")
+        self.loaded_reinstallable = None
+        for to_obj in reinstallables:
+            if str(obj) == str(to_obj):
+                self.loaded_reinstallable = to_obj
+                break
+
+    def on_remove_activate(self, widget, do_purge = False):
+        busyCursor(self.ui.main)
+        model, iter = self.loaded_widget.get_selection().get_selected()
+        obj = self.store.get_value( iter, 0 )
+        oldqueued = obj.queued
+        oldpurge = obj.do_purge
+        obj.queued = "r"
+        if do_purge:
+            obj.do_purge = True
+        status, myaction = self.queue.add(obj)
+        if status != 0:
+            obj.queued = oldqueued
+            obj.do_purge = oldpurge
+        self.queueView.refresh()
+        normalCursor(self.ui.main)
+
+    def on_reinstall_activate(self, widget):
+        busyCursor(self.ui.main)
+        model, iter = self.loaded_widget.get_selection().get_selected()
+        obj = self.store.get_value( iter, 0 )
+        oldqueued = obj.queued
+        obj.queued = "rr"
+        oldqueued_reinstallable = self.loaded_reinstallable.queued
+        self.loaded_reinstallable.queued = "rr"
+        status, myaction = self.queue.add(self.loaded_reinstallable)
+        if status != 0:
+            obj.queued = oldqueued
+            self.loaded_reinstallable.queued = oldqueued_reinstallable
+        self.queueView.refresh()
+        normalCursor(self.ui.main)
+
+    def on_undoreinstall_activate(self, widget):
+        busyCursor(self.ui.main)
+        model, iter = self.loaded_widget.get_selection().get_selected()
+        obj = self.store.get_value( iter, 0 )
+        obj.queued = None
+        self.remove_queued(self.loaded_reinstallable)
+        self.queueView.refresh()
+        normalCursor(self.ui.main)
+
+    def on_undoremove_activate(self, widget):
+        busyCursor(self.ui.main)
+        model, iter = self.loaded_widget.get_selection().get_selected()
+        obj = self.store.get_value( iter, 0 )
+        self.remove_queued(obj)
+        obj.do_purge = False
+        self.queueView.refresh()
+        normalCursor(self.ui.main)
+
+    def remove_queued(self, obj):
+        oldqueued = obj.queued
+        obj.queued = None
+        status, myaction = self.queue.remove(obj)
+        if status != 0:
+            obj.queued = oldqueued
+        self.view.queue_draw()
+        return status
+
+    def on_purge_activate(self, widget):
+        self.on_remove_activate(widget, True)
+
+    def on_undopurge_activate(self, widget):
+        self.on_undoremove_activate(widget)
+
+    def on_update_activate(self, widget):
+        self.on_install_update_activate(widget, "u")
+
+    def on_undoupdate_activate(self, widget):
+        self.on_undoinstall_undoupdate_activate(widget)
+
+    def on_install_activate(self, widget):
+        self.on_install_update_activate(widget, "i")
+
+    def on_undoinstall_activate(self, widget):
+        self.on_undoinstall_undoupdate_activate(widget)
+
+    def on_install_update_activate(self, widget, action):
+        busyCursor(self.ui.main)
+        model, iter = self.loaded_widget.get_selection().get_selected()
+        obj = self.store.get_value( iter, 0 )
+        oldqueued = obj.queued
+        obj.queued = action
+        status, myaction = self.queue.add(obj)
+        if status != 0:
+            obj.queued = oldqueued
+        self.queueView.refresh()
+        normalCursor(self.ui.main)
+
+    def on_undoinstall_undoupdate_activate(self, widget):
+        busyCursor(self.ui.main)
+        model, iter = self.loaded_widget.get_selection().get_selected()
+        obj = self.store.get_value( iter, 0 )
+        self.remove_queued(obj)
+        self.queueView.refresh()
+        normalCursor(self.ui.main)
 
     def setupView( self ):
         store = gtk.ListStore( gobject.TYPE_PYOBJECT, str )
         self.view.set_model( store )
-        # Setup selection column
-        cell1 = gtk.CellRendererToggle()    # Selection
-        cell1.set_property( 'activatable', True )
-        column1 = gtk.TreeViewColumn( "", cell1 )
-        column1.set_cell_data_func( cell1, self.get_data_bool, 'selected' )
+
+        # Setup resent column
+        cell1 = gtk.CellRendererPixbuf()    # new
+        self.set_pixbuf_to_cell(cell1, self.pkg_install_ok )
+        column1 = gtk.TreeViewColumn( "S", cell1 )
+        column1.set_cell_data_func( cell1, self.new_pixbuf )
         column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column1.set_fixed_width( 20 )
+        column1.set_fixed_width( self.selection_width )
         column1.set_sort_column_id( -1 )
         self.view.append_column( column1 )
-        cell1.connect( "toggled", self.on_toggled )
-        column1.set_clickable( True )
-        # Setup resent column
-        cell2 = gtk.CellRendererPixbuf()    # new
-        cell2.set_property( 'stock-id', gtk.STOCK_ADD )
-        column2 = gtk.TreeViewColumn( "", cell2 )
-        column2.set_cell_data_func( cell2, self.new_pixbuf )
-        column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column2.set_fixed_width( 20 )
-        column2.set_sort_column_id( -1 )
-        self.view.append_column( column2 )
-        column2.set_clickable( True )
+        column1.set_clickable( False )
 
         self.create_text_column( _( "Package" ), 'name' , size=360)
         self.create_text_column( _( "Rev." ), 'revision' , size=50 )
@@ -103,8 +393,15 @@ class EntropyPackageView:
         self.view.set_reorderable( True )
         return store
 
+    def set_pixbuf_to_cell(self, cell, filename):
+        pixbuf = gtk.gdk.pixbuf_new_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
+        cell.set_property( 'pixbuf', pixbuf )
+
+    def set_pixbuf_to_image(self, img, filename):
+        img.set_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
+
     def create_text_column( self, hdr, property, size, sortcol = None):
-        """ 
+        """
         Create a TreeViewColumn with text and set
         the sorting properties and add it to the view
         """
@@ -123,38 +420,6 @@ class EntropyPackageView:
         if obj:
             cell.set_property( 'text', getattr( obj, property ) )
             cell.set_property('foreground',obj.color)
-
-    def get_data_bool( self, column, cell, model, iter, property ):
-        obj = model.get_value( iter, 0 )
-        cell.set_property( "visible", True )
-        if obj:
-            cell.set_property( "active", getattr( obj, property ) )
-
-    def on_toggled( self, widget, path ):
-        busyCursor(self.ui.main)
-        """ Package selection handler """
-        iter = self.store.get_iter( path )
-        obj = self.store.get_value( iter, 0 )
-        self.togglePackage(obj)
-        self.queueView.refresh()
-        normalCursor(self.ui.main)
-
-    def togglePackage(self,obj):
-        oldqueued = obj.queued
-        oldselected = obj.selected
-        if obj.queued == obj.action:
-            obj.queued = None
-            status, myaction = self.queue.remove(obj)
-            if status != 0:
-                obj.queued = oldqueued
-                obj.set_select(oldselected)
-        else:
-            obj.queued = obj.action
-            status, myaction = self.queue.add(obj)
-            if status != 0:
-                obj.queued = oldqueued
-                obj.set_select(oldselected)
-
 
     def selectAll(self):
         list = [x[0] for x in self.store if not x[0].queued == x[0].action]
@@ -194,15 +459,6 @@ class EntropyPackageView:
         for obj in xlist:
             obj.set_select( False )
         self.clearUpdates()
-        
-        '''
-        for el in self.store:
-            obj = el[0]
-            if obj.queued == obj.action:
-                obj.queued = None
-                self.queue.remove(obj)
-                obj.set_select( not obj.selected )
-        '''
         self.queueView.refresh()
         self.view.queue_draw()
 
@@ -213,35 +469,31 @@ class EntropyPackageView:
         """
         pkg = model.get_value( iter, 0 )
         if pkg:
-            action = pkg.queued
-            if action:
-                if action in ( 'u', 'i' ):
-                    icon = 'network-server'
+            if not pkg.queued:
+                if pkg.action == "r":
+                    self.set_pixbuf_to_cell(cell, self.pkg_install_ok)
+                elif pkg.action == "i":
+                    self.set_pixbuf_to_cell(cell, self.pkg_install_new)
                 else:
-                    icon = 'edit-delete'
-                cell.set_property( 'visible', True )
-                cell.set_property( 'icon-name', icon )
+                    self.set_pixbuf_to_cell(cell, self.pkg_install_updatable)
             else:
-                cell.set_property( 'visible', pkg.recent )
-                cell.set_property( 'icon-name', 'document-new' )
+                if pkg.queued == "r" and not pkg.do_purge:
+                    self.set_pixbuf_to_cell(cell, self.pkg_remove)
+                if pkg.queued == "r" and pkg.do_purge:
+                    self.set_pixbuf_to_cell(cell, self.pkg_purge)
+                elif pkg.queued == "rr":
+                    self.set_pixbuf_to_cell(cell, self.pkg_reinstall)
+                elif pkg.queued == "i":
+                    self.set_pixbuf_to_cell(cell, self.pkg_install)
+                elif pkg.queued == "u":
+                    self.set_pixbuf_to_cell(cell, self.pkg_update)
+
         else:
             cell.set_property( 'visible', False )
 
-    def get_selected( self, package=True ):
-        """ Get selected packages in current packageList """
-        selected = []
-        for row in self.store:
-            col = row[0]
-            if col:
-                pkg = row[0][0]
-                if pkg.selected:
-                    selected.append( pkg )
-        return selected
-
-
 class YumexQueueView:
     """ Queue View Class"""
-    def __init__( self, widget,queue ):
+    def __init__( self, widget, queue ):
         self.view = widget
         self.model = self.setup_view()
         self.queue = queue
@@ -274,7 +526,7 @@ class YumexQueueView:
             pkg.queued = None
             pkg.set_select( not pkg.selected )
         f = lambda x: str( x ) not in rmvlist
-        for action in ['u', 'i', 'r']:
+        for action in ['u', 'i', 'r','rr']:
             list = self.queue.get(action)
             if list:
                 self.queue.packages[action] = filter( f, list )
@@ -283,7 +535,7 @@ class YumexQueueView:
     def getPkgsFromList( self, rlist ):
         rclist = []
         f = lambda x: str( x ) in rlist
-        for action in ['u', 'i', 'r']:
+        for action in ['u', 'i', 'r','rr']:
             list = self.queue.packages[action]
             if list:
                 rclist += filter( f, list )
@@ -292,6 +544,10 @@ class YumexQueueView:
     def refresh ( self ):
         """ Populate view with data from queue """
         self.model.clear()
+        label = _( "<b>Packages To Reinstall</b>" )
+        list = self.queue.packages['rr']
+        if len( list ) > 0:
+            self.populate_list( label, list )
         label = _( "<b>Packages To Update</b>" )
         list = self.queue.packages['u']
         if len( list ) > 0:

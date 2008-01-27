@@ -39,7 +39,6 @@ class EntropyPackage( PackageWrapper ):
     def __init__( self, matched_atom, recentlimit, avail=True ):
         global color_normal
         PackageWrapper.__init__( self, matched_atom, avail )
-        self.selected = False
         self.visible = True
         self.queued = None
         self.action = None
@@ -51,9 +50,6 @@ class EntropyPackage( PackageWrapper ):
             self.recent = True
         else:
             self.recent = False
-
-    def set_select( self, state ):
-        self.selected = state
 
     def set_visible( self, state ):
         self.visible = state
@@ -157,6 +153,8 @@ class EntropyPackages:
         pkgs = []
         pkgs.extend(self.getPackages('installed'))
         pkgs.extend(self.getPackages('available'))
+        pkgs.extend(self.getPackages('reinstallable'))
+        pkgs.extend(self.getPackages('updates'))
         return pkgs
 
     def setFilter(self,fn = None):
@@ -224,6 +222,17 @@ class EntropyPackages:
                 yp.action = 'u'
                 yp.color = color_update
                 yield yp
+        elif mask == "reinstallable":
+            for idpackage in self.Entropy.clientDbconn.listAllIdpackages():
+                atom = self.Entropy.clientDbconn.retrieveAtom(idpackage)
+                upd, matched = self.Entropy.check_package_update(atom)
+                if not upd and matched:
+                    if matched[0] != -1:
+                        yp = EntropyPackage(matched, self.recent, False)
+                        yp.selected = True
+                        yp.action = 'rr'
+                        yp.color = color_install
+                        yield yp
 
     def getByProperty( self, type, category ):
         list = self.getPackages(type)

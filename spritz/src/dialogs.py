@@ -28,7 +28,7 @@ except:
     from ConfigParser import ConfigParser,SafeConfigParser
 
 
-from misc import const,cleanMarkupSting,YumexConf
+from misc import const,cleanMarkupSting,YumexConf,unicode2htmlentities
 from i18n import _
 
 class ConfimationDialog:
@@ -79,15 +79,21 @@ class ConfimationDialog:
     def show_data( self, model, pkgs ):
         model.clear()
         for pkg in pkgs:
-            label = "<b>%s</b>" % str(pkg)
-            model.append( None, [label, pkg.description] )
+            label = "<b>%s</b>" % unicode2htmlentities(str(pkg))
+            desc = pkg.description
+            model.append( None, [label, desc] )
 
     def show_data( self, model, pkgs ):
         model.clear()
         install = [x for x in pkgs if x.action == "i"]
         update = [x for x in pkgs if x.action == "u"]
         remove = [x for x in pkgs if x.action == "r"]
-        # install
+        reinstall = [x for x in pkgs if x.action == "rr"]
+        if reinstall:
+            label = "<b>%s</b>" % _("To be reinstalled")
+            level1 = model.append( None, [label, " "] )
+            for pkg in reinstall:
+                level2 = model.append( level1, [str(pkg), pkg.description] )
         if install:
             label = "<b>%s</b>" % _("To be installed")
             level1 = model.append( None, [label, " "] )

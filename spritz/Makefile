@@ -19,7 +19,7 @@ clean:
 
 install:
 	mkdir -p $(DESTDIR)/usr/lib/entropy/spritz
-	mkdir -p $(DESTDIR)/usr/share/pixmaps/spritz
+	mkdir -p $(DESTDIR)/usr/share/pixmaps/spritz/packages
 	mkdir -p $(DESTDIR)/usr/share/applications
 	mkdir -p $(DESTDIR)/usr/bin
 	mkdir -p $(DESTDIR)/etc
@@ -27,6 +27,7 @@ install:
 	install -m644 COPYING $(DESTDIR)/usr/lib/entropy/spritz/.
 	install -m755 $(MISCDIR)/spritz $(DESTDIR)/usr/bin/.
 	install -m644 $(PIXDIR)/*.png $(DESTDIR)/usr/share/pixmaps/spritz/.
+	install -m644 $(PIXDIR)/packages/*.png $(DESTDIR)/usr/share/pixmaps/spritz/packages/.
 	install -m644 $(MISCDIR)/spritz.pam $(DESTDIR)/etc/pam.d/spritz
 	chmod +x $(DESTDIR)/usr/bin/spritz
 	install -m644 $(MISCDIR)/spritz.desktop $(DESTDIR)/usr/share/applications/.

@@ -40,6 +40,10 @@ class const:
         PIXMAPS_PATH = '/usr/share/pixmaps/spritz'
     else:
         PIXMAPS_PATH = MAIN_PATH+'/../gfx'
+    if MAIN_PATH == '/usr/lib/entropy/spritz':
+        ICONS_PATH = '/usr/share/pixmaps/spritz'
+    else:
+        ICONS_PATH = MAIN_PATH+'/pixmaps'
 
     # package categories
     PACKAGE_CATEGORIES = [
@@ -144,19 +148,16 @@ class SpritzQueue:
     def __init__(self):
         self.logger = logging.getLogger('yumex.YumexQueue')
         self.packages = {}
-        self.packages['i'] = []
-        self.packages['u'] = []
-        self.packages['r'] = []
         self.groups = {}
-        self.groups['i'] = []
-        self.groups['r'] = []
+        self.before = []
+        self.clear()
         self.Entropy = None
         self.etpbase = None
         self.pkgView = None
         self.queueView = None
         import dialogs
         self.dialogs = dialogs
-        self.before = []
+
 
     def connect_objects(self, EquoConnection, etpbase, pkgView, ui):
         self.Entropy = EquoConnection
@@ -169,6 +170,7 @@ class SpritzQueue:
         self.packages['i'] = []
         self.packages['u'] = []
         self.packages['r'] = []
+        self.packages['rr'] = []
         self.groups.clear()
         self.groups['i'] = []
         self.groups['r'] = []
@@ -181,19 +183,22 @@ class SpritzQueue:
             return self.packages[action]
 
     def total(self):
-        return len(self.packages['i'])+len(self.packages['u'])+len(self.packages['r'])
+        size = 0
+        for key in self.packages:
+            size += len(self.packages[key])
+        return size
 
     def add(self, pkgs):
 
         if type(pkgs) is not list:
             pkgs = [pkgs]
 
-        action = [pkgs[0].action]
-        if action[0] in ("u","i"): # update/install
+        action = [pkgs[0].queued]
+        if action[0] in ("u","i","rr"): # update/install
 
-            action = ["u","i"]
-            tmpqueue = [x for x in pkgs if x not in self.packages['u']+self.packages['i']]
-            xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+tmpqueue]
+            action = ["u","i","rr"]
+            tmpqueue = [x for x in pkgs if x not in self.packages['u']+self.packages['i']+self.packages['rr']]
+            xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr']+tmpqueue]
             xlist = list(set(xlist))
             status = self.elaborateInstall(xlist,action,False)
             return status,0
@@ -223,12 +228,14 @@ class SpritzQueue:
             install_todo = []
             if runQueue:
                 #print "runQueue",runQueue
-                for dep_pkg in self.etpbase.getPackages('updates')+self.etpbase.getPackages('available'):
-                    for matched_atom in runQueue:
-                        if (dep_pkg.matched_atom == matched_atom) and \
-                            (dep_pkg not in self.packages[actions[0]]+self.packages[actions[1]]) and \
-                            (dep_pkg not in install_todo):
-                                install_todo.append(dep_pkg)
+                for dep_pkg in self.etpbase.getPackages('updates') + \
+                    self.etpbase.getPackages('available') + \
+                    self.etpbase.getPackages('reinstallable'):
+                        for matched_atom in runQueue:
+                            if (dep_pkg.matched_atom == matched_atom) and \
+                                (dep_pkg not in self.packages[actions[0]]+self.packages[actions[1]]+self.packages[actions[2]]) and \
+                                (dep_pkg not in install_todo):
+                                    install_todo.append(dep_pkg)
 
             # removalQueue
             if removalQueue:
@@ -267,12 +274,10 @@ class SpritzQueue:
 
                 if ok:
                     for rem_pkg in remove_todo:
-                        rem_pkg.set_select(False)
                         rem_pkg.queued = rem_pkg.action
                         if rem_pkg not in self.packages['r']:
                             self.packages['r'].append(rem_pkg)
                     for dep_pkg in install_todo:
-                        dep_pkg.set_select(True)
                         dep_pkg.queued = dep_pkg.action
                         if dep_pkg not in self.packages[dep_pkg.action]:
                             self.packages[dep_pkg.action].append(dep_pkg)
@@ -320,7 +325,6 @@ class SpritzQueue:
 
                 if ok:
                     for rem_pkg in todo:
-                        rem_pkg.set_select(False)
                         rem_pkg.queued = rem_pkg.action
                         if rem_pkg not in self.packages[rem_pkg.action]:
                             self.packages[rem_pkg.action].append(rem_pkg)
@@ -334,7 +338,6 @@ class SpritzQueue:
         # check if it's a system package
         valid = self.Entropy.validatePackageRemoval(pkg.matched_atom[0])
         if not valid:
-            pkg.set_select(not pkg.selected)
             pkg.queued = None
         return valid
 
@@ -346,17 +349,17 @@ class SpritzQueue:
             pkgs = [pkgs]
 
         action = [pkgs[0].action]
-        if action[0] in ("u","i"): # update/install
+        if action[0] in ("u","i","rr"): # update/install
 
-            action = ["u","i"]
+            action = ["u","i","rr"]
 
-            xlist = [x.matched_atom for x in self.packages['u']+self.packages['i'] if x not in pkgs]
-            self.before = self.packages['u'][:]+self.packages['i'][:]
+            xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr'] if x not in pkgs]
+            self.before = self.packages['u'][:]+self.packages['i'][:]+self.packages['rr'][:]
             for pkg in self.before:
-                pkg.set_select(False)
                 pkg.queued = None
             del self.packages['u'][:]
             del self.packages['i'][:]
+            del self.packages['rr'][:]
 
             if xlist:
 
@@ -374,7 +377,6 @@ class SpritzQueue:
             self.before = self.packages[action[0]][:]
             # clean, will be refilled
             for pkg in self.before:
-                pkg.set_select(True)
                 pkg.queued = None
             del self.packages[action[0]][:]
 
@@ -717,3 +719,12 @@ class fakeinfile:
     def tell(self):      raise IOError, (29, 'Illegal seek')
     truncate = tell
 
+from htmlentitydefs import codepoint2name
+def unicode2htmlentities(u):
+   htmlentities = list()
+   for c in u:
+      if ord(c) < 128:
+         htmlentities.append(c)
+      else:
+         htmlentities.append('&%s;' % codepoint2name[ord(c)])
+   return ''.join(htmlentities)

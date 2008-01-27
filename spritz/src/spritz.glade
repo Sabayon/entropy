@@ -4263,4 +4263,233 @@ gz</property>
   </child>
 </widget>
 
+<widget class="GtkMenu" id="packageInstalled">
+
+  <child>
+    <widget class="GtkImageMenuItem" id="reinstall">
+      <property name="visible">True</property>
+      <property name="tooltip" translatable="yes">Reinstall the selected package</property>
+      <property name="label" translatable="yes">Reinstall</property>
+      <property name="use_underline">True</property>
+      <signal name="activate" handler="on_reinstall_activate" last_modification_time="Sat, 26 Jan 2008 15:45:15 GMT"/>
+
+      <child internal-child="image">
+	<widget class="GtkImage" id="image266">
+	  <property name="visible">True</property>
+	  <property name="stock">gtk-refresh</property>
+	  <property name="icon_size">1</property>
+	  <property name="xalign">0.5</property>
+	  <property name="yalign">0.5</property>
+	  <property name="xpad">0</property>
+	  <property name="ypad">0</property>
+	</widget>
+      </child>
+    </widget>
+  </child>
+
+  <child>
+    <widget class="GtkImageMenuItem" id="undoreinstall">
+      <property name="visible">True</property>
+      <property name="tooltip" translatable="yes">Undo Reinstall action</property>
+      <property name="label" translatable="yes">Undo Reinstall</property>
+      <property name="use_underline">True</property>
+      <signal name="activate" handler="on_undoreinstall_activate" last_modification_time="Sun, 27 Jan 2008 12:01:59 GMT"/>
+
+      <child internal-child="image">
+	<widget class="GtkImage" id="image267">
+	  <property name="visible">True</property>
+	  <property name="stock">gtk-undo</property>
+	  <property name="icon_size">1</property>
+	  <property name="xalign">0.5</property>
+	  <property name="yalign">0.5</property>
+	  <property name="xpad">0</property>
+	  <property name="ypad">0</property>
+	</widget>
+      </child>
+    </widget>
+  </child>
+
+  <child>
+    <widget class="GtkImageMenuItem" id="remove">
+      <property name="visible">True</property>
+      <property name="tooltip" translatable="yes">Remove the selected package</property>
+      <property name="label" translatable="yes">Remove</property>
+      <property name="use_underline">True</property>
+      <signal name="activate" handler="on_remove_activate" last_modification_time="Sat, 26 Jan 2008 15:45:15 GMT"/>
+
+      <child internal-child="image">
+	<widget class="GtkImage" id="image268">
+	  <property name="visible">True</property>
+	  <property name="stock">gtk-undo</property>
+	  <property name="icon_size">1</property>
+	  <property name="xalign">0.5</property>
+	  <property name="yalign">0.5</property>
+	  <property name="xpad">0</property>
+	  <property name="ypad">0</property>
+	</widget>
+      </child>
+    </widget>
+  </child>
+
+  <child>
+    <widget class="GtkImageMenuItem" id="undoremove">
+      <property name="visible">True</property>
+      <property name="tooltip" translatable="yes">Undo Remove action</property>
+      <property name="label" translatable="yes">Undo Remove</property>
+      <property name="use_underline">True</property>
+      <signal name="activate" handler="on_undoremove_activate" last_modification_time="Sun, 27 Jan 2008 12:02:23 GMT"/>
+
+      <child internal-child="image">
+	<widget class="GtkImage" id="image269">
+	  <property name="visible">True</property>
+	  <property name="stock">gtk-undo</property>
+	  <property name="icon_size">1</property>
+	  <property name="xalign">0.5</property>
+	  <property name="yalign">0.5</property>
+	  <property name="xpad">0</property>
+	  <property name="ypad">0</property>
+	</widget>
+      </child>
+    </widget>
+  </child>
+
+  <child>
+    <widget class="GtkImageMenuItem" id="purge">
+      <property name="visible">True</property>
+      <property name="tooltip" translatable="yes">Remove the selected package and its configuration</property>
+      <property name="label" translatable="yes">Purge</property>
+      <property name="use_underline">True</property>
+      <signal name="activate" handler="on_purge_activate" last_modification_time="Sun, 27 Jan 2008 14:54:43 GMT"/>
+
+      <child internal-child="image">
+	<widget class="GtkImage" id="image270">
+	  <property name="visible">True</property>
+	  <property name="stock">gtk-cancel</property>
+	  <property name="icon_size">1</property>
+	  <property name="xalign">0.5</property>
+	  <property name="yalign">0.5</property>
+	  <property name="xpad">0</property>
+	  <property name="ypad">0</property>
+	</widget>
+      </child>
+    </widget>
+  </child>
+
+  <child>
+    <widget class="GtkImageMenuItem" id="undopurge">
+      <property name="visible">True</property>
+      <property name="tooltip" translatable="yes">Undo Purge action</property>
+      <property name="label" translatable="yes">Undo Purge</property>
+      <property name="use_underline">True</property>
+      <signal name="activate" handler="on_undopurge_activate" last_modification_time="Sun, 27 Jan 2008 12:03:55 GMT"/>
+
+      <child internal-child="image">
+	<widget class="GtkImage" id="image271">
+	  <property name="visible">True</property>
+	  <property name="stock">gtk-undo</property>
+	  <property name="icon_size">1</property>
+	  <property name="xalign">0.5</property>
+	  <property name="yalign">0.5</property>
+	  <property name="xpad">0</property>
+	  <property name="ypad">0</property>
+	</widget>
+      </child>
+    </widget>
+  </child>
+</widget>
+
+<widget class="GtkMenu" id="packageUpdates">
+
+  <child>
+    <widget class="GtkImageMenuItem" id="update">
+      <property name="visible">True</property>
+      <property name="tooltip" translatable="yes">Update the selected package</property>
+      <property name="label" translatable="yes">Update</property>
+      <property name="use_underline">True</property>
+      <signal name="activate" handler="on_update_activate" last_modification_time="Sun, 27 Jan 2008 15:02:09 GMT"/>
+
+      <child internal-child="image">
+	<widget class="GtkImage" id="image281">
+	  <property name="visible">True</property>
+	  <property name="stock">gtk-refresh</property>
+	  <property name="icon_size">1</property>
+	  <property name="xalign">0.5</property>
+	  <property name="yalign">0.5</property>
+	  <property name="xpad">0</property>
+	  <property name="ypad">0</property>
+	</widget>
+      </child>
+    </widget>
+  </child>
+
+  <child>
+    <widget class="GtkImageMenuItem" id="undoupdate">
+      <property name="visible">True</property>
+      <property name="tooltip" translatable="yes">Undo Update action</property>
+      <property name="label" translatable="yes">Undo Update</property>
+      <property name="use_underline">True</property>
+      <signal name="activate" handler="on_undoupdate_activate" last_modification_time="Sun, 27 Jan 2008 15:02:28 GMT"/>
+
+      <child internal-child="image">
+	<widget class="GtkImage" id="image282">
+	  <property name="visible">True</property>
+	  <property name="stock">gtk-undo</property>
+	  <property name="icon_size">1</property>
+	  <property name="xalign">0.5</property>
+	  <property name="yalign">0.5</property>
+	  <property name="xpad">0</property>
+	  <property name="ypad">0</property>
+	</widget>
+      </child>
+    </widget>
+  </child>
+</widget>
+
+<widget class="GtkMenu" id="packageInstall">
+
+  <child>
+    <widget class="GtkImageMenuItem" id="install">
+      <property name="visible">True</property>
+      <property name="tooltip" translatable="yes">Install the selected package</property>
+      <property name="label" translatable="yes">Install</property>
+      <property name="use_underline">True</property>
+      <signal name="activate" handler="on_install_activate" last_modification_time="Sun, 27 Jan 2008 15:25:36 GMT"/>
+
+      <child internal-child="image">
+	<widget class="GtkImage" id="image287">
+	  <property name="visible">True</property>
+	  <property name="stock">gtk-refresh</property>
+	  <property name="icon_size">1</property>
+	  <property name="xalign">0.5</property>
+	  <property name="yalign">0.5</property>
+	  <property name="xpad">0</property>
+	  <property name="ypad">0</property>
+	</widget>
+      </child>
+    </widget>
+  </child>
+
+  <child>
+    <widget class="GtkImageMenuItem" id="undoinstall">
+      <property name="visible">True</property>
+      <property name="tooltip" translatable="yes">Undo Install action</property>
+      <property name="label" translatable="yes">Undo Install</property>
+      <property name="use_underline">True</property>
+      <signal name="activate" handler="on_undoinstall_activate" last_modification_time="Sun, 27 Jan 2008 15:25:58 GMT"/>
+
+      <child internal-child="image">
+	<widget class="GtkImage" id="image288">
+	  <property name="visible">True</property>
+	  <property name="stock">gtk-undo</property>
+	  <property name="icon_size">1</property>
+	  <property name="xalign">0.5</property>
+	  <property name="yalign">0.5</property>
+	  <property name="xpad">0</property>
+	  <property name="ypad">0</property>
+	</widget>
+      </child>
+    </widget>
+  </child>
+</widget>
+
 </glade-interface>

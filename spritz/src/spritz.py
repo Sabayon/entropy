@@ -67,9 +67,9 @@ class SpritzController(Controller):
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
-        sys.stdout = self.output
-        sys.stderr = self.output
-        sys.stdin = self.input
+        #sys.stdout = self.output
+        #sys.stderr = self.output
+        #sys.stdin = self.input
 
 
     def quit(self, widget=None, event=None ):
@@ -460,11 +460,6 @@ class SpritzController(Controller):
 
     def on_select_clicked(self,widget):
         ''' Package Add All button handler '''
-        if len(self.pkgView.store) > 50:
-            msg = _('You are about to add %s packages and their dependencies\n') % len(self.pkgView.store)
-            msg += _('Do you want to continue ?')
-            if not questionDialog(self.ui.main,msg):
-                return
         busyCursor(self.ui.main)
         self.pkgView.selectAll()
         normalCursor(self.ui.main)
@@ -472,11 +467,6 @@ class SpritzController(Controller):
     def on_deselect_clicked(self,widget):
         ''' Package Remove All button handler '''
         self.on_clear_clicked(widget)
-        if len(self.pkgView.store) > 50:
-            msg = _('You are about to remove %s packages and their depends\n') % len(self.pkgView.store)
-            msg += _('Do you want to continue ?')
-            if not questionDialog(self.ui.main,msg):
-                return
         busyCursor(self.ui.main)
         self.pkgView.deselectAll()
         normalCursor(self.ui.main)
@@ -535,7 +525,7 @@ class SpritzController(Controller):
             flt.setFilterList(lst)
         else:
             flt.activate(False)
-        action = self.lastPkgPB  
+        action = self.lastPkgPB
         rb = self.packageRB[action]
         self.on_pkgFilter_toggled(rb,action)
 
@@ -551,7 +541,7 @@ class SpritzController(Controller):
             flt.setFilterList(lst)
         else:
             flt.activate(False)
-        action = self.lastPkgPB  
+        action = self.lastPkgPB
         rb = self.packageRB[action]
         self.on_pkgFilter_toggled(rb,action)
 
@@ -605,7 +595,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         if self.settings.debug:
             self.spritzOptions.dump()
             print self.spritzOptions.getArgs()
-        self.logger.info(_('Entropy Config Setuo'))
+        self.logger.info(_('Entropy Config Setup'))
         self.spritzOptions.parseCmdOptions()
         self.catsView.etpbase = self.etpbase
         self.lastPkgPB = "updates"
@@ -818,9 +808,10 @@ class SpritzApplication(SpritzController,SpritzGUI):
             queue = pkgs['i']+pkgs['u']
             install_queue = [x.matched_atom for x in queue]
             removal_queue = [x.matched_atom[0] for x in pkgs['r']]
+            do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if x.do_purge])
             if install_queue or removal_queue:
                 controller = QueueExecutor(self)
-                e,i = controller.run(install_queue[:], removal_queue[:])
+                e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache)
                 print e,i
                 # XXX let it sleep a bit to allow all other threads to flush
                 while gtk.events_pending():

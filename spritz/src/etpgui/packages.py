@@ -34,9 +34,10 @@ class PackageWrapper:
         self.idpackage = self.matched_atom[0]
         self.Entropy = EquoConnection
         self.available = avail
+        self.do_purge = False
 
     def __str__(self):
-        return str(self.dbconn.retrieveAtom(self.idpackage))
+        return str(self.dbconn.retrieveAtom(self.idpackage)+"~"+str(self.dbconn.retrieveRevision(self.idpackage)))
 
     def __cmp__(self, pkg):
         n1 = str(self)
@@ -72,6 +73,13 @@ class PackageWrapper:
     def getRevision(self):
         return self.dbconn.retrieveRevision(self.idpackage)
 
+    def getSysPkg(self):
+        if not self.from_installed:
+            return False
+        # check if it's a system package
+        s = self.Entropy.validatePackageRemoval(self.idpackage)
+        return not s
+
     # 0: from installed db, so it's installed for sure
     # 1: not installed
     # 2: updatable
@@ -84,7 +92,7 @@ class PackageWrapper:
         if not matches:
             return 1
         else:
-            rc = self.Entropy.check_package_update(key+":"+slot)
+            rc, matched = self.Entropy.check_package_update(key+":"+slot)
             if rc:
                 return 2
             else:
@@ -202,4 +210,5 @@ class PackageWrapper:
     arch = property(fget=getArch)
     epoch = property(fget=getEpoch)
     pkgtup = property(fget=getTup)
+    syspkg = property(fget=getSysPkg)
     install_status = property(fget=getInstallStatus)

@@ -37,7 +37,7 @@ class QueueExecutor:
         self.Spritz = SpritzApplication
         self.Entropy = SpritzApplication.Equo
 
-    def run(self, install_queue, removal_queue):
+    def run(self, install_queue, removal_queue, do_purge_cache = []):
         removalQueue = []
         runQueue = []
         if install_queue:
@@ -86,6 +86,8 @@ class QueueExecutor:
 
             metaopts = {}
             metaopts['removeconfig'] = rem_data[1]
+            if idpackage in do_purge_cache:
+                metaopts['removeconfig'] = True
             Package = self.Entropy.Package()
             Package.prepare((idpackage,),"remove", metaopts)
 
