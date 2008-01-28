@@ -324,7 +324,6 @@ except exceptionTools.RepositoryError, e:
     print_error(darkred(" * ")+red(str(e)+". Cannot continue."))
     sys.exit(101)
 except SystemExit:
-    reset_cache()
     pass
 except IOError, (errno,errstr):
     reset_cache()
