@@ -2069,8 +2069,8 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
         else:
             data['useflags'].append("-"+x)
     data['sources'] = portage_metadata['SRC_URI'].split()
-    data['dependencies'] = [x for x in portage_metadata['RDEPEND']+portage_metadata['PDEPEND'] if not x.startswith("!")]
-    data['conflicts'] = [x for x in portage_metadata['RDEPEND']+portage_metadata['PDEPEND'] if x.startswith("!")]
+    data['dependencies'] = [x for x in portage_metadata['RDEPEND'].split()+portage_metadata['PDEPEND'].split() if not x.startswith("!")]
+    data['conflicts'] = [x for x in portage_metadata['RDEPEND'].split()+portage_metadata['PDEPEND'].split() if x.startswith("!")]
 
     if (kernelDependentModule):
         # add kname to the dependency
