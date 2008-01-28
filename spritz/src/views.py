@@ -388,9 +388,9 @@ class EntropyPackageView:
         self.create_text_column( _( "Size" ), 'intelligentsizeFmt', size=80 )
         #self.create_text_column( _( "Download" ), 'sizeFmt' , size=80 )
         self.view.set_search_column( 1 )
-        self.view.set_enable_search(True)
+        self.view.set_enable_search(False)
         store.set_sort_column_id(1, gtk.SORT_ASCENDING)
-        self.view.set_reorderable( True )
+        self.view.set_reorderable( False )
         return store
 
     def set_pixbuf_to_cell(self, cell, filename):
