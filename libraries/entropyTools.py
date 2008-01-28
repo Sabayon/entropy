@@ -2052,7 +2052,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 
     try:
         f = open(tbz2TmpDir+dbSRC_URI,"r")
-        sources = f.readline().strip().split()
+        sources = f.readline().strip()
         f.close()
     except IOError:
         sources = ""
