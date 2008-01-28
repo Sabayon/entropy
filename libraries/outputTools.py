@@ -244,6 +244,8 @@ def print_error(msg, back = False):
         writechar("\r"+red(">>")+" "+msg)
         return
     setcols()
+    reset_cursor()
+    writechar("\r")
     print darkred(">>")+" "+msg
 
 def print_info(msg, back = False):
@@ -254,6 +256,7 @@ def print_info(msg, back = False):
         writechar("\r"+green(">>")+" "+msg)
         return
     setcols()
+    reset_cursor()
     writechar("\r")
     print green(">>")+" "+msg
 
@@ -265,6 +268,7 @@ def print_warning(msg, back = False):
         writechar("\r"+red(">>")+" "+msg)
         return
     setcols()
+    reset_cursor()
     writechar("\r")
     print red(">>")+" "+msg
 
