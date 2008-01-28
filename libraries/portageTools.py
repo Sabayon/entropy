@@ -354,7 +354,7 @@ def calculate_dependencies(my_iuse, my_use, my_license, my_depend, my_rdepend, m
         try:
             deps = paren_reduce(metadata[k])
             deps = use_reduce(deps, uselist=raw_use)
-            deps = paren_normalize(deps)
+            deps = p_normalize(deps)
             deps = paren_enclose(deps)
         except exceptionTools.InvalidDependString, e:
             print_error("%s: %s\n" % (k, str(e)))
