@@ -293,6 +293,78 @@ def getPackageVar(atom,var):
         return 1
     return portage.portdb.aux_get(atom,[var])[0]
 
+class paren_normalize(list):
+    """Take a dependency structure as returned by paren_reduce or use_reduce
+    and generate an equivalent structure that has no redundant lists."""
+    def __init__(self, src):
+        list.__init__(self)
+        self._zap_parens(src, self)
+
+    def _zap_parens(self, src, dest, disjunction=False):
+        if not src:
+            return dest
+        i = iter(src)
+        for x in i:
+            if isinstance(x, basestring):
+                if x == '||':
+                    x = self._zap_parens(i.next(), [], disjunction=True)
+                    if len(x) == 1:
+                        dest.append(x[0])
+                    else:
+                        dest.append("||")
+                        dest.append(x)
+                elif x.endswith("?"):
+                    dest.append(x)
+                    dest.append(self._zap_parens(i.next(), []))
+                else:
+                    dest.append(x)
+            else:
+                if disjunction:
+                    x = self._zap_parens(x, [])
+                    if len(x) == 1:
+                        dest.append(x[0])
+                    else:
+                        dest.append(x)
+                else:
+                    self._zap_parens(x, dest)
+        return dest
+
+def calculate_dependencies(my_iuse, my_use, my_license, my_depend, my_rdepend, my_pdepend, my_provide, my_src_uri):
+    metadata = {}
+    metadata['USE'] = my_use
+    metadata['IUSE'] = my_iuse
+    metadata['LICENSE'] = my_license
+    metadata['DEPEND'] = my_depend
+    metadata['PDEPEND'] = my_pdepend
+    metadata['RDEPEND'] = my_rdepend
+    metadata['PROVIDE'] = my_provide
+    metadata['SRC_URI'] = my_src_uri
+    use = metadata['USE'].split()
+    raw_use = use
+    iuse = set(metadata['IUSE'].split())
+    use = [f for f in use if f in iuse]
+    use.sort()
+    metadata['USE'] = " ".join(use)
+    try:
+        from portage_dep import paren_reduce, use_reduce, paren_enclose
+        p_normalize = paren_normalize
+    except ImportError:
+        from portage.dep import paren_reduce, use_reduce, paren_normalize as p_normalize, paren_enclose
+    for k in "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", "PROVIDE", "SRC_URI":
+        try:
+            deps = paren_reduce(metadata[k])
+            deps = use_reduce(deps, uselist=raw_use)
+            deps = paren_normalize(deps)
+            deps = paren_enclose(deps)
+        except exceptionTools.InvalidDependString, e:
+            print_error("%s: %s\n" % (k, str(e)))
+            raise
+        metadata[k] = deps
+    return metadata
+
+##
+## HIGHLY DEPRECATED, USE calculate_dependencies
+##
 def synthetizeRoughDependencies(roughDependencies, useflags = None):
     if useflags is None:
         useflags = getUSEFlags()

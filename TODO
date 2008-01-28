@@ -1,4 +1,5 @@
 TODO list:
+  - add diff to entropy dependencies
   - equo should save cache when raising an exception
   - rethink portage bashrc script
   - migrate server code to ServerInterface

@@ -1707,7 +1707,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 
     data = {}
 
-    from portageTools import synthetizeRoughDependencies, getPackagesInSystem, getConfigProtectAndMask, getThirdPartyMirrors
+    from portageTools import calculate_dependencies, getPackagesInSystem, getConfigProtectAndMask, getThirdPartyMirrors
 
     info_package = bold(os.path.basename(package))+": "
 
@@ -1996,128 +1996,6 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     except IOError:
         pass
 
-    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package License information..."),back = True)
-    # Fill license
-    data['license'] = []
-    try:
-        f = open(tbz2TmpDir+dbLICENSE,"r")
-	# strip away || ( )
-	tmpLic = f.readline().strip().split()
-	f.close()
-	for x in tmpLic:
-	    if x:
-		if (not x.startswith("|")) and (not x.startswith("(")) and (not x.startswith(")")):
-		    data['license'].append(x)
-	data['license'] = ' '.join(data['license'])
-    except IOError:
-	data['license'] = ""
-        pass
-
-    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package USE flags..."),back = True)
-    # Fill USE
-    data['useflags'] = []
-    f = open(tbz2TmpDir+dbUSE,"r")
-    tmpUSE = f.readline().strip()
-    f.close()
-
-    try:
-        f = open(tbz2TmpDir+dbIUSE,"r")
-        tmpIUSE = f.readline().strip().split()
-        f.close()
-    except IOError:
-        tmpIUSE = []
-
-    PackageFlags = []
-    for x in tmpUSE.split():
-	if (x):
-	    PackageFlags.append(x)
-
-    for i in tmpIUSE:
-	try:
-	    PackageFlags.index(i)
-	    data['useflags'].append(i)
-	except:
-	    data['useflags'].append("-"+i)
-
-    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package provide content..."),back = True)
-    # Fill Provide
-    data['provide'] = []
-    try:
-        f = open(tbz2TmpDir+dbPROVIDE,"r")
-        provide = f.readline().strip()
-        f.close()
-	if (provide):
-	    provide = provide.split()
-	    for x in provide:
-		data['provide'].append(x)
-    except:
-        pass
-
-    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package sources information..."),back = True)
-    # Fill sources
-    data['sources'] = []
-    try:
-        f = open(tbz2TmpDir+dbSRC_URI,"r")
-	sources = f.readline().strip().split()
-        f.close()
-	cnt = -1
-	skip = False
-	data['sources'] = []
-	
-	for source in sources:
-	    cnt += +1
-	    if source.endswith("?"):
-		# it's an use flag
-		source = source[:len(source)-1]
-		direction = True
-		if source.startswith("!"):
-		    direction = False
-		    source = source[1:]
-		# now get the useflag
-		useflag = False
-		try:
-		    data['useflags'].index(source)
-		    useflag = True
-		except:
-		    pass
-		
-		
-		if (useflag) and (direction): # useflag is enabled and it's asking for sources or useflag is not enabled and it's not not (= True) asking for sources
-		    # ack parsing from ( to )
-		    skip = False
-		elif (useflag) and (not direction):
-		    # deny parsing from ( to )
-		    skip = True
-		elif (not useflag) and (direction):
-		    # deny parsing from ( to )
-		    skip = True
-		else:
-		    # ack parsing from ( to )
-		    skip = False
-
-	    elif source.startswith(")"):
-		# reset skip
-		skip = False
-
-	    elif (not source.startswith("(")):
-		if (not skip):
-		    data['sources'].append(source)
-    
-    except IOError:
-	pass
-
-    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package mirrors list..."),back = True)
-    # manage data['sources'] to create data['mirrorlinks']
-    # =mirror://openoffice|link1|link2|link3
-    data['mirrorlinks'] = []
-    for i in data['sources']:
-        if i.startswith("mirror://"):
-            # parse what mirror I need
-            mirrorURI = i.split("/")[2]
-            mirrorlist = getThirdPartyMirrors(mirrorURI)
-            data['mirrorlinks'].append([mirrorURI,mirrorlist]) # mirrorURI = openoffice and mirrorlist = [link1, link2, link3]
-
-
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting source package supported ARCHs..."),back = True)
     # fill KEYWORDS
     data['keywords'] = []
@@ -2135,28 +2013,64 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
         pass
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package dependencies..."),back = True)
-    # Fill runtime dependencies
+
     f = open(tbz2TmpDir+dbRDEPEND,"r")
     rdepend = f.readline().strip()
-    rdepend = rdepend.split()
     f.close()
-    # Fill post dependencies
+
     f = open(tbz2TmpDir+dbPDEPEND,"r")
     pdepend = f.readline().strip()
-    pdepend = pdepend.split()
     f.close()
-    dependencies = rdepend+pdepend
 
-    # data['dependencies'], data['conflicts']
-    deps,conflicts = synthetizeRoughDependencies(dependencies,' '.join(PackageFlags))
-    data['dependencies'] = []
-    for i in deps.split():
-        data['dependencies'].append(i)
-    data['conflicts'] = []
-    for i in conflicts.split():
-        # check if i == PROVIDE
-        if i not in data['provide']: # we handle these conflicts using emerge, so we can just filter them out
-            data['conflicts'].append(i)
+    f = open(tbz2TmpDir+dbDEPEND,"r")
+    depend = f.readline().strip()
+    f.close()
+
+    f = open(tbz2TmpDir+dbUSE,"r")
+    use = f.readline().strip()
+    f.close()
+
+    try:
+        f = open(tbz2TmpDir+dbIUSE,"r")
+        iuse = f.readline().strip()
+        f.close()
+    except IOError:
+        iuse = ""
+
+    try:
+        f = open(tbz2TmpDir+dbLICENSE,"r")
+        lics = f.readline().strip()
+        f.close()
+    except IOError:
+        lics = ""
+
+    try:
+        f = open(tbz2TmpDir+dbPROVIDE,"r")
+        provide = f.readline().strip()
+    except IOError:
+        provide = ""
+
+    try:
+        f = open(tbz2TmpDir+dbSRC_URI,"r")
+        sources = f.readline().strip().split()
+        f.close()
+    except IOError:
+        sources = ""
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package metadata information..."),back = True)
+    portage_metadata = calculate_dependencies(iuse, use, lics, depend, rdepend, pdepend, provide, sources)
+
+    data['provide'] = portage_metadata['PROVIDE'].split()
+    data['license'] = portage_metadata['LICENSE']
+    data['useflags'] = []
+    for x in use.split():
+        if x in portage_metadata['USE']:
+            data['useflags'].append(x)
+        else:
+            data['useflags'].append("-"+x)
+    data['sources'] = portage_metadata['SRC_URI'].split()
+    data['dependencies'] = [x for x in portage_metadata['RDEPEND']+portage_metadata['PDEPEND'] if not x.startswith("!")]
+    data['conflicts'] = [x for x in portage_metadata['RDEPEND']+portage_metadata['PDEPEND'] if x.startswith("!")]
 
     if (kernelDependentModule):
         # add kname to the dependency
@@ -2170,6 +2084,17 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
         except:
             pass
     '''
+
+    if not silent: print_info(yellow(" * ")+red(info_package+"Getting package mirrors list..."),back = True)
+    # manage data['sources'] to create data['mirrorlinks']
+    # =mirror://openoffice|link1|link2|link3
+    data['mirrorlinks'] = []
+    for i in data['sources']:
+        if i.startswith("mirror://"):
+            # parse what mirror I need
+            mirrorURI = i.split("/")[2]
+            mirrorlist = getThirdPartyMirrors(mirrorURI)
+            data['mirrorlinks'].append([mirrorURI,mirrorlist]) # mirrorURI = openoffice and mirrorlist = [link1, link2, link3]
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting System Packages List..."),back = True)
     # write only if it's a systempackage
