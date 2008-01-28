@@ -345,6 +345,7 @@ def calculate_dependencies(my_iuse, my_use, my_license, my_depend, my_rdepend, m
     use = [f for f in use if f in iuse]
     use.sort()
     metadata['USE'] = " ".join(use)
+    # FIXME: there's some portage trunk stuff
     try:
         from portage_dep import paren_reduce, use_reduce, paren_enclose
         p_normalize = paren_normalize
