@@ -283,7 +283,7 @@ def writechar(char):
         return
     try:
         sys.stdout.write(char)
-        #sys.stdout.flush()
+        sys.stdout.flush()
     except IOError, (errno,strerror):
         if errno == 32:
             return

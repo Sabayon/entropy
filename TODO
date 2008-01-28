@@ -1,7 +1,8 @@
 TODO list:
-  - add diff to entropy dependencies
-  - equo should save cache when raising an exception
+  - add speed limiter
+  - make use flags check optional and controlled by a config option
   - rethink portage bashrc script
+  - split RDEPEND and PDEPEND
   - migrate server code to ServerInterface
   - treeupdates should take care of branches client side too
   - Community repositories

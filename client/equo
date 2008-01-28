@@ -38,9 +38,9 @@ def print_help():
     print_info(" \t\t"+red("--force")+"\t\t\t force sync regardless repositories status")
     print_info(" \t"+blue("repoinfo")+brown("\t show enabled repositories"))
     print_info(" \t"+blue("status")+brown("\t\t show respositories status"))
-    
+
     print_info(" \t"+blue("search")+brown("\t\t search a package trough repositories"))
-    
+
     print_info(" \t"+blue("world")+brown("\t\t update system with the latest available packages"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t"+red("--fetch")+"\t\t\t just download packages without doing the install")
@@ -52,7 +52,7 @@ def print_help():
     print_info(" \t\t"+red("--skipfirst")+"\t\t used with --resume, first package in queue will be skipped")
     print_info(" \t\t"+red("--upgrade")+"\t\t upgrade "+etpConst['systemname']+" to the specified release (3.5,3.6...)")
     print_info(" \t\t"+red("--nochecksum")+"\t\t disable package integrity check")
-    
+
     print_info(" \t"+blue("install")+brown("\t\t install one or more packages or .tbz2"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
@@ -65,7 +65,7 @@ def print_help():
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
     print_info(" \t\t"+red("--configfiles")+"\t\t also remove old configuration files [use with care]")
     print_info(" \t\t"+red("--nochecksum")+"\t\t disable package integrity check")
-    
+
     print_info(" \t"+blue("remove")+brown("\t\t remove one or more packages"))
     print_info(" \t\t"+red("--deep")+"\t\t\t also pull unused dependencies where depends list is empty")
     print_info(" \t\t"+red("--configfiles")+"\t\t also remove configuration files")
@@ -169,7 +169,7 @@ options = _options
 if (not options) or ("--help" in options):
     print_help()
     if not options:
-	print_error("not enough parameters")
+        print_error("not enough parameters")
     sys.exit()
 
 # print version
@@ -200,7 +200,15 @@ def writeerrorstatus(status):
     except:
         pass
 
-def loadconfcache():
+def reset_cache():
+    try:
+        from entropy import EquoInterface
+        Equo = EquoInterface(noclientdb = 2)
+        Equo.purge_cache()
+    except:
+        pass
+
+def load_conf_cache():
     if not etpUi['quiet']: print_info(red(" @@ ")+blue("Caching equo conf"), back = True)
     import text_configuration
     try:
@@ -242,7 +250,7 @@ try:
                 print_warning(red("Running with ")+bold("--pretend")+red("..."))
                 etpUi['pretend'] = True
         rc = text_ui.package(options)
-        loadconfcache()
+        load_conf_cache()
 
     elif (options[0] == "query"):
         import text_query
@@ -304,24 +312,31 @@ try:
             thread.kill()
     sys.exit(rc)
 except exceptionTools.SystemDatabaseError:
+    reset_cache()
     print_error(darkred(" * ")+red("Installed Packages Database not found or is corrupted. Please generate it using 'equo database' tools"))
     sys.exit(101)
 except exceptionTools.OnlineMirrorError, e:
+    reset_cache()
     print_error(darkred(" * ")+red(str(e)+". Cannot continue."))
     sys.exit(101)
 except exceptionTools.RepositoryError, e:
+    reset_cache()
     print_error(darkred(" * ")+red(str(e)+". Cannot continue."))
     sys.exit(101)
 except SystemExit:
+    reset_cache()
     pass
 except IOError, (errno,errstr):
+    reset_cache()
     if errno != 32:
         raise
 except KeyboardInterrupt:
+    reset_cache()
     sys.exit(0)
 #except Timeout:
 #    pass
 except Exception:
+    reset_cache()
 
     Text = TextInterface()
     print_error(darkred("Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. Well, you know, shit happens."))
