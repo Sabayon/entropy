@@ -3914,7 +3914,12 @@ class etpDatabase(TextInterface):
                     # now look if there's another package with the same category, name, version, but different tag
 
                     scope_data = self.getScopeData(newerPackage[0])
+                    # if == None, entry is corrupted and this surely happened on client db
+                    # otherwise, better to let it raising an exception
+                    if not scope_data and self.dbname == "client":
+                        return -1,1 # return as not found
                     similarPackages = self.searchPackagesKeyVersion(key = scope_data[1]+"/"+scope_data[2], version = scope_data[3], branch = scope_data[7])
+                    
                     del scope_data
 
                     if (multiMatch):
@@ -4002,6 +4007,10 @@ class etpDatabase(TextInterface):
 
                     # now look if there's another package with the same category, name, version, but different tag
                     scope_data = self.getScopeData(newerPackage[0])
+                    # if == None, entry is corrupted and this surely happened on client db
+                    # otherwise, better to let it raising an exception
+                    if not scope_data and self.dbname == "client":
+                        return -1,1 # return as not found
                     similarPackages = self.searchPackagesKeyVersion(key = scope_data[1]+"/"+scope_data[2], version = scope_data[3], branch = scope_data[7])
 
                     if (multiMatch):
@@ -4065,6 +4074,10 @@ class etpDatabase(TextInterface):
 
                 # now look if there's another package with the same category, name, version, tag
                 scope_data = self.getScopeData(newerPackage[1])
+                # if == None, entry is corrupted and this surely happened on client db
+                # otherwise, better to let it raising an exception
+                if not scope_data and self.dbname == "client":
+                    return -1,1 # return as not found
                 similarPackages = self.searchPackagesKeyVersion(key = scope_data[1]+"/"+scope_data[2], version = scope_data[3], branch = scope_data[7])
 
                 if (len(similarPackages) > 1):
