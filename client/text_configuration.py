@@ -66,8 +66,11 @@ def configurator(options):
 '''
 def update(cmd = None):
     cache_status = False
+    docmd = False
+    if cmd != None:
+        docmd = True
     while 1:
-        print_info(yellow(" @@ ")+darkgreen("Scanning filesystem..."))
+        print_info(brown(" @@ ")+darkgreen("Scanning filesystem..."))
         scandata = Equo.FileUpdates.scanfs(dcache = cache_status)
         if (cache_status):
             for x in scandata:
@@ -79,8 +82,10 @@ def update(cmd = None):
             break
 
         keys = scandata.keys()
-        if not cmd:
+        if not docmd:
             cmd = selfile()
+        else:
+            docmd = False
         try:
             cmd = int(cmd)
         except:
@@ -311,7 +316,7 @@ def showdiff(fromfile,tofile):
    @description: prints information about config files that should be updated
 '''
 def confinfo():
-    print_info(yellow(" @@ ")+darkgreen("These are the files that would be updated:"))
+    print_info(brown(" @@ ")+darkgreen("These are the files that would be updated:"))
     data = Equo.FileUpdates.scanfs(dcache = False)
     counter = 0
     for item in data:
