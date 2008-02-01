@@ -2660,19 +2660,6 @@
 			  <property name="spacing">5</property>
 
 			  <child>
-			    <widget class="GtkButton" id="queueDel">
-			      <property name="visible">True</property>
-			      <property name="can_default">True</property>
-			      <property name="can_focus">True</property>
-			      <property name="label">gtk-remove</property>
-			      <property name="use_stock">True</property>
-			      <property name="relief">GTK_RELIEF_NORMAL</property>
-			      <property name="focus_on_click">True</property>
-			      <signal name="clicked" handler="on_queueDel_clicked"/>
-			    </widget>
-			  </child>
-
-			  <child>
 			    <widget class="GtkButton" id="queueProcess">
 			      <property name="visible">True</property>
 			      <property name="can_default">True</property>

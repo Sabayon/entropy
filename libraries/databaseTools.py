@@ -3369,13 +3369,9 @@ class etpDatabase(TextInterface):
         if status:
             return False
 
-        # dependstable should always be bigger than baseinfo on a sane system
-        # XXX: maybe finding a better way to really verify dependstable sanity?
-        self.cursor.execute('select count(*) from baseinfo')
-        baseinfo_count = self.cursor.fetchone()
         self.cursor.execute('select count(*) from dependstable')
         dependstable_count = self.cursor.fetchone()
-        if dependstable_count < baseinfo_count:
+        if dependstable_count == 0:
             return False
         return True
 
