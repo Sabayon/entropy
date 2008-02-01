@@ -647,6 +647,8 @@ def initConfig_entropyConstants(rootdir):
                     'verbose_cmd': "--verbose"
         },
 
+        'downloadspeedlimit': None, # equo packages download speed limit (in kb/sec)
+
         'dumpstoragedir': ETP_DIR+ETP_CACHESDIR, # data storage directory, useful to speed up equo across multiple issued commands
 
         # packages keywords/mask/unmask settings
@@ -675,7 +677,7 @@ def initConfig_entropyConstants(rootdir):
         f = open(ETP_REVISION_FILE,"r")
         myrev = f.readline().strip()
         etpConst['entropyversion'] = myrev
-    
+
     # handle pid file
     piddir = os.path.dirname(etpConst['pidfile'])
     if not os.path.exists(piddir):
@@ -861,6 +863,13 @@ def initConfig_entropyConstants(rootdir):
             elif (line.find("conntestlink|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 conntestlink = line.split("|")[1]
                 etpConst['conntestlink'] = conntestlink
+
+            elif (line.find("downloadspeedlimit|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+                try:
+                    etpConst['downloadspeedlimit'] = int(line.split("|")[1])
+                except:
+                    etpConst['downloadspeedlimit'] = None
+
 
     # align etpConst['binaryurirelativepath'] and etpConst['etpurirelativepath'] with etpConst['product']
     etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['binaryurirelativepath']

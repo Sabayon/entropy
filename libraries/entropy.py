@@ -25,6 +25,7 @@ import commands
 import urllib2
 import socket
 import random
+import time
 from entropyConstants import *
 from outputTools import *
 import exceptionTools
@@ -2671,7 +2672,6 @@ class PackageInterface:
                                             header = red(" *** ")
                                         )
                     self.Entropy.entropyTools.ebeep(10)
-                    import time
                     time.sleep(20)
                     os.remove(rootdir)
 
@@ -2809,7 +2809,6 @@ class PackageInterface:
                                                 header = red(" *** ")
                                             )
                         self.Entropy.entropyTools.ebeep(10)
-                        import time
                         time.sleep(20)
                         try:
                             shutil.rmtree(tofile, True)
@@ -4306,17 +4305,17 @@ class urlFetcher:
         self.time_remaining = "(infinite)"
         self.elapsed = 0.0
         self.updatestep = 0.2
+        self.speedlimit = etpConst['downloadspeedlimit'] # kbytes/sec
         self.transferpollingtime = float(1)/4
 
     def download(self):
         self.initVars()
-        if self.showSpeed:
-            self.speedUpdater = self.entropyTools.TimeScheduled(
-                        self.updateSpeedInfo,
-                        self.transferpollingtime
-            )
-            self.speedUpdater.setName("download::"+self.url+str(random.random())) # set unique ID to thread, hopefully
-            self.speedUpdater.start()
+        self.speedUpdater = self.entropyTools.TimeScheduled(
+                    self.updateSpeedInfo,
+                    self.transferpollingtime
+        )
+        self.speedUpdater.setName("download::"+self.url+str(random.random())) # set unique ID to thread, hopefully
+        self.speedUpdater.start()
 
         # set timeout
         socket.setdefaulttimeout(20)
@@ -4383,6 +4382,11 @@ class urlFetcher:
             self.commitData(rsx)
             if self.showSpeed:
                 self.updateProgress()
+            if self.speedlimit:
+                while self.datatransfer > self.speedlimit*1024:
+                    time.sleep(0.1)
+                    if self.showSpeed:
+                        self.updateProgress()
 
         # kill thread
         self.close()
@@ -4445,8 +4449,7 @@ class urlFetcher:
             self.remotefile.close()
         except:
             pass
-        if self.showSpeed:
-            self.speedUpdater.kill()
+        self.speedUpdater.kill()
         socket.setdefaulttimeout(2)
 
     def updateSpeedInfo(self):
@@ -4474,8 +4477,6 @@ class rssFeed:
         self.items = {}
         self.itemscounter = 0
         self.maxentries = maxentries
-        import time
-        self.time = time
         from xml.dom import minidom
         self.minidom = minidom
 
@@ -4537,7 +4538,7 @@ class rssFeed:
         self.itemscounter += 1
         self.items[self.itemscounter] = {}
         self.items[self.itemscounter]['title'] = title
-        self.items[self.itemscounter]['pubDate'] = self.time.strftime("%a, %d %b %Y %X +0000")
+        self.items[self.itemscounter]['pubDate'] = time.strftime("%a, %d %b %Y %X +0000")
         self.items[self.itemscounter]['description'] = description
         self.items[self.itemscounter]['link'] = link
         if link:

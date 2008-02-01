@@ -1,6 +1,4 @@
 TODO list:
-  - add speed limiter
-  - make use flags check optional and controlled by a config option
   - rethink portage bashrc script
   - split RDEPEND and PDEPEND
   - migrate server code to ServerInterface
@@ -12,9 +10,8 @@ TODO list:
   - complete reagent spm interface
 
   Spritz:
-    - handle queue dependencies in the queue tab too (*)
     - handle config files updates interface (*)
-    - add masking interface
+    - add masking interface (*)
     - add branch switching menu (for upgrades)
     - wrap root password request
 
