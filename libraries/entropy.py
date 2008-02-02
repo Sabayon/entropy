@@ -2117,7 +2117,9 @@ class PackageInterface:
         self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Unpacking package: "+str(self.infoDict['atom']))
 
         if os.path.isdir(self.infoDict['unpackdir']):
-            shutil.rmtree(self.infoDict['unpackdir'])
+            shutil.rmtree(self.infoDict['unpackdir'].encode('raw_unicode_escape'))
+        elif os.path.isfile(self.infoDict['unpackdir']):
+            os.remove(self.infoDict['unpackdir'].encode('raw_unicode_escape'))
         os.makedirs(self.infoDict['imagedir'])
 
         rc = self.Entropy.entropyTools.uncompressTarBz2(
@@ -6086,12 +6088,13 @@ class ErrorReportInterface:
             opener = urllib2.build_opener(proxy_support)
             urllib2.install_opener(opener)
 
-    def prepare(self, tb_text, name, email):
+    def prepare(self, tb_text, name, email, report_data = ""):
         self.params['arch'] = etpConst['currentarch']
         self.params['stacktrace'] = tb_text
         self.params['name'] = name
         self.params['email'] = email
         self.params['version'] = etpConst['entropyversion']
+        self.params['errordata'] = report_data
         self.generated = True
 
     # params is a dict, key(HTTP post item name): value

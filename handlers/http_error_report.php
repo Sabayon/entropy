@@ -9,14 +9,18 @@ $email = $_POST['email'];
 $mail = "fabio.erculiani@gmail.com";
 $subject = "Entropy Error Reporting Handler";
 $message = "Hello, this is an Entropy error report.\n";
-$message .= $_POST['stacktrace'] . "\n\nArchitecture: " . $arch . "\n";
+$message .= $_POST['stacktrace'];
+$message .= "\n\n";
+$message .= $_POST['errordata'];
+$message .= "\n\nArchitecture: " . $arch . "\n";
 $message .= 'Name: ' . $name . "\n";
 $message .= 'E-mail: ' . $email . "\n";
 $message .= 'Version: ' . $version . "\n";
 $message .= 'IP: ' . $ip . "\n";
 $message .= 'Date: ' . date("G:i d/F/Y") . "\n";
 $message .= "\n";
-if ($_POST['stacktrace'] && $_POST['arch'] && $ip)
+if ($_POST['stacktrace'] && $_POST['arch'] && $ip) {
         $rc = mail($mail,$subject,$message, $header);
         print_r($rc);
+}
 ?>

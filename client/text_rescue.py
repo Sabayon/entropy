@@ -149,7 +149,7 @@ def database(options):
         return 0
 
     elif (options[0] == "check"):
-        if Equo.clientDatabase.doesTableExist("baseinfo"):
+        if Equo.clientDbconn.doesTableExist("baseinfo"):
             Equo.clientDatabaseSanityCheck()
         else:
             print_warning(bold("# ATTENTION: ")+red("database does not exist or is badly broken"))

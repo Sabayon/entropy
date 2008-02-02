@@ -347,19 +347,24 @@ except Exception:
 
     import traceback
     from entropy import ErrorReportInterface
+    exception_data = ""
     try:
         ferror = open("/tmp/equoerror.txt","w")
         traceback.print_exc(file = ferror)
         ferror.write("\nRevision: "+etpConst['entropyversion']+"\n\n")
-        #data = entropyTools.printException(True)
-        #for x in data:
-        #    ferror.write(str(x)+"\n")
+        exception_data = entropyTools.printException(True)
         ferror.write("\n")
         ferror.flush()
         ferror.close()
         f = open("/tmp/equoerror.txt","r")
         errorText = f.readlines()
         f.close()
+        ferror = open("/tmp/equoerror.txt","aw")
+        ferror.write("\n\n")
+        for x in exception_data:
+            ferror.write(str(x)+"\n")
+        ferror.flush()
+        ferror.close()
     except Exception, e:
         print
         print_error(darkred("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org."))
@@ -385,7 +390,7 @@ except Exception:
     email = readtext("Your E-Mail address: ")
     errorText = ''.join(errorText)
     error = ErrorReportInterface()
-    error.prepare(errorText,name,email)
+    error.prepare(errorText,name,email,exception_data)
     result = error.submit()
     if (result):
         print_error(darkgreen("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible."))
