@@ -1627,6 +1627,12 @@ class etpDatabase(TextInterface):
         self.cursor.execute('UPDATE baseinfo SET slot = (?) WHERE idpackage = (?)', (slot,idpackage,))
         self.commitChanges()
 
+    def insertCounter(self, idpackage, counter):
+        self.checkReadOnly()
+        self.cursor.execute('DELETE FROM counters WHERE counter = (?) OR idpackage = (?)', (counter,idpackage,))
+        self.cursor.execute('INSERT INTO counters VALUES (?,?)', (counter,idpackage,))
+        self.commitChanges()
+
     def setCounter(self, idpackage, counter):
         self.checkReadOnly()
         try:

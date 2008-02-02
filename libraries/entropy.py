@@ -2554,7 +2554,7 @@ class PackageInterface:
                     f.flush()
                     f.close()
                     # update counter inside clientDatabase
-                    self.Entropy.clientDbconn.setCounter(newidpackage,counter)
+                    self.Entropy.clientDbconn.insertCounter(newidpackage,counter)
                 else:
                     self.Entropy.updateProgress(
                                                 red("QA: ")+brown("cannot update Gentoo counter, destination %s does not exist." % 
