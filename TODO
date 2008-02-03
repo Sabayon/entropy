@@ -1,9 +1,8 @@
 TODO list:
-  - rethink portage bashrc script
-  - split RDEPEND and PDEPEND
   - migrate server code to ServerInterface
   - treeupdates should take care of branches client side too
   - Community repositories
+  - split RDEPEND and PDEPEND
   - find a way to better handle real smartapps deps (need split PDEPEND?)
   - separate packages by license restrictions
   - handle multiuser on entropy server using equo interface
