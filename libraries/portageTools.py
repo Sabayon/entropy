@@ -374,11 +374,17 @@ def paren_choose(dep_list):
 
         if isinstance(item, list):
             # match the first
+            matched = False
             for x in item:
                 match = getInstalledAtom(x)
                 if match != None:
                     newlist.append(x)
+                    matched = True
                     break
+            if not matched and item:
+                # no match, append the first one
+                # and let reagent fuck up
+                newlist.append(item[0])
         else:
             if item not in ["||"]:
                 newlist.append(item)
