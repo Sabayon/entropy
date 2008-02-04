@@ -356,7 +356,10 @@ def calculate_dependencies(my_iuse, my_use, my_license, my_depend, my_rdepend, m
             deps = paren_reduce(metadata[k])
             deps = use_reduce(deps, uselist=raw_use)
             deps = p_normalize(deps)
-            deps = paren_choose(deps)
+            if k == "LICENSE":
+                deps = paren_license_choose(deps)
+            else:
+                deps = paren_choose(deps)
             deps = ' '.join(deps)
         except exceptionTools.InvalidDependString, e:
             print_error("%s: %s\n" % (k, str(e)))
@@ -376,6 +379,20 @@ def paren_choose(dep_list):
                 if match != None:
                     newlist.append(x)
                     break
+        else:
+            if item not in ["||"]:
+                newlist.append(item)
+    return newlist
+
+def paren_license_choose(dep_list):
+
+    newlist = []
+    for item in dep_list:
+
+        if isinstance(item, list):
+            # match the first
+            for x in item:
+                newlist.append(x)
         else:
             if item not in ["||"]:
                 newlist.append(item)
