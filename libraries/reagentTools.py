@@ -547,14 +547,11 @@ def database(options):
 
             for result in results:
                 foundCounter += 1
-                print
                 printPackageInfo(result[1],dbconn, clientSearch = True, extended = True, EquoConnection = Entropy)
 
         dbconn.closeDB()
         if (foundCounter == 0):
             print_warning(red(" * ")+red("Nothing found."))
-        else:
-            print
         return 0
 
     elif (options[0] == "create-empty-database"):
