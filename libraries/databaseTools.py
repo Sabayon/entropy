@@ -3451,26 +3451,38 @@ class etpDatabase(TextInterface):
 
     def createContentIndex(self):
         if self.dbname != "etpdb" and self.indexing:
-            self.checkReadOnly()
+            try:
+                self.checkReadOnly()
+            except exceptionTools.OperationNotPermitted:
+                return
             self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex ON content ( file )')
             self.commitChanges()
 
     def createBaseinfoIndex(self):
         if self.dbname != "etpdb" and self.indexing:
-            self.checkReadOnly()
+            try:
+                self.checkReadOnly()
+            except exceptionTools.OperationNotPermitted:
+                return
             self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex ON baseinfo ( idpackage, atom, name, version, slot, branch, revision )')
             self.commitChanges()
 
     def createDependenciesIndex(self):
         if self.dbname != "etpdb" and self.indexing:
-            self.checkReadOnly()
+            try:
+                self.checkReadOnly()
+            except exceptionTools.OperationNotPermitted:
+                return
             self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex ON dependencies ( idpackage, iddependency )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesreferenceindex ON dependenciesreference ( iddependency, dependency )')
             self.commitChanges()
 
     def createExtrainfoIndex(self):
         if self.dbname != "etpdb" and self.indexing:
-            self.checkReadOnly()
+            try:
+                self.checkReadOnly()
+            except exceptionTools.OperationNotPermitted:
+                return
             self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( idpackage, description, homepage, download, digest, datecreation, size )')
             self.commitChanges()
 
