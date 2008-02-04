@@ -609,10 +609,7 @@ class EquoInterface(TextInterface):
             # update configuration
             self.entropyTools.writeNewBranch(branch)
             # reset treeupdatesactions
-            try:
-                self.clientDbconn.resetTreeupdatesDigests()
-            except:
-                pass
+            self.clientDbconn.resetTreeupdatesDigests()
             # clean cache
             self.purge_cache(showProgress = False)
             self.load_cache(showProgress = False)

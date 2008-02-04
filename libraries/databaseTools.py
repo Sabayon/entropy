@@ -3414,6 +3414,7 @@ class etpDatabase(TextInterface):
         return True
 
     def createXpakTable(self):
+        self.checkReadOnly()
         self.cursor.execute('CREATE TABLE xpakdata ( idpackage INTEGER PRIMARY KEY, data BLOB );')
         self.commitChanges()
 
@@ -3437,6 +3438,7 @@ class etpDatabase(TextInterface):
             pass
 
     def createCountersTable(self):
+        self.checkReadOnly()
         self.cursor.execute('DROP TABLE IF EXISTS counters;')
         self.cursor.execute('CREATE TABLE counters ( counter INTEGER PRIMARY KEY, idpackage INTEGER );')
         self.commitChanges()
@@ -3448,27 +3450,32 @@ class etpDatabase(TextInterface):
         self.createExtrainfoIndex()
 
     def createContentIndex(self):
+        self.checkReadOnly()
         if self.dbname != "etpdb" and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex ON content ( file )')
             self.commitChanges()
 
     def createBaseinfoIndex(self):
+        self.checkReadOnly()
         if self.dbname != "etpdb" and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex ON baseinfo ( idpackage, atom, name, version, slot, branch, revision )')
             self.commitChanges()
 
     def createDependenciesIndex(self):
+        self.checkReadOnly()
         if self.dbname != "etpdb" and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex ON dependencies ( idpackage, iddependency )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesreferenceindex ON dependenciesreference ( iddependency, dependency )')
             self.commitChanges()
 
     def createExtrainfoIndex(self):
+        self.checkReadOnly()
         if self.dbname != "etpdb" and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( idpackage, description, homepage, download, digest, datecreation, size )')
             self.commitChanges()
 
     def regenerateCountersTable(self, output = False):
+        self.checkReadOnly()
         self.createCountersTable()
         # assign a counter to an idpackage
         try:
@@ -3502,11 +3509,20 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def clearTreeupdatesEntries(self, repository):
+        self.checkReadOnly()
         # treeupdates
         if not self.doesTableExist("treeupdates"):
             self.createTreeupdatesTable()
         else:
             self.cursor.execute("DELETE FROM treeupdates WHERE repository = (?)", (repository,))
+        self.commitChanges()
+
+    def resetTreeupdatesDigests(self):
+        self.checkReadOnly()
+        if not self.doesTableExist("treeupdates"):
+            self.createTreeupdatesTable()
+        else:
+            self.cursor.execute('UPDATE treeupdates SET digest = "-1"')
         self.commitChanges()
 
     #
