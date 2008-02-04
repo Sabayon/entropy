@@ -224,6 +224,7 @@ def load_conf_cache():
                 print_warning(red("Please run: ")+bold("equo conf update"))
 
 try:
+    rc
     rc = 0
     # sync mirrors tool
     if (options[0] == "update") or (options[0] == "repoinfo") or (options[0] == "status"):
@@ -390,7 +391,7 @@ except Exception:
     email = readtext("Your E-Mail address: ")
     errorText = ''.join(errorText)
     error = ErrorReportInterface()
-    error.prepare(errorText,name,email,exception_data)
+    error.prepare(errorText,name,email,'\n'.join([str(x) for x in exception_data]))
     result = error.submit()
     if (result):
         print_error(darkgreen("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible."))
