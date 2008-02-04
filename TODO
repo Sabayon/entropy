@@ -1,6 +1,7 @@
 TODO list:
   - glsa utility (*)
   - migrate server code to ServerInterface
+     [] write a tool that helps keeping packages updated (also supporting injected ones)
   - Community repositories
   - split RDEPEND and PDEPEND
   - find a way to better handle real smartapps deps (need split PDEPEND?)

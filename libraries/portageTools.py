@@ -360,6 +360,8 @@ def calculate_dependencies(my_iuse, my_use, my_license, my_depend, my_rdepend, m
                 deps = paren_license_choose(deps)
             else:
                 deps = paren_choose(deps)
+                # flatten out
+                deps = entropyTools.flatten(deps)
             deps = ' '.join(deps)
         except exceptionTools.InvalidDependString, e:
             print_error("%s: %s\n" % (k, str(e)))
@@ -384,7 +386,8 @@ def paren_choose(dep_list):
             if not matched and item:
                 # no match, append the first one
                 # and let reagent fuck up
-                newlist.append(item[0])
+                for x in item:
+                    newlist.append(x)
         else:
             if item not in ["||"]:
                 newlist.append(item)

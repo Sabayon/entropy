@@ -1433,12 +1433,25 @@ def umountProc():
     # check if it's already mounted
     procfiles = os.listdir("/proc")
     if len(procfiles) > 2:
-	spawnCommand("umount /proc", " &> /dev/null")
-	spawnCommand("umount /proc", " &> /dev/null")
-	spawnCommand("umount /proc", " &> /dev/null")
-	return True
+        spawnCommand("umount /proc", " &> /dev/null")
+        spawnCommand("umount /proc", " &> /dev/null")
+        spawnCommand("umount /proc", " &> /dev/null")
+        return True
     else:
-	return True
+        return True
+
+def flatten(l, ltypes=(list, tuple)):
+  i = 0
+  while i < len(l):
+    while isinstance(l[i], ltypes):
+      if not l[i]:
+        l.pop(i)
+        if not len(l):
+          break
+      else:
+        l[i:i+1] = list(l[i])
+    i += 1
+  return l
 
 class lifobuffer:
 
