@@ -25,6 +25,7 @@
 #####################################################################################
 
 from entropyConstants import *
+import entropyTools
 import portage
 
 ############
@@ -361,7 +362,7 @@ def calculate_dependencies(my_iuse, my_use, my_license, my_depend, my_rdepend, m
             else:
                 deps = paren_choose(deps)
                 # flatten out
-                deps = entropyTools.flatten(deps)
+                deps = flatten(deps)
             deps = ' '.join(deps)
         except exceptionTools.InvalidDependString, e:
             print_error("%s: %s\n" % (k, str(e)))
