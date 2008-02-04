@@ -224,7 +224,6 @@ def load_conf_cache():
                 print_warning(red("Please run: ")+bold("equo conf update"))
 
 try:
-    rc
     rc = 0
     # sync mirrors tool
     if (options[0] == "update") or (options[0] == "repoinfo") or (options[0] == "status"):
