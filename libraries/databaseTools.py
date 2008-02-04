@@ -396,8 +396,9 @@ class etpDatabase(TextInterface):
                 # now run queue
                 self.runTreeUpdatesActions(update_actions)
 
-            # store new actions
-            self.addRepositoryUpdatesActions(repository,update_actions)
+                # store new actions
+                self.addRepositoryUpdatesActions(repository,update_actions)
+
             # store new digest into database
             self.setRepositoryUpdatesDigest(repository, portage_dirs_digest)
 
@@ -1649,6 +1650,21 @@ class etpDatabase(TextInterface):
                 )
         self.commitChanges()
 
+    def contentDiff(self, idpackage, content):
+        self.checkReadOnly()
+        # create a random table and fill
+        randomtable = "cdiff"+str(entropyTools.getRandomNumber())
+        self.cursor.execute('DROP TABLE IF EXISTS '+randomtable)
+        self.cursor.execute('CREATE TABLE '+randomtable+' ( file VARCHAR )')
+        for xfile in content:
+            self.cursor.execute('INSERT INTO '+randomtable+' VALUES (?)', (xfile,))
+        # now compare
+        self.cursor.execute('SELECT file FROM content WHERE content.idpackage = (?) AND content.file NOT IN (SELECT file from '+randomtable+') ', (idpackage,))
+        diff = self.fetchall2set(self.cursor.fetchall())
+        self.cursor.execute('DROP TABLE IF EXISTS '+randomtable)
+        return diff
+
+
     def cleanupUseflags(self):
         self.checkReadOnly()
         self.cursor.execute('SELECT idflag FROM useflagsreference')
@@ -2082,11 +2098,9 @@ class etpDatabase(TextInterface):
                 dbCacheStore[etpCache['dbSearch']+self.dbname][function][searchdata] = data
 
     def retrieveRepositoryUpdatesDigest(self, repository):
-        try:
-            self.cursor.execute('SELECT digest FROM treeupdates WHERE repository = (?)', (repository,))
-        except:
+        if not self.doesTableExist("treeupdates"):
             self.createTreeupdatesTable()
-            self.cursor.execute('SELECT digest FROM treeupdates WHERE repository = (?)', (repository,))
+        self.cursor.execute('SELECT digest FROM treeupdates WHERE repository = (?)', (repository,))
         mydigest = self.cursor.fetchone()
         if mydigest:
             return mydigest[0]
@@ -2094,44 +2108,53 @@ class etpDatabase(TextInterface):
             return -1
 
     def listAllTreeUpdatesActions(self):
-        try:
-            self.cursor.execute('SELECT * FROM treeupdatesactions')
-        except:
+        if not self.doesTableExist("treeupdatesactions"):
             self.createTreeupdatesactionsTable()
-            self.cursor.execute('SELECT * FROM treeupdatesactions')
+        elif not self.doesColumnInTableExist("treeupdatesactions","branch"):
+            self.createTreeupdatesactionsBranchColumn()
+        self.cursor.execute('SELECT * FROM treeupdatesactions')
         return self.cursor.fetchall()
 
-    def retrieveTreeUpdatesActions(self, repository):
-        try:
-            self.cursor.execute('SELECT command FROM treeupdatesactions where repository = (?)', (repository,))
-            return self.fetchall2set(self.cursor.fetchall())
-        except:
+    def retrieveTreeUpdatesActions(self, repository, forbranch = etpConst['branch']):
+        if not self.doesTableExist("treeupdatesactions"):
             self.createTreeupdatesactionsTable()
             return set()
+        elif not self.doesColumnInTableExist("treeupdatesactions","branch"):
+            self.createTreeupdatesactionsBranchColumn()
+
+        self.cursor.execute('SELECT command FROM treeupdatesactions where repository = (?) and branch = (?)', (repository,forbranch))
+        return self.fetchall2set(self.cursor.fetchall())
 
     # mainly used to restore a previous table, used by reagent in --initialize
     def addTreeUpdatesActions(self, updates):
+        if not self.doesTableExist("treeupdatesactions"):
+            self.createTreeupdatesactionsTable()
+        elif not self.doesColumnInTableExist("treeupdatesactions","branch"):
+            self.createTreeupdatesactionsBranchColumn()
+
         for update in updates:
             idupdate = update[0]
             repository = update[1]
             command = update[2]
-            self.cursor.execute('INSERT INTO treeupdatesactions VALUES (?,?,?)', (idupdate,repository,command,))
+            branch = etpConst['branch']
+            self.cursor.execute('INSERT INTO treeupdatesactions VALUES (?,?,?,?)', (idupdate,repository,command,branch,))
 
     def setRepositoryUpdatesDigest(self, repository, digest):
-        try:
-            self.cursor.execute('DELETE FROM treeupdates where repository = (?)', (repository,)) # doing it for safety
-        except:
+        if not self.doesTableExist("treeupdates"):
             self.createTreeupdatesTable()
+
+        self.cursor.execute('DELETE FROM treeupdates where repository = (?)', (repository,)) # doing it for safety
         self.cursor.execute('INSERT INTO treeupdates VALUES (?,?)', (repository,digest,))
         self.commitChanges()
 
-    def addRepositoryUpdatesActions(self, repository, actions):
+    def addRepositoryUpdatesActions(self, repository, actions, forbranch = etpConst['branch']):
+        if not self.doesTableExist("treeupdatesactions"):
+            self.createTreeupdatesactionsTable()
+        elif not self.doesColumnInTableExist("treeupdatesactions","branch"):
+            self.createTreeupdatesactionsBranchColumn()
+
         for command in actions:
-            try:
-                self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?)', (repository,command,))
-            except:
-                self.createTreeupdatesactionsTable()
-                self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?)', (repository,command,))
+            self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?)', (repository,command,forbranch,))
 
     def retrieveAtom(self, idpackage):
 
@@ -2157,9 +2180,6 @@ class etpDatabase(TextInterface):
 
     def retrieveTrigger(self, idpackage):
 
-        #cache = self.fetchInfoCache(idpackage,'retrieveTrigger')
-        #if cache != None: return cache
-
         try:
             self.cursor.execute('SELECT data FROM triggers WHERE idpackage = (?)', (idpackage,))
             trigger = self.cursor.fetchone()
@@ -2173,18 +2193,17 @@ class etpDatabase(TextInterface):
             trigger = ''
             pass
 
-        #self.storeInfoCache(idpackage,'retrieveTrigger',trigger)
         return trigger
 
     def retrieveDownloadURL(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveDownloadURL')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveDownloadURL')
+        #if cache != None: return cache
 
         self.cursor.execute('SELECT download FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         download = self.cursor.fetchone()[0]
 
-        self.storeInfoCache(idpackage,'retrieveDownloadURL',download)
+        #self.storeInfoCache(idpackage,'retrieveDownloadURL',download)
         return download
 
     def retrieveDescription(self, idpackage):
@@ -3281,6 +3300,19 @@ class etpDatabase(TextInterface):
             return False
         return True
 
+    # FIXME: this is only compatible with SQLITE
+    def doesColumnInTableExist(self, table, column):
+        self.cursor.execute('PRAGMA table_info( '+table+' )')
+        rslt = self.cursor.fetchall()
+        if not rslt:
+            return False
+        found = False
+        for row in rslt:
+            if row[1] == column:
+                found = True
+                break
+        return found
+
     def tablesChecksum(self):
         # NOTE: if you will add dependstable to the validation
         # please have a look at EquoInterface.__install_package_into_database world calculation cache stuff
@@ -3409,6 +3441,12 @@ class etpDatabase(TextInterface):
         self.cursor.execute('CREATE TABLE counters ( counter INTEGER PRIMARY KEY, idpackage INTEGER );')
         self.commitChanges()
 
+    def createAllIndexes(self):
+        self.createContentIndex()
+        self.createBaseinfoIndex()
+        self.createDependenciesIndex()
+        self.createExtrainfoIndex()
+
     def createContentIndex(self):
         if self.dbname != "etpdb" and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex ON content ( file )')
@@ -3465,10 +3503,10 @@ class etpDatabase(TextInterface):
 
     def clearTreeupdatesEntries(self, repository):
         # treeupdates
-        try:
-            self.cursor.execute("DELETE FROM treeupdates WHERE repository = (?)", (repository,))
-        except:
+        if not self.doesTableExist("treeupdates"):
             self.createTreeupdatesTable()
+        else:
+            self.cursor.execute("DELETE FROM treeupdates WHERE repository = (?)", (repository,))
         self.commitChanges()
 
     #
@@ -3482,12 +3520,20 @@ class etpDatabase(TextInterface):
 
     def createTreeupdatesactionsTable(self):
         self.cursor.execute('DROP TABLE IF EXISTS treeupdatesactions;')
-        self.cursor.execute('CREATE TABLE treeupdatesactions ( idupdate INTEGER PRIMARY KEY, repository VARCHAR, command VARCHAR );')
+        self.cursor.execute('CREATE TABLE treeupdatesactions ( idupdate INTEGER PRIMARY KEY, repository VARCHAR, command VARCHAR, branch VARCHAR );')
         self.commitChanges()
 
     def createSizesTable(self):
         self.cursor.execute('DROP TABLE IF EXISTS sizes;')
         self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
+        self.commitChanges()
+
+    def createTreeupdatesactionsBranchColumn(self):
+        try: # if database disk image is malformed, won't raise exception here
+            self.cursor.execute('ALTER TABLE treeupdatesactions ADD COLUMN branch VARCHAR;')
+            self.cursor.execute('UPDATE treeupdatesactions SET branch = (?)', (str(etpConst['branch']),))
+        except:
+            pass
         self.commitChanges()
 
     def createContentTypeColumn(self):

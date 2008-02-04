@@ -1,6 +1,6 @@
 TODO list:
+  - glsa utility (*)
   - migrate server code to ServerInterface
-  - treeupdates should take care of branches client side too
   - Community repositories
   - split RDEPEND and PDEPEND
   - find a way to better handle real smartapps deps (need split PDEPEND?)

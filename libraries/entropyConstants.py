@@ -294,7 +294,8 @@ CREATE TABLE treeupdates (
 CREATE TABLE treeupdatesactions (
     idupdate INTEGER PRIMARY KEY,
     repository VARCHAR,
-    command VARCHAR
+    command VARCHAR,
+    branch VARCHAR
 );
 
 CREATE TABLE binkeywords (

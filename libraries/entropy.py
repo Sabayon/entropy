@@ -184,7 +184,7 @@ class EquoInterface(TextInterface):
 
             etpRepositories[repositoryName]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotect']]
             etpRepositories[repositoryName]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotectmask']]
-        if not etpConst['treeupdatescalled'] and (etpConst['uid'] == 0):
+        if not etpConst['treeupdatescalled'] and (etpConst['uid'] == 0) and (not repositoryName.endswith(".tbz2")):
             conn.clientUpdatePackagesData()
         return conn
 
@@ -210,20 +210,19 @@ class EquoInterface(TextInterface):
     '''
        Cache stuff :: begin
     '''
-    def purge_cache(self):
+    def purge_cache(self, showProgress = True):
         const_resetCache()
         dumpdir = etpConst['dumpstoragedir']
         if not dumpdir.endswith("/"): dumpdir = dumpdir+"/"
         for key in etpCache:
             cachefile = dumpdir+etpCache[key]+"*.dmp"
-            self.updateProgress(darkred("Cleaning %s...") % (cachefile,), importance = 1, type = "warning", back = True)
+            if showProgress: self.updateProgress(darkred("Cleaning %s...") % (cachefile,), importance = 1, type = "warning", back = True)
             try:
                 os.system("rm -f "+cachefile)
             except:
                 pass
         # reset dict cache
-        self.updateProgress(darkgreen("Cache is now empty."), importance = 2, type = "info")
-        const_resetCache()
+        if showProgress: self.updateProgress(darkgreen("Cache is now empty."), importance = 2, type = "info")
 
     def generate_cache(self, depcache = True, configcache = True):
         # clean first of all
@@ -311,13 +310,13 @@ class EquoInterface(TextInterface):
         self.updateProgress(darkred("Dependencies cache filled."), importance = 2, type = "warning")
         self.save_cache()
 
-    def load_cache(self):
+    def load_cache(self, showProgress = True):
 
         if (etpConst['uid'] != 0) or (not self.xcache): # don't load cache as user
             return
 
         try:
-            self.updateProgress(blue("Loading On-Disk Cache..."), importance = 2, type = "info")
+            if showProgress: self.updateProgress(blue("Loading On-Disk Cache..."), importance = 2, type = "info")
         except:
             pass
 
@@ -599,6 +598,28 @@ class EquoInterface(TextInterface):
             brokenlibs.difference_update(libsfound)
 
         return packagesMatched,brokenlibs,0
+
+    def move_to_branch(self, branch, pretend = False):
+        availbranches = self.listAllAvailableBranches()
+        if branch not in availbranches:
+            return 1
+        if pretend:
+            return 0
+        if branch != etpConst['branch']:
+            # update configuration
+            self.entropyTools.writeNewBranch(branch)
+            # reset treeupdatesactions
+            try:
+                self.clientDbconn.resetTreeupdatesDigests()
+            except:
+                pass
+            # clean cache
+            self.purge_cache(showProgress = False)
+            self.load_cache(showProgress = False)
+            # reopen Client Database, this will make treeupdates to be re-read
+            self.reopenClientDbconn()
+            self.closeAllRepositoryDatabases()
+        return 0
 
     # tell if a new equo release is available, returns True or False
     def check_equo_updates(self):
@@ -3261,13 +3282,11 @@ class PackageInterface:
             if self.Entropy.clientDbconn.isIDPackageAvailable(self.infoDict['removeidpackage']):
                 self.infoDict['diffremoval'] = True
                 self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(self.infoDict['removeidpackage'])
-                # XXX: too much memory
-                oldcontent = self.Entropy.clientDbconn.retrieveContent(self.infoDict['removeidpackage'])
                 newcontent = dbconn.retrieveContent(idpackage)
-                oldcontent = oldcontent - newcontent
+                content_to_remove = self.Entropy.clientDbconn.contentDiff(self.infoDict['removeidpackage'],newcontent)
                 del newcontent
-                self.infoDict['removecontent'] = oldcontent.copy()
-                del oldcontent
+                self.infoDict['removecontent'] = content_to_remove.copy()
+                del content_to_remove
                 # XXX: too much memory
                 self.infoDict['triggers']['remove'] = self.Entropy.clientDbconn.getPackageData(self.infoDict['removeidpackage'])
                 self.infoDict['triggers']['remove']['removecontent'] = self.infoDict['removecontent']
@@ -3888,9 +3907,21 @@ class RepoInterface:
                                                 header = "\t"
                                 )
 
+                self.Entropy.updateProgress(
+                                                red("Indexing Repository metadata ..."),
+                                                importance = 1,
+                                                type = "info",
+                                                header = "\t"
+                                )
+                dbconn = self.Entropy.openRepositoryDatabase(repo)
+                dbconn.createAllIndexes()
+
             self.Entropy.cycleDone()
 
         self.close_transactions()
+
+        # keep them closed
+        self.Entropy.closeAllRepositoryDatabases()
 
         # clean caches
         if self.dbupdated:

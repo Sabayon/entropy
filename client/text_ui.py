@@ -129,19 +129,15 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
     if not resume:
 
         # verify selected release (branch)
-        if (upgradeTo):
-            availbranches = Equo.listAllAvailableBranches()
-            if (upgradeTo not in availbranches) or (upgradeTo == None):
+        if upgradeTo:
+            # set the new branch
+            result = Equo.move_to_branch(upgradeTo, pretend = etpUi['pretend'])
+            if result == 1:
                 print_error(red("Selected release: ")+bold(str(upgradeTo))+red(" is not available."))
                 return 1,-2
-            else:
-                branch = upgradeTo
+            branch = upgradeTo
         else:
             branch = etpConst['branch']
-
-        if (not etpUi['pretend']) and (upgradeTo):
-            # update configuration
-            Equo.entropyTools.writeNewBranch(upgradeTo)
 
         print_info(red(" @@ ")+blue("Calculating world packages..."))
         update, remove, fine = Equo.calculate_world_updates(empty_deps = replay, branch = branch)
