@@ -1107,16 +1107,20 @@ def database(options):
                     print_warning(countstring+"    scanned: "+str(found_deps))
                 else:
                     stats['updated'] += 1
-                    print_info(countstring+red("  Updating dependencies for ")+brown(atom))
+                    print_info(countstring+red("Updating dependencies for ")+brown(atom))
                     dbconn.removeDependencies(idpackage)
                     dbconn.insertDependencies(idpackage, found_deps)
 
         # done !
+        # XXX update depends
+        dependsTableInitialize(dbconn, False)
+
         print_info(blue(" *  Statistics:"))
         print_info(brown("     Number of checked packages:\t\t")+maxcount)
         print_info(green("     Number of updated packages:\t\t")+str(stats['updated']))
         print_info(red("     Number of broken packages:\t\t")+str(stats['bad_digest']))
         print_info(red("     Number of not found packages:\t\t")+str(stats['not_found']))
+        dbconn.closeDB()
 
     # query tools
     elif (options[0] == "query"):
