@@ -93,6 +93,9 @@ class EquoInterface(TextInterface):
         self.FileUpdates = self.__FileUpdates()
         self.repoDbCache = {}
 
+        # security interface
+        self.Security = SecurityInterface(self)
+
     def switchChroot(self, chroot = ""):
         # clean caches
         self.purge_cache()
@@ -3586,7 +3589,7 @@ class RepoInterface:
         # Test network connectivity
         conntest = self.Entropy.entropyTools.get_remote_data(etpConst['conntestlink'])
         if not conntest:
-            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: Cannot connect to ")
+            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: Cannot connect to %s" % (etpConst['conntestlink'],))
 
         if not self.reponames:
             for x in etpRepositories:
@@ -3923,6 +3926,8 @@ class RepoInterface:
         # clean caches
         if self.dbupdated:
             self.Entropy.generate_cache(depcache = True, configcache = False)
+            # update Security Advisories
+            self.Entropy.Security.fetch_advisories()
 
         if self.syncErrors:
             self.Entropy.updateProgress(    red("Something bad happened. Please have a look."),
@@ -6135,3 +6140,253 @@ class ErrorReportInterface:
         else:
             raise exceptionTools.PermissionDenied("PermissionDenied: not yet prepared")
 
+
+'''
+   I wrote this after having drunk a Red Bull,
+   so I think the code will look nice and sharp
+   ~~ GIVES YOU WINGS ~~
+'''
+class SecurityInterface:
+
+    def __init__(self, EquoInstance):
+        self.Entropy = EquoInstance
+        try:
+            self.Entropy.instanceTest()
+        except:
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+        self.lastfetch = None
+        self.previous_checksum = "0"
+        self.advisories_changed = None
+
+        self.unpackdir = os.path.join(etpConst['entropyunpackdir'],"security-"+str(self.Entropy.entropyTools.getRandomNumber()))
+        self.security_url = etpConst['securityurl']
+        self.unpacked_package = os.path.join(self.unpackdir,"glsa_package")
+        self.security_url_checksum = etpConst['securityurl']+etpConst['packageshashfileext']
+        self.download_package = os.path.join(self.unpackdir,os.path.basename(etpConst['securityurl']))
+        self.download_package_checksum = self.download_package+etpConst['packageshashfileext']
+
+        self.security_package = os.path.join(etpConst['securitydir'],os.path.basename(etpConst['securityurl']))
+        self.security_package_checksum = self.security_package+etpConst['packageshashfileext']
+
+        if os.path.isfile(etpConst['securitydir']) or os.path.islink(etpConst['securitydir']):
+            os.remove(etpConst['securitydir'])
+        if not os.path.isdir(etpConst['securitydir']):
+            os.makedirs(etpConst['securitydir'])
+        elif os.path.isfile(self.security_package_checksum):
+            try:
+                f = open(self.security_package_checksum)
+                self.previous_checksum = f.readline().strip().split()[0]
+                f.close()
+            except: # FIXME really horrible exception trapping
+                try:
+                    f.close()
+                except:
+                    pass
+
+    def __prepare_unpack(self):
+
+        if os.path.isfile(self.unpackdir) or os.path.islink(self.unpackdir):
+            os.remove(self.unpackdir)
+        if os.path.isdir(self.unpackdir):
+            shutil.rmtree(self.unpackdir,True)
+            try:
+                os.rmdir(self.unpackdir)
+            except OSError:
+                pass
+        os.makedirs(self.unpackdir)
+
+    def __download_glsa_package(self):
+        return self.__generic_download(self.security_url, self.download_package)
+
+    def __download_glsa_package_checksum(self):
+        return self.__generic_download(self.security_url_checksum, self.download_package_checksum, showSpeed = False)
+
+    def __generic_download(self, url, save_to, showSpeed = True):
+        fetchConn = self.Entropy.urlFetcher(url, save_to, resume = False, showSpeed = showSpeed)
+        fetchConn.progress = self.Entropy.progress
+        rc = fetchConn.download()
+        del fetchConn
+        status = True
+        if rc in ("-1","-2","-3"):
+            status = False
+        return status
+
+    def __verify_checksum(self):
+
+        # read checksum
+        if not os.path.isfile(self.download_package_checksum) or not os.access(self.download_package_checksum,os.R_OK):
+            return 1
+
+        f = open(self.download_package_checksum)
+        try:
+            checksum = f.readline().strip().split()[0]
+            f.close()
+        except:
+            return 2
+
+        if checksum == self.previous_checksum:
+            self.advisories_changed = False
+        else:
+            self.advisories_changed = True
+        md5res = self.Entropy.entropyTools.compareMd5(self.download_package,checksum)
+        if not md5res:
+            return 3
+        return 0
+
+    def __unpack_advisories(self):
+        rc = self.Entropy.entropyTools.uncompressTarBz2(
+                                                            self.download_package,
+                                                            self.unpacked_package,
+                                                            catchEmpty = True
+                                                        )
+        return rc
+
+    def __clear_previous_advisories(self):
+        if os.listdir(etpConst['securitydir']):
+            shutil.rmtree(etpConst['securitydir'],True)
+            if not os.path.isdir(etpConst['securitydir']):
+                os.makedirs(etpConst['securitydir'])
+
+    def __put_advisories_in_place(self):
+        for advfile in os.listdir(self.unpacked_package):
+            from_file = os.path.join(self.unpacked_package,advfile)
+            to_file = os.path.join(etpConst['securitydir'],advfile)
+            shutil.move(from_file,to_file)
+
+    def __cleanup_garbage(self):
+        shutil.rmtree(self.unpackdir,True)
+
+    def fetch_advisories(self):
+
+        self.Entropy.updateProgress(
+                                blue("Testing ")+bold("Security Advisories")+blue(" service connection"),
+                                importance = 2,
+                                type = "info",
+                                header = red("@@ "),
+                                footer = red(" ...")
+                            )
+
+        # Test network connectivity
+        conntest = self.Entropy.entropyTools.get_remote_data(etpConst['conntestlink'])
+        if not conntest:
+            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: Cannot connect to %s" % (etpConst['conntestlink'],))
+
+        self.Entropy.updateProgress(
+                                blue("Getting the latest ")+bold("Security Advisories")+darkgreen(" (GLSAs)"),
+                                importance = 2,
+                                type = "info",
+                                header = red("@@ "),
+                                footer = red(" ...")
+                            )
+
+        # prepare directories
+        self.__prepare_unpack()
+
+        # download package
+        status = self.__download_glsa_package()
+        self.lastfetch = status
+        if not status:
+            self.Entropy.updateProgress(
+                                    blue("Security Advisories: unable to download package, sorry."),
+                                    importance = 2,
+                                    type = "error",
+                                    header = red("   ## ")
+                                )
+            return 1
+
+        self.Entropy.updateProgress(
+                                blue("Verifying checksum"),
+                                importance = 1,
+                                type = "info",
+                                header = red("   # "),
+                                footer = red(" ..."),
+                                back = True
+                            )
+
+        # download digest
+        status = self.__download_glsa_package_checksum()
+        if not status:
+            self.Entropy.updateProgress(
+                                    blue("Security Advisories: cannot download checksum, sorry."),
+                                    importance = 2,
+                                    type = "error",
+                                    header = red("   ## ")
+                                )
+            return 2
+
+        # verify digest
+        status = self.__verify_checksum()
+
+        if status == 1:
+            self.Entropy.updateProgress(
+                                    blue("Security Advisories: cannot open packages, sorry."),
+                                    importance = 2,
+                                    type = "error",
+                                    header = red("   ## ")
+                                )
+            return 3
+        elif status == 2:
+            self.Entropy.updateProgress(
+                                    blue("Security Advisories: cannot read checksum, sorry."),
+                                    importance = 2,
+                                    type = "error",
+                                    header = red("   ## ")
+                                )
+            return 4
+        elif status == 3:
+            self.Entropy.updateProgress(
+                                    blue("Security Advisories: digest verification failed, sorry."),
+                                    importance = 2,
+                                    type = "error",
+                                    header = red("   ## ")
+                                )
+            return 5
+        elif status == 0:
+            self.Entropy.updateProgress(
+                                    darkgreen("Verification Successful"),
+                                    importance = 1,
+                                    type = "info",
+                                    header = red("   # ")
+                                )
+        else:
+            raise exceptionTools.InvalidData("InvalidData: return status not valid.")
+
+        # now unpack in place
+        status = self.__unpack_advisories()
+        if status != 0:
+            self.Entropy.updateProgress(
+                                    blue("Security Advisories: digest verification failed, try again later."),
+                                    importance = 2,
+                                    type = "error",
+                                    header = red("   ## ")
+                                )
+            return 6
+
+        self.Entropy.updateProgress(
+                                darkgreen("Installing Security Advisories"),
+                                importance = 1,
+                                type = "info",
+                                header = red("   # "),
+                                footer = red(" ...")
+                            )
+
+        # clear previous
+        self.__clear_previous_advisories()
+        # copy over
+        self.__put_advisories_in_place()
+        # remove temp stuff
+        self.__cleanup_garbage()
+
+        if self.advisories_changed:
+            advtext = darkgreen("Security Advisories: updated successfully")
+        else:
+            advtext = darkred("Security Advisories: already up to date")
+
+        self.Entropy.updateProgress(
+                                advtext,
+                                importance = 2,
+                                type = "info",
+                                header = red(" @@ ")
+                            )
+
+        return 0

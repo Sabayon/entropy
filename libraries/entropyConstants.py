@@ -517,6 +517,7 @@ def initConfig_entropyConstants(rootdir):
     ETP_SMARTAPPSDIR = "/smartapps/"+ETP_ARCH_CONST
     ETP_SMARTPACKAGESDIR = "/smartpackages/"+ETP_ARCH_CONST
     ETP_CACHESDIR = "/caches/"
+    ETP_SECURITYDIR = "/glsa/"
     ETP_LOG_DIR = ETP_DIR+"/"+"logs"
     ETP_CONF_DIR = rootdir+"/etc/entropy"
     ETP_SYSLOG_DIR = rootdir+"/var/log/entropy/"
@@ -651,6 +652,8 @@ def initConfig_entropyConstants(rootdir):
         'downloadspeedlimit': None, # equo packages download speed limit (in kb/sec)
 
         'dumpstoragedir': ETP_DIR+ETP_CACHESDIR, # data storage directory, useful to speed up equo across multiple issued commands
+        'securitydir': ETP_DIR+ETP_SECURITYDIR, # where GLSAs are stored
+        'securityurl': "http://packages.sabayonlinux.org/security/security-advisories.tar.bz2",
 
         # packages keywords/mask/unmask settings
         'packagemasking': {}, # package masking information dictionary filled by maskingparser.py
@@ -871,6 +874,12 @@ def initConfig_entropyConstants(rootdir):
                 except:
                     etpConst['downloadspeedlimit'] = None
 
+            elif (line.find("securityurl|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+                try:
+                    url = line.split("|")[1]
+                    etpConst['securityurl'] = url
+                except:
+                    pass
 
     # align etpConst['binaryurirelativepath'] and etpConst['etpurirelativepath'] with etpConst['product']
     etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['binaryurirelativepath']

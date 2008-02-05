@@ -2,6 +2,7 @@ TODO list:
   - glsa utility (*)
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
+  - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - Community repositories
   - split RDEPEND and PDEPEND
   - find a way to better handle real smartapps deps (need split PDEPEND?)
