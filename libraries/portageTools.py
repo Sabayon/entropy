@@ -361,8 +361,6 @@ def calculate_dependencies(my_iuse, my_use, my_license, my_depend, my_rdepend, m
                 deps = paren_license_choose(deps)
             else:
                 deps = paren_choose(deps)
-                # flatten out
-                deps = entropyTools.flatten(deps)
             deps = ' '.join(deps)
         except exceptionTools.InvalidDependString, e:
             print_error("%s: %s\n" % (k, str(e)))
@@ -373,26 +371,40 @@ def calculate_dependencies(my_iuse, my_use, my_license, my_depend, my_rdepend, m
 def paren_choose(dep_list):
 
     newlist = []
-    for item in dep_list:
+    do_skip = False
+    for idx in range(len(dep_list)):
 
-        if isinstance(item, list):
-            # match the first
-            matched = False
-            for x in item:
-                match = getInstalledAtom(x)
-                if match != None:
-                    newlist.append(x)
-                    matched = True
-                    break
-            if not matched and item:
-                # no match, append the first one
-                # and let reagent fuck up
-                for x in item:
-                    newlist.append(x)
-        else:
-            if item not in ["||"]:
+        if do_skip:
+            do_skip = False
+            continue
+
+        item = dep_list[idx]
+        if item == "||":
+            item = dep_or_select(dep_list[idx+1]) # must be a list
+            if item == None:
+                # no matches, transform to string and append, so reagent will fail
+                newlist.append(str(dep_list[idx+1]))
+            else:
                 newlist.append(item)
+            do_skip = True
+        else:
+            newlist.append(x)
+
     return newlist
+
+def dep_or_select(or_list):
+    do_skip = False
+    for idx in range(len(or_list)):
+        if do_skip:
+            do_skip = False
+            continue
+        x = or_list[idx]
+        if x == "||":
+            x = dep_or_select(or_list[idx+1])
+            do_skip = True
+        match = getInstalledAtom(x)
+        if match != None:
+            return x
 
 def paren_license_choose(dep_list):
 
