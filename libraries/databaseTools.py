@@ -918,29 +918,20 @@ class etpDatabase(TextInterface):
         )
 
         # content, a list
+        if not self.doesColumnInTableExist("content","type"):
+            self.createContentTypeColumn()
         for xfile in etpData['content']:
             contenttype = etpData['content'][xfile]
             if type(xfile) is unicode:
                 xfile = xfile.encode('raw_unicode_escape')
-            try:
-                self.cursor.execute(
-                    'INSERT into content VALUES '
-                    '(?,?,?)'
-                    , (	idpackage,
-                            xfile,
-                            contenttype,
-                            )
-                )
-            except:
-                self.createContentTypeColumn()
-                self.cursor.execute(
-                    'INSERT into content VALUES '
-                    '(?,?,?)'
-                    , ( idpackage,
-                            xfile,
-                            contenttype,
-                            )
-                )
+            self.cursor.execute(
+                'INSERT into content VALUES '
+                '(?,?,?)'
+                , (	idpackage,
+                        xfile,
+                        contenttype,
+                        )
+            )
 
         etpData['counter'] = int(etpData['counter']) # cast to integer
         if etpData['counter'] != -1 and not (etpData['injected']):
@@ -983,45 +974,25 @@ class etpDatabase(TextInterface):
                     raise
 
         # on disk size
-        try:
-            self.cursor.execute(
-            'INSERT into sizes VALUES '
-            '(?,?)'
-            , (	idpackage,
-                etpData['disksize'],
-                )
+        if not self.doesTableExist("sizes"):
+            self.createSizesTable()
+        self.cursor.execute(
+        'INSERT into sizes VALUES '
+        '(?,?)'
+        , (	idpackage,
+            etpData['disksize'],
             )
-        except:
-            # create sizes table, temp hack
-            if not self.doesTableExist("sizes"):
-                self.createSizesTable()
-            else:
-                raise
-            self.cursor.execute(
-            'INSERT into sizes VALUES '
-            '(?,?)'
-            , (	idpackage,
-                etpData['disksize'],
-                )
-            )
+        )
 
-        # trigger blob
-        try:
-            self.cursor.execute(
-            'INSERT into triggers VALUES '
-            '(?,?)'
-            , (	idpackage,
-                buffer(etpData['trigger']),
-            ))
-        except:
-            # create trigggers table, temp hack
+        if not self.doesTableExist("triggers"):
             self.createTriggerTable()
-            self.cursor.execute(
-            'INSERT into triggers VALUES '
-            '(?,?)'
-            , (	idpackage,
-                buffer(etpData['trigger']),
-            ))
+        # trigger blob
+        self.cursor.execute(
+        'INSERT into triggers VALUES '
+        '(?,?)'
+        , (	idpackage,
+            buffer(etpData['trigger']),
+        ))
 
         # eclasses table
         for var in etpData['eclasses']:
@@ -1062,20 +1033,7 @@ class etpDatabase(TextInterface):
             )
 
         # dependencies, a list
-        for dep in etpData['dependencies']:
-
-            iddep = self.isDependencyAvailable(dep)
-            if (iddep == -1):
-                # create category
-                iddep = self.addDependency(dep)
-
-            self.cursor.execute(
-                'INSERT into dependencies VALUES '
-                '(?,?)'
-                , (	idpackage,
-                        iddep,
-                        )
-            )
+        self.insertDependencies(idpackage, etpData['dependencies'])
 
         # provide
         for atom in etpData['provide']:
@@ -1627,6 +1585,28 @@ class etpDatabase(TextInterface):
         self.checkReadOnly()
         self.cursor.execute('UPDATE baseinfo SET slot = (?) WHERE idpackage = (?)', (slot,idpackage,))
         self.commitChanges()
+
+    def removeDependencies(self, idpackage):
+        self.checkReadOnly()
+        self.cursor.execute("DELETE FROM dependencies WHERE idpackage = (?)", (idpackage,))
+        self.commitChanges()
+
+    def insertDependencies(self, idpackage, deplist):
+        self.checkReadOnly()
+        for dep in deplist:
+
+            iddep = self.isDependencyAvailable(dep)
+            if (iddep == -1):
+                # create category
+                iddep = self.addDependency(dep)
+
+            self.cursor.execute(
+                'INSERT into dependencies VALUES '
+                '(?,?)'
+                , (	idpackage,
+                        iddep,
+                        )
+            )
 
     def insertCounter(self, idpackage, counter):
         self.checkReadOnly()
@@ -2550,14 +2530,11 @@ class etpDatabase(TextInterface):
             searchkeywords.append(contentType)
             contentstring = ' and type = (?)'
 
-        try:
-            self.cursor.execute('SELECT file'+extstring+' FROM content WHERE idpackage = (?) '+contentstring, searchkeywords)
-        except:
-            if extended:
-                self.createContentTypeColumn()
-                self.cursor.execute('SELECT file'+extstring+' FROM content WHERE idpackage = (?) '+contentstring, searchkeywords)
-            else:
-                raise
+        if not self.doesColumnInTableExist("content","type"):
+            self.createContentTypeColumn()
+
+        self.cursor.execute('SELECT file'+extstring+' FROM content WHERE idpackage = (?) '+contentstring, searchkeywords)
+
         if extended:
             fl = self.cursor.fetchall()
         else:

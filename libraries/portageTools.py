@@ -385,13 +385,11 @@ def paren_choose(dep_list):
                 # no matches, transform to string and append, so reagent will fail
                 newlist.append(str(dep_list[idx+1]))
             else:
-                for x in item:
-                    newlist.append(x)
+                newlist += item
             do_skip = True
         elif isinstance(item, list): # and
             item = dep_and_select(item)
-            for x in item:
-                newlist.append(x)
+            newlist += item
         else:
             newlist.append(item)
 
@@ -413,12 +411,10 @@ def dep_and_select(and_list):
             if not x:
                 x = str(and_list[idx+1])
             else:
-                for y in x:
-                    newlist.append(y)
+                newlist += x
         elif isinstance(x, list):
             x = dep_and_select(x)
-            for y in x:
-                newlist.append(y)
+            newlist += x
         else:
             newlist.append(x)
 

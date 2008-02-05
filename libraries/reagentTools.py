@@ -20,6 +20,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 import shutil
+import time
 from entropyConstants import *
 from serverConstants import *
 from outputTools import *
@@ -392,10 +393,16 @@ def database(options):
     from entropy import FtpInterface
 
     databaseRequestNoAsk = False
+    databaseRequestJustScan = False
+    databaseRequestNoChecksum = False
     _options = []
     for opt in options:
         if opt.startswith("--noask"):
             databaseRequestNoAsk = True
+        elif opt.startswith("--justscan"):
+            databaseRequestJustScan = True
+        elif opt.startswith("--nochecksum"):
+            databaseRequestNoChecksum = True
         else:
             _options.append(opt)
     options = _options
@@ -1039,6 +1046,77 @@ def database(options):
 
         dbconn.closeDB()
         return 0
+
+    # FIXME: this function does not update metadata inside tbz2
+    # Please implement this !!!
+    elif (options[0] == "depsregen"):
+        # first of all, sync and lock database
+        if not databaseRequestJustScan:
+            print_info(green(" * ")+red("Remember to flush all the pending uploads. It's always better having a fully synchronized system."))
+            time.sleep(5)
+            dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+        else:
+            dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+        print_info(green(" * ")+red("Starting to regenerate package dependencies in repository"))
+        idpackages = dbconn.listAllIdpackages()
+        maxcount = str(len(idpackages))
+        count = 0
+        stats = {}
+        stats['updated'] = 0
+        stats['not_found'] = 0
+        stats['bad_digest'] = 0
+        for idpackage in idpackages:
+            count += 1
+            atom = dbconn.retrieveAtom(idpackage)
+            branch = dbconn.retrieveBranch(idpackage)
+            download = dbconn.retrieveDownloadURL(idpackage)
+            checksum = dbconn.retrieveDigest(idpackage)
+            # start scanning
+            countstring = green(" * ")+red("(")+blue(str(count))+"/"+darkgreen(maxcount)+red(") ")+red("[")+blue(branch)+red("] ")
+            print_info(countstring+red("Scanning ")+brown(atom), back = True)
+            download = os.path.join(etpConst['entropyworkdir'],download)
+            download_upload = os.path.join(etpConst['packagessuploaddir'],branch)
+            download_upload = os.path.join(download_upload,os.path.basename(download))
+            if not os.path.isfile(download) and not os.path.isfile(download_upload):
+                print_warning(countstring+red("  Package Error:"))
+                print_warning(countstring+"    "+blue(download)+" not found!")
+                print_warning(countstring+"    "+blue(download_upload)+" not found!")
+                stats['not_found'] += 1
+                continue
+            if os.path.isfile(download_upload):
+                download = download_upload
+            # verify checksum before starting
+            if not databaseRequestNoChecksum:
+                print_info(countstring+red("Verifying checksum ")+brown(atom), back = True)
+                status = Entropy.entropyTools.compareMd5(download,checksum)
+                if not status:
+                    print_warning(countstring+red("  Checksum Error:"))
+                    print_warning(countstring+"    "+blue(download)+" is corrupted!")
+                    stats['bad_digest'] += 1
+                    continue
+            # rescan package
+            metadata = Entropy.entropyTools.extractPkgData(download, silent = True)
+            db_deps = dbconn.retrieveDependencies(idpackage)
+            found_deps = set([unicode(x) for x in metadata['dependencies']])
+            del metadata
+            if db_deps != found_deps:
+                if databaseRequestJustScan:
+                    # show difference
+                    print_warning(countstring+red("  Dependencies difference for ")+brown(atom)+(":"))
+                    print_warning(countstring+"    repository: "+str(db_deps))
+                    print_warning(countstring+"    scanned: "+str(found_deps))
+                else:
+                    stats['updated'] += 1
+                    print_info(countstring+red("  Updating dependencies for ")+brown(atom))
+                    dbconn.removeDependencies(idpackage)
+                    dbconn.insertDependencies(idpackage, found_deps)
+
+        # done !
+        print_info(blue(" *  Statistics:"))
+        print_info(brown("     Number of checked packages:\t\t")+maxcount)
+        print_info(green("     Number of updated packages:\t\t")+str(stats['updated']))
+        print_info(red("     Number of broken packages:\t\t")+str(stats['bad_digest']))
+        print_info(red("     Number of not found packages:\t\t")+str(stats['not_found']))
 
     # query tools
     elif (options[0] == "query"):
