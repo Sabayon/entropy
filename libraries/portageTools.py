@@ -381,11 +381,12 @@ def paren_choose(dep_list):
         item = dep_list[idx]
         if item == "||": # or
             item = dep_or_select(dep_list[idx+1]) # must be a list
-            if item == None:
+            if not item:
                 # no matches, transform to string and append, so reagent will fail
                 newlist.append(str(dep_list[idx+1]))
             else:
-                newlist.append(item)
+                for x in item:
+                    newlist.append(x)
             do_skip = True
         elif isinstance(item, list): # and
             item = dep_and_select(item)
@@ -409,9 +410,11 @@ def dep_and_select(and_list):
         if x == "||":
             x = dep_or_select(and_list[idx+1])
             do_skip = True
-            if x == None:
+            if not x:
                 x = str(and_list[idx+1])
-            newlist.append(x)
+            else:
+                for y in x:
+                    newlist.append(y)
         elif isinstance(x, list):
             x = dep_and_select(x)
             for y in x:
@@ -438,9 +441,14 @@ def dep_or_select(or_list):
                 if match == None:
                     # skip, can't match all
                     continue
-        match = getInstalledAtom(x)
-        if match != None:
+            # found
             return x
+
+        for y in x:
+            match = getInstalledAtom(y)
+            if match != None:
+                return [y]
+    return []
 
 def paren_license_choose(dep_list):
 
