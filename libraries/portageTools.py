@@ -388,7 +388,7 @@ def paren_choose(dep_list):
                 newlist.append(item)
             do_skip = True
         else:
-            newlist.append(x)
+            newlist.append(item)
 
     return newlist
 
