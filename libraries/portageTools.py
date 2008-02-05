@@ -444,6 +444,8 @@ def dep_or_select(or_list):
                     continue
             # found
             return x
+        else:
+            x = [x]
 
         for y in x:
             match = getInstalledAtom(y)
