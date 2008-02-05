@@ -379,7 +379,7 @@ def paren_choose(dep_list):
             continue
 
         item = dep_list[idx]
-        if item == "||":
+        if item == "||": # or
             item = dep_or_select(dep_list[idx+1]) # must be a list
             if item == None:
                 # no matches, transform to string and append, so reagent will fail
@@ -387,8 +387,37 @@ def paren_choose(dep_list):
             else:
                 newlist.append(item)
             do_skip = True
+        elif isinstance(item, list): # and
+            item = dep_and_select(item)
+            for x in item:
+                newlist.append(x)
         else:
             newlist.append(item)
+
+    return newlist
+
+def dep_and_select(and_list):
+    do_skip = False
+    newlist = []
+    for idx in range(len(and_list)):
+
+        if do_skip:
+            do_skip = False
+            continue
+
+        x = and_list[idx]
+        if x == "||":
+            x = dep_or_select(and_list[idx+1])
+            do_skip = True
+            if x == None:
+                x = str(and_list[idx+1])
+            newlist.append(x)
+        elif isinstance(x, list):
+            x = dep_and_select(x)
+            for y in x:
+                newlist.append(y)
+        else:
+            newlist.append(x)
 
     return newlist
 
@@ -399,9 +428,16 @@ def dep_or_select(or_list):
             do_skip = False
             continue
         x = or_list[idx]
-        if x == "||":
+        if x == "||": # or
             x = dep_or_select(or_list[idx+1])
             do_skip = True
+        elif isinstance(x, list): # and
+            x = dep_and_select(x)
+            for y in x: # need to match all
+                match = getInstalledAtom(y)
+                if match == None:
+                    # skip, can't match all
+                    continue
         match = getInstalledAtom(x)
         if match != None:
             return x
