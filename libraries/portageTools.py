@@ -426,7 +426,6 @@ def dep_and_select(and_list):
 
 def dep_or_select(or_list):
     do_skip = False
-    is_or = True
     for idx in range(len(or_list)):
         if do_skip:
             do_skip = False
@@ -435,7 +434,7 @@ def dep_or_select(or_list):
         if x == "||": # or
             x = dep_or_select(or_list[idx+1])
             do_skip = True
-        elif isinstance(x, list) and not is_or: # and
+        elif isinstance(x, list): # and
             x = dep_and_select(x)
             for y in x: # need to match all
                 match = getInstalledAtom(y)
@@ -451,8 +450,6 @@ def dep_or_select(or_list):
             match = getInstalledAtom(y)
             if match != None:
                 return [y]
-
-        is_or = False
 
     return []
 
