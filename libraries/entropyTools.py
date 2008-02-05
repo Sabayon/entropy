@@ -1850,7 +1850,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package content..."),back = True)
     # dbCONTENTS
     data['content'] = {}
-    try:
+    if os.path.isfile(tbz2TmpDir+dbCONTENTS):
         f = open(tbz2TmpDir+dbCONTENTS,"r")
         content = f.readlines()
         f.close()
@@ -1884,32 +1884,32 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
         for i in outcontent:
             data['content'][i[0]] = i[1]
  
-    except IOError:
-        if inject: # CONTENTS is not generated when a package is emerged with portage and the option -B
-            # we have to unpack the tbz2 and generate content dict
-            import shutil
-            mytempdir = etpConst['packagestmpdir']+"/"+os.path.basename(filepath)+".inject"
-            if os.path.isdir(mytempdir):
-                shutil.rmtree(mytempdir)
-            if not os.path.isdir(mytempdir):
-                os.makedirs(mytempdir)
-            uncompressTarBz2(filepath, extractPath = mytempdir, catchEmpty = True)
+    else:
+        # CONTENTS is not generated when a package is emerged with portage and the option -B
+        # we have to unpack the tbz2 and generate content dict
+        import shutil
+        mytempdir = etpConst['packagestmpdir']+"/"+os.path.basename(filepath)+".inject"
+        if os.path.isdir(mytempdir):
+            shutil.rmtree(mytempdir)
+        if not os.path.isdir(mytempdir):
+            os.makedirs(mytempdir)
+        uncompressTarBz2(filepath, extractPath = mytempdir, catchEmpty = True)
 
-            for currentdir, subdirs, files in os.walk(mytempdir):
-                data['content'][currentdir[len(mytempdir):]] = "dir"
-                for item in files:
-                    item = currentdir+"/"+item
-                    if os.path.islink(item):
-                        data['content'][item[len(mytempdir):]] = "sym"
-                    else:
-                        data['content'][item[len(mytempdir):]] = "obj"
+        for currentdir, subdirs, files in os.walk(mytempdir):
+            data['content'][currentdir[len(mytempdir):]] = "dir"
+            for item in files:
+                item = currentdir+"/"+item
+                if os.path.islink(item):
+                    data['content'][item[len(mytempdir):]] = "sym"
+                else:
+                    data['content'][item[len(mytempdir):]] = "obj"
 
-            # now remove
-            shutil.rmtree(mytempdir,True)
-            try:
-                os.rmdir(mytempdir)
-            except:
-                pass
+        # now remove
+        shutil.rmtree(mytempdir,True)
+        try:
+            os.rmdir(mytempdir)
+        except:
+            pass
 
     # files size on disk
     if (data['content']):
