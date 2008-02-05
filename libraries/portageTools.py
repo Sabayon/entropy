@@ -380,10 +380,14 @@ def paren_choose(dep_list):
 
         item = dep_list[idx]
         if item == "||": # or
-            item = dep_or_select(dep_list[idx+1]) # must be a list
+            next_item = dep_list[idx+1]
+            if not next_item: # || ( asd? ( atom ) dsa? ( atom ) ) => [] if use asd and dsa are disabled
+                do_skip = True
+                continue
+            item = dep_or_select(next_item) # must be a list
             if not item:
                 # no matches, transform to string and append, so reagent will fail
-                newlist.append(str(dep_list[idx+1]))
+                newlist.append(str(next_item))
             else:
                 newlist += item
             do_skip = True
