@@ -608,7 +608,7 @@ class EquoInterface(TextInterface):
                 brokenlibs.difference_update(libsfound)
 
         if reagent:
-            return packagesMatched,plain_brokenexecs,-1
+            return packagesMatched,plain_brokenexecs,0
         return packagesMatched,brokenlibs,0
 
     def move_to_branch(self, branch, pretend = False):
