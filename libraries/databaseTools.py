@@ -3516,7 +3516,6 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def createTreeupdatesactionsBranchColumn(self):
-        self.checkReadOnly()
         try: # if database disk image is malformed, won't raise exception here
             self.cursor.execute('ALTER TABLE treeupdatesactions ADD COLUMN branch VARCHAR;')
             self.cursor.execute('UPDATE treeupdatesactions SET branch = (?)', (str(etpConst['branch']),))

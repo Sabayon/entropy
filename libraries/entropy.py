@@ -6667,6 +6667,7 @@ class SecurityInterface:
         # remove temp stuff
         self.__cleanup_garbage()
 
+        # FIXME: this doesn't seem to work?
         if self.advisories_changed:
             advtext = darkgreen("Security Advisories: updated successfully")
         else:
@@ -6676,7 +6677,7 @@ class SecurityInterface:
                                 advtext,
                                 importance = 2,
                                 type = "info",
-                                header = red(" @@ ")
+                                header = red("@@ ")
                             )
 
         return 0
