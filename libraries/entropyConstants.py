@@ -353,7 +353,8 @@ etpCache = {
     'world': 'resume_world', # resume cache (world)
     'world_update': 'world_cache',
     'world_available': 'available_cache',
-    'check_package_update': 'package_update'
+    'check_package_update': 'package_update',
+    'advisories': 'advisories_cache'
 }
 
 # byte sizes of disk caches

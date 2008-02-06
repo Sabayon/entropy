@@ -19,7 +19,8 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
-
+from entropyConstants import *
+from outputTools import *
 from entropy import EquoInterface
 Equo = EquoInterface()
 
@@ -29,15 +30,54 @@ def security(options):
     if len(options) < 1:
         return -10
 
+    only_affected = False
+    only_unaffected = False
+    for opt in options:
+        if opt == "--affected":
+            only_affected = True
+        elif opt == "--unaffected":
+            only_unaffected = True
+
     if options[0] == "update":
         rc = Equo.Security.fetch_advisories()
-    #elif options[0] == "XXXX":
-    #    XXXXX
+    elif options[0] == "list":
+        rc = list_advisories(only_affected = only_affected, only_unaffected = only_unaffected)
     else:
         rc = -10
 
     return rc
 
 
+def list_advisories(only_affected = False, only_unaffected = False):
+    adv_metadata = Equo.Security.get_advisories_metadata()
+    if not adv_metadata:
+        print_info(brown(" :: ")+darkgreen("No advisories available. Try running the 'update' tool."))
+        return 0
+    adv_keys = adv_metadata.keys()
+    adv_keys.sort()
+    for key in adv_keys:
+        affected = Equo.Security.is_affected(key)
+        if only_affected and not affected:
+            continue
+        if only_unaffected and affected:
+            continue
+        if affected:
+            affection_string = red("A")
+        else:
+            affection_string = green("N")
+        if adv_metadata[key]['affected']:
+            affected_data = adv_metadata[key]['affected'].keys()
+            if affected_data:
+                for a_key in affected_data:
+                    vulnerables = ', '.join(adv_metadata[key]['affected'][a_key][0]['vul_vers'])
+                    description = "[GLSA:%s:%s][%s] %s: %s" % (
+                                        darkgreen(key),
+                                        affection_string,
+                                        brown(vulnerables),
+                                        darkred(a_key),
+                                        blue(adv_metadata[key]['title'])
+                    )
+                    print_info(description)
+    return 0
 
 

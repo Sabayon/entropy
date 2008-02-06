@@ -1,5 +1,7 @@
 TODO list:
   - glsa utility (*)
+    - tool that prints glsa information
+    - tool that installs all the security updates
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
@@ -9,6 +11,7 @@ TODO list:
   - separate packages by license restrictions
   - handle multiuser on entropy server using equo interface
   - complete reagent spm interface
+  - GLSAs for overlays?
 
   Spritz:
     - handle config files updates interface (*)

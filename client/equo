@@ -55,6 +55,10 @@ def print_help():
 
     print_info(" \t"+blue("security")+brown("\t\t security infrastructure tools"))
     print_info(" \t\t"+darkgreen("update")+red("\t\t\t download the latest Security Advisories"))
+    print_info(" \t\t"+darkgreen("list")+red("\t\t\t list all the available Security Advisories"))
+    print_info(" \t\t\t"+red("--affected")+"\t list only affected")
+    print_info(" \t\t\t"+red("--unaffected")+"\t list only unaffected")
+    print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
 
     print_info(" \t"+blue("install")+brown("\t\t install one or more packages or .tbz2"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
@@ -78,7 +82,7 @@ def print_help():
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
     print_info(" \t"+blue("libtest")+brown("\t\t look for missing libraries"))
-    print_info(" \t\t"+red("--listfiles")+"\t\t\t print broken files to stdout")
+    print_info(" \t\t"+red("--listfiles")+"\t\t print broken files to stdout")
     print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")

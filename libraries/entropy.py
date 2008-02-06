@@ -2209,6 +2209,8 @@ class PackageInterface:
         self.Entropy.dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
         check_package_update_cache.clear()
         self.Entropy.dumpTools.dumpobj(etpCache['check_package_update'],{})
+        # remove security advisories cache
+        self.Entropy.dumpTools.dumpobj(etpCache['advisories'],{})
 
         self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package: "+str(self.infoDict['removeatom']))
 
@@ -2449,6 +2451,8 @@ class PackageInterface:
         self.Entropy.dumpTools.dumpobj(etpCache['generateDependsTree'],{})
         check_package_update_cache.clear()
         self.Entropy.dumpTools.dumpobj(etpCache['check_package_update'],{})
+        # clear advisories cache
+        self.Entropy.dumpTools.dumpobj(etpCache['advisories'],{})
 
         self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing package: "+str(self.infoDict['atom']))
 
@@ -6142,11 +6146,22 @@ class ErrorReportInterface:
 
 
 '''
-   I wrote this after having drunk a Red Bull,
-   so I think the code will look nice and sharp
    ~~ GIVES YOU WINGS ~~
 '''
 class SecurityInterface:
+
+    # thanks to Gentoo "gentoolkit" package, License below:
+
+    # This program is licensed under the GPL, version 2
+
+    # WARNING: this code is only tested by a few people and should NOT be used
+    # on production systems at this stage. There are possible security holes and probably
+    # bugs in this code. If you test it please report ANY success or failure to
+    # me (genone@gentoo.org).
+
+    # The following planned features are currently on hold:
+    # - getting GLSAs from http/ftp servers (not really useful without the fixed ebuilds)
+    # - GPG signing/verification (until key policy is clear)
 
     def __init__(self, EquoInstance):
         self.Entropy = EquoInstance
@@ -6157,6 +6172,23 @@ class SecurityInterface:
         self.lastfetch = None
         self.previous_checksum = "0"
         self.advisories_changed = None
+        self.adv_metadata = None
+        self.affected_atoms = None
+
+        from xml.dom import minidom
+        self.minidom = minidom
+
+        self.op_mappings = {
+                            "le": "<=",
+                            "lt": "<",
+                            "eq": "=",
+                            "gt": ">",
+                            "ge": ">=",
+                            "rge": ">=~",
+                            "rle": "<=~",
+                            "rgt": " >~",
+                            "rlt": " <~"
+        }
 
         self.unpackdir = os.path.join(etpConst['entropyunpackdir'],"security-"+str(self.Entropy.entropyTools.getRandomNumber()))
         self.security_url = etpConst['securityurl']
@@ -6255,6 +6287,255 @@ class SecurityInterface:
 
     def __cleanup_garbage(self):
         shutil.rmtree(self.unpackdir,True)
+
+    def clear(self, xcache = False):
+        self.adv_metadata = None
+        if xcache:
+            self.Entropy.dumpTools.dumpobj(etpCache['advisories'], {})
+
+    def __get_advisories_cache(self):
+
+        if self.adv_metadata != None:
+            return self.adv_metadata
+
+        if self.Entropy.xcache:
+            adv_cache = self.Entropy.dumpTools.loadobj(etpCache['advisories'])
+            dir_checksum = self.Entropy.entropyTools.md5sum_directory(etpConst['securitydir'])
+            try:
+                if adv_cache['systemroot'] == etpConst['systemroot'] and \
+                    adv_cache['branch'] == etpConst['branch'] and \
+                    adv_cache['data'] and \
+                    adv_cache['checksum'] == dir_checksum:
+                        self.adv_metadata = adv_cache['data'].copy()
+                        return adv_cache['data']
+            except:
+                try:
+                    self.Entropy.dumpTools.dumpobj(etpCache['advisories'], {})
+                except IOError:
+                    pass
+
+    def __set_advisories_cache(self, adv_metadata):
+        if self.Entropy.xcache:
+            dir_checksum = self.Entropy.entropyTools.md5sum_directory(etpConst['securitydir'])
+            adv_cache = {}
+            adv_cache['branch'] = etpConst['branch']
+            adv_cache['data'] = adv_metadata
+            adv_cache['checksum'] = dir_checksum
+            adv_cache['systemroot'] = etpConst['systemroot']
+            try:
+                adv_cache = self.Entropy.dumpTools.dumpobj(etpCache['advisories'],adv_cache)
+            except IOError:
+                pass
+
+    def get_advisories_list(self):
+        if not self.check_advisories_availability():
+            return []
+        xmls = os.listdir(etpConst['securitydir'])
+        xmls = [x for x in xmls if x.endswith(".xml") and x.startswith("glsa-")]
+        xmls.sort()
+        return xmls
+
+    def get_advisories_metadata(self):
+
+        cached = self.__get_advisories_cache()
+        if cached != None:
+            return cached
+
+        adv_metadata = {}
+        xmls = self.get_advisories_list()
+        maxlen = len(xmls)
+        count = 0
+        for xml in xmls:
+
+            count += 1
+            if not etpUi['quiet']: self.Entropy.updateProgress(":: "+str(round((float(count)/maxlen)*100,1))+"% ::", importance = 0, type = "info", back = True)
+
+            xml_metadata = None
+            exc_string = ""
+            exc_err = ""
+            try:
+                xml_metadata = self.get_xml_metadata(xml)
+            except KeyboardInterrupt:
+                return {}
+            except Exception, e:
+                exc_string = str(Exception)
+                exc_err = str(e)
+            if xml_metadata == None:
+                more_info = ""
+                if exc_string:
+                    more_info = " Error: %s: %s" % (exc_string,exc_err,)
+                self.Entropy.updateProgress(
+                                        blue("Warning: ")+bold(xml)+blue(" advisory is broken !") + more_info,
+                                        importance = 1,
+                                        type = "warning",
+                                        header = red(" !!! ")
+                                    )
+                continue
+            elif not xml_metadata:
+                continue
+            adv_metadata.update(xml_metadata)
+
+        adv_metadata = self.__filter_advisories(adv_metadata)
+        self.__set_advisories_cache(adv_metadata)
+        self.adv_metadata = adv_metadata.copy()
+        return adv_metadata
+
+    # this function filters advisories for packages that aren't
+    # in the repositories. Note: only keys will be matched
+    def __filter_advisories(self, adv_metadata):
+        keys = adv_metadata.keys()
+        for key in keys:
+            valid = True
+            if adv_metadata[key]['affected']:
+                affected = adv_metadata[key]['affected']
+                affected_keys = affected.keys()
+                valid = False
+                for a_key in affected_keys:
+                    match = self.Entropy.atomMatch(a_key)
+                    if match[0] != -1:
+                        # it's in tree, it's valid
+                        valid = True
+                        break
+                if not valid:
+                    del adv_metadata[key]
+
+        return adv_metadata
+
+    def is_affected(self, adv_key):
+        adv_data = self.get_advisories_metadata()
+        if adv_key not in adv_data:
+            return False
+        mydata = adv_data[adv_key].copy()
+        del adv_data
+        # get packages
+        if not mydata['affected']:
+            return False
+        for key in mydata['affected']:
+            vul_atoms = mydata['affected'][key][0]['vul_atoms']
+            if not vul_atoms:
+                return False
+            for atom in vul_atoms:
+                match = self.Entropy.clientDbconn.atomMatch(atom)
+                if match[0] != -1:
+                    if self.affected_atoms == None:
+                        self.affected_atoms = set()
+                    self.affected_atoms.add(atom)
+                    return True
+        return False
+
+    def get_affected_atoms(self):
+        adv_data = self.get_advisories_metadata()
+        adv_data_keys = adv_data.keys()
+        del adv_data
+        for key in adv_data_keys:
+            self.is_affected(key)
+        return self.affected_atoms
+
+    def get_xml_metadata(self, xmlfilename):
+        xml_data = {}
+        xmlfile = os.path.join(etpConst['securitydir'],xmlfilename)
+        try:
+            xmldoc = self.minidom.parse(xmlfile)
+        except:
+            return None
+
+        # get base data
+        glsa_tree = xmldoc.getElementsByTagName("glsa")[0]
+        glsa_product = glsa_tree.getElementsByTagName("product")[0]
+        if glsa_product.getAttribute("type") != "ebuild":
+            return {}
+
+        glsa_id = glsa_tree.getAttribute("id")
+        glsa_title = glsa_tree.getElementsByTagName("title")[0].firstChild.data
+        glsa_synopsis = glsa_tree.getElementsByTagName("synopsis")[0].firstChild.data
+        glsa_announced = glsa_tree.getElementsByTagName("announced")[0].firstChild.data
+        glsa_revised = glsa_tree.getElementsByTagName("revised")[0].firstChild.data
+
+        xml_data['filename'] = xmlfilename
+        xml_data['title'] = glsa_title.strip()
+        xml_data['synopsis'] = glsa_synopsis.strip()
+        xml_data['announced'] = glsa_announced.strip()
+        xml_data['revised'] = glsa_revised.strip()
+        xml_data['bugs'] = [x.firstChild.data.strip() for x in glsa_tree.getElementsByTagName("bug")]
+        xml_data['access'] = ""
+        try:
+            xml_data['access'] = glsa_tree.getElementsByTagName("access")[0].firstChild.data.strip()
+        except IndexError:
+            pass
+
+        # references
+        references = glsa_tree.getElementsByTagName("references")[0]
+        xml_data['references'] = [x.getAttribute("link").strip() for x in references.getElementsByTagName("uri")]
+
+        xml_data['description'] = glsa_tree.getElementsByTagName("description")[0].firstChild.data.strip()
+        xml_data['workaround'] = glsa_tree.getElementsByTagName("workaround")[0].firstChild.data.strip()
+        xml_data['resolution'] = glsa_tree.getElementsByTagName("resolution")[0].firstChild.data.strip()
+        xml_data['impact'] = glsa_tree.getElementsByTagName("impact")[0].firstChild.data.strip()
+        xml_data['impacttype'] = glsa_tree.getElementsByTagName("impact")[0].getAttribute("type").strip()
+        xml_data['background'] = ""
+        try:
+            xml_data['background'] = glsa_tree.getElementsByTagName("background")[0].firstChild.data.strip()
+        except IndexError:
+            pass
+
+        # affection information
+        affected = glsa_tree.getElementsByTagName("affected")[0]
+        affected_packages = {}
+        # we will then filter affected_packages using repositories information
+        # if not affected_packages: advisory will be dropped
+        for p in affected.getElementsByTagName("package"):
+            name = p.getAttribute("name")
+            if not affected_packages.has_key(name):
+                affected_packages[name] = []
+
+            pdata = {}
+            pdata["arch"] = p.getAttribute("arch").strip()
+            pdata["auto"] = (p.getAttribute("auto") == "yes")
+            pdata["vul_vers"] = [self.__make_version(v) for v in p.getElementsByTagName("vulnerable")]
+            pdata["unaff_vers"] = [self.__make_version(v) for v in p.getElementsByTagName("unaffected")]
+            pdata["vul_atoms"] = [self.__make_atom(name, v) for v in p.getElementsByTagName("vulnerable")]
+            pdata["unaff_atoms"] = [self.__make_atom(name, v) for v in p.getElementsByTagName("unaffected")]
+            affected_packages[name].append(pdata)
+        xml_data['affected'] = affected_packages.copy()
+
+        return {glsa_id: xml_data}
+
+    def __make_version(self, vnode):
+        """
+        creates from the information in the I{versionNode} a 
+        version string (format <op><version>).
+
+        @type	vnode: xml.dom.Node
+        @param	vnode: a <vulnerable> or <unaffected> Node that
+                                                    contains the version information for this atom
+        @rtype:		String
+        @return:	the version string
+        """
+        return self.op_mappings[vnode.getAttribute("range")] + vnode.firstChild.data.strip()
+
+    def __make_atom(self, pkgname, vnode):
+        """
+        creates from the given package name and information in the 
+        I{versionNode} a (syntactical) valid portage atom.
+
+        @type	pkgname: String
+        @param	pkgname: the name of the package for this atom
+        @type	vnode: xml.dom.Node
+        @param	vnode: a <vulnerable> or <unaffected> Node that
+                                                    contains the version information for this atom
+        @rtype:		String
+        @return:	the portage atom
+        """
+	return str(self.op_mappings[vnode.getAttribute("range")] + pkgname + "-" + vnode.firstChild.data.strip())
+
+    def check_advisories_availability(self):
+        if not os.path.lexists(etpConst['securitydir']):
+            return False
+        if not os.path.isdir(etpConst['securitydir']):
+            return False
+        else:
+            return True
+        return False
 
     def fetch_advisories(self):
 
