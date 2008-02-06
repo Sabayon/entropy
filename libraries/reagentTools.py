@@ -357,7 +357,7 @@ def dependsTableInitialize(dbconn = None, runActivator = True):
 def librariesTest(listfiles = False):
 
     # load db
-    dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+    dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
 
     packagesMatched, brokenlibs, status = Entropy.libraries_test(dbconn = dbconn, reagent = True)
     if status != 0:
