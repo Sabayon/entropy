@@ -565,11 +565,10 @@ class EquoInterface(TextInterface):
                                             count = (count,total),
                                             header = "  "
                                         )
+                    if reagent:
+                        plain_brokenexecs.add(etpConst['systemroot']+executable)
                 brokenlibs.update(mylibs)
-                if reagent:
-                    plain_brokenexecs.add(etpConst['systemroot']+executable)
-                else:
-                    brokenexecs[executable] = mylibs.copy()
+                brokenexecs[executable] = mylibs.copy()
         del executables
 
         packagesMatched = set()

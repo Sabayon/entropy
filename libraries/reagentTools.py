@@ -380,6 +380,7 @@ def librariesTest(listfiles = False):
     if not os.access(qfile_exec,os.X_OK):
         print_error(red(" * ")+blue("You need portage-utils installed !"))
         return 1
+    print brokenexecs
     for brokenexec in brokenexecs:
         print_info(red("    : ")+darkgreen(brokenexec))
         os.system(qfile_exec+qfile_opts+" "+brokenexec)
