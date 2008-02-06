@@ -1128,6 +1128,11 @@ def database(options):
     # Please implement this !!!
     # it would just have to repackage the bins
     elif (options[0] == "contentregen"):
+
+        myatoms = []
+        for x in options[1:]:
+            myatoms.append(x)
+
         # first of all, sync and lock database
         if not databaseRequestJustScan:
             print_info(green(" * ")+red("Remember to flush all the pending uploads. It's always better having a fully synchronized system."))
@@ -1137,7 +1142,16 @@ def database(options):
         else:
             dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
             print_info(green(" * ")+red("Starting to scan and compare package content metadata in repository"))
-        idpackages = dbconn.listAllIdpackages()
+        if not myatoms:
+            idpackages = dbconn.listAllIdpackages()
+        else:
+            idpackages = set()
+            for atom in myatoms:
+                match = dbconn.atomMatch(atom)
+                if match[0] == -1:
+                    print_warning(green(" * ")+red("ATTENTION: no match for: ")+bold(atom))
+                    continue
+                idpackages.add(match[0])
         maxcount = str(len(idpackages))
         count = 0
         stats = {}
@@ -1175,9 +1189,9 @@ def database(options):
                     continue
             # rescan package
             metadata = Entropy.entropyTools.extractPkgData(download, silent = True)
-            db_content = dbconn.retrieveContent(idpackage)
+            db_content = set([x.encode('raw_unicode_escape') for x in dbconn.retrieveContent(idpackage)])
             found_content = metadata['content']
-            test_content = set([x.encode('raw_unicode_escape') for x in metadata['content']])
+            test_content = set([x for x in metadata['content']])
             del metadata
             if db_content != test_content:
                 if databaseRequestJustScan:
