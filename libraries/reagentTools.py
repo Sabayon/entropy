@@ -356,6 +356,8 @@ def dependsTableInitialize(dbconn = None, runActivator = True):
 
 def librariesTest(listfiles = False):
 
+    import commands
+
     # load db
     dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
 
@@ -376,14 +378,22 @@ def librariesTest(listfiles = False):
 
     print_info(red(" @@ ")+blue("Matching libraries with Portage:"))
     qfile_exec = "/usr/bin/qfile"
-    qfile_opts = " -q "
+    qfile_opts = " -qCe "
+    packages = set()
     if not os.access(qfile_exec,os.X_OK):
         print_error(red(" * ")+blue("You need portage-utils installed !"))
         return 1
-    print brokenexecs
     for brokenexec in brokenexecs:
-        print_info(red("    : ")+darkgreen(brokenexec))
-        os.system(qfile_exec+qfile_opts+" "+brokenexec)
+        print_info(red("Scanning: ")+darkgreen(brokenexec), back = True)
+        output = commands.getoutput(qfile_exec+qfile_opts+" "+brokenexec)
+        output = output.split("\n")[0].strip()
+        if output:
+            packages.add(output)
+
+    if packages:
+        print_info(red(" * These are the matching packages: "))
+        for package in packages:
+            print package
 
     return 0
 
