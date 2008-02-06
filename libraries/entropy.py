@@ -524,6 +524,7 @@ class EquoInterface(TextInterface):
 
         brokenlibs = set()
         brokenexecs = {}
+        plain_brokenexecs = set()
         total = len(executables)
         count = 0
         for executable in executables:
@@ -565,21 +566,23 @@ class EquoInterface(TextInterface):
                                             header = "  "
                                         )
                 brokenlibs.update(mylibs)
-                brokenexecs[executable] = mylibs.copy()
+                if reagent:
+                    plain_brokenexecs.add(etpConst['systemroot']+executable)
+                else:
+                    brokenexecs[executable] = mylibs.copy()
         del executables
 
-        self.updateProgress(
-                                blue("Trying to match packages"),
-                                importance = 1,
-                                type = "info",
-                                header = red(" @@ ")
-                            )
-
-
         packagesMatched = set()
-        # now search packages that contain the found libs
 
         if not reagent:
+
+            self.updateProgress(
+                                    blue("Trying to match packages"),
+                                    importance = 1,
+                                    type = "info",
+                                    header = red(" @@ ")
+                                )
+
             # match libraries
             for repoid in etpRepositoriesOrder:
                 self.updateProgress(
@@ -606,7 +609,7 @@ class EquoInterface(TextInterface):
                 brokenlibs.difference_update(libsfound)
 
         if reagent:
-            return packagesMatched,brokenexecs,-1
+            return packagesMatched,plain_brokenexecs,-1
         return packagesMatched,brokenlibs,0
 
     def move_to_branch(self, branch, pretend = False):
