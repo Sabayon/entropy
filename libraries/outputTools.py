@@ -341,6 +341,9 @@ class TextInterface:
     # in this case, we run a separate thread
     def __TextInterface_updateText(self, data):
 
+        sys.stdout.flush()
+        sys.stderr.flush()
+
         myfunc = print_info
         if data['type'] == "warning":
             myfunc = print_warning
