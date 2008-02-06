@@ -354,6 +354,44 @@ def dependsTableInitialize(dbconn = None, runActivator = True):
         activatorTools.database(['sync'])
     return 0
 
+def librariesTest(listfiles = False):
+
+    # load db
+    dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+
+    packagesMatched, brokenlibs, status = Entropy.libraries_test(dbconn = dbconn, reagent = True)
+    if status != 0:
+        return 1
+
+    if listfiles:
+        for x in brokenlibs:
+            print x
+        return 0
+
+    if (not brokenlibs) and (not packagesMatched):
+        if (not etpUi['quiet']): nprint_info(red(" @@ ")+blue("System is healthy."))
+        return 0
+
+    atomsdata = set()
+    if (not etpUi['quiet']):
+        print_info(red(" @@ ")+blue("Libraries statistics:"))
+        if brokenlibs:
+            print_info(brown(" ## ")+red("Not matched:"))
+            for lib in brokenlibs:
+                print_info(darkred("    => ")+red(lib))
+        print_info(darkgreen(" ## ")+red("Matched:"))
+        for packagedata in packagesMatched:
+            myatom = dbconn.retrieveAtom(packagedata[0])
+            atomsdata.add((packagedata[0],packagedata[1]))
+            print_info("   "+red(packagedata[2])+" => "+brown(myatom)+" ["+red(packagedata[1])+"]")
+    else:
+        for packagedata in packagesMatched:
+            myatom = dbconn.retrieveAtom(packagedata[0])
+            atomsdata.add((packagedata[0],packagedata[1]))
+            print myatom
+
+    return 0,atomsdata
+
 def dependenciesTest():
 
     dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)

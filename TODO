@@ -1,5 +1,6 @@
 TODO list:
   - glsa utility (*)
+    - self.advisories_changed FIXME
     - tool that prints glsa information
     - tool that installs all the security updates
   - migrate server code to ServerInterface

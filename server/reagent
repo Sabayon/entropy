@@ -86,6 +86,7 @@ def print_help():
     print_info(" \t\t\t"+brown("--list")+"\t\t list packages and quit")
 
     print_info(" \t"+green("deptest")+brown("\t\t Look for unsatisfied dependencies inside database"))
+    print_info(" \t"+green("libtest")+brown("\t\t Look for broken libraries on the live system"))
     print_info(" \t"+green("depends")+brown("\t\t Regenerate depends table (plus database lock and bump)"))
     print_info(" \t\t"+red("--quiet")+"\t\t\t\t just print the dependencies list")
     print_info(" \t"+green("cleanup")+brown("\t\t to clean temporary files"))
@@ -150,6 +151,10 @@ elif (options[0] == "database"):
 # deptest tool
 elif (options[0] == "deptest"):
     rc = reagentTools.dependenciesTest()
+    exit(rc)
+
+elif (options[0] == "libtest"):
+    rc = reagentTools.librariesTest()
     exit(rc)
 
 # deptest tool

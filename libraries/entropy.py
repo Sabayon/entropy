@@ -460,7 +460,7 @@ class EquoInterface(TextInterface):
             dbconn = self.clientDbconn
 
         self.updateProgress(
-                                blue("Dependencies test"),
+                                blue("Libraries test"),
                                 importance = 2,
                                 type = "info",
                                 header = red(" @@ ")
@@ -575,10 +575,14 @@ class EquoInterface(TextInterface):
         packagesMatched = set()
         # now search packages that contain the found libs
 
+        repo_order = etpRepositoriesOrder
+        if reagent:
+            repo_order = [etpConst['officialrepositoryid']]
+
         # match libraries
-        for repoid in etpRepositoriesOrder:
+        for repoid in repo_order:
             self.updateProgress(
-                                    blue("Repository: ")+darkgreen(etpRepositories[repoid]['description'])+" ["+red(repoid)+"]",
+                                    blue("Repository id: ")+darkgreen(repoid),
                                     importance = 1,
                                     type = "info",
                                     header = red(" @@ ")
@@ -5596,6 +5600,10 @@ class TriggerInterface:
         return 0
 
     def trigger_ebuild_preremove(self):
+        stdfile = open("/dev/null","w")
+        oldstderr = sys.stderr
+        sys.stderr = stdfile
+
         portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
         myebuild = self.portageTools.getPortageAppDbPath()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
         if os.path.isfile(myebuild):
@@ -5615,9 +5623,16 @@ class TriggerInterface:
                                         importance = 0,
                                         header = red("   ##")
                                     )
+
+        sys.stderr = oldstderr
+        stdfile.close()
         return 0
 
     def trigger_ebuild_postremove(self):
+        stdfile = open("/dev/null","w")
+        oldstderr = sys.stderr
+        sys.stderr = stdfile
+
         portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
         myebuild = self.portageTools.getPortageAppDbPath()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
         if os.path.isfile(myebuild):
@@ -5637,6 +5652,8 @@ class TriggerInterface:
                                         importance = 0,
                                         header = red("   ##")
                                     )
+        sys.stderr = oldstderr
+        stdfile.close()
         return 0
 
     '''
