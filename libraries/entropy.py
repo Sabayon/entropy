@@ -6412,11 +6412,17 @@ class SecurityInterface:
             return False
         for key in mydata['affected']:
             vul_atoms = mydata['affected'][key][0]['vul_atoms']
+            unaff_atoms = mydata['affected'][key][0]['unaff_atoms']
+            unaffected_atoms = set()
+            for atom in unaff_atoms:
+                match = self.Entropy.clientDbconn.atomMatch(atom)
+                if match[0] != -1:
+                    unaffected_atoms.add(match)
             if not vul_atoms:
                 return False
             for atom in vul_atoms:
                 match = self.Entropy.clientDbconn.atomMatch(atom)
-                if match[0] != -1:
+                if match[0] != -1 and match not in unaffected_atoms:
                     if self.affected_atoms == None:
                         self.affected_atoms = set()
                     self.affected_atoms.add(atom)
