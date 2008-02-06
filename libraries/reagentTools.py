@@ -1176,14 +1176,15 @@ def database(options):
             # rescan package
             metadata = Entropy.entropyTools.extractPkgData(download, silent = True)
             db_content = dbconn.retrieveContent(idpackage)
-            found_content = set([x for x in metadata['content']])
+            found_content = metadata['content']
+            test_content = set([x.encode('raw_unicode_escape') for x in metadata['content']])
             del metadata
-            if db_content != found_content:
+            if db_content != test_content:
                 if databaseRequestJustScan:
                     # show difference
                     print_warning(countstring+red("  Content difference for ")+brown(atom)+(":"))
                     print_warning(countstring+"    repository entries: "+str(len(db_content)))
-                    print_warning(countstring+"    scanned entries: "+str(len(found_content)))
+                    print_warning(countstring+"    scanned entries: "+str(len(test_content)))
                 else:
                     stats['updated'] += 1
                     print_info(countstring+red("Updating content metadata for ")+brown(atom))
