@@ -579,35 +579,34 @@ class EquoInterface(TextInterface):
         packagesMatched = set()
         # now search packages that contain the found libs
 
-        repo_order = etpRepositoriesOrder
+        if not reagent:
+            # match libraries
+            for repoid in etpRepositoriesOrder:
+                self.updateProgress(
+                                        blue("Repository id: ")+darkgreen(repoid),
+                                        importance = 1,
+                                        type = "info",
+                                        header = red(" @@ ")
+                                    )
+                if reagent:
+                    rdbconn = dbconn
+                else:
+                    rdbconn = self.openRepositoryDatabase(repoid)
+                libsfound = set()
+                for lib in brokenlibs:
+                    packages = rdbconn.searchBelongs(file = "%"+lib, like = True, branch = etpConst['branch'])
+                    if packages:
+                        for idpackage in packages:
+                            # retrieve content and really look if library is in ldpath
+                            mycontent = rdbconn.retrieveContent(idpackage)
+                            matching_libs = [x for x in mycontent if x.endswith(lib) and (os.path.dirname(x) in ldpaths)]
+                            libsfound.add(lib)
+                            if matching_libs:
+                                packagesMatched.add((idpackage,repoid,lib))
+                brokenlibs.difference_update(libsfound)
+
         if reagent:
-            repo_order = [etpConst['officialrepositoryid']]
-
-        # match libraries
-        for repoid in repo_order:
-            self.updateProgress(
-                                    blue("Repository id: ")+darkgreen(repoid),
-                                    importance = 1,
-                                    type = "info",
-                                    header = red(" @@ ")
-                                )
-            if reagent:
-                rdbconn = dbconn
-            else:
-                rdbconn = self.openRepositoryDatabase(repoid)
-            libsfound = set()
-            for lib in brokenlibs:
-                packages = rdbconn.searchBelongs(file = "%"+lib, like = True, branch = etpConst['branch'])
-                if packages:
-                    for idpackage in packages:
-                        # retrieve content and really look if library is in ldpath
-                        mycontent = rdbconn.retrieveContent(idpackage)
-                        matching_libs = [x for x in mycontent if x.endswith(lib) and (os.path.dirname(x) in ldpaths)]
-                        libsfound.add(lib)
-                        if matching_libs:
-                            packagesMatched.add((idpackage,repoid,lib))
-            brokenlibs.difference_update(libsfound)
-
+            return packagesMatched,brokenexecs,-1
         return packagesMatched,brokenlibs,0
 
     def move_to_branch(self, branch, pretend = False):
