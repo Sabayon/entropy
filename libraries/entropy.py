@@ -5849,8 +5849,11 @@ class TriggerInterface:
     def trigger_initdeactivate(self, item, running, scheduled):
         if not etpConst['systemroot']:
             myroot = "/"
+            '''
+            causes WORLD to fall under
             if (running):
                 os.system(item+' stop --quiet')
+            '''
         else:
             myroot = etpConst['systemroot']+"/"
         if (scheduled):
