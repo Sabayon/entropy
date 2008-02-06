@@ -390,7 +390,7 @@ def librariesTest(listfiles = False):
             atomsdata.add((packagedata[0],packagedata[1]))
             print myatom
 
-    return 0,atomsdata
+    return 0
 
 def dependenciesTest():
 

@@ -483,6 +483,10 @@ class EquoInterface(TextInterface):
             return (),(),-1
 
         ldpaths = self.entropyTools.collectLinkerPaths()
+        # speed up when /usr/lib is a /usr/lib64 symlink
+        if "/usr/lib64" in ldpaths and "/usr/lib" in ldpaths:
+            if os.path.realpath("/usr/lib64") == "/usr/lib":
+                ldpaths.remove("/usr/lib")
 
         executables = set()
         total = len(ldpaths)

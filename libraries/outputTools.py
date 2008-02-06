@@ -364,6 +364,9 @@ class TextInterface:
         elif data['importance'] in (2,3):
             myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'])
 
+        sys.stdout.flush()
+        sys.stderr.flush()
+
     # @input question: question to do
     #
     # @input importance:
