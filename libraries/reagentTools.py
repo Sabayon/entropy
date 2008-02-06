@@ -369,7 +369,7 @@ def librariesTest(listfiles = False):
         return 0
 
     if (not brokenlibs) and (not packagesMatched):
-        if (not etpUi['quiet']): nprint_info(red(" @@ ")+blue("System is healthy."))
+        if (not etpUi['quiet']): print_info(red(" @@ ")+blue("System is healthy."))
         return 0
 
     atomsdata = set()
