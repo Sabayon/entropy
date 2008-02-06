@@ -422,6 +422,12 @@ def dep_and_select(and_list):
         else:
             newlist.append(x)
 
+    # now verify if all are satisfied
+    for x in newlist:
+        match = getInstalledAtom(x)
+        if match == None:
+            return []
+
     return newlist
 
 def dep_or_select(or_list):
@@ -436,11 +442,8 @@ def dep_or_select(or_list):
             do_skip = True
         elif isinstance(x, list): # and
             x = dep_and_select(x)
-            for y in x: # need to match all
-                match = getInstalledAtom(y)
-                if match == None:
-                    # skip, can't match all
-                    continue
+            if not x:
+                continue
             # found
             return x
         else:

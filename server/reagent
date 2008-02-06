@@ -76,6 +76,9 @@ def print_help():
     print_info(" \t\t"+green("depsregen")+"\t\t\t Recalculate and update package dependencies in repository")
     print_info(" \t\t\t"+red("--justscan")+"\t Just show differences between results")
     print_info(" \t\t\t"+red("--nochecksum")+"\t Disable checksum verification")
+    print_info(" \t\t"+green("contentregen")+"\t\t\t Recalculate and update package content metadata in repository")
+    print_info(" \t\t\t"+red("--justscan")+"\t Just show differences between results")
+    print_info(" \t\t\t"+red("--nochecksum")+"\t Disable checksum verification")
 
     print_info(" \t"+green("spm")+brown("\t\t Source Package Manager tool manager"))
     print_info(" \t\t"+green("compile")+"\t\t\t Start SPM and compile something")

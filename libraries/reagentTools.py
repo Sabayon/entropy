@@ -1049,15 +1049,17 @@ def database(options):
 
     # FIXME: this function does not update metadata inside tbz2
     # Please implement this !!!
+    # it would just have to repackage the bins
     elif (options[0] == "depsregen"):
         # first of all, sync and lock database
         if not databaseRequestJustScan:
             print_info(green(" * ")+red("Remember to flush all the pending uploads. It's always better having a fully synchronized system."))
             time.sleep(5)
             dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+            print_info(green(" * ")+red("Starting to regenerate package dependencies in repository"))
         else:
             dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
-        print_info(green(" * ")+red("Starting to regenerate package dependencies in repository"))
+            print_info(green(" * ")+red("Starting to scan and compare package dependencies in repository"))
         idpackages = dbconn.listAllIdpackages()
         maxcount = str(len(idpackages))
         count = 0
@@ -1112,8 +1114,8 @@ def database(options):
                     dbconn.insertDependencies(idpackage, found_deps)
 
         # done !
-        # XXX update depends
-        dependsTableInitialize(dbconn, False)
+        if not databaseRequestJustScan:
+            dependsTableInitialize(dbconn, False)
 
         print_info(blue(" *  Statistics:"))
         print_info(brown("     Number of checked packages:\t\t")+maxcount)
@@ -1121,6 +1123,84 @@ def database(options):
         print_info(red("     Number of broken packages:\t\t")+str(stats['bad_digest']))
         print_info(red("     Number of not found packages:\t\t")+str(stats['not_found']))
         dbconn.closeDB()
+
+    # FIXME: this function does not update metadata inside tbz2
+    # Please implement this !!!
+    # it would just have to repackage the bins
+    elif (options[0] == "contentregen"):
+        # first of all, sync and lock database
+        if not databaseRequestJustScan:
+            print_info(green(" * ")+red("Remember to flush all the pending uploads. It's always better having a fully synchronized system."))
+            time.sleep(5)
+            dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+            print_info(green(" * ")+red("Starting to regenerate package content metadata in repository"))
+        else:
+            dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+            print_info(green(" * ")+red("Starting to scan and compare package content metadata in repository"))
+        idpackages = dbconn.listAllIdpackages()
+        maxcount = str(len(idpackages))
+        count = 0
+        stats = {}
+        stats['updated'] = 0
+        stats['not_found'] = 0
+        stats['bad_digest'] = 0
+        for idpackage in idpackages:
+            count += 1
+            atom = dbconn.retrieveAtom(idpackage)
+            branch = dbconn.retrieveBranch(idpackage)
+            download = dbconn.retrieveDownloadURL(idpackage)
+            checksum = dbconn.retrieveDigest(idpackage)
+            # start scanning
+            countstring = green(" * ")+red("(")+blue(str(count))+"/"+darkgreen(maxcount)+red(") ")+red("[")+blue(branch)+red("] ")
+            print_info(countstring+red("Scanning ")+brown(atom), back = True)
+            download = os.path.join(etpConst['entropyworkdir'],download)
+            download_upload = os.path.join(etpConst['packagessuploaddir'],branch)
+            download_upload = os.path.join(download_upload,os.path.basename(download))
+            if not os.path.isfile(download) and not os.path.isfile(download_upload):
+                print_warning(countstring+red("  Package Error:"))
+                print_warning(countstring+"    "+blue(download)+" not found!")
+                print_warning(countstring+"    "+blue(download_upload)+" not found!")
+                stats['not_found'] += 1
+                continue
+            if os.path.isfile(download_upload):
+                download = download_upload
+            # verify checksum before starting
+            if not databaseRequestNoChecksum:
+                print_info(countstring+red("Verifying checksum ")+brown(atom), back = True)
+                status = Entropy.entropyTools.compareMd5(download,checksum)
+                if not status:
+                    print_warning(countstring+red("  Checksum Error:"))
+                    print_warning(countstring+"    "+blue(download)+" is corrupted!")
+                    stats['bad_digest'] += 1
+                    continue
+            # rescan package
+            metadata = Entropy.entropyTools.extractPkgData(download, silent = True)
+            db_content = dbconn.retrieveContent(idpackage)
+            found_content = set([x for x in metadata['content']])
+            del metadata
+            if db_content != found_content:
+                if databaseRequestJustScan:
+                    # show difference
+                    print_warning(countstring+red("  Content difference for ")+brown(atom)+(":"))
+                    print_warning(countstring+"    repository entries: "+str(len(db_content)))
+                    print_warning(countstring+"    scanned entries: "+str(len(found_content)))
+                else:
+                    stats['updated'] += 1
+                    print_info(countstring+red("Updating content metadata for ")+brown(atom))
+                    dbconn.removeContent(idpackage)
+                    dbconn.insertContent(idpackage, found_content)
+
+        # done !
+        if not databaseRequestJustScan:
+            dependsTableInitialize(dbconn, False)
+
+        print_info(blue(" *  Statistics:"))
+        print_info(brown("     Number of checked packages:\t\t")+maxcount)
+        print_info(green("     Number of updated packages:\t\t")+str(stats['updated']))
+        print_info(red("     Number of broken packages:\t\t")+str(stats['bad_digest']))
+        print_info(red("     Number of not found packages:\t\t")+str(stats['not_found']))
+        dbconn.closeDB()
+
 
     # query tools
     elif (options[0] == "query"):

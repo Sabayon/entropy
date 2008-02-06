@@ -918,20 +918,7 @@ class etpDatabase(TextInterface):
         )
 
         # content, a list
-        if not self.doesColumnInTableExist("content","type"):
-            self.createContentTypeColumn()
-        for xfile in etpData['content']:
-            contenttype = etpData['content'][xfile]
-            if type(xfile) is unicode:
-                xfile = xfile.encode('raw_unicode_escape')
-            self.cursor.execute(
-                'INSERT into content VALUES '
-                '(?,?,?)'
-                , (	idpackage,
-                        xfile,
-                        contenttype,
-                        )
-            )
+        self.insertContent(idpackage,etpData['content'])
 
         etpData['counter'] = int(etpData['counter']) # cast to integer
         if etpData['counter'] != -1 and not (etpData['injected']):
@@ -1062,54 +1049,32 @@ class etpDatabase(TextInterface):
                 )
 
         # compile messages
-        try:
-            for message in etpData['messages']:
-                self.cursor.execute(
-                'INSERT into messages VALUES '
-                '(?,?)'
-                , (	idpackage,
-                        message,
-                        )
-                )
-        except:
-            # FIXME: temp workaround, create messages table
-            self.cursor.execute("CREATE TABLE messages ( idpackage INTEGER, message VARCHAR);")
-            for message in etpData['messages']:
-                self.cursor.execute(
-                'INSERT into messages VALUES '
-                '(?,?)'
-                , (	idpackage,
-                        message,
-                        )
-                )
+        if not self.doesTableExist("messages"):
+            self.createMessagesTable()
+        for message in etpData['messages']:
+            self.cursor.execute(
+            'INSERT into messages VALUES '
+            '(?,?)'
+            , (	idpackage,
+                    message,
+                    )
+            )
 
-        try:
-            # is it a system package?
-            if etpData['systempackage']:
-                self.cursor.execute(
-                    'INSERT into systempackages VALUES '
-                    '(?)'
-                    , (	idpackage,
-                            )
-                )
-        except:
-            # FIXME: temp workaround, create systempackages table
+        if not self.doesTableExist("systempackages"):
             self.createSystemPackagesTable()
-            # is it a system package?
-            if etpData['systempackage']:
-                self.cursor.execute(
-                    'INSERT into systempackages VALUES '
-                    '(?)'
-                    , (	idpackage,
-                            )
-                )
+        # is it a system package?
+        if etpData['systempackage']:
+            self.cursor.execute(
+                'INSERT into systempackages VALUES '
+                '(?)'
+                , (	idpackage,
+                        )
+            )
 
-        # create new protect if it doesn't exist
-        try:
-            idprotect = self.isProtectAvailable(etpData['config_protect'])
-        except:
+        if not self.doesTableExist("configprotect"):
             self.createProtectTable()
-            idprotect = self.isProtectAvailable(etpData['config_protect'])
+        # create new protect if it doesn't exist
+        idprotect = self.isProtectAvailable(etpData['config_protect'])
         if (idprotect == -1):
             # create category
             idprotect = self.addProtect(etpData['config_protect'])
@@ -1605,6 +1570,28 @@ class etpDatabase(TextInterface):
                 '(?,?)'
                 , (	idpackage,
                         iddep,
+                        )
+            )
+
+    def removeContent(self, idpackage):
+        self.checkReadOnly()
+        self.cursor.execute("DELETE FROM content WHERE idpackage = (?)", (idpackage,))
+        self.commitChanges()
+
+    def insertContent(self, idpackage, content):
+        self.checkReadOnly()
+        if not self.doesColumnInTableExist("content","type"):
+            self.createContentTypeColumn()
+        for xfile in content:
+            contenttype = content[xfile]
+            if type(xfile) is unicode:
+                xfile = xfile.encode('raw_unicode_escape')
+            self.cursor.execute(
+                'INSERT into content VALUES '
+                '(?,?,?)'
+                , (	idpackage,
+                        xfile,
+                        contenttype,
                         )
             )
 
@@ -2741,26 +2728,18 @@ class etpDatabase(TextInterface):
 
     def isSystemPackage(self,idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'isSystemPackage')
-	if cache != None: return cache
-
-        try:
-	    self.cursor.execute('SELECT idpackage FROM systempackages WHERE idpackage = (?)', (idpackage,))
-        except: # FIXME: remove this for 1.0
+        if not self.doesTableExist("systempackages"):
             try:
                 self.createSystemPackagesTable()
-            except:
-                # readonly database?
+            except exceptionTools.OperationNotPermitted:
                 return False
-            self.cursor.execute('SELECT idpackage FROM systempackages WHERE idpackage = (?)', (idpackage,))
-        
-	result = self.cursor.fetchone()
-	rslt = False
-	if result:
-	    rslt = True
 
-	self.storeInfoCache(idpackage,'isSystemPackage',rslt)
-	return rslt
+        self.cursor.execute('SELECT idpackage FROM systempackages WHERE idpackage = (?)', (idpackage,))
+
+        result = self.cursor.fetchone()
+        if result:
+            return True
+        return False
 
     def isInjected(self,idpackage):
 
@@ -3519,21 +3498,25 @@ class etpDatabase(TextInterface):
     #
 
     def createTreeupdatesTable(self):
+        self.checkReadOnly()
         self.cursor.execute('DROP TABLE IF EXISTS treeupdates;')
         self.cursor.execute('CREATE TABLE treeupdates ( repository VARCHAR PRIMARY KEY, digest VARCHAR );')
         self.commitChanges()
 
     def createTreeupdatesactionsTable(self):
+        self.checkReadOnly()
         self.cursor.execute('DROP TABLE IF EXISTS treeupdatesactions;')
         self.cursor.execute('CREATE TABLE treeupdatesactions ( idupdate INTEGER PRIMARY KEY, repository VARCHAR, command VARCHAR, branch VARCHAR );')
         self.commitChanges()
 
     def createSizesTable(self):
+        self.checkReadOnly()
         self.cursor.execute('DROP TABLE IF EXISTS sizes;')
         self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
         self.commitChanges()
 
     def createTreeupdatesactionsBranchColumn(self):
+        self.checkReadOnly()
         try: # if database disk image is malformed, won't raise exception here
             self.cursor.execute('ALTER TABLE treeupdatesactions ADD COLUMN branch VARCHAR;')
             self.cursor.execute('UPDATE treeupdatesactions SET branch = (?)', (str(etpConst['branch']),))
@@ -3542,6 +3525,7 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def createContentTypeColumn(self):
+        self.checkReadOnly()
         try: # if database disk image is malformed, won't raise exception here
             self.cursor.execute('ALTER TABLE content ADD COLUMN type VARCHAR;')
             self.cursor.execute('UPDATE content SET type = "0"')
@@ -3550,15 +3534,23 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def createTriggerTable(self):
+        self.checkReadOnly()
         self.cursor.execute('CREATE TABLE triggers ( idpackage INTEGER PRIMARY KEY, data BLOB );')
         self.commitChanges()
 
     def createTriggerColumn(self):
+        self.checkReadOnly()
         self.cursor.execute('ALTER TABLE baseinfo ADD COLUMN trigger INTEGER;')
         self.cursor.execute('UPDATE baseinfo SET trigger = 0')
         self.commitChanges()
 
+    def createMessagesTable(self):
+        self.checkReadOnly()
+        self.cursor.execute("CREATE TABLE messages ( idpackage INTEGER, message VARCHAR);")
+        self.commitChanges()
+
     def createEclassesTable(self):
+        self.checkReadOnly()
         self.cursor.execute('DROP TABLE IF EXISTS eclasses;')
         self.cursor.execute('DROP TABLE IF EXISTS eclassesreference;')
         self.cursor.execute('CREATE TABLE eclasses ( idpackage INTEGER, idclass INTEGER );')
@@ -3566,19 +3558,23 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def createNeededTable(self):
+        self.checkReadOnly()
         self.cursor.execute('CREATE TABLE needed ( idpackage INTEGER, idneeded INTEGER );')
         self.cursor.execute('CREATE TABLE neededreference ( idneeded INTEGER PRIMARY KEY, library VARCHAR );')
         self.commitChanges()
 
     def createSystemPackagesTable(self):
+        self.checkReadOnly()
         self.cursor.execute('CREATE TABLE systempackages ( idpackage INTEGER PRIMARY KEY );')
         self.commitChanges()
 
     def createInjectedTable(self):
+        self.checkReadOnly()
         self.cursor.execute('CREATE TABLE injected ( idpackage INTEGER PRIMARY KEY );')
         self.commitChanges()
 
     def createProtectTable(self):
+        self.checkReadOnly()
         self.cursor.execute('DROP TABLE IF EXISTS configprotect;')
         self.cursor.execute('DROP TABLE IF EXISTS configprotectmask;')
         self.cursor.execute('DROP TABLE IF EXISTS configprotectreference;')
@@ -3588,6 +3584,7 @@ class etpDatabase(TextInterface):
         self.commitChanges()
 
     def createInstalledTable(self):
+        self.checkReadOnly()
         self.cursor.execute('DROP TABLE IF EXISTS installedtable;')
         self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER PRIMARY KEY, repositoryname VARCHAR );')
         self.commitChanges()
