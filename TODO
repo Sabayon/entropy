@@ -1,15 +1,14 @@
 TODO list:
+  - split RDEPEND and PDEPEND
   - improve dependencies order resolution
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
+     [] complete reagent spm interface
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - Community repositories
-  - split RDEPEND and PDEPEND
-  - find a way to better handle real smartapps deps (need split PDEPEND?)
   - separate packages by license restrictions
-  - handle multiuser on entropy server using equo interface
-  - complete reagent spm interface
   - GLSAs for overlays?
+  - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
     - handle config files updates interface (*)

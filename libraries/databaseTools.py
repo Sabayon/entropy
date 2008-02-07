@@ -3498,13 +3498,11 @@ class etpDatabase(TextInterface):
     #
 
     def createTreeupdatesTable(self):
-        self.checkReadOnly()
         self.cursor.execute('DROP TABLE IF EXISTS treeupdates;')
         self.cursor.execute('CREATE TABLE treeupdates ( repository VARCHAR PRIMARY KEY, digest VARCHAR );')
         self.commitChanges()
 
     def createTreeupdatesactionsTable(self):
-        self.checkReadOnly()
         self.cursor.execute('DROP TABLE IF EXISTS treeupdatesactions;')
         self.cursor.execute('CREATE TABLE treeupdatesactions ( idupdate INTEGER PRIMARY KEY, repository VARCHAR, command VARCHAR, branch VARCHAR );')
         self.commitChanges()
