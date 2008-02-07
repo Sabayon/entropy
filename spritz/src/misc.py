@@ -60,12 +60,14 @@ class const:
     PAGE_OUTPUT = 2
     PAGE_GROUP = 3
     PAGE_QUEUE = 4
+    PAGE_FILESCONF = 5
     PAGES = {
        'packages'  : PAGE_PKG,
        'repos'     : PAGE_REPOS,
        'output'    : PAGE_OUTPUT,
        'queue'     : PAGE_QUEUE,
-       'group'     : PAGE_GROUP
+       'group'     : PAGE_GROUP,
+       'filesconf' : PAGE_FILESCONF
     }
 
     PACKAGE_PROGRESS_STEPS = ( 0.1, # Depsolve
@@ -393,8 +395,6 @@ class SpritzQueue:
             del self.before[:]
             return 0,1
 
-
-
     def addGroup( self, grp, action):
         list = self.groups[action]
         if not grp in list:
@@ -412,114 +412,6 @@ class SpritzQueue:
             if grp in self.groups[action]:
                 return action
         return None
-
-    def dump(self):
-        self.logger.info(_("Package Queue:"))
-        for action in ['install','update','remove']:
-            a = action[0]
-            list = self.packages[a]
-            if len(list) > 0:
-                self.logger.info(_(" Packages to %s" % action))
-                for pkg in list:
-                    self.logger.info(" ---> %s " % str(pkg))
-        for action in ['install','remove']:
-            a = action[0]
-            list = self.groups[a]
-            if len(list) > 0:
-                self.logger.info(_(" Groups to %s" % action))
-                for grp in list:
-                    self.logger.info(" ---> %s " % grp)
-
-    def getParser(self):
-        cp = YumexQueueFile()
-        for action in ['install','update','remove']:
-            a = action[0]
-            list = self.packages[a]
-            if len(list) > 0:
-                for pkg in list:
-                    cp.setPO(action,pkg)
-        return cp
-
-class YumexSaveFile:
-    __version__ = '100'
-
-    def __init__(self,typ):
-        self.parser = SafeConfigParser()
-        self.saveType = typ
-        self.parser.add_section('main')
-        self.parser.set("main","application","yumex")
-        self.parser.set("main","type",self.saveType)
-        self.parser.set("main","version",YumexSaveFile.__version__)
-
-    def setPO(self,section,pkg):
-        (n, a, e, v, r) = pkg.pkgtup
-        item = "%s.%s" % (n,a)
-        if pkg.epoch:
-            e = pkg.epoch
-        else:
-            e = 0
-        repo = pkg.repoid
-        value = "%s,%s,%s,%s,%s,%s" % (n,a,e,v,r,repo)
-        self.set(section,item ,value)
-
-    def getPO(self,section,opt):
-        value = self.get(section,opt)
-        n,a,e,v,r,repo = value.split(',')
-        tup = (n,a,e,v,r)
-        return tup,repo
-
-    def set(self,section,option,value):
-        if not self.parser.has_section(section):
-            self.parser.add_section(section)
-        self.parser.set(section, option, value)
-
-    def get(self,section,option):
-        try:
-            return self.parser.get(section,option)
-        except:
-            return None
-
-    def save(self,fp):
-        self.parser.write(fp)
-
-    def load(self,fp):
-        self.parser = SafeConfigParser()
-        self.parser.readfp(fp)
-        try:
-            appl = self.parser.get('main','application')
-            ver = self.parser.get('main','version')
-            typ = self.parser.get('main','type')
-            if appl != 'yumex':
-                return -1, _("Wrong file application (%s)" % appl)
-            if typ != self.saveType:
-                return -1, _("Wrong file type (%s)" % type)
-            if ver != YumexSaveFile.__version__:
-                return -1, _("Wrong file version (%s)" % ver)
-            return 0, "file ok"
-        except NoSectionError,NoOptionError:
-            return -1,"Error in fileformat"
-
-
-class YumexQueueFile(YumexSaveFile):
-    def __init__(self):
-        YumexSaveFile.__init__(self,'queue')
-
-    def getList(self,action):
-        dict = {}
-        try:
-            options = self.parser.options(action)
-            for opt in options:
-                tup,repo = self.getPO(action,opt)
-                if dict.has_key(repo):
-                    lst = dict[repo]
-                    lst.append(tup)
-                    dict[repo] = lst
-                else:
-                    dict[repo] = [tup]
-            return dict
-        except:
-            return {}
-
 
 class YumexConf:
     """ Yum Extender Config Setting"""

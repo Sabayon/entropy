@@ -67,9 +67,9 @@ class SpritzController(Controller):
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
-        #sys.stdout = self.output
-        #sys.stderr = self.output
-        #sys.stdin = self.input
+        sys.stdout = self.output
+        sys.stderr = self.output
+        sys.stdin = self.input
 
 
     def quit(self, widget=None, event=None ):
@@ -405,7 +405,10 @@ class SpritzController(Controller):
     def on_queueSave_clicked( self, widget ):
         dialog = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_SAVE,
                                   buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE,gtk.RESPONSE_OK))
-        dialog.set_current_folder("/tmp")
+        homedir = os.getenv('HOME')
+        if not homedir:
+            homedir = "/tmp"
+        dialog.set_current_folder(homedir)
         dialog.set_current_name('queue.spritz')
         response = dialog.run()
         if response == gtk.RESPONSE_OK:
@@ -415,15 +418,20 @@ class SpritzController(Controller):
         dialog.destroy()
         if fn:
             self.logger.info("Saving queue to %s" % fn)
-            cp = self.queue.getParser()
-            fp = open(fn,"w")
-            cp.save(fp)
-            fp.close()
+            pkgdata = self.queue.get()
+            keys = pkgdata.keys()
+            for key in keys:
+                if pkgdata[key]:
+                    pkgdata[key] = [str(x) for x in pkgdata[key]]
+            self.Equo.dumpTools.dumpobj(fn,pkgdata,True)
 
     def on_queueOpen_clicked( self, widget ):
         dialog = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
                                   buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
-        dialog.set_current_folder("/tmp")
+        homedir = os.getenv('HOME')
+        if not homedir:
+            homedir = "/tmp"
+        dialog.set_current_folder(homedir)
         response = dialog.run()
         if response == gtk.RESPONSE_OK:
             fn = dialog.get_filename()
@@ -432,23 +440,36 @@ class SpritzController(Controller):
         dialog.destroy()
         if fn:
             self.logger.info("Loading queue from %s" % fn)
-            cp = self.queue.getParser()
-            fp = open(fn,"r")
-            rc,msg = cp.load(fp)
-            fp.close()
-            print rc,msg
-            found = 0
-            total = 0
-            f,t = self.doQueueAdd(cp,'update')
-            found += f
-            total += t
-            f,t = self.doQueueAdd(cp,'install')
-            found += f
-            total += t
-            f,t = self.doQueueAdd(cp,'remove')
-            found += f
-            total += t
-            self.logger.info(' Loaded : %i of %i' % (found,total))
+            try:
+                pkgdata = self.Equo.dumpTools.loadobj(fn,True)
+            except:
+                return
+
+            try:
+                pkgdata_keys = pkgdata.keys()
+            except:
+                return
+            packages = self.etpbase.getAllPackages()
+            collected_items = []
+            for key in pkgdata_keys:
+                for pkg in pkgdata[key]:
+                    found = False
+                    for x in packages:
+                        if (pkg == str(x)) and (x.action == key):
+                            found = True
+                            collected_items.append([key,x])
+                            break
+                    if not found:
+                        okDialog( self.ui.main, _("Queue is too old. Cannot load.") )
+                        return
+
+            for pkgtuple in collected_items:
+                key = pkgtuple[0]
+                pkg = pkgtuple[1]
+                pkg.queued = key
+                self.queue.packages[key].append(pkg)
+
+            self.queueView.refresh()
 
     def on_view_cursor_changed( self, widget ):
         """ Handle selection of row in package view (Show Descriptions) """
@@ -863,46 +884,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
             errorMessage( self.ui.main, _( "Error" ), _( "Error in Transaction" ), str(e) )
             self.logger.error(str(e))
             return None
-
-    def doQueueAdd(self,parser,qType):
-        self.logger.debug( _("Parsing packages to %s ") % qType)
-        pTypeDict = {'install':'available',
-                     'update':'updates',
-                     'remove':'installed'}
-        dict = parser.getList(qType)
-        pType = pTypeDict[qType]
-        repos = self.repoList.getEnabledList()
-        repos.append('installed')
-        no = 0
-        found = 0
-        for repo in dict.keys():
-            if repo in repos:
-                self.logger.debug('--> Repo : %s' % repo)
-                no += len(dict[repo])
-                pkgs = self.etpbase.findPackagesByTuples(pType,dict[repo])
-                found += len(pkgs)
-                for po in pkgs:
-                    self.logger.debug("---> %s " % str(po))
-                    self.queue.add(po)
-                    self.queueView.refresh()
-            else:
-                self.logger.debug('--> Skipping Repo (Not Enabled): %s' % repo)
-        self.logger.debug("-> found %i of %i" % (found,no))
-        return found,no
-
-    def doQuickAdd(self,cmd,arglist):
-        cmd = cmd.lower()
-        typ = None
-        if cmd == 'install':
-            typ = 'available'
-        elif cmd == 'remove' or cmd == 'erase' or cmd == 'delete':
-            typ = 'installed'
-        if typ:
-            found = self.etpbase.findPackages(arglist,typ)
-            self.setStatus(_('found %d packages, matching : %s') % (len(found)," ".join(arglist)))
-            for po in found:
-                self.queue.add(po)
-            self.queueView.refresh()
 
     def populateCategories(self):
         busyCursor(self.ui.main)

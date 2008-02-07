@@ -354,13 +354,14 @@ class SpritzGUI:
         self.createButton( _( "Package Queue View" ), "button-queue.png", 'queue' )
         if not self.settings.disable_repo_page:
             self.createButton( _( "Repository Selection View" ), "button-repo.png", 'repos' )
-        self.createButton( _( "Output View" ), "button-output.png", 'output' )    
+        self.createButton( _( "Configuration Files View" ), "button-conf.png", 'filesconf' )
+        self.createButton( _( "Output View" ), "button-output.png", 'output' )
         style = self.ui.leftEvent.get_style()
 
         # Setup Page Icons
         self.ui.pageImage0.set_from_file ( const.PIXMAPS_PATH + '/button-repo.png' )
         self.ui.pageImage3.set_from_file ( const.PIXMAPS_PATH + '/button-group.png' )
-        self.ui.pageImage4.set_from_file ( const.PIXMAPS_PATH + '/button-group.png' )
+        self.ui.pageImage4.set_from_file ( const.PIXMAPS_PATH + '/button-queue.png' )
 
     def createButton( self, text, icon, page,first = None ):
           if first:
