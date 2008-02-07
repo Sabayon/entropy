@@ -1132,6 +1132,7 @@ class EquoInterface(TextInterface):
                 if installedNeeded != repo_needed:
                     depunsatisfied.update(depsatisfied)
                     depsatisfied.clear()
+                '''
                 else:
                     # also check useflags
                     installedUseflags = self.clientDbconn.retrieveUseflags(clientMatch[0])
@@ -1139,6 +1140,7 @@ class EquoInterface(TextInterface):
                     if installedUseflags != repo_useflags:
                         depunsatisfied.update(depsatisfied)
                         depsatisfied.clear()
+                '''
 
             unsatisfiedDeps.update(depunsatisfied)
             satisfiedDeps.update(depsatisfied)
@@ -4851,8 +4853,10 @@ class TriggerInterface:
                     functions.add('addbootablekernel')
                 if x.startswith('/usr/src/'):
                     functions.add('createkernelsym')
+                '''
                 if x.startswith('/etc/env.d/'):
                     functions.add('env_update')
+                '''
                 if os.path.dirname(x) in ldpaths:
                     if x.find(".so") > -1:
                         functions.add('run_ldconfig')
