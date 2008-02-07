@@ -6209,10 +6209,10 @@ class SecurityInterface:
                             "eq": "=",
                             "gt": ">",
                             "ge": ">=",
-                            "rge": ">=~",
-                            "rle": "<=~",
-                            "rgt": " >~",
-                            "rlt": " <~"
+                            "rge": ">=", # >=~
+                            "rle": "<=", # <=~
+                            "rgt": " >", # >~
+                            "rlt": "<" # <~
         }
 
         self.unpackdir = os.path.join(etpConst['entropyunpackdir'],"security-"+str(self.Entropy.entropyTools.getRandomNumber()))
@@ -6263,10 +6263,9 @@ class SecurityInterface:
         fetchConn.progress = self.Entropy.progress
         rc = fetchConn.download()
         del fetchConn
-        status = True
         if rc in ("-1","-2","-3"):
-            status = False
-        return status
+            return False
+        return True
 
     def __verify_checksum(self):
 
@@ -6415,27 +6414,42 @@ class SecurityInterface:
                 affected = adv_metadata[key]['affected']
                 affected_keys = affected.keys()
                 valid = False
+                skipping_keys = set()
                 for a_key in affected_keys:
                     match = self.Entropy.atomMatch(a_key)
                     if match[0] != -1:
-                        # it's in tree, it's valid
+                        # it's in the repos, it's valid
                         valid = True
-                        break
+                    else:
+                        skipping_keys.add(a_key)
                 if not valid:
                     del adv_metadata[key]
+                for a_key in skipping_keys:
+                    try:
+                        del adv_metadata[key]['affected'][a_key]
+                    except KeyError:
+                        pass
+                try:
+                    if not adv_metadata[key]['affected']:
+                        del adv_metadata[key]
+                except KeyError:
+                    pass
 
         return adv_metadata
 
-    def is_affected(self, adv_key):
-        adv_data = self.get_advisories_metadata()
+    def is_affected(self, adv_key, adv_data = {}):
+        if not adv_data:
+            adv_data = self.get_advisories_metadata()
         if adv_key not in adv_data:
             return False
         mydata = adv_data[adv_key].copy()
         del adv_data
-        # get packages
+
         if not mydata['affected']:
             return False
+
         for key in mydata['affected']:
+
             vul_atoms = mydata['affected'][key][0]['vul_atoms']
             unaff_atoms = mydata['affected'][key][0]['unaff_atoms']
             unaffected_atoms = set()
@@ -6447,17 +6461,56 @@ class SecurityInterface:
                 return False
             for atom in vul_atoms:
                 match = self.Entropy.clientDbconn.atomMatch(atom)
-                if match[0] != -1 and match not in unaffected_atoms:
+                if (match[0] != -1) and (match not in unaffected_atoms):
                     if self.affected_atoms == None:
                         self.affected_atoms = set()
                     self.affected_atoms.add(atom)
                     return True
         return False
 
+    def get_vulnerabilities(self):
+        return self.get_affection()
+
+    def get_fixed_vulnerabilities(self):
+        return self.get_affection(affected = False)
+
+    # if not affected: not affected packages will be returned
+    # if affected: affected packages will be returned
+    def get_affection(self, affected = True):
+        adv_data = self.get_advisories_metadata()
+        adv_data_keys = adv_data.keys()
+        valid_keys = set()
+        for adv in adv_data_keys:
+            is_affected = self.is_affected(adv,adv_data)
+            if affected == is_affected:
+                valid_keys.add(adv)
+        # we need to filter our adv_data and return
+        for key in adv_data_keys:
+            if key not in valid_keys:
+                try:
+                    del adv_data[key]
+                except KeyError:
+                    pass
+        # now we need to filter packages in adv_dat
+        for adv in adv_data:
+            for key in adv_data[adv]['affected'].keys():
+                #print key
+                atoms = adv_data[adv]['affected'][key][0]['vul_atoms']
+                #print atoms
+                applicable = True
+                for atom in atoms:
+                    if atom in self.affected_atoms:
+                        applicable = False
+                        break
+                if applicable == affected:
+                    del adv_data[adv]['affected'][key]
+        return adv_data
+
     def get_affected_atoms(self):
         adv_data = self.get_advisories_metadata()
         adv_data_keys = adv_data.keys()
         del adv_data
+        self.affected_atoms = set()
         for key in adv_data_keys:
             self.is_affected(key)
         return self.affected_atoms

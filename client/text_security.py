@@ -49,7 +49,12 @@ def security(options):
 
 
 def list_advisories(only_affected = False, only_unaffected = False):
-    adv_metadata = Equo.Security.get_advisories_metadata()
+    if (not only_affected and not only_unaffected) or (only_affected and only_unaffected):
+        adv_metadata = Equo.Security.get_advisories_metadata()
+    elif only_affected:
+        adv_metadata = Equo.Security.get_vulnerabilities()
+    else:
+        adv_metadata = Equo.Security.get_fixed_vulnerabilities()
     if not adv_metadata:
         print_info(brown(" :: ")+darkgreen("No advisories available. Try running the 'update' tool."))
         return 0
