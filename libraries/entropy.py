@@ -2035,7 +2035,7 @@ class EquoInterface(TextInterface):
     '''
         Repository interface :: end
     '''
-    
+
     '''
         Configuration files (updates, not entropy related) interface :: begin
     '''

@@ -341,7 +341,7 @@ except exceptionTools.RepositoryError, e:
     sys.exit(101)
 except SystemExit:
     pass
-except IOError, (errno,errstr):
+except IOError, (errno, strerror):
     reset_cache()
     if errno != 32:
         raise

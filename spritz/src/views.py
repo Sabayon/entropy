@@ -491,7 +491,7 @@ class EntropyPackageView:
         else:
             cell.set_property( 'visible', False )
 
-class YumexQueueView:
+class EntropyQueueView:
     """ Queue View Class"""
     def __init__( self, widget, queue ):
         self.view = widget
@@ -567,6 +567,39 @@ class YumexQueueView:
         for pkg in list:
             self.model.append( parent, [str( pkg ), pkg.description] )
 
+class EntropyFilesView:
+    """ Queue View Class"""
+    def __init__( self, widget ):
+        self.view = widget
+        self.model = self.setup_view()
+
+    def setup_view( self ):
+        """ Create Notebook list for single page  """
+        model = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_STRING )
+        self.view.set_model( model )
+        cell1 = gtk.CellRendererText()
+        column1 = gtk.TreeViewColumn( _( "Configuration file" ), cell1, markup = 0 )
+        column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column1.set_fixed_width( 500 )
+        column1.set_resizable( True )
+        self.view.append_column( column1 )
+
+        cell2 = gtk.CellRendererText()
+        column2 = gtk.TreeViewColumn( _( "Rev." ), cell2, text=1 )
+        column2.set_resizable( True )
+        column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column2.set_fixed_width( 30 )
+        self.view.append_column( column2 )
+        model.set_sort_column_id( 0, gtk.SORT_ASCENDING )
+        self.view.get_selection().set_mode( gtk.SELECTION_MULTIPLE )
+        return model
+
+    def populate( self, scandata ):
+        self.model.clear()
+        keys = scandata.keys()
+        keys.sort()
+        for key in keys:
+            self.model.append(None,[scandata[key]['destination'],scandata[key]['revision']])
 
 class CategoriesView:
     def __init__( self, treeview,qview):

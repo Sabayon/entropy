@@ -313,6 +313,8 @@ class SpritzController(Controller):
 
     def on_PageButton_changed( self, widget, page ):
         ''' Left Side Toolbar Handler'''
+        if page == "filesconf":
+            self.populateFilesUpdate()
         self.setNotebookPage(const.PAGES[page])
 
     def on_category_selected(self,widget):
@@ -670,6 +672,20 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.setupSpritz()
         if alone:
             self.progress.total.show()
+
+    def populateFilesUpdate(self):
+        # load filesUpdate interface and fill self.filesView
+        cached = None
+        try:
+            cached = self.Equo.FileUpdates.load_cache()
+        except exceptionTools.CacheCorruptionError:
+            pass
+        if cached == None:
+            self.startWorking()
+            cached = self.Equo.FileUpdates.scanfs()
+            self.endWorking()
+        if cached:
+            self.filesView.populate(cached)
 
     def updateRepositories(self, repos):
         self.setPage('output')

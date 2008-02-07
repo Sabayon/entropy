@@ -273,8 +273,9 @@ class SpritzGUI:
         self.Entropy = EquoConnection
         self.etpbase = etpbase
         self.queue = SpritzQueue()
-        self.queueView = YumexQueueView(self.ui.queueView,self.queue)
+        self.queueView = EntropyQueueView(self.ui.queueView,self.queue)
         self.pkgView = EntropyPackageView(self.ui.viewPkg,self.queueView, self.ui, self.etpbase)
+        self.filesView = EntropyFilesView(self.ui.filesView)
         self.queue.connect_objects(self.Entropy, self.etpbase, self.pkgView, self.ui)
         #self.catView = YumexCategoryView(self.ui.tvCategory)
         self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
@@ -362,6 +363,7 @@ class SpritzGUI:
         self.ui.pageImage0.set_from_file ( const.PIXMAPS_PATH + '/button-repo.png' )
         self.ui.pageImage3.set_from_file ( const.PIXMAPS_PATH + '/button-group.png' )
         self.ui.pageImage4.set_from_file ( const.PIXMAPS_PATH + '/button-queue.png' )
+        self.ui.pageImage5.set_from_file ( const.PIXMAPS_PATH + '/button-conf.png' )
 
     def createButton( self, text, icon, page,first = None ):
           if first:
