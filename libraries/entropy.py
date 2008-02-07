@@ -711,13 +711,13 @@ class EquoInterface(TextInterface):
     @ exit errors:
                 -1 => repository cannot be fetched online
     '''
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, matchBranches = ()):
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, matchBranches = (), packagesFilter = True):
 
         if self.xcache:
             cached = atomMatchCache.get(atom)
             if cached:
                 try:
-                    if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches) and (cached['etpRepositories'] == etpRepositories) and (cached['caseSensitive'] == caseSensitive) and (cached['etpRepositoriesOrder'] == etpRepositoriesOrder):
+                    if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches) and (cached['etpRepositories'] == etpRepositories) and (cached['caseSensitive'] == caseSensitive) and (cached['etpRepositoriesOrder'] == etpRepositoriesOrder) and (cached['packagesFilter'] == packagesFilter):
                         return cached['result']
                 except KeyError:
                     pass
@@ -738,7 +738,7 @@ class EquoInterface(TextInterface):
                 continue # repo not available
 
             # search
-            query = dbconn.atomMatch(atom, caseSensitive = caseSensitive, matchSlot = matchSlot, matchBranches = matchBranches)
+            query = dbconn.atomMatch(atom, caseSensitive = caseSensitive, matchSlot = matchSlot, matchBranches = matchBranches, packagesFilter = packagesFilter)
             if query[1] == 0:
                 # package found, add to our dictionary
                 repoResults[repo] = query[0]
@@ -753,6 +753,7 @@ class EquoInterface(TextInterface):
             atomMatchCache[atom]['matchSlot'] = matchSlot
             atomMatchCache[atom]['matchBranches'] = matchBranches
             atomMatchCache[atom]['caseSensitive'] = caseSensitive
+            atomMatchCache[atom]['packagesFilter'] = packagesFilter
             atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
             atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
             return -1,1
@@ -765,6 +766,7 @@ class EquoInterface(TextInterface):
                 atomMatchCache[atom]['matchSlot'] = matchSlot
                 atomMatchCache[atom]['matchBranches'] = matchBranches
                 atomMatchCache[atom]['caseSensitive'] = caseSensitive
+                atomMatchCache[atom]['packagesFilter'] = packagesFilter
                 atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
                 atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                 return repoResults[repo],repo
@@ -862,6 +864,7 @@ class EquoInterface(TextInterface):
                                     atomMatchCache[atom]['matchSlot'] = matchSlot
                                     atomMatchCache[atom]['matchBranches'] = matchBranches
                                     atomMatchCache[atom]['caseSensitive'] = caseSensitive
+                                    atomMatchCache[atom]['packagesFilter'] = packagesFilter
                                     atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
                                     atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                                     return repoResults[repository],repository
@@ -877,6 +880,7 @@ class EquoInterface(TextInterface):
                             atomMatchCache[atom]['matchSlot'] = matchSlot
                             atomMatchCache[atom]['matchBranches'] = matchBranches
                             atomMatchCache[atom]['caseSensitive'] = caseSensitive
+                            atomMatchCache[atom]['packagesFilter'] = packagesFilter
                             atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
                             atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                             return repoResults[reponame],reponame
@@ -892,6 +896,7 @@ class EquoInterface(TextInterface):
                         atomMatchCache[atom]['matchSlot'] = matchSlot
                         atomMatchCache[atom]['matchBranches'] = matchBranches
                         atomMatchCache[atom]['caseSensitive'] = caseSensitive
+                        atomMatchCache[atom]['packagesFilter'] = packagesFilter
                         atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
                         atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                         return repoResults[reponame],reponame
@@ -907,6 +912,7 @@ class EquoInterface(TextInterface):
                     atomMatchCache[atom]['matchSlot'] = matchSlot
                     atomMatchCache[atom]['matchBranches'] = matchBranches
                     atomMatchCache[atom]['caseSensitive'] = caseSensitive
+                    atomMatchCache[atom]['packagesFilter'] = packagesFilter
                     atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
                     atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                     return repoResults[reponame],reponame
@@ -925,6 +931,7 @@ class EquoInterface(TextInterface):
                 atomMatchCache[atom]['matchSlot'] = matchSlot
                 atomMatchCache[atom]['matchBranches'] = matchBranches
                 atomMatchCache[atom]['caseSensitive'] = caseSensitive
+                atomMatchCache[atom]['packagesFilter'] = packagesFilter
                 atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
                 atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                 return repoResults[reponame],reponame
