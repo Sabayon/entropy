@@ -1608,7 +1608,10 @@ class EquoInterface(TextInterface):
                     #matchatom = mdbconn.retrieveAtom(matchresults[0])
                     update.add(matchresults)
                 else:
-                    remove.add(idpackage)
+                    # don't take action if it's just masked
+                    maskedresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchSlot = myscopedata[4], matchBranches = (branch,), packagesFilter = False)
+                    if maskedresults[0] == -1:
+                        remove.add(idpackage)
                     # look for packages that would match key with any slot (for eg, gcc updates), slot changes handling
                     matchresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchBranches = (branch,))
                     if matchresults[0] != -1:

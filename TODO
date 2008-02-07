@@ -4,6 +4,7 @@ TODO list:
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
      [] complete reagent spm interface
+  - implement configuration files snapshot tool
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - Community repositories
   - separate packages by license restrictions
