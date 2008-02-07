@@ -1,8 +1,5 @@
 TODO list:
-  - glsa utility (*)
-    - self.advisories_changed FIXME
-    - tool that prints glsa information
-    - tool that installs all the security updates
+  - improve dependencies order resolution
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)

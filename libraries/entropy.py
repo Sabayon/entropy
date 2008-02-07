@@ -4853,10 +4853,8 @@ class TriggerInterface:
                     functions.add('addbootablekernel')
                 if x.startswith('/usr/src/'):
                     functions.add('createkernelsym')
-                '''
                 if x.startswith('/etc/env.d/'):
                     functions.add('env_update')
-                '''
                 if os.path.dirname(x) in ldpaths:
                     if x.find(".so") > -1:
                         functions.add('run_ldconfig')
@@ -6215,7 +6213,7 @@ class SecurityInterface:
                             "ge": ">=",
                             "rge": ">=", # >=~
                             "rle": "<=", # <=~
-                            "rgt": " >", # >~
+                            "rgt": ">", # >~
                             "rlt": "<" # <~
         }
 
@@ -6225,24 +6223,23 @@ class SecurityInterface:
         self.security_url_checksum = etpConst['securityurl']+etpConst['packageshashfileext']
         self.download_package = os.path.join(self.unpackdir,os.path.basename(etpConst['securityurl']))
         self.download_package_checksum = self.download_package+etpConst['packageshashfileext']
+        self.old_download_package_checksum = os.path.join(etpConst['dumpstoragedir'],os.path.basename(etpConst['securityurl']))+etpConst['packageshashfileext']
 
         self.security_package = os.path.join(etpConst['securitydir'],os.path.basename(etpConst['securityurl']))
         self.security_package_checksum = self.security_package+etpConst['packageshashfileext']
+
 
         if os.path.isfile(etpConst['securitydir']) or os.path.islink(etpConst['securitydir']):
             os.remove(etpConst['securitydir'])
         if not os.path.isdir(etpConst['securitydir']):
             os.makedirs(etpConst['securitydir'])
-        elif os.path.isfile(self.security_package_checksum):
+        elif os.path.isfile(self.old_download_package_checksum):
+            f = open(self.old_download_package_checksum)
             try:
-                f = open(self.security_package_checksum)
                 self.previous_checksum = f.readline().strip().split()[0]
-                f.close()
-            except: # FIXME really horrible exception trapping
-                try:
-                    f.close()
-                except:
-                    pass
+            except:
+                pass
+            f.close()
 
     def __prepare_unpack(self):
 
@@ -6457,12 +6454,15 @@ class SecurityInterface:
             vul_atoms = mydata['affected'][key][0]['vul_atoms']
             unaff_atoms = mydata['affected'][key][0]['unaff_atoms']
             unaffected_atoms = set()
-            for atom in unaff_atoms:
-                match = self.Entropy.clientDbconn.atomMatch(atom)
-                if match[0] != -1:
-                    unaffected_atoms.add(match)
             if not vul_atoms:
                 return False
+            # XXX: does multimatch work correctly?
+            for atom in unaff_atoms:
+                matches = self.Entropy.clientDbconn.atomMatch(atom, multiMatch = True)
+                if matches[1] == 0:
+                    for idpackage in matches[0]:
+                        unaffected_atoms.add((idpackage,0))
+
             for atom in vul_atoms:
                 match = self.Entropy.clientDbconn.atomMatch(atom)
                 if (match[0] != -1) and (match not in unaffected_atoms):
@@ -6555,16 +6555,38 @@ class SecurityInterface:
         references = glsa_tree.getElementsByTagName("references")[0]
         xml_data['references'] = [x.getAttribute("link").strip() for x in references.getElementsByTagName("uri")]
 
-        xml_data['description'] = glsa_tree.getElementsByTagName("description")[0].firstChild.data.strip()
-        xml_data['workaround'] = glsa_tree.getElementsByTagName("workaround")[0].firstChild.data.strip()
-        xml_data['resolution'] = glsa_tree.getElementsByTagName("resolution")[0].firstChild.data.strip()
-        xml_data['impact'] = glsa_tree.getElementsByTagName("impact")[0].firstChild.data.strip()
-        xml_data['impacttype'] = glsa_tree.getElementsByTagName("impact")[0].getAttribute("type").strip()
-        xml_data['background'] = ""
         try:
-            xml_data['background'] = glsa_tree.getElementsByTagName("background")[0].firstChild.data.strip()
+            description = glsa_tree.getElementsByTagName("description")[0]
+            xml_data['description'] = description.getElementsByTagName("p")[0].firstChild.data.strip()
         except IndexError:
-            pass
+            xml_data['description'] = ""
+        try:
+            workaround = glsa_tree.getElementsByTagName("workaround")[0]
+            xml_data['workaround'] = workaround.getElementsByTagName("p")[0].firstChild.data.strip()
+        except IndexError:
+            xml_data['workaround'] = ""
+
+        try:
+            xml_data['resolution'] = []
+            resolution = glsa_tree.getElementsByTagName("resolution")[0]
+            p_elements = resolution.getElementsByTagName("p")
+            for p_elem in p_elements:
+                xml_data['resolution'].append(p_elem.firstChild.data.strip())
+        except IndexError:
+            xml_data['resolution'] = []
+
+        try:
+            impact = glsa_tree.getElementsByTagName("impact")[0]
+            xml_data['impact'] = impact.getElementsByTagName("p")[0].firstChild.data.strip()
+        except IndexError:
+            xml_data['impact'] = ""
+        xml_data['impacttype'] = glsa_tree.getElementsByTagName("impact")[0].getAttribute("type").strip()
+
+        try:
+            background = glsa_tree.getElementsByTagName("background")[0]
+            xml_data['background'] = background.getElementsByTagName("p")[0].firstChild.data.strip()
+        except IndexError:
+            xml_data['background'] = ""
 
         # affection information
         affected = glsa_tree.getElementsByTagName("affected")[0]
@@ -6719,6 +6741,10 @@ class SecurityInterface:
                                 )
         else:
             raise exceptionTools.InvalidData("InvalidData: return status not valid.")
+
+        # save downloaded md5
+        if os.path.isfile(self.download_package_checksum) and os.path.isdir(etpConst['dumpstoragedir']):
+            shutil.copy2(self.download_package_checksum,self.old_download_package_checksum)
 
         # now unpack in place
         status = self.__unpack_advisories()

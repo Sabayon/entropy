@@ -43,7 +43,7 @@ def print_help():
 
     print_info(" \t"+blue("world")+brown("\t\t update system with the latest available packages"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
-    print_info(" \t\t"+red("--fetch")+"\t\t\t just download packages without doing the install")
+    print_info(" \t\t"+red("--fetch")+"\t\t\t just download packages")
     print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
     print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
     print_info(" \t\t"+red("--replay")+"\t\t reinstall all the packages and their dependencies")
@@ -58,6 +58,11 @@ def print_help():
     print_info(" \t\t"+darkgreen("list")+red("\t\t\t list all the available Security Advisories"))
     print_info(" \t\t\t"+red("--affected")+"\t list only affected")
     print_info(" \t\t\t"+red("--unaffected")+"\t list only unaffected")
+    print_info(" \t\t"+darkgreen("info")+red("\t\t\t show information about provided advisories identifiers"))
+    print_info(" \t\t"+darkgreen("install")+red("\t\t\t automaticly install all the available security updates"))
+    print_info(" \t\t\t"+red("--ask")+"\t\t\t ask before making any changes")
+    print_info(" \t\t\t"+red("--fetch")+"\t\t\t just download packages")
+    print_info(" \t\t\t"+red("--pretend")+"\t\t just show what would be done")
     print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
 
     print_info(" \t"+blue("install")+brown("\t\t install one or more packages or .tbz2"))
