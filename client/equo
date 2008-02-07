@@ -341,9 +341,9 @@ except exceptionTools.RepositoryError, e:
     sys.exit(101)
 except SystemExit:
     pass
-except IOError, (errno, strerror):
+except IOError, e:
     reset_cache()
-    if errno != 32:
+    if e.errno != 32:
         raise
 except KeyboardInterrupt:
     reset_cache()

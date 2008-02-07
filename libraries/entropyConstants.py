@@ -712,8 +712,8 @@ def initConfig_entropyConstants(rootdir):
                         f.write(str(pid))
                         f.flush()
                         f.close()
-                    except IOError, (errno,strerror):
-                        if errno == 30: # readonly filesystem
+                    except IOError, e:
+                        if e.errno == 30: # readonly filesystem
                             pass
                         else:
                             raise

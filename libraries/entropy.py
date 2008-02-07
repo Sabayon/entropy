@@ -2864,8 +2864,8 @@ class PackageInterface:
                     # XXX
                     shutil.move(fromfile_encoded,tofile)
 
-                except IOError,(errno,strerror):
-                    if errno == 2:
+                except IOError, e:
+                    if e.errno == 2:
                         # better to pass away, sometimes gentoo packages are fucked up and contain broken things
                         pass
                     else:

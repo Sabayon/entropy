@@ -284,8 +284,8 @@ def writechar(char):
     try:
         sys.stdout.write(char)
         sys.stdout.flush()
-    except IOError, (errno,strerror):
-        if errno == 32:
+    except IOError, e:
+        if e.errno == 32:
             return
         raise
 
