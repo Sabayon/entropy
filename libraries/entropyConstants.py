@@ -661,6 +661,12 @@ def initConfig_entropyConstants(rootdir):
         # packages keywords/mask/unmask settings
         'packagemasking': {}, # package masking information dictionary filled by maskingparser.py
 
+        # packages whose need their other installs (different tag), to be removed
+        'conflicting_tagged_packages': {
+            'x11-drivers/nvidia-drivers': ['x11-drivers/nvidia-drivers'],
+            'x11-drivers/ati-drivers': ['x11-drivers/ati-drivers'],
+        },
+
     }
     etpConst.update(myConst)
     del myConst

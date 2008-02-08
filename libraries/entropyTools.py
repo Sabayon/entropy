@@ -2125,6 +2125,11 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     if (kernelDependentModule):
         # add kname to the dependency
         data['dependencies'].append("=sys-kernel/linux-"+kname+"-"+kver)
+        key = data['category']+"/"+data['name']
+        if etpConst['conflicting_tagged_packages'].has_key(key):
+            myconflicts = etpConst['conflicting_tagged_packages'][key]
+            for conflict in myconflicts:
+                data['conflicts'].append(conflict)
 
     '''
     if (kernelItself):
