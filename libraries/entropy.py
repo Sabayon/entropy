@@ -760,21 +760,23 @@ class EquoInterface(TextInterface):
 
         elif len(repoResults) == 1:
             # one result found
-            for repo in repoResults:
-                atomMatchCache[atom] = {}
-                atomMatchCache[atom]['result'] = repoResults[repo],repo
-                atomMatchCache[atom]['matchSlot'] = matchSlot
-                atomMatchCache[atom]['matchBranches'] = matchBranches
-                atomMatchCache[atom]['caseSensitive'] = caseSensitive
-                atomMatchCache[atom]['packagesFilter'] = packagesFilter
-                atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-                atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
-                return repoResults[repo],repo
+            repo = repoResults.keys()[0]
+            atomMatchCache[atom] = {}
+            atomMatchCache[atom]['result'] = repoResults[repo],repo
+            atomMatchCache[atom]['matchSlot'] = matchSlot
+            atomMatchCache[atom]['matchBranches'] = matchBranches
+            atomMatchCache[atom]['caseSensitive'] = caseSensitive
+            atomMatchCache[atom]['packagesFilter'] = packagesFilter
+            atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
+            atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
+            return repoResults[repo],repo
 
+        # FIXME: consider to rewrite the code below
         elif len(repoResults) > 1:
             # we have to decide which version should be taken
 
-            # .tbz2 repos have always the precedence, so if we find them, we should second what user wants, installing his tbz2
+            # .tbz2 repos have always the precedence, so if we find them,
+            # we should second what user wants, installing his tbz2
             tbz2repos = [x for x in repoResults if x.endswith(".tbz2")]
             if tbz2repos:
                 del tbz2repos
@@ -804,8 +806,7 @@ class EquoInterface(TextInterface):
             # found duplicates, this mean that we have to look at the revision and then, at the version tag
             # if all this shait fails, get the uppest repository
             # if no duplicates, we're done
-            filteredVersions = self.entropyTools.filterDuplicatedEntries(versions)
-            if (len(versions) > len(filteredVersions)):
+            if (len(versions) > len(set(versions))):
                 # there are duplicated results, fetch them
                 # get the newerVersion
                 newerVersion = self.entropyTools.getNewerVersion(versions)
@@ -935,6 +936,7 @@ class EquoInterface(TextInterface):
                 atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
                 atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
                 return repoResults[reponame],reponame
+
 
     def __repository_move_clear_cache(self, repoid):
         # clean world_available cache
@@ -1259,6 +1261,7 @@ class EquoInterface(TextInterface):
 
             matchdb = self.openRepositoryDatabase(match[1])
             myundeps = matchdb.retrieveDependenciesList(match[0])
+            print myundeps
             if (not empty_deps):
                 myundeps, xxx = self.filterSatisfiedDependencies(myundeps, deep_deps = deep_deps)
                 del xxx
@@ -1651,6 +1654,13 @@ class EquoInterface(TextInterface):
             except:
                 self.dumpTools.dumpobj(etpCache['world_update'], {})
         return update, remove, fine
+
+    def is_match_masked(self, match):
+        dbconn = self.openRepositoryDatabase(match[1])
+        rc = dbconn.idpackageValidator(match[0])
+        if rc != -1:
+            return False
+        return True
 
     # every tbz2 file that would be installed must pass from here
     def add_tbz2_to_repos(self, tbz2file):
@@ -3262,6 +3272,7 @@ class PackageInterface:
                                                 self.Entropy.entropyTools.dep_getkey(self.infoDict['atom']),
                                                 self.infoDict['slot']
                                             )
+
         if self.infoDict['removeidpackage'] != -1:
             self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(self.infoDict['removeidpackage'])
 
@@ -3940,6 +3951,7 @@ class RepoInterface:
                                 )
                 dbconn = self.Entropy.openRepositoryDatabase(repo)
                 dbconn.createAllIndexes()
+                self.Entropy.clientDbconn.createAllIndexes()
 
             self.Entropy.cycleDone()
 

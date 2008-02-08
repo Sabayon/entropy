@@ -409,6 +409,7 @@ dep_gettagCache = {}
 removePackageOperatorsCache = {}
 compareVersionsCache = {}
 getNewerVersionCache = {}
+getEntropyNewerVersionCache = {}
 linkerPaths = set()
 # repository atoms updates digest cache
 repositoryUpdatesDigestCache_db = {}
@@ -438,6 +439,7 @@ def const_resetCache():
     removePackageOperatorsCache.clear()
     compareVersionsCache.clear()
     getNewerVersionCache.clear()
+    getEntropyNewerVersionCache.clear()
     linkerPaths.clear()
     repositoryUpdatesDigestCache_db.clear()
     repositoryUpdatesDigestCache_disk.clear()

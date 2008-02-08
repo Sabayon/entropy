@@ -999,63 +999,100 @@ def entropyCompareVersions(listA,listB):
         raise exceptionTools.InvalidDataType("InvalidDataType: listA or listB are not properly formatted.")
     # start with version
     rc = compareVersions(listA[0],listB[0])
-    
+
     if (rc == 0):
-	# check tag
-	if listA[1] > listB[1]:
-	    return 1
-	elif listA[1] < listB[1]:
-	    return -1
-	else:
-	    # check rev
-	    if listA[2] > listB[2]:
-		return 1
-	    elif listA[2] < listB[2]:
-		return -1
-	    else:
-		return 0
+        # check tag
+        if listA[1] > listB[1]:
+            return 1
+        elif listA[1] < listB[1]:
+            return -1
+        else:
+            # check rev
+            if listA[2] > listB[2]:
+                return 1
+            elif listA[2] < listB[2]:
+                return -1
+            else:
+                return 0
     return rc
 
 '''
    @description: reorder a version list
    @input versionlist: a list
    @output: the ordered list
+   XXX DEPRECATED
 '''
+def getNewerVersion(versions):
 
-def getNewerVersion(InputVersionlist):
+    if len(versions) == 1:
+        return versions
 
-    cached = getNewerVersionCache.get(tuple(InputVersionlist))
+    cached = getNewerVersionCache.get(tuple(versions))
     if cached != None:
-	return cached
+        return cached
 
-    versionlist = InputVersionlist[:]
-
-    # is there anything to filter btw?
-    if len(InputVersionlist) == 1:
-        getNewerVersionCache[tuple(versionlist)] = versionlist
-        return versionlist
+    versionlist = versions[:]
 
     rc = False
     while not rc:
-	change = False
+        change = False
         for x in range(len(versionlist)):
-	    pkgA = versionlist[x]
-	    try:
-	        pkgB = versionlist[x+1]
-	    except:
-	        pkgB = "0"
+            pkgA = versionlist[x]
+            try:
+                pkgB = versionlist[x+1]
+            except:
+                pkgB = "0"
             result = compareVersions(pkgA,pkgB)
-	    #print pkgA + "<->" +pkgB +" = " + str(result)
-	    if result < 0:
-	        # swap positions
-	        versionlist[x] = pkgB
-	        versionlist[x+1] = pkgA
-		change = True
-	if (not change):
-	    rc = True
-    
-    getNewerVersionCache[tuple(InputVersionlist)] = versionlist
+            #print pkgA + "<->" +pkgB +" = " + str(result)
+            if result < 0:
+                # swap positions
+                versionlist[x] = pkgB
+                versionlist[x+1] = pkgA
+                change = True
+        if (not change):
+            rc = True
+
+    getNewerVersionCache[tuple(versions)] = versionlist
     return versionlist
+
+
+'''
+    descendent order
+    versions = [(version,tag,revision),(version,tag,revision)]
+'''
+def getEntropyNewerVersion(versions):
+
+    if len(versions) == 1:
+        return versions
+
+    cached = getEntropyNewerVersionCache.get(tuple(versions))
+    if cached != None:
+        return cached
+
+    myversions = versions[:]
+    # ease the work
+
+    rc = False
+    while not rc:
+        change = False
+        for x in range(len(myversions)):
+            pkgA = myversions[x]
+            try:
+                pkgB = myversions[x+1]
+            except:
+                pkgB = ("0","",0)
+            result = entropyCompareVersions(pkgA,pkgB)
+            #print pkgA + "<->" +pkgB +" = " + str(result)
+            if result < 0:
+                # swap positions
+                myversions[x] = pkgB
+                myversions[x+1] = pkgA
+                change = True
+        if (not change):
+            rc = True
+
+    getEntropyNewerVersionCache[tuple(versions)] = myversions
+    return myversions
 
 '''
    @description: reorder a list of strings converted into ascii
@@ -2083,7 +2120,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
             data['useflags'].append("-"+x)
     data['sources'] = portage_metadata['SRC_URI'].split()
     data['dependencies'] = [x for x in portage_metadata['RDEPEND'].split()+portage_metadata['PDEPEND'].split() if not x.startswith("!") and not x in ("(","||",")","")]
-    data['conflicts'] = [x for x in portage_metadata['RDEPEND'].split()+portage_metadata['PDEPEND'].split() if x.startswith("!") and not x in ("(","||",")","")]
+    data['conflicts'] = [x[1:] for x in portage_metadata['RDEPEND'].split()+portage_metadata['PDEPEND'].split() if x.startswith("!") and not x in ("(","||",")","")]
 
     if (kernelDependentModule):
         # add kname to the dependency

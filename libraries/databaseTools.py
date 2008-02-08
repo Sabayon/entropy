@@ -1844,7 +1844,6 @@ class etpDatabase(TextInterface):
 
     def getScopeData(self, idpackage):
 
-        self.createBaseinfoIndex()
         self.cursor.execute("""
                 SELECT 
                         baseinfo.atom,
@@ -1865,9 +1864,6 @@ class etpDatabase(TextInterface):
         return self.cursor.fetchone()
 
     def getBaseData(self,idpackage):
-
-        self.createBaseinfoIndex()
-        self.createExtrainfoIndex()
 
         sql = """
                 SELECT 
@@ -2409,7 +2405,9 @@ class etpDatabase(TextInterface):
         deps = self.retrieveDependencies(idpackage)
         conflicts = self.retrieveConflicts(idpackage)
         for x in conflicts:
-            deps.add("!"+x)
+            if x[0] != "!": # workaround for my mistake
+                x = "!"+x
+            deps.add(x)
         del conflicts
 
         self.storeInfoCache(idpackage,'retrieveDependenciesList',deps)
@@ -2417,17 +2415,15 @@ class etpDatabase(TextInterface):
 
     def retrieveDependencies(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveDependencies')
-	if cache != None: return cache
-        
-        self.createDependenciesIndex()
-	
-	self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE dependencies.idpackage = (?) and dependencies.iddependency = dependenciesreference.iddependency', (idpackage,))
-        
-	deps = self.fetchall2set(self.cursor.fetchall())
+        cache = self.fetchInfoCache(idpackage,'retrieveDependencies')
+        if cache != None: return cache
 
-	self.storeInfoCache(idpackage,'retrieveDependencies',deps)
-	return deps
+        self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE dependencies.idpackage = (?) and dependencies.iddependency = dependenciesreference.iddependency', (idpackage,))
+
+        deps = self.fetchall2set(self.cursor.fetchall())
+
+        self.storeInfoCache(idpackage,'retrieveDependencies',deps)
+        return deps
 
     def retrieveIdDependencies(self, idpackage):
 
@@ -2501,8 +2497,6 @@ class etpDatabase(TextInterface):
         return sources
 
     def retrieveContent(self, idpackage, extended = False, contentType = None):
-
-        self.createContentIndex() # FIXME: remove this with 1.0
 
         # like portage does
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
@@ -2650,7 +2644,6 @@ class etpDatabase(TextInterface):
         return result[0]
 
     def isFileAvailable(self, file, extended = False):
-        self.createContentIndex() # FIXME: remove this with 1.0
 
         if extended:
             self.cursor.execute('SELECT * FROM content WHERE file = (?)', (file,))
@@ -3404,6 +3397,26 @@ class etpDatabase(TextInterface):
         self.createBaseinfoIndex()
         self.createDependenciesIndex()
         self.createExtrainfoIndex()
+        self.createNeededIndex()
+        self.createUseflagsIndex()
+
+    def createNeededIndex(self):
+        if self.dbname != "etpdb" and self.indexing:
+            try:
+                self.checkReadOnly()
+            except exceptionTools.OperationNotPermitted:
+                return
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( idneeded,library )')
+            self.commitChanges()
+
+    def createUseflagsIndex(self):
+        if self.dbname != "etpdb" and self.indexing:
+            try:
+                self.checkReadOnly()
+            except exceptionTools.OperationNotPermitted:
+                return
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS useflagsindex ON useflagsreference ( idflag,flagname )')
+            self.commitChanges()
 
     def createContentIndex(self):
         if self.dbname != "etpdb" and self.indexing:
@@ -3648,11 +3661,30 @@ class etpDatabase(TextInterface):
             return None
 
     def atomMatchStoreCache(self, result, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter):
+
+        data = {
+            'result': result[:],
+            'atom': atom,
+            'caseSensitive': caseSensitive,
+            'matchSlot': matchSlot,
+            'multiMatch': multiMatch,
+            'matchBranches': matchBranches,
+            'matchTag': matchTag,
+            'packagesFilter': packagesFilter,
+            'dbname': self.dbname
+        }
+        task = entropyTools.parallelTask(self.__atomMatchStoreCache, data)
+        task.parallel_wait()
+        task.start()
+        del data
+
+    def __atomMatchStoreCache(self, data):
         try:
-            cache_tuple = (atom,matchSlot,matchTag,multiMatch,caseSensitive,matchBranches,packagesFilter)
-            dbCacheStore[etpCache['dbMatch']+self.dbname][cache_tuple] = result
+            cache_tuple = (data['atom'],data['matchSlot'],data['matchTag'],data['multiMatch'],data['caseSensitive'],data['matchBranches'],data['packagesFilter'])
+            dbCacheStore[etpCache['dbMatch']+data['dbname']][cache_tuple] = data['result'][:]
         except KeyError: # againnn, issues with dicts??
             pass
+
 
     # function that validate one atom by reading keywords settings
     # idpackageValidatorCache = {} >> function cache
@@ -3744,6 +3776,41 @@ class etpDatabase(TextInterface):
                 newresults.append(item)
         return newresults
 
+    def __filterSlot(self, idpackage, slot):
+        if slot == None:
+            return idpackage
+        dbslot = self.retrieveSlot(idpackage)
+        if str(dbslot) == str(slot):
+            return idpackage
+
+    def __filterTag(self, idpackage, tag):
+        if tag == None:
+            return idpackage
+        dbtag = self.retrieveVersionTag(idpackage)
+        if tag == dbtag:
+            return idpackage
+
+    def __filterSlotTag(self, foundIDs, slot, tag):
+
+        newlist = set()
+        for data in foundIDs:
+            idpackage = data[1]
+
+            idpackage = self.__filterSlot(idpackage, slot)
+            if not idpackage:
+                continue
+
+            idpackage = self.__filterTag(idpackage, tag)
+            if not idpackage:
+                continue
+
+            newlist.add(data)
+
+        return list(newlist)
+
+
+
+
     '''
        @description: matches the user chosen package name+ver, if possibile, in a single repository
        @input atom: string, atom to match
@@ -3784,20 +3851,11 @@ class etpDatabase(TextInterface):
         pkgversion = ''
         if (not justname):
 
-            # FIXME: deprecated - will be removed soonly
-            if strippedAtom.split("-")[-1][0] == "t":
-                strippedAtom = '-t'.join(strippedAtom.split("-t")[:-1])
-
             # get version
             data = entropyTools.catpkgsplit(strippedAtom)
             if data == None:
                 return -1,3 # atom is badly formatted
             pkgversion = data[2]+"-"+data[3]
-
-            # FIXME: deprecated - will be removed soonly
-            if not matchTag:
-                if scan_atom.split("-")[-1].startswith("t"):
-                    matchTag = scan_atom.split("-")[-1]
 
         pkgkey = entropyTools.dep_getkey(strippedAtom)
         splitkey = pkgkey.split("/")
@@ -3893,253 +3951,126 @@ class etpDatabase(TextInterface):
                     foundIDs.append(results[0])
                     break
 
+        ### FILTERING
+        ### FILTERING
+        ### FILTERING
+
         if packagesFilter: # keyword filtering
             foundIDs = self.packagesFilter(foundIDs)
 
-        if (foundIDs):
-            # now we have to handle direction
-            if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
-                # check if direction is used with justname, in this case, return an error
-                if (justname):
-                    self.atomMatchStoreCache((-1,3), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                    return -1,3 # error, cannot use directions when not specifying version
+        # filter broken entries
+        if self.dbname == "client":
+            for x in range(len(foundIDs)):
+                try:
+                    self.retrieveAtom(foundIDs[x][1])
+                except TypeError:
+                    del foundIDs[x]
 
-                if (direction == "~") or (direction == "=") or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")): # any revision within the version specified OR the specified version
+        # filter slot and tag
+        foundIDs = self.__filterSlotTag(foundIDs, matchSlot, matchTag)
 
-                    if (direction == '' and not justname):
-                        direction = "="
+        ### END FILTERING
+        ### END FILTERING
+        ### END FILTERING
 
-                    # remove revision (-r0 if none)
-                    if (direction == "="):
-                        if (pkgversion.split("-")[-1] == "r0"):
-                            pkgversion = "-".join(pkgversion.split("-")[:-1])
-                    if (direction == "~"):
-                        pkgversion = entropyTools.remove_revision(pkgversion)
-
-                    dbpkginfo = []
-                    for data in foundIDs:
-                        idpackage = data[1]
-                        dbver = self.retrieveVersion(idpackage)
-                        if (direction == "~"):
-                            myver = entropyTools.remove_revision(dbver)
-                            if myver == pkgversion:
-                                # found
-                                dbpkginfo.append([idpackage,dbver])
-                        else:
-                            # media-libs/test-1.2* support
-                            if pkgversion[-1] == "*":
-                                if dbver.startswith(pkgversion[:-1]):
-                                    dbpkginfo.append([idpackage,dbver])
-                            else:
-                                # do versions matches?
-                                if pkgversion == dbver:
-                                    dbpkginfo.append([idpackage,dbver])
-
-                    if (not dbpkginfo):
-                        self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                        return -1,1
-
-                    versions = []
-                    for x in dbpkginfo:
-                        if (matchSlot != None):
-                            mslot = self.retrieveSlot(x[0])
-                            if (str(mslot) != str(matchSlot)):
-                                continue
-                        if (matchTag != None):
-                            if matchTag != self.retrieveVersionTag(x[0]):
-                                continue
-                        versions.append(x[1])
-
-                    if (not versions):
-                        self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                        return -1,1
-
-                    # who is newer ?
-                    versionlist = entropyTools.getNewerVersion(versions)
-                    newerPackage = dbpkginfo[versions.index(versionlist[0])]
-
-                    # now look if there's another package with the same category, name, version, but different tag
-
-                    scope_data = self.getScopeData(newerPackage[0])
-                    # if == None, entry is corrupted and this surely happened on client db
-                    # otherwise, better to let it raising an exception
-                    if not scope_data and self.dbname == "client":
-                        return -1,1 # return as not found
-                    similarPackages = self.searchPackagesKeyVersion(key = scope_data[1]+"/"+scope_data[2], version = scope_data[3], branch = scope_data[7])
-                    
-                    del scope_data
-
-                    if (multiMatch):
-                        # filter only valid keywords
-                        similarPackages = set([x[1] for x in similarPackages])
-                        self.atomMatchStoreCache((similarPackages,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                        return similarPackages,0
-
-                    if (len(similarPackages) > 1):
-                        # gosh, there are packages with the same name, version, category
-                        # we need to parse version tag
-                        versionTags = []
-                        for pkg in similarPackages:
-                            versionTags.append(self.retrieveVersionTag(pkg[1]))
-                        versiontaglist = entropyTools.getNewerVersionTag(versionTags)
-                        newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
-                        newerPackage = newerPackage[1],None # so will return correctly
-
-                    # filter only valid keywords
-                    self.atomMatchStoreCache((newerPackage[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                    return newerPackage[0],0
-
-                elif (direction.find(">") != -1) or (direction.find("<") != -1):
-
-                    # remove revision (-r0 if none)
-                    if pkgversion.split("-")[-1] == "r0":
-                        # remove
-                        pkgversion = '-'.join(pkgversion.split("-")[:-1])
-
-                    dbpkginfo = []
-                    for data in foundIDs:
-                        idpackage = data[1]
-                        dbver = self.retrieveVersion(idpackage)
-                        pkgcmp = entropyTools.compareVersions(pkgversion,dbver)
-                        if direction == ">": # the --deep mode should really act on this
-                            if (pkgcmp < 0):
-                                # found
-                                dbpkginfo.append([idpackage,dbver])
-                        elif direction == "<":
-                            if (pkgcmp > 0):
-                                # found
-                                dbpkginfo.append([idpackage,dbver])
-                        elif direction == ">=": # the --deep mode should really act on this
-                            if (pkgcmp <= 0):
-                                # found
-                                dbpkginfo.append([idpackage,dbver])
-                        elif direction == "<=":
-                            if (pkgcmp >= 0):
-                                # found
-                                dbpkginfo.append([idpackage,dbver])
-
-                    if (not dbpkginfo):
-                        # this version is not available
-                        self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                        return -1,1
-
-                    versions = []
-                    multiMatchList = set()
-                    _dbpkginfo = []
-                    for x in dbpkginfo:
-                        if (matchSlot != None):
-                            mslot = self.retrieveSlot(x[0])
-                            if (str(matchSlot) != str(mslot)):
-                                continue
-                        if (matchTag != None):
-                            if matchTag != self.retrieveVersionTag(x[0]):
-                                continue
-                        if (multiMatch):
-                            multiMatchList.add(x[0])
-                        versions.append(x[1])
-                        _dbpkginfo.append(x)
-                    dbpkginfo = _dbpkginfo
-
-                    if (multiMatch):
-                        self.atomMatchStoreCache((multiMatchList,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                        return multiMatchList,0
-
-                    if (not versions):
-                        self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                        return -1,1
-
-                    # who is newer ?
-                    versionlist = entropyTools.getNewerVersion(versions)
-                    newerPackage = dbpkginfo[versions.index(versionlist[0])]
-
-                    # now look if there's another package with the same category, name, version, but different tag
-                    scope_data = self.getScopeData(newerPackage[0])
-                    # if == None, entry is corrupted and this surely happened on client db
-                    # otherwise, better to let it raising an exception
-                    if not scope_data and self.dbname == "client":
-                        return -1,1 # return as not found
-                    similarPackages = self.searchPackagesKeyVersion(key = scope_data[1]+"/"+scope_data[2], version = scope_data[3], branch = scope_data[7])
-
-                    if (multiMatch):
-                        similarPackages = set([x[1] for x in similarPackages])
-                        self.atomMatchStoreCache((similarPackages,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                        return similarPackages,0
-
-                    if (len(similarPackages) > 1):
-                        # gosh, there are packages with the same name, version, category
-                        # we need to parse version tag
-                        versionTags = []
-                        for pkg in similarPackages:
-                            versionTags.append(self.retrieveVersionTag(pkg[1]))
-                        versiontaglist = entropyTools.getNewerVersionTag(versionTags)
-                        newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
-                        newerPackage = newerPackage[1],None
-
-
-                    self.atomMatchStoreCache((newerPackage[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                    return newerPackage[0],0
-
-                else:
-                    self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                    return -1,1
-
-            else:
-
-                # not set, just get the newer version, matching slot choosen if matchSlot != None
-                versionIDs = []
-                multiMatchList = set()
-                _foundIDs = []
-                for data in foundIDs:
-                    if (matchSlot == None) and (matchTag == None):
-                        versionIDs.append(self.retrieveVersion(data[1]))
-                        if (multiMatch):
-                            multiMatchList.add(data[1])
-                    else:
-                        if (matchSlot != None):
-                            foundslot = self.retrieveSlot(data[1])
-                            if (str(foundslot) != str(matchSlot)):
-                                continue
-                        if (matchTag != None):
-                            if matchTag != self.retrieveVersionTag(data[1]):
-                                continue
-                        versionIDs.append(self.retrieveVersion(data[1]))
-                        if (multiMatch):
-                            multiMatchList.add(data[1])
-                    _foundIDs.append(data)
-                foundIDs = _foundIDs
-
-                if (multiMatch):
-                    self.atomMatchStoreCache((multiMatchList,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                    return multiMatchList,0
-
-                if (not versionIDs):
-                    self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                    return -1,1
-
-                versionlist = entropyTools.getNewerVersion(versionIDs)
-                newerPackage = foundIDs[versionIDs.index(versionlist[0])]
-
-                # now look if there's another package with the same category, name, version, tag
-                scope_data = self.getScopeData(newerPackage[1])
-                # if == None, entry is corrupted and this surely happened on client db
-                # otherwise, better to let it raising an exception
-                if not scope_data and self.dbname == "client":
-                    return -1,1 # return as not found
-                similarPackages = self.searchPackagesKeyVersion(key = scope_data[1]+"/"+scope_data[2], version = scope_data[3], branch = scope_data[7])
-
-                if (len(similarPackages) > 1):
-                    # gosh, there are packages with the same name, version, category
-                    # we need to parse version tag
-                    versionTags = []
-                    for pkg in similarPackages:
-                        versionTags.append(self.retrieveVersionTag(pkg[1]))
-                    versiontaglist = entropyTools.getNewerVersionTag(versionTags)
-                    newerPackage = similarPackages[versionTags.index(versiontaglist[0])]
-
-                self.atomMatchStoreCache((newerPackage[1],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                return newerPackage[1],0
-
-        else:
-            # package not found in any branch
+        if not foundIDs:
+            # package not found
             self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
             return -1,1
+
+        ### FILLING dbpkginfo
+        ### FILLING dbpkginfo
+        ### FILLING dbpkginfo
+
+        dbpkginfo = []
+        # now we have to handle direction
+        if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
+
+            if (not justname) and \
+                ((direction == "~") or (direction == "=") or \
+                (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*"))):
+                # any revision within the version specified OR the specified version
+
+                if (direction == '' and not justname):
+                    direction = "="
+
+                # remove revision (-r0 if none)
+                if (direction == "="):
+                    if (pkgversion.split("-")[-1] == "r0"):
+                        pkgversion = entropyTools.remove_revision(pkgversion)
+                if (direction == "~"):
+                    pkgversion = entropyTools.remove_revision(pkgversion)
+
+                for data in foundIDs:
+
+                    idpackage = data[1]
+                    dbver = self.retrieveVersion(idpackage)
+                    if (direction == "~"):
+                        myver = entropyTools.remove_revision(dbver)
+                        if myver == pkgversion:
+                            # found
+                            dbpkginfo.append([idpackage,dbver])
+                    else:
+                        # media-libs/test-1.2* support
+                        if pkgversion[-1] == "*":
+                            if dbver.startswith(pkgversion[:-1]):
+                                dbpkginfo.append((idpackage,dbver))
+                        # do versions match?
+                        elif pkgversion == dbver:
+                            dbpkginfo.append((idpackage,dbver))
+
+            elif (direction.find(">") != -1) or (direction.find("<") != -1):
+
+                # remove revision (-r0 if none)
+                if pkgversion.split("-")[-1] == "r0":
+                    # remove
+                    entropyTools.remove_revision(pkgversion)
+
+                for data in foundIDs:
+
+                    idpackage = data[1]
+                    dbver = self.retrieveVersion(idpackage)
+                    pkgcmp = entropyTools.compareVersions(pkgversion,dbver)
+                    if direction == ">": # the --deep mode should really act on this
+                        if (pkgcmp < 0):
+                            # found
+                            dbpkginfo.append((idpackage,dbver))
+                    elif direction == "<":
+                        if (pkgcmp > 0):
+                            # found
+                            dbpkginfo.append((idpackage,dbver))
+                    elif direction == ">=": # the --deep mode should really act on this
+                        if (pkgcmp <= 0):
+                            # found
+                            dbpkginfo.append((idpackage,dbver))
+                    elif direction == "<=":
+                        if (pkgcmp >= 0):
+                            # found
+                            dbpkginfo.append((idpackage,dbver))
+
+        else: # just the key
+
+            dbpkginfo = [((x[1]),self.retrieveVersion(x[1])) for x in foundIDs]
+
+        ### END FILLING dbpkginfo
+        ### END FILLING dbpkginfo
+        ### END FILLING dbpkginfo
+
+        if not dbpkginfo:
+            self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
+            return -1,1
+
+        if multiMatch:
+            x = set([x[0] for x in dbpkginfo])
+            self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
+            return x,0
+
+        if len(dbpkginfo) == 1:
+            self.atomMatchStoreCache((dbpkginfo[0][0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
+            return dbpkginfo[0][0],0
+
+        versions = [(x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0])) for x in dbpkginfo]
+        versionlist = entropyTools.getEntropyNewerVersion(versions)
+        x = dbpkginfo[versions.index(versionlist[0])][0]
+        self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
+        return x,0
