@@ -1261,7 +1261,6 @@ class EquoInterface(TextInterface):
 
             matchdb = self.openRepositoryDatabase(match[1])
             myundeps = matchdb.retrieveDependenciesList(match[0])
-            print myundeps
             if (not empty_deps):
                 myundeps, xxx = self.filterSatisfiedDependencies(myundeps, deep_deps = deep_deps)
                 del xxx
