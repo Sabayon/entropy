@@ -925,16 +925,7 @@ class etpDatabase(TextInterface):
 
             if etpData['counter'] <= -2:
                 # special cases
-
-                try:
-                    mycounters = list(self.listAllCounters(onlycounters = True))
-                    mycounter = min(mycounters)
-                    if mycounter >= -1:
-                        etpData['counter'] = -2
-                    else:
-                        etpData['counter'] = mycounter-1
-                except:
-                    etpData['counter'] = -2
+                etpData['counter'] = self.getNewNegativeCounter()
 
             try:
                 self.cursor.execute(
@@ -1034,19 +1025,9 @@ class etpDatabase(TextInterface):
 
         # injected?
         if etpData['injected']:
-            try:
-                self.cursor.execute(
-                    'INSERT into injected VALUES '
-                    '(?)'
-                    , ( idpackage, )
-                )
-            except: # FIXME: remove this before 1.0
+            if not self.doesTableExist("injected"):
                 self.createInjectedTable()
-                self.cursor.execute(
-                    'INSERT into injected VALUES '
-                    '(?)'
-                    , ( idpackage, )
-                )
+            self.setInjected(idpackage)
 
         # compile messages
         if not self.doesTableExist("messages"):
@@ -1505,6 +1486,15 @@ class etpDatabase(TextInterface):
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert compile flags but then, fetching it returned -1. There's something broken.")
         self.commitChanges()
 
+    def setInjected(self, idpackage):
+        self.checkReadOnly()
+        if not self.isInjected(idpackage):
+            self.cursor.execute(
+                'INSERT into injected VALUES '
+                '(?)'
+                , ( idpackage, )
+            )
+
     # date expressed the unix way
     def setDateCreation(self, idpackage, date):
         self.checkReadOnly()
@@ -1796,6 +1786,19 @@ class etpDatabase(TextInterface):
         for iddep in orphanedDeps:
             self.cursor.execute('DELETE FROM dependenciesreference WHERE iddependency = '+str(iddep))
         self.commitChanges()
+
+    def getNewNegativeCounter(self):
+        counter = -2
+        try:
+            mycounters = list(self.listAllCounters(onlycounters = True))
+            mycounter = min(mycounters)
+            if mycounter >= -1:
+                counter = -2
+            else:
+                counter = mycounter-1
+        except:
+            pass
+        return counter
 
     def getIDPackage(self, atom, branch = etpConst['branch']):
         self.cursor.execute('SELECT "IDPACKAGE" FROM baseinfo WHERE atom = "'+atom+'" AND branch = "'+branch+'"')

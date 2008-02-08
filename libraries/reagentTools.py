@@ -137,6 +137,7 @@ def update(options):
             installedCounters = set()
             toBeAdded = set()
             toBeRemoved = set()
+            toBeInjected = set()
 
             # packages to be added
             for x in installedPackages[0]:
@@ -153,13 +154,14 @@ def update(options):
                 if x[0] not in installedCounters:
                     # check if the package is in toBeAdded
                     if (toBeAdded):
-                        #print x
+
                         atom = dbconn.retrieveAtom(x[1])
                         atomkey = Entropy.entropyTools.dep_getkey(atom)
                         atomtag = Entropy.entropyTools.dep_gettag(atom)
                         atomslot = dbconn.retrieveSlot(x[1])
 
                         add = True
+                        tagfound = False
                         for pkgdata in toBeAdded:
                             addslot = getPackageSlot(pkgdata[0])
                             addkey = Entropy.entropyTools.dep_getkey(pkgdata[0])
@@ -173,12 +175,37 @@ def update(options):
                         if add:
                             toBeRemoved.add(x[1])
                     else:
-                        toBeRemoved.add(x[1])
+                        if dbconn.retrieveVersionTag(x[1]) != None:
+                            if not dbconn.isInjected(x[1]):
+                                toBeInjected.add(x[1])
+                        else:
+                            toBeRemoved.add(x[1])
 
-            if (not toBeRemoved) and (not toBeAdded):
+            if (not toBeRemoved) and (not toBeAdded) and (not toBeInjected):
                 print_info(brown(" * ")+red("Nothing to do, check later."))
                 # then exit gracefully
                 return 0
+
+            if (toBeInjected):
+                print_info(brown(" @@ ")+blue("These are the packages that would be changed to injected status:"))
+                for x in toBeInjected:
+                    atom = dbconn.retrieveAtom(x)
+                    print_info(brown("    # ")+red(atom))
+                if reagentRequestAsk:
+                    rc = Entropy.askQuestion(">>   Would you like to transform them now ?")
+                else:
+                    rc = "Yes"
+                if rc == "Yes":
+                    rwdbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+                    for x in toBeInjected:
+                        atom = rwdbconn.retrieveAtom(x)
+                        print_info(brown("   <> ")+blue("Transforming from database: ")+red(atom))
+                        # get new counter
+                        counter = rwdbconn.getNewNegativeCounter()
+                        rwdbconn.setCounter(x,counter)
+                        rwdbconn.setInjected(x)
+                    rwdbconn.closeDB()
+                    print_info(brown(" @@ ")+blue("Database transform complete."))
 
             if (toBeRemoved):
                 print_info(brown(" @@ ")+blue("These are the packages that would be removed from the database:"))
