@@ -176,7 +176,7 @@ def list_advisories(only_affected = False, only_unaffected = False):
     else:
         adv_metadata = Equo.Security.get_fixed_vulnerabilities()
     if not adv_metadata:
-        print_info(brown(" :: ")+darkgreen("No advisories available. Try running the 'update' tool."))
+        print_info(brown(" :: ")+darkgreen("No advisories available or applicable."))
         return 0
     adv_keys = adv_metadata.keys()
     adv_keys.sort()
@@ -207,6 +207,10 @@ def list_advisories(only_affected = False, only_unaffected = False):
 
 def install_packages(fetch = False):
 
+    cr = Equo.entropyTools.applicationLockCheck("install", gentle = True)
+    if (cr):
+        print_warning(red("Running with ")+bold("--pretend")+red("..."))
+        etpUi['pretend'] = True
     import text_ui
 
     print_info(red(" @@ ")+blue("Calculating security updates..."))
