@@ -1692,7 +1692,7 @@ class EquoInterface(TextInterface):
 
         del idpackages
 
-        if self.xcache:
+        if self.xcache and (etpConst['uid'] == 0):
             try:
                 mycache = {}
                 mycache['db_digest'] = db_digest
