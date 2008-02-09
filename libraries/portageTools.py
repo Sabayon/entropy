@@ -458,17 +458,18 @@ def dep_or_select(or_list):
 
 def paren_license_choose(dep_list):
 
-    newlist = []
+    newlist = set()
     for item in dep_list:
 
         if isinstance(item, list):
             # match the first
-            for x in item:
-                newlist.append(x)
+            data = set(paren_license_choose(item))
+            newlist.update(data)
         else:
             if item not in ["||"]:
-                newlist.append(item)
-    return newlist
+                newlist.add(item)
+
+    return list(newlist)
 
 ##
 ## HIGHLY DEPRECATED, USE calculate_dependencies
