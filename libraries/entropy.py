@@ -224,7 +224,7 @@ class EquoInterface(TextInterface):
                 os.system("rm -f "+cachefile)
             except:
                 pass
-        # reset dict cache
+
         if showProgress: self.updateProgress(darkgreen("Cache is now empty."), importance = 2, type = "info")
 
     def generate_cache(self, depcache = True, configcache = True):
@@ -306,7 +306,9 @@ class EquoInterface(TextInterface):
         # we can barely ignore any exception from here
         # especially cases where client db does not exist
         try:
-            self.calculate_world_updates()
+            update, remove, fine = self.calculate_world_updates()
+            del fine, remove
+            self.retrieveInstallQueue(update, False, False)
         except:
             pass
 
@@ -1141,15 +1143,6 @@ class EquoInterface(TextInterface):
                 if installedNeeded != repo_needed:
                     depunsatisfied.update(depsatisfied)
                     depsatisfied.clear()
-                '''
-                else:
-                    # also check useflags
-                    installedUseflags = self.clientDbconn.retrieveUseflags(clientMatch[0])
-                    repo_useflags = dbconn.retrieveUseflags(repoMatch[0])
-                    if installedUseflags != repo_useflags:
-                        depunsatisfied.update(depsatisfied)
-                        depsatisfied.clear()
-                '''
 
             unsatisfiedDeps.update(depunsatisfied)
             satisfiedDeps.update(depsatisfied)
@@ -1202,6 +1195,7 @@ class EquoInterface(TextInterface):
         while mydep != None:
 
             # already analyzed in this call
+
             if mydep[1] in treecache:
                 mydep = mybuffer.pop()
                 continue
@@ -1259,7 +1253,14 @@ class EquoInterface(TextInterface):
             matchcache.add(match)
             deptree.add((mydep[0],match)) # add match
 
-            matchdb = self.openRepositoryDatabase(match[1])
+            # library breakage check
+            clientmatch = self.clientDbconn.atomMatch(key, matchSlot = matchslot)
+            if clientmatch[0] != -1:
+                broken_atoms = self.__lookup_library_breakages(match, clientmatch, deep_deps = deep_deps)
+                for x in broken_atoms:
+                    if x not in treecache:
+                        mybuffer.push((treedepth,x))
+
             myundeps = matchdb.retrieveDependenciesList(match[0])
             if (not empty_deps):
                 myundeps, xxx = self.filterSatisfiedDependencies(myundeps, deep_deps = deep_deps)
@@ -1293,6 +1294,60 @@ class EquoInterface(TextInterface):
 
         return newdeptree,0 # note: newtree[0] contains possible conflicts
 
+    def clear_library_breakages_cache(self):
+        self.clientDbconn.clearLibraryBreakageCache()
+
+    def __lookup_library_breakages(self, match, clientmatch, deep_deps = False):
+
+        # there is no need to update this cache when "match" will be installed, because at that point
+        # clientmatch[0] will differ.
+        cached = self.clientDbconn.getLibraryBreakageCache(match, clientmatch[0], deep_deps)
+        if cached != None:
+            return cached
+
+        matchdb = self.openRepositoryDatabase(match[1])
+        reponeeded = matchdb.retrieveNeeded(match[0])
+        clientneeded = self.clientDbconn.retrieveNeeded(clientmatch[0])
+        neededdiff = clientneeded - reponeeded
+        broken_atoms = set()
+        if neededdiff:
+            # test content
+            repocontent = matchdb.retrieveContent(match[0])
+            repocontent = set([x for x in repocontent if (x.find(".so") != -1)])
+            repocontent = set([x for x in repocontent if (matchdb.isNeededAvailable(os.path.basename(x)) > 0)])
+            clientcontent = self.clientDbconn.retrieveContent(clientmatch[0])
+            clientcontent = set([x for x in clientcontent if (x.find(".so") != -1)])
+            clientcontent = set([x for x in clientcontent if (self.clientDbconn.isNeededAvailable(os.path.basename(x)) > 0)])
+            contentdiff = clientcontent - repocontent
+            del repocontent, clientcontent
+            search_libs = set()
+            linker_paths = self.entropyTools.collectLinkerPaths()
+            for cfile in contentdiff:
+                cpath = os.path.dirname(cfile)
+                if cpath in linker_paths:
+                    # there's a breakage
+                    cfile = os.path.basename(cfile)
+                    # search cfile
+                    search_libs.add(cfile)
+            search_libs.update(neededdiff)
+            del contentdiff
+            search_matches = set()
+            for x in search_libs:
+                y = self.clientDbconn.searchNeeded(x)
+                search_matches.update(y)
+            del search_libs
+            found_search_atoms = set()
+            for x in search_matches:
+                search_key, search_slot = self.clientDbconn.retrieveKeySlot(x)
+                search_repo_match = self.atomMatch(search_key, matchSlot = search_slot)
+                if search_repo_match[0] != -1:
+                    found_search_atoms.add("%s:%s" % (search_key,str(search_slot),))
+            if found_search_atoms:
+                search_unsat, xxx = self.filterSatisfiedDependencies(found_search_atoms, deep_deps = deep_deps)
+                broken_atoms.update(search_unsat)
+
+        self.clientDbconn.storeLibraryBreakageCache(broken_atoms, match, clientmatch[0], deep_deps)
+        return broken_atoms
 
     def get_required_packages(self, matched_atoms, empty_deps = False, deep_deps = False):
 
@@ -1304,7 +1359,7 @@ class EquoInterface(TextInterface):
 
         for atomInfo in matched_atoms:
 
-            if not etpUi['quiet']: count += 1; self.updateProgress(":: "+str(round((float(count)/atomlen)*100,1))+"% ::", importance = 0, type = "info", back = True)
+            if not etpUi['quiet']: count += 1; self.updateProgress(":: Sorting dependencies "+str(round((float(count)/atomlen)*100,1))+"% ::", importance = 0, type = "info", back = True)
 
             # check if atomInfo is in matchfilter 
 
@@ -1590,9 +1645,11 @@ class EquoInterface(TextInterface):
                 arevision = adbconn.retrieveRevision(match[0])
                 # if revision is 9999, then any revision is fine
                 if myscopedata[6] == 9999: arevision = 9999
-                if myscopedata[6] != arevision:
+                if empty_deps:
                     tainted = True
-                elif (myscopedata[6] == arevision):
+                elif myscopedata[6] != arevision:
+                    tainted = True
+                elif (myscopedata[6] == arevision) and (arevision == 9999):
                     # check if "needed" are the same, otherwise, pull
                     # this will avoid having old packages installed just because user ran equo database generate (migrating from gentoo)
                     # also this helps in environments with multiple repositories, to avoid messing with libraries
@@ -1600,6 +1657,7 @@ class EquoInterface(TextInterface):
                     needed = self.clientDbconn.retrieveNeeded(idpackage)
                     if needed != aneeded:
                         tainted = True
+                    #'''
                     else:
                         # check use flags too
                         # it helps for the same reason above and when doing upgrades to different branches
@@ -1607,8 +1665,7 @@ class EquoInterface(TextInterface):
                         useflags = self.clientDbconn.retrieveUseflags(idpackage)
                         if auseflags != useflags:
                             tainted = True
-                elif (empty_deps):
-                    tainted = True
+                    #'''
             if (tainted):
                 # Alice! use the key! ... and the slot
                 matchresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchSlot = myscopedata[4], matchBranches = (branch,))
@@ -1880,7 +1937,7 @@ class EquoInterface(TextInterface):
             return -1, data_transfer, resumed
         if fetchChecksum == "-3":
             return -3, data_transfer, resumed
-    
+
         del fetchConn
         if (digest):
             if (fetchChecksum != digest):
@@ -3961,6 +4018,10 @@ class RepoInterface:
 
         # clean caches
         if self.dbupdated:
+            try: # if no client db exists, we can barely ignore this
+                self.Entropy.clear_library_breakages_cache()
+            except:
+                pass
             self.Entropy.generate_cache(depcache = True, configcache = False)
             # update Security Advisories
             self.Entropy.Security.fetch_advisories()

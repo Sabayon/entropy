@@ -396,7 +396,7 @@ def searchOrphans():
                 # filter python compiled objects?
                 if filename.endswith(".pyo") or filename.startswith(".pyc") or filename == '.keep':
                     continue
-                mask = [x for x in etpConst['filesystemdirsmask'] if file.startswith(x)]
+                mask = [x for x in etpConst['filesystemdirsmask'] if x.startswith(x)]
                 if (not mask):
                     if (not etpUi['quiet']):
                         print_info(red(" @@ ")+blue("Looking: ")+bold(file[:50]+"..."), back = True)

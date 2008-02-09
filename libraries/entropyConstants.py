@@ -115,6 +115,7 @@ DROP TABLE IF EXISTS countersdata;
 DROP TABLE IF EXISTS injected;
 DROP TABLE IF EXISTS treeupdates;
 DROP TABLE IF EXISTS treeupdatesactions;
+DROP TABLE IF EXISTS library_breakages;
 """
 
 etpSQLInit = """
@@ -301,6 +302,16 @@ CREATE TABLE treeupdatesactions (
 CREATE TABLE binkeywords (
     idpackage INTEGER,
     idkeyword INTEGER
+);
+
+CREATE TABLE library_breakages (
+    idbreak INTEGER PRIMARY KEY,
+    repoidpackage INTEGER,
+    reponame VARCHAR,
+    idpackage INTEGER,
+    deep INTEGER,
+    repoorderck VARCHAR,
+    atom VARCHAR
 );
 
 """
