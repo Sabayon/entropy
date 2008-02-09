@@ -177,65 +177,65 @@ def packages(options):
     myopts = options[1:]
     activatorRequestPackagesCheck = False
     for opt in myopts:
-	if (opt == "--do-packages-check"):
-	    activatorRequestPackagesCheck = True
+        if (opt == "--do-packages-check"):
+            activatorRequestPackagesCheck = True
 
     if not options:
-	return
+        return
 
     if (options[0] == "sync"):
-        
-	print_info(green(" * ")+red("Starting ")+bold("binary")+brown(" packages")+red(" syncronization across servers ..."))
-	
-	totalUris = len(etpConst['activatoruploaduris'])
-	currentUri = 0
-	totalSuccessfulUri = 0
-        mirrorsTainted = False
-	
-	activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: called sync.")
-	
-	for uri in etpConst['activatoruploaduris']:
-		
-	    uriSuccessfulSync = 0
-	    currentUri += 1
-	    try:
-	        print_info(green(" * ")+brown("Working on ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)+red(" mirror.")))
-		
-		pkgbranches = os.listdir(etpConst['packagessuploaddir'])
-		pkgbranches = [x for x in pkgbranches if os.path.isdir(etpConst['packagessuploaddir']+"/"+x)]
-		
-		for mybranch in pkgbranches:
 
-		    print_info(red(" * ")+blue("Switching to branch: ")+bold(mybranch))
-	            print_info(green(" * ")+brown("Local Statistics: "))
-	            print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagessuploaddir']+"/"+mybranch)+red(" ..."), back = True)
-		
-	            uploadCounter = 0
-	            toBeUploaded = set() # parse etpConst['packagessuploaddir']
-	            for tbz2 in os.listdir(etpConst['packagessuploaddir']+"/"+mybranch):
-		        if tbz2.endswith(".tbz2") or tbz2.endswith(etpConst['packageshashfileext']):
-		            toBeUploaded.add(tbz2)
-			    if tbz2.endswith(".tbz2"):
-		                uploadCounter += 1
-		
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: upload directory stats -> files: "+str(uploadCounter)+" | upload packages list: "+str(toBeUploaded))
-		
-	            print_info(green(" * ")+red("Upload directory:\t\t")+bold(str(uploadCounter))+red(" files ready."))
-	            localPackagesRepository = set() # parse etpConst['packagesbindir']
-	            print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagesbindir']+"/"+mybranch)+red(" ..."), back = True)
-	            packageCounter = 0
-	            for tbz2 in os.listdir(etpConst['packagesbindir']+"/"+mybranch):
-		        if tbz2.endswith(".tbz2") or tbz2.endswith(etpConst['packageshashfileext']):
-		            localPackagesRepository.add(tbz2)
-			    if tbz2.endswith(".tbz2"):
-		                packageCounter += 1
-		
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: packages directory stats -> files: "+str(packageCounter)+" | download packages list (including md5): "+str(localPackagesRepository))
-		
-	            print_info(green(" * ")+red("Packages directory:\t")+bold(str(packageCounter))+red(" files ready."))
-	    
-	            print_info(green(" * ")+brown("Fetching remote statistics..."), back = True)
-	            ftp = FtpInterface(uri, Entropy)
+        print_info(green(" * ")+red("Starting ")+bold("binary")+brown(" packages")+red(" syncronization across servers ..."))
+
+        totalUris = len(etpConst['activatoruploaduris'])
+        currentUri = 0
+        totalSuccessfulUri = 0
+        mirrorsTainted = False
+
+        activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: called sync.")
+
+        for uri in etpConst['activatoruploaduris']:
+
+            uriSuccessfulSync = 0
+            currentUri += 1
+            try:
+                print_info(green(" * ")+brown("Working on ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)+red(" mirror.")))
+
+                pkgbranches = os.listdir(etpConst['packagessuploaddir'])
+                pkgbranches = [x for x in pkgbranches if os.path.isdir(etpConst['packagessuploaddir']+"/"+x)]
+
+                for mybranch in pkgbranches:
+
+                    print_info(red(" * ")+blue("Switching to branch: ")+bold(mybranch))
+                    print_info(green(" * ")+brown("Local Statistics: "))
+                    print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagessuploaddir']+"/"+mybranch)+red(" ..."), back = True)
+
+                    uploadCounter = 0
+                    toBeUploaded = set() # parse etpConst['packagessuploaddir']
+                    for tbz2 in os.listdir(etpConst['packagessuploaddir']+"/"+mybranch):
+                        if tbz2.endswith(".tbz2") or tbz2.endswith(etpConst['packageshashfileext']):
+                            toBeUploaded.add(tbz2)
+                            if tbz2.endswith(".tbz2"):
+                                uploadCounter += 1
+
+                    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: upload directory stats -> files: "+str(uploadCounter)+" | upload packages list: "+str(toBeUploaded))
+
+                    print_info(green(" * ")+red("Upload directory:\t\t")+bold(str(uploadCounter))+red(" files ready."))
+                    localPackagesRepository = set() # parse etpConst['packagesbindir']
+                    print_info(green(" * ")+red("Calculating packages in ")+bold(etpConst['packagesbindir']+"/"+mybranch)+red(" ..."), back = True)
+                    packageCounter = 0
+                    for tbz2 in os.listdir(etpConst['packagesbindir']+"/"+mybranch):
+                        if tbz2.endswith(".tbz2") or tbz2.endswith(etpConst['packageshashfileext']):
+                            localPackagesRepository.add(tbz2)
+                            if tbz2.endswith(".tbz2"):
+                                packageCounter += 1
+
+                    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: packages directory stats -> files: "+str(packageCounter)+" | download packages list (including md5): "+str(localPackagesRepository))
+
+                    print_info(green(" * ")+red("Packages directory:\t")+bold(str(packageCounter))+red(" files ready."))
+
+                    print_info(green(" * ")+brown("Fetching remote statistics..."), back = True)
+                    ftp = FtpInterface(uri, Entropy)
                     try:
                         ftp.setCWD(etpConst['binaryurirelativepath'])
                     except:
@@ -252,226 +252,217 @@ def packages(options):
                                         raise
                         ftp.setCWD(etpConst['binaryurirelativepath'])
 
-		    if (not ftp.isFileAvailable(mybranch)):
-			ftp.mkdir(mybranch)
-	            ftp.setCWD(mybranch)
-	            remotePackages = ftp.listDir()
-	            remotePackagesInfo = ftp.getRoughList()
-	            ftp.closeConnection()
+                    if (not ftp.isFileAvailable(mybranch)):
+                        ftp.mkdir(mybranch)
+                    ftp.setCWD(mybranch)
+                    remotePackages = ftp.listDir()
+                    remotePackagesInfo = ftp.getRoughList()
+                    ftp.closeConnection()
 
-	            print_info(green(" * ")+brown("Remote statistics"))
-	            remoteCounter = 0
-	            for tbz2 in remotePackages:
-		        if tbz2.endswith(".tbz2"):
-		            remoteCounter += 1
-		
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: remote packages stats -> files: "+str(remoteCounter))
-		
-	            print_info(green(" * ")+red("Remote packages:\t\t")+bold(str(remoteCounter))+red(" files stored."))
+                    print_info(green(" * ")+brown("Remote statistics"))
+                    remoteCounter = 0
+                    for tbz2 in remotePackages:
+                        if tbz2.endswith(".tbz2"):
+                            remoteCounter += 1
 
-	            print_info(green(" * ")+brown("Calculating..."))
-	            uploadQueue = set()
-	            downloadQueue = set()
-	            removalQueue = set()
-		
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: starting packages calculation...")
-		
-		    finePackages = set()
-	            # Fill uploadQueue and if something weird is found, add the packages to downloadQueue
-	            for localPackage in toBeUploaded:
-			if localPackage in remotePackages:
-			    # it's already on the mirror, but... is its size correct??
-			    localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+mybranch+"/"+localPackage)[6])
-			    remoteSize = 0
-			    for data in remotePackagesInfo:
-			        if data.split()[8] == localPackage:
-				    remoteSize = int(data.split()[4])
+                    remote_packages_metadata = {}
+                    for remote_package in remotePackagesInfo:
+                        remote_packages_metadata[remote_package.split()[8]] = int(remote_package.split()[4])
+
+                    print_info(green(" * ")+red("Remote packages:\t\t")+bold(str(remoteCounter))+red(" files stored."))
+                    print_info(green(" * ")+brown("Calculating..."))
+                    uploadQueue = set()
+                    downloadQueue = set()
+                    removalQueue = set()
+
+                    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: starting packages calculation...")
+
+                    finePackages = set()
+                    # Fill uploadQueue and if something weird is found, add the packages to downloadQueue
+                    for localPackage in toBeUploaded:
+                        if localPackage in remotePackages:
+                            # it's already on the mirror, but... is its size correct??
+                            localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+mybranch+"/"+localPackage)[6])
+                            remoteSize = remote_packages_metadata.get(localPackage)
+                            if remoteSize == None:
+                                remoteSize = 0
                             #print localPackage,"==>",localSize, remoteSize
-			    if (localSize != remoteSize):
-			        # size does not match, adding to the upload queue
-			        uploadQueue.add(localPackage)
-			    else:
-				finePackages.add(localPackage) # just move from upload to packages
-		        else:
+                            if (localSize != remoteSize):
+                                # size does not match, adding to the upload queue
+                                uploadQueue.add(localPackage)
+                            else:
+                                finePackages.add(localPackage) # just move from upload to packages
+                        else:
                             # always force upload of packages in uploaddir
                             uploadQueue.add(localPackage)
 
-	            # if a package is in the packages directory but not online, we have to upload it
-		    # we have localPackagesRepository and remotePackages
-	            for localPackage in localPackagesRepository:
-			if localPackage in remotePackages:
-			    # it's already on the mirror, but... is its size correct??
-			    localSize = int(os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+localPackage)[6])
-			    remoteSize = 0
-			    for xfile in remotePackagesInfo:
-			        if xfile.split()[8] == localPackage:
-				    remoteSize = int(xfile.split()[4])
-			    if (localSize != remoteSize) and (localSize != 0):
-			        # size does not match, adding to the upload queue
-				if localPackage not in finePackages:
-			            uploadQueue.add(localPackage)
-			else:
-		            # this means that the local package does not exist
-		            # so, we need to download it
-		            uploadQueue.add(localPackage)
-		
-	            # Fill downloadQueue and removalQueue
-	            for remotePackage in remotePackages:
-			if remotePackage in localPackagesRepository:
-			    # it's already on the mirror, but... is its size correct??
-			    localSize = int(os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+remotePackage)[6])
-			    remoteSize = 0
-			    for xfile in remotePackagesInfo:
-			        if xfile.split()[8] == remotePackage:
-				    remoteSize = int(xfile.split()[4])
-			    if (localSize != remoteSize) and (localSize != 0):
-			        # size does not match, remove first
-				#print "removal of "+localPackage+" because its size differ"
-				if remotePackage not in uploadQueue: # do it only if the package has not been added to the uploadQueue
-			            removalQueue.add(remotePackage) # remotePackage == localPackage # just remove something that differs from the content of the mirror
-			            # then add to the download queue
-			            downloadQueue.add(remotePackage)
-		        else:
-		            # this means that the local package does not exist
-		            # so, we need to download it
-			    if not remotePackage.endswith(".tmp"): # ignore .tmp files
-			        downloadQueue.add(remotePackage)
+                    # if a package is in the packages directory but not online, we have to upload it
+                    # we have localPackagesRepository and remotePackages
+                    for localPackage in localPackagesRepository:
+                        if localPackage in remotePackages:
+                            # it's already on the mirror, but... is its size correct??
+                            localSize = int(os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+localPackage)[6])
+                            remoteSize = remote_packages_metadata.get(localPackage)
+                            if remoteSize == None:
+                                remoteSize = 0
+                            if (localSize != remoteSize) and (localSize != 0):
+                                # size does not match, adding to the upload queue
+                                if localPackage not in finePackages:
+                                    uploadQueue.add(localPackage)
+                        else:
+                            # this means that the local package does not exist
+                            # so, we need to download it
+                            uploadQueue.add(localPackage)
 
-		    # Collect packages that don't exist anymore in the database
-		    # so we can filter them out from the download queue
-		    # Why downloading something that will be removed??
-		    # the same thing for the uploadQueue...
-		    dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
-		    dbFiles = dbconn.listBranchPackagesTbz2(mybranch)
-    		    dbconn.closeDB()
-		
-		    exclude = set()
-		    for dlFile in downloadQueue:
-		        if dlFile.endswith(".tbz2"):
-			    if dlFile not in dbFiles:
-				exclude.add(dlFile)
-		    downloadQueue.difference_update(exclude)
+                    # Fill downloadQueue and removalQueue
+                    for remotePackage in remotePackages:
+                        if remotePackage in localPackagesRepository:
+                            # it's already on the mirror, but... is its size correct??
+                            localSize = int(os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+remotePackage)[6])
+                            remoteSize = remote_packages_metadata.get(remotePackage)
+                            if remoteSize == None:
+                                remoteSize = 0
+                            if (localSize != remoteSize) and (localSize != 0):
+                                # size does not match, remove first
+                                #print "removal of "+localPackage+" because its size differ"
+                                if remotePackage not in uploadQueue: # do it only if the package has not been added to the uploadQueue
+                                    removalQueue.add(remotePackage) # remotePackage == localPackage # just remove something that differs from the content of the mirror
+                                    # then add to the download queue
+                                    downloadQueue.add(remotePackage)
+                        else:
+                            # this means that the local package does not exist
+                            # so, we need to download it
+                            if not remotePackage.endswith(".tmp"): # ignore .tmp files
+                                downloadQueue.add(remotePackage)
 
-		    exclude = set()
-		    for upFile in uploadQueue:
-		        if upFile.endswith(".tbz2"):
-			    if upFile not in dbFiles:
-				exclude.add(upFile)
-		    uploadQueue.difference_update(exclude)
-		
-		    # now filter things
-		    # packages in uploadQueue should be removed, if found, from downloadQueue
-		    exclude = set()
-		    for p in downloadQueue:
-		        # search inside uploadQueue
-			if p in uploadQueue:
-			    exclude.add(p)
-		    downloadQueue.difference_update(exclude)
+                    # Collect packages that don't exist anymore in the database
+                    # so we can filter them out from the download queue
+                    # Why downloading something that will be removed??
+                    # the same thing for the uploadQueue...
+                    dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+                    dbFiles = dbconn.listBranchPackagesTbz2(mybranch)
+                    dbconn.closeDB()
 
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: removal queue -> "+str(removalQueue))
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: download queue -> "+str(downloadQueue))
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: upload queue -> "+str(uploadQueue))
+                    exclude = set()
+                    for dlFile in downloadQueue:
+                        if dlFile.endswith(".tbz2"):
+                            if dlFile not in dbFiles:
+                                exclude.add(dlFile)
+                    downloadQueue.difference_update(exclude)
 
-	            if (not uploadQueue) and (not downloadQueue) and (not removalQueue):
-		        print_info(green(" * ")+red("Nothing to syncronize for ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)+red(". Queue empty.")))
-		        uriSuccessfulSync += 1
-			if (uriSuccessfulSync == len(pkgbranches)):
-			    totalSuccessfulUri += 1
-		        continue
+                    exclude = set()
+                    for upFile in uploadQueue:
+                        if upFile.endswith(".tbz2"):
+                            if upFile not in dbFiles:
+                                exclude.add(upFile)
+                    uploadQueue.difference_update(exclude)
 
-	            totalRemovalSize = 0
-	            totalDownloadSize = 0
-	            totalUploadSize = 0
+                    # now filter things
+                    # packages in uploadQueue should be removed, if found, from downloadQueue
+                    exclude = set()
+                    for p in downloadQueue:
+                        # search inside uploadQueue
+                        if p in uploadQueue:
+                            exclude.add(p)
+                    downloadQueue.difference_update(exclude)
 
-	            print_info(green(" * ")+brown("Queue tasks:"))
-	            detailedRemovalQueue = []
-	            detailedDownloadQueue = []
-	            detailedUploadQueue = []
-		    # this below is used when a package has been already uploaded
-		    # but something weird happened and it hasn't been moved to the packages dir
-		    simpleCopyQueue = []
+                    if (not uploadQueue) and (not downloadQueue) and (not removalQueue):
+                        print_info(green(" * ")+red("Nothing to syncronize for ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)+red(". Queue empty.")))
+                        uriSuccessfulSync += 1
+                        if (uriSuccessfulSync == len(pkgbranches)):
+                            totalSuccessfulUri += 1
+                        continue
 
-	            for item in removalQueue:
-		        fileSize = os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+item)[6]
-		        totalRemovalSize += int(fileSize)
-		        print_info(bold("\t[") + red("LOCAL REMOVAL") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(Entropy.entropyTools.bytesIntoHuman(fileSize)))
-		        detailedRemovalQueue.append([item,fileSize])
+                    totalRemovalSize = 0
+                    totalDownloadSize = 0
+                    totalUploadSize = 0
 
-	            for item in downloadQueue:
-		        # if the package is already in the upload directory, do not add the size
-		        if not os.path.isfile(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item):
-		            fileSize = "0"
-		            for remotePackage in remotePackagesInfo:
-		                if remotePackage.split()[8] == item:
-			            fileSize = remotePackage.split()[4]
-			            break
-			    if not item.endswith(etpConst['packageshashfileext']): # do not show .md5 to upload
-		                totalDownloadSize += int(fileSize)
-		                print_info(bold("\t[") + brown("REMOTE DOWNLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(Entropy.entropyTools.bytesIntoHuman(fileSize)))
-		            detailedDownloadQueue.append([item,fileSize])
-		        else:
-			    if (not item.endswith(etpConst['packageshashfileext'])):
-			        fileSize = os.stat(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item)[6]
-			        print_info(bold("\t[") + green("LOCAL COPY") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(Entropy.entropyTools.bytesIntoHuman(fileSize)))
-			    # file exists locally and remotely (where is fine == fully uploaded)
-			    simpleCopyQueue.append(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item)
+                    print_info(green(" * ")+brown("Queue tasks:"))
+                    detailedRemovalQueue = []
+                    detailedDownloadQueue = []
+                    detailedUploadQueue = []
+                    # this below is used when a package has been already uploaded
+                    # but something weird happened and it hasn't been moved to the packages dir
+                    simpleCopyQueue = []
 
-	            for item in uploadQueue:
-		        # if it is in the upload dir
-		        if os.path.isfile(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item):
-		            fileSize = os.stat(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item)[6]
-		        else: # otherwise it is in the packages dir
-			    fileSize = os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+item)[6]
-		        if not item.endswith(etpConst['packageshashfileext']): # do not show .md5 to upload
-		            print_info(bold("\t[") + red("REMOTE UPLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(Entropy.entropyTools.bytesIntoHuman(fileSize)))
-		            totalUploadSize += int(fileSize)
-		            detailedUploadQueue.append([item,fileSize])
+                    for item in removalQueue:
+                        fileSize = os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+item)[6]
+                        totalRemovalSize += int(fileSize)
+                        print_info(bold("\t[") + red("LOCAL REMOVAL") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(Entropy.entropyTools.bytesIntoHuman(fileSize)))
+                        detailedRemovalQueue.append([item,fileSize])
 
-		    # queue length info
-		    removalQueueLength = 0
-		    for i in removalQueue:
-		        if not i.endswith(etpConst['packageshashfileext']):
-			    removalQueueLength += 1
-		    downloadQueueLength = 0
-		    for i in downloadQueue:
-		        if not i.endswith(etpConst['packageshashfileext']):
-			    downloadQueueLength += 1
-		    uploadQueueLength = 0
-		    for i in uploadQueue:
-		        if not i.endswith(etpConst['packageshashfileext']):
-			    uploadQueueLength += 1
-		
-	            print_info(red(" * ")+blue("Packages that would be ")+red("removed:\t\t\t")+bold(str(removalQueueLength)))
-	            print_info(red(" * ")+blue("Packages that would be ")+brown("downloaded/moved locally:\t")+bold(str(downloadQueueLength)))
-	            print_info(red(" * ")+blue("Packages that would be ")+green("uploaded:\t\t\t")+bold(str(uploadQueueLength)))
-	            print_info(red(" * ")+blue("Total removal ")+red("size:\t\t\t\t")+bold(Entropy.entropyTools.bytesIntoHuman(str(totalRemovalSize))))
-	            print_info(red(" * ")+blue("Total download ")+brown("size:\t\t\t\t")+bold(Entropy.entropyTools.bytesIntoHuman(str(totalDownloadSize))))
-	            print_info(red(" * ")+blue("Total upload ")+green("size:\t\t\t\t")+bold(Entropy.entropyTools.bytesIntoHuman(str(totalUploadSize))))
+                    for item in downloadQueue:
+                        # if the package is already in the upload directory, do not add the size
+                        if not os.path.isfile(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item):
+                            fileSize = remote_packages_metadata.get(item)
+                            if fileSize == None:
+                                fileSize = "0"
+                            else:
+                                fileSize = str(fileSize)
+                            if not item.endswith(etpConst['packageshashfileext']): # do not show .md5 to upload
+                                totalDownloadSize += int(fileSize)
+                                print_info(bold("\t[") + brown("REMOTE DOWNLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(Entropy.entropyTools.bytesIntoHuman(fileSize)))
+                            detailedDownloadQueue.append([item,fileSize])
+                        else:
+                            if (not item.endswith(etpConst['packageshashfileext'])):
+                                fileSize = os.stat(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item)[6]
+                                print_info(bold("\t[") + green("LOCAL COPY") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(Entropy.entropyTools.bytesIntoHuman(fileSize)))
+                            # file exists locally and remotely (where is fine == fully uploaded)
+                            simpleCopyQueue.append(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item)
 
-	            if (etpUi['pretend']):
-		        continue
+                    for item in uploadQueue:
+                        # if it is in the upload dir
+                        if os.path.isfile(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item):
+                            fileSize = os.stat(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item)[6]
+                        else: # otherwise it is in the packages dir
+                            fileSize = os.stat(etpConst['packagesbindir']+"/"+mybranch+"/"+item)[6]
+                        if not item.endswith(etpConst['packageshashfileext']): # do not show .md5 to upload
+                            print_info(bold("\t[") + red("REMOTE UPLOAD") + bold("] ") + red(item.split(".tbz2")[0]) + bold(".tbz2 ") + blue(Entropy.entropyTools.bytesIntoHuman(fileSize)))
+                            totalUploadSize += int(fileSize)
+                            detailedUploadQueue.append([item,fileSize])
+
+                    # thanks
+                    del remote_packages_metadata
+
+                    # queue length info
+                    removalQueueLength = 0
+                    for i in removalQueue:
+                        if not i.endswith(etpConst['packageshashfileext']):
+                            removalQueueLength += 1
+                    downloadQueueLength = 0
+                    for i in downloadQueue:
+                        if not i.endswith(etpConst['packageshashfileext']):
+                            downloadQueueLength += 1
+                    uploadQueueLength = 0
+                    for i in uploadQueue:
+                        if not i.endswith(etpConst['packageshashfileext']):
+                            uploadQueueLength += 1
+
+                    print_info(red(" * ")+blue("Packages that would be ")+red("removed:\t\t\t")+bold(str(removalQueueLength)))
+                    print_info(red(" * ")+blue("Packages that would be ")+brown("downloaded/moved locally:\t")+bold(str(downloadQueueLength)))
+                    print_info(red(" * ")+blue("Packages that would be ")+green("uploaded:\t\t\t")+bold(str(uploadQueueLength)))
+                    print_info(red(" * ")+blue("Total removal ")+red("size:\t\t\t\t")+bold(Entropy.entropyTools.bytesIntoHuman(str(totalRemovalSize))))
+                    print_info(red(" * ")+blue("Total download ")+brown("size:\t\t\t\t")+bold(Entropy.entropyTools.bytesIntoHuman(str(totalDownloadSize))))
+                    print_info(red(" * ")+blue("Total upload ")+green("size:\t\t\t\t")+bold(Entropy.entropyTools.bytesIntoHuman(str(totalUploadSize))))
+
+                    if (etpUi['pretend']):
+                        continue
                     if (etpUi['ask']):
                         rc = Entropy.askQuestion("\n     Would you like to run the steps above ?")
                         if rc == "No":
                             print "\n"
                             continue
 
-		    # queues management
-		    successfulUploadCounter = 0
-		    successfulDownloadCounter = 0
-		    uploadCounter = "0"
-		    downloadCounter = "0"
+                    # queues management
+                    successfulUploadCounter = 0
+                    successfulDownloadCounter = 0
+                    uploadCounter = "0"
+                    downloadCounter = "0"
 
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: detailed removal queue -> "+str(detailedRemovalQueue))
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: detailed simple copy queue -> "+str(simpleCopyQueue))
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: detailed download queue -> "+str(detailedDownloadQueue))
-		    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: detailed upload queue -> "+str(detailedUploadQueue))
-		
-
-	            # removal queue
-	            if (detailedRemovalQueue):
-		        for item in detailedRemovalQueue:
-		            print_info(red(" * Removing file ")+bold(item[0]) + red(" [")+blue(Entropy.entropyTools.bytesIntoHuman(item[1]))+red("] from ")+ bold(etpConst['packagesbindir']+"/"+mybranch)+red(" ..."))
+                    # removal queue
+                    if (detailedRemovalQueue):
+                        for item in detailedRemovalQueue:
+                            print_info(red(" * Removing file ")+bold(item[0]) + red(" [")+blue(Entropy.entropyTools.bytesIntoHuman(item[1]))+red("] from ")+ bold(etpConst['packagesbindir']+"/"+mybranch)+red(" ..."))
                             try:
                                 os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+item[0])
                             except OSError:
@@ -480,228 +471,228 @@ def packages(options):
                                 os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+item[0]+etpConst['packageshashfileext'])
                             except OSError:
                                 pass
-		        print_info(red(" * Removal completed for ")+bold(etpConst['packagesbindir']+"/"+mybranch))
+                        print_info(red(" * Removal completed for ")+bold(etpConst['packagesbindir']+"/"+mybranch))
 
-		    # simple copy queue
-		    if (simpleCopyQueue):
-		        for item in simpleCopyQueue:
-			    print_info(red(" * Copying file from ") + bold(item) + red(" to ")+bold(etpConst['packagesbindir']+"/"+mybranch))
+                    # simple copy queue
+                    if (simpleCopyQueue):
+                        for item in simpleCopyQueue:
+                            print_info(red(" * Copying file from ") + bold(item) + red(" to ")+bold(etpConst['packagesbindir']+"/"+mybranch))
                             toitem = etpConst['packagesbindir']+"/"+mybranch+"/"+os.path.basename(item)
                             if not os.path.isdir(os.path.dirname(toitem)):
                                 os.makedirs(os.path.dirname(toitem))
-			    # md5 copy not needed, already in simpleCopyQueue
+                            # md5 copy not needed, already in simpleCopyQueue
                             shutil.copy2(item,toitem)
                             if os.path.isfile(toitem+etpConst['packagesexpirationfileext']): # clear expiration file
                                 os.remove(toitem+etpConst['packagesexpirationfileext'])
 
 
-	            # upload queue
-	            if (detailedUploadQueue):
+                    # upload queue
+                    if (detailedUploadQueue):
                         mirrorsTainted = True
-	                ftp = FtpInterface(uri, Entropy)
-	                ftp.setCWD(etpConst['binaryurirelativepath']+"/"+mybranch)
-		        uploadCounter = str(len(detailedUploadQueue))
-		        currentCounter = 0
-		        for item in detailedUploadQueue:
-		            currentCounter += 1
-		            counterInfo = bold(" (")+blue(str(currentCounter))+"/"+red(uploadCounter)+bold(")")
-		            print_info(counterInfo+red(" Uploading file ")+bold(item[0]) + red(" [")+blue(Entropy.entropyTools.bytesIntoHuman(item[1]))+red("] to ")+ bold(Entropy.entropyTools.extractFTPHostFromUri(uri)) +red(" ..."))
-			    # is the package in the upload queue?
-			    if os.path.isfile(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item[0]):
-			        uploadItem = etpConst['packagessuploaddir']+"/"+mybranch+"/"+item[0]
-			    else:
-			        uploadItem = etpConst['packagesbindir']+"/"+mybranch+"/"+item[0]
-			
-			    ckOk = False
-			    while not ckOk:
-			        rc = ftp.uploadFile(uploadItem)
-			        print_info("    "+red("   -> Verifying ")+green(item[0])+bold(" checksum")+red(" (if supported)"), back = True)
-			        ck = Entropy.get_remote_package_checksum(Entropy.entropyTools.extractFTPHostFromUri(uri),item[0], mybranch)
-			        if (ck == None):
-				    print_warning("    "+red("   -> Digest verification of ")+green(item[0])+bold(" not supported"))
-				    ckOk = True
-			        else:
-				    if (ck == False):
-				        # file does not exist???
-				        print_warning("    "+red("   -> Package ")+bold(item[0])+red(" does not exist remotely. Reuploading..."))
-				    else:
-				        if len(ck) == 32:
-					    # valid checksum, checking
-					    ckres = Entropy.entropyTools.compareMd5(uploadItem,ck)
-					    if (ckres):
-					        print_info("    "+red("   -> Package ")+bold(item[0])+red(" has been uploaded correctly."))
-					        ckOk = True
-					    else:
-					        print_warning("    "+red("   -> Package ")+bold(item[0])+brown(" has NOT been uploaded correctly. Reuploading..."))
-				        else:
-					    # hum, what the hell is this checksum!?!?!?!
-					    print_warning("    "+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum: "+str(ck)+". Reuploading..."))
-			
-			    if not os.path.isfile(uploadItem+etpConst['packageshashfileext']):
-			        hashfile = Entropy.entropyTools.createHashFile(uploadItem)
-			    else:
-			        hashfile = uploadItem+etpConst['packageshashfileext']
+                        ftp = FtpInterface(uri, Entropy)
+                        ftp.setCWD(etpConst['binaryurirelativepath']+"/"+mybranch)
+                        uploadCounter = str(len(detailedUploadQueue))
+                        currentCounter = 0
+                        for item in detailedUploadQueue:
+                            currentCounter += 1
+                            counterInfo = bold(" (")+blue(str(currentCounter))+"/"+red(uploadCounter)+bold(")")
+                            print_info(counterInfo+red(" Uploading file ")+bold(item[0]) + red(" [")+blue(Entropy.entropyTools.bytesIntoHuman(item[1]))+red("] to ")+ bold(Entropy.entropyTools.extractFTPHostFromUri(uri)) +red(" ..."))
+                            # is the package in the upload queue?
+                            if os.path.isfile(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item[0]):
+                                uploadItem = etpConst['packagessuploaddir']+"/"+mybranch+"/"+item[0]
+                            else:
+                                uploadItem = etpConst['packagesbindir']+"/"+mybranch+"/"+item[0]
 
-			    # upload md5 hash
-			    print_info("    "+red("   -> Uploading checksum of ")+bold(item[0]) + red(" to ") + bold(Entropy.entropyTools.extractFTPHostFromUri(uri)) +red(" ..."))
-			    ckOk = False
-			    while not ckOk:
-			        rcmd5 = ftp.uploadFile(hashfile,ascii = True)
-			        print_info("    "+red("   -> Verifying ")+green(item[0]+etpConst['packageshashfileext'])+bold(" checksum")+red(" (if supported)"), back = True)
-			        ck = Entropy.get_remote_package_checksum(Entropy.entropyTools.extractFTPHostFromUri(uri),item[0]+etpConst['packageshashfileext'], mybranch)
-			        if (ck == None):
-				    print_warning("    "+red("   -> Digest verification of ")+green(item[0]+etpConst['packageshashfileext'])+bold(" not supported"))
-				    ckOk = True
-			        else:
-				    if (ck == False):
-				        # file does not exist???
-				        print_warning("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" does not exist remotely. Reuploading..."))
-				    else:
-				        if len(ck) == 32:
-					    # valid checksum, checking
-					    ckres = Entropy.entropyTools.compareMd5(hashfile,ck)
-					    if (ckres):
-					        print_info("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" has been uploaded correctly."))
-					        ckOk = True
-					    else:
-					        print_warning("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+brown(" has NOT been uploaded correctly. Reuploading..."))
-				        else:
-					    # hum, what the hell is this checksum!?!?!?!
-					    print_warning("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" does not have a proper checksum: "+str(ck)+" Reuploading..."))
+                            ckOk = False
+                            while not ckOk:
+                                rc = ftp.uploadFile(uploadItem)
+                                print_info("    "+red("   -> Verifying ")+green(item[0])+bold(" checksum")+red(" (if supported)"), back = True)
+                                ck = Entropy.get_remote_package_checksum(Entropy.entropyTools.extractFTPHostFromUri(uri),item[0], mybranch)
+                                if (ck == None):
+                                    print_warning("    "+red("   -> Digest verification of ")+green(item[0])+bold(" not supported"))
+                                    ckOk = True
+                                else:
+                                    if (ck == False):
+                                        # file does not exist???
+                                        print_warning("    "+red("   -> Package ")+bold(item[0])+red(" does not exist remotely. Reuploading..."))
+                                    else:
+                                        if len(ck) == 32:
+                                            # valid checksum, checking
+                                            ckres = Entropy.entropyTools.compareMd5(uploadItem,ck)
+                                            if (ckres):
+                                                print_info("    "+red("   -> Package ")+bold(item[0])+red(" has been uploaded correctly."))
+                                                ckOk = True
+                                            else:
+                                                print_warning("    "+red("   -> Package ")+bold(item[0])+brown(" has NOT been uploaded correctly. Reuploading..."))
+                                        else:
+                                            # hum, what the hell is this checksum!?!?!?!
+                                            print_warning("    "+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum: "+str(ck)+". Reuploading..."))
 
-			    # now check
-			    if (rc) and (rcmd5):
-			        successfulUploadCounter += 1
-		        print_info(red(" * Upload completed for ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
-		        ftp.closeConnection()
+                            if not os.path.isfile(uploadItem+etpConst['packageshashfileext']):
+                                hashfile = Entropy.entropyTools.createHashFile(uploadItem)
+                            else:
+                                hashfile = uploadItem+etpConst['packageshashfileext']
 
-	            # download queue
-	            if (detailedDownloadQueue):
-	                ftp = FtpInterface(uri, Entropy)
-	                ftp.setCWD(etpConst['binaryurirelativepath']+"/"+mybranch)
-		        downloadCounter = str(len(detailedDownloadQueue))
-		        currentCounter = 0
-		        for item in detailedDownloadQueue:
-		            currentCounter += 1
-		            counterInfo = bold(" (")+blue(str(currentCounter))+"/"+red(downloadCounter)+bold(")")
-		            if os.path.isfile(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item[0]):
-			        localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item[0])[6])
-			        remoteSize = int(item[1])
-			        if localSize == remoteSize:
-			            # skip that, we'll move at the end of the mirrors sync
-			            continue
-		            print_info(counterInfo+red(" Downloading file ")+bold(item[0]) + red(" [")+blue(Entropy.entropyTools.bytesIntoHuman(item[1]))+red("] from ")+ bold(Entropy.entropyTools.extractFTPHostFromUri(uri)) +red(" ..."))
-			
-			    ckOk = False
-			    while not ckOk:
+                            # upload md5 hash
+                            print_info("    "+red("   -> Uploading checksum of ")+bold(item[0]) + red(" to ") + bold(Entropy.entropyTools.extractFTPHostFromUri(uri)) +red(" ..."))
+                            ckOk = False
+                            while not ckOk:
+                                rcmd5 = ftp.uploadFile(hashfile,ascii = True)
+                                print_info("    "+red("   -> Verifying ")+green(item[0]+etpConst['packageshashfileext'])+bold(" checksum")+red(" (if supported)"), back = True)
+                                ck = Entropy.get_remote_package_checksum(Entropy.entropyTools.extractFTPHostFromUri(uri),item[0]+etpConst['packageshashfileext'], mybranch)
+                                if (ck == None):
+                                    print_warning("    "+red("   -> Digest verification of ")+green(item[0]+etpConst['packageshashfileext'])+bold(" not supported"))
+                                    ckOk = True
+                                else:
+                                    if (ck == False):
+                                        # file does not exist???
+                                        print_warning("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" does not exist remotely. Reuploading..."))
+                                    else:
+                                        if len(ck) == 32:
+                                            # valid checksum, checking
+                                            ckres = Entropy.entropyTools.compareMd5(hashfile,ck)
+                                            if (ckres):
+                                                print_info("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" has been uploaded correctly."))
+                                                ckOk = True
+                                            else:
+                                                print_warning("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+brown(" has NOT been uploaded correctly. Reuploading..."))
+                                        else:
+                                            # hum, what the hell is this checksum!?!?!?!
+                                            print_warning("    "+red("   -> Package ")+bold(item[0]+etpConst['packageshashfileext'])+red(" does not have a proper checksum: "+str(ck)+" Reuploading..."))
 
-			        if item[0].endswith(etpConst['packageshashfileext']):
-				    rc = ftp.downloadFile(item[0],etpConst['packagesbindir']+"/"+mybranch+"/", ascii = True)
-			        else:
-				    rc = ftp.downloadFile(item[0],etpConst['packagesbindir']+"/"+mybranch+"/")
+                            # now check
+                            if (rc) and (rcmd5):
+                                successfulUploadCounter += 1
+                        print_info(red(" * Upload completed for ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
+                        ftp.closeConnection()
 
-				if not item[0].endswith(etpConst['packageshashfileext']):
-			            print_info(counterInfo+red("   -> Verifying ")+green(item[0])+bold(" checksum")+red(" (if supported)"), back = True)
-			            ck = Entropy.get_remote_package_checksum(Entropy.entropyTools.extractFTPHostFromUri(uri),item[0], mybranch)
-			            if (ck == None):
-				        print_warning(counterInfo+red("   -> Digest verification of ")+green(item[0])+bold(" not supported"))
-				        ckOk = True
-			            else:
-				        if (ck == False):
-				            # file does not exist???
-				            print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not exist remotely. Skipping ..."))
-					    ckOk = True
-				        else:
-				            if len(ck) == 32:
-					        # valid checksum, checking
-					        filepath = etpConst['packagesbindir']+"/"+mybranch+"/"+item[0]
-					        ckres = Entropy.entropyTools.compareMd5(filepath,ck)
-					        if (ckres):
-					            print_info(counterInfo+red("   -> Package ")+bold(item[0])+red(" has been downloaded correctly."))
-					            ckOk = True
-					        else:
-					            print_warning(counterInfo+red("   -> Package ")+bold(item[0])+brown(" has NOT been downloaded correctly. Redownloading..."))
-				            else:
-					        # hum, what the hell is this checksum!?!?!?!
-					        print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum: "+str(ck)+" Redownloading..."))
-				else: # skip checking for .md5 files
-				    ckOk = True
-			
-			    if (rc):
-			        successfulDownloadCounter += 1
-			
-		        print_info(red(" * Download completed for ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
-		        ftp.closeConnection()
+                    # download queue
+                    if (detailedDownloadQueue):
+                        ftp = FtpInterface(uri, Entropy)
+                        ftp.setCWD(etpConst['binaryurirelativepath']+"/"+mybranch)
+                        downloadCounter = str(len(detailedDownloadQueue))
+                        currentCounter = 0
+                        for item in detailedDownloadQueue:
+                            currentCounter += 1
+                            counterInfo = bold(" (")+blue(str(currentCounter))+"/"+red(downloadCounter)+bold(")")
+                            if os.path.isfile(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item[0]):
+                                localSize = int(os.stat(etpConst['packagessuploaddir']+"/"+mybranch+"/"+item[0])[6])
+                                remoteSize = int(item[1])
+                                if localSize == remoteSize:
+                                    # skip that, we'll move at the end of the mirrors sync
+                                    continue
+                            print_info(counterInfo+red(" Downloading file ")+bold(item[0]) + red(" [")+blue(Entropy.entropyTools.bytesIntoHuman(item[1]))+red("] from ")+ bold(Entropy.entropyTools.extractFTPHostFromUri(uri)) +red(" ..."))
 
-		    uploadCounter = int(uploadCounter)
-		    downloadCounter = int(downloadCounter)
-		    
-		    if (successfulUploadCounter == uploadCounter) and (successfulDownloadCounter == downloadCounter):
-			uriSuccessfulSync += 1
+                            ckOk = False
+                            while not ckOk:
 
-		    if (uriSuccessfulSync == len(pkgbranches)):
-		        totalSuccessfulUri += 1
+                                if item[0].endswith(etpConst['packageshashfileext']):
+                                    rc = ftp.downloadFile(item[0],etpConst['packagesbindir']+"/"+mybranch+"/", ascii = True)
+                                else:
+                                    rc = ftp.downloadFile(item[0],etpConst['packagesbindir']+"/"+mybranch+"/")
 
-	    # trap exceptions, failed to upload/download someting?
-	    except Exception, e: # FIXME: only trap proper ftp exceptions
-		
-		print_error(brown(" * ")+red("packages: Exception caught: ")+str(e)+red(" . Showing traceback:"))
-		import traceback
-		traceback.print_exc()
-		
-		# trap CTRL+C
-		if (str(e) == "100"):
-		    sys.exit(0)
-		
-		activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: Exception caught: "+str(e)+" . Trying to continue if possible.")
-		activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: cannot properly syncronize "+Entropy.entropyTools.extractFTPHostFromUri(uri)+". Trying to continue if possible.")
-		
-		# print warning cannot sync uri
-		print_warning(brown(" * ")+red("ATTENTION: cannot properly syncronize ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Continuing if possible..."))
-		
-		# decide what to do
-		if (totalSuccessfulUri > 0) or (etpUi['pretend']):
-		    # we're safe
-		    activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: at least one mirror has been synced properly. I'm fine.")
-		    print_info(green(" * ")+red("At least one mirror has been synced properly. I'm fine."))
-		    continue
-		else:
-		    if (currentUri < totalUris):
-			# we have another mirror to try
-			continue
-		    else:
-			# no mirrors were synced properly
-			# show error and return, do not move files from the upload dir
-			activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: no mirrors have been properly syncronized. Check network status and retry. Cannot continue.")
-			print_error(brown(" * ")+red("ERROR: no mirrors have been properly syncronized. Check network status and retry. Cannot continue."))
-			return False
+                                if not item[0].endswith(etpConst['packageshashfileext']):
+                                    print_info(counterInfo+red("   -> Verifying ")+green(item[0])+bold(" checksum")+red(" (if supported)"), back = True)
+                                    ck = Entropy.get_remote_package_checksum(Entropy.entropyTools.extractFTPHostFromUri(uri),item[0], mybranch)
+                                    if (ck == None):
+                                        print_warning(counterInfo+red("   -> Digest verification of ")+green(item[0])+bold(" not supported"))
+                                        ckOk = True
+                                    else:
+                                        if (ck == False):
+                                            # file does not exist???
+                                            print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not exist remotely. Skipping ..."))
+                                            ckOk = True
+                                        else:
+                                            if len(ck) == 32:
+                                                # valid checksum, checking
+                                                filepath = etpConst['packagesbindir']+"/"+mybranch+"/"+item[0]
+                                                ckres = Entropy.entropyTools.compareMd5(filepath,ck)
+                                                if (ckres):
+                                                    print_info(counterInfo+red("   -> Package ")+bold(item[0])+red(" has been downloaded correctly."))
+                                                    ckOk = True
+                                                else:
+                                                    print_warning(counterInfo+red("   -> Package ")+bold(item[0])+brown(" has NOT been downloaded correctly. Redownloading..."))
+                                            else:
+                                                # hum, what the hell is this checksum!?!?!?!
+                                                print_warning(counterInfo+red("   -> Package ")+bold(item[0])+red(" does not have a proper checksum: "+str(ck)+" Redownloading..."))
+                                else: # skip checking for .md5 files
+                                    ckOk = True
+
+                            if (rc):
+                                successfulDownloadCounter += 1
+
+                        print_info(red(" * Download completed for ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
+                        ftp.closeConnection()
+
+                    uploadCounter = int(uploadCounter)
+                    downloadCounter = int(downloadCounter)
+
+                    if (successfulUploadCounter == uploadCounter) and (successfulDownloadCounter == downloadCounter):
+                        uriSuccessfulSync += 1
+
+                    if (uriSuccessfulSync == len(pkgbranches)):
+                        totalSuccessfulUri += 1
+
+            # trap exceptions, failed to upload/download someting?
+            except Exception, e: # FIXME: only trap proper ftp exceptions
+
+                print_error(brown(" * ")+red("packages: Exception caught: ")+str(e)+red(" . Showing traceback:"))
+                import traceback
+                traceback.print_exc()
+
+                # trap CTRL+C
+                if (str(e) == "100"):
+                    sys.exit(0)
+
+                activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: Exception caught: "+str(e)+" . Trying to continue if possible.")
+                activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: cannot properly syncronize "+Entropy.entropyTools.extractFTPHostFromUri(uri)+". Trying to continue if possible.")
+
+                # print warning cannot sync uri
+                print_warning(brown(" * ")+red("ATTENTION: cannot properly syncronize ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Continuing if possible..."))
+
+                # decide what to do
+                if (totalSuccessfulUri > 0) or (etpUi['pretend']):
+                    # we're safe
+                    activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: at least one mirror has been synced properly. I'm fine.")
+                    print_info(green(" * ")+red("At least one mirror has been synced properly. I'm fine."))
+                    continue
+                else:
+                    if (currentUri < totalUris):
+                        # we have another mirror to try
+                        continue
+                    else:
+                        # no mirrors were synced properly
+                        # show error and return, do not move files from the upload dir
+                        activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: no mirrors have been properly syncronized. Check network status and retry. Cannot continue.")
+                        print_error(brown(" * ")+red("ERROR: no mirrors have been properly syncronized. Check network status and retry. Cannot continue."))
+                        return False
 
 
-	# if at least one server has been synced successfully, move files
-	if (totalSuccessfulUri > 0) and (not etpUi['pretend']):
-	    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"packages: all done. Now it's time to move packages to "+etpConst['packagesbindir'])
-	    pkgbranches = os.listdir(etpConst['packagessuploaddir'])
-	    pkgbranches = [x for x in pkgbranches if os.path.isdir(etpConst['packagessuploaddir']+"/"+x)]
-	    for branch in pkgbranches:
-		branchcontent = os.listdir(etpConst['packagessuploaddir']+"/"+branch)
-		for xfile in branchcontent:
-		    source = etpConst['packagessuploaddir']+"/"+branch+"/"+xfile
-		    destdir = etpConst['packagesbindir']+"/"+branch
-		    if not os.path.isdir(destdir):
-		        os.makedirs(destdir)
-		    dest = destdir+"/"+xfile
-		    shutil.move(source,dest)
+        # if at least one server has been synced successfully, move files
+        if (totalSuccessfulUri > 0) and (not etpUi['pretend']):
+            activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"packages: all done. Now it's time to move packages to "+etpConst['packagesbindir'])
+            pkgbranches = os.listdir(etpConst['packagessuploaddir'])
+            pkgbranches = [x for x in pkgbranches if os.path.isdir(etpConst['packagessuploaddir']+"/"+x)]
+            for branch in pkgbranches:
+                branchcontent = os.listdir(etpConst['packagessuploaddir']+"/"+branch)
+                for xfile in branchcontent:
+                    source = etpConst['packagessuploaddir']+"/"+branch+"/"+xfile
+                    destdir = etpConst['packagesbindir']+"/"+branch
+                    if not os.path.isdir(destdir):
+                        os.makedirs(destdir)
+                    dest = destdir+"/"+xfile
+                    shutil.move(source,dest)
                     if os.path.isfile(dest+etpConst['packagesexpirationfileext']): # clear expiration file
                         os.remove(dest+etpConst['packagesexpirationfileext'])
-	    return mirrorsTainted
-	else:
-	    raise exceptionTools.OnlineMirrorError("OnlineMirrorError: neither a mirror has been properly sync'd.")
+            return mirrorsTainted
+        else:
+            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: neither a mirror has been properly sync'd.")
 
         # Now we should start to check all the packages in the packages directory
         if (activatorRequestPackagesCheck):
             import reagentTools
             reagentTools.database(['md5check'])
-	
+
 
 def database(options):
 
