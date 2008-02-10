@@ -3237,12 +3237,12 @@ class etpDatabase(TextInterface):
                 deep = 0
             if not self.doesTableExist("library_breakages"):
                 self.createLibraryBreakagesTable()
-            repo_order_ck = str(etpRepositoriesOrder) + \
+            repo_order_ck = hash(str(etpRepositoriesOrder) + \
                             etpConst['systemroot'] + \
-                            str(etpRepositories[repo_name]['dbrevision'])
+                            str(etpRepositories[repo_name]['dbrevision']))
             mybroken = broken_atoms.copy()
             if not mybroken:
-                mybroken.add(".")
+                mybroken |= set(["."])
             for atom in mybroken:
                 self.cursor.execute(
                         'INSERT into library_breakages VALUES '
@@ -3268,9 +3268,9 @@ class etpDatabase(TextInterface):
             if not self.doesTableExist("library_breakages"):
                 self.createLibraryBreakagesTable()
                 return None
-            repo_order_ck = str(etpRepositoriesOrder) + \
+            repo_order_ck = hash(str(etpRepositoriesOrder) + \
                             etpConst['systemroot'] + \
-                            str(etpRepositories[repo_name]['dbrevision'])
+                            str(etpRepositories[repo_name]['dbrevision']))
             # fetch data
             self.cursor.execute("""
                     SELECT atom FROM library_breakages WHERE 
@@ -3284,18 +3284,14 @@ class etpDatabase(TextInterface):
             )
             found = self.fetchall2set(self.cursor.fetchall())
             if found:
-                try:
-                    found.remove(".")
-                except:
-                    pass
+                found = found - set(["."])
                 return found
 
     def clearLibraryBreakageCache(self):
         self.checkReadOnly()
-        if not self.doesTableExist("library_breakages"):
-            self.createLibraryBreakagesTable()
-            return
-        self.cursor.execute('DELETE from library_breakages')
+        self.cursor.execute("DROP INDEX IF EXISTS libraryindex;")
+        self.cursor.execute("DROP TABLE IF EXISTS library_breakages;")
+        self.createLibraryBreakagesTable()
         self.commitChanges()
 
     def createLibraryBreakagesTable(self):
@@ -3306,8 +3302,17 @@ class etpDatabase(TextInterface):
                     reponame VARCHAR,
                     idpackage INTEGER,
                     deep INTEGER,
-                    repoorderck VARCHAR,
+                    repoorderck INTEGER,
                     atom VARCHAR
+                );
+        """)
+        self.cursor.execute("""
+                CREATE INDEX libraryindex ON library_breakages (
+                    repoidpackage,
+                    reponame,
+                    idpackage,
+                    repoorderck,
+                    atom
                 );
         """)
 

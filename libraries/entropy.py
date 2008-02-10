@@ -215,17 +215,18 @@ class EquoInterface(TextInterface):
     '''
     def purge_cache(self, showProgress = True):
         const_resetCache()
-        dumpdir = etpConst['dumpstoragedir']
-        if not dumpdir.endswith("/"): dumpdir = dumpdir+"/"
-        for key in etpCache:
-            cachefile = dumpdir+etpCache[key]+"*.dmp"
-            if showProgress: self.updateProgress(darkred("Cleaning %s...") % (cachefile,), importance = 1, type = "warning", back = True)
-            try:
-                os.system("rm -f "+cachefile)
-            except:
-                pass
+        if etpConst['uid'] == 0:
+            dumpdir = etpConst['dumpstoragedir']
+            if not dumpdir.endswith("/"): dumpdir = dumpdir+"/"
+            for key in etpCache:
+                cachefile = dumpdir+etpCache[key]+"*.dmp"
+                if showProgress: self.updateProgress(darkred("Cleaning %s...") % (cachefile,), importance = 1, type = "warning", back = True)
+                try:
+                    os.system("rm -f "+cachefile)
+                except:
+                    pass
 
-        if showProgress: self.updateProgress(darkgreen("Cache is now empty."), importance = 2, type = "info")
+            if showProgress: self.updateProgress(darkgreen("Cache is now empty."), importance = 2, type = "info")
 
     def generate_cache(self, depcache = True, configcache = True):
         # clean first of all
@@ -1329,7 +1330,7 @@ class EquoInterface(TextInterface):
                     cfile = os.path.basename(cfile)
                     # search cfile
                     search_libs.add(cfile)
-            search_libs.update(neededdiff)
+            #search_libs.update(neededdiff)
             del contentdiff
             search_matches = set()
             for x in search_libs:

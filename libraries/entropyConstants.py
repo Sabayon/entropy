@@ -310,7 +310,7 @@ CREATE TABLE library_breakages (
     reponame VARCHAR,
     idpackage INTEGER,
     deep INTEGER,
-    repoorderck VARCHAR,
+    repoorderck INTEGER,
     atom VARCHAR
 );
 
