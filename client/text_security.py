@@ -46,9 +46,7 @@ def security(options):
     elif options[0] == "list":
         rc = list_advisories(only_affected = only_affected, only_unaffected = only_unaffected)
     elif options[0] == "install":
-        Equo.load_cache()
         rc = install_packages(fetch = fetch)
-        Equo.save_cache()
     elif options[0] == "info":
         rc = show_advisories_info(options[1:])
     else:

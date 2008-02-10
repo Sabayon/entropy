@@ -136,8 +136,9 @@ class etpDatabase(TextInterface):
             self.indexing = False
         self.dbFile = dbFile
 
-        # load db on disk cache?
-        self.loadDatabaseCache()
+        # no caching for non root and server connections
+        if (self.dbname == 'etpdb') or (etpConst['uid'] != 0):
+            self.xcache = False
 
         # create connection
         self.connection = dbapi2.connect(dbFile,timeout=300.0)
@@ -461,11 +462,7 @@ class etpDatabase(TextInterface):
             clientDbconn.setRepositoryUpdatesDigest(repository, stored_digest)
 
             # clear client cache
-            dbCacheStore[etpCache['dbMatch']+"client"] = {}
-            dbCacheStore[etpCache['dbSearch']+"client"] = {}
-            dumpTools.dumpobj(etpCache['dbMatch']+"client",{})
-            dumpTools.dumpobj(etpCache['dbSearch']+"client",{})
-            clientDbconn.clearInfoCache()
+            clientDbconn.clearCache()
 
         clientDbconn.closeDB()
         del clientDbconn
@@ -534,11 +531,7 @@ class etpDatabase(TextInterface):
                 self.runTreeUpdatesSlotmoveAction(command[1:])
 
         # discard cache
-        dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
-        dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
-        dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
-        dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
-        self.clearInfoCache()
+        self.clearCache()
 
 
     # -- move action:
@@ -698,67 +691,6 @@ class etpDatabase(TextInterface):
                                     type = "warning",
                                     header = darkred(" * ")
                                 )
-
-    def loadDatabaseCache(self):
-
-        if (self.xcache) and (self.dbname != 'etpdb') and (etpConst['uid'] == 0):
-
-            ''' database query cache '''
-            broken1 = False
-            dbinfo = dbCacheStore.get(etpCache['dbInfo']+self.dbname)
-            if dbinfo == None:
-                try:
-                    dbCacheStore[etpCache['dbInfo']+self.dbname] = dumpTools.loadobj(etpCache['dbInfo']+self.dbname)
-                    if dbCacheStore[etpCache['dbInfo']+self.dbname] == None:
-                        broken1 = True
-                        dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
-                except:
-                    broken1 = True
-                    pass
-
-            ''' database atom dependencies cache '''
-            dbmatch = dbCacheStore.get(etpCache['dbMatch']+self.dbname)
-            broken2 = False
-            if dbmatch == None:
-                try:
-                    dbCacheStore[etpCache['dbMatch']+self.dbname] = dumpTools.loadobj(etpCache['dbMatch']+self.dbname)
-                    if dbCacheStore[etpCache['dbMatch']+self.dbname] == None:
-                        broken2 = True
-                        dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
-                except:
-                    broken2 = True
-                    pass
-
-            ''' database search cache '''
-            dbmatch = dbCacheStore.get(etpCache['dbSearch']+self.dbname)
-            broken3 = False
-            if dbmatch == None:
-                try:
-                    dbCacheStore[etpCache['dbSearch']+self.dbname] = dumpTools.loadobj(etpCache['dbSearch']+self.dbname)
-                    if dbCacheStore[etpCache['dbSearch']+self.dbname] == None:
-                        broken3 = True
-                        dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
-                except:
-                    broken3 = True
-                    pass
-
-            if (broken1 or broken2 or broken3):
-                # discard both caches
-                dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
-                dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
-                dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
-                dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
-                self.clearInfoCache()
-
-        else:
-            self.xcache = False # setting this to be safe
-            dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
-            try:
-                self.clearInfoCache()
-            except: # if it's not possible to write cache
-                pass
-            dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
-
 
     # this function manages the submitted package
     # if it does not exist, it fires up addPackage
@@ -1122,13 +1054,7 @@ class etpDatabase(TextInterface):
                         )
             )
 
-        # clear caches
-        dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
-        dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
-        # dump to be sure
-        dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
-        dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
-        self.clearInfoCache()
+        self.clearCache()
 
         self.packagesAdded = True
         self.commitChanges()
@@ -1294,12 +1220,7 @@ class etpDatabase(TextInterface):
         self.packagesRemoved = True
 
         # clear caches
-        dbCacheStore[etpCache['dbMatch']+self.dbname] = {}
-        dbCacheStore[etpCache['dbSearch']+self.dbname] = {}
-        # dump to be sure
-        dumpTools.dumpobj(etpCache['dbMatch']+self.dbname,{})
-        dumpTools.dumpobj(etpCache['dbSearch']+self.dbname,{})
-        self.clearInfoCache()
+        self.clearCache()
 
         self.commitChanges()
 
@@ -1933,67 +1854,31 @@ class etpDatabase(TextInterface):
     def fetchone2set(self, item):
         return set(item)
 
-    def clearInfoCache(self):
-        # clear caches
-        dbCacheStore[etpCache['dbInfo']+self.dbname] = {}
-        # dump to be sure
-        dumpTools.dumpobj(etpCache['dbInfo']+self.dbname,{})
+    def clearCache(self):
+        def do_clear(name):
+            dump_file = os.path.join(etpConst['dumpstoragedir'],name)
+            os.system("rm -rf %s*.dmp" % (dump_file,) )
+        do_clear(etpCache['dbInfo'])
+        do_clear(etpCache['dbMatch'])
 
-    def fetchInfoCache(self,idpackage,function):
+    def fetchInfoCache(self, idpackage, function, extra_hash = 0):
         if (self.xcache):
+            c_hash = str( hash(int(idpackage)) + hash(function) + hash(self.dbname) + extra_hash )
             try:
-                cached = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage))
-            except KeyError: # dict does not exist?
-                self.clearInfoCache()
-                return None
-            if cached != None:
-                rslt = cached.get(function)
-                if rslt != None:
-                    if (type(rslt) is dict) or (type(rslt) is set): # needed ?
-                        return rslt.copy()
-                    elif (type(rslt) is list):
-                        return rslt[:]
-                    else:
-                        return rslt
-        return None
+                cached = dumpTools.loadobj(etpCache['dbInfo']+c_hash)
+                if cached != None:
+                    return cached
+            except EOFError:
+                pass
 
-    def storeInfoCache(self,idpackage,function,info_cache_data):
+
+    def storeInfoCache(self, idpackage, function, info_cache_data, extra_hash = 0):
         if (self.xcache):
+            c_hash = str( hash(int(idpackage)) + hash(function) + hash(self.dbname) + extra_hash )
             try:
-                cache = dbCacheStore[etpCache['dbInfo']+self.dbname].get(int(idpackage))
-            except KeyError: # something bad happened even here, reset cache
-                self.clearInfoCache()
-                cache = None
-            if cache == None: dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)] = {}
-            if (type(info_cache_data) is set) or (type(info_cache_data) is dict):
-                dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)][function] = info_cache_data.copy()
-            elif (type(info_cache_data) is list):
-                dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)][function] = info_cache_data[:]
-            else:
-                dbCacheStore[etpCache['dbInfo']+self.dbname][int(idpackage)][function] = info_cache_data
-
-    def fetchSearchCache(self,searchdata,function):
-        if (self.xcache):
-            cached = dbCacheStore[etpCache['dbSearch']+self.dbname].get(function)
-            if cached != None:
-                rslt = cached.get(searchdata)
-                if rslt != None:
-                    if (type(rslt) is dict) or (type(rslt) is set): # needed ?
-                        return rslt.copy()
-                    elif (type(rslt) is list):
-                        return rslt[:]
-                    else:
-                        return rslt
-        return None
-
-    def storeSearchCache(self,searchdata,function,data):
-        if (self.xcache):
-            cache = dbCacheStore[etpCache['dbSearch']+self.dbname].get(function)
-            if cache == None: dbCacheStore[etpCache['dbSearch']+self.dbname][function] = {}
-            if (type(data) is set) or (type(data) is dict):
-                dbCacheStore[etpCache['dbSearch']+self.dbname][function][searchdata] = data.copy()
-            else:
-                dbCacheStore[etpCache['dbSearch']+self.dbname][function][searchdata] = data
+                dumpTools.dumpobj(etpCache['dbInfo']+c_hash,info_cache_data)
+            except IOError:
+                pass
 
     def retrieveRepositoryUpdatesDigest(self, repository):
         if not self.doesTableExist("treeupdates"):
@@ -2305,12 +2190,16 @@ class etpDatabase(TextInterface):
 
     def retrieveNeeded(self, idpackage):
 
+        cache = self.fetchInfoCache(idpackage,'retrieveNeeded')
+        if cache != None: return cache
+
         if not self.doesTableExist("needed"):
             self.createNeededTable()
 
         self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
         needed = self.fetchall2set(self.cursor.fetchall())
 
+        self.storeInfoCache(idpackage,'retrieveNeeded',needed)
         return needed
 
     def retrieveConflicts(self, idpackage):
@@ -2442,6 +2331,10 @@ class etpDatabase(TextInterface):
 
     def retrieveContent(self, idpackage, extended = False, contentType = None):
 
+        c_hash = hash(extended)+hash(contentType)
+        cache = self.fetchInfoCache(idpackage,'retrieveContent', extra_hash = c_hash)
+        if cache != None: return cache
+
         # like portage does
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
 
@@ -2465,18 +2358,19 @@ class etpDatabase(TextInterface):
         else:
             fl = self.fetchall2set(self.cursor.fetchall())
 
-	return fl
+        self.storeInfoCache(idpackage,'retrieveContent',fl, extra_hash = c_hash)
+        return fl
 
     def retrieveSlot(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveSlot')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveSlot')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT "slot" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-	ver = self.cursor.fetchone()[0]
+        self.cursor.execute('SELECT "slot" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        ver = self.cursor.fetchone()[0]
 
-	self.storeInfoCache(idpackage,'retrieveSlot',ver)
-	return ver
+        self.storeInfoCache(idpackage,'retrieveSlot',ver)
+        return ver
     
     def retrieveVersionTag(self, idpackage):
 
@@ -2881,10 +2775,6 @@ class etpDatabase(TextInterface):
 
     def searchPackagesByName(self, keyword, sensitive = False, branch = None):
 	
-	if (self.xcache):
-	    cached = self.fetchSearchCache((keyword,sensitive,branch),'searchPackagesByName')
-	    if cached != None: return cached
-	
         if sensitive:
             searchkeywords = [keyword]
         else:
@@ -2900,16 +2790,10 @@ class etpDatabase(TextInterface):
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = (?)'+branchstring, searchkeywords)
 	
 	results = self.cursor.fetchall()
-	if (self.xcache):
-	    self.storeSearchCache((keyword,sensitive,branch),'searchPackagesByName',results)
 	return results
 
 
     def searchPackagesByCategory(self, keyword, like = False, branch = None):
-	
-	if (self.xcache):
-	    cached = self.fetchSearchCache((keyword,branch),'searchPackagesByCategory')
-	    if cached != None: return cached
 	
         searchkeywords = [keyword]
 	branchstring = ''
@@ -2923,15 +2807,10 @@ class etpDatabase(TextInterface):
             self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE categories.category = (?) and baseinfo.idcategory = categories.idcategory '+branchstring, searchkeywords)
 	
 	results = self.cursor.fetchall()
-	if (self.xcache):
-	    self.storeSearchCache((keyword,branch),'searchPackagesByCategory',results)
+
 	return results
 
     def searchPackagesByNameAndCategory(self, name, category, sensitive = False, branch = None):
-	
-	if (self.xcache):
-	    cached = self.fetchSearchCache((name,category,sensitive,branch),'searchPackagesByNameAndCategory')
-	    if cached != None: return cached
 	
 	# get category id
 	idcat = -1
@@ -2961,15 +2840,10 @@ class etpDatabase(TextInterface):
 	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = (?) AND idcategory = (?) '+branchstring, searchkeywords)
 	
 	results = self.cursor.fetchall()
-	if (self.xcache):
-	    self.storeSearchCache((name,category,sensitive,branch),'searchPackagesByNameAndCategory',results)
+
 	return results
 
     def searchPackagesKeyVersion(self, key, version, branch = None, sensitive = False):
-
-        if (self.xcache):
-            cached = self.fetchSearchCache((key,version,branch,sensitive),'searchPackagesKeyVersion')
-            if cached != None: return cached
 
         searchkeywords = []
         if sensitive:
@@ -2990,8 +2864,7 @@ class etpDatabase(TextInterface):
             self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE LOWER(categories.category) || "/" || LOWER(baseinfo.name) = (?) and version = (?) and baseinfo.idcategory = categories.idcategory '+branchstring, searchkeywords)
 
         results = self.cursor.fetchall()
-        if (self.xcache):
-            self.storeSearchCache((key,version,branch,sensitive),'searchPackagesKeyVersion',results)
+
 	return results
 
     def listAllPackages(self):
@@ -3034,15 +2907,8 @@ class etpDatabase(TextInterface):
 
     def listAllBranches(self):
 
-        if (self.xcache):
-            cached = self.fetchSearchCache((None,),'listAllBranches')
-            if cached != None: return cached
-
         self.cursor.execute('SELECT branch FROM baseinfo')
         results = self.fetchall2set(self.cursor.fetchall())
-
-        if (self.xcache):
-            self.storeSearchCache((None,),'listAllBranches',results)
         return results
 
     def listIdPackagesInIdcategory(self,idcategory):
@@ -3207,114 +3073,20 @@ class etpDatabase(TextInterface):
     def tablesChecksum(self):
         # NOTE: if you will add dependstable to the validation
         # please have a look at EquoInterface.__install_package_into_database world calculation cache stuff
-        import md5
         self.cursor.execute('select * from baseinfo')
-        m = md5.new()
+        c_hash = 0
         for row in self.cursor:
-            m.update(str(row))
+            c_hash += hash(str(row))
         self.cursor.execute('select * from dependenciesreference')
         for row in self.cursor:
-            m.update(str(row))
-        return m.hexdigest()
+            c_hash += hash(str(row))
+        return str(c_hash)
 
 
 ########################################################
 ####
 ##   Client Database API / but also used by server part
 #
-
-    def storeLibraryBreakageCache(self, broken_atoms, match, idpackage, deep_deps):
-        try:
-            self.checkReadOnly()
-        except exceptionTools.OperationNotPermitted:
-            return
-        repo_idpackage = match[0]
-        repo_name = match[1]
-        if self.dbname == "client" and not repo_name.endswith(".tbz2") and (etpConst['uid'] == 0):
-            if deep_deps:
-                deep = 1
-            else:
-                deep = 0
-            if not self.doesTableExist("library_breakages"):
-                self.createLibraryBreakagesTable()
-            repo_order_ck = hash(str(etpRepositoriesOrder) + \
-                            etpConst['systemroot'] + \
-                            str(etpRepositories[repo_name]['dbrevision']))
-            mybroken = broken_atoms.copy()
-            if not mybroken:
-                mybroken |= set(["."])
-            for atom in mybroken:
-                self.cursor.execute(
-                        'INSERT into library_breakages VALUES '
-                        '(NULL,?,?,?,?,?,?)'
-                        , (	repo_idpackage,
-                                repo_name,
-                                idpackage,
-                                deep,
-                                repo_order_ck,
-                                atom
-                        )
-                )
-            self.commitChanges()
-
-    def getLibraryBreakageCache(self, match, idpackage, deep_deps):
-        repo_idpackage = match[0]
-        repo_name = match[1]
-        if self.dbname == "client" and not repo_name.endswith(".tbz2"):
-            if deep_deps:
-                deep = 1
-            else:
-                deep = 0
-            if not self.doesTableExist("library_breakages"):
-                self.createLibraryBreakagesTable()
-                return None
-            repo_order_ck = hash(str(etpRepositoriesOrder) + \
-                            etpConst['systemroot'] + \
-                            str(etpRepositories[repo_name]['dbrevision']))
-            # fetch data
-            self.cursor.execute("""
-                    SELECT atom FROM library_breakages WHERE 
-                        repoidpackage = (?) and
-                        reponame = (?) and
-                        idpackage = (?) and
-                        deep = (?) and
-                        repoorderck = (?)
-                    """,
-                    (repo_idpackage,repo_name,idpackage,deep,repo_order_ck)
-            )
-            found = self.fetchall2set(self.cursor.fetchall())
-            if found:
-                found = found - set(["."])
-                return found
-
-    def clearLibraryBreakageCache(self):
-        self.checkReadOnly()
-        self.cursor.execute("DROP INDEX IF EXISTS libraryindex;")
-        self.cursor.execute("DROP TABLE IF EXISTS library_breakages;")
-        self.createLibraryBreakagesTable()
-        self.commitChanges()
-
-    def createLibraryBreakagesTable(self):
-        self.cursor.execute("""
-                CREATE TABLE library_breakages (
-                    idbreak INTEGER PRIMARY KEY,
-                    repoidpackage INTEGER,
-                    reponame VARCHAR,
-                    idpackage INTEGER,
-                    deep INTEGER,
-                    repoorderck INTEGER,
-                    atom VARCHAR
-                );
-        """)
-        self.cursor.execute("""
-                CREATE INDEX libraryindex ON library_breakages (
-                    repoidpackage,
-                    reponame,
-                    idpackage,
-                    repoorderck,
-                    atom
-                );
-        """)
 
     def addPackageToInstalledTable(self, idpackage, repositoryName):
         self.checkReadOnly()
@@ -3648,43 +3420,35 @@ class etpDatabase(TextInterface):
 #
 
     def atomMatchFetchCache(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter):
-        if (self.xcache):
-            try:
-                cache_tuple = (atom,matchSlot,matchTag,multiMatch,caseSensitive,matchBranches,packagesFilter)
-                cached = dbCacheStore[etpCache['dbMatch']+self.dbname].get((cache_tuple))
-                if cached:
-                    return cached
-                else:
-                    return None
-            except KeyError: # issues with dictionaries?
-                return None
-        else:
-            return None
+        if self.xcache:
+            c_hash = str(   hash(atom) + \
+                            hash(matchSlot) + \
+                            hash(matchTag) + \
+                            hash(multiMatch) + \
+                            hash(caseSensitive) + \
+                            hash(tuple(matchBranches)) + \
+                            hash(packagesFilter) + \
+                            hash(self.dbname)
+                        )
+            cached = dumpTools.loadobj(etpCache['dbMatch']+c_hash)
+            if cached != None:
+                return cached
 
     def atomMatchStoreCache(self, result, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter):
-
-        data = {
-            'result': result[:],
-            'atom': atom,
-            'caseSensitive': caseSensitive,
-            'matchSlot': matchSlot,
-            'multiMatch': multiMatch,
-            'matchBranches': matchBranches,
-            'matchTag': matchTag,
-            'packagesFilter': packagesFilter,
-            'dbname': self.dbname
-        }
-        task = entropyTools.parallelTask(self.__atomMatchStoreCache, data)
-        task.parallel_wait()
-        task.start()
-        del data
-
-    def __atomMatchStoreCache(self, data):
-        try:
-            cache_tuple = (data['atom'],data['matchSlot'],data['matchTag'],data['multiMatch'],data['caseSensitive'],data['matchBranches'],data['packagesFilter'])
-            dbCacheStore[etpCache['dbMatch']+data['dbname']][cache_tuple] = data['result'][:]
-        except KeyError: # againnn, issues with dicts??
-            pass
+        if self.xcache:
+            c_hash = str(   hash(atom) + \
+                            hash(matchSlot) + \
+                            hash(matchTag) + \
+                            hash(multiMatch) + \
+                            hash(caseSensitive) + \
+                            hash(tuple(matchBranches)) + \
+                            hash(packagesFilter) + \
+                            hash(self.dbname)
+                        )
+            try:
+                dumpTools.dumpobj(etpCache['dbMatch']+c_hash,result)
+            except IOError:
+                pass
 
 
     # function that validate one atom by reading keywords settings
@@ -3692,6 +3456,7 @@ class etpDatabase(TextInterface):
     def idpackageValidator(self,idpackage):
 
         reponame = self.dbname[5:]
+
         cached = idpackageValidatorCache.get((idpackage,reponame))
         if cached != None: return cached
 
@@ -3734,6 +3499,7 @@ class etpDatabase(TextInterface):
                     keyword_data = etpConst['packagemasking']['keywords']['repositories'][reponame].get(keyword)
                     for atom in keyword_data:
                         if atom == "*": # all packages in this repo with keyword "keyword" are ok
+                            idpackageValidatorCache[(idpackage,reponame)] = idpackage
                             return idpackage
                         matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
                         if matches[1] != 0:

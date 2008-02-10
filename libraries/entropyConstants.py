@@ -304,16 +304,6 @@ CREATE TABLE binkeywords (
     idkeyword INTEGER
 );
 
-CREATE TABLE library_breakages (
-    idbreak INTEGER PRIMARY KEY,
-    repoidpackage INTEGER,
-    reponame VARCHAR,
-    idpackage INTEGER,
-    deep INTEGER,
-    repoorderck INTEGER,
-    atom VARCHAR
-);
-
 """
 
 # ETP_ARCH_CONST setup
@@ -355,26 +345,19 @@ ETP_LOGPRI_ERROR = "[ ERROR ]"
 etpCache = {
     'configfiles': 'scanfs', # used to store information about files that should be merged using "equo conf merge"
     'dbMatch': 'cache_', # used by the database controller as prefix to the cache files belonging to etpDatabase class (dep solving)
-    'dbSearch': 'search_', # used by the database controller as prefix to the cache files belonging to etpDatabase class (searches)
     'dbInfo': 'info_', # used by the database controller as prefix to the cache files belonging to etpDatabase class (info retrival)
-    'atomMatch': 'atomMatchCache', # used to store info about repository dependencies solving
-    'generateDependsTree': 'generateDependsTreeCache', # used to store info about removal dependencies
+    'atomMatch': 'atom_match_', # used to store info about repository dependencies solving
     'install': 'resume_install', # resume cache (install)
     'remove': 'resume_remove', # resume cache (remove)
     'world': 'resume_world', # resume cache (world)
-    'world_update': 'world_cache',
-    'world_available': 'available_cache',
-    'check_package_update': 'package_update',
-    'advisories': 'advisories_cache'
-}
-
-# byte sizes of disk caches
-etpCacheSizes = {
-    'dbMatch': 3000000, # bytes
-    'dbInfo': 6000000, # bytes
-    'dbSearch': 2000000, # bytes
-    'atomMatch': 3000000, # bytes
-    'generateDependsTree': 3000000, # bytes
+    'world_update': 'world_cache_',
+    'world_available': 'available_cache_',
+    'check_package_update': 'package_update_',
+    'advisories': 'advisories_cache_',
+    'dep_tree': 'dep_tree_',
+    'depends_tree': 'depends_tree_',
+    'filter_satisfied_deps': 'filter_satisfied_deps_',
+    'library_breakage': 'library_breakage_'
 }
 
 # ahahaha
@@ -401,60 +384,20 @@ etpRSSMessages = {
 etpHandlers = {}
 
 # CACHING dictionaries
-dbCacheStore = {}
-atomMatchCache = {}
-atomClientMatchCache = {}
-generateDependsTreeCache = {}
 idpackageValidatorCache = {}
-filterSatisfiedDependenciesCache = {}
-filterSatisfiedDependenciesCmpResults = {}
-check_package_update_cache = {}
-ververifyCache = {}
-isjustnameCache = {}
-catpkgsplitCache = {}
-dep_striptagCache = {}
-dep_getkeyCache = {}
-dep_getcpvCache = {}
-dep_getslotCache = {}
-dep_gettagCache = {}
-removePackageOperatorsCache = {}
-compareVersionsCache = {}
-getNewerVersionCache = {}
-getEntropyNewerVersionCache = {}
 linkerPaths = set()
 # repository atoms updates digest cache
 repositoryUpdatesDigestCache_db = {}
 repositoryUpdatesDigestCache_disk = {}
-
 fetch_repository_if_not_available_cache = {}
 repo_error_messages_cache = set()
 
 ### Application disk cache
 def const_resetCache():
-    for item in dbCacheStore:
-        dbCacheStore[item].clear()
-    atomMatchCache.clear()
-    atomClientMatchCache.clear()
-    generateDependsTreeCache.clear()
     idpackageValidatorCache.clear()
-    filterSatisfiedDependenciesCache.clear()
-    filterSatisfiedDependenciesCmpResults.clear()
-    ververifyCache.clear()
-    isjustnameCache.clear()
-    catpkgsplitCache.clear()
-    dep_striptagCache.clear()
-    dep_getkeyCache.clear()
-    dep_getcpvCache.clear()
-    dep_getslotCache.clear()
-    dep_gettagCache.clear()
-    removePackageOperatorsCache.clear()
-    compareVersionsCache.clear()
-    getNewerVersionCache.clear()
-    getEntropyNewerVersionCache.clear()
     linkerPaths.clear()
     repositoryUpdatesDigestCache_db.clear()
     repositoryUpdatesDigestCache_disk.clear()
-    check_package_update_cache.clear()
     fetch_repository_if_not_available_cache.clear()
     repo_error_messages_cache.clear()
 

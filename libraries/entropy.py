@@ -95,6 +95,11 @@ class EquoInterface(TextInterface):
 
         # security interface
         self.Security = SecurityInterface(self)
+        if not self.xcache:
+            try:
+                self.purge_cache(False)
+            except:
+                pass
 
     def switchChroot(self, chroot = ""):
         # clean caches
@@ -216,10 +221,10 @@ class EquoInterface(TextInterface):
     def purge_cache(self, showProgress = True):
         const_resetCache()
         if etpConst['uid'] == 0:
-            dumpdir = etpConst['dumpstoragedir']
-            if not dumpdir.endswith("/"): dumpdir = dumpdir+"/"
             for key in etpCache:
-                cachefile = dumpdir+etpCache[key]+"*.dmp"
+                if key in ["library_breakage"]: # caches we can skip
+                    continue
+                cachefile = os.path.join(etpConst['dumpstoragedir'],etpCache[key])+"*.dmp"
                 if showProgress: self.updateProgress(darkred("Cleaning %s...") % (cachefile,), importance = 1, type = "warning", back = True)
                 try:
                     os.system("rm -f "+cachefile)
@@ -270,7 +275,6 @@ class EquoInterface(TextInterface):
                 depends.add(info[1])
 
         self.updateProgress(darkgreen("Resolving metadata"), importance = 1, type = "warning")
-        atomMatchCache.clear()
         maxlen = len(names)
         cnt = 0
         for name in names:
@@ -314,84 +318,10 @@ class EquoInterface(TextInterface):
             pass
 
         self.updateProgress(darkred("Dependencies cache filled."), importance = 2, type = "warning")
-        self.save_cache()
 
-    def load_cache(self, showProgress = True):
-
-        if (etpConst['uid'] != 0) or (not self.xcache): # don't load cache as user
-            return
-
-        try:
-            if showProgress: self.updateProgress(blue("Loading On-Disk Cache..."), importance = 2, type = "info")
-        except:
-            pass
-
-        # atomMatch
-        try:
-            mycache = self.dumpTools.loadobj(etpCache['atomMatch'])
-            if isinstance(mycache, dict):
-                atomMatchCache.clear()
-                atomMatchCache.update(mycache)
-                del mycache
-        except:
-            atomMatchCache.clear()
-            self.dumpTools.dumpobj(etpCache['atomMatch'],{})
-
-        # removal dependencies
-        try:
-            mycache = self.dumpTools.loadobj(etpCache['generateDependsTree'])
-            if isinstance(mycache, dict):
-                generateDependsTreeCache.clear()
-                generateDependsTreeCache.update(mycache)
-                del mycache
-        except:
-            generateDependsTreeCache.clear()
-            self.dumpTools.dumpobj(etpCache['generateDependsTree'],{})
-
-        # check_package_update cache
-        try:
-            mycache = self.dumpTools.loadobj(etpCache['check_package_update'])
-            if isinstance(mycache, dict):
-                check_package_update_cache.clear()
-                check_package_update_cache.update(mycache)
-                del mycache
-        except:
-            check_package_update_cache.clear()
-            self.dumpTools.dumpobj(etpCache['check_package_update'],{})
-
-    def save_cache(self):
-
-        if (etpConst['uid'] != 0): # don't save cache as user
-            return
-
-        self.dumpTools.dumpobj(etpCache['check_package_update'],check_package_update_cache)
-
-        self.dumpTools.dumpobj(etpCache['atomMatch'],atomMatchCache)
-        if os.path.isfile(etpConst['dumpstoragedir']+"/"+etpCache['atomMatch']+".dmp"):
-            if os.stat(etpConst['dumpstoragedir']+"/"+etpCache['atomMatch']+".dmp")[6] > etpCacheSizes['atomMatch']:
-                # clean cache
-                self.dumpTools.dumpobj(etpCache['atomMatch'],{})
-        self.dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
-        if os.path.isfile(etpConst['dumpstoragedir']+"/"+etpCache['generateDependsTree']+".dmp"):
-            if os.stat(etpConst['dumpstoragedir']+"/"+etpCache['generateDependsTree']+".dmp")[6] > etpCacheSizes['generateDependsTree']:
-                # clean cache
-                self.dumpTools.dumpobj(etpCache['generateDependsTree'],{})
-        for dbinfo in dbCacheStore:
-            self.dumpTools.dumpobj(dbinfo,dbCacheStore[dbinfo])
-            # check size
-            if os.path.isfile(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp"):
-                if dbinfo.startswith(etpCache['dbMatch']):
-                    if os.stat(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp")[6] > etpCacheSizes['dbMatch']:
-                        # clean cache
-                        self.dumpTools.dumpobj(dbinfo,{})
-                elif dbinfo.startswith(etpCache['dbInfo']):
-                    if os.stat(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp")[6] > etpCacheSizes['dbInfo']:
-                        # clean cache
-                        self.dumpTools.dumpobj(dbinfo,{})
-                elif dbinfo.startswith(etpCache['dbSearch']):
-                    if os.stat(etpConst['dumpstoragedir']+"/"+dbinfo+".dmp")[6] > etpCacheSizes['dbSearch']:
-                        # clean cache
-                        self.dumpTools.dumpobj(dbinfo,{})
+    def clear_dump_cache(self, dump_name):
+        dump_file = os.path.join(etpConst['dumpstoragedir'],dump_name)
+        os.system("rm -rf %s*.dmp" % (dump_file,) )
 
     '''
        Cache stuff :: end
@@ -627,7 +557,6 @@ class EquoInterface(TextInterface):
             self.clientDbconn.resetTreeupdatesDigests()
             # clean cache
             self.purge_cache(showProgress = False)
-            self.load_cache(showProgress = False)
             # reopen Client Database, this will make treeupdates to be re-read
             self.reopenClientDbconn()
             self.closeAllRepositoryDatabases()
@@ -640,8 +569,11 @@ class EquoInterface(TextInterface):
 
     def check_package_update(self, atom):
 
-        if check_package_update_cache.has_key(atom):
-            return check_package_update_cache[atom]
+        if self.xcache:
+            c_hash = str(hash(atom))
+            cached = self.dumpTools.loadobj(etpCache['check_package_update']+c_hash)
+            if cached != None:
+                return cached
 
         found = False
         match = self.clientDbconn.atomMatch(atom)
@@ -657,8 +589,12 @@ class EquoInterface(TextInterface):
             matched = self.atomMatch(pkg_match)
         del match
 
-        # cache
-        check_package_update_cache[atom] = (found,matched)
+        if self.xcache:
+            try:
+                self.dumpTools.dumpobj(etpCache['check_package_update']+c_hash,(found,matched))
+            except:
+                pass
+
         return found, matched
 
 
@@ -717,13 +653,17 @@ class EquoInterface(TextInterface):
     def atomMatch(self, atom, caseSensitive = True, matchSlot = None, matchBranches = (), packagesFilter = True):
 
         if self.xcache:
-            cached = atomMatchCache.get(atom)
-            if cached:
-                try:
-                    if (cached['matchSlot'] == matchSlot) and (cached['matchBranches'] == matchBranches) and (cached['etpRepositories'] == etpRepositories) and (cached['caseSensitive'] == caseSensitive) and (cached['etpRepositoriesOrder'] == etpRepositoriesOrder) and (cached['packagesFilter'] == packagesFilter):
-                        return cached['result']
-                except KeyError:
-                    pass
+            c_hash = str(   hash(atom) + \
+                            hash(caseSensitive) + \
+                            hash(matchSlot) + \
+                            hash(tuple(matchBranches)) + \
+                            hash(packagesFilter) + \
+                            hash(tuple(etpRepositoriesOrder)) + \
+                            hash(tuple(etpRepositories))
+                        )
+            cached = self.dumpTools.loadobj(etpCache['atomMatch']+c_hash)
+            if cached != None:
+                return cached
 
         repoResults = {}
         for repo in etpRepositoriesOrder:
@@ -751,27 +691,21 @@ class EquoInterface(TextInterface):
 
         # nothing found
         if not repoResults:
-            atomMatchCache[atom] = {}
-            atomMatchCache[atom]['result'] = -1,1
-            atomMatchCache[atom]['matchSlot'] = matchSlot
-            atomMatchCache[atom]['matchBranches'] = matchBranches
-            atomMatchCache[atom]['caseSensitive'] = caseSensitive
-            atomMatchCache[atom]['packagesFilter'] = packagesFilter
-            atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-            atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
+            if self.xcache:
+                try:
+                    self.dumpTools.dumpobj(etpCache['atomMatch']+c_hash,(-1,1))
+                except IOError:
+                    pass
             return -1,1
 
         elif len(repoResults) == 1:
             # one result found
             repo = repoResults.keys()[0]
-            atomMatchCache[atom] = {}
-            atomMatchCache[atom]['result'] = repoResults[repo],repo
-            atomMatchCache[atom]['matchSlot'] = matchSlot
-            atomMatchCache[atom]['matchBranches'] = matchBranches
-            atomMatchCache[atom]['caseSensitive'] = caseSensitive
-            atomMatchCache[atom]['packagesFilter'] = packagesFilter
-            atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-            atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
+            if self.xcache:
+                try:
+                    self.dumpTools.dumpobj(etpCache['atomMatch']+c_hash,(repoResults[repo],repo))
+                except IOError:
+                    pass
             return repoResults[repo],repo
 
         # FIXME: consider to rewrite the code below
@@ -863,14 +797,11 @@ class EquoInterface(TextInterface):
                             for repository in etpRepositoriesOrder:
                                 if repository in conflictingTags:
                                     # found it, WE ARE DOOONE!
-                                    atomMatchCache[atom] = {}
-                                    atomMatchCache[atom]['result'] = repoResults[repository],repository
-                                    atomMatchCache[atom]['matchSlot'] = matchSlot
-                                    atomMatchCache[atom]['matchBranches'] = matchBranches
-                                    atomMatchCache[atom]['caseSensitive'] = caseSensitive
-                                    atomMatchCache[atom]['packagesFilter'] = packagesFilter
-                                    atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-                                    atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
+                                    if self.xcache:
+                                        try:
+                                            self.dumpTools.dumpobj(etpCache['atomMatch']+c_hash,(repoResults[repository],repository))
+                                        except IOError:
+                                            pass
                                     return repoResults[repository],repository
                         else:
                             # we are done!!!
@@ -879,14 +810,11 @@ class EquoInterface(TextInterface):
                                 if str(conflictingTags[x]['revision']) == str(newerRevision):
                                     reponame = x
                                     break
-                            atomMatchCache[atom] = {}
-                            atomMatchCache[atom]['result'] = repoResults[reponame],reponame
-                            atomMatchCache[atom]['matchSlot'] = matchSlot
-                            atomMatchCache[atom]['matchBranches'] = matchBranches
-                            atomMatchCache[atom]['caseSensitive'] = caseSensitive
-                            atomMatchCache[atom]['packagesFilter'] = packagesFilter
-                            atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-                            atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
+                            if self.xcache:
+                                try:
+                                    self.dumpTools.dumpobj(etpCache['atomMatch']+c_hash,(repoResults[reponame],reponame))
+                                except IOError:
+                                    pass
                             return repoResults[reponame],reponame
                     else:
                         # we're finally done
@@ -895,14 +823,11 @@ class EquoInterface(TextInterface):
                             if conflictingEntries[x]['versiontag'] == newerTag:
                                 reponame = x
                                 break
-                        atomMatchCache[atom] = {}
-                        atomMatchCache[atom]['result'] = repoResults[reponame],reponame
-                        atomMatchCache[atom]['matchSlot'] = matchSlot
-                        atomMatchCache[atom]['matchBranches'] = matchBranches
-                        atomMatchCache[atom]['caseSensitive'] = caseSensitive
-                        atomMatchCache[atom]['packagesFilter'] = packagesFilter
-                        atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-                        atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
+                        if self.xcache:
+                            try:
+                                self.dumpTools.dumpobj(etpCache['atomMatch']+c_hash,(repoResults[reponame],reponame))
+                            except IOError:
+                                pass
                         return repoResults[reponame],reponame
                 else:
                     # we are fine, the newerVersion is not one of the duplicated ones
@@ -911,14 +836,11 @@ class EquoInterface(TextInterface):
                         if packageInformation[x]['version'] == newerVersion:
                             reponame = x
                             break
-                    atomMatchCache[atom] = {}
-                    atomMatchCache[atom]['result'] = repoResults[reponame],reponame
-                    atomMatchCache[atom]['matchSlot'] = matchSlot
-                    atomMatchCache[atom]['matchBranches'] = matchBranches
-                    atomMatchCache[atom]['caseSensitive'] = caseSensitive
-                    atomMatchCache[atom]['packagesFilter'] = packagesFilter
-                    atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-                    atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
+                    if self.xcache:
+                        try:
+                            self.dumpTools.dumpobj(etpCache['atomMatch']+c_hash,(repoResults[reponame],reponame))
+                        except IOError:
+                            pass
                     return repoResults[reponame],reponame
             else:
                 # yeah, we're done, just return the info
@@ -930,34 +852,22 @@ class EquoInterface(TextInterface):
                     if packageInformation[x]['version'] == newerVersion:
                         reponame = x
                         break
-                atomMatchCache[atom] = {}
-                atomMatchCache[atom]['result'] = repoResults[reponame],reponame
-                atomMatchCache[atom]['matchSlot'] = matchSlot
-                atomMatchCache[atom]['matchBranches'] = matchBranches
-                atomMatchCache[atom]['caseSensitive'] = caseSensitive
-                atomMatchCache[atom]['packagesFilter'] = packagesFilter
-                atomMatchCache[atom]['etpRepositories'] = etpRepositories.copy()
-                atomMatchCache[atom]['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
+                if self.xcache:
+                    try:
+                        self.dumpTools.dumpobj(etpCache['atomMatch']+c_hash,(repoResults[reponame],reponame))
+                    except IOError:
+                        pass
                 return repoResults[reponame],reponame
 
 
     def __repository_move_clear_cache(self, repoid):
-        # clean world_available cache
-        self.dumpTools.dumpobj(etpCache['world_available'], {})
-        # clean world_update cache
-        self.dumpTools.dumpobj(etpCache['world_update'], {})
-        # clean check_update_package_cache
-        check_package_update_cache.clear()
-        self.dumpTools.dumpobj(etpCache['check_package_update'],{})
-        # clear atomMatchCache
-        atomMatchCache.clear()
-        self.dumpTools.dumpobj(etpCache['atomMatch'],{})
-        dbCacheStore[etpCache['dbMatch']+etpConst['dbnamerepoprefix']+repoid] = {}
-        dbCacheStore[etpCache['dbSearch']+etpConst['dbnamerepoprefix']+repoid] = {}
-        dbCacheStore[etpCache['dbInfo']+etpConst['dbnamerepoprefix']+repoid] = {}
-        self.dumpTools.dumpobj(etpCache['dbMatch']+etpConst['dbnamerepoprefix']+repoid,{})
-        self.dumpTools.dumpobj(etpCache['dbSearch']+etpConst['dbnamerepoprefix']+repoid,{})
-        self.dumpTools.dumpobj(etpCache['dbInfo']+etpConst['dbnamerepoprefix']+repoid,{})
+        self.clear_dump_cache(etpCache['world_available'])
+        self.clear_dump_cache(etpCache['world_update'])
+        self.clear_dump_cache(etpCache['check_package_update'])
+        self.clear_dump_cache(etpCache['filter_satisfied_deps'])
+        self.clear_dump_cache(etpCache['atomMatch'])
+        self.clear_dump_cache(etpCache['dbMatch'])
+        self.clear_dump_cache(etpCache['dbInfo'])
 
 
     def addRepository(self, repodata):
@@ -1076,6 +986,15 @@ class EquoInterface(TextInterface):
     '''
     def filterSatisfiedDependencies(self, dependencies, deep_deps = False):
 
+        if self.xcache:
+            c_data = list(dependencies)
+            c_data.sort()
+            c_hash = str(hash(tuple(c_data))+hash(deep_deps))
+            del c_data
+            cached = self.dumpTools.loadobj(etpCache['filter_satisfied_deps']+c_hash)
+            if cached != None:
+                return cached
+
         unsatisfiedDeps = set()
         satisfiedDeps = set()
 
@@ -1083,14 +1002,6 @@ class EquoInterface(TextInterface):
 
             depsatisfied = set()
             depunsatisfied = set()
-
-            ''' caching '''
-            cached = filterSatisfiedDependenciesCache.get(dependency)
-            if cached:
-                if (cached['deep_deps'] == deep_deps):
-                    unsatisfiedDeps.update(cached['depunsatisfied'])
-                    satisfiedDeps.update(cached['depsatisfied'])
-                    continue
 
             ### conflict
             if dependency[0] == "!":
@@ -1125,7 +1036,6 @@ class EquoInterface(TextInterface):
                 if (deep_deps):
                     vcmp = self.entropyTools.entropyCompareVersions((repo_pkgver,repo_pkgtag,repo_pkgrev),(installedVer,installedTag,installedRev))
                     if vcmp != 0:
-                        filterSatisfiedDependenciesCmpResults[dependency] = vcmp
                         depunsatisfied.add(dependency)
                     else:
                         # check if needed is the same?
@@ -1134,7 +1044,6 @@ class EquoInterface(TextInterface):
                     depsatisfied.add(dependency)
             else:
                 # not the same version installed
-                filterSatisfiedDependenciesCmpResults[dependency] = 10
                 depunsatisfied.add(dependency)
 
             if depsatisfied:
@@ -1148,11 +1057,11 @@ class EquoInterface(TextInterface):
             unsatisfiedDeps.update(depunsatisfied)
             satisfiedDeps.update(depsatisfied)
 
-            ''' caching '''
-            filterSatisfiedDependenciesCache[dependency] = {}
-            filterSatisfiedDependenciesCache[dependency]['depunsatisfied'] = depunsatisfied
-            filterSatisfiedDependenciesCache[dependency]['depsatisfied'] = depsatisfied
-            filterSatisfiedDependenciesCache[dependency]['deep_deps'] = deep_deps
+        if self.xcache:
+            try:
+                self.dumpTools.dumpobj(etpCache['filter_satisfied_deps']+c_hash,(unsatisfiedDeps,satisfiedDeps))
+            except IOError:
+                pass
 
         return unsatisfiedDeps, satisfiedDeps
 
@@ -1254,7 +1163,7 @@ class EquoInterface(TextInterface):
             matchcache.add(match)
             deptree.add((mydep[0],match)) # add match
 
-            # library breakage check
+            # extra library breakages check
             clientmatch = self.clientDbconn.atomMatch(key, matchSlot = matchslot)
             if clientmatch[0] != -1:
                 broken_atoms = self.__lookup_library_breakages(match, clientmatch, deep_deps = deep_deps)
@@ -1295,16 +1204,15 @@ class EquoInterface(TextInterface):
 
         return newdeptree,0 # note: newtree[0] contains possible conflicts
 
-    def clear_library_breakages_cache(self):
-        self.clientDbconn.clearLibraryBreakageCache()
-
     def __lookup_library_breakages(self, match, clientmatch, deep_deps = False):
 
         # there is no need to update this cache when "match" will be installed, because at that point
         # clientmatch[0] will differ.
-        cached = self.clientDbconn.getLibraryBreakageCache(match, clientmatch[0], deep_deps)
-        if cached != None:
-            return cached
+        if self.xcache:
+            c_hash = str(hash(tuple(match))+hash(clientmatch[0])+hash(deep_deps))
+            cached = self.dumpTools.loadobj(etpCache['library_breakage']+c_hash)
+            if cached != None:
+                return cached
 
         matchdb = self.openRepositoryDatabase(match[1])
         reponeeded = matchdb.retrieveNeeded(match[0])
@@ -1319,11 +1227,11 @@ class EquoInterface(TextInterface):
             clientcontent = self.clientDbconn.retrieveContent(clientmatch[0])
             clientcontent = set([x for x in clientcontent if (x.find(".so") != -1)])
             clientcontent = set([x for x in clientcontent if (self.clientDbconn.isNeededAvailable(os.path.basename(x)) > 0)])
-            contentdiff = clientcontent - repocontent
-            del repocontent, clientcontent
+            clientcontent -= repocontent
+            del repocontent
             search_libs = set()
             linker_paths = self.entropyTools.collectLinkerPaths()
-            for cfile in contentdiff:
+            for cfile in clientcontent:
                 cpath = os.path.dirname(cfile)
                 if cpath in linker_paths:
                     # there's a breakage
@@ -1331,11 +1239,11 @@ class EquoInterface(TextInterface):
                     # search cfile
                     search_libs.add(cfile)
             #search_libs.update(neededdiff)
-            del contentdiff
+            del clientcontent
             search_matches = set()
             for x in search_libs:
                 y = self.clientDbconn.searchNeeded(x)
-                search_matches.update(y)
+                search_matches |= y
             del search_libs
             found_search_atoms = set()
             for x in search_matches:
@@ -1345,22 +1253,37 @@ class EquoInterface(TextInterface):
                     found_search_atoms.add("%s:%s" % (search_key,str(search_slot),))
             if found_search_atoms:
                 search_unsat, xxx = self.filterSatisfiedDependencies(found_search_atoms, deep_deps = deep_deps)
-                broken_atoms.update(search_unsat)
+                broken_atoms |= search_unsat
 
-        self.clientDbconn.storeLibraryBreakageCache(broken_atoms, match, clientmatch[0], deep_deps)
+        if self.xcache:
+            try:
+                self.dumpTools.dumpobj(etpCache['library_breakage']+c_hash,broken_atoms)
+            except IOError:
+                pass
         return broken_atoms
 
     def get_required_packages(self, matched_atoms, empty_deps = False, deep_deps = False):
 
+        if self.xcache:
+            c_data = list(matched_atoms)
+            c_data.sort()
+            c_hash = str(hash(tuple(c_data))+hash(empty_deps)+hash(deep_deps))
+            del c_data
+            cached = self.dumpTools.loadobj(etpCache['dep_tree']+c_hash)
+            if cached != None:
+                return cached
+
         deptree = {}
         deptree[0] = set()
 
-        if not etpUi['quiet']: atomlen = len(matched_atoms); count = 0
+        atomlen = len(matched_atoms); count = 0
         matchfilter = matchContainer()
 
         for atomInfo in matched_atoms:
 
-            if not etpUi['quiet']: count += 1; self.updateProgress(":: Sorting dependencies "+str(round((float(count)/atomlen)*100,1))+"% ::", importance = 0, type = "info", back = True)
+            count += 1
+            if (count%10 == 0) or (count == atomlen) or (count == 1):
+                self.updateProgress(":: Sorting dependencies "+str(round((float(count)/atomlen)*100,1))+"% ::", importance = 0, type = "info", back = True)
 
             # check if atomInfo is in matchfilter 
 
@@ -1388,6 +1311,11 @@ class EquoInterface(TextInterface):
 
         matchfilter.clear()
         del matchfilter
+        if self.xcache:
+            try:
+                self.dumpTools.dumpobj(etpCache['dep_tree']+c_hash,(deptree,0))
+            except IOError:
+                pass
         return deptree,0
 
     '''
@@ -1398,11 +1326,14 @@ class EquoInterface(TextInterface):
     '''
     def generate_depends_tree(self, idpackages, deep = False):
 
-        ''' caching '''
-        cached = generateDependsTreeCache.get(tuple(idpackages))
-        if cached:
-            if (cached['deep'] == deep):
-                return cached['result']
+        if self.xcache:
+            c_data = list(idpackages)
+            c_data.sort()
+            c_hash = str( hash(tuple(c_data)) + hash(deep) )
+            del c_data
+            cached = self.dumpTools.loadobj(etpCache['depends_tree']+c_hash)
+            if cached != None:
+                return cached
 
         dependscache = set()
         dependsOk = False
@@ -1492,10 +1423,11 @@ class EquoInterface(TextInterface):
 
         del tree
 
-        ''' caching '''
-        generateDependsTreeCache[tuple(idpackages)] = {}
-        generateDependsTreeCache[tuple(idpackages)]['result'] = newtree,0
-        generateDependsTreeCache[tuple(idpackages)]['deep'] = deep
+        if self.xcache:
+            try:
+                self.dumpTools.dumpobj(etpCache['depends_tree']+c_hash,(newtree,0))
+            except IOError:
+                pass
         return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
     def list_repo_categories(self):
@@ -1534,20 +1466,14 @@ class EquoInterface(TextInterface):
         if self.xcache:
             repo_digest = self.all_repositories_checksum()
             client_digest = self.clientDbconn.tablesChecksum()
-            disk_cache = self.dumpTools.loadobj(etpCache['world_available'])
-            try:
-                if disk_cache != None:
-                    if disk_cache['repo_digest'] == repo_digest and \
-                        disk_cache['branch'] == branch and \
-                        disk_cache['client_digest'] == client_digest and \
-                        disk_cache['etpRepositories_keys'] == etpRepositories.keys() and \
-                        disk_cache['etpRepositoriesOrder'] == etpRepositoriesOrder:
-                        return disk_cache['available']
-            except:
-                try:
-                    self.dumpTools.dumpobj(etpCache['world_available'], {})
-                except IOError:
-                    pass
+            c_hash = str(hash(repo_digest) + \
+                     hash(branch) + \
+                     hash(client_digest) + \
+                     hash(tuple(etpRepositories)) + \
+                     hash(tuple(etpRepositoriesOrder)))
+            disk_cache = self.dumpTools.loadobj(etpCache['world_available']+c_hash)
+            if disk_cache != None:
+                return disk_cache
 
         available = set()
         self.setTotalCycles(len(etpRepositories))
@@ -1576,51 +1502,35 @@ class EquoInterface(TextInterface):
 
         if self.xcache:
             try:
-                mycache = {}
-                mycache['repo_digest'] = repo_digest
-                mycache['client_digest'] = client_digest
-                mycache['available'] = available.copy()
-                mycache['branch'] = branch
-                mycache['etpRepositories_keys'] = etpRepositories.keys()[:]
-                mycache['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
-                # save cache
-                self.dumpTools.dumpobj(etpCache['world_available'], mycache)
-                mycache.clear()
-                del mycache
-            except:
-                self.dumpTools.dumpobj(etpCache['world_available'], {})
-
+                disk_cache = self.dumpTools.dumpobj(etpCache['world_available']+c_hash,available)
+            except IOError:
+                pass
         return available
 
     def get_world_update_cache(self, empty_deps, branch = etpConst['branch'], db_digest = None):
         if self.xcache:
             if db_digest == None:
                 db_digest = self.clientDbconn.tablesChecksum()
-            disk_cache = self.dumpTools.loadobj(etpCache['world_update'])
-            try:
-                if disk_cache != None:
-                    if disk_cache['db_digest'] == db_digest and \
-                        disk_cache['empty_deps'] == empty_deps and \
-                        disk_cache['etpRepositories_keys'] == etpRepositories.keys() and \
-                        disk_cache['etpRepositoriesOrder'] == etpRepositoriesOrder and \
-                        disk_cache['branch'] == branch:
-                        return disk_cache['update'],disk_cache['remove'],disk_cache['fine']
-            except:
-                try:
-                    self.dumpTools.dumpobj(etpCache['world_update'], {})
-                except IOError:
-                    pass
+            c_hash = str(   hash(db_digest) + \
+                            hash(empty_deps) + \
+                            hash(tuple(etpRepositories)) + \
+                            hash(tuple(etpRepositoriesOrder)) + \
+                            hash(branch)
+                        )
+            disk_cache = self.dumpTools.loadobj(etpCache['world_update']+c_hash)
+            if disk_cache != None:
+                return disk_cache
 
     def calculate_world_updates(self, empty_deps = False, branch = etpConst['branch']):
-
-        update = set()
-        remove = set()
-        fine = set()
 
         db_digest = self.clientDbconn.tablesChecksum()
         cached = self.get_world_update_cache(empty_deps = empty_deps, branch = branch, db_digest = db_digest)
         if cached != None:
             return cached
+
+        update = set()
+        remove = set()
+        fine = set()
 
         # get all the installed packages
         idpackages = self.clientDbconn.listAllIdpackages()
@@ -1628,7 +1538,8 @@ class EquoInterface(TextInterface):
         count = 0
         for idpackage in idpackages:
             count += 1
-            self.updateProgress("Calculating world dependencies", importance = 0, type = "info", back = True, header = "::", count = (count,maxlen), percent = True, footer = " ::")
+            if (count%10 == 0) or (count == maxlen) or (count == 1):
+                self.updateProgress("Calculating world dependencies", importance = 0, type = "info", back = True, header = "::", count = (count,maxlen), percent = True, footer = " ::")
             tainted = False
             myscopedata = self.clientDbconn.getScopeData(idpackage)
             #atom = myscopedata[0]
@@ -1693,23 +1604,17 @@ class EquoInterface(TextInterface):
 
         del idpackages
 
-        if self.xcache and (etpConst['uid'] == 0):
+        if self.xcache:
+            c_hash = str(   hash(db_digest) + \
+                            hash(empty_deps) + \
+                            hash(tuple(etpRepositories)) + \
+                            hash(tuple(etpRepositoriesOrder)) + \
+                            hash(branch)
+                        )
             try:
-                mycache = {}
-                mycache['db_digest'] = db_digest
-                mycache['update'] = update.copy()
-                mycache['remove'] = remove.copy()
-                mycache['fine'] = fine.copy()
-                mycache['empty_deps'] = empty_deps
-                mycache['branch'] = branch
-                mycache['etpRepositories_keys'] = etpRepositories.keys()[:]
-                mycache['etpRepositoriesOrder'] = etpRepositoriesOrder[:]
-                # save cache
-                self.dumpTools.dumpobj(etpCache['world_update'], mycache)
-                mycache.clear()
-                del mycache
-            except:
-                self.dumpTools.dumpobj(etpCache['world_update'], {})
+                self.dumpTools.dumpobj(etpCache['world_update']+c_hash, (update, remove, fine))
+            except IOError:
+                pass
         return update, remove, fine
 
     def is_match_masked(self, match):
@@ -2254,7 +2159,7 @@ class PackageInterface:
             os.mkdir(self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'])
             # now unpack for real
             xpakPath = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakfilename']
-    
+
             if (self.infoDict['smartpackage']):
                 # we need to get the .xpak from database
                 xdbconn = self.Entropy.openRepositoryDatabase(self.infoDict['repository'])
@@ -2293,12 +2198,7 @@ class PackageInterface:
     def __remove_package(self):
 
         # clear on-disk cache
-        generateDependsTreeCache.clear()
-        self.Entropy.dumpTools.dumpobj(etpCache['generateDependsTree'],generateDependsTreeCache)
-        check_package_update_cache.clear()
-        self.Entropy.dumpTools.dumpobj(etpCache['check_package_update'],{})
-        # remove security advisories cache
-        self.Entropy.dumpTools.dumpobj(etpCache['advisories'],{})
+        self.__clear_cache()
 
         self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package: "+str(self.infoDict['removeatom']))
 
@@ -2313,10 +2213,8 @@ class PackageInterface:
             self.__remove_package_from_database()
 
         # Handle gentoo database
-        if (etpConst['gentoo-compat']):  # FIXME: remove dep_striptag asap
-            gentooAtom = self.Entropy.entropyTools.dep_striptag(
-                                        self.Entropy.entropyTools.remove_tag(self.infoDict['removeatom'])
-            )
+        if (etpConst['gentoo-compat']):
+            gentooAtom = self.Entropy.entropyTools.remove_tag(self.infoDict['removeatom'])
             self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing from Portage: "+str(gentooAtom))
             self.__remove_package_from_gentoo_database(gentooAtom)
             del gentooAtom
@@ -2501,32 +2399,19 @@ class PackageInterface:
     '''
     def __remove_package_from_database(self):
         self.error_on_not_prepared()
-
-        find = False
-        disk_cache = self.Entropy.dumpTools.loadobj(etpCache['world_update'])
-        if disk_cache != None:
-            try:
-                slot = self.Entropy.clientDbconn.retrieveSlot(self.infoDict['removeidpackage'])
-                key = self.Entropy.entropyTools.dep_getkey(self.infoDict['removeatom'])
-                matched = self.Entropy.atomMatch(key, matchSlot = slot)
-                if matched[0] != -1:
-                    dbconn = self.Entropy.openRepositoryDatabase(matched[1])
-                    atom = dbconn.retrieveAtom(matched[0])
-                    cached_item = (atom,matched)
-                    if cached_item in disk_cache['update']:
-                        find = True
-            except:
-                self.Entropy.dumpTools.dumpobj(etpCache['world_update'], {})
-
         self.Entropy.clientDbconn.removePackage(self.infoDict['removeidpackage'])
-
-        if find:
-            disk_cache['update'].remove(cached_item)
-            db_digest = self.Entropy.clientDbconn.tablesChecksum()
-            disk_cache['db_digest'] = db_digest
-            self.Entropy.dumpTools.dumpobj(etpCache['world_update'], disk_cache)
-
         return 0
+
+    def __clear_cache(self):
+        self.Entropy.clear_dump_cache(etpCache['advisories'])
+        self.Entropy.clear_dump_cache(etpCache['filter_satisfied_deps'])
+        self.Entropy.clear_dump_cache(etpCache['depends_tree'])
+        self.Entropy.clear_dump_cache(etpCache['check_package_update'])
+        self.Entropy.clear_dump_cache(etpCache['dep_tree'])
+        self.Entropy.clear_dump_cache(etpCache['world_available'])
+        self.Entropy.clear_dump_cache(etpCache['world_update'])
+        self.Entropy.clear_dump_cache(etpCache['dbMatch'])
+        self.Entropy.clear_dump_cache(etpCache['dbInfo'])
 
     '''
     @description: install unpacked files, update database and also update gentoo db if requested
@@ -2535,12 +2420,7 @@ class PackageInterface:
     def __install_package(self):
 
         # clear on-disk cache
-        generateDependsTreeCache.clear()
-        self.Entropy.dumpTools.dumpobj(etpCache['generateDependsTree'],{})
-        check_package_update_cache.clear()
-        self.Entropy.dumpTools.dumpobj(etpCache['check_package_update'],{})
-        # clear advisories cache
-        self.Entropy.dumpTools.dumpobj(etpCache['advisories'],{})
+        self.__clear_cache()
 
         self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing package: "+str(self.infoDict['atom']))
 
@@ -2703,40 +2583,6 @@ class PackageInterface:
         # update datecreation
         ctime = self.Entropy.entropyTools.getCurrentUnixTime()
         self.Entropy.clientDbconn.setDateCreation(idpk, str(ctime))
-
-        # update world calculation cache
-        disk_cache = self.Entropy.dumpTools.loadobj(etpCache['world_update'])
-        if disk_cache != None:
-            try:
-                atom = self.Entropy.clientDbconn.retrieveAtom(idpk)
-                slot = self.Entropy.clientDbconn.retrieveSlot(idpk)
-                cached_item = (atom,(self.infoDict['idpackage'],self.infoDict['repository']))
-                if cached_item in disk_cache['update']:
-                    disk_cache['update'].remove(cached_item)
-                    db_digest = self.Entropy.clientDbconn.tablesChecksum()
-                    disk_cache['db_digest'] = db_digest
-                    self.Entropy.dumpTools.dumpobj(etpCache['world_update'], disk_cache)
-                else:
-                    # add it, because can happen that a user firstly removes the package, then
-                    # decides to install a specific version which is not the latest
-                    key = self.Entropy.entropyTools.dep_getkey(atom)
-                    match = self.Entropy.atomMatch(key, matchSlot = slot)
-                    if (match[0] != -1) and (match != cached_item[1]):
-                        ldbconn = self.Entropy.openRepositoryDatabase(match[1])
-                        latest_atom = ldbconn.retrieveAtom(match[0])
-                        disk_cache['update'].add(latest_atom,match)
-                        # if you came from databaseTools.validateDatabase, this is the reason:
-                        # db_digest is the checksum of baseinfo and extrainfo, if you add dependstable
-                        # then you'll have to move this at the bottom of this function because, if you
-                        # read below, dependstable will be updated, so checksum won't never match,
-                        # the same for the condition above
-                        db_digest = self.Entropy.clientDbconn.tablesChecksum()
-                        disk_cache['db_digest'] = db_digest
-                        self.Entropy.dumpTools.dumpobj(etpCache['world_update'], disk_cache)
-            except Exception,e:
-                # invalidate cache
-                self.Entropy.dumpTools.dumpobj(etpCache['world_update'],{})
-                print "DEBUG: please REPORT %s: %s" % (str(Exception),str(e),)
 
         # add idpk to the installedtable
         self.Entropy.clientDbconn.removePackageFromInstalledTable(idpk)
@@ -3536,7 +3382,7 @@ class FileUpdatesInterface:
         # store data
         try:
             self.Entropy.dumpTools.dumpobj(etpCache['configfiles'],scandata)
-        except:
+        except IOError:
             pass
         return scandata
 
@@ -3590,7 +3436,7 @@ class FileUpdatesInterface:
         scandata[index] = mydata.copy()
         try:
             self.Entropy.dumpTools.dumpobj(etpCache['configfiles'],scandata)
-        except:
+        except IOError:
             pass
 
     def remove_from_cache(self, sd, key):
@@ -3800,7 +3646,7 @@ class RepoInterface:
 
     def clear_repository_cache(self, repo):
         self.__validate_repository_id(repo)
-        self.Entropy.dumpTools.dumpobj(etpCache['dbInfo']+repo,{})
+        self.Entropy.clear_dump_cache(etpCache['dbInfo'])
 
     # this function can be reimplemented
     def download_item(self, item, repo, cmethod = None):
@@ -3815,25 +3661,6 @@ class RepoInterface:
         if rc in ("-1","-2","-3"):
             return False
         return True
-
-    def close_transactions(self):
-
-        if not self.dbupdated:
-            return
-
-        # safely clean ram caches
-        atomMatchCache.clear()
-        self.Entropy.dumpTools.dumpobj(etpCache['atomMatch'],{})
-        generateDependsTreeCache.clear()
-        self.Entropy.dumpTools.dumpobj(etpCache['generateDependsTree'],{})
-        for dbinfo in dbCacheStore:
-            dbCacheStore[dbinfo].clear()
-            self.Entropy.dumpTools.dumpobj(dbinfo,{})
-
-        # clean resume caches
-        self.Entropy.dumpTools.dumpobj(etpCache['install'],{})
-        self.Entropy.dumpTools.dumpobj(etpCache['world'],{})
-        self.Entropy.dumpTools.dumpobj(etpCache['remove'],[])
 
     def sync(self):
 
@@ -4008,21 +3835,19 @@ class RepoInterface:
                                 )
                 dbconn = self.Entropy.openRepositoryDatabase(repo)
                 dbconn.createAllIndexes()
-                self.Entropy.clientDbconn.createAllIndexes()
+                try: # client db can be absent
+                    self.Entropy.clientDbconn.createAllIndexes()
+                except:
+                    pass
 
             self.Entropy.cycleDone()
-
-        self.close_transactions()
 
         # keep them closed
         self.Entropy.closeAllRepositoryDatabases()
 
         # clean caches
         if self.dbupdated:
-            try: # if no client db exists, we can barely ignore this
-                self.Entropy.clear_library_breakages_cache()
-            except:
-                pass
+            self.Entropy.clear_dump_cache(etpCache['library_breakage'])
             self.Entropy.generate_cache(depcache = True, configcache = False)
             # update Security Advisories
             self.Entropy.Security.fetch_advisories()
@@ -6399,7 +6224,7 @@ class SecurityInterface:
     def clear(self, xcache = False):
         self.adv_metadata = None
         if xcache:
-            self.Entropy.dumpTools.dumpobj(etpCache['advisories'], {})
+            self.Entropy.clear_dump_cache(etpCache['advisories'])
 
     def __get_advisories_cache(self):
 
@@ -6407,31 +6232,25 @@ class SecurityInterface:
             return self.adv_metadata
 
         if self.Entropy.xcache:
-            adv_cache = self.Entropy.dumpTools.loadobj(etpCache['advisories'])
             dir_checksum = self.Entropy.entropyTools.md5sum_directory(etpConst['securitydir'])
-            try:
-                if adv_cache['systemroot'] == etpConst['systemroot'] and \
-                    adv_cache['branch'] == etpConst['branch'] and \
-                    adv_cache['data'] and \
-                    adv_cache['checksum'] == dir_checksum:
-                        self.adv_metadata = adv_cache['data'].copy()
-                        return adv_cache['data']
-            except:
-                try:
-                    self.Entropy.dumpTools.dumpobj(etpCache['advisories'], {})
-                except IOError:
-                    pass
+            c_hash = str(   hash(etpConst['branch']) + \
+                            hash(dir_checksum) + \
+                            hash(etpConst['systemroot'])
+                        )
+            adv_metadata = self.Entropy.dumpTools.loadobj(etpCache['advisories']+c_hash)
+            if adv_metadata != None:
+                self.adv_metadata = adv_metadata.copy()
+                return self.adv_metadata
 
     def __set_advisories_cache(self, adv_metadata):
         if self.Entropy.xcache:
             dir_checksum = self.Entropy.entropyTools.md5sum_directory(etpConst['securitydir'])
-            adv_cache = {}
-            adv_cache['branch'] = etpConst['branch']
-            adv_cache['data'] = adv_metadata
-            adv_cache['checksum'] = dir_checksum
-            adv_cache['systemroot'] = etpConst['systemroot']
+            c_hash = str(   hash(etpConst['branch']) + \
+                            hash(dir_checksum) + \
+                            hash(etpConst['systemroot'])
+                        )
             try:
-                adv_cache = self.Entropy.dumpTools.dumpobj(etpCache['advisories'],adv_cache)
+                self.Entropy.dumpTools.dumpobj(etpCache['advisories']+c_hash,adv_metadata)
             except IOError:
                 pass
 

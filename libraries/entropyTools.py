@@ -545,11 +545,6 @@ def isjustpkgname(mypkg):
 
 def ververify(myverx, silent=1):
 
-    cached = ververifyCache.get(myverx)
-    if cached != None:
-        return cached
-
-    ververifyCache[myverx] = 1
     myver = myverx[:]
     if myver.endswith("*"):
         myver = myver[:len(myver)-1]
@@ -558,7 +553,6 @@ def ververify(myverx, silent=1):
     else:
         if not silent:
             print "!!! syntax error in version: %s" % myver
-        ververifyCache[myverx] = 0
         return 0
 
 
@@ -582,15 +576,9 @@ def isjustname(mypkg):
         2) 1 if it is
     """
 
-    cached = isjustnameCache.get(mypkg)
-    if cached != None:
-        return cached
-
-    isjustnameCache[mypkg] = 1
     myparts = mypkg.split('-')
     for x in myparts:
         if ververify(x):
-            isjustnameCache[mypkg] = 0
             return 0
     return 1
 
@@ -635,10 +623,6 @@ def catpkgsplit(mydata,silent=1):
                 an InvalidData Exception will be thrown
     """
 
-    cached = catpkgsplitCache.get(mydata)
-    if cached != None:
-        return cached
-
     # Categories may contain a-zA-z0-9+_- but cannot start with -
     mysplit=mydata.split("/")
     p_split=None
@@ -649,10 +633,8 @@ def catpkgsplit(mydata,silent=1):
         retval=[mysplit[0]]
         p_split=pkgsplit(mysplit[1],silent=silent)
     if not p_split:
-        catpkgsplitCache[mydata] = None
         return None
     retval.extend(p_split)
-    catpkgsplitCache[mydata] = retval
     return retval
 
 def pkgsplit(mypkg,silent=1):
@@ -698,23 +680,6 @@ def pkgsplit(mypkg,silent=1):
     else:
         return None
 
-# FIXME: deprecated, use remove_tag - will be removed soonly
-def dep_striptag(mydepx):
-
-    cached = dep_striptagCache.get(mydepx)
-    if cached != None:
-        return cached
-
-    mydep = mydepx[:]
-    if not (isjustname(mydep)):
-        if mydep.split("-")[len(mydep.split("-"))-1].startswith("t"): # tag -> remove
-            tag = mydep.split("-")[len(mydep.split("-"))-1]
-            mydep = mydep[:len(mydep)-len(tag)-1]
-
-    dep_striptagCache[mydepx] = mydep
-    return mydep
-
-
 def dep_getkey(mydepx):
     """
     Return the category/package-name of a depstring.
@@ -728,26 +693,18 @@ def dep_getkey(mydepx):
     @rtype: String
     @return: The package category/package-version
     """
-    
-    cached = dep_getkeyCache.get(mydepx)
-    if cached != None:
-	return cached
-    
+
     mydep = mydepx[:]
-    mydep = dep_striptag(mydep)
     mydep = remove_tag(mydep)
-    
+
     mydep = dep_getcpv(mydep)
     if mydep and isspecific(mydep):
-	mysplit = catpkgsplit(mydep)
-	if not mysplit:
-	    dep_getkeyCache[mydepx] = mydep
-	    return mydep
-	dep_getkeyCache[mydepx] = mysplit[0] + "/" + mysplit[1]
-	return mysplit[0] + "/" + mysplit[1]
+        mysplit = catpkgsplit(mydep)
+        if not mysplit:
+            return mydep
+        return mysplit[0] + "/" + mysplit[1]
     else:
-	dep_getkeyCache[mydepx] = mydep
-	return mydep
+        return mydep
 
 
 def dep_getcpv(mydep):
@@ -764,10 +721,6 @@ def dep_getcpv(mydep):
     @return: The depstring with the operator removed
     """
     
-    cached = dep_getcpvCache.get(mydep)
-    if cached != None:
-	return cached
-    
     if mydep and mydep[0] == "*":
 	mydep = mydep[1:]
     if mydep and mydep[-1] == "*":
@@ -782,7 +735,6 @@ def dep_getcpv(mydep):
     if colon != -1:
 	mydep = mydep[:colon]
 
-    dep_getcpvCache[mydep] = mydep
     return mydep
 
 
@@ -800,18 +752,12 @@ def dep_getslot(dep):
     @return: The slot
     """
     
-    cached = dep_getslotCache.get(dep)
-    if cached != None:
-	return cached
-    
     colon = dep.rfind(":")
     if colon != -1:
 	mydep = dep[colon+1:]
 	rslt = remove_tag(mydep)
-	dep_getslotCache[dep] = rslt
 	return rslt
     
-    dep_getslotCache[dep] = None
     return None
 
 def remove_slot(mydep):
@@ -852,25 +798,15 @@ def dep_gettag(dep):
     
     """
 
-    cached = dep_gettagCache.get(dep)
-    if cached != None:
-	return cached
-
     colon = dep.rfind("#")
     if colon != -1:
 	mydep = dep[colon+1:]
 	rslt = remove_slot(mydep)
-	dep_gettagCache[dep] = rslt
 	return rslt
-    dep_gettagCache[dep] = None
     return None
 
 
 def removePackageOperators(atom):
-
-    cached = removePackageOperatorsCache.get(atom)
-    if cached != None:
-	return cached
 
     original = atom
     if atom[0] == ">" or atom[0] == "<":
@@ -880,7 +816,6 @@ def removePackageOperators(atom):
     if atom[0] == "~":
 	atom = atom[1:]
     
-    removePackageOperatorsCache[original] = atom
     return atom
 
 # Version compare function taken from portage_versions.py
@@ -892,12 +827,7 @@ suffix_value = {"pre": -2, "p": 0, "alpha": -4, "beta": -3, "rc": -1}
 endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
 def compareVersions(ver1, ver2):
 	
-	cached = compareVersionsCache.get(tuple([ver1,ver2]))
-	if cached != None:
-	    return cached
-	
 	if ver1 == ver2:
-		compareVersionsCache[tuple([ver1,ver2])] = 0
 		return 0
 	#mykey=ver1+":"+ver2
 	match1 = ver_regexp.match(ver1)
@@ -939,13 +869,10 @@ def compareVersions(ver1, ver2):
 
 	for i in range(0, max(len(list1), len(list2))):
 		if len(list1) <= i:
-			compareVersionsCache[tuple([ver1,ver2])] = -1
 			return -1
 		elif len(list2) <= i:
-			compareVersionsCache[tuple([ver1,ver2])] = 1
 			return 1
 		elif list1[i] != list2[i]:
-			compareVersionsCache[tuple([ver1,ver2])] = list1[i] - list2[i]
 			return list1[i] - list2[i]
 	
 	# main version is equal, so now compare the _suffix part
@@ -962,7 +889,6 @@ def compareVersions(ver1, ver2):
 		else:
 			s2 = suffix_regexp.match(list2[i]).groups()
 		if s1[0] != s2[0]:
-			compareVersionsCache[tuple([ver1,ver2])] = suffix_value[s1[0]] - suffix_value[s2[0]]
 			return suffix_value[s1[0]] - suffix_value[s2[0]]
 		if s1[1] != s2[1]:
 			# it's possible that the s(1|2)[1] == ''
@@ -971,7 +897,6 @@ def compareVersions(ver1, ver2):
 			except ValueError:	r1 = 0
 			try:			r2 = int(s2[1])
 			except ValueError:	r2 = 0
-			compareVersionsCache[tuple([ver1,ver2])] = r1 - r2
 			return r1 - r2
 	
 	# the suffix part is equal to, so finally check the revision
@@ -983,7 +908,6 @@ def compareVersions(ver1, ver2):
 		r2 = int(match2.group(10))
 	else:
 		r2 = 0
-	compareVersionsCache[tuple([ver1,ver2])] = r1 - r2
 	return r1 - r2
 
 '''
@@ -1020,16 +944,11 @@ def entropyCompareVersions(listA,listB):
    @description: reorder a version list
    @input versionlist: a list
    @output: the ordered list
-   XXX DEPRECATED
 '''
 def getNewerVersion(versions):
 
     if len(versions) == 1:
         return versions
-
-    cached = getNewerVersionCache.get(tuple(versions))
-    if cached != None:
-        return cached
 
     versionlist = versions[:]
 
@@ -1052,7 +971,6 @@ def getNewerVersion(versions):
         if (not change):
             rc = True
 
-    getNewerVersionCache[tuple(versions)] = versionlist
     return versionlist
 
 
@@ -1064,10 +982,6 @@ def getEntropyNewerVersion(versions):
 
     if len(versions) == 1:
         return versions
-
-    cached = getEntropyNewerVersionCache.get(tuple(versions))
-    if cached != None:
-        return cached
 
     myversions = versions[:]
     # ease the work
@@ -1091,7 +1005,6 @@ def getEntropyNewerVersion(versions):
         if (not change):
             rc = True
 
-    getEntropyNewerVersionCache[tuple(versions)] = myversions
     return myversions
 
 '''
@@ -2221,9 +2134,10 @@ def collectLinkerPaths():
         f = open(etpConst['systemroot']+"/etc/ld.so.conf","r")
         paths = f.readlines()
         for path in paths:
-            if path.strip():
+            path = path.strip()
+            if path:
                 if path[0] == "/":
-                    ldpaths.add(os.path.normpath(path.strip()))
+                    ldpaths.add(os.path.normpath(path))
         f.close()
     except:
         pass

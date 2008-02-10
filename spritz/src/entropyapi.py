@@ -200,4 +200,3 @@ class GuiUrlFetcher(urlFetcher):
 
 
 EquoConnection = Equo()
-EquoConnection.load_cache()

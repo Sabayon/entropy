@@ -73,7 +73,6 @@ class SpritzController(Controller):
 
 
     def quit(self, widget=None, event=None ):
-        EquoConnection.save_cache()
         ''' Main destroy Handler '''
         gtkEventThread.doQuit()
         if self.isWorking:
@@ -860,7 +859,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
             # regenerate packages information
             self.etpbase.clearPackages()
             self.setupSpritz()
-            self.Equo.save_cache()
             self.endWorking()
             #self.progress.hide()
             if quit:

@@ -84,32 +84,24 @@ def package(options):
     myopts = _myopts
 
     if (options[0] == "deptest"):
-        Equo.load_cache()
         rc, garbage = dependenciesTest()
-        Equo.save_cache()
 
     elif (options[0] == "libtest"):
         rc, garbage = librariesTest(listfiles = equoRequestListfiles)
 
     elif (options[0] == "install"):
         if (myopts) or (mytbz2paths) or (equoRequestResume):
-            Equo.load_cache()
             status, rc = installPackages(myopts, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep, configFiles = equoRequestConfigFiles, tbz2 = mytbz2paths, resume = equoRequestResume, skipfirst = equoRequestSkipfirst, dochecksum = equoRequestChecksum)
-            Equo.save_cache()
         else:
             print_error(red(" Nothing to do."))
             rc = 127
 
     elif (options[0] == "world"):
-        Equo.load_cache()
         status, rc = worldUpdate(onlyfetch = equoRequestOnlyFetch, replay = (equoRequestReplay or equoRequestEmptyDeps), upgradeTo = equoRequestUpgradeTo, resume = equoRequestResume, skipfirst = equoRequestSkipfirst, human = True, dochecksum = equoRequestChecksum)
-        Equo.save_cache()
 
     elif (options[0] == "remove"):
         if myopts or equoRequestResume:
-            Equo.load_cache()
             status, rc = removePackages(myopts, deps = equoRequestDeps, deep = equoRequestDeep, configFiles = equoRequestConfigFiles, resume = equoRequestResume)
-            Equo.save_cache()
         else:
             print_error(red(" Nothing to do."))
             rc = 127
@@ -160,7 +152,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
                 resume_cache['ask'] = etpUi['ask']
                 resume_cache['verbose'] = etpUi['verbose']
                 resume_cache['onlyfetch'] = onlyfetch
-                resume_cache['remove'] = remove
+                resume_cache['remove'] = remove.copy()
                 Equo.dumpTools.dumpobj(etpCache['world'],resume_cache)
 
     else: # if resume, load cache if possible
@@ -443,16 +435,16 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     action = -1
                 flags += "] "
 
-                repoinfo = red("[")+bold(packageInfo[1])+red("] ")
+                repoinfo = "["+brown(packageInfo[1])+"] "
                 oldinfo = ''
                 if action != 0:
-                    oldinfo = "   ["+blue(installedVer)+"/"+red(str(installedRev))
+                    oldinfo = "   ["+blue(installedVer)+"|"+red(str(installedRev))
                     oldtag = "]"
                     if installedTag:
-                        oldtag = "/"+darkred(installedTag)+oldtag
+                        oldtag = "|"+darkred(installedTag)+oldtag
                     oldinfo += oldtag
 
-                print_info(darkred(" ##")+flags+repoinfo+enlightenatom(str(pkgatom))+"/"+str(pkgrev)+oldinfo)
+                print_info(darkred(" ##")+flags+repoinfo+blue(pkgatom)+"|"+red(str(pkgrev))+oldinfo)
 
         if (removalQueue):
 
