@@ -223,9 +223,9 @@ class EquoInterface(TextInterface):
         if etpConst['uid'] == 0:
             for key in etpCache:
                 cachefiles = [x for x in os.listdir(etpConst['dumpstoragedir']) if x.startswith(etpCache[key]) and x.endswith(".dmp")]
+                if showProgress: self.updateProgress(darkred("Cleaning %s*.dmp...") % (etpCache[key],), importance = 1, type = "warning", back = True)
                 for item in cachefiles:
                     item = os.path.join(etpConst['dumpstoragedir'],item)
-                    if showProgress: self.updateProgress(darkred("Cleaning %s...") % (item,), importance = 1, type = "warning", back = True)
                     if os.path.isfile(item):
                         os.remove(item)
 
@@ -3863,7 +3863,8 @@ class RepoInterface:
                                                 red("Indexing Repository metadata ..."),
                                                 importance = 1,
                                                 type = "info",
-                                                header = "\t"
+                                                header = "\t",
+                                                back = True
                                 )
                 dbconn = self.Entropy.openRepositoryDatabase(repo)
                 dbconn.createAllIndexes()
