@@ -344,8 +344,9 @@ ETP_LOGPRI_ERROR = "[ ERROR ]"
 # disk caching dictionary
 etpCache = {
     'configfiles': 'scanfs', # used to store information about files that should be merged using "equo conf merge"
-    'dbMatch': 'cache_', # used by the database controller as prefix to the cache files belonging to etpDatabase class (dep solving)
-    'dbInfo': 'info_', # used by the database controller as prefix to the cache files belonging to etpDatabase class (info retrival)
+    'dbMatch': 'cache_', # db atom match cache
+    'dbInfo': 'info_', # db data retrieval cache
+    'dbSearch': 'search_', # db search cache
     'atomMatch': 'atom_match_', # used to store info about repository dependencies solving
     'install': 'resume_install', # resume cache (install)
     'remove': 'resume_remove', # resume cache (remove)
@@ -620,6 +621,9 @@ def initConfig_entropyConstants(rootdir):
             'x11-drivers/nvidia-drivers': ['x11-drivers/nvidia-drivers'],
             'x11-drivers/ati-drivers': ['x11-drivers/ati-drivers'],
         },
+
+        'clientdbid': "client",
+        'serverdbid': "etpdb",
 
     }
     etpConst.update(myConst)

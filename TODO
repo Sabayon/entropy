@@ -1,6 +1,6 @@
 TODO list:
+  - cache update instead of trashing each time, look for caches that can be kept if bound to specific checksums
   - split RDEPEND and PDEPEND
-  - improve dependencies order resolution
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
      [] complete reagent spm interface

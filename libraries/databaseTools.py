@@ -53,7 +53,7 @@ def openClientDatabase(xcache = True, generate = False, indexing = True):
     if (not generate) and (not os.path.isfile(etpConst['etpdatabaseclientfilepath'])):
         raise exceptionTools.SystemDatabaseError("SystemDatabaseError: system database not found. Either does not exist or corrupted.")
     else:
-        conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = 'client', xcache = xcache, indexing = indexing)
+        conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = etpConst['clientdbid'], xcache = xcache, indexing = indexing)
         # validate database
         if not generate:
             conn.validateDatabase()
@@ -122,7 +122,7 @@ def backupClientDatabase():
 
 class etpDatabase(TextInterface):
 
-    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = 'etpdb', indexing = True):
+    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = etpConst['serverdbid'], indexing = True):
 
         self.readOnly = readOnly
         self.noUpload = noUpload
@@ -137,7 +137,7 @@ class etpDatabase(TextInterface):
         self.dbFile = dbFile
 
         # no caching for non root and server connections
-        if (self.dbname == 'etpdb') or (etpConst['uid'] != 0):
+        if (self.dbname == etpConst['serverdbid']) or (etpConst['uid'] != 0):
             self.xcache = False
 
         # create connection
@@ -847,7 +847,7 @@ class etpDatabase(TextInterface):
                     )
                 )
             except:
-                if self.dbname == "client": # force only for client database
+                if self.dbname == etpConst['clientdbid']: # force only for client database
                     if not self.doesTableExist("counters"):
                         self.createCountersTable()
                     else:
@@ -859,7 +859,7 @@ class etpDatabase(TextInterface):
                         idpackage,
                         )
                     )
-                elif self.dbname == "etpdb":
+                elif self.dbname == etpConst['serverdbid']:
                     raise
 
         # on disk size
@@ -1179,12 +1179,12 @@ class etpDatabase(TextInterface):
             # counter
             self.cursor.execute('DELETE FROM counters WHERE idpackage = '+idpackage)
         except:
-            if self.dbname == "client":
+            if self.dbname == etpConst['clientdbid']:
                 if not self.doesTableExist("counters"):
                     self.createCountersTable()
                 else:
                     raise
-            elif self.dbname == "etpdb":
+            elif self.dbname == etpConst['serverdbid']:
                 raise
         try:
             # on disk sizes
@@ -1455,7 +1455,7 @@ class etpDatabase(TextInterface):
         try:
             self.cursor.execute('UPDATE counters SET counter = (?) WHERE idpackage = (?)', (counter,idpackage,))
         except:
-            if self.dbname == "client":
+            if self.dbname == etpConst['clientdbid']:
                 if not self.doesTableExist("counters"):
                     self.createCountersTable()
                 else:
@@ -1858,14 +1858,15 @@ class etpDatabase(TextInterface):
         def do_clear(name):
             dump_file = os.path.join(etpConst['dumpstoragedir'],name)
             os.system("rm -rf %s*.dmp" % (dump_file,) )
-        do_clear(etpCache['dbInfo'])
-        do_clear(etpCache['dbMatch'])
+        do_clear(etpCache['dbInfo']+self.dbname)
+        do_clear(etpCache['dbMatch']+self.dbname)
+        do_clear(etpCache['dbSearch']+self.dbname)
 
     def fetchInfoCache(self, idpackage, function, extra_hash = 0):
         if (self.xcache):
-            c_hash = str( hash(int(idpackage)) + hash(function) + hash(self.dbname) + extra_hash )
+            c_hash = str( hash(int(idpackage)) + hash(function) + extra_hash )
             try:
-                cached = dumpTools.loadobj(etpCache['dbInfo']+c_hash)
+                cached = dumpTools.loadobj(etpCache['dbInfo']+self.dbname+c_hash)
                 if cached != None:
                     return cached
             except EOFError:
@@ -1874,9 +1875,26 @@ class etpDatabase(TextInterface):
 
     def storeInfoCache(self, idpackage, function, info_cache_data, extra_hash = 0):
         if (self.xcache):
-            c_hash = str( hash(int(idpackage)) + hash(function) + hash(self.dbname) + extra_hash )
+            c_hash = str( hash(int(idpackage)) + hash(function) + extra_hash )
             try:
-                dumpTools.dumpobj(etpCache['dbInfo']+c_hash,info_cache_data)
+                dumpTools.dumpobj(etpCache['dbInfo']+self.dbname+c_hash,info_cache_data)
+            except IOError:
+                pass
+
+    def fetchSearchCache(self, cache_hash):
+        if self.xcache:
+            try:
+                cached = dumpTools.loadobj(etpCache['dbSearch']+self.dbname+cache_hash)
+                if cached != None:
+                    return cached
+            except EOFError:
+                pass
+
+
+    def storeSearchCache(self, cache_hash, cache_data):
+        if self.xcache:
+            try:
+                dumpTools.dumpobj(etpCache['dbSearch']+self.dbname+cache_hash,cache_data)
             except IOError:
                 pass
 
@@ -2023,7 +2041,7 @@ class etpDatabase(TextInterface):
             if mycounter:
                 counter = mycounter[0]
         except:
-            if self.dbname == "client":
+            if self.dbname == etpConst['clientdbid']:
                 if not self.doesTableExist("counters"):
                     self.createCountersTable()
                 else:
@@ -2371,18 +2389,18 @@ class etpDatabase(TextInterface):
 
         self.storeInfoCache(idpackage,'retrieveSlot',ver)
         return ver
-    
+
     def retrieveVersionTag(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveVersionTag')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveVersionTag')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT "versiontag" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-	ver = self.cursor.fetchone()[0]
+        self.cursor.execute('SELECT "versiontag" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        ver = self.cursor.fetchone()[0]
 
-	self.storeInfoCache(idpackage,'retrieveVersionTag',ver)
-	return ver
-    
+        self.storeInfoCache(idpackage,'retrieveVersionTag',ver)
+        return ver
+
     def retrieveMirrorInfo(self, mirrorname):
 
 	self.cursor.execute('SELECT "mirrorlink" FROM mirrorlinks WHERE mirrorname = (?)', (mirrorname,))
@@ -2718,27 +2736,34 @@ class etpDatabase(TextInterface):
 
     def searchProvide(self, keyword, slot = None, tag = None, branch = None):
 
-	self.cursor.execute('SELECT idpackage FROM provide WHERE atom = (?)', (keyword,))
-	idpackage = self.cursor.fetchone()
-	if not idpackage:
-	    return ()
+        c_hash = str( hash("searchProvide") + hash(keyword) + hash(slot) + hash(branch) + hash(tag) )
+        cache = self.fetchSearchCache(c_hash)
+        if cache != None: return cache
 
-	slotstring = ''
+        self.cursor.execute('SELECT idpackage FROM provide WHERE atom = (?)', (keyword,))
+        idpackage = self.cursor.fetchone()
+        if not idpackage:
+            return ()
+
+        slotstring = ''
         searchkeywords = [idpackage[0]]
-	if slot:
+        if slot:
             searchkeywords.append(slot)
-	    slotstring = ' and slot = (?)'
-	tagstring = ''
-	if tag:
+            slotstring = ' and slot = (?)'
+        tagstring = ''
+        if tag:
             searchkeywords.append(tag)
-	    tagstring = ' and versiontag = (?)'
-	branchstring = ''
-	if branch:
+            tagstring = ' and versiontag = (?)'
+        branchstring = ''
+        if branch:
             searchkeywords.append(branch)
-	    branchstring = ' and branch = (?)'
+            branchstring = ' and branch = (?)'
 
-	self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE idpackage = (?)'+slotstring+tagstring+branchstring, searchkeywords)
-	return self.cursor.fetchall()
+        self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE idpackage = (?)'+slotstring+tagstring+branchstring, searchkeywords)
+
+        results = self.cursor.fetchall()
+        self.storeSearchCache(c_hash,results)
+        return results
 
     def searchPackagesByDescription(self, keyword):
 	self.cursor.execute('SELECT idpackage FROM extrainfo WHERE LOWER(description) LIKE (?)', ("%"+keyword.lower()+"%",))
@@ -2774,23 +2799,29 @@ class etpDatabase(TextInterface):
 	return result
 
     def searchPackagesByName(self, keyword, sensitive = False, branch = None):
-	
+
+        c_hash = str( hash("searchPackagesByName") + hash(keyword) + hash(sensitive) + hash(branch) )
+        cache = self.fetchSearchCache(c_hash)
+        if cache != None: return cache
+
         if sensitive:
             searchkeywords = [keyword]
         else:
             searchkeywords = [keyword.lower()]
-	branchstring = ''
-	if branch:
+        branchstring = ''
+        if branch:
             searchkeywords.append(branch)
-	    branchstring = ' and branch = (?)'
-	
-	if (sensitive):
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = (?)'+branchstring, searchkeywords)
-	else:
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = (?)'+branchstring, searchkeywords)
-	
-	results = self.cursor.fetchall()
-	return results
+            branchstring = ' and branch = (?)'
+
+        if sensitive:
+            self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = (?)'+branchstring, searchkeywords)
+        else:
+            self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = (?)'+branchstring, searchkeywords)
+
+        results = self.cursor.fetchall()
+
+        self.storeSearchCache(c_hash,results)
+        return results
 
 
     def searchPackagesByCategory(self, keyword, like = False, branch = None):
@@ -2811,37 +2842,41 @@ class etpDatabase(TextInterface):
 	return results
 
     def searchPackagesByNameAndCategory(self, name, category, sensitive = False, branch = None):
-	
-	# get category id
-	idcat = -1
-	self.cursor.execute('SELECT idcategory FROM categories WHERE category = (?)', (category,))
-	idcat = self.cursor.fetchone()
-	if not idcat:
-	    return ()
-	else:
-	    idcat = idcat[0]
+
+        c_hash = str( hash("searchPackagesByNameAndCategory") + hash(name) + hash(category) + hash(sensitive) + hash(branch) )
+        cache = self.fetchSearchCache(c_hash)
+        if cache != None: return cache
+
+        # get category id
+        idcat = -1
+        self.cursor.execute('SELECT idcategory FROM categories WHERE category = (?)', (category,))
+        idcat = self.cursor.fetchone()
+        if not idcat:
+            return ()
+        else:
+            idcat = idcat[0]
 
         searchkeywords = []
         if sensitive:
             searchkeywords.append(name)
         else:
             searchkeywords.append(name.lower())
-        
+
         searchkeywords.append(idcat)
-        
-	branchstring = ''
-	if branch:
+
+        branchstring = ''
+        if branch:
             searchkeywords.append(branch)
-	    branchstring = ' and branch = (?)'
+            branchstring = ' and branch = (?)'
 
-	if (sensitive):
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = (?) AND idcategory = (?) '+branchstring, searchkeywords)
-	else:
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = (?) AND idcategory = (?) '+branchstring, searchkeywords)
-	
-	results = self.cursor.fetchall()
+        if (sensitive):
+            self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = (?) AND idcategory = (?) '+branchstring, searchkeywords)
+        else:
+            self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = (?) AND idcategory = (?) '+branchstring, searchkeywords)
 
-	return results
+        results = self.cursor.fetchall()
+        self.storeSearchCache(c_hash,results)
+        return results
 
     def searchPackagesKeyVersion(self, key, version, branch = None, sensitive = False):
 
@@ -2907,8 +2942,13 @@ class etpDatabase(TextInterface):
 
     def listAllBranches(self):
 
+        cache = self.fetchInfoCache(0,'listAllBranches')
+        if cache != None: return cache
+
         self.cursor.execute('SELECT branch FROM baseinfo')
         results = self.fetchall2set(self.cursor.fetchall())
+
+        self.storeInfoCache(0,'listAllBranches',results)
         return results
 
     def listIdPackagesInIdcategory(self,idcategory):
@@ -3201,57 +3241,33 @@ class etpDatabase(TextInterface):
         self.createUseflagsIndex()
 
     def createNeededIndex(self):
-        if self.dbname != "etpdb" and self.indexing:
-            try:
-                self.checkReadOnly()
-            except exceptionTools.OperationNotPermitted:
-                return
+        if self.dbname != etpConst['serverdbid'] and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( idneeded,library )')
             self.commitChanges()
 
     def createUseflagsIndex(self):
-        if self.dbname != "etpdb" and self.indexing:
-            try:
-                self.checkReadOnly()
-            except exceptionTools.OperationNotPermitted:
-                return
+        if self.dbname != etpConst['serverdbid'] and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS useflagsindex ON useflagsreference ( idflag,flagname )')
             self.commitChanges()
 
     def createContentIndex(self):
-        if self.dbname != "etpdb" and self.indexing:
-            try:
-                self.checkReadOnly()
-            except exceptionTools.OperationNotPermitted:
-                return
+        if self.dbname != etpConst['serverdbid'] and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex ON content ( file )')
             self.commitChanges()
 
     def createBaseinfoIndex(self):
-        if self.dbname != "etpdb" and self.indexing:
-            try:
-                self.checkReadOnly()
-            except exceptionTools.OperationNotPermitted:
-                return
-            self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex ON baseinfo ( idpackage, atom, name, version, slot, branch, revision )')
+        if self.dbname != etpConst['serverdbid'] and self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex ON baseinfo ( idpackage, atom, name, version, versiontag, slot, branch, revision )')
             self.commitChanges()
 
     def createDependenciesIndex(self):
-        if self.dbname != "etpdb" and self.indexing:
-            try:
-                self.checkReadOnly()
-            except exceptionTools.OperationNotPermitted:
-                return
+        if self.dbname != etpConst['serverdbid'] and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex ON dependencies ( idpackage, iddependency )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesreferenceindex ON dependenciesreference ( iddependency, dependency )')
             self.commitChanges()
 
     def createExtrainfoIndex(self):
-        if self.dbname != "etpdb" and self.indexing:
-            try:
-                self.checkReadOnly()
-            except exceptionTools.OperationNotPermitted:
-                return
+        if self.dbname != etpConst['serverdbid'] and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( idpackage, description, homepage, download, digest, datecreation, size )')
             self.commitChanges()
 
@@ -3381,7 +3397,7 @@ class etpDatabase(TextInterface):
                         idpackage,
                         )
         )
-        if etpConst['uid'] == 0 and self.dbname == "etpdb": # force commit even if readonly, this will allow to automagically fix dependstable server side
+        if etpConst['uid'] == 0 and self.dbname == etpConst['serverdbid']: # force commit even if readonly, this will allow to automagically fix dependstable server side
             self.connection.commit()                        # we don't care much about syncing the database since it's quite trivial
 
     '''
@@ -3427,10 +3443,9 @@ class etpDatabase(TextInterface):
                             hash(multiMatch) + \
                             hash(caseSensitive) + \
                             hash(tuple(matchBranches)) + \
-                            hash(packagesFilter) + \
-                            hash(self.dbname)
+                            hash(packagesFilter)
                         )
-            cached = dumpTools.loadobj(etpCache['dbMatch']+c_hash)
+            cached = dumpTools.loadobj(etpCache['dbMatch']+self.dbname+c_hash)
             if cached != None:
                 return cached
 
@@ -3442,11 +3457,10 @@ class etpDatabase(TextInterface):
                             hash(multiMatch) + \
                             hash(caseSensitive) + \
                             hash(tuple(matchBranches)) + \
-                            hash(packagesFilter) + \
-                            hash(self.dbname)
+                            hash(packagesFilter)
                         )
             try:
-                dumpTools.dumpobj(etpCache['dbMatch']+c_hash,result)
+                dumpTools.dumpobj(etpCache['dbMatch']+self.dbname+c_hash,result)
             except IOError:
                 pass
 
@@ -3536,11 +3550,11 @@ class etpDatabase(TextInterface):
         if not self.dbname.startswith(etpConst['dbnamerepoprefix']):
             return results
 
-        newresults = []
+        newresults = set()
         for item in results:
             rc = self.idpackageValidator(item[1])
             if rc != -1:
-                newresults.append(item)
+                newresults.add(item)
         return newresults
 
     def __filterSlot(self, idpackage, slot):
@@ -3573,7 +3587,7 @@ class etpDatabase(TextInterface):
 
             newlist.add(data)
 
-        return list(newlist)
+        return newlist
 
 
 
@@ -3616,7 +3630,7 @@ class etpDatabase(TextInterface):
 
         justname = entropyTools.isjustname(strippedAtom)
         pkgversion = ''
-        if (not justname):
+        if not justname:
 
             # get version
             data = entropyTools.catpkgsplit(strippedAtom)
@@ -3636,14 +3650,14 @@ class etpDatabase(TextInterface):
         if (matchBranches):
             myBranchIndex = tuple(matchBranches) # force to tuple for security
         else:
-            if (self.dbname == 'client'):
+            if (self.dbname == etpConst['clientdbid']):
                 # collect all available branches
                 myBranchIndex = tuple(self.listAllBranches())
             else:
                 myBranchIndex = (etpConst['branch'],)
 
         # IDs found in the database that match our search
-        foundIDs = []
+        foundIDs = set()
 
         for idx in myBranchIndex:
             results = self.searchPackagesByName(pkgname, sensitive = caseSensitive, branch = idx)
@@ -3698,7 +3712,7 @@ class etpDatabase(TextInterface):
                     continue  # search into another branch
 
                 # if we get here, we have found the needed IDs
-                foundIDs = results
+                foundIDs |= set(results)
                 break
 
             else:
@@ -3711,30 +3725,22 @@ class etpDatabase(TextInterface):
                 if mypkgcat != "null":
                     foundCat = self.retrieveCategory(results[0][1])
                     if mypkgcat == foundCat:
-                        foundIDs.append(results[0])
+                        foundIDs.add(results[0])
                     else:
                         continue
                 else:
-                    foundIDs.append(results[0])
+                    foundIDs.add(results[0])
                     break
 
         ### FILTERING
         ### FILTERING
         ### FILTERING
 
-        if packagesFilter: # keyword filtering
-            foundIDs = self.packagesFilter(foundIDs)
-
-        # filter broken entries
-        if self.dbname == "client":
-            for x in range(len(foundIDs)):
-                try:
-                    self.retrieveAtom(foundIDs[x][1])
-                except TypeError:
-                    del foundIDs[x]
-
         # filter slot and tag
         foundIDs = self.__filterSlotTag(foundIDs, matchSlot, matchTag)
+
+        if packagesFilter: # keyword filtering
+            foundIDs = self.packagesFilter(foundIDs)
 
         ### END FILTERING
         ### END FILTERING
@@ -3749,7 +3755,7 @@ class etpDatabase(TextInterface):
         ### FILLING dbpkginfo
         ### FILLING dbpkginfo
 
-        dbpkginfo = []
+        dbpkginfo = set()
         # now we have to handle direction
         if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
 
@@ -3776,15 +3782,15 @@ class etpDatabase(TextInterface):
                         myver = entropyTools.remove_revision(dbver)
                         if myver == pkgversion:
                             # found
-                            dbpkginfo.append([idpackage,dbver])
+                            dbpkginfo.add((idpackage,dbver))
                     else:
                         # media-libs/test-1.2* support
                         if pkgversion[-1] == "*":
                             if dbver.startswith(pkgversion[:-1]):
-                                dbpkginfo.append((idpackage,dbver))
+                                dbpkginfo.add((idpackage,dbver))
                         # do versions match?
                         elif pkgversion == dbver:
-                            dbpkginfo.append((idpackage,dbver))
+                            dbpkginfo.add((idpackage,dbver))
 
             elif (direction.find(">") != -1) or (direction.find("<") != -1):
 
@@ -3801,23 +3807,23 @@ class etpDatabase(TextInterface):
                     if direction == ">": # the --deep mode should really act on this
                         if (pkgcmp < 0):
                             # found
-                            dbpkginfo.append((idpackage,dbver))
+                            dbpkginfo.add((idpackage,dbver))
                     elif direction == "<":
                         if (pkgcmp > 0):
                             # found
-                            dbpkginfo.append((idpackage,dbver))
+                            dbpkginfo.add((idpackage,dbver))
                     elif direction == ">=": # the --deep mode should really act on this
                         if (pkgcmp <= 0):
                             # found
-                            dbpkginfo.append((idpackage,dbver))
+                            dbpkginfo.add((idpackage,dbver))
                     elif direction == "<=":
                         if (pkgcmp >= 0):
                             # found
-                            dbpkginfo.append((idpackage,dbver))
+                            dbpkginfo.add((idpackage,dbver))
 
         else: # just the key
 
-            dbpkginfo = [((x[1]),self.retrieveVersion(x[1])) for x in foundIDs]
+            dbpkginfo = set([((x[1]),self.retrieveVersion(x[1])) for x in foundIDs])
 
         ### END FILLING dbpkginfo
         ### END FILLING dbpkginfo
@@ -3833,11 +3839,18 @@ class etpDatabase(TextInterface):
             return x,0
 
         if len(dbpkginfo) == 1:
-            self.atomMatchStoreCache((dbpkginfo[0][0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-            return dbpkginfo[0][0],0
+            x = dbpkginfo.pop()
+            self.atomMatchStoreCache((x[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
+            return x[0],0
 
-        versions = [(x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0])) for x in dbpkginfo]
-        versionlist = entropyTools.getEntropyNewerVersion(versions)
-        x = dbpkginfo[versions.index(versionlist[0])][0]
+        dbpkginfo = list(dbpkginfo)
+        pkgdata = {}
+        versions = set()
+        for x in dbpkginfo:
+            info_tuple = (x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0]))
+            versions.add(info_tuple)
+            pkgdata[info_tuple] = x[0]
+        newer = entropyTools.getEntropyNewerVersion(list(versions))[0]
+        x = pkgdata[newer]
         self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
         return x,0
