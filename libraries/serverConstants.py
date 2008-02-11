@@ -23,7 +23,7 @@
 from entropyConstants import *
 
 def initConfig_serverConstants():
-    
+
     # activator section
     if (os.path.isfile(etpConst['activatorconf'])):
         try:
@@ -61,7 +61,7 @@ def initConfig_serverConstants():
                     etpConst['activatorloglevel'] = loglevel
                 else:
                     pass
-    
+
     # reagent section
     if (os.path.isfile(etpConst['reagentconf'])):
         f = open(etpConst['reagentconf'],"r")

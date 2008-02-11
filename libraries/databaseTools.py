@@ -3653,6 +3653,13 @@ class etpDatabase(TextInterface):
             if (self.dbname == etpConst['clientdbid']):
                 # collect all available branches
                 myBranchIndex = tuple(self.listAllBranches())
+            elif self.dbname.startswith(etpConst['dbnamerepoprefix']): # repositories should match to any branch <= than the current if none specified
+                allbranches = set([x for x in self.listAllBranches() if x <= etpConst['branch']])
+                allbranches = list(allbranches)
+                allbranches.reverse()
+                if etpConst['branch'] not in allbranches:
+                    allbranches.insert(0,etpConst['branch'])
+                myBranchIndex = tuple(allbranches)
             else:
                 myBranchIndex = (etpConst['branch'],)
 
@@ -3697,9 +3704,7 @@ class etpDatabase(TextInterface):
                     foundCat = list(cats)[0]
                 if (not foundCat):
                     # got the issue
-                    # gosh, return and complain
-                    self.atomMatchStoreCache((-1,2), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
-                    return -1,2
+                    continue
 
                 # we can use foundCat
                 mypkgcat = foundCat
