@@ -1876,17 +1876,21 @@ class etpDatabase(TextInterface):
 
     def clearCache(self):
         def do_clear(name):
-            dump_file = os.path.join(etpConst['dumpstoragedir'],name)
-            os.system("rm -rf %s*.dmp" % (dump_file,) )
-        do_clear(etpCache['dbInfo']+self.dbname)
+            dump_path = os.path.join(etpConst['dumpstoragedir'],name)
+            dump_dir = os.path.dirname(dump_path)
+            for item in os.listdir(dump_dir):
+                item = os.path.join(dump_dir,item)
+                if os.path.isfile(item):
+                    os.remove(item)
+        do_clear(etpCache['dbInfo']+self.dbname+"/")
         do_clear(etpCache['dbMatch']+self.dbname)
-        do_clear(etpCache['dbSearch']+self.dbname)
+        do_clear(etpCache['dbSearch']+self.dbname+"/")
 
     def fetchInfoCache(self, idpackage, function, extra_hash = 0):
-        if (self.xcache):
+        if self.xcache:
             c_hash = str( hash(int(idpackage)) + hash(function) + extra_hash )
             try:
-                cached = dumpTools.loadobj(etpCache['dbInfo']+self.dbname+c_hash)
+                cached = dumpTools.loadobj(etpCache['dbInfo']+self.dbname+"/"+c_hash)
                 if cached != None:
                     return cached
             except EOFError:
@@ -1894,17 +1898,17 @@ class etpDatabase(TextInterface):
 
 
     def storeInfoCache(self, idpackage, function, info_cache_data, extra_hash = 0):
-        if (self.xcache):
+        if self.xcache:
             c_hash = str( hash(int(idpackage)) + hash(function) + extra_hash )
             try:
-                dumpTools.dumpobj(etpCache['dbInfo']+self.dbname+c_hash,info_cache_data)
+                dumpTools.dumpobj(etpCache['dbInfo']+self.dbname+"/"+c_hash,info_cache_data)
             except IOError:
                 pass
 
     def fetchSearchCache(self, cache_hash):
         if self.xcache:
             try:
-                cached = dumpTools.loadobj(etpCache['dbSearch']+self.dbname+cache_hash)
+                cached = dumpTools.loadobj(etpCache['dbSearch']+self.dbname+"/"+cache_hash)
                 if cached != None:
                     return cached
             except EOFError:
@@ -1914,7 +1918,7 @@ class etpDatabase(TextInterface):
     def storeSearchCache(self, cache_hash, cache_data):
         if self.xcache:
             try:
-                dumpTools.dumpobj(etpCache['dbSearch']+self.dbname+cache_hash,cache_data)
+                dumpTools.dumpobj(etpCache['dbSearch']+self.dbname+"/"+cache_hash,cache_data)
             except IOError:
                 pass
 
@@ -3490,7 +3494,7 @@ class etpDatabase(TextInterface):
                             hash(tuple(matchBranches)) + \
                             hash(packagesFilter)
                         )
-            cached = dumpTools.loadobj(etpCache['dbMatch']+self.dbname+c_hash)
+            cached = dumpTools.loadobj(etpCache['dbMatch']+self.dbname+"/"+c_hash)
             if cached != None:
                 return cached
 
@@ -3505,7 +3509,7 @@ class etpDatabase(TextInterface):
                             hash(packagesFilter)
                         )
             try:
-                dumpTools.dumpobj(etpCache['dbMatch']+self.dbname+c_hash,result)
+                dumpTools.dumpobj(etpCache['dbMatch']+self.dbname+"/"+c_hash,result)
             except IOError:
                 pass
 

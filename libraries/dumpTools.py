@@ -29,14 +29,16 @@ import cPickle
 '''
 def dumpobj(name, object, completePath = False):
     while 1: # trap ctrl+C
-        # etpConst['dumpstoragedir']
         try:
             if completePath:
                 dmpfile = name
             else:
-                if not os.path.isdir(etpConst['dumpstoragedir']):
-                    os.makedirs(etpConst['dumpstoragedir'])
-                dmpfile = etpConst['dumpstoragedir']+"/"+name+".dmp"
+                dump_path = os.path.join(etpConst['dumpstoragedir'],name)
+                dump_dir = os.path.dirname(dump_path)
+                #dump_name = os.path.basename(dump_path)
+                if not os.path.isdir(dump_dir):
+                    os.makedirs(dump_dir)
+                dmpfile = dump_path+".dmp"
             f = open(dmpfile,"wb")
             cPickle.dump(object,f)
             f.flush()
@@ -57,7 +59,10 @@ def loadobj(name, completePath = False):
     if completePath:
         dmpfile = name
     else:
-        dmpfile = etpConst['dumpstoragedir']+"/"+name+".dmp"
+        dump_path = os.path.join(etpConst['dumpstoragedir'],name)
+        #dump_dir = os.path.dirname(dump_path)
+        #dump_name = os.path.basename(dump_path)
+        dmpfile = dump_path+".dmp"
     if os.path.isfile(dmpfile):
 	try:
             f = open(dmpfile,"rb")

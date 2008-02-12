@@ -226,12 +226,8 @@ class EquoInterface(TextInterface):
         const_resetCache()
         if etpConst['uid'] == 0:
             for key in etpCache:
-                cachefiles = [x for x in os.listdir(etpConst['dumpstoragedir']) if x.startswith(etpCache[key]) and x.endswith(".dmp")]
                 if showProgress: self.updateProgress(darkred("Cleaning %s*.dmp...") % (etpCache[key],), importance = 1, type = "warning", back = True)
-                for item in cachefiles:
-                    item = os.path.join(etpConst['dumpstoragedir'],item)
-                    if os.path.isfile(item):
-                        os.remove(item)
+                self.clear_dump_cache(etpCache[key])
 
             if showProgress: self.updateProgress(darkgreen("Cache is now empty."), importance = 2, type = "info")
 
@@ -323,12 +319,16 @@ class EquoInterface(TextInterface):
         self.updateProgress(darkred("Dependencies cache filled."), importance = 2, type = "warning")
 
     def clear_dump_cache(self, dump_name):
-        dump_file = os.path.join(etpConst['dumpstoragedir'],dump_name)
-        files = [x for x in os.listdir(etpConst['dumpstoragedir']) if x.startswith(dump_name) and x.endswith(".dmp")]
-        for item in files:
-            item = os.path.join(etpConst['dumpstoragedir'],item)
-            if os.path.isfile(item):
-                os.remove(item)
+        dump_path = os.path.join(etpConst['dumpstoragedir'],dump_name)
+
+        dump_dir = os.path.dirname(dump_path)
+        dump_file = os.path.basename(dump_path)
+        for currentdir, subdirs, files in os.walk(dump_dir):
+            path = os.path.join(dump_dir,currentdir)
+            for item in files:
+                if item.endswith(".dmp"):
+                    item = os.path.join(path,item)
+                    os.remove(item)
 
     '''
        Cache stuff :: end
@@ -861,9 +861,9 @@ class EquoInterface(TextInterface):
         self.clear_dump_cache(etpCache['check_package_update'])
         self.clear_dump_cache(etpCache['filter_satisfied_deps'])
         self.clear_dump_cache(etpCache['atomMatch'])
-        self.clear_dump_cache(etpCache['dbMatch']+repoid)
-        self.clear_dump_cache(etpCache['dbInfo']+repoid)
-        self.clear_dump_cache(etpCache['dbSearch']+repoid)
+        self.clear_dump_cache(etpCache['dbMatch']+repoid+"/")
+        self.clear_dump_cache(etpCache['dbInfo']+repoid+"/")
+        self.clear_dump_cache(etpCache['dbSearch']+repoid+"/")
 
 
     def addRepository(self, repodata):
@@ -2414,9 +2414,9 @@ class PackageInterface:
         self.Entropy.clear_dump_cache(etpCache['check_package_update'])
         self.Entropy.clear_dump_cache(etpCache['dep_tree'])
         self.Entropy.clear_dump_cache(etpCache['world_update'])
-        self.Entropy.clear_dump_cache(etpCache['dbInfo']+etpConst['clientdbid'])
-        self.Entropy.clear_dump_cache(etpCache['dbMatch']+etpConst['clientdbid'])
-        self.Entropy.clear_dump_cache(etpCache['dbSearch']+etpConst['clientdbid'])
+        self.Entropy.clear_dump_cache(etpCache['dbInfo']+etpConst['clientdbid']+"/")
+        self.Entropy.clear_dump_cache(etpCache['dbMatch']+etpConst['clientdbid']+"/")
+        self.Entropy.clear_dump_cache(etpCache['dbSearch']+etpConst['clientdbid']+"/")
 
         # update world available cache
         if self.Entropy.xcache and (self.action in ("remove","install")):
@@ -3680,9 +3680,9 @@ class RepoInterface:
 
     def clear_repository_cache(self, repo):
         self.__validate_repository_id(repo)
-        self.Entropy.clear_dump_cache(etpCache['dbInfo']+repo)
-        self.Entropy.clear_dump_cache(etpCache['dbMatch']+repo)
-        self.Entropy.clear_dump_cache(etpCache['dbSearch']+repo)
+        self.Entropy.clear_dump_cache(etpCache['dbInfo']+repo+"/")
+        self.Entropy.clear_dump_cache(etpCache['dbMatch']+repo+"/")
+        self.Entropy.clear_dump_cache(etpCache['dbSearch']+repo+"/")
 
     # this function can be reimplemented
     def download_item(self, item, repo, cmethod = None):

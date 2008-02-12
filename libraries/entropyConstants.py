@@ -344,22 +344,22 @@ ETP_LOGPRI_ERROR = "[ ERROR ]"
 
 # disk caching dictionary
 etpCache = {
-    'configfiles': 'scanfs', # used to store information about files that should be merged using "equo conf merge"
-    'dbMatch': 'cache_', # db atom match cache
-    'dbInfo': 'info_', # db data retrieval cache
-    'dbSearch': 'search_', # db search cache
-    'atomMatch': 'atom_match_', # used to store info about repository dependencies solving
-    'install': 'resume_install', # resume cache (install)
-    'remove': 'resume_remove', # resume cache (remove)
-    'world': 'resume_world', # resume cache (world)
-    'world_update': 'world_cache_',
-    'world_available': 'available_cache_',
-    'check_package_update': 'package_update_',
-    'advisories': 'advisories_cache_',
-    'dep_tree': 'dep_tree_',
-    'depends_tree': 'depends_tree_',
-    'filter_satisfied_deps': 'filter_satisfied_deps_',
-    'library_breakage': 'library_breakage_'
+    'configfiles': 'conf/scanfs', # used to store information about files that should be merged using "equo conf merge"
+    'dbMatch': 'match/cache_', # db atom match cache
+    'dbInfo': 'info/item_', # db data retrieval cache
+    'dbSearch': 'search/search_', # db search cache
+    'atomMatch': 'atom_match/atom_match_', # used to store info about repository dependencies solving
+    'install': 'resume/resume_install', # resume cache (install)
+    'remove': 'resume/resume_remove', # resume cache (remove)
+    'world': 'resume/resume_world', # resume cache (world)
+    'world_update': 'world_update/world_cache_',
+    'world_available': 'world_available/available_cache_',
+    'check_package_update': 'check_update/package_update_',
+    'advisories': 'security/advisories_cache_',
+    'dep_tree': 'deptree/dep_tree_',
+    'depends_tree': 'depends/depends_tree_',
+    'filter_satisfied_deps': 'depfilter/filter_satisfied_deps_',
+    'library_breakage': 'libs_break/library_breakage_'
 }
 
 # ahahaha
