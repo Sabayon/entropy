@@ -1878,10 +1878,11 @@ class etpDatabase(TextInterface):
         def do_clear(name):
             dump_path = os.path.join(etpConst['dumpstoragedir'],name)
             dump_dir = os.path.dirname(dump_path)
-            for item in os.listdir(dump_dir):
-                item = os.path.join(dump_dir,item)
-                if os.path.isfile(item):
-                    os.remove(item)
+            if os.path.isdir(dump_dir):
+                for item in os.listdir(dump_dir):
+                    item = os.path.join(dump_dir,item)
+                    if os.path.isfile(item):
+                        os.remove(item)
         do_clear(etpCache['dbInfo']+self.dbname+"/")
         do_clear(etpCache['dbMatch']+self.dbname)
         do_clear(etpCache['dbSearch']+self.dbname+"/")
