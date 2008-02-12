@@ -264,7 +264,8 @@ CREATE TABLE messages (
 
 CREATE TABLE counters (
     counter INTEGER,
-    idpackage INTEGER PRIMARY KEY
+    idpackage INTEGER PRIMARY KEY,
+    branch VARCHAR
 );
 
 CREATE TABLE eclasses (

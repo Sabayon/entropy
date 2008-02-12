@@ -130,7 +130,7 @@ def update(options):
 
         dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
 
-        if (not reagentRequestRepackage):
+        if not reagentRequestRepackage:
             print_info(brown(" * ")+red("Scanning database for differences..."))
             from portageTools import getInstalledPackagesCounters, quickpkg, getPackageSlot
             installedPackages = getInstalledPackagesCounters()
@@ -142,12 +142,12 @@ def update(options):
             # packages to be added
             for x in installedPackages[0]:
                 installedCounters.add(x[1])
-                counter = dbconn.isCounterAvailable(x[1])
+                counter = dbconn.isCounterAvailable(x[1], branch = etpConst['branch'])
                 if (not counter):
                     toBeAdded.add(tuple(x))
 
             # packages to be removed from the database
-            databaseCounters = dbconn.listAllCounters()
+            databaseCounters = dbconn.listAllCounters(branch = etpConst['branch'])
             for x in databaseCounters:
                 if x[0] < 0:
                     continue # skip packages without valid counter

@@ -93,6 +93,10 @@ class EquoInterface(TextInterface):
         self.FileUpdates = self.__FileUpdates()
         self.repoDbCache = {}
 
+        # are we running on a livecd? (/proc/cmdline has "cdroot")
+        if self.entropyTools.islive():
+            self.xcache = False
+
         # security interface
         self.Security = SecurityInterface(self)
         if not self.xcache:

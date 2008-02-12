@@ -147,6 +147,14 @@ def get_remote_data(url):
         socket.setdefaulttimeout(2)
         return False
 
+def islive():
+    f = open("/proc/cmdline")
+    cmdline = f.readline().strip().split()
+    f.close()
+    if "cdroot" in cmdline:
+        return True
+    return False
+
 def ebeep(count = 5):
     for x in range(count):
         os.system("sleep 0.35; echo -ne \"\a\"; sleep 0.35")

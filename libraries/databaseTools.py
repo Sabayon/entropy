@@ -831,6 +831,10 @@ class etpDatabase(TextInterface):
         # content, a list
         self.insertContent(idpackage,etpData['content'])
 
+        if not self.doesTableExist("counters"):
+            self.createCountersTable()
+        elif not self.doesColumnInTableExist("counters","branch"):
+            self.createCountersBranchColumn()
         etpData['counter'] = int(etpData['counter']) # cast to integer
         if etpData['counter'] != -1 and not (etpData['injected']):
 
@@ -841,22 +845,22 @@ class etpDatabase(TextInterface):
             try:
                 self.cursor.execute(
                 'INSERT into counters VALUES '
-                '(?,?)'
+                '(?,?,?)'
                 , ( etpData['counter'],
                     idpackage,
+                    etpData['branch'],
                     )
                 )
             except:
                 if self.dbname == etpConst['clientdbid']: # force only for client database
-                    if not self.doesTableExist("counters"):
-                        self.createCountersTable()
-                    else:
+                    if self.doesTableExist("counters"):
                         raise
                     self.cursor.execute(
                     'INSERT into counters VALUES '
-                    '(?,?)'
+                    '(?,?,?)'
                     , ( etpData['counter'],
                         idpackage,
+                        etpData['branch'],
                         )
                     )
                 elif self.dbname == etpConst['serverdbid']:
@@ -1444,16 +1448,32 @@ class etpDatabase(TextInterface):
                         )
             )
 
-    def insertCounter(self, idpackage, counter):
+    def insertCounter(self, idpackage, counter, branch = None):
         self.checkReadOnly()
+        if not self.doesColumnInTableExist("counters","branch"):
+            self.createCountersBranchColumn()
+        if not branch:
+            branch = etpConst['branch']
         self.cursor.execute('DELETE FROM counters WHERE counter = (?) OR idpackage = (?)', (counter,idpackage,))
-        self.cursor.execute('INSERT INTO counters VALUES (?,?)', (counter,idpackage,))
+        self.cursor.execute('INSERT INTO counters VALUES (?,?,?)', (counter,idpackage,branch,))
         self.commitChanges()
 
-    def setCounter(self, idpackage, counter):
+    def setCounter(self, idpackage, counter, branch = None):
         self.checkReadOnly()
+
+        if not self.doesColumnInTableExist("counters","branch"):
+            self.createCountersBranchColumn()
+
+        branchstring = ''
+        insertdata = [counter,idpackage]
+        if branch:
+            branchstring = ', branch = (?)'
+            insertdata.insert(1,branch)
+        else:
+            branch = etpConst['branch']
+
         try:
-            self.cursor.execute('UPDATE counters SET counter = (?) WHERE idpackage = (?)', (counter,idpackage,))
+            self.cursor.execute('UPDATE counters SET counter = (?) '+branchstring+' WHERE idpackage = (?)', insertdata)
         except:
             if self.dbname == etpConst['clientdbid']:
                 if not self.doesTableExist("counters"):
@@ -1462,7 +1482,7 @@ class etpDatabase(TextInterface):
                     raise
                 self.cursor.execute(
                     'INSERT into counters VALUES '
-                    '(?,?)', (counter,idpackage,)
+                    '(?,?,?)', (counter,idpackage,branch)
                 )
         self.commitChanges()
 
@@ -2034,6 +2054,9 @@ class etpDatabase(TextInterface):
         cache = self.fetchInfoCache(idpackage,'retrieveCounter')
         if cache != None: return cache
 
+        if not self.doesColumnInTableExist("counters","branch"):
+            self.createCountersBranchColumn()
+
         counter = -1
         try:
             self.cursor.execute('SELECT counter FROM counters WHERE idpackage = (?)', (idpackage,))
@@ -2562,22 +2585,29 @@ class etpDatabase(TextInterface):
             return -1
         return result[0]
 
-    def isCounterAvailable(self,counter):
+    def isCounterAvailable(self,counter, branch = None):
+
+        if not self.doesColumnInTableExist("counters","branch"):
+            self.createCountersBranchColumn()
+
         result = False
-        self.cursor.execute('SELECT counter FROM counters WHERE counter = (?)', (counter,))
+        if not branch:
+            branch = etpConst['branch']
+        self.cursor.execute('SELECT counter FROM counters WHERE counter = (?) and branch = (?)', (counter,branch,))
         result = self.cursor.fetchone()
         if result:
             result = True
+
         return result
 
     def isLicenseAvailable(self,pkglicense):
         if not pkglicense: # workaround for packages without a license but just garbage
             pkglicense = ' '
-	self.cursor.execute('SELECT idlicense FROM licenses WHERE license = (?)', (pkglicense,))
-	result = self.cursor.fetchone()
-	if not result:
-	    return -1
-	return result[0]
+        self.cursor.execute('SELECT idlicense FROM licenses WHERE license = (?)', (pkglicense,))
+        result = self.cursor.fetchone()
+        if not result:
+            return -1
+        return result[0]
 
     def isSystemPackage(self,idpackage):
 
@@ -2919,12 +2949,19 @@ class etpDatabase(TextInterface):
                 results.add((download,injected))
         return results
 
-    def listAllCounters(self, onlycounters = False):
+    def listAllCounters(self, onlycounters = False, branch = None):
+
+        if not self.doesColumnInTableExist("counters","branch"):
+            self.createCountersBranchColumn()
+
+        branchstring = ''
+        if branch:
+            branchstring = ' WHERE branch = "'+str(branch)+'"'
         if onlycounters:
-            self.cursor.execute('SELECT counter FROM counters')
+            self.cursor.execute('SELECT counter FROM counters'+branchstring)
             return self.fetchall2set(self.cursor.fetchall())
         else:
-            self.cursor.execute('SELECT counter,idpackage FROM counters')
+            self.cursor.execute('SELECT counter,idpackage FROM counters'+branchstring)
             return self.cursor.fetchall()
 
     def listAllIdpackages(self, branch = None):
@@ -3230,7 +3267,7 @@ class etpDatabase(TextInterface):
 
     def createCountersTable(self):
         self.cursor.execute('DROP TABLE IF EXISTS counters;')
-        self.cursor.execute('CREATE TABLE counters ( counter INTEGER PRIMARY KEY, idpackage INTEGER );')
+        self.cursor.execute('CREATE TABLE counters ( counter INTEGER, idpackage INTEGER PRIMARY KEY, branch VARCHAR );')
 
     def createAllIndexes(self):
         self.createContentIndex()
@@ -3284,6 +3321,7 @@ class etpDatabase(TextInterface):
         for myid in myids:
             # get atom
             myatom = self.retrieveAtom(myid)
+            mybranch = self.retrieveBranch(myid)
             myatom = entropyTools.remove_tag(myatom)
             myatomcounterpath = appdbpath+myatom+"/"+dbCOUNTER
             if os.path.isfile(myatomcounterpath):
@@ -3298,7 +3336,7 @@ class etpDatabase(TextInterface):
                 try:
                     self.cursor.execute(
                             'INSERT into counters VALUES '
-                            '(?,?)', ( counter, myid, )
+                            '(?,?,?)', ( counter, myid, mybranch )
                     )
                 except:
                     if output: self.updateProgress(red("ATTENTION: counter for atom %s")+red(" is duplicated. Ignoring.") % (bold(myatom),), importance = 1, type = "warning")
@@ -3335,6 +3373,13 @@ class etpDatabase(TextInterface):
     def createSizesTable(self):
         self.cursor.execute('DROP TABLE IF EXISTS sizes;')
         self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
+
+    def createCountersBranchColumn(self):
+        self.cursor.execute('ALTER TABLE counters ADD COLUMN branch VARCHAR;')
+        idpackages = self.listAllIdpackages()
+        for idpackage in idpackages:
+            branch = self.retrieveBranch(idpackage)
+            self.cursor.execute('UPDATE counters SET branch = (?) WHERE idpackage = (?)', (branch,idpackage,))
 
     def createTreeupdatesactionsBranchColumn(self):
         try: # if database disk image is malformed, won't raise exception here
@@ -3589,9 +3634,6 @@ class etpDatabase(TextInterface):
 
         return newlist
 
-
-
-
     '''
        @description: matches the user chosen package name+ver, if possibile, in a single repository
        @input atom: string, atom to match
@@ -3601,7 +3643,7 @@ class etpDatabase(TextInterface):
        @input matchBranches: tuple or list, match packages only in the specified branches
        @input matchTag: match packages only for the specified tag
        @input packagesFilter: enable/disable package.mask/.keywords/.unmask filter
-       @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = not found, 2 = need more info, 3 = cannot use direction without specifying version
+       @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = error
     '''
     def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = (), matchTag = None, packagesFilter = True):
 
@@ -3635,7 +3677,7 @@ class etpDatabase(TextInterface):
             # get version
             data = entropyTools.catpkgsplit(strippedAtom)
             if data == None:
-                return -1,3 # atom is badly formatted
+                return -1,1 # atom is badly formatted
             pkgversion = data[2]+"-"+data[3]
 
         pkgkey = entropyTools.dep_getkey(strippedAtom)

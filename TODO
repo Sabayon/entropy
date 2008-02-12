@@ -1,4 +1,5 @@
 TODO list:
+  - rewrite switch branch function or add a new one
   - split RDEPEND and PDEPEND
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
@@ -12,7 +13,7 @@ TODO list:
 
   Spritz:
     - handle config files updates interface (*)
-    - handle multi repos in "available" menu
+    - handle multi repos in "available" menu (*)
     - add masking interface (*)
     - add branch switching menu (for upgrades)
     - wrap root password request

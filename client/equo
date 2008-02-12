@@ -226,7 +226,12 @@ def load_conf_cache():
     try:
         oldquiet = etpUi['quiet']
         etpUi['quiet'] = True
-        scandata = text_configuration.Equo.FileUpdates.scanfs(dcache = True)
+        while 1:
+            try:
+                scandata = text_configuration.Equo.FileUpdates.scanfs(dcache = True)
+                break
+            except KeyboardInterrupt:
+                continue
         etpUi['quiet'] = oldquiet
     except:
         if not etpUi['quiet']: print_info(red(" @@ ")+blue("Caching not run."))
