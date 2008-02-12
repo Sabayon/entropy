@@ -142,12 +142,12 @@ def update(options):
             # packages to be added
             for x in installedPackages[0]:
                 installedCounters.add(x[1])
-                counter = dbconn.isCounterAvailable(x[1], branch = etpConst['branch'])
+                counter = dbconn.isCounterAvailable(x[1], branch = etpConst['branch'], branch_operator = "<=")
                 if (not counter):
                     toBeAdded.add(tuple(x))
 
             # packages to be removed from the database
-            databaseCounters = dbconn.listAllCounters(branch = etpConst['branch'])
+            databaseCounters = dbconn.listAllCounters(branch = etpConst['branch'], branch_operator = "<=")
             for x in databaseCounters:
                 if x[0] < 0:
                     continue # skip packages without valid counter

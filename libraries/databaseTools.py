@@ -2589,7 +2589,7 @@ class etpDatabase(TextInterface):
             return -1
         return result[0]
 
-    def isCounterAvailable(self,counter, branch = None):
+    def isCounterAvailable(self,counter, branch = None, branch_operator = "="):
 
         if not self.doesColumnInTableExist("counters","branch"):
             self.createCountersBranchColumn()
@@ -2597,7 +2597,7 @@ class etpDatabase(TextInterface):
         result = False
         if not branch:
             branch = etpConst['branch']
-        self.cursor.execute('SELECT counter FROM counters WHERE counter = (?) and branch = (?)', (counter,branch,))
+        self.cursor.execute('SELECT counter FROM counters WHERE counter = (?) and branch '+branch_operator+' (?)', (counter,branch,))
         result = self.cursor.fetchone()
         if result:
             result = True
@@ -2953,14 +2953,14 @@ class etpDatabase(TextInterface):
                 results.add((download,injected))
         return results
 
-    def listAllCounters(self, onlycounters = False, branch = None):
+    def listAllCounters(self, onlycounters = False, branch = None, branch_operator = "="):
 
         if not self.doesColumnInTableExist("counters","branch"):
             self.createCountersBranchColumn()
 
         branchstring = ''
         if branch:
-            branchstring = ' WHERE branch = "'+str(branch)+'"'
+            branchstring = ' WHERE branch '+branch_operator+' "'+str(branch)+'"'
         if onlycounters:
             self.cursor.execute('SELECT counter FROM counters'+branchstring)
             return self.fetchall2set(self.cursor.fetchall())
