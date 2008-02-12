@@ -20,7 +20,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 from entropyConstants import *
-import cPickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 '''
    @description: dump object to file
@@ -40,7 +43,7 @@ def dumpobj(name, object, completePath = False):
                     os.makedirs(dump_dir)
                 dmpfile = dump_path+".dmp"
             f = open(dmpfile,"wb")
-            cPickle.dump(object,f)
+            pickle.dump(object,f)
             f.flush()
             f.close()
         except IOError, e:
@@ -66,10 +69,10 @@ def loadobj(name, completePath = False):
     if os.path.isfile(dmpfile):
 	try:
             f = open(dmpfile,"rb")
-            x = cPickle.load(f)
+            x = pickle.load(f)
             f.close()
             return x
-	except cPickle.UnpicklingError:
+	except pickle.UnpicklingError:
 	    os.remove(dmpfile)
 	    raise SyntaxError,"cannot load object"
 
