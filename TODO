@@ -16,10 +16,8 @@ TODO list:
     - add masking interface (*)
     - add branch switching menu (for upgrades) (*)
     - wrap root password request (*)
-
+    - Popularity feature
     - handle queue errors
-    - handle config files stuff
-    - when choosing a package that is a multipackage one, mark the installed one for removal?
 
 Project Status:
 - reagent: complete.

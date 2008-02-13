@@ -2587,6 +2587,8 @@ class etpDatabase:
         return result[0]
 
     def isNeededAvailable(self,needed):
+        if not self.doesTableExist("needed"):
+            self.createNeededTable()
         self.cursor.execute('SELECT idneeded FROM neededreference WHERE library = (?)', (needed,))
         result = self.cursor.fetchone()
         if not result:
