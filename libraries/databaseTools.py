@@ -1892,15 +1892,16 @@ class etpDatabase:
                     item = os.path.join(dump_dir,item)
                     if os.path.isfile(item):
                         os.remove(item)
-        do_clear(etpCache['dbInfo']+self.dbname+"/")
-        do_clear(etpCache['dbMatch']+self.dbname)
-        do_clear(etpCache['dbSearch']+self.dbname+"/")
+        do_clear(etpCache['dbInfo']+"/"+self.dbname+"/")
+        do_clear(etpCache['dbMatch']+"/"+self.dbname+"/")
+        do_clear(etpCache['dbSearch']+"/"+self.dbname+"/")
 
     def fetchInfoCache(self, idpackage, function, extra_hash = 0):
         if self.xcache:
-            c_hash = str( hash(int(idpackage)) + hash(function) + extra_hash )
+            c_hash = str( hash(function) + extra_hash )
+            c_match = str(idpackage)
             try:
-                cached = dumpTools.loadobj(etpCache['dbInfo']+self.dbname+"/"+c_hash)
+                cached = dumpTools.loadobj(etpCache['dbInfo']+"/"+self.dbname+"/"+c_match+"/"+c_hash)
                 if cached != None:
                     return cached
             except EOFError:
@@ -1909,16 +1910,17 @@ class etpDatabase:
 
     def storeInfoCache(self, idpackage, function, info_cache_data, extra_hash = 0):
         if self.xcache:
-            c_hash = str( hash(int(idpackage)) + hash(function) + extra_hash )
+            c_hash = str( hash(function) + extra_hash )
+            c_match = str(idpackage)
             try:
-                dumpTools.dumpobj(etpCache['dbInfo']+self.dbname+"/"+c_hash,info_cache_data)
+                dumpTools.dumpobj(etpCache['dbInfo']+"/"+self.dbname+"/"+c_match+"/"+c_hash,info_cache_data)
             except IOError:
                 pass
 
     def fetchSearchCache(self, cache_hash):
         if self.xcache:
             try:
-                cached = dumpTools.loadobj(etpCache['dbSearch']+self.dbname+"/"+cache_hash)
+                cached = dumpTools.loadobj(etpCache['dbSearch']+"/"+self.dbname+"/"+cache_hash)
                 if cached != None:
                     return cached
             except EOFError:
@@ -1928,7 +1930,7 @@ class etpDatabase:
     def storeSearchCache(self, cache_hash, cache_data):
         if self.xcache:
             try:
-                dumpTools.dumpobj(etpCache['dbSearch']+self.dbname+"/"+cache_hash,cache_data)
+                dumpTools.dumpobj(etpCache['dbSearch']+"/"+self.dbname+"/"+cache_hash,cache_data)
             except IOError:
                 pass
 
@@ -2032,13 +2034,13 @@ class etpDatabase:
 
     def retrieveDownloadURL(self, idpackage):
 
-        #cache = self.fetchInfoCache(idpackage,'retrieveDownloadURL')
-        #if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveDownloadURL')
+        if cache != None: return cache
 
         self.cursor.execute('SELECT download FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         download = self.cursor.fetchone()[0]
 
-        #self.storeInfoCache(idpackage,'retrieveDownloadURL',download)
+        self.storeInfoCache(idpackage,'retrieveDownloadURL',download)
         return download
 
     def retrieveDescription(self, idpackage):
@@ -2365,22 +2367,18 @@ class etpDatabase:
 
     def retrieveSources(self, idpackage):
 
-        ''' caching 
         cache = self.fetchInfoCache(idpackage,'retrieveSources')
         if cache != None: return cache
-        '''
 
         self.cursor.execute('SELECT sourcesreference.source FROM sources,sourcesreference WHERE idpackage = (?) and sources.idsource = sourcesreference.idsource', (idpackage,))
         sources = self.fetchall2set(self.cursor.fetchall())
 
-        ''' caching
         self.storeInfoCache(idpackage,'retrieveSources',sources)
-        '''
         return sources
 
     def retrieveContent(self, idpackage, extended = False, contentType = None):
 
-        c_hash = hash(extended)+hash(contentType)
+        c_hash = hash(extended)*2+hash(contentType)
         cache = self.fetchInfoCache(idpackage,'retrieveContent', extra_hash = c_hash)
         if cache != None: return cache
 
@@ -3635,7 +3633,7 @@ class etpDatabase:
                             hash(tuple(matchBranches)) + \
                             hash(packagesFilter)
                         )
-            cached = dumpTools.loadobj(etpCache['dbMatch']+self.dbname+"/"+c_hash)
+            cached = dumpTools.loadobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash)
             if cached != None:
                 return cached
 
@@ -3650,7 +3648,7 @@ class etpDatabase:
                             hash(packagesFilter)
                         )
             try:
-                dumpTools.dumpobj(etpCache['dbMatch']+self.dbname+"/"+c_hash,result)
+                dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash,result)
             except IOError:
                 pass
 

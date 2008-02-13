@@ -345,9 +345,9 @@ ETP_LOGPRI_ERROR = "[ ERROR ]"
 # disk caching dictionary
 etpCache = {
     'configfiles': 'conf/scanfs', # used to store information about files that should be merged using "equo conf merge"
-    'dbMatch': 'match/cache_', # db atom match cache
-    'dbInfo': 'info/item_', # db data retrieval cache
-    'dbSearch': 'search/search_', # db search cache
+    'dbMatch': 'match/db', # db atom match cache
+    'dbInfo': 'info/db', # db data retrieval cache
+    'dbSearch': 'search/db', # db search cache
     'atomMatch': 'atom_match/atom_match_', # used to store info about repository dependencies solving
     'install': 'resume/resume_install', # resume cache (install)
     'remove': 'resume/resume_remove', # resume cache (remove)
