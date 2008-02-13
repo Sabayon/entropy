@@ -412,9 +412,10 @@ except Exception:
     print_error(darkgreen("If you want to be contacted back (and actively supported), also answer the questions below:"))
     name = readtext("Your Full name: ")
     email = readtext("Your E-Mail address: ")
+    description = readtext("What you were doing: ")
     errorText = ''.join(errorText)
     error = ErrorReportInterface()
-    error.prepare(errorText,name,email,'\n'.join([str(x) for x in exception_data]))
+    error.prepare(errorText, name, email, '\n'.join([str(x) for x in exception_data]), description)
     result = error.submit()
     if (result):
         print_error(darkgreen("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible."))

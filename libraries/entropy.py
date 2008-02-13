@@ -6116,13 +6116,14 @@ class ErrorReportInterface:
             opener = urllib2.build_opener(proxy_support)
             urllib2.install_opener(opener)
 
-    def prepare(self, tb_text, name, email, report_data = ""):
+    def prepare(self, tb_text, name, email, report_data = "", description = ""):
         self.params['arch'] = etpConst['currentarch']
         self.params['stacktrace'] = tb_text
         self.params['name'] = name
         self.params['email'] = email
         self.params['version'] = etpConst['entropyversion']
         self.params['errordata'] = report_data
+        self.params['description'] = description
         self.generated = True
 
     # params is a dict, key(HTTP post item name): value
