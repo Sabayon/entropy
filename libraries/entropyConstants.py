@@ -533,6 +533,7 @@ def initConfig_entropyConstants(rootdir):
                                             "bz2": ("bz2.BZ2File","unpackBzip2","etpdatabasefilebzip2",),
                                             "gz": ("gzip.GzipFile","unpackGzip","etpdatabasefilegzip",)
         },
+        'metadata-compression': False, # enable/disable server-side database tables compression
         'rss-feed': True, # enable/disable packages RSS feed feature
         'rss-name': "packages.rss", # default name of the RSS feed
         'rss-base-url': "http://packages.sabayonlinux.org/", # default URL to the entropy web interface (overridden in reagent.conf)
@@ -903,34 +904,34 @@ def initConfig_clientConstants():
                 if (loglevel > -1) and (loglevel < 3):
                     etpConst['equologlevel'] = loglevel
 
-            if line.startswith("gentoo-compat|") and (len(line.split("|")) == 2):
+            elif line.startswith("gentoo-compat|") and (len(line.split("|")) == 2):
                 compatopt = line.split("|")[1].strip()
                 if compatopt == "disable":
                     etpConst['gentoo-compat'] = False
                 else:
                     etpConst['gentoo-compat'] = True
 
-            if line.startswith("filesbackup|") and (len(line.split("|")) == 2):
+            elif line.startswith("filesbackup|") and (len(line.split("|")) == 2):
                 compatopt = line.split("|")[1].strip()
                 if compatopt == "disable":
                     etpConst['filesbackup'] = False
 
-            if line.startswith("collisionprotect|") and (len(line.split("|")) == 2):
+            elif line.startswith("collisionprotect|") and (len(line.split("|")) == 2):
                 collopt = line.split("|")[1].strip()
                 if collopt == "0" or collopt == "1" or collopt == "2":
                     etpConst['collisionprotect'] = int(collopt)
 
-            if line.startswith("configprotect|") and (len(line.split("|")) == 2):
+            elif line.startswith("configprotect|") and (len(line.split("|")) == 2):
                 configprotect = line.split("|")[1].strip()
                 for x in configprotect.split():
                     etpConst['configprotect'].append(x)
 
-            if line.startswith("configprotectmask|") and (len(line.split("|")) == 2):
+            elif line.startswith("configprotectmask|") and (len(line.split("|")) == 2):
                 configprotect = line.split("|")[1].strip()
                 for x in configprotect.split():
                     etpConst['configprotectmask'].append(x)
 
-            if line.startswith("configprotectskip|") and (len(line.split("|")) == 2):
+            elif line.startswith("configprotectskip|") and (len(line.split("|")) == 2):
                 configprotect = line.split("|")[1].strip()
                 for x in configprotect.split():
                     etpConst['configprotectskip'].append(etpConst['systemroot']+x)

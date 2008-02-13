@@ -42,16 +42,16 @@ def initConfig_serverConstants():
                 if uri.endswith("/"):
                     uri = uri[:len(uri)-1]
                 etpConst['activatoruploaduris'].append(uri)
-            if line.startswith("mirror-download|") and (len(line.split("mirror-download|")) == 2):
+            elif line.startswith("mirror-download|") and (len(line.split("mirror-download|")) == 2):
                 uri = line.split("mirror-download|")[1]
                 if uri.endswith("/"):
                     uri = uri[:len(uri)-1]
                 etpConst['activatordownloaduris'].append(uri)
-            if line.startswith("database-format|") and (len(line.split("database-format|")) == 2):
+            elif line.startswith("database-format|") and (len(line.split("database-format|")) == 2):
                 format = line.split("database-format|")[1]
                 if format in etpConst['etpdatabasesupportedcformats']:
                     etpConst['etpdatabasefileformat'] = format
-            if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
+            elif line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
                 loglevel = line.split("loglevel|")[1]
                 try:
                     loglevel = int(loglevel)
@@ -61,6 +61,11 @@ def initConfig_serverConstants():
                     etpConst['activatorloglevel'] = loglevel
                 else:
                     pass
+            elif line.startswith("metadata-compression|") and (len(line.split("metadata-compression|")) == 2):
+                mc = line.split("metadata-compression|")[1]
+                if feed in ("enable","enabled","true","1"):
+                    etpConst['metadata-compression'] = True
+
 
     # reagent section
     if (os.path.isfile(etpConst['reagentconf'])):

@@ -2973,13 +2973,21 @@ class etpDatabase:
             return self.cursor.fetchall()
 
     def listAllIdpackages(self, branch = None):
+
+        cache = self.fetchInfoCache(hash(branch),'listAllIdpackages')
+        if cache != None: return cache
+
         branchstring = ''
         searchkeywords = []
         if branch:
             searchkeywords.append(branch)
             branchstring = ' where branch = (?)'
         self.cursor.execute('SELECT idpackage FROM baseinfo'+branchstring, searchkeywords)
-        return self.fetchall2set(self.cursor.fetchall())
+
+        results = self.fetchall2set(self.cursor.fetchall())
+        self.storeInfoCache(hash(branch),'listAllIdpackages',results)
+
+        return results
 
     def listAllDependencies(self):
         self.cursor.execute('SELECT * FROM dependenciesreference')
