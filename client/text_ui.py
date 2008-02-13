@@ -822,9 +822,26 @@ def dependenciesTest():
     depsNotMatched = Equo.dependencies_test()
 
     if depsNotMatched:
+
+        crying_atoms = {}
+        for atom in depsNotMatched:
+            riddep = Equo.clientDbconn.searchDependency(atom)
+            if riddep != -1:
+                ridpackages = Equo.clientDbconn.searchIdpackageFromIddependency(riddep)
+                for i in ridpackages:
+                    iatom = Equo.clientDbconn.retrieveAtom(i)
+                    if not crying_atoms.has_key(atom):
+                        crying_atoms[atom] = set()
+                    crying_atoms[atom].add(iatom)
+
         print_info(red(" @@ ")+blue("These are the dependencies not found:"))
-        for dep in depsNotMatched:
-            print_info("   # "+red(dep))
+        for atom in depsNotMatched:
+            print_info("   # "+red(atom))
+            if crying_atoms.has_key(atom):
+                print_info(blue("      # ")+red("Needed by:"))
+                for x in crying_atoms[atom]:
+                    print_info(blue("      # ")+darkgreen(x))
+
         if (etpUi['ask']):
             rc = Equo.askQuestion("     Would you like to install the available packages?")
             if rc == "No":
