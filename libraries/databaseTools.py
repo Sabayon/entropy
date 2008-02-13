@@ -137,6 +137,7 @@ class etpDatabase:
         self.dbFile = dbFile
         self.updateProgress = OutputInterface.updateProgress
         self.askQuestion = OutputInterface.askQuestion
+        self.outputInstanceTest = OutputInterface.outputInstanceTest
 
         # no caching for non root and server connections
         if (self.dbname == etpConst['serverdbid']) or (etpConst['uid'] != 0):
