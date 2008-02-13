@@ -1453,6 +1453,8 @@ class etpDatabase:
 
     def insertCounter(self, idpackage, counter, branch = None):
         self.checkReadOnly()
+        if not self.doesTableExist("counters"):
+            self.createCountersTable()
         if not self.doesColumnInTableExist("counters","branch"):
             self.createCountersBranchColumn()
         if not branch:
@@ -1464,6 +1466,8 @@ class etpDatabase:
     def setCounter(self, idpackage, counter, branch = None):
         self.checkReadOnly()
 
+        if not self.doesTableExist("counters"):
+            self.createCountersTable()
         if not self.doesColumnInTableExist("counters","branch"):
             self.createCountersBranchColumn()
 
@@ -2064,22 +2068,16 @@ class etpDatabase:
         cache = self.fetchInfoCache(idpackage,'retrieveCounter')
         if cache != None: return cache
 
+        if not self.doesTableExist("counters"):
+            self.createCountersTable()
         if not self.doesColumnInTableExist("counters","branch"):
             self.createCountersBranchColumn()
 
         counter = -1
-        try:
-            self.cursor.execute('SELECT counter FROM counters WHERE idpackage = (?)', (idpackage,))
-            mycounter = self.cursor.fetchone()
-            if mycounter:
-                counter = mycounter[0]
-        except:
-            if self.dbname == etpConst['clientdbid']:
-                if not self.doesTableExist("counters"):
-                    self.createCountersTable()
-                else:
-                    raise
-                counter = self.retrieveCounter(idpackage)
+        self.cursor.execute('SELECT counter FROM counters WHERE idpackage = (?)', (idpackage,))
+        mycounter = self.cursor.fetchone()
+        if mycounter:
+            counter = mycounter[0]
 
         self.storeInfoCache(idpackage,'retrieveCounter',int(counter))
         return int(counter)
@@ -2597,6 +2595,8 @@ class etpDatabase:
 
     def isCounterAvailable(self,counter, branch = None, branch_operator = "="):
 
+        if not self.doesTableExist("counters"):
+            self.createCountersTable()
         if not self.doesColumnInTableExist("counters","branch"):
             self.createCountersBranchColumn()
 
@@ -2961,6 +2961,8 @@ class etpDatabase:
 
     def listAllCounters(self, onlycounters = False, branch = None, branch_operator = "="):
 
+        if not self.doesTableExist("counters"):
+            self.createCountersTable()
         if not self.doesColumnInTableExist("counters","branch"):
             self.createCountersBranchColumn()
 
