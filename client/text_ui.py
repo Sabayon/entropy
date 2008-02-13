@@ -703,7 +703,6 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 
         if (lookForOrphanedPackages):
             choosenRemovalQueue = []
-            print_info(red(" @@ ")+blue("Calculating..."))
             choosenRemovalQueue = Equo.retrieveRemovalQueue(plainRemovalQueue, deep = deep)
             if choosenRemovalQueue:
                 print_info(red(" @@ ")+blue("This is the new removal queue:"))

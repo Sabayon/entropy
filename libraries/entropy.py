@@ -1348,9 +1348,8 @@ class EquoInterface(TextInterface):
                 return cached
 
         dependscache = set()
-        dependsOk = False
         treeview = set(idpackages)
-        treelevel = idpackages[:]
+        treelevel = set(idpackages)
         tree = {}
         treedepth = 0 # I start from level 1 because level 0 is idpackages itself
         tree[treedepth] = set(idpackages)
@@ -1360,7 +1359,7 @@ class EquoInterface(TextInterface):
         self.clientDbconn.retrieveDepends(idpackages[0])
         count = 0
 
-        while (not dependsOk):
+        while 1:
             treedepth += 1
             tree[treedepth] = set()
             for idpackage in treelevel:
@@ -1371,51 +1370,47 @@ class EquoInterface(TextInterface):
 
                 systempkg = self.clientDbconn.isSystemPackage(idpackage)
                 if (idpackage in dependscache) or systempkg:
-                    try:
-                        while 1: treeview.remove(idpackage)
-                    except:
-                        pass
+                    if idpackage in treeview:
+                        treeview.remove(idpackage)
                     continue
 
                 # obtain its depends
                 depends = self.clientDbconn.retrieveDepends(idpackage)
                 # filter already satisfied ones
-                depends = [x for x in depends if x not in list(monotree) and not self.clientDbconn.isSystemPackage(x)]
-                if (depends): # something depends on idpackage
+                depends = [x for x in depends if x not in monotree and not self.clientDbconn.isSystemPackage(x)]
+                if depends: # something depends on idpackage
                     for x in depends:
                         if x not in tree[treedepth]:
                             tree[treedepth].add(x)
                             monotree.add(x)
                             treeview.add(x)
                 elif deep: # if deep, grab its dependencies and check
-                    mydeps = set(self.clientDbconn.retrieveDependencies(idpackage))
-                    _mydeps = set()
-                    for x in mydeps:
+
+                    mydeps = set()
+                    for x in self.clientDbconn.retrieveDependencies(idpackage):
                         match = self.clientDbconn.atomMatch(x)
-                        if match and match[1] == 0:
-                            _mydeps.add(match[0])
-                    mydeps = _mydeps
+                        if match[0] != -1:
+                            mydeps.add(match[0])
+
                     # now filter them
-                    mydeps = [x for x in mydeps if x not in list(monotree) and not self.clientDbconn.isSystemPackage(x)]
+                    mydeps = [x for x in mydeps if x not in monotree and (not self.clientDbconn.isSystemPackage(x))]
                     for x in mydeps:
                         mydepends = self.clientDbconn.retrieveDepends(x)
-                        mydepends = [y for y in mydepends if y not in list(monotree)]
-                        if (not mydepends):
+                        mydepends = set([y for y in mydepends if y not in monotree])
+                        if not mydepends:
                             tree[treedepth].add(x)
                             monotree.add(x)
                             treeview.add(x)
 
                 dependscache.add(idpackage)
-                try:
-                    while 1: treeview.remove(idpackage)
-                except:
-                    pass
+                if idpackage in treeview:
+                    treeview.remove(idpackage)
 
-            treelevel = list(treeview)[:]
-            if (not treelevel):
+            treelevel = treeview.copy()
+            if not treelevel:
                 if not tree[treedepth]:
                     del tree[treedepth] # probably the last one is empty then
-                dependsOk = True
+                break
 
         newtree = tree.copy() # tree list
         if (tree):
