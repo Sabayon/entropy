@@ -46,14 +46,14 @@ import dumpTools
    @output: database class instance
    NOTE: if you are interested using it client side, please USE equoTools.Equo() class instead
 '''
-def openClientDatabase(xcache = True, generate = False, indexing = True):
+def openClientDatabase(xcache = True, generate = False, indexing = True, OutputInterface = Text):
     # extra check for directory existance
     if not os.path.isdir(os.path.dirname(etpConst['etpdatabaseclientfilepath'])):
         os.makedirs(os.path.dirname(etpConst['etpdatabaseclientfilepath']))
     if (not generate) and (not os.path.isfile(etpConst['etpdatabaseclientfilepath'])):
         raise exceptionTools.SystemDatabaseError("SystemDatabaseError: system database not found. Either does not exist or corrupted.")
     else:
-        conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = etpConst['clientdbid'], xcache = xcache, indexing = indexing)
+        conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = etpConst['clientdbid'], xcache = xcache, indexing = indexing, OutputInterface = OutputInterface)
         # validate database
         if not generate:
             conn.validateDatabase()
@@ -75,14 +75,14 @@ def openClientDatabase(xcache = True, generate = False, indexing = True):
    @description: open the entropy server database and returns the pointer. This function must be used only by reagent or activator
    @output: database class instance
 '''
-def openServerDatabase(readOnly = True, noUpload = True):
+def openServerDatabase(readOnly = True, noUpload = True, OutputInterface = Text):
     if not os.path.isdir(os.path.dirname(etpConst['etpdatabasefilepath'])):
         try:
             os.remove(os.path.dirname(etpConst['etpdatabasefilepath']))
         except OSError:
             pass
         os.makedirs(os.path.dirname(etpConst['etpdatabasefilepath']))
-    conn = etpDatabase(readOnly = readOnly, dbFile = etpConst['etpdatabasefilepath'], noUpload = noUpload)
+    conn = etpDatabase(readOnly = readOnly, dbFile = etpConst['etpdatabasefilepath'], noUpload = noUpload, OutputInterface = OutputInterface)
     # verify if we need to update the database to sync with portage updates, we just ignore being readonly in the case
     if not etpConst['treeupdatescalled']:
         # sometimes, when filling a new server db, we need to avoid tree updates
@@ -94,16 +94,16 @@ def openServerDatabase(readOnly = True, noUpload = True):
         if valid:
             conn.serverUpdatePackagesData()
         else:
-            Text.updateProgress(red("Entropy database is probably empty. If you don't agree with what I'm saying, then it's probably corrupted! I won't stop you here btw..."), importance = 1, type = "info", header = red(" * "))
+            OutputInterface.updateProgress(red("Entropy database is probably empty. If you don't agree with what I'm saying, then it's probably corrupted! I won't stop you here btw..."), importance = 1, type = "info", header = red(" * "))
     return conn
 
 '''
    @description: open a generic client database and returns the pointer.
    @output: database class instance
 '''
-def openGenericDatabase(dbfile, dbname = None, xcache = False, indexing = True, readOnly = False):
+def openGenericDatabase(dbfile, dbname = None, xcache = False, indexing = True, readOnly = False, OutputInterface = Text):
     if dbname == None: dbname = "generic"
-    conn = etpDatabase(readOnly = readOnly, dbFile = dbfile, clientDatabase = True, dbname = dbname, xcache = xcache, indexing = indexing)
+    conn = etpDatabase(readOnly = readOnly, dbFile = dbfile, clientDatabase = True, dbname = dbname, xcache = xcache, indexing = indexing, OutputInterface = OutputInterface)
     return conn
 
 def backupClientDatabase():
@@ -120,9 +120,9 @@ def backupClientDatabase():
         return dest
     return ""
 
-class etpDatabase(TextInterface):
+class etpDatabase:
 
-    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = etpConst['serverdbid'], indexing = True):
+    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = etpConst['serverdbid'], indexing = True, OutputInterface = Text):
 
         self.readOnly = readOnly
         self.noUpload = noUpload
@@ -135,6 +135,8 @@ class etpDatabase(TextInterface):
         if etpConst['uid'] > 0: # forcing since we won't have write access to db
             self.indexing = False
         self.dbFile = dbFile
+        self.updateProgress = OutputInterface.updateProgress
+        self.askQuestion = OutputInterface.askQuestion
 
         # no caching for non root and server connections
         if (self.dbname == etpConst['serverdbid']) or (etpConst['uid'] != 0):
@@ -1681,8 +1683,12 @@ class etpDatabase(TextInterface):
             pass
         return counter
 
+    def getApi(self):
+        self.cursor.execute('SELECT max(etpapi) FROM baseinfo')
+        return self.cursor.fetchone()[0]
+
     def getIDPackage(self, atom, branch = etpConst['branch']):
-        self.cursor.execute('SELECT "IDPACKAGE" FROM baseinfo WHERE atom = "'+atom+'" AND branch = "'+branch+'"')
+        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = "'+atom+'" AND branch = "'+branch+'"')
         idpackage = -1
         idpackage = self.cursor.fetchone()
         if idpackage:
@@ -1691,17 +1697,14 @@ class etpDatabase(TextInterface):
             idpackage = -1
         return idpackage
 
-    def getIDPackageFromFileInBranch(self, file, branch = "unstable"):
-        self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
-        idpackages = []
-        for row in self.cursor:
-            idpackages.append(row[0])
-        result = []
-        for pkg in idpackages:
-            self.cursor.execute('SELECT idpackage FROM baseinfo WHERE idpackage = "'+str(pkg)+'" and branch = "'+branch+'"')
-            for row in self.cursor:
-                result.append(row[0])
-        return result
+    def getIDPackageFromDownload(self, file, branch = etpConst['branch']):
+        self.cursor.execute('SELECT baseinfo.idpackage FROM content,baseinfo WHERE content.file = (?) and baseinfo.branch = (?)', (file,branch,))
+        idpackage = self.cursor.fetchone()
+        if idpackage:
+            idpackage = idpackage[0]
+        else:
+            idpackage = -1
+        return idpackage
 
     def getIDPackagesFromFile(self, file):
         self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
@@ -2935,14 +2938,14 @@ class etpDatabase(TextInterface):
 
         results = self.cursor.fetchall()
 
-	return results
+        return results
 
     def listAllPackages(self):
-	self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo')
-	return self.cursor.fetchall()
+        self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo')
+        return self.cursor.fetchall()
 
     def listAllInjectedPackages(self, justFiles = False):
-	self.cursor.execute('SELECT idpackage FROM injected')
+        self.cursor.execute('SELECT idpackage FROM injected')
         injecteds = self.fetchall2set(self.cursor.fetchall())
         results = set()
         # get download
@@ -3131,6 +3134,126 @@ class etpDatabase(TextInterface):
         if rslt == None:
             raise exceptionTools.SystemDatabaseError("SystemDatabaseError: table extrainfo not found. Either does not exist or corrupted.")
 
+    def checkDatabaseApi(self):
+
+        dbapi = self.getApi()
+        if dbapi > etpConst['etpapi']:
+            self.updateProgress(
+                                            red("Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as possible !"),
+                                            importance = 1,
+                                            type = "warning",
+                                            header = " * ! * ! * ! * "
+                            )
+
+    def doContentExtraction(self):
+
+        if not self.doesTableExist("packed_data"):
+            return
+
+        dbconn.cursor.execute('select data from packed_data where idpack = 1')
+        data = dbconn.cursor.fetchone()
+
+        if data == None:
+            return
+
+        import bz2
+        # write to disk
+        path = entropyTools.getRandomTempFile()
+        f = open(path,"wb")
+        f.write(data)
+        f.flush()
+        f.close()
+
+        # read and fill back
+        compressed_file = bz2.BZ2File(path,"r")
+        count = 0
+        self.cursor.execute('DELETE FROM content')
+        line = tuple(compressed_file.readline().strip().split("\t"))
+        while 1:
+            count += 1
+            if count%100 == 0:
+                self.updateProgress(
+                                                red("Unpacking database TOC ")+"["+blue(str(count))+"]",
+                                                importance = 0,
+                                                type = "info",
+                                                header = "\t",
+                                                back = True
+                                )
+            self.cursor.execute('INSERT INTO content VALUES (?,?,?)', line )
+            line = tuple(compressed_file.readline().strip().split("\t"))
+            if len(line) < 3:
+                break
+        compressed_file.close()
+        self.commitChanges()
+        self.cursor.execute('DELETE FROM packed_data WHERE idpack = 1;')
+        self.cursor.execute('VACUUM')
+        os.remove(path)
+
+    def doContentCompression(self):
+
+        import bz2
+        path = entropyTools.getRandomTempFile()
+        compressed_file = bz2.BZ2File(path,"w")
+
+        ### Compress data
+        self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+        self.cursor.execute('SELECT * FROM content')
+        row = self.cursor.fetchone()
+        count = 0
+        while row:
+            count += 1
+            if count%100 == 0:
+                self.updateProgress(
+                                                red("Packing database TOC ")+"["+blue(str(count))+"]",
+                                                importance = 0,
+                                                type = "info",
+                                                back = True
+                                )
+            try:
+                for item in row:
+                    if type(item) is int:
+                        compressed_file.write(str(item)+"\t")
+                    else:
+                        compressed_file.write(str(item.encode('raw_unicode_escape'))+"\t")
+                compressed_file.write("\n")
+            except UnicodeEncodeError:
+                self.updateProgress(
+                                                red("Error on item: %s" % (item,)),
+                                                importance = 0,
+                                                type = "info",
+                                                back = True
+                                )
+                raise
+            row = self.cursor.fetchone()
+
+        compressed_file.close()
+
+        self.updateProgress(
+                                        red("Flusing database TOC into database..."),
+                                        importance = 0,
+                                        type = "info"
+                        )
+
+        # now write to table
+        if not self.doesTableExist("packed_data"):
+            self.CreatePackedDataTable()
+
+        self.cursor.execute("DELETE FROM packed_data WHERE idpack = 1")
+        f = open(path,"rb")
+        f.seek(0,2)
+        size = f.tell()
+        f.seek(0)
+        data = buffer(f.read(size))
+        f.flush()
+        f.close()
+        self.cursor.execute('INSERT INTO packed_data VALUES (?,?)', (1,data,))
+
+        ### Delete from db
+        self.cursor.execute('DELETE FROM CONTENT')
+        self.cursor.execute('VACUUM')
+        self.commitChanges()
+        os.remove(path)
+
     # FIXME: this is only compatible with SQLITE
     def doesTableExist(self, table):
         self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table",table))
@@ -3273,6 +3396,9 @@ class etpDatabase(TextInterface):
     def createCountersTable(self):
         self.cursor.execute('DROP TABLE IF EXISTS counters;')
         self.cursor.execute('CREATE TABLE counters ( counter INTEGER, idpackage INTEGER PRIMARY KEY, branch VARCHAR );')
+
+    def CreatePackedDataTable(self):
+        self.cursor.execute('CREATE TABLE packed_data ( idpack INTEGER PRIMARY KEY, data BLOB );')
 
     def createAllIndexes(self):
         self.createContentIndex()

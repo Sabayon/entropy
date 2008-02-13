@@ -749,29 +749,29 @@ def dep_getcpv(mydep):
 def dep_getslot(dep):
     """
     Retrieve the slot on a depend.
-    
+
     Example usage:
 	>>> dep_getslot('app-misc/test:3')
 	'3'
-    	
+
     @param mydep: The depstring to retrieve the slot of
     @type dep: String
     @rtype: String
     @return: The slot
     """
-    
+
     colon = dep.rfind(":")
     if colon != -1:
 	mydep = dep[colon+1:]
 	rslt = remove_tag(mydep)
 	return rslt
-    
+
     return None
 
 def remove_slot(mydep):
     colon = mydep.rfind(":")
     if colon != -1:
-	mydep = mydep[:colon]
+        mydep = mydep[:colon]
     return mydep
 
 # input must be a valid package version or a full atom
@@ -1153,14 +1153,14 @@ def spliturl(url):
 
 # tar.bz2 compress function...
 def compressTarBz2(storepath,pathtocompress):
-    
+
     cmd = "tar cjf "+storepath+" ."
     rc = spawnCommand("cd "+pathtocompress+" && "+cmd, "&> /dev/null")
     return rc
 
 # OLD tar.bz2 uncompress function...
 def compat_uncompressTarBz2(filepath, extractPath = None):
-    
+
     cmd = "tar xjf "+filepath+" -C "+extractPath+" &> /dev/null"
     rc = os.system(cmd)
     if rc != 0:
@@ -1256,21 +1256,29 @@ def bytesIntoHuman(bytes):
 def hideFTPpassword(uri):
     ftppassword = uri.split("@")[:len(uri.split("@"))-1]
     if len(ftppassword) > 1:
-	ftppassword = '@'.join(ftppassword)
-	ftppassword = ftppassword.split(":")[len(ftppassword.split(":"))-1]
-	if (ftppassword == ""):
-	    return uri
+        ftppassword = '@'.join(ftppassword)
+        ftppassword = ftppassword.split(":")[len(ftppassword.split(":"))-1]
+        if (ftppassword == ""):
+            return uri
     else:
-	ftppassword = ftppassword[0]
-	ftppassword = ftppassword.split(":")[len(ftppassword.split(":"))-1]
-	if (ftppassword == ""):
-	    return uri
+        ftppassword = ftppassword[0]
+        ftppassword = ftppassword.split(":")[len(ftppassword.split(":"))-1]
+        if (ftppassword == ""):
+            return uri
 
     newuri = uri.replace(ftppassword,"xxxxxxxx")
     return newuri
 
 def getFileUnixMtime(path):
     return os.path.getmtime(path)
+
+def getRandomTempFile():
+    if not os.path.isdir(etpConst['packagestmpdir']):
+        os.makedirs(etpConst['packagestmpdir'])
+    path = os.path.join(etpConst['packagestmpdir'],"temp_"+str(getRandomNumber()))
+    while os.path.isfile(path):
+        path = os.path.join(etpConst['packagestmpdir'],"temp_"+str(getRandomNumber()))
+    return path
 
 def getFileTimeStamp(path):
     from datetime import datetime
@@ -1281,8 +1289,8 @@ def getFileTimeStamp(path):
     humantime = str(humantime)
     outputtime = ""
     for char in humantime:
-	if char != "-" and char != " " and char != ":":
-	    outputtime += char
+        if char != "-" and char != " " and char != ":":
+            outputtime += char
     return outputtime
 
 def convertUnixTimeToMtime(unixtime):

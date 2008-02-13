@@ -1217,7 +1217,7 @@ def downloadPackageFromMirror(uri,pkgfile,branch):
 	    return None
         # check md5
 	dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
-	idpackage = dbconn.getIDPackageFromFileInBranch(pkgfile,branch)
+	idpackage = dbconn.getIDPackageFromDownload(pkgfile,branch)
 	storedmd5 = dbconn.retrieveDigest(idpackage)
 	dbconn.closeDB()
 	print_info(red("  * Checking MD5 of ")+brown(pkgfile)+red(": should be ")+bold(storedmd5), back = True)

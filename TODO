@@ -1,5 +1,5 @@
 TODO list:
-  - rewrite switch branch function or add a new one
+  - improve db compression by supporting compressed blob
   - split RDEPEND and PDEPEND
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
@@ -15,8 +15,8 @@ TODO list:
     - handle config files updates interface (*)
     - handle multi repos in "available" menu (*)
     - add masking interface (*)
-    - add branch switching menu (for upgrades)
-    - wrap root password request
+    - add branch switching menu (for upgrades) (*)
+    - wrap root password request (*)
 
     - handle queue errors
     - handle config files stuff

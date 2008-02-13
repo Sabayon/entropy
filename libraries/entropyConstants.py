@@ -315,7 +315,7 @@ else:
 
 etpSys = {
     'archs': ["x86", "amd64"],
-    'api': '1',
+    'api': '2',
     'arch': ETP_ARCH_CONST,
     'rootdir': "",
     'maxthreads': 100,

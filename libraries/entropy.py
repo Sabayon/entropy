@@ -125,7 +125,7 @@ class EquoInterface(TextInterface):
         self.repoDbCache.clear()
 
     def openClientDatabase(self):
-        self.clientDbconn = self.databaseTools.openClientDatabase(indexing = self.indexing, generate = self.noclientdb, xcache = self.xcache)
+        self.clientDbconn = self.databaseTools.openClientDatabase(indexing = self.indexing, generate = self.noclientdb, xcache = self.xcache, OutputInterface = self)
         return self.clientDbconn # just for reference
 
     def clientDatabaseSanityCheck(self):
@@ -164,6 +164,7 @@ class EquoInterface(TextInterface):
     def openRepositoryDatabase(self, repoid):
         if not self.repoDbCache.has_key((repoid,etpConst['systemroot'])):
             dbconn = self.loadRepositoryDatabase(repoid, xcache = self.xcache, indexing = self.indexing)
+            dbconn.checkDatabaseApi()
             self.repoDbCache[(repoid,etpConst['systemroot'])] = dbconn
             return dbconn
         else:
@@ -184,7 +185,7 @@ class EquoInterface(TextInterface):
                 self.updateProgress(darkred("Repository %s hasn't been downloaded yet !!!") % (repositoryName,), importance = 2, type = "warning")
                 repo_error_messages_cache.add(repositoryName)
             raise exceptionTools.RepositoryError("RepositoryError: repository %s hasn't been downloaded yet." % (repositoryName,))
-        conn = self.databaseTools.etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = etpConst['dbnamerepoprefix']+repositoryName, xcache = xcache, indexing = indexing)
+        conn = self.databaseTools.etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = etpConst['dbnamerepoprefix']+repositoryName, xcache = xcache, indexing = indexing, OutputInterface = self)
         # initialize CONFIG_PROTECT
         if (etpRepositories[repositoryName]['configprotect'] == None) or \
             (etpRepositories[repositoryName]['configprotectmask'] == None):
@@ -3871,6 +3872,7 @@ class RepoInterface:
                                                 back = True
                                 )
                 dbconn = self.Entropy.openRepositoryDatabase(repo)
+                dbconn.doContentExtraction()
                 dbconn.createAllIndexes()
                 try: # client db can be absent
                     self.Entropy.clientDbconn.createAllIndexes()
