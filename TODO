@@ -1,5 +1,4 @@
 TODO list:
-  - improve db compression by supporting compressed blob
   - split RDEPEND and PDEPEND
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)

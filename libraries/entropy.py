@@ -1492,7 +1492,7 @@ class EquoInterface(TextInterface):
             maxlen = len(idpackages)
             for idpackage in idpackages:
                 count += 1
-                self.updateProgress("Calculating updates for %s" % (repo,), importance = 0, type = "info", back = True, header = "::", count = (count,maxlen), percent = True, footer = " ::")
+                self.updateProgress("Calculating available packages for %s" % (repo,), importance = 0, type = "info", back = True, header = "::", count = (count,maxlen), percent = True, footer = " ::")
                 # ignore masked packages
                 idpackage = dbconn.idpackageValidator(idpackage)
                 if idpackage == -1:
