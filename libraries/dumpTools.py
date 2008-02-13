@@ -32,24 +32,19 @@ except ImportError:
 '''
 def dumpobj(name, object, completePath = False):
     while 1: # trap ctrl+C
-        try:
-            if completePath:
-                dmpfile = name
-            else:
-                dump_path = os.path.join(etpConst['dumpstoragedir'],name)
-                dump_dir = os.path.dirname(dump_path)
-                #dump_name = os.path.basename(dump_path)
-                if not os.path.isdir(dump_dir):
-                    os.makedirs(dump_dir)
-                dmpfile = dump_path+".dmp"
-            f = open(dmpfile,"wb")
-            pickle.dump(object,f)
-            f.flush()
-            f.close()
-        except IOError, e:
-            raise IOError,"can't write to file "+name
-        except:
-            raise
+        if completePath:
+            dmpfile = name
+        else:
+            dump_path = os.path.join(etpConst['dumpstoragedir'],name)
+            dump_dir = os.path.dirname(dump_path)
+            #dump_name = os.path.basename(dump_path)
+            if not os.path.isdir(dump_dir):
+                os.makedirs(dump_dir)
+            dmpfile = dump_path+".dmp"
+        f = open(dmpfile,"wb")
+        pickle.dump(object,f)
+        f.flush()
+        f.close()
         break
 
 
@@ -59,22 +54,26 @@ def dumpobj(name, object, completePath = False):
    @output: object or, if error -1
 '''
 def loadobj(name, completePath = False):
-    if completePath:
-        dmpfile = name
-    else:
-        dump_path = os.path.join(etpConst['dumpstoragedir'],name)
-        #dump_dir = os.path.dirname(dump_path)
-        #dump_name = os.path.basename(dump_path)
-        dmpfile = dump_path+".dmp"
-    if os.path.isfile(dmpfile):
-	try:
-            f = open(dmpfile,"rb")
-            x = pickle.load(f)
-            f.close()
-            return x
-	except pickle.UnpicklingError:
-	    os.remove(dmpfile)
-	    raise SyntaxError,"cannot load object"
+    while 1:
+        if completePath:
+            dmpfile = name
+        else:
+            dump_path = os.path.join(etpConst['dumpstoragedir'],name)
+            #dump_dir = os.path.dirname(dump_path)
+            #dump_name = os.path.basename(dump_path)
+            dmpfile = dump_path+".dmp"
+        if os.path.isfile(dmpfile):
+            try:
+                f = open(dmpfile,"rb")
+                x = pickle.load(f)
+                f.close()
+                return x
+            except pickle.UnpicklingError, ValueError:
+                try:
+                    os.remove(dmpfile)
+                except OSError:
+                    pass
+        break
 
 def removeobj(name):
     if os.path.isfile(etpConst['dumpstoragedir']+"/"+name+".dmp"):
