@@ -1490,6 +1490,7 @@ class etpDatabase:
 
     def contentDiff(self, idpackage, content):
         self.checkReadOnly()
+        self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
         # create a random table and fill
         randomtable = "cdiff"+str(entropyTools.getRandomNumber())
         self.cursor.execute('DROP TABLE IF EXISTS '+randomtable)

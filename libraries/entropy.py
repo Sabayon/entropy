@@ -4720,6 +4720,10 @@ class TriggerInterface:
         if self.pkgdata['trigger']:
             functions.add('call_ext_postinstall')
 
+        # equo purge cache
+        if self.pkgdata['category']+"/"+self.pkgdata['name'] == "app-admin/equo":
+            functions.add("purgecache")
+
         # triggers that are not needed when gentoo-compat is enabled
         if not etpConst['gentoo-compat']:
 
@@ -4966,6 +4970,19 @@ class TriggerInterface:
         os.remove(triggerfile)
         return my_ext_status
 
+    def trigger_purgecache(self):
+        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Purging Equo cache...")
+        self.Entropy.updateProgress(
+                                brown(" Remember: It is always better to leave Equo updates isolated."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        self.Entropy.updateProgress(
+                                brown(" Purging Equo cache..."),
+                                importance = 0,
+                                header = red("   ##")
+                            )
+        self.Entropy.purge_cache(False)
 
     def trigger_fontconfig(self):
         fontdirs = set()
