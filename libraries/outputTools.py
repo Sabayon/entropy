@@ -332,9 +332,11 @@ class TextInterface:
         data['type'] = type
         data['count'] = count[:]
         data['percent'] = percent
-        task = self.entropyTools.parallelTask(self.__TextInterface_updateText, data)
-        task.parallel_wait()
-        task.start()
+        #task = self.entropyTools.parallelTask(self.__TextInterface_updateText, data)
+        #task.parallel_wait()
+        #task.start()
+        self.__TextInterface_updateText(data)
+
         del data
 
 

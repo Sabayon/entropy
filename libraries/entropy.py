@@ -461,7 +461,9 @@ class EquoInterface(TextInterface):
             ldpath = ldpath.encode(sys.getfilesystemencoding())
             for currentdir,subdirs,files in os.walk(etpConst['systemroot']+ldpath):
                 for item in files:
-                    filepath = currentdir+"/"+item
+                    filepath = os.path.join(currentdir,item)
+                    if filepath in etpConst['libtest_files_blacklist']:
+                        continue
                     if os.access(filepath,os.X_OK):
                         executables.add(filepath[len(etpConst['systemroot']):])
 
@@ -555,6 +557,9 @@ class EquoInterface(TextInterface):
                     packages = rdbconn.searchBelongs(file = "%"+lib, like = True, branch = etpConst['branch'])
                     if packages:
                         for idpackage in packages:
+                            key, slot = rdbconn.retrieveKeySlot(idpackage)
+                            if key in etpConst['libtest_blacklist']:
+                                continue
                             # retrieve content and really look if library is in ldpath
                             mycontent = rdbconn.retrieveContent(idpackage)
                             matching_libs = [x for x in mycontent if x.endswith(lib) and (os.path.dirname(x) in ldpaths)]

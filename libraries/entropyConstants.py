@@ -582,6 +582,16 @@ def initConfig_entropyConstants(rootdir):
                                     '/var/lib/scrollkeeper', '/usr/src', '/etc/skel', '/etc/ssh', '/etc/ssl', '/var/run', '/var/spool/cron', '/var/lib/init.d',
                                     '/lib/modules', '/etc/env.d', '/etc/gconf', '/etc/runlevels', '/lib/splash/cache', '/usr/share/mime', '/etc/portage'
         ],
+        'libtest_blacklist': [
+            'www-client/mozilla-firefox-bin',
+            'dev-java/blackdown-jdk',
+        ],
+        'libtest_files_blacklist': [
+            '/usr/lib64/openmotif-2.2/libMrm.so.3',
+            '/usr/lib64/openmotif-2.2/libXm.so.3',
+            '/usr/lib/openmotif-2.2/libMrm.so.3',
+            '/usr/lib/openmotif-2.2/libXm.so.3'
+        ],
         'officialrepositoryid': "sabayonlinux.org", # our official repository name
         'conntestlink': "http://www.google.com", 
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|", # tag to append to .tbz2 file before entropy database (must be 32bytes)
