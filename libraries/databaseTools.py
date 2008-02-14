@@ -2533,26 +2533,16 @@ class etpDatabase:
             return -1
         return result[0]
 
-    def isFileAvailable(self, file, extended = False):
+    def isFileAvailable(self, myfile):
 
         #c_hash = str( hash("isFileAvailable") + hash(file) + hash(extended) )
         #cache = self.fetchSearchCache(c_hash)
         #if cache != None: return cache
 
-        if extended:
-            self.cursor.execute('SELECT * FROM content WHERE file = (?)', (file,))
-        else:
-            self.cursor.execute('SELECT idpackage FROM content WHERE file = (?)', (file,))
+        self.cursor.execute('SELECT idpackage FROM content WHERE file = (?)', (myfile,))
         result = self.cursor.fetchone()
         rc = False
-        if not result:
-            if extended:
-                rc = False,()
-            else:
-                rc = False
-        if extended:
-            rc = True,result
-        else:
+        if result:
             rc = True
 
         #self.storeSearchCache(c_hash,rc)
