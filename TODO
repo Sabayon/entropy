@@ -17,8 +17,9 @@ TODO list:
     - add masking interface (*)
     - add branch switching menu (for upgrades) (*)
     - wrap root password request (*)
+    - handle queue errors (*)
     - Popularity feature
-    - handle queue errors
+
 
 Project Status:
 - reagent: complete.

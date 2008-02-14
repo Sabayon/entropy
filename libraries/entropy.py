@@ -699,7 +699,6 @@ class EquoInterface(TextInterface):
                             hash(tuple(etpRepositories.keys())) + \
                             m_hash + r_hash + s_hash
                         )
-            print c_hash
             cached = self.dumpTools.loadobj(etpCache['atomMatch']+c_hash)
             if cached != None:
                 return cached
