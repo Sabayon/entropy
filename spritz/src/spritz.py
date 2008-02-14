@@ -21,7 +21,7 @@
 import sys, os, pty
 import logging
 import traceback
-
+import commands
 
 # Entropy Imports
 sys.path.append("../../libraries")
@@ -67,9 +67,9 @@ class SpritzController(Controller):
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
-        sys.stdout = self.output
-        sys.stderr = self.output
-        sys.stdin = self.input
+        #sys.stdout = self.output
+        #sys.stderr = self.output
+        #sys.stdin = self.input
 
 
     def quit(self, widget=None, event=None ):
@@ -103,6 +103,46 @@ class SpritzController(Controller):
                 idx = etpRepositoriesOrder.index(repoid)
                 return idx, repoid, repodata
         return None, None, None
+
+    def runEditor(self, filename, delete = False):
+        cmd = ' '.join([self.fileEditor,filename])
+        task = self.Equo.entropyTools.parallelTask(self.__runEditor, {'cmd': cmd, 'delete': delete,'file': filename})
+        task.start()
+
+    def __runEditor(self, data):
+        os.system(data['cmd'])
+        delete = data['delete']
+        if delete and os.path.isfile(data['file']):
+            try:
+                os.remove(data['file'])
+            except OSError:
+                pass
+
+    def __get_Edit_filename(self):
+        selection = self.filesView.view.get_selection()
+        model, iterator = selection.get_selected()
+        if model != None and iterator != None:
+            destination = model.get_value( iterator, 1 )
+            source = model.get_value( iterator, 0 )
+            source = os.path.join(os.path.dirname(destination),source)
+            return source, destination
+        return None,None
+
+
+    def on_filesEdit_clicked( self, widget ):
+        source, dest = self.__get_Edit_filename()
+        if source == None:
+            return True
+        self.runEditor(source)
+
+    def on_filesViewChanges_clicked( self, widget ):
+        source, dest = self.__get_Edit_filename()
+        if source == None:
+            return True
+        randomfile = self.Equo.entropyTools.getRandomTempFile()+".diff"
+        diffcmd = "diff -Nu "+dest+" "+source+" > "+randomfile
+        os.system(diffcmd)
+        self.runEditor(randomfile, delete = True)
 
     def on_shiftUp_clicked( self, widget ):
         idx, repoid, iterdata = self.__getSelectedRepoIndex()
@@ -623,6 +663,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.lastPkgPB = "updates"
         self.etpbase.setFilter(filters.yumexFilter.processFilters)
 
+        self.setupEditor()
         # Setup GUI
         self.setupGUI()
         self.setPage("packages")
@@ -638,6 +679,37 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.console.set_pty(self.pty[0])
         # setup pty
 
+    def setupEditor(self):
+
+        paths = self.Equo.entropyTools.collectLinkerPaths()
+        pathenv = os.getenv("PATH")
+        for path in paths:
+            pathenv += ":"+path
+        os.environ['PATH'] = pathenv
+
+        self.fileEditor = '/usr/bin/xterm -e $EDITOR'
+        de_session = os.getenv('DESKTOP_SESSION')
+        path = os.getenv('PATH').split(":")
+        # FIXME: disabled for now because it needs a properly configured environment
+        #if os.access("/usr/bin/xdg-open",os.X_OK):
+        #    self.fileEditor = "/usr/bin/xdg-open"
+        if de_session.find("kde") != -1:
+            for item in path:
+                itempath = os.path.join(item,'kwrite')
+                itempath2 = os.path.join(item,'kedit')
+                itempath3 = os.path.join(item,'kate')
+                if os.access(itempath,os.X_OK):
+                    self.fileEditor = itempath
+                    break
+                elif os.access(itempath2,os.X_OK):
+                    self.fileEditor = itempath2
+                    break
+                elif os.access(itempath3,os.X_OK):
+                    self.fileEditor = itempath3
+                    break
+        else:
+            if os.access('/usr/bin/gedit',os.X_OK):
+                self.fileEditor = '/usr/bin/gedit'
 
     def startWorking(self):
         self.isWorking = True
@@ -929,6 +1001,7 @@ class ProcessGtkEventsThread(Thread):
 
     def run(self):
         while self.__quit == False:
+            import time
             while not self.__active.isSet():
                 self.__active.wait()
             time.sleep(0.1)

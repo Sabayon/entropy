@@ -1,5 +1,5 @@
 TODO list:
-  - split RDEPEND and PDEPEND
+  - lzma compression for the database?
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
      [] complete reagent spm interface
@@ -8,6 +8,7 @@ TODO list:
   - Community repositories
   - separate packages by license restrictions
   - GLSAs for overlays?
+  - split RDEPEND and PDEPEND
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
