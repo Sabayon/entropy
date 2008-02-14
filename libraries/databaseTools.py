@@ -2378,7 +2378,10 @@ class etpDatabase:
 
     def retrieveContent(self, idpackage, extended = False, contentType = None):
 
-        c_hash = hash(extended)*2+hash(contentType)
+        c_hash = -4
+        if extended:
+            c_hash += 2
+        c_hash += hash(contentType)
         cache = self.fetchInfoCache(idpackage,'retrieveContent', extra_hash = c_hash)
         if cache != None: return cache
 
@@ -2506,9 +2509,9 @@ class etpDatabase:
         return True
 
     # This version is more specific and supports branches
-    def isSpecificPackageAvailable(self, pkgkey, branch):
+    def isSpecificPackageAvailable(self, pkgkey, branch, branch_operator = "="):
         pkgkey = entropyTools.removePackageOperators(pkgkey)
-        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?) AND branch = (?)', (pkgkey,branch,))
+        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?) AND branch '+branch_operator+' (?)', (pkgkey,branch,))
         result = self.cursor.fetchone()
         if not result:
             return False
@@ -2532,20 +2535,28 @@ class etpDatabase:
 
     def isFileAvailable(self, file, extended = False):
 
+        #c_hash = str( hash("isFileAvailable") + hash(file) + hash(extended) )
+        #cache = self.fetchSearchCache(c_hash)
+        #if cache != None: return cache
+
         if extended:
             self.cursor.execute('SELECT * FROM content WHERE file = (?)', (file,))
         else:
             self.cursor.execute('SELECT idpackage FROM content WHERE file = (?)', (file,))
         result = self.cursor.fetchone()
+        rc = False
         if not result:
             if extended:
-                return False,()
+                rc = False,()
             else:
-                return False
+                rc = False
         if extended:
-            return True,result
+            rc = True,result
         else:
-            return True
+            rc = True
+
+        #self.storeSearchCache(c_hash,rc)
+        return rc
 
     def isSourceAvailable(self,source):
         self.cursor.execute('SELECT idsource FROM sourcesreference WHERE source = "'+source+'"')
@@ -3625,13 +3636,17 @@ class etpDatabase:
 
     def atomMatchFetchCache(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter):
         if self.xcache:
+            m_hash = -2
+            if multiMatch: m_hash = 2
+            r_hash = -3
+            if packagesFilter: r_hash = 3
+            s_hash = -4
+            if caseSensitive: s_hash = 4
             c_hash = str(   hash(atom) + \
                             hash(matchSlot) + \
                             hash(matchTag) + \
-                            hash(multiMatch) + \
-                            hash(caseSensitive) + \
                             hash(tuple(matchBranches)) + \
-                            hash(packagesFilter)
+                            m_hash + r_hash + s_hash
                         )
             cached = dumpTools.loadobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash)
             if cached != None:
@@ -3639,13 +3654,17 @@ class etpDatabase:
 
     def atomMatchStoreCache(self, result, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter):
         if self.xcache:
+            m_hash = -2
+            if multiMatch: m_hash = 2
+            r_hash = -3
+            if packagesFilter: r_hash = 3
+            s_hash = -4
+            if caseSensitive: s_hash = 4
             c_hash = str(   hash(atom) + \
                             hash(matchSlot) + \
                             hash(matchTag) + \
-                            hash(multiMatch) + \
-                            hash(caseSensitive) + \
                             hash(tuple(matchBranches)) + \
-                            hash(packagesFilter)
+                            m_hash + r_hash + s_hash
                         )
             try:
                 dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash,result)

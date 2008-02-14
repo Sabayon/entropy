@@ -685,23 +685,21 @@ class EquoInterface(TextInterface):
 
         if self.xcache:
 
-            if multiMatch:
-                m_hash = 2
-            else:
-                m_hash = -2
-            if multiRepo:
-                r_hash = 3
-            else:
-                r_hash = -3
+            m_hash = -2
+            if multiMatch: m_hash = 2
+            r_hash = -3
+            if multiRepo: r_hash = 3
+            s_hash = -4
+            if caseSensitive: s_hash = 4
             c_hash = str(   hash(atom) + \
-                            hash(caseSensitive) + \
                             hash(str(matchSlot)) + \
                             hash(tuple(matchBranches)) + \
                             hash(packagesFilter) + \
                             hash(tuple(valid_repos)) + \
-                            hash(tuple(etpRepositories)) + \
-                            m_hash + r_hash
+                            hash(tuple(etpRepositories.keys())) + \
+                            m_hash + r_hash + s_hash
                         )
+            print c_hash
             cached = self.dumpTools.loadobj(etpCache['atomMatch']+c_hash)
             if cached != None:
                 return cached
