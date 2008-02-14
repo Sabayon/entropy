@@ -110,7 +110,7 @@ class SpritzController(Controller):
         task.start()
 
     def __runEditor(self, data):
-        os.system(data['cmd'])
+        os.system(data['cmd']+"&> /dev/null")
         delete = data['delete']
         if delete and os.path.isfile(data['file']):
             try:
@@ -122,22 +122,52 @@ class SpritzController(Controller):
         selection = self.filesView.view.get_selection()
         model, iterator = selection.get_selected()
         if model != None and iterator != None:
-            destination = model.get_value( iterator, 1 )
-            source = model.get_value( iterator, 0 )
+            identifier = model.get_value( iterator, 0 )
+            destination = model.get_value( iterator, 2 )
+            source = model.get_value( iterator, 1 )
             source = os.path.join(os.path.dirname(destination),source)
-            return source, destination
-        return None,None
+            return identifier, source, destination
+        return 0,None,None
 
+    def on_filesDelete_clicked( self, widget ):
+        identifier, source, dest = self.__get_Edit_filename()
+        if not identifier:
+            return True
+        self.Equo.FileUpdates.remove_file(identifier)
+        self.filesView.populate(self.Equo.FileUpdates.scandata)
+
+    def on_filesMerge_clicked( self, widget ):
+        identifier, source, dest = self.__get_Edit_filename()
+        if not identifier:
+            return True
+        self.Equo.FileUpdates.merge_file(identifier)
+        self.filesView.populate(self.Equo.FileUpdates.scandata)
+
+    def on_mergeFiles_clicked( self, widget ):
+        self.Equo.FileUpdates.scanfs(dcache = True)
+        keys = self.Equo.FileUpdates.scandata.keys()
+        for key in keys:
+            self.Equo.FileUpdates.merge_file(key)
+            # it's cool watching it runtime
+            self.filesView.populate(self.Equo.FileUpdates.scandata)
+
+    def on_deleteFiles_clicked( self, widget ):
+        self.Equo.FileUpdates.scanfs(dcache = True)
+        keys = self.Equo.FileUpdates.scandata.keys()
+        for key in keys:
+            self.Equo.FileUpdates.remove_file(key)
+            # it's cool watching it runtime
+            self.filesView.populate(self.Equo.FileUpdates.scandata)
 
     def on_filesEdit_clicked( self, widget ):
-        source, dest = self.__get_Edit_filename()
-        if source == None:
+        identifier, source, dest = self.__get_Edit_filename()
+        if not identifier:
             return True
         self.runEditor(source)
 
     def on_filesViewChanges_clicked( self, widget ):
-        source, dest = self.__get_Edit_filename()
-        if source == None:
+        identifier, source, dest = self.__get_Edit_filename()
+        if not identifier:
             return True
         randomfile = self.Equo.entropyTools.getRandomTempFile()+".diff"
         diffcmd = "diff -Nu "+dest+" "+source+" > "+randomfile
@@ -681,18 +711,25 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
     def setupEditor(self):
 
-        paths = self.Equo.entropyTools.collectLinkerPaths()
         pathenv = os.getenv("PATH")
-        for path in paths:
-            pathenv += ":"+path
+        if os.path.isfile("/etc/profile.env"):
+            f = open("/etc/profile.env")
+            env_file = f.readlines()
+            for line in env_file:
+                line = line.strip()
+                if line.startswith("export PATH='"):
+                    line = line[len("export PATH='"):]
+                    line = line.rstrip("'")
+                    for path in line.split(":"):
+                        pathenv += ":"+path
+                    break
         os.environ['PATH'] = pathenv
 
         self.fileEditor = '/usr/bin/xterm -e $EDITOR'
         de_session = os.getenv('DESKTOP_SESSION')
         path = os.getenv('PATH').split(":")
-        # FIXME: disabled for now because it needs a properly configured environment
-        #if os.access("/usr/bin/xdg-open",os.X_OK):
-        #    self.fileEditor = "/usr/bin/xdg-open"
+        if os.access("/usr/bin/xdg-open",os.X_OK):
+            self.fileEditor = "/usr/bin/xdg-open"
         if de_session.find("kde") != -1:
             for item in path:
                 itempath = os.path.join(item,'kwrite')

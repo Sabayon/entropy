@@ -26,7 +26,6 @@ import gc
 import sys
 import os
 import stat
-import maskingparser
 import exceptionTools
 
 
@@ -626,7 +625,7 @@ def initConfig_entropyConstants(rootdir):
         'securityurl': "http://packages.sabayonlinux.org/security/security-advisories.tar.bz2",
 
         # packages keywords/mask/unmask settings
-        'packagemasking': {}, # package masking information dictionary filled by maskingparser.py
+        'packagemasking': None, # package masking information dictionary filled by the masking parser
 
         # packages whose need their other installs (different tag), to be removed
         'conflicting_tagged_packages': {
@@ -886,14 +885,6 @@ def initConfig_entropyConstants(rootdir):
                     url = url+"/"
                 url += etpConst['product']+"/handlers/"
                 etpRemoteSupport[servername] = url
-
-    # generate masking dictionary
-    myparser = maskingparser.parser(etpConst,etpCache)
-    etpConst['packagemasking'] = myparser.parse()
-    # merge universal keywords
-    for x in etpConst['packagemasking']['keywords']['universal']:
-        etpConst['keywords'].add(x)
-    del myparser
 
     gc.collect()
     initConfig_clientConstants()

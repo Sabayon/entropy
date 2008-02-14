@@ -12,7 +12,6 @@ TODO list:
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - handle config files updates interface (*)
     - handle multi repos in "available" menu (*)
     - add masking interface (*)
     - add branch switching menu (for upgrades) (*)

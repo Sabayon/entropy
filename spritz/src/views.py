@@ -575,31 +575,37 @@ class EntropyFilesView:
 
     def setup_view( self ):
         """ Create Notebook list for single page  """
-        model = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING )
+        model = gtk.TreeStore( gobject.TYPE_INT, gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING )
         self.view.set_model( model )
 
+        cell0 = gtk.CellRendererText()
+        column0 = gtk.TreeViewColumn( "", cell0, markup = 0 )
+        column0.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column0.set_fixed_width( 2 )
+        self.view.append_column( column0 )
+
         cell1 = gtk.CellRendererText()
-        column1 = gtk.TreeViewColumn( _( "Proposed" ), cell1, markup = 0 )
+        column1 = gtk.TreeViewColumn( _( "Proposed" ), cell1, markup = 1 )
         column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column1.set_fixed_width( 220 )
+        column1.set_fixed_width( 250 )
         column1.set_resizable( True )
         self.view.append_column( column1 )
 
         cell2 = gtk.CellRendererText()
-        column2 = gtk.TreeViewColumn( _( "Destination" ), cell2, markup = 1 )
+        column2 = gtk.TreeViewColumn( _( "Destination" ), cell2, markup = 2 )
         column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column2.set_fixed_width( 330 )
+        column2.set_fixed_width( 300 )
         column2.set_resizable( True )
         self.view.append_column( column2 )
 
         cell3 = gtk.CellRendererText()
-        column3 = gtk.TreeViewColumn( _( "Rev." ), cell3, text=2 )
+        column3 = gtk.TreeViewColumn( _( "Rev." ), cell3, text=3 )
         column3.set_resizable( True )
         column3.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column3.set_fixed_width( 30 )
         self.view.append_column( column3 )
         model.set_sort_column_id( 0, gtk.SORT_ASCENDING )
-        #self.view.get_selection().set_mode( gtk.SELECTION_MULTIPLE )
+        self.view.get_selection().set_mode( gtk.SELECTION_SINGLE )
         return model
 
     def populate( self, scandata ):
@@ -607,7 +613,13 @@ class EntropyFilesView:
         keys = scandata.keys()
         keys.sort()
         for key in keys:
-            self.model.append(None,[os.path.basename(scandata[key]['source']),scandata[key]['destination'],scandata[key]['revision']])
+            self.model.append(None,[
+                                        key,
+                                        os.path.basename(scandata[key]['source']),
+                                        scandata[key]['destination'],
+                                        scandata[key]['revision']
+                                    ]
+            )
 
 class CategoriesView:
     def __init__( self, treeview,qview):

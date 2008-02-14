@@ -72,7 +72,7 @@ def update(cmd = None):
     while 1:
         print_info(brown(" @@ ")+darkgreen("Scanning filesystem..."))
         scandata = Equo.FileUpdates.scanfs(dcache = cache_status)
-        if (cache_status):
+        if cache_status:
             for x in scandata:
                 print_info("("+blue(str(x))+") "+red(" file: ")+etpConst['systemroot']+scandata[x]['destination'])
         cache_status = True
@@ -100,7 +100,8 @@ def update(cmd = None):
             # automerge files asking one by one
             for key in keys:
                 if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
-                    scandata = Equo.FileUpdates.remove_from_cache(scandata,key)
+                    Equo.FileUpdates.remove_from_cache(key)
+                    scandata = Equo.FileUpdates.scandata
                     continue
                 print_info(darkred("Configuration file: ")+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
                 if cmd == -3:
@@ -109,28 +110,19 @@ def update(cmd = None):
                         continue
                 print_info(darkred("Moving ")+darkgreen(etpConst['systemroot']+scandata[key]['source'])+darkred(" to ")+brown(etpConst['systemroot']+scandata[key]['destination']))
 
-                # old file backup
-                if etpConst['filesbackup'] and os.path.isfile(etpConst['systemroot']+scandata[key]['destination']):
-                    bcount = 0
-                    backupfile = etpConst['systemroot']+os.path.dirname(scandata[key]['destination'])+"/._equo_backup."+unicode(bcount)+"_"+os.path.basename(scandata[key]['destination'])
-                    while os.path.lexists(backupfile):
-                        bcount += 1
-                        backupfile = etpConst['systemroot']+os.path.dirname(scandata[key]['destination'])+"/._equo_backup."+unicode(bcount)+"_"+os.path.basename(scandata[key]['destination'])
-                    try:
-                        shutil.copy2(etpConst['systemroot']+scandata[key]['destination'],backupfile)
-                    except IOError:
-                        pass
+                Equo.FileUpdates.merge_file(key)
+                scandata = Equo.FileUpdates.scandata
 
-                shutil.move(etpConst['systemroot']+scandata[key]['source'],etpConst['systemroot']+scandata[key]['destination'])
-                # remove from cache
-                scandata = Equo.FileUpdates.remove_from_cache(scandata,key)
             break
 
         elif cmd in (-7,-9):
             for key in keys:
 
                 if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
-                    scandata = Equo.FileUpdates.remove_from_cache(scandata,key)
+
+                    Equo.FileUpdates.remove_from_cache(key)
+                    scandata = Equo.FileUpdates.scandata
+
                     continue
                 print_info(darkred("Configuration file: ")+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
                 if cmd == -7:
@@ -138,11 +130,9 @@ def update(cmd = None):
                     if rc == "No":
                         continue
                 print_info(darkred("Discarding ")+darkgreen(etpConst['systemroot']+scandata[key]['source']))
-                try:
-                    os.remove(etpConst['systemroot']+scandata[key]['source'])
-                except:
-                    pass
-                scandata = Equo.FileUpdates.remove_from_cache(scandata,key)
+
+                Equo.FileUpdates.remove_file(key)
+                scandata = Equo.FileUpdates.scandata
 
             break
 
@@ -151,20 +141,27 @@ def update(cmd = None):
 
                 # do files exist?
                 if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['source']):
-                    scandata = Equo.FileUpdates.remove_from_cache(scandata,key)
+
+                    Equo.FileUpdates.remove_from_cache(cmd)
+                    scandata = Equo.FileUpdates.scandata
+
                     continue
                 if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['destination']):
                     print_info(darkred("Automerging file: ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
-                    shutil.move(etpConst['systemroot']+scandata[key]['source'],etpConst['systemroot']+scandata[key]['destination'])
-                    scandata = Equo.FileUpdates.remove_from_cache(scandata,key)
+
+                    Equo.FileUpdates.merge_file(cmd)
+                    scandata = Equo.FileUpdates.scandata
+
                     continue
                 # end check
 
                 diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],etpConst['systemroot']+scandata[cmd]['source'])
                 if (not diff):
                     print_info(darkred("Automerging file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
-                    shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
-                    scandata = Equo.FileUpdates.remove_from_cache(scandata,key)
+
+                    Equo.FileUpdates.merge_file(cmd)
+                    scandata = Equo.FileUpdates.scandata
+
                     continue
                 print_info(darkred("Selected file: ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 
@@ -182,37 +179,28 @@ def update(cmd = None):
                         comeback = True
                         break
                     elif action == 1:
-                        print_info(darkred("Replacing ")+darkgreen(etpConst['systemroot']+scandata[cmd]['destination'])+darkred(" with ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+                        print_info(darkred("Replacing ") + darkgreen(etpConst['systemroot'] + \
+                            scandata[cmd]['destination']) + darkred(" with ") + \
+                            darkgreen(etpConst['systemroot'] + scandata[cmd]['source']))
 
-                        # old file backup
-                        if etpConst['filesbackup'] and os.path.isfile(etpConst['systemroot']+scandata[cmd]['destination']):
-                            bcount = 0
-                            backupfile = etpConst['systemroot']+os.path.dirname(scandata[cmd]['destination'])+"/._equo_backup."+unicode(bcount)+"_"+os.path.basename(scandata[cmd]['destination'])
-                            while os.path.lexists(backupfile):
-                                bcount += 1
-                                backupfile = etpConst['systemroot']+os.path.dirname(scandata[cmd]['destination'])+"/._equo_backup."+unicode(bcount)+"_"+os.path.basename(scandata[cmd]['destination'])
-                            try:
-                                shutil.copy2(etpConst['systemroot']+scandata[cmd]['destination'],backupfile)
-                            except IOError:
-                                pass
+                        Equo.FileUpdates.merge_file(cmd)
+                        scandata = Equo.FileUpdates.scandata
 
-                        shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
-                        scandata = Equo.FileUpdates.remove_from_cache(scandata,cmd)
                         comeback = True
                         break
 
                     elif action == 2:
-                        print_info(darkred("Deleting file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
-                        try:
-                            os.remove(etpConst['systemroot']+scandata[cmd]['source'])
-                        except:
-                            pass
-                        scandata = Equo.FileUpdates.remove_from_cache(scandata,cmd)
+                        print_info(darkred("Deleting file ") + darkgreen(etpConst['systemroot'] + scandata[cmd]['source']))
+
+                        Equo.FileUpdates.remove_file(cmd)
+                        scandata = Equo.FileUpdates.scandata
+
                         comeback = True
                         break
 
                     elif action == 3:
-                        print_info(darkred("Editing file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+                        print_info(darkred("Editing file ") + darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+
                         if os.getenv("EDITOR"):
                             os.system("$EDITOR "+etpConst['systemroot']+scandata[cmd]['source'])
                         elif os.access("/bin/nano",os.X_OK):
@@ -229,12 +217,15 @@ def update(cmd = None):
                             print_error(" Cannot find a suitable editor. Can't edit file directly.")
                             comeback = True
                             break
-                        print_info(darkred("Edited file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source'])+darkred(" - showing differencies:"))
-                        diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],etpConst['systemroot']+scandata[cmd]['source'])
-                        if (not diff):
-                            print_info(darkred("Automerging file ")+darkgreen(scandata[cmd]['source']))
-                            shutil.move(etpConst['systemroot']+scandata[cmd]['source'],etpConst['systemroot']+scandata[cmd]['destination'])
-                            scandata = Equo.FileUpdates.remove_from_cache(scandata, cmd)
+
+                        print_info(darkred("Edited file ") + darkgreen(etpConst['systemroot'] + scandata[cmd]['source']) + darkred(" - showing differencies:"))
+                        diff = showdiff(etpConst['systemroot'] + scandata[cmd]['destination'],etpConst['systemroot'] + scandata[cmd]['source'])
+                        if not diff:
+                            print_info(darkred("Automerging file ") + darkgreen(scandata[cmd]['source']))
+
+                            Equo.FileUpdates.merge_file(cmd)
+                            scandata = Equo.FileUpdates.scandata
+
                             comeback = True
                             break
 
@@ -242,7 +233,7 @@ def update(cmd = None):
 
                     elif action == 4:
                         # show diffs again
-                        diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],etpConst['systemroot']+scandata[cmd]['source'])
+                        diff = showdiff(etpConst['systemroot'] + scandata[cmd]['destination'], etpConst['systemroot'] + scandata[cmd]['source'])
                         continue
 
                 if (comeback):

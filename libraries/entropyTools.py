@@ -148,6 +148,8 @@ def get_remote_data(url):
         return False
 
 def islive():
+    if not os.path.isfile("/proc/cmdline"):
+        return False
     f = open("/proc/cmdline")
     cmdline = f.readline().strip().split()
     f.close()

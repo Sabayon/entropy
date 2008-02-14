@@ -90,8 +90,11 @@ class EquoInterface(TextInterface):
         self.xcache = xcache
         if self.openclientdb:
             self.openClientDatabase()
-        self.FileUpdates = self.__FileUpdates()
+        self.FileUpdates = self.FileUpdatesInterfaceLoader()
         self.repoDbCache = {}
+
+        # masking parser
+        self.MaskingParser = self.PackageMaskingParserInterfaceLoader()
 
         # are we running on a livecd? (/proc/cmdline has "cdroot")
         if self.entropyTools.islive():
@@ -179,6 +182,14 @@ class EquoInterface(TextInterface):
     NOTE: DO NOT USE THIS DIRECTLY, BUT USE EquoInterface.openRepositoryDatabase
     '''
     def loadRepositoryDatabase(self, repositoryName, xcache = True, indexing = True):
+
+        # load the masking parser
+        if etpConst['packagemasking'] == None:
+            etpConst['packagemasking'] = self.MaskingParser.parse()
+            # merge universal keywords
+            for x in etpConst['packagemasking']['keywords']['universal']:
+                etpConst['keywords'].add(x)
+
         if repositoryName.endswith(".tbz2"):
             xcache = False
         dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
@@ -2039,12 +2050,16 @@ class EquoInterface(TextInterface):
     '''
         Configuration files (updates, not entropy related) interface :: begin
     '''
-    def __FileUpdates(self):
+    def FileUpdatesInterfaceLoader(self):
         conn = FileUpdatesInterface(EquoInstance = self)
         return conn
     '''
         Configuration files (updates, not entropy related) interface :: end
     '''
+
+    def PackageMaskingParserInterfaceLoader(self):
+        conn = PackageMaskingParser(EquoInstance = self)
+        return conn
 
 '''
     Real package actions (install/remove) interface
@@ -3353,17 +3368,51 @@ class FileUpdatesInterface:
             except:
                 raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
 
+        self.scandata = None
+
+    def merge_file(self, key):
+        self.scanfs(dcache = True)
+        self.do_backup(key)
+        shutil.move(etpConst['systemroot'] + self.scandata[key]['source'], etpConst['systemroot'] + self.scandata[key]['destination'])
+        self.remove_from_cache(key)
+
+    def remove_file(self, key):
+        self.scanfs(dcache = True)
+        try:
+            os.remove(etpConst['systemroot'] + self.scandata[key]['source'])
+        except OSError:
+            pass
+        self.remove_from_cache(key)
+
+    def do_backup(self, key):
+        self.scanfs(dcache = True)
+        if etpConst['filesbackup'] and os.path.isfile(etpConst['systemroot']+self.scandata[key]['destination']):
+            bcount = 0
+            backupfile = etpConst['systemroot'] + os.path.dirname(self.scandata[key]['destination']) + "/._equo_backup." + unicode(bcount) + "_" + os.path.basename(self.scandata[key]['destination'])
+            while os.path.lexists(backupfile):
+                bcount += 1
+                backupfile = etpConst['systemroot'] + os.path.dirname(self.scandata[key]['destination']) + "/._equo_backup." + unicode(bcount) + "_" + os.path.basename(self.scandata[key]['destination'])
+            try:
+                shutil.copy2(etpConst['systemroot'] + self.scandata[key]['destination'],backupfile)
+            except IOError:
+                pass
+
     '''
     @description: scan for files that need to be merged
     @output: dictionary using filename as key
     '''
     def scanfs(self, dcache = True):
 
-        if (dcache):
+        if dcache:
+
+            if self.scandata != None:
+                return self.scandata
+
             # can we load cache?
             try:
                 z = self.load_cache()
                 if z != None:
+                    self.scandata = z.copy()
                     return z
             except:
                 pass
@@ -3432,6 +3481,7 @@ class FileUpdatesInterface:
             self.Entropy.dumpTools.dumpobj(etpCache['configfiles'],scandata)
         except IOError:
             pass
+        self.scandata = scandata.copy()
         return scandata
 
     def load_cache(self):
@@ -3462,15 +3512,12 @@ class FileUpdatesInterface:
     @attention: please be sure that filepath is properly formatted before using this function
     '''
     def add_to_cache(self, filepath):
-        try:
-            scandata = self.load_cache()
-        except:
-            scandata = self.scanfs(dcache = False)
-        keys = scandata.keys()
+        self.scanfs(dcache = True)
+        keys = self.scandata.keys()
         try:
             for key in keys:
-                if scandata[key]['source'] == filepath[len(etpConst['systemroot']):]:
-                    del scandata[key]
+                if self.scandata[key]['source'] == filepath[len(etpConst['systemroot']):]:
+                    del self.scandata[key]
         except:
             pass
         # get next counter
@@ -3481,19 +3528,17 @@ class FileUpdatesInterface:
             index = 0
         index += 1
         mydata = self.generate_dict(filepath)
-        scandata[index] = mydata.copy()
-        try:
-            self.Entropy.dumpTools.dumpobj(etpCache['configfiles'],scandata)
-        except IOError:
-            pass
+        self.scandata[index] = mydata.copy()
+        self.Entropy.dumpTools.dumpobj(etpCache['configfiles'],self.scandata)
 
-    def remove_from_cache(self, sd, key):
+    def remove_from_cache(self, key):
+        self.scanfs(dcache = True)
         try:
-            del sd[key]
+            del self.scandata[key]
         except:
             pass
-        self.Entropy.dumpTools.dumpobj(etpCache['configfiles'],sd)
-        return sd
+        self.Entropy.dumpTools.dumpobj(etpCache['configfiles'],self.scandata)
+        return self.scandata
 
     def generate_dict(self, filepath):
 
@@ -5520,6 +5565,7 @@ class TriggerInterface:
     def trigger_ebuild_postinstall(self):
         stdfile = open("/dev/null","w")
         oldstderr = sys.stderr
+        oldstdout = sys.stdout
         sys.stderr = stdfile
 
         myebuild = [self.pkgdata['xpakdir']+"/"+x for x in os.listdir(self.pkgdata['xpakdir']) if x.endswith(".ebuild")]
@@ -5532,10 +5578,13 @@ class TriggerInterface:
                                     header = red("   ##")
                                 )
             try:
-                if not os.path.isfile(self.pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"): # if environment is not yet created, we need to run pkg_setup()
+                if not os.path.isfile(self.pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"):
+                    # if environment is not yet created, we need to run pkg_setup()
+                    sys.stdout = stdfile
                     rc = self.portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'])
                     if rc == 1:
                         self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
+                    sys.stdout = oldstdout
                 rc = self.portageTools.portage_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'])
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_postinst()) trigger for "+str(portage_atom)+". Something bad happened.")
@@ -5553,6 +5602,7 @@ class TriggerInterface:
     def trigger_ebuild_preinstall(self):
         stdfile = open("/dev/null","w")
         oldstderr = sys.stderr
+        oldstdout = sys.stdout
         sys.stderr = stdfile
 
         myebuild = [self.pkgdata['xpakdir']+"/"+x for x in os.listdir(self.pkgdata['xpakdir']) if x.endswith(".ebuild")]
@@ -5565,9 +5615,11 @@ class TriggerInterface:
                                     header = red("   ##")
                                 )
             try:
+                sys.stdout = stdfile
                 rc = self.portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir']) # create mysettings["T"]+"/environment"
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
+                sys.stdout = oldstdout
                 rc = self.portageTools.portage_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'])
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_preinst()) trigger for "+str(portage_atom)+". Something bad happened.")
@@ -6043,6 +6095,193 @@ timeout=10
                                     header = red("   ##")
                                 )
             return "(hd0,0)"
+
+class PackageMaskingParser:
+
+    def __init__(self, EquoInstance):
+
+        self.Entropy = EquoInstance
+        try:
+            self.Entropy.instanceTest()
+        except:
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+
+    def parse(self):
+
+        self.etpMaskFiles = {
+            'keywords': etpConst['confdir']+"/packages/package.keywords", # keywording configuration files
+            'unmask': etpConst['confdir']+"/packages/package.unmask", # unmasking configuration files
+            'mask': etpConst['confdir']+"/packages/package.mask", # masking configuration files
+        }
+        self.etpMtimeFiles = {
+            'keywords_mtime': etpConst['dumpstoragedir']+"/keywords.mtime", # keywording configuration files mtime
+            'unmask_mtime': etpConst['dumpstoragedir']+"/unmask.mtime", # unmasking configuration files mtime
+            'mask_mtime': etpConst['dumpstoragedir']+"/mask.mtime", # masking configuration files mtime
+        }
+
+        data = {}
+        for item in self.etpMaskFiles:
+            data[item] = eval('self.'+item+'_parser')()
+        return data
+
+
+    '''
+    parser of package.keywords file
+    '''
+    def keywords_parser(self):
+
+        self.__validateEntropyCache(self.etpMaskFiles['keywords'],self.etpMtimeFiles['keywords_mtime'])
+
+        data = {
+                'universal': set(),
+                'packages': {},
+                'repositories': {},
+        }
+        if os.path.isfile(self.etpMaskFiles['keywords']):
+            f = open(self.etpMaskFiles['keywords'],"r")
+            content = f.readlines()
+            f.close()
+            # filter comments and white lines
+            content = [x.strip() for x in content if not x.startswith("#") and x.strip()]
+            for line in content:
+                keywordinfo = line.split()
+                # skip wrong lines
+                if len(keywordinfo) > 3:
+                    sys.stderr.write(">> "+line+" << is invalid!!")
+                    continue
+                if len(keywordinfo) == 1: # inversal keywording, check if it's not repo=
+                    # repo=?
+                    if keywordinfo[0].startswith("repo="):
+                        sys.stderr.write(">> "+line+" << is invalid!!")
+                        continue
+                    # atom? is it worth it? it would take a little bit to parse uhm... >50 entries...!?
+                    #kinfo = keywordinfo[0]
+                    if keywordinfo[0] == "**": keywordinfo[0] = "" # convert into entropy format
+                    data['universal'].add(keywordinfo[0])
+                    continue # needed?
+                if len(keywordinfo) in (2,3): # inversal keywording, check if it's not repo=
+                    # repo=?
+                    if keywordinfo[0].startswith("repo="):
+                        sys.stderr.write(">> "+line+" << is invalid!!")
+                        continue
+                    # add to repo?
+                    items = keywordinfo[1:]
+                    if keywordinfo[0] == "**": keywordinfo[0] = "" # convert into entropy format
+                    reponame = [x for x in items if x.startswith("repo=") and (len(x.split("=")) == 2)]
+                    if reponame:
+                        reponame = reponame[0].split("=")[1]
+                        if reponame not in data['repositories']:
+                            data['repositories'][reponame] = {}
+                        # repository unmask or package in repository unmask?
+                        if keywordinfo[0] not in data['repositories'][reponame]:
+                            data['repositories'][reponame][keywordinfo[0]] = set()
+                        if len(items) == 1:
+                            # repository unmask
+                            data['repositories'][reponame][keywordinfo[0]].add('*')
+                        else:
+                            if "*" not in data['repositories'][reponame][keywordinfo[0]]:
+                                item = [x for x in items if not x.startswith("repo=")]
+                                data['repositories'][reponame][keywordinfo[0]].add(item[0])
+                    else:
+                        # it's going to be a faulty line!!??
+                        if len(items) == 2: # can't have two items and no repo=
+                            sys.stderr.write(">> "+line+" << is invalid!!")
+                            continue
+                        # add keyword to packages
+                        if keywordinfo[0] not in data['packages']:
+                            data['packages'][keywordinfo[0]] = set()
+                        data['packages'][keywordinfo[0]].add(items[0])
+        return data
+
+
+    def unmask_parser(self):
+        self.__validateEntropyCache(self.etpMaskFiles['unmask'],self.etpMtimeFiles['unmask_mtime'])
+
+        data = set()
+        if os.path.isfile(self.etpMaskFiles['unmask']):
+            f = open(self.etpMaskFiles['unmask'],"r")
+            content = f.readlines()
+            f.close()
+            # filter comments and white lines
+            content = [x.strip() for x in content if not x.startswith("#") and x.strip()]
+            for line in content:
+                # FIXME: need validation? probably not since atomMatch handles it all
+                # and doesn't care about badly formatted atoms
+                data.add(line)
+        return data
+
+    def mask_parser(self):
+        self.__validateEntropyCache(self.etpMaskFiles['mask'],self.etpMtimeFiles['mask_mtime'])
+
+        data = set()
+        if os.path.isfile(self.etpMaskFiles['mask']):
+            f = open(self.etpMaskFiles['mask'],"r")
+            content = f.readlines()
+            f.close()
+            # filter comments and white lines
+            content = [x.strip() for x in content if not x.startswith("#") and x.strip()]
+            for line in content:
+                # FIXME: need validation? probably not since atomMatch handles it all
+                # and doesn't care about badly formatted atoms
+                data.add(line)
+        return data
+
+    '''
+    internal functions
+    '''
+
+    def __removeRepoCache(self):
+        if os.path.isdir(etpConst['dumpstoragedir']):
+            for repoid in etpRepositoriesOrder:
+                self.Entropy.repository_move_clear_cache(repoid)
+        else:
+            os.makedirs(etpConst['dumpstoragedir'])
+
+    def __saveFileMtime(self,toread,tosaveinto):
+
+        if not os.path.isfile(toread):
+            currmtime = 0.0
+        else:
+            currmtime = os.path.getmtime(toread)
+
+        if not os.path.isdir(etpConst['dumpstoragedir']):
+            os.makedirs(etpConst['dumpstoragedir'])
+
+        f = open(tosaveinto,"w")
+        f.write(str(currmtime))
+        f.flush()
+        f.close()
+
+
+    def __validateEntropyCache(self,maskfile,mtimefile):
+
+        if os.getuid() != 0: # can't validate if running as user, thus cache shouldn't be loaded either
+            return
+
+        # handle on-disk cache validation
+        # in this case, repositories cache
+        # if package.keywords is changed, we must destroy cache
+        if not os.path.isfile(mtimefile):
+            # we can't know if package.keywords has been updated
+            # remove repositories caches
+            self.__removeRepoCache()
+            self.__saveFileMtime(maskfile,mtimefile)
+        else:
+            # check mtime
+            try:
+                f = open(mtimefile,"r")
+                mtime = float(f.readline().strip())
+                # compare with current mtime
+                try:
+                    currmtime = os.path.getmtime(maskfile)
+                except OSError:
+                    currmtime = 0.0
+                if mtime != currmtime:
+                    self.__removeRepoCache()
+                    self.__saveFileMtime(maskfile,mtimefile)
+            except:
+                self.__removeRepoCache()
+                self.__saveFileMtime(maskfile,mtimefile)
 
 
 class Callable:

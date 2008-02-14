@@ -394,13 +394,14 @@ def searchOrphans():
         for currentdir,subdirs,files in os.walk(xdir):
             for filename in files:
                 # filter python compiled objects?
-                if filename.endswith(".pyo") or filename.startswith(".pyc") or filename == '.keep':
+                if filename.endswith(".pyo") or filename.endswith(".pyc") or filename == '.keep':
                     continue
-                mask = [x for x in etpConst['filesystemdirsmask'] if x.startswith(x)]
-                if (not mask):
+                filename = os.path.join(currentdir,filename)
+                mask = [x for x in etpConst['filesystemdirsmask'] if filename.startswith(x)]
+                if not mask:
                     if (not etpUi['quiet']):
-                        print_info(red(" @@ ")+blue("Looking: ")+bold(file[:50]+"..."), back = True)
-                    foundFiles.add(file)
+                        print_info(red(" @@ ")+blue("Looking: ")+bold(filename[:50]+"..."), back = True)
+                    foundFiles.add(filename)
     totalfiles = len(foundFiles)
     if (not etpUi['quiet']):
         print_info(red(" @@ ")+blue("Analyzed directories: ")+' '.join(etpConst['filesystemdirs']))
@@ -419,15 +420,12 @@ def searchOrphans():
             atom = clientDbconn.retrieveAtom(idpackage)
             txt = "["+str(count)+"/"+length+"] "
             print_info(red(" @@ ")+blue("Intersecting content of package: ")+txt+bold(atom), back = True)
-        content = clientDbconn.retrieveContent(idpackage)
-        _content = set()
-        for x in content:
+        for x in clientDbconn.retrieveContent(idpackage):
             if x.startswith("/usr/lib64"):
                 x = "/usr/lib"+x[len("/usr/lib64"):]
-            _content.add(x)
+            content.add(x)
         # remove from foundFiles
-        del content
-        foundFiles.difference_update(_content)
+        foundFiles -= content
     if (not etpUi['quiet']):
         print_info(red(" @@ ")+blue("Intersection completed. Showing statistics: "))
         print_info(red(" @@ ")+blue("Number of total files: ")+bold(str(totalfiles)))
@@ -437,7 +435,7 @@ def searchOrphans():
     # order
     foundFiles = list(foundFiles)
     foundFiles.sort()
-    if (not etpUi['quiet']):
+    if not etpUi['quiet']:
         print_info(red(" @@ ")+blue("Writing file to disk: ")+bold("/tmp/equo-orphans.txt"))
         f = open("/tmp/equo-orphans.txt","w")
         for x in foundFiles:
