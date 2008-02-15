@@ -4811,6 +4811,10 @@ class TriggerInterface:
         if self.pkgdata['category']+"/"+self.pkgdata['name'] == "app-admin/equo":
             functions.add("purgecache")
 
+        # binutils configuration
+        if self.pkgdata['category']+"/"+self.pkgdata['name'] == "sys-devel/binutils":
+            functions.add("binutilsswitch")
+
         # triggers that are not needed when gentoo-compat is enabled
         if not etpConst['gentoo-compat']:
 
@@ -4829,10 +4833,6 @@ class TriggerInterface:
             # gcc configuration
             if self.pkgdata['category']+"/"+self.pkgdata['name'] == "sys-devel/gcc":
                 functions.add("gccswitch")
-
-            # binutils configuration
-            if self.pkgdata['category']+"/"+self.pkgdata['name'] == "sys-devel/binutils":
-                functions.add("binutilsswitch")
 
             # kde package ?
             if "kde" in self.pkgdata['eclasses']:
