@@ -96,6 +96,9 @@ class EquoInterface(TextInterface):
         # masking parser
         self.MaskingParser = self.PackageMaskingParserInterfaceLoader()
 
+        self.validate_repositories_cache()
+
+        # now if we are on live, we should disable it
         # are we running on a livecd? (/proc/cmdline has "cdroot")
         if self.entropyTools.islive():
             self.xcache = False
@@ -107,6 +110,32 @@ class EquoInterface(TextInterface):
                 self.purge_cache(False)
             except:
                 pass
+
+    def validate_repositories_cache(self):
+        # is the list of repos changed?
+        cached = self.dumpTools.loadobj(etpCache['repolist'])
+        if cached == None:
+            # invalidate matching cache
+            try:
+                self.repository_move_clear_cache()
+            except IOError:
+                pass
+        elif type(cached) is tuple:
+            # compare
+            myrepolist = tuple(etpRepositoriesOrder)
+            if cached != myrepolist:
+                cached = set(cached)
+                myrepolist = set(myrepolist)
+                difflist = cached - myrepolist # before minus now
+                for repoid in difflist:
+                    try:
+                        self.repository_move_clear_cache(repoid)
+                    except IOError:
+                        pass
+        try:
+            self.dumpTools.dumpobj(etpCache['repolist'],tuple(etpRepositoriesOrder))
+        except IOError:
+            pass
 
     def switchChroot(self, chroot = ""):
         # clean caches
@@ -884,15 +913,16 @@ class EquoInterface(TextInterface):
         return dbpkginfo
 
 
-    def repository_move_clear_cache(self, repoid):
+    def repository_move_clear_cache(self, repoid = None):
         self.clear_dump_cache(etpCache['world_available'])
         self.clear_dump_cache(etpCache['world_update'])
         self.clear_dump_cache(etpCache['check_package_update'])
         self.clear_dump_cache(etpCache['filter_satisfied_deps'])
         self.clear_dump_cache(etpCache['atomMatch'])
-        self.clear_dump_cache(etpCache['dbMatch']+repoid+"/")
-        self.clear_dump_cache(etpCache['dbInfo']+"/"+repoid+"/")
-        self.clear_dump_cache(etpCache['dbSearch']+repoid+"/")
+        if repoid != None:
+            self.clear_dump_cache(etpCache['dbMatch']+"/"+repoid+"/")
+            self.clear_dump_cache(etpCache['dbInfo']+"/"+repoid+"/")
+            self.clear_dump_cache(etpCache['dbSearch']+"/"+repoid+"/")
 
 
     def addRepository(self, repodata):
@@ -6445,11 +6475,13 @@ class SecurityInterface:
         self.security_package_checksum = self.security_package+etpConst['packageshashfileext']
 
 
-        if os.path.isfile(etpConst['securitydir']) or os.path.islink(etpConst['securitydir']):
-            os.remove(etpConst['securitydir'])
-        if not os.path.isdir(etpConst['securitydir']):
-            os.makedirs(etpConst['securitydir'])
-        elif os.path.isfile(self.old_download_package_checksum):
+        if etpConst['uid'] == 0:
+            if os.path.isfile(etpConst['securitydir']) or os.path.islink(etpConst['securitydir']):
+                os.remove(etpConst['securitydir'])
+            if not os.path.isdir(etpConst['securitydir']):
+                os.makedirs(etpConst['securitydir'])
+
+        if os.path.isfile(self.old_download_package_checksum):
             f = open(self.old_download_package_checksum)
             try:
                 self.previous_checksum = f.readline().strip().split()[0]

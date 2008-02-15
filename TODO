@@ -12,8 +12,9 @@ TODO list:
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - handle multi repos in "available" menu (*)
+    - handle multi repos in "available" menu (*) (un set keyslotcache)
     - add masking interface (*)
+    - add categories view? (*)
     - add branch switching menu (for upgrades) (*)
     - wrap root password request (*)
     - handle queue errors (*)

@@ -389,21 +389,34 @@ def searchOrphans():
 
     # start to list all files on the system:
     dirs = etpConst['filesystemdirs']
-    foundFiles = set()
+    filepath = Equo.entropyTools.getRandomTempFile()
+    tdbconn = Equo.openGenericDatabase(filepath)
+    tdbconn.initializeDatabase()
     for xdir in dirs:
         for currentdir,subdirs,files in os.walk(xdir):
+            foundFiles = {}
             for filename in files:
                 # filter python compiled objects?
                 if filename.endswith(".pyo") or filename.endswith(".pyc") or filename == '.keep':
                     continue
                 filename = os.path.join(currentdir,filename)
+                if filename.endswith(".ph") and \
+                    (filename.startswith("/usr/lib/perl") or filename.startswith("/usr/lib64/perl")):
+                        continue
                 mask = [x for x in etpConst['filesystemdirsmask'] if filename.startswith(x)]
                 if not mask:
-                    if (not etpUi['quiet']):
+                    if not etpUi['quiet']:
                         print_info(red(" @@ ")+blue("Looking: ")+bold(filename[:50]+"..."), back = True)
-                    foundFiles.add(filename)
-    totalfiles = len(foundFiles)
-    if (not etpUi['quiet']):
+                    foundFiles[filename] = "obj"
+            if foundFiles:
+                tdbconn.insertContent(1,foundFiles)
+
+    tdbconn.commitChanges()
+    tdbconn.createContentIndex()
+    tdbconn.cursor.execute('select count(file) from content')
+    totalfiles = tdbconn.cursor.fetchone()[0]
+
+    if not etpUi['quiet']:
         print_info(red(" @@ ")+blue("Analyzed directories: ")+' '.join(etpConst['filesystemdirs']))
         print_info(red(" @@ ")+blue("Masked directories: ")+' '.join(etpConst['filesystemdirsmask']))
         print_info(red(" @@ ")+blue("Number of files collected on the filesystem: ")+bold(str(totalfiles)))
@@ -415,37 +428,65 @@ def searchOrphans():
     length = str(len(idpackages))
     count = 0
     for idpackage in idpackages:
-        if (not etpUi['quiet']):
+        if not etpUi['quiet']:
             count += 1
             atom = clientDbconn.retrieveAtom(idpackage)
             txt = "["+str(count)+"/"+length+"] "
             print_info(red(" @@ ")+blue("Intersecting content of package: ")+txt+bold(atom), back = True)
+        content = set()
         for x in clientDbconn.retrieveContent(idpackage):
             if x.startswith("/usr/lib64"):
                 x = "/usr/lib"+x[len("/usr/lib64"):]
             content.add(x)
         # remove from foundFiles
-        foundFiles -= content
+        for item in content:
+            tdbconn.cursor.execute('delete from content where file = (?)', (item,))
+
+    tdbconn.commitChanges()
+    tdbconn.cursor.execute('select count(file) from content')
+    orpanedfiles = tdbconn.cursor.fetchone()[0]
+
     if (not etpUi['quiet']):
         print_info(red(" @@ ")+blue("Intersection completed. Showing statistics: "))
         print_info(red(" @@ ")+blue("Number of total files: ")+bold(str(totalfiles)))
-        print_info(red(" @@ ")+blue("Number of matching files: ")+bold(str(totalfiles - len(foundFiles))))
-        print_info(red(" @@ ")+blue("Number of orphaned files: ")+bold(str(len(foundFiles))))
+        print_info(red(" @@ ")+blue("Number of matching files: ")+bold(str(totalfiles - orpanedfiles)))
+        print_info(red(" @@ ")+blue("Number of orphaned files: ")+bold(str(orpanedfiles)))
 
-    # order
-    foundFiles = list(foundFiles)
-    foundFiles.sort()
+    tdbconn.cursor.execute('select file from content order by file desc')
     if not etpUi['quiet']:
-        print_info(red(" @@ ")+blue("Writing file to disk: ")+bold("/tmp/equo-orphans.txt"))
         f = open("/tmp/equo-orphans.txt","w")
-        for x in foundFiles:
-            f.write(x+"\n")
+        print_info(red(" @@ ")+blue("Writing file to disk: ")+bold("/tmp/equo-orphans.txt"))
+
+    tdbconn.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+    myfile = tdbconn.cursor.fetchone()
+
+    sizecount = 0
+    while myfile:
+        myfile = str(myfile[0].encode('raw_unicode_escape'))
+        try:
+            sizecount += os.stat(myfile)[6]
+        except OSError:
+            pass
+        if not etpUi['quiet']:
+            f.write(myfile+"\n")
+        else:
+            print myfile
+        myfile = tdbconn.cursor.fetchone()
+
+    humansize = Equo.entropyTools.bytesIntoHuman(sizecount)
+    if not etpUi['quiet']:
+        print_info(red(" @@ ")+blue("Total wasted space: ")+bold(humansize))
         f.flush()
         f.close()
-        return 0
     else:
-        for x in foundFiles:
-            print x
+        print humansize
+
+    tdbconn.closeDB()
+    try:
+        os.remove(filepath)
+    except OSError:
+        pass
+
     return 0
 
 

@@ -358,7 +358,8 @@ etpCache = {
     'dep_tree': 'deptree/dep_tree_',
     'depends_tree': 'depends/depends_tree_',
     'filter_satisfied_deps': 'depfilter/filter_satisfied_deps_',
-    'library_breakage': 'libs_break/library_breakage_'
+    'library_breakage': 'libs_break/library_breakage_',
+    'repolist': 'repos/repolist'
 }
 
 # ahahaha
@@ -575,11 +576,9 @@ def initConfig_entropyConstants(rootdir):
         'keywords': set([etpSys['arch'],"~"+etpSys['arch']]), # default allowed package keywords
         'gentoo-compat': False, # Gentoo compatibility (/var/db/pkg + Portage availability)
         'edbcounter': edbCOUNTER,
-        'filesystemdirs': ['/bin','/boot','/emul','/etc','/lib','/lib32','/lib64','/opt','/sbin','/usr','/var'], # directory of the filesystem
+        'filesystemdirs': ['/bin','/emul','/etc','/lib','/lib32','/lib64','/opt','/sbin','/usr','/var'], # directory of the filesystem
         'filesystemdirsmask': [
-                                    '/var/cache','/var/db','/var/empty','/var/lib/portage','/var/lib/entropy','/var/log','/var/mail','/var/tmp','/var/www', '/usr/portage',
-                                    '/var/lib/scrollkeeper', '/usr/src', '/etc/skel', '/etc/ssh', '/etc/ssl', '/var/run', '/var/spool/cron', '/var/lib/init.d',
-                                    '/lib/modules', '/etc/env.d', '/etc/gconf', '/etc/runlevels', '/lib/splash/cache', '/usr/share/mime', '/etc/portage'
+                                    '/var/cache','/var/db','/var/empty','/var/log','/var/mail','/var/tmp','/var/www', '/usr/portage', '/usr/src', '/etc/skel', '/etc/ssh', '/etc/ssl', '/var/run', '/var/spool/cron', '/var/lib/init.d', '/lib/modules', '/etc/env.d', '/etc/gconf', '/etc/runlevels', '/lib/splash/cache', '/usr/share/mime', '/etc/portage', '/var/spool', '/var/lib', '/usr/lib/locale','/lib64/splash/cache'
         ],
         'libtest_blacklist': [
             'www-client/mozilla-firefox-bin',
