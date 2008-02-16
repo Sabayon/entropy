@@ -180,14 +180,11 @@ class EntropyPackages:
         return self._packages[flt]
 
     def getPackageItem(self, pkgdata, avail):
-        import outputTools
         if self.pkgCache.has_key((pkgdata,avail)):
             yp = self.pkgCache[(pkgdata,avail)]
-            print outputTools.green(str(pkgdata)),"cached"
         else:
             yp = EntropyPackage(pkgdata, self.recent, avail)
             self.pkgCache[(pkgdata,avail)] = yp
-            print outputTools.red(str(pkgdata)),"not cached"
         return yp
 
     def _getPackages(self,mask):
