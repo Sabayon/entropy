@@ -23,85 +23,6 @@ from views import *
 from etpgui.widgets import TextViewConsole, SpritzConsole
 from i18n import _
 
-
-class YumexPackageInfo:
-    def __init__(self,ui,settings):
-        self.ui = ui
-        self.settings = settings
-        self.pkgDesc = TextViewConsole( self.ui.pkgDesc, font=self.settings.font_pkgdesc, color=self.settings.color_pkgdesc )
-        self.pkgInfo = TextViewConsole( self.ui.pkgInfo, font=self.settings.font_pkgdesc, color=self.settings.color_pkgdesc )
-        self.pkgFiles = TextViewConsole( self.ui.pkgFiles, font=self.settings.font_pkgdesc, color=self.settings.color_pkgdesc )
-        self.pkgChangeLog = TextViewConsole( self.ui.pkgCLog, font=self.settings.font_pkgdesc, color=self.settings.color_pkgdesc )
-        self.pkgOther = TextViewConsole( self.ui.pkgOther, font=self.settings.font_pkgdesc, color=self.settings.color_pkgdesc )
-        self.yumbase = None
-
-    def clear( self ):
-        self.pkgDesc.clear()
-        self.pkgInfo.clear()
-        self.pkgFiles.clear()
-        self.pkgChangeLog.clear()
-        self.pkgOther.clear()
-
-    def goTop( self ):
-        self.pkgDesc.goTop()
-        self.pkgInfo.goTop()
-        self.pkgFiles.goTop()
-        self.pkgChangeLog.goTop()
-        self.pkgOther.goTop()
-
-    def showInfo(self,pkg):
-        self.clear()
-        self.writePkg( self.pkgDesc, pkg, "%s", "description" )
-        if pkg.repoid == 'installed' or self.settings.filelist:
-            files = pkg.get_filelist()
-            for f in files:
-                self.pkgFiles.write_line( "%s\n" % f ) 
-        if pkg.repoid == 'installed' or self.settings.changelog:
-            cl = pkg.get_changelog()
-            for l in cl:
-                self.pkgChangeLog.write_line( "%s\n" % l )
-
-        self.writePkg( self.pkgInfo, pkg, 'Category      : %s\n', "category", True )
-        self.writePkg( self.pkgInfo, pkg, 'Name          : %s\n', "name" )
-        if not pkg.from_installed:
-            self.writePkg( self.pkgInfo, pkg, 'Branch          : %s\n', "branch" )
-        self.writePkg( self.pkgInfo, pkg, 'Slot          : %s\n', "slot" )
-        self.writePkg( self.pkgInfo, pkg, 'Version       : %s\n', "version" )
-        self.writePkg( self.pkgInfo, pkg, 'Kernel Tag    : %s\n', "versiontag" )
-        self.writePkg( self.pkgInfo, pkg, 'Revision      : %s\n', "revision" )
-        if pkg.from_installed:
-            self.writePkgTime( self.pkgInfo, pkg, 'Install time  : %s\n', "creationdate" )
-        else:
-            self.writePkgTime( self.pkgInfo, pkg, 'Install time  : %s\n', "creationdate" )
-        self.writePkg( self.pkgInfo, pkg, 'License       : %s\n', 'license' )
-
-        #if pkg.action =='r':
-        #    self.writePkgTime( self.pkgInfo, pkg, 'Install Time : %s\n', "installtime" )
-        #    self.pkgOther.write_line( _( "Requires:\n\n" ) )
-        self.goTop()
-
-    def writePkg( self, outobj, pkg, markup, attr, remove_newline=False ):
-        try:
-            data = pkg.getAttr( attr )
-            if remove_newline:
-                out = markup % data.replace( "\n", "" )
-            else:
-                out = markup % data 
-            outobj.write_line( out )
-        except AttributeError, e:
-            msg = _( 'Can not read the %s attribute' ) % attr
-            print msg
-
-    def writePkgTime( self, outobj, pkg, markup, attr ):
-        try:
-            data = pkg.getAttr( attr )
-            data = str( time.ctime( float( data ) ) )
-            out = markup % data 
-            outobj.write_line( out )
-        except AttributeError, e:
-            msg = _( 'Can not read the %s attribute' ) % attr
-            print msg
-
 class ProgressTotal:
     def __init__( self, widget ):
         self.progress = widget
@@ -283,8 +204,6 @@ class SpritzGUI:
         self.pageButtons = {}    # Dict with page buttons
         self.firstButton = None  # first button
         self.activePage = 'repos'
-        # Package info notebook
-        self.packageInfo = YumexPackageInfo(self.ui,self.settings)
         # Progress bars
         self.progress = YumexProgress(self.ui,self.setPage,self)
         # Package Radiobuttons

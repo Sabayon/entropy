@@ -60,8 +60,9 @@ class SpritzController(Controller):
         # Create and ui object contains the widgets.
         ui = UI( const.GLADE_FILE , 'main', 'yumex' )
         addrepo_ui = UI( const.GLADE_FILE , 'addRepoWin', 'yumex' )
+        pkginfo_ui = UI( const.GLADE_FILE , 'pkgInfo', 'yumex' )
         # init the Controller Class to connect signals.
-        Controller.__init__( self, ui, addrepo_ui )
+        Controller.__init__( self, ui, addrepo_ui, pkginfo_ui )
 
         self.clipboard = gtk.Clipboard()
         self.pty = pty.openpty()
@@ -411,13 +412,11 @@ class SpritzController(Controller):
         ndx = self.ui.cbCategory.get_active()
         if ndx == 0: # None
            self.categoryOn = False
-           self.packageInfo.clear()
            self.ui.swCategory.hide()
            self.addPackages()
         else:
            self.categoryOn = True
            self.ui.swCategory.show()
-           self.packageInfo.clear()
            tub = const.PACKAGE_CATEGORY_DICT[ndx]
            (label,fn,attr,sortcat,splitcat) = tub
            self.addCategories(fn,attr,sortcat,splitcat)
@@ -426,7 +425,6 @@ class SpritzController(Controller):
         ''' Package Type Selection Handler'''
         if rb.get_active(): # Only act on select, not deselect.
             rb.grab_add()
-            self.packageInfo.clear()
             self.lastPkgPB = action
             # Only show add/remove all when showing updates
             if action == 'updates':
@@ -551,13 +549,73 @@ class SpritzController(Controller):
 
             self.queueView.refresh()
 
-    def on_view_cursor_changed( self, widget ):
+    def on_pkg_doubleclick( self, widget, iterator, path ):
         """ Handle selection of row in package view (Show Descriptions) """
         ( model, iterator ) = widget.get_selection().get_selected()
         if model != None and iterator != None:
             pkg = model.get_value( iterator, 0 )
             if pkg:
-                self.packageInfo.showInfo(pkg)
+                self.loadPkgInfoMenu(pkg)
+
+    def loadPkgInfoMenu( self, pkg ):
+
+        # set left LABELS
+        
+
+        # set atom
+        self.pkginfo_ui.pkgatomLabel.set_markup("<b><big>%s</big></b>" % (pkg.name,))
+        repo = pkg.matched_atom[1]
+        if repo == 0:
+            # from installed
+            self.pkginfo_ui.pkgatomSublabel.set_markup("<small>%s</small>" % (_("From your Operating System"),))
+        else:
+            self.pkginfo_ui.pkgatomSublabel.set_markup("<small>%s</small>" % (etpRepositories[repo]['description'],))
+
+        self.pkginfo_ui.name.set_markup("<small>%s</small>" % (pkg.onlyname,))
+        self.pkginfo_ui.category.set_markup("<small>%s</small>" % (pkg.cat,))
+        self.pkginfo_ui.aversion.set_markup( "<small>%s: %s</small>" % (_("Version"),pkg.onlyver,) )
+        tag = pkg.tag
+        if not tag: tag = "None"
+        self.pkginfo_ui.atag.set_markup( "<small>%s: %s</small>" % (_("Tag"),tag,) )
+        self.pkginfo_ui.arevision.set_markup( "<small>%s: %s</small>" % (_("Revision"),pkg.revision,) )
+        if repo != 0:
+            # search if it's installed
+            key, slot = pkg.keyslot
+            result = self.Equo.clientDbconn.searchKeySlot(key, slot)
+            if result:
+                idpackage = result[0][0]
+                version = self.Equo.clientDbconn.retrieveVersion(idpackage)
+                revision = self.Equo.clientDbconn.retrieveRevision(idpackage)
+                tag = self.Equo.clientDbconn.retrieveVersionTag(idpackage)
+            else:
+                version = _("Not installed")
+                revision = version
+                tag = version
+
+            self.pkginfo_ui.iversion.set_markup( "<small>%s: %s</small>" % (_("Version"),version,) )
+            if not tag: tag = "None"
+            self.pkginfo_ui.itag.set_markup( "<small>%s: %s</small>" % (_("Tag"),tag,) )
+            self.pkginfo_ui.irevision.set_markup( "<small>%s: %s</small>" % (_("Revision"),revision,) )
+
+            self.pkginfo_ui.vboxinstalled.show()
+        else:
+            self.pkginfo_ui.vboxinstalled.hide()
+
+        # slot, size
+        self.pkginfo_ui.slot.set_markup("<small>%s</small>" % (pkg.slot,))
+        self.pkginfo_ui.size.set_markup("<small>%s</small>" % (pkg.intelligentsizeFmt,))
+        # download, checksum
+        self.pkginfo_ui.download.set_markup("<small>%s</small>" % (pkg.binurl,))
+        self.pkginfo_ui.checksum.set_markup("<small>%s</small>" % (pkg.digest,))
+
+        self.pkginfo_ui.pkgInfo.show()
+
+    def on_pkgInfoClose_clicked( self, widget ):
+        self.pkginfo_ui.pkgInfo.hide()
+
+    def on_pkgInfo_delete_event(self, widget, path):
+        self.pkginfo_ui.pkgInfo.hide()
+        return True
 
     def on_select_clicked(self,widget):
         ''' Package Add All button handler '''

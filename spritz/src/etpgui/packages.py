@@ -50,8 +50,14 @@ class PackageWrapper:
     def getPkg(self):
         return self.matched_atom
 
+    def getTag(self):
+        return self.dbconn.retrieveVersionTag(self.matched_atom[0])
+
     def getName(self):
         return self.dbconn.retrieveAtom(self.matched_atom[0])
+
+    def getOnlyName(self):
+        return self.dbconn.retrieveName(self.matched_atom[0])
 
     def getTup(self):
         return (self.getName(),self.getRepoId(),self.dbconn.retrieveVersion(self.matched_atom[0]),self.dbconn.retrieveVersionTag(self.matched_atom[0]),self.dbconn.retrieveRevision(self.matched_atom[0]))
@@ -104,8 +110,20 @@ class PackageWrapper:
         tag += "~"+str(self.dbconn.retrieveRevision(self.matched_atom[0]))
         return self.dbconn.retrieveVersion(self.matched_atom[0])+tag
 
+    def getOnlyVer(self):
+        return self.dbconn.retrieveVersion(self.matched_atom[0])
+
+    def getDownloadURL(self):
+        return self.dbconn.retrieveDownloadURL(self.matched_atom[0])
+
     def getSlot(self):
         return self.dbconn.retrieveSlot(self.matched_atom[0])
+
+    def getDigest(self):
+        return self.dbconn.retrieveDigest(self.matched_atom[0])
+
+    def getCategory(self):
+        return self.dbconn.retrieveCategory(self.matched_atom[0])
 
     def getKeySlot(self):
         return self.dbconn.retrieveKeySlot(self.matched_atom[0])
@@ -180,9 +198,15 @@ class PackageWrapper:
 
     pkg =  property(fget=getPkg)
     name =  property(fget=getName)
+    onlyname = property(fget=getOnlyName)
+    cat = property(fget=getCategory)
     repoid =  property(fget=getRepoId)
     ver =  property(fget=getVer)
+    binurl = property(fget=getDownloadURL)
+    onlyver = property(fget=getOnlyVer)
+    tag = property(fget=getTag)
     revision = property(fget=getRevision)
+    digest = property(fget=getDigest)
     version = property(fget=getVer)
     release = property(fget=getRel)
     slot = property(fget=getSlot)
