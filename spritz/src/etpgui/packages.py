@@ -93,10 +93,10 @@ class PackageWrapper:
             return 0
         key, slot = self.dbconn.retrieveKeySlot(self.matched_atom[0])
         matches = EquoConnection.clientDbconn.searchKeySlot(key,slot)
-        if not matches:
+        if not matches: # not installed, new!
             return 1
         else:
-            rc, matched = EquoConnection.check_package_update(key+":"+slot)
+            rc, matched = EquoConnection.check_package_update(key+":"+slot, deep = True)
             if rc:
                 return 2
             else:

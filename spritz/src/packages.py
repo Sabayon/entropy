@@ -51,11 +51,6 @@ class EntropyPackage( PackageWrapper ):
         else:
             self.recent = False
 
-    def set_visible( self, state ):
-        self.visible = state
-
-
-
 class EntropyPackages:
     def __init__(self, EquoInstance):
         self.Entropy = EquoInstance
@@ -103,21 +98,21 @@ class EntropyPackages:
             install_status = yp.install_status
             ok = False
             # FIXME: handle obsoletes in install_status == 3 whose are never install_status == 0
-            if install_status == 0: # becomes from installed packages
-                yp.action = 'r'
-                yp.color = color_install
-                #ok = True
-            elif install_status == 1:
+            #if install_status == 0: # becomes from installed packages
+            #    yp.action = 'r'
+            #    yp.color = color_install
+            #    ok = True
+            if install_status == 1:
                 yp.action = 'i'
                 ok = True
             elif install_status == 2:
                 yp.action = 'u'
                 yp.color = color_update
                 ok = True
-            elif install_status == 3:
-                yp.action = 'r'
-                yp.color = color_install
-                ok = True
+            #elif install_status == 3:
+            #    yp.action = 'r'
+            #    yp.color = color_install
+            #    ok = True
             if ok: pkgsdata.append(yp)
         del catsdata
         self._categoryPackages[category] = pkgsdata

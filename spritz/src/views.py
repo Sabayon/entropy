@@ -199,9 +199,11 @@ class EntropyPackageView:
             row, column, x, y = widget.get_path_at_pos(int(event.x),int(event.y))
         except TypeError:
             return
+
         self.event_click_pos = x,y
         if column.get_title() != "   S":
             return
+
         model, iter = widget.get_selection().get_selected()
         if iter:
             obj = model.get_value( iter, 0 )

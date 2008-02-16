@@ -620,10 +620,10 @@ class EquoInterface(TextInterface):
         return found
 
     # better to use key:slot
-    def check_package_update(self, atom):
+    def check_package_update(self, atom, deep = False):
 
         if self.xcache:
-            c_hash = str(hash(atom))
+            c_hash = str(hash(atom)+hash(deep))
             cached = self.dumpTools.loadobj(etpCache['check_package_update']+c_hash)
             if cached != None:
                 return cached
@@ -634,7 +634,7 @@ class EquoInterface(TextInterface):
         if match[0] != -1:
             myatom = self.clientDbconn.retrieveAtom(match[0])
             pkg_match = ">="+myatom
-            pkg_unsatisfied,x = self.filterSatisfiedDependencies([pkg_match])
+            pkg_unsatisfied,x = self.filterSatisfiedDependencies([pkg_match], deep_deps = deep)
             del x
             if pkg_unsatisfied:
                 found = True

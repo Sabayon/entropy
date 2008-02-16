@@ -12,9 +12,9 @@ TODO list:
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - remove package info widgets and write from scratch (*) 
-    - add masking menu (*)
-    - use availability bool to show masked packages and connect the masking menu (*)
+    - remove package info widgets and write from scratch (*)
+    - add masking menu
+    - use availability bool to show masked packages and connect the masking menu
     - Popularity feature
 
 
