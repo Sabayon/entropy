@@ -3943,7 +3943,7 @@ class RepoInterface:
 
         # keep them closed
         self.Entropy.closeAllRepositoryDatabases()
-        self.validate_repositories()
+        self.Entropy.validate_repositories()
         self.Entropy.closeAllRepositoryDatabases()
 
         # clean caches

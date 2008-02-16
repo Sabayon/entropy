@@ -1016,6 +1016,9 @@ class etpDatabase:
         # sources, a list
         for source in etpData['sources']:
 
+            if not source or source == "":
+                continue
+
             idsource = self.isSourceAvailable(source)
             if (idsource == -1):
                 # create category
