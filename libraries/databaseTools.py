@@ -1995,40 +1995,37 @@ class etpDatabase:
 
     def retrieveAtom(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveAtom')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveAtom')
+        #if cache != None: return cache
 
         self.cursor.execute('SELECT atom FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         atom = self.cursor.fetchone()[0]
 
-        self.storeInfoCache(idpackage,'retrieveAtom',atom)
+        #self.storeInfoCache(idpackage,'retrieveAtom',atom)
         return atom
 
     def retrieveBranch(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveBranch')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveBranch')
+        #if cache != None: return cache
 
         self.cursor.execute('SELECT branch FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         br = self.cursor.fetchone()[0]
 
-        self.storeInfoCache(idpackage,'retrieveBranch',br)
+        #self.storeInfoCache(idpackage,'retrieveBranch',br)
         return br
 
     def retrieveTrigger(self, idpackage):
 
-        try:
-            self.cursor.execute('SELECT data FROM triggers WHERE idpackage = (?)', (idpackage,))
-            trigger = self.cursor.fetchone()
-            if trigger:
-                trigger = trigger[0]
-            else:
-                trigger = ''
-        except:
-            # generate trigger column
+        if not self.doesTableExist("triggers"):
             self.createTriggerTable()
+
+        self.cursor.execute('SELECT data FROM triggers WHERE idpackage = (?)', (idpackage,))
+        trigger = self.cursor.fetchone()
+        if trigger:
+            trigger = trigger[0]
+        else:
             trigger = ''
-            pass
 
         return trigger
 
@@ -2045,30 +2042,30 @@ class etpDatabase:
 
     def retrieveDescription(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveDescription')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveDescription')
+        #if cache != None: return cache
 
         self.cursor.execute('SELECT description FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         description = self.cursor.fetchone()[0]
 
-        self.storeInfoCache(idpackage,'retrieveDescription',description)
+        #self.storeInfoCache(idpackage,'retrieveDescription',description)
         return description
 
     def retrieveHomepage(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveHomepage')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveHomepage')
+        #if cache != None: return cache
 
         self.cursor.execute('SELECT homepage FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         home = self.cursor.fetchone()[0]
 
-        self.storeInfoCache(idpackage,'retrieveHomepage',home)
+        #self.storeInfoCache(idpackage,'retrieveHomepage',home)
         return home
 
     def retrieveCounter(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveCounter')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveCounter')
+        #if cache != None: return cache
 
         if not self.doesTableExist("counters"):
             self.createCountersTable()
@@ -2081,7 +2078,7 @@ class etpDatabase:
         if mycounter:
             counter = mycounter[0]
 
-        self.storeInfoCache(idpackage,'retrieveCounter',int(counter))
+        #self.storeInfoCache(idpackage,'retrieveCounter',int(counter))
         return int(counter)
 
     def retrieveMessages(self, idpackage):
@@ -2102,59 +2099,54 @@ class etpDatabase:
     # in bytes
     def retrieveSize(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveSize')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveSize')
+        #if cache != None: return cache
 
         self.cursor.execute('SELECT size FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         size = self.cursor.fetchone()[0]
 
-        self.storeInfoCache(idpackage,'retrieveSize',size)
+        #self.storeInfoCache(idpackage,'retrieveSize',size)
         return size
 
     # in bytes
     def retrieveOnDiskSize(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveOnDiskSize')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveOnDiskSize')
+        #if cache != None: return cache
 
-        try:
-            self.cursor.execute('SELECT size FROM sizes WHERE idpackage = (?)', (idpackage,))
-        except:
-            if not self.doesTableExist("sizes"):
-                self.createSizesTable()
-            else:
-                raise
-            # table does not exist?
-            return 0
+        if not self.doesTableExist("sizes"):
+            self.createSizesTable()
+
+        self.cursor.execute('SELECT size FROM sizes WHERE idpackage = (?)', (idpackage,))
         size = self.cursor.fetchone() # do not use [0]!
         if not size:
             size = 0
         else:
             size = size[0]
 
-        self.storeInfoCache(idpackage,'retrieveOnDiskSize',size)
+        #self.storeInfoCache(idpackage,'retrieveOnDiskSize',size)
         return size
 
     def retrieveDigest(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveDigest')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveDigest')
+        #if cache != None: return cache
 
-        self.cursor.execute('SELECT "digest" FROM extrainfo WHERE idpackage = (?)', (idpackage,))
+        self.cursor.execute('SELECT digest FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         digest = self.cursor.fetchone()[0]
 
-        self.storeInfoCache(idpackage,'retrieveDigest',digest)
+        #self.storeInfoCache(idpackage,'retrieveDigest',digest)
         return digest
 
     def retrieveName(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveName')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveName')
+        #if cache != None: return cache
 
-        self.cursor.execute('SELECT "name" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        self.cursor.execute('SELECT name FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         name = self.cursor.fetchone()[0]
 
-        self.storeInfoCache(idpackage,'retrieveName',name)
+        #self.storeInfoCache(idpackage,'retrieveName',name)
         return name
 
     def retrieveKeySlot(self, idpackage):
@@ -2170,48 +2162,48 @@ class etpDatabase:
 
     def retrieveVersion(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveVersion')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveVersion')
+        #if cache != None: return cache
 
-        self.cursor.execute('SELECT "version" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        self.cursor.execute('SELECT version FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         ver = self.cursor.fetchone()[0]
 
-        self.storeInfoCache(idpackage,'retrieveVersion',ver)
+        #self.storeInfoCache(idpackage,'retrieveVersion',ver)
         return ver
 
     def retrieveRevision(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveRevision')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveRevision')
+        #if cache != None: return cache
 
-        self.cursor.execute('SELECT "revision" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        self.cursor.execute('SELECT revision FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         rev = self.cursor.fetchone()[0]
 
-        self.storeInfoCache(idpackage,'retrieveRevision',rev)
+        #self.storeInfoCache(idpackage,'retrieveRevision',rev)
         return rev
 
     def retrieveDateCreation(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveDateCreation')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveDateCreation')
+        #if cache != None: return cache
 
         self.cursor.execute('SELECT "datecreation" FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         date = self.cursor.fetchone()[0]
         if not date:
             date = "N/A" #FIXME: to be removed?
 
-        self.storeInfoCache(idpackage,'retrieveDateCreation',date)
+        #self.storeInfoCache(idpackage,'retrieveDateCreation',date)
         return date
 
     def retrieveApi(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveApi')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveApi')
+        #if cache != None: return cache
 
         self.cursor.execute('SELECT "etpapi" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         api = self.cursor.fetchone()[0]
 
-        self.storeInfoCache(idpackage,'retrieveApi',api)
+        #self.storeInfoCache(idpackage,'retrieveApi',api)
         return api
 
     def retrieveUseflags(self, idpackage):
@@ -2266,13 +2258,13 @@ class etpDatabase:
 
     def retrieveProvide(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveProvide')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveProvide')
+        #if cache != None: return cache
 
-        self.cursor.execute('SELECT "atom" FROM provide WHERE idpackage = (?)', (idpackage,))
+        self.cursor.execute('SELECT atom FROM provide WHERE idpackage = (?)', (idpackage,))
         provide = self.fetchall2set(self.cursor.fetchall())
 
-        self.storeInfoCache(idpackage,'retrieveProvide',provide)
+        #self.storeInfoCache(idpackage,'retrieveProvide',provide)
         return provide
 
     def retrieveDependenciesList(self, idpackage):
@@ -2413,24 +2405,24 @@ class etpDatabase:
 
     def retrieveSlot(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveSlot')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveSlot')
+        #if cache != None: return cache
 
-        self.cursor.execute('SELECT "slot" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        self.cursor.execute('SELECT slot FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         ver = self.cursor.fetchone()[0]
 
-        self.storeInfoCache(idpackage,'retrieveSlot',ver)
+        #self.storeInfoCache(idpackage,'retrieveSlot',ver)
         return ver
 
     def retrieveVersionTag(self, idpackage):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveVersionTag')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveVersionTag')
+        #if cache != None: return cache
 
         self.cursor.execute('SELECT "versiontag" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         ver = self.cursor.fetchone()[0]
 
-        self.storeInfoCache(idpackage,'retrieveVersionTag',ver)
+        #self.storeInfoCache(idpackage,'retrieveVersionTag',ver)
         return ver
 
     def retrieveMirrorInfo(self, mirrorname):
@@ -2979,8 +2971,10 @@ class etpDatabase:
 
     def listAllIdpackages(self, branch = None):
 
-        cache = self.fetchInfoCache(hash(branch),'listAllIdpackages')
-        if cache != None: return cache
+        # XXX if you will decide to re-enable this, consider that you have to clean this cache
+        # each time a package is updated/installed/removed
+        #cache = self.fetchInfoCache(hash(branch),'listAllIdpackages')
+        #if cache != None: return cache
 
         branchstring = ''
         searchkeywords = []
@@ -2990,8 +2984,7 @@ class etpDatabase:
         self.cursor.execute('SELECT idpackage FROM baseinfo'+branchstring, searchkeywords)
 
         results = self.fetchall2set(self.cursor.fetchall())
-        self.storeInfoCache(hash(branch),'listAllIdpackages',results)
-
+        #self.storeInfoCache(hash(branch),'listAllIdpackages',results)
         return results
 
     def listAllDependencies(self):
@@ -3656,11 +3649,24 @@ class etpDatabase:
                             hash(tuple(matchBranches)) + \
                             m_hash + r_hash + s_hash
                         )
-            try:
-                dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash,result)
-            except IOError:
-                pass
+            data = {}
+            data['hash'] = c_hash
+            if type(result) in (dict,set):
+                data['result'] = result.copy()
+            elif type(result) in (list,tuple):
+                data['result'] = result[:]
+            else:
+                data['result'] = result
 
+            task = entropyTools.parallelTask(self.__atomMatchStoreCache, data)
+            task.parallel_wait()
+            task.start()
+
+    def __atomMatchStoreCache(self, data):
+        try:
+            dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+data['hash'],data['result'])
+        except IOError:
+            pass
 
     # function that validate one atom by reading keywords settings
     # idpackageValidatorCache = {} >> function cache

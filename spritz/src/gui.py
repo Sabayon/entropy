@@ -231,7 +231,7 @@ class YumexProgress:
         if self.parent.quitNow:
             self.parent.exitNow()
         # Skip if fraction not have changed
-        if not frac >= self.lastFrac and frac < 1:
+        if frac < 1:
             return
         while gtk.events_pending():      # process gtk events
            gtk.main_iteration()

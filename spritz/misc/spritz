@@ -1,2 +1,38 @@
-#!/bin/bash
-python /usr/lib/entropy/spritz/spritz.py $@
+#!/usr/bin/python
+import sys, os
+spritz_path = " python /usr/lib/entropy/spritz/spritz.py"
+su_cmd = "xterm -e \"su -c '"+spritz_path+"'\""
+
+def setup_env():
+    global spritz_path, su_cmd
+    pathenv = os.getenv("PATH")
+    if os.path.isfile("/etc/profile.env"):
+        f = open("/etc/profile.env")
+        env_file = f.readlines()
+        for line in env_file:
+            line = line.strip()
+            if line.startswith("export PATH='"):
+                line = line[len("export PATH='"):]
+                line = line.rstrip("'")
+                for path in line.split(":"):
+                    pathenv += ":"+path
+                break
+    os.environ['PATH'] = pathenv
+
+    de_session = os.getenv('DESKTOP_SESSION')
+    path = os.getenv('PATH').split(":")
+    if de_session.find("kde") != -1:
+        for item in path:
+            itempath = os.path.join(item,'kdesu')
+            if os.access(itempath,os.X_OK):
+                su_cmd = itempath+spritz_path
+                break
+    else:
+        if os.access('/usr/bin/gksu',os.X_OK):
+            su_cmd = '/usr/bin/gksu'+spritz_path
+
+
+
+setup_env()
+rc = os.system(su_cmd)
+sys.exit(rc)

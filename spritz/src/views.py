@@ -108,6 +108,7 @@ class EntropyPackageView:
         self.img_pkg_undoinstall = gtk.Image()
         self.set_pixbuf_to_image(self.img_pkg_undoinstall,self.pkg_undoinstall)
 
+        treeview.set_fixed_height_mode(True)
         self.view = treeview
         self.view.connect("button-release-event", self.load_menu)
         self.headers = [_( "Package" ), _( "Ver" ), _( "Summary" ), _( "Repo" ), _( "Architecture" ), _( "Size" )]
@@ -389,7 +390,7 @@ class EntropyPackageView:
         #self.create_text_column( _( "Download" ), 'sizeFmt' , size=80 )
         self.view.set_search_column( 1 )
         self.view.set_enable_search(False)
-        store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+        #store.set_sort_column_id(1, gtk.SORT_ASCENDING)# SLOOOW
         self.view.set_reorderable( False )
         return store
 

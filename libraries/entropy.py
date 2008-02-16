@@ -98,6 +98,10 @@ class EquoInterface(TextInterface):
 
         self.validate_repositories_cache()
 
+        self.validRepositories = []
+        self.validate_repositories()
+
+
         # now if we are on live, we should disable it
         # are we running on a livecd? (/proc/cmdline has "cdroot")
         if self.entropyTools.islive():
@@ -110,6 +114,17 @@ class EquoInterface(TextInterface):
                 self.purge_cache(False)
             except:
                 pass
+
+    def validate_repositories(self):
+        # valid repositories
+        del self.validRepositories[:]
+        for repoid in etpRepositoriesOrder:
+            # open database
+            try:
+                self.openRepositoryDatabase(repoid)
+                self.validRepositories.append(repoid)
+            except exceptionTools.RepositoryError:
+                continue # repo not available
 
     def validate_repositories_cache(self):
         # is the list of repos changed?
@@ -146,6 +161,7 @@ class EquoInterface(TextInterface):
         etpSys['rootdir'] = chroot
         initConfig_entropyConstants(etpSys['rootdir'])
         initConfig_clientConstants()
+        self.validate_repositories()
 
     def reopenClientDbconn(self):
         self.clientDbconn.closeDB()
@@ -296,10 +312,7 @@ class EquoInterface(TextInterface):
     def do_depcache(self):
         self.updateProgress(darkred("Dependencies"), importance = 2, type = "warning")
         self.updateProgress(darkred("Scanning repositories"), importance = 2, type = "warning")
-        names = set()
         keys = set()
-        depends = set()
-        atoms = set()
         for reponame in etpRepositoriesOrder:
             self.updateProgress(darkgreen("Scanning %s" % (etpRepositories[reponame]['description'],)) , importance = 1, type = "info", back = True)
             # get all packages keys
@@ -313,22 +326,8 @@ class EquoInterface(TextInterface):
             for info in pkgdata:
                 key = self.entropyTools.dep_getkey(info[0])
                 keys.add(key)
-                names.add(key.split("/")[1])
-                atoms.add(info[0])
-            # dependencies
-            pkgdata = dbconn.listAllDependencies()
-            for info in pkgdata:
-                depends.add(info[1])
 
         self.updateProgress(darkgreen("Resolving metadata"), importance = 1, type = "warning")
-        maxlen = len(names)
-        cnt = 0
-        for name in names:
-            cnt += 1
-            self.updateProgress(darkgreen("Resolving name: %s") % (
-                                                name
-                                        ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
-            self.atomMatch(name)
         maxlen = len(keys)
         cnt = 0
         for key in keys:
@@ -337,22 +336,6 @@ class EquoInterface(TextInterface):
                                                 key
                                         ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
             self.atomMatch(key)
-        maxlen = len(atoms)
-        cnt = 0
-        for atom in atoms:
-            cnt += 1
-            self.updateProgress(darkgreen("Resolving atom: %s") % (
-                                                atom
-                                        ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
-            self.atomMatch(atom)
-        maxlen = len(depends)
-        cnt = 0
-        for depend in depends:
-            cnt += 1
-            self.updateProgress(darkgreen("Resolving dependency: %s") % (
-                                                depend
-                                        ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
-            self.atomMatch(depend)
 
         # we can barely ignore any exception from here
         # especially cases where client db does not exist
@@ -628,6 +611,7 @@ class EquoInterface(TextInterface):
             # reopen Client Database, this will make treeupdates to be re-read
             self.reopenClientDbconn()
             self.closeAllRepositoryDatabases()
+            self.validate_repositories()
         return 0
 
     # tell if a new equo release is available, returns True or False
@@ -714,15 +698,6 @@ class EquoInterface(TextInterface):
 
     def atomMatch(self, atom, caseSensitive = True, matchSlot = None, matchBranches = (), packagesFilter = True, multiMatch = False, multiRepo = False):
 
-        valid_repos = []
-        for repoid in etpRepositoriesOrder:
-            # open database
-            try:
-                self.openRepositoryDatabase(repoid)
-                valid_repos.append(repoid)
-            except exceptionTools.RepositoryError:
-                continue # repo not available
-
         if self.xcache:
 
             m_hash = -2
@@ -735,7 +710,7 @@ class EquoInterface(TextInterface):
                             hash(str(matchSlot)) + \
                             hash(tuple(matchBranches)) + \
                             hash(packagesFilter) + \
-                            hash(tuple(valid_repos)) + \
+                            hash(tuple(self.validRepositories)) + \
                             hash(tuple(etpRepositories.keys())) + \
                             m_hash + r_hash + s_hash
                         )
@@ -744,7 +719,7 @@ class EquoInterface(TextInterface):
                 return cached
 
         repoResults = {}
-        for repo in valid_repos:
+        for repo in self.validRepositories:
 
             # check if repo exists
             if not repo.endswith(".tbz2"):
@@ -791,21 +766,23 @@ class EquoInterface(TextInterface):
                     if not x.endswith(".tbz2"):
                         del repoResults[x]
 
+            version_duplicates = set()
             versions = []
-            # get package information for all the entries
             for repo in repoResults:
                 dbconn = self.openRepositoryDatabase(repo)
                 packageInformation[repo] = {}
                 version = dbconn.retrieveVersion(repoResults[repo])
                 packageInformation[repo]['version'] = version
+                if version in versions:
+                    version_duplicates.add(version)
                 versions.append(version)
                 packageInformation[repo]['versiontag'] = dbconn.retrieveVersionTag(repoResults[repo])
                 packageInformation[repo]['revision'] = dbconn.retrieveRevision(repoResults[repo])
 
+            newerVersion = self.entropyTools.getNewerVersion(versions)[0]
             # if no duplicates are found, we're done
-            if len(versions) == len(set(versions)):
+            if not version_duplicates:
 
-                newerVersion = self.entropyTools.getNewerVersion(versions)[0]
                 for reponame in packageInformation:
                     if packageInformation[reponame]['version'] == newerVersion:
                         break
@@ -813,13 +790,7 @@ class EquoInterface(TextInterface):
 
             else:
 
-                newerVersion = self.entropyTools.getNewerVersion(versions)[0]
-                duplicatedEntries = self.entropyTools.extractDuplicatedEntries(versions)
-                needFiltering = False
-                if newerVersion in duplicatedEntries:
-                    needFiltering = True
-
-                if not needFiltering:
+                if newerVersion not in version_duplicates:
 
                     # we are fine, the newerVersion is not one of the duplicated ones
                     for reponame in packageInformation:
@@ -829,26 +800,25 @@ class EquoInterface(TextInterface):
 
                 else:
 
-                    # we have to decide which one is good
-                    # we have newerVersion
+                    del version_duplicates
                     conflictingEntries = {}
+                    tags_duplicates = set()
+                    tags = []
                     for repo in packageInformation:
                         if packageInformation[repo]['version'] == newerVersion:
                             conflictingEntries[repo] = {}
-                            conflictingEntries[repo]['versiontag'] = packageInformation[repo]['versiontag']
+                            versiontag = packageInformation[repo]['versiontag']
+                            if versiontag in tags:
+                                tags_duplicates.add(versiontag)
+                            tags.append(versiontag)
+                            conflictingEntries[repo]['versiontag'] = versiontag
                             conflictingEntries[repo]['revision'] = packageInformation[repo]['revision']
 
-                    # at this point compare tags
-                    tags = [conflictingEntries[x]['versiontag'] for x in conflictingEntries]
-                    newerTag = self.entropyTools.getNewerVersionTag(tags)[0]
-
-                    # is the chosen tag duplicated?
-                    duplicatedTags = self.entropyTools.extractDuplicatedEntries(tags)
-                    needFiltering = False
-                    if newerTag in duplicatedTags:
-                        needFiltering = True
-
-                    if not needFiltering:
+                    del packageInformation
+                    newerTag = tags[:]
+                    newerTag.reverse()
+                    newerTag = newerTag[0]
+                    if not newerTag in tags_duplicates:
 
                         # we're finally done
                         for reponame in conflictingEntries:
@@ -859,31 +829,32 @@ class EquoInterface(TextInterface):
                     else:
 
                         # yes, it is. we need to compare revisions
-                        conflictingTags = {}
+                        conflictingRevisions = {}
+                        revisions = []
+                        revisions_duplicates = set()
                         for repo in conflictingEntries:
                             if conflictingEntries[repo]['versiontag'] == newerTag:
-                                conflictingTags[repo] = {}
-                                conflictingTags[repo]['revision'] = conflictingEntries[repo]['revision']
+                                conflictingRevisions[repo] = {}
+                                versionrev = conflictingEntries[repo]['revision']
+                                if versionrev in revisions:
+                                    revisions_duplicates.add(versionrev)
+                                revisions.append(versionrev)
+                                conflictingRevisions[repo]['revision'] = versionrev
 
-                        revisions = [conflictingTags[x]['revision'] for x in conflictingTags]
+                        del conflictingEntries
                         newerRevision = max(revisions)
-                        duplicatedRevisions = self.entropyTools.extractDuplicatedEntries(revisions)
-                        needFiltering = False
-                        if newerRevision in duplicatedRevisions:
-                            needFiltering = True
+                        if not newerRevision in revisions_duplicates:
 
-                        if not needFiltering:
-
-                            for reponame in conflictingTags:
-                                if conflictingTags[reponame]['revision'] == newerRevision:
+                            for reponame in conflictingRevisions:
+                                if conflictingRevisions[reponame]['revision'] == newerRevision:
                                     break
                             dbpkginfo = (repoResults[reponame],reponame)
 
                         else:
 
                             # ok, we must get the repository with the biggest priority
-                            for reponame in valid_repos:
-                                if reponame in conflictingTags:
+                            for reponame in self.validRepositories:
+                                if reponame in conflictingRevisions:
                                     break
                             dbpkginfo = (repoResults[reponame],reponame)
 
@@ -1338,7 +1309,7 @@ class EquoInterface(TextInterface):
 
             count += 1
             if (count%10 == 0) or (count == atomlen) or (count == 1):
-                self.updateProgress(":: Sorting dependencies "+str(round((float(count)/atomlen)*100,1))+"% ::", importance = 0, type = "info", back = True)
+                self.updateProgress("Sorting dependencies", importance = 0, type = "info", back = True, header = ":: ", footer = " ::", percent = True, count = (count,atomlen))
 
             # check if atomInfo is in matchfilter 
 
@@ -1510,7 +1481,7 @@ class EquoInterface(TextInterface):
             sum_hashes += dbconn.tablesChecksum()
         return sum_hashes
 
-    def get_available_packges_chash(self, branch):
+    def get_available_packages_chash(self, branch):
         repo_digest = self.all_repositories_checksum()
         # client digest not needed, cache is kept updated
         c_hash = str(hash(repo_digest) + \
@@ -1523,7 +1494,7 @@ class EquoInterface(TextInterface):
     def calculate_available_packages(self):
 
         if self.xcache:
-            c_hash = self.get_available_packges_chash(etpConst['branch'])
+            c_hash = self.get_available_packages_chash(etpConst['branch'])
             disk_cache = self.dumpTools.loadobj(etpCache['world_available'])
             if disk_cache != None:
                 try:
@@ -1599,7 +1570,7 @@ class EquoInterface(TextInterface):
         for idpackage in idpackages:
             count += 1
             if (count%10 == 0) or (count == maxlen) or (count == 1):
-                self.updateProgress("Calculating world packages", importance = 0, type = "info", back = True, header = "::", count = (count,maxlen), percent = True, footer = " ::")
+                self.updateProgress("Calculating world packages", importance = 0, type = "info", back = True, header = ":: ", count = (count,maxlen), percent = True, footer = " ::")
             tainted = False
             myscopedata = self.clientDbconn.getScopeData(idpackage)
             #atom = myscopedata[0]
@@ -2479,7 +2450,7 @@ class PackageInterface:
 
         # update world available cache
         if self.Entropy.xcache and (self.action in ("remove","install")):
-            c_hash = self.Entropy.get_available_packges_chash(etpConst['branch'])
+            c_hash = self.Entropy.get_available_packages_chash(etpConst['branch'])
             disk_cache = self.Entropy.dumpTools.loadobj(etpCache['world_available'])
             if disk_cache != None:
                 try:
@@ -2999,6 +2970,7 @@ class PackageInterface:
         tdict = {}
         tdict['unpackdir'] = self.infoDict['unpackdir']
         task = self.Entropy.entropyTools.parallelTask(self.__cleanup_package, tdict)
+        task.parallel_wait()
         task.start()
         # we don't care if cleanupPackage fails since it's not critical
         return 0
@@ -3970,6 +3942,8 @@ class RepoInterface:
             self.Entropy.cycleDone()
 
         # keep them closed
+        self.Entropy.closeAllRepositoryDatabases()
+        self.validate_repositories()
         self.Entropy.closeAllRepositoryDatabases()
 
         # clean caches

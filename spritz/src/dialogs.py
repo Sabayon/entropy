@@ -32,23 +32,35 @@ from misc import const,cleanMarkupSting,YumexConf,unicode2htmlentities
 from i18n import _
 
 class ConfimationDialog:
-    def __init__( self, parent, pkgs, top_text = None, bottom_text = None, bottom_data = None ):
+    def __init__( self, parent, pkgs, top_text = None, bottom_text = None, bottom_data = None, sub_text = None, cancel = True ):
 
         self.xml = gtk.glade.XML( const.GLADE_FILE, 'confirmation',domain="yumex" )
         self.dialog = self.xml.get_widget( "confirmation" )
         self.dialog.set_transient_for( parent )
         self.action = self.xml.get_widget( "confAction" )
+        self.subaction = self.xml.get_widget( "confSubtext" )
         self.bottomTitle = self.xml.get_widget( "bottomTitle" )
         self.bottomData = self.xml.get_widget( "bottomData" )
+        self.cancelbutton = self.xml.get_widget( "cancelbutton2" )
+        self.bottomtext = self.xml.get_widget( "bottomTitle" )
+        self.lowerhbox = self.xml.get_widget( "hbox63" )
+
+        self.dobottomtext = bottom_text
+        self.dobottomdata = bottom_data
+        self.docancel = cancel
 
         # setup text
         if top_text == None:
             top_text = _("Please confirm the actions above")
 
+        if sub_text == None:
+            sub_text = ""
+
         tit = "<span size='x-large'>%s</span>" % (top_text,)
         self.action.set_markup( tit )
         if bottom_text != None: self.bottomTitle.set_markup( bottom_text )
         if bottom_data != None: self.bottomData.set_text( bottom_data )
+        if sub_text != None: self.subaction.set_text( sub_text )
 
         self.pkgs = pkgs
         self.pkg = self.xml.get_widget( "confPkg" )
@@ -58,6 +70,12 @@ class ConfimationDialog:
 
     def run( self ):
         self.dialog.show_all()
+        if not self.docancel:
+            self.cancelbutton.hide()
+        if not self.dobottomtext:
+            self.bottomtext.hide()
+        if not self.dobottomdata:
+            self.lowerhbox.hide()
         return self.dialog.run()
 
     def setup_view( self, view ):
@@ -67,13 +85,15 @@ class ConfimationDialog:
         self.create_text_column( _( "Description" ), view, 1 )
         return model
 
-    def create_text_column( self, hdr, view, colno, min_width=0 ):
-         cell = gtk.CellRendererText()    # Size Column
-         column = gtk.TreeViewColumn( hdr, cell, markup=colno )
-         column.set_resizable( True )
-         if not min_width == 0:
-             column.set_min_width( min_width )
-         view.append_column( column )
+    def create_text_column( self, hdr, view, colno, min_width=0, max_width=0 ):
+        cell = gtk.CellRendererText()    # Size Column
+        column = gtk.TreeViewColumn( hdr, cell, markup=colno )
+        column.set_resizable( True )
+        if min_width:
+            column.set_min_width( min_width )
+        if max_width:
+            column.set_max_width( max_width )
+        view.append_column( column )
 
 
     def show_data( self, model, pkgs ):

@@ -32,7 +32,7 @@ import packages
 
 class const:
     ''' This Class contains all the Constants in Yumex'''
-    __spritz_version__   = "0.2"
+    __spritz_version__   = "0.3"
     # Paths
     MAIN_PATH = os.path.abspath( os.path.dirname( sys.argv[0] ) );
     GLADE_FILE = MAIN_PATH+'/spritz.glade'
@@ -152,6 +152,8 @@ class SpritzQueue:
         self.packages = {}
         self.groups = {}
         self.before = []
+        self.keyslotFilter = set()
+        self._keyslotFilter = set()
         self.clear()
         self.Entropy = None
         self.etpbase = None
@@ -177,6 +179,7 @@ class SpritzQueue:
         self.groups['i'] = []
         self.groups['r'] = []
         del self.before[:]
+        self.keyslotFilter.clear()
 
     def get( self, action = None ):
         if action == None:
@@ -190,13 +193,48 @@ class SpritzQueue:
             size += len(self.packages[key])
         return size
 
+    def keySlotFiltering(self, queue):
+
+        blocked = []
+        for pkg in queue:
+            match = pkg.matched_atom
+            dbconn = self.Entropy.openRepositoryDatabase(match[1])
+            keyslot = dbconn.retrieveKeySlot(match[0])
+            if keyslot in self.keyslotFilter:
+                blocked.append(pkg)
+            else:
+                self._keyslotFilter.add(keyslot)
+
+        return blocked
+
+    def showKeySlotErrorMessage(self, blocked):
+
+        confirmDialog = self.dialogs.ConfimationDialog( self.ui.main,
+                    list(blocked),
+                    top_text = _("Attention"),
+                    sub_text = _("There are packages that can't be installed at the same time, thus are blocking your request:"),
+                    bottom_text = "",
+                    cancel = False
+        )
+        confirmDialog.run()
+        confirmDialog.destroy()
+
+
     def add(self, pkgs):
 
         if type(pkgs) is not list:
             pkgs = [pkgs]
 
         action = [pkgs[0].queued]
+
         if action[0] in ("u","i","rr"): # update/install
+
+            self._keyslotFilter.clear()
+            blocked = self.keySlotFiltering(pkgs)
+            if blocked:
+                self.showKeySlotErrorMessage(blocked)
+                return 1,0
+            self.keyslotFilter |= self._keyslotFilter
 
             action = ["u","i","rr"]
             tmpqueue = [x for x in pkgs if x not in self.packages['u']+self.packages['i']+self.packages['rr']]
@@ -230,9 +268,9 @@ class SpritzQueue:
             install_todo = []
             if runQueue:
                 #print "runQueue",runQueue
-                for dep_pkg in self.etpbase.getPackages('updates') + \
-                    self.etpbase.getPackages('available') + \
-                    self.etpbase.getPackages('reinstallable'):
+                for dep_pkg in self.etpbase.getRawPackages('updates') + \
+                    self.etpbase.getRawPackages('available') + \
+                    self.etpbase.getRawPackages('reinstallable'):
                         for matched_atom in runQueue:
                             if (dep_pkg.matched_atom == matched_atom) and \
                                 (dep_pkg not in self.packages[actions[0]]+self.packages[actions[1]]+self.packages[actions[2]]) and \
@@ -241,7 +279,7 @@ class SpritzQueue:
 
             # removalQueue
             if removalQueue:
-                for rem_pkg in self.etpbase.getPackages('installed'):
+                for rem_pkg in self.etpbase.getRawPackages('installed'):
                     for matched_atom in removalQueue:
                         if rem_pkg.matched_atom == (matched_atom,0) and (rem_pkg not in remove_todo):
                             remove_todo.append(rem_pkg)
@@ -250,6 +288,7 @@ class SpritzQueue:
                 ok = True
 
                 items_before = [x for x in install_todo+remove_todo if x not in self.before]
+
                 if len(items_before) > 1:
                     ok = False
                     size = 0
@@ -286,7 +325,6 @@ class SpritzQueue:
                 else:
                     return -10
 
-
         return status
 
     def elaborateRemoval(self, list, nodeps):
@@ -295,7 +333,7 @@ class SpritzQueue:
         removalQueue = self.Entropy.retrieveRemovalQueue(list)
         if removalQueue:
             todo = []
-            for rem_pkg in self.etpbase.getPackages('installed'):
+            for rem_pkg in self.etpbase.getRawPackages('installed'):
                 for matched_atom in removalQueue:
                     if rem_pkg.matched_atom == (matched_atom,0):
                         if rem_pkg not in self.packages[rem_pkg.action] and (rem_pkg not in todo):

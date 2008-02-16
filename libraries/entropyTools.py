@@ -1354,7 +1354,7 @@ def alphaSorter(seq):
                 badchrs.remove(d)
         badchrs = ''.join(badchrs)
         return s.strip(badchrs)
-    
+
     def chr_index(value, sortorder):
         result = []
         for d in stripter(value, order):
@@ -1363,7 +1363,7 @@ def alphaSorter(seq):
                 dindex = len(sortorder)+ord(d)
             result.append(dindex)
         return result
-    
+
     order = ( '0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz' )
     deco = [(chr_index(a, order), a) for a in seq]
     deco.sort()

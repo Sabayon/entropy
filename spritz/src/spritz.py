@@ -174,6 +174,15 @@ class SpritzController(Controller):
         os.system(diffcmd)
         self.runEditor(randomfile, delete = True)
 
+    def on_switchBranch_clicked( self, widget ):
+        branch = inputBox(self.ui.main, _("Branch switching"), _("Enter a valid branch you want to switch to")+"     ", input_text = etpConst['branch'])
+        branches = self.Equo.listAllAvailableBranches()
+        if branch not in branches:
+            okDialog( self.ui.main, _("The selected branch is not available.") )
+        else:
+            self.Equo.move_to_branch(branch)
+            okDialog( self.ui.main, _("New branch is %s. It is suggested to synchronize repositories.") % (etpConst['branch'],) )
+
     def on_shiftUp_clicked( self, widget ):
         idx, repoid, iterdata = self.__getSelectedRepoIndex()
         if idx != None:
@@ -552,16 +561,16 @@ class SpritzController(Controller):
 
     def on_select_clicked(self,widget):
         ''' Package Add All button handler '''
-        busyCursor(self.ui.main)
+        self.setBusy()
         self.pkgView.selectAll()
-        normalCursor(self.ui.main)
+        self.unsetBusy()
 
     def on_deselect_clicked(self,widget):
         ''' Package Remove All button handler '''
         self.on_clear_clicked(widget)
-        busyCursor(self.ui.main)
+        self.setBusy()
         self.pkgView.deselectAll()
-        normalCursor(self.ui.main)
+        self.unsetBusy()
 
     def on_skipMirror_clicked(self,widget):
         if self.skipMirror:
@@ -692,6 +701,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.catsView.etpbase = self.etpbase
         self.lastPkgPB = "updates"
         self.etpbase.setFilter(filters.yumexFilter.processFilters)
+        self.treeViewCache = {}
 
         self.setupEditor()
         # Setup GUI
@@ -761,6 +771,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         gtkEventThread.endProcessing()
 
     def setupSpritz(self):
+        self.treeViewCache.clear()
         msg = _('Generating metadata. Please wait.')
         self.setStatus(msg)
         self.addPackages()
@@ -789,9 +800,9 @@ class SpritzApplication(SpritzController,SpritzGUI):
         except exceptionTools.CacheCorruptionError:
             pass
         if cached == None:
-            self.startWorking()
+            self.setBusy()
             cached = self.Equo.FileUpdates.scanfs()
-            self.endWorking()
+            self.unsetBusy()
         if cached:
             self.filesView.populate(cached)
 
@@ -849,19 +860,44 @@ class SpritzApplication(SpritzController,SpritzGUI):
     def setupRepoView(self):
         self.repoView.populate()
 
+    def setBusy(self):
+        #while gtk.events_pending():      # process gtk events
+        #    time.sleep(0.01)
+        #    gtk.main_iteration()
+        busyCursor(self.ui.main)
+
+    def unsetBusy(self):
+        normalCursor(self.ui.main)
+        #while gtk.events_pending():      # process gtk events
+        #    time.sleep(0.01)
+        #    gtk.main_iteration()
+
     def addPackages(self):
+
+        def comeback(bootstrap):
+            self.unsetBusy()
+            if self.doProgress: self.progress.hide() #Hide Progress
+            if bootstrap:
+                self.setPage('packages')
+
         bootstrap = False
         if (self.Equo.get_world_update_cache(empty_deps = False) == None):
             bootstrap = True
             self.setPage('output')
         self.progress.total.hide()
-        busyCursor(self.ui.main)
+        self.setBusy()
+
+        if bootstrap:
+            self.startWorking()
+            time.sleep(1)
+            self.endWorking()
+
         action = self.lastPkgPB
         if action == 'all':
             masks = ['installed','available']
         else:
             masks = [action]
-        self.pkgView.store.clear()
+
         self.etpbase.clearPackages()
         allpkgs = []
         if self.doProgress: self.progress.total.next() # -> Get lists
@@ -874,22 +910,36 @@ class SpritzApplication(SpritzController,SpritzGUI):
             allpkgs.extend(pkgs)
             self.setStatus(_("Ready"))
         if self.doProgress: self.progress.total.next() # -> Sort Lists
-        allpkgs.sort()
+
+        def mycmp(x,y):
+            return cmp(x,y)
+        my_hash = hash(tuple(action))
+        if self.treeViewCache.has_key(my_hash):
+            allpkgs = self.treeViewCache[my_hash]
+        else:
+            try:
+                allpkgs = sorted(allpkgs,mycmp)
+            except: # python 2.4 support
+                allpkgs.sort()
+            # store
+            # FIXME: we need to keep caching disabled because searches won't work then
+            #self.treeViewCache[my_hash] = allpkgs
+
+        self.pkgView.store.clear()
         self.ui.viewPkg.set_model(None)
         for po in allpkgs:
-            self.pkgView.store.append([po,str(po)])
+            self.pkgView.store.append((po,str(po)))
         self.ui.viewPkg.set_model(self.pkgView.store)
         self.progress.total.show()
 
-        normalCursor(self.ui.main)
-        if self.doProgress: self.progress.hide() #Hide Progress
-        if bootstrap:
-            self.setPage('packages')
+        self.treeViewPackages = my_hash
+
+        comeback(bootstrap)
 
     def addCategoryPackages(self,cat = None):
         msg = _('Package View Population')
         self.setStatus(msg)
-        busyCursor(self.ui.main)
+        self.setBusy()
         self.pkgView.store.clear()
         pkgs = self.yumbase.getPackagesByCategory(cat)
         if pkgs:
@@ -901,13 +951,13 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.ui.viewPkg.set_search_column( 2 )
             msg = _('Package View Population Completed')
             self.setStatus(msg)
-        normalCursor(self.ui.main)
+        self.unsetBusy()
 
 
     def addCategories(self, fn, para, sortkeys,splitkeys ):
         msg = _('Category View Population')
         self.setStatus(msg)
-        busyCursor(self.ui.main)
+        self.setBusy()
         getterfn = getattr( self.etpbase, fn )
         if para != '':
             lst, keys = getterfn( self.lastPkgPB, para )
@@ -923,7 +973,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.catView.populate(keydict,True)
         self.etpbase.setCategoryPackages(lst)
         self.catView.view.set_cursor((0,))
-        normalCursor(self.ui.main)
+        self.unsetBusy()
         msg = _('Category View Population Completed')
         self.setStatus(msg)
 
@@ -949,7 +999,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.startWorking()
             self.progress.show()
             self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
-            # XXX handle return codes
+
             queue = pkgs['i']+pkgs['u']
             install_queue = [x.matched_atom for x in queue]
             removal_queue = [x.matched_atom[0] for x in pkgs['r']]
@@ -957,7 +1007,8 @@ class SpritzApplication(SpritzController,SpritzGUI):
             if install_queue or removal_queue:
                 controller = QueueExecutor(self)
                 e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache)
-                print e,i
+                if e != 0:
+                    okDialog( self.ui.main, _("Attention. An error occured when processing the queue.\nPlease have a look in the processing terminal.") )
                 # XXX let it sleep a bit to allow all other threads to flush
                 while gtk.events_pending():
                     time.sleep(0.1)
@@ -985,34 +1036,11 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.progress.show()
         return rc == gtk.RESPONSE_OK
 
-    def processTransaction( self ):
-        self.setStatus( _( "Processing packages (See output for details)" ) )
-        try:
-            self.startWorking()
-            self.progress.show()
-            self.progress.total.next() # -> Download
-            self.enableSkipMirror()   # Enable SkipMirror
-            #self.etpbase._downloadPackages()
-            self.disableSkipMirror()   # Disable SkipMirror
-            # Skip Transaction is downloadonly is set.
-            if not self.settings.downloadonly:
-                self.progress.total.next() # -> Transaction Test
-                self.progress.total.next() # -> Run  Transaction
-            self.progress.hide()
-            self.endWorking()
-            rc = infoMessage( self.ui.main, _( "Packages Processing" ), _( "Packages Processing completed ok" ) )
-            return rc
-        except Errors.YumBaseError, e:
-            self.endWorking()
-            errorMessage( self.ui.main, _( "Error" ), _( "Error in Transaction" ), str(e) )
-            self.logger.error(str(e))
-            return None
-
     def populateCategories(self):
-        busyCursor(self.ui.main)
+        self.setBusy()
         self.etpbase.populateCategories()
         self.catsView.populate(self.etpbase.getCategories())
-        normalCursor(self.ui.main)
+        self.unsetBusy()
 
     def populateCategoryPackages(self, cat):
         #grp = self.etpbase.comps.return_group(id)
@@ -1064,6 +1092,10 @@ if __name__ == "__main__":
         mainApp = SpritzApplication()
         gtk.main()
     except SystemExit, e:
+        print "Quit by User"
+        gtkEventThread.doQuit()
+        sys.exit(1)
+    except KeyboardInterrupt:
         print "Quit by User"
         gtkEventThread.doQuit()
         sys.exit(1)

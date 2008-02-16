@@ -74,10 +74,7 @@ class EntropyPackages:
         for flt in masks:
             if self._packages.has_key(flt):
                 continue
-            if flt == 'available':
-                self._packages[flt] = self.getAvailable()
-            else:
-                self._packages[flt] = [p for p in self._getPackages(flt)]
+            self._packages[flt] = [p for p in self._getPackages(flt)]
 
     def setCategoryPackages(self,pkgdict = {}):
         self._categoryPackages = pkgdict
@@ -134,21 +131,6 @@ class EntropyPackages:
         else:
             return self.doFiltering(self.getRawPackages(flt))
 
-    def getAvailable(self):
-        if not self._packages.has_key('updates'):
-            self.populatePackages(['updates'])
-        polist = []
-        updlist = []
-        for po in self._packages['updates']:
-            polist.append(po)
-            updlist.append(po.pkgtup)
-        avail = [p for p in self._getPackages('available')]
-        for po in avail:
-            if not po.pkgtup in updlist:
-                polist.append(po)
-        return polist
-
-
     def getAllPackages(self):
         pkgs = []
         pkgs.extend(self.getPackages('installed'))
@@ -198,10 +180,10 @@ class EntropyPackages:
 
     def _getPackages(self,mask):
         global color_install,color_update,color_obsolete
+        #print "mask:",mask
         if mask == 'installed':
             for idpackage in self.Entropy.clientDbconn.listAllIdpackages():
                 yp = EntropyPackage((idpackage,0), self.recent, False)
-                yp.selected = True
                 yp.action = 'r'
                 yp.color = color_install
                 yield yp
@@ -213,8 +195,6 @@ class EntropyPackages:
                 yp.action = 'i'
                 yield yp
         elif mask == 'updates':
-            # get updates
-            #XXX add empty_deps and branch switching support
             updates, remove, fine = self.Entropy.calculate_world_updates()
             del remove, fine
             for pkgdata in updates:
@@ -229,10 +209,10 @@ class EntropyPackages:
                 if not upd and matched:
                     if matched[0] != -1:
                         yp = EntropyPackage(matched, self.recent, False)
-                        yp.selected = True
                         yp.action = 'rr'
                         yp.color = color_install
                         yield yp
+        #print "endmask:",mask
 
     def getByProperty( self, type, category ):
         list = self.getPackages(type)

@@ -395,7 +395,6 @@ except Exception:
         sys.exit(1)
 
     print
-    print_error(darkred("!!! If the error is about missing tables in the database, just run 'equo database generate' again !!!"))
     print_error(blue("Ok, back here. Let me see if you are connected to the Internet. Yes, I am blue now, so?"))
 
     conntest = entropyTools.get_remote_data(etpConst['conntestlink'])

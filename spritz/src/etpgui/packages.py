@@ -30,14 +30,12 @@ class PackageWrapper:
         else:
             self.dbconn = EquoConnection.openRepositoryDatabase(matched_atom[1])
             self.from_installed = False
-        self.matched_atom = matched_atom[:]
-        self.idpackage = self.matched_atom[0]
-        self.Entropy = EquoConnection
+        self.matched_atom = matched_atom
         self.available = avail
         self.do_purge = False
 
     def __str__(self):
-        return str(self.dbconn.retrieveAtom(self.idpackage)+"~"+str(self.dbconn.retrieveRevision(self.idpackage)))
+        return str(self.dbconn.retrieveAtom(self.matched_atom[0])+"~"+str(self.dbconn.retrieveRevision(self.matched_atom[0])))
 
     def __cmp__(self, pkg):
         n1 = str(self)
@@ -53,31 +51,31 @@ class PackageWrapper:
         return self.matched_atom
 
     def getName(self):
-        return self.dbconn.retrieveAtom(self.idpackage)
+        return self.dbconn.retrieveAtom(self.matched_atom[0])
 
     def getTup(self):
-        return (self.getName(),self.getRepoId(),self.dbconn.retrieveVersion(self.idpackage),self.dbconn.retrieveVersionTag(self.idpackage),self.dbconn.retrieveRevision(self.idpackage))
+        return (self.getName(),self.getRepoId(),self.dbconn.retrieveVersion(self.matched_atom[0]),self.dbconn.retrieveVersionTag(self.matched_atom[0]),self.dbconn.retrieveRevision(self.matched_atom[0]))
 
     def versionData(self):
-        return (self.dbconn.retrieveVersion(self.idpackage),self.dbconn.retrieveVersionTag(self.idpackage),self.dbconn.retrieveRevision(self.idpackage))
+        return (self.dbconn.retrieveVersion(self.matched_atom[0]),self.dbconn.retrieveVersionTag(self.matched_atom[0]),self.dbconn.retrieveRevision(self.matched_atom[0]))
 
     def getRepoId(self):
         if self.matched_atom[1] == 0:
-            return self.dbconn.retrievePackageFromInstalledTable(self.idpackage)
+            return self.dbconn.retrievePackageFromInstalledTable(self.matched_atom[0])
         else:
             return self.matched_atom[1]
 
     def getIdpackage(self):
-        return self.idpackage
+        return self.matched_atom[0]
 
     def getRevision(self):
-        return self.dbconn.retrieveRevision(self.idpackage)
+        return self.dbconn.retrieveRevision(self.matched_atom[0])
 
     def getSysPkg(self):
         if not self.from_installed:
             return False
         # check if it's a system package
-        s = self.Entropy.validatePackageRemoval(self.idpackage)
+        s = EquoConnection.validatePackageRemoval(self.matched_atom[0])
         return not s
 
     # 0: from installed db, so it's installed for sure
@@ -87,12 +85,12 @@ class PackageWrapper:
     def getInstallStatus(self):
         if self.from_installed:
             return 0
-        key, slot = self.dbconn.retrieveKeySlot(self.idpackage)
-        matches = self.Entropy.clientDbconn.searchKeySlot(key,slot)
+        key, slot = self.dbconn.retrieveKeySlot(self.matched_atom[0])
+        matches = EquoConnection.clientDbconn.searchKeySlot(key,slot)
         if not matches:
             return 1
         else:
-            rc, matched = self.Entropy.check_package_update(key+":"+slot)
+            rc, matched = EquoConnection.check_package_update(key+":"+slot)
             if rc:
                 return 2
             else:
@@ -100,26 +98,26 @@ class PackageWrapper:
 
     def getVer(self):
         tag = ""
-        vtag = self.dbconn.retrieveVersionTag(self.idpackage)
+        vtag = self.dbconn.retrieveVersionTag(self.matched_atom[0])
         if vtag:
             tag = "#"+vtag
-        tag += "~"+str(self.dbconn.retrieveRevision(self.idpackage))
-        return self.dbconn.retrieveVersion(self.idpackage)+tag
+        tag += "~"+str(self.dbconn.retrieveRevision(self.matched_atom[0]))
+        return self.dbconn.retrieveVersion(self.matched_atom[0])+tag
 
     def getSlot(self):
-        return self.dbconn.retrieveSlot(self.idpackage)
+        return self.dbconn.retrieveSlot(self.matched_atom[0])
 
     def getKeySlot(self):
-        return self.dbconn.retrieveKeySlot(self.idpackage)
+        return self.dbconn.retrieveKeySlot(self.matched_atom[0])
 
     def getDescription(self):
-        return self.dbconn.retrieveDescription(self.idpackage)
+        return self.dbconn.retrieveDescription(self.matched_atom[0])
 
     def getDownSize(self):
-        return self.dbconn.retrieveSize(self.idpackage)
+        return self.dbconn.retrieveSize(self.matched_atom[0])
 
     def getDiskSize(self):
-        return self.dbconn.retrieveOnDiskSize(self.idpackage)
+        return self.dbconn.retrieveOnDiskSize(self.matched_atom[0])
 
     def getIntelligentSize(self):
         if self.from_installed:
@@ -128,69 +126,57 @@ class PackageWrapper:
             return self.getDownSizeFmt()
 
     def getDownSizeFmt(self):
-        return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveSize(self.idpackage))
+        return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveSize(self.matched_atom[0]))
 
     def getDiskSizeFmt(self):
-        return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveOnDiskSize(self.idpackage))
+        return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveOnDiskSize(self.matched_atom[0]))
 
     def getArch(self):
         return etpConst['currentarch']
 
     def getEpoch(self):
-        return self.dbconn.retrieveDateCreation(self.idpackage)
+        return self.dbconn.retrieveDateCreation(self.matched_atom[0])
 
     def getRel(self):
-        return self.dbconn.retrieveBranch(self.idpackage)
-
-    def _toUTF( self, txt ):
-        """ this function convert a string to unicode to make gtk happy"""
-        rc=""
-        if isinstance(txt,types.UnicodeType):
-            return txt
-        else:
-            try:
-                rc = unicode( txt, 'utf-8' )
-            except UnicodeDecodeError, e:
-                rc = unicode( txt, 'iso-8859-1' )
-            return rc
+        return self.dbconn.retrieveBranch(self.matched_atom[0])
 
     def getAttr(self,attr):
         if attr == "description":
-            return self.dbconn.retrieveDescription(self.idpackage)
+            return self.dbconn.retrieveDescription(self.matched_atom[0])
         elif attr == "category":
-            return self.dbconn.retrieveCategory(self.idpackage)
+            return self.dbconn.retrieveCategory(self.matched_atom[0])
         elif attr == "license":
-            return self.dbconn.retrieveLicense(self.idpackage)
+            return self.dbconn.retrieveLicense(self.matched_atom[0])
         elif attr == "creationdate":
-            return self.dbconn.retrieveDateCreation(self.idpackage)
+            return self.dbconn.retrieveDateCreation(self.matched_atom[0])
         elif attr == "version":
-            return self.dbconn.retrieveVersion(self.idpackage)
+            return self.dbconn.retrieveVersion(self.matched_atom[0])
         elif attr == "revision":
-            return self.dbconn.retrieveRevision(self.idpackage)
+            return self.dbconn.retrieveRevision(self.matched_atom[0])
         elif attr == "versiontag":
-            t = self.dbconn.retrieveVersionTag(self.idpackage)
+            t = self.dbconn.retrieveVersionTag(self.matched_atom[0])
             if not t: return "None"
             return t
         elif attr == "branch":
-            return self.dbconn.retrieveBranch(self.idpackage)
+            return self.dbconn.retrieveBranch(self.matched_atom[0])
         elif attr == "name":
-            return self.dbconn.retrieveName(self.idpackage)
+            return self.dbconn.retrieveName(self.matched_atom[0])
         elif attr == "slot":
-            return self.dbconn.retrieveSlot(self.idpackage)
+            return self.dbconn.retrieveSlot(self.matched_atom[0])
 
     def _get_time( self ):
-        return self.dbconn.retrieveDateCreation(self.idpackage)
+        return self.dbconn.retrieveDateCreation(self.matched_atom[0])
 
     def get_changelog( self ):
         return "No ChangeLog"
 
     def get_filelist( self ):
-        c = list(self.dbconn.retrieveContent(self.idpackage))
+        c = list(self.dbconn.retrieveContent(self.matched_atom[0]))
         c.sort()
         return c
 
     def get_fullname( self ):
-        return self.dbconn.retrieveAtom(self.idpackage)
+        return self.dbconn.retrieveAtom(self.matched_atom[0])
 
     pkg =  property(fget=getPkg)
     name =  property(fget=getName)
