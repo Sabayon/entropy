@@ -191,13 +191,17 @@ class EntropyPackageView:
         self.loaded_event = event
         #if event.button != 3:
         #    return True
+
+        if event.x < 10:
+            return
+
         try:
-            row,column, x, y = widget.get_path_at_pos(int(event.x),int(event.y))
+            row, column, x, y = widget.get_path_at_pos(int(event.x),int(event.y))
         except TypeError:
-            return True
+            return
         self.event_click_pos = x,y
-        if column.get_title() != "S":
-            return True
+        if column.get_title() != "   S":
+            return
         model, iter = widget.get_selection().get_selected()
         if iter:
             obj = model.get_value( iter, 0 )
@@ -384,15 +388,15 @@ class EntropyPackageView:
         # Setup resent column
         cell1 = gtk.CellRendererPixbuf()    # new
         self.set_pixbuf_to_cell(cell1, self.pkg_install_ok )
-        column1 = gtk.TreeViewColumn( "S", cell1 )
+        column1 = gtk.TreeViewColumn( "   S", cell1 )
         column1.set_cell_data_func( cell1, self.new_pixbuf )
         column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column1.set_fixed_width( self.selection_width )
+        column1.set_fixed_width( self.selection_width+20 )
         column1.set_sort_column_id( -1 )
         self.view.append_column( column1 )
         column1.set_clickable( False )
 
-        self.create_text_column( _( "Package" ), 'name' , size=320)
+        self.create_text_column( _( "Package" ), 'name' , size=300)
         self.create_text_column( _( "Rev." ), 'revision' , size=40 )
         self.create_text_column( _( "Slot" ), 'slot' , size = 40 )
         self.create_text_column( _( "Repository" ), 'repoid', size = 100 )
@@ -401,7 +405,7 @@ class EntropyPackageView:
         self.view.set_search_column( 1 )
         self.view.set_enable_search(False)
         #store.set_sort_column_id(1, gtk.SORT_ASCENDING)# SLOOOW
-        self.view.set_reorderable( False )
+        #self.view.set_reorderable( False )
         return store
 
     def set_pixbuf_to_cell(self, cell, filename):

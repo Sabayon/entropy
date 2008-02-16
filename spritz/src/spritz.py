@@ -394,6 +394,9 @@ class SpritzController(Controller):
         ''' Left Side Toolbar Handler'''
         if page == "filesconf":
             self.populateFilesUpdate()
+        elif page == "packages" and not self.pageBootstrap:
+            self.addPackages()
+        self.pageBootstrap = False
         self.setNotebookPage(const.PAGES[page])
 
     def on_category_selected(self,widget):
@@ -715,14 +718,14 @@ class SpritzController(Controller):
                 self.populateCategoryPackages(id)
         self.unsetBusy()
 
+    '''
     def on_compsPkg_cursor_changed(self, widget):
         """ Handle selection of row in Comps Category  view  """
         ( model, iterator ) = widget.get_selection().get_selected()
         if model != None and iterator != None:
             pkg = model.get_value( iterator, 0 )
             if pkg:
-                self.catDesc.clear()
-                self.catDesc.write_line(pkg.description)
+    '''
 
 
 # Menu Handlers
@@ -1103,7 +1106,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.unsetBusy()
 
     def populateCategoryPackages(self, cat):
-        self.catDesc.clear()
         pkgs = self.etpbase.getPackagesByCategory(cat)
         self.catPackages.store.clear()
         self.ui.tvCatPackages.set_model(None)
