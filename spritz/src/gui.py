@@ -59,11 +59,7 @@ class YumexPackageInfo:
         if pkg.repoid == 'installed' or self.settings.changelog:
             cl = pkg.get_changelog()
             for l in cl:
-                self.pkgChangeLog.write_line( "%s\n" % l ) 
-        #if pkg.action == 'u':
-        #    lst = self.yumbase.rpmdb.searchNevra(name=pkg.name)
-        #    txt = _( "Updating : %s\n\n" ) % str(lst[0])
-        #    self.pkgInfo.write_line( txt )
+                self.pkgChangeLog.write_line( "%s\n" % l )
 
         self.writePkg( self.pkgInfo, pkg, 'Category      : %s\n', "category", True )
         self.writePkg( self.pkgInfo, pkg, 'Name          : %s\n', "name" )
@@ -277,7 +273,7 @@ class SpritzGUI:
         self.pkgView = EntropyPackageView(self.ui.viewPkg,self.queueView, self.ui, self.etpbase)
         self.filesView = EntropyFilesView(self.ui.filesView)
         self.queue.connect_objects(self.Entropy, self.etpbase, self.pkgView, self.ui)
-        #self.catView = YumexCategoryView(self.ui.tvCategory)
+        #self.catView = SpritzCategoryView(self.ui.tvCategory)
         self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
         self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView, self.ui, self.etpbase)
         self.catDesc = TextViewConsole(self.ui.catDesc)
@@ -349,14 +345,13 @@ class SpritzGUI:
 
     def setupPageButtons(self):
         # Setup Vertical Toolbar
-        self.createButton( _( "Package View" ), "button-packages.png", 'packages',True )
-        # XXX: if we'll re-enable categories listing, uncomment this
-        #self.createButton( _( "Group View" ), "button-group.png", 'group')
-        self.createButton( _( "Package Queue View" ), "button-queue.png", 'queue' )
+        self.createButton( _( "Packages" ), "button-packages.png", 'packages',True )
+        self.createButton( _( "Package Categories" ), "button-group.png", 'group')
+        self.createButton( _( "Package Queue" ), "button-queue.png", 'queue' )
         if not self.settings.disable_repo_page:
-            self.createButton( _( "Repository Selection View" ), "button-repo.png", 'repos' )
-        self.createButton( _( "Configuration Files View" ), "button-conf.png", 'filesconf' )
-        self.createButton( _( "Output View" ), "button-output.png", 'output' )
+            self.createButton( _( "Repository Selection" ), "button-repo.png", 'repos' )
+        self.createButton( _( "Configuration Files" ), "button-conf.png", 'filesconf' )
+        self.createButton( _( "Output" ), "button-output.png", 'output' )
         style = self.ui.leftEvent.get_style()
 
         # Setup Page Icons

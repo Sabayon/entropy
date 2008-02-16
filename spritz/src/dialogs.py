@@ -32,7 +32,7 @@ from misc import const,cleanMarkupSting,YumexConf,unicode2htmlentities
 from i18n import _
 
 class ConfimationDialog:
-    def __init__( self, parent, pkgs, top_text = None, bottom_text = None, bottom_data = None, sub_text = None, cancel = True ):
+    def __init__( self, parent, pkgs, top_text = None, bottom_text = None, bottom_data = None, sub_text = None, cancel = True, simpleList = False ):
 
         self.xml = gtk.glade.XML( const.GLADE_FILE, 'confirmation',domain="yumex" )
         self.dialog = self.xml.get_widget( "confirmation" )
@@ -48,6 +48,7 @@ class ConfimationDialog:
         self.dobottomtext = bottom_text
         self.dobottomdata = bottom_data
         self.docancel = cancel
+        self.simpleList = simpleList
 
         # setup text
         if top_text == None:
@@ -64,8 +65,12 @@ class ConfimationDialog:
 
         self.pkgs = pkgs
         self.pkg = self.xml.get_widget( "confPkg" )
-        self.pkgModel = self.setup_view( self.pkg )
-        self.show_data( self.pkgModel, pkgs )
+        if self.simpleList:
+            self.pkgModel = self.setup_simple_view( self.pkg )
+            self.show_data_simple( self.pkgModel, pkgs )
+        else:
+            self.pkgModel = self.setup_view( self.pkg )
+            self.show_data( self.pkgModel, pkgs )
         self.pkg.expand_all()
 
     def run( self ):
@@ -85,6 +90,12 @@ class ConfimationDialog:
         self.create_text_column( _( "Description" ), view, 1 )
         return model
 
+    def setup_simple_view(self, view ):
+        model = gtk.TreeStore( gobject.TYPE_STRING )
+        view.set_model( model )
+        self.create_text_column( _( "Package" ), view, 0 )
+        return model
+
     def create_text_column( self, hdr, view, colno, min_width=0, max_width=0 ):
         cell = gtk.CellRendererText()    # Size Column
         column = gtk.TreeViewColumn( hdr, cell, markup=colno )
@@ -96,12 +107,10 @@ class ConfimationDialog:
         view.append_column( column )
 
 
-    def show_data( self, model, pkgs ):
+    def show_data_simple( self, model, pkgs ):
         model.clear()
         for pkg in pkgs:
-            label = "<b>%s</b>" % unicode2htmlentities(str(pkg))
-            desc = pkg.description
-            model.append( None, [label, desc] )
+            model.append( None, [pkg] )
 
     def show_data( self, model, pkgs ):
         model.clear()

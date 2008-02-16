@@ -62,13 +62,18 @@ class EntropyPackages:
         self.logger = logging.getLogger('yumex.Packages')
         self.filterCallback = None
         self._packages = {}
+        self.pkgCache = {}
         self.currentCategory = None
         self._categoryPackages = {}
+        self.categories = []
         self.recent = self.Entropy.entropyTools.getCurrentUnixTime()
         self.pkgInCats = PkgInCategoryList()
 
     def clearPackages(self):
-        self._packages = {}
+        self._packages.clear()
+
+    def clearCache(self):
+        self.pkgCache.clear()
 
     def populatePackages(self,masks):
         for flt in masks:
@@ -84,46 +89,42 @@ class EntropyPackages:
            cat =  self.currentCategory
         else:
            self.currentCategory = cat
-        if self._categoryPackages.has_key(cat):
-            return self._categoryPackages[cat]
-        else:
-            return []
+        if not self._categoryPackages.has_key(cat):
+            self.populateCategory(cat)
+        return self._categoryPackages[cat]
+
+    def populateCategory(self, category):
+        global color_install,color_update,color_obsolete
+        catsdata = self.Entropy.list_repo_packages_in_category(category)
+        catsdata.update(set([(x,0) for x in self.Entropy.list_installed_packages_in_category(category)]))
+        pkgsdata = []
+        for pkgdata in catsdata:
+            yp = self.getPackageItem(pkgdata,True)
+            install_status = yp.install_status
+            ok = False
+            # FIXME: handle obsoletes in install_status == 3 whose are never install_status == 0
+            if install_status == 0: # becomes from installed packages
+                yp.action = 'r'
+                yp.color = color_install
+                #ok = True
+            elif install_status == 1:
+                yp.action = 'i'
+                ok = True
+            elif install_status == 2:
+                yp.action = 'u'
+                yp.color = color_update
+                ok = True
+            elif install_status == 3:
+                yp.action = 'r'
+                yp.color = color_install
+                ok = True
+            if ok: pkgsdata.append(yp)
+        del catsdata
+        self._categoryPackages[category] = pkgsdata
 
     def populateCategories(self):
-        global color_install,color_update,color_obsolete # FIXME: rename color_obsolete
+        del self.categories[:]
         self.categories = self.Entropy.list_repo_categories()
-        for category in self.categories:
-            catsdata = self.Entropy.list_repo_packages_in_category(category)
-            catsdata.update(set([(x,0) for x in self.Entropy.list_installed_packages_in_category(category)]))
-            pkgsdata = []
-            for pkgdata in catsdata:
-                yp = EntropyPackage(pkgdata, self.recent, True)
-                install_status = yp.install_status
-                ok = False
-                # FIXME: handle obsoletes in install_status == 3 whose are never install_status == 0
-                if install_status == 0: # becomes from installed packages
-                    yp.selected = True
-                    yp.action = 'r'
-                    yp.color = color_install
-                    #ok = True
-                elif install_status == 1:
-                    yp.action = 'i'
-                    yp.available = True
-                    ok = True
-                elif install_status == 2:
-                    yp.action = 'u'
-                    yp.color = color_update
-                    yp.selected = None
-                    # XXX: change to tri-state
-                    ok = True
-                elif install_status == 3:
-                    yp.action = 'r'
-                    yp.color = color_install
-                    yp.selected = True
-                    ok = True
-                if ok: pkgsdata.append(yp)
-            del catsdata
-            self._categoryPackages[category] = pkgsdata
 
     def getPackages(self,flt):
         if flt == 'all':
@@ -178,12 +179,23 @@ class EntropyPackages:
         self.populatePackages([flt])
         return self._packages[flt]
 
+    def getPackageItem(self, pkgdata, avail):
+        import outputTools
+        if self.pkgCache.has_key((pkgdata,avail)):
+            yp = self.pkgCache[(pkgdata,avail)]
+            print outputTools.green(str(pkgdata)),"cached"
+        else:
+            yp = EntropyPackage(pkgdata, self.recent, avail)
+            self.pkgCache[(pkgdata,avail)] = yp
+            print outputTools.red(str(pkgdata)),"not cached"
+        return yp
+
     def _getPackages(self,mask):
         global color_install,color_update,color_obsolete
         #print "mask:",mask
         if mask == 'installed':
             for idpackage in self.Entropy.clientDbconn.listAllIdpackages():
-                yp = EntropyPackage((idpackage,0), self.recent, False)
+                yp = self.getPackageItem((idpackage,0),True)
                 yp.action = 'r'
                 yp.color = color_install
                 yield yp
@@ -191,14 +203,14 @@ class EntropyPackages:
             # Get the rest of the available packages.
             available = self.Entropy.calculate_available_packages()
             for pkgdata in available:
-                yp = EntropyPackage(pkgdata, self.recent, True)
+                yp = self.getPackageItem(pkgdata,True)
                 yp.action = 'i'
                 yield yp
         elif mask == 'updates':
             updates, remove, fine = self.Entropy.calculate_world_updates()
             del remove, fine
             for pkgdata in updates:
-                yp = EntropyPackage(pkgdata, self.recent, False)
+                yp = self.getPackageItem(pkgdata,True)
                 yp.action = 'u'
                 yp.color = color_update
                 yield yp
@@ -208,7 +220,7 @@ class EntropyPackages:
                 upd, matched = self.Entropy.check_package_update(atom)
                 if not upd and matched:
                     if matched[0] != -1:
-                        yp = EntropyPackage(matched, self.recent, False)
+                        yp = self.getPackageItem(matched,True)
                         yp.action = 'rr'
                         yp.color = color_install
                         yield yp

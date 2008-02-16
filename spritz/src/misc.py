@@ -234,13 +234,14 @@ class SpritzQueue:
             if blocked:
                 self.showKeySlotErrorMessage(blocked)
                 return 1,0
-            self.keyslotFilter |= self._keyslotFilter
 
             action = ["u","i","rr"]
             tmpqueue = [x for x in pkgs if x not in self.packages['u']+self.packages['i']+self.packages['rr']]
             xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr']+tmpqueue]
             xlist = list(set(xlist))
             status = self.elaborateInstall(xlist,action,False)
+            if status == 0:
+                self.keyslotFilter |= self._keyslotFilter
             return status,0
 
         else: # remove
@@ -262,7 +263,19 @@ class SpritzQueue:
 
     def elaborateInstall(self, xlist, actions, deep_deps):
         (runQueue, removalQueue, status) = self.Entropy.retrieveInstallQueue(xlist,False,deep_deps)
-        if status == 0:
+        if status == -2: # dependencies not found
+            confirmDialog = self.dialogs.ConfimationDialog( self.ui.main,
+                        runQueue,
+                        top_text = _("Attention"),
+                        sub_text = _("Some dependencies couldn't be found. It can either be because they are masked or because they aren't in any active repository."),
+                        bottom_text = "",
+                        cancel = False,
+                        simpleList = True 
+            )
+            confirmDialog.run()
+            confirmDialog.destroy()
+            return -10
+        elif status == 0:
             # runQueue
             remove_todo = []
             install_todo = []

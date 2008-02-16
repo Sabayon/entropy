@@ -2389,6 +2389,7 @@
 							    <widget class="GtkTreeView" id="tvCatPackages">
 							      <property name="visible">True</property>
 							      <property name="can_focus">True</property>
+							      <property name="has_focus">True</property>
 							      <property name="headers_visible">True</property>
 							      <property name="rules_hint">False</property>
 							      <property name="reorderable">False</property>
@@ -3544,7 +3545,7 @@
 <widget class="GtkDialog" id="confirmation">
   <property name="border_width">5</property>
   <property name="width_request">600</property>
-  <property name="height_request">500</property>
+  <property name="height_request">350</property>
   <property name="visible">True</property>
   <property name="title" translatable="yes">Please Confirm</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>

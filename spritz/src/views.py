@@ -31,7 +31,7 @@ from i18n import _
 
 TOGGLE_WIDTH = 12
 
-class YumexCategoryView:
+class SpritzCategoryView:
     def __init__( self, treeview):
         self.view = treeview
         self.model = self.setup_view()
@@ -111,7 +111,6 @@ class EntropyPackageView:
         treeview.set_fixed_height_mode(True)
         self.view = treeview
         self.view.connect("button-release-event", self.load_menu)
-        self.headers = [_( "Package" ), _( "Ver" ), _( "Summary" ), _( "Repo" ), _( "Architecture" ), _( "Size" )]
         self.store = self.setupView()
         self.queue = qview.queue
         self.queueView = qview
@@ -192,7 +191,10 @@ class EntropyPackageView:
         self.loaded_event = event
         #if event.button != 3:
         #    return True
-        row,column, x, y = widget.get_path_at_pos(int(event.x),int(event.y))
+        try:
+            row,column, x, y = widget.get_path_at_pos(int(event.x),int(event.y))
+        except TypeError:
+            return True
         self.event_click_pos = x,y
         if column.get_title() != "S":
             return True
@@ -331,21 +333,27 @@ class EntropyPackageView:
 
     def on_purge_activate(self, widget):
         self.on_remove_activate(widget, True)
+        self.view.queue_draw()
 
     def on_undopurge_activate(self, widget):
         self.on_undoremove_activate(widget)
+        self.view.queue_draw()
 
     def on_update_activate(self, widget):
         self.on_install_update_activate(widget, "u")
+        self.view.queue_draw()
 
     def on_undoupdate_activate(self, widget):
         self.on_undoinstall_undoupdate_activate(widget)
+        self.view.queue_draw()
 
     def on_install_activate(self, widget):
         self.on_install_update_activate(widget, "i")
+        self.view.queue_draw()
 
     def on_undoinstall_activate(self, widget):
         self.on_undoinstall_undoupdate_activate(widget)
+        self.view.queue_draw()
 
     def on_install_update_activate(self, widget, action):
         busyCursor(self.ui.main)
@@ -358,6 +366,7 @@ class EntropyPackageView:
             obj.queued = oldqueued
         self.queueView.refresh()
         normalCursor(self.ui.main)
+        self.view.queue_draw()
 
     def on_undoinstall_undoupdate_activate(self, widget):
         busyCursor(self.ui.main)
@@ -366,6 +375,7 @@ class EntropyPackageView:
         self.remove_queued(obj)
         self.queueView.refresh()
         normalCursor(self.ui.main)
+        self.view.queue_draw()
 
     def setupView( self ):
         store = gtk.ListStore( gobject.TYPE_PYOBJECT, str )
@@ -382,11 +392,11 @@ class EntropyPackageView:
         self.view.append_column( column1 )
         column1.set_clickable( False )
 
-        self.create_text_column( _( "Package" ), 'name' , size=360)
-        self.create_text_column( _( "Rev." ), 'revision' , size=50 )
-        self.create_text_column( _( "Slot" ), 'slot' , size = 50 )
-        self.create_text_column( _( "Repository" ), 'repoid', size = 130 )
-        self.create_text_column( _( "Size" ), 'intelligentsizeFmt', size=80 )
+        self.create_text_column( _( "Package" ), 'name' , size=320)
+        self.create_text_column( _( "Rev." ), 'revision' , size=40 )
+        self.create_text_column( _( "Slot" ), 'slot' , size = 40 )
+        self.create_text_column( _( "Repository" ), 'repoid', size = 100 )
+        #self.create_text_column( _( "Size" ), 'intelligentsizeFmt', size=80 )
         #self.create_text_column( _( "Download" ), 'sizeFmt' , size=80 )
         self.view.set_search_column( 1 )
         self.view.set_enable_search(False)

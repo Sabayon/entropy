@@ -24,10 +24,10 @@ import traceback
 import commands
 
 # Entropy Imports
-sys.path.append("../../libraries")
-sys.path.append("../../client")
-sys.path.append("/usr/lib/entropy/libraries")
-sys.path.append("/usr/lib/entropy/client")
+sys.path.insert(0,"../../libraries")
+sys.path.insert(1,"../../client")
+sys.path.insert(2,"/usr/lib/entropy/libraries")
+sys.path.insert(3,"/usr/lib/entropy/client")
 from entropyConstants import *
 import exceptionTools
 from packages import EntropyPackages
@@ -647,6 +647,7 @@ class SpritzController(Controller):
         self.on_pkgFilter_toggled(rb,action)
 
     def on_comps_cursor_changed(self, widget):
+        self.setBusy()
         """ Handle selection of row in Comps Category  view  """
         ( model, iterator ) = widget.get_selection().get_selected()
         if model != None and iterator != None:
@@ -654,6 +655,7 @@ class SpritzController(Controller):
             isCategory = model.get_value( iterator, 4 )
             if isCategory:
                 self.populateCategoryPackages(id)
+        self.unsetBusy()
 
     def on_compsPkg_cursor_changed(self, widget):
         """ Handle selection of row in Comps Category  view  """
@@ -777,7 +779,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.addPackages()
         # XXX: if we'll re-enable categories listing, uncomment this
         #self.progressLog(_('Building Category Lists'))
-        #self.populateCategories()
+        self.populateCategories()
         #self.progressLog(_('Building Category Lists Completed'))
         msg = _('Ready')
         self.setStatus(msg)
@@ -788,6 +790,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.Equo.generate_cache(depcache = True, configcache = False)
         # clear views
         self.etpbase.clearPackages()
+        self.etpbase.clearCache()
         self.setupSpritz()
         if alone:
             self.progress.total.show()
@@ -861,16 +864,10 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.repoView.populate()
 
     def setBusy(self):
-        #while gtk.events_pending():      # process gtk events
-        #    time.sleep(0.01)
-        #    gtk.main_iteration()
         busyCursor(self.ui.main)
 
     def unsetBusy(self):
         normalCursor(self.ui.main)
-        #while gtk.events_pending():      # process gtk events
-        #    time.sleep(0.01)
-        #    gtk.main_iteration()
 
     def addPackages(self):
 
@@ -1018,8 +1015,13 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.Equo.reopenClientDbconn()
             # regenerate packages information
             self.etpbase.clearPackages()
+            self.etpbase.clearCache()
             self.setupSpritz()
             self.endWorking()
+            self.Equo.FileUpdates.scanfs(dcache = False)
+            if self.Equo.FileUpdates.scandata:
+                if len(self.Equo.FileUpdates.scandata) > 0:
+                    self.setPage('filesconf')
             #self.progress.hide()
             if quit:
                 return "QUIT"
@@ -1043,12 +1045,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.unsetBusy()
 
     def populateCategoryPackages(self, cat):
-        #grp = self.etpbase.comps.return_group(id)
         self.catDesc.clear()
-        #if grp.description:
-        #    self.catDesc.write_line(grp.description)
-        #pkgs = self.etpbase._getByGroup(grp,['m','d','o'])
-        #pkgs.sort()
         pkgs = self.etpbase.getPackagesByCategory(cat)
         self.catPackages.store.clear()
         self.ui.tvCatPackages.set_model(None)
