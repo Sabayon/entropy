@@ -3687,8 +3687,8 @@ class etpDatabase:
                 continue
             if idpackage in matches[0]:
                 # sorry, masked
-                idpackageValidatorCache[(idpackage,reponame)] = -1
-                return -1
+                idpackageValidatorCache[(idpackage,reponame)] = -1,1
+                return -1,1
 
         mykeywords = self.retrieveKeywords(idpackage)
         # XXX WORKAROUND
@@ -3697,8 +3697,8 @@ class etpDatabase:
         for key in etpConst['keywords']:
             if key in mykeywords:
                 # found! all fine
-                idpackageValidatorCache[(idpackage,reponame)] = idpackage
-                return idpackage
+                idpackageValidatorCache[(idpackage,reponame)] = idpackage,2
+                return idpackage,2
 
         #### IT IS MASKED!!
 
@@ -3708,8 +3708,8 @@ class etpDatabase:
             if matches[1] != 0:
                 continue
             if idpackage in matches[0]:
-                idpackageValidatorCache[(idpackage,reponame)] = idpackage
-                return idpackage
+                idpackageValidatorCache[(idpackage,reponame)] = idpackage,3
+                return idpackage,3
 
         # if we get here, it means we didn't find mykeywords in etpConst['keywords'], we need to seek etpConst['packagemasking']['keywords']
         # seek in repository first
@@ -3719,14 +3719,14 @@ class etpDatabase:
                     keyword_data = etpConst['packagemasking']['keywords']['repositories'][reponame].get(keyword)
                     for atom in keyword_data:
                         if atom == "*": # all packages in this repo with keyword "keyword" are ok
-                            idpackageValidatorCache[(idpackage,reponame)] = idpackage
-                            return idpackage
+                            idpackageValidatorCache[(idpackage,reponame)] = idpackage,4
+                            return idpackage,4
                         matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
                         if matches[1] != 0:
                             continue
                         if idpackage in matches[0]:
-                            idpackageValidatorCache[(idpackage,reponame)] = idpackage
-                            return idpackage
+                            idpackageValidatorCache[(idpackage,reponame)] = idpackage,5
+                            return idpackage,5
 
         # if we get here, it means we didn't find a match in repositories
         # so we scan packages, last chance
@@ -3742,12 +3742,12 @@ class etpDatabase:
                         continue
                     if idpackage in matches[0]:
                         # valid!
-                        idpackageValidatorCache[(idpackage,reponame)] = idpackage
-                        return idpackage
+                        idpackageValidatorCache[(idpackage,reponame)] = idpackage,6
+                        return idpackage,6
 
         # holy crap, can't validate
-        idpackageValidatorCache[(idpackage,reponame)] = -1
-        return -1
+        idpackageValidatorCache[(idpackage,reponame)] = -1,7
+        return -1,7
 
     # packages filter used by atomMatch, input must me foundIDs, a list like this:
     # [(u'x11-libs/qt-4.3.2', 608), (u'x11-libs/qt-3.3.8-r4', 1867)]
@@ -3759,7 +3759,7 @@ class etpDatabase:
         newresults = set()
         for item in results:
             rc = self.idpackageValidator(item[1])
-            if rc != -1:
+            if rc[0] != -1:
                 newresults.add(item)
         return newresults
 

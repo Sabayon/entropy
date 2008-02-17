@@ -1,4 +1,7 @@
 TODO list:
+  - speed up fetching remote statistics
+  - add package.mask server side to allow masking certain packages, put it into the database
+  - add simulated "equo world" test to reagent (with package keywording enabled) (or run deptest with keywordfilter enabled)
   - lzma compression for the database?
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
@@ -9,6 +12,7 @@ TODO list:
   - separate packages by license restrictions
   - GLSAs for overlays?
   - split RDEPEND and PDEPEND
+  - write a ncurses interface to manage entropy database
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:

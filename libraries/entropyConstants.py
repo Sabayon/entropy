@@ -625,6 +625,15 @@ def initConfig_entropyConstants(rootdir):
 
         # packages keywords/mask/unmask settings
         'packagemasking': None, # package masking information dictionary filled by the masking parser
+        'packagemaskingreasons': {
+            1: 'user package.mask',
+            2: 'system keywords',
+            3: 'user package.unmask',
+            4: 'user repo package.keywords (all packages)',
+            5: 'user repo package.keywords',
+            6: 'user package.keywords',
+            7: 'completely masked'
+        },
 
         # packages whose need their other installs (different tag), to be removed
         'conflicting_tagged_packages': {

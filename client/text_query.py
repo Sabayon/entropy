@@ -65,6 +65,9 @@ def query(options):
     elif myopts[0] == "needed":
         rc = searchNeeded(myopts[1:])
 
+    elif myopts[0] == "required":
+        rc = searchRequired(myopts[1:])
+
     elif myopts[0] == "removal":
         rc = searchRemoval(myopts[1:],deep = equoRequestDeep)
 
@@ -216,14 +219,22 @@ def searchDepends(atoms, idreturn = False, dbconn = None, EquoConnection = None)
     for atom in atoms:
         result = clientDbconn.atomMatch(atom)
         matchInRepo = False
+        repoMasked = False
         if (result[0] == -1):
             matchInRepo = True
             result = Equo.atomMatch(atom)
+        if (result[0] == -1):
+            result = Equo.atomMatch(atom, packagesFilter = False)
+            if result[0] != -1:
+                repoMasked = True
         if (result[0] != -1):
             if (matchInRepo):
                 dbconn = Equo.openRepositoryDatabase(result[1])
             else:
                 dbconn = clientDbconn
+            found_atom = dbconn.retrieveAtom(result[0])
+            if repoMasked:
+                idpackage_masked, idmasking_reason = dbconn.idpackageValidator(result[0])
             searchResults = dbconn.retrieveDepends(result[0])
             for idpackage in searchResults:
                 if (idreturn):
@@ -236,6 +247,11 @@ def searchDepends(atoms, idreturn = False, dbconn = None, EquoConnection = None)
             # print info
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue(" Keyword: ")+bold("\t"+atom))
+                print_info(blue(" Matched: ")+bold("\t"+found_atom))
+                masking_reason = ''
+                if repoMasked:
+                    masking_reason = ", "+etpConst['packagemaskingreasons'].get(idmasking_reason)
+                print_info(blue(" Masked: ")+bold("\t"+str(repoMasked))+masking_reason)
                 if (matchInRepo):
                     where = " from repository "+str(result[1])
                 else:
@@ -288,6 +304,46 @@ def searchNeeded(atoms, idreturn = False, dbconn = None, EquoConnection = None):
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue("     Atom: ")+bold("\t"+myatom))
                 print_info(blue(" Found:   ")+bold("\t"+str(len(myneeded)))+red(" libraries"))
+
+    if (idreturn):
+        return dataInfo
+    return 0
+
+def searchRequired(libraries, idreturn = False, dbconn = None, EquoConnection = None):
+
+    if EquoConnection != None:
+        Equo = EquoConnection
+    else:
+        try:
+            if Equo == None:
+                Equo = EquoInterface()
+        except NameError:
+            Equo = EquoInterface()
+
+
+    if (not idreturn) and (not etpUi['quiet']):
+        print_info(darkred(" @@ ")+darkgreen("Needed Search..."))
+
+    dataInfo = set()
+    if not dbconn:
+        clientDbconn = Equo.clientDbconn
+    else:
+        clientDbconn = dbconn
+
+    for library in libraries:
+        search_lib = library.replace("*","%")
+        results = clientDbconn.searchNeeded(search_lib, like = True)
+        for result in results:
+            if (idreturn):
+                dataInfo.add(result)
+            elif (etpUi['quiet']):
+                print clientDbconn.retrieveAtom(result)
+            else:
+                printPackageInfo(result, clientDbconn, clientSearch = True, strictOutput = True, EquoConnection = Equo)
+
+        if (not idreturn) and (not etpUi['quiet']):
+            print_info(blue(" Library: ")+bold("\t"+library))
+            print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" packages"))
 
     if (idreturn):
         return dataInfo
@@ -809,7 +865,16 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
     if (not pkgtag):
         pkgtag = "NoTag"
 
+    pkgmasked = False
+    masking_reason = ''
+    # check if it's masked
+    idpackage_masked, idmasking_reason = dbconn.idpackageValidator(idpackage)
+    if idpackage_masked == -1:
+        pkgmasked = True
+        masking_reason = ", "+etpConst['packagemaskingreasons'].get(idmasking_reason)
+
     if (not clientSearch):
+
         # client info
         installedVer = "Not installed"
         installedTag = "N/A"
@@ -831,6 +896,7 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
     if (not strictOutput):
         print_info(darkgreen("       Category:\t\t")+blue(pkgcat))
         print_info(darkgreen("       Name:\t\t\t")+blue(pkgname))
+    print_info(darkgreen("       Masked:\t\t")+blue(str(pkgmasked))+masking_reason)
     print_info(darkgreen("       Available:\t\t")+blue("version: ")+bold(pkgver)+blue(" ~ tag: ")+bold(pkgtag)+blue(" ~ revision: ")+bold(str(pkgrev)))
     if (not clientSearch):
         print_info(darkgreen("       Installed:\t\t")+blue("version: ")+bold(installedVer)+blue(" ~ tag: ")+bold(installedTag)+blue(" ~ revision: ")+bold(str(installedRev)))

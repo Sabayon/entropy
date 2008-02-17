@@ -339,15 +339,17 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             print_info(red(" @@ ")+blue("Calculating dependencies..."))
             runQueue, removalQueue, status = Equo.retrieveInstallQueue(foundAtoms, emptydeps, deepdeps)
             if status == -2:
-                print_error(red(" @@ ")+blue("Cannot find needed dependencies: ")+str(runQueue))
-                crying_atoms = Equo.find_belonging_dependency(runQueue)
-                if crying_atoms:
-                    print_error(red(" @@ ")+blue("Probably needed by:"))
-                    for crying_atomdata in crying_atoms:
-                        print_error(red("     # ")+" [from:"+crying_atomdata[1]+"] "+darkred(crying_atomdata[0]))
+                print_error(red(" @@ ")+blue("Cannot find needed dependencies: "))
+                for x in runQueue:
+                    print_error(red("    # ")+brown(x))
+                    crying_atoms = Equo.find_belonging_dependency([x])
+                    if crying_atoms:
+                        print_error(red("      # ")+blue("Probably needed by:"))
+                        for crying_atomdata in crying_atoms:
+                            print_error(red("        # ")+" ["+blue("from")+":"+brown(crying_atomdata[1])+"] "+darkred(crying_atomdata[0]))
 
                 dirscleanup()
-                return 130, -1
+                return 127, -1
         else:
             for atomInfo in foundAtoms:
                 runQueue.append(atomInfo)

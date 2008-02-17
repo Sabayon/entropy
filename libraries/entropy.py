@@ -429,6 +429,9 @@ class EquoInterface(TextInterface):
                 if riddep != -1:
                     ridpackages = rdbconn.searchIdpackageFromIddependency(riddep)
                     for i in ridpackages:
+                        i,r = rdbconn.idpackageValidator(i)
+                        if i == -1:
+                            continue
                         iatom = rdbconn.retrieveAtom(i)
                         crying_atoms.add((iatom,repo))
         return crying_atoms
@@ -1293,7 +1296,7 @@ class EquoInterface(TextInterface):
         if self.xcache:
             c_data = list(matched_atoms)
             c_data.sort()
-            c_hash = str(hash(tuple(c_data))+hash(empty_deps)+hash(deep_deps))
+            c_hash = str(hash(tuple(c_data))+hash(empty_deps)*3+hash(deep_deps)*2)
             del c_data
             cached = self.dumpTools.loadobj(etpCache['dep_tree']+c_hash)
             if cached != None:
@@ -1304,6 +1307,8 @@ class EquoInterface(TextInterface):
 
         atomlen = len(matched_atoms); count = 0
         matchfilter = matchContainer()
+        error_generated = 0
+        error_tree = set()
 
         for atomInfo in matched_atoms:
 
@@ -1311,11 +1316,13 @@ class EquoInterface(TextInterface):
             if (count%10 == 0) or (count == atomlen) or (count == 1):
                 self.updateProgress("Sorting dependencies", importance = 0, type = "info", back = True, header = ":: ", footer = " ::", percent = True, count = (count,atomlen))
 
-            # check if atomInfo is in matchfilter 
-
+            # check if atomInfo is in matchfilter
             newtree, result = self.generate_dependency_tree(atomInfo, empty_deps, deep_deps, matchfilter = matchfilter)
 
-            if (result != 0):
+            if result == -2: # deps not found
+                error_generated = -2
+                error_tree |= set(newtree) # it is a list, we convert it into set and update error_tree
+            elif (result != 0):
                 return newtree, result
             elif (newtree):
                 parent_keys = deptree.keys()
@@ -1337,6 +1344,10 @@ class EquoInterface(TextInterface):
 
         matchfilter.clear()
         del matchfilter
+
+        if error_generated != 0:
+            return error_tree,error_generated
+
         if self.xcache:
             try:
                 self.dumpTools.dumpobj(etpCache['dep_tree']+c_hash,(deptree,0))
@@ -1518,7 +1529,7 @@ class EquoInterface(TextInterface):
                 count += 1
                 self.updateProgress("Calculating available packages for %s" % (repo,), importance = 0, type = "info", back = True, header = "::", count = (count,maxlen), percent = True, footer = " ::")
                 # ignore masked packages
-                idpackage = dbconn.idpackageValidator(idpackage)
+                idpackage, idreason = dbconn.idpackageValidator(idpackage)
                 if idpackage == -1:
                     continue
                 # get key + slot
@@ -1620,15 +1631,11 @@ class EquoInterface(TextInterface):
                     maskedresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchSlot = myscopedata[4], matchBranches = (branch,), packagesFilter = False)
                     if maskedresults[0] == -1:
                         remove.add(idpackage)
-                    # look for packages that would match key with any slot (for eg, gcc updates), slot changes handling
-                    matchresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchBranches = (branch,))
-                    if matchresults[0] != -1:
-                        mdbconn = self.openRepositoryDatabase(matchresults[1])
-                        matchatom = mdbconn.retrieveAtom(matchresults[0])
-                        # compare versions
-                        unsatisfied, satisfied = self.filterSatisfiedDependencies((matchatom,))
-                        if unsatisfied:
+                        # look for packages that would match key with any slot (for eg, gcc updates)
+                        matchresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchBranches = (branch,))
+                        if matchresults[0] != -1:
                             update.add(matchresults)
+
             else:
                 fine.add(myscopedata[0])
 
@@ -1649,8 +1656,8 @@ class EquoInterface(TextInterface):
 
     def is_match_masked(self, match):
         dbconn = self.openRepositoryDatabase(match[1])
-        rc = dbconn.idpackageValidator(match[0])
-        if rc != -1:
+        idpackage, idreason = dbconn.idpackageValidator(match[0])
+        if idpackage != -1:
             return False
         return True
 

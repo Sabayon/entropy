@@ -766,6 +766,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.etpbase.setFilter(filters.yumexFilter.processFilters)
         self.treeViewCache = {}
 
+        self.Equo.connect_to_gui(self.progress, self.progressLogWrite, self.output)
         self.setupEditor()
         # Setup GUI
         self.setupGUI()
@@ -776,7 +777,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.setupRepoView()
         self.firstTime = True
         # calculate updates
-        self.Equo.connect_to_gui(self.progress, self.progressLogWrite, self.output)
         self.setupSpritz()
 
         self.console.set_pty(self.pty[0])
@@ -938,17 +938,15 @@ class SpritzApplication(SpritzController,SpritzGUI):
             if bootstrap:
                 self.setPage('packages')
 
+        self.setBusy()
         bootstrap = False
         if (self.Equo.get_world_update_cache(empty_deps = False) == None):
             bootstrap = True
             self.setPage('output')
         self.progress.total.hide()
-        self.setBusy()
 
         if bootstrap:
             self.startWorking()
-            time.sleep(1)
-            self.endWorking()
 
         action = self.lastPkgPB
         if action == 'all':
@@ -991,6 +989,9 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.progress.total.show()
 
         self.treeViewPackages = my_hash
+
+        if bootstrap:
+            self.endWorking()
 
         comeback(bootstrap)
 
