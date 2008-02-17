@@ -791,12 +791,26 @@ def remove_tag(mydep):
     return mydep
 
 def remove_entropy_revision(mydep):
-    colon = mydep.rfind("~")
+    dep = removePackageOperators(mydep)
+    operators = mydep[:-len(dep)]
+    colon = dep.rfind("~")
     if colon != -1:
-	mystring = mydep[:colon]
+	mystring = operators+dep[:colon]
         return mystring
     return mydep
 
+def dep_get_entropy_revision(mydep):
+    dep = removePackageOperators(mydep)
+    colon = mydep.rfind("~")
+    if colon != -1:
+        myrev = mydep[colon+1:]
+        try:
+            myrev = int(myrev)
+        except ValueError:
+            return None
+        return myrev
+    return None
+    
 
 def dep_gettag(dep):
     """

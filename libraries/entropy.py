@@ -310,6 +310,7 @@ class EquoInterface(TextInterface):
         self.updateProgress(darkred("Cache generation complete."), importance = 2, type = "info")
 
     def do_depcache(self):
+        '''
         self.updateProgress(darkred("Dependencies"), importance = 2, type = "warning")
         self.updateProgress(darkred("Scanning repositories"), importance = 2, type = "warning")
         keys = set()
@@ -326,8 +327,11 @@ class EquoInterface(TextInterface):
             for info in pkgdata:
                 key = self.entropyTools.dep_getkey(info[0])
                 keys.add(key)
+        '''
 
         self.updateProgress(darkgreen("Resolving metadata"), importance = 1, type = "warning")
+
+        ''' # XXX world calculation is enough
         maxlen = len(keys)
         cnt = 0
         for key in keys:
@@ -336,6 +340,7 @@ class EquoInterface(TextInterface):
                                                 key
                                         ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
             self.atomMatch(key)
+        '''
 
         # we can barely ignore any exception from here
         # especially cases where client db does not exist
@@ -699,7 +704,7 @@ class EquoInterface(TextInterface):
         fetch_repository_if_not_available_cache[reponame] = rc
         return rc
 
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, matchBranches = (), packagesFilter = True, multiMatch = False, multiRepo = False):
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, matchBranches = (), packagesFilter = True, multiMatch = False, multiRepo = False, matchRevision = None, matchRepo = None):
 
         if self.xcache:
 
@@ -709,20 +714,28 @@ class EquoInterface(TextInterface):
             if multiRepo: r_hash = 3
             s_hash = -4
             if caseSensitive: s_hash = 4
+            t_hash = -5
+            u_hash = -6
+            if matchRepo and (type(matchRepo) in (list,tuple,set)): u_hash = hash(tuple(matchRepo))
+            if matchRevision: t_hash = hash(matchRevision)
             c_hash = str(   hash(atom) + \
                             hash(str(matchSlot)) + \
                             hash(tuple(matchBranches)) + \
                             hash(packagesFilter) + \
                             hash(tuple(self.validRepositories)) + \
                             hash(tuple(etpRepositories.keys())) + \
-                            m_hash + r_hash + s_hash
+                            m_hash + r_hash + s_hash + t_hash + u_hash
                         )
             cached = self.dumpTools.loadobj(etpCache['atomMatch']+c_hash)
             if cached != None:
                 return cached
 
+        valid_repos = self.validRepositories
+        if matchRepo and (type(matchRepo) in (list,tuple,set)):
+            valid_repos = list(matchRepo)
+
         repoResults = {}
-        for repo in self.validRepositories:
+        for repo in valid_repos:
 
             # check if repo exists
             if not repo.endswith(".tbz2"):
@@ -732,7 +745,7 @@ class EquoInterface(TextInterface):
 
             # search
             dbconn = self.openRepositoryDatabase(repo)
-            query = dbconn.atomMatch(atom, caseSensitive = caseSensitive, matchSlot = matchSlot, matchBranches = matchBranches, packagesFilter = packagesFilter)
+            query = dbconn.atomMatch(atom, caseSensitive = caseSensitive, matchSlot = matchSlot, matchBranches = matchBranches, packagesFilter = packagesFilter, matchRevision = matchRevision)
             if query[1] == 0:
                 # package found, add to our dictionary
                 repoResults[repo] = query[0]
@@ -856,7 +869,7 @@ class EquoInterface(TextInterface):
                         else:
 
                             # ok, we must get the repository with the biggest priority
-                            for reponame in self.validRepositories:
+                            for reponame in valid_repos:
                                 if reponame in conflictingRevisions:
                                     break
                             dbpkginfo = (repoResults[reponame],reponame)
@@ -2867,7 +2880,10 @@ class PackageInterface:
                             return 4
                 if (protected):
                     # add to disk cache
+                    oldquiet = etpUi['quiet']
+                    etpUi['quiet'] = True
                     self.Entropy.FileUpdates.add_to_cache(tofile)
+                    etpUi['quiet'] = oldquiet
 
         return 0
 

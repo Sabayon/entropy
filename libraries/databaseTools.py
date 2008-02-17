@@ -3620,7 +3620,7 @@ class etpDatabase:
 ##   Dependency handling functions
 #
 
-    def atomMatchFetchCache(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter):
+    def atomMatchFetchCache(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision):
         if self.xcache:
             m_hash = -2
             if multiMatch: m_hash = 2
@@ -3631,14 +3631,18 @@ class etpDatabase:
             c_hash = str(   hash(atom) + \
                             hash(matchSlot) + \
                             hash(matchTag) + \
+                            hash(matchRevision) + \
                             hash(tuple(matchBranches)) + \
                             m_hash + r_hash + s_hash
                         )
-            cached = dumpTools.loadobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash)
-            if cached != None:
-                return cached
+            try:
+                cached = dumpTools.loadobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash)
+                if cached != None:
+                    return cached
+            except EOFError, IOError:
+                return None
 
-    def atomMatchStoreCache(self, result, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter):
+    def atomMatchStoreCache(self, result, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision):
         if self.xcache:
             m_hash = -2
             if multiMatch: m_hash = 2
@@ -3649,6 +3653,7 @@ class etpDatabase:
             c_hash = str(   hash(atom) + \
                             hash(matchSlot) + \
                             hash(matchTag) + \
+                            hash(matchRevision) + \
                             hash(tuple(matchBranches)) + \
                             m_hash + r_hash + s_hash
                         )
@@ -3777,7 +3782,14 @@ class etpDatabase:
         if tag == dbtag:
             return idpackage
 
-    def __filterSlotTag(self, foundIDs, slot, tag):
+    def __filterRevision(self, idpackage, revision):
+        if revision == None:
+            return idpackage
+        dbrev = self.retrieveRevision(idpackage)
+        if revision == dbrev:
+            return idpackage
+
+    def __filterSlotTagRevision(self, foundIDs, slot, tag, revision):
 
         newlist = set()
         for data in foundIDs:
@@ -3788,6 +3800,10 @@ class etpDatabase:
                 continue
 
             idpackage = self.__filterTag(idpackage, tag)
+            if not idpackage:
+                continue
+
+            idpackage = self.__filterRevision(idpackage, revision)
             if not idpackage:
                 continue
 
@@ -3806,24 +3822,30 @@ class etpDatabase:
        @input packagesFilter: enable/disable package.mask/.keywords/.unmask filter
        @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = error
     '''
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = (), matchTag = None, packagesFilter = True):
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = (), matchTag = None, packagesFilter = True, matchRevision = None):
 
-        cached = self.atomMatchFetchCache(atom,caseSensitive,matchSlot,multiMatch,matchBranches,matchTag,packagesFilter)
+        cached = self.atomMatchFetchCache(atom,caseSensitive,matchSlot,multiMatch,matchBranches,matchTag,packagesFilter, matchRevision)
         if cached != None:
             return cached
 
-        # check if tag is provided -> app-foo/foo-1.2.3:SLOT|TAG or app-foo/foo-1.2.3|TAG
         atomTag = entropyTools.dep_gettag(atom)
         atomSlot = entropyTools.dep_getslot(atom)
+        atomRev = entropyTools.dep_get_entropy_revision(atom)
 
+        # tag match
         scan_atom = entropyTools.remove_tag(atom)
         if (matchTag == None) and (atomTag != None):
             matchTag = atomTag
 
-        # check if slot is provided -> app-foo/foo-1.2.3:SLOT
+        # slot match
         scan_atom = entropyTools.remove_slot(scan_atom)
         if (matchSlot == None) and (atomSlot != None):
             matchSlot = atomSlot
+
+        # revision match
+        scan_atom = entropyTools.remove_entropy_revision(scan_atom)
+        if (matchRevision == None) and (atomRev != None):
+            matchRevision = atomRev
 
         # check for direction
         strippedAtom = entropyTools.dep_getcpv(scan_atom)
@@ -3945,7 +3967,7 @@ class etpDatabase:
         ### FILTERING
 
         # filter slot and tag
-        foundIDs = self.__filterSlotTag(foundIDs, matchSlot, matchTag)
+        foundIDs = self.__filterSlotTagRevision(foundIDs, matchSlot, matchTag, matchRevision)
 
         if packagesFilter: # keyword filtering
             foundIDs = self.packagesFilter(foundIDs)
@@ -3956,7 +3978,7 @@ class etpDatabase:
 
         if not foundIDs:
             # package not found
-            self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
+            self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
             return -1,1
 
         ### FILLING dbpkginfo
@@ -4038,17 +4060,17 @@ class etpDatabase:
         ### END FILLING dbpkginfo
 
         if not dbpkginfo:
-            self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
+            self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
             return -1,1
 
         if multiMatch:
             x = set([x[0] for x in dbpkginfo])
-            self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
+            self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
             return x,0
 
         if len(dbpkginfo) == 1:
             x = dbpkginfo.pop()
-            self.atomMatchStoreCache((x[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
+            self.atomMatchStoreCache((x[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
             return x[0],0
 
         dbpkginfo = list(dbpkginfo)
@@ -4060,5 +4082,5 @@ class etpDatabase:
             pkgdata[info_tuple] = x[0]
         newer = entropyTools.getEntropyNewerVersion(list(versions))[0]
         x = pkgdata[newer]
-        self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter)
+        self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
         return x,0
