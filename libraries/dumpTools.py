@@ -73,6 +73,7 @@ def loadobj(name, completePath = False):
                     os.remove(dmpfile)
                 except OSError:
                     pass
+                pass
         break
 
 def removeobj(name):
