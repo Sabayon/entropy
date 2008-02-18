@@ -5631,6 +5631,7 @@ class TriggerInterface:
                                         header = red("   ##")
                                     )
         sys.stderr = oldstderr
+        sys.stdout = oldstdout
         stdfile.close()
         return 0
 
@@ -5666,6 +5667,7 @@ class TriggerInterface:
                                         header = red("   ##")
                                     )
         sys.stderr = oldstderr
+        sys.stdout = oldstdout
         stdfile.close()
         return 0
 
