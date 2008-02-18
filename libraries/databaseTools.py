@@ -3685,6 +3685,25 @@ class etpDatabase:
         cached = idpackageValidatorCache.get((idpackage,reponame))
         if cached != None: return cached
 
+        # check if user package.mask needs it masked
+        for atom in etpConst['packagemasking']['mask']:
+            matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+            if matches[1] != 0:
+                continue
+            if idpackage in matches[0]:
+                # sorry, masked
+                idpackageValidatorCache[(idpackage,reponame)] = -1,1
+                return -1,1
+
+        # see if we can unmask by just lookin into user package.unmask stuff -> etpConst['packagemasking']['unmask']
+        for atom in etpConst['packagemasking']['unmask']:
+            matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+            if matches[1] != 0:
+                continue
+            if idpackage in matches[0]:
+                idpackageValidatorCache[(idpackage,reponame)] = idpackage,3
+                return idpackage,3
+
         # check if repository packages.db.mask needs it masked
         repomask = etpConst['packagemasking']['repos_mask'].get(reponame)
         if repomask != None:
@@ -3710,16 +3729,6 @@ class etpDatabase:
                             idpackageValidatorCache[(idpackage,reponame)] = -1,9
                             return -1,9
 
-        # check if user package.mask needs it masked
-        for atom in etpConst['packagemasking']['mask']:
-            matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-            if matches[1] != 0:
-                continue
-            if idpackage in matches[0]:
-                # sorry, masked
-                idpackageValidatorCache[(idpackage,reponame)] = -1,1
-                return -1,1
-
         mykeywords = self.retrieveKeywords(idpackage)
         # XXX WORKAROUND
         if not mykeywords: mykeywords = [''] # ** is fine then
@@ -3731,15 +3740,6 @@ class etpDatabase:
                 return idpackage,2
 
         #### IT IS MASKED!!
-
-        # see if we can unmask by just lookin into package.unmask stuff -> etpConst['packagemasking']['unmask']
-        for atom in etpConst['packagemasking']['unmask']:
-            matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-            if matches[1] != 0:
-                continue
-            if idpackage in matches[0]:
-                idpackageValidatorCache[(idpackage,reponame)] = idpackage,3
-                return idpackage,3
 
         # if we get here, it means we didn't find mykeywords in etpConst['keywords'], we need to seek etpConst['packagemasking']['keywords']
         # seek in repository first

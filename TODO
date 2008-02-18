@@ -1,4 +1,5 @@
 TODO list:
+  - add reagent tool to bump database easily
   - add simulated "equo world" test to reagent (with package keywording enabled) (or run deptest with keywordfilter enabled)
   - lzma compression for the database?
   - migrate server code to ServerInterface
