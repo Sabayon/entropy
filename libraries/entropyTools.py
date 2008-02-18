@@ -810,7 +810,17 @@ def dep_get_entropy_revision(mydep):
             return None
         return myrev
     return None
-    
+
+def dep_get_match_in_repos(mydep):
+    colon = mydep.rfind("@")
+    if colon != -1:
+        mydata = mydep[colon+1:]
+        mydata = mydata.split(",")
+        if not mydata:
+            mydata = None
+        return mydep[:colon],mydata
+    else:
+        return mydep,None
 
 def dep_gettag(dep):
     """

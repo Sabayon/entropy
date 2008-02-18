@@ -707,6 +707,12 @@ class EquoInterface(TextInterface):
 
     def atomMatch(self, atom, caseSensitive = True, matchSlot = None, matchBranches = (), packagesFilter = True, multiMatch = False, multiRepo = False, matchRevision = None, matchRepo = None):
 
+        # support match in repository from shell
+        # atom@repo1,repo2,repo3
+        atom, repos = self.entropyTools.dep_get_match_in_repos(atom)
+        if (matchRepo == None) and (repos != None):
+            matchRepo = repos
+
         if self.xcache:
 
             m_hash = -2

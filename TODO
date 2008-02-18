@@ -1,5 +1,4 @@
 TODO list:
-  - request an atom from a specific repository by adding ","
   - add package.mask server side to allow masking certain packages, put it into the database
   - add simulated "equo world" test to reagent (with package keywording enabled) (or run deptest with keywordfilter enabled)
   - lzma compression for the database?
