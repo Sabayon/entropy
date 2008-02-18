@@ -1069,9 +1069,14 @@ class EquoInterface(TextInterface):
             clientMatch = self.clientDbconn.atomMatch(dependency)
             if clientMatch[0] != -1:
 
-                installedVer = self.clientDbconn.retrieveVersion(clientMatch[0])
-                installedTag = self.clientDbconn.retrieveVersionTag(clientMatch[0])
-                installedRev = self.clientDbconn.retrieveRevision(clientMatch[0])
+                try:
+                    installedVer = self.clientDbconn.retrieveVersion(clientMatch[0])
+                    installedTag = self.clientDbconn.retrieveVersionTag(clientMatch[0])
+                    installedRev = self.clientDbconn.retrieveRevision(clientMatch[0])
+                except TypeError: # corrupted entry?
+                    installedVer = "0"
+                    installedTag = ''
+                    installedRev = 0
                 if installedRev == 9999: # any revision is fine
                     repo_pkgrev = 9999
 
@@ -1597,6 +1602,9 @@ class EquoInterface(TextInterface):
                 self.updateProgress("Calculating world packages", importance = 0, type = "info", back = True, header = ":: ", count = (count,maxlen), percent = True, footer = " ::")
             tainted = False
             myscopedata = self.clientDbconn.getScopeData(idpackage)
+            # check against broken entry
+            if myscopedata == None:
+                continue
             #atom = myscopedata[0]
             #category = myscopedata[1]
             #name = myscopedata[2]

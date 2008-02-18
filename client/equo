@@ -269,6 +269,8 @@ try:
             if (cr):
                 print_warning(red("Running with ")+bold("--pretend")+red("..."))
                 etpUi['pretend'] = True
+        elif options[0] in ["deptest","libtest"]:
+            entropyTools.applicationLockCheck(options[0], gentle = False)
         rc = text_ui.package(options)
         load_conf_cache()
 

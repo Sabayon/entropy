@@ -90,7 +90,11 @@ def getBestAtom(atom, match = "bestmatch-visible"):
 def getBestMaskedAtom(atom):
     atoms = portage.portdb.xmatch("match-all",str(atom))
     # find the best
-    from portage_versions import best
+    try:
+        from portage_versions import best
+    except ImportError:
+        from portage.versions import best
+
     rc = best(atoms)
     return rc
 
@@ -638,14 +642,20 @@ def synthetizeRoughDependencies(roughDependencies, useflags = None):
     return dependencies, conflicts
 
 def getPortageAppDbPath():
-    import portage_const
+    try:
+        import portage_const
+    except ImportError:
+        import portage.const as portage_const
     rc = etpConst['systemroot']+"/"+portage_const.VDB_PATH
     if (not rc.endswith("/")):
         return rc+"/"
     return rc
 
 def getAvailablePackages(categories = [], filter_reinstalls = True):
-    import portage_const
+    try:
+        import portage_const
+    except ImportError:
+        import portage.const as portage_const
     mypath = etpConst['systemroot']+"/"
     mysettings = portage.config(config_root="/", target_root=mypath, config_incrementals=portage_const.INCREMENTALS)
     portdb = portage.portdbapi(mysettings["PORTDIR"], mysettings = mysettings)
@@ -761,7 +771,10 @@ def refillCounter():
     return newcounter
 
 def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
-    import portage_const
+    try:
+        import portage_const
+    except ImportError:
+        import portage.const as portage_const
     # myebuild = path/to/ebuild.ebuild with a valid unpacked xpak metadata
     # tree = "bintree"
     # tree = "bintree"
