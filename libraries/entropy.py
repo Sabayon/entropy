@@ -914,7 +914,7 @@ class EquoInterface(TextInterface):
         self.clear_dump_cache(etpCache['atomMatch'])
         if repoid != None:
             self.clear_dump_cache(etpCache['dbMatch']+"/"+repoid+"/")
-            self.clear_dump_cache(etpCache['dbInfo']+"/"+repoid+"/")
+            self.clear_dump_cache(etpCache['dbInfo']+"/"+repoid+"/") # it also contains package masking information
             self.clear_dump_cache(etpCache['dbSearch']+"/"+repoid+"/")
 
 

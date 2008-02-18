@@ -2009,13 +2009,13 @@ class etpDatabase:
 
     def retrieveBranch(self, idpackage):
 
-        #cache = self.fetchInfoCache(idpackage,'retrieveBranch')
-        #if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveBranch')
+        if cache != None: return cache
 
         self.cursor.execute('SELECT branch FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         br = self.cursor.fetchone()[0]
 
-        #self.storeInfoCache(idpackage,'retrieveBranch',br)
+        self.storeInfoCache(idpackage,'retrieveBranch',br)
         return br
 
     def retrieveTrigger(self, idpackage):
@@ -3412,6 +3412,7 @@ class etpDatabase:
     def createAllIndexes(self):
         self.createContentIndex()
         self.createBaseinfoIndex()
+        self.createKeywordsIndex()
         self.createDependenciesIndex()
         self.createExtrainfoIndex()
         self.createNeededIndex()
@@ -3435,6 +3436,12 @@ class etpDatabase:
     def createBaseinfoIndex(self):
         if self.dbname != etpConst['serverdbid'] and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex ON baseinfo ( idpackage, atom, name, version, versiontag, slot, branch, revision )')
+            self.commitChanges()
+
+    def createKeywordsIndex(self):
+        if self.dbname != etpConst['serverdbid'] and self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsindex ON keywords ( idpackage, idkeyword )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsreferenceindex ON keywordsreference ( idkeyword, keywordname )')
             self.commitChanges()
 
     def createDependenciesIndex(self):
@@ -3657,6 +3664,13 @@ class etpDatabase:
                             hash(tuple(matchBranches)) + \
                             m_hash + r_hash + s_hash
                         )
+
+            try:
+                dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash,result)
+            except IOError:
+                pass
+
+            '''
             data = {}
             data['hash'] = c_hash
             if type(result) in (dict,set):
@@ -3666,15 +3680,19 @@ class etpDatabase:
             else:
                 data['result'] = result
 
+
             task = entropyTools.parallelTask(self.__atomMatchStoreCache, data)
             task.parallel_wait()
             task.start()
+            '''
 
+    '''
     def __atomMatchStoreCache(self, data):
         try:
             dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+data['hash'],data['result'])
         except IOError:
             pass
+    '''
 
     # function that validate one atom by reading keywords settings
     # idpackageValidatorCache = {} >> function cache
@@ -3686,23 +3704,33 @@ class etpDatabase:
         if cached != None: return cached
 
         # check if user package.mask needs it masked
-        for atom in etpConst['packagemasking']['mask']:
-            matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-            if matches[1] != 0:
-                continue
-            if idpackage in matches[0]:
-                # sorry, masked
-                idpackageValidatorCache[(idpackage,reponame)] = -1,1
-                return -1,1
+        user_package_mask_ids = etpConst['packagemasking'].get(reponame+'mask_ids')
+        if user_package_mask_ids == None:
+            etpConst['packagemasking'][reponame+'mask_ids'] = set()
+            for atom in etpConst['packagemasking']['mask']:
+                matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+                if matches[1] != 0:
+                    continue
+                etpConst['packagemasking'][reponame+'mask_ids'] |= matches[0]
+            user_package_mask_ids = etpConst['packagemasking'][reponame+'mask_ids']
+        if idpackage in user_package_mask_ids:
+            # sorry, masked
+            idpackageValidatorCache[(idpackage,reponame)] = -1,1
+            return -1,1
 
         # see if we can unmask by just lookin into user package.unmask stuff -> etpConst['packagemasking']['unmask']
-        for atom in etpConst['packagemasking']['unmask']:
-            matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-            if matches[1] != 0:
-                continue
-            if idpackage in matches[0]:
-                idpackageValidatorCache[(idpackage,reponame)] = idpackage,3
-                return idpackage,3
+        user_package_unmask_ids = etpConst['packagemasking'].get(reponame+'unmask_ids')
+        if user_package_unmask_ids == None:
+            etpConst['packagemasking'][reponame+'unmask_ids'] = set()
+            for atom in etpConst['packagemasking']['unmask']:
+                matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+                if matches[1] != 0:
+                    continue
+                etpConst['packagemasking'][reponame+'unmask_ids'] |= matches[0]
+            user_package_unmask_ids = etpConst['packagemasking'][reponame+'unmask_ids']
+        if idpackage in user_package_unmask_ids:
+            idpackageValidatorCache[(idpackage,reponame)] = idpackage,3
+            return idpackage,3
 
         # check if repository packages.db.mask needs it masked
         repomask = etpConst['packagemasking']['repos_mask'].get(reponame)
@@ -3710,22 +3738,33 @@ class etpDatabase:
             # first, seek into generic masking, all branches
             all_branches_mask = repomask.get("*")
             if all_branches_mask:
-                for atom in all_branches_mask:
-                    matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-                    if matches[1] != 0:
-                        continue
-                    if idpackage in matches[0]:
-                        idpackageValidatorCache[(idpackage,reponame)] = -1,8
-                        return -1,8
+                all_branches_mask_ids = repomask.get("*_ids")
+                if all_branches_mask_ids == None:
+                    etpConst['packagemasking']['repos_mask'][reponame]['*_ids'] = set()
+                    for atom in all_branches_mask:
+                        matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+                        if matches[1] != 0:
+                            continue
+                        etpConst['packagemasking']['repos_mask'][reponame]['*_ids'] |= matches[0]
+                    all_branches_mask_ids = etpConst['packagemasking']['repos_mask'][reponame]['*_ids']
+                if idpackage in all_branches_mask_ids:
+                    idpackageValidatorCache[(idpackage,reponame)] = -1,8
+                    return -1,8
             # no universal mask
             branches_mask = repomask.get("branch")
             if branches_mask:
                 for branch in branches_mask:
-                    for atom in branches_mask[branch]:
-                        matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-                        if matches[1] != 0:
-                            continue
-                        if (idpackage in matches[0]) and self.retrieveBranch(idpackage) == branch:
+                    branch_mask_ids = branches_mask.get(branch+"_ids")
+                    if branch_mask_ids == None:
+                        etpConst['packagemasking']['repos_mask'][reponame]['branch'][branch+"_ids"] = set()
+                        for atom in branches_mask[branch]:
+                            matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+                            if matches[1] != 0:
+                                continue
+                            etpConst['packagemasking']['repos_mask'][reponame]['branch'][branch+"_ids"] |= matches[0]
+                        branch_mask_ids = etpConst['packagemasking']['repos_mask'][reponame]['branch'][branch+"_ids"]
+                    if idpackage in branch_mask_ids:
+                        if  self.retrieveBranch(idpackage) == branch:
                             idpackageValidatorCache[(idpackage,reponame)] = -1,9
                             return -1,9
 
@@ -3747,14 +3786,21 @@ class etpDatabase:
             for keyword in etpConst['packagemasking']['keywords']['repositories'][reponame]:
                 if keyword in mykeywords:
                     keyword_data = etpConst['packagemasking']['keywords']['repositories'][reponame].get(keyword)
-                    for atom in keyword_data:
-                        if atom == "*": # all packages in this repo with keyword "keyword" are ok
+                    if keyword_data:
+                        if "*" in keyword_data: # all packages in this repo with keyword "keyword" are ok
                             idpackageValidatorCache[(idpackage,reponame)] = idpackage,4
+                            #self.storeInfoCache(idpackage,'idpackageValidator',(idpackage,4))
                             return idpackage,4
-                        matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-                        if matches[1] != 0:
-                            continue
-                        if idpackage in matches[0]:
+                        keyword_data_ids = etpConst['packagemasking']['keywords']['repositories'][reponame].get(keyword+"_ids")
+                        if keyword_data_ids == None:
+                            etpConst['packagemasking']['keywords']['repositories'][reponame][keyword+"_ids"] = set()
+                            for atom in keyword_data:
+                                matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+                                if matches[1] != 0:
+                                    continue
+                                etpConst['packagemasking']['keywords']['repositories'][reponame][keyword+"_ids"] |= matches[0]
+                            keyword_data_ids = etpConst['packagemasking']['keywords']['repositories'][reponame][keyword+"_ids"]
+                        if idpackage in keyword_data_ids:
                             idpackageValidatorCache[(idpackage,reponame)] = idpackage,5
                             return idpackage,5
 
@@ -3765,12 +3811,18 @@ class etpDatabase:
             if keyword in mykeywords:
                 keyword_data = etpConst['packagemasking']['keywords']['packages'].get(keyword)
                 # check for relation
-                for atom in keyword_data:
-                    # match atom
-                    matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-                    if matches[1] != 0:
-                        continue
-                    if idpackage in matches[0]:
+                if keyword_data:
+                    keyword_data_ids = etpConst['packagemasking']['keywords']['packages'][reponame+keyword+"_ids"]
+                    if keyword_data_ids == None:
+                        etpConst['packagemasking']['keywords']['packages'][reponame+keyword+"_ids"] = set()
+                        for atom in keyword_data:
+                            # match atom
+                            matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+                            if matches[1] != 0:
+                                continue
+                            etpConst['packagemasking']['keywords']['packages'][reponame+keyword+"_ids"] |= matches[0]
+                        keyword_data_ids = etpConst['packagemasking']['keywords']['packages'][reponame+keyword+"_ids"]
+                    if idpackage in keyword_data_ids:
                         # valid!
                         idpackageValidatorCache[(idpackage,reponame)] = idpackage,6
                         return idpackage,6
