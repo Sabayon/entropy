@@ -447,13 +447,13 @@ def packages(options):
 
                     if (etpUi['pretend']):
                         continue
-                    if (etpUi['ask']) and (removalQueueLength or downloadQueueLength or uploadQueueLength):
+                    if (not removalQueueLength and not downloadQueueLength and not uploadQueueLength):
+                        continue
+                    if (etpUi['ask']):
                         rc = Entropy.askQuestion("\n     Would you like to run the steps above ?")
                         if rc == "No":
                             print "\n"
                             continue
-                    else:
-                        continue
 
                     # queues management
                     successfulUploadCounter = 0
