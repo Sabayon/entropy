@@ -1,0 +1,18 @@
+# Server side packages.db.mask file, to allow masking packages
+#
+# In this file you can specify atoms, one per line, that you would mask.
+# Masking a package (atom) means that you will deny Entropy to pull in a package even if it's marked as "NOT experimental".
+
+# LINE CONSTRUCTION:
+# <atom> <branch, optional, if not branch specified, will be applied to all>
+# See examples below
+
+# EXAMPLES:
+# >=media-libs/foo-1.2.3 3.5
+# media-libs/foo
+# <media-libs/foo-1.2.3 2008
+# media-libs/foo:1
+# >=media-libs/foo-1.2.3#2.6.23-sabayon-r1 3.5
+# 
+# :1 means package with SLOT="1"
+# #2.6.23-sabayon-r1 means package with kernel tag = 2.6.23-sabayon-r1

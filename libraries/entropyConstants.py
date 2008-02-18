@@ -632,7 +632,9 @@ def initConfig_entropyConstants(rootdir):
             4: 'user repo package.keywords (all packages)',
             5: 'user repo package.keywords',
             6: 'user package.keywords',
-            7: 'completely masked'
+            7: 'completely masked',
+            8: 'repository general packages.db.mask',
+            9: 'repository in branch packages.db.mask'
         },
 
         # packages whose need their other installs (different tag), to be removed

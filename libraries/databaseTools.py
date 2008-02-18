@@ -3685,7 +3685,32 @@ class etpDatabase:
         cached = idpackageValidatorCache.get((idpackage,reponame))
         if cached != None: return cached
 
-        # check if package.mask need it masked
+        # check if repository packages.db.mask needs it masked
+        repomask = etpConst['packagemasking']['repos_mask'].get(reponame)
+        if repomask != None:
+            # first, seek into generic masking, all branches
+            all_branches_mask = repomask.get("*")
+            if all_branches_mask:
+                for atom in all_branches_mask:
+                    matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+                    if matches[1] != 0:
+                        continue
+                    if idpackage in matches[0]:
+                        idpackageValidatorCache[(idpackage,reponame)] = -1,8
+                        return -1,8
+            # no universal mask
+            branches_mask = repomask.get("branch")
+            if branches_mask:
+                for branch in branches_mask:
+                    for atom in branches_mask[branch]:
+                        matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+                        if matches[1] != 0:
+                            continue
+                        if (idpackage in matches[0]) and self.retrieveBranch(idpackage) == branch:
+                            idpackageValidatorCache[(idpackage,reponame)] = -1,9
+                            return -1,9
+
+        # check if user package.mask needs it masked
         for atom in etpConst['packagemasking']['mask']:
             matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
             if matches[1] != 0:

@@ -6176,12 +6176,24 @@ class PackageMaskingParser:
             'keywords': etpConst['confdir']+"/packages/package.keywords", # keywording configuration files
             'unmask': etpConst['confdir']+"/packages/package.unmask", # unmasking configuration files
             'mask': etpConst['confdir']+"/packages/package.mask", # masking configuration files
+            'repos_mask': {},
         }
+        # append repositories mask files
+        for repoid in etpRepositoriesOrder:
+            maskpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabasemaskfile'])
+            if os.path.isfile(maskpath):
+                self.etpMaskFiles['repos_mask'][repoid] = maskpath
+
         self.etpMtimeFiles = {
             'keywords_mtime': etpConst['dumpstoragedir']+"/keywords.mtime", # keywording configuration files mtime
             'unmask_mtime': etpConst['dumpstoragedir']+"/unmask.mtime", # unmasking configuration files mtime
             'mask_mtime': etpConst['dumpstoragedir']+"/mask.mtime", # masking configuration files mtime
+            'repos_mask': {},
         }
+        # append repositories mtime files
+        for repoid in etpRepositoriesOrder:
+            if repoid in self.etpMaskFiles['repos_mask']:
+                self.etpMtimeFiles['repos_mask'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabasemaskfile']+".mtime"
 
         data = {}
         for item in self.etpMaskFiles:
@@ -6269,8 +6281,6 @@ class PackageMaskingParser:
             # filter comments and white lines
             content = [x.strip() for x in content if not x.startswith("#") and x.strip()]
             for line in content:
-                # FIXME: need validation? probably not since atomMatch handles it all
-                # and doesn't care about badly formatted atoms
                 data.add(line)
         return data
 
@@ -6285,19 +6295,46 @@ class PackageMaskingParser:
             # filter comments and white lines
             content = [x.strip() for x in content if not x.startswith("#") and x.strip()]
             for line in content:
-                # FIXME: need validation? probably not since atomMatch handles it all
-                # and doesn't care about badly formatted atoms
                 data.add(line)
+        return data
+
+    def repos_mask_parser(self):
+
+        data = {}
+        for repoid in self.etpMaskFiles['repos_mask']:
+
+            data[repoid] = {}
+            data[repoid]['branch'] = {}
+            data[repoid]['*'] = set()
+
+            self.__validateEntropyCache(self.etpMaskFiles['repos_mask'][repoid],self.etpMtimeFiles['repos_mask'][repoid], repoid = repoid)
+            if os.path.isfile(self.etpMaskFiles['repos_mask'][repoid]):
+                f = open(self.etpMaskFiles['repos_mask'][repoid],"r")
+                content = f.readlines()
+                f.close()
+                # filter comments and white lines
+                content = [x.strip() for x in content if not x.startswith("#") and x.strip() and len(x.split()) <= 2]
+                for line in content:
+                    line = line.split()
+                    if len(line) == 1:
+                        data[repoid]['*'].add(line[0])
+                    else:
+                        if not data[repoid]['branch'].has_key(line[1]):
+                            data[repoid]['branch'][line[1]] = set()
+                        data[repoid]['branch'][line[1]].add(line[0])
         return data
 
     '''
     internal functions
     '''
 
-    def __removeRepoCache(self):
+    def __removeRepoCache(self, repoid = None):
         if os.path.isdir(etpConst['dumpstoragedir']):
-            for repoid in etpRepositoriesOrder:
+            if repoid:
                 self.Entropy.repository_move_clear_cache(repoid)
+            else:
+                for repoid in etpRepositoriesOrder:
+                    self.Entropy.repository_move_clear_cache(repoid)
         else:
             os.makedirs(etpConst['dumpstoragedir'])
 
@@ -6317,7 +6354,7 @@ class PackageMaskingParser:
         f.close()
 
 
-    def __validateEntropyCache(self,maskfile,mtimefile):
+    def __validateEntropyCache(self,maskfile,mtimefile, repoid = None):
 
         if os.getuid() != 0: # can't validate if running as user, thus cache shouldn't be loaded either
             return
@@ -6328,7 +6365,7 @@ class PackageMaskingParser:
         if not os.path.isfile(mtimefile):
             # we can't know if package.keywords has been updated
             # remove repositories caches
-            self.__removeRepoCache()
+            self.__removeRepoCache(repoid = repoid)
             self.__saveFileMtime(maskfile,mtimefile)
         else:
             # check mtime
@@ -6341,10 +6378,10 @@ class PackageMaskingParser:
                 except OSError:
                     currmtime = 0.0
                 if mtime != currmtime:
-                    self.__removeRepoCache()
+                    self.__removeRepoCache(repoid = repoid)
                     self.__saveFileMtime(maskfile,mtimefile)
             except:
-                self.__removeRepoCache()
+                self.__removeRepoCache(repoid = repoid)
                 self.__saveFileMtime(maskfile,mtimefile)
 
 
