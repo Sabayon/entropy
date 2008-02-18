@@ -62,18 +62,15 @@ def loadobj(name, completePath = False):
             #dump_dir = os.path.dirname(dump_path)
             #dump_name = os.path.basename(dump_path)
             dmpfile = dump_path+".dmp"
-        if os.path.isfile(dmpfile):
+        if os.path.isfile(dmpfile) and os.access(dmpfile,os.R_OK):
+            f = open(dmpfile,"rb")
+            x = None
             try:
-                f = open(dmpfile,"rb")
                 x = pickle.load(f)
-                f.close()
-                return x
             except pickle.UnpicklingError, ValueError:
-                try:
-                    os.remove(dmpfile)
-                except OSError:
-                    pass
                 pass
+            f.close()
+            return x
         break
 
 def removeobj(name):
