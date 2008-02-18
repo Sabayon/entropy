@@ -3631,7 +3631,7 @@ class etpDatabase:
             c_hash = str(   hash(atom) + \
                             hash(matchSlot) + \
                             hash(matchTag) + \
-                            hash(matchRevision) + \
+                            hash(matchRevision)*5 + \
                             hash(tuple(matchBranches)) + \
                             m_hash + r_hash + s_hash
                         )
@@ -3653,7 +3653,7 @@ class etpDatabase:
             c_hash = str(   hash(atom) + \
                             hash(matchSlot) + \
                             hash(matchTag) + \
-                            hash(matchRevision) + \
+                            hash(matchRevision)*5 + \
                             hash(tuple(matchBranches)) + \
                             m_hash + r_hash + s_hash
                         )
@@ -3775,21 +3775,28 @@ class etpDatabase:
         if str(dbslot) == str(slot):
             return idpackage
 
-    def __filterTag(self, idpackage, tag):
+    def __filterTag(self, idpackage, tag, operators):
         if tag == None:
             return idpackage
         dbtag = self.retrieveVersionTag(idpackage)
-        if tag == dbtag:
-            return idpackage
+        compare = cmp(tag,dbtag)
+        if not operators or operators == "=":
+            if compare == 0:
+                return idpackage
+        else:
+            return self.__do_operator_compare(idpackage, operators, compare)
 
-    def __filterRevision(self, idpackage, revision):
-        if revision == None:
-            return idpackage
-        dbrev = self.retrieveRevision(idpackage)
-        if revision == dbrev:
-            return idpackage
+    def __do_operator_compare(self, token, operators, compare):
+        if operators == ">" and compare == -1:
+            return token
+        elif operators == ">=" and compare < 1:
+            return token
+        elif operators == "<" and compare == 1:
+            return token
+        elif operators == "<=" and compare > -1:
+            return token
 
-    def __filterSlotTagRevision(self, foundIDs, slot, tag, revision):
+    def __filterSlotTag(self, foundIDs, slot, tag, operators):
 
         newlist = set()
         for data in foundIDs:
@@ -3799,11 +3806,7 @@ class etpDatabase:
             if not idpackage:
                 continue
 
-            idpackage = self.__filterTag(idpackage, tag)
-            if not idpackage:
-                continue
-
-            idpackage = self.__filterRevision(idpackage, revision)
+            idpackage = self.__filterTag(idpackage, tag, operators)
             if not idpackage:
                 continue
 
@@ -3967,7 +3970,7 @@ class etpDatabase:
         ### FILTERING
 
         # filter slot and tag
-        foundIDs = self.__filterSlotTagRevision(foundIDs, matchSlot, matchTag, matchRevision)
+        foundIDs = self.__filterSlotTag(foundIDs, matchSlot, matchTag, direction)
 
         if packagesFilter: # keyword filtering
             foundIDs = self.packagesFilter(foundIDs)
@@ -3997,7 +4000,7 @@ class etpDatabase:
                 if (direction == '' and not justname):
                     direction = "="
 
-                # remove revision (-r0 if none)
+                # remove gentoo revision (-r0 if none)
                 if (direction == "="):
                     if (pkgversion.split("-")[-1] == "r0"):
                         pkgversion = entropyTools.remove_revision(pkgversion)
@@ -4018,38 +4021,75 @@ class etpDatabase:
                         if pkgversion[-1] == "*":
                             if dbver.startswith(pkgversion[:-1]):
                                 dbpkginfo.add((idpackage,dbver))
-                        # do versions match?
-                        elif pkgversion == dbver:
+                        elif (matchRevision != None) and (pkgversion == dbver):
+                            dbrev = self.retrieveRevision(idpackage)
+                            if dbrev == matchRevision:
+                                dbpkginfo.add((idpackage,dbver))
+                        elif (pkgversion == dbver) and (matchRevision == None):
                             dbpkginfo.add((idpackage,dbver))
 
             elif (direction.find(">") != -1) or (direction.find("<") != -1):
 
-                # remove revision (-r0 if none)
-                if pkgversion.split("-")[-1] == "r0":
-                    # remove
-                    entropyTools.remove_revision(pkgversion)
+                if not justname:
 
-                for data in foundIDs:
+                    # remove revision (-r0 if none)
+                    if pkgversion.split("-")[-1] == "r0":
+                        # remove
+                        entropyTools.remove_revision(pkgversion)
 
-                    idpackage = data[1]
-                    dbver = self.retrieveVersion(idpackage)
-                    pkgcmp = entropyTools.compareVersions(pkgversion,dbver)
-                    if direction == ">": # the --deep mode should really act on this
-                        if (pkgcmp < 0):
-                            # found
-                            dbpkginfo.add((idpackage,dbver))
-                    elif direction == "<":
-                        if (pkgcmp > 0):
-                            # found
-                            dbpkginfo.add((idpackage,dbver))
-                    elif direction == ">=": # the --deep mode should really act on this
-                        if (pkgcmp <= 0):
-                            # found
-                            dbpkginfo.add((idpackage,dbver))
-                    elif direction == "<=":
-                        if (pkgcmp >= 0):
-                            # found
-                            dbpkginfo.add((idpackage,dbver))
+                    for data in foundIDs:
+
+                        idpackage = data[1]
+                        revcmp = 0
+                        tagcmp = 0
+                        if matchRevision != None:
+                            dbrev = self.retrieveRevision(idpackage)
+                            revcmp = cmp(matchRevision,dbrev)
+                        if matchTag != None:
+                            dbtag = self.retrieveVersionTag(idpackage)
+                            tagcmp = cmp(matchTag,dbtag)
+                        dbver = self.retrieveVersion(idpackage)
+                        pkgcmp = entropyTools.compareVersions(pkgversion,dbver)
+                        if direction == ">":
+                            if pkgcmp < 0:
+                                dbpkginfo.add((idpackage,dbver))
+                            elif (matchRevision != None) and pkgcmp <= 0 and revcmp < 0:
+                                #print "found >",self.retrieveAtom(idpackage)
+                                dbpkginfo.add((idpackage,dbver))
+                            elif (matchTag != None) and tagcmp < 0:
+                                dbpkginfo.add((idpackage,dbver))
+                        elif direction == "<":
+                            if pkgcmp > 0:
+                                dbpkginfo.add((idpackage,dbver))
+                            elif (matchRevision != None) and pkgcmp >= 0 and revcmp > 0:
+                                #print "found <",self.retrieveAtom(idpackage)
+                                dbpkginfo.add((idpackage,dbver))
+                            elif (matchTag != None) and tagcmp > 0:
+                                dbpkginfo.add((idpackage,dbver))
+                        elif direction == ">=":
+                            if (matchRevision != None) and pkgcmp <= 0:
+                                if pkgcmp == 0:
+                                    if revcmp <= 0:
+                                        dbpkginfo.add((idpackage,dbver))
+                                        #print "found >=",self.retrieveAtom(idpackage)
+                                else:
+                                    dbpkginfo.add((idpackage,dbver))
+                            elif pkgcmp <= 0 and matchRevision == None:
+                                dbpkginfo.add((idpackage,dbver))
+                            elif (matchTag != None) and tagcmp <= 0:
+                                dbpkginfo.add((idpackage,dbver))
+                        elif direction == "<=":
+                            if (matchRevision != None) and pkgcmp >= 0:
+                                if pkgcmp == 0:
+                                    if revcmp >= 0:
+                                        dbpkginfo.add((idpackage,dbver))
+                                        #print "found <=",self.retrieveAtom(idpackage)
+                                else:
+                                    dbpkginfo.add((idpackage,dbver))
+                            elif pkgcmp >= 0 and matchRevision == None:
+                                dbpkginfo.add((idpackage,dbver))
+                            elif (matchTag != None) and tagcmp >= 0:
+                                dbpkginfo.add((idpackage,dbver))
 
         else: # just the key
 

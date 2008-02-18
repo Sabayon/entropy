@@ -945,8 +945,13 @@ def compareVersions(ver1, ver2):
 def entropyCompareVersions(listA,listB):
     if len(listA) != 3 or len(listB) != 3:
         raise exceptionTools.InvalidDataType("InvalidDataType: listA or listB are not properly formatted.")
-    # start with version
-    rc = compareVersions(listA[0],listB[0])
+
+    # if both are tagged, check tag first
+    rc = 0
+    if listA[1] and listB[1]:
+        rc = cmp(listA[1],listB[1])
+    if rc == 0:
+        rc = compareVersions(listA[0],listB[0])
 
     if (rc == 0):
         # check tag

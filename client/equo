@@ -354,7 +354,6 @@ except IOError, e:
     if e.errno != 32:
         raise
 except KeyboardInterrupt:
-    #reset_cache()
     sys.exit(0)
 #except Timeout:
 #    pass

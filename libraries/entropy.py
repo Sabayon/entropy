@@ -624,7 +624,7 @@ class EquoInterface(TextInterface):
 
     # tell if a new equo release is available, returns True or False
     def check_equo_updates(self):
-        found, match = self.check_package_update("app-admin/equo")
+        found, match = self.check_package_update("app-admin/equo", deep = True)
         return found
 
     # better to use key:slot
@@ -641,7 +641,8 @@ class EquoInterface(TextInterface):
         matched = None
         if match[0] != -1:
             myatom = self.clientDbconn.retrieveAtom(match[0])
-            pkg_match = ">="+myatom
+            myrev = self.clientDbconn.retrieveRevision(match[0])
+            pkg_match = ">="+myatom+"~"+str(myrev)
             pkg_unsatisfied,x = self.filterSatisfiedDependencies([pkg_match], deep_deps = deep)
             del x
             if pkg_unsatisfied:
@@ -749,7 +750,6 @@ class EquoInterface(TextInterface):
             if query[1] == 0:
                 # package found, add to our dictionary
                 repoResults[repo] = query[0]
-
 
         dbpkginfo = (-1,1)
 
