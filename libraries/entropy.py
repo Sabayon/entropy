@@ -1132,13 +1132,11 @@ class EquoInterface(TextInterface):
 
         mydbconn = self.openRepositoryDatabase(atomInfo[1])
         myatom = mydbconn.retrieveAtom(atomInfo[0])
-        mykey, myslot = mydbconn.retrieveKeySlot(atomInfo[0])
 
         # caches
         treecache = set()
         matchcache = set()
         keyslotcache = set()
-        keyslotcache.add((myslot,mykey))
         # special events
         dependenciesNotFound = set()
         conflicts = set()
@@ -1152,11 +1150,7 @@ class EquoInterface(TextInterface):
         else:
             deptree.add((1,atomInfo))
 
-        ''' these ones ? not needed anymore?
-        #mybuffer.push((1,myatom))
-        #mytree.append((1,myatom))
-        '''
-
+        virgin = True
         while mydep != None:
 
             # already analyzed in this call
@@ -1173,7 +1167,11 @@ class EquoInterface(TextInterface):
                 continue
 
             # atom found?
-            match = self.atomMatch(mydep[1])
+            if virgin:
+                virgin = False
+                match = atomInfo
+            else:
+                match = self.atomMatch(mydep[1])
             if match[0] == -1:
                 dependenciesNotFound.add(mydep[1])
                 mydep = mybuffer.pop()

@@ -1295,7 +1295,6 @@ def database(options):
         print_info(green(" * ")+red("Bumping the database..."))
         dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
         dbconn.taintDatabase()
-        dbconn.revisionBump()
         dbconn.closeDB()
         if databaseRequestSync:
             activatorTools.database(["sync"])
