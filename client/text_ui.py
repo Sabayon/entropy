@@ -293,12 +293,14 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 installedVer = "Not installed"
                 installedTag = "NoTag"
                 installedRev = "NoRev"
+                installedRepo = "Not available"
                 pkginstalled = Equo.clientDbconn.atomMatch(Equo.entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
                 if (pkginstalled[1] == 0):
                     # found
                     idx = pkginstalled[0]
                     installedVer = Equo.clientDbconn.retrieveVersion(idx)
                     installedTag = Equo.clientDbconn.retrieveVersionTag(idx)
+                    installedRepo = Equo.clientDbconn.retrievePackageFromInstalledTable(idx)
                     if not installedTag:
                         installedTag = "NoTag"
                     installedRev = Equo.clientDbconn.retrieveRevision(idx)
@@ -312,7 +314,10 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     installedRev = 0
                 pkgcmp = Equo.entropyTools.entropyCompareVersions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
                 if (pkgcmp == 0):
-                    action = darkgreen("Reinstall")
+                    if installedRepo != reponame:
+                        action = darkgreen("Reinstall")+" | Switch repo: "+blue(installedRepo)+" ===> "+darkgreen(reponame)
+                    else:
+                        action = darkgreen("Reinstall")
                 elif (pkgcmp > 0):
                     if (installedVer == "0"):
                         action = darkgreen("Install")
@@ -404,6 +409,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 installedVer = '0'
                 installedTag = ''
                 installedRev = 0
+                installedRepo = 'Not available'
                 pkginstalled = Equo.clientDbconn.atomMatch(Equo.entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
                 if (pkginstalled[1] == 0):
                     # found an installed package
@@ -411,13 +417,20 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     installedVer = Equo.clientDbconn.retrieveVersion(idx)
                     installedTag = Equo.clientDbconn.retrieveVersionTag(idx)
                     installedRev = Equo.clientDbconn.retrieveRevision(idx)
+                    installedRepo = Equo.clientDbconn.retrievePackageFromInstalledTable(idx)
                     onDiskFreedSize += Equo.clientDbconn.retrieveOnDiskSize(idx)
 
                 if not (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']):
                     continue
 
                 action = 0
-                flags = " ["
+                repoSwitch = False
+                if packageInfo[1] != installedRepo:
+                    repoSwitch = True
+                if repoSwitch:
+                    flags = darkred(" [")
+                else:
+                    flags = " ["
                 pkgcmp = Equo.entropyTools.entropyCompareVersions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
                 if (pkgcmp == 0):
                     pkgsToReinstall += 1
@@ -435,9 +448,15 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     pkgsToDowngrade += 1
                     flags += darkblue("D")
                     action = -1
-                flags += "] "
+                if repoSwitch:
+                    flags += darkred("] ")
+                else:
+                    flags += "] "
 
-                repoinfo = "["+brown(packageInfo[1])+"] "
+                if repoSwitch:
+                    repoinfo = "["+brown(installedRepo)+"->"+darkred(packageInfo[1])+"] "
+                else:
+                    repoinfo = "["+brown(packageInfo[1])+"] "
                 oldinfo = ''
                 if action != 0:
                     oldinfo = "   ["+blue(installedVer)+"|"+red(str(installedRev))

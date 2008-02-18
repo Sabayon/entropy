@@ -1132,11 +1132,13 @@ class EquoInterface(TextInterface):
 
         mydbconn = self.openRepositoryDatabase(atomInfo[1])
         myatom = mydbconn.retrieveAtom(atomInfo[0])
+        mykey, myslot = mydbconn.retrieveKeySlot(atomInfo[0])
 
         # caches
         treecache = set()
         matchcache = set()
         keyslotcache = set()
+        keyslotcache.add((myslot,mykey))
         # special events
         dependenciesNotFound = set()
         conflicts = set()
@@ -1158,7 +1160,6 @@ class EquoInterface(TextInterface):
         while mydep != None:
 
             # already analyzed in this call
-
             if mydep[1] in treecache:
                 mydep = mybuffer.pop()
                 continue
@@ -1181,7 +1182,7 @@ class EquoInterface(TextInterface):
             # check if atom has been already pulled in
             matchdb = self.openRepositoryDatabase(match[1])
             matchatom = matchdb.retrieveAtom(match[0])
-            matchslot = matchdb.retrieveSlot(match[0]) # used later
+            matchkey, matchslot = matchdb.retrieveKeySlot(match[0])
             if matchatom in treecache:
                 mydep = mybuffer.pop()
                 continue
@@ -1191,12 +1192,12 @@ class EquoInterface(TextInterface):
             treecache.add(mydep[1])
 
             # check if key + slot has been already pulled in
-            key = self.entropyTools.dep_getkey(matchatom)
-            if (matchslot,key) in keyslotcache:
+            print "keyslotcache",matchslot, matchkey
+            if (matchslot,matchkey) in keyslotcache:
                 mydep = mybuffer.pop()
                 continue
             else:
-                keyslotcache.add((matchslot,key))
+                keyslotcache.add((matchslot,matchkey))
 
             # already analyzed by the calling function
             if usefilter:
@@ -1217,7 +1218,7 @@ class EquoInterface(TextInterface):
             deptree.add((mydep[0],match)) # add match
 
             # extra library breakages check
-            clientmatch = self.clientDbconn.atomMatch(key, matchSlot = matchslot)
+            clientmatch = self.clientDbconn.atomMatch(matchkey, matchSlot = matchslot)
             if clientmatch[0] != -1:
                 broken_atoms = self.__lookup_library_breakages(match, clientmatch, deep_deps = deep_deps)
                 for x in broken_atoms:
