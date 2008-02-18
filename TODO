@@ -1,9 +1,12 @@
 TODO list:
+  - include license data in the database (*)
+  - implement configuration files snapshot tool (*)
+  - try dump+bzip2
   - lzma compression for the database?
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
      [] complete reagent spm interface
-  - implement configuration files snapshot tool
+
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - Community repositories
   - separate packages by license restrictions
@@ -12,7 +15,9 @@ TODO list:
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
+    - if a package has a non OSS License, show it (*)
     - remove package info widgets and write from scratch (*)
+    - debug (*)
     - add masking menu
     - use availability bool to show masked packages and connect the masking menu
     - Popularity feature
