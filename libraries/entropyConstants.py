@@ -519,6 +519,7 @@ def initConfig_entropyConstants(rootdir):
         'entropyxpakdatarelativepath': "data", # Gentoo xpak metadata directory path
         'entropyxpakfilename': "metadata.xpak", # Gentoo xpak metadata file name
 
+        'etpdatabasemaskfile': ETP_DBFILE+".mask", # the local/remote database revision file
         'etpdatabaserevisionfile': ETP_DBFILE+".revision", # the local/remote database revision file
         'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum
         'etpdatabaselockfile': ETP_DBFILE+".lock", # the remote database lock file
@@ -560,7 +561,6 @@ def initConfig_entropyConstants(rootdir):
         'entropylogfile': ETP_SYSLOG_DIR+"entropy.log", # Activator operations log file
         'equologfile': ETP_SYSLOG_DIR+"equo.log", # Activator operations log file
 
-        'distccconf': "/etc/distcc/hosts", # distcc hosts configuration file FIXME: remove this?
         'etpdatabasedir': ETP_DIR+ETP_DBDIR,
         'etpdatabasefilepath': ETP_DIR+ETP_DBDIR+"/"+ETP_DBFILE,
         'etpdatabaseclientdir': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR,

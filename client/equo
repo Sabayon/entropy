@@ -34,7 +34,7 @@ def print_help():
     print_info("  --version\t\tprint version")
     print_info("  --nocolor\t\tdisable colorized output")
     print_info(red("Tools available: "))
-    print_info(" \t"+blue("update")+brown("\t\t update repositories (download new data)"))
+    print_info(" \t"+blue("update")+brown("\t\t update all or provided (through id) repositories"))
     print_info(" \t\t"+red("--force")+"\t\t\t force sync regardless repositories status")
     print_info(" \t"+blue("repoinfo")+brown("\t show enabled repositories"))
     print_info(" \t"+blue("status")+brown("\t\t show respositories status"))

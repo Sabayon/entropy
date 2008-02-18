@@ -37,12 +37,15 @@ def repositories(options):
     myopts = options[1:]
     equoRequestForceUpdate = False
     rc = 0
+    repo_names = []
     for opt in myopts:
         if (opt == "--force"):
             equoRequestForceUpdate = True
+        elif opt in etpRepositoriesOrder:
+            repo_names.append(opt)
 
     if (options[0] == "update"):
-        rc = do_sync(forceUpdate = equoRequestForceUpdate)
+        rc = do_sync(reponames = repo_names, forceUpdate = equoRequestForceUpdate)
     elif (options[0] == "status"):
         for repo in etpRepositories:
             showRepositoryInfo(repo)

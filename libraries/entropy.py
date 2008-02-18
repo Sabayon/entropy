@@ -1192,7 +1192,6 @@ class EquoInterface(TextInterface):
             treecache.add(mydep[1])
 
             # check if key + slot has been already pulled in
-            print "keyslotcache",matchslot, matchkey
             if (matchslot,matchkey) in keyslotcache:
                 mydep = mybuffer.pop()
                 continue
@@ -3690,7 +3689,7 @@ class RepoInterface:
 
     def __construct_paths(self, item, repo, cmethod):
 
-        if item not in ("db","rev","ck", "lock"):
+        if item not in ("db","rev","ck", "lock","mask"):
             raise exceptionTools.InvalidData("InvalidData: supported db, rev, ck, lock")
 
         if item == "db":
@@ -3704,6 +3703,9 @@ class RepoInterface:
         elif item == "ck":
             url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasehashfile']
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasehashfile']
+        elif item == "mask":
+            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasemaskfile']
+            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasemaskfile']
         elif item == "lock":
             url = etpRepositories[repo]['database']+"/"+etpConst['etpdatabasedownloadlockfile']
             filepath = "/dev/null"
@@ -3941,6 +3943,24 @@ class RepoInterface:
                     self.syncErrors = True
                     self.Entropy.cycleDone()
                     continue
+
+            # download packages.db.mask
+            self.Entropy.updateProgress(    red("Downloading package mask ")+darkgreen(etpConst['etpdatabasemaskfile'])+red(" ..."),
+                                            importance = 0,
+                                            type = "info",
+                                            header = "\t",
+                                            back = True
+                            )
+            mask_status = self.download_item("mask", repo)
+            if not mask_status:
+                mask_message = red("No %s available. It's ok." % (etpConst['etpdatabasemaskfile'],))
+            else:
+                mask_message = red("Downloaded %s. Awesome :-)" % (etpConst['etpdatabasemaskfile'],))
+            self.Entropy.updateProgress(    mask_message,
+                                            importance = 0,
+                                            type = "info",
+                                            header = "\t"
+                            )
 
             # download revision
             self.Entropy.updateProgress(    red("Downloading revision ")+darkgreen(etpConst['etpdatabaserevisionfile'])+red(" ..."),
