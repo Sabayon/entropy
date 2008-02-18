@@ -1,6 +1,4 @@
 TODO list:
-  - add reagent tool to bump database easily
-  - add simulated "equo world" test to reagent (with package keywording enabled) (or run deptest with keywordfilter enabled)
   - lzma compression for the database?
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
@@ -9,7 +7,6 @@ TODO list:
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - Community repositories
   - separate packages by license restrictions
-  - GLSAs for overlays?
   - split RDEPEND and PDEPEND
   - write a ncurses interface to manage entropy database
   - find a way to better handle real smartapps deps (need split PDEPEND?)

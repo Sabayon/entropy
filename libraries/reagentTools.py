@@ -465,6 +465,7 @@ def database(options):
     databaseRequestNoAsk = False
     databaseRequestJustScan = False
     databaseRequestNoChecksum = False
+    databaseRequestSync = False
     _options = []
     for opt in options:
         if opt.startswith("--noask"):
@@ -473,6 +474,8 @@ def database(options):
             databaseRequestJustScan = True
         elif opt.startswith("--nochecksum"):
             databaseRequestNoChecksum = True
+        elif opt.startswith("--sync"):
+            databaseRequestSync = True
         else:
             _options.append(opt)
     options = _options
@@ -1286,6 +1289,16 @@ def database(options):
         print_info(red("     Number of not found packages:\t\t")+str(stats['not_found']))
         dbconn.closeDB()
 
+    # bump tool
+    elif (options[0] == "bump"):
+
+        print_info(green(" * ")+red("Bumping the database..."))
+        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+        dbconn.taintDatabase()
+        dbconn.revisionBump()
+        dbconn.closeDB()
+        if databaseRequestSync:
+            activatorTools.database(["sync"])
 
     # query tools
     elif (options[0] == "query"):

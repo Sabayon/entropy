@@ -65,6 +65,8 @@ def print_help():
     print_info(" \t\t\t"+red("eclass")+"\t\t search packages using the specified eclasses")
     print_info(" \t\t\t"+brown("--verbose")+"\t show more details")
     print_info(" \t\t\t"+brown("--quiet")+"\t\t print results in a scriptable way")
+    print_info(" \t\t"+green("bump")+"\t\t\t\t Do a revision bump on the database")
+    print_info(" \t\t\t"+red("--sync")+"\t\t synchronize the database")
     print_info(" \t\t"+green("remove")+"\t\t\t\t Remove a package or a list of packages")
     print_info(" \t\t\t"+red("--branch=<branch name>")+"\t Choose which branch of the package to remove")
     print_info(" \t\t"+green("multiremove")+"\t\t\t Remove injected packages (all if no atom specified, multipackage)")
