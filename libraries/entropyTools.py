@@ -237,7 +237,7 @@ def unpackGzip(gzipfilepath):
 
 def unpackBzip2(bzip2filepath):
     import bz2
-    filepath = bzip2filepath[:-4] # remove .gz
+    filepath = bzip2filepath[:-4] # remove .bz2
     item = open(filepath,"wb")
     filebz2 = bz2.BZ2File(bzip2filepath,"rb")
     filecont = filebz2.readlines()

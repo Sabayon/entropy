@@ -1026,7 +1026,7 @@ class etpDatabase:
         # sources, a list
         for source in etpData['sources']:
 
-            if not source or source == "":
+            if (not source) or (source == "") or (not source.isalnum()):
                 continue
 
             idsource = self.isSourceAvailable(source)

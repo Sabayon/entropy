@@ -3784,8 +3784,10 @@ class RepoInterface:
 
         if self.dbformat_eapi == 1:
             path = eval("self.Entropy.entropyTools."+cmethod[1])(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
+            os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
         elif self.dbformat_eapi == 2:
             path = eval("self.Entropy.entropyTools."+cmethod[1])(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[3]])
+            os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[3]])
         else:
             raise exceptionTools.InvalidData('self.dbformat_eapi must be in (1,2)')
         return path
