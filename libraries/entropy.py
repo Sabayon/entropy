@@ -262,13 +262,17 @@ class EquoInterface(TextInterface):
             conn.clientUpdatePackagesData()
         return conn
 
-    def openGenericDatabase(self, dbfile, dbname = None, xcache = None, readOnly = False):
+    def openGenericDatabase(self, dbfile, dbname = None, xcache = None, readOnly = False, indexing_override = None):
         if xcache == None:
             xcache = self.xcache
+        if indexing_override != None:
+            indexing = indexing_override
+        else:
+            indexing = self.indexing
         dbconn = self.databaseTools.openGenericDatabase(dbfile, 
                                                         dbname = dbname, 
                                                         xcache = xcache, 
-                                                        indexing = self.indexing,
+                                                        indexing = indexing,
                                                         readOnly = readOnly
                                                     )
         return dbconn
@@ -3663,6 +3667,7 @@ class RepoInterface:
         self.noEquoCheck = noEquoCheck
         self.alreadyUpdated = 0
         self.notAvailable = 0
+        self.dbformat_eapi = 2
 
         # check if I am root
         if (not self.Entropy.entropyTools.isRoot()):
@@ -3704,7 +3709,7 @@ class RepoInterface:
 
     def __construct_paths(self, item, repo, cmethod):
 
-        if item not in ("db","rev","ck", "lock","mask"):
+        if item not in ("db","rev","ck","lock","mask","dbdump","dbdumpck"):
             raise exceptionTools.InvalidData("InvalidData: supported db, rev, ck, lock")
 
         if item == "db":
@@ -3712,12 +3717,22 @@ class RepoInterface:
                 raise exceptionTools.InvalidData("InvalidData: for db, cmethod can't be None")
             url = etpRepositories[repo]['database'] +   "/" + etpConst[cmethod[2]]
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst[cmethod[2]]
+        elif item == "dbdump":
+            if cmethod == None:
+                raise exceptionTools.InvalidData("InvalidData: for db, cmethod can't be None")
+            url = etpRepositories[repo]['database'] +   "/" + etpConst[cmethod[3]]
+            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst[cmethod[3]]
         elif item == "rev":
             url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaserevisionfile']
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabaserevisionfile']
         elif item == "ck":
             url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasehashfile']
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasehashfile']
+        elif item == "dbdumpck":
+            if cmethod == None:
+                raise exceptionTools.InvalidData("InvalidData: for db, cmethod can't be None")
+            url = etpRepositories[repo]['database'] + "/" + etpConst[cmethod[4]]
+            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst[cmethod[4]]
         elif item == "mask":
             url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasemaskfile']
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasemaskfile']
@@ -3727,16 +3742,27 @@ class RepoInterface:
 
         return url, filepath
 
-    def __remove_repository_files(self, repo, dbfilenameid):
+    def __remove_repository_files(self, repo, cmethod):
 
+        dbfilenameid = cmethod[2]
         self.__validate_repository_id(repo)
 
-        if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile']):
-            os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'])
-        if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst[dbfilenameid]):
-            os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[dbfilenameid])
-        if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']):
-            os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'])
+        if self.dbformat_eapi == 1:
+            if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile']):
+                os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'])
+            if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst[dbfilenameid]):
+                os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[dbfilenameid])
+            if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']):
+                os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'])
+        elif self.dbformat_eapi == 2:
+            if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+cmethod[4]):
+                os.remove(etpRepositories[repo]['dbpath']+"/"+cmethod[4])
+            if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[3]]):
+                os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[3]])
+            if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']):
+                os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'])
+        else:
+            raise exceptionTools.InvalidData('self.dbformat_eapi must be in (1,2)')
 
     def __unpack_downloaded_database(self, repo, cmethod):
 
@@ -3745,18 +3771,32 @@ class RepoInterface:
         path = eval("self.Entropy.entropyTools."+cmethod[1])(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
         return path
 
-    def __verify_database_checksum(self, repo):
+    def __verify_database_checksum(self, repo, cmethod = None):
 
         self.__validate_repository_id(repo)
 
-        try:
-            f = open(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
-            md5hash = f.readline().strip()
-            md5hash = md5hash.split()[0]
-            f.close()
-        except:
-            return -1
-        rc = self.Entropy.entropyTools.compareMd5(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasefile'],md5hash)
+        if self.dbformat_eapi == 1:
+            dbfile = etpConst['etpdatabasefile']
+            try:
+                f = open(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
+                md5hash = f.readline().strip()
+                md5hash = md5hash.split()[0]
+                f.close()
+            except:
+                return -1
+        elif self.dbformat_eapi == 2:
+            dbfile = cmethod[3]
+            try:
+                f = open(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[4]],"r")
+                md5hash = f.readline().strip()
+                md5hash = md5hash.split()[0]
+                f.close()
+            except:
+                return -1
+        else:
+            raise exceptionTools.InvalidData('self.dbformat_eapi must be in (1,2)')
+
+        rc = self.Entropy.entropyTools.compareMd5(etpRepositories[repo]['dbpath']+"/"+dbfile,md5hash)
         return rc
 
     # @returns -1 if the file is not available
@@ -3885,7 +3925,10 @@ class RepoInterface:
                                             header = "\t"
                             )
 
-            down_status = self.download_item("db", repo, cmethod)
+            down_status = self.download_item("dbdump", repo, cmethod)
+            if not down_status: # fallback to old db
+                self.dbformat_eapi = 1
+                down_status = self.download_item("db", repo, cmethod)
             if not down_status:
                 self.Entropy.updateProgress(    bold("Attention: ") + red("database does not exist online."),
                                                 importance = 1,
@@ -3899,22 +3942,31 @@ class RepoInterface:
             # database is going to be updated
             self.dbupdated = True
 
-            # unpack database
-            self.Entropy.updateProgress(    red("Unpacking database to ") + darkgreen(etpConst['etpdatabasefile'])+red(" ..."),
-                                            importance = 0,
-                                            type = "info",
-                                            header = "\t"
-                            )
-            # unpack database
-            self.__unpack_downloaded_database(repo, cmethod)
+            if self.dbformat_eapi == 1:
+                # unpack database
+                self.Entropy.updateProgress(    red("Unpacking database to ") + darkgreen(etpConst['etpdatabasefile'])+red(" ..."),
+                                                importance = 0,
+                                                type = "info",
+                                                header = "\t"
+                                )
+                # unpack database
+                self.__unpack_downloaded_database(repo, cmethod)
+
+
+
+            hashfile = etpConst['etpdatabasehashfile']
+            downitem = 'ck'
+            if self.dbformat_eapi == 2: # EAPI = 2
+                hashfile = etpConst[cmethod[4]]
+                downitem = 'dbdumpck'
 
             # download checksum
-            self.Entropy.updateProgress(    red("Downloading checksum ") + darkgreen(etpConst['etpdatabasehashfile'])+red(" ..."),
+            self.Entropy.updateProgress(    red("Downloading checksum ") + darkgreen(hashfile)+red(" ..."),
                                             importance = 0,
                                             type = "info",
                                             header = "\t"
                             )
-            down_status = self.download_item("ck", repo)
+            down_status = self.download_item(downitem, repo, cmethod)
             if not down_status:
                 self.Entropy.updateProgress(    red("Cannot fetch checksum. Cannot verify database integrity !"),
                                                 importance = 1,
@@ -3922,14 +3974,17 @@ class RepoInterface:
                                                 header = "\t"
                                 )
             else:
+                dbfilename = etpConst['etpdatabasefile']
+                if self.dbformat_eapi == 2:
+                    dbfilename = etpConst[cmethod[3]]
                 # verify checksum
-                self.Entropy.updateProgress(    red("Checking downloaded database ") + darkgreen(etpConst['etpdatabasefile'])+red(" ..."),
+                self.Entropy.updateProgress(    red("Checking downloaded database ") + darkgreen(dbfilename)+red(" ..."),
                                                 importance = 0,
                                                 back = True,
                                                 type = "info",
                                                 header = "\t"
                                 )
-                db_status = self.__verify_database_checksum(repo)
+                db_status = self.__verify_database_checksum(repo, cmethod)
                 if db_status == -1:
                     self.Entropy.updateProgress(    red("Cannot open digest. Cannot verify database integrity !"),
                                                     importance = 1,
@@ -3954,10 +4009,28 @@ class RepoInterface:
                                                     header = "\t"
                                     )
                     # delete all
-                    self.__remove_repository_files(repo, cmethod[2])
+                    self.__remove_repository_files(repo, cmethod)
                     self.syncErrors = True
                     self.Entropy.cycleDone()
                     continue
+
+            if self.dbformat_eapi == 2:
+                # load the dump into database
+                self.Entropy.updateProgress(    red("Injecting downloaded dump ") + darkgreen(etpConst[cmethod[3]])+red(" ..."),
+                                                importance = 0,
+                                                type = "info",
+                                                header = "\t"
+                                )
+                dbfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasefile'])
+                dumpfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst[cmethod[3]])
+                if os.path.isfile(dbfile):
+                    os.remove(dbfile)
+                dbconn = self.Entropy.openGenericDatabase(dbfile, xcache = False, indexing_override = False)
+                dbconn.doDatabaseImport(dumpfile)
+                dbconn.closeDB()
+                del dbconn
+                # remove the dump
+                os.remove(dumpfile)
 
             # download packages.db.mask
             self.Entropy.updateProgress(    red("Downloading package mask ")+darkgreen(etpConst['etpdatabasemaskfile'])+red(" ..."),
@@ -4005,7 +4078,6 @@ class RepoInterface:
                                                 back = True
                                 )
                 dbconn = self.Entropy.openRepositoryDatabase(repo)
-                dbconn.doContentExtraction()
                 dbconn.createAllIndexes()
                 try: # client db can be absent
                     self.Entropy.clientDbconn.createAllIndexes()

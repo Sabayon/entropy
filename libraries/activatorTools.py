@@ -1023,15 +1023,17 @@ def uploadDatabase(uris):
         dbfilec = eval(cmethod[0])(etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[2]], "wb")
 
         dbpath = etpConst['etpdatabasefilepath']
-        if etpConst['metadata-compression']:
-            dbpath = os.path.basename(etpConst['etpdatabasefilepath'])
-            dbpath = os.path.join(etpConst['packagestmpdir'],dbpath)
-            if not os.path.isdir(etpConst['packagestmpdir']):
-                os.makedirs(etpConst['packagestmpdir'])
-            shutil.copy2(etpConst['etpdatabasefilepath'],dbpath)
-            dbconn = Entropy.databaseTools.openGenericDatabase(dbpath, indexing = False, OutputInterface = Entropy)
-            dbconn.doContentCompression()
-            dbconn.closeDB()
+
+        # dump the schema to a file
+        schemafilename = etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[3]]
+        schemafilename_digest = etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[4]]
+        schemafile = eval(cmethod[0])(schemafilename, "w")
+        dbconn = Entropy.openGenericDatabase(dbpath, xcache = False, indexing_override = False)
+        dbconn.doDatabaseExport(schemafile)
+        schemafile.close()
+        dbconn.closeDB()
+        del dbconn
+        schema_hexdigest = Entropy.entropyTools.md5sum(schemafilename)
 
         # compress the database file first
         dbfile = open(dbpath,"rb")
@@ -1042,6 +1044,13 @@ def uploadDatabase(uris):
         dbfilec.close()
         del dbcont
 
+        # uploading schema file
+        rc = ftp.uploadFile(schemafilename)
+        if (rc == True):
+            print_info(green(" * ")+red("Upload of ")+bold(etpConst[cmethod[3]])+red(" completed."))
+        else:
+            print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
+
         # uploading database file
         rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[2]])
         if (rc == True):
@@ -1051,6 +1060,7 @@ def uploadDatabase(uris):
 
         # remove the compressed file
         os.remove(etpConst['etpdatabasedir'] + "/" + etpConst[cmethod[2]])
+        os.remove(schemafilename)
 
         # generate digest
         hexdigest = Entropy.entropyTools.md5sum(dbpath)
@@ -1058,6 +1068,20 @@ def uploadDatabase(uris):
         f.write(hexdigest+"  "+etpConst['etpdatabasefile']+"\n")
         f.flush()
         f.close()
+
+        # schema digest
+        f = open(schemafilename_digest,"w")
+        f.write(schema_hexdigest+"  "+etpConst[cmethod[3]]+"\n")
+        f.flush()
+        f.close()
+
+        # upload schema digest
+        print_info(green(" * ")+red("Uploading file ")+bold(etpConst[cmethod[4]])+red(" ..."), back = True)
+        rc = ftp.uploadFile(schemafilename_digest,True)
+        if (rc == True):
+            print_info(green(" * ")+red("Upload of ")+bold(schemafilename_digest)+red(" completed."))
+        else:
+            print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
 
         # upload digest
         print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasehashfile'])+red(" ..."), back = True)
@@ -1157,10 +1181,6 @@ def downloadDatabase(uri):
         print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabasehashfile'])+red(" completed."))
     else:
         print_warning(brown(" * ")+red("Cannot properly download from ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
-
-    dbconn = Entropy.databaseTools.openGenericDatabase(etpConst['etpdatabasefilepath'], indexing = False, OutputInterface = Entropy)
-    dbconn.doContentExtraction()
-    dbconn.closeDB()
 
     # download RSS
     if etpConst['rss-feed']:

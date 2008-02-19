@@ -522,19 +522,22 @@ def initConfig_entropyConstants(rootdir):
         'etpdatabasemaskfile': ETP_DBFILE+".mask", # the local/remote database revision file
         'etpdatabaserevisionfile': ETP_DBFILE+".revision", # the local/remote database revision file
         'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum
+        'etpdatabasedumphashfilebz2': ETP_DBFILE+".dump.bz2.md5",
+        'etpdatabasedumphashfilegzip': ETP_DBFILE+".dump.gz.md5",
         'etpdatabaselockfile': ETP_DBFILE+".lock", # the remote database lock file
         'etpdatabasedownloadlockfile': ETP_DBFILE+".download.lock", # the remote database download lock file
         'etpdatabasetaintfile': ETP_DBFILE+".tainted", # when this file exists, the database is not synced anymore with the online one
         'etpdatabasefile': ETP_DBFILE, # Entropy sqlite database file ETP_DIR+ETP_DBDIR+"/packages.db"
         'etpdatabasefilegzip': ETP_DBFILE+".gz", # Entropy sqlite database file (gzipped)
         'etpdatabasefilebzip2': ETP_DBFILE+".bz2", # Entropy sqlite database file (bzipped2)
+        'etpdatabasedumpbzip2': ETP_DBFILE+".dump.bz2", # Entropy sqlite database dump file (bzipped2)
+        'etpdatabasedumpgzip': ETP_DBFILE+".dump.gz", # Entropy sqlite database dump file (bzipped2)
         'etpdatabasefileformat': "bz2", # Entropy default compressed database format
         'etpdatabasesupportedcformats': ["bz2","gz"], # Entropy compressed databases format support
         'etpdatabasecompressclasses': {
-                                            "bz2": ("bz2.BZ2File","unpackBzip2","etpdatabasefilebzip2",),
-                                            "gz": ("gzip.GzipFile","unpackGzip","etpdatabasefilegzip",)
+                                            "bz2": ("bz2.BZ2File","unpackBzip2","etpdatabasefilebzip2","etpdatabasedumpbzip2","etpdatabasedumphashfilebz2"),
+                                            "gz": ("gzip.GzipFile","unpackGzip","etpdatabasefilegzip","etpdatabasedumpgzip","etpdatabasedumphashfilegzip")
         },
-        'metadata-compression': False, # enable/disable server-side database tables compression
         'rss-feed': True, # enable/disable packages RSS feed feature
         'rss-name': "packages.rss", # default name of the RSS feed
         'rss-base-url': "http://packages.sabayonlinux.org/", # default URL to the entropy web interface (overridden in reagent.conf)

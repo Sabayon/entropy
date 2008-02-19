@@ -3167,114 +3167,60 @@ class etpDatabase:
                                             header = " * ! * ! * ! * "
                             )
 
-    def doContentExtraction(self):
-
-        if not self.doesTableExist("packed_data"):
-            return
-
-        dbconn.cursor.execute('select data from packed_data where idpack = 1')
-        data = dbconn.cursor.fetchone()
-
-        if data == None:
-            return
-
-        import bz2
-        # write to disk
-        path = entropyTools.getRandomTempFile()
-        f = open(path,"wb")
-        f.write(data)
-        f.flush()
-        f.close()
-
-        # read and fill back
-        compressed_file = bz2.BZ2File(path,"r")
-        count = 0
-        self.cursor.execute('DELETE FROM content')
-        line = tuple(compressed_file.readline().strip().split("\t"))
-        while 1:
-            count += 1
-            if count%100 == 0:
-                self.updateProgress(
-                                                red("Unpacking database TOC ")+"["+blue(str(count))+"]",
-                                                importance = 0,
-                                                type = "info",
-                                                header = "\t",
-                                                back = True
-                                )
-            self.cursor.execute('INSERT INTO content VALUES (?,?,?)', line )
-            line = tuple(compressed_file.readline().strip().split("\t"))
-            if len(line) < 3:
-                break
-        compressed_file.close()
+    def doDatabaseImport(self, schema):
+        schemafile = open(schema, 'r')
+        self.cursor.executescript(schemafile.read())
+        schemafile.close()
         self.commitChanges()
-        self.cursor.execute('DELETE FROM packed_data WHERE idpack = 1;')
-        self.cursor.execute('VACUUM')
-        os.remove(path)
 
-    def doContentCompression(self):
+    def doDatabaseExport(self, dumpfile):
 
-        import bz2
-        path = entropyTools.getRandomTempFile()
-        compressed_file = bz2.BZ2File(path,"w")
+        dumpfile.write("BEGIN TRANSACTION;\n")
+        self.cursor.execute("SELECT name, type, sql FROM sqlite_master WHERE sql NOT NULL AND type=='table'")
+        for name, type, sql in self.cursor.fetchall():
 
-        ### Compress data
-        self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
-        self.cursor.execute('SELECT * FROM content')
-        row = self.cursor.fetchone()
-        count = 0
-        while row:
-            count += 1
-            if count%100 == 0:
-                self.updateProgress(
-                                                red("Packing database TOC ")+"["+blue(str(count))+"]",
-                                                importance = 0,
-                                                type = "info",
-                                                back = True
-                                )
-            try:
-                for item in row:
-                    if type(item) is int:
-                        compressed_file.write(str(item)+"\t")
-                    else:
-                        compressed_file.write(str(item.encode('raw_unicode_escape'))+"\t")
-                compressed_file.write("\n")
-            except UnicodeEncodeError:
-                self.updateProgress(
-                                                red("Error on item: %s" % (item,)),
-                                                importance = 0,
-                                                type = "info",
-                                                back = True
-                                )
-                raise
-            row = self.cursor.fetchone()
+            self.updateProgress(
+                                            red("Exporting database table ")+"["+blue(str(name))+"]",
+                                            importance = 0,
+                                            type = "info",
+                                            back = True
+                            )
 
-        compressed_file.close()
+            if name == "sqlite_sequence":
+                dumpfile.write("DELETE FROM sqlite_sequence;\n")
+            elif name == "sqlite_stat1":
+                dumpfile.write("ANALYZE sqlite_master;\n")
+            elif name.startswith("sqlite_"):
+                continue
+            else:
+                dumpfile.write("%s;\n" % sql)
 
+            self.cursor.execute("PRAGMA table_info('%s')" % name)
+            cols = [str(r[1]) for r in self.cursor.fetchall()]
+            q = "SELECT 'INSERT INTO \"%(tbl_name)s\" VALUES("
+            q += ", ".join(["'||quote(" + c + ")||'" for c in cols])
+            q += ")' FROM '%(tbl_name)s'"
+            self.cursor.execute(q % {'tbl_name': name})
+            con.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+            for row in self.cursor:
+                dumpfile.write("%s;\n" % str(row[0].encode('raw_unicode_escape')))
+
+        self.cursor.execute("SELECT name, type, sql FROM sqlite_master WHERE sql NOT NULL AND type!='table' AND type!='meta'")
+        for name, type, sql in self.cursor.fetchall():
+            dumpfile.write("%s;\n" % sql)
+
+        dumpfile.write("COMMIT;\n")
+        try:
+            dumpfile.flush()
+        except:
+            pass
         self.updateProgress(
-                                        red("Flusing database TOC into database..."),
+                                        red("Database Export completed."),
                                         importance = 0,
                                         type = "info"
                         )
+        # remember to close the file
 
-        # now write to table
-        if not self.doesTableExist("packed_data"):
-            self.CreatePackedDataTable()
-
-        self.cursor.execute("DELETE FROM packed_data WHERE idpack = 1")
-        f = open(path,"rb")
-        f.seek(0,2)
-        size = f.tell()
-        f.seek(0)
-        data = buffer(f.read(size))
-        f.flush()
-        f.close()
-        self.cursor.execute('INSERT INTO packed_data VALUES (?,?)', (1,data,))
-
-        ### Delete from db
-        self.cursor.execute('DELETE FROM CONTENT')
-        self.cursor.execute('VACUUM')
-        self.commitChanges()
-        os.remove(path)
 
     # FIXME: this is only compatible with SQLITE
     def doesTableExist(self, table):

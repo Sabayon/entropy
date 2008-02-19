@@ -61,11 +61,6 @@ def initConfig_serverConstants():
                     etpConst['activatorloglevel'] = loglevel
                 else:
                     pass
-            elif line.startswith("metadata-compression|") and (len(line.split("metadata-compression|")) == 2):
-                mc = line.split("metadata-compression|")[1]
-                if feed in ("enable","enabled","true","1"):
-                    etpConst['metadata-compression'] = True
-
 
     # reagent section
     if (os.path.isfile(etpConst['reagentconf'])):
