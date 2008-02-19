@@ -854,6 +854,16 @@ class etpDatabase:
                     etpData['branch'],
                     )
                 )
+            except IntegrityError: # we have a PRIMARY KEY we need to remove
+                self.migrateCountersTable()
+                self.cursor.execute(
+                'INSERT into counters VALUES '
+                '(?,?,?)'
+                , ( etpData['counter'],
+                    idpackage,
+                    etpData['branch'],
+                    )
+                )
             except:
                 if self.dbname == etpConst['clientdbid']: # force only for client database
                     if self.doesTableExist("counters"):
@@ -3511,6 +3521,22 @@ class etpDatabase:
     #
     # FIXME: remove these when 1.0 will be out
     #
+
+    def migrateCountersTable(self):
+        if not self.doesTableExist("counters"):
+            self.createCountersTable()
+        if not self.doesColumnInTableExist("counters","branch"):
+            self.createCountersBranchColumn()
+        self.cursor.execute('DROP TABLE IF EXISTS counterstemp;')
+        self.cursor.execute('CREATE TABLE counterstemp ( counter INTEGER, idpackage INTEGER PRIMARY KEY, branch VARCHAR );')
+        self.cursor.execute('select * from counters')
+        countersdata = self.cursor.fetchall()
+        if countersdata:
+            for row in countersdata:
+                self.cursor.execute('INSERT INTO counterstemp VALUES = (?,?,?)',row)
+        self.cursor.execute('DROP TABLE counters')
+        self.cursor.execute('ALTER TABLE counterstemp RENAME TO counters')
+        self.commitChanges()
 
     def createTreeupdatesTable(self):
         self.cursor.execute('DROP TABLE IF EXISTS treeupdates;')
