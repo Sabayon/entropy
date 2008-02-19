@@ -95,6 +95,8 @@ def inject(options):
 
     dbconn.commitChanges()
     dependsTableInitialize(dbconn, False)
+    # checking dependencies and print issues
+    dependenciesTest()
     dbconn.closeDB()
 
 

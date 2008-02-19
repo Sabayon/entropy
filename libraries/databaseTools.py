@@ -1901,7 +1901,7 @@ class etpDatabase:
 
     def fetchInfoCache(self, idpackage, function, extra_hash = 0):
         if self.xcache:
-            c_hash = str( hash(function) + extra_hash )
+            c_hash = str(hash(function)) + str(extra_hash)
             c_match = str(idpackage)
             try:
                 cached = dumpTools.loadobj(etpCache['dbInfo']+"/"+self.dbname+"/"+c_match+"/"+c_hash)
@@ -1913,7 +1913,7 @@ class etpDatabase:
 
     def storeInfoCache(self, idpackage, function, info_cache_data, extra_hash = 0):
         if self.xcache:
-            c_hash = str( hash(function) + extra_hash )
+            c_hash = str(hash(function)) + str(extra_hash)
             c_match = str(idpackage)
             try:
                 dumpTools.dumpobj(etpCache['dbInfo']+"/"+self.dbname+"/"+c_match+"/"+c_hash,info_cache_data)
@@ -2772,7 +2772,8 @@ class etpDatabase:
 
     def searchProvide(self, keyword, slot = None, tag = None, branch = None):
 
-        c_hash = str( hash("searchProvide") + hash(keyword) + hash(slot) + hash(branch) + hash(tag) )
+        c_hash = str(hash("searchProvide")) + str(hash(keyword)) + str(hash(slot)) + str(hash(branch)) + str(hash(tag))
+        c_hash = str(hash(c_hash))
         cache = self.fetchSearchCache(c_hash)
         if cache != None: return cache
 
@@ -2836,7 +2837,8 @@ class etpDatabase:
 
     def searchPackagesByName(self, keyword, sensitive = False, branch = None):
 
-        c_hash = str( hash("searchPackagesByName") + hash(keyword) + hash(sensitive) + hash(branch) )
+        c_hash = str(hash("searchPackagesByName")) + str(hash(keyword)) + str(hash(sensitive)) + str(hash(branch))
+        c_hash = str(hash(c_hash))
         cache = self.fetchSearchCache(c_hash)
         if cache != None: return cache
 
@@ -2879,7 +2881,8 @@ class etpDatabase:
 
     def searchPackagesByNameAndCategory(self, name, category, sensitive = False, branch = None):
 
-        c_hash = str( hash("searchPackagesByNameAndCategory") + hash(name) + hash(category) + hash(sensitive) + hash(branch) )
+        c_hash = str(hash("searchPackagesByNameAndCategory")) + str(hash(name)) + str(hash(category)) + str(hash(sensitive)) + str(hash(branch))
+        c_hash = str(hash(c_hash))
         cache = self.fetchSearchCache(c_hash)
         if cache != None: return cache
 
@@ -3627,21 +3630,23 @@ class etpDatabase:
 ##   Dependency handling functions
 #
 
+    def __get_match_hash(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision):
+        c_hash = str(hash(atom)) + \
+                 str(hash(matchSlot)) + \
+                 str(hash(matchTag)) + \
+                 str(hash(matchRevision)) + \
+                 str(hash(tuple(matchBranches))) + \
+                 str(hash(caseSensitive)) + \
+                 str(hash(multiMatch)) + \
+                 str(hash(packagesFilter)) + \
+                 str(hash(matchRevision))
+        c_hash = str(hash(c_hash))
+        return c_hash
+
+
     def atomMatchFetchCache(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision):
         if self.xcache:
-            m_hash = -2
-            if multiMatch: m_hash = 2
-            r_hash = -3
-            if packagesFilter: r_hash = 3
-            s_hash = -4
-            if caseSensitive: s_hash = 4
-            c_hash = str(   hash(atom) + \
-                            hash(matchSlot) + \
-                            hash(matchTag) + \
-                            hash(matchRevision)*5 + \
-                            hash(tuple(matchBranches)) + \
-                            m_hash + r_hash + s_hash
-                        )
+            c_hash = self.__get_match_hash(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
             try:
                 cached = dumpTools.loadobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash)
                 if cached != None:
@@ -3651,20 +3656,7 @@ class etpDatabase:
 
     def atomMatchStoreCache(self, result, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision):
         if self.xcache:
-            m_hash = -2
-            if multiMatch: m_hash = 2
-            r_hash = -3
-            if packagesFilter: r_hash = 3
-            s_hash = -4
-            if caseSensitive: s_hash = 4
-            c_hash = str(   hash(atom) + \
-                            hash(matchSlot) + \
-                            hash(matchTag) + \
-                            hash(matchRevision)*5 + \
-                            hash(tuple(matchBranches)) + \
-                            m_hash + r_hash + s_hash
-                        )
-
+            c_hash = self.__get_match_hash(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
             try:
                 dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash,result)
             except IOError:

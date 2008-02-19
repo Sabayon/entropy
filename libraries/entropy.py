@@ -631,7 +631,8 @@ class EquoInterface(TextInterface):
     def check_package_update(self, atom, deep = False):
 
         if self.xcache:
-            c_hash = str(hash(atom)+hash(deep))
+            c_hash = str(hash(atom))+str(hash(deep))
+            c_hash = str(hash(c_hash))
             cached = self.dumpTools.loadobj(etpCache['check_package_update']+c_hash)
             if cached != None:
                 return cached
@@ -715,24 +716,22 @@ class EquoInterface(TextInterface):
 
         if self.xcache:
 
-            m_hash = -2
-            if multiMatch: m_hash = 2
-            r_hash = -3
-            if multiRepo: r_hash = 3
-            s_hash = -4
-            if caseSensitive: s_hash = 4
-            t_hash = -5
-            u_hash = -6
-            if matchRepo and (type(matchRepo) in (list,tuple,set)): u_hash = hash(tuple(matchRepo))
-            if matchRevision: t_hash = hash(matchRevision)
-            c_hash = str(   hash(atom) + \
-                            hash(str(matchSlot)) + \
-                            hash(tuple(matchBranches)) + \
-                            hash(packagesFilter) + \
-                            hash(tuple(self.validRepositories)) + \
-                            hash(tuple(etpRepositories.keys())) + \
-                            m_hash + r_hash + s_hash + t_hash + u_hash
-                        )
+            if matchRepo and (type(matchRepo) in (list,tuple,set)):
+                u_hash = hash(tuple(matchRepo))
+            else:
+                u_hash = hash(matchRepo)
+            c_hash =    str(hash(atom)) + \
+                        str(hash(matchSlot)) + \
+                        str(hash(tuple(matchBranches))) + \
+                        str(hash(packagesFilter)) + \
+                        str(hash(tuple(self.validRepositories))) + \
+                        str(hash(tuple(etpRepositories.keys()))) + \
+                        str(hash(multiMatch)) + \
+                        str(hash(multiRepo)) + \
+                        str(hash(caseSensitive)) + \
+                        str(hash(matchRevision)) + \
+                        str(u_hash)
+            c_hash = str(hash(c_hash))
             cached = self.dumpTools.loadobj(etpCache['atomMatch']+c_hash)
             if cached != None:
                 return cached
@@ -1037,7 +1036,8 @@ class EquoInterface(TextInterface):
         if self.xcache:
             c_data = list(dependencies)
             c_data.sort()
-            c_hash = str(hash(tuple(c_data))+hash(deep_deps))
+            c_hash = str(hash(tuple(c_data)))+str(hash(deep_deps))
+            c_hash = str(hash(c_hash))
             del c_data
             cached = self.dumpTools.loadobj(etpCache['filter_satisfied_deps']+c_hash)
             if cached != None:
@@ -1260,7 +1260,8 @@ class EquoInterface(TextInterface):
         # there is no need to update this cache when "match" will be installed, because at that point
         # clientmatch[0] will differ.
         if self.xcache:
-            c_hash = str(hash(tuple(match))+hash(clientmatch[0])+hash(deep_deps))
+            c_hash = str(hash(tuple(match)))+str(hash(clientmatch[0]))+str(hash(deep_deps))
+            c_hash = str(hash(c_hash))
             cached = self.dumpTools.loadobj(etpCache['library_breakage']+c_hash)
             if cached != None:
                 return cached
@@ -1318,7 +1319,8 @@ class EquoInterface(TextInterface):
         if self.xcache:
             c_data = list(matched_atoms)
             c_data.sort()
-            c_hash = str(hash(tuple(c_data))+hash(empty_deps)*3+hash(deep_deps)*2)
+            c_hash = str(hash(tuple(c_data)))+str(hash(empty_deps))+str(hash(deep_deps))
+            c_hash = str(hash(c_hash))
             del c_data
             cached = self.dumpTools.loadobj(etpCache['dep_tree']+c_hash)
             if cached != None:
@@ -1388,7 +1390,8 @@ class EquoInterface(TextInterface):
         if self.xcache:
             c_data = list(idpackages)
             c_data.sort()
-            c_hash = str( hash(tuple(c_data)) + hash(deep) )
+            c_hash = str(hash(tuple(c_data))) + str(hash(deep))
+            c_hash = str(hash(c_hash))
             del c_data
             cached = self.dumpTools.loadobj(etpCache['depends_tree']+c_hash)
             if cached != None:
@@ -1517,10 +1520,11 @@ class EquoInterface(TextInterface):
     def get_available_packages_chash(self, branch):
         repo_digest = self.all_repositories_checksum()
         # client digest not needed, cache is kept updated
-        c_hash = str(hash(repo_digest) + \
-                    hash(branch) + \
-                    hash(tuple(etpRepositories)) + \
-                    hash(tuple(etpRepositoriesOrder)))
+        c_hash = str(hash(repo_digest)) + \
+                 str(hash(branch)) + \
+                 str(hash(tuple(etpRepositories))) + \
+                 str(hash(tuple(etpRepositoriesOrder)))
+        c_hash = str(hash(c_hash))
         return c_hash
 
     # this function searches all the not installed packages available in the repositories
@@ -1575,12 +1579,12 @@ class EquoInterface(TextInterface):
         if self.xcache:
             if db_digest == None:
                 db_digest = self.clientDbconn.tablesChecksum()
-            c_hash = str(   hash(db_digest) + \
-                            hash(empty_deps) + \
-                            hash(tuple(etpRepositories)) + \
-                            hash(tuple(etpRepositoriesOrder)) + \
-                            hash(branch)
-                        )
+            c_hash = str(hash(db_digest)) + \
+                     str(hash(empty_deps)) + \
+                     str(hash(tuple(etpRepositories))) + \
+                     str(hash(tuple(etpRepositoriesOrder))) + \
+                     str(hash(branch))
+            c_hash = str(hash(c_hash))
             disk_cache = self.dumpTools.loadobj(etpCache['world_update']+c_hash)
             if disk_cache != None:
                 return disk_cache
@@ -1667,12 +1671,12 @@ class EquoInterface(TextInterface):
         del idpackages
 
         if self.xcache:
-            c_hash = str(   hash(db_digest) + \
-                            hash(empty_deps) + \
-                            hash(tuple(etpRepositories)) + \
-                            hash(tuple(etpRepositoriesOrder)) + \
-                            hash(branch)
-                        )
+            c_hash = str(hash(db_digest)) + \
+                     str(hash(empty_deps)) + \
+                     str(hash(tuple(etpRepositories))) + \
+                     str(hash(tuple(etpRepositoriesOrder))) + \
+                     str(hash(branch))
+            c_hash = str(hash(c_hash))
             try:
                 self.dumpTools.dumpobj(etpCache['world_update']+c_hash, (update, remove, fine))
             except IOError:
@@ -2710,8 +2714,6 @@ class PackageInterface:
         if sys.version[:3] == "2.4":
             imageDir = imageDir.encode('raw_unicode_escape')
         # XXX Python 2.4 workaround
-
-        #import pdb; pdb.set_trace()
 
         # merge data into system
         for currentdir,subdirs,files in os.walk(imageDir):
@@ -6654,10 +6656,10 @@ class SecurityInterface:
 
         if self.Entropy.xcache:
             dir_checksum = self.Entropy.entropyTools.md5sum_directory(etpConst['securitydir'])
-            c_hash = str(   hash(etpConst['branch']) + \
-                            hash(dir_checksum) + \
-                            hash(etpConst['systemroot'])
-                        )
+            c_hash = str(hash(etpConst['branch'])) + \
+                     str(hash(dir_checksum)) + \
+                     str(hash(etpConst['systemroot']))
+            c_hash = str(hash(c_hash))
             adv_metadata = self.Entropy.dumpTools.loadobj(etpCache['advisories']+c_hash)
             if adv_metadata != None:
                 self.adv_metadata = adv_metadata.copy()
@@ -6666,10 +6668,10 @@ class SecurityInterface:
     def __set_advisories_cache(self, adv_metadata):
         if self.Entropy.xcache:
             dir_checksum = self.Entropy.entropyTools.md5sum_directory(etpConst['securitydir'])
-            c_hash = str(   hash(etpConst['branch']) + \
-                            hash(dir_checksum) + \
-                            hash(etpConst['systemroot'])
-                        )
+            c_hash = str(hash(etpConst['branch'])) + \
+                     str(hash(dir_checksum)) + \
+                     str(hash(etpConst['systemroot']))
+            c_hash = str(hash(c_hash))
             try:
                 self.Entropy.dumpTools.dumpobj(etpCache['advisories']+c_hash,adv_metadata)
             except IOError:
