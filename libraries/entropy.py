@@ -96,8 +96,6 @@ class EquoInterface(TextInterface):
         # masking parser
         self.MaskingParser = self.PackageMaskingParserInterfaceLoader()
 
-        self.validate_repositories_cache()
-
         self.validRepositories = []
         self.validate_repositories()
 
@@ -107,9 +105,14 @@ class EquoInterface(TextInterface):
         if self.entropyTools.islive():
             self.xcache = False
 
+        if etpConst['uid'] != 0:
+            self.xcache = False
+        else:
+            self.validate_repositories_cache()
+
         # security interface
         self.Security = SecurityInterface(self)
-        if not self.xcache:
+        if not self.xcache and (etpConst['uid'] == 0):
             try:
                 self.purge_cache(False)
             except:

@@ -401,7 +401,7 @@ except Exception:
     conntest = entropyTools.get_remote_data(etpConst['conntestlink'])
     if (conntest != False):
         print_error(darkgreen("Of course you are on the Internet..."))
-        rc = Text.askQuestion("   Erm... Can I send the error to my creators so they can fix me?")
+        rc = Text.askQuestion("   Erm... Can I send the error to my creators so they can fix me? (Your IP will be logged)")
         if rc == "No":
             print_error(darkgreen("Ok, ok ok ok... Sorry!"))
             sys.exit(2)
