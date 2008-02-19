@@ -2706,6 +2706,13 @@ class PackageInterface:
         # setup imageDir properly
         imageDir = self.infoDict['imagedir']
 
+        # XXX Python 2.4 workaround
+        if sys.version[:3] == "2.4":
+            imageDir = imageDir.encode('raw_unicode_escape')
+        # XXX Python 2.4 workaround
+
+        #import pdb; pdb.set_trace()
+
         # merge data into system
         for currentdir,subdirs,files in os.walk(imageDir):
             # create subdirs
@@ -2756,8 +2763,13 @@ class PackageInterface:
                 fromfile_encoded = fromfile
                 tofile_encoded = tofile
                 # redecode to bytestring
-                fromfile = fromfile.encode('raw_unicode_escape')
-                tofile = tofile.encode('raw_unicode_escape')
+
+                # XXX Python 2.4 bug workaround
+                # If Python 2.4, .encode fails
+                if sys.version[:3] != "2.4":
+                    fromfile = fromfile.encode('raw_unicode_escape')
+                    tofile = tofile.encode('raw_unicode_escape')
+                # XXX Python 2.4 bug workaround
 
                 if etpConst['collisionprotect'] > 1:
                     todbfile = fromfile[len(imageDir):]

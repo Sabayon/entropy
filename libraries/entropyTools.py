@@ -722,28 +722,28 @@ def dep_getcpv(mydep):
     Return the category-package-version with any operators/slot specifications stripped off
 
     Example usage:
-	>>> dep_getcpv('>=media-libs/test-3.0')
-	'media-libs/test-3.0'
+        >>> dep_getcpv('>=media-libs/test-3.0')
+        'media-libs/test-3.0'
 
     @param mydep: The depstring
     @type mydep: String
     @rtype: String
     @return: The depstring with the operator removed
     """
-    
+
     if mydep and mydep[0] == "*":
-	mydep = mydep[1:]
+        mydep = mydep[1:]
     if mydep and mydep[-1] == "*":
-	mydep = mydep[:-1]
+        mydep = mydep[:-1]
     if mydep and mydep[0] == "!":
-	mydep = mydep[1:]
+        mydep = mydep[1:]
     if mydep[:2] in [">=", "<="]:
-	mydep = mydep[2:]
+        mydep = mydep[2:]
     elif mydep[:1] in "=<>~":
-	mydep = mydep[1:]
+        mydep = mydep[1:]
     colon = mydep.rfind(":")
     if colon != -1:
-	mydep = mydep[:colon]
+        mydep = mydep[:colon]
 
     return mydep
 
@@ -753,8 +753,8 @@ def dep_getslot(dep):
     Retrieve the slot on a depend.
 
     Example usage:
-	>>> dep_getslot('app-misc/test:3')
-	'3'
+        >>> dep_getslot('app-misc/test:3')
+        '3'
 
     @param mydep: The depstring to retrieve the slot of
     @type dep: String
@@ -823,20 +823,21 @@ def dep_get_match_in_repos(mydep):
         return mydep,None
 
 def dep_gettag(dep):
+
     """
     Retrieve the slot on a depend.
-    
+
     Example usage:
-	>>> dep_gettag('app-misc/test#2.6.23-sabayon-r1')
-	'2.6.23-sabayon-r1'
-    
+        >>> dep_gettag('app-misc/test#2.6.23-sabayon-r1')
+        '2.6.23-sabayon-r1'
+
     """
 
     colon = dep.rfind("#")
     if colon != -1:
-	mydep = dep[colon+1:]
-	rslt = remove_slot(mydep)
-	return rslt
+        mydep = dep[colon+1:]
+        rslt = remove_slot(mydep)
+        return rslt
     return None
 
 
@@ -844,12 +845,12 @@ def removePackageOperators(atom):
 
     original = atom
     if atom[0] == ">" or atom[0] == "<":
-	atom = atom[1:]
+        atom = atom[1:]
     if atom[0] == "=":
-	atom = atom[1:]
+        atom = atom[1:]
     if atom[0] == "~":
-	atom = atom[1:]
-    
+        atom = atom[1:]
+
     return atom
 
 # Version compare function taken from portage_versions.py
