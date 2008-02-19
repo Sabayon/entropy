@@ -3788,7 +3788,7 @@ class RepoInterface:
             except:
                 return -1
         elif self.dbformat_eapi == 2:
-            dbfile = cmethod[3]
+            dbfile = etpConst[cmethod[3]]
             try:
                 f = open(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[4]],"r")
                 md5hash = f.readline().strip()
@@ -3923,16 +3923,16 @@ class RepoInterface:
             self.__ensure_repository_path(repo)
 
             # starting to download
-            self.Entropy.updateProgress(    red("Downloading database ") + darkgreen(etpConst[cmethod[2]])+red(" ..."),
+            self.Entropy.updateProgress(    red("Downloading repository database ..."),
                                             importance = 1,
                                             type = "info",
                                             header = "\t"
                             )
-
             down_status = self.download_item("dbdump", repo, cmethod)
             if not down_status: # fallback to old db
                 self.dbformat_eapi = 1
                 down_status = self.download_item("db", repo, cmethod)
+            
             if not down_status:
                 self.Entropy.updateProgress(    bold("Attention: ") + red("database does not exist online."),
                                                 importance = 1,
