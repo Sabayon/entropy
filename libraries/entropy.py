@@ -3984,7 +3984,9 @@ class RepoInterface:
                                             type = "info",
                                             header = "\t"
                             )
-            down_status = self.download_item("dbdump", repo, cmethod)
+            down_status = False
+            if self.dbformat_eapi == 2:
+                down_status = self.download_item("dbdump", repo, cmethod)
             if not down_status: # fallback to old db
                 self.dbformat_eapi = 1
                 down_status = self.download_item("db", repo, cmethod)
@@ -4010,6 +4012,7 @@ class RepoInterface:
                                             type = "info",
                                             header = "\t"
                             )
+
             db_down_status = self.download_item(downitem, repo, cmethod)
             if not db_down_status:
                 self.Entropy.updateProgress(    red("Cannot fetch checksum. Cannot verify database integrity !"),

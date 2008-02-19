@@ -1,6 +1,7 @@
 TODO list:
   - include license data in the database (*)
   - implement configuration files snapshot tool (*)
+  - write a tool that will rebuild kernel dependant packages (*)
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
      [] complete reagent spm interface
