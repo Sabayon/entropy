@@ -3201,7 +3201,7 @@ class etpDatabase:
             q += ", ".join(["'||quote(" + c + ")||'" for c in cols])
             q += ")' FROM '%(tbl_name)s'"
             self.cursor.execute(q % {'tbl_name': name})
-            con.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+            self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
             for row in self.cursor:
                 dumpfile.write("%s;\n" % str(row[0].encode('raw_unicode_escape')))
 
