@@ -3687,7 +3687,7 @@ class RepoInterface:
                 self.reponames.append(x)
 
     def reset_dbformat_eapi(self):
-        self.dbformat_eapi == 2
+        self.dbformat_eapi = 2
 
     def __validate_repository_id(self, repoid):
         if repoid not in self.reponames:
