@@ -531,7 +531,8 @@ def initConfig_entropyConstants(rootdir):
         'etpdatabasefilegzip': ETP_DBFILE+".gz", # Entropy sqlite database file (gzipped)
         'etpdatabasefilebzip2': ETP_DBFILE+".bz2", # Entropy sqlite database file (bzipped2)
         'etpdatabasedumpbzip2': ETP_DBFILE+".dump.bz2", # Entropy sqlite database dump file (bzipped2)
-        'etpdatabasedumpgzip': ETP_DBFILE+".dump.gz", # Entropy sqlite database dump file (bzipped2)
+        'etpdatabasedumpgzip': ETP_DBFILE+".dump.gz", # Entropy sqlite database dump file (gzipped)
+        'etpdatabasedump': ETP_DBFILE+".dump", # Entropy sqlite database dump file
         'etpdatabasefileformat': "bz2", # Entropy default compressed database format
         'etpdatabasesupportedcformats': ["bz2","gz"], # Entropy compressed databases format support
         'etpdatabasecompressclasses': {

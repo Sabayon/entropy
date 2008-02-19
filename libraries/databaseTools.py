@@ -3167,11 +3167,11 @@ class etpDatabase:
                                             header = " * ! * ! * ! * "
                             )
 
-    def doDatabaseImport(self, schema):
-        schemafile = open(schema, 'r')
-        self.cursor.executescript(schemafile.read())
-        schemafile.close()
-        self.commitChanges()
+    def doDatabaseImport(self, dumpfile, dbfile):
+        import subprocess
+        sqlite3_exec = "/usr/bin/sqlite3 %s < %s" % (dbfile,dumpfile,)
+        retcode = subprocess.call(sqlite3_exec, shell = True)
+        return retcode
 
     def doDatabaseExport(self, dumpfile):
 
