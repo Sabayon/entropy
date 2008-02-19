@@ -3691,8 +3691,13 @@ class RepoInterface:
 
     def reset_dbformat_eapi(self):
         self.dbformat_eapi = 2
-        if not os.access("/usr/bin/sqlite3",os.X_OK): # FIXME, find a way to do that without needing sqlite3 exec.
+        # FIXME, find a way to do that without needing sqlite3 exec.
+        if not os.access("/usr/bin/sqlite3",os.X_OK):
             self.dbformat_eapi = 1
+        else:
+            import subprocess
+            rc = subprocess.call("/usr/bin/sqlite3 -version &> /dev/null", shell = True)
+            if rc != 0: self.dbformat_eapi = 1
 
 
     def __validate_repository_id(self, repoid):
@@ -3868,6 +3873,44 @@ class RepoInterface:
             return False
         return True
 
+    def check_downloaded_database(self, repo, cmethod):
+        dbfilename = etpConst['etpdatabasefile']
+        if self.dbformat_eapi == 2:
+            dbfilename = etpConst[cmethod[3]]
+        # verify checksum
+        self.Entropy.updateProgress(    red("Checking downloaded database ") + darkgreen(dbfilename)+red(" ..."),
+                                        importance = 0,
+                                        back = True,
+                                        type = "info",
+                                        header = "\t"
+                        )
+        db_status = self.__verify_database_checksum(repo, cmethod)
+        if db_status == -1:
+            self.Entropy.updateProgress(    red("Cannot open digest. Cannot verify database integrity !"),
+                                            importance = 1,
+                                            type = "warning",
+                                            header = "\t"
+                            )
+        elif db_status:
+            self.Entropy.updateProgress(    red("Downloaded database status: ")+bold("OK"),
+                                            importance = 1,
+                                            type = "info",
+                                            header = "\t"
+                            )
+        else:
+            self.Entropy.updateProgress(    red("Downloaded database status: ")+darkred("ERROR"),
+                                            importance = 1,
+                                            type = "error",
+                                            header = "\t"
+                            )
+            self.Entropy.updateProgress(    red("An error occured while checking database integrity. Giving up."),
+                                            importance = 1,
+                                            type = "error",
+                                            header = "\t"
+                            )
+            return 1
+        return 0
+
     def sync(self):
 
         # close them
@@ -3953,8 +3996,34 @@ class RepoInterface:
                 self.notAvailable += 1
                 continue
 
-            # database is going to be updated
-            self.dbupdated = True
+            hashfile = etpConst['etpdatabasehashfile']
+            downitem = 'ck'
+            if self.dbformat_eapi == 2: # EAPI = 2
+                hashfile = etpConst[cmethod[4]]
+                downitem = 'dbdumpck'
+
+            # download checksum
+            self.Entropy.updateProgress(    red("Downloading checksum ") + darkgreen(hashfile)+red(" ..."),
+                                            importance = 0,
+                                            type = "info",
+                                            header = "\t"
+                            )
+            db_down_status = self.download_item(downitem, repo, cmethod)
+            if not db_down_status:
+                self.Entropy.updateProgress(    red("Cannot fetch checksum. Cannot verify database integrity !"),
+                                                importance = 1,
+                                                type = "warning",
+                                                header = "\t"
+                                )
+
+            if self.dbformat_eapi == 2 and db_down_status:
+                rc = self.check_downloaded_database(repo, cmethod)
+                if rc != 0:
+                    # delete all
+                    self.__remove_repository_files(repo, cmethod)
+                    self.syncErrors = True
+                    self.Entropy.cycleDone()
+                    continue
 
             file_to_unpack = etpConst['etpdatabasedump']
             if self.dbformat_eapi == 1:
@@ -3968,60 +4037,9 @@ class RepoInterface:
             # unpack database
             self.__unpack_downloaded_database(repo, cmethod)
 
-            hashfile = etpConst['etpdatabasehashfile']
-            downitem = 'ck'
-            if self.dbformat_eapi == 2: # EAPI = 2
-                hashfile = etpConst[cmethod[4]]
-                downitem = 'dbdumpck'
-
-            # download checksum
-            self.Entropy.updateProgress(    red("Downloading checksum ") + darkgreen(hashfile)+red(" ..."),
-                                            importance = 0,
-                                            type = "info",
-                                            header = "\t"
-                            )
-            down_status = self.download_item(downitem, repo, cmethod)
-            if not down_status:
-                self.Entropy.updateProgress(    red("Cannot fetch checksum. Cannot verify database integrity !"),
-                                                importance = 1,
-                                                type = "warning",
-                                                header = "\t"
-                                )
-            else:
-                dbfilename = etpConst['etpdatabasefile']
-                if self.dbformat_eapi == 2:
-                    dbfilename = etpConst[cmethod[3]]
-                # verify checksum
-                self.Entropy.updateProgress(    red("Checking downloaded database ") + darkgreen(dbfilename)+red(" ..."),
-                                                importance = 0,
-                                                back = True,
-                                                type = "info",
-                                                header = "\t"
-                                )
-                db_status = self.__verify_database_checksum(repo, cmethod)
-                if db_status == -1:
-                    self.Entropy.updateProgress(    red("Cannot open digest. Cannot verify database integrity !"),
-                                                    importance = 1,
-                                                    type = "warning",
-                                                    header = "\t"
-                                    )
-                elif db_status:
-                    self.Entropy.updateProgress(    red("Downloaded database status: ")+bold("OK"),
-                                                    importance = 1,
-                                                    type = "info",
-                                                    header = "\t"
-                                    )
-                else:
-                    self.Entropy.updateProgress(    red("Downloaded database status: ")+darkred("ERROR"),
-                                                    importance = 1,
-                                                    type = "error",
-                                                    header = "\t"
-                                    )
-                    self.Entropy.updateProgress(    red("An error occured while checking database integrity. Giving up."),
-                                                    importance = 1,
-                                                    type = "error",
-                                                    header = "\t"
-                                    )
+            if self.dbformat_eapi == 1 and db_down_status:
+                rc = self.check_downloaded_database(repo, cmethod)
+                if rc != 0:
                     # delete all
                     self.__remove_repository_files(repo, cmethod)
                     self.syncErrors = True
@@ -4051,6 +4069,9 @@ class RepoInterface:
                     self.syncErrors = True
                     self.Entropy.cycleDone()
                     continue
+
+            # database is going to be updated
+            self.dbupdated = True
 
             # download packages.db.mask
             self.Entropy.updateProgress(    red("Downloading package mask ")+darkgreen(etpConst['etpdatabasemaskfile'])+red(" ..."),
