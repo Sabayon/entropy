@@ -3667,7 +3667,7 @@ class RepoInterface:
         self.noEquoCheck = noEquoCheck
         self.alreadyUpdated = 0
         self.notAvailable = 0
-        self.dbformat_eapi = 2
+        self.reset_dbformat_eapi()
 
         # check if I am root
         if (not self.Entropy.entropyTools.isRoot()):
@@ -3685,6 +3685,9 @@ class RepoInterface:
         if not self.reponames:
             for x in etpRepositories:
                 self.reponames.append(x)
+
+    def reset_dbformat_eapi(self):
+        self.dbformat_eapi == 2
 
     def __validate_repository_id(self, repoid):
         if repoid not in self.reponames:
@@ -3871,6 +3874,7 @@ class RepoInterface:
         repolength = len(self.reponames)
         for repo in self.reponames:
 
+            self.reset_dbformat_eapi()
             repocount += 1
 
             self.Entropy.updateProgress(    bold("%s") % ( etpRepositories[repo]['description'] ),
