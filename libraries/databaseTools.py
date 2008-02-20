@@ -1359,7 +1359,7 @@ class etpDatabase:
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a needed library but then, fetching it returned -1. There's something broken.")
 
     def addLicense(self,pkglicense):
-        if not pkglicense:
+        if not pkglicense.isalnum():
             pkglicense = ' ' # workaround for broken license entries
         self.cursor.execute(
                 'INSERT into licenses VALUES '
@@ -2734,7 +2734,7 @@ class etpDatabase:
         self.commitChanges()
 
     def isLicenseAvailable(self,pkglicense):
-        if not pkglicense or not pkglicense.isalnum(): # workaround for packages without a license but just garbage
+        if not pkglicense.isalnum():
             pkglicense = ' '
         self.cursor.execute('SELECT idlicense FROM licenses WHERE license = (?)', (pkglicense,))
         result = self.cursor.fetchone()
