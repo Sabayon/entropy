@@ -75,6 +75,10 @@ def query(options):
         if (len(myopts) > 1):
             rc = searchTaggedPackages(myopts[1:])
 
+    elif myopts[0] == "license":
+        if (len(myopts) > 1):
+            rc = searchLicenses(myopts[1:])
+
     elif myopts[0] == "slot":
         if (len(myopts) > 1):
             rc = searchSlottedPackages(myopts[1:])
@@ -766,6 +770,52 @@ def searchTaggedPackages(tags, datareturn = False, dbconn = None, EquoConnection
                     printPackageInfo(result[1],dbconn, EquoConnection = EquoConnection)
             if (not datareturn) and (not etpUi['quiet']):
                 print_info(blue(" Keyword: ")+bold("\t"+tag))
+                print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
+
+    if (datareturn):
+        return foundPackages
+    return 0
+
+def searchLicenses(licenses, datareturn = False, dbconn = None, EquoConnection = None):
+
+    if EquoConnection != None:
+        Equo = EquoConnection
+    else:
+        try:
+            if Equo == None:
+                Equo = EquoInterface()
+        except NameError:
+            Equo = EquoInterface()
+
+    foundPackages = {}
+    dbclose = True
+    if dbconn:
+        dbclose = False
+
+    if (not datareturn) and (not etpUi['quiet']):
+        print_info(darkred(" @@ ")+darkgreen("License Search..."))
+    # search inside each available database
+    repoNumber = 0
+    for repo in etpRepositories:
+        foundPackages[repo] = {}
+        repoNumber += 1
+
+        if (not datareturn) and (not etpUi['quiet']):
+            print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
+
+        if dbclose:
+            dbconn = Equo.openRepositoryDatabase(repo)
+        for mylicense in licenses:
+            results = dbconn.searchLicenses(mylicense, atoms = True)
+            if not results:
+                continue
+            for result in results:
+                foundPackages[repo][result[1]] = result[0]
+                # print info
+                if (not datareturn):
+                    printPackageInfo(result[1],dbconn, EquoConnection = EquoConnection)
+            if (not datareturn) and (not etpUi['quiet']):
+                print_info(blue(" Keyword: ")+bold("\t"+mylicense))
                 print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
 
     if (datareturn):

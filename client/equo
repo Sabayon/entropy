@@ -106,6 +106,7 @@ def print_help():
     print_info(" \t\t"+darkgreen("removal")+red("\t\t\t print the removal tree for specified atoms"))
     print_info(" \t\t"+darkgreen("tags")+red("\t\t\t search packages that have the specified tags"))
     print_info(" \t\t"+darkgreen("slot")+red("\t\t\t search packages that have the specified slot"))
+    print_info(" \t\t"+darkgreen("license")+red("\t\t\t list packages distributed with the provided licenses"))
     print_info(" \t\t"+darkgreen("list")+red("\t\t\t list packages based on the chosen parameter below"))
     print_info(" \t\t\t"+green("installed")+red("\t list installed packages"))
     print_info(" \t\t"+darkgreen("orphans")+red("\t\t\t search files that don't belong to any package")+bold(" [USE WITH CARE]"))

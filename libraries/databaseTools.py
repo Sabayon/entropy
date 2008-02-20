@@ -2778,7 +2778,7 @@ class etpDatabase:
 
     def areCompileFlagsAvailable(self,chost,cflags,cxxflags):
 
-	self.cursor.execute('SELECT idflags FROM flags WHERE chost in (?) AND cflags in (?) AND cxxflags in (?)', (chost,cflags,cxxflags,))
+	self.cursor.execute('SELECT idflags FROM flags WHERE chost = (?) AND cflags = (?) AND cxxflags = (?)', (chost,cflags,cxxflags,))
         result = self.cursor.fetchone()
 	if not result:
 	    return -1
@@ -2805,25 +2805,42 @@ class etpDatabase:
 	    self.cursor.execute('SELECT baseinfo.atom,eclasses.idpackage FROM baseinfo,eclasses,eclassesreference WHERE eclassesreference.classname = (?) and eclassesreference.idclass = eclasses.idclass and eclasses.idpackage = baseinfo.idpackage', (eclass,))
 	    return self.cursor.fetchall()
 	else:
-	    self.cursor.execute('SELECT idpackage FROM baseinfo WHERE versiontag = in (?)', (eclass,))
+	    self.cursor.execute('SELECT idpackage FROM baseinfo WHERE versiontag = (?)', (eclass,))
 	    return self.fetchall2set(self.cursor.fetchall())
 
     ''' search packages whose versiontag matches the one provided '''
     def searchTaggedPackages(self, tag, atoms = False): # atoms = return atoms directly
-	if atoms:
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE versiontag in (?)', (tag,))
-	    return self.cursor.fetchall()
-	else:
-	    self.cursor.execute('SELECT idpackage FROM baseinfo WHERE versiontag = in (?)', (tag,))
-	    return self.fetchall2set(self.cursor.fetchall())
+        if atoms:
+            self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE versiontag = (?)', (tag,))
+            return self.cursor.fetchall()
+        else:
+            self.cursor.execute('SELECT idpackage FROM baseinfo WHERE versiontag = (?)', (tag,))
+            return self.fetchall2set(self.cursor.fetchall())
+
+    def searchLicenses(self, mylicense, caseSensitive = False, atoms = False):
+
+        if not mylicense.isalnum():
+            return []
+
+        request = "baseinfo.idpackage"
+        if atoms:
+            request = "baseinfo.atom,baseinfo.idpackage"
+
+        if caseSensitive:
+            self.cursor.execute('SELECT '+request+' FROM baseinfo,licenses WHERE licenses.license LIKE (?) and licenses.idlicense = baseinfo.idlicense', ("%"+mylicense+"%",))
+        else:
+            self.cursor.execute('SELECT '+request+' FROM baseinfo,licenses WHERE LOWER(licenses.license) LIKE (?) and licenses.idlicense = baseinfo.idlicense', ("%"+mylicense+"%".lower(),))
+        if atoms:
+            return self.cursor.fetchall()
+        return self.fetchall2set(self.cursor.fetchall())
 
     ''' search packages whose slot matches the one provided '''
     def searchSlottedPackages(self, slot, atoms = False): # atoms = return atoms directly
         if atoms:
-            self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE slot in (?)', (slot,))
+            self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE slot = (?)', (slot,))
             return self.cursor.fetchall()
         else:
-            self.cursor.execute('SELECT idpackage FROM baseinfo WHERE slot = in (?)', (slot,))
+            self.cursor.execute('SELECT idpackage FROM baseinfo WHERE slot = (?)', (slot,))
             return self.fetchall2set(self.cursor.fetchall())
 
     def searchKeySlot(self, key, slot, branch = None):
@@ -3769,30 +3786,6 @@ class etpDatabase:
                 dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash,result)
             except IOError:
                 pass
-
-            '''
-            data = {}
-            data['hash'] = c_hash
-            if type(result) in (dict,set):
-                data['result'] = result.copy()
-            elif type(result) in (list,tuple):
-                data['result'] = result[:]
-            else:
-                data['result'] = result
-
-
-            task = entropyTools.parallelTask(self.__atomMatchStoreCache, data)
-            task.parallel_wait()
-            task.start()
-            '''
-
-    '''
-    def __atomMatchStoreCache(self, data):
-        try:
-            dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+data['hash'],data['result'])
-        except IOError:
-            pass
-    '''
 
     # function that validate one atom by reading keywords settings
     # idpackageValidatorCache = {} >> function cache
