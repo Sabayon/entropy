@@ -116,6 +116,8 @@ DROP TABLE IF EXISTS injected;
 DROP TABLE IF EXISTS treeupdates;
 DROP TABLE IF EXISTS treeupdatesactions;
 DROP TABLE IF EXISTS library_breakages;
+DROP TABLE IF EXISTS licensedata;
+DROP TABLE IF EXISTS licenses_accepted;
 """
 
 etpSQLInit = """
