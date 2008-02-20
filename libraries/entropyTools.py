@@ -227,12 +227,13 @@ def unpackGzip(gzipfilepath):
     filepath = gzipfilepath[:-3] # remove .gz
     item = open(filepath,"wb")
     filegz = gzip.GzipFile(gzipfilepath,"rb")
-    filecont = filegz.readlines()
+    chunk = filegz.read(8192)
+    while chunk:
+        item.write(chunk)
+        chunk = filegz.read(8192)
     filegz.close()
-    item.writelines(filecont)
     item.flush()
     item.close()
-    del filecont
     return filepath
 
 def unpackBzip2(bzip2filepath):
@@ -240,12 +241,13 @@ def unpackBzip2(bzip2filepath):
     filepath = bzip2filepath[:-4] # remove .bz2
     item = open(filepath,"wb")
     filebz2 = bz2.BZ2File(bzip2filepath,"rb")
-    filecont = filebz2.readlines()
+    chunk = filebz2.read(8192)
+    while chunk:
+        item.write(chunk)
+        chunk = filebz2.read(8192)
     filebz2.close()
-    item.writelines(filecont)
     item.flush()
     item.close()
-    del filecont
     return filepath
 
 def extractXpak(tbz2file,tmpdir = None):
@@ -256,10 +258,7 @@ def extractXpak(tbz2file,tmpdir = None):
 def readXpak(tbz2file):
     xpakpath = suckXpak(tbz2file, etpConst['entropyunpackdir'])
     f = open(xpakpath,"rb")
-    f.seek(0,2)
-    size = f.tell()
-    f.seek(0)
-    data = f.read(size)
+    data = f.read()
     f.close()
     os.remove(xpakpath)
     return data
@@ -339,17 +338,15 @@ def suckXpak(tbz2file, outputpath):
         pass
     return xpakpath
 
-# FIXME: uses too much ram, please rewrite
 def aggregateEdb(tbz2file,dbfile):
     f = open(tbz2file,"abw")
-    g = open(dbfile,"rb")
-    dbx = g.readlines()
-    g.close()
-    del g
-    # append tag
     f.write(etpConst['databasestarttag'])
-    for x in dbx:
-        f.write(x)
+    g = open(dbfile,"rb")
+    chunk = g.read(8192)
+    while chunk:
+        f.write(chunk)
+        chunk = g.read(8192)
+    g.close()
     f.flush()
     f.close()
 
