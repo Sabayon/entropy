@@ -238,10 +238,24 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         else:
             foundAtoms = []
             for package in packages:
+                # clear masking reasons
+                maskingReasonsStorage.clear()
                 match = Equo.atomMatch(package)
                 if match[0] == -1:
-                    print_warning(bold("!!!")+red(" No match for ")+bold(package)+red(" in database. If you omitted the category, try adding it."))
-                    print_warning(red("    Also, if package is masked, you need to unmask it. See ")+bold(etpConst['confdir']+"/packages/*")+red(" files for help."))
+                    reasons = maskingReasonsStorage.get(package)
+                    if reasons != None:
+                        keyreasons = reasons.keys()
+                        print_warning(bold("!!!")+red(" Every package matching ")+bold(package)+red(" is masked."))
+                        for key in keyreasons:
+                            reason = etpConst['packagemaskingreasons'][key]
+                            print_warning(bold("    # ")+red("Reason: ")+blue(reason))
+                            masked_packages = reasons[key]
+                            for m_match in masked_packages:
+                                dbconn = Equo.openRepositoryDatabase(m_match[1])
+                                m_atom = dbconn.retrieveAtom(m_match[0])
+                                print_warning(blue("      <> ")+red("atom: ")+brown(m_atom))
+                    else:
+                        print_warning(bold("!!!")+red(" No match for ")+bold(package)+red(" in database. If you omitted the category, try adding it."))
                     continue
                 foundAtoms.append(match)
             if tbz2:
@@ -344,14 +358,27 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             print_info(red(" @@ ")+blue("Calculating dependencies..."))
             runQueue, removalQueue, status = Equo.retrieveInstallQueue(foundAtoms, emptydeps, deepdeps)
             if status == -2:
+
                 print_error(red(" @@ ")+blue("Cannot find needed dependencies: "))
                 for x in runQueue:
-                    print_error(red("    # ")+brown(x))
-                    crying_atoms = Equo.find_belonging_dependency([x])
-                    if crying_atoms:
-                        print_error(red("      # ")+blue("Probably needed by:"))
-                        for crying_atomdata in crying_atoms:
-                            print_error(red("        # ")+" ["+blue("from")+":"+brown(crying_atomdata[1])+"] "+darkred(crying_atomdata[0]))
+                    reasons = maskingReasonsStorage.get(x)
+                    if reasons != None:
+                        keyreasons = reasons.keys()
+                        for key in keyreasons:
+                            reason = etpConst['packagemaskingreasons'][key]
+                            print_warning(bold("    # ")+red("Reason: ")+blue(reason))
+                            masked_packages = reasons[key]
+                            for m_match in masked_packages:
+                                dbconn = Equo.openRepositoryDatabase(m_match[1])
+                                m_atom = dbconn.retrieveAtom(m_match[0])
+                                print_warning(blue("      <> ")+red("atom: ")+brown(m_atom))
+                    else:
+                        print_error(red("    # ")+blue("Not found: ")+brown(x))
+                        crying_atoms = Equo.find_belonging_dependency([x])
+                        if crying_atoms:
+                            print_error(red("      # ")+blue("Probably needed by:"))
+                            for crying_atomdata in crying_atoms:
+                                print_error(red("        # ")+" ["+blue("from")+":"+brown(crying_atomdata[1])+"] "+darkred(crying_atomdata[0]))
 
                 dirscleanup()
                 return 127, -1

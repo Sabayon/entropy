@@ -399,6 +399,7 @@ etpHandlers = {}
 
 # CACHING dictionaries
 idpackageValidatorCache = {}
+maskingReasonsStorage = {}
 linkerPaths = set()
 # repository atoms updates digest cache
 repositoryUpdatesDigestCache_db = {}
@@ -414,6 +415,7 @@ def const_resetCache():
     repositoryUpdatesDigestCache_disk.clear()
     fetch_repository_if_not_available_cache.clear()
     repo_error_messages_cache.clear()
+    maskingReasonsStorage.clear()
 
 # Inside it you'll find instantiated vartree classes
 portageRoots = {}
@@ -651,7 +653,8 @@ def initConfig_entropyConstants(rootdir):
             6: 'user package.keywords',
             7: 'completely masked',
             8: 'repository general packages.db.mask',
-            9: 'repository in branch packages.db.mask'
+            9: 'repository in branch packages.db.mask',
+            10: 'user license.mask'
         },
 
         # packages whose need their other installs (different tag), to be removed

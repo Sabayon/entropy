@@ -2502,7 +2502,7 @@ class etpDatabase:
             lictext = self.cursor.fetchone()
             if lictext != None:
                 lictext = lictext[0]
-                licdata[licname] = lictext
+                licdata[licname] = unicode(lictext, "raw_unicode_escape")
 
         self.storeInfoCache(idpackage,'retrieveLicensedata',licdata)
         return licdata
@@ -2540,7 +2540,7 @@ class etpDatabase:
         text = self.cursor.fetchone()
         if not text:
             return None
-        return text[0]
+        return unicode(text[0], "raw_unicode_escape")
 
     def retrieveLicense(self, idpackage):
 
@@ -3513,6 +3513,7 @@ class etpDatabase:
         self.createNeededIndex()
         self.createUseflagsIndex()
         self.createLicensedataIndex()
+        self.createLicensesIndex()
 
     def createNeededIndex(self):
         if self.dbname != etpConst['serverdbid'] and self.indexing:
@@ -3542,6 +3543,11 @@ class etpDatabase:
                 else:
                     return
             self.cursor.execute('CREATE INDEX IF NOT EXISTS licensedataindex ON licensedata ( licensename )')
+            self.commitChanges()
+
+    def createLicensesIndex(self):
+        if self.dbname != etpConst['serverdbid'] and self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS licensesindex ON licenses ( license )')
             self.commitChanges()
 
     def createKeywordsIndex(self):
@@ -3861,6 +3867,17 @@ class etpDatabase:
                             idpackageValidatorCache[(idpackage,reponame)] = -1,9
                             return -1,9
 
+        if etpConst['packagemasking']['license_mask']:
+            mylicenses = self.retrieveLicense(idpackage)
+            mylicenses = mylicenses.strip().split()
+            if mylicenses:
+                for mylicense in mylicenses:
+                    if not mylicense.isalnum():
+                        continue
+                    if mylicense in etpConst['packagemasking']['license_mask']:
+                        idpackageValidatorCache[(idpackage,reponame)] = -1,10
+                        return -1,10
+
         mykeywords = self.retrieveKeywords(idpackage)
         # XXX WORKAROUND
         if not mykeywords: mykeywords = [''] # ** is fine then
@@ -3870,8 +3887,6 @@ class etpDatabase:
                 # found! all fine
                 idpackageValidatorCache[(idpackage,reponame)] = idpackage,2
                 return idpackage,2
-
-        #### IT IS MASKED!!
 
         # if we get here, it means we didn't find mykeywords in etpConst['keywords'], we need to seek etpConst['packagemasking']['keywords']
         # seek in repository first
@@ -3926,7 +3941,7 @@ class etpDatabase:
 
     # packages filter used by atomMatch, input must me foundIDs, a list like this:
     # [(u'x11-libs/qt-4.3.2', 608), (u'x11-libs/qt-3.3.8-r4', 1867)]
-    def packagesFilter(self,results):
+    def packagesFilter(self,results, atom):
         # keywordsFilter ONLY FILTERS results if self.dbname.startswith(etpConst['dbnamerepoprefix']), repository database is open
         if not self.dbname.startswith(etpConst['dbnamerepoprefix']):
             return results
@@ -3936,6 +3951,13 @@ class etpDatabase:
             rc = self.idpackageValidator(item[1])
             if rc[0] != -1:
                 newresults.add(item)
+            else:
+                idreason = rc[1]
+                if not maskingReasonsStorage.has_key(atom):
+                    maskingReasonsStorage[atom] = {}
+                if not maskingReasonsStorage[atom].has_key(idreason):
+                    maskingReasonsStorage[atom][idreason] = set()
+                maskingReasonsStorage[atom][idreason].add((item[1],self.dbname[5:]))
         return newresults
 
     def __filterSlot(self, idpackage, slot):
@@ -4143,7 +4165,7 @@ class etpDatabase:
         foundIDs = self.__filterSlotTag(foundIDs, matchSlot, matchTag, direction)
 
         if packagesFilter: # keyword filtering
-            foundIDs = self.packagesFilter(foundIDs)
+            foundIDs = self.packagesFilter(foundIDs, atom)
 
         ### END FILTERING
         ### END FILTERING

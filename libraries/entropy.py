@@ -950,6 +950,7 @@ class EquoInterface(TextInterface):
         self.clear_dump_cache(etpCache['check_package_update'])
         self.clear_dump_cache(etpCache['filter_satisfied_deps'])
         self.clear_dump_cache(etpCache['atomMatch'])
+        self.clear_dump_cache(etpCache['dep_tree'])
         if repoid != None:
             self.clear_dump_cache(etpCache['dbMatch']+"/"+repoid+"/")
             self.clear_dump_cache(etpCache['dbInfo']+"/"+repoid+"/") # it also contains package masking information
@@ -1355,6 +1356,9 @@ class EquoInterface(TextInterface):
 
     def get_required_packages(self, matched_atoms, empty_deps = False, deep_deps = False):
 
+        # clear masking reasons
+        maskingReasonsStorage.clear()
+
         if self.xcache:
             c_data = list(matched_atoms)
             c_data.sort()
@@ -1569,6 +1573,9 @@ class EquoInterface(TextInterface):
     # this function searches all the not installed packages available in the repositories
     def calculate_available_packages(self):
 
+        # clear masking reasons
+        maskingReasonsStorage.clear()
+
         if self.xcache:
             c_hash = self.get_available_packages_chash(etpConst['branch'])
             disk_cache = self.dumpTools.loadobj(etpCache['world_available'])
@@ -1629,6 +1636,9 @@ class EquoInterface(TextInterface):
                 return disk_cache
 
     def calculate_world_updates(self, empty_deps = False, branch = etpConst['branch']):
+
+        # clear masking reasons
+        maskingReasonsStorage.clear()
 
         db_digest = self.clientDbconn.tablesChecksum()
         cached = self.get_world_update_cache(empty_deps = empty_deps, branch = branch, db_digest = db_digest)
@@ -1815,6 +1825,9 @@ class EquoInterface(TextInterface):
         return queue
 
     def retrieveInstallQueue(self, matched_atoms, empty_deps, deep_deps):
+
+        # clear masking reasons
+        maskingReasonsStorage.clear()
 
         install = []
         removal = []
@@ -6362,6 +6375,7 @@ class PackageMaskingParser:
             'keywords': etpConst['confdir']+"/packages/package.keywords", # keywording configuration files
             'unmask': etpConst['confdir']+"/packages/package.unmask", # unmasking configuration files
             'mask': etpConst['confdir']+"/packages/package.mask", # masking configuration files
+            'license_mask': etpConst['confdir']+"/packages/license.mask", # masking configuration files
             'repos_mask': {},
             'repos_license_whitelist': {}
         }
@@ -6375,9 +6389,10 @@ class PackageMaskingParser:
                 self.etpMaskFiles['repos_license_whitelist'][repoid] = wlpath
 
         self.etpMtimeFiles = {
-            'keywords_mtime': etpConst['dumpstoragedir']+"/keywords.mtime", # keywording configuration files mtime
-            'unmask_mtime': etpConst['dumpstoragedir']+"/unmask.mtime", # unmasking configuration files mtime
-            'mask_mtime': etpConst['dumpstoragedir']+"/mask.mtime", # masking configuration files mtime
+            'keywords_mtime': etpConst['dumpstoragedir']+"/keywords.mtime",
+            'unmask_mtime': etpConst['dumpstoragedir']+"/unmask.mtime",
+            'mask_mtime': etpConst['dumpstoragedir']+"/mask.mtime",
+            'license_mask_mtime': etpConst['dumpstoragedir']+"/license_mask.mtime",
             'repos_mask': {},
             'repos_license_whitelist': {}
         }
@@ -6483,6 +6498,20 @@ class PackageMaskingParser:
         data = set()
         if os.path.isfile(self.etpMaskFiles['mask']):
             f = open(self.etpMaskFiles['mask'],"r")
+            content = f.readlines()
+            f.close()
+            # filter comments and white lines
+            content = [x.strip() for x in content if not x.startswith("#") and x.strip()]
+            for line in content:
+                data.add(line)
+        return data
+
+    def license_mask_parser(self):
+        self.__validateEntropyCache(self.etpMaskFiles['license_mask'],self.etpMtimeFiles['license_mask_mtime'])
+
+        data = set()
+        if os.path.isfile(self.etpMaskFiles['license_mask']):
+            f = open(self.etpMaskFiles['license_mask'],"r")
             content = f.readlines()
             f.close()
             # filter comments and white lines
