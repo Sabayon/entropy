@@ -3726,7 +3726,7 @@ class RepoInterface:
 
     def __construct_paths(self, item, repo, cmethod):
 
-        if item not in ("db","rev","ck","lock","mask","dbdump","dbdumpck"):
+        if item not in ("db","rev","ck","lock","mask","dbdump","dbdumpck","lic_whitelist"):
             raise exceptionTools.InvalidData("InvalidData: supported db, rev, ck, lock")
 
         if item == "db":
@@ -3753,6 +3753,9 @@ class RepoInterface:
         elif item == "mask":
             url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasemaskfile']
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasemaskfile']
+        elif item == "lic_whitelist":
+            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaselicwhitelistfile']
+            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabaselicwhitelistfile']
         elif item == "lock":
             url = etpRepositories[repo]['database']+"/"+etpConst['etpdatabasedownloadlockfile']
             filepath = "/dev/null"
@@ -4093,6 +4096,24 @@ class RepoInterface:
                 mask_message = red("No %s available. It's ok." % (etpConst['etpdatabasemaskfile'],))
             else:
                 mask_message = red("Downloaded %s. Awesome :-)" % (etpConst['etpdatabasemaskfile'],))
+            self.Entropy.updateProgress(    mask_message,
+                                            importance = 0,
+                                            type = "info",
+                                            header = "\t"
+                            )
+
+            # download packages.db.lic_whitelist
+            self.Entropy.updateProgress(    red("Downloading license whitelist ")+darkgreen(etpConst['etpdatabaselicwhitelistfile'])+red(" ..."),
+                                            importance = 0,
+                                            type = "info",
+                                            header = "\t",
+                                            back = True
+                            )
+            mask_status = self.download_item("lic_whitelist", repo)
+            if not mask_status:
+                mask_message = red("No %s available. It's ok." % (etpConst['etpdatabaselicwhitelistfile'],))
+            else:
+                mask_message = red("Downloaded %s. Cool :-)" % (etpConst['etpdatabaselicwhitelistfile'],))
             self.Entropy.updateProgress(    mask_message,
                                             importance = 0,
                                             type = "info",
