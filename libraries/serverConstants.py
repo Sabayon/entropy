@@ -21,6 +21,7 @@
 '''
 
 from entropyConstants import *
+etpSys['serverside'] = True
 
 def initConfig_serverConstants():
 

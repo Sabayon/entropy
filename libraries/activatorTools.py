@@ -1099,7 +1099,20 @@ def uploadDatabase(uris):
         else:
             print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
 
-        # uploading package.mask (packages.db.mask) file
+        # uploading package licenses whitelist (packages.db.lic_whitelist) file
+        dblicwlfile = etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaselicwhitelistfile']
+        if not os.path.isfile(dblicwlfile):
+            f = open(dblicwlfile,"w")
+            f.flush()
+            f.close()
+        print_info(green(" * ")+red("Uploading file ")+bold(dblicwlfile)+red(" ..."), back = True)
+        rc = ftp.uploadFile(dblicwlfile,True)
+        if (rc == True):
+            print_info(green(" * ")+red("Upload of ")+bold(dblicwlfile)+red(" completed."))
+        else:
+            print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
+
+        # uploading packages mask list (packages.db.mask) file
         dbmaskfile = etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabasemaskfile']
         if not os.path.isfile(dbmaskfile):
             f = open(dbmaskfile,"w")
@@ -1166,7 +1179,15 @@ def downloadDatabase(uri):
     else:
         print_warning(brown(" * ")+red("Cannot properly download from ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
 
-    # downloading package.mask (packages.db.mask)
+    # downloading package license whitelist (packages.db.lic_whitelist)
+    print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['etpdatabaselicwhitelistfile'])+red(" ..."), back = True)
+    rc = ftp.downloadFile(etpConst['etpdatabaselicwhitelistfile'],os.path.dirname(etpConst['etpdatabasefilepath']),True)
+    if (rc == True):
+        print_info(green(" * ")+red("Download of ")+bold(etpConst['etpdatabaselicwhitelistfile'])+red(" completed."))
+    else:
+        print_warning(brown(" * ")+red("Cannot properly download from ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
+
+    # downloading package mask list (packages.db.mask)
     print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['etpdatabasemaskfile'])+red(" ..."), back = True)
     rc = ftp.downloadFile(etpConst['etpdatabasemaskfile'],os.path.dirname(etpConst['etpdatabasefilepath']),True)
     if (rc == True):

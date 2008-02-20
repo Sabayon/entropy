@@ -67,6 +67,7 @@ etpData = {
     'needed': u"", # runtime libraries needed by the package
     'trigger': u"", # this will become a bool, containing info about external trigger presence
     'injected': bool, # if the package has been injected manually, this will be true
+    'licensedata': dict # dictionary that contains license text
 }
 '''
 
@@ -304,6 +305,12 @@ CREATE TABLE binkeywords (
     idkeyword INTEGER
 );
 
+CREATE TABLE licensedata (
+    licensename VARCHAR UNIQUE,
+    text BLOB,
+    compressed INTEGER
+);
+
 """
 
 # ETP_ARCH_CONST setup
@@ -319,6 +326,7 @@ etpSys = {
     'rootdir': "",
     'maxthreads': 100,
     'dirstoclean': set(),
+    'serverside': False,
 }
 
 etpUi = {
@@ -520,6 +528,7 @@ def initConfig_entropyConstants(rootdir):
         'entropyxpakfilename': "metadata.xpak", # Gentoo xpak metadata file name
 
         'etpdatabasemaskfile': ETP_DBFILE+".mask", # the local/remote database revision file
+        'etpdatabaselicwhitelistfile': ETP_DBFILE+".lic_whitelist", # the local/remote database revision file
         'etpdatabaserevisionfile': ETP_DBFILE+".revision", # the local/remote database revision file
         'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum
         'etpdatabasedumphashfilebz2': ETP_DBFILE+".dump.bz2.md5",

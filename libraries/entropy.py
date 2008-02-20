@@ -2684,6 +2684,9 @@ class PackageInterface:
         data['injected'] = False
         data['counter'] = -1 # gentoo counter will be set in self.__install_package_into_gentoo_database()
 
+        # FIXME: this will be removed create all indexes on the client db
+        self.Entropy.clientDbconn.createAllIndexes()
+
         idpk, rev, x, status = self.Entropy.clientDbconn.handlePackage(etpData = data, forcedRevision = data['revision'])
         del x
         del data

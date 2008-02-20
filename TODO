@@ -8,7 +8,6 @@ TODO list:
 
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - Community repositories
-  - separate packages by license restrictions
   - split RDEPEND and PDEPEND
   - write a ncurses interface to manage entropy database
   - find a way to better handle real smartapps deps (need split PDEPEND?)

@@ -760,6 +760,22 @@ class etpDatabase:
             # create category
             licid = self.addLicense(etpData['license'])
 
+        # insert license information
+        if not self.doesTableExist("licensedata"):
+            self.createLicensedataTable()
+        mylicenses = etpData['licensedata'].keys()
+        for mylicense in mylicenses:
+            found = self.isLicensedataKeyAvailable(mylicense)
+            if not found:
+                text = mylicenses[mylicense]
+                self.cursor.execute(
+                    'INSERT into licensedata VALUES '
+                    '(?,?,?)'
+                    , (	mylicense,
+                            buffer(text),
+                            0,
+                ))
+
         # look for configured versiontag
         versiontag = ""
         if (etpData['versiontag']):
@@ -1422,6 +1438,13 @@ class etpDatabase:
         self.cursor.execute('UPDATE baseinfo SET slot = (?) WHERE idpackage = (?)', (slot,idpackage,))
         self.commitChanges()
 
+    def removeLicensedata(self, license_name):
+        if not self.doesTableExist("licensedata"):
+            if (etpConst['uid'] == 0) and (not self.readOnly):
+                self.createLicensedataTable()
+            return
+        self.cursor.execute('DELETE FROM licensedata WHERE licensename = (?)', (license_name,))
+
     def removeDependencies(self, idpackage):
         self.checkReadOnly()
         self.cursor.execute("DELETE FROM dependencies WHERE idpackage = (?)", (idpackage,))
@@ -1876,6 +1899,9 @@ class etpDatabase:
         data['size'] = mydata[17]
         data['revision'] = mydata[18]
         data['disksize'] = self.retrieveOnDiskSize(idpackage) # cannot do this too, for backward compat
+
+        data['licensedata'] = self.retrieveLicensedata(idpackage)
+
         return data
 
     def fetchall2set(self, item):
@@ -2440,21 +2466,70 @@ class etpDatabase:
 
     def retrieveMirrorInfo(self, mirrorname):
 
-	self.cursor.execute('SELECT "mirrorlink" FROM mirrorlinks WHERE mirrorname = (?)', (mirrorname,))
-	mirrorlist = self.fetchall2set(self.cursor.fetchall())
-
-	return mirrorlist
+        self.cursor.execute('SELECT "mirrorlink" FROM mirrorlinks WHERE mirrorname = (?)', (mirrorname,))
+        mirrorlist = self.fetchall2set(self.cursor.fetchall())
+        return mirrorlist
 
     def retrieveCategory(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveCategory')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveCategory')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT category FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
-	cat = self.cursor.fetchone()[0]
+        self.cursor.execute('SELECT category FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
+        cat = self.cursor.fetchone()[0]
 
-	self.storeInfoCache(idpackage,'retrieveCategory',cat)
-	return cat
+        self.storeInfoCache(idpackage,'retrieveCategory',cat)
+        return cat
+
+    def retrieveLicensedata(self, idpackage):
+
+        cache = self.fetchInfoCache(idpackage,'retrieveLicensedata')
+        if cache != None: return cache
+
+        # insert license information
+        if not self.doesTableExist("licensedata"):
+            if (etpConst['uid'] == 0) and (not self.readOnly):
+                self.createLicensedataTable()
+            return {}
+        licenses = self.retrieveLicense(idpackage)
+        licenses = licenses.split()
+        licdata = {}
+        for licname in licenses:
+            licname = licname.strip()
+            if not licname.isalnum():
+                continue
+            self.cursor.execute('SELECT text FROM licensedata WHERE licensename = (?)', (licname,))
+            lictext = self.cursor.fetchone()
+            if lictext != None:
+                lictext = lictext[0]
+                licdata[licname] = lictext
+
+        self.storeInfoCache(idpackage,'retrieveLicensedata',licdata)
+        return licdata
+
+    def retrieveLicensedataKeys(self, idpackage):
+
+        cache = self.fetchInfoCache(idpackage,'retrieveLicensedataKeys')
+        if cache != None: return cache
+
+        if not self.doesTableExist("licensedata"):
+            if (etpConst['uid'] == 0) and (not self.readOnly):
+                self.createLicensedataTable()
+            return set()
+        licenses = self.retrieveLicense(idpackage)
+        licenses = licenses.split()
+        licdata = set()
+        for licname in licenses:
+            licname = licname.strip()
+            if not licname.isalnum():
+                continue
+            self.cursor.execute('SELECT licensename FROM licensedata WHERE licensename = (?)', (licname,))
+            licidentifier = self.cursor.fetchone()
+            if licidentifier:
+                licdata.add(licidentifier[0])
+
+        self.storeInfoCache(idpackage,'retrieveLicensedataKeys',licdata)
+        return licdata
 
     def retrieveLicense(self, idpackage):
 
@@ -2616,8 +2691,20 @@ class etpDatabase:
 
         return result
 
+    def isLicensedataKeyAvailable(self, license_name):
+        if not self.doesTableExist("licensedata"):
+            if (etpConst['uid'] == 0) and (not self.readOnly):
+                self.createLicensedataTable()
+            else:
+                return True
+        self.cursor.execute('SELECT licensename FROM licensedata WHERE licensename = (?)', (license_name,))
+        result = self.cursor.fetchone()
+        if not result:
+            return False
+        return True
+
     def isLicenseAvailable(self,pkglicense):
-        if not pkglicense: # workaround for packages without a license but just garbage
+        if not pkglicense or not pkglicense.isalnum(): # workaround for packages without a license but just garbage
             pkglicense = ' '
         self.cursor.execute('SELECT idlicense FROM licenses WHERE license = (?)', (pkglicense,))
         result = self.cursor.fetchone()
@@ -3376,6 +3463,7 @@ class etpDatabase:
         self.createExtrainfoIndex()
         self.createNeededIndex()
         self.createUseflagsIndex()
+        self.createLicensedataIndex()
 
     def createNeededIndex(self):
         if self.dbname != etpConst['serverdbid'] and self.indexing:
@@ -3395,6 +3483,16 @@ class etpDatabase:
     def createBaseinfoIndex(self):
         if self.dbname != etpConst['serverdbid'] and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex ON baseinfo ( idpackage, atom, name, version, versiontag, slot, branch, revision )')
+            self.commitChanges()
+
+    def createLicensedataIndex(self):
+        if self.dbname != etpConst['serverdbid'] and self.indexing:
+            if not self.doesTableExist("licensedata"):
+                if (etpConst['uid'] == 0) and (not self.readOnly):
+                    self.createLicensedataTable()
+                else:
+                    return
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS licensedataindex ON licensedata ( licensename )')
             self.commitChanges()
 
     def createKeywordsIndex(self):
@@ -3516,6 +3614,9 @@ class etpDatabase:
             self.cursor.execute('UPDATE content SET type = "0"')
         except:
             pass
+
+    def createLicensedataTable(self):
+        self.cursor.execute('CREATE TABLE licensedata ( licensename VARCHAR UNIQUE, text BLOB, compressed INTEGER );')
 
     def createTriggerTable(self):
         self.cursor.execute('CREATE TABLE triggers ( idpackage INTEGER PRIMARY KEY, data BLOB );')

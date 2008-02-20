@@ -2101,6 +2101,27 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
             pass
     '''
 
+    # Get License text if possible
+    licenses_dir = None
+    try:
+        from portageTools import getPortageEnv
+        licenses_dir = os.path.join(getPortageEnv('PORTDIR'),'licenses')
+    except:
+        pass
+    data['licensedata'] = {}
+    if licenses_dir:
+        licdata = [x.strip() for x in data['license'].split() if x.strip().isalnum()]
+        for mylicense in licdata:
+            licfile = os.path.join(licenses_dir,mylicense)
+            if os.access(licfile,os.R_OK):
+                if istextfile(licfile):
+                    f = open(licfile,"rb")
+                    f.seek(0,2)
+                    size = f.tell()
+                    f.seek(0)
+                    data['licensedata'][mylicense] = f.read(size)
+                    f.close()
+
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package mirrors list..."),back = True)
     # manage data['sources'] to create data['mirrorlinks']
     # =mirror://openoffice|link1|link2|link3
