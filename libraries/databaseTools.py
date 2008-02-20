@@ -3270,7 +3270,8 @@ class etpDatabase:
                                             red("Exporting database table ")+"["+blue(str(name))+"]",
                                             importance = 0,
                                             type = "info",
-                                            back = True
+                                            back = True,
+                                            header = "   "
                             )
 
             if name == "sqlite_sequence":
@@ -3304,7 +3305,8 @@ class etpDatabase:
         self.updateProgress(
                                         red("Database Export completed."),
                                         importance = 0,
-                                        type = "info"
+                                        type = "info",
+                                        header = "   "
                         )
         # remember to close the file
 

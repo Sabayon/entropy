@@ -1,0 +1,11 @@
+# Server side packages.db.lic_whitelist file, to allow whitelisting license confirmation requests
+#
+# In this file you can specify Gentoo license identifiers (/usr/portage/licenses)
+
+# LINE CONSTRUCTION:
+# <license identifier>
+# See examples below
+
+# EXAMPLES:
+# GPL-2
+# GPL-3

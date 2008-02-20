@@ -19,6 +19,7 @@ TODO list:
     - add masking menu
     - use availability bool to show masked packages and connect the masking menu
     - Popularity feature
+    - GLSA interface
 
 
 Project Status:
