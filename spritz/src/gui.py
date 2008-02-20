@@ -148,7 +148,7 @@ class YumexProgress:
         if self.parent.quitNow:
             self.parent.exitNow()
         # Skip if fraction not have changed
-        if frac < 1:
+        if frac > 1 or frac == 0.0:
             return
         while gtk.events_pending():      # process gtk events
            gtk.main_iteration()
@@ -268,8 +268,7 @@ class SpritzGUI:
         self.createButton( _( "Packages" ), "button-packages.png", 'packages',True )
         self.createButton( _( "Package Categories" ), "button-group.png", 'group')
         self.createButton( _( "Package Queue" ), "button-queue.png", 'queue' )
-        if not self.settings.disable_repo_page:
-            self.createButton( _( "Repository Selection" ), "button-repo.png", 'repos' )
+        self.createButton( _( "Repository Selection" ), "button-repo.png", 'repos' )
         self.createButton( _( "Configuration Files" ), "button-conf.png", 'filesconf' )
         self.createButton( _( "Output" ), "button-output.png", 'output' )
         style = self.ui.leftEvent.get_style()
@@ -287,6 +286,7 @@ class SpritzGUI:
           else:
               button = gtk.RadioButton( self.firstButton )
           button.connect( "clicked", self.on_PageButton_changed, page )
+          button.connect( "pressed", self.on_PageButton_pressed, page )
 
           button.set_relief( gtk.RELIEF_NONE )
           button.set_mode( False )

@@ -150,9 +150,6 @@ class Equo(EquoInterface):
 
         count_str = ""
         if count:
-            if len(count) < 2:
-                import exceptionTools
-                raise exceptionTools.IncorrectParameter("IncorrectParameter: count length must be >= 2")
             count_str = "(%s/%s) " % (str(count[0]),str(count[1]),)
             if importance == 0:
                 progress_text = text

@@ -390,13 +390,14 @@ class SpritzController(Controller):
         self.clipboard.clear()
         self.clipboard.set_text(''.join(self.output.text_written))
 
-    def on_PageButton_changed( self, widget, page ):
-        ''' Left Side Toolbar Handler'''
+    def on_PageButton_pressed( self, widget, page ):
         if page == "filesconf":
             self.populateFilesUpdate()
-        elif page == "packages" and not self.pageBootstrap:
+        elif page == "packages":
             self.addPackages()
-        self.pageBootstrap = False
+
+    def on_PageButton_changed( self, widget, page ):
+        ''' Left Side Toolbar Handler'''
         self.setNotebookPage(const.PAGES[page])
 
     def on_category_selected(self,widget):
@@ -838,10 +839,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         msg = _('Generating metadata. Please wait.')
         self.setStatus(msg)
         self.addPackages()
-        # XXX: if we'll re-enable categories listing, uncomment this
-        #self.progressLog(_('Building Category Lists'))
         self.populateCategories()
-        #self.progressLog(_('Building Category Lists Completed'))
         msg = _('Ready')
         self.setStatus(msg)
 
@@ -932,11 +930,11 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
     def addPackages(self):
 
-        def comeback(bootstrap):
-            self.unsetBusy()
-            if self.doProgress: self.progress.hide() #Hide Progress
-            if bootstrap:
-                self.setPage('packages')
+        action = self.lastPkgPB
+        if action == 'all':
+            masks = ['installed','available']
+        else:
+            masks = [action]
 
         self.setBusy()
         bootstrap = False
@@ -945,27 +943,27 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.setPage('output')
         self.progress.total.hide()
 
+        self.etpbase.clearPackages()
+        self.etpbase.clearCache()
         if bootstrap:
             self.startWorking()
 
-        action = self.lastPkgPB
-        if action == 'all':
-            masks = ['installed','available']
-        else:
-            masks = [action]
-
-        self.etpbase.clearPackages()
         allpkgs = []
         if self.doProgress: self.progress.total.next() # -> Get lists
+        self.progress.set_mainLabel(_('Generating Metadata, please wait.'))
+        self.progress.set_subLabel(_('Entropy is indexing the repositories. It will take a few seconds'))
+        self.progress.set_extraLabel(_('While you are waiting, take a break and look outside. Is it rainy?'))
         for flt in masks:
             msg = _('Calculating %s' ) % flt
-            #self.progressLog(msg)
             self.setStatus(msg)
-            pkgs = self.etpbase.getPackages(flt)
-            #self.progressLog(_('Found %d %s') % (len(pkgs),flt))
+            pkgs = self.etpbase.getPackages(flt) # XXX HERE
             allpkgs.extend(pkgs)
             self.setStatus(_("Ready"))
         if self.doProgress: self.progress.total.next() # -> Sort Lists
+        self.progress.set_mainLabel('')
+
+        if bootstrap:
+            self.endWorking()
 
         def mycmp(x,y):
             return cmp(x,y)
@@ -990,10 +988,10 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
         self.treeViewPackages = my_hash
 
+        self.unsetBusy()
+        if self.doProgress: self.progress.hide() #Hide Progress
         if bootstrap:
-            self.endWorking()
-
-        comeback(bootstrap)
+            self.setPage('packages')
 
     def addCategoryPackages(self,cat = None):
         msg = _('Package View Population')

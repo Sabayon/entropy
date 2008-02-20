@@ -1,9 +1,9 @@
 TODO list:
   - implement configuration files snapshot tool
-  - write a tool that will rebuild kernel dependant packages
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
      [] complete reagent spm interface
+     [] write a tool that will rebuild kernel dependant packages
 
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - Community repositories
