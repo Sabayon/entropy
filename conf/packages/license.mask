@@ -1,0 +1,12 @@
+# license.mask example file
+#
+# In this file you can specify Gentoo license identifiers (/usr/portage/licenses), one per line, whose belonging packages must be masked.
+
+# LINE CONSTRUCTION:
+# <license identifier>
+# See examples below
+
+# EXAMPLES:
+# NVIDIA
+# ATI
+# AMD

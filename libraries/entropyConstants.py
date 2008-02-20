@@ -311,6 +311,10 @@ CREATE TABLE licensedata (
     compressed INTEGER
 );
 
+CREATE TABLE licenses_accepted (
+    licensename VARCHAR UNIQUE
+);
+
 """
 
 # ETP_ARCH_CONST setup

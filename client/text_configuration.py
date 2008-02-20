@@ -201,22 +201,13 @@ def update(cmd = None):
                     elif action == 3:
                         print_info(darkred("Editing file ") + darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 
-                        if os.getenv("EDITOR"):
-                            os.system("$EDITOR "+etpConst['systemroot']+scandata[cmd]['source'])
-                        elif os.access("/bin/nano",os.X_OK):
-                            os.system("/bin/nano "+etpConst['systemroot']+scandata[cmd]['source'])
-                        elif os.access("/bin/vi",os.X_OK):
-                            os.system("/bin/vi "+etpConst['systemroot']+scandata[cmd]['source'])
-                        elif os.access("/usr/bin/vi",os.X_OK):
-                            os.system("/usr/bin/vi "+etpConst['systemroot']+scandata[cmd]['source'])
-                        elif os.access("/usr/bin/emacs",os.X_OK):
-                            os.system("/usr/bin/emacs "+etpConst['systemroot']+scandata[cmd]['source'])
-                        elif os.access("/bin/emacs",os.X_OK):
-                            os.system("/bin/emacs "+etpConst['systemroot']+scandata[cmd]['source'])
-                        else:
+                        editor = Equo.get_file_editor()
+                        if editor == None:
                             print_error(" Cannot find a suitable editor. Can't edit file directly.")
                             comeback = True
                             break
+                        else:
+                            os.system(editor+" "+etpConst['systemroot']+scandata[cmd]['source'])
 
                         print_info(darkred("Edited file ") + darkgreen(etpConst['systemroot'] + scandata[cmd]['source']) + darkred(" - showing differencies:"))
                         diff = showdiff(etpConst['systemroot'] + scandata[cmd]['destination'],etpConst['systemroot'] + scandata[cmd]['source'])

@@ -1,7 +1,6 @@
 TODO list:
-  - include license data in the database (*)
-  - implement configuration files snapshot tool (*)
-  - write a tool that will rebuild kernel dependant packages (*)
+  - implement configuration files snapshot tool
+  - write a tool that will rebuild kernel dependant packages
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
      [] complete reagent spm interface
@@ -13,7 +12,7 @@ TODO list:
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - if a package has a non OSS License, show it (*)
+    - if a package has a non OSS License, show it (*) IMPLEMENT
     - remove package info widgets and write from scratch (*)
     - debug (*)
     - add masking menu
@@ -26,4 +25,4 @@ Project Status:
 - reagent: complete.
 - activator: complete.
 ============
-- equo - beta stage: 50%
+- equo - beta stage: 60%

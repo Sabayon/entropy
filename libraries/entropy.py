@@ -321,38 +321,8 @@ class EquoInterface(TextInterface):
         self.updateProgress(darkred("Cache generation complete."), importance = 2, type = "info")
 
     def do_depcache(self):
-        '''
-        self.updateProgress(darkred("Dependencies"), importance = 2, type = "warning")
-        self.updateProgress(darkred("Scanning repositories"), importance = 2, type = "warning")
-        keys = set()
-        for reponame in etpRepositoriesOrder:
-            self.updateProgress(darkgreen("Scanning %s" % (etpRepositories[reponame]['description'],)) , importance = 1, type = "info", back = True)
-            # get all packages keys
-            try:
-                dbconn = self.openRepositoryDatabase(reponame)
-            except exceptionTools.RepositoryError:
-                self.updateProgress(darkred("Cannot download/access: %s" % (etpRepositories[reponame]['description'],)) , importance = 2, type = "error")
-                continue
-            pkgdata = dbconn.listAllPackages()
-            pkgdata = set(pkgdata)
-            for info in pkgdata:
-                key = self.entropyTools.dep_getkey(info[0])
-                keys.add(key)
-        '''
 
         self.updateProgress(darkgreen("Resolving metadata"), importance = 1, type = "warning")
-
-        ''' # XXX world calculation is enough
-        maxlen = len(keys)
-        cnt = 0
-        for key in keys:
-            cnt += 1
-            self.updateProgress(darkgreen("Resolving key: %s") % (
-                                                key
-                                        ), importance = 0, type = "info", back = True, count = (cnt, maxlen) )
-            self.atomMatch(key)
-        '''
-
         # we can barely ignore any exception from here
         # especially cases where client db does not exist
         try:
@@ -451,6 +421,64 @@ class EquoInterface(TextInterface):
                         iatom = rdbconn.retrieveAtom(i)
                         crying_atoms.add((iatom,repo))
         return crying_atoms
+
+    def get_licenses_to_accept(self, install_queue):
+        if not install_queue:
+            return []
+        licenses = {}
+        for match in install_queue:
+            repoid = match[1]
+            dbconn = self.openRepositoryDatabase(repoid)
+            wl = etpConst['packagemasking']['repos_license_whitelist'].get(repoid)
+            if not wl:
+                continue
+            keys = dbconn.retrieveLicensedataKeys(match[0])
+            for key in keys:
+                if key not in wl:
+                    found = self.clientDbconn.isLicenseAccepted(key)
+                    if found:
+                        continue
+                    if not licenses.has_key(key):
+                        licenses[key] = set()
+                    licenses[key].add(match)
+        return licenses
+
+    def get_text_license(self, license_name, repoid):
+        dbconn = self.openRepositoryDatabase(repoid)
+        text = dbconn.retrieveLicenseText(license_name)
+        tempfile = self.entropyTools.getRandomTempFile()
+        f = open(tempfile,"w")
+        for x in text:
+            f.write(x)
+        f.flush()
+        f.close()
+        return tempfile
+
+    def get_file_viewer(self):
+        viewer = None
+        if os.access("/usr/bin/less",os.X_OK):
+            viewer = "/usr/bin/less"
+        elif os.access("/bin/more",os.X_OK):
+            viewer = "/bin/more"
+        if not viewer:
+            viewer = self.get_file_editor()
+        return viewer
+
+    def get_file_editor(self):
+        editor = None
+        if os.getenv("EDITOR"):
+            editor = "$EDITOR"
+        elif os.access("/bin/nano",os.X_OK):
+            editor = "/bin/nano"
+        elif os.access("/bin/vi",os.X_OK):
+            editor = "/bin/vi"
+        elif os.access("/usr/bin/vi",os.X_OK):
+            editor = "/usr/bin/vi"
+        elif os.access("/usr/bin/emacs",os.X_OK):
+            editor = "/usr/bin/emacs"
+        elif os.access("/bin/emacs",os.X_OK):
+            editor = "/bin/emacs"
+        return editor
 
     def libraries_test(self, dbconn = None, reagent = False):
 
@@ -6363,7 +6391,6 @@ class PackageMaskingParser:
         data = {}
         for item in self.etpMaskFiles:
             data[item] = eval('self.'+item+'_parser')()
-        #print data['repos_license_whitelist'] 
         return data
 
 

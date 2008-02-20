@@ -2531,6 +2531,17 @@ class etpDatabase:
         self.storeInfoCache(idpackage,'retrieveLicensedataKeys',licdata)
         return licdata
 
+    def retrieveLicenseText(self, license_name):
+        if not self.doesTableExist("licensedata"):
+            if (etpConst['uid'] == 0) and (not self.readOnly):
+                self.createLicensedataTable()
+            return None
+        self.cursor.execute('SELECT text FROM licensedata WHERE licensename = (?)', (license_name,))
+        text = self.cursor.fetchone()
+        if not text:
+            return None
+        return text[0]
+
     def retrieveLicense(self, idpackage):
 
         cache = self.fetchInfoCache(idpackage,'retrieveLicense')
@@ -2702,6 +2713,25 @@ class etpDatabase:
         if not result:
             return False
         return True
+
+    def isLicenseAccepted(self, license_name):
+        if not self.doesTableExist("licenses_accepted"):
+            self.createLicensesAcceptedTable()
+        self.cursor.execute('SELECT licensename FROM licenses_accepted WHERE licensename = (?)', (license_name,))
+        result = self.cursor.fetchone()
+        if not result:
+            return False
+        return True
+
+    def acceptLicense(self, license_name):
+        if self.readOnly or (etpConst['uid'] != 0):
+            return
+        if not self.doesTableExist("licenses_accepted"):
+            self.createLicensesAcceptedTable()
+        if self.isLicenseAccepted(license_name):
+            return
+        self.cursor.execute('INSERT INTO licenses_accepted VALUES (?)', (license_name,))
+        self.commitChanges()
 
     def isLicenseAvailable(self,pkglicense):
         if not pkglicense or not pkglicense.isalnum(): # workaround for packages without a license but just garbage
@@ -3619,6 +3649,9 @@ class etpDatabase:
 
     def createLicensedataTable(self):
         self.cursor.execute('CREATE TABLE licensedata ( licensename VARCHAR UNIQUE, text BLOB, compressed INTEGER );')
+
+    def createLicensesAcceptedTable(self):
+        self.cursor.execute('CREATE TABLE licenses_accepted ( licensename VARCHAR UNIQUE );')
 
     def createTriggerTable(self):
         self.cursor.execute('CREATE TABLE triggers ( idpackage INTEGER PRIMARY KEY, data BLOB );')

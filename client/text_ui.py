@@ -556,6 +556,54 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     currentqueue = 0
     currentremovalqueue = 0
 
+    def read_lic_selection():
+        print_info(darkred("    Please choose an action"))
+        print_info("      ("+blue("1")+")"+darkgreen(" Read the license"))
+        print_info("      ("+blue("2")+")"+brown(" Accept the license (I've read it)"))
+        print_info("      ("+blue("3")+")"+darkred(" Accept the license and don't ask anymore (I've read it)"))
+        print_info("      ("+blue("0")+")"+bold(" Quit"))
+        # wait user interaction
+        action = readtext("       Your choice (type a number and press enter): ")
+        return action
+
+    ### Before even starting the fetch, make sure that the user accepts their licenses
+    licenses = Equo.get_licenses_to_accept(runQueue)
+    if licenses:
+        print_info(red(" @@ ")+blue("You need to accept the licenses below:"))
+        keys = licenses.keys()
+        keys.sort()
+        for key in keys:
+            print_info(red("    :: License: ")+bold(key)+red(", needed by:"))
+            for match in licenses[key]:
+                dbconn = Equo.openRepositoryDatabase(match[1])
+                atom = dbconn.retrieveAtom(match[0])
+                print_info(blue("       ## ")+"["+brown("from")+":"+red(match[1])+"] "+bold(atom))
+            while 1:
+                choice = read_lic_selection()
+                try:
+                    choice = int(choice)
+                except TypeError:
+                    continue
+                if choice not in (0,1,2,3):
+                    continue
+                if choice == 0:
+                    dirscleanup()
+                    return 0,0
+                elif choice == 1: # read
+                    filename = Equo.get_text_license(key, match[1])
+                    viewer = Equo.get_file_viewer()
+                    if viewer == None:
+                        print_info(red("    No file viewer ! License saved into %s " % (filename,) ))
+                        continue
+                    os.system(viewer+" "+filename)
+                    os.remove(filename)
+                    continue
+                elif choice == 2:
+                    break
+                elif choice == 3:
+                    Equo.clientDbconn.acceptLicense(key)
+                    break
+
     ### Before starting the real install, fetch packages and verify checksum.
     fetchqueue = 0
     for packageInfo in runQueue:
