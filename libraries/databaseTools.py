@@ -767,7 +767,7 @@ class etpDatabase:
         for mylicense in mylicenses:
             found = self.isLicensedataKeyAvailable(mylicense)
             if not found:
-                text = mylicenses[mylicense]
+                text = etpData['licensedata'][mylicense]
                 self.cursor.execute(
                     'INSERT into licensedata VALUES '
                     '(?,?,?)'

@@ -22,6 +22,7 @@
 
 from entropyConstants import *
 etpSys['serverside'] = True
+os.environ['ENTROPY_SERVER_SIDE'] = "1"
 
 def initConfig_serverConstants():
 

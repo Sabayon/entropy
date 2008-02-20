@@ -174,6 +174,7 @@ class EquoInterface(TextInterface):
         for item in self.repoDbCache:
             self.repoDbCache[item].closeDB()
         self.repoDbCache.clear()
+        etpConst['packagemasking'] = None
 
     def openClientDatabase(self):
         self.clientDbconn = self.databaseTools.openClientDatabase(indexing = self.indexing, generate = self.noclientdb, xcache = self.xcache, OutputInterface = self)
@@ -4109,12 +4110,12 @@ class RepoInterface:
                                             header = "\t",
                                             back = True
                             )
-            mask_status = self.download_item("lic_whitelist", repo)
-            if not mask_status:
-                mask_message = red("No %s available. It's ok." % (etpConst['etpdatabaselicwhitelistfile'],))
+            lic_status = self.download_item("lic_whitelist", repo)
+            if not lic_status:
+                lic_message = red("No %s available. It's ok." % (etpConst['etpdatabaselicwhitelistfile'],))
             else:
-                mask_message = red("Downloaded %s. Cool :-)" % (etpConst['etpdatabaselicwhitelistfile'],))
-            self.Entropy.updateProgress(    mask_message,
+                lic_message = red("Downloaded %s. Cool :-)" % (etpConst['etpdatabaselicwhitelistfile'],))
+            self.Entropy.updateProgress(    lic_message,
                                             importance = 0,
                                             type = "info",
                                             header = "\t"
@@ -6334,27 +6335,35 @@ class PackageMaskingParser:
             'unmask': etpConst['confdir']+"/packages/package.unmask", # unmasking configuration files
             'mask': etpConst['confdir']+"/packages/package.mask", # masking configuration files
             'repos_mask': {},
+            'repos_license_whitelist': {}
         }
         # append repositories mask files
         for repoid in etpRepositoriesOrder:
             maskpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabasemaskfile'])
-            if os.path.isfile(maskpath):
+            wlpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabaselicwhitelistfile'])
+            if os.path.isfile(maskpath) and os.access(maskpath,os.R_OK):
                 self.etpMaskFiles['repos_mask'][repoid] = maskpath
+            if os.path.isfile(wlpath) and os.access(wlpath,os.R_OK):
+                self.etpMaskFiles['repos_license_whitelist'][repoid] = wlpath
 
         self.etpMtimeFiles = {
             'keywords_mtime': etpConst['dumpstoragedir']+"/keywords.mtime", # keywording configuration files mtime
             'unmask_mtime': etpConst['dumpstoragedir']+"/unmask.mtime", # unmasking configuration files mtime
             'mask_mtime': etpConst['dumpstoragedir']+"/mask.mtime", # masking configuration files mtime
             'repos_mask': {},
+            'repos_license_whitelist': {}
         }
         # append repositories mtime files
         for repoid in etpRepositoriesOrder:
             if repoid in self.etpMaskFiles['repos_mask']:
                 self.etpMtimeFiles['repos_mask'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabasemaskfile']+".mtime"
+            if repoid in self.etpMaskFiles['repos_license_whitelist']:
+                self.etpMtimeFiles['repos_license_whitelist'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabaselicwhitelistfile']+".mtime"
 
         data = {}
         for item in self.etpMaskFiles:
             data[item] = eval('self.'+item+'_parser')()
+        #print data['repos_license_whitelist'] 
         return data
 
 
@@ -6453,6 +6462,23 @@ class PackageMaskingParser:
             content = [x.strip() for x in content if not x.startswith("#") and x.strip()]
             for line in content:
                 data.add(line)
+        return data
+
+    def repos_license_whitelist_parser(self):
+        data = {}
+        for repoid in self.etpMaskFiles['repos_license_whitelist']:
+            data[repoid] = set()
+
+            self.__validateEntropyCache(self.etpMaskFiles['repos_license_whitelist'][repoid],self.etpMtimeFiles['repos_license_whitelist'][repoid], repoid = repoid)
+
+            if os.path.isfile(self.etpMaskFiles['repos_license_whitelist'][repoid]):
+                f = open(self.etpMaskFiles['repos_license_whitelist'][repoid],"r")
+                content = f.readlines()
+                f.close()
+                # filter comments and white lines
+                content = [x.strip() for x in content if not x.startswith("#") and x.strip()]
+                for mylicense in content:
+                    data[repoid].add(mylicense)
         return data
 
     def repos_mask_parser(self):
