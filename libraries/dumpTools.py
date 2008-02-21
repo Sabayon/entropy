@@ -67,7 +67,11 @@ def loadobj(name, completePath = False):
             x = None
             try:
                 x = pickle.load(f)
-            except pickle.UnpicklingError, ValueError:
+            except ValueError:
+                pass
+            except EOFError:
+                pass
+            except pickle.UnpicklingError:
                 pass
             f.close()
             return x

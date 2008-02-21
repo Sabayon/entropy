@@ -60,7 +60,7 @@ class EntropyPackages:
         self.pkgCache = {}
         self.currentCategory = None
         self._categoryPackages = {}
-        self.categories = []
+        self.categories = set()
         self.recent = self.Entropy.entropyTools.getCurrentUnixTime()
         self.pkgInCats = PkgInCategoryList()
 
@@ -118,7 +118,6 @@ class EntropyPackages:
         self._categoryPackages[category] = pkgsdata
 
     def populateCategories(self):
-        del self.categories[:]
         self.categories = self.Entropy.list_repo_categories()
 
     def getPackages(self,flt):
@@ -216,9 +215,10 @@ class EntropyPackages:
             for idpackage in self.Entropy.clientDbconn.listAllIdpackages():
                 atom = self.Entropy.clientDbconn.retrieveAtom(idpackage)
                 upd, matched = self.Entropy.check_package_update(atom)
-                if not upd and matched:
+                if (not upd) and matched:
                     if matched[0] != -1:
-                        yp = self.getPackageItem((idpackage,0),True)
+                        yp = self.getPackageItem(matched,True)
+                        yp.installed_match = (idpackage,0)
                         #if str(yp).find("gnome-system-tools") != -1:
                         #    print str(yp),yp.queued,yp.action,"reinstallable"
                         yp.action = 'rr'

@@ -166,6 +166,9 @@ class SpritzController(Controller):
             return True
         self.runEditor(source)
 
+    def on_filesView_row_activated( self, widget, iterator, path ):
+        self.on_filesViewChanges_clicked(widget)
+
     def on_filesViewChanges_clicked( self, widget ):
         identifier, source, dest = self.__get_Edit_filename()
         if not identifier:
@@ -391,11 +394,15 @@ class SpritzController(Controller):
         self.clipboard.set_text(''.join(self.output.text_written))
 
     def on_PageButton_pressed( self, widget, page ):
-        if page == "filesconf":
-            self.populateFilesUpdate()
+        #if page == "filesconf":
+        #    self.populateFilesUpdate()
+        pass
 
     def on_PageButton_changed( self, widget, page ):
         ''' Left Side Toolbar Handler'''
+        # do not put here actions for 'packages' and 'output' but use on_PageButton_pressed
+        if page == "filesconf":
+            self.populateFilesUpdate()
         self.setNotebookPage(const.PAGES[page])
 
     def on_category_selected(self,widget):
@@ -956,7 +963,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
             allpkgs.extend(pkgs)
             self.setStatus(_("Ready"))
         if self.doProgress: self.progress.total.next() # -> Sort Lists
-        self.progress.set_mainLabel('')
 
         # to let the first package iteration be fast
         self.etpbase.getAllPackages()
@@ -976,10 +982,13 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.ui.viewPkg.set_model(self.pkgView.store)
         self.progress.total.show()
 
-        self.unsetBusy()
         if self.doProgress: self.progress.hide() #Hide Progress
         if bootstrap:
             self.setPage('packages')
+
+        self.unsetBusy()
+        # reset labels
+        self.progress.set_mainLabel('')
 
     def addCategoryPackages(self,cat = None):
         msg = _('Package View Population')

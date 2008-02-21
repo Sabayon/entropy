@@ -682,7 +682,7 @@ class EquoInterface(TextInterface):
         if match[0] != -1:
             myatom = self.clientDbconn.retrieveAtom(match[0])
             myrev = self.clientDbconn.retrieveRevision(match[0])
-            pkg_match = ">="+myatom+"~"+str(myrev)
+            pkg_match = "="+myatom+"~"+str(myrev)
             pkg_unsatisfied,x = self.filterSatisfiedDependencies([pkg_match], deep_deps = deep)
             del x
             if pkg_unsatisfied:
@@ -3272,6 +3272,10 @@ class PackageInterface:
         @input action(string): is an action to take, which must be one in self.valid_actions
     '''
     def prepare(self, matched_atom, action, metaopts = {}):
+
+        # clear masking reasons
+        maskingReasonsStorage.clear()
+
         self.error_on_prepared()
         self.check_action_validity(action)
 

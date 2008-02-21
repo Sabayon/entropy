@@ -31,6 +31,7 @@ class PackageWrapper:
             self.dbconn = EquoConnection.openRepositoryDatabase(matched_atom[1])
             self.from_installed = False
         self.matched_atom = matched_atom
+        self.installed_match = None
         self.available = avail
         self.do_purge = False
 

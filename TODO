@@ -1,4 +1,5 @@
 TODO list:
+  - remove conflicting packages right before the conflict?
   - implement configuration files snapshot tool
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
@@ -12,9 +13,9 @@ TODO list:
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
+    - debug (*) (speed on selecting stuff for the first time)
     - if a package has a non OSS License, show it (*) IMPLEMENT
     - remove package info widgets and write from scratch (*)
-    - debug (*)
     - add masking menu
     - use availability bool to show masked packages and connect the masking menu
     - Popularity feature

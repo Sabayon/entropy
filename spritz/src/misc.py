@@ -198,7 +198,10 @@ class SpritzQueue:
         blocked = []
         for pkg in queue:
             match = pkg.matched_atom
-            dbconn = self.Entropy.openRepositoryDatabase(match[1])
+            if type(match[1]) is int: # installed package
+                dbconn = self.Entropy.clientDbconn
+            else:
+                dbconn = self.Entropy.openRepositoryDatabase(match[1])
             keyslot = dbconn.retrieveKeySlot(match[0])
             if keyslot in self.keyslotFilter:
                 blocked.append(pkg)
