@@ -46,7 +46,7 @@ from etpgui import *
 import filters
 from gui import SpritzGUI
 from dialogs import *
-from misc import const, SpritzOptions, fakeoutfile, fakeinfile
+from misc import const, fakeoutfile, fakeinfile
 from i18n import _
 import time
 
@@ -415,21 +415,6 @@ class SpritzController(Controller):
             else:
                 self.pkgView.store.clear()
 
-
-    def on_Category_changed(self,widget):
-        ''' Category Type Change Handler'''
-        ndx = self.ui.cbCategory.get_active()
-        if ndx == 0: # None
-           self.categoryOn = False
-           self.ui.swCategory.hide()
-           self.addPackages()
-        else:
-           self.categoryOn = True
-           self.ui.swCategory.show()
-           tub = const.PACKAGE_CATEGORY_DICT[ndx]
-           (label,fn,attr,sortcat,splitcat) = tub
-           self.addCategories(fn,attr,sortcat,splitcat)
-
     def on_pkgFilter_toggled(self,rb,action):
         ''' Package Type Selection Handler'''
         if rb.get_active(): # Only act on select, not deselect.
@@ -749,12 +734,20 @@ class SpritzController(Controller):
 class SpritzApplication(SpritzController,SpritzGUI):
 
     def __init__(self):
+
+        # check if another instance is running
+        cr = EquoConnection.entropyTools.applicationLockCheck("Spritz Loader", gentle = True)
+        if cr:
+            # warn the user 
+            okDialog( None, _("<big><b>Sorry to tell you</b></big>\t\t\nAnother instance of Entropy <b>is running</b>. <u>Close</u> it or <u>remove</u>: %s") % (etpConst['pidfile'],) )
+            sys.exit()
+
         SpritzController.__init__( self )
-        self.spritzOptions = SpritzOptions()
-        self.spritzOptions.parseCmdOptions()
         self.Equo = EquoConnection
+
         SpritzGUI.__init__(self, self.Equo, self.etpbase)
         self.logger = logging.getLogger("yumex.main")
+
         # init flags
         self.skipMirror = False
         self.skipMirrorNow = False
@@ -762,11 +755,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.categoryOn = False
         self.quitNow = False
         self.isWorking = False
-        if self.settings.debug:
-            self.spritzOptions.dump()
-            print self.spritzOptions.getArgs()
         self.logger.info(_('Entropy Config Setup'))
-        self.spritzOptions.parseCmdOptions()
         self.catsView.etpbase = self.etpbase
         self.lastPkgPB = "updates"
         self.etpbase.setFilter(filters.yumexFilter.processFilters)
@@ -785,7 +774,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.setupSpritz()
 
         self.console.set_pty(self.pty[0])
-        # setup pty
+        self.resetProgressText()
 
     def setupEditor(self):
 
@@ -921,6 +910,10 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.setupRepoView()
         self.endWorking()
 
+    def resetProgressText(self):
+        self.progress.set_mainLabel(_('Nothing to do. I am idle.'))
+        self.progress.set_subLabel(_('Really, don\'t waste your time here. This is just a placeholder'))
+        self.progress.set_extraLabel(_('I am still alive and kickin\''))
 
     def setupRepoView(self):
         self.repoView.populate()
@@ -988,7 +981,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
         self.unsetBusy()
         # reset labels
-        self.progress.set_mainLabel('')
+        self.resetProgressText()
 
     def addCategoryPackages(self,cat = None):
         msg = _('Package View Population')

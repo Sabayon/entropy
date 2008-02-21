@@ -28,7 +28,7 @@ except:
     from ConfigParser import ConfigParser,SafeConfigParser
 
 
-from misc import const,cleanMarkupSting,YumexConf,unicode2htmlentities
+from misc import const,cleanMarkupSting,SpritzConf,unicode2htmlentities
 from i18n import _
 
 class ConfimationDialog:
@@ -358,7 +358,7 @@ def okDialog(parent, msg):
     dlg = gtk.MessageDialog(parent=parent,
                             type=gtk.MESSAGE_INFO,
                             buttons=gtk.BUTTONS_OK)
-    dlg.set_markup(cleanMarkupSting(msg))
+    dlg.set_markup(msg)
     dlg.set_title( _("Attention") )
     rc = dlg.run()
     dlg.destroy()

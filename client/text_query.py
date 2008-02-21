@@ -911,6 +911,7 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
     pkgtag = dbconn.retrieveVersionTag(idpackage)
     pkgrev = dbconn.retrieveRevision(idpackage)
     pkgdesc = dbconn.retrieveDescription(idpackage)
+    pkguseflags = dbconn.retrieveUseflags(idpackage)
     pkgbranch = dbconn.retrieveBranch(idpackage)
     if (not pkgtag):
         pkgtag = "NoTag"
@@ -964,7 +965,13 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
             for conflict in pkgconflicts:
                 print_info(darkred("       ## \t\t\t")+brown(conflict))
     print_info(darkgreen("       Homepage:\t\t")+red(pkghome))
-    print_info(darkgreen("       Description:\t\t")+pkgdesc)
+
+    if (not strictOutput):
+        # print description
+        _my_formatted_print(pkgdesc,darkgreen("       Description:\t\t"),"\t\t\t\t")
+        # print use flags
+        _my_formatted_print(pkguseflags,darkgreen("       USE flags:\t\t"),"\t\t\t\t", color = red)
+
     if (not strictOutput):
         if (extended):
             print_info(darkgreen("       CHOST:\t\t")+blue(pkgflags[0]))
@@ -984,3 +991,24 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
         print_info(darkgreen("       Keywords:\t\t")+red(' '.join(pkgkeywords)))
         print_info(darkgreen("       Created:\t\t")+pkgcreatedate)
         print_info(darkgreen("       License:\t\t")+red(pkglic))
+
+def _my_formatted_print(data,header,reset_columns, min_chars = 25, color = None):
+    if type(data) is set:
+        mydata = list(data)
+    elif type(data) is not list:
+        mydata = data.split()
+    else:
+        mydata = data
+    fcount = 0
+    desc_text = header
+    for x in mydata:
+        fcount += len(x)
+        if color:
+            desc_text += color(x)+" "
+        else:
+            desc_text += x+" "
+        if fcount > min_chars:
+            fcount = 0
+            print_info(desc_text)
+            desc_text = reset_columns
+    if fcount > 0: print_info(desc_text)

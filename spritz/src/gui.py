@@ -18,7 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from etpgui import *
-from misc import SpritzQueue,YumexConf,const,cleanMarkupSting
+from misc import SpritzQueue, SpritzConf, const, cleanMarkupSting
 from views import *
 from etpgui.widgets import TextViewConsole, SpritzConsole
 from i18n import _
@@ -185,7 +185,7 @@ class YumexProgress:
 class SpritzGUI:
     ''' This class contains GUI related methods '''
     def __init__(self, EquoConnection, etpbase):
-        self.settings = YumexConf()
+        self.settings = SpritzConf()
         # Package & Queue Views
         self.Entropy = EquoConnection
         self.etpbase = etpbase
@@ -227,7 +227,7 @@ class SpritzGUI:
         self.setPage(self.activePage)
 
         # put self.console in place
-        self.console = SpritzConsole()
+        self.console = SpritzConsole(self.settings)
         self.console.set_scrollback_lines(1024)
         self.console.set_scroll_on_output(True)
         self.console.connect("button-press-event", self.on_console_click)

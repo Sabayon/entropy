@@ -52,7 +52,6 @@ class const:
         "RPM Groups",
         "Age"]
 
-    YUM_PID_FILE = '/var/run/equo.pid'
     DAY_IN_SECONDS = 86400
     # Page -> Notebook page numbers
     PAGE_REPOS = 0
@@ -81,33 +80,6 @@ class const:
                              0.2, # Updates 
                              0.1, # Group 
                              0.3) # get package Lists
-    PACKAGE_CATEGORY_NO = 5
-
-# Package Category Control Dict.    
-    PACKAGE_CATEGORY_DICT = { 
-#
-#  [1]           [2]               [3]             [4]     [5]     [6]
-#-------------------------------------------------------------------------    
-    1 : ( _( 'RPM Groups' ),   'getByAttr',     'group',  True,  True), 
-    2 : ( _( 'Repositories' ), 'getByProperty', 'repoid', True,  False ), 
-    3 : ( _( 'Architecture' ), 'getByProperty', 'arch',   True,  False ), 
-    4 : ( _( 'Sizes' ),        'getBySizes',     '',      False, False ), 
-    5 : ( _( 'Age' ),          'getByAge',       '',      False, False )}
-    
-# [1] : Order in Category Combo
-# [2] : Text in Combo
-# [3] : Method to get the package by category
-# [4] : Parameter to [3].
-# [5] : Sort flag
-# [6] : Split Categoties and make a tree, insted of a list
-
-    GROUP_PACKAGE_TYPE = {
-        'm' : _('Mandatory'),
-        'd' : _('Default'),
-        'o' : _('Optional'),
-        'c' : _('Conditional')
-    }
-
 
     CREDITS = (
            (('Spritz Package Manager - %s' % __spritz_version__),
@@ -467,7 +439,7 @@ class SpritzQueue:
                 return action
         return None
 
-class YumexConf:
+class SpritzConf:
     """ Yum Extender Config Setting"""
     autorefresh = True
     recentdays = 14
@@ -477,7 +449,8 @@ class YumexConf:
     proxy = ""
     font_console = 'Monospace 8'
     font_pkgdesc = 'Monospace 8'
-    color_console = '#68228B'
+    color_console_background = '#FFFFFF'
+    color_console_font = '#000000'
     color_pkgdesc = '#68228B'
     color_install = 'darkgreen'
     color_update = 'red'
@@ -527,58 +500,6 @@ class YumexConf:
             return getattr(self, option)
         return default
 
-
-class SpritzOptions:
-
-    def __init__(self):
-        self.logger = logging.getLogger('yumex.YumexOptions')
-        self._optparser = OptionParser()
-        self.setupParser()
-
-    def parseCmdOptions(self):
-        self.getCmdlineOptions()
-
-    def getYumexConfig(self,configfile='/etc/spritz.conf', sec='spritz' ):
-        conf = YumexConf()
-        parser = ConfigParser()    
-        parser.read( configfile )
-        conf.populate( parser, sec )
-        return conf
-
-    def reload(self):
-        self.settings = self.getYumexConfig()
-
-    def getArgs(self):
-        return self.cmd_args
-
-    def setupParser(self):
-        parser = self._optparser
-        parser.add_option( "-d", "--debug", 
-                        action="store_true", dest="debug", default=False, 
-                        help="Debug mode" )
-        self.parserInit = True
-
-    def getCmdlineOptions( self ):
-        """ Handle commmand line options """
-        parser = self._optparser
-        ( options, args ) = parser.parse_args()
-        self.cmd_options = options
-        self.cmd_args = args
-
-    def dump(self):
-        self.logger.info( _( "Current Settings :" ) )
-        settings = str( self.settings ).split( '\n' )
-        for s in settings:
-            if not s.startswith( '[' ):
-                self.logger.info("    %s" % s )
-
-    def check_option( self, option ):
-        """ Check options in settings or command line"""
-        rc = False
-        if option == "debug":
-            if self.settings.debug or self.cmd_options.debug:
-                rc = True
-        return rc
 
 def cleanMarkupSting(msg):
     msg = str(msg) # make sure it is a string

@@ -17,22 +17,34 @@
 # Authors:
 #    Tim Lauridsen <tla@rasmil.dk>
 
-import gtk.glade
+import gtk.glade,gtk.gdk
 import pango
 import etpgui
 import gobject
 import types
-import sys
+import sys, os
 from misc import const
 import vte
 
 class SpritzConsole(vte.Terminal):
 
-    def __init__(self, default_style = None):
+    def __init__(self, settings):
         vte.Terminal.__init__(self)
+        self.settings = settings
+        self.myfontcolor = gtk.gdk.color_parse(self.settings.color_console_font)
+        self._dosettings()
+
+    def _dosettings(self):
+        imgpath = os.path.join(const.PIXMAPS_PATH,'sabayon-console-background.png')
+        if os.path.isfile(imgpath):
+            self.set_background_image_file(imgpath)
+        self.set_background_saturation(0.4)
+        self.set_opacity(65535)
+        self.set_color_foreground(self.myfontcolor)
 
     def reset (self):
         vte.Terminal.reset(self, True, True)
+        self._dosettings()
 
 
 class TextViewConsole:
