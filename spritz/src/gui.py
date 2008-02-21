@@ -237,7 +237,6 @@ class SpritzGUI:
         self.ui.termHBox.show_all()
 
         # hide All Packages radio button, useless
-        self.ui.rbAll.hide()
         self.setupPkgFilter()
 
     def on_console_click(self, widget, event):
@@ -253,13 +252,24 @@ class SpritzGUI:
 
     def setupPkgFilter(self):
         ''' set callbacks for package radio buttons (all,updates, ...)'''
-        self.setupPkgRadio(self.ui.rbAll,"all",_('Show All Packages'))
         self.setupPkgRadio(self.ui.rbUpdates,"updates",_('Show Package Updates'))
         self.setupPkgRadio(self.ui.rbAvailable,"available",_('Show available Packages'))
         self.setupPkgRadio(self.ui.rbInstalled,"installed",_('Show Installed Packages'))
 
-    def setupPkgRadio(self,widget,tag,tip):
+    def setupPkgRadio(self, widget, tag, tip):
         widget.connect('toggled',self.on_pkgFilter_toggled,tag)
+
+        #widget.set_relief( gtk.RELIEF_NONE )
+        widget.set_mode( False )
+        p = gtk.gdk.pixbuf_new_from_file( const.PIXMAPS_PATH+"/"+tag+".png" )
+        pix = self.ui.rbUpdatesImage
+        if tag == "available":
+            pix = self.ui.rbAvailableImage
+        elif tag == "installed":
+            pix = self.ui.rbInstalledImage
+        pix.set_from_pixbuf( p )
+        pix.show()
+
         self.tooltip.set_tip(widget,tip)
         self.packageRB[tag] = widget
 
