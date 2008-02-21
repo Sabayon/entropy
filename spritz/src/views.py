@@ -207,7 +207,7 @@ class EntropyPackageView:
         model, iter = widget.get_selection().get_selected()
         if iter:
             obj = model.get_value( iter, 0 )
-            if obj.action in ["r"]: # installed packages listing
+            if obj.action in ["r","rr"]: # installed packages listing
                 self.run_installed_menu_stuff(obj)
             elif obj.action in ["u"]: # updatable packages listing
                 self.run_updates_menu_stuff(obj)
@@ -486,8 +486,10 @@ class EntropyPackageView:
         """
         pkg = model.get_value( iter, 0 )
         if pkg:
+            #if str(pkg).find("gnome-system-tools") != -1:
+            #    print str(pkg),pkg.queued,pkg.action
             if not pkg.queued:
-                if pkg.action == "r":
+                if pkg.action in ["r","rr"]:
                     self.set_pixbuf_to_cell(cell, self.pkg_install_ok)
                 elif pkg.action == "i":
                     self.set_pixbuf_to_cell(cell, self.pkg_install_new)
@@ -756,11 +758,11 @@ class CategoriesView:
         grpid = model.get_value( iter, 2 )
         queued = model.get_value( iter, 3 )
         action = self.queue.hasGroup(grpid)
-        if action:            
+        if action:
             if action ==  'i':
                 icon = 'network-server'
             else:
-                icon = 'edit-delete'                
+                icon = 'edit-delete'
             cell.set_property( 'visible', True )
             cell.set_property( 'icon-name', icon )
         cell.set_property( 'visible', queued )

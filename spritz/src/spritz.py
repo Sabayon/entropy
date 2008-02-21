@@ -393,8 +393,6 @@ class SpritzController(Controller):
     def on_PageButton_pressed( self, widget, page ):
         if page == "filesconf":
             self.populateFilesUpdate()
-        elif page == "packages":
-            self.addPackages()
 
     def on_PageButton_changed( self, widget, page ):
         ''' Left Side Toolbar Handler'''
@@ -765,7 +763,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.catsView.etpbase = self.etpbase
         self.lastPkgPB = "updates"
         self.etpbase.setFilter(filters.yumexFilter.processFilters)
-        self.treeViewCache = {}
 
         self.Equo.connect_to_gui(self.progress, self.progressLogWrite, self.output)
         self.setupEditor()
@@ -835,7 +832,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
         gtkEventThread.endProcessing()
 
     def setupSpritz(self):
-        self.treeViewCache.clear()
         msg = _('Generating metadata. Please wait.')
         self.setStatus(msg)
         self.addPackages()
@@ -944,8 +940,8 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.progress.total.hide()
 
         self.etpbase.clearPackages()
-        self.etpbase.clearCache()
         if bootstrap:
+            self.etpbase.clearCache()
             self.startWorking()
 
         allpkgs = []
@@ -956,28 +952,22 @@ class SpritzApplication(SpritzController,SpritzGUI):
         for flt in masks:
             msg = _('Calculating %s' ) % flt
             self.setStatus(msg)
-            pkgs = self.etpbase.getPackages(flt) # XXX HERE
+            pkgs = self.etpbase.getPackages(flt)
             allpkgs.extend(pkgs)
             self.setStatus(_("Ready"))
         if self.doProgress: self.progress.total.next() # -> Sort Lists
         self.progress.set_mainLabel('')
 
+        # to let the first package iteration be fast
+        self.etpbase.getAllPackages()
+
         if bootstrap:
             self.endWorking()
 
-        def mycmp(x,y):
-            return cmp(x,y)
-        my_hash = hash(tuple(action))
-        if self.treeViewCache.has_key(my_hash):
-            allpkgs = self.treeViewCache[my_hash]
-        else:
-            try:
-                allpkgs = sorted(allpkgs,mycmp)
-            except: # python 2.4 support
-                allpkgs.sort()
-            # store
-            # FIXME: we need to keep caching disabled because searches won't work then
-            #self.treeViewCache[my_hash] = allpkgs
+        try:
+            allpkgs = sorted(allpkgs)
+        except: # python 2.4 support
+            allpkgs.sort()
 
         self.pkgView.store.clear()
         self.ui.viewPkg.set_model(None)
@@ -985,8 +975,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.pkgView.store.append((po,str(po)))
         self.ui.viewPkg.set_model(self.pkgView.store)
         self.progress.total.show()
-
-        self.treeViewPackages = my_hash
 
         self.unsetBusy()
         if self.doProgress: self.progress.hide() #Hide Progress

@@ -188,6 +188,8 @@ class EntropyPackages:
         if mask == 'installed':
             for idpackage in self.Entropy.clientDbconn.listAllIdpackages():
                 yp = self.getPackageItem((idpackage,0),True)
+                #if str(yp).find("gnome-system-tools") != -1:
+                #    print str(yp),yp.queued,yp.action,"installed"
                 yp.action = 'r'
                 yp.color = color_install
                 yield yp
@@ -196,6 +198,8 @@ class EntropyPackages:
             available = self.Entropy.calculate_available_packages()
             for pkgdata in available:
                 yp = self.getPackageItem(pkgdata,True)
+                #if str(yp).find("gnome-system-tools") != -1:
+                #    print str(yp),yp.queued,yp.action,"available"
                 yp.action = 'i'
                 yield yp
         elif mask == 'updates':
@@ -203,6 +207,8 @@ class EntropyPackages:
             del remove, fine
             for pkgdata in updates:
                 yp = self.getPackageItem(pkgdata,True)
+                #if str(yp).find("gnome-system-tools") != -1:
+                #    print str(yp),yp.queued,yp.action,"updates"
                 yp.action = 'u'
                 yp.color = color_update
                 yield yp
@@ -212,7 +218,9 @@ class EntropyPackages:
                 upd, matched = self.Entropy.check_package_update(atom)
                 if not upd and matched:
                     if matched[0] != -1:
-                        yp = self.getPackageItem(matched,True)
+                        yp = self.getPackageItem((idpackage,0),True)
+                        #if str(yp).find("gnome-system-tools") != -1:
+                        #    print str(yp),yp.queued,yp.action,"reinstallable"
                         yp.action = 'rr'
                         yp.color = color_install
                         yield yp
