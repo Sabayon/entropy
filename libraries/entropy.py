@@ -997,33 +997,30 @@ class EquoInterface(TextInterface):
             self.entropyTools.saveRepositorySettings(repodata)
             initConfig_entropyConstants(etpSys['rootdir'])
 
-    def removeRepository(self, repoid):
+    def removeRepository(self, repoid, disable = False):
 
         done = False
-        try:
+        if etpRepositories.has_key(repoid):
             del etpRepositories[repoid]
             done = True
-        except:
-            pass
 
-        try:
+        if etpRepositoriesExcluded.has_key(repoid):
             del etpRepositoriesExcluded[repoid]
             done = True
-        except:
-            pass
 
         if done:
-            try:
+
+            if repoid in etpRepositoriesOrder:
                 etpRepositoriesOrder.remove(repoid)
-            except:
-                pass
-            # it's not vital to reset etpRepositoriesOrder counters
 
             self.repository_move_clear_cache(repoid)
             # save new etpRepositories to file
             repodata = {}
             repodata['repoid'] = repoid
-            self.entropyTools.saveRepositorySettings(repodata, remove = True)
+            if disable:
+                self.entropyTools.saveRepositorySettings(repodata, disable = True)
+            else:
+                self.entropyTools.saveRepositorySettings(repodata, remove = True)
             initConfig_entropyConstants(etpSys['rootdir'])
 
     def shiftRepository(self, repoid, toidx):

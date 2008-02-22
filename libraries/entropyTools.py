@@ -1473,7 +1473,12 @@ def read_repositories_conf():
     return content
 
 def getRepositorySettings(repoid):
-    repodata = etpRepositories[repoid].copy()
+    try:
+        repodata = etpRepositories[repoid].copy()
+    except KeyError:
+        if not etpRepositoriesExcluded.has_key(repoid):
+            raise
+        repodata = etpRepositoriesExcluded[repoid].copy()
     repodata['repoid'] = repoid
     # remove extra paths from database and packages
     repodata['packages'] = [x[:-len("/"+etpConst['product'])] for x in repodata['packages']]
@@ -1520,7 +1525,9 @@ def saveRepositorySettings(repodata, remove = False, disable = False, enable = F
             repolines_data[repocount]['repoid'] = x.split("|")[1]
             repolines_data[repocount]['line'] = x
             if disable and x.split("|")[1] == repodata['repoid']:
-                repolines_data[repocount]['line'] = "#"+x
+                if not x.startswith("#"):
+                    x = "#"+x
+                repolines_data[repocount]['line'] = x
             elif enable and x.split("|")[1] == repodata['repoid'] and x.startswith("#"):
                 repolines_data[repocount]['line'] = x[1:]
             repocount += 1

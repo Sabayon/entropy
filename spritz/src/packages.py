@@ -61,6 +61,7 @@ class EntropyPackages:
         self.currentCategory = None
         self._categoryPackages = {}
         self.categories = set()
+        self.selected_treeview_item = None
         self.recent = self.Entropy.entropyTools.getCurrentUnixTime()
         self.pkgInCats = PkgInCategoryList()
 

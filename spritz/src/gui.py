@@ -20,7 +20,7 @@
 from etpgui import *
 from misc import SpritzQueue, SpritzConf, const, cleanMarkupSting
 from views import *
-from etpgui.widgets import TextViewConsole, SpritzConsole
+from etpgui.widgets import SpritzConsole
 from i18n import _
 
 class ProgressTotal:
@@ -197,7 +197,6 @@ class SpritzGUI:
         #self.catView = SpritzCategoryView(self.ui.tvCategory)
         self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
         self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView, self.ui, self.etpbase)
-        #self.catDesc = TextViewConsole(self.ui.catDesc)
         self.repoView = EntropyRepoView(self.ui.viewRepo, self.Entropy, self.ui)
         self.repoMirrorsView = EntropyRepositoryMirrorsView(self.addrepo_ui.mirrorsView)
         # Left Side Toolbar

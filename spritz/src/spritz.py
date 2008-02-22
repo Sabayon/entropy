@@ -68,9 +68,9 @@ class SpritzController(Controller):
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
-        #sys.stdout = self.output
-        #sys.stderr = self.output
-        #sys.stdin = self.input
+        sys.stdout = self.output
+        sys.stderr = self.output
+        sys.stdin = self.input
 
 
     def quit(self, widget=None, event=None ):
@@ -129,6 +129,10 @@ class SpritzController(Controller):
             source = os.path.join(os.path.dirname(destination),source)
             return identifier, source, destination
         return 0,None,None
+
+    def on_pkgInfoButton_clicked( self, widget ):
+        if self.etpbase.selected_treeview_item:
+            self.loadPkgInfoMenu(self.etpbase.selected_treeview_item)
 
     def on_filesDelete_clicked( self, widget ):
         identifier, source, dest = self.__get_Edit_filename()
@@ -288,8 +292,12 @@ class SpritzController(Controller):
             okDialog( self.addrepo_ui.addRepoWin, _("Wrong entries, errors: %s") % (', '.join(errors),) )
             return True
         else:
-            self.Equo.removeRepository(repodata['repoid'])
-            self.Equo.addRepository(repodata)
+            disable = False
+            if etpRepositoriesExcluded.has_key(repodata['repoid']):
+                disable = True
+            self.Equo.removeRepository(repodata['repoid'], disable = disable)
+            if not disable:
+                self.Equo.addRepository(repodata)
             self.setupRepoView()
             self.addrepo_ui.addRepoWin.hide()
             okDialog( self.ui.main, _("You should press the %s button now") % (_("Regenerate Cache")) )
@@ -1059,15 +1067,18 @@ class SpritzApplication(SpritzController,SpritzGUI):
                 # XXX let it sleep a bit to allow all other threads to flush
                 while gtk.events_pending():
                     time.sleep(0.1)
-                time.sleep(20) # FIXME, still happens on a big queue
+                self.endWorking()
+                self.etpbase.clearPackages()
+                time.sleep(10) # FIXME, still happens on a big queue
+            self.endWorking()
             self.progress.reset_progress()
+            self.etpbase.clearPackages()
+            self.etpbase.clearCache()
             self.Equo.closeAllRepositoryDatabases()
             self.Equo.reopenClientDbconn()
             # regenerate packages information
-            self.etpbase.clearPackages()
-            self.etpbase.clearCache()
+
             self.setupSpritz()
-            self.endWorking()
             self.Equo.FileUpdates.scanfs(dcache = False)
             if self.Equo.FileUpdates.scandata:
                 if len(self.Equo.FileUpdates.scandata) > 0:

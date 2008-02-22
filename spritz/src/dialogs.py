@@ -162,22 +162,22 @@ class ErrorDialog:
         self.style_err.set_property( "family", "Monospace" )
         self.style_err.set_property( "size_points", 8 )
         self.longtext.get_buffer().get_tag_table().add( self.style_err )
-        
+
         if modal:
             self.dialog.set_modal( True )
         if text != "":
             self.set_text( text )
         if longtext != "" and longtext != None:
             self.set_long_text( longtext )
-        
+
     def set_text( self, text ):
         self.text.set_markup( text )
-    
+
     def set_long_text( self, longtext ):
         buffer = self.longtext.get_buffer()
         start, end = buffer.get_bounds()
         buffer.insert_with_tags( end, longtext, self.style_err )
-        
+
     def run( self ):
         self.dialog.show_all()
         return self.dialog.run()
@@ -362,4 +362,134 @@ def okDialog(parent, msg):
     dlg.set_title( _("Attention") )
     rc = dlg.run()
     dlg.destroy()
-    
+
+
+class LicenseDialog:
+    def __init__( self, parent, licenses, EquoConnection ):
+
+        self.Entropy = EquoConnection
+        self.xml = gtk.glade.XML( const.GLADE_FILE, 'licenseWindow',domain="yumex" )
+        self.xml_licread = gtk.glade.XML( const.GLADE_FILE, 'licenseReadWindow',domain="yumex" )
+        self.dialog = self.xml.get_widget( "licenseWindow" )
+        self.dialog.set_transient_for( parent )
+        self.read_dialog = self.xml_licread.get_widget( "licenseReadWindow" )
+        self.read_dialog.connect( 'delete-event', self.close_read_text_window )
+        #self.read_dialog.set_transient_for( self.dialog )
+        self.licenseView = self.xml_licread.get_widget( "licenseTextView" )
+        self.okReadButton = self.xml_licread.get_widget( "okReadButton" )
+        self.okReadButton.connect( "clicked", self.close_read_text )
+
+
+        self.okButton = self.xml.get_widget( "confirmLicense" )
+        self.stopButton = self.xml.get_widget( "discardLicense" )
+        self.acceptLicense = self.xml.get_widget( "acceptLicense" )
+        self.acceptLicense.connect( "clicked", self.accept_selected_license )
+        self.readLicense = self.xml.get_widget( "readLicense" )
+        self.readLicense.connect( "clicked", self.read_selected_license )
+
+        self.view = self.xml.get_widget( "licenseView" )
+        self.model = self.setup_view()
+        self.show_data( licenses )
+        self.view.expand_all()
+        self.licenses = licenses
+        self.accepted = set()
+
+
+    def close_read_text_window(self, widget, path):
+        self.read_dialog.hide()
+        return True
+
+    def close_read_text(self, widget ):
+        self.read_dialog.hide()
+
+    def run( self ):
+        self.dialog.show_all()
+        return self.dialog.run()
+
+    def destroy( self ):
+        return self.dialog.destroy()
+
+    def setup_view(self):
+        model = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_PYOBJECT )
+        self.view.set_model( model )
+        self.create_text_column( _( "License" ), 0, size = 200 )
+
+        cell2 = gtk.CellRendererPixbuf()    # new
+        column2 = gtk.TreeViewColumn( _("Accepted"), cell2 )
+        column2.set_cell_data_func( cell2, self.new_pixbuf )
+        column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column2.set_fixed_width( 20 )
+        column2.set_sort_column_id( -1 )
+        self.view.append_column( column2 )
+        column2.set_clickable( False )
+
+        return model
+
+    def set_pixbuf_to_cell(self, cell, do):
+        if do:
+            cell.set_property( 'stock-id', 'gtk-apply' )
+        elif do == False:
+            cell.set_property( 'stock-id', 'gtk-cancel' )
+        else:
+            cell.set_property( 'stock-id', None )
+
+    def new_pixbuf( self, column, cell, model, iterator ):
+        license_identifier = model.get_value( iterator, 0 )
+        chief = model.get_value( iterator, 1 )
+        if (license_identifier in self.accepted) and chief:
+            self.set_pixbuf_to_cell(cell, True)
+        elif chief:
+            self.set_pixbuf_to_cell(cell, False)
+        elif chief == None:
+            self.set_pixbuf_to_cell(cell, None)
+
+    def create_text_column( self, hdr, colno, size = None ):
+        cell = gtk.CellRendererText()    # Size Column
+        column = gtk.TreeViewColumn( hdr, cell, markup=colno )
+        if size != None:
+            column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+            column.set_fixed_width( size )
+        column.set_resizable( False ) 
+        self.view.append_column( column )
+
+    def read_selected_license(self, widget):
+        model, iterator = self.view.get_selection().get_selected()
+        if model != None and iterator != None:
+            license_identifier = model.get_value( iterator, 0 )
+            packages = self.licenses[license_identifier]
+            license_text = ''
+            found = False
+            for package in packages:
+                repoid = package[1]
+                dbconn = self.Entropy.openRepositoryDatabase(repoid)
+                if dbconn.isLicensedataKeyAvailable(license_identifier):
+                    license_text = dbconn.retrieveLicenseText(license_identifier)
+                    found = True
+                    break
+            # prepare textview
+            mybuffer = gtk.TextBuffer()
+            mybuffer.set_text(license_text)
+            self.licenseView.set_buffer(mybuffer)
+            self.read_dialog.set_title(license_identifier+" license text")
+            self.read_dialog.show_all()
+
+    def accept_selected_license(self, widget):
+        model, iterator = self.view.get_selection().get_selected()
+        if model != None and iterator != None:
+            license_identifier = model.get_value( iterator, 0 )
+            chief = model.get_value( iterator, 1 )
+            if chief:
+                self.accepted.add(license_identifier)
+                self.view.queue_draw()
+                if len(self.accepted) == len(self.licenses):
+                    self.okButton.set_sensitive(True)
+
+    def show_data( self, licenses ):
+        self.model.clear()
+        for lic in licenses:
+            parent = self.model.append( None, [lic,True] )
+            packages = licenses[lic]
+            for match in packages:
+                dbconn = self.Entropy.openRepositoryDatabase(match[1])
+                atom = dbconn.retrieveAtom(match[0])
+                self.model.append( parent, [atom,None] )

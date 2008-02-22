@@ -25,47 +25,7 @@ import sys
 import time
 import logging
 
-#
-# Classes
-#
-            
 
-class TextViewLogHandler(logging.Handler):
-    ''' Python logging handler for writing in a TextViewConsole'''
-    def __init__(self,console,doGTK=False):
-        logging.Handler.__init__(self)
-        self.console = console
-        self.doGTK = doGTK
-        
-        #TextViewConsole.__init__(self,textview)
-        
-    def emit(self,record):   
-        while gtk.events_pending():      # process gtk events
-           gtk.main_iteration()    
-        msg = self.format(record)
-        if self.console:
-            if self.doGTK:
-                doGtkEvents()
-            if record.levelno < 40:
-                self.console.write_line("%s\n" % msg)
-            else:
-                self.console.write_line("%s\n" % msg,self.console.style_err)  
-        #print msg
-        
-        
-    
-#
-# Functions
-#    
-def doLoggerSetup(console,logroot,logfmt='%(message)s',loglvl=logging.DEBUG):
-    logger = logging.getLogger(logroot)
-    logger.setLevel(loglvl)
-    formatter = logging.Formatter(logfmt, "%H:%M:%S")
-    handler = TextViewLogHandler(console)
-    handler.setFormatter(formatter)
-    handler.propagate = False
-    logger.addHandler(handler)
-    
 def busyCursor(mainwin,insensitive=False):
     ''' Set busy cursor in mainwin and make it insensitive if selected '''
     mainwin.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
@@ -79,7 +39,7 @@ def normalCursor(mainwin):
         mainwin.window.set_cursor(None)
         mainwin.set_sensitive(True)        
     doGtkEvents()
-    
+
 def doGtkEvents():
     while gtk.events_pending():      # process gtk events
         gtk.main_iteration()

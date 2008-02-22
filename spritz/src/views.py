@@ -111,6 +111,7 @@ class EntropyPackageView:
         treeview.set_fixed_height_mode(True)
         self.view = treeview
         self.view.connect("button-release-event", self.load_menu)
+        #self.view.connect("button-press-event", self.load_properties_button)
         self.store = self.setupView()
         self.queue = qview.queue
         self.queueView = qview
@@ -186,11 +187,27 @@ class EntropyPackageView:
         self.installed_reinstall.hide()
         self.installed_purge.hide()
 
+    def enable_properties_menu(self, pkg):
+        self.etpbase.selected_treeview_item = None
+        do = False
+        if pkg:
+            do = True
+            self.etpbase.selected_treeview_item = pkg
+        self.ui.pkgInfoButton.set_sensitive(do)
+
     def load_menu(self, widget, event):
         self.loaded_widget = widget
         self.loaded_event = event
         #if event.button != 3:
         #    return True
+
+        obj = None
+        model, myiter = widget.get_selection().get_selected()
+        if myiter:
+            obj = model.get_value( myiter, 0 )
+            self.enable_properties_menu(obj)
+        else:
+            self.enable_properties_menu(None)
 
         if event.x < 10:
             return
@@ -204,9 +221,7 @@ class EntropyPackageView:
         if column.get_title() != "   S":
             return
 
-        model, iter = widget.get_selection().get_selected()
-        if iter:
-            obj = model.get_value( iter, 0 )
+        if obj:
             if obj.action in ["r","rr"]: # installed packages listing
                 self.run_installed_menu_stuff(obj)
             elif obj.action in ["u"]: # updatable packages listing
@@ -256,6 +271,7 @@ class EntropyPackageView:
             elif obj.queued == "r" and obj.do_purge:
                 self.installed_undopurge.show()
         else:
+
             # is it a system package ?
             if obj.syspkg:
                 self.installed_remove.hide()
@@ -388,7 +404,7 @@ class EntropyPackageView:
         self.view.set_model( store )
 
         # Setup resent column
-        cell1 = gtk.CellRendererPixbuf()    # new
+        cell1 = gtk.CellRendererPixbuf()
         self.set_pixbuf_to_cell(cell1, self.pkg_install_ok )
         column1 = gtk.TreeViewColumn( "   S", cell1 )
         column1.set_cell_data_func( cell1, self.new_pixbuf )

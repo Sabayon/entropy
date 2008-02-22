@@ -19,7 +19,7 @@
 
 from misc import const,cleanMarkupSting
 from i18n import _
-from dialogs import questionDialog
+from dialogs import questionDialog,LicenseDialog
 
 # Entropy Imports
 from entropyConstants import *
@@ -33,9 +33,22 @@ from entropy import EquoInterface, urlFetcher
 '''
 
 class QueueExecutor:
+
     def __init__(self, SpritzApplication):
         self.Spritz = SpritzApplication
         self.Entropy = SpritzApplication.Equo
+
+    def handle_licenses(self, queue):
+
+        ### Before even starting the fetch, make sure that the user accepts their licenses
+        licenses = self.Entropy.get_licenses_to_accept(queue)
+        if licenses:
+            dialog = LicenseDialog(self.Spritz.ui.main, licenses, self.Entropy)
+            accept = dialog.run()
+            dialog.destroy()
+            return accept,licenses
+        else:
+            return 0,licenses
 
     def run(self, install_queue, removal_queue, do_purge_cache = []):
         removalQueue = []
@@ -47,6 +60,13 @@ class QueueExecutor:
             # XXX handle status
         if removal_queue:
             removalQueue += [(x,False) for x in removal_queue if (x,True) not in removalQueue]
+
+        rc, licenses = self.handle_licenses(runQueue)
+        if rc != 0:
+            return 0,0
+
+        for lic in licenses:
+            self.Entropy.clientDbconn.acceptLicense(lic)
 
         totalqueue = len(runQueue)
         progress_step = float(1)/((totalqueue*2)+len(removalQueue))

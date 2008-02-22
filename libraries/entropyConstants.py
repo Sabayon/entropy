@@ -790,6 +790,7 @@ def initConfig_entropyConstants(rootdir):
     etpHandlers['errorsend'] = "http://svn.sabayonlinux.org/entropy/%s/handlers/http_error_report.php" % (etpConst['product'],)
 
     etpRepositories.clear()
+    etpRepositoriesExcluded.clear()
     del etpRepositoriesOrder[:]
     if os.path.isfile(etpConst['repositoriesconf']):
         f = open(etpConst['repositoriesconf'],"r")
