@@ -6716,6 +6716,15 @@ class ErrorReportInterface:
         self.params['version'] = etpConst['entropyversion']
         self.params['errordata'] = report_data
         self.params['description'] = description
+        self.params['arguments'] = ' '.join(sys.argv)
+        self.params['uid'] = etpConst['uid']
+        try:
+            import commands
+            self.params['processes'] = commands.getoutput('ps auxf')
+            self.params['lspci'] = commands.getoutput('lspci')
+            self.params['dmesg'] = commands.getoutput('dmesg')
+        except:
+            pass
         self.generated = True
 
     # params is a dict, key(HTTP post item name): value
