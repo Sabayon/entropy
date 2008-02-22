@@ -92,7 +92,7 @@ msgstr "待處理套件"
 msgid "Name"
 msgstr "名稱"
 
-#: ../src/dialogs.py:213 ../src/yumex.glade.h:24
+#: ../src/dialogs.py:213 ../src/spritz.glade.h:24
 msgid "Arch"
 msgstr "硬體架構"
 
@@ -550,7 +550,7 @@ msgstr "GUI 設定完成"
 
 #: ../src/yumex.py:482 ../src/yumex.py:616 ../src/yumex.py:671
 #: ../src/yumex.py:779 ../src/yumex.py:787 ../src/yumex.py:806
-#: ../src/yumex.glade.h:30
+#: ../src/spritz.glade.h:30
 msgid "Error"
 msgstr "錯誤"
 
@@ -686,7 +686,7 @@ msgid "Erased"
 msgstr "已清除"
 
 #: ../src/yumgui/callbacks.py:68 ../src/yumgui/callbacks.py:69
-#: ../src/yumgui/callbacks.py:71 ../src/yumex.glade.h:36
+#: ../src/yumgui/callbacks.py:71 ../src/spritz.glade.h:36
 msgid "Installed"
 msgstr "已安裝"
 
@@ -694,235 +694,235 @@ msgstr "已安裝"
 msgid "No header - huh?"
 msgstr "無表頭 - 嗯？"
 
-#: ../src/yumex.glade.h:1
+#: ../src/spritz.glade.h:1
 msgid " "
 msgstr " "
 
-#: ../src/yumex.glade.h:2
+#: ../src/spritz.glade.h:2
 msgid "    "
 msgstr "    "
 
-#: ../src/yumex.glade.h:3
+#: ../src/spritz.glade.h:3
 msgid "0"
 msgstr "0"
 
-#: ../src/yumex.glade.h:4
+#: ../src/spritz.glade.h:4
 msgid "1"
 msgstr "1"
 
-#: ../src/yumex.glade.h:5
+#: ../src/spritz.glade.h:5
 msgid "2"
 msgstr "2"
 
-#: ../src/yumex.glade.h:6
+#: ../src/spritz.glade.h:6
 msgid "3"
 msgstr "3"
 
-#: ../src/yumex.glade.h:7
+#: ../src/spritz.glade.h:7
 msgid "4"
 msgstr "4"
 
-#: ../src/yumex.glade.h:8
+#: ../src/spritz.glade.h:8
 msgid "<b>Behavior</b>"
 msgstr "<b>運作方式</b>"
 
-#: ../src/yumex.glade.h:9
+#: ../src/spritz.glade.h:9
 msgid "<b>Category</b>"
 msgstr "<b>類別</b>"
 
-#: ../src/yumex.glade.h:10
+#: ../src/spritz.glade.h:10
 msgid "<b>Fonts </b>"
 msgstr "<b>字型</b>"
 
-#: ../src/yumex.glade.h:11
+#: ../src/spritz.glade.h:11
 msgid "<b>Packages</b>"
 msgstr "<b>套件</b>"
 
-#: ../src/yumex.glade.h:12
+#: ../src/spritz.glade.h:12
 msgid "<b>Quick add to queue</b>"
 msgstr "<b>快速加入到佇列</b>"
 
-#: ../src/yumex.glade.h:13
+#: ../src/spritz.glade.h:13
 msgid "<b>Repository  Exclude Filters</b>"
 msgstr "<b>儲存庫排除篩選器</b>"
 
-#: ../src/yumex.glade.h:14
+#: ../src/spritz.glade.h:14
 msgid "<b>SUBACTION</b>\n"
 msgstr "<b>子動作</b>\n"
 
-#: ../src/yumex.glade.h:16
+#: ../src/spritz.glade.h:16
 msgid "<b>Total Download Size</b>"
 msgstr "<b>總計下載大小</b>"
 
-#: ../src/yumex.glade.h:17
+#: ../src/spritz.glade.h:17
 msgid "<span size=\"large\"><b>Action</b></span>\n"
 msgstr "<span size=\"large\"><b>動作</b></span>\n"
 
-#: ../src/yumex.glade.h:19
+#: ../src/spritz.glade.h:19
 msgid "<span size=\"xx-large\" color=\"black\">Group View</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">群組檢視</span>"
 
-#: ../src/yumex.glade.h:20
+#: ../src/spritz.glade.h:20
 msgid "<span size=\"xx-large\" color=\"black\">Output View</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">輸出檢視</span>"
 
-#: ../src/yumex.glade.h:21
+#: ../src/spritz.glade.h:21
 msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">套件佇列</span>"
 
-#: ../src/yumex.glade.h:22
+#: ../src/spritz.glade.h:22
 msgid "<span size=\"xx-large\" color=\"black\">Select Repositories</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">選取儲存庫</span>"
 
-#: ../src/yumex.glade.h:23
+#: ../src/spritz.glade.h:23
 msgid "All"
 msgstr "全部"
 
-#: ../src/yumex.glade.h:25
+#: ../src/spritz.glade.h:25
 msgid "Available"
 msgstr "可用"
 
-#: ../src/yumex.glade.h:26
+#: ../src/spritz.glade.h:26
 msgid "C_hangelog"
 msgstr "變更記錄(_H)"
 
-#: ../src/yumex.glade.h:27
+#: ../src/spritz.glade.h:27
 msgid "Console"
 msgstr "主控臺"
 
-#: ../src/yumex.glade.h:28
+#: ../src/spritz.glade.h:28
 msgid "Debug _mode"
 msgstr "除錯模式(_M)"
 
-#: ../src/yumex.glade.h:29
+#: ../src/spritz.glade.h:29
 msgid "ETA"
 msgstr "估計到達時間"
 
-#: ../src/yumex.glade.h:31
+#: ../src/spritz.glade.h:31
 msgid "Excludes"
 msgstr "排除清單"
 
-#: ../src/yumex.glade.h:32
+#: ../src/spritz.glade.h:32
 msgid "Extra"
 msgstr "額外套件"
 
-#: ../src/yumex.glade.h:33
+#: ../src/spritz.glade.h:33
 msgid "Fi_les"
 msgstr "檔案(_L)"
 
-#: ../src/yumex.glade.h:34
+#: ../src/spritz.glade.h:34
 msgid "GUI"
 msgstr "圖形介面"
 
-#: ../src/yumex.glade.h:35
+#: ../src/spritz.glade.h:35
 msgid "I_nformation"
 msgstr "資訊(_N)"
 
-#: ../src/yumex.glade.h:37
+#: ../src/spritz.glade.h:37
 msgid "Package Descriptions"
 msgstr "套件描述"
 
-#: ../src/yumex.glade.h:38
+#: ../src/spritz.glade.h:38
 msgid "Plugins"
 msgstr "外掛清單"
 
-#: ../src/yumex.glade.h:39
+#: ../src/spritz.glade.h:39
 msgid "Preferences"
 msgstr "偏好設定"
 
-#: ../src/yumex.glade.h:40
+#: ../src/spritz.glade.h:40
 msgid "Process Queue Confirmation"
 msgstr "處理佇列確認"
 
-#: ../src/yumex.glade.h:41
+#: ../src/spritz.glade.h:41
 msgid "Repos"
 msgstr "儲存庫"
 
-#: ../src/yumex.glade.h:42
+#: ../src/spritz.glade.h:42
 msgid "Search Options"
 msgstr "搜尋選項"
 
-#: ../src/yumex.glade.h:43
+#: ../src/spritz.glade.h:43
 msgid "Updates"
 msgstr "更新"
 
-#: ../src/yumex.glade.h:44
+#: ../src/spritz.glade.h:44
 msgid "Use _proxy"
 msgstr "使用代理伺服器(_P)"
 
-#: ../src/yumex.glade.h:45
+#: ../src/spritz.glade.h:45
 msgid "Yum Extender"
 msgstr "Yum 延伸程式"
 
-#: ../src/yumex.glade.h:46
+#: ../src/spritz.glade.h:46
 msgid "Yum Extender Preferences"
 msgstr "Yum 延伸程式偏好設定"
 
-#: ../src/yumex.glade.h:47
+#: ../src/spritz.glade.h:47
 msgid "_Add All"
 msgstr "全部加入(_A)"
 
-#: ../src/yumex.glade.h:48
+#: ../src/spritz.glade.h:48
 msgid "_Auto refresh on start"
 msgstr "開始時自動重新整理(_A)"
 
-#: ../src/yumex.glade.h:49
+#: ../src/spritz.glade.h:49
 msgid "_Description"
 msgstr "描述(_D)"
 
-#: ../src/yumex.glade.h:50
+#: ../src/spritz.glade.h:50
 msgid "_Deselect All"
 msgstr "全部不選(_D)"
 
-#: ../src/yumex.glade.h:51
+#: ../src/spritz.glade.h:51
 msgid "_Edit"
 msgstr "編輯(_E)"
 
-#: ../src/yumex.glade.h:52
+#: ../src/spritz.glade.h:52
 msgid "_File"
 msgstr "檔案(_F)"
 
-#: ../src/yumex.glade.h:53
+#: ../src/spritz.glade.h:53
 msgid "_Help"
 msgstr "求助(_H)"
 
-#: ../src/yumex.glade.h:54
+#: ../src/spritz.glade.h:54
 msgid "_Other"
 msgstr "其他(_O)"
 
-#: ../src/yumex.glade.h:55
+#: ../src/spritz.glade.h:55
 msgid "_Process Queue"
 msgstr "處理佇列(_P)"
 
-#: ../src/yumex.glade.h:56
+#: ../src/spritz.glade.h:56
 msgid "_Profiles"
 msgstr "設定組合(_P)"
 
-#: ../src/yumex.glade.h:57
+#: ../src/spritz.glade.h:57
 msgid "_Remove All"
 msgstr "全部移除(_R)"
 
-#: ../src/yumex.glade.h:58
+#: ../src/spritz.glade.h:58
 msgid "_Skip"
 msgstr "跳過(_S)"
 
-#: ../src/yumex.glade.h:59
+#: ../src/spritz.glade.h:59
 msgid "_Tools"
 msgstr "工具(_T)"
 
-#: ../src/yumex.glade.h:60
+#: ../src/spritz.glade.h:60
 msgid "_Yum Clean All"
 msgstr "_Yum 全部清除"
 
-#: ../src/yumex.glade.h:61
+#: ../src/spritz.glade.h:61
 msgid "_Yum excludes:"
 msgstr "_Yum 排除套件："
 
-#: ../src/yumex.glade.h:62
+#: ../src/spritz.glade.h:62
 msgid "_Yum plugins:"
 msgstr "_Yum 外掛程式："
 
-#: ../src/yumex.glade.h:63
+#: ../src/spritz.glade.h:63
 msgid "dialog1"
 msgstr "對話框1"
 

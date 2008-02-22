@@ -1,0 +1,1116 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-02-22 20:02+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/callbacks.py:69
+#, python-format
+msgid "Getting : %s"
+msgstr ""
+
+#: ../src/callbacks.py:160
+msgid "Removing"
+msgstr ""
+
+#: ../src/callbacks.py:162
+msgid "Cleanup"
+msgstr ""
+
+#: ../src/callbacks.py:180
+#, python-format
+msgid "Erased: %s"
+msgstr ""
+
+#: ../src/callbacks.py:201
+#, python-format
+msgid "Processing metadata from : %s"
+msgstr ""
+
+#: ../src/callbacks.py:203
+msgid "Processing metadata"
+msgstr ""
+
+#: ../src/callbacks.py:236
+#, python-format
+msgid "---> Package %s.%s %s:%s-%s set to be %s"
+msgstr ""
+
+#: ../src/callbacks.py:243
+msgid "--> Running transaction check"
+msgstr ""
+
+#: ../src/callbacks.py:247
+msgid "--> Restarting Dependency Resolution with new changes."
+msgstr ""
+
+#: ../src/callbacks.py:251
+msgid "--> Finished Dependency Resolution"
+msgstr ""
+
+#: ../src/callbacks.py:255
+#, python-format
+msgid "--> Processing Dependency: %s for package: %s"
+msgstr ""
+
+#: ../src/callbacks.py:260
+#, python-format
+msgid "--> Unresolved Dependency: %s"
+msgstr ""
+
+#: ../src/callbacks.py:264
+#, python-format
+msgid "--> Processing Conflict: %s conflicts %s"
+msgstr ""
+
+#: ../src/callbacks.py:267
+msgid "--> Populating transaction set with selected packages. Please wait."
+msgstr ""
+
+#: ../src/callbacks.py:270
+#, python-format
+msgid "---> Downloading header for %s to pack into transaction set."
+msgstr ""
+
+#: ../src/dialogs.py:55
+msgid "Please confirm the actions above"
+msgstr ""
+
+#: ../src/dialogs.py:89 ../src/dialogs.py:96 ../src/views.py:417
+msgid "Package"
+msgstr ""
+
+#: ../src/dialogs.py:90 ../src/views.py:546 ../src/views.py:879
+#: ../src/spritz.glade.h:69
+msgid "Description"
+msgstr ""
+
+#: ../src/dialogs.py:122
+msgid "To be reinstalled"
+msgstr ""
+
+#: ../src/dialogs.py:127
+msgid "To be installed"
+msgstr ""
+
+#: ../src/dialogs.py:132
+msgid "No description"
+msgstr ""
+
+#: ../src/dialogs.py:135
+msgid "To be updated"
+msgstr ""
+
+#: ../src/dialogs.py:140
+msgid "To be removed"
+msgstr ""
+
+#: ../src/dialogs.py:251
+#, python-format
+msgid "About %s"
+msgstr ""
+
+#: ../src/dialogs.py:344
+msgid "Hey!"
+msgstr ""
+
+#: ../src/dialogs.py:348
+msgid "Spritz Question"
+msgstr ""
+
+#: ../src/dialogs.py:362 ../src/misc.py:189 ../src/misc.py:244
+msgid "Attention"
+msgstr ""
+
+#: ../src/dialogs.py:415
+msgid "License"
+msgstr ""
+
+#. new
+#: ../src/dialogs.py:418
+msgid "Accepted"
+msgstr ""
+
+#: ../src/gui.py:254
+msgid "Show Package Updates"
+msgstr ""
+
+#: ../src/gui.py:255
+msgid "Show available Packages"
+msgstr ""
+
+#: ../src/gui.py:256
+msgid "Show Installed Packages"
+msgstr ""
+
+#. Setup Vertical Toolbar
+#: ../src/gui.py:277 ../src/views.py:541
+msgid "Packages"
+msgstr ""
+
+#: ../src/gui.py:278
+msgid "Package Categories"
+msgstr ""
+
+#: ../src/gui.py:279
+msgid "Package Queue"
+msgstr ""
+
+#: ../src/gui.py:280
+msgid "Repository Selection"
+msgstr ""
+
+#: ../src/gui.py:281
+msgid "Configuration Files"
+msgstr ""
+
+#: ../src/gui.py:282
+msgid "Output"
+msgstr ""
+
+#: ../src/misc.py:88
+msgid "Programming:"
+msgstr ""
+
+#: ../src/misc.py:91
+msgid "Yum Extender Programmers:"
+msgstr ""
+
+#: ../src/misc.py:94
+msgid "Translation:"
+msgstr ""
+
+#: ../src/misc.py:115
+msgid "Dedicated to:"
+msgstr ""
+
+#: ../src/misc.py:190
+msgid ""
+"There are packages that can't be installed at the same time, thus are "
+"blocking your request:"
+msgstr ""
+
+#: ../src/misc.py:245
+msgid ""
+"Some dependencies couldn't be found. It can either be because they are "
+"masked or because they aren't in any active repository."
+msgstr ""
+
+#: ../src/misc.py:288
+msgid "Needed disk space"
+msgstr ""
+
+#: ../src/misc.py:291
+msgid "Freed disk space"
+msgstr ""
+
+#: ../src/misc.py:295
+msgid "These are the packages that would be installed/updated"
+msgstr ""
+
+#: ../src/misc.py:338
+msgid "Freed space"
+msgstr ""
+
+#: ../src/misc.py:341
+msgid "Needed space"
+msgstr ""
+
+#: ../src/misc.py:345
+msgid "These are the packages that would be removed"
+msgstr ""
+
+#: ../src/views.py:44
+msgid "Categories"
+msgstr ""
+
+#: ../src/views.py:418 ../src/views.py:637
+msgid "Rev."
+msgstr ""
+
+#: ../src/views.py:419
+msgid "Slot"
+msgstr ""
+
+#: ../src/views.py:420 ../src/views.py:818
+msgid "Repository"
+msgstr ""
+
+#: ../src/views.py:582
+msgid "<b>Packages To Reinstall</b>"
+msgstr ""
+
+#: ../src/views.py:586
+msgid "<b>Packages To Update</b>"
+msgstr ""
+
+#: ../src/views.py:590
+msgid "<b>Packages To Install</b>"
+msgstr ""
+
+#: ../src/views.py:594
+msgid "<b>Packages To Remove</b>"
+msgstr ""
+
+#: ../src/views.py:623
+msgid "Proposed"
+msgstr ""
+
+#: ../src/views.py:630
+msgid "Destination"
+msgstr ""
+
+#: ../src/views.py:818
+msgid "Filename"
+msgstr ""
+
+#: ../src/views.py:838 ../src/spritz.py:304
+#, python-format
+msgid "You should press the %s button now"
+msgstr ""
+
+#: ../src/views.py:838 ../src/spritz.py:304 ../src/spritz.py:381
+msgid "Regenerate Cache"
+msgstr ""
+
+#: ../src/views.py:857
+msgid "Active"
+msgstr ""
+
+#: ../src/views.py:867 ../src/spritz.glade.h:103
+msgid "Update"
+msgstr ""
+
+#. Setup revision column
+#: ../src/views.py:875
+msgid "Revision"
+msgstr ""
+
+#. Setup reponame & repofile column's
+#: ../src/views.py:878
+msgid "Repository Identifier"
+msgstr ""
+
+#: ../src/spritz.py:82
+msgid "Quiting, please wait !!!!!!"
+msgstr ""
+
+#: ../src/spritz.py:187
+msgid "Branch switching"
+msgstr ""
+
+#: ../src/spritz.py:187
+msgid "Enter a valid branch you want to switch to"
+msgstr ""
+
+#: ../src/spritz.py:190
+msgid "The selected branch is not available."
+msgstr ""
+
+#: ../src/spritz.py:193
+#, python-format
+msgid "New branch is %s. It is suggested to synchronize repositories."
+msgstr ""
+
+#: ../src/spritz.py:236 ../src/spritz.py:258
+msgid "Insert URL"
+msgstr ""
+
+#: ../src/spritz.py:236 ../src/spritz.py:258
+msgid "Enter a download mirror, HTTP or FTP"
+msgstr ""
+
+#: ../src/spritz.py:241
+msgid "You must enter either a HTTP or a FTP url."
+msgstr ""
+
+#: ../src/spritz.py:293 ../src/spritz.py:340
+#, python-format
+msgid "Wrong entries, errors: %s"
+msgstr ""
+
+#: ../src/spritz.py:309
+msgid "No Repository Identifier"
+msgstr ""
+
+#: ../src/spritz.py:312
+msgid "Duplicated Repository Identifier"
+msgstr ""
+
+#: ../src/spritz.py:316
+msgid "No download mirrors"
+msgstr ""
+
+#: ../src/spritz.py:318
+msgid "Database URL must be HTTP or FTP"
+msgstr ""
+
+#: ../src/spritz.py:338
+#, python-format
+msgid "You should now press the %s button now"
+msgstr ""
+
+#: ../src/spritz.py:338 ../src/spritz.py:381
+msgid "Update Repositories"
+msgstr ""
+
+#: ../src/spritz.py:349
+msgid "Insert Repository"
+msgstr ""
+
+#: ../src/spritz.py:349
+msgid "Insert Repository identification string"
+msgstr ""
+
+#: ../src/spritz.py:367
+msgid "This Repository identification string is malformed"
+msgstr ""
+
+#: ../src/spritz.py:377
+msgid "You! Why do you want to remove the main repository ?"
+msgstr ""
+
+#: ../src/spritz.py:381
+#, python-format
+msgid "You must now either press the %s or the %s button"
+msgstr ""
+
+#: ../src/spritz.py:446
+msgid "Please select at least one repository"
+msgstr ""
+
+#. Check there are any packages in the queue
+#: ../src/spritz.py:475
+msgid "No packages in queue"
+msgstr ""
+
+#: ../src/spritz.py:544
+msgid "Queue is too old. Cannot load."
+msgstr ""
+
+#. from installed
+#: ../src/spritz.py:575
+msgid "From your Operating System"
+msgstr ""
+
+#: ../src/spritz.py:807
+msgid "Cleaning up all yum metadata"
+msgstr ""
+
+#. warn the user
+#: ../src/spritz.py:817
+#, python-format
+msgid ""
+"<big><b>Sorry to tell you</b></big>\t\t\n"
+"Another instance of Entropy <b>is running</b>. <u>Close</u> it or <u>remove</"
+"u>: %s"
+msgstr ""
+
+#: ../src/spritz.py:833
+msgid "Entropy Config Setup"
+msgstr ""
+
+#: ../src/spritz.py:844
+msgid "GUI Setup Completed"
+msgstr ""
+
+#: ../src/spritz.py:860
+msgid "License name"
+msgstr ""
+
+#: ../src/spritz.py:868
+msgid "Sources"
+msgstr ""
+
+#: ../src/spritz.py:876
+msgid "Mirrors"
+msgstr ""
+
+#: ../src/spritz.py:884
+msgid "Keywords"
+msgstr ""
+
+#: ../src/spritz.py:892
+msgid "Dependencies"
+msgstr ""
+
+#: ../src/spritz.py:900
+msgid "Depends"
+msgstr ""
+
+#: ../src/spritz.py:908
+msgid "Needed libraries"
+msgstr ""
+
+#: ../src/spritz.py:916
+msgid "Protected item"
+msgstr ""
+
+#: ../src/spritz.py:919 ../src/spritz.py:931
+msgid "Type"
+msgstr ""
+
+#: ../src/spritz.py:927
+msgid "File"
+msgstr ""
+
+#: ../src/spritz.py:991
+msgid "Generating metadata. Please wait."
+msgstr ""
+
+#: ../src/spritz.py:995 ../src/spritz.py:1117
+msgid "Ready"
+msgstr ""
+
+#: ../src/spritz.py:1037
+msgid "Initializing Repository module..."
+msgstr ""
+
+#: ../src/spritz.py:1043
+msgid "You must run this application as root"
+msgstr ""
+
+#: ../src/spritz.py:1046
+#, python-format
+msgid "No repositories specified in %s"
+msgstr ""
+
+#: ../src/spritz.py:1049
+msgid "You are not connected to the Internet. You should."
+msgstr ""
+
+#: ../src/spritz.py:1052
+#, python-format
+msgid "Unhandled exception: %s"
+msgstr ""
+
+#: ../src/spritz.py:1056
+msgid "Errors updating repositories."
+msgstr ""
+
+#: ../src/spritz.py:1057
+msgid "Please check logs below for more info"
+msgstr ""
+
+#: ../src/spritz.py:1060
+msgid "Repositories updated successfully"
+msgstr ""
+
+#: ../src/spritz.py:1063
+msgid "All the repositories were already up to date."
+msgstr ""
+
+#: ../src/spritz.py:1065
+#, python-format
+msgid "%s repositories were already up to date. Others have been updated."
+msgstr ""
+
+#: ../src/spritz.py:1067
+msgid "app-admin/equo needs to be updated as soon as possible."
+msgstr ""
+
+#: ../src/spritz.py:1074
+msgid "Nothing to do. I am idle."
+msgstr ""
+
+#: ../src/spritz.py:1075
+msgid "Really, don't waste your time here. This is just a placeholder"
+msgstr ""
+
+#: ../src/spritz.py:1076
+msgid "I am still alive and kickin'"
+msgstr ""
+
+#. -> Get lists
+#: ../src/spritz.py:1109
+msgid "Generating Metadata, please wait."
+msgstr ""
+
+#: ../src/spritz.py:1110
+msgid "Entropy is indexing the repositories. It will take a few seconds"
+msgstr ""
+
+#: ../src/spritz.py:1111
+msgid "While you are waiting, take a break and look outside. Is it rainy?"
+msgstr ""
+
+#: ../src/spritz.py:1113
+#, python-format
+msgid "Calculating %s"
+msgstr ""
+
+#: ../src/spritz.py:1147
+msgid "Package View Population"
+msgstr ""
+
+#: ../src/spritz.py:1159
+msgid "Package View Population Completed"
+msgstr ""
+
+#: ../src/spritz.py:1165
+msgid "Category View Population"
+msgstr ""
+
+#: ../src/spritz.py:1184
+msgid "Category View Population Completed"
+msgstr ""
+
+#: ../src/spritz.py:1201
+msgid "Running tasks"
+msgstr ""
+
+#: ../src/spritz.py:1208
+msgid "Processing Packages in queue"
+msgstr ""
+
+#: ../src/spritz.py:1218
+msgid ""
+"Attention. An error occured when processing the queue.\n"
+"Please have a look in the processing terminal."
+msgstr ""
+
+#: ../src/spritz.py:1243
+msgid "No packages selected"
+msgstr ""
+
+#: ../src/spritz.py:1327 ../src/spritz.glade.h:71
+msgid "Error"
+msgstr ""
+
+#: ../src/spritz.py:1327
+msgid "Error in Yumex"
+msgstr ""
+
+#: ../src/etpgui/callbacks.py:60
+msgid "Updating"
+msgstr ""
+
+#: ../src/etpgui/callbacks.py:61
+msgid "Erasing"
+msgstr ""
+
+#: ../src/etpgui/callbacks.py:62 ../src/etpgui/callbacks.py:63
+#: ../src/etpgui/callbacks.py:65
+msgid "Installing"
+msgstr ""
+
+#: ../src/etpgui/callbacks.py:64 ../src/etpgui/callbacks.py:70
+msgid "Obsoleted"
+msgstr ""
+
+#: ../src/etpgui/callbacks.py:66
+msgid "Updated"
+msgstr ""
+
+#: ../src/etpgui/callbacks.py:67
+msgid "Erased"
+msgstr ""
+
+#: ../src/etpgui/callbacks.py:68 ../src/etpgui/callbacks.py:69
+#: ../src/etpgui/callbacks.py:71 ../src/spritz.glade.h:76
+msgid "Installed"
+msgstr ""
+
+#: ../src/etpgui/callbacks.py:181
+msgid "No header - huh?"
+msgstr ""
+
+#: ../src/spritz.glade.h:1
+msgid " "
+msgstr ""
+
+#: ../src/spritz.glade.h:2
+msgid "    "
+msgstr ""
+
+#: ../src/spritz.glade.h:3
+msgid "0"
+msgstr ""
+
+#: ../src/spritz.glade.h:4
+msgid "1"
+msgstr ""
+
+#: ../src/spritz.glade.h:5
+msgid "2"
+msgstr ""
+
+#: ../src/spritz.glade.h:6
+msgid "3"
+msgstr ""
+
+#: ../src/spritz.glade.h:7
+msgid "4"
+msgstr ""
+
+#: ../src/spritz.glade.h:8
+msgid "5"
+msgstr ""
+
+#: ../src/spritz.glade.h:9
+msgid ""
+"<b><big>Please wait</big></b>\n"
+"<small>...take a little break !</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:11
+msgid "<b>Branch</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:12
+msgid "<b>CFLAGS</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:13
+msgid "<b>CHOST</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:14
+msgid "<b>CONFIG_PROTECT Stuff</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:15
+msgid "<b>CXXFLAGS</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:16
+msgid "<b>Creation date</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:17
+msgid "<b>Download Path</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:18
+msgid "<b>Eclasses</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:19
+msgid "<b>Entropy API</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:20
+msgid "<b>External Trigger</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:21
+msgid "<b>Install Size</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:22
+msgid "<b>Kernel Tag</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:23
+msgid "<b>Location</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:24
+msgid "<b>MD5 Signature</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:25
+msgid "<b>Masked</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:26
+msgid "<b>Messages</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:27
+msgid "<b>Package Size</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:28
+msgid "<b>Quick add to queue</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:29
+msgid "<b>Repositories options</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:30
+msgid "<b>Requested actions</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:31
+msgid "<b>Revision</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:32
+msgid "<b>SUBACTION</b>\n"
+msgstr ""
+
+#: ../src/spritz.glade.h:34
+msgid "<b>Slot</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:35
+msgid "<b>Total Download Size</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:36
+msgid "<b>USE Flags</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:37
+msgid "<b>Version</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:38
+msgid "<b>Website</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:39
+msgid "<big><b>media-libs/foo-1.2.3</b></big>"
+msgstr ""
+
+#: ../src/spritz.glade.h:40
+msgid "<small>0</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:41
+msgid "<small>1.0MB</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:42
+msgid "<small>1.2.3</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:43
+msgid "<small>123123123123123123123</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:44
+msgid "<small>2</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:45
+msgid "<small>3.5</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:46
+msgid "<small>3.5MB</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:47
+msgid "<small>None</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:48
+msgid "<small>Official Sabayon Linux Repository</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:49
+msgid "<small>This is a description placeholder</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:50
+msgid "<small>Today, yesterday, who knows</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:51
+msgid "<small>http://www.sabayonlinux.org</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:52
+msgid "<small>path/to/download/blah.tbz2</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:53
+msgid "<small>why?</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:54
+msgid "<small>you me they</small>"
+msgstr ""
+
+#: ../src/spritz.glade.h:55
+msgid "<span size=\"large\"><b>Action</b></span>\n"
+msgstr ""
+
+#: ../src/spritz.glade.h:57
+msgid "<span size=\"xx-large\" color=\"black\">Files Update</span>"
+msgstr ""
+
+#: ../src/spritz.glade.h:58
+msgid "<span size=\"xx-large\" color=\"black\">Package Categories</span>"
+msgstr ""
+
+#: ../src/spritz.glade.h:59
+msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
+msgstr ""
+
+#: ../src/spritz.glade.h:60
+msgid "<span size=\"xx-large\" color=\"black\">Repositories</span>"
+msgstr ""
+
+#: ../src/spritz.glade.h:61
+msgid "Add/Edit Repository"
+msgstr ""
+
+#: ../src/spritz.glade.h:62
+msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
+msgstr ""
+
+#: ../src/spritz.glade.h:63
+msgid "Available"
+msgstr ""
+
+#: ../src/spritz.glade.h:64
+msgid "C_hanges"
+msgstr ""
+
+#: ../src/spritz.glade.h:65
+msgid "D_ependencies"
+msgstr ""
+
+#: ../src/spritz.glade.h:66
+msgid "Database URL"
+msgstr ""
+
+#: ../src/spritz.glade.h:67
+msgid "Database compression"
+msgstr ""
+
+#: ../src/spritz.glade.h:68
+msgid "Dele_te all"
+msgstr ""
+
+#: ../src/spritz.glade.h:70
+msgid "Download mirrors"
+msgstr ""
+
+#: ../src/spritz.glade.h:72
+msgid "Extra"
+msgstr ""
+
+#: ../src/spritz.glade.h:73
+msgid "Identifier"
+msgstr ""
+
+#: ../src/spritz.glade.h:74
+msgid "Install"
+msgstr ""
+
+#: ../src/spritz.glade.h:75
+msgid "Install the selected package"
+msgstr ""
+
+#: ../src/spritz.glade.h:77
+msgid "Load content"
+msgstr ""
+
+#: ../src/spritz.glade.h:78
+msgid "M_erge"
+msgstr ""
+
+#: ../src/spritz.glade.h:79
+msgid "Merge all"
+msgstr ""
+
+#: ../src/spritz.glade.h:80
+msgid "Package Info."
+msgstr ""
+
+#: ../src/spritz.glade.h:81
+msgid "Package Information"
+msgstr ""
+
+#: ../src/spritz.glade.h:82
+msgid "Please Confirm"
+msgstr ""
+
+#: ../src/spritz.glade.h:83
+msgid "Purge"
+msgstr ""
+
+#: ../src/spritz.glade.h:84
+msgid "R_egenerate Cache"
+msgstr ""
+
+#: ../src/spritz.glade.h:85
+msgid "Reinstall"
+msgstr ""
+
+#: ../src/spritz.glade.h:86
+msgid "Reinstall the selected package"
+msgstr ""
+
+#: ../src/spritz.glade.h:87
+msgid "Remove"
+msgstr ""
+
+#: ../src/spritz.glade.h:88
+msgid "Remove the selected package"
+msgstr ""
+
+#: ../src/spritz.glade.h:89
+msgid "Remove the selected package and its configuration"
+msgstr ""
+
+#: ../src/spritz.glade.h:90
+msgid "Repository information"
+msgstr ""
+
+#: ../src/spritz.glade.h:91
+msgid "Soon!"
+msgstr ""
+
+#: ../src/spritz.glade.h:92
+msgid "Spritz Package Manager"
+msgstr ""
+
+#: ../src/spritz.glade.h:93
+msgid "Undo Install"
+msgstr ""
+
+#: ../src/spritz.glade.h:94
+msgid "Undo Install action"
+msgstr ""
+
+#: ../src/spritz.glade.h:95
+msgid "Undo Purge"
+msgstr ""
+
+#: ../src/spritz.glade.h:96
+msgid "Undo Purge action"
+msgstr ""
+
+#: ../src/spritz.glade.h:97
+msgid "Undo Reinstall"
+msgstr ""
+
+#: ../src/spritz.glade.h:98
+msgid "Undo Reinstall action"
+msgstr ""
+
+#: ../src/spritz.glade.h:99
+msgid "Undo Remove"
+msgstr ""
+
+#: ../src/spritz.glade.h:100
+msgid "Undo Remove action"
+msgstr ""
+
+#: ../src/spritz.glade.h:101
+msgid "Undo Update"
+msgstr ""
+
+#: ../src/spritz.glade.h:102
+msgid "Undo Update action"
+msgstr ""
+
+#: ../src/spritz.glade.h:104
+msgid "Update the selected package"
+msgstr ""
+
+#: ../src/spritz.glade.h:105
+msgid "Updates"
+msgstr ""
+
+#: ../src/spritz.glade.h:106
+msgid ""
+"You <b>need to accept</b> the licenses below.\n"
+"Please read them carefully and <b>make your choice</b>."
+msgstr ""
+
+#: ../src/spritz.glade.h:108
+msgid "_Accept License"
+msgstr ""
+
+#: ../src/spritz.glade.h:109
+msgid "_Add All"
+msgstr ""
+
+#: ../src/spritz.glade.h:110
+msgid "_Branch ..."
+msgstr ""
+
+#: ../src/spritz.glade.h:111
+msgid "_Details"
+msgstr ""
+
+#: ../src/spritz.glade.h:112
+msgid "_File"
+msgstr ""
+
+#: ../src/spritz.glade.h:113
+msgid "_Force repositories update"
+msgstr ""
+
+#: ../src/spritz.glade.h:114
+msgid "_Help"
+msgstr ""
+
+#: ../src/spritz.glade.h:115
+msgid "_Insert String"
+msgstr ""
+
+#: ../src/spritz.glade.h:116
+msgid "_Other"
+msgstr ""
+
+#: ../src/spritz.glade.h:117
+msgid "_Overview"
+msgstr ""
+
+#: ../src/spritz.glade.h:118
+msgid "_Process Queue"
+msgstr ""
+
+#: ../src/spritz.glade.h:119
+msgid "_Read License"
+msgstr ""
+
+#: ../src/spritz.glade.h:120
+msgid "_References"
+msgstr ""
+
+#: ../src/spritz.glade.h:121
+msgid "_Remove All"
+msgstr ""
+
+#: ../src/spritz.glade.h:122
+msgid "_Skip"
+msgstr ""
+
+#: ../src/spritz.glade.h:123
+msgid "_Update Repositories"
+msgstr ""
+
+#: ../src/spritz.glade.h:124
+msgid "_Your Ego!"
+msgstr ""
+
+#: ../src/spritz.glade.h:125
+msgid "dialog1"
+msgstr ""
+
+#: ../src/spritz.glade.h:126
+msgid "gtk-close"
+msgstr ""
+
+#: ../src/spritz.glade.h:127
+msgid "gtk-ok"
+msgstr ""
+
+#: ../src/spritz.glade.h:128
+msgid "gtk-stop"
+msgstr ""
+
+#: ../src/spritz.glade.h:129
+msgid "please wait"
+msgstr ""

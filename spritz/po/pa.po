@@ -95,7 +95,7 @@ msgstr "ਕਾਰਵਾਈ ਲਈ ਪੈਕੇਜ"
 msgid "Name"
 msgstr "ਨਾਂ"
 
-#: ../src/dialogs.py:213 ../src/yumex.glade.h:24
+#: ../src/dialogs.py:213 ../src/spritz.glade.h:24
 msgid "Arch"
 msgstr "ਢਾਂਚਾ"
 
@@ -553,7 +553,7 @@ msgstr "GUI ਸੈੱਟਅੱਟ ਮੁਕੰਮਲ ਹੋਇਆ"
 
 #: ../src/yumex.py:482 ../src/yumex.py:616 ../src/yumex.py:671
 #: ../src/yumex.py:779 ../src/yumex.py:787 ../src/yumex.py:806
-#: ../src/yumex.glade.h:30
+#: ../src/spritz.glade.h:30
 msgid "Error"
 msgstr "ਗਲਤੀ"
 
@@ -689,7 +689,7 @@ msgid "Erased"
 msgstr "ਸਾਫ਼ ਕੀਤੇ"
 
 #: ../src/yumgui/callbacks.py:68 ../src/yumgui/callbacks.py:69
-#: ../src/yumgui/callbacks.py:71 ../src/yumex.glade.h:36
+#: ../src/yumgui/callbacks.py:71 ../src/spritz.glade.h:36
 msgid "Installed"
 msgstr "ਇੰਸਟਾਲ ਹੋਏ"
 
@@ -697,235 +697,235 @@ msgstr "ਇੰਸਟਾਲ ਹੋਏ"
 msgid "No header - huh?"
 msgstr "ਸਿਰਲੇਖ ਨਹੀਂ - ਕੀ?"
 
-#: ../src/yumex.glade.h:1
+#: ../src/spritz.glade.h:1
 msgid " "
 msgstr " "
 
-#: ../src/yumex.glade.h:2
+#: ../src/spritz.glade.h:2
 msgid "    "
 msgstr "    "
 
-#: ../src/yumex.glade.h:3
+#: ../src/spritz.glade.h:3
 msgid "0"
 msgstr "0"
 
-#: ../src/yumex.glade.h:4
+#: ../src/spritz.glade.h:4
 msgid "1"
 msgstr "1"
 
-#: ../src/yumex.glade.h:5
+#: ../src/spritz.glade.h:5
 msgid "2"
 msgstr "2"
 
-#: ../src/yumex.glade.h:6
+#: ../src/spritz.glade.h:6
 msgid "3"
 msgstr "3"
 
-#: ../src/yumex.glade.h:7
+#: ../src/spritz.glade.h:7
 msgid "4"
 msgstr "4"
 
-#: ../src/yumex.glade.h:8
+#: ../src/spritz.glade.h:8
 msgid "<b>Behavior</b>"
 msgstr "<b>ਰਵੱਈਆ</b>"
 
-#: ../src/yumex.glade.h:9
+#: ../src/spritz.glade.h:9
 msgid "<b>Category</b>"
 msgstr "<b>ਵਰਗ</b>"
 
-#: ../src/yumex.glade.h:10
+#: ../src/spritz.glade.h:10
 msgid "<b>Fonts </b>"
 msgstr "<b>ਫੋਂਟ</b>"
 
-#: ../src/yumex.glade.h:11
+#: ../src/spritz.glade.h:11
 msgid "<b>Packages</b>"
 msgstr "<b>ਪੈਕੇਜ</b>"
 
-#: ../src/yumex.glade.h:12
+#: ../src/spritz.glade.h:12
 msgid "<b>Quick add to queue</b>"
 msgstr "<b>ਕਤਾਰ 'ਚ ਤੁਰੰਤ ਸ਼ਾਮਿਲ</b>"
 
-#: ../src/yumex.glade.h:13
+#: ../src/spritz.glade.h:13
 msgid "<b>Repository  Exclude Filters</b>"
 msgstr "<b>ਰਿਪੋਜ਼ਟਰੀ ਛੱਡਣ ਫਿਲਟਰ</b>"
 
-#: ../src/yumex.glade.h:14
+#: ../src/spritz.glade.h:14
 msgid "<b>SUBACTION</b>\n"
 msgstr "<b>ਘਟਾਓ</b>\n"
 
-#: ../src/yumex.glade.h:16
+#: ../src/spritz.glade.h:16
 msgid "<b>Total Download Size</b>"
 msgstr "<b>ਕੁੱਲ ਡਾਊਨਲੋਡ ਅਕਾਰ</b>"
 
-#: ../src/yumex.glade.h:17
+#: ../src/spritz.glade.h:17
 msgid "<span size=\"large\"><b>Action</b></span>\n"
 msgstr "<span size=\"large\"><b>ਕਾਰਵਾਈ</b></span>\n"
 
-#: ../src/yumex.glade.h:19
+#: ../src/spritz.glade.h:19
 msgid "<span size=\"xx-large\" color=\"black\">Group View</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">ਗਰੁੱਪ ਝਲਕ</span>"
 
-#: ../src/yumex.glade.h:20
+#: ../src/spritz.glade.h:20
 msgid "<span size=\"xx-large\" color=\"black\">Output View</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">ਆਉਟਪੁੱਟ ਝਲਕ</span>"
 
-#: ../src/yumex.glade.h:21
+#: ../src/spritz.glade.h:21
 msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">ਪੈਕੇਜ ਕਤਾਰ</span>"
 
-#: ../src/yumex.glade.h:22
+#: ../src/spritz.glade.h:22
 msgid "<span size=\"xx-large\" color=\"black\">Select Repositories</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">ਰਿਪੋਜ਼ਟਰੀ ਚੁਣੋ</span>"
 
-#: ../src/yumex.glade.h:23
+#: ../src/spritz.glade.h:23
 msgid "All"
 msgstr "ਸਭ"
 
-#: ../src/yumex.glade.h:25
+#: ../src/spritz.glade.h:25
 msgid "Available"
 msgstr "ਉਪਲੱਬਧ"
 
-#: ../src/yumex.glade.h:26
+#: ../src/spritz.glade.h:26
 msgid "C_hangelog"
 msgstr "ਚੇਜ਼ ਲਾਗ(_h)"
 
-#: ../src/yumex.glade.h:27
+#: ../src/spritz.glade.h:27
 msgid "Console"
 msgstr "ਕੰਨਸੋਲ"
 
-#: ../src/yumex.glade.h:28
+#: ../src/spritz.glade.h:28
 msgid "Debug _mode"
 msgstr "ਡੀਬੱਗ ਢੰਗ(_M)"
 
-#: ../src/yumex.glade.h:29
+#: ../src/spritz.glade.h:29
 msgid "ETA"
 msgstr "ETA"
 
-#: ../src/yumex.glade.h:31
+#: ../src/spritz.glade.h:31
 msgid "Excludes"
 msgstr "ਨਾ-ਸ਼ਾਮਿਲ"
 
-#: ../src/yumex.glade.h:32
+#: ../src/spritz.glade.h:32
 msgid "Extra"
 msgstr "ਵਾਧੂ (Extra)"
 
-#: ../src/yumex.glade.h:33
+#: ../src/spritz.glade.h:33
 msgid "Fi_les"
 msgstr "ਫਾਇਲਾਂ(_l)"
 
-#: ../src/yumex.glade.h:34
+#: ../src/spritz.glade.h:34
 msgid "GUI"
 msgstr "GUI"
 
-#: ../src/yumex.glade.h:35
+#: ../src/spritz.glade.h:35
 msgid "I_nformation"
 msgstr "ਜਾਣਕਾਰੀ(_i)"
 
-#: ../src/yumex.glade.h:37
+#: ../src/spritz.glade.h:37
 msgid "Package Descriptions"
 msgstr "ਪੈਕੇਜ ਵੇਰਵਾ"
 
-#: ../src/yumex.glade.h:38
+#: ../src/spritz.glade.h:38
 msgid "Plugins"
 msgstr "ਪਲੱਗਇਨ"
 
-#: ../src/yumex.glade.h:39
+#: ../src/spritz.glade.h:39
 msgid "Preferences"
 msgstr "ਮੇਰੀ ਪਸੰਦ"
 
-#: ../src/yumex.glade.h:40
+#: ../src/spritz.glade.h:40
 msgid "Process Queue Confirmation"
 msgstr "ਕਤਾਰ ਕਾਰਵਾਈ ਪੁਸ਼ਟੀ"
 
-#: ../src/yumex.glade.h:41
+#: ../src/spritz.glade.h:41
 msgid "Repos"
 msgstr "ਰਿਪੋ"
 
-#: ../src/yumex.glade.h:42
+#: ../src/spritz.glade.h:42
 msgid "Search Options"
 msgstr "ਖੋਜ ਚੋਣਾਂ"
 
-#: ../src/yumex.glade.h:43
+#: ../src/spritz.glade.h:43
 msgid "Updates"
 msgstr "ਅੱਪਡੇਟ"
 
-#: ../src/yumex.glade.h:44
+#: ../src/spritz.glade.h:44
 msgid "Use _proxy"
 msgstr "ਪਰਾਕਸੀ ਵਰਤੋਂ(_P)"
 
-#: ../src/yumex.glade.h:45
+#: ../src/spritz.glade.h:45
 msgid "Yum Extender"
 msgstr "ਯੱਮ ਐਕਸਟੈਂਡਰ"
 
-#: ../src/yumex.glade.h:46
+#: ../src/spritz.glade.h:46
 msgid "Yum Extender Preferences"
 msgstr "ਯੱਮ ਐਕਸਟੈਂਡਰ ਪਸੰਦ"
 
-#: ../src/yumex.glade.h:47
+#: ../src/spritz.glade.h:47
 msgid "_Add All"
 msgstr "ਸਭ ਸ਼ਾਮਿਲ(_A)"
 
-#: ../src/yumex.glade.h:48
+#: ../src/spritz.glade.h:48
 msgid "_Auto refresh on start"
 msgstr "ਸ਼ੁਰੂ ਸਮੇਂ ਆਟੋ ਤਾਜ਼ਾ(_A)"
 
-#: ../src/yumex.glade.h:49
+#: ../src/spritz.glade.h:49
 msgid "_Description"
 msgstr "ਵੇਰਵਾ(_D)"
 
-#: ../src/yumex.glade.h:50
+#: ../src/spritz.glade.h:50
 msgid "_Deselect All"
 msgstr "ਸਭ ਅਣ-ਚੁਣੇ(_D)"
 
-#: ../src/yumex.glade.h:51
+#: ../src/spritz.glade.h:51
 msgid "_Edit"
 msgstr "ਸੋਧ(_E)"
 
-#: ../src/yumex.glade.h:52
+#: ../src/spritz.glade.h:52
 msgid "_File"
 msgstr "ਫਾਇਲ(_F)"
 
-#: ../src/yumex.glade.h:53
+#: ../src/spritz.glade.h:53
 msgid "_Help"
 msgstr "ਸਹਾਇਤਾ(_H)"
 
-#: ../src/yumex.glade.h:54
+#: ../src/spritz.glade.h:54
 msgid "_Other"
 msgstr "ਹੋਰ(_O)"
 
-#: ../src/yumex.glade.h:55
+#: ../src/spritz.glade.h:55
 msgid "_Process Queue"
 msgstr "ਕਤਾਰ 'ਤੇ ਕਾਰਵਾਈ(_P)"
 
-#: ../src/yumex.glade.h:56
+#: ../src/spritz.glade.h:56
 msgid "_Profiles"
 msgstr "ਪ੍ਰੋਫਾਇਲ(_P)"
 
-#: ../src/yumex.glade.h:57
+#: ../src/spritz.glade.h:57
 msgid "_Remove All"
 msgstr "ਸਭ ਹਟਾਓ(_R)"
 
-#: ../src/yumex.glade.h:58
+#: ../src/spritz.glade.h:58
 msgid "_Skip"
 msgstr "ਵਿੱਚੇ ਛੱਡੋ(_S)"
 
-#: ../src/yumex.glade.h:59
+#: ../src/spritz.glade.h:59
 msgid "_Tools"
 msgstr "ਸੰਦ(_T)"
 
-#: ../src/yumex.glade.h:60
+#: ../src/spritz.glade.h:60
 msgid "_Yum Clean All"
 msgstr "ਯੱਮ ਸਭ ਸਾਫ਼ ਕਰੋ(_Y)"
 
-#: ../src/yumex.glade.h:61
+#: ../src/spritz.glade.h:61
 msgid "_Yum excludes:"
 msgstr "ਯੱਮ ਨਾ-ਸ਼ਾਮਿਲ(_Y):"
 
-#: ../src/yumex.glade.h:62
+#: ../src/spritz.glade.h:62
 msgid "_Yum plugins:"
 msgstr "ਯੱਮ ਪਲੱਗਇਨ(_Y):"
 
-#: ../src/yumex.glade.h:63
+#: ../src/spritz.glade.h:63
 msgid "dialog1"
 msgstr "dialog1"
 

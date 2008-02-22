@@ -92,7 +92,7 @@ msgstr "Обробка пакетів"
 msgid "Name"
 msgstr "Назва"
 
-#: ../src/dialogs.py:213 ../src/yumex.glade.h:24
+#: ../src/dialogs.py:213 ../src/spritz.glade.h:24
 msgid "Arch"
 msgstr "Архітектура"
 
@@ -573,7 +573,7 @@ msgstr ""
 
 #: ../src/yumex.py:482 ../src/yumex.py:616 ../src/yumex.py:671
 #: ../src/yumex.py:779 ../src/yumex.py:787 ../src/yumex.py:806
-#: ../src/yumex.glade.h:30
+#: ../src/spritz.glade.h:30
 msgid "Error"
 msgstr "Помилка"
 
@@ -721,7 +721,7 @@ msgid "Erased"
 msgstr "Видалено"
 
 #: ../src/yumgui/callbacks.py:68 ../src/yumgui/callbacks.py:69
-#: ../src/yumgui/callbacks.py:71 ../src/yumex.glade.h:36
+#: ../src/yumgui/callbacks.py:71 ../src/spritz.glade.h:36
 msgid "Installed"
 msgstr "Встановлено"
 
@@ -729,242 +729,242 @@ msgstr "Встановлено"
 msgid "No header - huh?"
 msgstr "Відсутній заголовок - як це?"
 
-#: ../src/yumex.glade.h:1
+#: ../src/spritz.glade.h:1
 msgid " "
 msgstr " "
 
-#: ../src/yumex.glade.h:2
+#: ../src/spritz.glade.h:2
 msgid "    "
 msgstr "    "
 
-#: ../src/yumex.glade.h:3
+#: ../src/spritz.glade.h:3
 msgid "0"
 msgstr "0"
 
-#: ../src/yumex.glade.h:4
+#: ../src/spritz.glade.h:4
 msgid "1"
 msgstr "1"
 
-#: ../src/yumex.glade.h:5
+#: ../src/spritz.glade.h:5
 msgid "2"
 msgstr "2"
 
-#: ../src/yumex.glade.h:6
+#: ../src/spritz.glade.h:6
 msgid "3"
 msgstr "3"
 
-#: ../src/yumex.glade.h:7
+#: ../src/spritz.glade.h:7
 msgid "4"
 msgstr "4"
 
-#: ../src/yumex.glade.h:8
+#: ../src/spritz.glade.h:8
 msgid "<b>Behavior</b>"
 msgstr "<b>Поведінка</b>"
 
-#: ../src/yumex.glade.h:9
+#: ../src/spritz.glade.h:9
 #, fuzzy
 msgid "<b>Category</b>"
 msgstr "<b>Ознаки</b>"
 
-#: ../src/yumex.glade.h:10
+#: ../src/spritz.glade.h:10
 msgid "<b>Fonts </b>"
 msgstr "<b>Шрифти</b>"
 
-#: ../src/yumex.glade.h:11
+#: ../src/spritz.glade.h:11
 #, fuzzy
 msgid "<b>Packages</b>"
 msgstr "<b>Пакети для оновлення</b>"
 
-#: ../src/yumex.glade.h:12
+#: ../src/spritz.glade.h:12
 #, fuzzy
 msgid "<b>Quick add to queue</b>"
 msgstr "до черги додано %i пакетів"
 
-#: ../src/yumex.glade.h:13
+#: ../src/spritz.glade.h:13
 msgid "<b>Repository  Exclude Filters</b>"
 msgstr ""
 
-#: ../src/yumex.glade.h:14
+#: ../src/spritz.glade.h:14
 msgid "<b>SUBACTION</b>\n"
 msgstr "<b>ПІДДІЯ</b>\n"
 
-#: ../src/yumex.glade.h:16
+#: ../src/spritz.glade.h:16
 msgid "<b>Total Download Size</b>"
 msgstr "<b>Загальний обсяг завантаження</b>"
 
-#: ../src/yumex.glade.h:17
+#: ../src/spritz.glade.h:17
 msgid "<span size=\"large\"><b>Action</b></span>\n"
 msgstr "<span size=\"large\"><b>Дія</b></span>\n"
 
-#: ../src/yumex.glade.h:19
+#: ../src/spritz.glade.h:19
 msgid "<span size=\"xx-large\" color=\"black\">Group View</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">Перегляд груп</span>"
 
-#: ../src/yumex.glade.h:20
+#: ../src/spritz.glade.h:20
 msgid "<span size=\"xx-large\" color=\"black\">Output View</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">Перегляд виводу</span>"
 
-#: ../src/yumex.glade.h:21
+#: ../src/spritz.glade.h:21
 msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">Черга пакетів</span>"
 
-#: ../src/yumex.glade.h:22
+#: ../src/spritz.glade.h:22
 msgid "<span size=\"xx-large\" color=\"black\">Select Repositories</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">Вибір репозиторіїв</span>"
 
-#: ../src/yumex.glade.h:23
+#: ../src/spritz.glade.h:23
 msgid "All"
 msgstr ""
 
-#: ../src/yumex.glade.h:25
+#: ../src/spritz.glade.h:25
 msgid "Available"
 msgstr ""
 
-#: ../src/yumex.glade.h:26
+#: ../src/spritz.glade.h:26
 msgid "C_hangelog"
 msgstr "Історія _змін"
 
-#: ../src/yumex.glade.h:27
+#: ../src/spritz.glade.h:27
 msgid "Console"
 msgstr "Консоль"
 
-#: ../src/yumex.glade.h:28
+#: ../src/spritz.glade.h:28
 msgid "Debug _mode"
 msgstr "Режим _налагодження"
 
-#: ../src/yumex.glade.h:29
+#: ../src/spritz.glade.h:29
 msgid "ETA"
 msgstr "Очікуваний час"
 
-#: ../src/yumex.glade.h:31
+#: ../src/spritz.glade.h:31
 msgid "Excludes"
 msgstr "Винятки"
 
-#: ../src/yumex.glade.h:32
+#: ../src/spritz.glade.h:32
 msgid "Extra"
 msgstr "Додатково"
 
-#: ../src/yumex.glade.h:33
+#: ../src/spritz.glade.h:33
 msgid "Fi_les"
 msgstr "Фа_йли"
 
-#: ../src/yumex.glade.h:34
+#: ../src/spritz.glade.h:34
 msgid "GUI"
 msgstr "Графічний інтерфейс"
 
-#: ../src/yumex.glade.h:35
+#: ../src/spritz.glade.h:35
 msgid "I_nformation"
 msgstr "Інфо_рмація"
 
-#: ../src/yumex.glade.h:37
+#: ../src/spritz.glade.h:37
 msgid "Package Descriptions"
 msgstr "Опис пакету"
 
-#: ../src/yumex.glade.h:38
+#: ../src/spritz.glade.h:38
 msgid "Plugins"
 msgstr "Модулі"
 
-#: ../src/yumex.glade.h:39
+#: ../src/spritz.glade.h:39
 msgid "Preferences"
 msgstr "Параметри"
 
-#: ../src/yumex.glade.h:40
+#: ../src/spritz.glade.h:40
 msgid "Process Queue Confirmation"
 msgstr "Підтвердження обробки черги"
 
-#: ../src/yumex.glade.h:41
+#: ../src/spritz.glade.h:41
 #, fuzzy
 msgid "Repos"
 msgstr "Р_епозиторії"
 
-#: ../src/yumex.glade.h:42
+#: ../src/spritz.glade.h:42
 msgid "Search Options"
 msgstr ""
 
-#: ../src/yumex.glade.h:43
+#: ../src/spritz.glade.h:43
 #, fuzzy
 msgid "Updates"
 msgstr "Оновити"
 
-#: ../src/yumex.glade.h:44
+#: ../src/spritz.glade.h:44
 msgid "Use _proxy"
 msgstr "Використовувати п_роксі"
 
-#: ../src/yumex.glade.h:45
+#: ../src/spritz.glade.h:45
 #, fuzzy
 msgid "Yum Extender"
 msgstr "Про програму: Yum Extender"
 
-#: ../src/yumex.glade.h:46
+#: ../src/spritz.glade.h:46
 msgid "Yum Extender Preferences"
 msgstr "Параметри Yum Extender"
 
-#: ../src/yumex.glade.h:47
+#: ../src/spritz.glade.h:47
 msgid "_Add All"
 msgstr ""
 
-#: ../src/yumex.glade.h:48
+#: ../src/spritz.glade.h:48
 msgid "_Auto refresh on start"
 msgstr "_Автоматично оновлювати на старті"
 
-#: ../src/yumex.glade.h:49
+#: ../src/spritz.glade.h:49
 msgid "_Description"
 msgstr "Оп_ис"
 
-#: ../src/yumex.glade.h:50
+#: ../src/spritz.glade.h:50
 msgid "_Deselect All"
 msgstr "Зн_яти виділення"
 
-#: ../src/yumex.glade.h:51
+#: ../src/spritz.glade.h:51
 msgid "_Edit"
 msgstr "_Правка"
 
-#: ../src/yumex.glade.h:52
+#: ../src/spritz.glade.h:52
 msgid "_File"
 msgstr "_Файл"
 
-#: ../src/yumex.glade.h:53
+#: ../src/spritz.glade.h:53
 msgid "_Help"
 msgstr "_Довідка"
 
-#: ../src/yumex.glade.h:54
+#: ../src/spritz.glade.h:54
 msgid "_Other"
 msgstr "Ін_ші"
 
-#: ../src/yumex.glade.h:55
+#: ../src/spritz.glade.h:55
 msgid "_Process Queue"
 msgstr "_Обробити чергу"
 
-#: ../src/yumex.glade.h:56
+#: ../src/spritz.glade.h:56
 msgid "_Profiles"
 msgstr "Профі_лі"
 
-#: ../src/yumex.glade.h:57
+#: ../src/spritz.glade.h:57
 #, fuzzy
 msgid "_Remove All"
 msgstr "В_идалити"
 
-#: ../src/yumex.glade.h:58
+#: ../src/spritz.glade.h:58
 msgid "_Skip"
 msgstr ""
 
-#: ../src/yumex.glade.h:59
+#: ../src/spritz.glade.h:59
 msgid "_Tools"
 msgstr "Панел_ь інструментів"
 
-#: ../src/yumex.glade.h:60
+#: ../src/spritz.glade.h:60
 msgid "_Yum Clean All"
 msgstr ""
 
-#: ../src/yumex.glade.h:61
+#: ../src/spritz.glade.h:61
 msgid "_Yum excludes:"
 msgstr "_Винятки Yum:"
 
-#: ../src/yumex.glade.h:62
+#: ../src/spritz.glade.h:62
 msgid "_Yum plugins:"
 msgstr "_Модулі Yum:"
 
-#: ../src/yumex.glade.h:63
+#: ../src/spritz.glade.h:63
 msgid "dialog1"
 msgstr "dialog1"
 

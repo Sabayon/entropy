@@ -7,12 +7,12 @@ top_srcdir = "."
 
 MSGMERGE = intltool-update -x --gettext-package=$(NLSPACKAGE) --dist
 
-NLSPACKAGE = yumex
+NLSPACKAGE = spritz
 
 CATALOGS = $(shell ls *.po)
 FMTCATALOGS = $(patsubst %.po,%.mo,$(CATALOGS))
 
-PYFILES  = $(wildcard ../src/*.py) $(wildcard ../src/yumex/*.py) $(wildcard ../src/yumgui/*.py)
+PYFILES  = $(wildcard ../src/*.py) $(wildcard ../src/spritz/*.py) $(wildcard ../src/etpgui/*.py)
 GLADEFILES = $(wildcard ../src/*.glade)
 POTFILES  = $(PYFILES) $(GLADEFILES)
 

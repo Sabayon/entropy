@@ -6,10 +6,10 @@ src/i18n.py
 src/misc.py
 src/packages.py
 src/views.py
-src/yumapi.py
-src/yumex.py
-src/yumgui/callbacks.py
-src/yumgui/__init__.py
-src/yumgui/packages.py
-src/yumgui/widgets.py
-src/yumex.glade
+src/entropyapi.py
+src/spritz.py
+src/etpgui/callbacks.py
+src/etpgui/__init__.py
+src/etpgui/packages.py
+src/etpgui/widgets.py
+src/spritz.glade
