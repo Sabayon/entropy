@@ -2569,14 +2569,17 @@ class etpDatabase:
         self.storeInfoCache(idpackage,'retrieveCompileFlags',flags)
         return flags
 
-    def retrieveDepends(self, idpackage):
+    def retrieveDepends(self, idpackage, atoms = False):
 
         # sanity check on the table
         sanity = self.isDependsTableSane()
         if not sanity: # is empty, need generation
             self.regenerateDependsTable(output = False)
 
-        self.cursor.execute('SELECT dependencies.idpackage FROM dependstable,dependencies WHERE dependstable.idpackage = (?) and dependstable.iddependency = dependencies.iddependency', (idpackage,))
+        if atoms:
+            self.cursor.execute('SELECT baseinfo.atom FROM dependstable,dependencies,baseinfo WHERE dependstable.idpackage = (?) and dependstable.iddependency = dependencies.iddependency and baseinfo.idpackage = dependencies.idpackage', (idpackage,))
+        else:
+            self.cursor.execute('SELECT dependencies.idpackage FROM dependstable,dependencies WHERE dependstable.idpackage = (?) and dependstable.iddependency = dependencies.iddependency', (idpackage,))
         result = self.fetchall2set(self.cursor.fetchall())
 
         return result

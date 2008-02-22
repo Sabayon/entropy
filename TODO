@@ -13,10 +13,10 @@ TODO list:
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - remove package info widgets and write from scratch (*)
     - add masking menu
     - use availability bool to show masked packages and connect the masking menu
-    - Popularity feature
+    - Popularity feature / Your Ego service
+    - Category <-> Image dictionary (for the properties menu)
     - GLSA interface
     - Skip Mirror buttons
 

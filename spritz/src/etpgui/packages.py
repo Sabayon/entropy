@@ -120,6 +120,18 @@ class PackageWrapper:
     def getSlot(self):
         return self.dbconn.retrieveSlot(self.matched_atom[0])
 
+    def getDependencies(self):
+        return self.dbconn.retrieveDependencies(self.matched_atom[0])
+
+    def getDependsFmt(self):
+        return self.dbconn.retrieveDepends(self.matched_atom[0], atoms = True)
+
+    def getConflicts(self):
+        return self.dbconn.retrieveConflicts(self.matched_atom[0])
+
+    def getLicense(self):
+        return self.dbconn.retrieveLicense(self.matched_atom[0])
+
     def getDigest(self):
         return self.dbconn.retrieveDigest(self.matched_atom[0])
 
@@ -129,8 +141,38 @@ class PackageWrapper:
     def getApi(self):
         return self.dbconn.retrieveApi(self.matched_atom[0])
 
+    def getUseflags(self):
+        return self.dbconn.retrieveUseflags(self.matched_atom[0])
+
+    def getTrigger(self):
+        return self.dbconn.retrieveTrigger(self.matched_atom[0])
+
+    def getConfigProtect(self):
+        return self.dbconn.retrieveProtect(self.matched_atom[0])
+
+    def getConfigProtectMask(self):
+        return self.dbconn.retrieveProtectMask(self.matched_atom[0])
+
+    def getKeywords(self):
+        return self.dbconn.retrieveKeywords(self.matched_atom[0])
+
+    def getNeeded(self):
+        return self.dbconn.retrieveNeeded(self.matched_atom[0])
+
+    def getCompileFlags(self):
+        return self.dbconn.retrieveCompileFlags(self.matched_atom[0])
+
+    def getSources(self):
+        return self.dbconn.retrieveSources(self.matched_atom[0])
+
+    def getEclasses(self):
+        return self.dbconn.retrieveEclasses(self.matched_atom[0])
+
     def getHomepage(self):
         return self.dbconn.retrieveHomepage(self.matched_atom[0])
+
+    def getMessages(self):
+        return self.dbconn.retrieveMessages(self.matched_atom[0])
 
     def getKeySlot(self):
         return self.dbconn.retrieveKeySlot(self.matched_atom[0])
@@ -203,6 +245,12 @@ class PackageWrapper:
         c.sort()
         return c
 
+    def get_filelist_ext( self ):
+        c = self.dbconn.retrieveContent(self.matched_atom[0], extended = True)
+        data = list(c)
+        data.sort()
+        return data
+
     def get_fullname( self ):
         return self.dbconn.retrieveAtom(self.matched_atom[0])
 
@@ -220,8 +268,24 @@ class PackageWrapper:
     version = property(fget=getVer)
     release = property(fget=getRel)
     slot = property(fget=getSlot)
+    keywords = property(fget=getKeywords)
+    useflags = property(fget=getUseflags)
     homepage = property(fget=getHomepage)
+    messages = property(fget=getMessages)
+    protect = property(fget=getConfigProtect)
+    protect_mask = property(fget=getConfigProtectMask)
+    trigger = property(fget=getTrigger)
+    compileflags = property(fget=getCompileFlags)
+    dependencies = property(fget=getDependencies)
+    needed = property(fget=getNeeded)
+    conflicts = property(fget=getConflicts)
+    dependsFmt = property(fget=getDependsFmt)
     api = property(fget=getApi)
+    content = property(fget=get_filelist)
+    contentExt = property(fget=get_filelist_ext)
+    eclasses = property(fget=getEclasses)
+    lic = property(fget=getLicense)
+    sources = property(fget=getSources)
     keyslot = property(fget=getKeySlot)
     description =  property(fget=getDescription)
     size =  property(fget=getDownSize)
