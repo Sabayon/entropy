@@ -338,7 +338,7 @@ class EquoInterface(TextInterface):
     def clear_dump_cache(self, dump_name, skip = []):
         dump_path = os.path.join(etpConst['dumpstoragedir'],dump_name)
         dump_dir = os.path.dirname(dump_path)
-        dump_file = os.path.basename(dump_path)
+        #dump_file = os.path.basename(dump_path)
         for currentdir, subdirs, files in os.walk(dump_dir):
             path = os.path.join(dump_dir,currentdir)
             if skip:
@@ -1699,7 +1699,7 @@ class EquoInterface(TextInterface):
                 # Alice! use the key! ... and the slot
                 matchresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchSlot = myscopedata[4], matchBranches = (branch,))
                 if matchresults[0] != -1:
-                    mdbconn = self.openRepositoryDatabase(matchresults[1])
+                    #mdbconn = self.openRepositoryDatabase(matchresults[1])
                     update.add(matchresults)
                 else:
                     # don't take action if it's just masked
@@ -2815,7 +2815,7 @@ class PackageInterface:
                 fromfile = currentdir+"/"+item
                 tofile = etpConst['systemroot']+fromfile[len(imageDir):]
                 fromfile_encoded = fromfile
-                tofile_encoded = tofile
+                #tofile_encoded = tofile
                 # redecode to bytestring
 
                 # XXX Python 2.4 bug workaround
@@ -6719,7 +6719,6 @@ class ErrorReportInterface:
         self.params['arguments'] = ' '.join(sys.argv)
         self.params['uid'] = etpConst['uid']
         try:
-            import commands
             self.params['processes'] = commands.getoutput('ps auxf')
             self.params['lspci'] = commands.getoutput('lspci')
             self.params['dmesg'] = commands.getoutput('dmesg')
