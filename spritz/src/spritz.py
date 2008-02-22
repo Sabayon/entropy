@@ -593,40 +593,6 @@ class SpritzController(Controller):
         self.pkginfo_ui.instsize.set_markup( "<small>%s</small>" % (pkg.disksizeFmt,) )
         self.pkginfo_ui.creationdate.set_markup( "<small>%s</small>" % (pkg.epochFmt,) )
 
-        '''
-
-        self.pkginfo_ui.arevision.set_markup( "<small>%s: %s</small>" % (_("Revision"),pkg.revision,) )
-        if repo != 0:
-            # search if it's installed
-            key, slot = pkg.keyslot
-            result = self.Equo.clientDbconn.searchKeySlot(key, slot)
-            if result:
-                idpackage = result[0][0]
-                version = self.Equo.clientDbconn.retrieveVersion(idpackage)
-                revision = self.Equo.clientDbconn.retrieveRevision(idpackage)
-                tag = self.Equo.clientDbconn.retrieveVersionTag(idpackage)
-            else:
-                version = _("Not installed")
-                revision = version
-                tag = version
-
-            self.pkginfo_ui.iversion.set_markup( "<small>%s: %s</small>" % (_("Version"),version,) )
-            if not tag: tag = "None"
-            self.pkginfo_ui.itag.set_markup( "<small>%s: %s</small>" % (_("Tag"),tag,) )
-            self.pkginfo_ui.irevision.set_markup( "<small>%s: %s</small>" % (_("Revision"),revision,) )
-
-            self.pkginfo_ui.vboxinstalled.show()
-        else:
-            self.pkginfo_ui.vboxinstalled.hide()
-
-        # slot, size
-        self.pkginfo_ui.slot.set_markup("<small>%s</small>" % (pkg.slot,))
-        self.pkginfo_ui.size.set_markup("<small>%s</small>" % (pkg.intelligentsizeFmt,))
-        # download, checksum
-        self.pkginfo_ui.download.set_markup("<small>%s</small>" % (pkg.binurl,))
-        self.pkginfo_ui.checksum.set_markup("<small>%s</small>" % (pkg.digest,))
-
-        '''
 
         self.pkginfo_ui.pkgInfo.show()
 
