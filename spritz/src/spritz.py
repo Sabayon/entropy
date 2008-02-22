@@ -68,9 +68,9 @@ class SpritzController(Controller):
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
-        sys.stdout = self.output
-        sys.stderr = self.output
-        sys.stdin = self.input
+        #sys.stdout = self.output
+        #sys.stderr = self.output
+        #sys.stdin = self.input
 
 
     def quit(self, widget=None, event=None ):
@@ -561,24 +561,40 @@ class SpritzController(Controller):
 
     def loadPkgInfoMenu( self, pkg ):
 
-        # set left LABELS
-        
+        # XXX set package image
 
-        # set atom
-        self.pkginfo_ui.pkgatomLabel.set_markup("<b><big>%s</big></b>" % (pkg.name,))
+        # FIRST PAGE
+        self.pkginfo_ui.labelAtom.set_markup("<b><big>%s</big></b>" % (pkg.name,))
+        self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (pkg.description,))
+
         repo = pkg.matched_atom[1]
         if repo == 0:
             # from installed
-            self.pkginfo_ui.pkgatomSublabel.set_markup("<small>%s</small>" % (_("From your Operating System"),))
+            self.pkginfo_ui.location.set_markup("<small>%s</small>" % (_("From your Operating System"),))
         else:
-            self.pkginfo_ui.pkgatomSublabel.set_markup("<small>%s</small>" % (etpRepositories[repo]['description'],))
+            self.pkginfo_ui.location.set_markup("<small>%s</small>" % (etpRepositories[repo]['description'],))
 
         self.pkginfo_ui.name.set_markup("<small>%s</small>" % (pkg.onlyname,))
         self.pkginfo_ui.category.set_markup("<small>%s</small>" % (pkg.cat,))
-        self.pkginfo_ui.aversion.set_markup( "<small>%s: %s</small>" % (_("Version"),pkg.onlyver,) )
+        self.pkginfo_ui.version.set_markup( "<small>%s</small>" % (pkg.onlyver,) )
         tag = pkg.tag
         if not tag: tag = "None"
-        self.pkginfo_ui.atag.set_markup( "<small>%s: %s</small>" % (_("Tag"),tag,) )
+        self.pkginfo_ui.tag.set_markup( "<small>%s</small>" % (tag,) )
+        self.pkginfo_ui.slot.set_markup( "<small>%s</small>" % (pkg.slot,) )
+        self.pkginfo_ui.revision.set_markup( "<small>%s</small>" % (pkg.revision,) )
+        self.pkginfo_ui.branch.set_markup( "<small>%s</small>" % (pkg.release,) )
+        self.pkginfo_ui.eapi.set_markup( "<small>%s</small>" % (pkg.api,) )
+        self.pkginfo_ui.homepage.set_markup( "<small>%s</small>" % (pkg.homepage,) )
+
+        # SECOND PAGE
+        self.pkginfo_ui.download.set_markup( "<small>%s</small>" % (pkg.binurl,) )
+        self.pkginfo_ui.checksum.set_markup( "<small>%s</small>" % (pkg.digest,) )
+        self.pkginfo_ui.pkgsize.set_markup( "<small>%s</small>" % (pkg.sizeFmt,) )
+        self.pkginfo_ui.instsize.set_markup( "<small>%s</small>" % (pkg.disksizeFmt,) )
+        self.pkginfo_ui.creationdate.set_markup( "<small>%s</small>" % (pkg.epochFmt,) )
+
+        '''
+
         self.pkginfo_ui.arevision.set_markup( "<small>%s: %s</small>" % (_("Revision"),pkg.revision,) )
         if repo != 0:
             # search if it's installed
@@ -610,9 +626,11 @@ class SpritzController(Controller):
         self.pkginfo_ui.download.set_markup("<small>%s</small>" % (pkg.binurl,))
         self.pkginfo_ui.checksum.set_markup("<small>%s</small>" % (pkg.digest,))
 
+        '''
+
         self.pkginfo_ui.pkgInfo.show()
 
-    def on_pkgInfoClose_clicked( self, widget ):
+    def on_closeInfo_clicked( self, widget ):
         self.pkginfo_ui.pkgInfo.hide()
 
     def on_pkgInfo_delete_event(self, widget, path):

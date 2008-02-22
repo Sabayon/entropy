@@ -126,6 +126,12 @@ class PackageWrapper:
     def getCategory(self):
         return self.dbconn.retrieveCategory(self.matched_atom[0])
 
+    def getApi(self):
+        return self.dbconn.retrieveApi(self.matched_atom[0])
+
+    def getHomepage(self):
+        return self.dbconn.retrieveHomepage(self.matched_atom[0])
+
     def getKeySlot(self):
         return self.dbconn.retrieveKeySlot(self.matched_atom[0])
 
@@ -155,6 +161,9 @@ class PackageWrapper:
 
     def getEpoch(self):
         return self.dbconn.retrieveDateCreation(self.matched_atom[0])
+
+    def getEpochFmt(self):
+        return EquoConnection.entropyTools.convertUnixTimeToHumanTime(float(self.dbconn.retrieveDateCreation(self.matched_atom[0])))
 
     def getRel(self):
         return self.dbconn.retrieveBranch(self.matched_atom[0])
@@ -211,6 +220,8 @@ class PackageWrapper:
     version = property(fget=getVer)
     release = property(fget=getRel)
     slot = property(fget=getSlot)
+    homepage = property(fget=getHomepage)
+    api = property(fget=getApi)
     keyslot = property(fget=getKeySlot)
     description =  property(fget=getDescription)
     size =  property(fget=getDownSize)
@@ -220,6 +231,7 @@ class PackageWrapper:
     disksizeFmt =  property(fget=getDiskSizeFmt)
     arch = property(fget=getArch)
     epoch = property(fget=getEpoch)
+    epochFmt = property(fget=getEpochFmt)
     pkgtup = property(fget=getTup)
     syspkg = property(fget=getSysPkg)
     install_status = property(fget=getInstallStatus)
