@@ -447,8 +447,14 @@ class SpritzController(Controller):
             return
         self.setPage('output')
         self.logger.info( "Enabled repositories : %s" % ",".join(repos))
+        self.startWorking()
         self.updateRepositories(repos)
+        # clear cache here too
+        self.endWorking()
+        self.etpbase.clearCache()
+        self.setupRepoView()
         self.setupSpritz()
+        self.setPage('repos')
 
     def on_cacheButton_clicked(self,widget):
         repos = self.repoView.get_selected()
@@ -1021,8 +1027,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.filesView.populate(cached)
 
     def updateRepositories(self, repos):
-        self.setPage('output')
-        self.startWorking()
 
         # set steps
         progress_step = float(1)/(len(repos))
@@ -1067,8 +1071,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
                 self.progress.set_extraLabel(_('app-admin/equo needs to be updated as soon as possible.'))
 
         initConfig_entropyConstants(etpSys['rootdir'])
-        self.setupRepoView()
-        self.endWorking()
 
     def resetProgressText(self):
         self.progress.set_mainLabel(_('Nothing to do. I am idle.'))

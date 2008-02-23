@@ -214,7 +214,9 @@ class EquoInterface(TextInterface):
             return -1
 
     def openRepositoryDatabase(self, repoid):
-        if not self.repoDbCache.has_key((repoid,etpConst['systemroot'])):
+        if not self.repoDbCache.has_key((repoid,etpConst['systemroot'])) or (etpConst['packagemasking'] == None):
+            if etpConst['packagemasking'] == None:
+                self.closeAllRepositoryDatabases()
             dbconn = self.loadRepositoryDatabase(repoid, xcache = self.xcache, indexing = self.indexing)
             try:
                 dbconn.checkDatabaseApi()

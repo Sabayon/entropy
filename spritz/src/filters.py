@@ -20,7 +20,6 @@
 # Filtering action class
 
 import re
-import exceptionTools
 
 class YumexFiltering:
     def __init__(self):
@@ -66,55 +65,6 @@ class YumexFilter:
         self._state = state
 
 
-class ListFilter(YumexFilter):
-    def __init__(self):
-        YumexFilter.__init__(self)
-        self.fltList = []
-
-    def setFilterList(self,lst):
-        self.fltList = lst
-
-    def getName(self):
-        return "ListFilter"
-
-    def isInList(self,value):
-        if self._state:
-            if value in self.fltList:
-                return True
-            else:
-                return False
-        return True
-
-class BoolFilter(YumexFilter):
-    def __init__(self):
-        YumexFilter.__init__(self)
-
-    def getName(self):
-        return "BoolFilter"
-
-    def process(self,value):
-        if self._state and not value:
-            return False
-        else:
-            return True
-
-class ValueFilter(YumexFilter):
-    def __init__(self):
-        YumexFilter.__init__(self)
-        self._value = None
-
-    def getName(self):
-        return "ValueFilter"
-
-    def setValue(self,value):
-        self._value = value
-
-    def process(self,value):
-        if self._state and not value == self._value:
-            return False
-        else:
-            return True
-
 # Filters
 
 class KeywordFilter(YumexFilter):
@@ -151,34 +101,5 @@ class KeywordFilter(YumexFilter):
         else:
             return True
 
-
-class RepoFilter(ListFilter):
-    def getName(self):
-        return "RepoFilter"
-
-    def process(self,po):
-        return self.isInList(po.repoid)
-
-class SlotFilter(ListFilter):
-    def getName(self):
-        return "SlotFilter"
-
-    def process(self,po):
-        return self.isInList(po.slot)
-
-class ActionFilter(ListFilter):
-    def getName(self):
-        return "ActionFilter"
-
-    def process(self,po):
-        return self.isInList(po.action)
-
-
-class QueuedFilter(BoolFilter):
-    def getName(self):
-        return "QueuedFilter"
-
 yumexFilter = YumexFiltering()
-yumexFilter.registerFilter(RepoFilter())
-yumexFilter.registerFilter(SlotFilter())
 yumexFilter.registerFilter(KeywordFilter())
