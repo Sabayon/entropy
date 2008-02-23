@@ -21,18 +21,14 @@ import logging
 import gtk
 import gobject
 import time
-import sys,os
-# Use Python ConfigParser
-from ConfigParser import ConfigParser,SafeConfigParser
-
-from optparse import OptionParser
 from i18n import _
 import packages
+from entropyConstants import *
 
 
 class const:
     ''' This Class contains all the Constants in Yumex'''
-    __spritz_version__   = "0.3"
+    __spritz_version__   = etpConst['entropyversion']
     # Paths
     MAIN_PATH = os.path.abspath( os.path.dirname( sys.argv[0] ) );
     GLADE_FILE = MAIN_PATH+'/spritz.glade'
@@ -460,46 +456,6 @@ class SpritzConf:
     changelog = False
     disable_repo_page = False
     branding_title = 'Spritz Package Manager'
-
-    #
-    # This routines are taken from config.py yum > 3.2.2
-    # They are because we want the config save to work
-    # better with older Yum version (EL5 & FC6)
-    #
-
-    def write(self, fileobj, section=None, always=()):
-        '''Write out the configuration to a file-like object
-
-        @param fileobj: File-like object to write to
-        @param section: Section name to use. If not-specified the section name
-            used during parsing will be used.
-        @param always: A sequence of option names to always write out.
-            Options not listed here will only be written out if they are at
-            non-default values. Set to None to dump out all options.
-        '''
-        # Write section heading
-        if section is None:
-            if self._section is None:
-                raise ValueError("not populated, don't know section")
-            section = self._section
-
-        # Updated the ConfigParser with the changed values
-        cfgOptions = self.cfg.options(section)
-        for name,value in self.iteritems():
-            option = self.optionobj(name)
-            if always is None or name in always or option.default != value or name in cfgOptions :
-                self.cfg.set(section,name, option.tostring(value))
-        # write the updated ConfigParser to the fileobj.
-        self.cfg.write(fileobj)
-
-    def getConfigOption(self, option, default=None):
-        warnings.warn('getConfigOption() will go away in a future version of Yum.\n'
-                'Please access option values as attributes or using getattr().',
-                DeprecationWarning)
-        if hasattr(self, option):
-            return getattr(self, option)
-        return default
-
 
 def cleanMarkupSting(msg):
     msg = str(msg) # make sure it is a string
