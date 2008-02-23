@@ -69,9 +69,9 @@ class SpritzController(Controller):
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
-        #sys.stdout = self.output
-        #sys.stderr = self.output
-        #sys.stdin = self.input
+        sys.stdout = self.output
+        sys.stderr = self.output
+        sys.stdin = self.input
 
 
     def quit(self, widget=None, event=None ):
@@ -1201,7 +1201,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
     def processPackageQueue( self, pkgs, doAll=False):
         """ Workflow for processing package queue """
         self.setStatus( _( "Running tasks" ) )
-        total = len( pkgs['i'] )+len( pkgs['u'] )+len( pkgs['r'] )
+        total = len( pkgs['i'] )+len( pkgs['u'] )+len( pkgs['r'] ) +len( pkgs['rr'] )
         state = True
         quit = False
         if total > 0:
@@ -1209,7 +1209,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.progress.show()
             self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
 
-            queue = pkgs['i']+pkgs['u']
+            queue = pkgs['i']+pkgs['u']+pkgs['rr']
             install_queue = [x.matched_atom for x in queue]
             removal_queue = [x.matched_atom[0] for x in pkgs['r']]
             do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if x.do_purge])
