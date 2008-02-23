@@ -1236,11 +1236,8 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
             try:
                 tarinfo.name = tarinfo.name.encode(sys.getfilesystemencoding())
             except:  # default encoding failed
-                try:
-                    tarinfo.name = tarinfo.name.decode("latin1") # try to convert to latin1 and then back to sys.getfilesystemencoding()
-                    tarinfo.name = tarinfo.name.encode(sys.getfilesystemencoding())
-                except:
-                    raise
+                tarinfo.name = tarinfo.name.decode("latin1") # try to convert to latin1 and then back to sys.getfilesystemencoding()
+                tarinfo.name = tarinfo.name.encode(sys.getfilesystemencoding())
             tar.extract(tarinfo, extractPath.encode(sys.getfilesystemencoding()))
         del tar.members[:]
 
