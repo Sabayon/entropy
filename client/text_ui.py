@@ -609,6 +609,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 choice = read_lic_selection()
                 try:
                     choice = int(choice)
+                except ValueError:
+                    continue
                 except TypeError:
                     continue
                 if choice not in (0,1,2,3):

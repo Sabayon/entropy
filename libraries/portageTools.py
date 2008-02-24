@@ -770,7 +770,7 @@ def refillCounter():
     del counters
     return newcounter
 
-def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
+def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = []):
     try:
         import portage_const
     except ImportError:
@@ -800,12 +800,11 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None):
         oldsysstdout = sys.stdout
         sys.stdout = f
 
-    # XXX? always accept license if etpUi['mute']
-    if etpUi['mute']:
-        if os.path.isdir("/usr/portage/licenses"):
-            os.environ["ACCEPT_LICENSE"] = str(' '.join(os.listdir("/usr/portage/licenses")))
     os.environ["SKIP_EQUO_SYNC"] = "1"
     os.environ["CD_ROOT"] = "/tmp" # workaround for scripts asking for user intervention
+
+    if licenses:
+        os.environ["ACCEPT_LICENSE"] = str(' '.join(licenses)) # we already do this early
 
     # load metadata
     myebuilddir = os.path.dirname(myebuild)

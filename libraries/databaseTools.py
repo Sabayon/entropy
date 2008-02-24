@@ -2502,7 +2502,10 @@ class etpDatabase:
             lictext = self.cursor.fetchone()
             if lictext != None:
                 lictext = lictext[0]
-                licdata[licname] = unicode(lictext, "raw_unicode_escape")
+                if type(lictext) is unicode: # should always be a buffer btw
+                    licdata[licname] = lictext
+                else:
+                    licdata[licname] = unicode(lictext, "raw_unicode_escape")
 
         self.storeInfoCache(idpackage,'retrieveLicensedata',licdata)
         return licdata
@@ -2540,7 +2543,11 @@ class etpDatabase:
         text = self.cursor.fetchone()
         if not text:
             return None
-        return unicode(text[0], "raw_unicode_escape")
+        text = text[0]
+        if type(text) is unicode: # should always be a buffer btw
+            return text
+        else:
+            return unicode(text[0], "raw_unicode_escape")
 
     def retrieveLicense(self, idpackage):
 

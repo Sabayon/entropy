@@ -1309,6 +1309,7 @@ class EquoInterface(TextInterface):
         reponeeded = matchdb.retrieveNeeded(match[0])
         clientneeded = self.clientDbconn.retrieveNeeded(clientmatch[0])
         neededdiff = clientneeded - reponeeded
+        #neededdiff |= reponeeded - clientneeded
         broken_atoms = set()
         if neededdiff:
             # test content
@@ -1329,7 +1330,7 @@ class EquoInterface(TextInterface):
                     cfile = os.path.basename(cfile)
                     # search cfile
                     search_libs.add(cfile)
-            #search_libs.update(neededdiff)
+            #search_libs |= neededdiff
             del clientcontent
             search_matches = set()
             for x in search_libs:
@@ -3337,6 +3338,7 @@ class PackageInterface:
         self.infoDict['name'] = dbconn.retrieveName(idpackage)
         self.infoDict['messages'] = dbconn.retrieveMessages(idpackage)
         self.infoDict['checksum'] = dbconn.retrieveDigest(idpackage)
+        self.infoDict['accept_license'] = dbconn.retrieveLicensedataKeys(idpackage)
         # fill action queue
         self.infoDict['removeidpackage'] = -1
         removeConfig = False
@@ -3421,6 +3423,7 @@ class PackageInterface:
 
         # XXX: too much memory used for this
         self.infoDict['triggers']['install'] = dbconn.getPackageData(idpackage)
+        self.infoDict['triggers']['install']['accept_license'] = self.infoDict['accept_license']
         self.infoDict['triggers']['install']['unpackdir'] = self.infoDict['unpackdir']
         if etpConst['gentoo-compat']:
             self.infoDict['triggers']['install']['xpakpath'] = self.infoDict['xpakpath']
@@ -5845,14 +5848,15 @@ class TriggerInterface:
                 if not os.path.isfile(self.pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"):
                     # if environment is not yet created, we need to run pkg_setup()
                     sys.stdout = stdfile
-                    rc = self.portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'])
+                    rc = self.portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
                     if rc == 1:
                         self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
                     sys.stdout = oldstdout
-                rc = self.portageTools.portage_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'])
+                rc = self.portageTools.portage_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_postinst()) trigger for "+str(portage_atom)+". Something bad happened.")
             except Exception, e:
+                sys.stdout = oldstdout
                 self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
                 self.Entropy.updateProgress(
                                         bold(" QA Warning: ")+brown("Cannot run Gentoo postint trigger for ")+bold(portage_atom)+brown(". Please report."),
@@ -5881,14 +5885,15 @@ class TriggerInterface:
                                 )
             try:
                 sys.stdout = stdfile
-                rc = self.portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir']) # create mysettings["T"]+"/environment"
+                rc = self.portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license']) # create mysettings["T"]+"/environment"
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
                 sys.stdout = oldstdout
-                rc = self.portageTools.portage_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'])
+                rc = self.portageTools.portage_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_preinst()) trigger for "+str(portage_atom)+". Something bad happened.")
             except Exception, e:
+                sys.stdout = oldstdout
                 self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
                 self.Entropy.updateProgress(
                                         bold(" QA Warning: ")+brown("Cannot run Gentoo preinst trigger for ")+bold(portage_atom)+brown(". Please report."),
