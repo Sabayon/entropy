@@ -163,7 +163,6 @@ def update(options):
                         atomslot = dbconn.retrieveSlot(x[1])
 
                         add = True
-                        tagfound = False
                         for pkgdata in toBeAdded:
                             addslot = getPackageSlot(pkgdata[0])
                             addkey = Entropy.entropyTools.dep_getkey(pkgdata[0])
@@ -176,7 +175,7 @@ def update(options):
                                 break
                         if add:
                             dbtag = dbconn.retrieveVersionTag(x[1])
-                            if dbtag:
+                            if dbtag != '':
                                 is_injected = dbconn.isInjected(x[1])
                                 if not is_injected:
                                     toBeInjected.add(x[1])
@@ -184,7 +183,7 @@ def update(options):
                                 toBeRemoved.add(x[1])
                     else:
                         dbtag = dbconn.retrieveVersionTag(x[1])
-                        if dbtag:
+                        if dbtag != '':
                             is_injected = dbconn.isInjected(x[1])
                             if not is_injected:
                                 toBeInjected.add(x[1])
