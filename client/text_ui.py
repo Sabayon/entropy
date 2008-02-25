@@ -727,6 +727,8 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         print_warning(red("Running with ")+bold("--pretend")+red("..."))
         etpUi['pretend'] = True
 
+    doSelectiveRemoval = False
+
     if not resume:
 
         foundAtoms = []
@@ -827,8 +829,8 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             if human:
                 question = "     Would you like to proceed with a selective removal ?"
             rc = Equo.askQuestion(question)
-            if rc == "No":
-                return 0,0
+            if rc == "Yes":
+                doSelectiveRemoval = True
         elif (deps):
             Equo.entropyTools.countdown(what = red(" @@ ")+blue("Starting removal in "),back = True)
 
@@ -840,6 +842,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         Equo.dumpTools.dumpobj(etpCache['remove'],{})
         # store resume information
         resume_cache = {}
+        resume_cache['doSelectiveRemoval'] = doSelectiveRemoval
         resume_cache['removalQueue'] = removalQueue[:]
         Equo.dumpTools.dumpobj(etpCache['remove'],resume_cache)
 
@@ -853,6 +856,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         else:
             try:
                 removalQueue = resume_cache['removalQueue'][:]
+                doSelectiveRemoval = resume_cache['doSelectiveRemoval']
                 print_warning(red("Resuming previous operations..."))
             except:
                 print_error(red("Resume cache corrupted."))
@@ -878,10 +882,11 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             currentqueue += 1
             atom = Equo.clientDbconn.retrieveAtom(idpackage)
             print_info(red(" -- ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(atom))
-            rc = Equo.askQuestion("     Remove this one ?")
-            if rc == "No":
-                # update resume cache
-                ignored.append(idpackage)
+            if doSelectiveRemoval:
+                rc = Equo.askQuestion("     Remove this one ?")
+                if rc == "No":
+                    # update resume cache
+                    ignored.append(idpackage)
         removalQueue = [x for x in removalQueue if x not in ignored]
 
     totalqueue = str(len(removalQueue))
