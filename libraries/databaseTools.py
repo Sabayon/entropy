@@ -1045,7 +1045,7 @@ class etpDatabase:
         # sources, a list
         for source in etpData['sources']:
 
-            if (not source) or (source == "") or (not source.isalnum()):
+            if (not source) or (source == "") or (not entropyTools.is_valid_string(source)):
                 continue
 
             idsource = self.isSourceAvailable(source)
@@ -1362,7 +1362,7 @@ class etpDatabase:
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a needed library but then, fetching it returned -1. There's something broken.")
 
     def addLicense(self,pkglicense):
-        if not pkglicense.isalnum():
+        if not entropyTools.is_valid_string(pkglicense):
             pkglicense = ' ' # workaround for broken license entries
         self.cursor.execute(
                 'INSERT into licenses VALUES '
@@ -2499,7 +2499,7 @@ class etpDatabase:
         licdata = {}
         for licname in licenses:
             licname = licname.strip()
-            if not licname.isalnum():
+            if not entropyTools.is_valid_string(licname):
                 continue
             self.cursor.execute('SELECT text FROM licensedata WHERE licensename = (?)', (licname,))
             lictext = self.cursor.fetchone()
@@ -2527,7 +2527,7 @@ class etpDatabase:
         licdata = set()
         for licname in licenses:
             licname = licname.strip()
-            if not licname.isalnum():
+            if not entropyTools.is_valid_string(licname):
                 continue
             self.cursor.execute('SELECT licensename FROM licensedata WHERE licensename = (?)', (licname,))
             licidentifier = self.cursor.fetchone()
@@ -2747,7 +2747,7 @@ class etpDatabase:
         self.commitChanges()
 
     def isLicenseAvailable(self,pkglicense):
-        if not pkglicense.isalnum():
+        if not entropyTools.is_valid_string(pkglicense):
             pkglicense = ' '
         self.cursor.execute('SELECT idlicense FROM licenses WHERE license = (?)', (pkglicense,))
         result = self.cursor.fetchone()
@@ -2832,7 +2832,7 @@ class etpDatabase:
 
     def searchLicenses(self, mylicense, caseSensitive = False, atoms = False):
 
-        if not mylicense.isalnum():
+        if not entropyTools.is_valid_string(mylicense):
             return []
 
         request = "baseinfo.idpackage"
@@ -3885,8 +3885,6 @@ class etpDatabase:
             mylicenses = mylicenses.strip().split()
             if mylicenses:
                 for mylicense in mylicenses:
-                    if not mylicense.isalnum():
-                        continue
                     if mylicense in etpConst['packagemasking']['license_mask']:
                         idpackageValidatorCache[(idpackage,reponame)] = -1,10
                         return -1,10

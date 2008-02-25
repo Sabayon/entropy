@@ -2111,8 +2111,9 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
         pass
     data['licensedata'] = {}
     if licenses_dir:
-        licdata = [x.strip() for x in data['license'].split() if x.strip().isalnum()]
+        licdata = [str(x.strip()) for x in data['license'].split() if str(x.strip()) and is_valid_string(x.strip())]
         for mylicense in licdata:
+
             licfile = os.path.join(licenses_dir,mylicense)
             if os.access(licfile,os.R_OK):
                 if istextfile(licfile):
@@ -2195,6 +2196,13 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Done"),back = True)
     return data
+
+def is_valid_string(string):
+    mystring = str(string)
+    for char in mystring:
+        if ord(char) not in range(32,127):
+            return False
+    return True
 
 def collectLinkerPaths():
     if linkerPaths:
