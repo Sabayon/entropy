@@ -4030,6 +4030,9 @@ class etpDatabase:
     '''
     def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = (), matchTag = None, packagesFilter = True, matchRevision = None):
 
+        if not atom:
+            return -1,1
+
         cached = self.atomMatchFetchCache(atom,caseSensitive,matchSlot,multiMatch,matchBranches,matchTag,packagesFilter, matchRevision)
         if cached != None:
             return cached

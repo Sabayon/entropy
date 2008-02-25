@@ -79,8 +79,8 @@ def package(options):
                 equoRequestUpgradeTo = opt
             elif opt.endswith(".tbz2") and os.access(opt,os.R_OK) and Equo.entropyTools.isEntropyTbz2(opt):
                 mytbz2paths.append(opt)
-            else:
-                _myopts.append(opt)
+            elif opt.strip():
+                _myopts.append(opt.strip())
     myopts = _myopts
 
     if (options[0] == "deptest"):
