@@ -2065,7 +2065,7 @@ class EquoInterface(TextInterface):
                             self.add_failing_mirror(uri,1)
                             error_message += " - wrong checksum."
                         elif rc == -3:
-                            self.add_failing_mirror(uri,2)
+                            #self.add_failing_mirror(uri,2)
                             error_message += " - not found."
                         elif rc == -4:
                             error_message += blue(" - discarded download.")
