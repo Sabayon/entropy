@@ -134,6 +134,9 @@ class etpDatabase:
         self.indexing = indexing
         if etpConst['uid'] > 0: # forcing since we won't have write access to db
             self.indexing = False
+        # live systems don't like wasting RAM
+        if entropyTools.islive():
+            self.indexing = False
         self.dbFile = dbFile
         self.updateProgress = OutputInterface.updateProgress
         self.askQuestion = OutputInterface.askQuestion
