@@ -175,10 +175,18 @@ def update(options):
                                 add = False
                                 break
                         if add:
-                            toBeRemoved.add(x[1])
+                            dbtag = dbconn.retrieveVersionTag(x[1])
+                            if dbtag:
+                                is_injected = dbconn.isInjected(x[1])
+                                if not is_injected:
+                                    toBeInjected.add(x[1])
+                            else:
+                                toBeRemoved.add(x[1])
                     else:
-                        if dbconn.retrieveVersionTag(x[1]) != None:
-                            if not dbconn.isInjected(x[1]):
+                        dbtag = dbconn.retrieveVersionTag(x[1])
+                        if dbtag:
+                            is_injected = dbconn.isInjected(x[1])
+                            if not is_injected:
                                 toBeInjected.add(x[1])
                         else:
                             toBeRemoved.add(x[1])
