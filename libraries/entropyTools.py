@@ -1204,7 +1204,7 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
     if extractPath is None:
         extractPath = os.path.dirname(filepath)
     if not os.path.isfile(filepath):
-        raise OSError
+        raise exceptionTools.FileNotFound('archive does not exist')
 
     ### XXX dirty bastard workaround for buggy python2.4's tarfile
     if sys.version[:3] == "2.4":

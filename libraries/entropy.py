@@ -2258,11 +2258,20 @@ class PackageInterface:
             os.remove(self.infoDict['unpackdir'].encode('raw_unicode_escape'))
         os.makedirs(self.infoDict['imagedir'])
 
+        if not os.path.isfile(self.infoDict['pkgpath']):
+            if os.path.isdir(self.infoDict['pkgpath']):
+                shutil.rmtree(self.infoDict['pkgpath'])
+            if os.path.islink(self.infoDict['pkgpath']):
+                os.remove(self.infoDict['pkgpath'])
+            self.infoDict['verified'] = False
+            self.fetch_step()
+
         rc = self.Entropy.entropyTools.uncompressTarBz2(
                                                             self.infoDict['pkgpath'],
                                                             self.infoDict['imagedir'],
                                                             catchEmpty = True
                                                         )
+        
         if rc != 0:
             return rc
         if not os.path.isdir(self.infoDict['imagedir']):

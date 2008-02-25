@@ -15,6 +15,7 @@ TODO list:
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
+    - interface bug reporting interface (ahah)
     - add masking menu
     - use availability bool to show masked packages and connect the masking menu
     - Popularity feature / Your Ego service
