@@ -285,7 +285,7 @@ try:
 
     # smartapps tool
     elif (options[0] == "smart"):
-        rc = 0
+        rc = -10
         if len(options) > 1:
             import text_smart
             rc = text_smart.smart(options[1:])
@@ -299,7 +299,7 @@ try:
         rc = text_cache.cache(options[1:])
 
     elif (options[0] == "search"):
-        rc = 0
+        rc = -10
         if len(options) > 1:
             import text_query
             rc = text_query.searchPackage(options[1:])
