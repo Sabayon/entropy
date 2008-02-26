@@ -1254,12 +1254,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
     def populateCategoryPackages(self, cat):
         pkgs = self.etpbase.getPackagesByCategory(cat)
-        #self.catPackages.store.clear()
-        #self.ui.tvCatPackages.set_model(None)
         self.catPackages.populate(pkgs,self.ui.tvCatPackages)
-        #for po in pkgs:
-        #    self.catPackages.store.append([po,str(po)])
-        #self.ui.tvCatPackages.set_model(self.catPackages.store)
 
 
 class ProcessGtkEventsThread(Thread):

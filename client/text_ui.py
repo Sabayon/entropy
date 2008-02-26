@@ -633,27 +633,28 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     Equo.clientDbconn.acceptLicense(key)
                     break
 
-    ### Before starting the real install, fetch packages and verify checksum.
-    fetchqueue = 0
-    for packageInfo in runQueue:
-        fetchqueue += 1
+    if not etpUi['clean'] or onlyfetch:
+        ### Before starting the real install, fetch packages and verify checksum.
+        fetchqueue = 0
+        for packageInfo in runQueue:
+            fetchqueue += 1
 
-        metaopts = {}
-        metaopts['dochecksum'] = dochecksum
-        Package = Equo.Package()
-        Package.prepare(packageInfo,"fetch", metaopts)
+            metaopts = {}
+            metaopts['dochecksum'] = dochecksum
+            Package = Equo.Package()
+            Package.prepare(packageInfo,"fetch", metaopts)
 
-        xterm_header = "Equo (fetch) :: "+str(fetchqueue)+" of "+totalqueue+" ::"
-        print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['atom']))
+            xterm_header = "Equo (fetch) :: "+str(fetchqueue)+" of "+totalqueue+" ::"
+            print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['atom']))
 
-        rc = Package.run(xterm_header = xterm_header)
-        if rc != 0:
-            dirscleanup()
-            return -1,rc
-        Package.kill()
+            rc = Package.run(xterm_header = xterm_header)
+            if rc != 0:
+                dirscleanup()
+                return -1,rc
+            Package.kill()
 
-        del metaopts
-        del Package
+            del metaopts
+            del Package
 
     if onlyfetch:
         print_info(red(" @@ ")+blue("Fetch Complete."))
@@ -702,6 +703,10 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 
         # there's a buffer inside, better remove otherwise cPickle will complain
         del Package.infoDict['triggers']
+
+        if etpUi['clean']: # remove downloaded package
+            if os.path.isfile(Package.infoDict['pkgpath']):
+                os.remove(Package.infoDict['pkgpath'])
 
         # update resume cache
         if not tbz2: # tbz2 caching not supported

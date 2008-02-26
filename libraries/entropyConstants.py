@@ -342,6 +342,7 @@ etpUi = {
     'pretend': False,
     'mute': False,
     'nolog': False,
+    'clean': False,
     'postinstall_triggers_disable': set(),
     'postremove_triggers_disable': set(),
     'preinstall_triggers_disable': set(),
