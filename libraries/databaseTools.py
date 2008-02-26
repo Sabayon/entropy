@@ -2550,7 +2550,7 @@ class etpDatabase:
         if type(text) is unicode: # should always be a buffer btw
             return text
         else:
-            return unicode(text[0], "raw_unicode_escape")
+            return unicode(text, "raw_unicode_escape")
 
     def retrieveLicense(self, idpackage):
 

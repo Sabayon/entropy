@@ -1,5 +1,4 @@
 TODO list:
-  - add an option that will let equo to remove downloaded package after the install phase
   - log messages from portage doebuild() calls
   - remove conflicting packages right before the conflict
   - move portageTools to a class

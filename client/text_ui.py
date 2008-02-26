@@ -576,7 +576,6 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 resume_cache['removalQueue'] = removalQueue[:]
                 Equo.dumpTools.dumpobj(etpCache['install'],resume_cache)
 
-
     # running tasks
     totalqueue = str(len(runQueue))
     totalremovalqueue = str(len(removalQueue))
@@ -610,6 +609,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 try:
                     choice = int(choice)
                 except ValueError:
+                    continue
+                except EOFError:
                     continue
                 except TypeError:
                     continue

@@ -450,8 +450,7 @@ class EquoInterface(TextInterface):
         text = dbconn.retrieveLicenseText(license_name)
         tempfile = self.entropyTools.getRandomTempFile()
         f = open(tempfile,"w")
-        for x in text:
-            f.write(x)
+        f.write(text)
         f.flush()
         f.close()
         return tempfile
