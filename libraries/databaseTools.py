@@ -2541,15 +2541,14 @@ class etpDatabase:
             if (etpConst['uid'] == 0) and (not self.readOnly):
                 self.createLicensedataTable()
             return None
+
+        self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+
         self.cursor.execute('SELECT text FROM licensedata WHERE licensename = (?)', (license_name,))
         text = self.cursor.fetchone()
         if not text:
             return None
-        text = text[0]
-        if type(text) is unicode: # should always be a buffer btw
-            return text
-        else:
-            return unicode(text, "raw_unicode_escape")
+        return text[0]
 
     def retrieveLicense(self, idpackage):
 
