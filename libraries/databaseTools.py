@@ -2501,14 +2501,13 @@ class etpDatabase:
             licname = licname.strip()
             if not entropyTools.is_valid_string(licname):
                 continue
+
+            self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+
             self.cursor.execute('SELECT text FROM licensedata WHERE licensename = (?)', (licname,))
             lictext = self.cursor.fetchone()
             if lictext != None:
-                lictext = lictext[0]
-                if type(lictext) is unicode: # should always be a buffer btw
-                    licdata[licname] = lictext
-                else:
-                    licdata[licname] = unicode(lictext, "raw_unicode_escape")
+                licdata[licname] = lictext[0]
 
         self.storeInfoCache(idpackage,'retrieveLicensedata',licdata)
         return licdata

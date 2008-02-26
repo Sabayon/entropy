@@ -2117,11 +2117,8 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
             licfile = os.path.join(licenses_dir,mylicense)
             if os.access(licfile,os.R_OK):
                 if istextfile(licfile):
-                    f = open(licfile,"rb")
-                    f.seek(0,2)
-                    size = f.tell()
-                    f.seek(0)
-                    data['licensedata'][mylicense] = f.read(size)
+                    f = open(licfile)
+                    data['licensedata'][mylicense] = f.read()
                     f.close()
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package mirrors list..."),back = True)
