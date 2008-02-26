@@ -1924,11 +1924,11 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 
     # [][][] Kernel dependent packages hook [][][]
     data['versiontag'] = ''
-    kernelDependentModule = False
-    kernelItself = False
+    kernelstuff = False
+    kernelstuff_kernel = False
     for item in data['content']:
         if item.startswith("/lib/modules/"):
-            kernelDependentModule = True
+            kernelstuff = True
             # get the version of the modules
             kmodver = item.split("/lib/modules/")[1]
             kmodver = kmodver.split("/")[0]
@@ -1942,12 +1942,10 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
                 kver = kmodver.split("-")[0]
             break
     # validate the results above
-    if (kernelDependentModule):
+    if (kernelstuff):
         matchatom = "linux-"+kname+"-"+kver
         if (matchatom == data['name']+"-"+data['version']):
-            # discard, it's the kernel itself, add other deps instead
-            kernelItself = True
-            kernelDependentModule = False
+            kernelstuff_kernel = True
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package category..."),back = True)
     # Fill category
@@ -1957,10 +1955,10 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package download URL..."),back = True)
     # Fill download relative URI
-    if (kernelDependentModule):
+    if (kernelstuff):
         data['versiontag'] = kmodver
-        # force slot == tag:
-        data['slot'] = kmodver # if you change this behaviour, you must change "reagent update" and "equo database gentoosync" consequentially
+        if not kernelstuff_kernel:
+            data['slot'] = kmodver # if you change this behaviour, you must change "reagent update" and "equo database gentoosync" consequentially
         versiontag = "#"+data['versiontag']
     else:
         versiontag = ""
@@ -2084,7 +2082,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     data['dependencies'] = [x for x in portage_metadata['RDEPEND'].split()+portage_metadata['PDEPEND'].split() if not x.startswith("!") and not x in ("(","||",")","")]
     data['conflicts'] = [x[1:] for x in portage_metadata['RDEPEND'].split()+portage_metadata['PDEPEND'].split() if x.startswith("!") and not x in ("(","||",")","")]
 
-    if (kernelDependentModule):
+    if (kernelstuff) and (not kernelstuff_kernel):
         # add kname to the dependency
         data['dependencies'].append("=sys-kernel/linux-"+kname+"-"+kver)
         key = data['category']+"/"+data['name']
@@ -2092,15 +2090,6 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
             myconflicts = etpConst['conflicting_tagged_packages'][key]
             for conflict in myconflicts:
                 data['conflicts'].append(conflict)
-
-    '''
-    if (kernelItself):
-        # it's the kernel, add dependency on all tagged packages
-        try:
-            data['dependencies'].append("=sys-kernel/linux-"+kname+"-modules-"+kver)
-        except:
-            pass
-    '''
 
     # Get License text if possible
     licenses_dir = None

@@ -2461,11 +2461,11 @@ class etpDatabase:
         #cache = self.fetchInfoCache(idpackage,'retrieveVersionTag')
         #if cache != None: return cache
 
-        self.cursor.execute('SELECT "versiontag" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-        ver = self.cursor.fetchone()[0]
+        self.cursor.execute('SELECT versiontag FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        vtag = self.cursor.fetchone()[0]
 
         #self.storeInfoCache(idpackage,'retrieveVersionTag',ver)
-        return ver
+        return vtag
 
     def retrieveMirrorInfo(self, mirrorname):
 

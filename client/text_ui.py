@@ -322,7 +322,9 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
                 print_info("\t"+red("Versioning:\t")+" "+blue(installedVer)+" / "+blue(installedTag)+" / "+blue(str(installedRev))+bold(" ===> ")+darkgreen(pkgver)+" / "+darkgreen(pkgtag)+" / "+darkgreen(str(pkgrev)))
                 # tell wether we should update it
+                is_installed = True
                 if installedVer == "Not installed":
+                    is_installed = False
                     installedVer = "0"
                 if installedRev == "NoRev":
                     installedRev = 0
@@ -332,7 +334,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         action = darkgreen("Reinstall")+" | Switch repo: "+blue(installedRepo)+" ===> "+darkgreen(reponame)
                     else:
                         action = darkgreen("Reinstall")
-                elif (pkgcmp > 0):
+                elif (pkgcmp > 0) or (not is_installed):
                     if (installedVer == "0"):
                         action = darkgreen("Install")
                     else:
