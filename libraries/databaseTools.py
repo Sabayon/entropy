@@ -2507,7 +2507,8 @@ class etpDatabase:
             self.cursor.execute('SELECT text FROM licensedata WHERE licensename = (?)', (licname,))
             lictext = self.cursor.fetchone()
             if lictext != None:
-                licdata[licname] = unicode(lictext[0])
+                #licdata[licname] = unicode(lictext[0],'raw_unicode_escape','replace')
+		licdata[licname] = str(lictext[0])
 
         self.storeInfoCache(idpackage,'retrieveLicensedata',licdata)
         return licdata
@@ -2548,7 +2549,8 @@ class etpDatabase:
         text = self.cursor.fetchone()
         if not text:
             return None
-        return unicode(text[0])
+	#return unicode(text[0],'raw_unicode_escape','replace')
+	return str(text[0])
 
     def retrieveLicense(self, idpackage):
 
