@@ -400,7 +400,7 @@ class EntropyPackageView:
         self.view.queue_draw()
 
     def setupView( self ):
-        store = gtk.ListStore( gobject.TYPE_PYOBJECT, str )
+        store = gtk.TreeStore( gobject.TYPE_PYOBJECT )#, gobject.TYPE_STRING )
         self.view.set_model( store )
 
         # Setup resent column
@@ -414,17 +414,30 @@ class EntropyPackageView:
         self.view.append_column( column1 )
         column1.set_clickable( False )
 
-        self.create_text_column( _( "Package" ), 'name' , size=300)
+        #self.create_text_column( _( "Package" ), 'name' , size=300)
+        self.create_text_column( _( "Package" ), 'namedesc' , size=300)
         self.create_text_column( _( "Rev." ), 'revision' , size=40 )
         self.create_text_column( _( "Slot" ), 'slot' , size = 40 )
         self.create_text_column( _( "Repository" ), 'repoid', size = 100 )
-        #self.create_text_column( _( "Size" ), 'intelligentsizeFmt', size=80 )
-        #self.create_text_column( _( "Download" ), 'sizeFmt' , size=80 )
         self.view.set_search_column( 1 )
         self.view.set_enable_search(False)
-        #store.set_sort_column_id(1, gtk.SORT_ASCENDING)# SLOOOW
-        #self.view.set_reorderable( False )
         return store
+
+    def clear(self):
+        self.store.clear()
+
+    def populate(self, pkgs, widget = None):
+        self.clear()
+        if widget == None:
+            self.ui.viewPkg.set_model(None)
+        else:
+            widget.set_model(None)
+        for po in pkgs:
+            self.store.append( None, (po,) ) # str(po)) )
+        if widget == None:
+            self.ui.viewPkg.set_model(self.store)
+        else:
+            widget.set_model(self.store)
 
     def set_pixbuf_to_cell(self, cell, filename):
         pixbuf = gtk.gdk.pixbuf_new_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
@@ -451,7 +464,8 @@ class EntropyPackageView:
     def get_data_text( self, column, cell, model, iter, property ):
         obj = model.get_value( iter, 0 )
         if obj:
-            cell.set_property( 'text', getattr( obj, property ) )
+            cell.set_property('markup',getattr( obj, property ))
+            #cell.set_property( 'text', getattr( obj, property ) )
             cell.set_property('foreground',obj.color)
 
     def selectAll(self):

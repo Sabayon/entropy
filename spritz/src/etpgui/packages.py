@@ -57,6 +57,14 @@ class PackageWrapper:
     def getName(self):
         return self.dbconn.retrieveAtom(self.matched_atom[0])
 
+    def getNameDesc(self):
+        t = self.getName()
+        desc = self.getDescription()
+        if len(desc) > 43:
+            desc = desc[:43]+"..."
+        t += "\n<small>%s</small>" % (desc,)
+        return t
+
     def getOnlyName(self):
         return self.dbconn.retrieveName(self.matched_atom[0])
 
@@ -231,6 +239,8 @@ class PackageWrapper:
             return self.dbconn.retrieveBranch(self.matched_atom[0])
         elif attr == "name":
             return self.dbconn.retrieveName(self.matched_atom[0])
+        elif attr == "namedesc":
+            return self.getNameDesc()
         elif attr == "slot":
             return self.dbconn.retrieveSlot(self.matched_atom[0])
 
@@ -256,6 +266,7 @@ class PackageWrapper:
 
     pkg =  property(fget=getPkg)
     name =  property(fget=getName)
+    namedesc = property(fget=getNameDesc)
     onlyname = property(fget=getOnlyName)
     cat = property(fget=getCategory)
     repoid =  property(fget=getRepoId)

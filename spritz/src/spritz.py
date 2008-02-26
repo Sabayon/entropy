@@ -69,9 +69,10 @@ class SpritzController(Controller):
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
-        sys.stdout = self.output
-        sys.stderr = self.output
-        sys.stdin = self.input
+        if "--debug" not in sys.argv:
+            sys.stdout = self.output
+            sys.stderr = self.output
+            sys.stdin = self.input
 
 
     def quit(self, widget=None, event=None ):
@@ -422,7 +423,7 @@ class SpritzController(Controller):
             if category != '':
                 self.addCategoryPackages(category)
             else:
-                self.pkgView.store.clear()
+                self.pkgView.clear()
 
     def on_pkgFilter_toggled(self,rb,action):
         ''' Package Type Selection Handler'''
@@ -1130,11 +1131,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         except: # python 2.4 support
             allpkgs.sort()
 
-        self.pkgView.store.clear()
-        self.ui.viewPkg.set_model(None)
-        for po in allpkgs:
-            self.pkgView.store.append((po,str(po)))
-        self.ui.viewPkg.set_model(self.pkgView.store)
+        self.pkgView.populate(allpkgs)
         self.progress.total.show()
 
         if self.doProgress: self.progress.hide() #Hide Progress
@@ -1153,11 +1150,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         pkgs = self.yumbase.getPackagesByCategory(cat)
         if pkgs:
             pkgs.sort()
-            self.ui.viewPkg.set_model(None)
-            for po in pkgs:
-                self.pkgView.store.append([po,str(po)])
-            self.ui.viewPkg.set_model(self.pkgView.store)
-            self.ui.viewPkg.set_search_column( 2 )
+            self.pkgView.populate(pkgs)
             msg = _('Package View Population Completed')
             self.setStatus(msg)
         self.unsetBusy()
@@ -1261,11 +1254,12 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
     def populateCategoryPackages(self, cat):
         pkgs = self.etpbase.getPackagesByCategory(cat)
-        self.catPackages.store.clear()
-        self.ui.tvCatPackages.set_model(None)
-        for po in pkgs:
-            self.catPackages.store.append([po,str(po)])
-        self.ui.tvCatPackages.set_model(self.catPackages.store)
+        #self.catPackages.store.clear()
+        #self.ui.tvCatPackages.set_model(None)
+        self.catPackages.populate(pkgs,self.ui.tvCatPackages)
+        #for po in pkgs:
+        #    self.catPackages.store.append([po,str(po)])
+        #self.ui.tvCatPackages.set_model(self.catPackages.store)
 
 
 class ProcessGtkEventsThread(Thread):
