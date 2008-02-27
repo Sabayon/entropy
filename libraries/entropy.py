@@ -652,6 +652,7 @@ class EquoInterface(TextInterface):
         if pretend:
             return 0
         if branch != etpConst['branch']:
+            etpConst['branch'] = branch
             # update configuration
             self.entropyTools.writeNewBranch(branch)
             # reset treeupdatesactions
@@ -662,6 +663,7 @@ class EquoInterface(TextInterface):
             self.reopenClientDbconn()
             self.closeAllRepositoryDatabases()
             self.validate_repositories()
+            initConfig_entropyConstants(etpSys['rootdir'])
         return 0
 
     # tell if a new equo release is available, returns True or False
