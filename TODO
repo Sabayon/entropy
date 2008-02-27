@@ -25,6 +25,8 @@ TODO list:
     - Category <-> Image dictionary (for the properties menu)
     - GLSA interface
     - Skip Mirror buttons
+    - button to stop the queue
+    - show the number of packages found in a list
 
 
 Project Status:
