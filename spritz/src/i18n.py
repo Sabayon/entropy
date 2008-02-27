@@ -26,11 +26,11 @@ try:
     import gettext
     import sys
     if sys.version_info[0] == 2:
-        t = gettext.translation('yumex')
+        t = gettext.translation('spritz')
         _ = t.gettext
     else:
-        gettext.bindtextdomain('yumex', '/usr/share/locale')
-        gettext.textdomain('yumex')
+        gettext.bindtextdomain('spritz', '/usr/share/locale')
+        gettext.textdomain('spritz')
         _ = gettext.gettext
 
 except:
