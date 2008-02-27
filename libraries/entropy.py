@@ -6191,6 +6191,9 @@ class TriggerInterface:
             os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(item))
         return 0
 
+    def __get_entropy_kernel_grub_line(self, kernel):
+        return "title="+etpConst['systemname']+" ("+os.path.basename(kernel)+")\n"
+
     '''
     @description: append kernel entry to grub.conf
     @output: returns int() as exit status
@@ -6208,10 +6211,10 @@ class TriggerInterface:
             # test if entry has been already added
             grubtest = open(etpConst['systemroot']+"/boot/grub/grub.conf","r")
             content = grubtest.readlines()
-            content = self.Entropy.entropyTools.listToUtf8(content)
+            content = [unicode(x,'raw_unicode_escape') for x in content]
             for line in content:
                 try: # handle stupidly encoded text
-                    if line.find("title="+etpConst['systemname']+" ("+os.path.basename(kernel)+")\n") != -1:
+                    if line.find(self.__get_entropy_kernel_grub_line(kernel)) != -1:
                         grubtest.close()
                         return
                     # also check if we have the same kernel listed
@@ -6238,7 +6241,7 @@ timeout=10
             if "dolvm" not in params: # support new kernels >= 2.6.23
                 cmdline += " dolvm "
             f.close()
-        grub.write("title="+etpConst['systemname']+" ("+os.path.basename(kernel)+")\n")
+        grub.write(self.__get_entropy_kernel_grub_line(kernel))
         grub.write("\troot "+boot_dev+"\n")
         grub.write("\tkernel "+kernel+cmdline+"\n")
         if initramfs:
@@ -6253,38 +6256,23 @@ timeout=10
             f = open(etpConst['systemroot']+"/boot/grub/grub.conf","r")
             grub_conf = f.readlines()
             f.close()
-            grub_conf = self.Entropy.entropyTools.listToUtf8(grub_conf)
-            # validate file encodings - damn what a crap
-            kernel, initramfs = self.Entropy.entropyTools.listToUtf8([kernel,initramfs])
+            content = [unicode(x,'raw_unicode_escape') for x in content]
+            kernel, initramfs = (unicode(kernel,'raw_unicode_escape'),unicode(initramfs,'raw_unicode_escape'))
             kernelname = os.path.basename(kernel)
             new_conf = []
-            found = False
-            for count in range(len(grub_conf)):
-                line = grub_conf[count].strip()
-                if (line.find(kernelname) != -1) or (line.find(kernelname) != -1):
-                    found = True
-                    # remove previous content up to title
-                    rlines = 0
-                    for x in range(len(new_conf))[::-1]:
-                        rlines += 1
-                        if new_conf[x].strip().startswith("title"):
-                            break
-                    new_conf = new_conf[::-1][rlines:][::-1]
-                if (found):
-                    # check if the parameter belongs to title or it is something else
-                    try:
-                        line = grub_conf[count].strip().split()[0]
-                    except IndexError: # in case of weird stuff (happened...)
-                        new_conf.append(grub_conf[count])
-                        continue
-                    if line: # skip empty lines
-                        if line in ["root","kernel","initrd","hide","unhide","chainloader","makeactive","rootnoverify"]:
-                            # skip write
-                            continue
-                        else:
-                            # skip completed
-                            found = False
-                new_conf.append(grub_conf[count])
+            skip = False
+            for line in content:
+
+                if (line.find(self.__get_entropy_kernel_grub_line(kernel)) != -1):
+                    skip = True
+                    continue
+
+                if line.strip().startswith("title"):
+                    skip = False
+
+                if not skip or line.strip().startswith("#"):
+                    new_conf.append(line)
+
             f = open(etpConst['systemroot']+"/boot/grub/grub.conf","w")
             f.writelines(new_conf)
             f.flush()
