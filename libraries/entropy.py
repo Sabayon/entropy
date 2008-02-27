@@ -6213,16 +6213,13 @@ class TriggerInterface:
             content = grubtest.readlines()
             content = [unicode(x,'raw_unicode_escape') for x in content]
             for line in content:
-                try: # handle stupidly encoded text
-                    if line.find(self.__get_entropy_kernel_grub_line(kernel)) != -1:
-                        grubtest.close()
-                        return
-                    # also check if we have the same kernel listed
-                    if (line.find("kernel") != 1) and (line.find(os.path.basename(kernel)) != -1) and not line.strip().startswith("#"):
-                        grubtest.close()
-                        return
-                except UnicodeDecodeError:
-                    continue
+                if line.find(self.__get_entropy_kernel_grub_line(kernel)) != -1:
+                    grubtest.close()
+                    return
+                # also check if we have the same kernel listed
+                if (line.find("kernel") != 1) and (line.find(os.path.basename(kernel)) != -1) and not line.strip().startswith("#"):
+                    grubtest.close()
+                    return
         else:
             # create
             boot_dev = "(hd0,0)"
