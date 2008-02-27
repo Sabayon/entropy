@@ -6253,7 +6253,7 @@ timeout=10
             f = open(etpConst['systemroot']+"/boot/grub/grub.conf","r")
             grub_conf = f.readlines()
             f.close()
-            content = [unicode(x,'raw_unicode_escape') for x in content]
+            content = [unicode(x,'raw_unicode_escape') for x in grub_conf]
             kernel, initramfs = (unicode(kernel,'raw_unicode_escape'),unicode(initramfs,'raw_unicode_escape'))
             kernelname = os.path.basename(kernel)
             new_conf = []
