@@ -103,6 +103,12 @@ def initConfig_serverConstants():
                     etpConst['rss-max-entries'] = entries
                 except:
                     pass
+            elif line.startswith("max-rss-light-entries|") and (len(line.split("max-rss-light-entries|")) == 2):
+                try:
+                    entries = int(line.split("max-rss-light-entries|")[1].strip())
+                    etpConst['rss-light-max-entries'] = entries
+                except:
+                    pass
 
     # generic settings section
     if (os.path.isfile(etpConst['serverconf'])):

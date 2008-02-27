@@ -1001,6 +1001,14 @@ def uploadDatabase(uris):
                 for atom in removed_items:
                     description = atom+": "+removed_items[atom]['description']
                     rssClass.addItem(title = "Removed"+title, link = link, description = description)
+            light_items = db_actions.get('light')
+            if light_items:
+                rssLight = rssFeed(etpConst['etpdatabasedir'] + "/" + etpConst['rss-light-name'], maxentries = etpConst['rss-light-max-entries'])
+                for atom in light_items:
+                    mylink = link+"?search="+atom.split("~")[0]+"&arch="+etpConst['currentarch']+"&product="+etpConst['product']
+                    description = light_items[atom]['description']
+                    rssLight.addItem(title = "["+revision+"] "+atom, link = link, description = description)
+                rssLight.writeChanges()
 
         rssClass.writeChanges()
         # clean global vars
@@ -1126,13 +1134,22 @@ def uploadDatabase(uris):
             print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
 
         # uploading rss file (if enabled)
-        if etpConst['rss-feed'] and os.path.isfile(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name']):
-            print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'])+red(" ..."), back = True)
-            rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'],True)
-            if (rc == True):
-                print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'])+red(" completed."))
-            else:
-                print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
+        if etpConst['rss-feed']:
+            if os.path.isfile(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name']):
+                print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'])+red(" ..."), back = True)
+                rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'],True)
+                if (rc == True):
+                    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['rss-name'])+red(" completed."))
+                else:
+                    print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
+
+            if os.path.isfile(etpConst['etpdatabasedir'] + "/" + etpConst['rss-light-name']):
+                print_info(green(" * ")+red("Uploading file ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['rss-light-name'])+red(" ..."), back = True)
+                rc = ftp.uploadFile(etpConst['etpdatabasedir'] + "/" + etpConst['rss-light-name'],True)
+                if (rc == True):
+                    print_info(green(" * ")+red("Upload of ")+bold(etpConst['etpdatabasedir'] + "/" + etpConst['rss-light-name'])+red(" completed."))
+                else:
+                    print_warning(brown(" * ")+red("Cannot properly upload to ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
 
         # close connection
         ftp.closeConnection()
@@ -1206,15 +1223,17 @@ def downloadDatabase(uri):
     # download RSS
     if etpConst['rss-feed']:
 
-        print_info(green(" * ")+red("Downloading file to ")+bold(etpConst['rss-name'])+red(" ..."), back = True)
-        try:
-            rc = ftp.downloadFile(etpConst['rss-name'],etpConst['etpdatabasedir'],True)
-            if (rc == True):
-                print_info(green(" * ")+red("Download of ")+bold(etpConst['rss-name'])+red(" completed."))
-            else:
-                print_warning(brown(" * ")+red("Cannot properly download from ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
-        except:
-            print_warning(brown(" * ")+red("Cannot properly download RSS file: "+etpConst['rss-name']+" for: ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
+        for item in [etpConst['rss-name'],etpConst['rss-light-name']]:
+
+            print_info(green(" * ")+red("Downloading file to ")+bold(item)+red(" ..."), back = True)
+            try:
+                rc = ftp.downloadFile(item,etpConst['etpdatabasedir'],True)
+                if (rc == True):
+                    print_info(green(" * ")+red("Download of ")+bold(item)+red(" completed."))
+                else:
+                    print_warning(brown(" * ")+red("Cannot properly download from ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
+            except:
+                print_warning(brown(" * ")+red("Cannot properly download RSS file: "+item+" for: ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Please check."))
 
     try:
         os.remove(etpConst['etpdatabasedir'] + "/" + dbfilename)

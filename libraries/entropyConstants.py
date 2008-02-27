@@ -390,11 +390,12 @@ etpExitMessages = {
 }
 
 # information about what has been done on the database,
-# those dicts will be dumped to a file and used by activator to update and updload .rss
+# those dicts will be dumped to a file and used by activator to update and upload .rss
 etpRSSMessages = {
     'added': {}, # packages that has been added
     'removed': {}, # packages that has been removed
-    'commitmessage': "" # commit message from the guy who is going to submit a repository update
+    'commitmessage': "", # commit message from the guy who is going to submit a repository update
+    'light': {} # this stuff will be pushed to the light rss
 }
 
 # Handlers used by entropy to run and retrieve data remotely, using php helpers
@@ -559,10 +560,12 @@ def initConfig_entropyConstants(rootdir):
         },
         'rss-feed': True, # enable/disable packages RSS feed feature
         'rss-name': "packages.rss", # default name of the RSS feed
+        'rss-light-name': "updates.rss", # light version
         'rss-base-url': "http://packages.sabayonlinux.org/", # default URL to the entropy web interface (overridden in reagent.conf)
         'rss-website-url': "http://www.sabayonlinux.org/", # default URL to the Operating System website (overridden in reagent.conf)
         'rss-dump-name': "rss_database_actions", # xml file where will be dumped etpRSSMessages dictionary
         'rss-max-entries': 10000, # maximum rss entries
+        'rss-light-max-entries': 300, # max entries for the light version
         'rss-managing-editor': "lxnay@sabayonlinux.org", # updates submitter
 
         'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file

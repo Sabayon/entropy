@@ -826,6 +826,8 @@ class etpDatabase:
             etpRSSMessages['added'][rssAtom] = {}
             etpRSSMessages['added'][rssAtom]['description'] = etpData['description']
             etpRSSMessages['added'][rssAtom]['homepage'] = etpData['homepage']
+            etpRSSMessages['light'][rssAtom] = {}
+            etpRSSMessages['light'][rssAtom]['description'] = etpData['description']
             # save
             dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
 

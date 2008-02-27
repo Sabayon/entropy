@@ -3,12 +3,12 @@ TODO list:
   - log messages from portage doebuild() calls
   - remove conflicting packages right before the conflict
   - move portageTools to a class
-  - RSS, make a light version too
   - implement configuration files snapshot tool
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
      [] complete reagent spm interface
      [] write a tool that will rebuild kernel dependant packages
+     [] GLSA interface, interfaced between packages in repo and the portage tree
 
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - Community repositories

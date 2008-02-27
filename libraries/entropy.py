@@ -4863,7 +4863,7 @@ class rssFeed:
                 self.items[mycounter]['guid'] = item.getElementsByTagName("guid")[0].firstChild.data
                 self.items[mycounter]['pubDate'] = item.getElementsByTagName("pubDate")[0].firstChild.data
 
-    def addItem(self, title, link = '', description = ''):
+    def addItem(self, title, link = '', description = '', light = False):
         self.itemscounter += 1
         self.items[self.itemscounter] = {}
         self.items[self.itemscounter]['title'] = title
@@ -6976,14 +6976,14 @@ class SecurityInterface:
                 continue
             adv_metadata.update(xml_metadata)
 
-        adv_metadata = self.__filter_advisories(adv_metadata)
+        adv_metadata = self.filter_advisories(adv_metadata)
         self.__set_advisories_cache(adv_metadata)
         self.adv_metadata = adv_metadata.copy()
         return adv_metadata
 
     # this function filters advisories for packages that aren't
     # in the repositories. Note: only keys will be matched
-    def __filter_advisories(self, adv_metadata):
+    def filter_advisories(self, adv_metadata):
         keys = adv_metadata.keys()
         for key in keys:
             valid = True
