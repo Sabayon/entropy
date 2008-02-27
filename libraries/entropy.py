@@ -6202,6 +6202,7 @@ class TriggerInterface:
         if os.path.isfile(etpConst['systemroot']+"/boot/grub/grub.conf"):
             # open in append
             grub = open(etpConst['systemroot']+"/boot/grub/grub.conf","aw")
+            shutil.copy2(etpConst['systemroot']+"/boot/grub/grub.conf",etpConst['systemroot']+"/boot/grub/grub.conf.old.add")
             # get boot dev
             boot_dev = self.trigger_get_grub_boot_dev()
             # test if entry has been already added
@@ -6248,6 +6249,7 @@ timeout=10
 
     def trigger_remove_boot_grub(self, kernel,initramfs):
         if os.path.isdir(etpConst['systemroot']+"/boot/grub") and os.path.isfile(etpConst['systemroot']+"/boot/grub/grub.conf"):
+            shutil.copy2(etpConst['systemroot']+"/boot/grub/grub.conf",etpConst['systemroot']+"/boot/grub/grub.conf.old.remove")
             f = open(etpConst['systemroot']+"/boot/grub/grub.conf","r")
             grub_conf = f.readlines()
             f.close()

@@ -18,6 +18,7 @@ TODO list:
 
   Spritz:
     - interface bug reporting interface (ahah)
+    - handle entropy exceptions
     - add masking menu
     - use availability bool to show masked packages and connect the masking menu
     - Popularity feature / Your Ego service
