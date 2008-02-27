@@ -165,6 +165,8 @@ class EquoInterface(TextInterface):
         initConfig_entropyConstants(etpSys['rootdir'])
         initConfig_clientConstants()
         self.validate_repositories()
+        self.closeAllRepositoryDatabases()
+        self.reopenClientDbconn()
 
     def reopenClientDbconn(self):
         self.clientDbconn.closeDB()
