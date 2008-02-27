@@ -3559,7 +3559,7 @@ class FileUpdatesInterface:
                         if path != item:
                             continue
 
-                    filepath = currentdir+"/"+item
+                    filepath = os.path.join(currentdir,item)
                     if item.startswith("._cfg"):
 
                         # further check then
