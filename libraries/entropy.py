@@ -6254,7 +6254,10 @@ timeout=10
             grub_conf = f.readlines()
             f.close()
             content = [unicode(x,'raw_unicode_escape') for x in grub_conf]
-            kernel, initramfs = (unicode(kernel,'raw_unicode_escape'),unicode(initramfs,'raw_unicode_escape'))
+            try:
+                kernel, initramfs = (unicode(kernel,'raw_unicode_escape'),unicode(initramfs,'raw_unicode_escape'))
+            except TypeError:
+                pass
             kernelname = os.path.basename(kernel)
             new_conf = []
             skip = False
