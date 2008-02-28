@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-02-27 13:40+0100\n"
+"POT-Creation-Date: 2008-02-28 15:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -591,7 +591,7 @@ msgid "Error"
 msgstr ""
 
 #: ../src/spritz.py:1318
-msgid "Error in Yumex"
+msgid "Error in Spritz"
 msgstr ""
 
 #: ../src/etpgui/callbacks.py:60
