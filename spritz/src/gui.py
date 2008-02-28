@@ -109,7 +109,7 @@ class ProgressTotal:
             text = "%3i%%" % procent
         self.progress.set_text( text )
 
-class YumexProgress:
+class SpritzProgress:
     """ Progress Class """
     def __init__( self, ui, set_page_func, parent ):
         self.ui = ui
@@ -205,14 +205,14 @@ class SpritzGUI:
         self.activePage = 'repos'
         self.pageBootstrap = True
         # Progress bars
-        self.progress = YumexProgress(self.ui,self.setPage,self)
+        self.progress = SpritzProgress(self.ui,self.setPage,self)
         # Package Radiobuttons
         self.packageRB = {}
         self.lastPkgPB = 'updates'
         self.tooltip =  gtk.Tooltips()
 
         # setup add repository window
-        self.console_menu_xml = gtk.glade.XML( const.GLADE_FILE, "terminalMenu",domain="yumex" )
+        self.console_menu_xml = gtk.glade.XML( const.GLADE_FILE, "terminalMenu",domain="spritz" )
         self.console_menu = self.console_menu_xml.get_widget( "terminalMenu" )
         self.console_menu_xml.signal_autoconnect(self)
 

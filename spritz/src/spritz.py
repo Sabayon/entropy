@@ -42,7 +42,7 @@ from etpgui.widgets import UI, Controller
 from etpgui import *
 
 
-# yumex imports
+# spritz imports
 import filters
 from gui import SpritzGUI
 from dialogs import *
@@ -58,10 +58,10 @@ class SpritzController(Controller):
     def __init__( self ):
         self.etpbase = EntropyPackages(EquoConnection)
         # Create and ui object contains the widgets.
-        ui = UI( const.GLADE_FILE , 'main', 'yumex' )
-        addrepo_ui = UI( const.GLADE_FILE , 'addRepoWin', 'yumex' )
-        pkginfo_ui = UI( const.GLADE_FILE , 'pkgInfo', 'yumex' )
-        wait_ui = UI( const.GLADE_FILE , 'waitWindow', 'yumex' )
+        ui = UI( const.GLADE_FILE , 'main', 'spritz' )
+        addrepo_ui = UI( const.GLADE_FILE , 'addRepoWin', 'spritz' )
+        pkginfo_ui = UI( const.GLADE_FILE , 'pkgInfo', 'spritz' )
+        wait_ui = UI( const.GLADE_FILE , 'waitWindow', 'spritz' )
         # init the Controller Class to connect signals.
         Controller.__init__( self, ui, addrepo_ui, pkginfo_ui, wait_ui )
 
@@ -721,7 +721,7 @@ class SpritzController(Controller):
                 # prepare textview
                 mybuffer = gtk.TextBuffer()
                 mybuffer.set_text(license_text)
-                xml_licread = gtk.glade.XML( const.GLADE_FILE, 'licenseReadWindow',domain="yumex" )
+                xml_licread = gtk.glade.XML( const.GLADE_FILE, 'licenseReadWindow',domain="spritz" )
                 read_dialog = xml_licread.get_widget( "licenseReadWindow" )
                 okReadButton = xml_licread.get_widget( "okReadButton" )
                 okReadButton.connect( 'clicked', self.destroy_read_license_dialog )
@@ -773,7 +773,7 @@ class SpritzController(Controller):
     def on_search_clicked(self,widget):
         ''' Search entry+button handler'''
         txt = self.ui.pkgFilter.get_text()
-        flt = filters.yumexFilter.get('KeywordFilter')
+        flt = filters.spritzFilter.get('KeywordFilter')
         if txt != '':
             flt.activate()
             lst = txt.split(' ')
@@ -840,7 +840,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.logger.info(_('Entropy Config Setup'))
         self.catsView.etpbase = self.etpbase
         self.lastPkgPB = "updates"
-        self.etpbase.setFilter(filters.yumexFilter.processFilters)
+        self.etpbase.setFilter(filters.spritzFilter.processFilters)
 
         self.Equo.connect_to_gui(self.progress, self.progressLogWrite, self.output)
         self.setupEditor()
@@ -1315,6 +1315,6 @@ if __name__ == "__main__":
             errmsg += '  File : %s , line %s, in %s\n' % (f,str(l),m)
             logger.error('    %s ' % c)
             errmsg += '    %s \n' % c
-        errorMessage(None, _( "Error" ), _( "Error in Yumex" ), errmsg )  
+        errorMessage(None, _( "Error" ), _( "Error in Spritz" ), errmsg )
         gtkEventThread.doQuit()
         sys.exit(1)

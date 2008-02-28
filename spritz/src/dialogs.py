@@ -34,7 +34,7 @@ from i18n import _
 class ConfimationDialog:
     def __init__( self, parent, pkgs, top_text = None, bottom_text = None, bottom_data = None, sub_text = None, cancel = True, simpleList = False ):
 
-        self.xml = gtk.glade.XML( const.GLADE_FILE, 'confirmation',domain="yumex" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, 'confirmation',domain="spritz" )
         self.dialog = self.xml.get_widget( "confirmation" )
         self.dialog.set_transient_for( parent )
         self.action = self.xml.get_widget( "confAction" )
@@ -147,7 +147,7 @@ class ConfimationDialog:
 
 class ErrorDialog:
     def __init__( self, parent, title, text, longtext, modal ):
-        self.xml = gtk.glade.XML( const.GLADE_FILE, "errDialog",domain="yumex" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, "errDialog",domain="spritz" )
         self.dialog = self.xml.get_widget( "errDialog" )
         self.parent = parent
         if parent:
@@ -187,7 +187,7 @@ class ErrorDialog:
 
 class infoDialog:
     def __init__( self, parent, title, text ):
-        self.xml = gtk.glade.XML( const.GLADE_FILE, "msg",domain="yumex" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, "msg",domain="spritz" )
         self.dialog = self.xml.get_widget( "msg" )
         self.parent = parent
         self.dialog.set_transient_for( parent )
@@ -210,7 +210,7 @@ class infoDialog:
 
 class EntryDialog:
     def __init__( self, parent, title, text ):
-        self.xml = gtk.glade.XML( const.GLADE_FILE, "EntryDialog",domain="yumex" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, "EntryDialog",domain="spritz" )
         self.dialog = self.xml.get_widget( "EntryDialog" )
         self.parent = parent
         #self.dialog.set_transient_for( parent )
@@ -368,8 +368,8 @@ class LicenseDialog:
     def __init__( self, parent, licenses, EquoConnection ):
 
         self.Entropy = EquoConnection
-        self.xml = gtk.glade.XML( const.GLADE_FILE, 'licenseWindow',domain="yumex" )
-        self.xml_licread = gtk.glade.XML( const.GLADE_FILE, 'licenseReadWindow',domain="yumex" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, 'licenseWindow',domain="spritz" )
+        self.xml_licread = gtk.glade.XML( const.GLADE_FILE, 'licenseReadWindow',domain="spritz" )
         self.dialog = self.xml.get_widget( "licenseWindow" )
         self.dialog.set_transient_for( parent )
         self.read_dialog = self.xml_licread.get_widget( "licenseReadWindow" )

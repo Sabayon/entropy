@@ -21,7 +21,7 @@
 
 import re
 
-class YumexFiltering:
+class SpritzFiltering:
     def __init__(self):
         self.filters = []
 
@@ -50,13 +50,13 @@ class YumexFiltering:
 
 # Abstact Filter Classes
 
-class YumexFilter:
+class SpritzFilter:
     def __init__(self):
         self.name = self.getName()
         self._state = False
 
     def getName(self):
-        return "YumexFilter"
+        return "SpritzFilter"
 
     def process(self,po):
         raise NotImplementedError()
@@ -67,9 +67,9 @@ class YumexFilter:
 
 # Filters
 
-class KeywordFilter(YumexFilter):
+class KeywordFilter(SpritzFilter):
     def __init__(self):
-        YumexFilter.__init__(self)
+        SpritzFilter.__init__(self)
         self.reList = []
         self.fields = ['name', 'description']
 
@@ -101,5 +101,5 @@ class KeywordFilter(YumexFilter):
         else:
             return True
 
-yumexFilter = YumexFiltering()
-yumexFilter.registerFilter(KeywordFilter())
+spritzFilter = SpritzFiltering()
+spritzFilter.registerFilter(KeywordFilter())
