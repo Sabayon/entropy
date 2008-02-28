@@ -1007,7 +1007,7 @@ def uploadDatabase(uris):
                 for atom in light_items:
                     mylink = link+"?search="+atom.split("~")[0]+"&arch="+etpConst['currentarch']+"&product="+etpConst['product']
                     description = light_items[atom]['description']
-                    rssLight.addItem(title = "["+revision+"] "+atom, link = link, description = description)
+                    rssLight.addItem(title = "["+revision+"] "+atom, link = mylink, description = description)
                 rssLight.writeChanges()
 
         rssClass.writeChanges()

@@ -4801,6 +4801,7 @@ class rssFeed:
     def __init__(self, filename, maxentries = 100):
 
         self.feed_title = etpConst['systemname']+" Online Repository Status"
+        self.feed_title = self.feed_title.strip()
         self.feed_description = "Keep you updated on what's going on in the Official "+etpConst['systemname']+" Repository."
         self.feed_language = "en-EN"
         self.feed_editor = etpConst['rss-managing-editor']
@@ -4837,12 +4838,12 @@ class rssFeed:
             # parse file
             self.rssdoc = self.xmldoc.getElementsByTagName("rss")[0]
             self.channel = self.rssdoc.getElementsByTagName("channel")[0]
-            self.title = self.channel.getElementsByTagName("title")[0].firstChild.data
-            self.link = self.channel.getElementsByTagName("link")[0].firstChild.data
-            self.description = self.channel.getElementsByTagName("description")[0].firstChild.data
-            self.language = self.channel.getElementsByTagName("language")[0].firstChild.data
-            self.cright = self.channel.getElementsByTagName("copyright")[0].firstChild.data
-            self.editor = self.channel.getElementsByTagName("managingEditor")[0].firstChild.data
+            self.title = self.channel.getElementsByTagName("title")[0].firstChild.data.strip()
+            self.link = self.channel.getElementsByTagName("link")[0].firstChild.data.strip()
+            self.description = self.channel.getElementsByTagName("description")[0].firstChild.data.strip()
+            self.language = self.channel.getElementsByTagName("language")[0].firstChild.data.strip()
+            self.cright = self.channel.getElementsByTagName("copyright")[0].firstChild.data.strip()
+            self.editor = self.channel.getElementsByTagName("managingEditor")[0].firstChild.data.strip()
             entries = self.channel.getElementsByTagName("item")
             self.itemscounter = len(entries)
             if self.itemscounter > self.maxentries:
@@ -4853,19 +4854,19 @@ class rssFeed:
                     break
                 mycounter -= 1
                 self.items[mycounter] = {}
-                self.items[mycounter]['title'] = item.getElementsByTagName("title")[0].firstChild.data
+                self.items[mycounter]['title'] = item.getElementsByTagName("title")[0].firstChild.data.strip()
                 description = item.getElementsByTagName("description")[0].firstChild
                 if description:
-                    self.items[mycounter]['description'] = description.data
+                    self.items[mycounter]['description'] = description.data.strip()
                 else:
                     self.items[mycounter]['description'] = ""
                 link = item.getElementsByTagName("link")[0].firstChild
                 if link:
-                    self.items[mycounter]['link'] = link.data
+                    self.items[mycounter]['link'] = link.data.strip()
                 else:
                     self.items[mycounter]['link'] = ""
-                self.items[mycounter]['guid'] = item.getElementsByTagName("guid")[0].firstChild.data
-                self.items[mycounter]['pubDate'] = item.getElementsByTagName("pubDate")[0].firstChild.data
+                self.items[mycounter]['guid'] = item.getElementsByTagName("guid")[0].firstChild.data.strip()
+                self.items[mycounter]['pubDate'] = item.getElementsByTagName("pubDate")[0].firstChild.data.strip()
 
     def addItem(self, title, link = '', description = '', light = False):
         self.itemscounter += 1

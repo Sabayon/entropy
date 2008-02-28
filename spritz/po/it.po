@@ -1,745 +1,639 @@
-# Italian translation of yumex.
-# Copyright (C) 2005 THE yumex'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the yumex package.
-# Danilo Bodei <dbodei@lombardiacom.it><dbodei@katamail.com>, 2005-2006.
-# 
-# 
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: yumex 1.2.0\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-27 12:10+0200\n"
-"PO-Revision-Date: 2006-10-14 11:01+0200\n"
-"Last-Translator: Danilo Bodei <dbodei@lombardiacom.it>\n"
-"Language-Team: Italian <tp@lists.linux.it>\n"
+"POT-Creation-Date: 2008-02-26 16:05+0100\n"
+"PO-Revision-Date: 2008-02-28 HO:MI+ZONE\n"
+"Last-Translator: Fabio Erculiani <lxnay@sabayonlinux.org>\n"
+"Language-Team: None\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../src/callbacks.py:69
 #, python-format
 msgid "Getting : %s"
-msgstr "Ricevendo : %s"
+msgstr "Ottenendo: %s"
 
-#: ../src/callbacks.py:164 ../src/yumapi.py:204
+#: ../src/callbacks.py:160
 msgid "Removing"
-msgstr "Rimozione"
+msgstr "Verwijderen"
 
-#: ../src/callbacks.py:166
+#: ../src/callbacks.py:162
 msgid "Cleanup"
-msgstr "Pulizia"
+msgstr "Opruimen"
 
-#: ../src/callbacks.py:184
-#, fuzzy, python-format
+#: ../src/callbacks.py:180
+#, python-format
 msgid "Erased: %s"
-msgstr "Cancellato"
+msgstr "Verwijderd: %s"
 
-#: ../src/callbacks.py:205
+#: ../src/callbacks.py:201
 #, python-format
 msgid "Processing metadata from : %s"
-msgstr "Elaborazione dei metadati da: %s"
+msgstr "Verwerken van metadata voor : %s"
 
-#: ../src/callbacks.py:207
+#: ../src/callbacks.py:203
 msgid "Processing metadata"
-msgstr "Elaborazione dei metadati"
+msgstr "Verwerken van metadata"
 
-#: ../src/callbacks.py:240
+#: ../src/callbacks.py:236
 #, python-format
 msgid "---> Package %s.%s %s:%s-%s set to be %s"
-msgstr "---> Pacchetto %s.%s %s:%s-%s impostato per essere %s"
+msgstr ""
+
+#: ../src/callbacks.py:243
+msgid "--> Running transaction check"
+msgstr "--> Transactie controle"
 
 #: ../src/callbacks.py:247
-msgid "--> Running transaction check"
-msgstr "--> Avvio controllo transazione"
+msgid "--> Restarting Dependency Resolution with new changes."
+msgstr "--> Herstart Afhankelijkheids Controle met nieuwe aanpassingen"
 
 #: ../src/callbacks.py:251
-msgid "--> Restarting Dependency Resolution with new changes."
-msgstr "--> Riavvio la risoluzione della dipendenza con i nuovi cambiamenti."
+msgid "--> Finished Dependency Resolution"
+msgstr "--> Afhankelijkheids Controle Gereed"
 
 #: ../src/callbacks.py:255
-msgid "--> Finished Dependency Resolution"
-msgstr "--> Risoluzione della dipendenza terminata"
-
-#: ../src/callbacks.py:259
 #, python-format
 msgid "--> Processing Dependency: %s for package: %s"
-msgstr "--> Elaborazione dipendenza: %s per il pacchetto: %s"
+msgstr "--> Verwerken van Afhankelijkheid: %s voor pakket %s"
+
+#: ../src/callbacks.py:260
+#, python-format
+msgid "--> Unresolved Dependency: %s"
+msgstr "--> Onopgeloste Afhankelijkheid: %s"
 
 #: ../src/callbacks.py:264
 #, python-format
-msgid "--> Unresolved Dependency: %s"
-msgstr "--> Dipendenza non risolta: %s"
-
-#: ../src/callbacks.py:268
-#, python-format
 msgid "--> Processing Conflict: %s conflicts %s"
-msgstr "--> Elaborazione conflitto: %s è in conflitto con %s"
+msgstr "--> Verwerken van Conflict: %s conflicteert met %s"
 
-#: ../src/callbacks.py:271
+#: ../src/callbacks.py:267
 msgid "--> Populating transaction set with selected packages. Please wait."
-msgstr ""
-"--> Popolo la transazione impostata con i pacchetti selezionati. Attendere."
+msgstr "--> Opbouwen van transactie set met geselecteerde pakketen. Even geduld."
 
-#: ../src/callbacks.py:274
+#: ../src/callbacks.py:270
 #, python-format
 msgid "---> Downloading header for %s to pack into transaction set."
-msgstr ""
-"---> Scaricamento dell'intestazione di %s per inserirlo nella transazione "
-"impostata."
+msgstr "---> Download headerinformatie voor %s voor de transactie set."
 
-#: ../src/dialogs.py:196
-#, fuzzy
-msgid "Packages to Process"
-msgstr "Elaborazione pacchetti"
+#: ../src/dialogs.py:55
+msgid "Please confirm the actions above"
+msgstr "Bevestig bovenstaande actie"
 
-#: ../src/dialogs.py:212 ../src/views.py:474
-msgid "Name"
-msgstr "Nome"
+#. self.create_text_column( _( "Package" ), 'name' , size=300)
+#: ../src/dialogs.py:89 ../src/dialogs.py:96 ../src/views.py:418
+msgid "Package"
+msgstr "Pakket"
 
-#: ../src/dialogs.py:213 ../src/spritz.glade.h:24
-msgid "Arch"
-msgstr "Arch"
+#: ../src/dialogs.py:90 ../src/views.py:560 ../src/views.py:893
+#: ../src/spritz.glade.h:68
+msgid "Description"
+msgstr "Omschrijving"
 
-#: ../src/dialogs.py:214 ../src/views.py:61
-msgid "Ver"
-msgstr "Ver"
+#: ../src/dialogs.py:122
+msgid "To be reinstalled"
+msgstr "Gemarkeerd voor Herinstallatie"
 
-#. Setup reponame & repofile column's
-#: ../src/dialogs.py:215 ../src/views.py:438 ../src/views.py:473
+#: ../src/dialogs.py:127
+msgid "To be installed"
+msgstr "Gemarkeerd voor Installatie"
+
+#: ../src/dialogs.py:132
+msgid "No description"
+msgstr "Geen omschrijving"
+
+#: ../src/dialogs.py:135
+msgid "To be updated"
+msgstr "Gemarkeerd voor update"
+
+#: ../src/dialogs.py:140
+msgid "To be removed"
+msgstr "Gemarkeerd voor verwijdering"
+
+#: ../src/dialogs.py:251
+#, python-format
+msgid "About %s"
+msgstr "Over %s"
+
+#: ../src/dialogs.py:344
+msgid "Hey!"
+msgstr "Hey!"
+
+#: ../src/dialogs.py:348
+msgid "Spritz Question"
+msgstr "Spritz Vraag"
+
+#: ../src/dialogs.py:362 ../src/misc.py:185 ../src/misc.py:240
+msgid "Attention"
+msgstr "Attentie"
+
+#: ../src/dialogs.py:415
+msgid "License"
+msgstr "Licentie"
+
+#. new
+#: ../src/dialogs.py:418
+msgid "Accepted"
+msgstr "Geaccepteerd"
+
+#: ../src/gui.py:254
+msgid "Show Package Updates"
+msgstr "Toon Pakket Updates"
+
+#: ../src/gui.py:255
+msgid "Show available Packages"
+msgstr "Toon beschikbare Pakketten"
+
+#: ../src/gui.py:256
+msgid "Show Installed Packages"
+msgstr "Toon geïnstalleerde pakketten"
+
+#. Setup Vertical Toolbar
+#: ../src/gui.py:277 ../src/views.py:555
+msgid "Packages"
+msgstr "Pakketten"
+
+#: ../src/gui.py:278
+msgid "Package Categories"
+msgstr "Pakket Categorieën"
+
+#: ../src/gui.py:279
+msgid "Package Queue"
+msgstr "Pakket Wachtrij"
+
+#: ../src/gui.py:280
+msgid "Repository Selection"
+msgstr "Repostitory Selectie"
+
+#: ../src/gui.py:281
+msgid "Configuration Files"
+msgstr "Configuratie Bestanden"
+
+#: ../src/gui.py:282
+msgid "Output"
+msgstr "Output"
+
+#: ../src/misc.py:84
+msgid "Programming:"
+msgstr "Programmeerwerk:"
+
+#: ../src/misc.py:87
+msgid "Yum Extender Programmers:"
+msgstr "Yum Extender Programmeurs:"
+
+#: ../src/misc.py:90
+msgid "Translation:"
+msgstr "Vertaling"
+
+#: ../src/misc.py:111
+msgid "Dedicated to:"
+msgstr "Opgedragen aan:"
+
+#: ../src/misc.py:186
+msgid ""
+"There are packages that can't be installed at the same time, thus are "
+"blocking your request:"
+msgstr "Er zijn pakketten die niet tegelijkertijd geïnstalleerd kunnen worden. Volgende pakketten veroorzaken het probleem:"
+
+#: ../src/misc.py:241
+msgid ""
+"Some dependencies couldn't be found. It can either be because they are "
+"masked or because they aren't in any active repository."
+msgstr "Sommige afhankelijkheden konden niet worden gevonden. Wellicht zijn ze gemaskeerd of ontbreken in de actieve repository."
+
+#: ../src/misc.py:284
+msgid "Needed disk space"
+msgstr "Benodigde schijfruimte"
+
+#: ../src/misc.py:287
+msgid "Freed disk space"
+msgstr "Vrijgemaakte schijfruimte"
+
+#: ../src/misc.py:291
+msgid "These are the packages that would be installed/updated"
+msgstr "Volgende pakketten zullen worden geïnstalleerd/geupdate"
+
+#: ../src/misc.py:334
+msgid "Freed space"
+msgstr "Vrijgemaakte schijfruimte"
+
+#: ../src/misc.py:337
+msgid "Needed space"
+msgstr "Benodigde schijfruimte"
+
+#: ../src/misc.py:341
+msgid "These are the packages that would be removed"
+msgstr "Volgende pakketten worden verwijderd"
+
+#: ../src/views.py:44
+msgid "Categories"
+msgstr "Categorieën"
+
+#: ../src/views.py:419 ../src/views.py:651
+msgid "Rev."
+msgstr "Rev."
+
+#: ../src/views.py:420
+msgid "Slot"
+msgstr "Slot"
+
+#: ../src/views.py:421 ../src/views.py:832
 msgid "Repository"
 msgstr "Repository"
 
-#: ../src/dialogs.py:216 ../src/views.py:61
-msgid "Size"
-msgstr "Dimensione"
+#: ../src/views.py:596
+msgid "<b>Packages To Reinstall</b>"
+msgstr "<b>Pakketten voor Herinstallatie</b>"
 
-#: ../src/dialogs.py:348
-#, fuzzy, python-format
-msgid "About %s"
-msgstr "Informazioni"
-
-#: ../src/gui.py:66
-#, fuzzy, python-format
-msgid ""
-"Updating : %s\n"
-"\n"
-msgstr "Aggiornamento"
-
-#: ../src/gui.py:73
-#, fuzzy, python-format
-msgid ""
-"Obsoleting : %s\n"
-"\n"
-msgstr "Ricevendo : %s"
-
-#: ../src/gui.py:88
-msgid ""
-"Requires:\n"
-"\n"
-msgstr ""
-"Richiede:\n"
-"\n"
-
-#: ../src/gui.py:103 ../src/gui.py:113
-#, python-format
-msgid "Can not read the %s attribute"
-msgstr "Impossibile leggere l'attributo %s"
-
-#: ../src/gui.py:369
-#, fuzzy
-msgid "Show All Packages"
-msgstr "Pacchetti"
-
-#: ../src/gui.py:370
-#, fuzzy
-msgid "Show Package Updates"
-msgstr "%d Pacchetto(i) da installare"
-
-#: ../src/gui.py:371
-#, fuzzy
-msgid "Show available Packages"
-msgstr "Pacchetti"
-
-#: ../src/gui.py:372
-#, fuzzy
-msgid "Show Installed Packages"
-msgstr "Scaricamento pacchetti:"
-
-#. Setup Vertical Toolbar
-#: ../src/gui.py:381
-#, fuzzy
-msgid "Package View"
-msgstr "Pacchetto"
-
-#: ../src/gui.py:382
-msgid "Group View"
-msgstr ""
-
-#: ../src/gui.py:383
-#, fuzzy
-msgid "Package Queue View"
-msgstr "Pacchetto"
-
-#: ../src/gui.py:385
-#, fuzzy
-msgid "Repository Selection View"
-msgstr "Creazione repository fallita!"
-
-#: ../src/gui.py:386
-#, fuzzy
-msgid "Output View"
-msgstr "_Output"
-
-#.
-#. [1]           [2]               [3]             [4]     [5]     [6]
-#. -------------------------------------------------------------------------
-#: ../src/misc.py:93
-msgid "RPM Groups"
-msgstr "Gruppi RPM"
-
-#: ../src/misc.py:94
-msgid "Repositories"
-msgstr "Repository"
-
-#: ../src/misc.py:95 ../src/views.py:61
-msgid "Architecture"
-msgstr "Architettura"
-
-#: ../src/misc.py:96
-msgid "Sizes"
-msgstr "Dimensioni"
-
-#: ../src/misc.py:97
-msgid "Age"
-msgstr "Età"
-
-#: ../src/misc.py:107
-#, fuzzy
-msgid "Mandatory"
-msgstr "O_bbligatorio"
-
-#: ../src/misc.py:108
-#, fuzzy
-msgid "Default"
-msgstr "Pre_definito"
-
-#: ../src/misc.py:109
-#, fuzzy
-msgid "Optional"
-msgstr "_Opzionale"
-
-#: ../src/misc.py:110
-#, fuzzy
-msgid "Conditional"
-msgstr "_Opzionale"
-
-#: ../src/misc.py:118
-msgid "Programming:"
-msgstr ""
-
-#: ../src/misc.py:121
-#, fuzzy
-msgid "Translation:"
-msgstr "installazione"
-
-#: ../src/misc.py:142
-msgid "Special Thanks To:"
-msgstr ""
-
-#: ../src/misc.py:359
-#, fuzzy
-msgid "Package Queue:"
-msgstr "Pacchetto"
-
-#: ../src/misc.py:364
-#, fuzzy, python-format
-msgid " Packages to %s"
-msgstr "%d Pacchetto(i) da installare"
-
-#: ../src/misc.py:371
-#, fuzzy, python-format
-msgid " Groups to %s"
-msgstr "Gruppi RPM"
-
-#: ../src/misc.py:435
-#, python-format
-msgid "Wrong file application (%s)"
-msgstr ""
-
-#: ../src/misc.py:437
-#, python-format
-msgid "Wrong file type (%s)"
-msgstr ""
-
-#: ../src/misc.py:439
-#, fuzzy, python-format
-msgid "Wrong file version (%s)"
-msgstr ""
-"Versione installata: %s (%s) \n"
-"\n"
-
-#: ../src/misc.py:610
-msgid "Current Settings :"
-msgstr "Impostazioni attuali :"
-
-#: ../src/views.py:40
-#, fuzzy
-msgid "Categories"
-msgstr "_Categoria"
-
-#: ../src/views.py:61 ../src/views.py:91
-msgid "Package"
-msgstr "Pacchetto"
-
-#: ../src/views.py:61 ../src/views.py:94 ../src/views.py:218
-msgid "Summary"
-msgstr "Sommario"
-
-#: ../src/views.py:61
-msgid "Repo"
-msgstr "Repo"
-
-#: ../src/views.py:92
-msgid "Arch."
-msgstr "Arch."
-
-#: ../src/views.py:93
-msgid "Ver."
-msgstr "Ver."
-
-#: ../src/views.py:95
-msgid "Repo."
-msgstr "Repo."
-
-#: ../src/views.py:96
-msgid "Size."
-msgstr "Dimensione."
-
-#: ../src/views.py:213
-msgid "Packages"
-msgstr "Pacchetti"
-
-#: ../src/views.py:255
+#: ../src/views.py:600
 msgid "<b>Packages To Update</b>"
-msgstr "<b>Pacchetti da aggiornare</b>"
+msgstr "<b>Pakketten voor Update</b>"
 
-#: ../src/views.py:259
+#: ../src/views.py:604
 msgid "<b>Packages To Install</b>"
-msgstr "<b>Pacchetti da installare</b>"
+msgstr "<b>Pakketten voor Installatie</b>"
 
-#: ../src/views.py:263
+#: ../src/views.py:608
 msgid "<b>Packages To Remove</b>"
-msgstr "<b>Pacchetti da rimuovere</b>"
+msgstr "<b></b>"
 
-#: ../src/views.py:438
-#, fuzzy
+#: ../src/views.py:637
+msgid "Proposed"
+msgstr "Voorgesteld"
+
+#: ../src/views.py:644
+msgid "Destination"
+msgstr "Bestemming"
+
+#: ../src/views.py:832
 msgid "Filename"
-msgstr "File"
+msgstr "Bestandsnaam"
 
-#: ../src/views.py:571
-msgid "Plugin"
-msgstr "Plugin"
-
-#: ../src/yumapi.py:67 ../src/yumapi.py:114
-msgid "Setup Yum : Transaction Set"
-msgstr "Impostazione yum : impostazione transazione"
-
-#: ../src/yumapi.py:69 ../src/yumapi.py:116
-msgid "Setup Yum : RPM Db."
-msgstr "Impostazione yum : db RPM"
-
-#. -> Repo Setup
-#: ../src/yumapi.py:72 ../src/yumapi.py:119
-#, fuzzy
-msgid "Setup Yum : Repositories."
-msgstr "Impostazione yum : config"
-
-#. -> Sack Setup
-#: ../src/yumapi.py:75 ../src/yumapi.py:122
-#, fuzzy
-msgid "Setup Yum : Package Sacks"
-msgstr "Impostazione sacco del pacchetto"
-
-#. -> Updates Setup
-#. -> Sack Setup
-#: ../src/yumapi.py:78 ../src/yumapi.py:125
-#, fuzzy
-msgid "Setup Yum : Updates"
-msgstr "Impostazione yum : plugins"
-
-#. -> Group Setup
-#. -> Sack Setup
-#: ../src/yumapi.py:82 ../src/yumapi.py:128
-#, fuzzy
-msgid "Setup Yum : Groups"
-msgstr "Impostazione yum : plugins"
-
-#: ../src/yumapi.py:84 ../src/yumapi.py:130
-msgid "Setup Yum : Base setup completed"
-msgstr "Impostazione yum : impostazione base completata"
-
-#: ../src/yumapi.py:138
-#, fuzzy, python-format
-msgid "Loaded update Metadata from %s "
-msgstr "Carica i metadati di yum"
-
-#: ../src/yumapi.py:140
+#: ../src/views.py:852 ../src/spritz.py:305
 #, python-format
-msgid "No update Metadata found for %s "
+msgid "You should press the %s button now"
+msgstr "Druk op de %s toets"
+
+#: ../src/views.py:852 ../src/spritz.py:305 ../src/spritz.py:382
+msgid "Regenerate Cache"
+msgstr "Hergenereer Cache"
+
+#: ../src/views.py:871
+msgid "Active"
+msgstr "Actief"
+
+#: ../src/views.py:881 ../src/spritz.glade.h:102
+msgid "Update"
+msgstr "Update"
+
+#. Setup revision column
+#: ../src/views.py:889
+msgid "Revision"
+msgstr "Herziening"
+
+#. Setup reponame & repofile column's
+#: ../src/views.py:892
+msgid "Repository Identifier"
 msgstr ""
 
-#: ../src/yumapi.py:159 ../src/yumex.py:601
-msgid "Preparing for install/remove/update"
-msgstr "Preparazione all'installazione/rimozione/aggiornamento"
-
-#: ../src/yumapi.py:163
-msgid "--> Preparing for install"
-msgstr "-> Preparazione all'installazione"
-
-#: ../src/yumapi.py:168
-msgid "--> Preparing for remove"
-msgstr "-> Preparazione alla rimozione"
-
-#: ../src/yumapi.py:175
-msgid "--> Preparing for a full update"
-msgstr "-> Preparazione per un aggiornamento totale"
-
-#: ../src/yumapi.py:178
-msgid "--> Preparing for a partial update"
-msgstr "-> Preparazione per un aggiornamento parziale"
-
-#: ../src/yumapi.py:180
-msgid "--> Adding all obsoletion to transaction"
-msgstr "---> Aggiunta di tutti gli obsoleti alla transazione"
-
-#: ../src/yumapi.py:202 ../src/yumgui/callbacks.py:62
-#: ../src/yumgui/callbacks.py:63 ../src/yumgui/callbacks.py:65
-msgid "Installing"
-msgstr "Installazione"
-
-#: ../src/yumapi.py:203 ../src/yumgui/callbacks.py:60
-msgid "Updating"
-msgstr "Aggiornamento"
-
-#: ../src/yumapi.py:205
-msgid "Installing for dependencies"
-msgstr "Installazione per le dipendenze"
-
-#: ../src/yumapi.py:206
-msgid "Updating for dependencies"
-msgstr "Aggiornamento per le dipendenze"
-
-#: ../src/yumapi.py:207
-msgid "Removing for dependencies"
-msgstr "Rimozione per le dipendenze"
-
-#: ../src/yumapi.py:253
-#, python-format
-msgid "Failure getting %s: "
-msgstr "Errore ricevendo %s: "
-
-#: ../src/yumapi.py:275
-msgid "Downloading Packages:"
-msgstr "Scaricamento pacchetti:"
-
-#: ../src/yumapi.py:291 ../src/yumapi.py:299
-msgid "Error Downloading Packages:\n"
-msgstr "Errore scaricamento pacchetti:\n"
-
-#. Check GPG signatures
-#: ../src/yumapi.py:306
-msgid "Checking GPG Signatures:"
-msgstr "Controllo firme GPG:"
-
-#: ../src/yumapi.py:311
-msgid "Error checking package signatures:\n"
-msgstr "Errore controllando le firme del pacchetto:\n"
-
-#: ../src/yumapi.py:317
-#, fuzzy
-msgid "Traceback in checking package signatures:\n"
-msgstr "Errore controllando le firme del pacchetto:\n"
-
-#: ../src/yumapi.py:324
-msgid "Running Transaction Test"
-msgstr "Avvio test transazione"
-
-#: ../src/yumapi.py:342
-msgid "Finished Transaction Test"
-msgstr "Test transazione terminato"
-
-#: ../src/yumapi.py:344
-msgid "Transaction Check Error: "
-msgstr "Errore controllo transazione: "
-
-#: ../src/yumapi.py:349
-msgid "Transaction Test Succeeded"
-msgstr "Test transazione completato con successo"
-
-#: ../src/yumapi.py:365
-msgid "Running Transaction"
-msgstr "Avvio transazione"
-
-#. print "po: %s userid: %s hexkey: %s " % (str(po),userid,hexkeyid)
-#: ../src/yumapi.py:449
-#, python-format
-msgid "Do you want to import GPG Key : %s \n"
-msgstr ""
-
-#: ../src/yumapi.py:451
-#, python-format
-msgid "Needed by %s"
-msgstr ""
-
-#: ../src/yumex.py:63
-#, fuzzy
-msgid "Cant Quit while running RPM Transactions"
-msgstr "Avvio transazione"
-
-#: ../src/yumex.py:68
+#: ../src/spritz.py:83
 msgid "Quiting, please wait !!!!!!"
+msgstr "Bezig met afsluiten, even geduld!!!!!"
+
+#: ../src/spritz.py:188
+msgid "Branch switching"
+msgstr "Veranderen van Branch"
+
+#: ../src/spritz.py:188
+msgid "Enter a valid branch you want to switch to"
+msgstr "Voor een geldige Branch in"
+
+#: ../src/spritz.py:191
+msgid "The selected branch is not available."
+msgstr "Geselecteerde branch is niet beschikbaar"
+
+#: ../src/spritz.py:194
+#, python-format
+msgid "New branch is %s. It is suggested to synchronize repositories."
+msgstr "Nieuwe branch is %s. Synchroniseer de repositories opnieuw."
+
+#: ../src/spritz.py:237 ../src/spritz.py:259
+msgid "Insert URL"
+msgstr "Voer URL in"
+
+#: ../src/spritz.py:237 ../src/spritz.py:259
+msgid "Enter a download mirror, HTTP or FTP"
+msgstr "Voer een download mirror in, HTTP of FTP"
+
+#: ../src/spritz.py:242
+msgid "You must enter either a HTTP or a FTP url."
+msgstr "Vul een geldige HTTP of FTP url in."
+
+#: ../src/spritz.py:294 ../src/spritz.py:341
+#, python-format
+msgid "Wrong entries, errors: %s"
+msgstr "Verkeerde invoer, fouten: %s"
+
+#: ../src/spritz.py:310
+msgid "No Repository Identifier"
+msgstr "Geen Repository Identifier"
+
+#: ../src/spritz.py:313
+msgid "Duplicated Repository Identifier"
+msgstr "Dubbele Repository identifier"
+
+#: ../src/spritz.py:317
+msgid "No download mirrors"
+msgstr "Geen download locatie"
+
+#: ../src/spritz.py:319
+msgid "Database URL must be HTTP or FTP"
+msgstr "Database URL moet HTTP of FTP zijn"
+
+#: ../src/spritz.py:339
+#, python-format
+msgid "You should now press the %s button now"
+msgstr "Druk op de %s toets"
+
+#: ../src/spritz.py:339 ../src/spritz.py:382
+msgid "Update Repositories"
+msgstr "Update Repositories"
+
+#: ../src/spritz.py:350
+msgid "Insert Repository"
+msgstr "Voer Repository in"
+
+#: ../src/spritz.py:350
+msgid "Insert Repository identification string"
 msgstr ""
 
-#: ../src/yumex.py:158
-msgid "Yum has not been initialized yet"
-msgstr ""
+#: ../src/spritz.py:368
+msgid "This Repository identification string is malformed"
+msgstr "Ongeldige Repository invoer"
+
+#: ../src/spritz.py:378
+msgid "You! Why do you want to remove the main repository ?"
+msgstr "Hey! Waarom wil je de hoofdrepository verwijderen?"
+
+#: ../src/spritz.py:382
+#, python-format
+msgid "You must now either press the %s or the %s button"
+msgstr "Druk op de %s of op de %s toets"
+
+#: ../src/spritz.py:447
+msgid "Please select at least one repository"
+msgstr "Selecteer tenminste één repository"
 
 #. Check there are any packages in the queue
-#: ../src/yumex.py:164
-#, fuzzy
+#: ../src/spritz.py:482
 msgid "No packages in queue"
-msgstr "Elaborazione dei pacchetti nella coda"
+msgstr "De wachtrij is leeg"
 
-#: ../src/yumex.py:241
-#, python-format
-msgid "You are about to add %s packages\n"
-msgstr ""
+#: ../src/spritz.py:551
+msgid "Queue is too old. Cannot load."
+msgstr "De wachtrij is te oud en kon niet geladen worden."
 
-#: ../src/yumex.py:242 ../src/yumex.py:254
-msgid "It will take some time\n"
-msgstr ""
+#. from installed
+#: ../src/spritz.py:582
+msgid "From your Operating System"
+msgstr "Van je Besturings Systeem"
 
-#: ../src/yumex.py:243 ../src/yumex.py:255
-#, fuzzy
-msgid "do you want to continue ?"
-msgstr "Salvare i cambiamenti?"
-
-#: ../src/yumex.py:253
-#, python-format
-msgid "You are about to remove %s packages\n"
-msgstr ""
-
-#: ../src/yumex.py:359
-#, python-format
-msgid "Selected the %s profile"
-msgstr "È stato selezionato il profilo %s"
-
-#: ../src/yumex.py:379
-#, python-format
-msgid "Profile : %s saved ok"
-msgstr "Profilo : %s salvataggio riuscito"
-
-#: ../src/yumex.py:381
-#, python-format
-msgid "Profile : %s save failed"
-msgstr "Profilo : %s salvataggio fallito"
-
-#: ../src/yumex.py:386
-msgid "Create New Profile"
-msgstr "Crea nuovo profilo"
-
-#: ../src/yumex.py:386
-#, fuzzy
-msgid "Name of new profile"
-msgstr "Crea nuovo profilo"
-
-#: ../src/yumex.py:390
-#, fuzzy, python-format
-msgid "Profile : %s created ok"
-msgstr "Profilo : %s creato"
-
-#: ../src/yumex.py:393
-#, python-format
-msgid "Profile : %s creation failed"
-msgstr "Profilo : %s creazione fallita"
-
-#: ../src/yumex.py:397
+#: ../src/spritz.py:814
 msgid "Cleaning up all yum metadata"
-msgstr ""
+msgstr "opschonen van yum metadata"
 
-#: ../src/yumex.py:424
-msgid "Yum Config Setup"
+#. warn the user
+#: ../src/spritz.py:824
+#, python-format
+msgid ""
+"<big><b>Sorry to tell you</b></big>\t\t\n"
+"Another instance of Entropy <b>is running</b>. <u>Close</u> it or <u>remove</"
+"u>: %s"
 msgstr ""
+"<big><b>Helaas</b></big>\t\t\n"
+"Entropy is <b>al in gebruik</b> door een ander process. <u>Sluit</u> het of <u>verwijder</"
+"u>: %s"
 
-#: ../src/yumex.py:440
+#: ../src/spritz.py:840
+msgid "Entropy Config Setup"
+msgstr "Entropy Configuratie"
+
+#: ../src/spritz.py:851
 msgid "GUI Setup Completed"
-msgstr ""
+msgstr "GUI setup voltooid"
 
-#: ../src/yumex.py:482 ../src/yumex.py:616 ../src/yumex.py:671
-#: ../src/yumex.py:779 ../src/yumex.py:787 ../src/yumex.py:806
-#: ../src/spritz.glade.h:30
-msgid "Error"
-msgstr "Errore"
+#: ../src/spritz.py:867
+msgid "License name"
+msgstr "Licentie naam"
 
-#: ../src/yumex.py:482
-#, fuzzy
-msgid "Error in Yum Setup"
-msgstr "Errore nell'impostazione di yum"
+#: ../src/spritz.py:875
+msgid "Sources"
+msgstr "Broncode"
 
-#. prepare package lists
-#. -> List setup
-#: ../src/yumex.py:487
-#, fuzzy
-msgid "Building Package Lists"
-msgstr "Costruzione liste pacchetti completata"
+#: ../src/spritz.py:883
+msgid "Mirrors"
+msgstr "Mirrors"
 
-#: ../src/yumex.py:489
-#, fuzzy
-msgid "Building Package Lists Completed"
-msgstr "Costruzione liste pacchetti completata"
+#: ../src/spritz.py:891
+msgid "Keywords"
+msgstr "Keywords"
 
-#: ../src/yumex.py:490
-msgid "Building Groups Lists"
-msgstr ""
+#: ../src/spritz.py:899
+msgid "Dependencies"
+msgstr "Afhankelijkheden"
 
-#: ../src/yumex.py:493
-#, fuzzy
-msgid "Building Group Lists Completed"
-msgstr "Costruzione liste pacchetti completata"
+#: ../src/spritz.py:907
+msgid "Depends"
+msgstr "Afhankelijk van"
 
-#: ../src/yumex.py:525
-#, fuzzy, python-format
-msgid "Getting packages : %s"
-msgstr "Impostazione sacco del pacchetto"
+#: ../src/spritz.py:915
+msgid "Needed libraries"
+msgstr "Benodigde bibliotheken"
 
-#: ../src/yumex.py:529
+#: ../src/spritz.py:923
+msgid "Protected item"
+msgstr "Beschermd item"
+
+#: ../src/spritz.py:926 ../src/spritz.py:938
+msgid "Type"
+msgstr "Type"
+
+#: ../src/spritz.py:934
+msgid "File"
+msgstr "Bestand"
+
+#: ../src/spritz.py:998
+msgid "Generating metadata. Please wait."
+msgstr "Genereren van Metadata. Even geduld."
+
+#: ../src/spritz.py:1002 ../src/spritz.py:1120
+msgid "Ready"
+msgstr "Klaar"
+
+#: ../src/spritz.py:1042
+msgid "Initializing Repository module..."
+msgstr "Initialiseren van Repository module"
+
+#: ../src/spritz.py:1048
+msgid "You must run this application as root"
+msgstr "Je moet deze applicatie als root uitvoeren"
+
+#: ../src/spritz.py:1051
 #, python-format
-msgid "Found %d %s packages"
-msgstr ""
+msgid "No repositories specified in %s"
+msgstr "Geen repositories gespecificeerd in %s"
 
-#. -> Sort Lists
-#: ../src/yumex.py:532
-#, fuzzy
-msgid "Sorting packages"
-msgstr "Impostazione sacco del pacchetto"
+#: ../src/spritz.py:1054
+msgid "You are not connected to the Internet. You should."
+msgstr "Je bent niet verbonden met het internet. Dat is een vereiste."
 
-#: ../src/yumex.py:534
-#, fuzzy
-msgid "Population view with packages"
-msgstr "Popolo la vista %s con i pacchetti : (%-4s / %-4s)"
+#: ../src/spritz.py:1057
+#, python-format
+msgid "Unhandled exception: %s"
+msgstr "Onuitvoerbare opdracht: %s"
 
-#: ../src/yumex.py:540
-#, fuzzy
-msgid "Population Completed"
-msgstr "La popolazione della vista è completata"
+#: ../src/spritz.py:1061
+msgid "Errors updating repositories."
+msgstr "Fouten tijdens het updaten van de repositories"
 
-#: ../src/yumex.py:547
-#, fuzzy
+#: ../src/spritz.py:1062
+msgid "Please check logs below for more info"
+msgstr "Controleer onderstaande log voor uitgebreide informatie."
+
+#: ../src/spritz.py:1065
+msgid "Repositories updated successfully"
+msgstr "Repositories succesvol geupdate"
+
+#: ../src/spritz.py:1068
+msgid "All the repositories were already up to date."
+msgstr "Alle repositories waren reeds up to date"
+
+#: ../src/spritz.py:1070
+#, python-format
+msgid "%s repositories were already up to date. Others have been updated."
+msgstr "%s repositories waren reeds up to date, de overige zijn geupdate"
+
+#: ../src/spritz.py:1072
+msgid "app-admin/equo needs to be updated as soon as possible."
+msgstr "app-admin/equo dient zo spoedig mogelijk geupdate te worden!"
+
+#: ../src/spritz.py:1077
+msgid "Nothing to do. I am idle."
+msgstr "Niets te doen. Ik wacht."
+
+#: ../src/spritz.py:1078
+msgid "Really, don't waste your time here. This is just a placeholder"
+msgstr "Niets te zien hier mensen, doorlopen!"
+
+#: ../src/spritz.py:1079
+msgid "I am still alive and kickin'"
+msgstr "Joehoe! Ik leef nog hoor!"
+
+#. -> Get lists
+#: ../src/spritz.py:1112
+msgid "Generating Metadata, please wait."
+msgstr "Genereren van Metadata, even geduld."
+
+#: ../src/spritz.py:1113
+msgid "Entropy is indexing the repositories. It will take a few seconds"
+msgstr "Entropy indexeert de repositories, even geduld"
+
+#: ../src/spritz.py:1114
+msgid "While you are waiting, take a break and look outside. Is it rainy?"
+msgstr "Terwijl je wacht kijk eens naar buiten. Regent het?"
+
+#: ../src/spritz.py:1116
+#, python-format
+msgid "Calculating %s"
+msgstr "Berekenen %s"
+
+#: ../src/spritz.py:1146
 msgid "Package View Population"
-msgstr "Descrizione del pacchetto"
+msgstr "Pakket weergave vullen"
 
-#: ../src/yumex.py:559
-#, fuzzy
+#: ../src/spritz.py:1154
 msgid "Package View Population Completed"
-msgstr "La popolazione della vista è completata"
+msgstr "Pakket weergave vullen gereed"
 
-#: ../src/yumex.py:565
+#: ../src/spritz.py:1160
 msgid "Category View Population"
-msgstr ""
+msgstr "Categorie overzicht vullen"
 
-#: ../src/yumex.py:584
-#, fuzzy
+#: ../src/spritz.py:1179
 msgid "Category View Population Completed"
-msgstr "La popolazione della vista è completata"
+msgstr "Categorie overzicht vullen gereed"
 
-#: ../src/yumex.py:609
+#: ../src/spritz.py:1196
+msgid "Running tasks"
+msgstr "Bezig met uitvoeren van taken"
+
+#: ../src/spritz.py:1203
 msgid "Processing Packages in queue"
-msgstr "Elaborazione dei pacchetti nella coda"
+msgstr "Verwerken van pakket wachtlijst"
 
-#: ../src/yumex.py:615
-msgid "Error in Dependency Resolution"
-msgstr "Errore nella risoluzione della dipendenza"
+#: ../src/spritz.py:1213
+msgid ""
+"Attention. An error occured when processing the queue.\n"
+"Please have a look in the processing terminal."
+msgstr "Attentie! Er is een fout opgetreden tijdens het verwerken van de wachtlijst.\n Kijk in het terminal venster voor meer informatie"
 
-#: ../src/yumex.py:632
+#: ../src/spritz.py:1238
 msgid "No packages selected"
-msgstr "Nessun pacchetto selezionato"
+msgstr "Geen pakketten geselecteerd"
 
-#: ../src/yumex.py:639
-#, fuzzy
-msgid "No packages in transaction"
-msgstr "Elaborazione dei pacchetti nella coda"
+#: ../src/spritz.py:1318 ../src/spritz.glade.h:70
+msgid "Error"
+msgstr "Fout"
 
-#: ../src/yumex.py:649
-msgid "Processing packages (See output for details)"
-msgstr "Elaborazione pacchetti (vedere l'output per i dettagli)"
-
-#: ../src/yumex.py:667
-msgid "Packages Processing"
-msgstr "Elaborazione pacchetti"
-
-#: ../src/yumex.py:667
-msgid "Packages Processing completed ok"
-msgstr "Elaborazione dei pacchetti completata con successo"
-
-#: ../src/yumex.py:671
-msgid "Error in Transaction"
-msgstr "Errore nella transazione"
-
-#: ../src/yumex.py:676
-#, fuzzy, python-format
-msgid "Parsing packages to %s "
-msgstr "%d Pacchetto(i) da installare"
-
-#: ../src/yumex.py:710
-#, python-format
-msgid "found %d packages, matching : %s"
-msgstr ""
-
-#: ../src/yumex.py:777
-msgid "Yum is locked by another application"
-msgstr "Yum è bloccato da un'altra applicazione"
-
-#: ../src/yumex.py:779 ../src/yumex.py:806
-#, fuzzy
+#: ../src/spritz.py:1318
 msgid "Error in Yumex"
-msgstr "Errore nell'impostazione di yum"
+msgstr "Fout in Yumex"
 
-#: ../src/yumex.py:787
-msgid "Error in plugin, Yum Extender will exit"
-msgstr ""
+#: ../src/etpgui/callbacks.py:60
+msgid "Updating"
+msgstr "Updaten"
 
-#: ../src/yumgui/callbacks.py:61
+#: ../src/etpgui/callbacks.py:61
 msgid "Erasing"
-msgstr "Cancellazione"
+msgstr "Verwijderen"
 
-#: ../src/yumgui/callbacks.py:64 ../src/yumgui/callbacks.py:70
+#: ../src/etpgui/callbacks.py:62 ../src/etpgui/callbacks.py:63
+#: ../src/etpgui/callbacks.py:65
+msgid "Installing"
+msgstr "Installeren"
+
+#: ../src/etpgui/callbacks.py:64 ../src/etpgui/callbacks.py:70
 msgid "Obsoleted"
-msgstr "Obsoleto"
+msgstr "Verouderd"
 
-#: ../src/yumgui/callbacks.py:66
+#: ../src/etpgui/callbacks.py:66
 msgid "Updated"
-msgstr "Aggiornato"
+msgstr "Geupdate"
 
-#: ../src/yumgui/callbacks.py:67
+#: ../src/etpgui/callbacks.py:67
 msgid "Erased"
-msgstr "Cancellato"
+msgstr "Verwijderd"
 
-#: ../src/yumgui/callbacks.py:68 ../src/yumgui/callbacks.py:69
-#: ../src/yumgui/callbacks.py:71 ../src/spritz.glade.h:36
+#: ../src/etpgui/callbacks.py:68 ../src/etpgui/callbacks.py:69
+#: ../src/etpgui/callbacks.py:71 ../src/spritz.glade.h:75
 msgid "Installed"
-msgstr "Installato"
+msgstr "Geïnstalleerd"
 
-#: ../src/yumgui/callbacks.py:181
+#: ../src/etpgui/callbacks.py:181
 msgid "No header - huh?"
-msgstr "Nessuna intestazione - huh?"
+msgstr "Geen header - wat?"
 
 #: ../src/spritz.glade.h:1
 msgid " "
 msgstr " "
-
-#: ../src/spritz.glade.h:2
-msgid "    "
-msgstr "    "
 
 #: ../src/spritz.glade.h:3
 msgid "0"
@@ -762,655 +656,461 @@ msgid "4"
 msgstr "4"
 
 #: ../src/spritz.glade.h:8
-msgid "<b>Behavior</b>"
-msgstr "<b>Comportamento</b>"
+msgid "5"
+msgstr "5"
 
 #: ../src/spritz.glade.h:9
-#, fuzzy
-msgid "<b>Category</b>"
-msgstr "<b>Flag</b>"
-
-#: ../src/spritz.glade.h:10
-msgid "<b>Fonts </b>"
-msgstr "<b>Caratteri </b>"
+msgid ""
+"<b><big>Please wait</big></b>\n"
+"<small>...take a little break !</small>"
+msgstr ""
+"<b><big>Even geduld</big></b>\n"
+"<small>...neem een kleine pauze!</small>"
 
 #: ../src/spritz.glade.h:11
-#, fuzzy
-msgid "<b>Packages</b>"
-msgstr "<b>Pacchetti da aggiornare</b>"
+msgid "<b>Branch</b>"
+msgstr "<b>Branch</b>"
 
 #: ../src/spritz.glade.h:12
-#, fuzzy
-msgid "<b>Quick add to queue</b>"
-msgstr "%i pacchetti aggiunti alla coda"
+msgid "<b>CFLAGS</b>"
+msgstr "<b>CFLAGS</b>"
 
 #: ../src/spritz.glade.h:13
-msgid "<b>Repository  Exclude Filters</b>"
-msgstr ""
+msgid "<b>CHOST</b>"
+msgstr "<b>CHOST</b>"
 
 #: ../src/spritz.glade.h:14
-msgid "<b>SUBACTION</b>\n"
-msgstr "<b>Sottoazione</b>\n"
+msgid "<b>CONFIG_PROTECT Stuff</b>"
+msgstr "<b>CONFIG_PROTECT info</b>"
+
+#: ../src/spritz.glade.h:15
+msgid "<b>CXXFLAGS</b>"
+msgstr "<b>CXXFLAGS</b>"
 
 #: ../src/spritz.glade.h:16
-msgid "<b>Total Download Size</b>"
-msgstr "<b>Dimensione totale dello scaricamento</b>"
+msgid "<b>Creation date</b>"
+msgstr "<b>Creatie datum</b>"
 
 #: ../src/spritz.glade.h:17
-msgid "<span size=\"large\"><b>Action</b></span>\n"
-msgstr "<span size=\"large\"><b>Azione</b></span>\n"
+msgid "<b>Download Path</b>"
+msgstr "<b>Download Pad</b>"
+
+#: ../src/spritz.glade.h:18
+msgid "<b>Eclasses</b>"
+msgstr "<b>Eclassen</b>"
 
 #: ../src/spritz.glade.h:19
-msgid "<span size=\"xx-large\" color=\"black\">Group View</span>"
-msgstr "<span size=\"xx-large\" color=\"black\">Vista gruppo</span>"
+msgid "<b>Entropy API</b>"
+msgstr "<b>Entropy API</b>"
 
 #: ../src/spritz.glade.h:20
-msgid "<span size=\"xx-large\" color=\"black\">Output View</span>"
-msgstr "<span size=\"xx-large\" color=\"black\">Vista output</span>"
+msgid "<b>External Trigger</b>"
+msgstr "<b>Externe Trigger</b>"
 
 #: ../src/spritz.glade.h:21
-msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
-msgstr "<span size=\"xx-large\" color=\"black\">Pacchetti in coda</span>"
+msgid "<b>Install Size</b>"
+msgstr "<b>Installatie Grootte</b>"
 
 #: ../src/spritz.glade.h:22
-msgid "<span size=\"xx-large\" color=\"black\">Select Repositories</span>"
-msgstr "<span size=\"xx-large\" color=\"black\">Selezione repository</span>"
+msgid "<b>Kernel Tag</b>"
+msgstr "<b>Kernel Tag</b>"
 
 #: ../src/spritz.glade.h:23
-msgid "All"
-msgstr ""
+msgid "<b>Location</b>"
+msgstr "<b>Locatie</b>"
+
+#: ../src/spritz.glade.h:24
+msgid "<b>MD5 Signature</b>"
+msgstr "<b>MD5 Sleutel</b>"
 
 #: ../src/spritz.glade.h:25
-msgid "Available"
-msgstr ""
+msgid "<b>Masked</b>"
+msgstr "<b>Masked</b>"
 
 #: ../src/spritz.glade.h:26
-msgid "C_hangelog"
-msgstr "C_hangelog"
+msgid "<b>Messages</b>"
+msgstr "<b>Meldingen</b>"
 
 #: ../src/spritz.glade.h:27
-msgid "Console"
-msgstr "Console"
+msgid "<b>Package Size</b>"
+msgstr "<b>Pakket Grootte</b>"
 
 #: ../src/spritz.glade.h:28
-msgid "Debug _mode"
-msgstr "_Modalità debug"
+msgid "<b>Repositories options</b>"
+msgstr "<b>Repositories opties</b>"
 
 #: ../src/spritz.glade.h:29
-msgid "ETA"
-msgstr "ETA"
+msgid "<b>Requested actions</b>"
+msgstr "<b>Gevraagde acties</b>"
+
+#: ../src/spritz.glade.h:30
+msgid "<b>Revision</b>"
+msgstr "<b>Revisie</b>"
 
 #: ../src/spritz.glade.h:31
-msgid "Excludes"
-msgstr "Esclude"
+msgid "<b>SUBACTION</b>\n"
+msgstr "<b>SUBACTIE</b>\n"
 
-#: ../src/spritz.glade.h:32
+#: ../src/spritz.glade.h:33
+msgid "<b>Slot</b>"
+msgstr "<b>Slot</b>"
+
+#: ../src/spritz.glade.h:34
+msgid "<b>Total Download Size</b>"
+msgstr "<b>Totale Download Grootte</b>"
+
+#: ../src/spritz.glade.h:35
+msgid "<b>USE Flags</b>"
+msgstr "<b>USE Flags</b>"
+
+#: ../src/spritz.glade.h:36
+msgid "<b>Version</b>"
+msgstr "<b>Versie</b>"
+
+#: ../src/spritz.glade.h:37
+msgid "<b>Website</b>"
+msgstr "<b>Website</b>"
+
+#: ../src/spritz.glade.h:38
+msgid "<big><b>media-libs/foo-1.2.3</b></big>"
+msgstr "<big><b>media-libs/foo-1.2.3</b></big>"
+
+#: ../src/spritz.glade.h:39
+msgid "<small>0</small>"
+msgstr "<small>0</small>"
+
+#: ../src/spritz.glade.h:40
+msgid "<small>1.0MB</small>"
+msgstr "<small>1.0MB</small>"
+
+#: ../src/spritz.glade.h:41
+msgid "<small>1.2.3</small>"
+msgstr "<small>1.2.3</small>"
+
+#: ../src/spritz.glade.h:42
+msgid "<small>123123123123123123123</small>"
+msgstr "<small>123123123123123123123</small>"
+
+#: ../src/spritz.glade.h:43
+msgid "<small>2</small>"
+msgstr "<small>2</small>"
+
+#: ../src/spritz.glade.h:44
+msgid "<small>3.5</small>"
+msgstr "<small>3.5</small>"
+
+#: ../src/spritz.glade.h:45
+msgid "<small>3.5MB</small>"
+msgstr "<small>3.5MB</small>"
+
+#: ../src/spritz.glade.h:46
+msgid "<small>None</small>"
+msgstr "<small>Geen</small>"
+
+#: ../src/spritz.glade.h:47
+msgid "<small>Official Sabayon Linux Repository</small>"
+msgstr "<small>Officiële Sabayon Linux Repository</small>"
+
+#: ../src/spritz.glade.h:48
+msgid "<small>This is a description placeholder</small>"
+msgstr "<small>Dit is een omschrijving veld</small>"
+
+#: ../src/spritz.glade.h:49
+msgid "<small>Today, yesterday, who knows</small>"
+msgstr "<small>Vandaag, gisteren, wie zal het zeggen</small>"
+
+#: ../src/spritz.glade.h:50
+msgid "<small>http://www.sabayonlinux.org</small>"
+msgstr "<small>http://www.sabayonlinux.org</small>"
+
+#: ../src/spritz.glade.h:51
+msgid "<small>path/to/download/blah.tbz2</small>"
+msgstr "<small>pad/naar/download/blah.tbz2</small>"
+
+#: ../src/spritz.glade.h:52
+msgid "<small>why?</small>"
+msgstr "<small>waarom?</small>"
+
+#: ../src/spritz.glade.h:53
+msgid "<small>you me they</small>"
+msgstr "<small>jij ik zij</small>"
+
+#: ../src/spritz.glade.h:54
+msgid "<span size=\"large\"><b>Action</b></span>\n"
+msgstr "<span size=\"large\"><b>Actie</b></span>\n"
+
+#: ../src/spritz.glade.h:56
+msgid "<span size=\"xx-large\" color=\"black\">Files Update</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Bestanden Update</span>"
+
+#: ../src/spritz.glade.h:57
+msgid "<span size=\"xx-large\" color=\"black\">Package Categories</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Pakket Categorieën</span>"
+
+#: ../src/spritz.glade.h:58
+msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Pakket Wachtlijst</span>"
+
+#: ../src/spritz.glade.h:59
+msgid "<span size=\"xx-large\" color=\"black\">Repositories</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Repositories</span>"
+
+#: ../src/spritz.glade.h:60
+msgid "Add/Edit Repository"
+msgstr "Repository Toevoegen/Bewerken"
+
+#: ../src/spritz.glade.h:61
+msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
+msgstr "Het toevoegen van een <b>nieuwe repository</b> maakt het mogelijk om <b>extra software</b> te installeren."
+
+#: ../src/spritz.glade.h:62
+msgid "Available"
+msgstr "Beschikbaar"
+
+#: ../src/spritz.glade.h:63
+msgid "C_hanges"
+msgstr ""
+
+#: ../src/spritz.glade.h:64
+msgid "D_ependencies"
+msgstr ""
+
+#: ../src/spritz.glade.h:65
+msgid "Database URL"
+msgstr "Database URL"
+
+#: ../src/spritz.glade.h:66
+msgid "Database compression"
+msgstr "Database compressie"
+
+#: ../src/spritz.glade.h:67
+msgid "Dele_te all"
+msgstr ""
+
+#: ../src/spritz.glade.h:69
+msgid "Download mirrors"
+msgstr "Download mirrors"
+
+#: ../src/spritz.glade.h:71
 msgid "Extra"
 msgstr "Extra"
 
-#: ../src/spritz.glade.h:33
-msgid "Fi_les"
-msgstr "Fi_le"
+#: ../src/spritz.glade.h:72
+msgid "Identifier"
+msgstr "Identifier"
 
-#: ../src/spritz.glade.h:34
-msgid "GUI"
-msgstr "GUI"
+#: ../src/spritz.glade.h:73
+msgid "Install"
+msgstr "Installeer"
 
-#: ../src/spritz.glade.h:35
-msgid "I_nformation"
-msgstr "I_nformazioni"
+#: ../src/spritz.glade.h:74
+msgid "Install the selected package"
+msgstr "Installeer geselecteerd pakket"
 
-#: ../src/spritz.glade.h:37
-msgid "Package Descriptions"
-msgstr "Descrizione del pacchetto"
+#: ../src/spritz.glade.h:76
+msgid "Load content"
+msgstr "Laad inhoud"
 
-#: ../src/spritz.glade.h:38
-msgid "Plugins"
-msgstr "Plugin"
-
-#: ../src/spritz.glade.h:39
-msgid "Preferences"
-msgstr "Preferenze"
-
-#: ../src/spritz.glade.h:40
-msgid "Process Queue Confirmation"
-msgstr "Elaboro la conferma della coda"
-
-#: ../src/spritz.glade.h:41
-#, fuzzy
-msgid "Repos"
-msgstr "Re_po"
-
-#: ../src/spritz.glade.h:42
-msgid "Search Options"
+#: ../src/spritz.glade.h:77
+msgid "M_erge"
 msgstr ""
 
-#: ../src/spritz.glade.h:43
-#, fuzzy
+#: ../src/spritz.glade.h:78
+msgid "Merge all"
+msgstr ""
+
+#: ../src/spritz.glade.h:79
+msgid "Package Info."
+msgstr "Pakket Info."
+
+#: ../src/spritz.glade.h:80
+msgid "Package Information"
+msgstr "Pakket Informatie"
+
+#: ../src/spritz.glade.h:81
+msgid "Please Confirm"
+msgstr "Bevestig alstublieft"
+
+#: ../src/spritz.glade.h:82
+msgid "Purge"
+msgstr "Volledig verwijderen"
+
+#: ../src/spritz.glade.h:83
+msgid "R_egenerate Cache"
+msgstr ""
+
+#: ../src/spritz.glade.h:84
+msgid "Reinstall"
+msgstr "Herinstalleer"
+
+#: ../src/spritz.glade.h:85
+msgid "Reinstall the selected package"
+msgstr "Herinstalleer geselecteerd pakket"
+
+#: ../src/spritz.glade.h:86
+msgid "Remove"
+msgstr "Verwijder"
+
+#: ../src/spritz.glade.h:87
+msgid "Remove the selected package"
+msgstr "Verwijder geselecteerd pakket"
+
+#: ../src/spritz.glade.h:88
+msgid "Remove the selected package and its configuration"
+msgstr "Verwijder geselecteerd en configuratie"
+
+#: ../src/spritz.glade.h:89
+msgid "Repository information"
+msgstr "Repository informatie"
+
+#: ../src/spritz.glade.h:90
+msgid "Soon!"
+msgstr "Binnenkort!"
+
+#: ../src/spritz.glade.h:91
+msgid "Spritz Package Manager"
+msgstr "Spritz Pakket Beheer"
+
+#: ../src/spritz.glade.h:92
+msgid "Undo Install"
+msgstr "Installatie ongedaan maken"
+
+#: ../src/spritz.glade.h:93
+msgid "Undo Install action"
+msgstr "Installatie actie ongedaan maken"
+
+#: ../src/spritz.glade.h:94
+msgid "Undo Purge"
+msgstr ""
+
+#: ../src/spritz.glade.h:95
+msgid "Undo Purge action"
+msgstr ""
+
+#: ../src/spritz.glade.h:96
+msgid "Undo Reinstall"
+msgstr "Herinstallatie ongedaan maken"
+
+#: ../src/spritz.glade.h:97
+msgid "Undo Reinstall action"
+msgstr "Herinstallatie actie ongedaan maken"
+
+#: ../src/spritz.glade.h:98
+msgid "Undo Remove"
+msgstr "Verwijderen ongedaan maken"
+
+#: ../src/spritz.glade.h:99
+msgid "Undo Remove action"
+msgstr "Verwijder actie ongedaan maken"
+
+#: ../src/spritz.glade.h:100
+msgid "Undo Update"
+msgstr "Update ongedaan maken"
+
+#: ../src/spritz.glade.h:101
+msgid "Undo Update action"
+msgstr "Update actie ongedaan maken"
+
+#: ../src/spritz.glade.h:103
+msgid "Update the selected package"
+msgstr "Update geselecteerd pakket"
+
+#: ../src/spritz.glade.h:104
 msgid "Updates"
-msgstr "Aggiorna"
+msgstr "Updates"
 
-#: ../src/spritz.glade.h:44
-msgid "Use _proxy"
-msgstr "Usa _proxy"
+#: ../src/spritz.glade.h:105
+msgid ""
+"You <b>need to accept</b> the licenses below.\n"
+"Please read them carefully and <b>make your choice</b>."
+msgstr ""
+"Je <b>moet</b> onderstaande licentie accepteren.\n"
+"Lees goed door <b>en maak een keuze</b>."
 
-#: ../src/spritz.glade.h:45
-#, fuzzy
-msgid "Yum Extender"
-msgstr "Informazioni su Yum Extender"
+#: ../src/spritz.glade.h:107
+msgid "_Accept License"
+msgstr "_Accepteer Licentie"
 
-#: ../src/spritz.glade.h:46
-msgid "Yum Extender Preferences"
-msgstr "Preferenze di Yum Extender"
-
-#: ../src/spritz.glade.h:47
+#: ../src/spritz.glade.h:108
 msgid "_Add All"
+msgstr "_Alles toevoegen"
+
+#: ../src/spritz.glade.h:109
+msgid "_Branch ..."
 msgstr ""
 
-#: ../src/spritz.glade.h:48
-msgid "_Auto refresh on start"
-msgstr "_Aggiornamento automatico all'avvio"
+#: ../src/spritz.glade.h:110
+msgid "_Details"
+msgstr ""
 
-#: ../src/spritz.glade.h:49
-msgid "_Description"
-msgstr "_Descrizione"
-
-#: ../src/spritz.glade.h:50
-msgid "_Deselect All"
-msgstr "_Deseleziona tutto"
-
-#: ../src/spritz.glade.h:51
-msgid "_Edit"
-msgstr "_Modifica"
-
-#: ../src/spritz.glade.h:52
+#: ../src/spritz.glade.h:111
 msgid "_File"
-msgstr "_File"
+msgstr ""
 
-#: ../src/spritz.glade.h:53
+#: ../src/spritz.glade.h:112
+msgid "_Force repositories update"
+msgstr ""
+
+#: ../src/spritz.glade.h:113
 msgid "_Help"
-msgstr "A_iuto"
+msgstr ""
 
-#: ../src/spritz.glade.h:54
+#: ../src/spritz.glade.h:114
+msgid "_Insert String"
+msgstr ""
+
+#: ../src/spritz.glade.h:115
 msgid "_Other"
-msgstr "Altr_o"
+msgstr ""
 
-#: ../src/spritz.glade.h:55
+#: ../src/spritz.glade.h:116
+msgid "_Overview"
+msgstr ""
+
+#: ../src/spritz.glade.h:117
 msgid "_Process Queue"
-msgstr "E_labora coda"
+msgstr ""
 
-#: ../src/spritz.glade.h:56
-msgid "_Profiles"
-msgstr "Pr_ofili"
+#: ../src/spritz.glade.h:118
+msgid "_Read License"
+msgstr ""
 
-#: ../src/spritz.glade.h:57
-#, fuzzy
+#: ../src/spritz.glade.h:119
+msgid "_References"
+msgstr ""
+
+#: ../src/spritz.glade.h:120
 msgid "_Remove All"
-msgstr "_Rimuovi"
+msgstr "_Verwijder Alles"
 
-#: ../src/spritz.glade.h:58
+#: ../src/spritz.glade.h:121
 msgid "_Skip"
 msgstr ""
 
-#: ../src/spritz.glade.h:59
-msgid "_Tools"
-msgstr "S_trumenti"
-
-#: ../src/spritz.glade.h:60
-msgid "_Yum Clean All"
+#: ../src/spritz.glade.h:122
+msgid "_Update Repositories"
 msgstr ""
 
-#: ../src/spritz.glade.h:61
-msgid "_Yum excludes:"
-msgstr "_Yum esclude:"
+#: ../src/spritz.glade.h:123
+msgid "_Your Ego!"
+msgstr ""
 
-#: ../src/spritz.glade.h:62
-msgid "_Yum plugins:"
-msgstr "_Plugin di Yum:"
-
-#: ../src/spritz.glade.h:63
+#: ../src/spritz.glade.h:124
 msgid "dialog1"
-msgstr "dialog1"
-
-#~ msgid "About Yum Extender"
-#~ msgstr "Informazioni su Yum Extender"
-
-#, fuzzy
-#~ msgid "Groups"
-#~ msgstr "_Gruppi"
-
-#~ msgid "<b>(C) 2005  - Tim Lauridsen</b>"
-#~ msgstr "<b>(C) 2005  - Tim Lauridsen</b>"
-
-#~ msgid "<b>Flags</b>"
-#~ msgstr "<b>Flag</b>"
-
-#~ msgid "<b>GPG Key</b>"
-#~ msgstr "<b>Chiave gpg</b>"
-
-#~ msgid "<b>Select Profile</b>"
-#~ msgstr "<b>Seleziona profilo</b>"
-
-#~ msgid "<b>URL Type</b>"
-#~ msgstr "<b>Tipo di URL</b>"
-
-#~ msgid "<b>URLs</b>"
-#~ msgstr "<b>URL</b>"
-
-#~ msgid "Credits"
-#~ msgstr "Riconoscimenti"
-
-#~ msgid "Debug mode"
-#~ msgstr "Modalità debug"
-
-#~ msgid "Disable 'Yum Extender Launcher'"
-#~ msgstr "Disabilita 'Lanciatore di Yum Extender'"
-
-#~ msgid "Disable Plugins"
-#~ msgstr "Disabilita i plugin"
-
-#~ msgid "Edit Repository"
-#~ msgstr "Modifica repository"
-
-#~ msgid "Update Only"
-#~ msgstr "Aggiorna solamente"
-
-#~ msgid "Yum Extender Launcher"
-#~ msgstr "Lanciatore di Yum Extender"
-
-#~ msgid "_Base url "
-#~ msgstr "Url di _base "
-
-#~ msgid "_Enabled"
-#~ msgstr "_Abilitato"
-
-#~ msgid "_GPG check"
-#~ msgstr "Controllo _GPG"
-
-#~ msgid "_Mirror list"
-#~ msgstr "Lista _mirror"
-
-#~ msgid "_Name:"
-#~ msgstr "_Nome:"
-
-#~ msgid "_Tag:"
-#~ msgstr "_Tag:"
-
-#~ msgid "xxxx"
-#~ msgstr "xxxx"
-
-#, fuzzy
-#~ msgid "Save"
-#~ msgstr "_Salva"
-
-#~ msgid "_About"
-#~ msgstr "Inform_azioni"
-
-#~ msgid "_Delete from Queue"
-#~ msgstr "Elimina _dalla coda"
-
-#~ msgid "_New"
-#~ msgstr "_Nuovo"
-
-#~ msgid "_Quit"
-#~ msgstr "_Esci"
-
-#~ msgid "_Save"
-#~ msgstr "_Salva"
-
-#, fuzzy
-#~ msgid ""
-#~ "Installed version: %s\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Versione installata: %s (%s) \n"
-#~ "\n"
-
-#, fuzzy
-#~ msgid "Quiting"
-#~ msgstr "aggiornamento"
-
-#~ msgid "Process (_SafeMode)"
-#~ msgstr "Elabora (modalità _sicura)"
-
-#~ msgid "_Reset Repository Cache"
-#~ msgstr "Azze_ra la cache del repository"
-
-#~ msgid "(yumex) Erased: %s"
-#~ msgstr "(yumex) Cancellato: %s"
-
-#~ msgid "<b>Mirror Detection</b>"
-#~ msgstr "<b>Rilevamento mirror</b>"
-
-#~ msgid "Install Repository"
-#~ msgstr "Installa repository"
-
-#~ msgid "_Best"
-#~ msgstr "_Migliore"
-
-#~ msgid "_Default"
-#~ msgstr "Pre_definito"
-
-#~ msgid "_Enable 'Process Queue (SafeMode)'"
-#~ msgstr "Abilita «_Elabora coda (modalità sicura)»"
-
-#~ msgid "_Fastest"
-#~ msgstr "_Più veloce"
-
-#~ msgid "_Show file lists & changelog (longer metadata load time)"
-#~ msgstr ""
-#~ "Mo_stra liste dei file & changelog (richiede più tempo per caricare i "
-#~ "metadati)"
-
-#, fuzzy
-#~ msgid "_Packages"
-#~ msgstr "Pacchetti"
-
-#~ msgid "_Queue"
-#~ msgstr "_Coda"
-
-#~ msgid "Filte_r:"
-#~ msgstr "Filt_ro:"
-
-#~ msgid "Sear_ch"
-#~ msgstr "Ri_cerca"
-
-#~ msgid "_Select All"
-#~ msgstr "_Seleziona tutto"
-
-#~ msgid "_Delete"
-#~ msgstr "_Elimina"
-
-#~ msgid " Do you want to delete the <b>%s</b> repository?"
-#~ msgstr " Eliminare il repository <b>%s</b>?"
-
-#~ msgid "Delete Repository"
-#~ msgstr "Eliminazione repository"
-
-#~ msgid "_Add to Queue"
-#~ msgstr "_Aggiungi alla coda"
-
-#~ msgid "added remove of %s to Queue"
-#~ msgstr "aggiunta la rimozione di %s alla coda"
-
-#~ msgid "added install of %s to Queue"
-#~ msgstr "aggiunta l'installazione di %s alla coda"
-
-#~ msgid "%i packages added to queue for removal"
-#~ msgstr "%i pacchetti aggiunti alla coda per la rimozione"
-
-#~ msgid "package %s was not found"
-#~ msgstr "pacchetto %s non trovato"
-
-#~ msgid "%i packages added to queue for installation"
-#~ msgstr "%i pacchetti aggiunti alla coda per l'installazione"
-
-#~ msgid "Profile %s not found"
-#~ msgstr "Profilo %s non trovato"
-
-#~ msgid "No profile selected"
-#~ msgstr "Nessun profilo selezionato"
-
-#~ msgid "_Profile name:"
-#~ msgstr "Nome _profilo:"
-
-#~ msgid "_Update"
-#~ msgstr "_Aggiorna"
-
-#~ msgid "_Install"
-#~ msgstr "_Installa"
-
-#~ msgid "Updating %s view, populate view with data "
-#~ msgstr "Aggiornamento vista %s, popolo la vista con i dati"
-
-#~ msgid "Using http_proxy=%s"
-#~ msgstr "Uso il _proxy http=%s"
-
-#~ msgid "Initializing Repositories"
-#~ msgstr "Inizializzazione repository"
-
-#~ msgid "Repository initialization completed in %.2f seconds"
-#~ msgstr "Inizializzazione dei repository completata in %.2f secondi"
-
-#~ msgid "Error in loading repository data"
-#~ msgstr "Errore caricando i dati del repository"
-
-#~ msgid "Mirrordetection : %s"
-#~ msgstr "Rilevamento mirror : %s"
-
-#~ msgid "Yum Version : %s (%s)"
-#~ msgstr "Versione di yum : %s (%s)"
-
-#~ msgid "Setup Yum : Plugins are disabled"
-#~ msgstr "Impostazione di yum : i plugin sono disabilitati"
-
-#~ msgid "Using yum cache"
-#~ msgstr "Uso la cache di yum"
-
-#~ msgid "Loading Repositories Data : Init. %s repository"
-#~ msgstr "Caricamento dati dei repository : iniz. del repository %s"
-
-#~ msgid "Reading mirror URL's from yumex cache"
-#~ msgstr "Lettura dell'URL del mirror dalla cache di yumex"
-
-#~ msgid "Determining %s mirrors for %s"
-#~ msgstr "Determinazione del mirror %s per %s"
-
-#~ msgid "--> Mirrors Detected (Top 3)"
-#~ msgstr "-> Rilevati mirror (Top 3)"
-
-#~ msgid "Using default mirror detection"
-#~ msgstr "Uso il rilevamento mirror predefinito"
-
-#~ msgid "Loading Repositories Data"
-#~ msgstr "Caricamento dati repository"
-
-#~ msgid "Setting Up Package Sack : Filelists"
-#~ msgstr "Impostazione sacco del pacchetto : lista dei file"
-
-#~ msgid "Setting Up Package Sack : Changelogs"
-#~ msgstr "Impostazione sacco del pacchetto : changelog"
-
-#~ msgid "Loading Repository Group Data"
-#~ msgstr "Caricamento dati repository di gruppo"
-
-#~ msgid "Loading Repositories Data completed"
-#~ msgstr "Caricamento dati repository completato"
-
-#~ msgid "Writing Mirrorcache to disk"
-#~ msgstr "Scrittura della cache dei mirror sul disco"
-
-#~ msgid "--> Repositories saved: %s"
-#~ msgstr "-> Repository salvati: %s"
-
-#~ msgid "Enable/Disable Repositories"
-#~ msgstr "Abilito/disabilito i repository"
-
-#~ msgid "Building Package Lists : Updates"
-#~ msgstr "Costruzione liste pacchetti : aggiornati"
-
-#~ msgid "Building Package Lists : %i Updates found"
-#~ msgstr "Costruzione liste pacchetti : trovati %i aggiornamenti"
-
-#~ msgid "Building Package Lists : Installed"
-#~ msgstr "Costruzione liste pacchetti : installati"
-
-#~ msgid "Building Package Lists : %i Installed packages found"
-#~ msgstr "Costruzione liste pacchetti : trovati %i pacchetti installati"
-
-#~ msgid "Building Package Lists : Available"
-#~ msgstr "Costruzione liste pacchetti : disponibili"
-
-#~ msgid "Building Package Lists : %i Available packages found"
-#~ msgstr "Costruzione liste pacchetti : trovati %i pacchetti disponibili"
-
-#~ msgid "Retrieving GPG key from %s"
-#~ msgstr "Ricezione della chiave GPG da %s"
-
-#~ msgid "GPG key retrieval failed: "
-#~ msgstr "Ricezione della chiave GPG fallita: "
-
-#~ msgid "GPG key parsing failed: "
-#~ msgstr "Analisi della chiave GPG fallita: "
-
-#~ msgid "GPG key at %s (0x%s) is already installed"
-#~ msgstr "La chiave GPG %s (0x%s) è già installata"
-
-#~ msgid "Importing GPG key 0x%s \"%s\""
-#~ msgstr "Importazione della chiave GPG 0x%s «%s»"
-
-#~ msgid "Key import failed (code %d)"
-#~ msgstr "Importazione della chiave fallita (codice %d)"
-
-#~ msgid "Key imported successfully"
-#~ msgstr "Chiave importata con successo"
-
-#~ msgid ""
-#~ "The GPG keys listed for the \"%s\" repository are already installed but "
-#~ "they are not correct for this package.\n"
-#~ "Check that the correct key URLs are configured for this repository."
-#~ msgstr ""
-#~ "Le chiavi GPG elencate per il repository «%s» sono già installate ma non "
-#~ "sono corrette per questo pacchetto.\n"
-#~ "Controllare che i corretti URL della chiave siano configurati per questo "
-#~ "repository."
-
-#~ msgid "Import of key(s) didn't help, wrong key(s)?"
-#~ msgstr ""
-#~ "L'importazione della(e) chiave(i) non è d'aiuto, chiave(i) sbagliata(e)?"
-
-#~ msgid "Warning: Group %s does not exist."
-#~ msgstr "Attenzione: il gruppo %s non esiste."
-
-#~ msgid "No packages in any requested group available to install or update"
-#~ msgstr ""
-#~ "Nessun pacchetto in qualsiasi gruppo richiesto disponibile per "
-#~ "l'installazione o l'aggiornamento"
-
-#~ msgid "No group named %s exists"
-#~ msgstr "Non esiste nessun gruppo di nome %s"
-
-#~ msgid "No packages to remove from groups"
-#~ msgstr "Nessun pacchetto da rimuovere dai gruppi"
-
-#~ msgid "%d Package(s) to remove"
-#~ msgstr "%d pacchetto(i) da rimuovere"
-
-#~ msgid "%s was not deleted"
-#~ msgstr "% non è stato eliminato"
-
-#~ msgid "Preparing for install Groups"
-#~ msgstr "Preparazione all'installazione dei gruppi"
-
-#~ msgid "Installing Groups"
-#~ msgstr "Installazione gruppi"
-
-#~ msgid "Error in preparation for package installing"
-#~ msgstr "Errore nella preparazione per l'installazione del pacchetto"
-
-#~ msgid "Install"
-#~ msgstr "Installa"
-
-#~ msgid "Preparing for Removing Groups"
-#~ msgstr "Preparazione alla rimozione dei gruppi"
-
-#~ msgid "Removeing Groups"
-#~ msgstr "Rimozione gruppi"
-
-#~ msgid "Error in preparation for package removing"
-#~ msgstr "Errore nella preparazione per la rimozione del pacchetto"
-
-#~ msgid "Remove"
-#~ msgstr "Rimuovi"
-
-#~ msgid ""
-#~ "Enabled Repositories:\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Repository abilitati:\n"
-#~ "%s"
-
-#~ msgid "default"
-#~ msgstr "predefinito"
-
-#~ msgid "fastest"
-#~ msgstr "più veloce"
-
-#~ msgid "best"
-#~ msgstr "migliore"
-
-#~ msgid "removal"
-#~ msgstr "rimozione"
-
-#~ msgid "<span size=\"xx-large\" color=\"black\">Install Packages</span>"
-#~ msgstr ""
-#~ "<span size=\"xx-large\" color=\"black\">Installazione pacchetti</span>"
-
-#~ msgid "<span size=\"xx-large\" color=\"black\">Remove Packages</span>"
-#~ msgstr "<span size=\"xx-large\" color=\"black\">Rimozione pacchetti</span>"
-
-#~ msgid "<span size=\"xx-large\" color=\"black\">Packages by category</span>"
-#~ msgstr ""
-#~ "<span size=\"xx-large\" color=\"black\">Pacchetti per categoria</span>"
-
-#~ msgid "<span size=\"xx-large\" color=\"black\">Update Packages</span>"
-#~ msgstr ""
-#~ "<span size=\"xx-large\" color=\"black\">Aggiornamento pacchetti</span>"
-
-#~ msgid ""
-#~ "\n"
-#~ "You are using the <b>--forcei386</b> option which makes yumex\n"
-#~ "to use i386 repositories instead of x86_64. Use it with\n"
-#~ "<b>extreme caution</b> because packages installed in this\n"
-#~ "mode <b>will not be upgraded</b> during normal operation\n"
-#~ "of yumex, yum or other yum-based tools. This may lead to\n"
-#~ "<b>package conflicts</b> which <b>could</b> only be resolved\n"
-#~ "by running yumex with this option again and updating i386\n"
-#~ "packages to their newest versions.\n"
-#~ "<b>***DO NOT USE THIS OPTION*** IF YOU WANT AVOID PROBLEMS IN THE FUTURE</"
-#~ "b>\n"
-#~ msgstr ""
-#~ "\n"
-#~ "State usando l'opzione <b>--forcei386</b> che fa usare a yumex\n"
-#~ "i repository i386 al posto di quelli x86_64. Usatela con\n"
-#~ "<b>estrema cautela</b> perché i pacchetti installati in questa\n"
-#~ "modalità <b>non saranno aggiornati</b> durante le normali operazioni\n"
-#~ "di yumex, yum o di altri strumenti basati su yum. Questo può condurre a\n"
-#~ "<b>conflitti di pacchetto</b> che <b>potrebbero</b> essere risolti solo\n"
-#~ "avviando ancora yumex con questa opzione e aggiornando i pacchetti i386\n"
-#~ "alle loro versioni più recenti.\n"
-#~ "<b>***NON USATE QUESTA OPZIONE*** SE IN FUTURO VOLETE EVITARE PROBLEMI </"
-#~ "b>\n"
-
-#~ msgid "New Repository"
-#~ msgstr "Nuovo repository"
-
-#~ msgid "_New repository tag name:"
-#~ msgstr "_Nome tag nuovo repository:"
-
-#~ msgid "Save Changes"
-#~ msgstr "Salva cambiamenti"
-
-#~ msgid "<span size='x-large'> Packages to Process</span>"
-#~ msgstr "<span size='x-large'> Pacchetti da elaborare</span>"
-
-#~ msgid "%s view is populated"
-#~ msgstr "La vista %s è stata popolata"
-
-#~ msgid "Categories / Groups"
-#~ msgstr "Categorie / Gruppi"
-
-#~ msgid "Description"
-#~ msgstr "Descrizione"
-
-#~ msgid "All Groups"
-#~ msgstr "Tutti i gruppi"
-
-#~ msgid "A_dd to Queue"
-#~ msgstr "_Aggiungi alla coda"
-
-#~ msgid "Test"
-#~ msgstr "Test"
-
-#~ msgid "_Add & Process"
-#~ msgstr "_Aggiungi & elabora"
+msgstr ""
+
+#: ../src/spritz.glade.h:125
+msgid "gtk-close"
+msgstr ""
+
+#: ../src/spritz.glade.h:126
+msgid "gtk-ok"
+msgstr ""
+
+#: ../src/spritz.glade.h:127
+msgid "gtk-stop"
+msgstr ""
+
+#: ../src/spritz.glade.h:128
+msgid "please wait"
+msgstr ""
