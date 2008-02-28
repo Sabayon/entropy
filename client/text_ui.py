@@ -394,6 +394,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             return 126,-1
 
         downloadSize = 0
+        unpackSize = 0
         onDiskUsedSize = 0
         onDiskFreedSize = 0
         pkgsToInstall = 0
@@ -420,8 +421,9 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 onDiskUsedSize += dbconn.retrieveOnDiskSize(packageInfo[0])
 
                 dl = Equo.check_needed_package_download(pkgfile, None) # we'll do a good check during installPackage
+                pkgsize = dbconn.retrieveSize(packageInfo[0])
+                unpackSize += int(pkgsize)*2
                 if dl < 0:
-                    pkgsize = dbconn.retrieveSize(packageInfo[0])
                     downloadSize += int(pkgsize)
                 else:
                     try:
@@ -496,6 +498,10 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 
                 print_info(darkred(" ##")+flags+repoinfo+blue(pkgatom)+"|"+red(str(pkgrev))+oldinfo)
 
+        deltaSize = onDiskUsedSize - onDiskFreedSize
+        neededSize = deltaSize
+        if unpackSize > 0: neededSize += unpackSize
+
         if (removalQueue):
 
             if (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']) and removalQueue:
@@ -521,11 +527,12 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 print_info(red(" @@ ")+blue("Download size:\t\t\t")+bold(str(Equo.entropyTools.bytesIntoHuman(downloadSize))))
             else:
                 print_info(red(" @@ ")+blue("Download size:\t\t\t")+bold("0b"))
-            deltaSize = onDiskUsedSize - onDiskFreedSize
             if (deltaSize > 0):
                 print_info(red(" @@ ")+blue("Used disk space:\t\t\t")+bold(str(Equo.entropyTools.bytesIntoHuman(deltaSize))))
             else:
                 print_info(red(" @@ ")+blue("Freed disk space:\t\t")+bold(str(Equo.entropyTools.bytesIntoHuman(abs(deltaSize)))))
+
+            print_info(red(" @@ ")+bold("You need at least:\t\t")+blue(str(Equo.entropyTools.bytesIntoHuman(neededSize))+" of free space"))
 
         if (etpUi['ask']):
             rc = Equo.askQuestion("     Would you like to run the queue ?")
