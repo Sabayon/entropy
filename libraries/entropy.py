@@ -5018,8 +5018,15 @@ class TriggerInterface:
         ''' portage stuff '''
         self.portageTools = None
         if etpConst['gentoo-compat']:
-            import portageTools
-            self.portageTools = portageTools
+            try:
+                import portageTools
+                self.portageTools = portageTools
+            except Exception, e:
+                self.Entropy.updateProgress(
+                                        red("Portage interface can't be loaded due to %s: (%s), please fix it !" % (str(Exception),str(e)) ),
+                                        importance = 0,
+                                        header = bold(" !!! ")
+                                    )
 
         self.phase = phase
         # validate phase
@@ -5868,7 +5875,7 @@ class TriggerInterface:
                 rc = self.portageTools.portage_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_postinst()) trigger for "+str(portage_atom)+". Something bad happened.")
-            except Exception, e:
+            except Exception, e: # let it crash even if self.portageTools == None
                 sys.stdout = oldstdout
                 self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
                 self.Entropy.updateProgress(
@@ -5924,7 +5931,10 @@ class TriggerInterface:
         sys.stderr = stdfile
 
         portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
-        myebuild = self.portageTools.getPortageAppDbPath()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
+        try:
+            myebuild = self.portageTools.getPortageAppDbPath()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
+        except:
+            myebuild = ''
         if os.path.isfile(myebuild):
             self.Entropy.updateProgress(
                                     brown(" Ebuild: pkg_prerm()"),
@@ -5953,7 +5963,10 @@ class TriggerInterface:
         sys.stderr = stdfile
 
         portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
-        myebuild = self.portageTools.getPortageAppDbPath()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
+        try:
+            myebuild = self.portageTools.getPortageAppDbPath()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
+        except:
+            myebuild = ''
         if os.path.isfile(myebuild):
             self.Entropy.updateProgress(
                                     brown(" Ebuild: pkg_postrm()"),
