@@ -131,9 +131,6 @@ class ConfirmationDialog:
                 for pkg in pkgs['remove']:
                     model.append( parent, [pkg] )
 
-        for pkg in pkgs:
-            model.append( None, [pkg] )
-
     def show_data_simple( self, model, pkgs ):
         model.clear()
         for pkg in pkgs:
