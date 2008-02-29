@@ -30,8 +30,11 @@ class const:
     ''' This Class contains all the Constants in Yumex'''
     __spritz_version__   = etpConst['entropyversion']
     # Paths
-    MAIN_PATH = os.path.abspath( os.path.dirname( sys.argv[0] ) );
+    MAIN_PATH = os.path.abspath( os.path.dirname( sys.argv[0] ) )
     GLADE_FILE = MAIN_PATH+'/spritz.glade'
+    if not os.path.isfile(GLADE_FILE):
+        MAIN_PATH = '/usr/lib/entropy/spritz'
+        GLADE_FILE = MAIN_PATH+'/spritz.glade'
     if MAIN_PATH == '/usr/lib/entropy/spritz':
         PIXMAPS_PATH = '/usr/share/pixmaps/spritz'
     else:
