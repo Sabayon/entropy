@@ -23,25 +23,25 @@ msgstr "Ottenendo: %s"
 
 #: ../src/callbacks.py:160
 msgid "Removing"
-msgstr "Verwijderen"
+msgstr "Rimuovendo"
 
 #: ../src/callbacks.py:162
 msgid "Cleanup"
-msgstr "Opruimen"
+msgstr "Pulisci"
 
 #: ../src/callbacks.py:180
 #, python-format
 msgid "Erased: %s"
-msgstr "Verwijderd: %s"
+msgstr "Eliminator: %s"
 
 #: ../src/callbacks.py:201
 #, python-format
 msgid "Processing metadata from : %s"
-msgstr "Verwerken van metadata voor : %s"
+msgstr "Elaborazione metadati da : %s"
 
 #: ../src/callbacks.py:203
 msgid "Processing metadata"
-msgstr "Verwerken van metadata"
+msgstr "Elaborazione metadati"
 
 #: ../src/callbacks.py:236
 #, python-format
@@ -50,78 +50,78 @@ msgstr ""
 
 #: ../src/callbacks.py:243
 msgid "--> Running transaction check"
-msgstr "--> Transactie controle"
+msgstr ""
 
 #: ../src/callbacks.py:247
 msgid "--> Restarting Dependency Resolution with new changes."
-msgstr "--> Herstart Afhankelijkheids Controle met nieuwe aanpassingen"
+msgstr ""
 
 #: ../src/callbacks.py:251
 msgid "--> Finished Dependency Resolution"
-msgstr "--> Afhankelijkheids Controle Gereed"
+msgstr ""
 
 #: ../src/callbacks.py:255
 #, python-format
 msgid "--> Processing Dependency: %s for package: %s"
-msgstr "--> Verwerken van Afhankelijkheid: %s voor pakket %s"
+msgstr ""
 
 #: ../src/callbacks.py:260
 #, python-format
 msgid "--> Unresolved Dependency: %s"
-msgstr "--> Onopgeloste Afhankelijkheid: %s"
+msgstr ""
 
 #: ../src/callbacks.py:264
 #, python-format
 msgid "--> Processing Conflict: %s conflicts %s"
-msgstr "--> Verwerken van Conflict: %s conflicteert met %s"
+msgstr ""
 
 #: ../src/callbacks.py:267
 msgid "--> Populating transaction set with selected packages. Please wait."
-msgstr "--> Opbouwen van transactie set met geselecteerde pakketen. Even geduld."
+msgstr ""
 
 #: ../src/callbacks.py:270
 #, python-format
 msgid "---> Downloading header for %s to pack into transaction set."
-msgstr "---> Download headerinformatie voor %s voor de transactie set."
+msgstr ""
 
 #: ../src/dialogs.py:55
 msgid "Please confirm the actions above"
-msgstr "Bevestig bovenstaande actie"
+msgstr "Per favore conferma le azioni di cui sopra"
 
 #. self.create_text_column( _( "Package" ), 'name' , size=300)
 #: ../src/dialogs.py:89 ../src/dialogs.py:96 ../src/views.py:418
 msgid "Package"
-msgstr "Pakket"
+msgstr "Pacchetto"
 
 #: ../src/dialogs.py:90 ../src/views.py:560 ../src/views.py:893
 #: ../src/spritz.glade.h:68
 msgid "Description"
-msgstr "Omschrijving"
+msgstr "Descrizione"
 
 #: ../src/dialogs.py:122
 msgid "To be reinstalled"
-msgstr "Gemarkeerd voor Herinstallatie"
+msgstr "Da reinstallare"
 
 #: ../src/dialogs.py:127
 msgid "To be installed"
-msgstr "Gemarkeerd voor Installatie"
+msgstr "Da installare"
 
 #: ../src/dialogs.py:132
 msgid "No description"
-msgstr "Geen omschrijving"
+msgstr "Nessuna descrizione"
 
 #: ../src/dialogs.py:135
 msgid "To be updated"
-msgstr "Gemarkeerd voor update"
+msgstr "Da aggiornare"
 
 #: ../src/dialogs.py:140
 msgid "To be removed"
-msgstr "Gemarkeerd voor verwijdering"
+msgstr "Da rimuovere"
 
 #: ../src/dialogs.py:251
 #, python-format
 msgid "About %s"
-msgstr "Over %s"
+msgstr "Informazioni su %s"
 
 #: ../src/dialogs.py:344
 msgid "Hey!"
@@ -129,53 +129,53 @@ msgstr "Hey!"
 
 #: ../src/dialogs.py:348
 msgid "Spritz Question"
-msgstr "Spritz Vraag"
+msgstr "Domanda Spritz"
 
 #: ../src/dialogs.py:362 ../src/misc.py:185 ../src/misc.py:240
 msgid "Attention"
-msgstr "Attentie"
+msgstr "Attenzione"
 
 #: ../src/dialogs.py:415
 msgid "License"
-msgstr "Licentie"
+msgstr "Licenza"
 
 #. new
 #: ../src/dialogs.py:418
 msgid "Accepted"
-msgstr "Geaccepteerd"
+msgstr "Accettato"
 
 #: ../src/gui.py:254
 msgid "Show Package Updates"
-msgstr "Toon Pakket Updates"
+msgstr "Visualizza aggiornamenti"
 
 #: ../src/gui.py:255
 msgid "Show available Packages"
-msgstr "Toon beschikbare Pakketten"
+msgstr "Visualizza pacchetti disponibili"
 
 #: ../src/gui.py:256
 msgid "Show Installed Packages"
-msgstr "Toon geïnstalleerde pakketten"
+msgstr "Visualizza pacchetti installati"
 
 #. Setup Vertical Toolbar
 #: ../src/gui.py:277 ../src/views.py:555
 msgid "Packages"
-msgstr "Pakketten"
+msgstr "Pacchetti"
 
 #: ../src/gui.py:278
 msgid "Package Categories"
-msgstr "Pakket Categorieën"
+msgstr "Categorie Pacchetti"
 
 #: ../src/gui.py:279
 msgid "Package Queue"
-msgstr "Pakket Wachtrij"
+msgstr "Coda Pacchetti"
 
 #: ../src/gui.py:280
 msgid "Repository Selection"
-msgstr "Repostitory Selectie"
+msgstr "Selezione Repository"
 
 #: ../src/gui.py:281
 msgid "Configuration Files"
-msgstr "Configuratie Bestanden"
+msgstr "File di configurazione"
 
 #: ../src/gui.py:282
 msgid "Output"
@@ -183,59 +183,63 @@ msgstr "Output"
 
 #: ../src/misc.py:84
 msgid "Programming:"
-msgstr "Programmeerwerk:"
+msgstr "Programmazione:"
 
 #: ../src/misc.py:87
 msgid "Yum Extender Programmers:"
-msgstr "Yum Extender Programmeurs:"
+msgstr "Programmatori Yum Extender:"
 
 #: ../src/misc.py:90
 msgid "Translation:"
-msgstr "Vertaling"
+msgstr "Traduttori:"
 
 #: ../src/misc.py:111
 msgid "Dedicated to:"
-msgstr "Opgedragen aan:"
+msgstr "Dedicato a:"
 
 #: ../src/misc.py:186
 msgid ""
 "There are packages that can't be installed at the same time, thus are "
 "blocking your request:"
-msgstr "Er zijn pakketten die niet tegelijkertijd geïnstalleerd kunnen worden. Volgende pakketten veroorzaken het probleem:"
+msgstr ""
+"Ci sono pacchetti che non possono essere installati allo stesso tempo "
+"e che stanno bloccando la tua richiesta:"
 
 #: ../src/misc.py:241
 msgid ""
 "Some dependencies couldn't be found. It can either be because they are "
 "masked or because they aren't in any active repository."
-msgstr "Sommige afhankelijkheden konden niet worden gevonden. Wellicht zijn ze gemaskeerd of ontbreken in de actieve repository."
+msgstr ""
+"Dipendenze non trovate. Questo può accadere se un pacchetto è mascherato "
+"oppure semplicemente perché il pacchetto non è stato trovato."
 
 #: ../src/misc.py:284
 msgid "Needed disk space"
-msgstr "Benodigde schijfruimte"
+msgstr "Spazio su disco richiesto"
 
 #: ../src/misc.py:287
 msgid "Freed disk space"
-msgstr "Vrijgemaakte schijfruimte"
+msgstr "Spazio su disco liberato"
 
 #: ../src/misc.py:291
 msgid "These are the packages that would be installed/updated"
-msgstr "Volgende pakketten zullen worden geïnstalleerd/geupdate"
+msgstr "Questi sono i pacchetti che vorrebbero essere installati/aggiornati"
 
 #: ../src/misc.py:334
 msgid "Freed space"
-msgstr "Vrijgemaakte schijfruimte"
+msgstr "Spazio liberato"
 
 #: ../src/misc.py:337
 msgid "Needed space"
-msgstr "Benodigde schijfruimte"
+msgstr "Spazio richiesto"
 
 #: ../src/misc.py:341
 msgid "These are the packages that would be removed"
-msgstr "Volgende pakketten worden verwijderd"
+msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
 
 #: ../src/views.py:44
 msgid "Categories"
-msgstr "Categorieën"
+msgstr "Categorie"
 
 #: ../src/views.py:419 ../src/views.py:651
 msgid "Rev."
@@ -251,164 +255,164 @@ msgstr "Repository"
 
 #: ../src/views.py:596
 msgid "<b>Packages To Reinstall</b>"
-msgstr "<b>Pakketten voor Herinstallatie</b>"
+msgstr "<b>Paccketti da reinstallare</b>"
 
 #: ../src/views.py:600
 msgid "<b>Packages To Update</b>"
-msgstr "<b>Pakketten voor Update</b>"
+msgstr "<b>Pacchetti da aggiornare</b>"
 
 #: ../src/views.py:604
 msgid "<b>Packages To Install</b>"
-msgstr "<b>Pakketten voor Installatie</b>"
+msgstr "<b>Pacchetti da installare</b>"
 
 #: ../src/views.py:608
 msgid "<b>Packages To Remove</b>"
-msgstr "<b></b>"
+msgstr "<b>Pacchetti da rimuovere</b>"
 
 #: ../src/views.py:637
 msgid "Proposed"
-msgstr "Voorgesteld"
+msgstr "Proposto"
 
 #: ../src/views.py:644
 msgid "Destination"
-msgstr "Bestemming"
+msgstr "Destinazione"
 
 #: ../src/views.py:832
 msgid "Filename"
-msgstr "Bestandsnaam"
+msgstr "Nome file"
 
 #: ../src/views.py:852 ../src/spritz.py:305
 #, python-format
 msgid "You should press the %s button now"
-msgstr "Druk op de %s toets"
+msgstr "Ora dovresti premere il bottone %s"
 
 #: ../src/views.py:852 ../src/spritz.py:305 ../src/spritz.py:382
 msgid "Regenerate Cache"
-msgstr "Hergenereer Cache"
+msgstr "Rigenera Cache"
 
 #: ../src/views.py:871
 msgid "Active"
-msgstr "Actief"
+msgstr "Attivo"
 
 #: ../src/views.py:881 ../src/spritz.glade.h:102
 msgid "Update"
-msgstr "Update"
+msgstr "Aggiorna"
 
 #. Setup revision column
 #: ../src/views.py:889
 msgid "Revision"
-msgstr "Herziening"
+msgstr "Revisione"
 
 #. Setup reponame & repofile column's
 #: ../src/views.py:892
 msgid "Repository Identifier"
-msgstr ""
+msgstr "Identificatore Repository"
 
 #: ../src/spritz.py:83
 msgid "Quiting, please wait !!!!!!"
-msgstr "Bezig met afsluiten, even geduld!!!!!"
+msgstr "Sto uscendo, cribbio !!!!!!"
 
 #: ../src/spritz.py:188
 msgid "Branch switching"
-msgstr "Veranderen van Branch"
+msgstr "Migrazione della Branch"
 
 #: ../src/spritz.py:188
 msgid "Enter a valid branch you want to switch to"
-msgstr "Voor een geldige Branch in"
+msgstr "Inserisci una Branch valida a cui vuoi migrare"
 
 #: ../src/spritz.py:191
 msgid "The selected branch is not available."
-msgstr "Geselecteerde branch is niet beschikbaar"
+msgstr "La branch selezionata non è disponibile"
 
 #: ../src/spritz.py:194
 #, python-format
 msgid "New branch is %s. It is suggested to synchronize repositories."
-msgstr "Nieuwe branch is %s. Synchroniseer de repositories opnieuw."
+msgstr "La nuova branch è %s. Sincronizza le repository ora."
 
 #: ../src/spritz.py:237 ../src/spritz.py:259
 msgid "Insert URL"
-msgstr "Voer URL in"
+msgstr "Inserisci URL"
 
 #: ../src/spritz.py:237 ../src/spritz.py:259
 msgid "Enter a download mirror, HTTP or FTP"
-msgstr "Voer een download mirror in, HTTP of FTP"
+msgstr "Inserisci un mirror di scaricamento, HTTP o FTP"
 
 #: ../src/spritz.py:242
 msgid "You must enter either a HTTP or a FTP url."
-msgstr "Vul een geldige HTTP of FTP url in."
+msgstr "Devi immettere un indirizzo HTTP o FTP."
 
 #: ../src/spritz.py:294 ../src/spritz.py:341
 #, python-format
 msgid "Wrong entries, errors: %s"
-msgstr "Verkeerde invoer, fouten: %s"
+msgstr "Parametri errati, errori: %s"
 
 #: ../src/spritz.py:310
 msgid "No Repository Identifier"
-msgstr "Geen Repository Identifier"
+msgstr "Nessun Identificatore di Repository"
 
 #: ../src/spritz.py:313
 msgid "Duplicated Repository Identifier"
-msgstr "Dubbele Repository identifier"
+msgstr "Identificatore di Repository duplicato"
 
 #: ../src/spritz.py:317
 msgid "No download mirrors"
-msgstr "Geen download locatie"
+msgstr "Nessun mirror di scaricamento"
 
 #: ../src/spritz.py:319
 msgid "Database URL must be HTTP or FTP"
-msgstr "Database URL moet HTTP of FTP zijn"
+msgstr "L'indirizzo del database deve essere HTTP o FTP"
 
 #: ../src/spritz.py:339
 #, python-format
 msgid "You should now press the %s button now"
-msgstr "Druk op de %s toets"
+msgstr "Ora dovresti premere il bottone %s"
 
 #: ../src/spritz.py:339 ../src/spritz.py:382
 msgid "Update Repositories"
-msgstr "Update Repositories"
+msgstr "Aggiorna Repository"
 
 #: ../src/spritz.py:350
 msgid "Insert Repository"
-msgstr "Voer Repository in"
+msgstr "Inserisci Repository"
 
 #: ../src/spritz.py:350
 msgid "Insert Repository identification string"
-msgstr ""
+msgstr "Inserisci stringa di identificazione Repository"
 
 #: ../src/spritz.py:368
 msgid "This Repository identification string is malformed"
-msgstr "Ongeldige Repository invoer"
+msgstr "La stringa di identificazione Repository è malformata"
 
 #: ../src/spritz.py:378
 msgid "You! Why do you want to remove the main repository ?"
-msgstr "Hey! Waarom wil je de hoofdrepository verwijderen?"
+msgstr "Miserabile! Cosa stai cercando di rimuovere ? :-)"
 
 #: ../src/spritz.py:382
 #, python-format
 msgid "You must now either press the %s or the %s button"
-msgstr "Druk op de %s of op de %s toets"
+msgstr "Ora dovresti premere il bottone %s o %s"
 
 #: ../src/spritz.py:447
 msgid "Please select at least one repository"
-msgstr "Selecteer tenminste één repository"
+msgstr "Seleziona almeno una Repository, suvvia..."
 
 #. Check there are any packages in the queue
 #: ../src/spritz.py:482
 msgid "No packages in queue"
-msgstr "De wachtrij is leeg"
+msgstr "Nessun pacchetto in coda"
 
 #: ../src/spritz.py:551
 msgid "Queue is too old. Cannot load."
-msgstr "De wachtrij is te oud en kon niet geladen worden."
+msgstr "La coda è troppo vecchia, impossibile caricare"
 
 #. from installed
 #: ../src/spritz.py:582
 msgid "From your Operating System"
-msgstr "Van je Besturings Systeem"
+msgstr "Dal tuo bel Sistema Operativo"
 
 #: ../src/spritz.py:814
 msgid "Cleaning up all yum metadata"
-msgstr "opschonen van yum metadata"
+msgstr ""
 
 #. warn the user
 #: ../src/spritz.py:824
@@ -418,218 +422,218 @@ msgid ""
 "Another instance of Entropy <b>is running</b>. <u>Close</u> it or <u>remove</"
 "u>: %s"
 msgstr ""
-"<big><b>Helaas</b></big>\t\t\n"
-"Entropy is <b>al in gebruik</b> door een ander process. <u>Sluit</u> het of <u>verwijder</"
+"<big><b>Ciao, ascolta</b></big>\t\t\n"
+"Un'altra istanza di Entropy <b>è attiva</b>. <u>Chiudila</u> o <u>cancella il file</"
 "u>: %s"
 
 #: ../src/spritz.py:840
 msgid "Entropy Config Setup"
-msgstr "Entropy Configuratie"
+msgstr "Setup configurazione di Entropy"
 
 #: ../src/spritz.py:851
 msgid "GUI Setup Completed"
-msgstr "GUI setup voltooid"
+msgstr "Configurazione GUI completata"
 
 #: ../src/spritz.py:867
 msgid "License name"
-msgstr "Licentie naam"
+msgstr "Nome licenza"
 
 #: ../src/spritz.py:875
 msgid "Sources"
-msgstr "Broncode"
+msgstr "Sorgenti"
 
 #: ../src/spritz.py:883
 msgid "Mirrors"
-msgstr "Mirrors"
+msgstr "Mirror"
 
 #: ../src/spritz.py:891
 msgid "Keywords"
-msgstr "Keywords"
+msgstr "Keyword"
 
 #: ../src/spritz.py:899
 msgid "Dependencies"
-msgstr "Afhankelijkheden"
+msgstr "Dipendenze"
 
 #: ../src/spritz.py:907
 msgid "Depends"
-msgstr "Afhankelijk van"
+msgstr "Sono dipendenza di"
 
 #: ../src/spritz.py:915
 msgid "Needed libraries"
-msgstr "Benodigde bibliotheken"
+msgstr "Librerie richieste"
 
 #: ../src/spritz.py:923
 msgid "Protected item"
-msgstr "Beschermd item"
+msgstr "Oggetto protetto"
 
 #: ../src/spritz.py:926 ../src/spritz.py:938
 msgid "Type"
-msgstr "Type"
+msgstr "Tipo"
 
 #: ../src/spritz.py:934
 msgid "File"
-msgstr "Bestand"
+msgstr ""
 
 #: ../src/spritz.py:998
 msgid "Generating metadata. Please wait."
-msgstr "Genereren van Metadata. Even geduld."
+msgstr "Generazione metadati. Attendere."
 
 #: ../src/spritz.py:1002 ../src/spritz.py:1120
 msgid "Ready"
-msgstr "Klaar"
+msgstr "Pronto"
 
 #: ../src/spritz.py:1042
 msgid "Initializing Repository module..."
-msgstr "Initialiseren van Repository module"
+msgstr "Inizializzazione modulo Repository..."
 
 #: ../src/spritz.py:1048
 msgid "You must run this application as root"
-msgstr "Je moet deze applicatie als root uitvoeren"
+msgstr "Devi essere root per poter utilizzare questa applicazione"
 
 #: ../src/spritz.py:1051
 #, python-format
 msgid "No repositories specified in %s"
-msgstr "Geen repositories gespecificeerd in %s"
+msgstr "Nessuna repository specificata in %s"
 
 #: ../src/spritz.py:1054
 msgid "You are not connected to the Internet. You should."
-msgstr "Je bent niet verbonden met het internet. Dat is een vereiste."
+msgstr "Non sei connesso ad Internet. Dovresti."
 
 #: ../src/spritz.py:1057
 #, python-format
 msgid "Unhandled exception: %s"
-msgstr "Onuitvoerbare opdracht: %s"
+msgstr "Eccezione non gestita: %s"
 
 #: ../src/spritz.py:1061
 msgid "Errors updating repositories."
-msgstr "Fouten tijdens het updaten van de repositories"
+msgstr "Errori aggiornando le repository."
 
 #: ../src/spritz.py:1062
 msgid "Please check logs below for more info"
-msgstr "Controleer onderstaande log voor uitgebreide informatie."
+msgstr "Guarda il testo visualizzato sotto per capire di più"
 
 #: ../src/spritz.py:1065
 msgid "Repositories updated successfully"
-msgstr "Repositories succesvol geupdate"
+msgstr "Repository aggiornate correttamente"
 
 #: ../src/spritz.py:1068
 msgid "All the repositories were already up to date."
-msgstr "Alle repositories waren reeds up to date"
+msgstr "Tutte le repository erano già aggiornate."
 
 #: ../src/spritz.py:1070
 #, python-format
 msgid "%s repositories were already up to date. Others have been updated."
-msgstr "%s repositories waren reeds up to date, de overige zijn geupdate"
+msgstr "Repository %s, erano già aggiornate. Le altre sono state aggiornate."
 
 #: ../src/spritz.py:1072
 msgid "app-admin/equo needs to be updated as soon as possible."
-msgstr "app-admin/equo dient zo spoedig mogelijk geupdate te worden!"
+msgstr "app-admin/equo richiede di essere aggiornato il prima possibile."
 
 #: ../src/spritz.py:1077
 msgid "Nothing to do. I am idle."
-msgstr "Niets te doen. Ik wacht."
+msgstr "Niente da fare. Sono in attesa di ordini."
 
 #: ../src/spritz.py:1078
 msgid "Really, don't waste your time here. This is just a placeholder"
-msgstr "Niets te zien hier mensen, doorlopen!"
+msgstr "Davvero, non perdere tempo qui. E' solo un modo per occupare spazio."
 
 #: ../src/spritz.py:1079
 msgid "I am still alive and kickin'"
-msgstr "Joehoe! Ik leef nog hoor!"
+msgstr "Ahah, ci sono ancora, cosa credevi!"
 
 #. -> Get lists
 #: ../src/spritz.py:1112
 msgid "Generating Metadata, please wait."
-msgstr "Genereren van Metadata, even geduld."
+msgstr "Generazione metadati, attendere prego."
 
 #: ../src/spritz.py:1113
 msgid "Entropy is indexing the repositories. It will take a few seconds"
-msgstr "Entropy indexeert de repositories, even geduld"
+msgstr "Entropy sta indicizzando le repository. Ci metterà qualche secondo."
 
 #: ../src/spritz.py:1114
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
-msgstr "Terwijl je wacht kijk eens naar buiten. Regent het?"
+msgstr "Mentre stai aspettando, fai un break e guarda fuori. Lo vedi l'inceneritore?"
 
 #: ../src/spritz.py:1116
 #, python-format
 msgid "Calculating %s"
-msgstr "Berekenen %s"
+msgstr "Calcolando %s"
 
 #: ../src/spritz.py:1146
 msgid "Package View Population"
-msgstr "Pakket weergave vullen"
+msgstr "Popolazione Vista Pacchetti"
 
 #: ../src/spritz.py:1154
 msgid "Package View Population Completed"
-msgstr "Pakket weergave vullen gereed"
+msgstr "Popolazione Vista Pacchetti Completata"
 
 #: ../src/spritz.py:1160
 msgid "Category View Population"
-msgstr "Categorie overzicht vullen"
+msgstr "Popolazione Vista Categorie"
 
 #: ../src/spritz.py:1179
 msgid "Category View Population Completed"
-msgstr "Categorie overzicht vullen gereed"
+msgstr "Popolazione Vista Categorie Completata"
 
 #: ../src/spritz.py:1196
 msgid "Running tasks"
-msgstr "Bezig met uitvoeren van taken"
+msgstr "Esecuzione task"
 
 #: ../src/spritz.py:1203
 msgid "Processing Packages in queue"
-msgstr "Verwerken van pakket wachtlijst"
+msgstr "Processamento dei pacchetti in coda"
 
 #: ../src/spritz.py:1213
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
-msgstr "Attentie! Er is een fout opgetreden tijdens het verwerken van de wachtlijst.\n Kijk in het terminal venster voor meer informatie"
+msgstr "Attenzione, c'è stato un errore nel processamento della coda.\n Dai un'occhiata nel terminale di processamento."
 
 #: ../src/spritz.py:1238
 msgid "No packages selected"
-msgstr "Geen pakketten geselecteerd"
+msgstr "Nessun pacchetto selezionato"
 
 #: ../src/spritz.py:1318 ../src/spritz.glade.h:70
 msgid "Error"
-msgstr "Fout"
+msgstr "Errore"
 
 #: ../src/spritz.py:1318
 msgid "Error in Yumex"
-msgstr "Fout in Yumex"
+msgstr "Errore in Yumex"
 
 #: ../src/etpgui/callbacks.py:60
 msgid "Updating"
-msgstr "Updaten"
+msgstr "Aggiornando"
 
 #: ../src/etpgui/callbacks.py:61
 msgid "Erasing"
-msgstr "Verwijderen"
+msgstr "Rimuovendo"
 
 #: ../src/etpgui/callbacks.py:62 ../src/etpgui/callbacks.py:63
 #: ../src/etpgui/callbacks.py:65
 msgid "Installing"
-msgstr "Installeren"
+msgstr "Installando"
 
 #: ../src/etpgui/callbacks.py:64 ../src/etpgui/callbacks.py:70
 msgid "Obsoleted"
-msgstr "Verouderd"
+msgstr "Obsoleto"
 
 #: ../src/etpgui/callbacks.py:66
 msgid "Updated"
-msgstr "Geupdate"
+msgstr "Aggiornato"
 
 #: ../src/etpgui/callbacks.py:67
 msgid "Erased"
-msgstr "Verwijderd"
+msgstr "Rimosso"
 
 #: ../src/etpgui/callbacks.py:68 ../src/etpgui/callbacks.py:69
 #: ../src/etpgui/callbacks.py:71 ../src/spritz.glade.h:75
 msgid "Installed"
-msgstr "Geïnstalleerd"
+msgstr "Installato"
 
 #: ../src/etpgui/callbacks.py:181
 msgid "No header - huh?"
-msgstr "Geen header - wat?"
+msgstr "Nessun header - cosa?"
 
 #: ../src/spritz.glade.h:1
 msgid " "
@@ -664,8 +668,8 @@ msgid ""
 "<b><big>Please wait</big></b>\n"
 "<small>...take a little break !</small>"
 msgstr ""
-"<b><big>Even geduld</big></b>\n"
-"<small>...neem een kleine pauze!</small>"
+"<b><big>Attendere prego</big></b>\n"
+"<small>...fai un piccolo break!</small>"
 
 #: ../src/spritz.glade.h:11
 msgid "<b>Branch</b>"
@@ -689,15 +693,15 @@ msgstr "<b>CXXFLAGS</b>"
 
 #: ../src/spritz.glade.h:16
 msgid "<b>Creation date</b>"
-msgstr "<b>Creatie datum</b>"
+msgstr "<b>Data di creazione</b>"
 
 #: ../src/spritz.glade.h:17
 msgid "<b>Download Path</b>"
-msgstr "<b>Download Pad</b>"
+msgstr "<b>Percorso download</b>"
 
 #: ../src/spritz.glade.h:18
 msgid "<b>Eclasses</b>"
-msgstr "<b>Eclassen</b>"
+msgstr "<b>Eclass</b>"
 
 #: ../src/spritz.glade.h:19
 msgid "<b>Entropy API</b>"
@@ -705,11 +709,11 @@ msgstr "<b>Entropy API</b>"
 
 #: ../src/spritz.glade.h:20
 msgid "<b>External Trigger</b>"
-msgstr "<b>Externe Trigger</b>"
+msgstr "<b>Trigger Esterno</b>"
 
 #: ../src/spritz.glade.h:21
 msgid "<b>Install Size</b>"
-msgstr "<b>Installatie Grootte</b>"
+msgstr "<b>Dimensione installazione</b>"
 
 #: ../src/spritz.glade.h:22
 msgid "<b>Kernel Tag</b>"
@@ -717,39 +721,39 @@ msgstr "<b>Kernel Tag</b>"
 
 #: ../src/spritz.glade.h:23
 msgid "<b>Location</b>"
-msgstr "<b>Locatie</b>"
+msgstr "<b>Luogo</b>"
 
 #: ../src/spritz.glade.h:24
 msgid "<b>MD5 Signature</b>"
-msgstr "<b>MD5 Sleutel</b>"
+msgstr "<b>Firma MD5</b>"
 
 #: ../src/spritz.glade.h:25
 msgid "<b>Masked</b>"
-msgstr "<b>Masked</b>"
+msgstr "<b>Mascherato</b>"
 
 #: ../src/spritz.glade.h:26
 msgid "<b>Messages</b>"
-msgstr "<b>Meldingen</b>"
+msgstr "<b>Messaggi</b>"
 
 #: ../src/spritz.glade.h:27
 msgid "<b>Package Size</b>"
-msgstr "<b>Pakket Grootte</b>"
+msgstr "<b>Dimensione pacchetto</b>"
 
 #: ../src/spritz.glade.h:28
 msgid "<b>Repositories options</b>"
-msgstr "<b>Repositories opties</b>"
+msgstr "<b>Opzioni Repository</b>"
 
 #: ../src/spritz.glade.h:29
 msgid "<b>Requested actions</b>"
-msgstr "<b>Gevraagde acties</b>"
+msgstr "<b>Azioni richieste</b>"
 
 #: ../src/spritz.glade.h:30
 msgid "<b>Revision</b>"
-msgstr "<b>Revisie</b>"
+msgstr "<b>Revisione</b>"
 
 #: ../src/spritz.glade.h:31
 msgid "<b>SUBACTION</b>\n"
-msgstr "<b>SUBACTIE</b>\n"
+msgstr "<b>SUBAZIONE</b>\n"
 
 #: ../src/spritz.glade.h:33
 msgid "<b>Slot</b>"
@@ -757,19 +761,19 @@ msgstr "<b>Slot</b>"
 
 #: ../src/spritz.glade.h:34
 msgid "<b>Total Download Size</b>"
-msgstr "<b>Totale Download Grootte</b>"
+msgstr "<b>Dimensione totale download</b>"
 
 #: ../src/spritz.glade.h:35
 msgid "<b>USE Flags</b>"
-msgstr "<b>USE Flags</b>"
+msgstr "<b>USE Flag</b>"
 
 #: ../src/spritz.glade.h:36
 msgid "<b>Version</b>"
-msgstr "<b>Versie</b>"
+msgstr "<b>Versione</b>"
 
 #: ../src/spritz.glade.h:37
 msgid "<b>Website</b>"
-msgstr "<b>Website</b>"
+msgstr "<b>Sito web</b>"
 
 #: ../src/spritz.glade.h:38
 msgid "<big><b>media-libs/foo-1.2.3</b></big>"
@@ -805,19 +809,19 @@ msgstr "<small>3.5MB</small>"
 
 #: ../src/spritz.glade.h:46
 msgid "<small>None</small>"
-msgstr "<small>Geen</small>"
+msgstr "<small>Nessuno</small>"
 
 #: ../src/spritz.glade.h:47
 msgid "<small>Official Sabayon Linux Repository</small>"
-msgstr "<small>Officiële Sabayon Linux Repository</small>"
+msgstr "<small>Repository ufficiale di Sabayon Linux</small>"
 
 #: ../src/spritz.glade.h:48
 msgid "<small>This is a description placeholder</small>"
-msgstr "<small>Dit is een omschrijving veld</small>"
+msgstr "<small>Esiste solo per riempire uno spazio</small>"
 
 #: ../src/spritz.glade.h:49
 msgid "<small>Today, yesterday, who knows</small>"
-msgstr "<small>Vandaag, gisteren, wie zal het zeggen</small>"
+msgstr "<small>Oggi, ieri, chi lo sa</small>"
 
 #: ../src/spritz.glade.h:50
 msgid "<small>http://www.sabayonlinux.org</small>"
@@ -825,35 +829,35 @@ msgstr "<small>http://www.sabayonlinux.org</small>"
 
 #: ../src/spritz.glade.h:51
 msgid "<small>path/to/download/blah.tbz2</small>"
-msgstr "<small>pad/naar/download/blah.tbz2</small>"
+msgstr "<small>percorso/al/download/blah.tbz2</small>"
 
 #: ../src/spritz.glade.h:52
 msgid "<small>why?</small>"
-msgstr "<small>waarom?</small>"
+msgstr "<small>perché?</small>"
 
 #: ../src/spritz.glade.h:53
 msgid "<small>you me they</small>"
-msgstr "<small>jij ik zij</small>"
+msgstr "<small>tu me loro</small>"
 
 #: ../src/spritz.glade.h:54
 msgid "<span size=\"large\"><b>Action</b></span>\n"
-msgstr "<span size=\"large\"><b>Actie</b></span>\n"
+msgstr "<span size=\"large\"><b>Azione</b></span>\n"
 
 #: ../src/spritz.glade.h:56
 msgid "<span size=\"xx-large\" color=\"black\">Files Update</span>"
-msgstr "<span size=\"xx-large\" color=\"black\">Bestanden Update</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Aggiornamento file</span>"
 
 #: ../src/spritz.glade.h:57
 msgid "<span size=\"xx-large\" color=\"black\">Package Categories</span>"
-msgstr "<span size=\"xx-large\" color=\"black\">Pakket Categorieën</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Categorie pacchetti</span>"
 
 #: ../src/spritz.glade.h:58
 msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
-msgstr "<span size=\"xx-large\" color=\"black\">Pakket Wachtlijst</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Coda pacchetti</span>"
 
 #: ../src/spritz.glade.h:59
 msgid "<span size=\"xx-large\" color=\"black\">Repositories</span>"
-msgstr "<span size=\"xx-large\" color=\"black\">Repositories</span>"
+msgstr "<span size=\"xx-large\" color=\"black\">Repository</span>"
 
 #: ../src/spritz.glade.h:60
 msgid "Add/Edit Repository"
@@ -861,35 +865,35 @@ msgstr "Repository Toevoegen/Bewerken"
 
 #: ../src/spritz.glade.h:61
 msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
-msgstr "Het toevoegen van een <b>nieuwe repository</b> maakt het mogelijk om <b>extra software</b> te installeren."
+msgstr "Aggiungere una <b>nuova repository</b> ti permette di accedere a <b>software aggiuntivo</b>"
 
 #: ../src/spritz.glade.h:62
 msgid "Available"
-msgstr "Beschikbaar"
+msgstr "Disponibile"
 
 #: ../src/spritz.glade.h:63
 msgid "C_hanges"
-msgstr ""
+msgstr "Ca_mbiamenti"
 
 #: ../src/spritz.glade.h:64
 msgid "D_ependencies"
-msgstr ""
+msgstr "Dip_endenze"
 
 #: ../src/spritz.glade.h:65
 msgid "Database URL"
-msgstr "Database URL"
+msgstr "Indirizzo database"
 
 #: ../src/spritz.glade.h:66
 msgid "Database compression"
-msgstr "Database compressie"
+msgstr "Compressione database"
 
 #: ../src/spritz.glade.h:67
 msgid "Dele_te all"
-msgstr ""
+msgstr "Elimina _tutto"
 
 #: ../src/spritz.glade.h:69
 msgid "Download mirrors"
-msgstr "Download mirrors"
+msgstr "Mirror di scaricamento"
 
 #: ../src/spritz.glade.h:71
 msgid "Extra"
@@ -897,143 +901,143 @@ msgstr "Extra"
 
 #: ../src/spritz.glade.h:72
 msgid "Identifier"
-msgstr "Identifier"
+msgstr "Identificatore"
 
 #: ../src/spritz.glade.h:73
 msgid "Install"
-msgstr "Installeer"
+msgstr "Installa"
 
 #: ../src/spritz.glade.h:74
 msgid "Install the selected package"
-msgstr "Installeer geselecteerd pakket"
+msgstr "Installa il pacchetto selezionato"
 
 #: ../src/spritz.glade.h:76
 msgid "Load content"
-msgstr "Laad inhoud"
+msgstr "Carica il contenuto"
 
 #: ../src/spritz.glade.h:77
 msgid "M_erge"
-msgstr ""
+msgstr "M_ergi"
 
 #: ../src/spritz.glade.h:78
 msgid "Merge all"
-msgstr ""
+msgstr "Mergi tutto"
 
 #: ../src/spritz.glade.h:79
 msgid "Package Info."
-msgstr "Pakket Info."
+msgstr "Info Pacchetto"
 
 #: ../src/spritz.glade.h:80
 msgid "Package Information"
-msgstr "Pakket Informatie"
+msgstr "Informazioni Pacchetto"
 
 #: ../src/spritz.glade.h:81
 msgid "Please Confirm"
-msgstr "Bevestig alstublieft"
+msgstr "Conferma per favore"
 
 #: ../src/spritz.glade.h:82
 msgid "Purge"
-msgstr "Volledig verwijderen"
+msgstr "Spazza via"
 
 #: ../src/spritz.glade.h:83
 msgid "R_egenerate Cache"
-msgstr ""
+msgstr "R_igenera Cache"
 
 #: ../src/spritz.glade.h:84
 msgid "Reinstall"
-msgstr "Herinstalleer"
+msgstr "Reinstalla"
 
 #: ../src/spritz.glade.h:85
 msgid "Reinstall the selected package"
-msgstr "Herinstalleer geselecteerd pakket"
+msgstr "Reinstalla il pacchetto selezionato"
 
 #: ../src/spritz.glade.h:86
 msgid "Remove"
-msgstr "Verwijder"
+msgstr "Rimuovi"
 
 #: ../src/spritz.glade.h:87
 msgid "Remove the selected package"
-msgstr "Verwijder geselecteerd pakket"
+msgstr "Rimuovi il pacchetto selezionato"
 
 #: ../src/spritz.glade.h:88
 msgid "Remove the selected package and its configuration"
-msgstr "Verwijder geselecteerd en configuratie"
+msgstr "Rimuovi il pacchetto selezionato e la sua configurazione"
 
 #: ../src/spritz.glade.h:89
 msgid "Repository information"
-msgstr "Repository informatie"
+msgstr "Informazioni Repository"
 
 #: ../src/spritz.glade.h:90
 msgid "Soon!"
-msgstr "Binnenkort!"
+msgstr "Presto!"
 
 #: ../src/spritz.glade.h:91
 msgid "Spritz Package Manager"
-msgstr "Spritz Pakket Beheer"
+msgstr "Gestore di pacchetti Spritz"
 
 #: ../src/spritz.glade.h:92
 msgid "Undo Install"
-msgstr "Installatie ongedaan maken"
+msgstr "Annulla Installa"
 
 #: ../src/spritz.glade.h:93
 msgid "Undo Install action"
-msgstr "Installatie actie ongedaan maken"
+msgstr "Annulla azione Installa"
 
 #: ../src/spritz.glade.h:94
 msgid "Undo Purge"
-msgstr ""
+msgstr "Annulla Spazza via"
 
 #: ../src/spritz.glade.h:95
 msgid "Undo Purge action"
-msgstr ""
+msgstr "Annulla azione Spazza via"
 
 #: ../src/spritz.glade.h:96
 msgid "Undo Reinstall"
-msgstr "Herinstallatie ongedaan maken"
+msgstr "Annulla Reinstalla"
 
 #: ../src/spritz.glade.h:97
 msgid "Undo Reinstall action"
-msgstr "Herinstallatie actie ongedaan maken"
+msgstr "Annulla azione Reinstalla"
 
 #: ../src/spritz.glade.h:98
 msgid "Undo Remove"
-msgstr "Verwijderen ongedaan maken"
+msgstr "Annulla Rimuovi"
 
 #: ../src/spritz.glade.h:99
 msgid "Undo Remove action"
-msgstr "Verwijder actie ongedaan maken"
+msgstr "Annulla azione Rimuovi"
 
 #: ../src/spritz.glade.h:100
 msgid "Undo Update"
-msgstr "Update ongedaan maken"
+msgstr "Annulla Aggiorna"
 
 #: ../src/spritz.glade.h:101
 msgid "Undo Update action"
-msgstr "Update actie ongedaan maken"
+msgstr "Annulla azione Aggiorna"
 
 #: ../src/spritz.glade.h:103
 msgid "Update the selected package"
-msgstr "Update geselecteerd pakket"
+msgstr "Aggiorna il pacchetto selezionato"
 
 #: ../src/spritz.glade.h:104
 msgid "Updates"
-msgstr "Updates"
+msgstr "Aggiornamenti"
 
 #: ../src/spritz.glade.h:105
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
 msgstr ""
-"Je <b>moet</b> onderstaande licentie accepteren.\n"
-"Lees goed door <b>en maak een keuze</b>."
+"Devi <b>accettare</b> le licenze sotto.\n"
+"Leggile attentamente e fai <b>la tua scelta</b>."
 
 #: ../src/spritz.glade.h:107
 msgid "_Accept License"
-msgstr "_Accepteer Licentie"
+msgstr "_Accetta licenza"
 
 #: ../src/spritz.glade.h:108
 msgid "_Add All"
-msgstr "_Alles toevoegen"
+msgstr "_Aggiungi tutto"
 
 #: ../src/spritz.glade.h:109
 msgid "_Branch ..."
@@ -1041,55 +1045,55 @@ msgstr ""
 
 #: ../src/spritz.glade.h:110
 msgid "_Details"
-msgstr ""
+msgstr "_Dettagli"
 
 #: ../src/spritz.glade.h:111
 msgid "_File"
-msgstr ""
+msgstr "_File"
 
 #: ../src/spritz.glade.h:112
 msgid "_Force repositories update"
-msgstr ""
+msgstr "_Forza aggiornamento repository"
 
 #: ../src/spritz.glade.h:113
 msgid "_Help"
-msgstr ""
+msgstr "_Aiuto"
 
 #: ../src/spritz.glade.h:114
 msgid "_Insert String"
-msgstr ""
+msgstr "_Inserisci Stringa"
 
 #: ../src/spritz.glade.h:115
 msgid "_Other"
-msgstr ""
+msgstr "_Altro"
 
 #: ../src/spritz.glade.h:116
 msgid "_Overview"
-msgstr ""
+msgstr "_Riepilogo"
 
 #: ../src/spritz.glade.h:117
 msgid "_Process Queue"
-msgstr ""
+msgstr "_Processa coda"
 
 #: ../src/spritz.glade.h:118
 msgid "_Read License"
-msgstr ""
+msgstr "_Leggi licenza"
 
 #: ../src/spritz.glade.h:119
 msgid "_References"
-msgstr ""
+msgstr "_Riferimenti"
 
 #: ../src/spritz.glade.h:120
 msgid "_Remove All"
-msgstr "_Verwijder Alles"
+msgstr "_Rimuovi tutto"
 
 #: ../src/spritz.glade.h:121
 msgid "_Skip"
-msgstr ""
+msgstr "_Salta"
 
 #: ../src/spritz.glade.h:122
 msgid "_Update Repositories"
-msgstr ""
+msgstr "A_ggiorna Repository"
 
 #: ../src/spritz.glade.h:123
 msgid "_Your Ego!"

@@ -263,7 +263,7 @@ msgstr "<b>Pakketten voor Installatie</b>"
 
 #: ../src/views.py:608
 msgid "<b>Packages To Remove</b>"
-msgstr "<b></b>"
+msgstr ""
 
 #: ../src/views.py:637
 msgid "Proposed"
