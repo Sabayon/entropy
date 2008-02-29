@@ -61,6 +61,7 @@ class QueueExecutor:
         if removal_queue:
             removalQueue += [(x,False) for x in removal_queue if (x,True) not in removalQueue]
 
+        # XXX handle for eva too, move db configuration to LicenseDialog and forget
         rc, licenses = self.handle_licenses(runQueue)
         if rc != 0:
             return 0,0
