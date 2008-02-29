@@ -406,6 +406,9 @@ class TextInterface:
     def cycleDone(self):
         return
 
+    def setTitle(self, title):
+        xtermTitle(title)
+
     def setTotalCycles(self, total):
         return
 

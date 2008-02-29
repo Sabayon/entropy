@@ -3231,27 +3231,27 @@ class PackageInterface:
 
             if step == "fetch":
                 self.xterm_title += 'Fetching: '+os.path.basename(self.infoDict['download'])
-                xtermTitle(self.xterm_title)
+                self.setTitle(self.xterm_title)
                 rc = self.fetch_step()
 
             elif step == "checksum":
                 self.xterm_title += 'Verifying: '+os.path.basename(self.infoDict['download'])
-                xtermTitle(self.xterm_title)
+                self.setTitle(self.xterm_title)
                 rc = self.checksum_step()
 
             elif step == "unpack":
                 self.xterm_title += 'Unpacking: '+os.path.basename(self.infoDict['download'])
-                xtermTitle(self.xterm_title)
+                self.setTitle(self.xterm_title)
                 rc = self.unpack_step()
 
             elif step == "install":
                 self.xterm_title += 'Installing: '+self.infoDict['atom']
-                xtermTitle(self.xterm_title)
+                self.setTitle(self.xterm_title)
                 rc = self.install_step()
 
             elif step == "remove":
                 self.xterm_title += 'Removing: '+self.infoDict['removeatom']
-                xtermTitle(self.xterm_title)
+                self.setTitle(self.xterm_title)
                 rc = self.remove_step()
 
             elif step == "showmessages":
@@ -3259,27 +3259,27 @@ class PackageInterface:
 
             elif step == "cleanup":
                 self.xterm_title += 'Cleaning: '+self.infoDict['atom']
-                xtermTitle(self.xterm_title)
+                self.setTitle(self.xterm_title)
                 rc = self.cleanup_step()
 
             elif step == "postinstall":
                 self.xterm_title += 'Postinstall: '+self.infoDict['atom']
-                xtermTitle(self.xterm_title)
+                self.setTitle(self.xterm_title)
                 rc = self.postinstall_step()
 
             elif step == "preinstall":
                 self.xterm_title += 'Preinstall: '+self.infoDict['atom']
-                xtermTitle(self.xterm_title)
+                self.setTitle(self.xterm_title)
                 rc = self.preinstall_step()
 
             elif step == "preremove":
                 self.xterm_title += 'Preremove: '+self.infoDict['removeatom']
-                xtermTitle(self.xterm_title)
+                self.setTitle(self.xterm_title)
                 rc = self.preremove_step()
 
             elif step == "postremove":
                 self.xterm_title += 'Postremove: '+self.infoDict['removeatom']
-                xtermTitle(self.xterm_title)
+                self.setTitle(self.xterm_title)
                 rc = self.postremove_step()
 
             if rc != 0:
