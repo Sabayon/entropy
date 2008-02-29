@@ -2274,7 +2274,6 @@ class PackageInterface:
                                                             self.infoDict['imagedir'],
                                                             catchEmpty = True
                                                         )
-        
         if rc != 0:
             return rc
         if not os.path.isdir(self.infoDict['imagedir']):
@@ -5008,6 +5007,7 @@ class TriggerInterface:
         self.pkgdata = pkgdata
         self.prepared = False
         self.triggers = set()
+        self.gentoo_compat = etpConst['gentoo-compat']
 
         '''
         @ description: Gentoo toolchain variables
@@ -5017,7 +5017,7 @@ class TriggerInterface:
 
         ''' portage stuff '''
         self.portageTools = None
-        if etpConst['gentoo-compat']:
+        if self.gentoo_compat:
             try:
                 import portageTools
                 self.portageTools = portageTools
@@ -5027,6 +5027,7 @@ class TriggerInterface:
                                         importance = 0,
                                         header = bold(" !!! ")
                                     )
+                self.gentoo_compat = False
 
         self.phase = phase
         # validate phase
@@ -5058,7 +5059,7 @@ class TriggerInterface:
 
         functions = set()
         # Gentoo hook
-        if etpConst['gentoo-compat']:
+        if self.gentoo_compat:
             functions.add('ebuild_postinstall')
 
         if self.pkgdata['trigger']:
@@ -5073,7 +5074,7 @@ class TriggerInterface:
             functions.add("binutilsswitch")
 
         # triggers that are not needed when gentoo-compat is enabled
-        if not etpConst['gentoo-compat']:
+        if not self.gentoo_compat:
 
             if "gnome2" in self.pkgdata['eclasses']:
                 functions.add('iconscache')
@@ -5122,7 +5123,7 @@ class TriggerInterface:
         ldpaths = self.Entropy.entropyTools.collectLinkerPaths()
         # prepare content
         for x in self.pkgdata['content']:
-            if not etpConst['gentoo-compat']:
+            if not self.gentoo_compat:
                 if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
                     functions.add('iconscache')
                 if x.startswith("/usr/share/mime"):
@@ -5163,7 +5164,7 @@ class TriggerInterface:
             functions.add('call_ext_preinstall')
 
         # Gentoo hook
-        if etpConst['gentoo-compat']:
+        if self.gentoo_compat:
             functions.add('ebuild_preinstall')
 
         for x in self.pkgdata['content']:
@@ -5180,7 +5181,7 @@ class TriggerInterface:
         if self.pkgdata['trigger']:
             functions.add('call_ext_postremove')
 
-        if not etpConst['gentoo-compat']:
+        if not self.gentoo_compat:
 
             # kde package ?
             if "kde" in self.pkgdata['eclasses']:
@@ -5207,7 +5208,7 @@ class TriggerInterface:
         ldpaths = self.Entropy.entropyTools.collectLinkerPaths()
 
         for x in self.pkgdata['removecontent']:
-            if not etpConst['gentoo-compat']:
+            if not self.gentoo_compat:
                 if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
                     functions.add('iconscache')
                 if x.startswith("/usr/share/mime"):
@@ -5242,7 +5243,7 @@ class TriggerInterface:
             functions.add('call_ext_preremove')
 
         # Gentoo hook
-        if etpConst['gentoo-compat']:
+        if self.gentoo_compat:
             functions.add('ebuild_preremove')
             functions.add('ebuild_postremove') # doing here because we need /var/db/pkg stuff in place and also because doesn't make any difference
 
