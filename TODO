@@ -9,7 +9,7 @@ TODO list:
      [] complete reagent spm interface
      [] write a tool that will rebuild kernel dependant packages
      [] GLSA interface, interfaced between packages in repo and the portage tree
-
+  - add changelog to packages
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - Community repositories
   - split RDEPEND and PDEPEND
