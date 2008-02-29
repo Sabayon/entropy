@@ -124,6 +124,12 @@ class ConfirmationDialog:
                 parent = model.append( None, [label] )
                 for pkg in pkgs['update']:
                     model.append( parent, [pkg] )
+        if pkgs.has_key("downgrade"):
+            if pkgs['downgrade']:
+                label = "<b>%s</b>" % _("To be downgraded")
+                parent = model.append( None, [label] )
+                for pkg in pkgs['downgrade']:
+                    model.append( parent, [pkg] )
         if pkgs.has_key("remove"):
             if pkgs['remove']:
                 label = "<b>%s</b>" % _("To be removed")
