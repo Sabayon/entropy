@@ -686,7 +686,7 @@ class EquoInterface(TextInterface):
         if not results:
             return 1
 
-        installed_idpackage = results[0]
+        installed_idpackage = results[0][0]
         pkgver = dbconn.retrieveVersion(match[0])
         pkgtag = dbconn.retrieveVersionTag(match[0])
         pkgrev = dbconn.retrieveRevision(match[0])
