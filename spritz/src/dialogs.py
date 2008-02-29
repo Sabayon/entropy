@@ -31,7 +31,7 @@ except:
 from misc import const,cleanMarkupSting,SpritzConf,unicode2htmlentities
 from i18n import _
 
-class ConfimationDialog:
+class ConfirmationDialog:
     def __init__( self, parent, pkgs, top_text = None, bottom_text = None, bottom_data = None, sub_text = None, cancel = True, simpleList = False ):
 
         self.xml = gtk.glade.XML( const.GLADE_FILE, 'confirmation',domain="spritz" )
@@ -144,6 +144,9 @@ class ConfimationDialog:
 
     def destroy( self ):
         return self.dialog.destroy()
+
+class ConfimationDialog(ConfirmationDialog):
+    pass
 
 class ErrorDialog:
     def __init__( self, parent, title, text, longtext, modal ):

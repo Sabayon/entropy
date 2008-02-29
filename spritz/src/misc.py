@@ -180,7 +180,7 @@ class SpritzQueue:
 
     def showKeySlotErrorMessage(self, blocked):
 
-        confirmDialog = self.dialogs.ConfimationDialog( self.ui.main,
+        confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
                     list(blocked),
                     top_text = _("Attention"),
                     sub_text = _("There are packages that can't be installed at the same time, thus are blocking your request:"),
@@ -235,7 +235,7 @@ class SpritzQueue:
     def elaborateInstall(self, xlist, actions, deep_deps):
         (runQueue, removalQueue, status) = self.Entropy.retrieveInstallQueue(xlist,False,deep_deps)
         if status == -2: # dependencies not found
-            confirmDialog = self.dialogs.ConfimationDialog( self.ui.main,
+            confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
                         runQueue,
                         top_text = _("Attention"),
                         sub_text = _("Some dependencies couldn't be found. It can either be because they are masked or because they aren't in any active repository."),
@@ -286,7 +286,7 @@ class SpritzQueue:
                         size = abs(size)
                         bottom_text = _("Freed disk space")
                     size = self.Entropy.entropyTools.bytesIntoHuman(size)
-                    confirmDialog = self.dialogs.ConfimationDialog( self.ui.main,
+                    confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
                                                                     install_todo+remove_todo,
                                                                     top_text = _("These are the packages that would be installed/updated"),
                                                                     bottom_text = bottom_text,
@@ -336,7 +336,7 @@ class SpritzQueue:
                         size = abs(size)
                         bottom_text = _("Needed space")
                     size = self.Entropy.entropyTools.bytesIntoHuman(size)
-                    confirmDialog = self.dialogs.ConfimationDialog( self.ui.main,
+                    confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
                                                                     todo,
                                                                     top_text = _("These are the packages that would be removed"),
                                                                     bottom_text = bottom_text,

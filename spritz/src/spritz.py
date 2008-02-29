@@ -1240,7 +1240,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
     def get_confimation( self, task ):
         self.progress.hide( False )
-        dlg = ConfimationDialog(self.ui.main, [], size )
+        dlg = ConfirmationDialog(self.ui.main, [], size )
         rc = dlg.run()
         dlg.destroy()
         self.progress.show()

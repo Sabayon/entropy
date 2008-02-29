@@ -120,7 +120,7 @@ class EntropyPackageView:
         self.clearUpdates()
 
         # installed packages right click menu
-        self.installed_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageInstalled",domain="yumex" )
+        self.installed_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageInstalled",domain="spritz" )
         self.installed_menu = self.installed_menu_xml.get_widget( "packageInstalled" )
         self.installed_menu_xml.signal_autoconnect(self)
 
@@ -138,7 +138,7 @@ class EntropyPackageView:
         self.installed_undopurge.set_image(self.img_pkg_undopurge)
 
         # updates right click menu
-        self.updates_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageUpdates",domain="yumex" )
+        self.updates_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageUpdates",domain="spritz" )
         self.updates_menu = self.updates_menu_xml.get_widget( "packageUpdates" )
         self.updates_menu_xml.signal_autoconnect(self)
         self.updates_update = self.updates_menu_xml.get_widget( "update" )
@@ -147,7 +147,7 @@ class EntropyPackageView:
         self.updates_undoupdate.set_image(self.img_pkg_downgrade)
 
         # install right click menu
-        self.install_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageInstall",domain="yumex" )
+        self.install_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageInstall",domain="spritz" )
         self.install_menu = self.install_menu_xml.get_widget( "packageInstall" )
         self.install_menu_xml.signal_autoconnect(self)
         self.install_install = self.install_menu_xml.get_widget( "install" )
