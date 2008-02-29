@@ -115,19 +115,19 @@ class ConfirmationDialog:
         if pkgs.has_key("install"):
             if pkgs['install']:
                 label = "<b>%s</b>" % _("To be installed")
-                parent = model.append( None, [label, " "] )
+                parent = model.append( None, [label] )
                 for pkg in pkgs['install']:
                     model.append( parent, [pkg] )
         if pkgs.has_key("update"):
             if pkgs['update']:
                 label = "<b>%s</b>" % _("To be updated")
-                parent = model.append( None, [label, " "] )
+                parent = model.append( None, [label] )
                 for pkg in pkgs['update']:
                     model.append( parent, [pkg] )
         if pkgs.has_key("remove"):
             if pkgs['remove']:
                 label = "<b>%s</b>" % _("To be removed")
-                parent = model.append( None, [label, " "] )
+                parent = model.append( None, [label] )
                 for pkg in pkgs['remove']:
                     model.append( parent, [pkg] )
 
