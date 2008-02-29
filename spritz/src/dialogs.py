@@ -32,7 +32,7 @@ from misc import const,cleanMarkupSting,SpritzConf,unicode2htmlentities
 from i18n import _
 
 class ConfirmationDialog:
-    def __init__( self, parent, pkgs, top_text = None, bottom_text = None, bottom_data = None, sub_text = None, cancel = True, simpleList = False ):
+    def __init__( self, parent, pkgs, top_text = None, bottom_text = None, bottom_data = None, sub_text = None, cancel = True, simpleList = False, simpleDict = False ):
 
         self.xml = gtk.glade.XML( const.GLADE_FILE, 'confirmation',domain="spritz" )
         self.dialog = self.xml.get_widget( "confirmation" )
@@ -49,6 +49,7 @@ class ConfirmationDialog:
         self.dobottomdata = bottom_data
         self.docancel = cancel
         self.simpleList = simpleList
+        self.simpleDict = simpleDict
 
         # setup text
         if top_text == None:
@@ -68,6 +69,9 @@ class ConfirmationDialog:
         if self.simpleList:
             self.pkgModel = self.setup_simple_view( self.pkg )
             self.show_data_simple( self.pkgModel, pkgs )
+        elif self.simpleDict:
+            self.pkgModel = self.setup_simple_view( self.pkg )
+            self.show_data_simpledict( self.pkgModel, pkgs )
         else:
             self.pkgModel = self.setup_view( self.pkg )
             self.show_data( self.pkgModel, pkgs )
@@ -106,6 +110,29 @@ class ConfirmationDialog:
             column.set_max_width( max_width )
         view.append_column( column )
 
+    def show_data_simpledict( self, model, pkgs ):
+        model.clear()
+        if pkgs.has_key("install"):
+            if pkgs['install']:
+                label = "<b>%s</b>" % _("To be installed")
+                parent = model.append( None, [label, " "] )
+                for pkg in pkgs['install']:
+                    model.append( parent, [pkg] )
+        if pkgs.has_key("update"):
+            if pkgs['update']:
+                label = "<b>%s</b>" % _("To be updated")
+                parent = model.append( None, [label, " "] )
+                for pkg in pkgs['update']:
+                    model.append( parent, [pkg] )
+        if pkgs.has_key("remove"):
+            if pkgs['remove']:
+                label = "<b>%s</b>" % _("To be removed")
+                parent = model.append( None, [label, " "] )
+                for pkg in pkgs['remove']:
+                    model.append( parent, [pkg] )
+
+        for pkg in pkgs:
+            model.append( None, [pkg] )
 
     def show_data_simple( self, model, pkgs ):
         model.clear()
