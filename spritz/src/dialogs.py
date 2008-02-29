@@ -112,6 +112,12 @@ class ConfirmationDialog:
 
     def show_data_simpledict( self, model, pkgs ):
         model.clear()
+        if pkgs.has_key("reinstall"):
+            if pkgs['reinstall']:
+                label = "<b>%s</b>" % _("To be reinstalled")
+                parent = model.append( None, [label] )
+                for pkg in pkgs['reinstall']:
+                    model.append( parent, [pkg] )
         if pkgs.has_key("install"):
             if pkgs['install']:
                 label = "<b>%s</b>" % _("To be installed")
