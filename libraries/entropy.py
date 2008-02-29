@@ -671,6 +671,36 @@ class EquoInterface(TextInterface):
         found, match = self.check_package_update("app-admin/equo", deep = True)
         return found
 
+    '''
+        @input: matched atom (idpackage,repoid)
+        @output:
+                upgrade: int(2)
+                install: int(1)
+                reinstall: int(0)
+                downgrade: int(-1)
+    '''
+    def get_package_action(self, match):
+        dbconn = self.openRepositoryDatabase(match[1])
+        pkgkey, pkgslot = dbconn.retrieveKeySlot(match[0])
+        results = self.clientDbconn.searchKeySlot(pkgkey, pkgslot)
+        if not results:
+            return 1
+
+        installed_idpackage = results[0]
+        pkgver = dbconn.retrieveVersion(match[0])
+        pkgtag = dbconn.retrieveVersionTag(match[0])
+        pkgrev = dbconn.retrieveRevision(match[0])
+        installedVer = self.clientDbconn.retrieveVersion(installed_idpackage)
+        installedTag = self.clientDbconn.retrieveVersionTag(installed_idpackage)
+        installedRev = self.clientDbconn.retrieveRevision(installed_idpackage)
+        pkgcmp = self.entropyTools.entropyCompareVersions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
+        if pkgcmp == 0:
+            return 0
+        elif pkgcmp > 0:
+            return 2
+        else:
+            return -1
+
     # better to use key:slot
     def check_package_update(self, atom, deep = False):
 
