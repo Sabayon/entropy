@@ -828,6 +828,7 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses 
     else:
         mysettings = portage.config(config_root="/", target_root=mypath, config_incrementals=portage_const.INCREMENTALS)
         portageConfigs[mypath] = mysettings
+    mysettings['EBUILD_PHASE'] = mydo
 
     try: # this is a >portage-2.1.4_rc11 feature
         mysettings._environ_whitelist = set(mysettings._environ_whitelist)
@@ -860,7 +861,8 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses 
         vartree = portage.vartree(root=mypath)
         portageRoots[mypath] = vartree
 
-    rc = portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = mypath, tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree, use_cache = 0) ### FIXME: add support for cache_overlay
+    ### FIXME: add support for cache_overlay
+    rc = portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = mypath, tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree, use_cache = 0)
 
     # if mute, restore old stdout/stderr
     if etpUi['mute']:

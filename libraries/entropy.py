@@ -5966,7 +5966,12 @@ class TriggerInterface:
             myebuild = self.portageTools.getPortageAppDbPath()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
         except:
             myebuild = ''
+
         if os.path.isfile(myebuild):
+            myebuild = self._setup_ebuild_environment(myebuild, portage_atom)
+
+        if os.path.isfile(myebuild):
+
             self.Entropy.updateProgress(
                                     brown(" Ebuild: pkg_prerm()"),
                                     importance = 0,
@@ -5998,6 +6003,10 @@ class TriggerInterface:
             myebuild = self.portageTools.getPortageAppDbPath()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
         except:
             myebuild = ''
+
+        if os.path.isfile(myebuild):
+            myebuild = self._setup_ebuild_environment(myebuild, portage_atom)
+
         if os.path.isfile(myebuild):
             self.Entropy.updateProgress(
                                     brown(" Ebuild: pkg_postrm()"),
@@ -6018,6 +6027,30 @@ class TriggerInterface:
         sys.stderr = oldstderr
         stdfile.close()
         return 0
+
+    def _setup_ebuild_environment(self, myebuild, portage_atom):
+
+        ebuild_dir = os.path.dirname(myebuild)
+        ebuild_file = os.path.basename(myebuild)
+
+        # copy the whole directory in a safe place
+        dest_dir = os.path.join(etpConst['entropyunpackdir'],"vardb/"+portage_atom)
+        if os.path.exists(dest_dir):
+            if os.path.isdir(dest_dir):
+                shutil.rmtree(dest_dir,True)
+            elif os.path.isfile(dest_dir) or os.path.islink(dest_dir):
+                os.remove(dest_dir)
+        os.makedirs(dest_dir)
+        items = os.listdir(ebuild_dir)
+        for item in items:
+            myfrom = os.path.join(ebuild_dir,item)
+            myto = os.path.join(dest_dir,item)
+            shutil.copy2(myfrom,myto)
+
+        newmyebuild = os.path.join(dest_dir,ebuild_file)
+        if os.path.isfile(newmyebuild):
+            myebuild = newmyebuild
+        return myebuild
 
     '''
         Internal ones
