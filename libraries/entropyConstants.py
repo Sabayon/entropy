@@ -424,8 +424,6 @@ def const_resetCache():
 # Inside it you'll find instantiated vartree classes
 portageRoots = {}
 portageConfigs = {}
-# portage fakedbapi cache
-portageFakeDbApi = {}
 
 # Client packages/database repositories
 etpRepositories = {}
