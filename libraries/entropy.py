@@ -5969,7 +5969,7 @@ class TriggerInterface:
 
         self.myebuild_moved = None
         if os.path.isfile(myebuild):
-            myebuild = self._setup_ebuild_environment(myebuild, portage_atom)
+            myebuild = self._setup_remove_ebuild_environment(myebuild, portage_atom)
 
         if os.path.isfile(myebuild):
 
@@ -6010,7 +6010,7 @@ class TriggerInterface:
 
         self.myebuild_moved = None
         if os.path.isfile(myebuild):
-            myebuild = self._setup_ebuild_environment(myebuild, portage_atom)
+            myebuild = self._setup_remove_ebuild_environment(myebuild, portage_atom)
 
         if os.path.isfile(myebuild):
             self.Entropy.updateProgress(
@@ -6036,7 +6036,7 @@ class TriggerInterface:
 
         return 0
 
-    def _setup_ebuild_environment(self, myebuild, portage_atom):
+    def _setup_remove_ebuild_environment(self, myebuild, portage_atom):
 
         ebuild_dir = os.path.dirname(myebuild)
         ebuild_file = os.path.basename(myebuild)
@@ -6059,7 +6059,35 @@ class TriggerInterface:
         if os.path.isfile(newmyebuild):
             myebuild = newmyebuild
             self.myebuild_moved = myebuild
+            self._ebuild_env_setup_hook(myebuild)
         return myebuild
+
+    def _ebuild_env_setup_hook(self, myebuild):
+        ebuild_path = os.path.dirname(myebuild)
+        if not etpConst['systemroot']:
+            myroot = "/"
+        else:
+            myroot = etpConst['systemroot']+"/"
+
+        # we need to fix ROOT= if it's set inside environment
+        bz2envfile = os.path.join(ebuild_path,"environment.bz2")
+        if os.path.isfile(bz2envfile) and os.path.isdir(myroot):
+            print "found",bz2envfile,myroot
+            import bz2
+            envfile = self.Entropy.entropyTools.unpackBzip2(bz2envfile)
+            bzf = bz2.BZ2File(bz2envfile,"w")
+            f = open(envfile,"r")
+            line = f.readline()
+            while line:
+                if line.startswith("ROOT="):
+                    print "found ROOT ::: ",line
+                    line = "ROOT=%s\n" % (myroot,)
+                    print "CHANGED ROOT ::: ",line
+                bzf.write(line)
+                line = f.readline()
+            f.close()
+            bzf.close()
+            os.remove(envfile)
 
     def _remove_overlayed_ebuild(self):
         if not self.myebuild_moved:
