@@ -6072,7 +6072,7 @@ class TriggerInterface:
         # we need to fix ROOT= if it's set inside environment
         bz2envfile = os.path.join(ebuild_path,"environment.bz2")
         if os.path.isfile(bz2envfile) and os.path.isdir(myroot):
-            print "found",bz2envfile,myroot
+            #print "found",bz2envfile,myroot
             import bz2
             envfile = self.Entropy.entropyTools.unpackBzip2(bz2envfile)
             bzf = bz2.BZ2File(bz2envfile,"w")
@@ -6080,9 +6080,9 @@ class TriggerInterface:
             line = f.readline()
             while line:
                 if line.startswith("ROOT="):
-                    print "found ROOT ::: ",line
+                    #print "found ROOT ::: ",line
                     line = "ROOT=%s\n" % (myroot,)
-                    print "CHANGED ROOT ::: ",line
+                    #print "CHANGED ROOT ::: ",line
                 bzf.write(line)
                 line = f.readline()
             f.close()
