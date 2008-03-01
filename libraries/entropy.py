@@ -5967,6 +5967,7 @@ class TriggerInterface:
         except:
             myebuild = ''
 
+        self.myebuild_moved = None
         if os.path.isfile(myebuild):
             myebuild = self._setup_ebuild_environment(myebuild, portage_atom)
 
@@ -5991,6 +5992,9 @@ class TriggerInterface:
 
         sys.stderr = oldstderr
         stdfile.close()
+
+        self._remove_overlayed_ebuild()
+
         return 0
 
     def trigger_ebuild_postremove(self):
@@ -6004,6 +6008,7 @@ class TriggerInterface:
         except:
             myebuild = ''
 
+        self.myebuild_moved = None
         if os.path.isfile(myebuild):
             myebuild = self._setup_ebuild_environment(myebuild, portage_atom)
 
@@ -6026,6 +6031,9 @@ class TriggerInterface:
                                     )
         sys.stderr = oldstderr
         stdfile.close()
+
+        self._remove_overlayed_ebuild()
+
         return 0
 
     def _setup_ebuild_environment(self, myebuild, portage_atom):
@@ -6050,7 +6058,22 @@ class TriggerInterface:
         newmyebuild = os.path.join(dest_dir,ebuild_file)
         if os.path.isfile(newmyebuild):
             myebuild = newmyebuild
+            self.myebuild_moved = myebuild
         return myebuild
+
+    def _remove_overlayed_ebuild(self):
+        if not self.myebuild_moved:
+            return
+
+        if os.path.isfile(self.myebuild_moved):
+            mydir = os.path.dirname(self.myebuild_moved)
+            shutil.rmtree(mydir,True)
+            mydir = os.path.dirname(mydir)
+            content = os.listdir(mydir)
+            while not content:
+                os.rmdir(mydir)
+                mydir = os.path.dirname(mydir)
+                content = os.listdir(mydir)
 
     '''
         Internal ones
