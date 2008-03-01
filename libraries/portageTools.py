@@ -800,8 +800,10 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses 
         oldsysstdout = sys.stdout
         sys.stdout = f
 
+    mypath = etpConst['systemroot']+"/"
     os.environ["SKIP_EQUO_SYNC"] = "1"
     os.environ["CD_ROOT"] = "/tmp" # workaround for scripts asking for user intervention
+    os.environ["ROOT"] = mypath
 
     if licenses:
         os.environ["ACCEPT_LICENSE"] = str(' '.join(licenses)) # we already do this early
@@ -820,7 +822,6 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses 
 
     ### END SETUP ENVIRONMENT
 
-    mypath = etpConst['systemroot']+"/"
     # find config
     if portageConfigs.has_key(mypath):
         mysettings = portageConfigs.get(mypath)
@@ -834,6 +835,7 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses 
         mysettings._environ_whitelist.add("SKIP_EQUO_SYNC")
         mysettings._environ_whitelist.add("ACCEPT_LICENSE")
         mysettings._environ_whitelist.add("CD_ROOT")
+        mysettings._environ_whitelist.add("ROOT")
         mysettings._environ_whitelist = frozenset(mysettings._environ_whitelist)
     except:
         pass
