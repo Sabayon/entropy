@@ -25,8 +25,8 @@
 import os
 from sys import path, exit, argv
 
-path.append('../libraries')
-path.append('../client')
+path.insert(0,'../libraries')
+path.insert(1,'../client')
 from outputTools import *
 
 # CONSTANTS
