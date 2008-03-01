@@ -859,8 +859,6 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses 
         portageRoots[mypath] = vartree
 
     rc = portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = mypath, tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree, use_cache = 0) ### FIXME: add support for cache_overlay
-    # avoid python/portage memleaks
-    import gc; gc.collect()
 
     # if mute, restore old stdout/stderr
     if etpUi['mute']:
