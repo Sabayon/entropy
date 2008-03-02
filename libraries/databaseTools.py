@@ -1848,7 +1848,6 @@ class etpDatabase:
         data['versiontag'] = mydata[5]
 
         data['trigger'] = self.retrieveTrigger(idpackage)
-        # FIXME: this will be removed when 1.0 will be out
         data['eclasses'] = self.retrieveEclasses(idpackage)
         data['content'] = self.retrieveContent(idpackage)
 
