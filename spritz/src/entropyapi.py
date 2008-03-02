@@ -17,7 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-from misc import const,cleanMarkupSting
+from spritz_setup import const,cleanMarkupSting
 from i18n import _
 from dialogs import questionDialog,LicenseDialog
 

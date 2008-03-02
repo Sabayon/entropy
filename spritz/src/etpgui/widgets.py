@@ -23,7 +23,7 @@ import etpgui
 import gobject
 import types
 import sys, os
-from misc import const
+from spritz_setup import const
 import vte
 
 class SpritzConsole(vte.Terminal):

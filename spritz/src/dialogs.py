@@ -28,7 +28,7 @@ except:
     from ConfigParser import ConfigParser,SafeConfigParser
 
 
-from misc import const,cleanMarkupSting,SpritzConf,unicode2htmlentities
+from spritz_setup import const,cleanMarkupSting,SpritzConf,unicode2htmlentities
 from i18n import _
 
 class ConfirmationDialog:

@@ -18,7 +18,8 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from etpgui import *
-from misc import SpritzQueue, SpritzConf, const, cleanMarkupSting
+from spritz_setup import SpritzConf, const, cleanMarkupSting
+from misc import SpritzQueue
 from views import *
 from etpgui.widgets import SpritzConsole
 from i18n import _

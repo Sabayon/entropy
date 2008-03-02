@@ -22,7 +22,7 @@ import gobject
 import logging
 import glob
 import ConfigParser
-from misc import const
+from spritz_setup import const
 from etpgui.widgets import UI
 from etpgui import *
 from entropyConstants import *

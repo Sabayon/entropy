@@ -46,7 +46,7 @@ from etpgui import *
 import filters
 from gui import SpritzGUI
 from dialogs import *
-from misc import const, fakeoutfile, fakeinfile
+from spritz_setup import const, fakeoutfile, fakeinfile
 from i18n import _
 import time
 

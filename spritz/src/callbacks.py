@@ -26,7 +26,7 @@ import logging
 from urlgrabber.progress import *
 
 # Yumex imports
-from misc import const
+from spritz_setup import const
 #from yumgui.callbacks import RPMInstallCallback
 #from yumgui import *
 from i18n import _
