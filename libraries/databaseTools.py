@@ -1839,37 +1839,16 @@ class etpDatabase:
     def getTriggerInfo(self, idpackage):
         data = {}
 
-        mydata = self.getBaseData(idpackage)
+        mydata = self.getScopeData(idpackage)
 
-        data['name'] = mydata[1]
-        data['version'] = mydata[2]
-        data['versiontag'] = mydata[3]
-        data['description'] = mydata[4]
-        data['category'] = mydata[5]
-        data['slot'] = mydata[14]
-        data['etpapi'] = mydata[15]
-
-        data['chost'] = mydata[6]
-        data['cflags'] = mydata[7]
-        data['cxxflags'] = mydata[8]
-
-        data['homepage'] = mydata[9]
-        data['license'] = mydata[10]
-        data['branch'] = mydata[11]
-        data['download'] = mydata[12]
-        data['digest'] = mydata[13]
-        data['datecreation'] = mydata[16]
-        data['size'] = mydata[17]
-        data['revision'] = mydata[18]
+        data['atom'] = mydata[0]
+        data['category'] = mydata[1]
+        data['name'] = mydata[2]
+        data['version'] = mydata[3]
+        data['versiontag'] = mydata[5]
 
         data['trigger'] = self.retrieveTrigger(idpackage)
-        if (self.isSystemPackage(idpackage)):
-            data['systempackage'] = 'xxx'
-        else:
-            data['systempackage'] = ''
         # FIXME: this will be removed when 1.0 will be out
-        data['config_protect'] = self.retrieveProtect(idpackage)
-        data['config_protect_mask'] = self.retrieveProtectMask(idpackage)
         data['eclasses'] = self.retrieveEclasses(idpackage)
         data['content'] = self.retrieveContent(idpackage)
 
