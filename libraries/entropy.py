@@ -3441,8 +3441,7 @@ class PackageInterface:
                 del newcontent
                 self.infoDict['removecontent'] = content_to_remove.copy()
                 del content_to_remove
-                # XXX: too much memory
-                self.infoDict['triggers']['remove'] = self.Entropy.clientDbconn.getPackageData(self.infoDict['removeidpackage'])
+                self.infoDict['triggers']['remove'] = self.Entropy.clientDbconn.getTriggerInfo(self.infoDict['removeidpackage'])
                 self.infoDict['triggers']['remove']['removecontent'] = self.infoDict['removecontent']
             else:
                 self.infoDict['removeidpackage'] = -1
@@ -3462,8 +3461,7 @@ class PackageInterface:
             self.infoDict['steps'].append("showmessages")
         self.infoDict['steps'].append("cleanup")
 
-        # XXX: too much memory used for this
-        self.infoDict['triggers']['install'] = dbconn.getPackageData(idpackage)
+        self.infoDict['triggers']['install'] = dbconn.getTriggerInfo(idpackage)
         self.infoDict['triggers']['install']['accept_license'] = self.infoDict['accept_license']
         self.infoDict['triggers']['install']['unpackdir'] = self.infoDict['unpackdir']
         if etpConst['gentoo-compat']:
