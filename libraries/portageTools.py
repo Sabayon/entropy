@@ -830,7 +830,7 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses 
         mysettings = portageConfigs.get(mypath)
     else:
         mysettings = portage.config(config_root="/", target_root=mypath, config_incrementals=portage_const.INCREMENTALS)
-        portageConfigs[mypath] = mysettings
+        #portageConfigs[mypath] = mysettings
     mysettings['EBUILD_PHASE'] = mydo
 
     try: # this is a >portage-2.1.4_rc11 feature
