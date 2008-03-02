@@ -797,7 +797,9 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses 
 
     ### SETUP ENVIRONMENT
     # if mute, supress portage output
+    domute = False
     if etpUi['mute']:
+        domute = True
         oldsysstdout = sys.stdout
         sys.stdout = f
 
@@ -866,7 +868,7 @@ def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses 
     rc = portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = mypath, tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree, use_cache = 0)
 
     # if mute, restore old stdout/stderr
-    if etpUi['mute']:
+    if domute:
         sys.stdout = oldsysstdout
 
     sys.stderr = oldsystderr
