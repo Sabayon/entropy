@@ -2291,7 +2291,7 @@ class PackageInterface:
             os.remove(self.infoDict['unpackdir'].encode('raw_unicode_escape'))
         os.makedirs(self.infoDict['imagedir'])
 
-        if not os.path.isfile(self.infoDict['pkgpath']):
+        if not os.path.isfile(self.infoDict['pkgpath']) and not self.infoDict['merge_from']:
             if os.path.isdir(self.infoDict['pkgpath']):
                 shutil.rmtree(self.infoDict['pkgpath'])
             if os.path.islink(self.infoDict['pkgpath']):
