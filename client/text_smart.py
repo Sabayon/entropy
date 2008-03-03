@@ -419,11 +419,8 @@ def smartgenerator(atomInfo, emptydeps = False):
         print_info(darkgreen("   (x) ")+red(atom))
 
     fetchdata = []
-    fetchdata.append([atom,atomInfo])
-    for x in pkgs:
-        xdbconn = text_ui.Equo.openRepositoryDatabase(x[1])
-        xatom = xdbconn.retrieveAtom(x[0])
-        fetchdata.append([xatom,x])
+    fetchdata.append(atomInfo)
+    fetchdata += pkgs
     # run installPackages with onlyfetch
     rc = text_ui.installPackages(atomsdata = fetchdata, deps = False, onlyfetch = True)
     if rc[1] != 0:
