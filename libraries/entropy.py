@@ -2533,15 +2533,21 @@ class PackageInterface:
                 pass
             key = self.Entropy.entropyTools.dep_getkey(atom)
             othersInstalled = _portage_getInstalledAtoms(key) #FIXME: really slow
-            if othersInstalled == None: # FIXME: beautify this shit (skippedKey)
-                # safest way (error free) is to use sed without loading the file
-                # escape /
-                skippedKey = ''
-                for x in key:
-                    if x == "/":
-                        x = "\/"
-                    skippedKey += x
-                os.system("sed -i '/"+skippedKey+"/d' "+etpConst['systemroot']+"/var/lib/portage/world")
+            if othersInstalled == None:
+                world_file = os.path.join(etpConst['systemroot'],'var/lib/portage/world')
+                world_file_tmp = world_file+".entropy.tmp"
+                if os.access(world_file,os.W_OK):
+                    new = open(world_file_tmp,"w")
+                    old = open(world_file,"r")
+                    line = old.readline()
+                    while line:
+                        if line.find(skippedKey) == -1:
+                            new.write(line)
+                        line = old.readline()
+                    new.flush()
+                    new.close()
+                    old.close()
+                    shutil.move(world_file_tmp,world_file)
         return 0
 
     '''
@@ -2703,19 +2709,32 @@ class PackageInterface:
                         pass
             del atomsfound
 
-            # xpakstatus is perpared by unpackPackage()
             # we now install it
-            if self.infoDict['xpakstatus'] != None and \
-                                os.path.isdir(
-                                        self.infoDict['xpakpath'] + "/" + etpConst['entropyxpakdatarelativepath']
-                ):
+            if ((self.infoDict['xpakstatus'] != None) and \
+                    os.path.isdir( self.infoDict['xpakpath'] + "/" + etpConst['entropyxpakdatarelativepath'])) or \
+                    self.infoDict['merge_from']:
+
+                if self.infoDict['merge_from']:
+                    portdbdir = portDbDir[len(etpConst['systemroot']):]
+                    if portdbdir[0] == "/":
+                        portdbdir = portdbdir[1:]
+                    copypath = os.path.join(self.infoDict['merge_from'],portdbdir)
+                    copypath = os.path.join(copypath,self.infoDict['category'])
+                    copypath = os.path.join(copypath,self.infoDict['name']+"-"+self.infoDict['version'])
+                    print "DEBUG: copypath",copypath
+                    if not os.path.isdir(copypath):
+                        print "DEBUG: no copypath dir"
+                        return 0
+                else:
+                    copypath = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
+
                 if not os.path.isdir(portDbDir+self.infoDict['category']):
                     os.makedirs(portDbDir+self.infoDict['category'])
                 destination = portDbDir+self.infoDict['category']+"/"+self.infoDict['name']+"-"+self.infoDict['version']
                 if os.path.isdir(destination):
                     shutil.rmtree(destination)
 
-                shutil.copytree(self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'],destination)
+                shutil.copytree(copypath,destination)
 
                 # test if /var/cache/edb/counter is fine
                 if os.path.isfile(etpConst['edbcounter']):
@@ -2774,20 +2793,6 @@ class PackageInterface:
         del data
         del status # if operation isn't successful, an error will be surely raised
 
-        '''
-        # now properly insert content without wasting a lot of RAM
-        # XXX this is a nice hack, using dbconn.cursor is ALWAYS highly discouraged if you
-        # are not Fabio Erculiani
-        dbconn.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
-        dbconn.cursor.execute('SELECT file,type FROM content WHERE idpackage = (?)', (self.infoDict['idpackage'],))
-        fdata = dbconn.cursor.fetchone()
-        while fdata:
-            fdata_formatted = {}
-            fdata_formatted[fdata[0]] = fdata[1]
-            self.Entropy.clientDbconn.insertContent(idpk,fdata_formatted)
-            fdata = dbconn.cursor.fetchone()
-        '''
-
         # update datecreation
         ctime = self.Entropy.entropyTools.getCurrentUnixTime()
         self.Entropy.clientDbconn.setDateCreation(idpk, str(ctime))
@@ -2811,18 +2816,76 @@ class PackageInterface:
 
         return idpk
 
+    def __fill_image_dir(self, mergeFrom, imageDir):
+
+        dbconn = self.Entropy.openRepositoryDatabase(self.infoDict['repository'])
+        package_content = dbconn.retrieveContent(self.infoDict['idpackage'], extended = True)
+        contents = [x for x in package_content]
+        contents.sort()
+
+        # collect files
+        for path in contents:
+            # convert back to filesystem str
+            encoded_path = path
+            path = path.encode('raw_unicode_escape')
+            path = os.path.join(mergeFrom,path[1:])
+            topath = os.path.join(imageDir,path[1:])
+            try:
+                exist = os.lstat(path)
+            except OSError, e:
+                continue # skip file
+            ftype = package_content[encoded_path]
+            if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
+            if 'dir' == ftype and \
+                not stat.S_ISDIR(exist.st_mode) and \
+                os.path.isdir(path): # workaround for directory symlink issues
+                path = os.path.realpath(path)
+
+            copystat = False
+            # if our directory is a symlink instead, then copy the symlink
+            if os.path.islink(path):
+                tolink = os.readlink(path)
+                if os.path.islink(topath):
+                    os.remove(topath)
+                os.symlink(tolink,topath)
+            elif os.path.isdir(path):
+                if not os.path.isdir(topath):
+                    os.makedirs(topath)
+                    copystat = True
+            elif os.path.isfile(path):
+                if os.path.isfile(topath):
+                    os.remove(topath) # should never happen
+                shutil.copy2(path,topath)
+                copystat = True
+
+            if copystat:
+                user = os.stat(path)[4]
+                group = os.stat(path)[5]
+                os.chown(topath,user,group)
+                shutil.copystat(path,topath)
+
+
     def __move_image_to_system(self):
 
         # load CONFIG_PROTECT and its mask
         protect = etpRepositories[self.infoDict['repository']]['configprotect']
         mask = etpRepositories[self.infoDict['repository']]['configprotectmask']
+
         # setup imageDir properly
         imageDir = self.infoDict['imagedir']
-
         # XXX Python 2.4 workaround
         if sys.version[:3] == "2.4":
+            if self.infoDict['merge_from']:
+                self.infoDict['merge_from'] = self.infoDict['merge_from'].encode('raw_unicode_escape')
             imageDir = imageDir.encode('raw_unicode_escape')
         # XXX Python 2.4 workaround
+
+        if mergeFrom:
+            self.Entropy.entropyTools.spawnFunction(
+                        self.__fill_image_dir,
+                        self.infoDict['merge_from'],
+                        imageDir
+                )
 
         # merge data into system
         for currentdir,subdirs,files in os.walk(imageDir):
@@ -3054,6 +3117,11 @@ class PackageInterface:
 
     def unpack_step(self):
         self.error_on_not_prepared()
+
+        # we'll move data from this directory if set
+        if self.infoDict['merge_from']:
+            return 0
+
         self.Entropy.updateProgress(
                                             blue("Unpacking package: ")+red(os.path.basename(self.infoDict['download'])),
                                             importance = 1,
@@ -3398,6 +3466,10 @@ class PackageInterface:
         removeConfig = False
         if self.metaopts.has_key('removeconfig'):
             removeConfig = self.metaopts.get('removeconfig')
+        self.infoDict['merge_from'] = None
+        mf = self.metaopts.get('merge_from')
+        if mf != None:
+            self.infoDict['merge_from'] = mf
         self.infoDict['removeconfig'] = removeConfig
         self.infoDict['removeidpackage'] = self.Entropy.retrieveInstalledIdPackage(
                                                 self.Entropy.entropyTools.dep_getkey(self.infoDict['atom']),

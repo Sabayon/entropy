@@ -1670,8 +1670,8 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
         for path in contents:
             # convert back to filesystem str
             encoded_path = path
-            path = shiftpath+path
             path = path.encode('raw_unicode_escape')
+            path = shiftpath+path
             try:
                 exist = os.lstat(path)
             except OSError, e:
