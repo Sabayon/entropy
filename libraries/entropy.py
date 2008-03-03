@@ -2874,7 +2874,7 @@ class PackageInterface:
             imageDir = imageDir.encode('raw_unicode_escape')
         # XXX Python 2.4 workaround
 
-        if mergeFrom:
+        if self.infoDict['merge_from']:
             self.Entropy.entropyTools.spawnFunction(
                         self.__fill_image_dir,
                         self.infoDict['merge_from'],
@@ -3499,7 +3499,6 @@ class PackageInterface:
                 portdbdir = os.path.join(self.infoDict['merge_from'],portdbdir)
                 portdbdir = os.path.join(portdbdir,self.infoDict['category'])
                 portdbdir = os.path.join(portdbdir,self.infoDict['name']+"-"+self.infoDict['version'])
-                print "DEBUG: portdbdir",portdbdir
                 self.infoDict['xpakdir'] = portdbdir
 
         # compare both versions and if they match, disable removeidpackage
