@@ -2715,13 +2715,7 @@ class PackageInterface:
                     self.infoDict['merge_from']:
 
                 if self.infoDict['merge_from']:
-                    portdbdir = portDbDir[len(etpConst['systemroot']):]
-                    if portdbdir[0] == "/":
-                        portdbdir = portdbdir[1:]
-                    copypath = os.path.join(self.infoDict['merge_from'],portdbdir)
-                    copypath = os.path.join(copypath,self.infoDict['category'])
-                    copypath = os.path.join(copypath,self.infoDict['name']+"-"+self.infoDict['version'])
-                    print "DEBUG: copypath",copypath
+                    copypath = self.infoDict['xpakdir']
                     if not os.path.isdir(copypath):
                         print "DEBUG: no copypath dir"
                         return 0
@@ -3118,10 +3112,6 @@ class PackageInterface:
     def unpack_step(self):
         self.error_on_not_prepared()
 
-        # we'll move data from this directory if set
-        if self.infoDict['merge_from']:
-            return 0
-
         self.Entropy.updateProgress(
                                             blue("Unpacking package: ")+red(os.path.basename(self.infoDict['download'])),
                                             importance = 1,
@@ -3498,9 +3488,19 @@ class PackageInterface:
 
         # gentoo xpak data
         if etpConst['gentoo-compat']:
-            self.infoDict['xpakstatus'] = None
-            self.infoDict['xpakpath'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']+"/"+etpConst['entropyxpakrelativepath']
-            self.infoDict['xpakdir'] = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
+            if not self.infoDict['merge_from']:
+                self.infoDict['xpakstatus'] = None
+                self.infoDict['xpakpath'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']+"/"+etpConst['entropyxpakrelativepath']
+                self.infoDict['xpakdir'] = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
+            else:
+                self.infoDict['xpakstatus'] = True
+                self.infoDict['xpakpath'] = ''
+                portdbdir = 'var/db/pkg' # XXX hard coded ?
+                portdbdir = os.path.join(self.infoDict['merge_from'],portdbdir)
+                portdbdir = os.path.join(portdbdir,self.infoDict['category'])
+                portdbdir = os.path.join(portdbdir,self.infoDict['name']+"-"+self.infoDict['version'])
+                print "DEBUG: copypath",copypath
+                self.infoDict['xpakdir'] = portdbdir
 
         # compare both versions and if they match, disable removeidpackage
         if self.infoDict['removeidpackage'] != -1:
@@ -3532,7 +3532,8 @@ class PackageInterface:
         # install
         if (self.infoDict['removeidpackage'] != -1):
             self.infoDict['steps'].append("preremove")
-        self.infoDict['steps'].append("unpack")
+        if not self.infoDict['merge_from']:
+            self.infoDict['steps'].append("unpack")
         self.infoDict['steps'].append("preinstall")
         self.infoDict['steps'].append("install")
         if (self.infoDict['removeidpackage'] != -1):
@@ -3546,7 +3547,7 @@ class PackageInterface:
         self.infoDict['triggers']['install']['accept_license'] = self.infoDict['accept_license']
         self.infoDict['triggers']['install']['unpackdir'] = self.infoDict['unpackdir']
         if etpConst['gentoo-compat']:
-            self.infoDict['triggers']['install']['xpakpath'] = self.infoDict['xpakpath']
+            #self.infoDict['triggers']['install']['xpakpath'] = self.infoDict['xpakpath']
             self.infoDict['triggers']['install']['xpakdir'] = self.infoDict['xpakdir']
 
         return 0
