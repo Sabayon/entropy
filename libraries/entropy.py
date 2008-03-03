@@ -2723,7 +2723,6 @@ class PackageInterface:
                 if self.infoDict['merge_from']:
                     copypath = self.infoDict['xpakdir']
                     if not os.path.isdir(copypath):
-                        print "DEBUG: no copypath dir"
                         return 0
                 else:
                     copypath = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
