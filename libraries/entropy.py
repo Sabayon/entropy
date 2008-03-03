@@ -3469,7 +3469,7 @@ class PackageInterface:
         self.infoDict['merge_from'] = None
         mf = self.metaopts.get('merge_from')
         if mf != None:
-            self.infoDict['merge_from'] = mf
+            self.infoDict['merge_from'] = unicode(mf)
         self.infoDict['removeconfig'] = removeConfig
         self.infoDict['removeidpackage'] = self.Entropy.retrieveInstalledIdPackage(
                                                 self.Entropy.entropyTools.dep_getkey(self.infoDict['atom']),
