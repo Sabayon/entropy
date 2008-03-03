@@ -1639,7 +1639,7 @@ def isEntropyTbz2(tbz2file):
 
 # @pkgdata: etpData mapping dictionary (retrieved from db using getPackageData())
 # @dirpath: directory to save .tbz2
-def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, compression = "bz2"):
+def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, compression = "bz2", shiftpath = ""):
 
     import stat
     import tarfile
@@ -1672,25 +1672,24 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
             encoded_path = path
             path = path.encode('raw_unicode_escape')
             try:
-                exist = os.lstat(path)
+                exist = os.lstat(shiftpath+path)
             except OSError, e:
-                print e
                 continue # skip file
             arcname = path[1:] # remove trailing /
             ftype = pkgdata['content'][encoded_path]
             if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
             if 'dir' == ftype and \
                 not stat.S_ISDIR(exist.st_mode) and \
-                os.path.isdir(path): # workaround for directory symlink issues
-                path = os.path.realpath(path)
+                os.path.isdir(shiftpath+path): # workaround for directory symlink issues
+                path = os.path.realpath(shiftpath+path)
 
-            tarinfo = tar.gettarinfo(path, arcname)
+            tarinfo = tar.gettarinfo(shiftpath+path, arcname)
             tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
             tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
 
             if stat.S_ISREG(exist.st_mode):
                 tarinfo.type = tarfile.REGTYPE
-                f = open(path)
+                f = open(shiftpath+path)
                 try:
                     tar.addfile(tarinfo, f)
                 finally:
