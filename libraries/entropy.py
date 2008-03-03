@@ -2541,7 +2541,7 @@ class PackageInterface:
                     old = open(world_file,"r")
                     line = old.readline()
                     while line:
-                        if line.find(skippedKey) == -1:
+                        if line.find(key) == -1:
                             new.write(line)
                         line = old.readline()
                     new.flush()
