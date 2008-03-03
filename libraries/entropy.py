@@ -3499,7 +3499,7 @@ class PackageInterface:
                 portdbdir = os.path.join(self.infoDict['merge_from'],portdbdir)
                 portdbdir = os.path.join(portdbdir,self.infoDict['category'])
                 portdbdir = os.path.join(portdbdir,self.infoDict['name']+"-"+self.infoDict['version'])
-                print "DEBUG: copypath",copypath
+                print "DEBUG: portdbdir",portdbdir
                 self.infoDict['xpakdir'] = portdbdir
 
         # compare both versions and if they match, disable removeidpackage
