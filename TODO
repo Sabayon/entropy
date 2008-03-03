@@ -2,6 +2,7 @@ TODO list:
   - lilo.conf trigger?
   - equo: "you meant...?" feature
   - calculate extra deps from NEEDED, server side?
+  - split RDEPEND and PDEPEND ( + && and || )
   - log messages from portage doebuild() calls
   - remove conflicting packages right before the conflict
   - move portageTools to a class
@@ -14,7 +15,6 @@ TODO list:
   - add changelog to packages
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - Community repositories
-  - split RDEPEND and PDEPEND
   - write a ncurses interface to manage entropy database
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 

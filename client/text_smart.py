@@ -266,7 +266,7 @@ def smartpackagegenerator(matchedPackages):
         matchedAtoms[x]['atom'] = xatom
         matchedAtoms[x]['download'] = xdownload
         matchedAtoms[x]['revision'] = xrevision
-        fetchdata.append([xatom,x])
+        fetchdata.append(x)
     # run installPackages with onlyfetch
     rc = text_ui.installPackages(atomsdata = fetchdata, deps = False, onlyfetch = True)
     if rc[1] != 0:
