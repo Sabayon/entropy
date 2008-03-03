@@ -1,5 +1,6 @@
 TODO list:
   - lilo.conf trigger?
+  - equo: "you meant...?" feature
   - calculate extra deps from NEEDED, server side?
   - log messages from portage doebuild() calls
   - remove conflicting packages right before the conflict

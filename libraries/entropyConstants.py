@@ -696,12 +696,9 @@ def initConfig_entropyConstants(rootdir):
 
     # handle pid file
     piddir = os.path.dirname(etpConst['pidfile'])
-    if not os.path.exists(piddir):
-        if etpConst['uid'] == 0:
-            os.makedirs(piddir)
-        else:
-            import exceptionTools
-            raise exceptionTools.DirectoryNotFound("DirectoryNotFound: please run this as root at least once or create: "+piddir)
+    if not os.path.exists(piddir) and (etpConst['uid'] == 0):
+        os.makedirs(piddir)
+
     # PID creation
     pid = os.getpid()
     if os.path.exists(etpConst['pidfile']):
@@ -735,9 +732,6 @@ def initConfig_entropyConstants(rootdir):
             f.write(str(pid))
             f.flush()
             f.close()
-        else:
-            import exceptionTools
-            raise exceptionTools.FileNotFound("FileNotFound: pid not found. please run this application as root at least once.")
 
     # Create paths
     if not os.path.isdir(etpConst['entropyworkdir']):
@@ -753,9 +747,6 @@ def initConfig_entropyConstants(rootdir):
                         os.chown(etpConst[x],0,0)
                     except OSError:
                         pass
-        else:
-            import exceptionTools
-            raise exceptionTools.DirectoryNotFound("DirectoryNotFound: pid not found. please run this application as root at least once or create: "+etpConst['entropyworkdir'])
 
 
     # entropy section
@@ -869,9 +860,6 @@ def initConfig_entropyConstants(rootdir):
                     if etpConst['uid'] == 0:
                         # check if we have a broken symlink
                         os.makedirs(etpConst['packagesbindir']+"/"+branch)
-                    else:
-                        import exceptionTools
-                        raise exceptionTools.DirectoryNotFound("DirectoryNotFound: please run this as root at least once or create: "+etpConst['packagesbindir']+"/"+branch)
 
             elif (line.find("officialrepositoryid|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 officialreponame = line.split("|")[1]

@@ -79,10 +79,6 @@ class parallelTask(threading.Thread):
             self.function(self.data)
         else:
             self.function()
-    '''
-    def destroy(self):
-        del self.function
-    '''
 
 def printException(returndata = False):
     import traceback
@@ -609,7 +605,7 @@ def isspecific(mypkg):
     """
     mysplit = mypkg.split("/")
     if not isjustname(mysplit[-1]):
-	return 1
+        return 1
     return 0
 
 
@@ -761,9 +757,9 @@ def dep_getslot(dep):
 
     colon = dep.rfind(":")
     if colon != -1:
-	mydep = dep[colon+1:]
-	rslt = remove_tag(mydep)
-	return rslt
+        mydep = dep[colon+1:]
+        rslt = remove_tag(mydep)
+        return rslt
 
     return None
 
@@ -777,13 +773,13 @@ def remove_slot(mydep):
 def remove_revision(ver):
     myver = ver.split("-")
     if myver[-1][0] == "r":
-	return '-'.join(myver[:-1])
+        return '-'.join(myver[:-1])
     return ver
 
 def remove_tag(mydep):
     colon = mydep.rfind("#")
     if colon != -1:
-	mystring = mydep[:colon]
+        mystring = mydep[:colon]
         return mystring
     return mydep
 
@@ -792,7 +788,7 @@ def remove_entropy_revision(mydep):
     operators = mydep[:-len(dep)]
     colon = dep.rfind("~")
     if colon != -1:
-	mystring = operators+dep[:colon]
+        mystring = operators+dep[:colon]
         return mystring
     return mydep
 
@@ -1195,6 +1191,38 @@ def compat_uncompressTarBz2(filepath, extractPath = None):
     if rc != 0:
         return -1
     return 0
+
+def spawnFunction(f, *args, **kwds):
+    try:
+        import cPickle as pickle
+    except ImportError:
+        import pickle
+    pread, pwrite = os.pipe()
+    pid = os.fork()
+    if pid > 0:
+        os.close(pwrite)
+        f = os.fdopen(pread, 'rb')
+        status, result = pickle.load(f)
+        os.waitpid(pid, 0)
+        if status == 0:
+            return result
+        else:
+            raise result
+    else:
+        os.close(pread)
+        try:
+            result = f(*args, **kwds)
+            status = 0
+        except Exception, exc:
+            result = exc
+            status = 1
+        f = os.fdopen(pwrite, 'wb')
+        try:
+            pickle.dump((status,result), f, pickle.HIGHEST_PROTOCOL)
+        except pickle.PicklingError, exc:
+            pickle.dump((2,exc), f, pickle.HIGHEST_PROTOCOL)
+        f.close()
+        os._exit(0)
 
 # tar* uncompress function...
 def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):

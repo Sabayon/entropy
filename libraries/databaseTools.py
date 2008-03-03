@@ -1534,15 +1534,20 @@ class etpDatabase:
                 )
         self.commitChanges()
 
-    def contentDiff(self, idpackage, content):
+    def contentDiff(self, idpackage, dbconn, dbconn_idpackage):
         self.checkReadOnly()
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
         # create a random table and fill
         randomtable = "cdiff"+str(entropyTools.getRandomNumber())
         self.cursor.execute('DROP TABLE IF EXISTS '+randomtable)
         self.cursor.execute('CREATE TABLE '+randomtable+' ( file VARCHAR )')
-        for xfile in content:
-            self.cursor.execute('INSERT INTO '+randomtable+' VALUES (?)', (xfile,))
+
+        dbconn.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+        dbconn.cursor.execute('select file from content where idpackage = (?)', (dbconn_idpackage,))
+        xfile = dbconn.cursor.fetchone()
+        while xfile:
+            self.cursor.execute('INSERT INTO '+randomtable+' VALUES (?)', (xfile[0],))
+            xfile = dbconn.cursor.fetchone()
         # now compare
         self.cursor.execute('SELECT file FROM content WHERE content.idpackage = (?) AND content.file NOT IN (SELECT file from '+randomtable+') ', (idpackage,))
         diff = self.fetchall2set(self.cursor.fetchall())
@@ -1853,7 +1858,7 @@ class etpDatabase:
 
         return data
 
-    def getPackageData(self, idpackage):
+    def getPackageData(self, idpackage, get_content = True):
         data = {}
 
         mydata = self.getBaseData(idpackage)
@@ -1906,10 +1911,11 @@ class etpDatabase:
 
         data['slot'] = mydata[14]
         data['injected'] = self.isInjected(idpackage)
-        mycontent = self.retrieveContent(idpackage, extended = True)
         data['content'] = {}
-        for cdata in mycontent:
-            data['content'][cdata[0]] = cdata[1]
+        if get_content:
+            mycontent = self.retrieveContent(idpackage, extended = True)
+            for cdata in mycontent:
+                data['content'][cdata[0]] = cdata[1]
 
         data['dependencies'] = self.retrieveDependencies(idpackage)
         data['provide'] = self.retrieveProvide(idpackage)

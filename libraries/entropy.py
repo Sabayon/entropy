@@ -2299,11 +2299,13 @@ class PackageInterface:
             self.infoDict['verified'] = False
             self.fetch_step()
 
-        rc = self.Entropy.entropyTools.uncompressTarBz2(
-                                                            self.infoDict['pkgpath'],
-                                                            self.infoDict['imagedir'],
-                                                            catchEmpty = True
-                                                        )
+        rc = self.Entropy.entropyTools.spawnFunction(
+                    self.Entropy.entropyTools.uncompressTarBz2,
+                    self.infoDict['pkgpath'],
+                    self.infoDict['imagedir'],
+                    catchEmpty = True
+             )
+
         if rc != 0:
             return rc
         if not os.path.isdir(self.infoDict['imagedir']):
@@ -2628,7 +2630,7 @@ class PackageInterface:
                                 type = "info",
                                 header = red("   ## ")
                             )
-        newidpackage = self.__install_package_into_database()
+        newidpackage = self.Entropy.entropyTools.spawnFunction( self.__install_package_into_database )
 
         # remove old files and gentoo stuff
         if (self.infoDict['removeidpackage'] != -1):
@@ -2767,13 +2769,24 @@ class PackageInterface:
         data['injected'] = False
         data['counter'] = -1 # gentoo counter will be set in self.__install_package_into_gentoo_database()
 
-        # FIXME: this will be removed create all indexes on the client db
-        self.Entropy.clientDbconn.createAllIndexes()
-
         idpk, rev, x, status = self.Entropy.clientDbconn.handlePackage(etpData = data, forcedRevision = data['revision'])
         del x
         del data
         del status # if operation isn't successful, an error will be surely raised
+
+        '''
+        # now properly insert content without wasting a lot of RAM
+        # XXX this is a nice hack, using dbconn.cursor is ALWAYS highly discouraged if you
+        # are not Fabio Erculiani
+        dbconn.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+        dbconn.cursor.execute('SELECT file,type FROM content WHERE idpackage = (?)', (self.infoDict['idpackage'],))
+        fdata = dbconn.cursor.fetchone()
+        while fdata:
+            fdata_formatted = {}
+            fdata_formatted[fdata[0]] = fdata[1]
+            self.Entropy.clientDbconn.insertContent(idpk,fdata_formatted)
+            fdata = dbconn.cursor.fetchone()
+        '''
 
         # update datecreation
         ctime = self.Entropy.entropyTools.getCurrentUnixTime()
@@ -3351,7 +3364,7 @@ class PackageInterface:
             removeConfig = self.metaopts.get('removeconfig')
         self.infoDict['removeconfig'] = removeConfig
         self.infoDict['removecontent'] = self.Entropy.clientDbconn.retrieveContent(idpackage)
-        self.infoDict['triggers']['remove'] = self.Entropy.clientDbconn.getPackageData(idpackage)
+        self.infoDict['triggers']['remove'] = self.Entropy.clientDbconn.getTriggerInfo(idpackage)
         self.infoDict['triggers']['remove']['removecontent'] = self.infoDict['removecontent']
         self.infoDict['steps'] = []
         self.infoDict['steps'].append("preremove")
@@ -3436,11 +3449,7 @@ class PackageInterface:
             if self.Entropy.clientDbconn.isIDPackageAvailable(self.infoDict['removeidpackage']):
                 self.infoDict['diffremoval'] = True
                 self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(self.infoDict['removeidpackage'])
-                newcontent = dbconn.retrieveContent(idpackage)
-                content_to_remove = self.Entropy.clientDbconn.contentDiff(self.infoDict['removeidpackage'],newcontent)
-                del newcontent
-                self.infoDict['removecontent'] = content_to_remove.copy()
-                del content_to_remove
+                self.infoDict['removecontent'] = self.Entropy.clientDbconn.contentDiff(self.infoDict['removeidpackage'], dbconn, idpackage)
                 self.infoDict['triggers']['remove'] = self.Entropy.clientDbconn.getTriggerInfo(self.infoDict['removeidpackage'])
                 self.infoDict['triggers']['remove']['removecontent'] = self.infoDict['removecontent']
             else:

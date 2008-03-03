@@ -772,6 +772,18 @@ def refillCounter():
     return newcounter
 
 def portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = []):
+
+    rc = entropyTools.spawnFunction(    _portage_doebuild,
+                                        myebuild,
+                                        mydo,
+                                        tree,
+                                        cpv,
+                                        portage_tmpdir,
+                                        licenses
+                                    )
+    return rc
+
+def _portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = []):
     try:
         import portage_const
     except ImportError:
