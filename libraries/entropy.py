@@ -2317,10 +2317,10 @@ class PackageInterface:
                 os.rmdir(self.infoDict['xpakpath'])
             except OSError:
                 pass
-            os.makedirs(self.infoDict['xpakpath'])
+
             # create data dir where we'll unpack the xpak
-            os.mkdir(self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'])
-            # now unpack for real
+            os.makedirs(self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'])
+            #os.mkdir(self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'])
             xpakPath = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakfilename']
 
             if not self.infoDict['merge_from']:
@@ -2816,7 +2816,7 @@ class PackageInterface:
 
         return idpk
 
-    def __fill_image_dir(self, mergeFrom, imageDir):
+    def _fill_image_dir(self, mergeFrom, imageDir):
 
         dbconn = self.Entropy.openRepositoryDatabase(self.infoDict['repository'])
         package_content = dbconn.retrieveContent(self.infoDict['idpackage'], extended = True)
@@ -2881,9 +2881,10 @@ class PackageInterface:
         # XXX Python 2.4 workaround
 
         if self.infoDict['merge_from']:
+            mf = self.infoDict['merge_from']
             self.Entropy.entropyTools.spawnFunction(
-                        self.__fill_image_dir,
-                        self.infoDict['merge_from'],
+                        self._fill_image_dir,
+                        mf,
                         imageDir
                 )
 
