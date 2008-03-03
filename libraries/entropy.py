@@ -3613,7 +3613,8 @@ class FileUpdatesInterface:
     def merge_file(self, key):
         self.scanfs(dcache = True)
         self.do_backup(key)
-        shutil.move(etpConst['systemroot'] + self.scandata[key]['source'], etpConst['systemroot'] + self.scandata[key]['destination'])
+        if os.access(etpConst['systemroot'] + self.scandata[key]['source'], os.R_OK):
+            shutil.move(etpConst['systemroot'] + self.scandata[key]['source'], etpConst['systemroot'] + self.scandata[key]['destination'])
         self.remove_from_cache(key)
 
     def remove_file(self, key):
