@@ -2299,17 +2299,15 @@ class PackageInterface:
             self.infoDict['verified'] = False
             self.fetch_step()
 
-        rc = self.Entropy.entropyTools.spawnFunction(
-                    self.Entropy.entropyTools.uncompressTarBz2,
-                    self.infoDict['pkgpath'],
-                    self.infoDict['imagedir'],
-                    catchEmpty = True
-             )
-
-        if rc != 0:
-            return rc
-        if not os.path.isdir(self.infoDict['imagedir']):
-            return 2
+        if not self.infoDict['merge_from']:
+            rc = self.Entropy.entropyTools.spawnFunction(
+                        self.Entropy.entropyTools.uncompressTarBz2,
+                        self.infoDict['pkgpath'],
+                        self.infoDict['imagedir'],
+                        catchEmpty = True
+                )
+            if rc != 0:
+                return rc
 
         # unpack xpak ?
         if etpConst['gentoo-compat']:
@@ -2325,28 +2323,36 @@ class PackageInterface:
             # now unpack for real
             xpakPath = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakfilename']
 
-            if (self.infoDict['smartpackage']):
-                # we need to get the .xpak from database
-                xdbconn = self.Entropy.openRepositoryDatabase(self.infoDict['repository'])
-                xpakdata = xdbconn.retrieveXpakMetadata(self.infoDict['idpackage'])
-                if xpakdata:
-                    # save into a file
-                    f = open(xpakPath,"wb")
-                    f.write(xpakdata)
-                    f.flush()
-                    f.close()
-                    self.infoDict['xpakstatus'] = self.Entropy.entropyTools.unpackXpak(
-                                                    xpakPath,
-                                                    self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
-                    )
+            if not self.infoDict['merge_from']:
+                if (self.infoDict['smartpackage']):
+                    # we need to get the .xpak from database
+                    xdbconn = self.Entropy.openRepositoryDatabase(self.infoDict['repository'])
+                    xpakdata = xdbconn.retrieveXpakMetadata(self.infoDict['idpackage'])
+                    if xpakdata:
+                        # save into a file
+                        f = open(xpakPath,"wb")
+                        f.write(xpakdata)
+                        f.flush()
+                        f.close()
+                        self.infoDict['xpakstatus'] = self.Entropy.entropyTools.unpackXpak(
+                                                        xpakPath,
+                                                        self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
+                        )
+                    else:
+                        self.infoDict['xpakstatus'] = None
+                    del xpakdata
                 else:
-                    self.infoDict['xpakstatus'] = None
-                del xpakdata
+                    self.infoDict['xpakstatus'] = self.Entropy.entropyTools.extractXpak(
+                                                                self.infoDict['pkgpath'],
+                                                                self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
+                    )
             else:
-                self.infoDict['xpakstatus'] = self.Entropy.entropyTools.extractXpak(
-                                                            self.infoDict['pkgpath'],
-                                                            self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
-                )
+                # link xpakdir to self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
+                tolink_dir = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
+                if os.path.isdir(tolink_dir):
+                    shutil.rmtree(tolink_dir,True)
+                # now link
+                os.symlink(self.infoDict['xpakdir'],tolink_dir)
 
             # create fake portage ${D} linking it to imagedir
             portage_db_fakedir = os.path.join(
@@ -3112,12 +3118,13 @@ class PackageInterface:
     def unpack_step(self):
         self.error_on_not_prepared()
 
-        self.Entropy.updateProgress(
-                                            blue("Unpacking package: ")+red(os.path.basename(self.infoDict['download'])),
-                                            importance = 1,
-                                            type = "info",
-                                            header = red("   ## ")
-                                    )
+        if not self.infoDict['merge_from']:
+            self.Entropy.updateProgress(
+                                                blue("Unpacking package: ")+red(os.path.basename(self.infoDict['download'])),
+                                                importance = 1,
+                                                type = "info",
+                                                header = red("   ## ")
+                                        )
         rc = self.__unpack_package()
         if rc != 0:
             if rc == 512:
@@ -3488,13 +3495,12 @@ class PackageInterface:
 
         # gentoo xpak data
         if etpConst['gentoo-compat']:
+            self.infoDict['xpakpath'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']+"/"+etpConst['entropyxpakrelativepath']
             if not self.infoDict['merge_from']:
                 self.infoDict['xpakstatus'] = None
-                self.infoDict['xpakpath'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']+"/"+etpConst['entropyxpakrelativepath']
                 self.infoDict['xpakdir'] = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
             else:
                 self.infoDict['xpakstatus'] = True
-                self.infoDict['xpakpath'] = ''
                 portdbdir = 'var/db/pkg' # XXX hard coded ?
                 portdbdir = os.path.join(self.infoDict['merge_from'],portdbdir)
                 portdbdir = os.path.join(portdbdir,self.infoDict['category'])
@@ -3531,8 +3537,7 @@ class PackageInterface:
         # install
         if (self.infoDict['removeidpackage'] != -1):
             self.infoDict['steps'].append("preremove")
-        if not self.infoDict['merge_from']:
-            self.infoDict['steps'].append("unpack")
+        self.infoDict['steps'].append("unpack")
         self.infoDict['steps'].append("preinstall")
         self.infoDict['steps'].append("install")
         if (self.infoDict['removeidpackage'] != -1):
