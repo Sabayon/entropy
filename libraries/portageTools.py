@@ -369,7 +369,8 @@ def calculate_dependencies(my_iuse, my_use, my_license, my_depend, my_rdepend, m
             deps = ' '.join(deps)
         except exceptionTools.InvalidDependString, e:
             print_error("%s: %s\n" % (k, str(e)))
-            raise
+            deps = ''
+            continue
         metadata[k] = deps
     return metadata
 
