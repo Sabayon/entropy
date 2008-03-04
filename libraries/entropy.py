@@ -3142,7 +3142,7 @@ class PackageInterface:
                                         )
         else:
             self.Entropy.updateProgress(
-                                                blue("Merging package: ")+red(os.path.basename(self.infoDict['download'])),
+                                                blue("Merging package: ")+red(os.path.basename(self.infoDict['atom'])),
                                                 importance = 1,
                                                 type = "info",
                                                 header = red("   ## ")
