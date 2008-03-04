@@ -2852,7 +2852,7 @@ class PackageInterface:
             try:
                 exist = os.lstat(path)
             except OSError, e:
-                print e
+                #print e
                 continue # skip file
             ftype = package_content[encoded_path]
             if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
