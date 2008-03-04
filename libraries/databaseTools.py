@@ -155,6 +155,9 @@ class etpDatabase:
             # lock mirror remotely and ensure to have latest database revision
             self.doServerDatabaseSyncLock(self.noUpload)
 
+        if (etpConst['uid'] == 0) and os.access(self.dbFile,os.W_OK):
+            self.databaseStructureUpdates()
+
     def doServerDatabaseSyncLock(self, noUpload):
 
         from entropy import FtpInterface
@@ -764,8 +767,6 @@ class etpDatabase:
             licid = self.addLicense(etpData['license'])
 
         # insert license information
-        if not self.doesTableExist("licensedata"):
-            self.createLicensedataTable()
         mylicenses = etpData['licensedata'].keys()
         for mylicense in mylicenses:
             found = self.isLicensedataKeyAvailable(mylicense)
@@ -790,8 +791,6 @@ class etpDatabase:
 
         # baseinfo
         pkgatom = etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag
-        if not self.doesColumnInTableExist("baseinfo","trigger"):
-            self.createTriggerColumn()
         self.cursor.execute(
                 'INSERT into baseinfo VALUES '
                 '(NULL,?,?,?,?,?,?,?,?,?,?,?)'
@@ -855,10 +854,6 @@ class etpDatabase:
         # content, a list
         self.insertContent(idpackage,etpData['content'])
 
-        if not self.doesTableExist("counters"):
-            self.createCountersTable()
-        elif not self.doesColumnInTableExist("counters","branch"):
-            self.createCountersBranchColumn()
         etpData['counter'] = int(etpData['counter']) # cast to integer
         if etpData['counter'] != -1 and not (etpData['injected']):
 
@@ -901,8 +896,6 @@ class etpDatabase:
                     raise
 
         # on disk size
-        if not self.doesTableExist("sizes"):
-            self.createSizesTable()
         self.cursor.execute(
         'INSERT into sizes VALUES '
         '(?,?)'
@@ -911,8 +904,6 @@ class etpDatabase:
             )
         )
 
-        if not self.doesTableExist("triggers"):
-            self.createTriggerTable()
         # trigger blob
         self.cursor.execute(
         'INSERT into triggers VALUES '
@@ -969,13 +960,9 @@ class etpDatabase:
 
         # injected?
         if etpData['injected']:
-            if not self.doesTableExist("injected"):
-                self.createInjectedTable()
             self.setInjected(idpackage)
 
         # compile messages
-        if not self.doesTableExist("messages"):
-            self.createMessagesTable()
         for message in etpData['messages']:
             self.cursor.execute(
             'INSERT into messages VALUES '
@@ -985,8 +972,6 @@ class etpDatabase:
                     )
             )
 
-        if not self.doesTableExist("systempackages"):
-            self.createSystemPackagesTable()
         # is it a system package?
         if etpData['systempackage']:
             self.cursor.execute(
@@ -996,8 +981,6 @@ class etpDatabase:
                         )
             )
 
-        if (not self.doesTableExist("configprotect")) or (not self.doesTableExist("configprotectreference")):
-            self.createProtectTable()
         # create new protect if it doesn't exist
         idprotect = self.isProtectAvailable(etpData['config_protect'])
         if (idprotect == -1):
@@ -1220,12 +1203,7 @@ class etpDatabase:
             # counter
             self.cursor.execute('DELETE FROM counters WHERE idpackage = '+idpackage)
         except:
-            if self.dbname == etpConst['clientdbid']:
-                if not self.doesTableExist("counters"):
-                    self.createCountersTable()
-                else:
-                    raise
-            elif self.dbname == etpConst['serverdbid']:
+            if self.dbname in [etpConst['clientdbid'],etpConst['serverdbid']]:
                 raise
         try:
             # on disk sizes
@@ -1445,8 +1423,6 @@ class etpDatabase:
 
     def removeLicensedata(self, license_name):
         if not self.doesTableExist("licensedata"):
-            if (etpConst['uid'] == 0) and (not self.readOnly):
-                self.createLicensedataTable()
             return
         self.cursor.execute('DELETE FROM licensedata WHERE licensename = (?)', (license_name,))
 
@@ -1477,8 +1453,6 @@ class etpDatabase:
         self.commitChanges()
 
     def insertContent(self, idpackage, content):
-        if not self.doesColumnInTableExist("content","type"):
-            self.createContentTypeColumn()
         for xfile in content:
             contenttype = content[xfile]
             if type(xfile) is unicode:
@@ -1494,10 +1468,6 @@ class etpDatabase:
 
     def insertCounter(self, idpackage, counter, branch = None):
         self.checkReadOnly()
-        if not self.doesTableExist("counters"):
-            self.createCountersTable()
-        if not self.doesColumnInTableExist("counters","branch"):
-            self.createCountersBranchColumn()
         if not branch:
             branch = etpConst['branch']
         self.cursor.execute('DELETE FROM counters WHERE counter = (?) OR idpackage = (?)', (counter,idpackage,))
@@ -1506,11 +1476,6 @@ class etpDatabase:
 
     def setCounter(self, idpackage, counter, branch = None):
         self.checkReadOnly()
-
-        if not self.doesTableExist("counters"):
-            self.createCountersTable()
-        if not self.doesColumnInTableExist("counters","branch"):
-            self.createCountersBranchColumn()
 
         branchstring = ''
         insertdata = [counter,idpackage]
@@ -1524,14 +1489,7 @@ class etpDatabase:
             self.cursor.execute('UPDATE counters SET counter = (?) '+branchstring+' WHERE idpackage = (?)', insertdata)
         except:
             if self.dbname == etpConst['clientdbid']:
-                if not self.doesTableExist("counters"):
-                    self.createCountersTable()
-                else:
-                    raise
-                self.cursor.execute(
-                    'INSERT into counters VALUES '
-                    '(?,?,?)', (counter,idpackage,branch)
-                )
+                raise
         self.commitChanges()
 
     def contentDiff(self, idpackage, dbconn, dbconn_idpackage):
@@ -1623,8 +1581,6 @@ class etpDatabase:
 
     def cleanupEclasses(self):
         self.checkReadOnly()
-        if not self.doesTableExist("eclasses"):
-            self.createEclassesTable()
         self.cursor.execute('SELECT idclass FROM eclassesreference')
         idclasses = self.fetchall2set(self.cursor.fetchall())
         # now parse them into useflags table
@@ -2001,8 +1957,6 @@ class etpDatabase:
                 pass
 
     def retrieveRepositoryUpdatesDigest(self, repository):
-        if not self.doesTableExist("treeupdates"):
-            self.createTreeupdatesTable()
         self.cursor.execute('SELECT digest FROM treeupdates WHERE repository = (?)', (repository,))
         mydigest = self.cursor.fetchone()
         if mydigest:
@@ -2011,30 +1965,17 @@ class etpDatabase:
             return -1
 
     def listAllTreeUpdatesActions(self):
-        if not self.doesTableExist("treeupdatesactions"):
-            self.createTreeupdatesactionsTable()
-        elif not self.doesColumnInTableExist("treeupdatesactions","branch"):
-            self.createTreeupdatesactionsBranchColumn()
         self.cursor.execute('SELECT * FROM treeupdatesactions')
         return self.cursor.fetchall()
 
     def retrieveTreeUpdatesActions(self, repository, forbranch = etpConst['branch']):
         if not self.doesTableExist("treeupdatesactions"):
-            self.createTreeupdatesactionsTable()
             return set()
-        elif not self.doesColumnInTableExist("treeupdatesactions","branch"):
-            self.createTreeupdatesactionsBranchColumn()
-
         self.cursor.execute('SELECT command FROM treeupdatesactions where repository = (?) and branch = (?)', (repository,forbranch))
         return self.fetchall2set(self.cursor.fetchall())
 
     # mainly used to restore a previous table, used by reagent in --initialize
     def addTreeUpdatesActions(self, updates):
-        if not self.doesTableExist("treeupdatesactions"):
-            self.createTreeupdatesactionsTable()
-        elif not self.doesColumnInTableExist("treeupdatesactions","branch"):
-            self.createTreeupdatesactionsBranchColumn()
-
         for update in updates:
             idupdate = update[0]
             repository = update[1]
@@ -2043,19 +1984,11 @@ class etpDatabase:
             self.cursor.execute('INSERT INTO treeupdatesactions VALUES (?,?,?,?)', (idupdate,repository,command,branch,))
 
     def setRepositoryUpdatesDigest(self, repository, digest):
-        if not self.doesTableExist("treeupdates"):
-            self.createTreeupdatesTable()
-
         self.cursor.execute('DELETE FROM treeupdates where repository = (?)', (repository,)) # doing it for safety
         self.cursor.execute('INSERT INTO treeupdates VALUES (?,?)', (repository,digest,))
         self.commitChanges()
 
     def addRepositoryUpdatesActions(self, repository, actions, forbranch = etpConst['branch']):
-        if not self.doesTableExist("treeupdatesactions"):
-            self.createTreeupdatesactionsTable()
-        elif not self.doesColumnInTableExist("treeupdatesactions","branch"):
-            self.createTreeupdatesactionsBranchColumn()
-
         for command in actions:
             self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?)', (repository,command,forbranch,))
 
@@ -2082,9 +2015,6 @@ class etpDatabase:
         return br
 
     def retrieveTrigger(self, idpackage):
-
-        if not self.doesTableExist("triggers"):
-            self.createTriggerTable()
 
         self.cursor.execute('SELECT data FROM triggers WHERE idpackage = (?)', (idpackage,))
         trigger = self.cursor.fetchone()
@@ -2133,11 +2063,6 @@ class etpDatabase:
         #cache = self.fetchInfoCache(idpackage,'retrieveCounter')
         #if cache != None: return cache
 
-        if not self.doesTableExist("counters"):
-            self.createCountersTable()
-        if not self.doesColumnInTableExist("counters","branch"):
-            self.createCountersBranchColumn()
-
         counter = -1
         self.cursor.execute('SELECT counter FROM counters WHERE idpackage = (?)', (idpackage,))
         mycounter = self.cursor.fetchone()
@@ -2179,9 +2104,6 @@ class etpDatabase:
 
         #cache = self.fetchInfoCache(idpackage,'retrieveOnDiskSize')
         #if cache != None: return cache
-
-        if not self.doesTableExist("sizes"):
-            self.createSizesTable()
 
         self.cursor.execute('SELECT size FROM sizes WHERE idpackage = (?)', (idpackage,))
         size = self.cursor.fetchone() # do not use [0]!
@@ -2288,9 +2210,6 @@ class etpDatabase:
         cache = self.fetchInfoCache(idpackage,'retrieveEclasses')
         if cache != None: return cache
 
-        if not self.doesTableExist("eclasses"):
-            self.createEclassesTable()
-
         self.cursor.execute('SELECT classname FROM eclasses,eclassesreference WHERE eclasses.idpackage = (?) and eclasses.idclass = eclassesreference.idclass', (idpackage,))
         classes = self.fetchall2set(self.cursor.fetchall())
 
@@ -2301,9 +2220,6 @@ class etpDatabase:
 
         cache = self.fetchInfoCache(idpackage,'retrieveNeeded')
         if cache != None: return cache
-
-        if not self.doesTableExist("needed"):
-            self.createNeededTable()
 
         self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
         needed = self.fetchall2set(self.cursor.fetchall())
@@ -2392,9 +2308,6 @@ class etpDatabase:
         cache = self.fetchInfoCache(idpackage,'retrieveProtect')
         if cache != None: return cache
 
-        if (not self.doesTableExist("configprotect")) or (not self.doesTableExist("configprotectreference")):
-            self.createProtectTable()
-
         self.cursor.execute('SELECT protect FROM configprotect,configprotectreference WHERE configprotect.idpackage = (?) and configprotect.idprotect = configprotectreference.idprotect', (idpackage,))
         protect = self.cursor.fetchone()
         if not protect:
@@ -2409,9 +2322,6 @@ class etpDatabase:
 
         cache = self.fetchInfoCache(idpackage,'retrieveProtectMask')
         if cache != None: return cache
-
-        if (not self.doesTableExist("configprotect")) or (not self.doesTableExist("configprotectreference")):
-            self.createProtectTable()
 
         self.cursor.execute('SELECT protect FROM configprotectmask,configprotectreference WHERE idpackage = (?) and configprotectmask.idprotect= configprotectreference.idprotect', (idpackage,))
         protect = self.cursor.fetchone()
@@ -2455,9 +2365,6 @@ class etpDatabase:
         if contentType:
             searchkeywords.append(contentType)
             contentstring = ' and type = (?)'
-
-        if not self.doesColumnInTableExist("content","type"):
-            self.createContentTypeColumn()
 
         self.cursor.execute('SELECT file'+extstring+' FROM content WHERE idpackage = (?) '+contentstring, searchkeywords)
 
@@ -2515,8 +2422,6 @@ class etpDatabase:
 
         # insert license information
         if not self.doesTableExist("licensedata"):
-            if (etpConst['uid'] == 0) and (not self.readOnly):
-                self.createLicensedataTable()
             return {}
         licenses = self.retrieveLicense(idpackage)
         licenses = licenses.split()
@@ -2543,8 +2448,6 @@ class etpDatabase:
         if cache != None: return cache
 
         if not self.doesTableExist("licensedata"):
-            if (etpConst['uid'] == 0) and (not self.readOnly):
-                self.createLicensedataTable()
             return set()
         licenses = self.retrieveLicense(idpackage)
         licenses = licenses.split()
@@ -2563,8 +2466,6 @@ class etpDatabase:
 
     def retrieveLicenseText(self, license_name):
         if not self.doesTableExist("licensedata"):
-            if (etpConst['uid'] == 0) and (not self.readOnly):
-                self.createLicensedataTable()
             return None
 
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
@@ -2653,8 +2554,6 @@ class etpDatabase:
         return result[0]
 
     def isProtectAvailable(self,protect):
-        if (not self.doesTableExist("configprotect")) or (not self.doesTableExist("configprotectreference")):
-            self.createProtectTable()
         self.cursor.execute('SELECT idprotect FROM configprotectreference WHERE protect = (?)', (protect,))
         result = self.cursor.fetchone()
         if not result:
@@ -2705,8 +2604,6 @@ class etpDatabase:
         return result[0]
 
     def isEclassAvailable(self,eclass):
-        if not self.doesTableExist("eclasses"):
-            self.createEclassesTable()
         self.cursor.execute('SELECT idclass FROM eclassesreference WHERE classname = (?)', (eclass,))
         result = self.cursor.fetchone()
         if not result:
@@ -2714,8 +2611,6 @@ class etpDatabase:
         return result[0]
 
     def isNeededAvailable(self,needed):
-        if not self.doesTableExist("needed"):
-            self.createNeededTable()
         self.cursor.execute('SELECT idneeded FROM neededreference WHERE library = (?)', (needed,))
         result = self.cursor.fetchone()
         if not result:
@@ -2723,12 +2618,6 @@ class etpDatabase:
         return result[0]
 
     def isCounterAvailable(self,counter, branch = None, branch_operator = "="):
-
-        if not self.doesTableExist("counters"):
-            self.createCountersTable()
-        if not self.doesColumnInTableExist("counters","branch"):
-            self.createCountersBranchColumn()
-
         result = False
         if not branch:
             branch = etpConst['branch']
@@ -2741,10 +2630,7 @@ class etpDatabase:
 
     def isLicensedataKeyAvailable(self, license_name):
         if not self.doesTableExist("licensedata"):
-            if (etpConst['uid'] == 0) and (not self.readOnly):
-                self.createLicensedataTable()
-            else:
-                return True
+            return True
         self.cursor.execute('SELECT licensename FROM licensedata WHERE licensename = (?)', (license_name,))
         result = self.cursor.fetchone()
         if not result:
@@ -2752,8 +2638,6 @@ class etpDatabase:
         return True
 
     def isLicenseAccepted(self, license_name):
-        if not self.doesTableExist("licenses_accepted"):
-            self.createLicensesAcceptedTable()
         self.cursor.execute('SELECT licensename FROM licenses_accepted WHERE licensename = (?)', (license_name,))
         result = self.cursor.fetchone()
         if not result:
@@ -2763,8 +2647,6 @@ class etpDatabase:
     def acceptLicense(self, license_name):
         if self.readOnly or (etpConst['uid'] != 0):
             return
-        if not self.doesTableExist("licenses_accepted"):
-            self.createLicensesAcceptedTable()
         if self.isLicenseAccepted(license_name):
             return
         self.cursor.execute('INSERT INTO licenses_accepted VALUES (?)', (license_name,))
@@ -2780,12 +2662,7 @@ class etpDatabase:
         return result[0]
 
     def isSystemPackage(self,idpackage):
-
-        if not self.doesTableExist("systempackages"):
-            self.createSystemPackagesTable()
-
         self.cursor.execute('SELECT idpackage FROM systempackages WHERE idpackage = (?)', (idpackage,))
-
         result = self.cursor.fetchone()
         if result:
             return True
@@ -2795,9 +2672,6 @@ class etpDatabase:
 
         cache = self.fetchInfoCache(idpackage,'isInjected')
         if cache != None: return cache
-
-        if not self.doesTableExist("injected"):
-            self.createInjectedTable()
 
         try:
             self.cursor.execute('SELECT idpackage FROM injected WHERE idpackage = (?)', (idpackage,))
@@ -3141,11 +3015,6 @@ class etpDatabase:
 
     def listAllCounters(self, onlycounters = False, branch = None, branch_operator = "="):
 
-        if not self.doesTableExist("counters"):
-            self.createCountersTable()
-        if not self.doesColumnInTableExist("counters","branch"):
-            self.createCountersBranchColumn()
-
         branchstring = ''
         if branch:
             branchstring = ' WHERE branch '+branch_operator+' "'+str(branch)+'"'
@@ -3259,8 +3128,6 @@ class etpDatabase:
         query = 'SELECT idprotect FROM configprotect'
         if mask:
             query += 'mask'
-        if (not self.doesTableExist("configprotect")) or (not self.doesTableExist("configprotectreference")):
-            self.createProtectTable()
         self.cursor.execute(query)
         idprotects = self.fetchall2set(self.cursor.fetchall())
 
@@ -3316,6 +3183,61 @@ class etpDatabase:
         self.cursor.execute('UPDATE baseinfo SET branch = (?) WHERE idpackage = (?)', (tobranch,idpackage,))
         self.cursor.execute('UPDATE extrainfo SET download = (?) WHERE idpackage = (?)', (newdownload,idpackage,))
         self.commitChanges()
+
+    def databaseStructureUpdates(self):
+
+        if not self.doesTableExist("licensedata"):
+            self.createLicensedataTable()
+
+        if not self.doesTableExist("licenses_accepted"):
+            self.createLicensesAcceptedTable()
+
+        if not self.doesColumnInTableExist("baseinfo","trigger"):
+            self.createTriggerColumn()
+
+        if not self.doesTableExist("counters"):
+            self.createCountersTable()
+        elif not self.doesColumnInTableExist("counters","branch"):
+            self.createCountersBranchColumn()
+
+        if not self.doesTableExist("sizes"):
+            self.createSizesTable()
+
+        if not self.doesTableExist("triggers"):
+            self.createTriggerTable()
+
+        if not self.doesTableExist("messages"):
+            self.createMessagesTable()
+
+        if not self.doesTableExist("injected"):
+            self.createInjectedTable()
+
+        if not self.doesTableExist("systempackages"):
+            self.createSystemPackagesTable()
+
+        if (not self.doesTableExist("configprotect")) or (not self.doesTableExist("configprotectreference")):
+            self.createProtectTable()
+
+        if not self.doesColumnInTableExist("content","type"):
+            self.createContentTypeColumn()
+
+        if not self.doesTableExist("eclasses"):
+            self.createEclassesTable()
+
+        if not self.doesTableExist("treeupdates"):
+            self.createTreeupdatesTable()
+
+        if not self.doesTableExist("treeupdatesactions"):
+            self.createTreeupdatesactionsTable()
+        elif not self.doesColumnInTableExist("treeupdatesactions","branch"):
+            self.createTreeupdatesactionsBranchColumn()
+
+        if not self.doesTableExist("needed"):
+            self.createNeededTable()
+
+        if not self.doesTableExist("installedtable") and (self.dbname == etpConst['clientdbid']):
+            self.createInstalledTable()
+
 
     def validateDatabase(self):
         self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table","baseinfo"))
@@ -3456,8 +3378,6 @@ class etpDatabase:
         return result
 
     def removePackageFromInstalledTable(self, idpackage):
-        if not self.doesTableExist("installedtable"):
-            self.createInstalledTable()
         self.cursor.execute('DELETE FROM installedtable WHERE idpackage = (?)', (idpackage,))
 
     def removePackageFromDependsTable(self, idpackage):
@@ -3575,10 +3495,7 @@ class etpDatabase:
     def createLicensedataIndex(self):
         if self.dbname != etpConst['serverdbid'] and self.indexing:
             if not self.doesTableExist("licensedata"):
-                if (etpConst['uid'] == 0) and (not self.readOnly):
-                    self.createLicensedataTable()
-                else:
-                    return
+                return
             self.cursor.execute('CREATE INDEX IF NOT EXISTS licensedataindex ON licensedata ( licensename )')
             self.commitChanges()
 
@@ -3642,27 +3559,17 @@ class etpDatabase:
     def clearTreeupdatesEntries(self, repository):
         self.checkReadOnly()
         # treeupdates
-        if not self.doesTableExist("treeupdates"):
-            self.createTreeupdatesTable()
-        else:
-            self.cursor.execute("DELETE FROM treeupdates WHERE repository = (?)", (repository,))
+        self.cursor.execute("DELETE FROM treeupdates WHERE repository = (?)", (repository,))
 
     def resetTreeupdatesDigests(self):
         self.checkReadOnly()
-        if not self.doesTableExist("treeupdates"):
-            self.createTreeupdatesTable()
-        else:
-            self.cursor.execute('UPDATE treeupdates SET digest = "-1"')
+        self.cursor.execute('UPDATE treeupdates SET digest = "-1"')
 
     #
     # FIXME: remove these when 1.0 will be out
     #
 
     def migrateCountersTable(self):
-        if not self.doesTableExist("counters"):
-            self.createCountersTable()
-        if not self.doesColumnInTableExist("counters","branch"):
-            self.createCountersBranchColumn()
         self.cursor.execute('DROP TABLE IF EXISTS counterstemp;')
         self.cursor.execute('CREATE TABLE counterstemp ( counter INTEGER, idpackage INTEGER PRIMARY KEY, branch VARCHAR );')
         self.cursor.execute('select * from counters')

@@ -750,6 +750,12 @@ class EquoInterface(TextInterface):
             revision = -1
         return revision
 
+    def update_repository_revision(self, reponame):
+        r = self.get_repository_revision(reponame)
+        etpRepositories[reponame]['dbrevision'] = "0"
+        if r != -1:
+            etpRepositories[reponame]['dbrevision'] = str(r)
+
     # @returns -1 if the file does not exist
     # @returns int>0 if the file exists
     def get_repository_db_file_checksum(self, reponame):
@@ -3856,10 +3862,6 @@ class RepoInterface:
         self.notAvailable = 0
         self.reset_dbformat_eapi()
 
-        # check if I am root
-        if (not self.Entropy.entropyTools.isRoot()):
-            raise exceptionTools.PermissionDenied("PermissionDenied: not allowed as user.")
-
         # check etpRepositories
         if not etpRepositories:
             raise exceptionTools.MissingParameter("MissingParameter: no repositories specified in %s" % (etpConst['repositoriesconf'],))
@@ -4334,6 +4336,8 @@ class RepoInterface:
                     self.Entropy.clientDbconn.createAllIndexes()
                 except:
                     pass
+                # update revision in etpRepositories
+                self.Entropy.update_repository_revision(repo)
 
             self.Entropy.cycleDone()
 
