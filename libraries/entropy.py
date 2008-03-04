@@ -168,7 +168,10 @@ class EquoInterface(TextInterface):
         self.validate_repositories()
         self.reopenClientDbconn()
         if chroot:
-            self.clientDbconn.resetTreeupdatesDigests()
+            try:
+                self.clientDbconn.resetTreeupdatesDigests()
+            except:
+                pass
 
     def reopenClientDbconn(self):
         self.clientDbconn.closeDB()
