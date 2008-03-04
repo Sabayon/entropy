@@ -326,6 +326,7 @@ class etpDatabase:
         for sql in etpSQLInit.split(";"):
             if sql:
                 self.cursor.execute(sql+";")
+        self.databaseStructureUpdates()
         self.commitChanges()
 
     def checkReadOnly(self):
