@@ -155,7 +155,7 @@ class etpDatabase:
             # lock mirror remotely and ensure to have latest database revision
             self.doServerDatabaseSyncLock(self.noUpload)
 
-        if (etpConst['uid'] == 0) and os.access(self.dbFile,os.W_OK):
+        if (etpConst['uid'] == 0) or os.access(self.dbFile,os.W_OK):
             self.databaseStructureUpdates()
 
     def doServerDatabaseSyncLock(self, noUpload):
