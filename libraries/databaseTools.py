@@ -156,7 +156,12 @@ class etpDatabase:
             self.doServerDatabaseSyncLock(self.noUpload)
 
         if os.access(self.dbFile,os.W_OK) and self.doesTableExist('baseinfo') and self.doesTableExist('extrainfo'):
-            self.databaseStructureUpdates()
+            if entropyTools.islive():
+                # check where's the file
+                if etpConst['systemroot']:
+                    self.databaseStructureUpdates()
+            else:
+                self.databaseStructureUpdates()
 
     def doServerDatabaseSyncLock(self, noUpload):
 
@@ -3189,7 +3194,7 @@ class etpDatabase:
         if not self.doesTableExist("licensedata"):
             self.createLicensedataTable()
 
-        if not self.doesTableExist("licenses_accepted"):
+        if not self.doesTableExist("licenses_accepted") and (self.dbname == etpConst['clientdbid']):
             self.createLicensesAcceptedTable()
 
         if not self.doesColumnInTableExist("baseinfo","trigger"):
