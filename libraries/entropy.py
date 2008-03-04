@@ -5204,6 +5204,9 @@ class TriggerInterface:
         if self.pkgdata['category']+"/"+self.pkgdata['name'] == "sys-devel/binutils":
             functions.add("binutilsswitch")
 
+        if (self.pkgdata['category']+"/"+self.pkgdata['name'] == "net-www/netscape-flash") and (etpSys['arch'] == "amd64"):
+            functions.add("nspluginwrapper_fix_flash")
+
         # triggers that are not needed when gentoo-compat is enabled
         if not self.gentoo_compat:
 
@@ -5445,6 +5448,27 @@ class TriggerInterface:
         execfile(triggerfile)
         os.remove(triggerfile)
         return my_ext_status
+
+    def trigger_nspluginwrapper_fix_flash(self):
+        # check if nspluginwrapper is installed
+        if os.access("/usr/bin/nspluginwrapper",os.X_OK):
+            self.Entropy.updateProgress(
+                                    brown(" Regenerating nspluginwrapper flash plugin"),
+                                    importance = 0,
+                                    header = red("   ##")
+                                )
+            quietstring = ''
+            if etpUi['quiet']: quietstring = " &>/dev/null"
+            cmds = [
+                "nspluginwrapper -r /usr/lib64/nsbrowser/plugins/npwrapper.libflashplayer.so"+quietstring,
+                "nspluginwrapper -i /usr/lib32/nsbrowser/plugins/libflashplayer.so"+quietstring
+            ]
+            if not etpConst['systemroot']:
+                for cmd in cmds:
+                    os.system(cmd)
+            else:
+                for cmd in cmds:
+                    os.system('echo "'+cmd+'" | chroot '+etpConst['systemroot']+quietstring)
 
     def trigger_purgecache(self):
         self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Purging Equo cache...")
