@@ -159,6 +159,7 @@ class EquoInterface(TextInterface):
         # clean caches
         self.purge_cache()
         const_resetCache()
+        self.closeAllRepositoryDatabases()
         if chroot.endswith("/"):
             chroot = chroot[:-1]
         etpSys['rootdir'] = chroot
@@ -168,7 +169,6 @@ class EquoInterface(TextInterface):
         self.reopenClientDbconn()
         if chroot:
             self.clientDbconn.resetTreeupdatesDigests()
-        self.closeAllRepositoryDatabases()
 
     def reopenClientDbconn(self):
         self.clientDbconn.closeDB()
