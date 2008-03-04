@@ -791,6 +791,12 @@ class etpDatabase:
 
         # baseinfo
         pkgatom = etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag
+        # create new idflag if it doesn't exist
+        idflags = self.areCompileFlagsAvailable(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
+        if (idflags == -1):
+            # create category
+            idflags = self.addCompileFlags(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
+
         self.cursor.execute(
                 'INSERT into baseinfo VALUES '
                 '(NULL,?,?,?,?,?,?,?,?,?,?,?)'
@@ -807,34 +813,7 @@ class etpDatabase:
                         trigger,
                         )
         )
-
-        # self.connection.commit() risky to do here
         idpackage = self.cursor.lastrowid
-
-        ### RSS Atom support
-        ### dictionary will be elaborated by activator
-        if etpConst['rss-feed'] and not self.clientDatabase:
-            rssAtom = pkgatom+"~"+str(revision)
-            # store addPackage action
-            rssObj = dumpTools.loadobj(etpConst['rss-dump-name'])
-            if rssObj:
-                global etpRSSMessages
-                etpRSSMessages = rssObj.copy()
-            if rssAtom in etpRSSMessages['removed']:
-                del etpRSSMessages['removed'][rssAtom]
-            etpRSSMessages['added'][rssAtom] = {}
-            etpRSSMessages['added'][rssAtom]['description'] = etpData['description']
-            etpRSSMessages['added'][rssAtom]['homepage'] = etpData['homepage']
-            etpRSSMessages['light'][rssAtom] = {}
-            etpRSSMessages['light'][rssAtom]['description'] = etpData['description']
-            # save
-            dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
-
-        # create new idflag if it doesn't exist
-        idflags = self.areCompileFlagsAvailable(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
-        if (idflags == -1):
-            # create category
-            idflags = self.addCompileFlags(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
 
         # extrainfo
         self.cursor.execute(
@@ -850,6 +829,7 @@ class etpDatabase:
                         etpData['datecreation'],
                         )
         )
+        ### other information iserted below are not as critical as these above
 
         # content, a list
         self.insertContent(idpackage,etpData['content'])
@@ -1082,6 +1062,25 @@ class etpDatabase:
 
         self.packagesAdded = True
         self.commitChanges()
+
+        ### RSS Atom support
+        ### dictionary will be elaborated by activator
+        if etpConst['rss-feed'] and not self.clientDatabase:
+            rssAtom = pkgatom+"~"+str(revision)
+            # store addPackage action
+            rssObj = dumpTools.loadobj(etpConst['rss-dump-name'])
+            if rssObj:
+                global etpRSSMessages
+                etpRSSMessages = rssObj.copy()
+            if rssAtom in etpRSSMessages['removed']:
+                del etpRSSMessages['removed'][rssAtom]
+            etpRSSMessages['added'][rssAtom] = {}
+            etpRSSMessages['added'][rssAtom]['description'] = etpData['description']
+            etpRSSMessages['added'][rssAtom]['homepage'] = etpData['homepage']
+            etpRSSMessages['light'][rssAtom] = {}
+            etpRSSMessages['light'][rssAtom]['description'] = etpData['description']
+            # save
+            dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
 
         return idpackage, revision, etpData, True
 
