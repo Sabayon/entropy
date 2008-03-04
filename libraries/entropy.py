@@ -2315,6 +2315,13 @@ class PackageInterface:
                 )
             if rc != 0:
                 return rc
+        else:
+            self.__fill_image_dir(self.infoDict['merge_from'],self.infoDict['imagedir'])
+            #self.Entropy.entropyTools.spawnFunction(
+            #            self.__fill_image_dir,
+            #            self.infoDict['merge_from'],
+            #            self.infoDict['imagedir']
+            #    )
 
         # unpack xpak ?
         if etpConst['gentoo-compat']:
@@ -2888,17 +2895,8 @@ class PackageInterface:
         imageDir = self.infoDict['imagedir']
         # XXX Python 2.4 workaround
         if sys.version[:3] == "2.4":
-            if self.infoDict['merge_from']:
-                self.infoDict['merge_from'] = self.infoDict['merge_from'].encode('raw_unicode_escape')
             imageDir = imageDir.encode('raw_unicode_escape')
         # XXX Python 2.4 workaround
-
-        if self.infoDict['merge_from']:
-            self.Entropy.entropyTools.spawnFunction(
-                        self.__fill_image_dir,
-                        self.infoDict['merge_from'],
-                        imageDir
-                )
 
         # merge data into system
         for currentdir,subdirs,files in os.walk(imageDir):
@@ -3134,6 +3132,13 @@ class PackageInterface:
         if not self.infoDict['merge_from']:
             self.Entropy.updateProgress(
                                                 blue("Unpacking package: ")+red(os.path.basename(self.infoDict['download'])),
+                                                importance = 1,
+                                                type = "info",
+                                                header = red("   ## ")
+                                        )
+        else:
+            self.Entropy.updateProgress(
+                                                blue("Merging package: ")+red(os.path.basename(self.infoDict['download'])),
                                                 importance = 1,
                                                 type = "info",
                                                 header = red("   ## ")
