@@ -2316,12 +2316,12 @@ class PackageInterface:
             if rc != 0:
                 return rc
         else:
-            self.__fill_image_dir(self.infoDict['merge_from'],self.infoDict['imagedir'])
-            #self.Entropy.entropyTools.spawnFunction(
-            #            self.__fill_image_dir,
-            #            self.infoDict['merge_from'],
-            #            self.infoDict['imagedir']
-            #    )
+            #self.__fill_image_dir(self.infoDict['merge_from'],self.infoDict['imagedir'])
+            self.Entropy.entropyTools.spawnFunction(
+                        self.__fill_image_dir,
+                        self.infoDict['merge_from'],
+                        self.infoDict['imagedir']
+                )
 
         # unpack xpak ?
         if etpConst['gentoo-compat']:
