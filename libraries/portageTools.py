@@ -368,7 +368,7 @@ def calculate_dependencies(my_iuse, my_use, my_license, my_depend, my_rdepend, m
                 deps = paren_choose(deps)
             deps = ' '.join(deps)
         except Exception, e:
-            print_error("%s: %s\n" % (k, str(e)))
+            print "%s: %s\n" % (k, str(e))
             deps = ''
             continue
         metadata[k] = deps
