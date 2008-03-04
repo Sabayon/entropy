@@ -27,7 +27,7 @@ from serverConstants import *
 from outputTools import *
 from entropy import FtpInterface, EquoInterface, rssFeed
 import exceptionTools
-Entropy = EquoInterface(noclientdb = True)
+Entropy = EquoInterface(noclientdb = 2)
 
 # Logging initialization
 import logTools
