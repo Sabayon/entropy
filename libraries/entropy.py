@@ -165,8 +165,9 @@ class EquoInterface(TextInterface):
         initConfig_entropyConstants(etpSys['rootdir'])
         initConfig_clientConstants()
         self.validate_repositories()
-        self.closeAllRepositoryDatabases()
         self.reopenClientDbconn()
+        self.clientDbconn.resetTreeupdatesDigests()
+        self.closeAllRepositoryDatabases()
 
     def reopenClientDbconn(self):
         self.clientDbconn.closeDB()
@@ -2830,12 +2831,15 @@ class PackageInterface:
         for path in contents:
             # convert back to filesystem str
             encoded_path = path
-            path = path.encode('raw_unicode_escape')
             path = os.path.join(mergeFrom,path[1:])
             topath = os.path.join(imageDir,path[1:])
+            path = path.encode('raw_unicode_escape')
+            topath = topath.encode('raw_unicode_escape')
+
             try:
                 exist = os.lstat(path)
             except OSError, e:
+                print e
                 continue # skip file
             ftype = package_content[encoded_path]
             if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
