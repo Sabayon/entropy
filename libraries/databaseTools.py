@@ -1812,6 +1812,10 @@ class etpDatabase:
         data['name'] = mydata[2]
         data['version'] = mydata[3]
         data['versiontag'] = mydata[5]
+        flags = self.retrieveCompileFlags(idpackage)
+        data['chost'] = flags[0]
+        data['cflags'] = flags[1]
+        data['cxxflags'] = flags[2]
 
         data['trigger'] = self.retrieveTrigger(idpackage)
         data['eclasses'] = self.retrieveEclasses(idpackage)
