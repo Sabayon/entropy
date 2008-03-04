@@ -2844,8 +2844,8 @@ class PackageInterface:
         for path in contents:
             # convert back to filesystem str
             encoded_path = path
-            path = os.path.join(mergeFrom,path[1:])
-            topath = os.path.join(imageDir,path[1:])
+            path = os.path.join(mergeFrom,encoded_path[1:])
+            topath = os.path.join(imageDir,encoded_path[1:])
             path = path.encode('raw_unicode_escape')
             topath = topath.encode('raw_unicode_escape')
 
