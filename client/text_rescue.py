@@ -246,7 +246,7 @@ def database(options):
             print_info("  ("+str(cnt)+"/"+count+") "+red("Adding: ")+atoms[pkgfound], back = True)
             Package = Equo.Package()
             Package.prepare(tuple(pkgfound),"install", {})
-            Package.__install_package_into_database()
+            Package._install_package_into_database()
             Package.kill()
             del Package
 
