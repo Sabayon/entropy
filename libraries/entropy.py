@@ -2660,7 +2660,8 @@ class PackageInterface:
                                 type = "info",
                                 header = red("   ## ")
                             )
-        newidpackage = self.Entropy.entropyTools.spawnFunction( self.__install_package_into_database )
+        newidpackage = self.__install_package_into_database()
+        #newidpackage = self.Entropy.entropyTools.spawnFunction( self.__install_package_into_database ) it hangs on live systems!
 
         # remove old files and gentoo stuff
         if (self.infoDict['removeidpackage'] != -1):
