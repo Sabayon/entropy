@@ -41,39 +41,23 @@ class rhnAppletNoticeWindow(rhnGladeWindow):
         self.package_list.append_column(gtk.TreeViewColumn(_("Available"), gtk.CellRendererText(), text=2))
         self.package_list.get_selection().set_mode(gtk.SELECTION_NONE)
 
-        self.ignore_list = self.get_widget('ignore_clist')
-        self.ignore_list.append_column(gtk.TreeViewColumn(_("Ignored Packages"), gtk.CellRendererText(), text=0))
-        self.ignore_list.get_selection().set_mode(gtk.SELECTION_SINGLE)
-        self.ignore_list_contents = []
-
-        self.available_list = self.get_widget('available_clist')
-        self.available_list.append_column(gtk.TreeViewColumn(_("Available Updates"), gtk.CellRendererText(), text=0))
-        self.available_list.get_selection().set_mode(gtk.SELECTION_SINGLE)
-        self.available_list_contents = []
-
         self.notebook = self.get_widget('notice_notebook')
         self.critical_tab = None
         self.critical_tab_contents = None
-
-        self.available_model = gtk.ListStore(gobject.TYPE_STRING)
-        self.available_list.set_model(self.available_model)
-
-        self.ignore_list_model = gtk.ListStore(gobject.TYPE_STRING)
-        self.ignore_list.set_model(self.ignore_list_model)
 
         self.package_list_model = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING)
         self.package_list.set_model(self.package_list_model)
 
         self.xml.signal_autoconnect (
             {
-            "on_launch_up2date_clicked" : self.on_up2date,
+            "on_launch_spritz_clicked" : self.on_spritz,
             "on_ignore_clicked" : self.on_ignore_clicked,
             "on_unignore_clicked" : self.on_unignore_clicked,
             "on_close_clicked" : self.on_close,
             })
 
-    def on_up2date(self, button):
-        self.parent.launch_up2date()
+    def on_spritz(self, button):
+        self.parent.launch_package_manager()
         
     def on_close(self, close_button):
         self.close_window()
@@ -83,13 +67,7 @@ class rhnAppletNoticeWindow(rhnGladeWindow):
         self.parent.notice_window_closed()
 
     def clear_window(self):
-
-        self.available_model.clear()
-        self.available_list_contents = []
-
-        self.ignore_list_model.clear() 
         self.package_list_model.clear()
-        self.ignore_list_contents = []
 
     def on_link_clicked(self, html, url):
         print "url: %s" % url
@@ -143,43 +121,25 @@ class rhnAppletNoticeWindow(rhnGladeWindow):
         (model, iter) = selection.get_selected()
         if not iter:
             return
-        
+
         name = model.get_value(iter, 0)
         self.parent.set_ignored(name, 1)
-    
+
     def on_unignore_clicked(self, *data):
         selection = self.ignore_list.get_selection()
         (model, iter) = selection.get_selected()
         if not iter:
             return
-        
+
         name = model.get_value(iter, 0)
         self.parent.set_ignored(name, 0)
-    
+
     def add_package(self, name, installed, avail):
-        if self.parent.model.is_package_ignored(name):
-            self.ignore_list_contents.append(name)
-        else:
-            self.available_list_contents.append(name)
-            iter = self.package_list_model.append()
-            self.package_list_model.set_value(iter, 0, name) 
-            self.package_list_model.set_value(iter, 1, installed)
-            self.package_list_model.set_value(iter, 2, avail)
+        iter = self.package_list_model.append()
+        self.package_list_model.set_value(iter, 0, name)
+        self.package_list_model.set_value(iter, 1, installed)
+        self.package_list_model.set_value(iter, 2, avail)
 
-    def redraw_lists(self):
-        self.available_model.clear()
-
-        self.available_list_contents.sort()
-        for i in self.available_list_contents:
-            iter = self.available_model.append()
-            self.available_model.set_value(iter, 0, i) 
-
-        self.ignore_list_model.clear()
-
-        self.ignore_list_contents.sort()
-        for i in self.ignore_list_contents:
-            iter = self.ignore_list_model.append()
-            self.ignore_list_model.set_value(iter, 0, i)
 
 class rhnRegistrationPromptDialog(rhnGladeWindow):
     def __init__(self, parent):

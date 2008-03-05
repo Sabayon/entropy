@@ -55,22 +55,30 @@ class Entropy(EquoInterface):
         self.clientDbconn.xcache = True
         self.nocolor()
 
-    def connect_progress_objects(self, tooltip_widget, tooltip_function):
-        self.progress_tooltip = tooltip_function
-        self.progress_widget = tooltip_widget
+    def connect_progress_objects(self, appletInterface):
+        self.appletInterface = appletInterface
+        self.progress_tooltip = self.appletInterface.update_tooltip
+        self.progress_widget = self.appletInterface.tooltip
         self.updateProgress = self.appletUpdateProgress
         self.progress_tooltip_message_title = _("Updates Notification")
         self.appletCreateNotification()
-        self.progress_tooltip_notification_timer = None
-        self.applet_notification_active = 0
-        gobject.timeout_add(5000, self.appletRemoveNotification)
+        #self.progress_tooltip_notification_timer = None
+        #gobject.timeout_add(1000, self.appletCreateNotification)
         self.urlFetcher = GuiUrlFetcher
         self.progress = self.appletPrintText # for the GuiUrlFetcher
+        self.progress_tooltip_lasttext = ''
+
+
+    def appletSetCoordinates(self):
+        self.appletX,self.appletY = self.appletInterface.get_tray_coordinates()
+        self.progress_tooltip_notification.set_hint("x", self.appletX+11)
+        self.progress_tooltip_notification.set_hint("y", self.appletY+5)
 
     def appletCreateNotification(self):
-        pynotify.init("Message Replace")
+        pynotify.init("XY")
         self.progress_tooltip_notification = pynotify.Notification(self.progress_tooltip_message_title,"Hello world")
-        self.progress_tooltip_notification.set_timeout(0)
+        self.progress_tooltip_notification.set_timeout(3000)
+        self.appletSetCoordinates()
 
     def appletUpdateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
 
@@ -82,25 +90,13 @@ class Entropy(EquoInterface):
                 count_str = "(%s/%s) " % (str(count[0]),str(count[1]),)
 
         message = count_str+_(text)
-        self.appletPrintText(message)
+        self.progress_tooltip_lasttext = message
+        self.appletPrintText()
 
-    def appletPrintText(self, message):
-        self.progress_tooltip_notification.update(self.progress_tooltip_message_title,message)
+    def appletPrintText(self):
+        self.appletSetCoordinates()
+        self.progress_tooltip_notification.update(self.progress_tooltip_message_title,self.progress_tooltip_lasttext)
         self.progress_tooltip_notification.show()
-        self.applet_notification_active = 2
-
-    def appletRemoveNotification(self):
-        #self.appletInitTimer()
-        if self.applet_notification_active == 0:
-            return
-        elif self.applet_notification_active == 2:
-            self.applet_notification_active = 1
-            return
-
-        self.progress_tooltip_notification.set_timeout(1)
-        time.sleep(1.5)
-        self.applet_notification_active = 0
-        self.appletCreateNotification()
 
 class GuiUrlFetcher(urlFetcher):
 
@@ -163,7 +159,6 @@ class rhnApplet:
         self.tooltip = gtk.Tooltips()
         self.applet_window = egg.trayicon.TrayIcon("spritz-updater")
         self.applet_window.connect("destroy", self.exit_applet)
-        self.Entropy.connect_progress_objects(self.tooltip, self.update_tooltip)
 
         #
         # Cope with a change in the Gnome python bindings naming
@@ -249,10 +244,6 @@ class rhnApplet:
         self.applet_window.add(self.event_box)
         self.applet_window.show_all()
 
-        self.proxy = {}
-        self.proxy_username = {}
-        self.proxy_password = {}
-
         self.animator = None
         self.client = None
         self.notice_window = None
@@ -264,6 +255,8 @@ class rhnApplet:
         self.last_error_is_exception = 0
         self.last_error_is_network_error = 0
         self.change_number = 0
+        self.available_packages = set()
+        self.last_alert = None
 
         # first refresh should be 2 minutes after execution; this
         # should give the rest of the user's desktop environment time
@@ -271,7 +264,9 @@ class rhnApplet:
         # else is loading.  subsequent intervals will be much larger.
         self.set_state("OKAY")
         self.update_tooltip(_("Waiting until first checkin..."))
-        self.enable_refresh_timer(60000)
+        self.enable_refresh_timer(50000)
+
+        self.Entropy.connect_progress_objects(self)
 
     def get_tray_coordinates(self):
         """
@@ -465,12 +460,22 @@ class rhnApplet:
             else:
                 os._exit(-1)
 
-    def show_alert(self, title, text):
+    def show_alert(self, title, text, urgency = None):
+
+        if (title,text) == self.last_alert:
+            return
+
         pynotify.init("XY")
         n = pynotify.Notification(title, text)
+        if urgency == 'critical':
+            n.set_urgency(pynotify.URGENCY_CRITICAL)
+        elif urgency == 'low':
+            n.set_urgency(pynotify.URGENCY_LOW)
+
         x,y = self.get_tray_coordinates()
         n.set_hint("x", x+11)
         n.set_hint("y", y+5)
+        self.last_alert = (title,text)
         n.show()
 
     def move_to_user_directory(self):
@@ -548,7 +553,6 @@ class rhnApplet:
                 # -1: not able to update all the repositories
                 rc = repoConn.sync()
                 rc = rc*-1
-                print "RETURNED",rc
             self.Entropy.xcache = oldxcache
 
         if rc == 1:
@@ -590,7 +594,6 @@ class rhnApplet:
             return False
 
 
-        print "NOW I SHOULD CHECK"
         try:
             update, remove, fine = self.Entropy.calculate_world_updates()
             del fine, remove
@@ -615,14 +618,23 @@ class rhnApplet:
             return False
 
         if update:
+            self.available_packages = update.copy()
             self.set_state("CRITICAL")
             self.update_tooltip(_("There are %d updates available.") % (len(update),))
+            self.show_alert(    _("Updates available"),
+                                _("There are %d updates available.") % (len(update),),
+                                urgency = 'critical'
+                           )
             if self.notice_window:
-                self.refresh_notice_window(update)
+                self.refresh_notice_window()
 
         else:
             self.set_state(old_state)
             self.update_tooltip(_("So far, so good. w00t!"))
+            self.show_alert(    _("Everything up-to-date"),
+                                _("So far, so good. w00t!"),
+                                urgency = 'low'
+                           )
 
         self.disable_refresh_timer()
         self.enable_refresh_timer()
@@ -753,57 +765,53 @@ class rhnApplet:
             self.rhnreg_dialog.set_transient(self.notice_window)
             self.rhnreg_dialog.raise_()
 
-    def refresh_notice_window(self, needed_packages = None):
+    def refresh_notice_window(self):
         self.notice_window.clear_window()
 
-        if not needed_package:
-            print "no updates to show"
+        if not self.available_packages:
             return
 
-        print "refresh notice window"
-        return
-
         names = {}
-        for pkg in needed_packages:
-            if not names.has_key(pkg["name"]):
-                names[pkg["name"]] = []
+        equo_entropy_update = False
+        entropy_data = {}
+        for pkg in self.available_packages:
+            dbconn = self.Entropy.openRepositoryDatabase(pkg[1])
+            atom = dbconn.retrieveAtom(pkg[0])
+            avail = dbconn.retrieveVersion(pkg[0])
+            avail_rev = dbconn.retrieveRevision(pkg[0])
+            key, slot = dbconn.retrieveKeySlot(pkg[0])
+            installed_match = self.Entropy.clientDbconn.atomMatch(key, matchSlot = slot)
 
-            names[pkg["name"]].append(pkg)
+            if installed_match[0] != -1:
+                installed = self.Entropy.clientDbconn.retrieveVersion(installed_match[0])
+                installed_rev = self.Entropy.clientDbconn.retrieveRevision(installed_match[0])
+            else:
+                installed = _("Not installed")
+            if key in ["sys-apps/entropy"]:
+                equo_entropy_update = True
+                entropy_data['avail'] = avail+"~"+str(avail_rev)
+                entropy_data['installed'] = installed+"~"+str(installed_rev)
+
+
+            names[atom] = {}
+            names[atom]['installed'] = installed+"~"+str(installed_rev)
+            names[atom]['avail'] = avail+"~"+str(avail_rev)
 
         ordered_names = names.keys()
-        ordered_names.sort();
-
+        ordered_names.sort()
         for name in ordered_names:
-
-            available = ', '.join(map(lambda p: p["nevr"], names[name]))
-            # drop the ending ':' if there is no epoch
-            if len(available) >= 1 and available[-1] == ":":
-                available = available[:-1]
-
-
-            #installed = self.model.installed_package(name)
-            installed['name'] = "asdads"
-            installed['version'] = "1.2.3"
-            installed['release'] = "0"
-            self.notice_window.add_package(name,
-                                           "-".join((installed["name"],
-                                                        installed["version"],
-                                                        installed["release"])),
-                                           available)
+            self.notice_window.add_package( name,
+                                            names[name]['installed'],
+                                            names[name]['avail']
+                                          )
 
         critical_text = []
-
-        # XXX show equo updates
-        '''
-        for a in self.model.alerts():
-            if a.is_up2date_alert():
-                current, latest = a.alert_data()
-                critical_text.append(_("""
-Your system currently has <b>%s</b> installed, but the latest
+        if equo_entropy_update:
+            critical_text.append(_("""
+Your system currently has sys-apps/entropy <b>%s</b> installed, but the latest
 available version is <b>%s</b>.  It is recommended that you <b>upgrade
-to the latest up2date</b> before updating any other packages.
-""") % (self.model.pkg_as_nvr(current), self.model.pkg_as_nvr(latest)))
-        '''
+to the latest</b> before updating any other packages.
+""") % (entropy_data['installed'], names[atom]['avail']))
 
         if critical_text:
             if self.old_critical_text != critical_text:
@@ -814,7 +822,6 @@ to the latest up2date</b> before updating any other packages.
         else:
             self.notice_window.remove_critical()
 
-        self.notice_window.redraw_lists()
 
     def set_ignored(self, name, new_value):
         self.never_viewed_notices = 0
