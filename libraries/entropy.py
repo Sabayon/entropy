@@ -3211,7 +3211,7 @@ class PackageInterface:
     def cleanup_step(self):
         self.error_on_not_prepared()
         self.Entropy.updateProgress(
-                                        blue('Cleaning temporary files for archive: ')+red(self.infoDict['atom']),
+                                        blue('Cleaning: ')+red(self.infoDict['atom']),
                                         importance = 1,
                                         type = "info",
                                         header = red("   ## ")
