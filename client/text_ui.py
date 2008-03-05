@@ -179,7 +179,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
 
     # disable collisions protection, better
     oldcollprotect = etpConst['collisionprotect']
-    etpConst['collisionprotect'] = 0
+    etpConst['collisionprotect'] = 1
 
     if (update) or (resume):
         rc = installPackages(atomsdata = update, onlyfetch = onlyfetch, resume = resume, skipfirst = skipfirst, dochecksum = dochecksum)
