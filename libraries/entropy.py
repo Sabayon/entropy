@@ -59,7 +59,7 @@ class EquoInterface(TextInterface):
                                 2: client database won't be opened at all
         @input xcache(bool): enable/disable database caching
     '''
-    def __init__(self, indexing = True, noclientdb = 0, xcache = True):
+    def __init__(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False):
 
         # Logging initialization
         import logTools
@@ -105,9 +105,9 @@ class EquoInterface(TextInterface):
         if self.entropyTools.islive():
             self.xcache = False
 
-        if etpConst['uid'] != 0:
+        if etpConst['uid'] != 0 and not user_xcache:
             self.xcache = False
-        else:
+        elif not user_xcache:
             self.validate_repositories_cache()
 
         # security interface
@@ -2153,9 +2153,6 @@ class EquoInterface(TextInterface):
         conn = PackageInterface(EquoInstance = self)
         return conn
 
-    def instanceTest(self):
-        return
-
     '''
         Package interface :: end
     '''
@@ -2173,8 +2170,8 @@ class EquoInterface(TextInterface):
     '''
         Repository interface :: begin
     '''
-    def Repositories(self, reponames = [], forceUpdate = False, noEquoCheck = False):
-        conn = RepoInterface(EquoInstance = self, reponames = reponames, forceUpdate = forceUpdate, noEquoCheck = noEquoCheck)
+    def Repositories(self, reponames = [], forceUpdate = False, noEquoCheck = False, fetchSecurity = True):
+        conn = RepoInterface(EquoInstance = self, reponames = reponames, forceUpdate = forceUpdate, noEquoCheck = noEquoCheck, fetchSecurity = fetchSecurity)
         return conn
     '''
         Repository interface :: end
@@ -2200,11 +2197,10 @@ class EquoInterface(TextInterface):
 class PackageInterface:
 
     def __init__(self, EquoInstance):
-        self.Entropy = EquoInstance
-        try:
-            self.Entropy.instanceTest()
-        except:
+
+        if not isinstance(EquoInstance,EquoInterface):
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+        self.Entropy = EquoInstance
         self.infoDict = {}
         self.prepared = False
         self.matched_atom = ()
@@ -3628,11 +3624,9 @@ class FileUpdatesInterface:
             import dumpTools
             self.Entropy.dumpTools = dumpTools
         else:
-            self.Entropy = EquoInstance
-            try:
-                self.Entropy.instanceTest()
-            except:
+            if not isinstance(EquoInstance,EquoInterface):
                 raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+            self.Entropy = EquoInstance
 
         self.scandata = None
 
@@ -3860,19 +3854,18 @@ class FileUpdatesInterface:
 #
 class RepoInterface:
 
-    def __init__(self, EquoInstance, reponames = [], forceUpdate = False, noEquoCheck = False):
+    def __init__(self, EquoInstance, reponames = [], forceUpdate = False, noEquoCheck = False, fetchSecurity = True):
 
-        self.Entropy = EquoInstance
-        try:
-            self.Entropy.instanceTest()
-        except:
+        if not isinstance(EquoInstance,EquoInterface):
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
 
+        self.Entropy = EquoInstance
         self.reponames = reponames
         self.forceUpdate = forceUpdate
         self.syncErrors = False
         self.dbupdated = False
         self.newEquo = False
+        self.fetchSecurity = fetchSecurity
         self.noEquoCheck = noEquoCheck
         self.alreadyUpdated = 0
         self.notAvailable = 0
@@ -4339,19 +4332,20 @@ class RepoInterface:
                                                 header = "\t"
                                 )
 
-                self.Entropy.updateProgress(
-                                                red("Indexing Repository metadata ..."),
-                                                importance = 1,
-                                                type = "info",
-                                                header = "\t",
-                                                back = True
-                                )
-                dbconn = self.Entropy.openRepositoryDatabase(repo)
-                dbconn.createAllIndexes()
-                try: # client db can be absent
-                    self.Entropy.clientDbconn.createAllIndexes()
-                except:
-                    pass
+                if self.Entropy.indexing:
+                    self.Entropy.updateProgress(
+                                                    red("Indexing Repository metadata ..."),
+                                                    importance = 1,
+                                                    type = "info",
+                                                    header = "\t",
+                                                    back = True
+                                    )
+                    dbconn = self.Entropy.openRepositoryDatabase(repo)
+                    dbconn.createAllIndexes()
+                    try: # client db can be absent
+                        self.Entropy.clientDbconn.createAllIndexes()
+                    except:
+                        pass
                 # update revision in etpRepositories
                 self.Entropy.update_repository_revision(repo)
 
@@ -4364,9 +4358,10 @@ class RepoInterface:
 
         # clean caches
         if self.dbupdated:
-            self.Entropy.generate_cache(depcache = True, configcache = False, client_purge = False)
+            self.Entropy.generate_cache(depcache = self.Entropy.xcache, configcache = False, client_purge = False)
             # update Security Advisories
-            self.Entropy.Security.fetch_advisories()
+            if self.fetchSecurity:
+                self.Entropy.Security.fetch_advisories()
 
         if self.syncErrors:
             self.Entropy.updateProgress(    red("Something bad happened. Please have a look."),
@@ -4407,12 +4402,10 @@ class FtpInterface:
     # this must be run before calling the other functions
     def __init__(self, ftpuri, EntropyInterface):
 
-        self.Entropy = EntropyInterface
-        try:
-            self.Entropy.outputInstanceTest()
-        except:
+        if not isinstance(EntropyInterface, (EquoInterface, TextInterface)):
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid TextInterface based Instance is needed")
 
+        self.Entropy = EntropyInterface
         import entropyTools
         self.entropyTools = entropyTools
         import ftplib
@@ -5138,12 +5131,11 @@ class rssFeed:
 class TriggerInterface:
 
     def __init__(self, EquoInstance, phase, pkgdata):
-        self.Entropy = EquoInstance
-        try:
-            self.Entropy.instanceTest()
-        except:
+
+        if not isinstance(EquoInstance,EquoInterface):
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
 
+        self.Entropy = EquoInstance
         self.equoLog = self.Entropy.equoLog
         self.validPhases = ("preinstall","postinstall","preremove","postremove")
         self.pkgdata = pkgdata
@@ -6638,11 +6630,9 @@ class PackageMaskingParser:
 
     def __init__(self, EquoInstance):
 
-        self.Entropy = EquoInstance
-        try:
-            self.Entropy.instanceTest()
-        except:
+        if not isinstance(EquoInstance,EquoInterface):
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+        self.Entropy = EquoInstance
 
     def parse(self):
 
@@ -7030,11 +7020,10 @@ class SecurityInterface:
     # - GPG signing/verification (until key policy is clear)
 
     def __init__(self, EquoInstance):
-        self.Entropy = EquoInstance
-        try:
-            self.Entropy.instanceTest()
-        except:
+
+        if not isinstance(EquoInstance,EquoInterface):
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+        self.Entropy = EquoInstance
         self.lastfetch = None
         self.previous_checksum = "0"
         self.advisories_changed = None
