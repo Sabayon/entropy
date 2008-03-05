@@ -2658,7 +2658,7 @@ class PackageInterface:
 
         # inject into database
         self.Entropy.updateProgress(
-                                blue("Updating database with: ")+red(self.infoDict['atom']),
+                                blue("Updating database: ")+red(self.infoDict['atom']),
                                 importance = 1,
                                 type = "info",
                                 header = red("   ## ")
