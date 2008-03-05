@@ -439,7 +439,7 @@ class etpDatabase:
                 doRescan = True
 
         try:
-            clientDbconn = openClientDatabase(xcache = False, indexing = False)
+            clientDbconn = openClientDatabase(xcache = False, indexing = False, OutputInterface = self)
         except exceptionTools.SystemDatabaseError:
             return # don't run anything for goodness' sake
 
