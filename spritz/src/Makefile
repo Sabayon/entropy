@@ -5,8 +5,8 @@ all:
 
 clean:
 	rm -fv *.pyc *.pyo *~ *.bak *.gladep
-	rm -fv yumex/*.pyc yumex/*.pyo etpgui/*~ 
 	rm -fv etpgui/*.pyc etpgui/*.pyo etpgui/*~ 
+	rm -fv applet/*.pyc etpgui/*.pyo applet/*~ 
 
 install:
 	mkdir -p $(DESTDIR)/usr/lib/entropy/spritz

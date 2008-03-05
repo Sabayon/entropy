@@ -12,8 +12,8 @@ NLSPACKAGE = spritz
 CATALOGS = $(shell ls *.po)
 FMTCATALOGS = $(patsubst %.po,%.mo,$(CATALOGS))
 
-PYFILES  = $(wildcard ../src/*.py) $(wildcard ../src/spritz/*.py) $(wildcard ../src/etpgui/*.py)
-GLADEFILES = $(wildcard ../src/*.glade)
+PYFILES  = $(wildcard ../src/*.py) $(wildcard ../src/spritz/*.py) $(wildcard ../src/etpgui/*.py) $(wildcard ../src/applet/*.py)
+GLADEFILES = $(wildcard ../src/*.glade) $(wildcard ../src/applet/*.glade)
 POTFILES  = $(PYFILES) $(GLADEFILES)
 
 all: $(NLSPACKAGE).pot $(FMTCATALOGS)

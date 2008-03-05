@@ -12,4 +12,11 @@ src/etpgui/callbacks.py
 src/etpgui/__init__.py
 src/etpgui/packages.py
 src/etpgui/widgets.py
+src/applet/etp_applet_animation.py
+src/applet/etp_applet_config.py
+src/applet/etp_applet_dialogs.py
+src/applet/etp_applet.py
+src/applet/applet.py
+src/applet/etp_applet.glade
 src/spritz.glade
+
