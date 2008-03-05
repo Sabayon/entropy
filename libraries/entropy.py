@@ -1300,7 +1300,7 @@ class EquoInterface(TextInterface):
             # extra library breakages check
             clientmatch = self.clientDbconn.atomMatch(matchkey, matchSlot = matchslot)
             if clientmatch[0] != -1:
-                broken_atoms = self.__lookup_library_breakages(match, clientmatch, deep_deps = deep_deps)
+                broken_atoms = self._lookup_library_breakages(match, clientmatch, deep_deps = deep_deps)
                 for x in broken_atoms:
                     if x not in treecache:
                         mybuffer.push((treedepth,x))
@@ -1338,7 +1338,7 @@ class EquoInterface(TextInterface):
 
         return newdeptree,0 # note: newtree[0] contains possible conflicts
 
-    def __lookup_library_breakages(self, match, clientmatch, deep_deps = False):
+    def _lookup_library_breakages(self, match, clientmatch, deep_deps = False):
 
         # there is no need to update this cache when "match" will be installed, because at that point
         # clientmatch[0] will differ.
@@ -2660,8 +2660,8 @@ class PackageInterface:
                                 type = "info",
                                 header = red("   ## ")
                             )
-        newidpackage = self.__install_package_into_database()
-        #newidpackage = self.Entropy.entropyTools.spawnFunction( self.__install_package_into_database ) it hangs on live systems!
+        newidpackage = self._install_package_into_database()
+        #newidpackage = self.Entropy.entropyTools.spawnFunction( self._install_package_into_database ) it hangs on live systems!
 
         # remove old files and gentoo stuff
         if (self.infoDict['removeidpackage'] != -1):
@@ -2687,7 +2687,7 @@ class PackageInterface:
         rc = 0
         if (etpConst['gentoo-compat']):
             self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing new Gentoo database entry: "+str(self.infoDict['atom']))
-            rc = self.__install_package_into_gentoo_database(newidpackage)
+            rc = self._install_package_into_gentoo_database(newidpackage)
 
         return rc
 
@@ -2695,7 +2695,7 @@ class PackageInterface:
     @description: inject the database information into the Gentoo database
     @output: 0 = all fine, !=0 = error!
     '''
-    def __install_package_into_gentoo_database(self, newidpackage):
+    def _install_package_into_gentoo_database(self, newidpackage):
 
         # handle gentoo-compat
         _portage_avail = False
@@ -2795,7 +2795,7 @@ class PackageInterface:
     @description: injects package info into the installed packages database
     @output: 0 = all fine, >0 = error!
     '''
-    def __install_package_into_database(self):
+    def _install_package_into_database(self):
 
         # fetch info
         dbconn = self.Entropy.openRepositoryDatabase(self.infoDict['repository'])
@@ -2804,7 +2804,7 @@ class PackageInterface:
         # always set data['injected'] to False
         # installed packages database SHOULD never have more than one package for scope (key+slot)
         data['injected'] = False
-        data['counter'] = -1 # gentoo counter will be set in self.__install_package_into_gentoo_database()
+        data['counter'] = -1 # gentoo counter will be set in self._install_package_into_gentoo_database()
 
         idpk, rev, x, status = self.Entropy.clientDbconn.handlePackage(etpData = data, forcedRevision = data['revision'])
         del x

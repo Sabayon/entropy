@@ -142,9 +142,11 @@ def database(options):
             os.remove(temptbz2)
 
         print_info(red("  All the Gentoo packages have been injected into Entropy database."))
-
         print_info(red("  Now generating depends caching table..."))
         Equo.clientDbconn.regenerateDependsTable()
+        print_info(red("  Now indexing tables..."))
+        Equo.clientDbconn.indexing = True
+        Equo.clientDbconn.createAllIndexes()
         print_info(red("  Database reinitialized successfully."))
         return 0
 
@@ -249,6 +251,14 @@ def database(options):
             del Package
 
 	print_info(red("  Database resurrected successfully."))
+
+        print_info(red("  Now generating depends caching table..."))
+        Equo.clientDbconn.regenerateDependsTable()
+        print_info(red("  Now indexing tables..."))
+        Equo.clientDbconn.indexing = True
+        Equo.clientDbconn.createAllIndexes()
+        print_info(red("  Database reinitialized successfully."))
+
 	print_warning(red("  Keep in mind that virtual/meta packages couldn't be matched. They don't own any files."))
         return 0
 
