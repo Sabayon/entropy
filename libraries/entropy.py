@@ -2294,7 +2294,10 @@ class PackageInterface:
     '''
     def __unpack_package(self):
         self.error_on_not_prepared()
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Unpacking package: "+str(self.infoDict['atom']))
+        if not self.infoDict['merge_from']:
+            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Unpacking package: "+str(self.infoDict['atom']))
+        else:
+            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Merging package: "+str(self.infoDict['atom']))
 
         if os.path.isdir(self.infoDict['unpackdir']):
             shutil.rmtree(self.infoDict['unpackdir'].encode('raw_unicode_escape'))
@@ -3341,7 +3344,10 @@ class PackageInterface:
                 rc = self.checksum_step()
 
             elif step == "unpack":
-                self.xterm_title += 'Unpacking: '+os.path.basename(self.infoDict['download'])
+                if not self.infoDict['merge_from']:
+                    self.xterm_title += 'Unpacking: '+os.path.basename(self.infoDict['download'])
+                else:
+                    self.xterm_title += 'Merging: '+os.path.basename(self.infoDict['atom'])
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.unpack_step()
 
