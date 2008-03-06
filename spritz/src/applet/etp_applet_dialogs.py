@@ -21,7 +21,7 @@ class rhnGladeWindow:
     def __init__(self, filename, window_name):
         self.filename = filename
         if not os.path.isfile(filename):
-            self.filename = "/usr/share/entropy/spritz/applet/%s" % (filename,)
+            self.filename = "/usr/lib/entropy/spritz/applet/%s" % (filename,)
         self.xml = gtk.glade.XML(self.filename, window_name, domain="spritz")
         self.window = self.xml.get_widget(window_name)
 

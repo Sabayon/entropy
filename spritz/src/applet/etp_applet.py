@@ -66,7 +66,7 @@ class Entropy(EquoInterface):
         #gobject.timeout_add(1000, self.appletCreateNotification)
         self.urlFetcher = GuiUrlFetcher
         self.progress = self.appletPrintText # for the GuiUrlFetcher
-        self.progress_tooltip_lasttext = ''
+        self.applet_last_message = ''
 
 
     def appletSetCoordinates(self):
@@ -90,13 +90,18 @@ class Entropy(EquoInterface):
                 count_str = "(%s/%s) " % (str(count[0]),str(count[1]),)
 
         message = count_str+_(text)
-        self.progress_tooltip_lasttext = message
-        self.appletPrintText()
+        #if importance in (1,2):
+        if importance == 2:
+            self.progress_tooltip_message_title = message
+            self.appletPrintText(self.applet_last_message)
+        else:
+            self.appletPrintText(message)
 
-    def appletPrintText(self):
+    def appletPrintText(self, message):
         self.appletSetCoordinates()
-        self.progress_tooltip_notification.update(self.progress_tooltip_message_title,self.progress_tooltip_lasttext)
+        self.progress_tooltip_notification.update(self.progress_tooltip_message_title,message)
         self.progress_tooltip_notification.show()
+        self.applet_last_message = message
 
 class GuiUrlFetcher(urlFetcher):
 
