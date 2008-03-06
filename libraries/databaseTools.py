@@ -138,9 +138,11 @@ class etpDatabase:
         if entropyTools.islive():
             self.indexing = False
         self.dbFile = dbFile
-        self.updateProgress = OutputInterface.updateProgress
-        self.askQuestion = OutputInterface.askQuestion
-        self.outputInstanceTest = OutputInterface.outputInstanceTest
+
+        # setup output interface
+        self.OutputInterface = OutputInterface
+        self.updateProgress = self.OutputInterface.updateProgress
+        self.askQuestion = self.OutputInterface.askQuestion
 
         # no caching for non root and server connections
         if (self.dbname == etpConst['serverdbid']) or (etpConst['uid'] != 0):
@@ -175,7 +177,7 @@ class etpDatabase:
             # check if the database is locked REMOTELY
             self.updateProgress(red("Locking and Syncing Entropy database..."), importance = 1, type = "info", header = red(" * "), back = True)
             for uri in etpConst['activatoruploaduris']:
-                ftp = FtpInterface(uri, self)
+                ftp = FtpInterface(uri, self.OutputInterface)
                 try:
                     ftp.setCWD(etpConst['etpurirelativepath'])
                 except:
