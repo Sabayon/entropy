@@ -777,7 +777,6 @@ class rhnApplet:
             return
 
         names = {}
-        equo_entropy_update = False
         entropy_data = {}
         for pkg in self.available_packages:
             dbconn = self.Entropy.openRepositoryDatabase(pkg[1])
@@ -792,15 +791,14 @@ class rhnApplet:
                 installed_rev = self.Entropy.clientDbconn.retrieveRevision(installed_match[0])
             else:
                 installed = _("Not installed")
-            if key in ["sys-apps/entropy"]:
-                equo_entropy_update = True
-                entropy_data['avail'] = avail+"~"+str(avail_rev)
+            if key == "sys-apps/entropy":
+                entropy_data['avail'] = avail+"~"+str(avail_rev)[:]
                 entropy_data['installed'] = installed+"~"+str(installed_rev)
-
 
             names[atom] = {}
             names[atom]['installed'] = installed+"~"+str(installed_rev)
             names[atom]['avail'] = avail+"~"+str(avail_rev)
+
 
         ordered_names = names.keys()
         ordered_names.sort()
@@ -811,7 +809,7 @@ class rhnApplet:
                                           )
 
         critical_text = []
-        if equo_entropy_update:
+        if entropy_data.has_key("avail"):
             critical_text.append(_("""
 Your system currently has sys-apps/entropy <b>%s</b> installed, but the latest
 available version is <b>%s</b>.  It is recommended that you <b>upgrade

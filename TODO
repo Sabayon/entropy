@@ -1,4 +1,5 @@
 TODO list:
+  - make an ETP_DIR switching function
   - lilo.conf trigger?
   - equo: "you meant...?" feature
   - calculate extra deps from NEEDED, server side?

@@ -4028,7 +4028,11 @@ class RepoInterface:
         status = self.Entropy.entropyTools.get_remote_data(url)
         if (status):
             status = status[0].strip()
-            return int(status)
+            try:
+                status = int(status)
+            except ValueError:
+                status = -1
+            return status
         else:
             return -1
 
@@ -4041,6 +4045,8 @@ class RepoInterface:
             localstatus = self.Entropy.get_repository_revision(repo)
             if (localstatus == onlinestatus) and (not self.forceUpdate):
                 return False
+        else: # if == -1, means no repo found online
+            return False
         return True
 
     def is_repository_unlocked(self, repo):
