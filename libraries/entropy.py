@@ -4361,7 +4361,14 @@ class RepoInterface:
             self.Entropy.generate_cache(depcache = self.Entropy.xcache, configcache = False, client_purge = False)
             # update Security Advisories
             if self.fetchSecurity:
-                self.Entropy.Security.fetch_advisories()
+                try:
+                    self.Entropy.Security.fetch_advisories()
+                except Exception, e:
+                    self.Entropy.updateProgress(    red("Advisories fetch error: %s: %s.") % (str(Exception),str(e),),
+                                                    importance = 1,
+                                                    type = "warning",
+                                                    header = darkred(" @@ ")
+                                    )
 
         if self.syncErrors:
             self.Entropy.updateProgress(    red("Something bad happened. Please have a look."),
