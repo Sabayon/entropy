@@ -504,6 +504,7 @@ class rhnApplet:
         # now get remote
         for repoid in etpRepositories:
             if repoConn.is_repository_updatable(repoid):
+                self.Entropy.repository_move_clear_cache(repoid)
                 repos[repoid] = {}
                 repos[repoid]['local_revision'] = self.Entropy.get_repository_revision(repoid)
                 repos[repoid]['remote_revision'] = repoConn.get_online_repository_revision(repoid)
@@ -532,6 +533,7 @@ class rhnApplet:
         self.last_error = None
         self.last_error_is_network_error = 0
         self.error_threshold = 0
+        self.available_packages = set()
 
         # compare repos
         repositories_to_update, rc = self.compare_repositories_status()
