@@ -495,6 +495,8 @@ class LicenseDialog:
         model, iterator = self.view.get_selection().get_selected()
         if model != None and iterator != None:
             license_identifier = model.get_value( iterator, 0 )
+            if not self.licenses.has_key(license_identifier): # for security reasons
+                return
             packages = self.licenses[license_identifier]
             license_text = ''
             found = False
