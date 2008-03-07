@@ -503,6 +503,7 @@ def initConfig_entropyConstants(rootdir):
     const_resetCache()
     etpConst.clear()
     myConst = {
+        'installdir': '/usr/lib/entropy', # entropy default installation directory
         'packagestmpdir': ETP_DIR+ETP_TMPDIR, # etpConst['packagestmpdir'] --> temp directory
         'packagestmpfile': ETP_DIR+ETP_TMPDIR+ETP_TMPFILE, # etpConst['packagestmpfile'] --> general purpose tmp file
         'packagesbindir': ETP_DIR+ETP_REPODIR, # etpConst['packagesbindir'] --> repository where the packages will be stored
@@ -689,6 +690,8 @@ def initConfig_entropyConstants(rootdir):
 
     # handle Entropy Version
     ETP_REVISION_FILE = "../libraries/revision"
+    if not os.path.isfile(ETP_REVISION_FILE):
+        ETP_REVISION_FILE = os.path.join(etpConst['installdir'],'libraries/revision')
     if os.path.isfile(ETP_REVISION_FILE):
         f = open(ETP_REVISION_FILE,"r")
         myrev = f.readline().strip()
