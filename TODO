@@ -20,6 +20,7 @@ TODO list:
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
+    - fix reinstall for tagged packages
     - interface bug reporting interface (ahah)
     - handle entropy exceptions
     - add masking menu
