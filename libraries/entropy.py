@@ -2698,13 +2698,14 @@ class PackageInterface:
 
         # handle gentoo-compat
         _portage_avail = False
+        portDbDir = ''
         try:
             import portageTools
+            portDbDir = portageTools.getPortageAppDbPath()
             _portage_avail = True
         except:
             return -1 # no Portage support
-        if (_portage_avail):
-            portDbDir = portageTools.getPortageAppDbPath()
+        if _portage_avail and os.path.isdir(portDbDir):
             # extract xpak from unpackDir+etpConst['packagecontentdir']+"/"+package
             key = self.infoDict['category']+"/"+self.infoDict['name']
             atomsfound = set()
