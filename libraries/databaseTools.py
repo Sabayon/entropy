@@ -3726,7 +3726,7 @@ class etpDatabase:
                  str(hash(multiMatch)) + \
                  str(hash(packagesFilter)) + \
                  str(hash(matchRevision))
-        c_hash = str(hash(c_hash))
+        #c_hash = str(hash(c_hash))
         return c_hash
 
 
