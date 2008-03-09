@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-05 21:06+0100\n"
+"POT-Creation-Date: 2008-03-09 17:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -471,7 +471,7 @@ msgstr ""
 msgid "You must run this application as root"
 msgstr ""
 
-#: ../src/spritz.py:1051 ../src/applet/etp_applet.py:536
+#: ../src/spritz.py:1051 ../src/applet/etp_applet.py:548
 #, python-format
 msgid "No repositories specified in %s"
 msgstr ""
@@ -480,7 +480,7 @@ msgstr ""
 msgid "You are not connected to the Internet. You should."
 msgstr ""
 
-#: ../src/spritz.py:1057 ../src/applet/etp_applet.py:544
+#: ../src/spritz.py:1057 ../src/applet/etp_applet.py:556
 #, python-format
 msgid "Unhandled exception: %s"
 msgstr ""
@@ -628,19 +628,11 @@ msgstr ""
 msgid "Available"
 msgstr ""
 
-#: ../src/applet/etp_applet_dialogs.py:45 ../src/applet/etp_applet.glade.h:5
-msgid "Ignored Packages"
-msgstr ""
-
-#: ../src/applet/etp_applet_dialogs.py:50 ../src/applet/etp_applet.glade.h:3
-msgid "Available Updates"
-msgstr ""
-
-#: ../src/applet/etp_applet_dialogs.py:108
+#: ../src/applet/etp_applet_dialogs.py:86
 msgid "Critical Information"
 msgstr ""
 
-#: ../src/applet/etp_applet_dialogs.py:261
+#: ../src/applet/etp_applet_dialogs.py:221
 msgid ""
 "Red Hat Network provides an intelligent, proactive management service for "
 "your Red Hat Linux-based system.  Red Hat Network has the latest Red Hat "
@@ -652,18 +644,18 @@ msgid ""
 "not imply any agreement with Red Hat Network."
 msgstr ""
 
-#: ../src/applet/etp_applet_dialogs.py:262
+#: ../src/applet/etp_applet_dialogs.py:222
 msgid ""
 "Use of the up2date service, or use of this applet in conjunction with the "
 "up2date service, is governed by the Red Hat Network Services Use and "
 "Subscription Agreement, which may be reviewed at "
 msgstr ""
 
-#: ../src/applet/etp_applet_dialogs.py:264
+#: ../src/applet/etp_applet_dialogs.py:224
 msgid "Red Hat Network's privacy policy may be reviewed at "
 msgstr ""
 
-#: ../src/applet/etp_applet_dialogs.py:266
+#: ../src/applet/etp_applet_dialogs.py:226
 msgid ""
 "If you do not wish to have this application appear on your panel, click the "
 "'Remove From Panel' button below.  Once removed, you can return it to your "
@@ -676,14 +668,14 @@ msgstr ""
 #. #         file = pixmap_file('gnome-warning.png')
 #. #         if file:
 #. #             hbox.pack_start (GnomePixmap (file), gtk.FALSE)
-#: ../src/applet/etp_applet_dialogs.py:446
+#: ../src/applet/etp_applet_dialogs.py:406
 msgid ""
 "An unhandled exception has occured.  This is most likely a bug.  Please copy "
 "the full text of this exception into an email and send it to applet@rhn."
 "redhat.com.  Thank you."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:62
+#: ../src/applet/etp_applet.py:63
 msgid "Updates Notification"
 msgstr ""
 
@@ -736,7 +728,7 @@ msgstr ""
 msgid "Exit"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:273
+#: ../src/applet/etp_applet.py:271
 msgid "Waiting until first checkin..."
 msgstr ""
 
@@ -744,93 +736,117 @@ msgstr ""
 msgid "execv didn't execv?"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:520
+#: ../src/applet/etp_applet.py:531
 msgid "Checking for updates..."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:539
+#: ../src/applet/etp_applet.py:551
 msgid "Repository Network Error"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:555
+#: ../src/applet/etp_applet.py:566
 msgid "No repositories specified. Cannot check for package updates."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:556
+#: ../src/applet/etp_applet.py:567
 msgid "Updates: attention"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:560
+#: ../src/applet/etp_applet.py:571
 msgid ""
 "Cannot connect to the Updates Service, you're probably not connected to the "
 "world."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:561 ../src/applet/etp_applet.py:586
+#: ../src/applet/etp_applet.py:572 ../src/applet/etp_applet.py:597
 msgid "Updates: connection issues"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:565
+#: ../src/applet/etp_applet.py:576
 msgid "Not all the repositories have been fetched for checking"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:566 ../src/applet/etp_applet.py:571
+#: ../src/applet/etp_applet.py:577 ../src/applet/etp_applet.py:582
 msgid "Updates: repository issues"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:570
+#: ../src/applet/etp_applet.py:581
 msgid "No repositories found online"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:575
+#: ../src/applet/etp_applet.py:586
 msgid "Synchronization errors. Cannot update repositories. Check logs."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:576
+#: ../src/applet/etp_applet.py:587
 msgid "Updates: sync issues"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:580
+#: ../src/applet/etp_applet.py:591
 msgid "Updates: unhandled error"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:598
+#: ../src/applet/etp_applet.py:608
 #, python-format
 msgid "Updates: exception %s"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:605
+#: ../src/applet/etp_applet.py:615
 #, python-format
 msgid "Updates: issue: %s"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:619
+#: ../src/applet/etp_applet.py:630 ../src/applet/etp_applet.py:632
 #, python-format
 msgid "There are %d updates available."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:625
+#: ../src/applet/etp_applet.py:631
+msgid "Updates available"
+msgstr ""
+
+#: ../src/applet/etp_applet.py:640 ../src/applet/etp_applet.py:642
 msgid "So far, so good. w00t!"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:715
+#: ../src/applet/etp_applet.py:641
+msgid "Everything up-to-date"
+msgstr ""
+
+#: ../src/applet/etp_applet.py:734
 msgid "Waiting before checkin..."
 msgstr ""
 
+#: ../src/applet/etp_applet.py:795
+msgid "Not installed"
+msgstr ""
+
+#: ../src/applet/etp_applet.py:815
+#, python-format
+msgid ""
+"\n"
+"Your system currently has sys-apps/entropy <b>%s</b> installed, but the "
+"latest\n"
+"available version is <b>%s</b>.  It is recommended that you <b>upgrade\n"
+"to the latest</b> before updating any other packages.\n"
+msgstr ""
+
 #: ../src/applet/etp_applet.glade.h:1
-msgid "< <"
+msgid ""
+"<b>Attention</b>: if you load the Package Manager, remember to synchronize "
+"all the Repositories"
 msgstr ""
 
 #: ../src/applet/etp_applet.glade.h:2
-msgid "> >"
+msgid "Available Updates"
+msgstr ""
+
+#: ../src/applet/etp_applet.glade.h:3
+msgid "Package Manager Notification Window"
 msgstr ""
 
 #: ../src/applet/etp_applet.glade.h:4
-msgid "GYUM Alert Notification Tool"
-msgstr ""
-
-#: ../src/applet/etp_applet.glade.h:6
-msgid "Launch GYUM..."
+msgid "_Load Package Manager"
 msgstr ""
 
 #: ../src/spritz.glade.h:1
