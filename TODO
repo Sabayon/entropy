@@ -1,4 +1,5 @@
 TODO list:
+  - add "equo match" tool
   - make an ETP_DIR switching function
   - lilo.conf trigger?
   - equo: "you meant...?" feature

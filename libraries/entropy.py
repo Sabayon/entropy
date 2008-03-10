@@ -5738,11 +5738,19 @@ class TriggerInterface:
 
     # FIXME: this only supports grub (no lilo support)
     def trigger_addbootablekernel(self):
+        boot_mount = False
+        if os.path.ismount("/boot"):
+            boot_mount = True
         kernels = [x for x in self.pkgdata['content'] if x.startswith("/boot/kernel-")]
+        if boot_mount:
+            kernels = [x[len("/boot"):] for x in kernels]
         for kernel in kernels:
             initramfs = "/boot/initramfs-"+kernel[13:]
             if initramfs not in self.pkgdata['content']:
                 initramfs = ''
+            elif boot_mount:
+                initramfs = initramfs[len("/boot"):]
+
             # configure GRUB
             self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Adding the new kernel...")
             self.Entropy.updateProgress(
