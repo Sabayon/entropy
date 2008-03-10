@@ -569,7 +569,16 @@ class SpritzController(Controller):
 
     def loadPkgInfoMenu( self, pkg ):
 
-        # XXX set package image
+        # set package image
+        pkg_pixmap = const.PIXMAPS_PATH+'/package-x-generic.png'
+        heart_pixmap = const.PIXMAPS_PATH+'/heart.png'
+
+        self.pkginfo_ui.pkgImage.set_from_file(pkg_pixmap)
+        self.pkginfo_ui.vote1.set_from_file(heart_pixmap)
+        self.pkginfo_ui.vote2.set_from_file(heart_pixmap)
+        self.pkginfo_ui.vote3.set_from_file(heart_pixmap)
+        self.pkginfo_ui.vote4.set_from_file(heart_pixmap)
+        self.pkginfo_ui.vote5.set_from_file(heart_pixmap)
 
         self.pkgProperties_selected = pkg
         self.pkginfo_ui.labelAtom.set_markup("<b><big>%s</big></b>" % (pkg.name,))
