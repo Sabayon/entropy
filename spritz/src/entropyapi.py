@@ -160,6 +160,10 @@ class QueueExecutor:
 
 class Equo(EquoInterface):
 
+    def __init__(self):
+        EquoInterface.__init__(self)
+        self.xcache = True # force xcache enabling
+
     def connect_to_gui(self, progress, progressLog, viewOutput):
         self.progress = progress
         self.urlFetcher = GuiUrlFetcher
