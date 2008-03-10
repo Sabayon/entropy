@@ -3888,7 +3888,7 @@ class RepoInterface:
     def reset_dbformat_eapi(self):
         self.dbformat_eapi = 2
         # FIXME, find a way to do that without needing sqlite3 exec.
-        if not os.access("/usr/bin/sqlite3",os.X_OK):
+        if not os.access("/usr/bin/sqlite3",os.X_OK) or self.Entropy.entropyTools.islive():
             self.dbformat_eapi = 1
         else:
             import subprocess
