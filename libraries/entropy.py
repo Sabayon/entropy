@@ -5745,7 +5745,8 @@ class TriggerInterface:
         if boot_mount:
             kernels = [x[len("/boot"):] for x in kernels]
         for kernel in kernels:
-            initramfs = "/boot/initramfs-"+kernel[13:]
+            mykernel = kernel.split('/kernel-')[1]
+            initramfs = "/boot/initramfs-"+mykernel
             if initramfs not in self.pkgdata['content']:
                 initramfs = ''
             elif boot_mount:
