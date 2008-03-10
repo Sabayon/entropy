@@ -2,7 +2,7 @@
 _Name=Entropy Alert Icon
 _Comment=Panel icon for indication that newer Entropy packages are available
 Icon=entropy-applet.png
-Exec=entropy-applet-gui
+Exec=etp-applet-gui
 Type=Application
 Terminal=false
 Encoding=UTF-8
