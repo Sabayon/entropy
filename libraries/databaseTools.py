@@ -2706,13 +2706,13 @@ class etpDatabase:
 	    return -1
 	return result[0]
 
-    def searchBelongs(self, file, like = False, branch = None):
+    def searchBelongs(self, file, like = False, branch = None, branch_operator = "="):
 	
 	branchstring = ''
         searchkeywords = [file]
 	if branch:
             searchkeywords.append(branch)
-	    branchstring = ' and baseinfo.branch = (?)'
+	    branchstring = ' and baseinfo.branch '+branch_operator+' (?)'
 
 	if (like):
 	    self.cursor.execute('SELECT content.idpackage FROM content,baseinfo WHERE file LIKE (?) and content.idpackage = baseinfo.idpackage '+branchstring, searchkeywords)
