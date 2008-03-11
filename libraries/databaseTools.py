@@ -273,11 +273,14 @@ class etpDatabase:
             self.updateProgress(darkgreen("Mirrors have not been unlocked. Run activator."), importance = 1, type = "info", header = brown(" * "))
 
         # run vacuum cleaner
-        self.cursor.execute("vacuum")
+        self.vacuum()
         self.connection.commit()
 
         self.cursor.close()
         self.connection.close()
+
+    def vacuum(self):
+        self.cursor.execute("vacuum")
 
     def commitChanges(self):
         if (not self.readOnly):
