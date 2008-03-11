@@ -4915,7 +4915,7 @@ class urlFetcher:
             average = str(self.average)
             if len(average) < 2:
                 average = " "+average
-            currentText += "    <->  "+average+"% "+bartext
+            currentText += " <->  "+average+"% "+bartext
             # print !
             print_info(currentText,back = True)
         self.oldaverage = self.average
