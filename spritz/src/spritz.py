@@ -970,6 +970,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
         self.fileEditor = '/usr/bin/xterm -e $EDITOR'
         de_session = os.getenv('DESKTOP_SESSION')
+        if de_session == None: de_session = ''
         path = os.getenv('PATH').split(":")
         if os.access("/usr/bin/xdg-open",os.X_OK):
             self.fileEditor = "/usr/bin/xdg-open"
