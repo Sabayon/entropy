@@ -1,4 +1,5 @@
 TODO list:
+  - during "equo remove" show disk size for each package
   - add "equo match" tool
   - make an ETP_DIR switching function
   - lilo.conf trigger?
