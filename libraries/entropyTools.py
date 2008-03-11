@@ -2239,6 +2239,14 @@ def collectLinkerPaths():
     linkerPaths.update(ldpaths)
     return ldpaths
 
+def collectPaths():
+    path = set()
+    paths = os.getenv("PATH")
+    if paths != None:
+        paths = set(paths.split(":"))
+        path |= paths
+    return path
+
 # this is especially used to try to guess portage bytecoded entries in CONTENTS
 def string_to_utf8(string):
     done = False
