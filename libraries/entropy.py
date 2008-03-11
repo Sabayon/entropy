@@ -4894,7 +4894,7 @@ class urlFetcher:
 
     def updateProgress(self):
 
-        currentText = darkred("    <-> Downloading: ")+darkgreen(str(round(float(self.downloadedsize)/1024,1)))+"/"+red(str(round(self.remotesize,1))) + " kB"
+        currentText = darkred("    Fetch: ")+darkgreen(str(round(float(self.downloadedsize)/1024,1)))+"/"+red(str(round(self.remotesize,1))) + " kB"
         # create progress bar
         barsize = 10
         bartext = "["
