@@ -1,5 +1,4 @@
 TODO list:
-  - fix equo libtest results output
   - during "equo remove" show disk size for each package
   - add "equo match" tool
   - make an ETP_DIR switching function

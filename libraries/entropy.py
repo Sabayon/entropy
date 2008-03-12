@@ -641,10 +641,10 @@ class EquoInterface(TextInterface):
                                 continue
                             # retrieve content and really look if library is in ldpath
                             mycontent = rdbconn.retrieveContent(idpackage)
-                            #matching_libs = [x for x in mycontent if x.endswith(lib)] # and (os.path.dirname(x) in ldpaths)]
+                            matching_libs = [x for x in mycontent if x.endswith(lib) and (os.path.dirname(x) in ldpaths)]
                             libsfound.add(lib)
-                            #if matching_libs:
-                            packagesMatched.add((idpackage,repoid,lib))
+                            if matching_libs:
+                                packagesMatched.add((idpackage,repoid,lib))
                 brokenlibs.difference_update(libsfound)
 
         if reagent:
