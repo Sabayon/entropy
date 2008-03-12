@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-09 17:29+0100\n"
+"POT-Creation-Date: 2008-03-12 13:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -390,16 +390,16 @@ msgid "Queue is too old. Cannot load."
 msgstr ""
 
 #. from installed
-#: ../src/spritz.py:582
+#: ../src/spritz.py:591
 msgid "From your Operating System"
 msgstr ""
 
-#: ../src/spritz.py:814
+#: ../src/spritz.py:823
 msgid "Cleaning up all yum metadata"
 msgstr ""
 
 #. warn the user
-#: ../src/spritz.py:824
+#: ../src/spritz.py:833
 #, python-format
 msgid ""
 "<big><b>Sorry to tell you</b></big>\t\t\n"
@@ -407,178 +407,178 @@ msgid ""
 "u>: %s"
 msgstr ""
 
-#: ../src/spritz.py:840
+#: ../src/spritz.py:849
 msgid "Entropy Config Setup"
 msgstr ""
 
-#: ../src/spritz.py:851
+#: ../src/spritz.py:860
 msgid "GUI Setup Completed"
 msgstr ""
 
-#: ../src/spritz.py:867
+#: ../src/spritz.py:876
 msgid "License name"
 msgstr ""
 
-#: ../src/spritz.py:875
+#: ../src/spritz.py:884
 msgid "Sources"
 msgstr ""
 
-#: ../src/spritz.py:883
+#: ../src/spritz.py:892
 msgid "Mirrors"
 msgstr ""
 
-#: ../src/spritz.py:891
+#: ../src/spritz.py:900
 msgid "Keywords"
 msgstr ""
 
-#: ../src/spritz.py:899
+#: ../src/spritz.py:908
 msgid "Dependencies"
 msgstr ""
 
-#: ../src/spritz.py:907
+#: ../src/spritz.py:916
 msgid "Depends"
 msgstr ""
 
-#: ../src/spritz.py:915
+#: ../src/spritz.py:924
 msgid "Needed libraries"
 msgstr ""
 
-#: ../src/spritz.py:923
+#: ../src/spritz.py:932
 msgid "Protected item"
 msgstr ""
 
-#: ../src/spritz.py:926 ../src/spritz.py:938
+#: ../src/spritz.py:935 ../src/spritz.py:947
 msgid "Type"
 msgstr ""
 
-#: ../src/spritz.py:934
+#: ../src/spritz.py:943
 msgid "File"
 msgstr ""
 
-#: ../src/spritz.py:998
+#: ../src/spritz.py:1008
 msgid "Generating metadata. Please wait."
 msgstr ""
 
-#: ../src/spritz.py:1002 ../src/spritz.py:1120
+#: ../src/spritz.py:1012 ../src/spritz.py:1130
 msgid "Ready"
 msgstr ""
 
-#: ../src/spritz.py:1042
+#: ../src/spritz.py:1052
 msgid "Initializing Repository module..."
 msgstr ""
 
-#: ../src/spritz.py:1048
+#: ../src/spritz.py:1058
 msgid "You must run this application as root"
 msgstr ""
 
-#: ../src/spritz.py:1051 ../src/applet/etp_applet.py:548
+#: ../src/spritz.py:1061 ../src/applet/etp_applet.py:548
 #, python-format
 msgid "No repositories specified in %s"
 msgstr ""
 
-#: ../src/spritz.py:1054
+#: ../src/spritz.py:1064
 msgid "You are not connected to the Internet. You should."
 msgstr ""
 
-#: ../src/spritz.py:1057 ../src/applet/etp_applet.py:556
+#: ../src/spritz.py:1067 ../src/applet/etp_applet.py:556
 #, python-format
 msgid "Unhandled exception: %s"
 msgstr ""
 
-#: ../src/spritz.py:1061
+#: ../src/spritz.py:1071
 msgid "Errors updating repositories."
 msgstr ""
 
-#: ../src/spritz.py:1062
+#: ../src/spritz.py:1072
 msgid "Please check logs below for more info"
 msgstr ""
 
-#: ../src/spritz.py:1065
+#: ../src/spritz.py:1075
 msgid "Repositories updated successfully"
 msgstr ""
 
-#: ../src/spritz.py:1068
+#: ../src/spritz.py:1078
 msgid "All the repositories were already up to date."
 msgstr ""
 
-#: ../src/spritz.py:1070
+#: ../src/spritz.py:1080
 #, python-format
 msgid "%s repositories were already up to date. Others have been updated."
 msgstr ""
 
-#: ../src/spritz.py:1072
+#: ../src/spritz.py:1082
 msgid "app-admin/equo needs to be updated as soon as possible."
 msgstr ""
 
-#: ../src/spritz.py:1077
+#: ../src/spritz.py:1087
 msgid "Nothing to do. I am idle."
 msgstr ""
 
-#: ../src/spritz.py:1078
+#: ../src/spritz.py:1088
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr ""
 
-#: ../src/spritz.py:1079
+#: ../src/spritz.py:1089
 msgid "I am still alive and kickin'"
 msgstr ""
 
 #. -> Get lists
-#: ../src/spritz.py:1112
+#: ../src/spritz.py:1122
 msgid "Generating Metadata, please wait."
 msgstr ""
 
-#: ../src/spritz.py:1113
+#: ../src/spritz.py:1123
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr ""
 
-#: ../src/spritz.py:1114
+#: ../src/spritz.py:1124
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr ""
 
-#: ../src/spritz.py:1116
+#: ../src/spritz.py:1126
 #, python-format
 msgid "Calculating %s"
 msgstr ""
 
-#: ../src/spritz.py:1146
+#: ../src/spritz.py:1156
 msgid "Package View Population"
 msgstr ""
 
-#: ../src/spritz.py:1154
+#: ../src/spritz.py:1164
 msgid "Package View Population Completed"
 msgstr ""
 
-#: ../src/spritz.py:1160
+#: ../src/spritz.py:1170
 msgid "Category View Population"
 msgstr ""
 
-#: ../src/spritz.py:1179
+#: ../src/spritz.py:1189
 msgid "Category View Population Completed"
 msgstr ""
 
-#: ../src/spritz.py:1196
+#: ../src/spritz.py:1206
 msgid "Running tasks"
 msgstr ""
 
-#: ../src/spritz.py:1203
+#: ../src/spritz.py:1213
 msgid "Processing Packages in queue"
 msgstr ""
 
-#: ../src/spritz.py:1213
+#: ../src/spritz.py:1223
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
 
-#: ../src/spritz.py:1238
+#: ../src/spritz.py:1248
 msgid "No packages selected"
 msgstr ""
 
-#: ../src/spritz.py:1318 ../src/spritz.glade.h:70
+#: ../src/spritz.py:1328 ../src/spritz.glade.h:70
 msgid "Error"
 msgstr ""
 
-#: ../src/spritz.py:1318
+#: ../src/spritz.py:1328
 msgid "Error in Spritz"
 msgstr ""
 

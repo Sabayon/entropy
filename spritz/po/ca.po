@@ -1,14 +1,14 @@
-# translation of spritz.po to Català
+# translation of ca.po to Català
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# CatalanUser <rcalvoi@yahoo.com>, 2008.
+# Roger Calvó <rcalvoi@yahoo.com>, 2008.
 msgid ""
 msgstr ""
 "Project-Id-Version: ca\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-02-22 20:02+0100\n"
-"PO-Revision-Date: 2008-02-26 13:05+0100\n"
+"POT-Creation-Date: 2008-03-09 17:29+0100\n"
+"PO-Revision-Date: 2008-03-11 23:18+0100\n"
 "Last-Translator: CatalanUser <rcalvoi@yahoo.com>\n"
 "Language-Team: Català\n"
 "MIME-Version: 1.0\n"
@@ -32,7 +32,7 @@ msgstr "Neteja-ho tot"
 #: ../src/callbacks.py:180
 #, python-format
 msgid "Erased: %s"
-msgstr "Esborrat: %s"
+msgstr "Esborrat: %s "
 
 #: ../src/callbacks.py:201
 #, python-format
@@ -77,340 +77,329 @@ msgstr "--> S'està processant el conflicte: %s entra en conflicte amb %s"
 
 #: ../src/callbacks.py:267
 msgid "--> Populating transaction set with selected packages. Please wait."
-msgstr "--> S'està poblant la transacció amb els paquets seleccionats. Espereu si us plau"
+msgstr "--> S'està poblant la transacció amb els paquets seleccionats. Espereu si us plau."
 
 #: ../src/callbacks.py:270
 #, python-format
 msgid "---> Downloading header for %s to pack into transaction set."
 msgstr "---> S'està baixant la capçalera per tal que %s les empaqueti en la transacció."
 
-#: ../src/dialogs.py:55
+#: ../src/dialogs.py:56
 msgid "Please confirm the actions above"
 msgstr "Si us plau confirmeu les accions de sobre"
 
-#: ../src/dialogs.py:89 ../src/dialogs.py:96 ../src/views.py:417
+#. self.create_text_column( _( "Package" ), 'name' , size=300)
+#: ../src/dialogs.py:93 ../src/dialogs.py:100 ../src/views.py:418
 msgid "Package"
 msgstr "Paquet"
 
-#: ../src/dialogs.py:90 ../src/views.py:546 ../src/views.py:879
-#: ../src/spritz.glade.h:69
+#: ../src/dialogs.py:94 ../src/views.py:560 ../src/views.py:893
+#: ../src/spritz.glade.h:68
 msgid "Description"
 msgstr "Descripció"
 
-#: ../src/dialogs.py:122
+#: ../src/dialogs.py:117 ../src/dialogs.py:158
 msgid "To be reinstalled"
 msgstr "S'instal·laran de nou"
 
-#: ../src/dialogs.py:127
+#: ../src/dialogs.py:123 ../src/dialogs.py:163
 msgid "To be installed"
 msgstr "S'instal·laran"
 
-#: ../src/dialogs.py:132
-msgid "No description"
-msgstr "Cap descripció"
-
-#: ../src/dialogs.py:135
+#: ../src/dialogs.py:129 ../src/dialogs.py:171
 msgid "To be updated"
 msgstr "S'actualitzaran"
 
-#: ../src/dialogs.py:140
+#: ../src/dialogs.py:135
+msgid "To be downgraded"
+msgstr "Es degradaran"
+
+#: ../src/dialogs.py:141 ../src/dialogs.py:176
 msgid "To be removed"
 msgstr "S'esborraran"
 
-#: ../src/dialogs.py:251
+#: ../src/dialogs.py:168
+msgid "No description"
+msgstr "Cap descripció"
+
+#: ../src/dialogs.py:290
 #, python-format
 msgid "About %s"
 msgstr "Quant a l'%s"
 
-#: ../src/dialogs.py:344
+#: ../src/dialogs.py:383
 msgid "Hey!"
 msgstr "Ei!"
 
-#: ../src/dialogs.py:348
+#: ../src/dialogs.py:387
 msgid "Spritz Question"
 msgstr "Pregunta de Spritz"
 
-#: ../src/dialogs.py:362 ../src/misc.py:189 ../src/misc.py:244
+#: ../src/dialogs.py:401 ../src/misc.py:89 ../src/misc.py:144
 msgid "Attention"
 msgstr "Atenció"
 
-#: ../src/dialogs.py:415
+#: ../src/dialogs.py:454
 msgid "License"
 msgstr "Llicència"
 
 #. new
-#: ../src/dialogs.py:418
+#: ../src/dialogs.py:457
 msgid "Accepted"
 msgstr "Acceptat"
 
-#: ../src/gui.py:254
+#: ../src/gui.py:255
 msgid "Show Package Updates"
 msgstr "Mostra les actualitzacions de paquets"
 
-#: ../src/gui.py:255
+#: ../src/gui.py:256
 msgid "Show available Packages"
 msgstr "Mostra els paquets disponibles"
 
-#: ../src/gui.py:256
+#: ../src/gui.py:257
 msgid "Show Installed Packages"
 msgstr "Mostra els paquets instal·lats"
 
 #. Setup Vertical Toolbar
-#: ../src/gui.py:277 ../src/views.py:541
+#: ../src/gui.py:278 ../src/views.py:555
 msgid "Packages"
 msgstr "Paquets"
 
-#: ../src/gui.py:278
+#: ../src/gui.py:279
 msgid "Package Categories"
 msgstr "Categories de paquets"
 
-#: ../src/gui.py:279
+#: ../src/gui.py:280
 msgid "Package Queue"
 msgstr "Cua de paquets"
 
-#: ../src/gui.py:280
+#: ../src/gui.py:281
 msgid "Repository Selection"
 msgstr "Selecció de repositori"
 
-#: ../src/gui.py:281
+#: ../src/gui.py:282
 msgid "Configuration Files"
 msgstr "Fitxers de configuració"
 
-#: ../src/gui.py:282
+#: ../src/gui.py:283
 msgid "Output"
 msgstr "Sortida"
 
-#: ../src/misc.py:88
-msgid "Programming:"
-msgstr "Programació:"
-
-#: ../src/misc.py:91
-msgid "Yum Extender Programmers:"
-msgstr "Programadors de Yum Extender:"
-
-#: ../src/misc.py:94
-msgid "Translation:"
-msgstr "Traducció:"
-
-#: ../src/misc.py:115
-msgid "Dedicated to:"
-msgstr "Dedicat a :"
-
-#: ../src/misc.py:190
+#: ../src/misc.py:90
 msgid ""
 "There are packages that can't be installed at the same time, thus are "
 "blocking your request:"
 msgstr "Hi ha paquets que no es poden instal·lar al mateix temps. Alguns estan blocant la vostra sol·licitud:"
 
-#: ../src/misc.py:245
+#: ../src/misc.py:145
 msgid ""
 "Some dependencies couldn't be found. It can either be because they are "
 "masked or because they aren't in any active repository."
 msgstr "Hi ha algunes dependències que no s'han pogut trobar. Pot ser que estinguin enmascarades o que no es trobin a cap dels repositoris actius."
 
-#: ../src/misc.py:288
+#: ../src/misc.py:188
 msgid "Needed disk space"
 msgstr "Espai de disc necessari"
 
-#: ../src/misc.py:291
+#: ../src/misc.py:191
 msgid "Freed disk space"
 msgstr "Espai de disc alliberat "
 
-#: ../src/misc.py:295
+#: ../src/misc.py:195
 msgid "These are the packages that would be installed/updated"
 msgstr "Aquests són els paquets que s'instal·laran/actualitzaran "
 
-#: ../src/misc.py:338
+#: ../src/misc.py:238
 msgid "Freed space"
 msgstr "Espai alliberat"
 
-#: ../src/misc.py:341
+#: ../src/misc.py:241
 msgid "Needed space"
 msgstr "Espai necessari"
 
-#: ../src/misc.py:345
+#: ../src/misc.py:245
 msgid "These are the packages that would be removed"
-msgstr " Aquests paquets es suprimiran"
+msgstr "Aquests paquets es suprimiran"
 
 #: ../src/views.py:44
 msgid "Categories"
-msgstr "categories"
+msgstr "Categories"
 
-#: ../src/views.py:418 ../src/views.py:637
+#: ../src/views.py:419 ../src/views.py:651
 msgid "Rev."
 msgstr "Rev."
 
-#: ../src/views.py:419
+#: ../src/views.py:420
 msgid "Slot"
 msgstr "Slot"
 
-#: ../src/views.py:420 ../src/views.py:818
+#: ../src/views.py:421 ../src/views.py:832
 msgid "Repository"
 msgstr "Repositori"
 
-#: ../src/views.py:582
+#: ../src/views.py:596
 msgid "<b>Packages To Reinstall</b>"
 msgstr "<b>Paquets a instal·lar de nou</b>"
 
-#: ../src/views.py:586
+#: ../src/views.py:600
 msgid "<b>Packages To Update</b>"
 msgstr "<b>Paquets a actualitzar</b>"
 
-#: ../src/views.py:590
+#: ../src/views.py:604
 msgid "<b>Packages To Install</b>"
 msgstr "<b>Paquets a instal·lar</b>"
 
-#: ../src/views.py:594
+#: ../src/views.py:608
 msgid "<b>Packages To Remove</b>"
 msgstr "<b>Paquets a eliminar</b>"
 
-#: ../src/views.py:623
+#: ../src/views.py:637
 msgid "Proposed"
 msgstr "Proposats"
 
-#: ../src/views.py:630
+#: ../src/views.py:644
 msgid "Destination"
 msgstr "Destí"
 
-#: ../src/views.py:818
+#: ../src/views.py:832
 msgid "Filename"
 msgstr "Nom de fitxer"
 
-#: ../src/views.py:838 ../src/spritz.py:304
+#: ../src/views.py:852 ../src/spritz.py:305
 #, python-format
 msgid "You should press the %s button now"
 msgstr "És recomanable que premeu el botó %s"
 
-#: ../src/views.py:838 ../src/spritz.py:304 ../src/spritz.py:381
+#: ../src/views.py:852 ../src/spritz.py:305 ../src/spritz.py:382
 msgid "Regenerate Cache"
 msgstr "Regenera la memòria de cau"
 
-#: ../src/views.py:857
+#: ../src/views.py:871
 msgid "Active"
 msgstr "Actiu"
 
-#: ../src/views.py:867 ../src/spritz.glade.h:103
+#: ../src/views.py:881 ../src/spritz.glade.h:102
 msgid "Update"
 msgstr "Actualitza"
 
 #. Setup revision column
-#: ../src/views.py:875
+#: ../src/views.py:889
 msgid "Revision"
 msgstr "Revisió"
 
 #. Setup reponame & repofile column's
-#: ../src/views.py:878
+#: ../src/views.py:892
 msgid "Repository Identifier"
 msgstr "Identificador del repositori"
 
-#: ../src/spritz.py:82
+#: ../src/spritz.py:83
 msgid "Quiting, please wait !!!!!!"
 msgstr "S'està tancant, espereu si us plau !!!!!!"
 
-#: ../src/spritz.py:187
+#: ../src/spritz.py:188
 msgid "Branch switching"
 msgstr "Selector de branca"
 
-#: ../src/spritz.py:187
+#: ../src/spritz.py:188
 msgid "Enter a valid branch you want to switch to"
 msgstr "Introduïu la branca que voleu seleccionar"
 
-#: ../src/spritz.py:190
+#: ../src/spritz.py:191
 msgid "The selected branch is not available."
 msgstr "La branca seleccionada no està disponible."
 
-#: ../src/spritz.py:193
+#: ../src/spritz.py:194
 #, python-format
 msgid "New branch is %s. It is suggested to synchronize repositories."
 msgstr "La nova branca és %s. És recomanable que sincronitzeu els repositoris."
 
-#: ../src/spritz.py:236 ../src/spritz.py:258
+#: ../src/spritz.py:237 ../src/spritz.py:259
 msgid "Insert URL"
 msgstr "Inseriu l'adreça URL"
 
-#: ../src/spritz.py:236 ../src/spritz.py:258
+#: ../src/spritz.py:237 ../src/spritz.py:259
 msgid "Enter a download mirror, HTTP or FTP"
 msgstr "Introduïu una rèplica de descàrrega HTTP o FTP"
 
-#: ../src/spritz.py:241
+#: ../src/spritz.py:242
 msgid "You must enter either a HTTP or a FTP url."
 msgstr "Heu d'introduïr una adreça HTTP o FTP"
 
-#: ../src/spritz.py:293 ../src/spritz.py:340
+#: ../src/spritz.py:294 ../src/spritz.py:341
 #, python-format
 msgid "Wrong entries, errors: %s"
 msgstr "Entrades incorrectes, errors: %s"
 
-#: ../src/spritz.py:309
+#: ../src/spritz.py:310
 msgid "No Repository Identifier"
 msgstr "No hi ha identificador de repositori"
 
-#: ../src/spritz.py:312
+#: ../src/spritz.py:313
 msgid "Duplicated Repository Identifier"
 msgstr "Indentificador de repositori duplicat"
 
-#: ../src/spritz.py:316
+#: ../src/spritz.py:317
 msgid "No download mirrors"
 msgstr "No hi ha rèpliques de descarrega"
 
-#: ../src/spritz.py:318
+#: ../src/spritz.py:319
 msgid "Database URL must be HTTP or FTP"
 msgstr "L'adreça de la base de dades ha de ser HTTP o FTP"
 
-#: ../src/spritz.py:338
+#: ../src/spritz.py:339
 #, python-format
 msgid "You should now press the %s button now"
 msgstr "És recomanable que premeu ara el botó %s"
 
-#: ../src/spritz.py:338 ../src/spritz.py:381
+#: ../src/spritz.py:339 ../src/spritz.py:382
 msgid "Update Repositories"
-msgstr "Actualitza els repositoris"
+msgstr "A_ctualitza els repositoris"
 
-#: ../src/spritz.py:349
+#: ../src/spritz.py:350
 msgid "Insert Repository"
 msgstr "Insereix repositori"
 
-#: ../src/spritz.py:349
+#: ../src/spritz.py:350
 msgid "Insert Repository identification string"
 msgstr "Inseriu cadena d'identificació de repositori"
 
-#: ../src/spritz.py:367
+#: ../src/spritz.py:368
 msgid "This Repository identification string is malformed"
 msgstr "La cadena d'identificació del repositori éstà mal formada"
 
-#: ../src/spritz.py:377
+#: ../src/spritz.py:378
 msgid "You! Why do you want to remove the main repository ?"
 msgstr "Vós! Perquè voleu esborrar el repositori principal?"
 
-#: ../src/spritz.py:381
+#: ../src/spritz.py:382
 #, python-format
 msgid "You must now either press the %s or the %s button"
 msgstr "Heu de prémer el botó %s o el %s"
 
-#: ../src/spritz.py:446
+#: ../src/spritz.py:447
 msgid "Please select at least one repository"
 msgstr "Si us plau seleccioneu com a mínim un repositori"
 
 #. Check there are any packages in the queue
-#: ../src/spritz.py:475
+#: ../src/spritz.py:482
 msgid "No packages in queue"
 msgstr "No hi ha paquets a la cua"
 
-#: ../src/spritz.py:544
+#: ../src/spritz.py:551
 msgid "Queue is too old. Cannot load."
 msgstr "La cua és massa antiga. No s'ha pogut carregar."
 
 #. from installed
-#: ../src/spritz.py:575
+#: ../src/spritz.py:582
 msgid "From your Operating System"
 msgstr "Del vostre sistema operatiu"
 
-#: ../src/spritz.py:807
+#: ../src/spritz.py:814
 msgid "Cleaning up all yum metadata"
 msgstr "S'estan esborrant totes les metadades de yum"
 
 #. warn the user
-#: ../src/spritz.py:817
+#: ../src/spritz.py:824
 #, python-format
 msgid ""
 "<big><b>Sorry to tell you</b></big>\t\t\n"
@@ -421,164 +410,164 @@ msgstr ""
 "una altra instància de Entropy <b>s'està executant</b>. <u>Tanqueu-la</u> o <u>suprimiu</"
 "u>: %s"
 
-#: ../src/spritz.py:833
+#: ../src/spritz.py:840
 msgid "Entropy Config Setup"
 msgstr "Configura Entropy"
 
-#: ../src/spritz.py:844
+#: ../src/spritz.py:851
 msgid "GUI Setup Completed"
 msgstr "S'ha acabat la instal·lació GUI"
 
-#: ../src/spritz.py:860
+#: ../src/spritz.py:867
 msgid "License name"
 msgstr "Nom de la llicència"
 
-#: ../src/spritz.py:868
+#: ../src/spritz.py:875
 msgid "Sources"
 msgstr "Codis font"
 
-#: ../src/spritz.py:876
+#: ../src/spritz.py:883
 msgid "Mirrors"
 msgstr "Rèpliques"
 
-#: ../src/spritz.py:884
+#: ../src/spritz.py:891
 msgid "Keywords"
 msgstr "Paraules clau"
 
-#: ../src/spritz.py:892
+#: ../src/spritz.py:899
 msgid "Dependencies"
 msgstr "Dependències"
 
-#: ../src/spritz.py:900
+#: ../src/spritz.py:907
 msgid "Depends"
 msgstr "Depèn de"
 
-#: ../src/spritz.py:908
+#: ../src/spritz.py:915
 msgid "Needed libraries"
 msgstr "Llibreries necessàries"
 
-#: ../src/spritz.py:916
+#: ../src/spritz.py:923
 msgid "Protected item"
 msgstr "Element protegit"
 
-#: ../src/spritz.py:919 ../src/spritz.py:931
+#: ../src/spritz.py:926 ../src/spritz.py:938
 msgid "Type"
 msgstr "Tipus"
 
-#: ../src/spritz.py:927
+#: ../src/spritz.py:934
 msgid "File"
 msgstr "Fitxer"
 
-#: ../src/spritz.py:991
+#: ../src/spritz.py:998
 msgid "Generating metadata. Please wait."
 msgstr "S'estan generant metadades. Espereu si us plau."
 
-#: ../src/spritz.py:995 ../src/spritz.py:1117
+#: ../src/spritz.py:1002 ../src/spritz.py:1120
 msgid "Ready"
 msgstr "Preparat"
 
-#: ../src/spritz.py:1037
+#: ../src/spritz.py:1042
 msgid "Initializing Repository module..."
 msgstr "S'està inicialitzant el mòdul del repositori..."
 
-#: ../src/spritz.py:1043
+#: ../src/spritz.py:1048
 msgid "You must run this application as root"
-msgstr "Heu d'iniciar aquesta aplicació com a usuari primari"
+msgstr "Heu d'iniciar aquesta aplicació com a usuari root"
 
-#: ../src/spritz.py:1046
+#: ../src/spritz.py:1051 ../src/applet/etp_applet.py:548
 #, python-format
 msgid "No repositories specified in %s"
 msgstr "No hi ha repositoris especificats a %s"
 
-#: ../src/spritz.py:1049
+#: ../src/spritz.py:1054
 msgid "You are not connected to the Internet. You should."
 msgstr "No esteu connectat a Internet i ho haurieu d'estar."
 
-#: ../src/spritz.py:1052
+#: ../src/spritz.py:1057 ../src/applet/etp_applet.py:556
 #, python-format
 msgid "Unhandled exception: %s"
 msgstr "Excepció no suportada: %s"
 
-#: ../src/spritz.py:1056
+#: ../src/spritz.py:1061
 msgid "Errors updating repositories."
 msgstr "S'estan actualitzant els repositoris d'errors"
 
-#: ../src/spritz.py:1057
+#: ../src/spritz.py:1062
 msgid "Please check logs below for more info"
 msgstr "Si us plau comproveu els registres de baix per a més informació"
 
-#: ../src/spritz.py:1060
+#: ../src/spritz.py:1065
 msgid "Repositories updated successfully"
 msgstr "Els reporitoris s'han actualitzat correctament"
 
-#: ../src/spritz.py:1063
+#: ../src/spritz.py:1068
 msgid "All the repositories were already up to date."
 msgstr "Tots els repositoris ja estaven actualitzats."
 
-#: ../src/spritz.py:1065
+#: ../src/spritz.py:1070
 #, python-format
 msgid "%s repositories were already up to date. Others have been updated."
 msgstr "%s repositoris ja estaven actualitzats. La resta s'han actualitzat."
 
-#: ../src/spritz.py:1067
+#: ../src/spritz.py:1072
 msgid "app-admin/equo needs to be updated as soon as possible."
 msgstr "haurieu d'actualitzar app-admin/equo el més aviat possible."
 
-#: ../src/spritz.py:1074
+#: ../src/spritz.py:1077
 msgid "Nothing to do. I am idle."
-msgstr "No hi ha res a fer. Aquí mostro idle."
+msgstr "No hi ha res a fer. Aquí es mostra idle."
 
-#: ../src/spritz.py:1075
+#: ../src/spritz.py:1078
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr "No perdeu el temps aquí. Això només és un quadre de text variable"
 
-#: ../src/spritz.py:1076
+#: ../src/spritz.py:1079
 msgid "I am still alive and kickin'"
 msgstr "El programa respon correctament"
 
 #. -> Get lists
-#: ../src/spritz.py:1109
+#: ../src/spritz.py:1112
 msgid "Generating Metadata, please wait."
 msgstr "S'estan generant metadades, espereu si us plau."
 
-#: ../src/spritz.py:1110
+#: ../src/spritz.py:1113
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr "Entropy està indexant els repositoris. Això trigarà uns segons"
 
-#: ../src/spritz.py:1111
+#: ../src/spritz.py:1114
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr "Mentre espereu, descanseu i mireu a fora. Potser està emplujat?"
 
-#: ../src/spritz.py:1113
+#: ../src/spritz.py:1116
 #, python-format
 msgid "Calculating %s"
 msgstr "S'està calculant %s"
 
-#: ../src/spritz.py:1147
+#: ../src/spritz.py:1146
 msgid "Package View Population"
 msgstr "Visualitza la població de paquets"
 
-#: ../src/spritz.py:1159
+#: ../src/spritz.py:1154
 msgid "Package View Population Completed"
 msgstr "La visualització de la població de paquets ha acabat"
 
-#: ../src/spritz.py:1165
+#: ../src/spritz.py:1160
 msgid "Category View Population"
 msgstr "Categoria de visualització de paquets de població"
 
-#: ../src/spritz.py:1184
+#: ../src/spritz.py:1179
 msgid "Category View Population Completed"
 msgstr "La categoria de visualització de població s'ha acabat"
 
-#: ../src/spritz.py:1201
+#: ../src/spritz.py:1196
 msgid "Running tasks"
 msgstr "S'estan executant tasques"
 
-#: ../src/spritz.py:1208
+#: ../src/spritz.py:1203
 msgid "Processing Packages in queue"
 msgstr "S'estan processant els paquets de la cua"
 
-#: ../src/spritz.py:1218
+#: ../src/spritz.py:1213
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
@@ -586,17 +575,17 @@ msgstr ""
 "Atenció. S'ha poduit un error mentre es processava la cua.\n"
 "Si us plau, mireu la terminal de processos."
 
-#: ../src/spritz.py:1243
+#: ../src/spritz.py:1238
 msgid "No packages selected"
 msgstr "No hi ha paquets seleccionats"
 
-#: ../src/spritz.py:1327 ../src/spritz.glade.h:71
+#: ../src/spritz.py:1318 ../src/spritz.glade.h:70
 msgid "Error"
 msgstr "Error"
 
-#: ../src/spritz.py:1327
-msgid "Error in Yumex"
-msgstr "Error en el Yumex"
+#: ../src/spritz.py:1318
+msgid "Error in Spritz"
+msgstr "S'ha produït un error a Spritz"
 
 #: ../src/etpgui/callbacks.py:60
 msgid "Updating"
@@ -624,13 +613,252 @@ msgid "Erased"
 msgstr "Eliminat"
 
 #: ../src/etpgui/callbacks.py:68 ../src/etpgui/callbacks.py:69
-#: ../src/etpgui/callbacks.py:71 ../src/spritz.glade.h:76
+#: ../src/etpgui/callbacks.py:71 ../src/spritz.glade.h:75
 msgid "Installed"
 msgstr "Instal·lat"
 
 #: ../src/etpgui/callbacks.py:181
 msgid "No header - huh?"
 msgstr "Sense capçalera - ei?"
+
+#: ../src/applet/etp_applet_dialogs.py:39
+msgid "Package Name"
+msgstr "Nom del paquet"
+
+#: ../src/applet/etp_applet_dialogs.py:40
+msgid "Version Installed"
+msgstr "Versió instal·lada"
+
+#: ../src/applet/etp_applet_dialogs.py:41 ../src/spritz.glade.h:62
+msgid "Available"
+msgstr "Disponible"
+
+#: ../src/applet/etp_applet_dialogs.py:86
+msgid "Critical Information"
+msgstr "Informació crítica"
+
+#: ../src/applet/etp_applet_dialogs.py:221
+msgid ""
+"Red Hat Network provides an intelligent, proactive management service for "
+"your Red Hat Linux-based system.  Red Hat Network has the latest Red Hat "
+"information, updates, and services to make your systems more secure and "
+"reliable.  This application is designed to inform you when updates are "
+"available for your system, but does not save any personally identifiable "
+"information about you or your system to the Red Hat Network unless you "
+"choose to subscribe to Red Hat Network. Use of this applet by itself does "
+"not imply any agreement with Red Hat Network."
+msgstr "La xarxa Red Hat proporciona un sistema de gestió intel·ligent del vostre sistema basat en Red Hat Linux. La xarxa Red Had té les últimes informacions, actualitzacions i serveis per fer el vostre sistema més segur i fiable. Aquesta aplicació està especialment disenyada per informar-vos quan hi ha actualitzacions disponibles pel vostre sistema, però no desa cap dada vostra ni del vostre sistema que us pugui identificar personalment excepte que escolliu subscriure-us a la xarxa Red Had. L'ús d'aquesta miniaplicació no implica que estigueu d'acord amb la propia xarxa Red Hat."
+
+#: ../src/applet/etp_applet_dialogs.py:222
+msgid ""
+"Use of the up2date service, or use of this applet in conjunction with the "
+"up2date service, is governed by the Red Hat Network Services Use and "
+"Subscription Agreement, which may be reviewed at "
+msgstr "L'ús del servei d'actualitzacions, o l'ús d'aquesta aplicació conjuntament amb el servei d'actualitzacions implica l'acceptació de la subscripció de Red Had Network Services, que podeu veure a "
+
+#: ../src/applet/etp_applet_dialogs.py:224
+msgid "Red Hat Network's privacy policy may be reviewed at "
+msgstr "Podeu veure la política de privacitat de Red Had a "
+
+#: ../src/applet/etp_applet_dialogs.py:226
+msgid ""
+"If you do not wish to have this application appear on your panel, click the "
+"'Remove From Panel' button below.  Once removed, you can return it to your "
+"panel at any time by clicking on the Red Fedora in the bottom left of the "
+"desktop, choosing 'System Tools' and then choosing 'Red Hat Network Alert "
+"Icon.'\n"
+"            "
+msgstr ""
+"Si voleu que aquesta aplicació no es mostri en la barra de tasques, premeu el butó 'Elimina de la barra de tasques' a baix. Una vegada eliminat, podeu retornar-lo a la barra de tasques en qualsevol moment fent clic a Fedora, a la part inferior esquerra de l'escriptori, i escollint 'Eines del sistema' i després a la'icona d'alerta en xarxa de Red Hat.'\n"
+"            "
+
+#. #         file = pixmap_file('gnome-warning.png')
+#. #         if file:
+#. #             hbox.pack_start (GnomePixmap (file), gtk.FALSE)
+#: ../src/applet/etp_applet_dialogs.py:406
+msgid ""
+"An unhandled exception has occured.  This is most likely a bug.  Please copy "
+"the full text of this exception into an email and send it to applet@rhn."
+"redhat.com.  Thank you."
+msgstr "S'ha produït una excepció no suportada. Això és molt probablement un error de programació. copieu el text sencer d'aquesta excepció en un email i envieu-lo a applet@rhn.redhat.com, si us plau. Gràcies."
+
+#: ../src/applet/etp_applet.py:63
+msgid "Updates Notification"
+msgstr "Notificació d'actualització"
+
+#: ../src/applet/etp_applet.py:208
+msgid "_Check for updates"
+msgstr "_Cerca actualitzacions"
+
+#: ../src/applet/etp_applet.py:208
+msgid "Check for updates"
+msgstr "Busca actualitzacions"
+
+#: ../src/applet/etp_applet.py:209
+msgid "_Launch Package Manager"
+msgstr "Executa e_l gestor de paquets"
+
+#: ../src/applet/etp_applet.py:209
+msgid "Launch Package Manager"
+msgstr "Executa el gestor de paquets"
+
+#. ("configure_applet", _("C_onfiguration"), _("Configuration"), self.run_first_time_druid),
+#: ../src/applet/etp_applet.py:211
+msgid "_Packages Website"
+msgstr "Web de _paquets"
+
+#: ../src/applet/etp_applet.py:211
+msgid "Use Packages web interface"
+msgstr "Usa la interfície web de paquets"
+
+#: ../src/applet/etp_applet.py:212
+msgid "_Sabayon Linux Website"
+msgstr "_Web de Sabayon Linux"
+
+#: ../src/applet/etp_applet.py:212
+msgid "Launch Sabayon Linux Website"
+msgstr "Executa la pàgina web de _Sabayon Linux"
+
+#: ../src/applet/etp_applet.py:214
+msgid "_About"
+msgstr "_Quant a"
+
+#: ../src/applet/etp_applet.py:214
+msgid "About..."
+msgstr "Quant a..."
+
+#: ../src/applet/etp_applet.py:215
+msgid "_Exit"
+msgstr "Sortir"
+
+#: ../src/applet/etp_applet.py:215
+msgid "Exit"
+msgstr "Sortir"
+
+#: ../src/applet/etp_applet.py:271
+msgid "Waiting until first checkin..."
+msgstr "Esperant mentre s'executa la primera comprovació..."
+
+#: ../src/applet/etp_applet.py:464
+msgid "execv didn't execv?"
+msgstr "execv didn't execv?"
+
+#: ../src/applet/etp_applet.py:531
+msgid "Checking for updates..."
+msgstr "Comprovant actualitzacions..."
+
+#: ../src/applet/etp_applet.py:551
+msgid "Repository Network Error"
+msgstr "Error a la xarxa de repositoris"
+
+#: ../src/applet/etp_applet.py:566
+msgid "No repositories specified. Cannot check for package updates."
+msgstr "No s'han especificat repositoris. No es poden comprovar les actualitzacions de paquets."
+
+#: ../src/applet/etp_applet.py:567
+msgid "Updates: attention"
+msgstr "Actualitzacions: atenció"
+
+#: ../src/applet/etp_applet.py:571
+msgid ""
+"Cannot connect to the Updates Service, you're probably not connected to the "
+"world."
+msgstr "No s'ha pogut connectar amb el servei d'actualitzacions, provablement no esteu connectats a la xarxa."
+
+#: ../src/applet/etp_applet.py:572 ../src/applet/etp_applet.py:597
+msgid "Updates: connection issues"
+msgstr "Actualitzacions: problema de connexió"
+
+#: ../src/applet/etp_applet.py:576
+msgid "Not all the repositories have been fetched for checking"
+msgstr "No s'han pogut recollir tots els repositoris per comprovar"
+
+#: ../src/applet/etp_applet.py:577 ../src/applet/etp_applet.py:582
+msgid "Updates: repository issues"
+msgstr "Actualitzacions: problemes als repositoris"
+
+#: ../src/applet/etp_applet.py:581
+msgid "No repositories found online"
+msgstr "No s'han trobat repositoris en línia"
+
+#: ../src/applet/etp_applet.py:586
+msgid "Synchronization errors. Cannot update repositories. Check logs."
+msgstr "Error de sincronització. No shan pogut actualitzar els repositoris. Comproveu els registres."
+
+#: ../src/applet/etp_applet.py:587
+msgid "Updates: sync issues"
+msgstr "Actualitzacions: problemes de sincronització"
+
+#: ../src/applet/etp_applet.py:591
+msgid "Updates: unhandled error"
+msgstr "Actualitzacions: error no suportat"
+
+#: ../src/applet/etp_applet.py:608
+#, python-format
+msgid "Updates: exception %s"
+msgstr "Actualitzacions: excepció %s"
+
+#: ../src/applet/etp_applet.py:615
+#, python-format
+msgid "Updates: issue: %s"
+msgstr "Actualitzacions: problema %s"
+
+#: ../src/applet/etp_applet.py:630 ../src/applet/etp_applet.py:632
+#, python-format
+msgid "There are %d updates available."
+msgstr "Hi ha %d actualitzacions disponibles."
+
+#: ../src/applet/etp_applet.py:631
+msgid "Updates available"
+msgstr "Actualitzacions disponibles"
+
+#: ../src/applet/etp_applet.py:640 ../src/applet/etp_applet.py:642
+msgid "So far, so good. w00t!"
+msgstr "Tot és correcte :-)"
+
+#: ../src/applet/etp_applet.py:641
+msgid "Everything up-to-date"
+msgstr "El sistema està actualitzat"
+
+#: ../src/applet/etp_applet.py:734
+msgid "Waiting before checkin..."
+msgstr "Esperant per fer comprovacions..."
+
+#: ../src/applet/etp_applet.py:795
+msgid "Not installed"
+msgstr "No instal·lat"
+
+#: ../src/applet/etp_applet.py:815
+#, python-format
+msgid ""
+"\n"
+"Your system currently has sys-apps/entropy <b>%s</b> installed, but the "
+"latest\n"
+"available version is <b>%s</b>.  It is recommended that you <b>upgrade\n"
+"to the latest</b> before updating any other packages.\n"
+msgstr ""
+"\n"
+"El sistema té sys-apps/entropy <b>%s</b> instal·lat, però la última\n"
+"versió disponible és <b>%s</b>. és recomanable que <b>actualitzeu\n"
+"a l'última versió </b> abans d'actualitzar altres paquets.\n"
+
+#: ../src/applet/etp_applet.glade.h:1
+msgid ""
+"<b>Attention</b>: if you load the Package Manager, remember to synchronize "
+"all the Repositories"
+msgstr "<b>Atenció</b>: recordeu sinconitzar els repositoris si executeu el gestor de paquets"
+
+#: ../src/applet/etp_applet.glade.h:2
+msgid "Available Updates"
+msgstr "Actualitzacions disponibles"
+
+#: ../src/applet/etp_applet.glade.h:3
+msgid "Package Manager Notification Window"
+msgstr "Finestra de notificació del gestor de paquets"
+
+#: ../src/applet/etp_applet.glade.h:4
+msgid "_Load Package Manager"
+msgstr "Executa el gestor de _paquets"
 
 #: ../src/spritz.glade.h:1
 msgid " "
@@ -686,7 +914,7 @@ msgstr "<b>CHOST</b>"
 
 #: ../src/spritz.glade.h:14
 msgid "<b>CONFIG_PROTECT Stuff</b>"
-msgstr "<b>CONFIG_PROTECT Stuff</b>"
+msgstr "<b>Matèria CONFIG_PROTECT</b>"
 
 #: ../src/spritz.glade.h:15
 msgid "<b>CXXFLAGS</b>"
@@ -741,294 +969,286 @@ msgid "<b>Package Size</b>"
 msgstr "<b>Tamany del paquet</b>"
 
 #: ../src/spritz.glade.h:28
-msgid "<b>Quick add to queue</b>"
-msgstr "<b>Afegeix ràpid a la cua</b>"
-
-#: ../src/spritz.glade.h:29
 msgid "<b>Repositories options</b>"
 msgstr "<b>Opcions de repositori</b>"
 
-#: ../src/spritz.glade.h:30
+#: ../src/spritz.glade.h:29
 msgid "<b>Requested actions</b>"
 msgstr "<b>Accions sol·licitades</b>"
 
-#: ../src/spritz.glade.h:31
+#: ../src/spritz.glade.h:30
 msgid "<b>Revision</b>"
 msgstr "<b>Revisió</b>"
 
-#: ../src/spritz.glade.h:32
+#: ../src/spritz.glade.h:31
 msgid "<b>SUBACTION</b>\n"
 msgstr "<b>SUBACTION</b>\n"
 
-#: ../src/spritz.glade.h:34
+#: ../src/spritz.glade.h:33
 msgid "<b>Slot</b>"
 msgstr "<b>Slot</b>"
 
-#: ../src/spritz.glade.h:35
+#: ../src/spritz.glade.h:34
 msgid "<b>Total Download Size</b>"
 msgstr "<b>Tamany total de baixada</b>"
 
-#: ../src/spritz.glade.h:36
+#: ../src/spritz.glade.h:35
 msgid "<b>USE Flags</b>"
 msgstr "<b>USE Flags</b>"
 
-#: ../src/spritz.glade.h:37
+#: ../src/spritz.glade.h:36
 msgid "<b>Version</b>"
 msgstr "<b>Versió</b>"
 
-#: ../src/spritz.glade.h:38
+#: ../src/spritz.glade.h:37
 msgid "<b>Website</b>"
 msgstr "<b>Lloc Web</b>"
 
-#: ../src/spritz.glade.h:39
+#: ../src/spritz.glade.h:38
 msgid "<big><b>media-libs/foo-1.2.3</b></big>"
 msgstr "<big><b>media-libs/foo-1.2.3</b></big>"
 
-#: ../src/spritz.glade.h:40
+#: ../src/spritz.glade.h:39
 msgid "<small>0</small>"
 msgstr "<small>0</small>"
 
-#: ../src/spritz.glade.h:41
+#: ../src/spritz.glade.h:40
 msgid "<small>1.0MB</small>"
 msgstr "<small>1.0MB</small>"
 
-#: ../src/spritz.glade.h:42
+#: ../src/spritz.glade.h:41
 msgid "<small>1.2.3</small>"
 msgstr "<small>1.2.3</small>"
 
-#: ../src/spritz.glade.h:43
+#: ../src/spritz.glade.h:42
 msgid "<small>123123123123123123123</small>"
 msgstr "<small>123123123123123123123</small>"
 
-#: ../src/spritz.glade.h:44
+#: ../src/spritz.glade.h:43
 msgid "<small>2</small>"
 msgstr "<small>2</small>"
 
-#: ../src/spritz.glade.h:45
+#: ../src/spritz.glade.h:44
 msgid "<small>3.5</small>"
 msgstr "<small>3.5</small>"
 
-#: ../src/spritz.glade.h:46
+#: ../src/spritz.glade.h:45
 msgid "<small>3.5MB</small>"
 msgstr "<small>3.5MB</small>"
 
-#: ../src/spritz.glade.h:47
+#: ../src/spritz.glade.h:46
 msgid "<small>None</small>"
 msgstr "<small>Cap</small>"
 
-#: ../src/spritz.glade.h:48
+#: ../src/spritz.glade.h:47
 msgid "<small>Official Sabayon Linux Repository</small>"
 msgstr "<small>Official Sabayon Linux Repository</small>"
 
-#: ../src/spritz.glade.h:49
+#: ../src/spritz.glade.h:48
 msgid "<small>This is a description placeholder</small>"
 msgstr "<small>Això és un quadre de text variable de descripció</small>"
 
-#: ../src/spritz.glade.h:50
+#: ../src/spritz.glade.h:49
 msgid "<small>Today, yesterday, who knows</small>"
 msgstr "<small>Avui, ahir, qui sap</small>"
 
-#: ../src/spritz.glade.h:51
+#: ../src/spritz.glade.h:50
 msgid "<small>http://www.sabayonlinux.org</small>"
 msgstr "<small>http://www.sabayonlinux.org</small>"
 
-#: ../src/spritz.glade.h:52
+#: ../src/spritz.glade.h:51
 msgid "<small>path/to/download/blah.tbz2</small>"
 msgstr "<small>path/to/download/blah.tbz2</small>"
 
-#: ../src/spritz.glade.h:53
+#: ../src/spritz.glade.h:52
 msgid "<small>why?</small>"
 msgstr "<small>perquè?</small>"
 
-#: ../src/spritz.glade.h:54
+#: ../src/spritz.glade.h:53
 msgid "<small>you me they</small>"
 msgstr "<small>vós jo ells</small>"
 
-#: ../src/spritz.glade.h:55
+#: ../src/spritz.glade.h:54
 msgid "<span size=\"large\"><b>Action</b></span>\n"
 msgstr "<span size=\"large\"><b>Action</b></span>\n"
 
-#: ../src/spritz.glade.h:57
+#: ../src/spritz.glade.h:56
 msgid "<span size=\"xx-large\" color=\"black\">Files Update</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">Actualitza fitxers</span>"
 
-#: ../src/spritz.glade.h:58
+#: ../src/spritz.glade.h:57
 msgid "<span size=\"xx-large\" color=\"black\">Package Categories</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">Categories de paquet</span>"
 
-#: ../src/spritz.glade.h:59
+#: ../src/spritz.glade.h:58
 msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">Cua de paquets</span>"
 
-#: ../src/spritz.glade.h:60
+#: ../src/spritz.glade.h:59
 msgid "<span size=\"xx-large\" color=\"black\">Repositories</span>"
 msgstr "<span size=\"xx-large\" color=\"black\">Repositoris</span>"
 
-#: ../src/spritz.glade.h:61
+#: ../src/spritz.glade.h:60
 msgid "Add/Edit Repository"
 msgstr "Afegeix/Edita repositori"
 
-#: ../src/spritz.glade.h:62
+#: ../src/spritz.glade.h:61
 msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
 msgstr "S'està afegint un<b>nou repositori</b>permetrà accedir a<b>nou programari</b>"
 
 #: ../src/spritz.glade.h:63
-msgid "Available"
-msgstr "Disponible"
-
-#: ../src/spritz.glade.h:64
 msgid "C_hanges"
 msgstr "C_anvis"
 
-#: ../src/spritz.glade.h:65
+#: ../src/spritz.glade.h:64
 msgid "D_ependencies"
 msgstr "D_ependències"
 
-#: ../src/spritz.glade.h:66
+#: ../src/spritz.glade.h:65
 msgid "Database URL"
 msgstr "URL de la base de dades"
 
-#: ../src/spritz.glade.h:67
+#: ../src/spritz.glade.h:66
 msgid "Database compression"
 msgstr "Compressió de la base de dades"
 
-#: ../src/spritz.glade.h:68
+#: ../src/spritz.glade.h:67
 msgid "Dele_te all"
 msgstr "Esborra-ho _tot"
 
-#: ../src/spritz.glade.h:70
+#: ../src/spritz.glade.h:69
 msgid "Download mirrors"
 msgstr "Rèpliques de baixada"
 
-#: ../src/spritz.glade.h:72
+#: ../src/spritz.glade.h:71
 msgid "Extra"
 msgstr "Extra"
 
-#: ../src/spritz.glade.h:73
+#: ../src/spritz.glade.h:72
 msgid "Identifier"
 msgstr "Identificador"
 
-#: ../src/spritz.glade.h:74
+#: ../src/spritz.glade.h:73
 msgid "Install"
-msgstr "Instal·lació"
+msgstr "Instal·la"
 
-#: ../src/spritz.glade.h:75
+#: ../src/spritz.glade.h:74
 msgid "Install the selected package"
 msgstr "Instal·la el paquet seleccionat"
 
-#: ../src/spritz.glade.h:77
+#: ../src/spritz.glade.h:76
 msgid "Load content"
 msgstr "Mostra el contingut"
 
-#: ../src/spritz.glade.h:78
+#: ../src/spritz.glade.h:77
 msgid "M_erge"
-msgstr "Combina"
+msgstr "C_ombina"
+
+#: ../src/spritz.glade.h:78
+msgid "Merge all"
+msgstr "_Combina-ho tot"
 
 #: ../src/spritz.glade.h:79
-msgid "Merge all"
-msgstr "Combina-ho tot"
-
-#: ../src/spritz.glade.h:80
 msgid "Package Info."
 msgstr "Informació del paquet"
 
-#: ../src/spritz.glade.h:81
+#: ../src/spritz.glade.h:80
 msgid "Package Information"
 msgstr "Informació del paquet"
 
-#: ../src/spritz.glade.h:82
+#: ../src/spritz.glade.h:81
 msgid "Please Confirm"
 msgstr "Confirmeu si us plau"
 
-#: ../src/spritz.glade.h:83
+#: ../src/spritz.glade.h:82
 msgid "Purge"
 msgstr "Purga"
 
-#: ../src/spritz.glade.h:84
+#: ../src/spritz.glade.h:83
 msgid "R_egenerate Cache"
 msgstr "R_egenera la memòria cau"
 
-#: ../src/spritz.glade.h:85
+#: ../src/spritz.glade.h:84
 msgid "Reinstall"
 msgstr "Instal·la de nou"
 
-#: ../src/spritz.glade.h:86
+#: ../src/spritz.glade.h:85
 msgid "Reinstall the selected package"
 msgstr "Instal·la de nou els paquets selecionats"
 
-#: ../src/spritz.glade.h:87
+#: ../src/spritz.glade.h:86
 msgid "Remove"
 msgstr "Elimina"
 
-#: ../src/spritz.glade.h:88
+#: ../src/spritz.glade.h:87
 msgid "Remove the selected package"
 msgstr "Elimina els paquets seleccionats"
 
-#: ../src/spritz.glade.h:89
+#: ../src/spritz.glade.h:88
 msgid "Remove the selected package and its configuration"
 msgstr "Elimina els paquets seleccionats i la seva configuració"
 
-#: ../src/spritz.glade.h:90
+#: ../src/spritz.glade.h:89
 msgid "Repository information"
 msgstr "Informació del repositori"
 
-#: ../src/spritz.glade.h:91
+#: ../src/spritz.glade.h:90
 msgid "Soon!"
 msgstr "Aviat!"
 
-#: ../src/spritz.glade.h:92
+#: ../src/spritz.glade.h:91
 msgid "Spritz Package Manager"
 msgstr "Spritz - Gestor de paquets"
 
-#: ../src/spritz.glade.h:93
+#: ../src/spritz.glade.h:92
 msgid "Undo Install"
 msgstr "Desfés la instal·lació"
 
-#: ../src/spritz.glade.h:94
+#: ../src/spritz.glade.h:93
 msgid "Undo Install action"
 msgstr "Desfés l'acció d'instal·lar"
 
-#: ../src/spritz.glade.h:95
+#: ../src/spritz.glade.h:94
 msgid "Undo Purge"
 msgstr "Desfés purga"
 
-#: ../src/spritz.glade.h:96
+#: ../src/spritz.glade.h:95
 msgid "Undo Purge action"
 msgstr "Desfés l'acció de purgar"
 
-#: ../src/spritz.glade.h:97
+#: ../src/spritz.glade.h:96
 msgid "Undo Reinstall"
 msgstr "Desfés la reinstal·lació"
 
-#: ../src/spritz.glade.h:98
+#: ../src/spritz.glade.h:97
 msgid "Undo Reinstall action"
 msgstr "Desfés l'acció de reinstal·lar"
 
-#: ../src/spritz.glade.h:99
+#: ../src/spritz.glade.h:98
 msgid "Undo Remove"
 msgstr "Desfés eliminar"
 
-#: ../src/spritz.glade.h:100
+#: ../src/spritz.glade.h:99
 msgid "Undo Remove action"
 msgstr "Desfés l'acció d'eliminar"
 
-#: ../src/spritz.glade.h:101
+#: ../src/spritz.glade.h:100
 msgid "Undo Update"
 msgstr "Desfés actualitza"
 
-#: ../src/spritz.glade.h:102
+#: ../src/spritz.glade.h:101
 msgid "Undo Update action"
 msgstr "Desfés l'acció d'actualitzar"
 
-#: ../src/spritz.glade.h:104
+#: ../src/spritz.glade.h:103
 msgid "Update the selected package"
 msgstr "Actualitza els paquets selecionats"
 
-#: ../src/spritz.glade.h:105
+#: ../src/spritz.glade.h:104
 msgid "Updates"
 msgstr "Actualitzacions"
 
-#: ../src/spritz.glade.h:106
+#: ../src/spritz.glade.h:105
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
@@ -1036,91 +1256,91 @@ msgstr ""
 "Heu <b>d'acceptar</b> les llicències de baix.\n"
 "Si us plau, llegiu-les amb tenció i <b>escolliu una opció</b>."
 
-#: ../src/spritz.glade.h:108
+#: ../src/spritz.glade.h:107
 msgid "_Accept License"
 msgstr "_Accepta la llicència"
 
-#: ../src/spritz.glade.h:109
+#: ../src/spritz.glade.h:108
 msgid "_Add All"
 msgstr "_Afegeix-los tots"
 
-#: ../src/spritz.glade.h:110
+#: ../src/spritz.glade.h:109
 msgid "_Branch ..."
 msgstr "_Branca..."
 
-#: ../src/spritz.glade.h:111
+#: ../src/spritz.glade.h:110
 msgid "_Details"
 msgstr "_Detalls"
 
-#: ../src/spritz.glade.h:112
+#: ../src/spritz.glade.h:111
 msgid "_File"
 msgstr "_Fitxer"
 
-#: ../src/spritz.glade.h:113
+#: ../src/spritz.glade.h:112
 msgid "_Force repositories update"
 msgstr "_Força l'actualització dels repositioris"
 
-#: ../src/spritz.glade.h:114
+#: ../src/spritz.glade.h:113
 msgid "_Help"
 msgstr "Ajuda"
 
-#: ../src/spritz.glade.h:115
+#: ../src/spritz.glade.h:114
 msgid "_Insert String"
 msgstr "_Insereix cadena"
 
-#: ../src/spritz.glade.h:116
+#: ../src/spritz.glade.h:115
 msgid "_Other"
-msgstr "Altres"
+msgstr "_Altres"
+
+#: ../src/spritz.glade.h:116
+msgid "_Overview"
+msgstr "Resu_m"
 
 #: ../src/spritz.glade.h:117
-msgid "_Overview"
-msgstr "Resum"
-
-#: ../src/spritz.glade.h:118
 msgid "_Process Queue"
 msgstr "_Processa la cua"
 
-#: ../src/spritz.glade.h:119
+#: ../src/spritz.glade.h:118
 msgid "_Read License"
 msgstr "Llegi_r la llicència"
 
-#: ../src/spritz.glade.h:120
+#: ../src/spritz.glade.h:119
 msgid "_References"
 msgstr "_Referències"
 
-#: ../src/spritz.glade.h:121
+#: ../src/spritz.glade.h:120
 msgid "_Remove All"
 msgstr "Sup_rimeix-los tots"
 
-#: ../src/spritz.glade.h:122
+#: ../src/spritz.glade.h:121
 msgid "_Skip"
 msgstr "Omet"
 
-#: ../src/spritz.glade.h:123
+#: ../src/spritz.glade.h:122
 msgid "_Update Repositories"
 msgstr "Actualitza els repositoris"
 
-#: ../src/spritz.glade.h:124
+#: ../src/spritz.glade.h:123
 msgid "_Your Ego!"
-msgstr "El vostre Ego!"
+msgstr "El _vostre Ego!"
 
-#: ../src/spritz.glade.h:125
+#: ../src/spritz.glade.h:124
 msgid "dialog1"
 msgstr "dialog1"
 
-#: ../src/spritz.glade.h:126
+#: ../src/spritz.glade.h:125
 msgid "gtk-close"
-msgstr "gtk-tanca"
+msgstr "gtk-close"
+
+#: ../src/spritz.glade.h:126
+msgid "gtk-ok"
+msgstr "gtk-ok"
 
 #: ../src/spritz.glade.h:127
-msgid "gtk-ok"
-msgstr "gtk-d'acord"
+msgid "gtk-stop"
+msgstr "gtk-stop"
 
 #: ../src/spritz.glade.h:128
-msgid "gtk-stop"
-msgstr "gtk-atura"
-
-#: ../src/spritz.glade.h:129
 msgid "please wait"
 msgstr "Espereu si us plau"
 
