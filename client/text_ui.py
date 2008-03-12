@@ -846,6 +846,8 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             rc = Equo.askQuestion(question)
             if rc == "Yes":
                 doSelectiveRemoval = True
+            else:
+                return 0,0
         elif (deps):
             Equo.entropyTools.countdown(what = red(" @@ ")+blue("Starting removal in "),back = True)
 
