@@ -2235,6 +2235,11 @@ def collectLinkerPaths():
         f.close()
     except:
         pass
+
+    # can happen that /lib /usr/lib are not in LDPATH
+    ldpaths.add("/lib")
+    ldpaths.add("/usr/lib")
+
     linkerPaths.clear()
     linkerPaths.update(ldpaths)
     return ldpaths
