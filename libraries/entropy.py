@@ -6559,7 +6559,8 @@ timeout=10
                     new_conf.append(line)
 
             f = open(etpConst['systemroot']+"/boot/grub/grub.conf","w")
-            f.writelines(new_conf)
+            for line in new_conf:
+                f.write(line)
             f.flush()
             f.close()
 
@@ -6611,8 +6612,15 @@ timeout=10
             # get disk
             match = re.subn("[0-9]","",gboot)
             gdisk = match[0]
+            if gdisk == '':
+                self.Entropy.updateProgress(
+                                        bold(" QA Warning: ") + brown("cannot match %s device with a GRUB one!! Cannot properly configure kernel! Defaulting to (hd0,0)") % (gboot,),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
+                return "(hd0,0)"
             match = re.subn("[a-z/]","",gboot)
-            gpartnum = str(int(match[0])-1)
+            gpartnum = str(int(gdisk)-1)
             # now match with grub
             device_map = etpConst['packagestmpdir']+"/grub.map"
             if os.path.isfile(device_map):
