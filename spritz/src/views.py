@@ -636,14 +636,14 @@ class EntropyFilesView:
         cell1 = gtk.CellRendererText()
         column1 = gtk.TreeViewColumn( _( "Proposed" ), cell1, markup = 1 )
         column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column1.set_fixed_width( 250 )
+        column1.set_fixed_width( 200 )
         column1.set_resizable( True )
         self.view.append_column( column1 )
 
         cell2 = gtk.CellRendererText()
         column2 = gtk.TreeViewColumn( _( "Destination" ), cell2, markup = 2 )
         column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column2.set_fixed_width( 300 )
+        column2.set_fixed_width( 200 )
         column2.set_resizable( True )
         self.view.append_column( column2 )
 
