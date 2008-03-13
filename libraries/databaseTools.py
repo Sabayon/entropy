@@ -586,6 +586,9 @@ class etpDatabase:
             for iddep in iddeps:
                 # update string
                 mydep = self.retrieveDependencyFromIddependency(iddep)
+                mydep_key = entropyTools.dep_getkey(mydep)
+                if mydep_key != key_from: # avoid changing wrong atoms -> dev-python/qscintilla-python would
+                    continue              # become x11-libs/qscintilla if we don't do this check
                 mydep = mydep.replace(key_from,key_to)
 
                 # now update

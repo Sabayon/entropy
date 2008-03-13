@@ -252,7 +252,10 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                             masked_packages = reasons[key]
                             for m_match in masked_packages:
                                 dbconn = Equo.openRepositoryDatabase(m_match[1])
-                                m_atom = dbconn.retrieveAtom(m_match[0])
+                                try:
+                                    m_atom = dbconn.retrieveAtom(m_match[0])
+                                except TypeError:
+                                    m_atom = "idpackage: %s matching %s is broken" % (m_match[0],package,)
                                 print_warning(blue("      <> ")+red("atom: ")+brown(m_atom))
                     else:
                         print_warning(bold("!!!")+red(" No match for ")+bold(package)+red(" in database. If you omitted the category, try adding it."))
