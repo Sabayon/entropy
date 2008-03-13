@@ -6620,7 +6620,7 @@ timeout=10
                                     )
                 return "(hd0,0)"
             match = re.subn("[a-z/]","",gboot)
-            gpartnum = str(int(gdisk)-1)
+            gpartnum = str(int(match[0])-1)
             # now match with grub
             device_map = etpConst['packagestmpdir']+"/grub.map"
             if os.path.isfile(device_map):
