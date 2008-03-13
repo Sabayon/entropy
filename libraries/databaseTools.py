@@ -3476,8 +3476,8 @@ class etpDatabase:
         self.cursor.execute('CREATE TABLE packed_data ( idpack INTEGER PRIMARY KEY, data BLOB );')
 
     def createAllIndexes(self):
-        if not self.dbname.startswith(etpConst['dbnamerepoprefix']):
-            self.createContentIndex()
+        #if not self.dbname.startswith(etpConst['dbnamerepoprefix']):
+        self.createContentIndex()
         self.createBaseinfoIndex()
         self.createKeywordsIndex()
         self.createDependenciesIndex()
