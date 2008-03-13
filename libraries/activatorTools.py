@@ -71,9 +71,7 @@ def sync(options, justTidy = False):
                 if rc == "No":
                     sys.exit(0)
 
-    print_info(green(" * ")+red("Starting to collect packages that would be removed from the repository ..."), back = True)
-
-
+    print_info(green(" * ")+red("Starting to collect packages that would be removed from the repository ..."))
     for mybranch in etpConst['branches']:
 
         print_info(red(" * ")+blue("Switching to branch: ")+bold(mybranch))
@@ -448,6 +446,10 @@ def packages(options):
                     if (etpUi['pretend']):
                         continue
                     if (not removalQueueLength and not downloadQueueLength and not uploadQueueLength):
+                        print_info(green(" * ")+red("Nothing to syncronize for ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)+red(". Queue empty.")))
+                        uriSuccessfulSync += 1
+                        if (uriSuccessfulSync == len(pkgbranches)):
+                            totalSuccessfulUri += 1
                         continue
                     if (etpUi['ask']):
                         rc = Entropy.askQuestion("\n     Would you like to run the steps above ?")
@@ -671,7 +673,9 @@ def packages(options):
 
 
         # if at least one server has been synced successfully, move files
-        if (totalSuccessfulUri > 0) and (not etpUi['pretend']):
+        if (totalSuccessfulUri > 0):
+            if not etpUi['pretend']:
+                return False
             activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"packages: all done. Now it's time to move packages to "+etpConst['packagesbindir'])
             pkgbranches = os.listdir(etpConst['packagessuploaddir'])
             pkgbranches = [x for x in pkgbranches if os.path.isdir(etpConst['packagessuploaddir']+"/"+x)]
@@ -694,6 +698,8 @@ def packages(options):
         if (activatorRequestPackagesCheck):
             import reagentTools
             reagentTools.database(['md5check'])
+
+        return False
 
 
 def database(options):
