@@ -581,7 +581,7 @@ class SpritzController(Controller):
         self.pkginfo_ui.vote5.set_from_file(heart_pixmap)
 
         self.pkgProperties_selected = pkg
-        self.pkginfo_ui.labelAtom.set_markup("<b><big>%s</big></b>" % (pkg.name,))
+        self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (pkg.name,))
         self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (pkg.description,))
 
         dbconn = self.Entropy.clientDbconn
