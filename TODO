@@ -5,6 +5,7 @@ TODO list:
   - make an ETP_DIR switching function
   - lilo.conf trigger?
   - equo: "you meant...?" feature
+  - add i18n support
   - calculate extra deps from NEEDED, server side?
   - split RDEPEND and PDEPEND ( + && and || )
   - log messages from portage doebuild() calls
@@ -23,7 +24,8 @@ TODO list:
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - fix reinstall for tagged packages
+    - improve notification applet
+    - make the properties menu fit in a 640x480 display
     - interface bug reporting interface (ahah)
     - handle entropy exceptions
     - add masking menu

@@ -67,9 +67,11 @@ class EntropyPackages:
 
     def clearPackages(self):
         self._packages.clear()
+        self.selected_treeview_item = None
 
     def clearCache(self):
         self.pkgCache.clear()
+        self.selected_treeview_item = None
 
     def populatePackages(self,masks):
         for flt in masks:
