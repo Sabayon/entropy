@@ -722,8 +722,12 @@ class EquoInterface(TextInterface):
         matched = None
         if match[0] != -1:
             myatom = self.clientDbconn.retrieveAtom(match[0])
+            mytag = self.entropyTools.dep_gettag(myatom)
+            myatom = self.entropyTools.remove_tag(myatom)
             myrev = self.clientDbconn.retrieveRevision(match[0])
             pkg_match = "="+myatom+"~"+str(myrev)
+            if mytag != None:
+                pkg_match += "#%s" % (mytag,)
             pkg_unsatisfied,x = self.filterSatisfiedDependencies([pkg_match], deep_deps = deep)
             del x
             if pkg_unsatisfied:
