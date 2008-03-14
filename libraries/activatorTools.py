@@ -674,7 +674,7 @@ def packages(options):
 
         # if at least one server has been synced successfully, move files
         if (totalSuccessfulUri > 0):
-            if not etpUi['pretend']:
+            if etpUi['pretend']:
                 return False
             activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"packages: all done. Now it's time to move packages to "+etpConst['packagesbindir'])
             pkgbranches = os.listdir(etpConst['packagessuploaddir'])
