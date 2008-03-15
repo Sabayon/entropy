@@ -693,7 +693,7 @@ def searchPackage(packages, idreturn = False):
         return dataInfo
     return 0
 
-def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = False, showRepo = False):
+def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = False, showRepo = False, showDesc = False):
 
     global Equo
     if Equo == None:
@@ -724,7 +724,7 @@ def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = Fal
                     dataInfo.add(tuple(match))
                 else:
                     dbconn = Equo.openRepositoryDatabase(match[1])
-                    printPackageInfo(match[0],dbconn, showRepoOnQuiet = showRepo)
+                    printPackageInfo(match[0],dbconn, showRepoOnQuiet = showRepo, showDescOnQuiet = showDesc)
                     found = True
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue(" Keyword: ")+bold("\t"+package))
@@ -918,7 +918,7 @@ def __searchDescriptions(descriptions, dbconn, idreturn = False, EquoConnection 
                 print_info(blue(" Found:   ")+bold("\t"+str(len(mydescdata[desc])))+red(" entries"))
     return dataInfo,mydescdata
 
-def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, extended = False, EquoConnection = None, showRepoOnQuiet = False):
+def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, extended = False, EquoConnection = None, showRepoOnQuiet = False, showDescOnQuiet = False):
 
     if EquoConnection != None:
         Equo = EquoConnection
@@ -932,10 +932,13 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
     # now fetch essential info
     pkgatom = dbconn.retrieveAtom(idpackage)
     if (etpUi['quiet']):
+        repoinfo = ''
+        desc = ''
         if showRepoOnQuiet:
-            print "[%s] %s" % (dbconn.dbname, pkgatom)
-        else:
-            print pkgatom
+            repoinfo = "[%s] " % (dbconn.dbname,)
+        if showDescOnQuiet:
+            desc = ' %s' % (dbconn.retrieveDescription(idpackage),)
+        print "%s%s%s" % (repoinfo,pkgatom,desc,)
         return
 
     if (not strictOutput):

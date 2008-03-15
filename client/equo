@@ -43,7 +43,8 @@ def print_help():
     print_info(" \t"+blue("match")+brown("\t\t match a package in repositories"))
     print_info(" \t\t"+red("--multimatch")+"\t\t return all the possible matches")
     print_info(" \t\t"+red("--multirepo")+"\t\t return matches from every repository")
-    print_info(" \t\t"+red("--showrepo")+"\t\t print repository information")
+    print_info(" \t\t"+red("--showrepo")+"\t\t print repository information (w/--quiet)")
+    print_info(" \t\t"+red("--showdesc")+"\t\t print description too (w/--quiet)")
 
     print_info(" \t"+blue("world")+brown("\t\t update system with the latest available packages"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
@@ -318,6 +319,7 @@ try:
         multiMatch = False
         multiRepo = False
         showRepo = False
+        showDesc = False
         myoptions = []
         for opt in options:
             if opt == "--multimatch":
@@ -326,6 +328,8 @@ try:
                 multiRepo = True
             elif opt == "--showrepo":
                 showRepo = True
+            elif opt == "--showdesc":
+                showDesc = True
             else:
                 myoptions.append(opt)
         if len(myoptions) > 1:
@@ -334,7 +338,8 @@ try:
             rc = text_query.matchPackage(myoptions[1:],
                                             multiMatch = multiMatch,
                                             multiRepo = multiRepo,
-                                            showRepo = showRepo
+                                            showRepo = showRepo,
+                                            showDesc = showDesc
                                         )
         else:
             rc = -10
