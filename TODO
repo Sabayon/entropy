@@ -1,6 +1,6 @@
 TODO list:
+  - create a meta-packages list ... I hate Joost
   - during "equo remove" show disk size for each package
-  - add "equo match" tool
   - NEEDED + ldconfig -p ?
   - make an ETP_DIR switching function
   - lilo.conf trigger?

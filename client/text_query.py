@@ -693,6 +693,50 @@ def searchPackage(packages, idreturn = False):
         return dataInfo
     return 0
 
+def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = False, showRepo = False):
+
+    global Equo
+    if Equo == None:
+        Equo = EquoInterface()
+
+    dataInfo = set() # when idreturn is True
+
+    if (not idreturn) and (not etpUi['quiet']):
+        print_info(darkred(" @@ ")+darkgreen("Matching..."), back = True)
+    found = False
+
+    for package in packages:
+
+        if (not idreturn) and (not etpUi['quiet']):
+            print_info(blue("  # ")+bold(package))
+
+        match = Equo.atomMatch(package, multiMatch = multiMatch, multiRepo = multiRepo)
+        if match[1] != 1:
+            if not multiMatch:
+                if multiRepo:
+                    matches = match[0]
+                else:
+                    matches = [match]
+            else:
+                matches = match[0]
+            for match in matches:
+                if (idreturn):
+                    dataInfo.add(tuple(match))
+                else:
+                    dbconn = Equo.openRepositoryDatabase(match[1])
+                    printPackageInfo(match[0],dbconn, showRepoOnQuiet = showRepo)
+                    found = True
+            if (not idreturn) and (not etpUi['quiet']):
+                print_info(blue(" Keyword: ")+bold("\t"+package))
+                print_info(blue(" Found:   ")+bold("\t"+str(len(matches)))+red(" entries"))
+
+    if (not idreturn) and (not etpUi['quiet']) and (not found):
+        print_info(darkred(" @@ ")+darkgreen("No match."))
+
+    if (idreturn):
+        return dataInfo
+    return 0
+
 def searchSlottedPackages(slots, datareturn = False, dbconn = None):
 
     global Equo
@@ -874,7 +918,7 @@ def __searchDescriptions(descriptions, dbconn, idreturn = False, EquoConnection 
                 print_info(blue(" Found:   ")+bold("\t"+str(len(mydescdata[desc])))+red(" entries"))
     return dataInfo,mydescdata
 
-def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, extended = False, EquoConnection = None):
+def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, extended = False, EquoConnection = None, showRepoOnQuiet = False):
 
     if EquoConnection != None:
         Equo = EquoConnection
@@ -888,7 +932,10 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
     # now fetch essential info
     pkgatom = dbconn.retrieveAtom(idpackage)
     if (etpUi['quiet']):
-        print pkgatom
+        if showRepoOnQuiet:
+            print "[%s] %s" % (dbconn.dbname, pkgatom)
+        else:
+            print pkgatom
         return
 
     if (not strictOutput):

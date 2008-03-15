@@ -39,7 +39,11 @@ def print_help():
     print_info(" \t"+blue("repoinfo")+brown("\t show enabled repositories"))
     print_info(" \t"+blue("status")+brown("\t\t show respositories status"))
 
-    print_info(" \t"+blue("search")+brown("\t\t search a package trough repositories"))
+    print_info(" \t"+blue("search")+brown("\t\t search a package in repositories"))
+    print_info(" \t"+blue("match")+brown("\t\t match a package in repositories"))
+    print_info(" \t\t"+red("--multimatch")+"\t\t return all the possible matches")
+    print_info(" \t\t"+red("--multirepo")+"\t\t return matches from every repository")
+    print_info(" \t\t"+red("--showrepo")+"\t\t print repository information")
 
     print_info(" \t"+blue("world")+brown("\t\t update system with the latest available packages"))
     print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
@@ -306,6 +310,32 @@ try:
         if len(options) > 1:
             import text_query
             rc = text_query.searchPackage(options[1:])
+        else:
+            rc = -10
+
+    elif (options[0] == "match"):
+        rc = -10
+        multiMatch = False
+        multiRepo = False
+        showRepo = False
+        myoptions = []
+        for opt in options:
+            if opt == "--multimatch":
+                multiMatch = True
+            elif opt == "--multirepo":
+                multiRepo = True
+            elif opt == "--showrepo":
+                showRepo = True
+            else:
+                myoptions.append(opt)
+        if len(myoptions) > 1:
+            import text_query
+            # repoMatch can be made using @repository  
+            rc = text_query.matchPackage(myoptions[1:],
+                                            multiMatch = multiMatch,
+                                            multiRepo = multiRepo,
+                                            showRepo = showRepo
+                                        )
         else:
             rc = -10
 
