@@ -42,7 +42,8 @@ def security(options):
             fetch = True
 
     if options[0] == "update":
-        rc = Equo.Security.fetch_advisories()
+        securityConn = Equo.Security()
+        rc = securityConn.fetch_advisories()
     elif options[0] == "list":
         rc = list_advisories(only_affected = only_affected, only_unaffected = only_unaffected)
     elif options[0] == "install":
@@ -59,7 +60,8 @@ def show_advisories_info(advisories):
         print_error(brown(" :: ")+darkgreen("No advisories provided."))
         return 1
 
-    adv_metadata = Equo.Security.get_advisories_metadata()
+    securityConn = Equo.Security()
+    adv_metadata = securityConn.get_advisories_metadata()
     for advisory in advisories:
         if advisory not in adv_metadata:
             print_warning(brown(" :: ")+darkred("Advisory ")+blue(advisory)+darkred(" does not exist."))
@@ -167,19 +169,20 @@ def print_advisory_information(advisory_data, key):
 
 
 def list_advisories(only_affected = False, only_unaffected = False):
+    securityConn = Equo.Security()
     if (not only_affected and not only_unaffected) or (only_affected and only_unaffected):
-        adv_metadata = Equo.Security.get_advisories_metadata()
+        adv_metadata = securityConn.get_advisories_metadata()
     elif only_affected:
-        adv_metadata = Equo.Security.get_vulnerabilities()
+        adv_metadata = securityConn.get_vulnerabilities()
     else:
-        adv_metadata = Equo.Security.get_fixed_vulnerabilities()
+        adv_metadata = securityConn.get_fixed_vulnerabilities()
     if not adv_metadata:
         print_info(brown(" :: ")+darkgreen("No advisories available or applicable."))
         return 0
     adv_keys = adv_metadata.keys()
     adv_keys.sort()
     for key in adv_keys:
-        affected = Equo.Security.is_affected(key)
+        affected = securityConn.is_affected(key)
         if only_affected and not affected:
             continue
         if only_unaffected and affected:
@@ -211,8 +214,9 @@ def install_packages(fetch = False):
         etpUi['pretend'] = True
     import text_ui
 
+    securityConn = Equo.Security()
     print_info(red(" @@ ")+blue("Calculating security updates..."))
-    affected_atoms = Equo.Security.get_affected_atoms()
+    affected_atoms = securityConn.get_affected_atoms()
     # match in client database
     valid_matches = set()
     for atom in affected_atoms:

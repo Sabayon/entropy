@@ -20,7 +20,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import os
 from entropyConstants import *
 from outputTools import *
 from entropy import EquoInterface

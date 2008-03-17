@@ -90,13 +90,13 @@ class EquoInterface(TextInterface):
             self.openClientDatabase()
         self.FileUpdates = self.FileUpdatesInterfaceLoader()
         self.repoDbCache = {}
+        self.securityCache = {}
 
         # masking parser
         self.MaskingParser = self.PackageMaskingParserInterfaceLoader()
 
         self.validRepositories = []
         self.validate_repositories()
-
 
         # now if we are on live, we should disable it
         # are we running on a livecd? (/proc/cmdline has "cdroot")
@@ -108,8 +108,6 @@ class EquoInterface(TextInterface):
         elif not user_xcache:
             self.validate_repositories_cache()
 
-        # security interface
-        self.Security = SecurityInterface(self)
         if not self.xcache and (etpConst['uid'] == 0):
             try:
                 self.purge_cache(False)
@@ -170,6 +168,21 @@ class EquoInterface(TextInterface):
                 self.clientDbconn.resetTreeupdatesDigests()
             except:
                 pass
+        # I don't think it's safe to keep them open
+        # isn't it?
+        self.closeAllSecurity()
+
+    def Security(self):
+        chroot = etpConst['systemroot']
+        cached = self.securityCache.get(chroot)
+        if cached != None:
+            return cached
+        cached = SecurityInterface(self)
+        self.securityCache[chroot] = cached
+        return cached
+
+    def closeAllSecurity(self):
+        self.securityCache.clear()
 
     def reopenClientDbconn(self):
         self.clientDbconn.closeDB()
@@ -4372,7 +4385,8 @@ class RepoInterface:
             # update Security Advisories
             if self.fetchSecurity:
                 try:
-                    self.Entropy.Security.fetch_advisories()
+                    securityConn = self.Entropy.Security()
+                    securityConn.fetch_advisories()
                 except Exception, e:
                     self.Entropy.updateProgress(    red("Advisories fetch error: %s: %s.") % (str(Exception),str(e),),
                                                     importance = 1,
