@@ -22,7 +22,6 @@
 
 
 import random
-import gc
 import sys
 import os
 import stat
@@ -912,7 +911,6 @@ def initConfig_entropyConstants(rootdir):
                 url += etpConst['product']+"/handlers/"
                 etpRemoteSupport[servername] = url
 
-    gc.collect()
     initConfig_clientConstants()
 
 def initConfig_clientConstants():

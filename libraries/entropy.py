@@ -23,8 +23,6 @@
 import shutil
 import commands
 import urllib2
-import socket
-import random
 import time
 from entropyConstants import *
 from outputTools import *
@@ -4429,11 +4427,13 @@ class FtpInterface:
         self.entropyTools = entropyTools
         import ftplib
         self.ftplib = ftplib
+        import socket
+        self.socket = socket
 
         self.oldprogress = 0.0
 
         # import FTP modules
-        socket.setdefaulttimeout(60)
+        self.socket.setdefaulttimeout(60)
 
         self.ftpuri = ftpuri
         self.ftphost = self.entropyTools.extractFTPHostFromUri(self.ftpuri)
@@ -4488,7 +4488,7 @@ class FtpInterface:
     # this can be used in case of exceptions
     def reconnectHost(self):
         # import FTP modules
-        socket.setdefaulttimeout(60)
+        self.socket.setdefaulttimeout(60)
         counter = 10
         while 1:
             counter -= 1
@@ -4753,7 +4753,9 @@ class urlFetcher:
         self.showSpeed = showSpeed
         self.initVars()
         import entropyTools
+        import socket
         self.entropyTools = entropyTools
+        self.socket = socket
 
         # resume support
         if os.path.isfile(self.pathToSave) and os.access(self.pathToSave,os.R_OK) and self.resume:
@@ -4804,7 +4806,7 @@ class urlFetcher:
         self.speedUpdater.start()
 
         # set timeout
-        socket.setdefaulttimeout(20)
+        self.socket.setdefaulttimeout(20)
 
         # get file size if available
         try:
@@ -4936,7 +4938,7 @@ class urlFetcher:
         except:
             pass
         self.speedUpdater.kill()
-        socket.setdefaulttimeout(2)
+        self.socket.setdefaulttimeout(2)
 
     def updateSpeedInfo(self):
         self.elapsed += self.transferpollingtime

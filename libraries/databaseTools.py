@@ -2454,7 +2454,7 @@ class etpDatabase:
             lictext = self.cursor.fetchone()
             if lictext != None:
                 #licdata[licname] = unicode(lictext[0],'raw_unicode_escape','replace')
-		licdata[licname] = str(lictext[0])
+                licdata[licname] = str(lictext[0])
 
         self.storeInfoCache(idpackage,'retrieveLicensedata',licdata)
         return licdata
@@ -2875,37 +2875,8 @@ class etpDatabase:
         return results
 
     def searchPackagesByDescription(self, keyword):
-	self.cursor.execute('SELECT idpackage FROM extrainfo WHERE LOWER(description) LIKE (?)', ("%"+keyword.lower()+"%",))
-	idpkgs = self.fetchall2set(self.cursor.fetchall())
-	if not idpkgs:
-	    return ()
-
-	result = set()
-	query = 'WHERE idpackage = '
-	counter = 0
-	run = False
-	for idpkg in idpkgs:
-	    run = True
-	    counter += 1
-	    query += str(idpkg)+' OR idpackage = '
-	    if counter > 25:
-		counter = 0
-		query = query[:-16]
-		self.cursor.execute('SELECT atom,idpackage FROM baseinfo '+query)
-		qry = self.cursor.fetchall()
-		for x in qry:
-		    result.add(x)
-		query = 'WHERE idpackage = '
-		run = False
-	
-	if (run):
-	    query = query[:-16]
-	    self.cursor.execute('SELECT atom,idpackage FROM baseinfo '+query)
-	    qry = self.cursor.fetchall()
-	    for x in qry:
-		result.add(x)
-	
-	return result
+        self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM extrainfo,baseinfo WHERE LOWER(extrainfo.description) LIKE (?) and baseinfo.idpackage = extrainfo.idpackage', ("%"+keyword.lower()+"%",))
+        return self.cursor.fetchall()
 
     def searchPackagesByName(self, keyword, sensitive = False, branch = None):
 
@@ -3081,36 +3052,12 @@ class etpDatabase:
 
     def listIdpackageDependencies(self, idpackage):
         self.cursor.execute('SELECT iddependency FROM dependencies where idpackage = (?)', (idpackage,))
-        iddeps = self.fetchall2set(self.cursor.fetchall())
+        iddeps = tuple(self.fetchall2set(self.cursor.fetchall()))
         if not iddeps:
             return ()
-
         result = set()
-        query = 'WHERE iddependency = '
-        counter = 0
-        run = False
-        for iddep in iddeps:
-            run = True
-            counter += 1
-            query += str(iddep)+' OR iddependency = '
-            if counter > 25:
-                counter = 0
-                query = query[:-19]
-                self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference '+query)
-                qry = self.cursor.fetchall()
-                for x in qry:
-                    result.add(x)
-                query = 'WHERE iddependency = '
-                run = False
-
-        if (run):
-            query = query[:-19]
-            self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference '+query)
-            qry = self.cursor.fetchall()
-            for x in qry:
-                result.add(x)
-
-        return result
+        self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference WHERE iddependency IN %s' % (iddeps,))
+        return set(self.cursor.fetchall())
 
     def listBranchPackagesTbz2(self, branch):
         result = set()
@@ -3141,42 +3088,23 @@ class etpDatabase:
         return self.cursor.fetchall()
 
     def listConfigProtectDirectories(self, mask = False):
-        dirs = set()
-        query = 'SELECT idprotect FROM configprotect'
+        query = 'SELECT max(idprotect) FROM configprotect'
         if mask:
             query += 'mask'
         self.cursor.execute(query)
-        idprotects = self.fetchall2set(self.cursor.fetchall())
-
-        if not idprotects:
+        r = self.cursor.fetchone()
+        if not r:
             return []
 
-        results = set()
-        query = 'WHERE idprotect = '
-        counter = 0
-        run = False
-        for idprotect in idprotects:
-            run = True
-            counter += 1
-            query += str(idprotect)+' OR idprotect = '
-            if counter > 25:
-                counter = 0
-                query = query[:-16]
-                self.cursor.execute('SELECT protect FROM configprotectreference '+query)
-                results.update(self.fetchall2set(self.cursor.fetchall()))
-                query = 'WHERE idprotect = '
-                run = False
-
-        if (run):
-            query = query[:-16]
-            self.cursor.execute('SELECT protect FROM configprotectreference '+query)
-            results.update(self.fetchall2set(self.cursor.fetchall()))
-
-        for result in results:
-            for x in result.split():
-                dirs.add(x)
-        dirs = list(dirs)
-        dirs.sort()
+        mymax = r[0]
+        self.cursor.execute('SELECT protect FROM configprotectreference where idprotect >= (?) and idprotect <= (?) order by protect', (1,mymax,))
+        results = self.cursor.fetchall()
+        dirs = []
+        for row in results:
+            mydirs = row[0].split()
+            for x in mydirs:
+                if x not in dirs:
+                    dirs.append(x)
         return dirs
 
     def switchBranch(self, idpackage, tobranch):
@@ -3489,6 +3417,7 @@ class etpDatabase:
         self.createUseflagsIndex()
         self.createLicensedataIndex()
         self.createLicensesIndex()
+        self.createConfigProtectReferenceIndex()
 
     def createNeededIndex(self):
         if self.dbname != etpConst['serverdbid'] and self.indexing:
@@ -3503,6 +3432,11 @@ class etpDatabase:
     def createContentIndex(self):
         if self.dbname != etpConst['serverdbid'] and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex ON content ( file )')
+            self.commitChanges()
+
+    def createConfigProtectReferenceIndex(self):
+        if self.dbname != etpConst['serverdbid'] and self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS configprotectreferenceindex ON configprotectreference ( protect )')
             self.commitChanges()
 
     def createBaseinfoIndex(self):

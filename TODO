@@ -1,12 +1,10 @@
 TODO list:
-  - create a meta-packages list ... I hate Joost
   - during "equo remove" show disk size for each package
-  - NEEDED + ldconfig -p ?
   - make an ETP_DIR switching function
   - lilo.conf trigger?
   - equo: "you meant...?" feature
-  - add i18n support
-  - calculate extra deps from NEEDED, server side?
+  - calculate extra deps from NEEDED, server side? - NEEDED + ldconfig -p ?
+  - create a meta-packages list ... I hate Joost
   - split RDEPEND and PDEPEND ( + && and || )
   - log messages from portage doebuild() calls
   - remove conflicting packages right before the conflict
@@ -21,6 +19,7 @@ TODO list:
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - Community repositories
   - write a ncurses interface to manage entropy database
+  - add i18n support
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
