@@ -1,8 +1,8 @@
-TODO list:
-  - during "equo remove" show disk size for each package
+TODO list
   - make an ETP_DIR switching function
   - lilo.conf trigger?
   - equo: "you meant...?" feature
+  - hard-disk repositories support !
   - calculate extra deps from NEEDED, server side? - NEEDED + ldconfig -p ?
   - create a meta-packages list ... I hate Joost
   - split RDEPEND and PDEPEND ( + && and || )

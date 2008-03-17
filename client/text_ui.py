@@ -77,8 +77,13 @@ def package(options):
                 continue
             if (equoRequestUpgrade):
                 equoRequestUpgradeTo = opt
-            elif opt.endswith(".tbz2") and os.access(opt,os.R_OK) and Equo.entropyTools.isEntropyTbz2(opt):
-                mytbz2paths.append(opt)
+            elif opt.endswith(".tbz2") and \
+                os.path.isabs(opt) and \
+                os.access(opt,os.R_OK) and \
+                Equo.entropyTools.isEntropyTbz2(opt):
+                    mytbz2paths.append(opt)
+            elif opt.endswith(".tbz2"):
+                continue
             elif opt.strip():
                 _myopts.append(opt.strip())
     myopts = _myopts
@@ -785,7 +790,6 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 
             # get needed info
             pkgatom = Equo.clientDbconn.retrieveAtom(idpackage)
-            installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
 
             if (systemPackagesCheck):
                 valid = Equo.validatePackageRemoval(idpackage)
@@ -795,7 +799,11 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 
             plainRemovalQueue.append(idpackage)
 
-            print_info("   # "+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+" | Installed from: "+red(installedfrom))
+            installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
+            disksize = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
+            disksize = Equo.entropyTools.bytesIntoHuman(disksize)
+            disksizeinfo = " | %s: %s" % (blue("Disk size"),bold(str(disksize)),)
+            print_info("   # "+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+" | Installed from: "+red(installedfrom)+disksizeinfo)
 
         if (etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']):
             print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
@@ -831,11 +839,14 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                     atomscounter += 1
                     rematom = Equo.clientDbconn.retrieveAtom(idpackage)
                     installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
-                    repositoryInfo = bold("[")+red("from: ")+brown(installedfrom)+bold("]")
+                    disksize = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
+                    disksize = Equo.entropyTools.bytesIntoHuman(disksize)
+                    repositoryInfo = bold("[")+darkgreen("from:")+brown(installedfrom)+bold("]")
                     stratomscounter = str(atomscounter)
                     while len(stratomscounter) < len(totalatoms):
                         stratomscounter = " "+stratomscounter
-                    print_info("   # "+red("(")+bold(stratomscounter)+"/"+blue(str(totalatoms))+red(")")+repositoryInfo+" "+blue(rematom))
+                    disksizeinfo = bold(" [")+red(str(disksize))+bold("]")
+                    print_info("   # "+red("(")+bold(stratomscounter)+"/"+blue(str(totalatoms))+red(")")+repositoryInfo+" "+blue(rematom)+disksizeinfo)
 
                 removalQueue = choosenRemovalQueue
 
