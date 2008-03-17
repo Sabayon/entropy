@@ -709,7 +709,7 @@ def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = Fal
         if (not idreturn) and (not etpUi['quiet']):
             print_info(blue("  # ")+bold(package))
 
-        match = Equo.atomMatch(package, multiMatch = multiMatch, multiRepo = multiRepo)
+        match = Equo.atomMatch(package, multiMatch = multiMatch, multiRepo = multiRepo, packagesFilter = False)
         if match[1] != 1:
             if not multiMatch:
                 if multiRepo:
