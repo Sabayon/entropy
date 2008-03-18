@@ -27,7 +27,6 @@
 from entropyConstants import *
 import entropyTools
 import portage
-import gc
 
 ############
 # Functions and Classes
@@ -891,7 +890,6 @@ def _portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses
         import shutil
         shutil.rmtree(portage_tmpdir,True)
 
-    #gc.collect()
     del mydbapi
     del metadata
     del keys

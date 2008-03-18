@@ -27,8 +27,6 @@ import time
 from entropyConstants import *
 from outputTools import *
 import exceptionTools
-global _garbage_cycle
-_garbage_cycle = 0
 
 class matchContainer:
     def __init__(self):
@@ -69,8 +67,6 @@ class EquoInterface(TextInterface):
         self.databaseTools = databaseTools
         import entropyTools
         self.entropyTools = entropyTools
-        import gc
-        self.gcTool = gc
         self.urlFetcher = urlFetcher # in this way, can be reimplemented (so you can override updateProgress)
         self.progress = None # supporting external updateProgress stuff, you can point self.progress to your progress bar
                              # and reimplement updateProgress
@@ -3412,14 +3408,6 @@ class PackageInterface:
                                                 type = "error",
                                                 header = darkred("   ## ")
                                         )
-            return rc
-
-        # XXX workaround for portage memleak - clear garbage
-        global _garbage_cycle
-        _garbage_cycle += 1
-        if _garbage_cycle > 15:
-            self.Entropy.gcTool.collect()
-            _garbage_cycle = 0
         return rc
 
     '''
