@@ -543,7 +543,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             print_info(red(" @@ ")+bold("You need at least:\t\t")+blue(str(Equo.entropyTools.bytesIntoHuman(neededSize))+" of free space"))
             # check for disk space and print a warning
             ## unpackSize
-            size_match = Equo.entropyTools.check_required_space(etpConst['entropyunpackdir'],unpackSize)
+            size_match = Equo.entropyTools.check_required_space(etpConst['entropyunpackdir'],neededSize)
             if not size_match:
                 print_info(darkred(" !!! ")+bold("Attention"))
                 print_info(darkred(" !!! ")+bold("Attention"))
