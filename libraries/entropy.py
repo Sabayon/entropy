@@ -7022,6 +7022,11 @@ class ErrorReportInterface:
         self.params['description'] = description
         self.params['arguments'] = ' '.join(sys.argv)
         self.params['uid'] = etpConst['uid']
+        self.params['system_version'] = "N/A"
+        if os.access(etpConst['systemreleasefile'],os.R_OK):
+            f = open(etpConst['systemreleasefile'],"r")
+            self.params['system_version'] = f.readlines()
+            f.close()
         try:
             self.params['processes'] = commands.getoutput('ps auxf')
             self.params['lspci'] = commands.getoutput('lspci')

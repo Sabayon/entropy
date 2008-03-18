@@ -670,6 +670,8 @@ def initConfig_entropyConstants(rootdir):
         'clientdbid': "client",
         'serverdbid': "etpdb",
 
+        'systemreleasefile': '/etc/sabayon-release',
+
     }
     etpConst.update(myConst)
     del myConst
