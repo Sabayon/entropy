@@ -263,7 +263,17 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                                     m_atom = "idpackage: %s matching %s is broken" % (m_match[0],package,)
                                 print_warning(blue("      <> ")+red("atom: ")+brown(m_atom))
                     else:
-                        print_warning(bold("!!!")+red(" No match for ")+bold(package)+red(" in database. If you omitted the category, try adding it."))
+                        print_warning(bold("!!!")+red(" No match for ")+bold(package)+red(" in database."))
+                        # search similar packages
+                        # you meant...?
+                        import text_query
+                        items = text_query.searchPackage([package],idreturn = True)
+                        if items:
+                            print_info(bold("  ?")+red(" When you wrote ")+bold(package)+darkgreen(" You Meant(tm) ")+red("one of these below?"))
+                            for match in items:
+                                dbc = Equo.openRepositoryDatabase(match[1])
+                                meant_atom = dbc.retrieveAtom(match[0])
+                                print_info(red("    # ")+blue(meant_atom)+red(" ?"))
                     continue
                 foundAtoms.append(match)
             if tbz2:

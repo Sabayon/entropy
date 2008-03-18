@@ -1,7 +1,6 @@
 TODO list
   - make an ETP_DIR switching function
   - lilo.conf trigger?
-  - equo: "you meant...?" feature
   - hard-disk repositories support !
   - calculate extra deps from NEEDED, server side? - NEEDED + ldconfig -p ?
   - create a meta-packages list ... I hate Joost
@@ -24,7 +23,6 @@ TODO list
 
   Spritz:
     - improve notification applet
-    - make the properties menu fit in a 640x480 display
     - interface bug reporting interface (ahah)
     - handle entropy exceptions
     - add masking menu
