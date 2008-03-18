@@ -269,11 +269,15 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         import text_query
                         items = text_query.searchPackage([package],idreturn = True)
                         if items:
+                            items_cache = set()
                             print_info(bold("  ?")+red(" When you wrote ")+bold(package)+darkgreen(" You Meant(tm) ")+red("one of these below?"))
                             for match in items:
                                 dbc = Equo.openRepositoryDatabase(match[1])
-                                meant_atom = dbc.retrieveAtom(match[0])
-                                print_info(red("    # ")+blue(meant_atom)+red(" ?"))
+                                key, slot = dbc.retrieveKeySlot(match[0])
+                                if (key,slot) not in items_cache:
+                                    print_info(red("    # ")+blue(key)+":"+brown(str(slot))+red(" ?"))
+                                items_cache.add((key, slot))
+                            del items_cache
                     continue
                 foundAtoms.append(match)
             if tbz2:

@@ -1,5 +1,4 @@
 TODO list
-  - make an ETP_DIR switching function
   - lilo.conf trigger?
   - hard-disk repositories support !
   - calculate extra deps from NEEDED, server side? - NEEDED + ldconfig -p ?
