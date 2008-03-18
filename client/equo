@@ -166,9 +166,9 @@ import exceptionTools
 _options = []
 for opt in options:
     if (opt == "--nocolor"):
-	nocolor()
+        nocolor()
     elif (opt == "--debug"):
-	entropyTools.enableDebug()
+        entropyTools.enableDebug()
     else:
         if (opt == "--quiet"):
             etpUi['quiet'] = True
@@ -393,6 +393,13 @@ except SystemExit:
 except IOError, e:
     reset_cache()
     if e.errno != 32:
+        raise
+except OSError, e:
+    if e.errno == 28:
+        entropyTools.printException()
+        print_error(darkred("Your hard drive is full! Next time remember to have a look at it before starting. I'm sorry, there's nothing I can do for you. It's your fault :-("))
+        sys.exit(5)
+    else:
         raise
 except KeyboardInterrupt:
     sys.exit(0)

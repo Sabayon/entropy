@@ -153,6 +153,18 @@ def islive():
         return True
     return False
 
+
+def check_required_space(mountpoint, bytes_required):
+    import statvfs
+    st = os.statvfs(mountpoint)
+    freeblocks = st[statvfs.F_BFREE]
+    blocksize = st[statvfs.F_BSIZE]
+    freespace = freeblocks*blocksize
+    if bytes_required > freespace:
+        # it's NOT fine
+        return False
+    return True
+
 def ebeep(count = 5):
     for x in range(count):
         os.system("sleep 0.35; echo -ne \"\a\"; sleep 0.35")

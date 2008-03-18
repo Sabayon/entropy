@@ -541,6 +541,15 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 print_info(red(" @@ ")+blue("Freed disk space:\t\t")+bold(str(Equo.entropyTools.bytesIntoHuman(abs(deltaSize)))))
 
             print_info(red(" @@ ")+bold("You need at least:\t\t")+blue(str(Equo.entropyTools.bytesIntoHuman(neededSize))+" of free space"))
+            # check for disk space and print a warning
+            ## unpackSize
+            size_match = Equo.entropyTools.check_required_space(etpConst['entropyunpackdir'],unpackSize)
+            if not size_match:
+                print_info(darkred(" !!! ")+bold("Attention"))
+                print_info(darkred(" !!! ")+bold("Attention"))
+                print_info(darkred(" !!! ")+blue("You don't have enough space in %s for the installation. You will run into troubles!" % (etpConst['entropyunpackdir'],) ) )
+                print_info(darkred(" !!! ")+bold("Attention"))
+                print_info(darkred(" !!! ")+bold("Attention"))
 
         if (etpUi['ask']):
             rc = Equo.askQuestion("     Would you like to run the queue ?")
