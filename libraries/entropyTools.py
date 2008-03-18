@@ -804,6 +804,17 @@ def dep_get_entropy_revision(mydep):
         return myrev
     return None
 
+
+dep_revmatch = re.compile('^r[0-9]?')
+def dep_get_portage_revision(mydep):
+    myver = mydep.split("-")
+    myrev = myver[-1]
+    if dep_revmatch.match(myrev):
+        return myrev
+    else:
+        return "r0"
+
+
 def dep_get_match_in_repos(mydep):
     colon = mydep.rfind("@")
     if colon != -1:

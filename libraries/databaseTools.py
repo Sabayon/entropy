@@ -4094,6 +4094,7 @@ class etpDatabase:
                     if (pkgversion.split("-")[-1] == "r0"):
                         pkgversion = entropyTools.remove_revision(pkgversion)
                 if (direction == "~"):
+                    pkgrevision = entropyTools.dep_get_portage_revision(pkgversion)
                     pkgversion = entropyTools.remove_revision(pkgversion)
 
                 for data in foundIDs:
@@ -4101,8 +4102,9 @@ class etpDatabase:
                     idpackage = data[1]
                     dbver = self.retrieveVersion(idpackage)
                     if (direction == "~"):
+                        myrev = entropyTools.dep_get_portage_revision(dbver)
                         myver = entropyTools.remove_revision(dbver)
-                        if myver == pkgversion:
+                        if myver == pkgversion and pkgrevision <= myrev:
                             # found
                             dbpkginfo.add((idpackage,dbver))
                     else:
