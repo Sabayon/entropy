@@ -1,6 +1,5 @@
 TODO list
   - lilo.conf trigger?
-  - hard-disk repositories support !
   - calculate extra deps from NEEDED, server side? - NEEDED + ldconfig -p ?
   - create a meta-packages list ... I hate Joost
   - split RDEPEND and PDEPEND ( + && and || )

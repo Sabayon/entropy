@@ -827,8 +827,8 @@ def initConfig_entropyConstants(rootdir):
                             pass
                     repodatabase = repodatabase[:dbformatcolon]
 
-                if ((repopackages.startswith("http://") or repopackages.startswith("ftp://")) and \
-                        (repodatabase.startswith("http://") or repodatabase.startswith("ftp://"))) or \
+                if ((repopackages.startswith("http://") or repopackages.startswith("ftp://") or repopackages.startswith("file://")) and \
+                        (repodatabase.startswith("http://") or repodatabase.startswith("ftp://") or repodatabase.startswith("file://"))) or \
                          ((not repodatabase) and (myRepodata.has_key(reponame))):
 
                     if not myRepodata.has_key(reponame):
