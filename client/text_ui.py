@@ -266,8 +266,9 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         print_warning(bold("!!!")+red(" No match for ")+bold(package)+red(" in database."))
                         # search similar packages
                         # you meant...?
-                        import text_query
-                        items = text_query.searchPackage([package],idreturn = True)
+                        if len(package) < 4:
+                            continue
+                        items = Equo.get_meant_packages(package)
                         if items:
                             items_cache = set()
                             print_info(bold("  ?")+red(" When you wrote ")+bold(package)+darkgreen(" You Meant(tm) ")+red("one of these below?"))

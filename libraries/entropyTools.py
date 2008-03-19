@@ -817,7 +817,7 @@ def dep_get_entropy_revision(mydep):
     return None
 
 
-dep_revmatch = re.compile('^r[0-9]?')
+dep_revmatch = re.compile('^r[0-9]')
 def dep_get_portage_revision(mydep):
     myver = mydep.split("-")
     myrev = myver[-1]

@@ -714,6 +714,55 @@ class EquoInterface(TextInterface):
         else:
             return -1
 
+    def get_meant_packages(self, search_term):
+        import re
+        #match_string = ''.join(["(%s)?" % (x,) for x in search_term])
+        match_string = ''
+        for x in search_term:
+            if x not in ["-"]:
+                x = "(%s{1,})?" % (x,)
+                match_string += x
+        #print match_string
+        match_exp = re.compile(match_string,re.IGNORECASE)
+
+        matched = {}
+        for repo in etpRepositories:
+            dbconn = self.openRepositoryDatabase(repo)
+            # get names
+            idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=")
+            for idpackage in idpackages:
+                name = dbconn.retrieveName(idpackage)
+                if len(name) < len(search_term):
+                    continue
+                mymatches = match_exp.findall(name)
+                found_matches = []
+                for mymatch in mymatches:
+                    items = len([x for x in mymatch if x != ""])
+                    if items < 1:
+                        continue
+                    calc = float(items)/len(mymatch)
+                    if calc > 0.0:
+                        found_matches.append(calc)
+                if not found_matches:
+                    continue
+                #print "found_matches",name,found_matches
+                maxpoint = max(found_matches)
+                if not matched.has_key(maxpoint):
+                    matched[maxpoint] = set()
+                matched[maxpoint].add((idpackage,repo))
+        if matched:
+            mydata = []
+            while len(mydata) < 5:
+                try:
+                    most = max(matched.keys())
+                    #print "most",most
+                except ValueError:
+                    break
+                popped = matched.pop(most)
+                mydata.extend(list(popped))
+            return mydata
+        return set()
+
     # better to use key:slot
     def check_package_update(self, atom, deep = False):
 

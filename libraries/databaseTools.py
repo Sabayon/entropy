@@ -3013,7 +3013,7 @@ class etpDatabase:
             self.cursor.execute('SELECT counter,idpackage FROM counters'+branchstring)
             return self.cursor.fetchall()
 
-    def listAllIdpackages(self, branch = None):
+    def listAllIdpackages(self, branch = None, branch_operator = "="):
 
         # XXX if you will decide to re-enable this, consider that you have to clean this cache
         # each time a package is updated/installed/removed
@@ -3024,7 +3024,7 @@ class etpDatabase:
         searchkeywords = []
         if branch:
             searchkeywords.append(branch)
-            branchstring = ' where branch = (?)'
+            branchstring = ' where branch %s (?)' % (str(branch_operator),)
         self.cursor.execute('SELECT idpackage FROM baseinfo'+branchstring, searchkeywords)
 
         results = self.fetchall2set(self.cursor.fetchall())
