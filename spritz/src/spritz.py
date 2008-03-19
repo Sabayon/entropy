@@ -238,7 +238,7 @@ class SpritzController(Controller):
         # call liststore and tell to add
         if text:
             # validate url
-            if not (text.startswith("http://") or text.startswith("ftp://")):
+            if not (text.startswith("http://") or text.startswith("ftp://") or text.startswith("file://")):
                 okDialog( self.addrepo_ui.addRepoWin, _("You must enter either a HTTP or a FTP url.") )
             else:
                 self.repoMirrorsView.add(text)
@@ -315,8 +315,8 @@ class SpritzController(Controller):
             repodata['description'] = "No description"
         if not repodata['packages']:
             errors.append(_("No download mirrors"))
-        if not repodata['database'] or not (repodata['database'].endswith("http://") or (not repodata['database'].endswith("ftp://"))):
-            errors.append(_("Database URL must be HTTP or FTP"))
+        if not repodata['database'] or not (repodata['database'].startswith("http://") or repodata['database'].startswith("ftp://") or repodata['database'].startswith("file://")):
+            errors.append(_("Database URL must start either with http:// or ftp:// or file://"))
         return errors
 
     def __getRepodata(self):
