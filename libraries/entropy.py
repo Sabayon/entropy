@@ -440,7 +440,7 @@ class EquoInterface(TextInterface):
 
     def get_licenses_to_accept(self, install_queue):
         if not install_queue:
-            return []
+            return {}
         licenses = {}
         for match in install_queue:
             repoid = match[1]

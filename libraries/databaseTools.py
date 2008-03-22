@@ -3051,12 +3051,7 @@ class etpDatabase:
         return self.fetchall2set(self.cursor.fetchall())
 
     def listIdpackageDependencies(self, idpackage):
-        self.cursor.execute('SELECT iddependency FROM dependencies where idpackage = (?)', (idpackage,))
-        iddeps = tuple(self.fetchall2set(self.cursor.fetchall()))
-        if not iddeps:
-            return ()
-        result = set()
-        self.cursor.execute('SELECT iddependency,dependency FROM dependenciesreference WHERE iddependency IN %s' % (iddeps,))
+        self.cursor.execute('SELECT dependenciesreference.iddependency,dependenciesreference.dependency FROM dependenciesreference,dependencies WHERE dependencies.idpackage = (?) AND dependenciesreference.iddependency = dependencies.iddependency', (idpackage,))
         return set(self.cursor.fetchall())
 
     def listBranchPackagesTbz2(self, branch):

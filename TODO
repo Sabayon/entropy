@@ -1,17 +1,17 @@
 TODO list
-  - lilo.conf trigger?
   - calculate extra deps from NEEDED, server side? - NEEDED + ldconfig -p ?
-  - create a meta-packages list ... I hate Joost
+  - create a meta-packages list ... I hate Joost (*)
   - split RDEPEND and PDEPEND ( + && and || )
   - log messages from portage doebuild() calls
-  - remove conflicting packages right before the conflict
-  - move portageTools to a class
+  - remove conflicting packages right before the conflict (*)
+  - move portageTools to a class (*)
   - implement configuration files snapshot tool
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
      [] complete reagent spm interface
      [] write a tool that will rebuild kernel dependant packages
      [] GLSA interface, interfaced between packages in repo and the portage tree
+  - allow interactivity for games requiring CDs/DVDs
   - add changelog to packages
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - Community repositories

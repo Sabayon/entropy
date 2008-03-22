@@ -550,6 +550,7 @@ def extractElog(file):
 # Imported from Gentoo portage_dep.py
 # Copyright 2003-2004 Gentoo Foundation
 # done to avoid the import of portage_dep here
+
 ver_regexp = re.compile("^(cvs\\.)?(\\d+)((\\.\\d+)*)([a-z]?)((_(pre|p|beta|alpha|rc)\\d*)*)(-r(\\d+))(-t(\\S+))?$")
 def isjustpkgname(mypkg):
     myparts = mypkg.split('-')
@@ -562,7 +563,7 @@ def ververify(myverx, silent=1):
 
     myver = myverx[:]
     if myver.endswith("*"):
-        myver = myver[:len(myver)-1]
+        myver = myver[:-1]
     if ver_regexp.match(myver):
         return 1
     else:

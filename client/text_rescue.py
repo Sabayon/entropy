@@ -142,6 +142,31 @@ def database(options):
             os.remove(temptbz2)
 
         print_info(red("  All the Gentoo packages have been injected into Entropy database."))
+        print_info(red("  Now checking dependency atoms validity..."))
+        mydeps = Equo.clientDbconn.listAllDependencies()
+        maxcount = str(len(mydeps))
+        count = 0
+        for depdata in mydeps:
+            count += 1
+            atom = depdata[1]
+            iddependency = depdata[0]
+            print_info(blue("(")+darkgreen(str(count))+"/"+darkred(maxcount)+blue(")")+red(" atom: ")+brown(atom), back = True)
+            try:
+                Equo.clientDbconn.atomMatch(atom)
+            except Exception, e:
+                Equo.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Database dependency atoms check: Exception caught: %s: %s" % (str(Exception),str(e),))
+                print_warning(red("!!! An error occured while analyzing: ")+blue(atom)+" - "+red("can be invalid!"))
+                print_warning("Exception: %s: %s" % (str(Exception),str(e),))
+                found_idpackages = Equo.clientDbconn.searchIdpackageFromIddependency(iddependency)
+                if found_idpackages:
+                    print_warning(red("These are the invalid entries:"))
+                    for myidpackage in found_idpackages:
+                        myatom = Equo.clientDbconn.retrieveAtom(myidpackage)
+                        print_warning(darkred("   # ")+blue(myatom))
+                    print_warning(red("Removing database information..."))
+                    for myidpackage in found_idpackages:
+                        Equo.clientDbconn.removePackage(myidpackage)
+
         print_info(red("  Now generating depends caching table..."))
         Equo.clientDbconn.regenerateDependsTable()
         print_info(red("  Now indexing tables..."))
@@ -455,16 +480,16 @@ def pythonUpdater():
     import text_ui
     pattern = re.compile(r'^(python)[0-9](.)[0-9]$')
     print_info(brown(" @@ ")+blue("Looking for old Python directories..."), back = True)
-    dirs = [x for x in os.listdir("/usr/lib") if x.startswith("python") and pattern.match(x)]
-    if len(dirs) <= 1:
+    mydirs = [x for x in os.listdir("/usr/lib") if x.startswith("python") and pattern.match(x)]
+    if len(mydirs) <= 1:
         print_info(brown(" @@ ")+blue("Your Python installation seems fine."))
         return 0
-    dirs.sort()
+    mydirs.sort()
     print_info(brown(" @@ ")+blue("Multiple Python directories found:"))
-    for pdir in dirs:
+    for pdir in mydirs:
         print_info(red("    # ")+blue("/usr/lib/%s" % (pdir,) ))
 
-    old_pdir = os.path.join("/usr/lib/",dirs[0])
+    old_pdir = os.path.join("/usr/lib/",mydirs[0])
     print_info(brown(" @@ ")+blue("Scanning: %s" % (red(old_pdir),)))
 
     old_pdir = old_pdir.replace("/usr/lib","/usr/lib*")
