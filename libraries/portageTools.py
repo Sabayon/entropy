@@ -723,11 +723,13 @@ def getInstalledPackagesCounters():
                 # get counter
                 try:
                     f = open(appDbDir+pkgsdir+"/"+pdir+"/"+dbCOUNTER,"r")
+                    counter = int(f.readline().strip())
+                    f.close()
                 except IOError:
                     continue
-                counter = f.readline().strip()
-                f.close()
-                installedAtoms.add((pkgatom,int(counter)))
+                except ValueError:
+                    continue
+                installedAtoms.add((pkgatom,counter))
     return installedAtoms, len(installedAtoms)
 
 def refillCounter():
