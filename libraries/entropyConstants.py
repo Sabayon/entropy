@@ -580,6 +580,7 @@ def initConfig_entropyConstants(rootdir):
         'activatorlogfile': ETP_SYSLOG_DIR+"activator.log", # Activator operations log file
         'entropylogfile': ETP_SYSLOG_DIR+"entropy.log", # Activator operations log file
         'equologfile': ETP_SYSLOG_DIR+"equo.log", # Activator operations log file
+        'socketlogfile': ETP_SYSLOG_DIR+"socket.log", # Activator operations log file
 
         'etpdatabasedir': ETP_DIR+ETP_DBDIR,
         'etpdatabasefilepath': ETP_DIR+ETP_DBDIR+"/"+ETP_DBFILE,

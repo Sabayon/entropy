@@ -25,12 +25,11 @@ from entropyConstants import *
 from serverConstants import *
 from outputTools import *
 import exceptionTools
-from entropy import EquoInterface
+from entropy import EquoInterface, LogFile
 Entropy = EquoInterface(noclientdb = 2)
 
 # Logging initialization
-import logTools
-reagentLog = logTools.LogFile(level=etpConst['reagentloglevel'],filename = etpConst['reagentlogfile'], header = "[Reagent]")
+reagentLog = LogFile(level=etpConst['reagentloglevel'],filename = etpConst['reagentlogfile'], header = "[Reagent]")
 
 def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['branch'], inject = False):
 

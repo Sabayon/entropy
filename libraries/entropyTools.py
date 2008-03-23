@@ -24,11 +24,8 @@ from outputTools import *
 from entropyConstants import *
 import exceptionTools
 import re
-import threading, time
-
-# Logging initialization
-import logTools
-entropyLog = logTools.LogFile(level=etpConst['entropyloglevel'],filename = etpConst['entropylogfile'], header = "[Entropy]")
+import threading
+import time
 
 global __etp_debug
 __etp_debug = False

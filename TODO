@@ -1,15 +1,15 @@
 TODO list
-  - calculate extra deps from NEEDED, server side? - NEEDED + ldconfig -p ?
-  - create a meta-packages list ... I hate Joost (*)
-  - split RDEPEND and PDEPEND ( + && and || )
-  - log messages from portage doebuild() calls
-  - remove conflicting packages right before the conflict (*)
-  - implement configuration files snapshot tool
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
      [] complete reagent spm interface
      [] write a tool that will rebuild kernel dependant packages
      [] GLSA interface, interfaced between packages in repo and the portage tree
+  - calculate extra deps from NEEDED, server side? - NEEDED + ldconfig -p ?
+  - split RDEPEND and PDEPEND ( + && and || )
+  - log messages from portage doebuild() calls
+  - create a meta-packages list ... I hate Joost (*)
+  - remove conflicting packages right before the conflict (*)
+  - implement configuration files snapshot tool
   - allow interactivity for games requiring CDs/DVDs
   - add changelog to packages
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)

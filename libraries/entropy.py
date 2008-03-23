@@ -58,8 +58,7 @@ class EquoInterface(TextInterface):
     def __init__(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False):
 
         # Logging initialization
-        import logTools
-        self.equoLog = logTools.LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[Equo]")
+        self.equoLog = LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[Equo]")
 
         import dumpTools
         self.dumpTools = dumpTools
@@ -9216,4 +9215,162 @@ class PortageInterface:
         del metadata
         del keys
         return rc
+
+class LogFile:
+    def __init__ (self, level = 0, filename = None, header = "[LOG]"):
+        self.handler = self.default_handler
+        self.level = level
+        self.header = header
+        self.logFile = None
+        self.open(filename)
+
+    def close (self):
+        try:
+            self.logFile.close ()
+        except:
+            pass
+
+    def open (self, file = None):
+        if type(file) == type("hello"):
+            try:
+                self.logFile = open(file, "aw")
+            except:
+                self.logFile = open("/dev/null", "aw")
+        elif file:
+            self.logFile = file
+        else:
+            self.logFile = sys.stderr
+
+    def getFile (self):
+        return self.logFile.fileno ()
+
+    def __call__(self, format, *args):
+        self.handler (format % args)
+
+    def default_handler (self, string):
+        self.logFile.write ("* %s\n" % (string))
+        self.logFile.flush ()
+
+    def set_loglevel(self, level):
+        self.level = level
+
+    def log(self, messagetype, level, message):
+        if self.level >= level and not etpUi['nolog']:
+            self.handler(self.getTimeDateHeader()+messagetype+' '+self.header+' '+message)
+
+    def getTimeDateHeader(self):
+        return time.strftime('[%X %x %Z] ')
+
+    def ladd(self, level, file, message):
+        if self.level >= level:
+            self.handler("++ %s \t%s" % (file, message))
+
+    def ldel(self, level, file, message):
+        if self.level >= level:
+            self.handler("-- %s \t%s" % (file, message))
+
+    def lch(self, level, file, message):
+        if self.level >= level:
+            self.handler("-+ %s \t%s" % (file, message))
+
+class SocketHostInterface:
+
+    import socket
+    def __init__(self, intf, *args, **kwds):
+
+        self.socketLog = LogFile(level = 2,filename = etpConst['socketlogfile'], header = "[Socket]")
+
+        self.timeout = 200
+        self.hostname = 'localhost'
+        self.port = 999
+        self.threads = 5
+        self.running = False
+        self.conn_active = False
+        self.channel = None
+        self.Entropy = intf
+        self.last_result = None
+        self.Entropy = intf(*args, **kwds)
+        self.Entropy_updateProgress = self.Entropy.updateProgress
+        self.updateProgress = self.localUpdateProgress
+        self.Entropy.updateProgress = self.remoteUpdateProgress
+
+        self.SocketServer = self.socket.socket ( self.socket.AF_INET, self.socket.SOCK_STREAM )
+        while 1:
+            try:
+                self.SocketServer.bind ( ( self.hostname , self.port ) )
+                self.updateProgress("Entropy Socket Host Interface, listening on: %s, port: %s" % (self.hostname,self.port,) )
+                break
+            except self.socket.error, e:
+                if e[0] == 98:
+                    self.updateProgress("Address already in use, waiting 10 seconds...")
+                    time.sleep(10)
+                    continue
+                raise
+        self.SocketServer.listen ( self.threads )
+
+
+    def go(self):
+        try:
+
+            self.running = True
+            while self.running:
+
+                self.channel, details = self.SocketServer.accept()
+                self.updateProgress('open: %s' % (details,))
+                self.conn_active = True
+                while self.conn_active:
+                    try:
+                        data = self.channel.recv ( 1024 )
+                    except self.socket.error, e:
+                        self.conn_active = False
+                        self.updateProgress('connection aborted: %s' % (e,))
+                        break
+
+                    self.updateProgress("  call: %s" % (data,))
+
+                    if data == "quit":
+                        self.updateProgress('close: %s' % (details,))
+                        self.channel.send ( 'CLO' )
+                        self.channel.close()
+                        self.conn_active = False
+                        self.running = False
+                        self.channel = None
+                        break
+
+                    # run the command
+                    try:
+                        rc = eval(data)
+                    except Exception, e:
+                        self.channel.send ( "%s\n" % (Exception,) )
+                        self.channel.send ( "%s\n" % (e,) )
+                        self.channel.send ( "ERR\n" )
+                        self.channel.close()
+                        break
+
+                    self.channel.send ( "%s\n" % (rc,) )
+                    self.channel.send ( "SUC" )
+                    self.updateProgress('close: %s' % (details,))
+                    self.channel.close()
+                    break
+
+        except KeyboardInterrupt:
+            if self.conn_active:
+                self.conn_active = False
+                self.channel.close()
+        except self.socket.error, e:
+            if e[0] == 32: # broken pipe
+                if self.conn_active:
+                    self.conn_active = False
+                    self.channel.close()
+            else:
+                raise
+
+    def remoteUpdateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
+        if self.conn_active:
+            self.channel.send(text+"\n")
+
+    def localUpdateProgress(self, *args, **kwargs):
+        self.socketLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,str(args[0]))
+        self.Entropy_updateProgress(*args,**kwargs)
+
 

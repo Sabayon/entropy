@@ -25,14 +25,12 @@ import shutil
 from entropyConstants import *
 from serverConstants import *
 from outputTools import *
-from entropy import FtpInterface, EquoInterface, rssFeed
+from entropy import FtpInterface, EquoInterface, rssFeed, LogFile
 import exceptionTools
 Entropy = EquoInterface(noclientdb = 2)
 
 # Logging initialization
-import logTools
-activatorLog = logTools.LogFile(level=etpConst['activatorloglevel'],filename = etpConst['activatorlogfile'], header = "[Activator]")
-
+activatorLog = LogFile(level=etpConst['activatorloglevel'],filename = etpConst['activatorlogfile'], header = "[Activator]")
 
 def sync(options, justTidy = False):
 
