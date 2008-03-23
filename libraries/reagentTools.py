@@ -40,7 +40,7 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
     packagename = os.path.basename(package)
 
     print_info(brown(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
-    mydata = Entropy.entropyTools.extractPkgData(package, enzymeRequestBranch, inject = inject)
+    mydata = Entropy.extract_pkg_metadata(package, enzymeRequestBranch, inject = inject)
 
     if dbconnection is None:
         dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
@@ -588,7 +588,7 @@ def database(options):
                 if os.path.join(etpConst['binaryurirelativepath'],mybranch+"/"+pkg) in injectedPackages:
                     doinject = True
 
-                mydata = Entropy.entropyTools.extractPkgData(etpConst['packagesbindir']+"/"+mybranch+"/"+pkg, mybranch, inject = doinject)
+                mydata = Entropy.extract_pkg_metadata(etpConst['packagesbindir']+"/"+mybranch+"/"+pkg, mybranch, inject = doinject)
 
                 # get previous revision
                 revisionAvail = revisionsMatch.get(os.path.basename(mydata['download']))
@@ -1177,7 +1177,7 @@ def database(options):
                     stats['bad_digest'] += 1
                     continue
             # rescan package
-            metadata = Entropy.entropyTools.extractPkgData(download, silent = True)
+            metadata = Entropy.extract_pkg_metadata(download, silent = True)
             db_deps = dbconn.retrieveDependencies(idpackage)
             found_deps = set([unicode(x) for x in metadata['dependencies']])
             del metadata
@@ -1268,7 +1268,7 @@ def database(options):
                     stats['bad_digest'] += 1
                     continue
             # rescan package
-            metadata = Entropy.entropyTools.extractPkgData(download, silent = True)
+            metadata = Entropy.extract_pkg_metadata(download, silent = True)
             db_content = set([x.encode('raw_unicode_escape') for x in dbconn.retrieveContent(idpackage)])
             found_content = metadata['content']
             test_content = set([x for x in metadata['content']])

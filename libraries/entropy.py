@@ -2230,12 +2230,675 @@ class EquoInterface(TextInterface):
         conn = SpmInterface(self)
         self.spmCache[myroot] = conn.intf
         return conn.intf
+
+    # This function extracts all the info from a .tbz2 file and returns them
+    def extract_pkg_metadata(self, package, etpBranch = etpConst['branch'], silent = False, inject = False):
+
+        data = {}
+        info_package = bold(os.path.basename(package))+": "
+
+        filepath = package
+        if not silent:
+            self.updateProgress(
+                        red(info_package+"Getting package name/version..."),
+                        importance = 0,
+                        type = "info",
+                        header = yellow(" * "),
+                        back = True
+                    )
+        tbz2File = package
+        package = package.split(".tbz2")[0]
+        package = self.entropyTools.remove_entropy_revision(package)
+        package = self.entropyTools.remove_tag(package)
+        # remove category
+        if package.find(":") != -1:
+            package = ':'.join(package.split(":")[1:])
+
+        package = package.split("-")
+        pkgname = ""
+        pkglen = len(package)
+        if package[pkglen-1].startswith("r"):
+            pkgver = package[pkglen-2]+"-"+package[pkglen-1]
+            pkglen -= 2
+        else:
+            pkgver = package[-1]
+            pkglen -= 1
+        for i in range(pkglen):
+            if i == pkglen-1:
+                pkgname += package[i]
+            else:
+                pkgname += package[i]+"-"
+        pkgname = pkgname.split("/")[-1]
+
+        # Fill Package name and version
+        data['name'] = pkgname
+        data['version'] = pkgver
+
+        if not silent:
+            self.updateProgress(
+                        red(info_package+"Getting package md5..."),
+                        importance = 0,
+                        type = "info",
+                        header = yellow(" * "),
+                        back = True
+                    )
+        # .tbz2 md5
+        data['digest'] = self.entropyTools.md5sum(tbz2File)
+
+        if not silent:
+            self.updateProgress(
+                        red(info_package+"Getting package mtime..."),
+                        importance = 0,
+                        type = "info",
+                        header = yellow(" * "),
+                        back = True
+                    )
+        # .tbz2 md5
+        data['datecreation'] = str(self.entropyTools.getFileUnixMtime(tbz2File))
+
+        if not silent:
+            self.updateProgress(
+                        red(info_package+"Getting package size..."),
+                        importance = 0,
+                        type = "info",
+                        header = yellow(" * "),
+                        back = True
+                    )
+        # .tbz2 byte size
+        data['size'] = str(os.stat(tbz2File)[6])
+
+        if not silent:
+            self.updateProgress(
+                        red(info_package+"Unpacking package data..."),
+                        importance = 0,
+                        type = "info",
+                        header = yellow(" * "),
+                        back = True
+                    )
+        # unpack file
+        tbz2TmpDir = etpConst['packagestmpdir']+"/"+data['name']+"-"+data['version']+"/"
+        if not os.path.isdir(tbz2TmpDir):
+            if os.path.lexists(tbz2TmpDir):
+                os.remove(tbz2TmpDir)
+            os.makedirs(tbz2TmpDir)
+        self.entropyTools.extractXpak(tbz2File,tbz2TmpDir)
+
+        if not silent:
+            self.updateProgress(
+                        red(info_package+"Getting package CHOST..."),
+                        importance = 0,
+                        type = "info",
+                        header = yellow(" * "),
+                        back = True
+                    )
+        # Fill chost
+        f = open(tbz2TmpDir+dbCHOST,"r")
+        data['chost'] = f.readline().strip()
+        f.close()
+
+        if not silent:
+            self.updateProgress(
+                    red(info_package+"Setting package branch..."),
+                    importance = 0,
+                    type = "info",
+                    header = yellow(" * "),
+                    back = True
+                )
+        data['branch'] = etpBranch
+
+        if not silent:
+            self.updateProgress(
+                    red(info_package+"Getting package description..."),
+                    importance = 0,
+                    type = "info",
+                    header = yellow(" * "),
+                    back = True
+                )
+        # Fill description
+        data['description'] = ""
+        try:
+            f = open(tbz2TmpDir+dbDESCRIPTION,"r")
+            data['description'] = f.readline().strip()
+            f.close()
+        except IOError:
+            pass
+
+        if not silent:
+            self.updateProgress(
+                    red(info_package+"Getting package homepage..."),
+                    importance = 0,
+                    type = "info",
+                    header = yellow(" * "),
+                    back = True
+                )
+        # Fill homepage
+        data['homepage'] = ""
+        try:
+            f = open(tbz2TmpDir+dbHOMEPAGE,"r")
+            data['homepage'] = f.readline().strip()
+            f.close()
+        except IOError:
+            pass
+
+        if not silent:
+            self.updateProgress(
+                    red(info_package+"Getting package slot information..."),
+                    importance = 0,
+                    type = "info",
+                    header = yellow(" * "),
+                    back = True
+                )
+        # fill slot, if it is
+        data['slot'] = ""
+        try:
+            f = open(tbz2TmpDir+dbSLOT,"r")
+            data['slot'] = f.readline().strip()
+            f.close()
+        except IOError:
+            pass
+
+        if not silent:
+            self.updateProgress(
+                    red(info_package+"Getting package injection information..."),
+                    importance = 0,
+                    type = "info",
+                    header = yellow(" * "),
+                    back = True
+                )
+        # fill slot, if it is
+        if inject:
+            data['injected'] = True
+        else:
+            data['injected'] = False
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting package eclasses information..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        # fill eclasses list
+        data['eclasses'] = []
+        try:
+            f = open(tbz2TmpDir+dbINHERITED,"r")
+            data['eclasses'] = f.readline().strip().split()
+            f.close()
+        except IOError:
+            pass
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting package needed libraries information..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        # fill needed list
+        data['needed'] = set()
+        try:
+            f = open(tbz2TmpDir+dbNEEDED,"r")
+            lines = f.readlines()
+            f.close()
+            for line in lines:
+                line = line.strip()
+                if line:
+                    needed = line.split()
+                    if len(needed) == 2:
+                        libs = needed[1].split(",")
+                        for lib in libs:
+                            if (lib.find(".so") != -1):
+                                data['needed'].add(lib)
+        except IOError:
+            pass
+        data['needed'] = list(data['needed'])
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting package content..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        data['content'] = {}
+        if os.path.isfile(tbz2TmpDir+dbCONTENTS):
+            f = open(tbz2TmpDir+dbCONTENTS,"r")
+            content = f.readlines()
+            f.close()
+            outcontent = set()
+            for line in content:
+                line = line.strip().split()
+                try:
+                    datatype = line[0]
+                    datafile = line[1:]
+                    if datatype == 'obj':
+                        datafile = datafile[:-2]
+                        datafile = ' '.join(datafile)
+                    elif datatype == 'dir':
+                        datafile = ' '.join(datafile)
+                    elif datatype == 'sym':
+                        datafile = datafile[:-3]
+                        datafile = ' '.join(datafile)
+                    else:
+                        raise exceptionTools.InvalidData("InvalidData: "+str(datafile)+" not supported. Probably portage API changed.")
+                    outcontent.add((datafile,datatype))
+                except:
+                    pass
+
+            _outcontent = set()
+            for i in outcontent:
+                i = list(i)
+                datatype = i[1]
+                _outcontent.add((i[0],i[1]))
+            outcontent = list(_outcontent)
+            outcontent.sort()
+            for i in outcontent:
+                data['content'][i[0]] = i[1]
+
+        else:
+            # CONTENTS is not generated when a package is emerged with portage and the option -B
+            # we have to unpack the tbz2 and generate content dict
+            mytempdir = etpConst['packagestmpdir']+"/"+os.path.basename(filepath)+".inject"
+            if os.path.isdir(mytempdir):
+                shutil.rmtree(mytempdir)
+            if not os.path.isdir(mytempdir):
+                os.makedirs(mytempdir)
+            self.entropyTools.uncompressTarBz2(filepath, extractPath = mytempdir, catchEmpty = True)
+
+            for currentdir, subdirs, files in os.walk(mytempdir):
+                data['content'][currentdir[len(mytempdir):]] = "dir"
+                for item in files:
+                    item = currentdir+"/"+item
+                    if os.path.islink(item):
+                        data['content'][item[len(mytempdir):]] = "sym"
+                    else:
+                        data['content'][item[len(mytempdir):]] = "obj"
+
+            # now remove
+            shutil.rmtree(mytempdir,True)
+            try:
+                os.rmdir(mytempdir)
+            except:
+                pass
+
+        # files size on disk
+        if (data['content']):
+            data['disksize'] = 0
+            for item in data['content']:
+                try:
+                    size = os.stat(item)[6]
+                    data['disksize'] += size
+                except:
+                    pass
+        else:
+            data['disksize'] = 0
+
+        # [][][] Kernel dependent packages hook [][][]
+        data['versiontag'] = ''
+        kernelstuff = False
+        kernelstuff_kernel = False
+        for item in data['content']:
+            if item.startswith("/lib/modules/"):
+                kernelstuff = True
+                # get the version of the modules
+                kmodver = item.split("/lib/modules/")[1]
+                kmodver = kmodver.split("/")[0]
+
+                lp = kmodver.split("-")[-1]
+                if lp.startswith("r"):
+                    kname = kmodver.split("-")[-2]
+                    kver = kmodver.split("-")[0]+"-"+kmodver.split("-")[-1]
+                else:
+                    kname = kmodver.split("-")[-1]
+                    kver = kmodver.split("-")[0]
+                break
+        # validate the results above
+        if (kernelstuff):
+            matchatom = "linux-%s-%s" % (kname,kver,)
+            if (matchatom == data['name']+"-"+data['version']):
+                kernelstuff_kernel = True
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting package category..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        # Fill category
+        f = open(tbz2TmpDir+dbCATEGORY,"r")
+        data['category'] = f.readline().strip()
+        f.close()
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting package download URL..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        # Fill download relative URI
+        if (kernelstuff):
+            data['versiontag'] = kmodver
+            if not kernelstuff_kernel:
+                data['slot'] = kmodver # if you change this behaviour, you must change "reagent update" and "equo database gentoosync" consequentially
+            versiontag = "#"+data['versiontag']
+        else:
+            versiontag = ""
+        # remove etpConst['product'] from etpConst['binaryurirelativepath']
+        downloadrelative = etpConst['binaryurirelativepath'][len(etpConst['product'])+1:]
+        data['download'] = downloadrelative+data['branch']+"/"+data['category']+":"+data['name']+"-"+data['version']+versiontag+".tbz2"
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting package counter..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        # Fill counter
+        try:
+            f = open(tbz2TmpDir+dbCOUNTER,"r")
+            data['counter'] = int(f.readline().strip())
+            f.close()
+        except IOError:
+            data['counter'] = -2 # -2 values will be insterted as incremental negative values into the database
+
+        data['trigger'] = ""
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting package external trigger availability..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        if os.path.isfile(etpConst['triggersdir']+"/"+data['category']+"/"+data['name']+"/"+etpConst['triggername']):
+            f = open(etpConst['triggersdir']+"/"+data['category']+"/"+data['name']+"/"+etpConst['triggername'],"rb")
+            data['trigger'] = f.read()
+            f.close()
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting package CFLAGS..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        # Fill CFLAGS
+        data['cflags'] = ""
+        try:
+            f = open(tbz2TmpDir+dbCFLAGS,"r")
+            data['cflags'] = f.readline().strip()
+            f.close()
+        except IOError:
+            pass
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting package CXXFLAGS..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        # Fill CXXFLAGS
+        data['cxxflags'] = ""
+        try:
+            f = open(tbz2TmpDir+dbCXXFLAGS,"r")
+            data['cxxflags'] = f.readline().strip()
+            f.close()
+        except IOError:
+            pass
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting source package supported ARCHs..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        # fill KEYWORDS
+        data['keywords'] = []
+        try:
+            f = open(tbz2TmpDir+dbKEYWORDS,"r")
+            cnt = f.readline().strip().split()
+            if not cnt:
+                data['keywords'].append("") # support for packages with no keywords
+            else:
+                for i in cnt:
+                    if i:
+                        data['keywords'].append(i)
+            f.close()
+        except IOError:
+            pass
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting package dependencies..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+
+        f = open(tbz2TmpDir+dbRDEPEND,"r")
+        rdepend = f.readline().strip()
+        f.close()
+
+        f = open(tbz2TmpDir+dbPDEPEND,"r")
+        pdepend = f.readline().strip()
+        f.close()
+
+        f = open(tbz2TmpDir+dbDEPEND,"r")
+        depend = f.readline().strip()
+        f.close()
+
+        f = open(tbz2TmpDir+dbUSE,"r")
+        use = f.readline().strip()
+        f.close()
+
+        try:
+            f = open(tbz2TmpDir+dbIUSE,"r")
+            iuse = f.readline().strip()
+            f.close()
+        except IOError:
+            iuse = ""
+
+        try:
+            f = open(tbz2TmpDir+dbLICENSE,"r")
+            lics = f.readline().strip()
+            f.close()
+        except IOError:
+            lics = ""
+
+        try:
+            f = open(tbz2TmpDir+dbPROVIDE,"r")
+            provide = f.readline().strip()
+        except IOError:
+            provide = ""
+
+        try:
+            f = open(tbz2TmpDir+dbSRC_URI,"r")
+            sources = f.readline().strip()
+            f.close()
+        except IOError:
+            sources = ""
+
+        Spm = self.Spm()
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting package metadata information..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        portage_metadata = Spm.calculate_dependencies(iuse, use, lics, depend, rdepend, pdepend, provide, sources)
+
+        data['provide'] = portage_metadata['PROVIDE'].split()
+        data['license'] = portage_metadata['LICENSE']
+        data['useflags'] = []
+        for x in use.split():
+            if x in portage_metadata['USE']:
+                data['useflags'].append(x)
+            else:
+                data['useflags'].append("-"+x)
+        data['sources'] = portage_metadata['SRC_URI'].split()
+        data['dependencies'] = [x for x in portage_metadata['RDEPEND'].split()+portage_metadata['PDEPEND'].split() if not x.startswith("!") and not x in ("(","||",")","")]
+        data['conflicts'] = [x[1:] for x in portage_metadata['RDEPEND'].split()+portage_metadata['PDEPEND'].split() if x.startswith("!") and not x in ("(","||",")","")]
+
+        if (kernelstuff) and (not kernelstuff_kernel):
+            # add kname to the dependency
+            data['dependencies'].append("=sys-kernel/linux-"+kname+"-"+kver)
+            key = data['category']+"/"+data['name']
+            if etpConst['conflicting_tagged_packages'].has_key(key):
+                myconflicts = etpConst['conflicting_tagged_packages'][key]
+                for conflict in myconflicts:
+                    data['conflicts'].append(conflict)
+
+        # Get License text if possible
+        licenses_dir = os.path.join(Spm.get_spm_setting('PORTDIR'),'licenses')
+        data['licensedata'] = {}
+        if licenses_dir:
+            licdata = [str(x.strip()) for x in data['license'].split() if str(x.strip()) and self.entropyTools.is_valid_string(x.strip())]
+            for mylicense in licdata:
+
+                licfile = os.path.join(licenses_dir,mylicense)
+                if os.access(licfile,os.R_OK):
+                    if self.entropyTools.istextfile(licfile):
+                        f = open(licfile)
+                        data['licensedata'][mylicense] = f.read()
+                        f.close()
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting package mirrors list..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        # manage data['sources'] to create data['mirrorlinks']
+        # =mirror://openoffice|link1|link2|link3
+        data['mirrorlinks'] = []
+        for i in data['sources']:
+            if i.startswith("mirror://"):
+                # parse what mirror I need
+                mirrorURI = i.split("/")[2]
+                mirrorlist = Spm.get_third_party_mirrors(mirrorURI)
+                data['mirrorlinks'].append([mirrorURI,mirrorlist]) # mirrorURI = openoffice and mirrorlist = [link1, link2, link3]
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting System Packages List..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        # write only if it's a systempackage
+        data['systempackage'] = ''
+        systemPackages = Spm.get_atoms_in_system()
+        for x in systemPackages:
+            x = self.entropyTools.dep_getkey(x)
+            y = data['category']+"/"+data['name']
+            if x == y:
+                # found
+                data['systempackage'] = "xxx"
+                break
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting CONFIG_PROTECT/CONFIG_PROTECT_MASK List..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        # write only if it's a systempackage
+        protect, mask = Spm.get_config_protect_and_mask()
+        data['config_protect'] = protect
+        data['config_protect_mask'] = mask
+
+        # fill data['messages']
+        # etpConst['logdir']+"/elog"
+        if not os.path.isdir(etpConst['logdir']+"/elog"):
+            os.makedirs(etpConst['logdir']+"/elog")
+        data['messages'] = []
+        if os.path.isdir(etpConst['logdir']+"/elog"):
+            elogfiles = os.listdir(etpConst['logdir']+"/elog")
+            myelogfile = data['category']+":"+data['name']+"-"+data['version']
+            foundfiles = []
+            for item in elogfiles:
+                if item.startswith(myelogfile):
+                    foundfiles.append(item)
+            if foundfiles:
+                elogfile = foundfiles[0]
+                if len(foundfiles) > 1:
+                    # get the latest
+                    mtimes = []
+                    for item in foundfiles:
+                        mtimes.append((self.entropyTools.getFileUnixMtime(etpConst['logdir']+"/elog/"+item),item))
+                    mtimes.sort()
+                    elogfile = mtimes[len(mtimes)-1][1]
+                messages = self.entropyTools.extractElog(etpConst['logdir']+"/elog/"+elogfile)
+                for message in messages:
+                    message = message.replace("emerge","install")
+                    data['messages'].append(message)
+        else:
+            if not silent:
+                self.updateProgress(
+                    red(etpConst['logdir']+"/elog")+" not set, have you configured make.conf properly?",
+                    importance = 1,
+                    type = "warning",
+                    header = yellow(" * ")
+                )
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Getting Entropy API version..."),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        # write API info
+        data['etpapi'] = etpConst['etpapi']
+
+        # removing temporary directory
+        shutil.rmtree(tbz2TmpDir,True)
+        if os.path.isdir(tbz2TmpDir):
+            try:
+                os.remove(tbz2TmpDir)
+            except OSError:
+                pass
+
+        if not silent:
+            self.updateProgress(
+                red(info_package+"Done"),
+                importance = 0,
+                type = "info",
+                header = yellow(" * "),
+                back = True
+            )
+        return data
+
     '''
         Source Package Manager Interface :: end
     '''
 
     '''
-        Triggers interface :: begin
+        Triggers interface :: begindatabaseStructureUpdates
     '''
     def Triggers(self, phase, pkgdata):
         conn = TriggerInterface(EquoInstance = self, phase = phase, pkgdata = pkgdata)
@@ -7731,6 +8394,11 @@ class SpmInterface:
         if self.spm_backend == "portage":
             self.intf = PortageInterface(OutputInterface)
 
+    @staticmethod
+    def get_spm_interface():
+        backend = etpConst['spm']['backend']
+        if backend == "portage":
+            return PortageInterface
 
 class PortageInterface:
 
@@ -7978,16 +8646,11 @@ class PortageInterface:
         use = [f for f in use if f in iuse]
         use.sort()
         metadata['USE'] = " ".join(use)
-        try:
-            from portage_dep import paren_reduce, use_reduce #, paren_enclose
-            p_normalize = self.entropyTools.paren_normalize
-        except ImportError:
-            from portage.dep import paren_reduce, use_reduce, paren_normalize as p_normalize #, paren_enclose
         for k in "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", "PROVIDE", "SRC_URI":
             try:
-                deps = paren_reduce(metadata[k])
-                deps = use_reduce(deps, uselist=raw_use)
-                deps = p_normalize(deps)
+                deps = self.paren_reduce(metadata[k])
+                deps = self.use_reduce(deps, uselist=raw_use)
+                deps = self.entropyTools.paren_normalize(deps)
                 if k == "LICENSE":
                     deps = self.paren_license_choose(deps)
                 else:
@@ -8005,8 +8668,216 @@ class PortageInterface:
             metadata[k] = deps
         return metadata
 
-    def paren_choose(self, dep_list):
+    def paren_reduce(self, mystr,tokenize=1):
+        """
 
+            # deps.py -- Portage dependency resolution functions
+            # Copyright 2003-2004 Gentoo Foundation
+            # Distributed under the terms of the GNU General Public License v2
+            # $Id: portage_dep.py 9174 2008-01-11 05:49:02Z zmedico $
+
+        Take a string and convert all paren enclosed entities into sublists, optionally
+        futher splitting the list elements by spaces.
+
+        Example usage:
+                >>> paren_reduce('foobar foo ( bar baz )',1)
+                ['foobar', 'foo', ['bar', 'baz']]
+                >>> paren_reduce('foobar foo ( bar baz )',0)
+                ['foobar foo ', [' bar baz ']]
+
+        @param mystr: The string to reduce
+        @type mystr: String
+        @param tokenize: Split on spaces to produces further list breakdown
+        @type tokenize: Integer
+        @rtype: Array
+        @return: The reduced string in an array
+        """
+        mylist = []
+        while mystr:
+            left_paren = mystr.find("(")
+            has_left_paren = left_paren != -1
+            right_paren = mystr.find(")")
+            has_right_paren = right_paren != -1
+            if not has_left_paren and not has_right_paren:
+                freesec = mystr
+                subsec = None
+                tail = ""
+            elif mystr[0] == ")":
+                return [mylist,mystr[1:]]
+            elif has_left_paren and not has_right_paren:
+                raise exceptionTools.InvalidDependString(
+                        "missing right parenthesis: '%s'" % mystr)
+            elif has_left_paren and left_paren < right_paren:
+                freesec,subsec = mystr.split("(",1)
+                subsec,tail = self.paren_reduce(subsec,tokenize)
+            else:
+                subsec,tail = mystr.split(")",1)
+                if tokenize:
+                    subsec = self.strip_empty(subsec.split(" "))
+                    return [mylist+subsec,tail]
+                return mylist+[subsec],tail
+            mystr = tail
+            if freesec:
+                if tokenize:
+                    mylist = mylist + self.strip_empty(freesec.split(" "))
+                else:
+                    mylist = mylist + [freesec]
+            if subsec is not None:
+                mylist = mylist + [subsec]
+        return mylist
+
+    def strip_empty(self, myarr):
+        """
+
+            # deps.py -- Portage dependency resolution functions
+            # Copyright 2003-2004 Gentoo Foundation
+            # Distributed under the terms of the GNU General Public License v2
+            # $Id: portage_dep.py 9174 2008-01-11 05:49:02Z zmedico $
+
+        Strip all empty elements from an array
+
+        @param myarr: The list of elements
+        @type myarr: List
+        @rtype: Array
+        @return: The array with empty elements removed
+        """
+        for x in range(len(myarr)-1, -1, -1):
+                if not myarr[x]:
+                        del myarr[x]
+        return myarr
+
+    def use_reduce(self, deparray, uselist=[], masklist=[], matchall=0, excludeall=[]):
+        """
+
+            # deps.py -- Portage dependency resolution functions
+            # Copyright 2003-2004 Gentoo Foundation
+            # Distributed under the terms of the GNU General Public License v2
+            # $Id: portage_dep.py 9174 2008-01-11 05:49:02Z zmedico $
+
+        Takes a paren_reduce'd array and reduces the use? conditionals out
+        leaving an array with subarrays
+
+        @param deparray: paren_reduce'd list of deps
+        @type deparray: List
+        @param uselist: List of use flags
+        @type uselist: List
+        @param masklist: List of masked flags
+        @type masklist: List
+        @param matchall: Resolve all conditional deps unconditionally.  Used by repoman
+        @type matchall: Integer
+        @rtype: List
+        @return: The use reduced depend array
+        """
+        # Quick validity checks
+        for x in range(len(deparray)):
+            if deparray[x] in ["||","&&"]:
+                if len(deparray) - 1 == x or not isinstance(deparray[x+1], list):
+                    raise exceptionTools.InvalidDependString(deparray[x]+" missing atom list in \""+str(deparray)+"\"")
+        if deparray and deparray[-1] and deparray[-1][-1] == "?":
+            raise exceptionTools.InvalidDependString("Conditional without target in \""+str(deparray)+"\"")
+
+        # This is just for use by emerge so that it can enable a backward compatibility
+        # mode in order to gracefully deal with installed packages that have invalid
+        # atoms or dep syntax.  For backward compatibility with api consumers, strict
+        # behavior will be explicitly enabled as necessary.
+        _dep_check_strict = False
+
+        mydeparray = deparray[:]
+        rlist = []
+        while mydeparray:
+            head = mydeparray.pop(0)
+
+            if isinstance(head,list):
+                additions = self.use_reduce(head, uselist, masklist, matchall, excludeall)
+                if additions:
+                    rlist.append(additions)
+                elif rlist and rlist[-1] == "||":
+                    #XXX: Currently some DEPEND strings have || lists without default atoms.
+                    #	raise portage_exception.InvalidDependString("No default atom(s) in \""+paren_enclose(deparray)+"\"")
+                    rlist.append([])
+            else:
+                if head[-1] == "?": # Use reduce next group on fail.
+                    # Pull any other use conditions and the following atom or list into a separate array
+                    newdeparray = [head]
+                    while isinstance(newdeparray[-1], str) and newdeparray[-1][-1] == "?":
+                        if mydeparray:
+                            newdeparray.append(mydeparray.pop(0))
+                        else:
+                            raise ValueError, "Conditional with no target."
+
+                    # Deprecation checks
+                    warned = 0
+                    if len(newdeparray[-1]) == 0:
+                        self.updateProgress(
+                                                darkred("PortageInterface.use_reduce(): Empty target in string. (Deprecated)"),
+                                                importance = 0,
+                                                type = "error",
+                                                header = bold(" !!! ")
+                                            )
+                        warned = 1
+                    if len(newdeparray) != 2:
+                        self.updateProgress(
+                                                darkred("PortageInterface.use_reduce(): Note: Nested use flags without parenthesis (Deprecated)"),
+                                                importance = 0,
+                                                type = "error",
+                                                header = bold(" !!! ")
+                                            )
+                        warned = 1
+                    if warned:
+                        self.updateProgress(
+                                                darkred("PortageInterface.use_reduce(): "+" ".join(map(str,[head]+newdeparray))),
+                                                importance = 0,
+                                                type = "error",
+                                                header = bold(" !!! ")
+                                            )
+
+                    # Check that each flag matches
+                    ismatch = True
+                    missing_flag = False
+                    for head in newdeparray[:-1]:
+                        head = head[:-1]
+                        if not head:
+                            missing_flag = True
+                            break
+                        if head.startswith("!"):
+                            head_key = head[1:]
+                            if not head_key:
+                                missing_flag = True
+                                break
+                            if not matchall and head_key in uselist or \
+                                head_key in excludeall:
+                                ismatch = False
+                                break
+                        elif head not in masklist:
+                            if not matchall and head not in uselist:
+                                    ismatch = False
+                                    break
+                        else:
+                            ismatch = False
+                    if missing_flag:
+                        raise exceptionTools.InvalidDependString(
+                                "Conditional without flag: \"" + \
+                                str([head+"?", newdeparray[-1]])+"\"")
+
+                    # If they all match, process the target
+                    if ismatch:
+                            target = newdeparray[-1]
+                            if isinstance(target, list):
+                                    additions = self.use_reduce(target, uselist, masklist, matchall, excludeall)
+                                    if additions:
+                                            rlist.append(additions)
+                            elif not _dep_check_strict:
+                                    # The old deprecated behavior.
+                                    rlist.append(target)
+                            else:
+                                    raise exceptionTools.InvalidDependString(
+                                            "Conditional without parenthesis: '%s?'" % head)
+
+                else:
+                    rlist += [head]
+        return rlist
+
+    def paren_choose(self, dep_list):
         newlist = []
         do_skip = False
         for idx in range(len(dep_list)):

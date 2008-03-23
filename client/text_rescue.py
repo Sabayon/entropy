@@ -120,7 +120,7 @@ def database(options):
             Equo.entropyTools.appendXpak(temptbz2,portagePackage)
             # now extract info
             try:
-                mydata = Equo.entropyTools.extractPkgData(temptbz2, silent = True)
+                mydata = Equo.extract_pkg_metadata(temptbz2, silent = True)
             except Exception, e:
                 Equo.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Database generation: Exception caught: %s: %s" % (str(Exception),str(e),))
                 print_warning(red("!!! An error occured while analyzing: ")+blue(portagePackage))
@@ -423,7 +423,7 @@ def database(options):
                 Equo.entropyTools.appendXpak(temptbz2,atom)
                 # now extract info
                 try:
-                    mydata = Equo.entropyTools.extractPkgData(temptbz2, silent = True)
+                    mydata = Equo.extract_pkg_metadata(temptbz2, silent = True)
                 except Exception, e:
                     Equo.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Database gentoosync: Exception caught: %s: %s" % (str(Exception),str(e),))
                     print_warning(red("!!! An error occured while analyzing: ")+blue(atom))

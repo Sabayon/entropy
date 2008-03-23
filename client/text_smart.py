@@ -163,7 +163,7 @@ def InflateHandler(mytbz2s, savedir):
         etptbz2path = savedir+"/"+os.path.basename(tbz2)
         if os.path.realpath(tbz2) != os.path.realpath(etptbz2path): # can convert a file without copying
             shutil.copy2(tbz2,etptbz2path)
-        mydata = text_ui.Equo.entropyTools.extractPkgData(etptbz2path)
+        mydata = text_ui.Equo.extract_pkg_metadata(etptbz2path)
         # append arbitrary revision
         mydata['revision'] = 9999
         mydata['download'] = mydata['download'][:-5]+"~9999.tbz2"
