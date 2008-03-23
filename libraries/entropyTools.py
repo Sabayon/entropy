@@ -1607,10 +1607,10 @@ def saveRepositorySettings(repodata, remove = False, disable = False, enable = F
         # inject new repodata
         keys = repolines_data.keys()
         keys.sort()
-        for c in keys:
-            repoid = repolines_data[c]['repoid']
+        for cc in keys:
+            repoid = repolines_data[cc]['repoid']
             # write the first
-            line = repolines_data[c]['line']
+            line = repolines_data[cc]['line']
             content.append(line)
 
     _saveRepositoriesContent(content)
@@ -1729,12 +1729,14 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
     # appending xpak metadata
     if etpConst['gentoo-compat']:
         import etpXpak
+        from entropy import SpmInterface
+        SpmIntf = SpmInterface(None)
+        Spm = SpmIntf.intf
 
         gentoo_name = remove_tag(pkgname)
         gentoo_name = remove_entropy_revision(gentoo_name)
         if portdbPath == None:
-            from portageTools import getPortageAppDbPath
-            dbdir = getPortageAppDbPath()+"/"+pkgcat+"/"+gentoo_name+"/"
+            dbdir = Spm.get_vdb_path()+"/"+pkgcat+"/"+gentoo_name+"/"
         else:
             dbdir = portdbPath+"/"+pkgcat+"/"+gentoo_name+"/"
         if os.path.isdir(dbdir):
@@ -1761,8 +1763,10 @@ def quickpkg(pkgdata, dirpath, edb = True, portdbPath = None, fake = False, comp
 
 def appendXpak(tbz2file, atom):
     import etpXpak
-    from portageTools import getPortageAppDbPath
-    dbdir = getPortageAppDbPath()+"/"+atom+"/"
+    from entropy import SpmInterface
+    SpmIntf = SpmInterface(None)
+    Spm = SpmIntf.intf
+    dbdir = Spm.get_vdb_path()+"/"+atom+"/"
     if os.path.isdir(dbdir):
         tbz2 = etpXpak.tbz2(tbz2file)
         tbz2.recompose(dbdir)
@@ -1773,7 +1777,9 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 
     data = {}
 
-    from portageTools import calculate_dependencies, getPackagesInSystem, getConfigProtectAndMask, getThirdPartyMirrors
+    from entropy import SpmInterface
+    SpmIntf = SpmInterface(None)
+    Spm = SpmIntf.intf
 
     info_package = bold(os.path.basename(package))+": "
 
@@ -1822,6 +1828,10 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
     if not silent: print_info(yellow(" * ")+red(info_package+"Unpacking package data..."),back = True)
     # unpack file
     tbz2TmpDir = etpConst['packagestmpdir']+"/"+data['name']+"-"+data['version']+"/"
+    if not os.path.isdir(tbz2TmpDir):
+        if os.path.lexists(tbz2TmpDir):
+            os.remove(tbz2TmpDir)
+        os.makedirs(tbz2TmpDir)
     extractXpak(tbz2File,tbz2TmpDir)
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package CHOST..."),back = True)
@@ -2122,7 +2132,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
         sources = ""
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting package metadata information..."),back = True)
-    portage_metadata = calculate_dependencies(iuse, use, lics, depend, rdepend, pdepend, provide, sources)
+    portage_metadata = Spm.calculate_dependencies(iuse, use, lics, depend, rdepend, pdepend, provide, sources)
 
     data['provide'] = portage_metadata['PROVIDE'].split()
     data['license'] = portage_metadata['LICENSE']
@@ -2146,12 +2156,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
                 data['conflicts'].append(conflict)
 
     # Get License text if possible
-    licenses_dir = None
-    try:
-        from portageTools import getPortageEnv
-        licenses_dir = os.path.join(getPortageEnv('PORTDIR'),'licenses')
-    except:
-        pass
+    licenses_dir = os.path.join(Spm.get_spm_setting('PORTDIR'),'licenses')
     data['licensedata'] = {}
     if licenses_dir:
         licdata = [str(x.strip()) for x in data['license'].split() if str(x.strip()) and is_valid_string(x.strip())]
@@ -2172,13 +2177,13 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
         if i.startswith("mirror://"):
             # parse what mirror I need
             mirrorURI = i.split("/")[2]
-            mirrorlist = getThirdPartyMirrors(mirrorURI)
+            mirrorlist = Spm.get_third_party_mirrors(mirrorURI)
             data['mirrorlinks'].append([mirrorURI,mirrorlist]) # mirrorURI = openoffice and mirrorlist = [link1, link2, link3]
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting System Packages List..."),back = True)
     # write only if it's a systempackage
     data['systempackage'] = ''
-    systemPackages = getPackagesInSystem()
+    systemPackages = Spm.get_atoms_in_system()
     for x in systemPackages:
         x = dep_getkey(x)
         y = data['category']+"/"+data['name']
@@ -2189,7 +2194,7 @@ def extractPkgData(package, etpBranch = etpConst['branch'], silent = False, inje
 
     if not silent: print_info(yellow(" * ")+red(info_package+"Getting CONFIG_PROTECT/CONFIG_PROTECT_MASK List..."),back = True)
     # write only if it's a systempackage
-    protect, mask = getConfigProtectAndMask()
+    protect, mask = Spm.get_config_protect_and_mask()
     data['config_protect'] = protect
     data['config_protect_mask'] = mask
 
@@ -2276,41 +2281,6 @@ def collectPaths():
         path |= paths
     return path
 
-# this is especially used to try to guess portage bytecoded entries in CONTENTS
-def string_to_utf8(string):
-    done = False
-
-    # simple unicode?
-    try:
-        newstring = unicode(string)
-        done = True
-    except:
-        pass
-    if done:
-        return newstring
-
-    # try utf8
-    try:
-        newstring = string.decode("iso-8859-1")
-        done = True
-    except:
-        pass
-    if done:
-        return newstring
-
-    # try latin1 + iso-8859-1
-    try:
-        newstring = string.decode("latin1")
-        done = True
-    except:
-        pass
-    if done:
-        return newstring
-
-    # otherwise return None
-    print "DEBUG: cannot encode into filesystem encoding -> "+unicode(string)
-    return None
-
 def listToUtf8(mylist):
     mynewlist = []
     for item in mylist:
@@ -2322,3 +2292,40 @@ def listToUtf8(mylist):
             except:
                 raise
     return mynewlist
+
+# used by PortageInterface
+class paren_normalize(list):
+    """Take a dependency structure as returned by paren_reduce or use_reduce
+    and generate an equivalent structure that has no redundant lists."""
+    def __init__(self, src):
+        list.__init__(self)
+        self._zap_parens(src, self)
+
+    def _zap_parens(self, src, dest, disjunction=False):
+        if not src:
+            return dest
+        i = iter(src)
+        for x in i:
+            if isinstance(x, basestring):
+                if x == '||':
+                    x = self._zap_parens(i.next(), [], disjunction=True)
+                    if len(x) == 1:
+                        dest.append(x[0])
+                    else:
+                        dest.append("||")
+                        dest.append(x)
+                elif x.endswith("?"):
+                    dest.append(x)
+                    dest.append(self._zap_parens(i.next(), []))
+                else:
+                    dest.append(x)
+            else:
+                if disjunction:
+                    x = self._zap_parens(x, [])
+                    if len(x) == 1:
+                        dest.append(x[0])
+                    else:
+                        dest.append(x)
+                else:
+                    self._zap_parens(x, dest)
+        return dest

@@ -124,9 +124,9 @@ def CommonFlate(mytbz2s, action, savedir = None):
 
     # test if portage is available
     try:
-        import portageTools
+        Spm = Equo.Spm()
     except:
-        print_error(darkred(" * ")+bold("Portage")+red(" is not available."))
+        print_error(darkred(" * ")+bold("Source Package Manager backend")+red(" is not available."))
         return 1
 
     if savedir:

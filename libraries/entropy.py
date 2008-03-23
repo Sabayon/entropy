@@ -87,6 +87,7 @@ class EquoInterface(TextInterface):
         self.FileUpdates = self.FileUpdatesInterfaceLoader()
         self.repoDbCache = {}
         self.securityCache = {}
+        self.spmCache = {}
 
         # masking parser
         self.MaskingParser = self.PackageMaskingParserInterfaceLoader()
@@ -2219,6 +2220,21 @@ class EquoInterface(TextInterface):
     '''
 
     '''
+        Source Package Manager Interface :: begin
+    '''
+    def Spm(self):
+        myroot = etpConst['systemroot']
+        cached = self.spmCache.get(myroot)
+        if cached != None:
+            return cached
+        conn = SpmInterface(self)
+        self.spmCache[myroot] = conn.intf
+        return conn.intf
+    '''
+        Source Package Manager Interface :: end
+    '''
+
+    '''
         Triggers interface :: begin
     '''
     def Triggers(self, phase, pkgdata):
@@ -2601,37 +2617,34 @@ class PackageInterface:
     def __remove_package_from_gentoo_database(self, atom):
 
         # handle gentoo-compat
-        _portage_avail = False
         try:
-            from portageTools import getPortageAppDbPath as _portage_getPortageAppDbPath, getInstalledAtoms as _portage_getInstalledAtoms
-            _portage_avail = True
+            Spm = self.Entropy.Spm()
         except:
-            return -1 # no Portage support
+            return -1 # no Spm support ??
 
-        if (_portage_avail):
-            portDbDir = _portage_getPortageAppDbPath()
-            removePath = portDbDir+atom
-            try:
-                shutil.rmtree(removePath,True)
-            except:
-                pass
-            key = self.Entropy.entropyTools.dep_getkey(atom)
-            othersInstalled = _portage_getInstalledAtoms(key) #FIXME: really slow
-            if othersInstalled == None:
-                world_file = os.path.join(etpConst['systemroot'],'var/lib/portage/world')
-                world_file_tmp = world_file+".entropy.tmp"
-                if os.access(world_file,os.W_OK):
-                    new = open(world_file_tmp,"w")
-                    old = open(world_file,"r")
+        portDbDir = Spm.get_vdb_path()
+        removePath = portDbDir+atom
+        try:
+            shutil.rmtree(removePath,True)
+        except:
+            pass
+        key = self.Entropy.entropyTools.dep_getkey(atom)
+        othersInstalled = Spm.get_installed_atoms(key) #FIXME: really slow
+        if othersInstalled == None:
+            world_file = os.path.join(etpConst['systemroot'],'var/lib/portage/world')
+            world_file_tmp = world_file+".entropy.tmp"
+            if os.access(world_file,os.W_OK):
+                new = open(world_file_tmp,"w")
+                old = open(world_file,"r")
+                line = old.readline()
+                while line:
+                    if line.find(key) == -1:
+                        new.write(line)
                     line = old.readline()
-                    while line:
-                        if line.find(key) == -1:
-                            new.write(line)
-                        line = old.readline()
-                    new.flush()
-                    new.close()
-                    old.close()
-                    shutil.move(world_file_tmp,world_file)
+                new.flush()
+                new.close()
+                old.close()
+                shutil.move(world_file_tmp,world_file)
         return 0
 
     '''
@@ -2758,15 +2771,12 @@ class PackageInterface:
     def _install_package_into_gentoo_database(self, newidpackage):
 
         # handle gentoo-compat
-        _portage_avail = False
-        portDbDir = ''
         try:
-            import portageTools
-            portDbDir = portageTools.getPortageAppDbPath()
-            _portage_avail = True
+            Spm = self.Entropy.Spm()
         except:
             return -1 # no Portage support
-        if _portage_avail and os.path.isdir(portDbDir):
+        portDbDir = Spm.get_vdb_path()
+        if os.path.isdir(portDbDir):
             # extract xpak from unpackDir+etpConst['packagecontentdir']+"/"+package
             key = self.infoDict['category']+"/"+self.infoDict['name']
             atomsfound = set()
@@ -2781,7 +2791,7 @@ class PackageInterface:
             if atomsfound:
                 pkgToRemove = ''
                 for atom in atomsfound:
-                    atomslot = portageTools.getPackageSlot(atom)
+                    atomslot = Spm.get_package_slot(atom)
                     # get slot from gentoo db
                     if atomslot == self.infoDict['slot']:
                         pkgToRemove = atom
@@ -2823,9 +2833,9 @@ class PackageInterface:
                         f.close()
                     except:
                         # need file recreation, parse gentoo tree
-                        counter = portageTools.refillCounter()
+                        counter = Spm.refill_counter()
                 else:
-                    counter = portageTools.refillCounter()
+                    counter = Spm.refill_counter()
 
                 # write new counter to file
                 if os.path.isdir(destination):
@@ -4471,7 +4481,7 @@ class FtpInterface:
     def __init__(self, ftpuri, EntropyInterface):
 
         if not isinstance(EntropyInterface, (EquoInterface, TextInterface)):
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid TextInterface based Instance is needed")
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid TextInterface based instance is needed")
 
         self.Entropy = EntropyInterface
         import entropyTools
@@ -5222,11 +5232,10 @@ class TriggerInterface:
         self.INITSERVICES_DIR="/var/lib/init.d/"
 
         ''' portage stuff '''
-        self.portageTools = None
         if self.gentoo_compat:
             try:
-                import portageTools
-                self.portageTools = portageTools
+                Spm = self.Entropy.Spm()
+                self.Spm = Spm
             except Exception, e:
                 self.Entropy.updateProgress(
                                         red("Portage interface can't be loaded due to %s: (%s), please fix it !" % (str(Exception),str(e)) ),
@@ -6108,14 +6117,14 @@ class TriggerInterface:
                 if not os.path.isfile(self.pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"):
                     # if environment is not yet created, we need to run pkg_setup()
                     sys.stdout = stdfile
-                    rc = self.portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
+                    rc = self.Spm.spm_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
                     if rc == 1:
                         self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
                     sys.stdout = oldstdout
-                rc = self.portageTools.portage_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
+                rc = self.Spm.spm_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_postinst()) trigger for "+str(portage_atom)+". Something bad happened.")
-            except Exception, e: # let it crash even if self.portageTools == None
+            except Exception, e:
                 sys.stdout = oldstdout
                 self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
                 self.Entropy.updateProgress(
@@ -6145,11 +6154,11 @@ class TriggerInterface:
                                 )
             try:
                 sys.stdout = stdfile
-                rc = self.portageTools.portage_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license']) # create mysettings["T"]+"/environment"
+                rc = self.Spm.spm_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license']) # create mysettings["T"]+"/environment"
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
                 sys.stdout = oldstdout
-                rc = self.portageTools.portage_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
+                rc = self.Spm.spm_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_preinst()) trigger for "+str(portage_atom)+". Something bad happened.")
             except Exception, e:
@@ -6172,7 +6181,7 @@ class TriggerInterface:
 
         portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
         try:
-            myebuild = self.portageTools.getPortageAppDbPath()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
+            myebuild = self.Spm.get_vdb_path()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
         except:
             myebuild = ''
 
@@ -6188,7 +6197,7 @@ class TriggerInterface:
                                     header = red("   ##")
                                 )
             try:
-                rc = self.portageTools.portage_doebuild(myebuild, mydo = "prerm", tree = "bintree", cpv = portage_atom, portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom)
+                rc = self.Spm.spm_doebuild(myebuild, mydo = "prerm", tree = "bintree", cpv = portage_atom, portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom)
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preremove trigger for "+str(portage_atom)+". Something bad happened.")
             except Exception, e:
@@ -6213,7 +6222,7 @@ class TriggerInterface:
 
         portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
         try:
-            myebuild = self.portageTools.getPortageAppDbPath()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
+            myebuild = self.Spm.get_vdb_path()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
         except:
             myebuild = ''
 
@@ -6228,7 +6237,7 @@ class TriggerInterface:
                                     header = red("   ##")
                                 )
             try:
-                rc = self.portageTools.portage_doebuild(myebuild, mydo = "postrm", tree = "bintree", cpv = portage_atom, portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom)
+                rc = self.Spm.spm_doebuild(myebuild, mydo = "postrm", tree = "bintree", cpv = portage_atom, portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom)
                 if rc == 1:
                     self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo postremove trigger for "+str(portage_atom)+". Something bad happened.")
             except Exception, e:
@@ -7704,3 +7713,636 @@ class SecurityInterface:
                             )
 
         return 0
+
+class SpmInterface:
+
+    def __init__(self, OutputInterface):
+        if not isinstance(OutputInterface, (EquoInterface, TextInterface)):
+            if OutputInterface == None:
+                OutputInterface = TextInterface()
+            else:
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid TextInterface based instance is needed")
+
+        self.spm_backend = etpConst['spm']['backend']
+        self.valid_backends = etpConst['spm']['available_backends']
+        if self.spm_backend not in self.valid_backends:
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: invalid backend %s" % (self.spm_backend,))
+
+        if self.spm_backend == "portage":
+            self.intf = PortageInterface(OutputInterface)
+
+
+class PortageInterface:
+
+    def __init__(self, OutputInterface):
+        if not isinstance(OutputInterface, (EquoInterface, TextInterface)):
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid TextInterface based instance is needed")
+
+        # interface only needed OutputInterface functions
+        self.updateProgress = OutputInterface.updateProgress
+        self.askQuestion = OutputInterface.askQuestion
+
+        # importing portage stuff
+        import portage
+        self.portage = portage
+        try:
+            import portage_const
+        except ImportError:
+            import portage.const as portage_const
+        self.portage_const = portage_const
+
+        import entropyTools
+        self.entropyTools = entropyTools
+
+    def get_third_party_mirrors(self, mirrorname):
+        try:
+            return self.portage.thirdpartymirrors[mirrorname]
+        except KeyError:
+            return []
+
+    def get_spm_setting(self, var):
+        return self.portage.settings[var]
+
+    # Packages in system (in the Portage language -> emerge system, remember?)
+    def get_atoms_in_system(self):
+        system = self.portage.settings.packages
+        sysoutput = []
+        for x in system:
+            y = self.get_installed_atoms(x)
+            if (y != None):
+                for z in y:
+                    sysoutput.append(z)
+        sysoutput.append("sys-kernel/linux-sabayon") # our kernel
+        sysoutput.append("dev-db/sqlite") # our interface
+        sysoutput.append("dev-python/pysqlite") # our python interface to our interface (lol)
+        sysoutput.append("virtual/cron") # our cron service
+        sysoutput.append("app-admin/equo") # our package manager (client)
+        sysoutput.append("sys-apps/entropy") # our package manager (server+client)
+        return sysoutput
+
+    def get_config_protect_and_mask(self):
+        config_protect = self.portage.settings['CONFIG_PROTECT']
+        config_protect = config_protect.split()
+        config_protect_mask = self.portage.settings['CONFIG_PROTECT_MASK']
+        config_protect_mask = config_protect_mask.split()
+        # explode
+        protect = []
+        for x in config_protect:
+            if x.startswith("$"): #FIXME: small hack
+                x = commands.getoutput("echo "+x).split("\n")[0]
+            protect.append(x)
+        mask = []
+        for x in config_protect_mask:
+            if x.startswith("$"): #FIXME: small hack
+                x = commands.getoutput("echo "+x).split("\n")[0]
+            mask.append(x)
+        return ' '.join(protect),' '.join(mask)
+
+    # resolve atoms automagically (best, not current!)
+    # sys-libs/application --> sys-libs/application-1.2.3-r1
+    def get_best_atom(self, atom, match = "bestmatch-visible"):
+        try:
+            rc = self.portage.portdb.xmatch(match,str(atom))
+            return rc
+        except ValueError:
+            return "!!conflicts"
+
+    # same as above but includes masked ebuilds
+    def get_best_masked_atom(self, atom):
+        atoms = self.portage.portdb.xmatch("match-all",str(atom))
+        # find the best
+        try:
+            from portage_versions import best
+        except ImportError:
+            from portage.versions import best
+        rc = best(atoms)
+        return rc
+
+    def get_atom_category(self, atom):
+        try:
+            rc = self.portage.portdb.xmatch("match-all",str(atom))[0].split("/")[0]
+            return rc
+        except:
+            return None
+
+    def _get_portage_vartree(self, root):
+
+        if not etpConst['spm']['cache'].has_key('portage'):
+            etpConst['spm']['cache']['portage'] = {}
+        if not etpConst['spm']['cache']['portage'].has_key('vartree'):
+            etpConst['spm']['cache']['portage']['vartree'] = {}
+
+        cached = etpConst['spm']['cache']['portage']['vartree'].get(root)
+        if cached != None:
+            return cached
+
+        mytree = self.portage.vartree(root=root)
+        etpConst['spm']['cache']['portage']['vartree'][root] = mytree
+        return mytree
+
+    def _get_portage_config(self, config_root, root):
+
+        if not etpConst['spm']['cache'].has_key('portage'):
+            etpConst['spm']['cache']['portage'] = {}
+        if not etpConst['spm']['cache']['portage'].has_key('config'):
+            etpConst['spm']['cache']['portage']['config'] = {}
+
+        cached = etpConst['spm']['cache']['portage']['config'].get((config_root,root))
+        if cached != None:
+            return cached
+
+        mysettings = self.portage.config(config_root = config_root, target_root = root, config_incrementals = self.portage_const.INCREMENTALS)
+        etpConst['spm']['cache']['portage']['config'][(config_root,root)] = mysettings
+        return mysettings
+
+    # please always force =pkgcat/pkgname-ver if possible
+    def get_installed_atom(self, atom):
+        mypath = etpConst['systemroot']+"/"
+        mytree = self._get_portage_vartree(mypath)
+        rc = mytree.dep_match(str(atom))
+        if rc:
+            return rc[-1]
+        return None
+
+    def get_package_slot(self, atom):
+        mypath = etpConst['systemroot']+"/"
+        mytree = self._get_portage_vartree(mypath)
+        if atom.startswith("="):
+            atom = atom[1:]
+        rc = mytree.getslot(atom)
+        if rc:
+            return rc
+        return None
+
+    def get_installed_atoms(self, atom):
+        mypath = etpConst['systemroot']+"/"
+        mytree = self._get_portage_vartree(mypath)
+        rc = mytree.dep_match(str(atom))
+        if rc:
+            return rc
+        return None
+
+    # create a .tbz2 file in the specified path
+    def quickpkg(self, atom, dirpath):
+
+        # getting package info
+        pkgname = atom.split("/")[1]
+        pkgcat = atom.split("/")[0]
+        #pkgfile = pkgname+".tbz2"
+        if not os.path.isdir(dirpath):
+            os.makedirs(dirpath)
+        dirpath += "/"+pkgname+".tbz2"
+        dbdir = self.get_vdb_path()+"/"+pkgcat+"/"+pkgname+"/"
+
+        import tarfile
+        import stat
+        trees = self.portage.db["/"]
+        vartree = trees["vartree"]
+        dblnk = self.portage.dblink(pkgcat, pkgname, "/", vartree.settings, treetype="vartree", vartree=vartree)
+        dblnk.lockdb()
+        tar = tarfile.open(dirpath,"w:bz2")
+
+        contents = dblnk.getcontents()
+        id_strings = {}
+        paths = contents.keys()
+        paths.sort()
+
+        for path in paths:
+            try:
+                exist = os.lstat(path)
+            except OSError:
+                continue # skip file
+            ftype = contents[path][0]
+            lpath = path
+            arcname = path[1:]
+            if 'dir' == ftype and \
+                not stat.S_ISDIR(exist.st_mode) and \
+                os.path.isdir(lpath):
+                lpath = os.path.realpath(lpath)
+            tarinfo = tar.gettarinfo(lpath, arcname)
+            tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
+            tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
+
+            if stat.S_ISREG(exist.st_mode):
+                tarinfo.type = tarfile.REGTYPE
+                f = open(path)
+                try:
+                    tar.addfile(tarinfo, f)
+                finally:
+                    f.close()
+            else:
+                tar.addfile(tarinfo)
+
+        tar.close()
+
+        # appending xpak informations
+        import etpXpak
+        tbz2 = etpXpak.tbz2(dirpath)
+        tbz2.recompose(dbdir)
+
+        dblnk.unlockdb()
+
+        if os.path.isfile(dirpath):
+            return dirpath
+        else:
+            return False
+
+    def get_useflags(self):
+        return self.portage.settings['USE']
+
+    def get_useflags_force(self):
+        return self.portage.settings.useforce
+
+    def get_useflags_mask(self):
+        return self.portage.settings.usemask
+
+    def get_package_setting(self, atom, setting):
+        myatom = atom[:]
+        if myatom.startswith("="):
+            myatom = myatom[1:]
+        return self.portage.portdb.aux_get(myatom,[setting])[0]
+
+    def calculate_dependencies(self, my_iuse, my_use, my_license, my_depend, my_rdepend, my_pdepend, my_provide, my_src_uri):
+        metadata = {}
+        metadata['USE'] = my_use
+        metadata['IUSE'] = my_iuse
+        metadata['LICENSE'] = my_license
+        metadata['DEPEND'] = my_depend
+        metadata['PDEPEND'] = my_pdepend
+        metadata['RDEPEND'] = my_rdepend
+        metadata['PROVIDE'] = my_provide
+        metadata['SRC_URI'] = my_src_uri
+        use = metadata['USE'].split()
+        raw_use = use
+        iuse = set(metadata['IUSE'].split())
+        use = [f for f in use if f in iuse]
+        use.sort()
+        metadata['USE'] = " ".join(use)
+        try:
+            from portage_dep import paren_reduce, use_reduce #, paren_enclose
+            p_normalize = self.entropyTools.paren_normalize
+        except ImportError:
+            from portage.dep import paren_reduce, use_reduce, paren_normalize as p_normalize #, paren_enclose
+        for k in "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", "PROVIDE", "SRC_URI":
+            try:
+                deps = paren_reduce(metadata[k])
+                deps = use_reduce(deps, uselist=raw_use)
+                deps = p_normalize(deps)
+                if k == "LICENSE":
+                    deps = self.paren_license_choose(deps)
+                else:
+                    deps = self.paren_choose(deps)
+                deps = ' '.join(deps)
+            except Exception, e:
+                self.updateProgress(
+                                        darkred("Error calculating Portage dependencies: %s: %s :: %s") % (str(Exception), k, str(e)) ,
+                                        importance = 1,
+                                        type = "error",
+                                        header = red(" !!! ")
+                                    )
+                deps = ''
+                continue
+            metadata[k] = deps
+        return metadata
+
+    def paren_choose(self, dep_list):
+
+        newlist = []
+        do_skip = False
+        for idx in range(len(dep_list)):
+
+            if do_skip:
+                do_skip = False
+                continue
+
+            item = dep_list[idx]
+            if item == "||": # or
+                next_item = dep_list[idx+1]
+                if not next_item: # || ( asd? ( atom ) dsa? ( atom ) ) => [] if use asd and dsa are disabled
+                    do_skip = True
+                    continue
+                item = self.dep_or_select(next_item) # must be a list
+                if not item:
+                    # no matches, transform to string and append, so reagent will fail
+                    newlist.append(str(next_item))
+                else:
+                    newlist += item
+                do_skip = True
+            elif isinstance(item, list): # and
+                item = self.dep_and_select(item)
+                newlist += item
+            else:
+                newlist.append(item)
+
+        return newlist
+
+    def dep_and_select(self, and_list):
+        do_skip = False
+        newlist = []
+        for idx in range(len(and_list)):
+
+            if do_skip:
+                do_skip = False
+                continue
+
+            x = and_list[idx]
+            if x == "||":
+                x = self.dep_or_select(and_list[idx+1])
+                do_skip = True
+                if not x:
+                    x = str(and_list[idx+1])
+                else:
+                    newlist += x
+            elif isinstance(x, list):
+                x = self.dep_and_select(x)
+                newlist += x
+            else:
+                newlist.append(x)
+
+        # now verify if all are satisfied
+        for x in newlist:
+            match = self.get_installed_atom(x)
+            if match == None:
+                return []
+
+        return newlist
+
+    def dep_or_select(self, or_list):
+        do_skip = False
+        for idx in range(len(or_list)):
+            if do_skip:
+                do_skip = False
+                continue
+            x = or_list[idx]
+            if x == "||": # or
+                x = self.dep_or_select(or_list[idx+1])
+                do_skip = True
+            elif isinstance(x, list): # and
+                x = self.dep_and_select(x)
+                if not x:
+                    continue
+                # found
+                return x
+            else:
+                x = [x]
+
+            for y in x:
+                match = self.get_installed_atom(y)
+                if match != None:
+                    return [y]
+
+        return []
+
+    def paren_license_choose(self, dep_list):
+
+        newlist = set()
+        for item in dep_list:
+
+            if isinstance(item, list):
+                # match the first
+                data = set(self.paren_license_choose(item))
+                newlist.update(data)
+            else:
+                if item not in ["||"]:
+                    newlist.add(item)
+
+        return list(newlist)
+
+    def get_vdb_path(self):
+        rc = etpConst['systemroot']+"/"+self.portage_const.VDB_PATH
+        if (not rc.endswith("/")):
+            return rc+"/"
+        return rc
+
+    def get_available_packages(self, categories = [], filter_reinstalls = True):
+        mypath = etpConst['systemroot']+"/"
+        mysettings = self._get_portage_config("/",mypath)
+        portdb = self.portage.portdbapi(mysettings["PORTDIR"], mysettings = mysettings)
+        cps = portdb.cp_all()
+        visibles = set()
+        for cp in cps:
+            if categories and cp.split("/")[0] not in categories:
+                continue
+            # get slots
+            slots = set()
+            atoms = self.get_best_atom(cp, "match-visible")
+            for atom in atoms:
+                slots.add(portdb.aux_get(atom, ["SLOT"])[0])
+            for slot in slots:
+                visibles.add(cp+":"+slot)
+        del cps
+
+        # now match visibles
+        available = set()
+        for visible in visibles:
+            match = self.get_best_atom(visible)
+            if filter_reinstalls:
+                installed = self.get_installed_atom(visible)
+                # if not installed, installed == None
+                if installed != match:
+                    available.add(match)
+            else:
+                available.add(match)
+        del visibles
+
+        return available
+
+    # Collect installed packages
+    def get_installed_packages(self, dbdir = None):
+        if not dbdir:
+            appDbDir = self.get_vdb_path()
+        else:
+            appDbDir = dbdir
+        dbDirs = os.listdir(appDbDir)
+        installedAtoms = set()
+        for pkgsdir in dbDirs:
+            if os.path.isdir(appDbDir+pkgsdir):
+                pkgdir = os.listdir(appDbDir+pkgsdir)
+                for pdir in pkgdir:
+                    pkgcat = pkgsdir.split("/")[len(pkgsdir.split("/"))-1]
+                    pkgatom = pkgcat+"/"+pdir
+                    if pkgatom.find("-MERGING-") == -1:
+                        installedAtoms.add(pkgatom)
+        return list(installedAtoms), len(installedAtoms)
+
+    def get_installed_packages_counter(self, dbdir = None):
+        if not dbdir:
+            appDbDir = self.get_vdb_path()
+        else:
+            appDbDir = dbdir
+        dbDirs = os.listdir(appDbDir)
+        installedAtoms = set()
+        for pkgsdir in dbDirs:
+            if not os.path.isdir(appDbDir+pkgsdir):
+                continue
+            pkgdir = os.listdir(appDbDir+pkgsdir)
+            for pdir in pkgdir:
+                pkgcat = pkgsdir.split("/")[len(pkgsdir.split("/"))-1]
+                pkgatom = pkgcat+"/"+pdir
+                if pkgatom.find("-MERGING-") == -1:
+                    # get counter
+                    try:
+                        f = open(appDbDir+pkgsdir+"/"+pdir+"/"+dbCOUNTER,"r")
+                        counter = int(f.readline().strip())
+                        f.close()
+                    except IOError:
+                        continue
+                    except ValueError:
+                        continue
+                    installedAtoms.add((pkgatom,counter))
+        return installedAtoms, len(installedAtoms)
+
+    def refill_counter(self, dbdir = None):
+        if not dbdir:
+            appDbDir = self.get_vdb_path()
+        else:
+            appDbDir = dbdir
+        counters = set()
+        for catdir in os.listdir(appDbDir):
+            catdir = appDbDir+catdir
+            if not os.path.isdir(catdir):
+                continue
+            for pkgdir in os.listdir(catdir):
+                pkgdir = catdir+"/"+pkgdir
+                if not os.path.isdir(pkgdir):
+                    continue
+                counterfile = pkgdir+"/"+dbCOUNTER
+                if not os.path.isfile(pkgdir+"/"+dbCOUNTER):
+                    continue
+                try:
+                    f = open(counterfile,"r")
+                    counter = int(f.readline().strip())
+                    counters.add(counter)
+                    f.close()
+                except:
+                    continue
+        newcounter = max(counters)
+        if not os.path.isdir(os.path.dirname(etpConst['edbcounter'])):
+            os.makedirs(os.path.dirname(etpConst['edbcounter']))
+        try:
+            f = open(etpConst['edbcounter'],"w")
+        except IOError, e:
+            if e[0] == 21:
+                shutil.rmtree(etpConst['edbcounter'],True)
+                try:
+                    os.rmdir(etpConst['edbcounter'])
+                except:
+                    pass
+            f = open(etpConst['edbcounter'],"w")
+        f.write(str(newcounter))
+        f.flush()
+        f.close()
+        del counters
+        return newcounter
+
+
+    def spm_doebuild(self, myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = []):
+
+        rc = self.entropyTools.spawnFunction(    self._portage_doebuild,
+                                            myebuild,
+                                            mydo,
+                                            tree,
+                                            cpv,
+                                            portage_tmpdir,
+                                            licenses
+                                        )
+        return rc
+
+    def _portage_doebuild(self, myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = []):
+        # myebuild = path/to/ebuild.ebuild with a valid unpacked xpak metadata
+        # tree = "bintree"
+        # tree = "bintree"
+        # cpv = atom
+        '''
+            # This is a demonstration that Sabayon team love Gentoo so much
+            [01:46] <zmedico> if you want something to stay in mysettings
+            [01:46] <zmedico> do mysettings.backup_changes("CFLAGS") for example
+            [01:46] <zmedico> otherwise your change can get lost inside doebuild()
+            [01:47] <zmedico> because it calls mysettings.reset()
+            # ^^^ this is DA MAN!
+        '''
+        # mydbapi = portage.fakedbapi(settings=portage.settings)
+        # vartree = portage.vartree(root=myroot)
+
+        oldsystderr = sys.stderr
+        f = open("/dev/null","w")
+        sys.stderr = f
+
+        ### SETUP ENVIRONMENT
+        # if mute, supress portage output
+        domute = False
+        if etpUi['mute']:
+            domute = True
+            oldsysstdout = sys.stdout
+            sys.stdout = f
+
+        mypath = etpConst['systemroot']+"/"
+        os.environ["SKIP_EQUO_SYNC"] = "1"
+        os.environ["CD_ROOT"] = "/tmp" # workaround for scripts asking for user intervention
+        os.environ["ROOT"] = mypath
+
+        if licenses:
+            os.environ["ACCEPT_LICENSE"] = str(' '.join(licenses)) # we already do this early
+
+        # load metadata
+        myebuilddir = os.path.dirname(myebuild)
+        keys = self.portage.auxdbkeys
+        metadata = {}
+
+        for key in keys:
+            mykeypath = os.path.join(myebuilddir,key)
+            if os.path.isfile(mykeypath) and os.access(mykeypath,os.R_OK):
+                f = open(mykeypath,"r")
+                metadata[key] = f.readline().strip()
+                f.close()
+
+        ### END SETUP ENVIRONMENT
+
+        # find config
+        mysettings = self._get_portage_config("/",mypath)
+        mysettings['EBUILD_PHASE'] = mydo
+
+        try: # this is a >portage-2.1.4_rc11 feature
+            mysettings._environ_whitelist = set(mysettings._environ_whitelist)
+            # put our vars into whitelist
+            mysettings._environ_whitelist.add("SKIP_EQUO_SYNC")
+            mysettings._environ_whitelist.add("ACCEPT_LICENSE")
+            mysettings._environ_whitelist.add("CD_ROOT")
+            mysettings._environ_whitelist.add("ROOT")
+            mysettings._environ_whitelist = frozenset(mysettings._environ_whitelist)
+        except:
+            pass
+
+        cpv = str(cpv)
+        mysettings.setcpv(cpv)
+        portage_tmpdir_created = False # for pkg_postrm, pkg_prerm
+        if portage_tmpdir:
+            if not os.path.isdir(portage_tmpdir):
+                os.makedirs(portage_tmpdir)
+                portage_tmpdir_created = True
+            mysettings['PORTAGE_TMPDIR'] = str(portage_tmpdir)
+            mysettings.backup_changes("PORTAGE_TMPDIR")
+
+        mydbapi = self.portage.fakedbapi(settings=mysettings)
+        mydbapi.cpv_inject(cpv, metadata = metadata)
+
+        # cached vartree class
+        vartree = self._get_portage_vartree(mypath)
+
+        rc = self.portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = mypath, tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree, use_cache = 0)
+
+        # if mute, restore old stdout/stderr
+        if domute:
+            sys.stdout = oldsysstdout
+
+        sys.stderr = oldsystderr
+        f.close()
+
+        if portage_tmpdir_created:
+            shutil.rmtree(portage_tmpdir,True)
+
+        del mydbapi
+        del metadata
+        del keys
+        return rc
+

@@ -127,6 +127,7 @@ def update(options):
                 continue
             _options.append(opt)
     options = _options
+    Spm = Entropy.Spm()
 
     if (not reagentRequestSeekStore):
 
@@ -134,8 +135,7 @@ def update(options):
 
         if not reagentRequestRepackage:
             print_info(brown(" * ")+red("Scanning database for differences..."))
-            from portageTools import getInstalledPackagesCounters, quickpkg, getPackageSlot
-            installedPackages = getInstalledPackagesCounters()
+            installedPackages = Spm.get_installed_packages_counter()
             installedCounters = set()
             toBeAdded = set()
             toBeRemoved = set()
@@ -164,7 +164,7 @@ def update(options):
 
                         add = True
                         for pkgdata in toBeAdded:
-                            addslot = getPackageSlot(pkgdata[0])
+                            addslot = Spm.get_package_slot(pkgdata[0])
                             addkey = Entropy.entropyTools.dep_getkey(pkgdata[0])
                             # workaround for ebuilds not having slot
                             if addslot == None:
@@ -249,9 +249,7 @@ def update(options):
                 # then exit gracefully
                 return 0
 
-            from portageTools import getPortageAppDbPath,quickpkg
-            appdb = getPortageAppDbPath()
-
+            appdb = Spm.get_vdb_path()
             packages = []
             for item in repackageItems:
                 match = dbconn.atomMatch(item)
@@ -276,7 +274,7 @@ def update(options):
         print_info(brown(" @@ ")+blue("Compressing packages..."))
         for x in toBeAdded:
             print_info(brown("    # ")+red(x[0]+"..."))
-            rc = quickpkg(x[0],etpConst['packagesstoredir'])
+            rc = Spm.quickpkg(x[0],etpConst['packagesstoredir'])
             if (rc is None):
                 reagentLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"update: "+str(x)+" -> quickpkg error. Cannot continue.")
                 print_error(red("      *")+" quickpkg error for "+red(x))
@@ -402,7 +400,7 @@ def librariesTest(listfiles = False):
         return 1
 
     if listfiles:
-        for x in brokenlibs:
+        for x in brokenexecs:
             print x
         return 0
 
@@ -412,7 +410,7 @@ def librariesTest(listfiles = False):
 
     atomsdata = set()
 
-    print_info(red(" @@ ")+blue("Matching libraries with Portage:"))
+    print_info(red(" @@ ")+blue("Matching libraries with Spm:"))
     qfile_exec = "/usr/bin/qfile"
     qfile_opts = " -qCe "
     packages = set()
@@ -1352,7 +1350,7 @@ def spm(options):
 
     if len(options) < 2:
         return 0
-    import portageTools
+    Spm = Entropy.Spm()
     options = options[1:]
 
     opts = []
@@ -1372,7 +1370,7 @@ def spm(options):
             return 0
         categories = list(set(options[1:]))
         categories.sort()
-        packages = portageTools.getAvailablePackages(categories)
+        packages = Spm.get_available_packages(categories)
         packages = list(packages)
         packages.sort()
         if do_list:

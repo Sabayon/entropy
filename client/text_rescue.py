@@ -30,6 +30,15 @@ from outputTools import *
 from entropy import EquoInterface
 Equo = EquoInterface(noclientdb = True)
 
+def test_spm():
+    # test if portage is available
+    try:
+        Spm = Equo.Spm()
+        return Spm
+    except:
+        print_error(darkred(" * ")+bold("Source Package Manager backend")+red(" is not available."))
+        return None
+
 def database(options):
 
     if len(options) < 1:
@@ -42,13 +51,9 @@ def database(options):
 
     if (options[0] == "generate"):
 
-        # test if portage is available
-        try:
-            import portageTools
-        except:
-            print_error(darkred(" * ")+bold("Portage")+red(" is not available."))
+        Spm = test_spm()
+        if Spm == None:
             return 1
-
 
         print_warning(bold("ATTENTION: ")+red("The installed package database will be generated again using Gentoo one."))
         print_warning(red("If you dont know what you're doing just, don't do this. Really. I'm not joking."))
@@ -93,7 +98,7 @@ def database(options):
         # now collect packages in the system
         print_info(red("  Transductingactioningintactering databases..."))
 
-        portagePackages = portageTools.getInstalledPackages()
+        portagePackages = Spm.get_installed_packages()
         portagePackages = portagePackages[0]
 
         # do for each database
@@ -295,23 +300,19 @@ def database(options):
 
     elif (options[0] == "counters"):
 
-        try:
-            import portageTools
-        except:
-            print_error(darkred(" * ")+bold("Portage")+red(" is not available."))
+        Spm = test_spm()
+        if Spm == None:
             return 1
 
         print_info(red("  Regenerating counters table. Please wait..."))
-        Equo.clientDbconn.regenerateCountersTable(output = True)
+        Equo.clientDbconn.regenerateCountersTable(Spm.get_vdb_path(), output = True)
         print_info(red("  Counters table regenerated. Check above for errors."))
         return 0
 
     elif (options[0] == "gentoosync"):
 
-        try:
-            import portageTools
-        except:
-            print_error(darkred(" * ")+bold("Portage")+red(" is not available."))
+        Spm = test_spm()
+        if Spm == None:
             return 1
 
         print_info(red(" Scanning Portage and Entropy databases for differences..."))
@@ -328,9 +329,8 @@ def database(options):
             return 1
 
         import shutil
-        from portageTools import getInstalledPackagesCounters, getPackageSlot
         print_info(red(" Collecting Portage counters..."), back = True)
-        installedPackages = getInstalledPackagesCounters()
+        installedPackages = Spm.get_installed_packages_counter()
         print_info(red(" Collecting Entropy packages..."), back = True)
         installedCounters = set()
         toBeAdded = set()
@@ -356,7 +356,7 @@ def database(options):
                     atomslot = Equo.clientDbconn.retrieveSlot(x[1])
                     add = True
                     for pkgdata in toBeAdded:
-                        addslot = getPackageSlot(pkgdata[0])
+                        addslot = Spm.get_package_slot(pkgdata[0])
                         addkey = Equo.entropyTools.dep_getkey(pkgdata[0])
                         # workaround for ebuilds not having slot
                         if addslot == None:

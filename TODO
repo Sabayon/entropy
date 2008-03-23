@@ -4,7 +4,6 @@ TODO list
   - split RDEPEND and PDEPEND ( + && and || )
   - log messages from portage doebuild() calls
   - remove conflicting packages right before the conflict (*)
-  - move portageTools to a class (*)
   - implement configuration files snapshot tool
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)

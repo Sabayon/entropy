@@ -347,7 +347,6 @@ class etpDatabase:
     def serverUpdatePackagesData(self):
 
         etpConst['treeupdatescalled'] = True
-
         repository = etpConst['officialrepositoryid']
         doRescan = False
 
@@ -367,15 +366,16 @@ class etpDatabase:
             if repositoryUpdatesDigestCache_disk.has_key(repository):
                 portage_dirs_digest = repositoryUpdatesDigestCache_disk.get(repository)
             else:
-                import portageTools
+                from entropy import SpmInterface
+                SpmIntf = SpmInterface(self.OutputInterface)
+                Spm = SpmIntf.intf
                 # grab portdir
-                updates_dir = etpConst['systemroot']+portageTools.getPortageEnv("PORTDIR")+"/profiles/updates"
+                updates_dir = etpConst['systemroot']+Spm.get_spm_setting("PORTDIR")+"/profiles/updates"
                 if os.path.isdir(updates_dir):
                     # get checksum
                     portage_dirs_digest = entropyTools.md5sum_directory(updates_dir)
                     repositoryUpdatesDigestCache_disk[repository] = portage_dirs_digest
                 del updates_dir
-                del portageTools
 
         if doRescan or (str(stored_digest) != str(portage_dirs_digest)):
 
@@ -386,8 +386,10 @@ class etpDatabase:
             # reset database tables
             self.clearTreeupdatesEntries(repository)
 
-            import portageTools
-            updates_dir = etpConst['systemroot']+portageTools.getPortageEnv("PORTDIR")+"/profiles/updates"
+            from entropy import SpmInterface
+            SpmIntf = SpmInterface(self.OutputInterface)
+            Spm = SpmIntf.intf
+            updates_dir = etpConst['systemroot']+Spm.get_spm_setting("PORTDIR")+"/profiles/updates"
             update_files = entropyTools.sortUpdateFiles(os.listdir(updates_dir))
             update_files = [os.path.join(updates_dir,x) for x in update_files]
             # now load actions from files
@@ -3468,22 +3470,17 @@ class etpDatabase:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( idpackage, description, homepage, download, digest, datecreation, size )')
             self.commitChanges()
 
-    def regenerateCountersTable(self, output = False):
+    def regenerateCountersTable(self, vdb_path, output = False):
         self.checkReadOnly()
         self.createCountersTable()
         # assign a counter to an idpackage
-        try:
-            from portageTools import getPortageAppDbPath # only if Portage is found
-        except:
-            return
-        appdbpath = getPortageAppDbPath()
         myids = self.listAllIdpackages()
         for myid in myids:
             # get atom
             myatom = self.retrieveAtom(myid)
             mybranch = self.retrieveBranch(myid)
             myatom = entropyTools.remove_tag(myatom)
-            myatomcounterpath = appdbpath+myatom+"/"+dbCOUNTER
+            myatomcounterpath = vdb_path+myatom+"/"+dbCOUNTER
             if os.path.isfile(myatomcounterpath):
                 try:
                     f = open(myatomcounterpath,"r")

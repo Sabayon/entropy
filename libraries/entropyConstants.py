@@ -420,10 +420,6 @@ def const_resetCache():
     repo_error_messages_cache.clear()
     maskingReasonsStorage.clear()
 
-# Inside it you'll find instantiated vartree classes
-portageRoots = {}
-portageConfigs = {}
-
 # Client packages/database repositories
 etpRepositories = {}
 etpRepositoriesExcluded = {}
@@ -637,7 +633,10 @@ def initConfig_entropyConstants(rootdir):
                     'exec': "/usr/bin/emerge", # source package manager executable
                     'ask_cmd': "--ask",
                     'pretend_cmd': "--pretend",
-                    'verbose_cmd': "--verbose"
+                    'verbose_cmd': "--verbose",
+                    'backend': "portage",
+                    'available_backends': ["portage"],
+                    'cache': {}
         },
 
         'downloadspeedlimit': None, # equo packages download speed limit (in kb/sec)

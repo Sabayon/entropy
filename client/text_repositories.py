@@ -45,6 +45,10 @@ def repositories(options):
             repo_names.append(opt)
 
     if (options[0] == "update"):
+        # check if I am root
+        if not Equo.entropyTools.isRoot():
+            print_error(red("You must be ")+bold("root")+red("."))
+            return 1
         rc = do_sync(reponames = repo_names, forceUpdate = equoRequestForceUpdate)
     elif (options[0] == "status"):
         for repo in etpRepositories:
