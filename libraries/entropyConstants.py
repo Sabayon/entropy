@@ -532,6 +532,7 @@ def initConfig_entropyConstants(rootdir):
         'entropyxpakfilename': "metadata.xpak", # Gentoo xpak metadata file name
 
         'etpdatabasemaskfile': ETP_DBFILE+".mask", # the local/remote database revision file
+        'etpdatabaseupdatefile': ETP_DBFILE+".repo_updates", # the local/remote database revision file
         'etpdatabaselicwhitelistfile': ETP_DBFILE+".lic_whitelist", # the local/remote database revision file
         'etpdatabaserevisionfile': ETP_DBFILE+".revision", # the local/remote database revision file
         'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum

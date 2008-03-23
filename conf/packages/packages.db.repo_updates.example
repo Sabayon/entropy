@@ -1,0 +1,14 @@
+# Server side packages.db.repo_updates file, syntax is the same of
+# /usr/portage/profiles/updates file
+#
+# In this file you can specify what packages should be moved to one 
+# category/key to another, or to one slot to another
+
+# SLOT CHANGES, LINE CONSTRUCTION:
+# slotmove <atom> <from slot> <to slot>
+# move <from atom> <to slot>
+# See examples below
+
+# move dev-python/qscintilla x11-libs/qscintilla
+# slotmove =x11-libs/goffice-0.2* 0 0.2
+# move app-emacs/df app-emacs/df-mode

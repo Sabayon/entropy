@@ -348,6 +348,7 @@ class etpDatabase:
 
         etpConst['treeupdatescalled'] = True
         repository = etpConst['officialrepositoryid']
+        repo_updates_file = os.path.join(etpConst['etpdatabasedir'],etpConst['etpdatabaseupdatefile'])
         doRescan = False
 
         if repositoryUpdatesDigestCache_db.has_key(repository):
@@ -373,7 +374,16 @@ class etpDatabase:
                 updates_dir = etpConst['systemroot']+Spm.get_spm_setting("PORTDIR")+"/profiles/updates"
                 if os.path.isdir(updates_dir):
                     # get checksum
-                    portage_dirs_digest = entropyTools.md5sum_directory(updates_dir)
+                    mdigest = entropyTools.md5sum_directory(updates_dir, get_obj = True)
+                    # also checksum etpConst['etpdatabaseupdatefile']
+                    if os.path.isfile(repo_updates_file):
+                        f = open(repo_updates_file)
+                        block = f.read(1024)
+                        while block:
+                            mdigest.update(block)
+                            block = f.read(1024)
+                        f.close()
+                    portage_dirs_digest = mdigest.hexdigest()
                     repositoryUpdatesDigestCache_disk[repository] = portage_dirs_digest
                 del updates_dir
 
@@ -399,7 +409,15 @@ class etpDatabase:
                 lines = [x.strip() for x in f.readlines() if x.strip()]
                 for line in lines:
                     update_actions.append(line)
+                f.close()
                 del lines
+            # add entropy packages.db.repo_updates content
+            if os.path.isfile(repo_updates_file):
+                f = open(repo_updates_file,"r")
+                lines = [x.strip() for x in f.readlines() if x.strip()]
+                for line in lines:
+                    update_actions.append(line)
+                f.close()
             # now filter the required actions
             update_actions = self.filterTreeUpdatesActions(update_actions)
             if update_actions:

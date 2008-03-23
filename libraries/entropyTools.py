@@ -212,14 +212,18 @@ def md5sum(filepath):
         block = readfile.read(1024)
     return m.hexdigest()
 
-def md5sum_directory(directory):
+def md5sum_directory(directory, get_obj = False):
     if not os.path.isdir(directory):
         raise exceptionTools.DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
     myfiles = os.listdir(directory)
-    if not myfiles:
-        return "0" # no files means 0
     import md5
     m = md5.new()
+    if not myfiles:
+        if get_obj:
+            return m
+        else:
+            return "0" # no files means 0
+
     for currentdir,subdirs,files in os.walk(directory):
         for myfile in files:
             myfile = os.path.join(currentdir,myfile)
@@ -228,7 +232,10 @@ def md5sum_directory(directory):
             while block:
                 m.update(block)
                 block = readfile.read(1024)
-    return m.hexdigest()
+    if get_obj:
+        return m
+    else:
+        return m.hexdigest()
 
 def unpackGzip(gzipfilepath):
     import gzip
