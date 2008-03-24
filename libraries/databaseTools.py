@@ -2864,11 +2864,6 @@ class etpDatabase:
 
     def searchProvide(self, keyword, slot = None, tag = None, branch = None):
 
-        c_hash = str(hash("searchProvide")) + str(hash(keyword)) + str(hash(slot)) + str(hash(branch)) + str(hash(tag))
-        c_hash = str(hash(c_hash))
-        cache = self.fetchSearchCache(c_hash)
-        if cache != None: return cache
-
         self.cursor.execute('SELECT idpackage FROM provide WHERE atom = (?)', (keyword,))
         idpackage = self.cursor.fetchone()
         if not idpackage:
@@ -2891,7 +2886,6 @@ class etpDatabase:
         self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE idpackage = (?)'+slotstring+tagstring+branchstring, searchkeywords)
 
         results = self.cursor.fetchall()
-        self.storeSearchCache(c_hash,results)
         return results
 
     def searchPackagesByDescription(self, keyword):
@@ -2899,11 +2893,6 @@ class etpDatabase:
         return self.cursor.fetchall()
 
     def searchPackagesByName(self, keyword, sensitive = False, branch = None):
-
-        c_hash = str(hash("searchPackagesByName")) + str(hash(keyword)) + str(hash(sensitive)) + str(hash(branch))
-        c_hash = str(hash(c_hash))
-        cache = self.fetchSearchCache(c_hash)
-        if cache != None: return cache
 
         if sensitive:
             searchkeywords = [keyword]
@@ -2920,8 +2909,6 @@ class etpDatabase:
             self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = (?)'+branchstring, searchkeywords)
 
         results = self.cursor.fetchall()
-
-        self.storeSearchCache(c_hash,results)
         return results
 
 
@@ -2943,11 +2930,6 @@ class etpDatabase:
 	return results
 
     def searchPackagesByNameAndCategory(self, name, category, sensitive = False, branch = None):
-
-        c_hash = str(hash("searchPackagesByNameAndCategory")) + str(hash(name)) + str(hash(category)) + str(hash(sensitive)) + str(hash(branch))
-        c_hash = str(hash(c_hash))
-        cache = self.fetchSearchCache(c_hash)
-        if cache != None: return cache
 
         # get category id
         idcat = -1
@@ -2977,7 +2959,6 @@ class etpDatabase:
             self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = (?) AND idcategory = (?) '+branchstring, searchkeywords)
 
         results = self.cursor.fetchall()
-        self.storeSearchCache(c_hash,results)
         return results
 
     def searchPackagesKeyVersion(self, key, version, branch = None, sensitive = False):
