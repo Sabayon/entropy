@@ -70,7 +70,7 @@ data = {
 }
 '''
 
-# Entropy database SQL initialization Schema and data structure
+# Entropy SQL initialization Schema and data structure
 etpSQLInitDestroyAll = """
 DROP TABLE IF EXISTS baseinfo;
 DROP TABLE IF EXISTS extrainfo;
@@ -653,6 +653,14 @@ def const_defaultSettings(rootdir):
                         'contents': "CONTENTS",
                         'counter': "COUNTER"
                     },
+                    'system_packages': [
+                        "sys-kernel/linux-sabayon", # our kernel
+                        "dev-db/sqlite", # our interface
+                        "dev-python/pysqlite",  # our python interface to our interface
+                        "virtual/cron", # our cron service
+                        "app-admin/equo", # our package manager (client)
+                        "sys-apps/entropy" # our package manager (server+client)
+                    ],
         },
 
         'downloadspeedlimit': None, # equo packages download speed limit (in kb/sec)

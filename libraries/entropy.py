@@ -8401,6 +8401,8 @@ class SpmInterface:
 
 class PortageInterface:
 
+    import entropyTools
+
     def __init__(self, OutputInterface):
         if not isinstance(OutputInterface, (EquoInterface, TextInterface)):
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid TextInterface based instance is needed")
@@ -8418,14 +8420,11 @@ class PortageInterface:
             import portage.const as portage_const
         self.portage_const = portage_const
 
-        import entropyTools
-        self.entropyTools = entropyTools
-
     def get_third_party_mirrors(self, mirrorname):
-        try:
-            return self.portage.thirdpartymirrors[mirrorname]
-        except KeyError:
-            return []
+        x = []
+        if self.portage.thirdpartymirrors.has_key(mirrorname):
+            x = self.portage.thirdpartymirrors[mirrorname]
+        return x
 
     def get_spm_setting(self, var):
         return self.portage.settings[var]
@@ -8439,12 +8438,7 @@ class PortageInterface:
             if (y != None):
                 for z in y:
                     sysoutput.append(z)
-        sysoutput.append("sys-kernel/linux-sabayon") # our kernel
-        sysoutput.append("dev-db/sqlite") # our interface
-        sysoutput.append("dev-python/pysqlite") # our python interface to our interface (lol)
-        sysoutput.append("virtual/cron") # our cron service
-        sysoutput.append("app-admin/equo") # our package manager (client)
-        sysoutput.append("sys-apps/entropy") # our package manager (server+client)
+        sysoutput.extend(etpConst['spm']['system_packages']) # add our packages
         return sysoutput
 
     def get_config_protect_and_mask(self):
@@ -8469,10 +8463,9 @@ class PortageInterface:
     # sys-libs/application --> sys-libs/application-1.2.3-r1
     def get_best_atom(self, atom, match = "bestmatch-visible"):
         try:
-            rc = self.portage.portdb.xmatch(match,str(atom))
-            return rc
+            return self.portage.portdb.xmatch(match,str(atom))
         except ValueError:
-            return "!!conflicts"
+            return None
 
     # same as above but includes masked ebuilds
     def get_best_masked_atom(self, atom):
@@ -8482,13 +8475,11 @@ class PortageInterface:
             from portage_versions import best
         except ImportError:
             from portage.versions import best
-        rc = best(atoms)
-        return rc
+        return best(atoms)
 
     def get_atom_category(self, atom):
         try:
-            rc = self.portage.portdb.xmatch("match-all",str(atom))[0].split("/")[0]
-            return rc
+            return self.portage.portdb.xmatch("match-all",str(atom))[0].split("/")[0]
         except:
             return None
 
@@ -8996,16 +8987,19 @@ class PortageInterface:
             # get slots
             slots = set()
             atoms = self.get_best_atom(cp, "match-visible")
-            for atom in atoms:
-                slots.add(portdb.aux_get(atom, ["SLOT"])[0])
-            for slot in slots:
-                visibles.add(cp+":"+slot)
+            if atoms:
+                for atom in atoms:
+                    slots.add(portdb.aux_get(atom, ["SLOT"])[0])
+                for slot in slots:
+                    visibles.add(cp+":"+slot)
         del cps
 
         # now match visibles
         available = set()
         for visible in visibles:
             match = self.get_best_atom(visible)
+            if match == None:
+                continue
             if filter_reinstalls:
                 installed = self.get_installed_atom(visible)
                 # if not installed, installed == None
