@@ -28,9 +28,9 @@ import stat
 import exceptionTools
 
 
-# Specifications of the content of etpData
+# Specifications of the content of packages metadata
 '''
-etpData = {
+data = {
     'name': u"", # the Package Name
     'version': u"", # the Package version
     'description': u"", # the Package description
@@ -470,6 +470,25 @@ def initConfig_entropyConstants(rootdir):
         import exceptionTools
         raise exceptionTools.FileNotFound("FileNotFound: not a valid chroot.")
 
+    const_resetCache()
+    const_defaultSettings(rootdir)
+    const_defaultServerDbStatus()
+    const_readEntropyRelease()
+    const_createWorkingDirectories()
+    if not "--no-pid-handling" in sys.argv:
+        const_setupEntropyPid()
+    const_readEntropySettings()
+    const_readRepositoriesSettings()
+    const_readRemoteSettings()
+    const_readSocketSettings()
+    initConfig_clientConstants()
+
+def initConfig_clientConstants():
+    const_readEquoSettings()
+
+
+def const_defaultSettings(rootdir):
+
     ETP_DIR = rootdir+"/var/lib/entropy"
     ETP_TMPDIR = "/tmp"
     ETP_RANDOM = str(random.random())[2:7]
@@ -494,8 +513,6 @@ def initConfig_entropyConstants(rootdir):
     ETP_VAR_DIR = rootdir+"/var/tmp/entropy"
     edbCOUNTER = rootdir+"/var/cache/edb/counter"
 
-
-    const_resetCache()
     etpConst.clear()
     myConst = {
         'installdir': '/usr/lib/entropy', # entropy default installation directory
@@ -682,117 +699,8 @@ def initConfig_entropyConstants(rootdir):
 
     }
     etpConst.update(myConst)
-    del myConst
 
-    # load server database status
-    myDatabase = {
-        etpConst['etpdatabasefilepath']: {
-            'bumped': False,
-            'tainted': False
-        }
-    }
-    if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
-        myDatabase[etpConst['etpdatabasefilepath']]['tainted'] = True
-        myDatabase[etpConst['etpdatabasefilepath']]['bumped'] = True
-    etpDbStatus.update(myDatabase)
-    del myDatabase
-
-    # handle Entropy Version
-    ETP_REVISION_FILE = "../libraries/revision"
-    if not os.path.isfile(ETP_REVISION_FILE):
-        ETP_REVISION_FILE = os.path.join(etpConst['installdir'],'libraries/revision')
-    if os.path.isfile(ETP_REVISION_FILE):
-        f = open(ETP_REVISION_FILE,"r")
-        myrev = f.readline().strip()
-        etpConst['entropyversion'] = myrev
-
-    # handle pid file
-    piddir = os.path.dirname(etpConst['pidfile'])
-    if not os.path.exists(piddir) and (etpConst['uid'] == 0):
-        os.makedirs(piddir)
-
-    # PID creation
-    pid = os.getpid()
-    if os.path.exists(etpConst['pidfile']):
-        f = open(etpConst['pidfile'],"r")
-        foundPid = f.readline().strip()
-        f.close()
-        if foundPid != str(pid):
-            # is foundPid still running ?
-            import commands
-            pids = commands.getoutput("pidof python").split("\n")[0].split()
-            try:
-                pids.index(foundPid)
-                etpConst['applicationlock'] = True
-            except:
-                # if root, write new pid
-                if etpConst['uid'] == 0:
-                    try:
-                        f = open(etpConst['pidfile'],"w")
-                        f.write(str(pid))
-                        f.flush()
-                        f.close()
-                    except IOError, e:
-                        if e.errno == 30: # readonly filesystem
-                            pass
-                        else:
-                            raise
-
-    else:
-        if etpConst['uid'] == 0:
-            f = open(etpConst['pidfile'],"w")
-            f.write(str(pid))
-            f.flush()
-            f.close()
-
-    # Create paths
-    if not os.path.isdir(etpConst['entropyworkdir']):
-        if etpConst['uid'] == 0:
-            for x in etpConst:
-                if (type(etpConst[x]) is str):
-
-                    if (not etpConst[x]) or (etpConst[x].endswith(".conf")) or (not etpConst[x].startswith("/")) or (etpConst[x].endswith(".cfg")) or (etpConst[x].endswith(".tmp")) or (etpConst[x].find(".db") != -1) or (etpConst[x].find(".log") != -1):
-                        continue
-
-                    try:
-                        os.makedirs(etpConst[x],0755)
-                        os.chown(etpConst[x],0,0)
-                    except OSError:
-                        pass
-
-
-    # entropy section
-    if os.path.isfile(etpConst['entropyconf']):
-        f = open(etpConst['entropyconf'],"r")
-        entropyconf = f.readlines()
-        f.close()
-        for line in entropyconf:
-            if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
-                loglevel = line.split("loglevel|")[1]
-                try:
-                    loglevel = int(loglevel)
-                except:
-                    print "ERROR: invalid loglevel in: "+etpConst['entropyconf']
-                if (loglevel > -1) and (loglevel < 3):
-                    etpConst['entropyloglevel'] = loglevel
-                else:
-                    print "WARNING: invalid loglevel in: "+etpConst['entropyconf']
-
-            elif line.startswith("ftp-proxy|") and (len(line.split("|")) == 2):
-                ftpproxy = line.split("|")[1].strip()
-                for x in ftpproxy.split():
-                    etpConst['proxy']['ftp'] = ftpproxy
-            elif line.startswith("http-proxy|") and (len(line.split("|")) == 2):
-                httpproxy = line.split("|")[1].strip()
-                for x in httpproxy.split():
-                    etpConst['proxy']['http'] = httpproxy
-            elif line.startswith("system-name|") and (len(line.split("|")) == 2):
-                etpConst['systemname'] = line.split("|")[1].strip()
-
-
-    etpHandlers.clear()
-    etpHandlers['md5sum'] = "md5sum.php?arch="+etpConst['currentarch']+"&package=" # md5sum handler
-    etpHandlers['errorsend'] = "http://svn.sabayonlinux.org/entropy/%s/handlers/http_error_report.php" % (etpConst['product'],)
+def const_readRepositoriesSettings():
 
     etpRepositories.clear()
     etpRepositoriesExcluded.clear()
@@ -894,18 +802,77 @@ def initConfig_entropyConstants(rootdir):
                 except:
                     pass
 
+    # handler settings
+    etpHandlers.clear()
+    etpHandlers['md5sum'] = "md5sum.php?arch="+etpConst['currentarch']+"&package=" # md5sum handler
+    etpHandlers['errorsend'] = "http://svn.sabayonlinux.org/entropy/%s/handlers/http_error_report.php" % (etpConst['product'],)
+
     # align etpConst['binaryurirelativepath'] and etpConst['etpurirelativepath'] with etpConst['product']
     etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['binaryurirelativepath']
     etpConst['etpurirelativepath'] = etpConst['product']+"/"+etpConst['etpurirelativepath']
 
-    # check for packages and upload directories
-    if etpConst['uid'] == 0:
-        for x in etpConst['branches']:
-            if not os.path.isdir(etpConst['packagesbindir']+"/"+x):
-                os.makedirs(etpConst['packagesbindir']+"/"+x)
-            if not os.path.isdir(etpConst['packagessuploaddir']+"/"+x):
-                os.makedirs(etpConst['packagessuploaddir']+"/"+x)
+def const_readSocketSettings():
+    if os.path.isfile(etpConst['socketconf']):
+        f = open(etpConst['socketconf'],"r")
+        socketconf = f.readlines()
+        f.close()
+        for line in socketconf:
+            if line.startswith("listen|") and (len(line.split("|")) > 1):
+                x = line.split("|")[1].strip()
+                if x:
+                    etpConst['socket_service']['hostname'] = x
+            elif line.startswith("listen-port|") and (len(line.split("|")) > 1):
+                x = line.split("|")[1].strip()
+                try:
+                    x = int(x)
+                    etpConst['socket_service']['port'] = x
+                except ValueError:
+                    pass
+            elif line.startswith("listen-timeout|") and (len(line.split("|")) > 1):
+                x = line.split("|")[1].strip()
+                try:
+                    x = int(x)
+                    etpConst['socket_service']['timeout'] = x
+                except ValueError:
+                    pass
+            elif line.startswith("listen-threads|") and (len(line.split("|")) > 1):
+                x = line.split("|")[1].strip()
+                try:
+                    x = int(x)
+                    etpConst['socket_service']['threads'] = x
+                except ValueError:
+                    pass
 
+def const_readEntropySettings():
+    # entropy section
+    if os.path.isfile(etpConst['entropyconf']):
+        f = open(etpConst['entropyconf'],"r")
+        entropyconf = f.readlines()
+        f.close()
+        for line in entropyconf:
+            if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
+                loglevel = line.split("loglevel|")[1]
+                try:
+                    loglevel = int(loglevel)
+                except:
+                    print "ERROR: invalid loglevel in: "+etpConst['entropyconf']
+                if (loglevel > -1) and (loglevel < 3):
+                    etpConst['entropyloglevel'] = loglevel
+                else:
+                    print "WARNING: invalid loglevel in: "+etpConst['entropyconf']
+
+            elif line.startswith("ftp-proxy|") and (len(line.split("|")) == 2):
+                ftpproxy = line.split("|")[1].strip()
+                for x in ftpproxy.split():
+                    etpConst['proxy']['ftp'] = ftpproxy
+            elif line.startswith("http-proxy|") and (len(line.split("|")) == 2):
+                httpproxy = line.split("|")[1].strip()
+                for x in httpproxy.split():
+                    etpConst['proxy']['http'] = httpproxy
+            elif line.startswith("system-name|") and (len(line.split("|")) == 2):
+                etpConst['systemname'] = line.split("|")[1].strip()
+
+def const_readRemoteSettings():
     etpRemoteSupport.clear()
     etpRemoteFailures.clear()
     if (os.path.isfile(etpConst['remoteconf'])):
@@ -921,41 +888,31 @@ def initConfig_entropyConstants(rootdir):
                 url += etpConst['product']+"/handlers/"
                 etpRemoteSupport[servername] = url
 
-    if (os.path.isfile(etpConst['socketconf'])):
-        f = open(etpConst['socketconf'],"r")
-        socketconf = f.readlines()
-        f.close()
-        for line in socketconf:
-            if line.startswith("listen|") and (len(line.split("|")) > 2):
-                x = line.split("|")[1].strip()
-                if x:
-                    etpConst['socket_service']['hostname'] = x
-            elif line.startswith("listen-port|") and (len(line.split("|")) > 2)
-                x = line.split("|")[1].strip()
-                try:
-                    x = int(x)
-                    etpConst['socket_service']['port'] = x
-                except ValueError:
-                    pass
-            elif line.startswith("listen-timeout|") and (len(line.split("|")) > 2)
-                x = line.split("|")[1].strip()
-                try:
-                    x = int(x)
-                    etpConst['socket_service']['timeout'] = x
-                except ValueError:
-                    pass
-            elif line.startswith("listen-threads|") and (len(line.split("|")) > 2)
-                x = line.split("|")[1].strip()
-                try:
-                    x = int(x)
-                    etpConst['socket_service']['threads'] = x
-                except ValueError:
-                    pass
+def const_defaultServerDbStatus():
+    # load server database status
+    myDatabase = {
+        etpConst['etpdatabasefilepath']: {
+            'bumped': False,
+            'tainted': False
+        }
+    }
+    if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
+        myDatabase[etpConst['etpdatabasefilepath']]['tainted'] = True
+        myDatabase[etpConst['etpdatabasefilepath']]['bumped'] = True
+    etpDbStatus.update(myDatabase)
+    del myDatabase
 
-    initConfig_clientConstants()
+def const_readEntropyRelease():
+    # handle Entropy Version
+    ETP_REVISION_FILE = "../libraries/revision"
+    if not os.path.isfile(ETP_REVISION_FILE):
+        ETP_REVISION_FILE = os.path.join(etpConst['installdir'],'libraries/revision')
+    if os.path.isfile(ETP_REVISION_FILE):
+        f = open(ETP_REVISION_FILE,"r")
+        myrev = f.readline().strip()
+        etpConst['entropyversion'] = myrev
 
-def initConfig_clientConstants():
-
+def const_readEquoSettings():
     # equo section
     if (os.path.isfile(etpConst['equoconf'])):
         f = open(etpConst['equoconf'],"r")
@@ -1003,7 +960,71 @@ def initConfig_clientConstants():
                 for x in configprotect.split():
                     etpConst['configprotectskip'].append(etpConst['systemroot']+x)
 
+def const_setupEntropyPid():
+    # PID creation
+    pid = os.getpid()
+    if os.path.isfile(etpConst['pidfile']):
 
+        f = open(etpConst['pidfile'],"r")
+        foundPid = str(f.readline().strip())
+        f.close()
+        if foundPid != str(pid):
+            # is foundPid still running ?
+            if os.path.isdir("%s/proc/%s" % (etpConst['systemroot'],foundPid,)):
+                etpConst['applicationlock'] = True
+            else:
+                # if root, write new pid
+                if etpConst['uid'] == 0:
+                    try:
+                        f = open(etpConst['pidfile'],"w")
+                        f.write(str(pid))
+                        f.flush()
+                        f.close()
+                    except IOError, e:
+                        if e.errno == 30: # readonly filesystem
+                            pass
+                        else:
+                            raise
+
+    else:
+        if etpConst['uid'] == 0:
+
+            if os.path.exists(etpConst['pidfile']):
+                if os.path.islink(etpConst['pidfile']):
+                    os.remove(etpConst['pidfile'])
+                elif os.path.isdir(etpConst['pidfile']):
+                    import shutil
+                    shutil.rmtree(etpConst['pidfile'])
+
+            f = open(etpConst['pidfile'],"w")
+            f.write(str(pid))
+            f.flush()
+            f.close()
+
+def const_createWorkingDirectories():
+
+    # handle pid file
+    piddir = os.path.dirname(etpConst['pidfile'])
+    if not os.path.exists(piddir) and (etpConst['uid'] == 0):
+        os.makedirs(piddir)
+
+    # Create paths
+    if etpConst['uid'] == 0:
+        for x in etpConst:
+            if (type(etpConst[x]) is basestring):
+
+                if not etpConst[x] or \
+                    etpConst[x].endswith(".conf") or \
+                    not os.path.isabs(etpConst[x]) or \
+                    etpConst[x].endswith(".cfg") or \
+                    etpConst[x].endswith(".tmp") or \
+                    etpConst[x].find(".db") != -1 or \
+                    etpConst[x].find(".log") != -1 or \
+                    os.path.isdir(etpConst[x]) or \
+                    not x.endswith("dir"):
+                        continue
+
+                os.makedirs(etpConst[x],0755)
 
 # load config
 initConfig_entropyConstants(etpSys['rootdir'])
