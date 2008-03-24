@@ -1,4 +1,5 @@
 TODO list
+  - make entropyConstants functions more modular (*)
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
      [] complete reagent spm interface

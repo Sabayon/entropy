@@ -519,6 +519,7 @@ def initConfig_entropyConstants(rootdir):
         'reagentconf': ETP_CONF_DIR+"/reagent.conf", # reagent.conf file
         'remoteconf': ETP_CONF_DIR+"/remote.conf", # remote.conf file
         'equoconf': ETP_CONF_DIR+"/equo.conf", # equo.conf file
+        'socketconf': ETP_CONF_DIR+"/socket.conf", # socket.conf file
         'activatoruploaduris': [], # list of URIs that activator can use to upload files (parsed from activator.conf)
         'activatordownloaduris': [], # list of URIs that activator can use to fetch data
         'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
@@ -670,8 +671,14 @@ def initConfig_entropyConstants(rootdir):
 
         'clientdbid': "client",
         'serverdbid': "etpdb",
+        'systemreleasefile': "/etc/sabayon-release",
 
-        'systemreleasefile': '/etc/sabayon-release',
+        'socket_service': {
+            'hostname': "localhost",
+            'port': 999,
+            'timeout': 200,
+            'threads': 5,
+        },
 
     }
     etpConst.update(myConst)
@@ -914,9 +921,41 @@ def initConfig_entropyConstants(rootdir):
                 url += etpConst['product']+"/handlers/"
                 etpRemoteSupport[servername] = url
 
+    if (os.path.isfile(etpConst['socketconf'])):
+        f = open(etpConst['socketconf'],"r")
+        socketconf = f.readlines()
+        f.close()
+        for line in socketconf:
+            if line.startswith("listen|") and (len(line.split("|")) > 2):
+                x = line.split("|")[1].strip()
+                if x:
+                    etpConst['socket_service']['hostname'] = x
+            elif line.startswith("listen-port|") and (len(line.split("|")) > 2)
+                x = line.split("|")[1].strip()
+                try:
+                    x = int(x)
+                    etpConst['socket_service']['port'] = x
+                except ValueError:
+                    pass
+            elif line.startswith("listen-timeout|") and (len(line.split("|")) > 2)
+                x = line.split("|")[1].strip()
+                try:
+                    x = int(x)
+                    etpConst['socket_service']['timeout'] = x
+                except ValueError:
+                    pass
+            elif line.startswith("listen-threads|") and (len(line.split("|")) > 2)
+                x = line.split("|")[1].strip()
+                try:
+                    x = int(x)
+                    etpConst['socket_service']['threads'] = x
+                except ValueError:
+                    pass
+
     initConfig_clientConstants()
 
 def initConfig_clientConstants():
+
     # equo section
     if (os.path.isfile(etpConst['equoconf'])):
         f = open(etpConst['equoconf'],"r")
