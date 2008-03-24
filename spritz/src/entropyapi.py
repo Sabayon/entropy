@@ -211,7 +211,6 @@ class GuiUrlFetcher(urlFetcher):
     def updateProgress(self):
 
         # use progress bar
-        self.gather = self.downloadedsize # needed ?
         self.progress.set_progress( round(float(self.average)/100,1), str(int(round(float(self.average),1)))+"%" )
         self.progress.set_extraLabel("%s/%s kB @ %s" % (
                                         str(round(float(self.downloadedsize)/1024,1)),

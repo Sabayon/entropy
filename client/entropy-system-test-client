@@ -1,0 +1,45 @@
+#!/usr/bin/python
+import sys
+import socket
+serverHost = "localhost"
+serverPort = 999
+s = None
+def connect():
+    global s
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.connect((serverHost, serverPort))
+    except socket.error, e:
+        if e[0] == 111:
+            print "no daemon running"
+            sys.exit(1)
+        else:
+            raise
+connect()
+try:
+    #s.send("reposync reponames=['sabayonlinux.org'] forceUpdate=True")
+    s.send("match 'x11-libs/qt'") 
+    data = s.recv(1024)
+    while data:
+        if not data:
+            break
+        sys.stdout.write(data)
+        sys.stdout.flush()
+        data = s.recv(1024)
+
+    # get rc
+    s.close()
+    sys.stdout.write("\n")
+    connect()
+    s.send("rc")
+    result = ''
+    d = s.recv(1024)
+    while d:
+        result += d
+        d = s.recv(1024)
+    print "returned data:",result
+
+except KeyboardInterrupt:
+    s.close()
+    sys.exit(0)
+s.close()

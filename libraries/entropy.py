@@ -119,7 +119,19 @@ class EquoInterface(TextInterface):
                 self.openRepositoryDatabase(repoid)
                 self.validRepositories.append(repoid)
             except exceptionTools.RepositoryError:
+                self.updateProgress(
+                                    darkred("Repository %s is not available. Cannot validate" % (repoid,)),
+                                    importance = 1,
+                                    type = "warning"
+                                   )
                 continue # repo not available
+            except self.databaseTools.dbapi2.OperationalError:
+                self.updateProgress(
+                                    darkred("Repository %s is corrupted. Cannot validate" % (repoid,)),
+                                    importance = 1,
+                                    type = "warning"
+                                   )
+                continue
 
     def validate_repositories_cache(self):
         # is the list of repos changed?
@@ -4799,6 +4811,7 @@ class RepoInterface:
 
         fetchConn = self.Entropy.urlFetcher(url, filepath, resume = False)
         fetchConn.progress = self.Entropy.progress
+
         rc = fetchConn.download()
         del fetchConn
         if rc in ("-1","-2","-3"):
@@ -5593,11 +5606,13 @@ class urlFetcher:
             self.commitData(rsx)
             if self.showSpeed:
                 self.updateProgress()
+                self.oldaverage = self.average
             if self.speedlimit:
                 while self.datatransfer > self.speedlimit*1024:
                     time.sleep(0.1)
                     if self.showSpeed:
                         self.updateProgress()
+                        self.oldaverage = self.average
 
         # kill thread
         self.close()
@@ -5647,7 +5662,6 @@ class urlFetcher:
             currentText += " <->  "+average+"% "+bartext
             # print !
             print_info(currentText,back = True)
-        self.oldaverage = self.average
 
 
     def close(self):
@@ -8403,6 +8417,42 @@ class PortageInterface:
 
     import entropyTools
 
+    class paren_normalize(list):
+        """Take a dependency structure as returned by paren_reduce or use_reduce
+        and generate an equivalent structure that has no redundant lists."""
+        def __init__(self, src):
+            list.__init__(self)
+            self._zap_parens(src, self)
+
+        def _zap_parens(self, src, dest, disjunction=False):
+            if not src:
+                return dest
+            i = iter(src)
+            for x in i:
+                if isinstance(x, basestring):
+                    if x == '||':
+                        x = self._zap_parens(i.next(), [], disjunction=True)
+                        if len(x) == 1:
+                            dest.append(x[0])
+                        else:
+                            dest.append("||")
+                            dest.append(x)
+                    elif x.endswith("?"):
+                        dest.append(x)
+                        dest.append(self._zap_parens(i.next(), []))
+                    else:
+                        dest.append(x)
+                else:
+                    if disjunction:
+                        x = self._zap_parens(x, [])
+                        if len(x) == 1:
+                            dest.append(x[0])
+                        else:
+                            dest.append(x)
+                    else:
+                        self._zap_parens(x, dest)
+            return dest
+
     def __init__(self, OutputInterface):
         if not isinstance(OutputInterface, (EquoInterface, TextInterface)):
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid TextInterface based instance is needed")
@@ -8640,7 +8690,7 @@ class PortageInterface:
             try:
                 deps = self.paren_reduce(metadata[k])
                 deps = self.use_reduce(deps, uselist=raw_use)
-                deps = self.entropyTools.paren_normalize(deps)
+                deps = self.paren_normalize(deps)
                 if k == "LICENSE":
                     deps = self.paren_license_choose(deps)
                 else:
@@ -8851,17 +8901,17 @@ class PortageInterface:
 
                     # If they all match, process the target
                     if ismatch:
-                            target = newdeparray[-1]
-                            if isinstance(target, list):
-                                    additions = self.use_reduce(target, uselist, masklist, matchall, excludeall)
-                                    if additions:
-                                            rlist.append(additions)
-                            elif not _dep_check_strict:
-                                    # The old deprecated behavior.
-                                    rlist.append(target)
-                            else:
-                                    raise exceptionTools.InvalidDependString(
-                                            "Conditional without parenthesis: '%s?'" % head)
+                        target = newdeparray[-1]
+                        if isinstance(target, list):
+                            additions = self.use_reduce(target, uselist, masklist, matchall, excludeall)
+                            if additions:
+                                    rlist.append(additions)
+                        elif not _dep_check_strict:
+                            # The old deprecated behavior.
+                            rlist.append(target)
+                        else:
+                            raise exceptionTools.InvalidDependString(
+                                    "Conditional without parenthesis: '%s?'" % head)
 
                 else:
                     rlist += [head]
@@ -9272,6 +9322,20 @@ class LogFile:
 
 class SocketHostInterface:
 
+    class SocketUrlFetcher(urlFetcher):
+        """ hello my highness """
+
+        import entropyTools
+        # reimplementing updateProgress
+        def updateProgress(self):
+
+            kbprogress = " (%s/%s kB @ %s)" % (
+                                            str(round(float(self.downloadedsize)/1024,1)),
+                                            str(round(self.remotesize,1)),
+                                            str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
+                                        )
+            self.progress( "Fetching "+str((round(float(self.average),1)))+"%"+kbprogress, back = True )
+
     import socket
     def __init__(self, intf, *args, **kwds):
 
@@ -9283,6 +9347,13 @@ class SocketHostInterface:
         self.port = etpConst['socket_service']['port']
         self.threads = etpConst['socket_service']['threads']
 
+        # FIXME: add policy handling
+        self.valid_commands = [
+            'reposync',
+            'rc',
+            'match'
+        ]
+
         self.running = False
         self.conn_active = False
         self.channel = None
@@ -9292,6 +9363,10 @@ class SocketHostInterface:
         self.Entropy_updateProgress = self.Entropy.updateProgress
         self.updateProgress = self.localUpdateProgress
         self.Entropy.updateProgress = self.remoteUpdateProgress
+        self.Entropy.progress = self.remoteUpdateProgress
+        self.Entropy.urlFetcher = self.SocketUrlFetcher
+        self.lastoutput = ''
+        self.lastresult = None
 
         self.SocketServer = self.socket.socket ( self.socket.AF_INET, self.socket.SOCK_STREAM )
         while 1:
@@ -9301,8 +9376,8 @@ class SocketHostInterface:
                 break
             except self.socket.error, e:
                 if e[0] == 98:
-                    self.updateProgress("Address already in use, waiting 10 seconds...")
-                    time.sleep(10)
+                    self.updateProgress("Address already in use, waiting 5 seconds...")
+                    time.sleep(5)
                     continue
                 raise
         self.SocketServer.listen ( self.threads )
@@ -9327,28 +9402,44 @@ class SocketHostInterface:
 
                     self.updateProgress("  call: %s" % (data,))
 
-                    if data == "quit":
+                    if data in ["quit","","close"]:
                         self.updateProgress('close: %s' % (details,))
-                        self.channel.send ( 'CLO' )
+                        self.channel.send ( "CLO" )
                         self.channel.close()
-                        self.conn_active = False
                         self.running = False
                         self.channel = None
                         break
 
-                    # run the command
-                    # FIXME Policy validation
-                    # FIXME Auth validation
-                    try:
-                        rc = eval(data)
-                    except Exception, e:
-                        self.channel.send ( "%s\n" % (Exception,) )
-                        self.channel.send ( "%s\n" % (e,) )
-                        self.channel.send ( "ERR\n" )
+                    # validate command
+                    args = data.split()
+                    cmd = args[0]
+                    if cmd not in self.valid_commands:
+                        self.channel.send ( "NOP" )
                         self.channel.close()
+                        self.lastresult = None
                         break
 
-                    self.channel.send ( "%s\n" % (rc,) )
+                    # get last returned output
+                    if cmd == "rc":
+                        self.channel.send ( str(self.lastresult) )
+                        self.channel.close()
+                        self.lastresult = None
+                        break
+
+                    try:
+                        myargs = []
+                        if len(args) > 1:
+                            myargs = args[1:]
+                        # FIXME: run this in parallel to avoid locks and check when done (sleep until done)
+                        self.lastresult = self.run_task(cmd, myargs)
+                    except Exception, e:
+                        self.channel.send ( "Exception: %s\n" % (str(Exception),) )
+                        self.channel.send ( "Error: %s\n" % (e,) )
+                        self.channel.send ( "ERR" )
+                        self.channel.close()
+                        self.lastresult = None
+                        break
+
                     self.channel.send ( "SUC" )
                     self.updateProgress('close: %s' % (details,))
                     self.channel.close()
@@ -9366,12 +9457,41 @@ class SocketHostInterface:
             else:
                 raise
 
+    def run_task(self, cmd, args):
+        myargs = []
+        mykwargs = {}
+        for arg in args:
+            if (arg.find("=") != -1) and not arg.startswith("="):
+                x = arg.split("=")
+                a = x[0]
+                b = ''.join(x[1:])
+                mykwargs[a] = eval(b)
+            else:
+                myargs.append(eval(arg))
+        rc = self.spawn_function(cmd, myargs, mykwargs)
+        return rc
+
+    def spawn_function(self, cmd, myargs, mykwargs):
+
+        self.updateProgress('called %s: args: %s, kwargs: %s' % (cmd,myargs,mykwargs,))
+
+        if cmd == "reposync":
+            repoConn = self.Entropy.Repositories(*myargs, **mykwargs)
+            rc = repoConn.sync()
+            return rc
+
+        elif cmd == "match":
+            rc = self.Entropy.atomMatch(*myargs, **mykwargs)
+            return rc
+
     def remoteUpdateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
-        if self.conn_active:
-            self.channel.send(text+"\n")
+        if self.conn_active and (text != self.lastoutput):
+            text = chr(27)+"[2K\r"+text
+            if not back:
+                text += "\n"
+            self.channel.send(text)
+        self.lastoutput = text
 
     def localUpdateProgress(self, *args, **kwargs):
         self.socketLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,str(args[0]))
         self.Entropy_updateProgress(*args,**kwargs)
-
-

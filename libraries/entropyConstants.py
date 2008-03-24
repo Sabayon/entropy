@@ -697,7 +697,7 @@ def const_defaultSettings(rootdir):
         'socket_service': {
             'hostname': "localhost",
             'port': 999,
-            'timeout': 200,
+            'timeout': 30,
             'threads': 5,
         },
 
