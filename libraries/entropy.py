@@ -2331,7 +2331,7 @@ class EquoInterface(TextInterface):
                         back = True
                     )
         # Fill chost
-        f = open(tbz2TmpDir+dbCHOST,"r")
+        f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['chost'],"r")
         data['chost'] = f.readline().strip()
         f.close()
 
@@ -2356,7 +2356,7 @@ class EquoInterface(TextInterface):
         # Fill description
         data['description'] = ""
         try:
-            f = open(tbz2TmpDir+dbDESCRIPTION,"r")
+            f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['description'],"r")
             data['description'] = f.readline().strip()
             f.close()
         except IOError:
@@ -2373,7 +2373,7 @@ class EquoInterface(TextInterface):
         # Fill homepage
         data['homepage'] = ""
         try:
-            f = open(tbz2TmpDir+dbHOMEPAGE,"r")
+            f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['homepage'],"r")
             data['homepage'] = f.readline().strip()
             f.close()
         except IOError:
@@ -2390,7 +2390,7 @@ class EquoInterface(TextInterface):
         # fill slot, if it is
         data['slot'] = ""
         try:
-            f = open(tbz2TmpDir+dbSLOT,"r")
+            f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['slot'],"r")
             data['slot'] = f.readline().strip()
             f.close()
         except IOError:
@@ -2421,7 +2421,7 @@ class EquoInterface(TextInterface):
         # fill eclasses list
         data['eclasses'] = []
         try:
-            f = open(tbz2TmpDir+dbINHERITED,"r")
+            f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['inherited'],"r")
             data['eclasses'] = f.readline().strip().split()
             f.close()
         except IOError:
@@ -2438,7 +2438,7 @@ class EquoInterface(TextInterface):
         # fill needed list
         data['needed'] = set()
         try:
-            f = open(tbz2TmpDir+dbNEEDED,"r")
+            f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['needed'],"r")
             lines = f.readlines()
             f.close()
             for line in lines:
@@ -2463,8 +2463,8 @@ class EquoInterface(TextInterface):
                 back = True
             )
         data['content'] = {}
-        if os.path.isfile(tbz2TmpDir+dbCONTENTS):
-            f = open(tbz2TmpDir+dbCONTENTS,"r")
+        if os.path.isfile(tbz2TmpDir+etpConst['spm']['xpak_entries']['contents']):
+            f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['contents'],"r")
             content = f.readlines()
             f.close()
             outcontent = set()
@@ -2569,7 +2569,7 @@ class EquoInterface(TextInterface):
                 back = True
             )
         # Fill category
-        f = open(tbz2TmpDir+dbCATEGORY,"r")
+        f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['category'],"r")
         data['category'] = f.readline().strip()
         f.close()
 
@@ -2603,7 +2603,7 @@ class EquoInterface(TextInterface):
             )
         # Fill counter
         try:
-            f = open(tbz2TmpDir+dbCOUNTER,"r")
+            f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['counter'],"r")
             data['counter'] = int(f.readline().strip())
             f.close()
         except IOError:
@@ -2634,7 +2634,7 @@ class EquoInterface(TextInterface):
         # Fill CFLAGS
         data['cflags'] = ""
         try:
-            f = open(tbz2TmpDir+dbCFLAGS,"r")
+            f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['cflags'],"r")
             data['cflags'] = f.readline().strip()
             f.close()
         except IOError:
@@ -2651,7 +2651,7 @@ class EquoInterface(TextInterface):
         # Fill CXXFLAGS
         data['cxxflags'] = ""
         try:
-            f = open(tbz2TmpDir+dbCXXFLAGS,"r")
+            f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['cxxflags'],"r")
             data['cxxflags'] = f.readline().strip()
             f.close()
         except IOError:
@@ -2668,7 +2668,7 @@ class EquoInterface(TextInterface):
         # fill KEYWORDS
         data['keywords'] = []
         try:
-            f = open(tbz2TmpDir+dbKEYWORDS,"r")
+            f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['keywords'],"r")
             cnt = f.readline().strip().split()
             if not cnt:
                 data['keywords'].append("") # support for packages with no keywords
@@ -2689,44 +2689,44 @@ class EquoInterface(TextInterface):
                 back = True
             )
 
-        f = open(tbz2TmpDir+dbRDEPEND,"r")
+        f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['rdepend'],"r")
         rdepend = f.readline().strip()
         f.close()
 
-        f = open(tbz2TmpDir+dbPDEPEND,"r")
+        f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['pdepend'],"r")
         pdepend = f.readline().strip()
         f.close()
 
-        f = open(tbz2TmpDir+dbDEPEND,"r")
+        f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['depend'],"r")
         depend = f.readline().strip()
         f.close()
 
-        f = open(tbz2TmpDir+dbUSE,"r")
+        f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['use'],"r")
         use = f.readline().strip()
         f.close()
 
         try:
-            f = open(tbz2TmpDir+dbIUSE,"r")
+            f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['iuse'],"r")
             iuse = f.readline().strip()
             f.close()
         except IOError:
             iuse = ""
 
         try:
-            f = open(tbz2TmpDir+dbLICENSE,"r")
+            f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['license'],"r")
             lics = f.readline().strip()
             f.close()
         except IOError:
             lics = ""
 
         try:
-            f = open(tbz2TmpDir+dbPROVIDE,"r")
+            f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['provide'],"r")
             provide = f.readline().strip()
         except IOError:
             provide = ""
 
         try:
-            f = open(tbz2TmpDir+dbSRC_URI,"r")
+            f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['src_uri'],"r")
             sources = f.readline().strip()
             f.close()
         except IOError:
@@ -3502,7 +3502,7 @@ class PackageInterface:
                 # write new counter to file
                 if os.path.isdir(destination):
                     counter += 1
-                    f = open(destination+"/"+dbCOUNTER,"w")
+                    f = open(destination+"/"+etpConst['spm']['xpak_entries']['counter'],"w")
                     f.write(str(counter))
                     f.flush()
                     f.close()
@@ -9052,7 +9052,7 @@ class PortageInterface:
                 if pkgatom.find("-MERGING-") == -1:
                     # get counter
                     try:
-                        f = open(appDbDir+pkgsdir+"/"+pdir+"/"+dbCOUNTER,"r")
+                        f = open(appDbDir+pkgsdir+"/"+pdir+"/"+etpConst['spm']['xpak_entries']['counter'],"r")
                         counter = int(f.readline().strip())
                         f.close()
                     except IOError:
@@ -9076,8 +9076,8 @@ class PortageInterface:
                 pkgdir = catdir+"/"+pkgdir
                 if not os.path.isdir(pkgdir):
                     continue
-                counterfile = pkgdir+"/"+dbCOUNTER
-                if not os.path.isfile(pkgdir+"/"+dbCOUNTER):
+                counterfile = pkgdir+"/"+etpConst['spm']['xpak_entries']['counter']
+                if not os.path.isfile(pkgdir+"/"+etpConst['spm']['xpak_entries']['counter']):
                     continue
                 try:
                     f = open(counterfile,"r")

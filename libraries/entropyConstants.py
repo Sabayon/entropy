@@ -435,39 +435,13 @@ etpConst = {}
 # database status dict
 etpDbStatus = {}
 
-# Portage /var/db/<pkgcat>/<pkgname-pkgver>/*
-# you never know if gentoo devs change these things
-dbDESCRIPTION = "DESCRIPTION"
-dbHOMEPAGE = "HOMEPAGE"
-dbCHOST = "CHOST"
-dbCATEGORY = "CATEGORY"
-dbCFLAGS = "CFLAGS"
-dbCXXFLAGS = "CXXFLAGS"
-dbLICENSE = "LICENSE"
-dbSRC_URI = "SRC_URI"
-dbUSE = "USE"
-dbIUSE = "IUSE"
-dbSLOT = "SLOT"
-dbPROVIDE = "PROVIDE"
-dbDEPEND = "DEPEND"
-dbRDEPEND = "RDEPEND"
-dbPDEPEND = "PDEPEND"
-dbNEEDED = "NEEDED"
-dbINHERITED = "INHERITED"
-dbOR = "|or|"
-dbKEYWORDS = "KEYWORDS"
-dbCONTENTS = "CONTENTS"
-dbCOUNTER = "COUNTER"
-
-
 # ===============================================================================================
-# BEGINNING OF DYNAMIC SECTION
+# BEGINNING OF THE DYNAMIC SECTION
 # ===============================================================================================
 
 def initConfig_entropyConstants(rootdir):
 
     if rootdir and not os.path.isdir(rootdir):
-        import exceptionTools
         raise exceptionTools.FileNotFound("FileNotFound: not a valid chroot.")
 
     const_resetCache()
@@ -656,7 +630,29 @@ def const_defaultSettings(rootdir):
                     'verbose_cmd': "--verbose",
                     'backend': "portage",
                     'available_backends': ["portage"],
-                    'cache': {}
+                    'cache': {},
+                    'xpak_entries': {
+                        'description': "DESCRIPTION",
+                        'homepage': "HOMEPAGE",
+                        'chost': "CHOST",
+                        'category': "CATEGORY",
+                        'cflags': "CFLAGS",
+                        'cxxflags': "CXXFLAGS",
+                        'license': "LICENSE",
+                        'src_uri': "SRC_URI",
+                        'use': "USE",
+                        'iuse': "IUSE",
+                        'slot': "SLOT",
+                        'provide': "PROVIDE",
+                        'depend': "DEPEND",
+                        'rdepend': "RDEPEND",
+                        'pdepend': "PDEPEND",
+                        'needed': "NEEDED",
+                        'inherited': "INHERITED",
+                        'keywords': "KEYWORDS",
+                        'contents': "CONTENTS",
+                        'counter': "COUNTER"
+                    },
         },
 
         'downloadspeedlimit': None, # equo packages download speed limit (in kb/sec)

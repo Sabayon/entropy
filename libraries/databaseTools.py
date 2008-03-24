@@ -3479,7 +3479,7 @@ class etpDatabase:
             myatom = self.retrieveAtom(myid)
             mybranch = self.retrieveBranch(myid)
             myatom = entropyTools.remove_tag(myatom)
-            myatomcounterpath = vdb_path+myatom+"/"+dbCOUNTER
+            myatomcounterpath = vdb_path+myatom+"/"+etpConst['spm']['xpak_entries']['counter']
             if os.path.isfile(myatomcounterpath):
                 try:
                     f = open(myatomcounterpath,"r")
