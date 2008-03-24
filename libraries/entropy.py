@@ -9086,7 +9086,10 @@ class PortageInterface:
                     f.close()
                 except:
                     continue
-        newcounter = max(counters)
+        if counters:
+            newcounter = max(counters)
+        else:
+            newcounter = 0
         if not os.path.isdir(os.path.dirname(etpConst['edbcounter'])):
             os.makedirs(os.path.dirname(etpConst['edbcounter']))
         try:
@@ -9280,10 +9283,13 @@ class SocketHostInterface:
 
         self.socketLog = LogFile(level = 2,filename = etpConst['socketlogfile'], header = "[Socket]")
 
+        # settings
+        # FIXME: move to config file
         self.timeout = 200
         self.hostname = 'localhost'
         self.port = 999
         self.threads = 5
+
         self.running = False
         self.conn_active = False
         self.channel = None
@@ -9338,6 +9344,8 @@ class SocketHostInterface:
                         break
 
                     # run the command
+                    # FIXME Policy validation
+                    # FIXME Auth validation
                     try:
                         rc = eval(data)
                     except Exception, e:

@@ -1,0 +1,10 @@
+#!/usr/bin/python
+import sys
+sys.path.insert(0,'/usr/lib/entropy/libraries')
+sys.path.insert(0,'/usr/lib/entropy/client')
+sys.path.insert(0,'../libraries')
+sys.path.insert(0,'../client')
+from entropy import SocketHostInterface, EquoInterface
+srv = SocketHostInterface(EquoInterface)
+srv.go()
+
