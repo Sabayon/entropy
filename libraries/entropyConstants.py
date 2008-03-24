@@ -858,13 +858,13 @@ def const_readEntropySettings():
                     print "WARNING: invalid loglevel in: "+etpConst['entropyconf']
 
             elif line.startswith("ftp-proxy|") and (len(line.split("|")) == 2):
-                ftpproxy = line.split("|")[1].strip()
-                for x in ftpproxy.split():
-                    etpConst['proxy']['ftp'] = ftpproxy
+                ftpproxy = line.split("|")[1].strip().split()
+                if ftpproxy:
+                    etpConst['proxy']['ftp'] = ftpproxy[-1]
             elif line.startswith("http-proxy|") and (len(line.split("|")) == 2):
-                httpproxy = line.split("|")[1].strip()
-                for x in httpproxy.split():
-                    etpConst['proxy']['http'] = httpproxy
+                httpproxy = line.split("|")[1].strip().split()
+                if httpproxy:
+                    etpConst['proxy']['http'] = httpproxy[-1]
             elif line.startswith("system-name|") and (len(line.split("|")) == 2):
                 etpConst['systemname'] = line.split("|")[1].strip()
 
