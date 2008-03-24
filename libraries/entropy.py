@@ -719,7 +719,7 @@ class EquoInterface(TextInterface):
         #match_string = ''.join(["(%s)?" % (x,) for x in search_term])
         match_string = ''
         for x in search_term:
-            if x not in ["-"]:
+            if x not in ["-","*"]:
                 x = "(%s{1,})?" % (x,)
                 match_string += x
         #print match_string
