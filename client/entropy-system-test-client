@@ -31,24 +31,19 @@ def spawn(cmd, silent = False):
     s.close()
     return data
 
-try:
+# 1st step, get session
+session = spawn("begin", silent = True)
+print "session is:",session # XXX VALIDATE
 
-    # 1st step, get session
-    session = spawn("begin", silent = True)
-    print "session is:",session # XXX VALIDATE
+# 2nd step, run the command
+#s.send("reposync reponames=['sabayonlinux.org'] forceUpdate=True")
+result = spawn("%s match 'x11-libs/qt'" % (session,), silent = True)
+print "spawn result is:",result
 
-    # 2nd step, run the command
-    #s.send("reposync reponames=['sabayonlinux.org'] forceUpdate=True")
-    result = spawn("%s match 'x11-libs/qt'" % (session,), silent = True)
-    print "spawn result is:",result
+# 3rd step, get rc
+rc = spawn("%s rc" % (session,), silent = True)
+print "REAL returned data:",rc
 
-    # 3rd step, get rc
-    rc = spawn("%s rc" % (session,), silent = True)
-    print "REAL returned data:",rc
-
-    # 4th step, end session
-    rc = spawn("%s end" % (session,), silent = True)
-    print "END session result",rc
-
-except KeyboardInterrupt:
-    sys.exit(0)
+# 4th step, end session
+rc = spawn("%s end" % (session,), silent = True)
+print "END session result",rc
