@@ -9347,6 +9347,7 @@ class SocketHostInterface:
         self.port = etpConst['socket_service']['port']
         self.threads = etpConst['socket_service']['threads']
         self.sessions = {}
+        self.socket.setdefaulttimeout(self.timeout)
 
         # FIXME: add policy handling
         self.valid_commands = [
@@ -9500,33 +9501,43 @@ class SocketHostInterface:
         self.updateProgress('called %s: args: %s, kwargs: %s' % (cmd,myargs,mykwargs,))
 
         if cmd == "reposync":
-            repoConn = self.Entropy.Repositories(*myargs, **mykwargs)
-            rc = repoConn.sync()
-            self._store_rc(rc, session)
-            return rc
-
+            return self.docmd_reposync(session, *myargs, **mykwargs)
         elif cmd == "match":
-            rc = self.Entropy.atomMatch(*myargs, **mykwargs)
-            self._store_rc(rc, session)
-            return rc
-
+            return self.docmd_match(session, *myargs, **mykwargs)
         elif cmd == "rc":
-            rc = self._get_rc(session)
-            self.channel.send(str(rc))
-            return rc
-
+            return self.docmd_rc(session)
         elif cmd == "begin":
-            session = self.get_new_session()
-            self.channel.send(session)
-            return session
-
+            return self.docmd_begin()
         elif cmd == "end":
-            rc = self.destroy_session(session)
-            if rc:
-                self.channel.send ( "SUC" )
-            else:
-                self.channel.send ( "ERR" )
-            return rc
+            return self.docmd_end(session)
+
+    def docmd_end(self, session):
+        rc = self.destroy_session(session)
+        cmd = "ERR"
+        if rc: cmd = "SUC"
+        self.channel.send ( cmd )
+        return rc
+
+    def docmd_begin(self):
+        session = self.get_new_session()
+        self.channel.send(session)
+        return session
+
+    def docmd_rc(self, session):
+        rc = self._get_rc(session)
+        self.channel.send(str(rc))
+        return rc
+
+    def docmd_match(self, session, *myargs, **mykwargs):
+        rc = self.Entropy.atomMatch(*myargs, **mykwargs)
+        self._store_rc(rc, session)
+        return rc
+
+    def docmd_reposync(self, session, *myargs, **mykwargs):
+        repoConn = self.Entropy.Repositories(*myargs, **mykwargs)
+        rc = repoConn.sync()
+        self._store_rc(rc, session)
+        return rc
 
     def remoteUpdateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
         if self.conn_active and (text != self.lastoutput):

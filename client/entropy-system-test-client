@@ -17,7 +17,7 @@ def spawn(cmd, silent = False):
             raise
 
     # send command
-    s.send(cmd)
+    s.sendall(cmd)
 
     # get data
     data = ''
