@@ -884,7 +884,7 @@ class etpDatabase:
                     etpData['branch'],
                     )
                 )
-            except IntegrityError: # we have a PRIMARY KEY we need to remove
+            except dbapi2.IntegrityError: # we have a PRIMARY KEY we need to remove
                 self.migrateCountersTable()
                 self.cursor.execute(
                 'INSERT into counters VALUES '

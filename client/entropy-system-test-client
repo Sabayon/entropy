@@ -3,9 +3,9 @@ import sys
 import socket
 serverHost = "localhost"
 serverPort = 999
-s = None
-def connect():
-    global s
+def spawn(cmd, silent = False):
+
+    # connect
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         s.connect((serverHost, serverPort))
@@ -15,31 +15,40 @@ def connect():
             sys.exit(1)
         else:
             raise
-connect()
-try:
-    #s.send("reposync reponames=['sabayonlinux.org'] forceUpdate=True")
-    s.send("match 'x11-libs/qt'") 
-    data = s.recv(1024)
-    while data:
-        if not data:
-            break
-        sys.stdout.write(data)
-        sys.stdout.flush()
-        data = s.recv(1024)
 
-    # get rc
+    # send command
+    s.send(cmd)
+
+    # get data
+    data = ''
+    x = s.recv(1024)
+    while x:
+        data += x
+        if not silent:
+            sys.stdout.write(x)
+            sys.stdout.flush()
+        x = s.recv(1024)
     s.close()
-    sys.stdout.write("\n")
-    connect()
-    s.send("rc")
-    result = ''
-    d = s.recv(1024)
-    while d:
-        result += d
-        d = s.recv(1024)
-    print "returned data:",result
+    return data
+
+try:
+
+    # 1st step, get session
+    session = spawn("begin", silent = True)
+    print "session is:",session # XXX VALIDATE
+
+    # 2nd step, run the command
+    #s.send("reposync reponames=['sabayonlinux.org'] forceUpdate=True")
+    result = spawn("%s match 'x11-libs/qt'" % (session,), silent = True)
+    print "spawn result is:",result
+
+    # 3rd step, get rc
+    rc = spawn("%s rc" % (session,), silent = True)
+    print "REAL returned data:",rc
+
+    # 4th step, end session
+    rc = spawn("%s end" % (session,), silent = True)
+    print "END session result",rc
 
 except KeyboardInterrupt:
-    s.close()
     sys.exit(0)
-s.close()
