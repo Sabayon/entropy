@@ -9337,6 +9337,7 @@ class SocketHostInterface:
             self.progress( "Fetching "+str((round(float(self.average),1)))+"%"+kbprogress, back = True )
 
     import socket
+    import dumpTools
     def __init__(self, intf, *args, **kwds):
 
         self.socketLog = LogFile(level = 2,filename = etpConst['socketlogfile'], header = "[Socket]")
@@ -9347,7 +9348,6 @@ class SocketHostInterface:
         self.port = etpConst['socket_service']['port']
         self.threads = etpConst['socket_service']['threads']
         self.sessions = {}
-        self.socket.setdefaulttimeout(self.timeout)
 
         # FIXME: add policy handling
         self.valid_commands = [
@@ -9384,6 +9384,12 @@ class SocketHostInterface:
                 raise
         self.SocketServer.listen ( self.threads )
 
+    def set_timeout(self):
+        self.socket.setdefaulttimeout(self.timeout)
+
+    def unset_timeout(self):
+        self.socket.setdefaulttimeout(0)
+
     def get_new_session(self):
         rng = str(int(random.random()*100000))
         while rng in self.sessions:
@@ -9407,11 +9413,15 @@ class SocketHostInterface:
                 self.updateProgress('open: %s' % (details,))
                 self.conn_active = True
                 while self.conn_active:
+
+                    self.set_timeout()
+
                     try:
                         data = self.channel.recv ( 1024 )
                     except self.socket.error, e:
                         self.conn_active = False
                         self.updateProgress('connection aborted: %s' % (e,))
+                        self.unset_timeout()
                         break
 
                     self.updateProgress("  call: %s" % (data,))
@@ -9422,7 +9432,10 @@ class SocketHostInterface:
                         self.channel.close()
                         self.running = False
                         self.channel = None
+                        self.unset_timeout()
                         break
+
+                    self.unset_timeout()
 
                     # validate command
                     args = data.split()
@@ -9525,7 +9538,14 @@ class SocketHostInterface:
 
     def docmd_rc(self, session):
         rc = self._get_rc(session)
-        self.channel.send(str(rc))
+        try:
+            import cStringIO as stringio
+        except ImportError:
+            import StringIO as stringio
+        f = stringio.StringIO()
+        self.dumpTools.serialize(rc, f)
+        self.channel.send(f.getvalue())
+        f.close()
         return rc
 
     def docmd_match(self, session, *myargs, **mykwargs):

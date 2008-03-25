@@ -47,6 +47,25 @@ def dumpobj(name, object, completePath = False):
         f.close()
         break
 
+'''
+   @description: serialize object to f (file)
+   @input: object, file object
+   @output: file object, pointer to the beginning
+'''
+def serialize(object, f):
+    pickle.dump(object,f)
+    f.flush()
+    f.seek(0)
+    return f
+
+'''
+   @description: unserialize file to object (file)
+   @input: file object
+   @output: object
+'''
+def unserialize(f):
+    x = pickle.load(f)
+    return x
 
 '''
    @description: load object from a file

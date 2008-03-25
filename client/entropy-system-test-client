@@ -1,9 +1,25 @@
 #!/usr/bin/python
-import sys
-import socket
 serverHost = "localhost"
 serverPort = 999
-def spawn(cmd, silent = False):
+
+import sys, os
+import socket
+sys.path.insert(0,'/usr/lib/entropy/libraries')
+sys.path.insert(0,'/usr/lib/entropy/client')
+sys.path.insert(0,'../libraries')
+sys.path.insert(0,'../client')
+
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+try:
+    import cStringIO as stringio
+except ImportError:
+    import StringIO as stringio
+import dumpTools
+
+def spawn(cmd, silent = False, getobj = False):
 
     # connect
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -28,12 +44,18 @@ def spawn(cmd, silent = False):
             sys.stdout.write(x)
             sys.stdout.flush()
         x = s.recv(1024)
+
+    if getobj:
+        f = stringio.StringIO(data)
+        data = dumpTools.unserialize(f)
+        f.close()
+
     s.close()
     return data
 
 # 1st step, get session
 session = spawn("begin", silent = True)
-print "session is:",session # XXX VALIDATE
+print "session is:",session
 
 # 2nd step, run the command
 #s.send("reposync reponames=['sabayonlinux.org'] forceUpdate=True")
@@ -41,8 +63,8 @@ result = spawn("%s match 'x11-libs/qt'" % (session,), silent = True)
 print "spawn result is:",result
 
 # 3rd step, get rc
-rc = spawn("%s rc" % (session,), silent = True)
-print "REAL returned data:",rc
+rc = spawn("%s rc" % (session,), silent = True, getobj = True)
+print "REAL returned data:",rc,type(rc)
 
 # 4th step, end session
 rc = spawn("%s end" % (session,), silent = True)
