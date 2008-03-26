@@ -1972,24 +1972,12 @@ class etpDatabase:
             c_hash = str(hash(function)) + str(extra_hash)
             c_match = str(idpackage)
             try:
+                sperms = False
+                if not os.path.isdir(os.path.join(etpConst['dumpstoragedir'],etpCache['dbInfo']+"/"+self.dbname)):
+                    sperms = True
                 dumpTools.dumpobj(etpCache['dbInfo']+"/"+self.dbname+"/"+c_match+"/"+c_hash,info_cache_data)
-            except IOError:
-                pass
-
-    def fetchSearchCache(self, cache_hash):
-        if self.xcache:
-            try:
-                cached = dumpTools.loadobj(etpCache['dbSearch']+"/"+self.dbname+"/"+cache_hash)
-                if cached != None:
-                    return cached
-            except EOFError:
-                pass
-
-
-    def storeSearchCache(self, cache_hash, cache_data):
-        if self.xcache:
-            try:
-                dumpTools.dumpobj(etpCache['dbSearch']+"/"+self.dbname+"/"+cache_hash,cache_data)
+                if sperms:
+                    const_setup_perms(etpConst['dumpstoragedir'],etpConst['entropygid'])
             except IOError:
                 pass
 
@@ -2599,17 +2587,12 @@ class etpDatabase:
 
     def isFileAvailable(self, myfile):
 
-        #c_hash = str( hash("isFileAvailable") + hash(file) + hash(extended) )
-        #cache = self.fetchSearchCache(c_hash)
-        #if cache != None: return cache
-
         self.cursor.execute('SELECT idpackage FROM content WHERE file = (?)', (myfile,))
         result = self.cursor.fetchone()
         rc = False
         if result:
             rc = True
 
-        #self.storeSearchCache(c_hash,rc)
         return rc
 
     def isSourceAvailable(self,source):
@@ -3676,7 +3659,12 @@ class etpDatabase:
         if self.xcache:
             c_hash = self.__get_match_hash(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
             try:
+                sperms = False
+                if not os.path.isdir(os.path.join(etpConst['dumpstoragedir'],etpCache['dbMatch']+"/"+self.dbname)):
+                    sperms = True
                 dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash,result)
+                if sperms:
+                    const_setup_perms(etpConst['dumpstoragedir'],etpConst['entropygid'])
             except IOError:
                 pass
 

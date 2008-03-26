@@ -1305,12 +1305,12 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
     origpath = extractPath
     # Set correct owner, mtime and filemode on directories.
     for tarinfo in directories:
-        extractPath = os.path.join(extractPath, tarinfo.name)
+        epath = os.path.join(extractPath, tarinfo.name)
         try:
-            tar.chown(tarinfo, extractPath)
-            tar.utime(tarinfo, extractPath)
-            tar.chmod(tarinfo, extractPath)
-        except tarfile.ExtractError:
+            tar.chown(tarinfo, epath)
+            tar.utime(tarinfo, epath)
+            tar.chmod(tarinfo, epath)
+        except tarfile.ExtractError, e:
             if tar.errorlevel > 1:
                 raise
     #'''

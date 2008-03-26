@@ -4,6 +4,7 @@ serverPort = 999
 
 import sys, os
 import socket
+socket.setdefaulttimeout(5)
 sys.path.insert(0,'/usr/lib/entropy/libraries')
 sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'../libraries')
@@ -37,13 +38,18 @@ def spawn(cmd, silent = False, getobj = False):
 
     # get data
     data = ''
-    x = s.recv(1024)
-    while x:
+    while 1:
+        try:
+            x = s.recv(1024)
+        except socket.timeout, e:
+            print "connection timed out"
+            sys.exit(3)
+        if not x:
+            break
         data += x
         if not silent:
             sys.stdout.write(x)
             sys.stdout.flush()
-        x = s.recv(1024)
 
     if getobj:
         f = stringio.StringIO(data)
@@ -60,12 +66,18 @@ print "session is:",session
 # 2nd step, run the command
 #s.send("reposync reponames=['sabayonlinux.org'] forceUpdate=True")
 result = spawn("%s match 'x11-libs/qt'" % (session,), silent = True)
-print "spawn result is:",result
+print "spawn result is:",repr(result)
+
+if result != chr(0)*2:
+    print "cannot continue, error:",repr(result)
+    sys.exit(2)
 
 # 3rd step, get rc
 rc = spawn("%s rc" % (session,), silent = True, getobj = True)
-print "REAL returned data:",rc,type(rc)
+print "REAL returned data:",repr(rc)
 
 # 4th step, end session
 rc = spawn("%s end" % (session,), silent = True)
-print "END session result",rc
+print "END session result",repr(rc)
+
+sys.exit(0)

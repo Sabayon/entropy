@@ -5,6 +5,7 @@ TODO list
      [] complete reagent spm interface
      [] write a tool that will rebuild kernel dependant packages
      [] GLSA interface, interfaced between packages in repo and the portage tree
+  - implement notice board
   - calculate extra deps from NEEDED, server side? - NEEDED + ldconfig -p ?
   - split RDEPEND and PDEPEND ( + && and || )
   - log messages from portage doebuild() calls

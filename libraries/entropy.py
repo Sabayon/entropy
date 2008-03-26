@@ -133,6 +133,12 @@ class EquoInterface(TextInterface):
                                    )
                 continue
 
+    def setup_default_file_perms(self, filepath):
+        # setup file permissions
+        os.chmod(filepath,0664)
+        if etpConst['entropygid'] != None:
+            os.chown(filepath,0,etpConst['entropygid'])
+
     def validate_repositories_cache(self):
         # is the list of repos changed?
         cached = self.dumpTools.loadobj(etpCache['repolist'])
@@ -3040,7 +3046,9 @@ class PackageInterface:
     @output: 0 = all fine, >0 = error!
     '''
     def __unpack_package(self):
+
         self.error_on_not_prepared()
+
         if not self.infoDict['merge_from']:
             self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Unpacking package: "+str(self.infoDict['atom']))
         else:
@@ -3087,7 +3095,7 @@ class PackageInterface:
                 pass
 
             # create data dir where we'll unpack the xpak
-            os.makedirs(self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'])
+            os.makedirs(self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'],0755)
             #os.mkdir(self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'])
             xpakPath = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakfilename']
 
@@ -3128,7 +3136,7 @@ class PackageInterface:
                                                 "portage/"+self.infoDict['category'] + "/" + self.infoDict['name'] + "-" + self.infoDict['version']
                                             )
 
-            os.makedirs(portage_db_fakedir)
+            os.makedirs(portage_db_fakedir,0755)
             # now link it to self.infoDict['imagedir']
             os.symlink(self.infoDict['imagedir'],os.path.join(portage_db_fakedir,"image"))
 
@@ -3492,7 +3500,7 @@ class PackageInterface:
                     copypath = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
 
                 if not os.path.isdir(portDbDir+self.infoDict['category']):
-                    os.makedirs(portDbDir+self.infoDict['category'])
+                    os.makedirs(portDbDir+self.infoDict['category'],0755)
                 destination = portDbDir+self.infoDict['category']+"/"+self.infoDict['name']+"-"+self.infoDict['version']
                 if os.path.isdir(destination):
                     shutil.rmtree(destination)
@@ -3533,6 +3541,7 @@ class PackageInterface:
                                                 type = "warning",
                                                 header = darkred("   ## ")
                                         )
+
 
         return 0
 
@@ -4650,9 +4659,11 @@ class RepoInterface:
 
         self.__validate_repository_id(repo)
 
-	# create dir if it doesn't exist
-	if not os.path.isdir(etpRepositories[repo]['dbpath']):
-	    os.makedirs(etpRepositories[repo]['dbpath'])
+        # create dir if it doesn't exist
+        if not os.path.isdir(etpRepositories[repo]['dbpath']):
+            os.makedirs(etpRepositories[repo]['dbpath'],0775)
+
+        const_setup_perms(etpConst['etpdatabaseclientdir'],etpConst['entropygid'])
 
     def __construct_paths(self, item, repo, cmethod):
 
@@ -4726,6 +4737,8 @@ class RepoInterface:
             os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[3]])
         else:
             raise exceptionTools.InvalidData('self.dbformat_eapi must be in (1,2)')
+
+        self.Entropy.setup_default_file_perms(path)
         return path
 
     def __verify_database_checksum(self, repo, cmethod = None):
@@ -4816,6 +4829,7 @@ class RepoInterface:
         del fetchConn
         if rc in ("-1","-2","-3"):
             return False
+        self.Entropy.setup_default_file_perms(filepath)
         return True
 
     def check_downloaded_database(self, repo, cmethod):
@@ -5017,6 +5031,8 @@ class RepoInterface:
                     self.syncErrors = True
                     self.Entropy.cycleDone()
                     continue
+                if os.path.isfile(dbfile):
+                    self.Entropy.setup_default_file_perms(dbfile)
 
             # database is going to be updated
             self.dbupdated = True
@@ -7624,17 +7640,21 @@ class PackageMaskingParser:
             currmtime = os.path.getmtime(toread)
 
         if not os.path.isdir(etpConst['dumpstoragedir']):
-            os.makedirs(etpConst['dumpstoragedir'])
+            os.makedirs(etpConst['dumpstoragedir'],0775)
+            const_setup_perms(etpConst['dumpstoragedir'],etpConst['entropygid'])
 
         f = open(tosaveinto,"w")
         f.write(str(currmtime))
         f.flush()
         f.close()
+        os.chmod(tosaveinto,0664)
+        if etpConst['entropygid'] != None:
+            os.chown(tosaveinto,0,etpConst['entropygid'])
 
 
-    def __validateEntropyCache(self,maskfile,mtimefile, repoid = None):
+    def __validateEntropyCache(self, maskfile, mtimefile, repoid = None):
 
-        if os.getuid() != 0: # can't validate if running as user, thus cache shouldn't be loaded either
+        if os.getuid() != 0: # can't validate if running as user, moreover users can't make changes, so...
             return
 
         # handle on-disk cache validation
@@ -7835,12 +7855,14 @@ class SecurityInterface:
         self.security_package = os.path.join(etpConst['securitydir'],os.path.basename(etpConst['securityurl']))
         self.security_package_checksum = self.security_package+etpConst['packageshashfileext']
 
-
-        if etpConst['uid'] == 0:
+        try:
             if os.path.isfile(etpConst['securitydir']) or os.path.islink(etpConst['securitydir']):
                 os.remove(etpConst['securitydir'])
             if not os.path.isdir(etpConst['securitydir']):
-                os.makedirs(etpConst['securitydir'])
+                os.makedirs(etpConst['securitydir'],0775)
+            const_setup_perms(etpConst['securitydir'],etpConst['entropygid'])
+        except OSError:
+            pass
 
         if os.path.isfile(self.old_download_package_checksum):
             f = open(self.old_download_package_checksum)
@@ -7860,7 +7882,8 @@ class SecurityInterface:
                 os.rmdir(self.unpackdir)
             except OSError:
                 pass
-        os.makedirs(self.unpackdir)
+        os.makedirs(self.unpackdir,0775)
+        const_setup_perms(self.unpackdir,etpConst['entropygid'])
 
     def __download_glsa_package(self):
         return self.__generic_download(self.security_url, self.download_package)
@@ -7875,6 +7898,8 @@ class SecurityInterface:
         del fetchConn
         if rc in ("-1","-2","-3"):
             return False
+        # setup permissions
+        self.Entropy.setup_default_file_perms(save_to)
         return True
 
     def __verify_checksum(self):
@@ -7905,13 +7930,15 @@ class SecurityInterface:
                                                             self.unpacked_package,
                                                             catchEmpty = True
                                                         )
+        const_setup_perms(self.unpacked_package,etpConst['entropygid'])
         return rc
 
     def __clear_previous_advisories(self):
         if os.listdir(etpConst['securitydir']):
             shutil.rmtree(etpConst['securitydir'],True)
             if not os.path.isdir(etpConst['securitydir']):
-                os.makedirs(etpConst['securitydir'])
+                os.makedirs(etpConst['securitydir'],0775)
+            const_setup_perms(self.unpackdir,etpConst['entropygid'])
 
     def __put_advisories_in_place(self):
         for advfile in os.listdir(self.unpacked_package):
@@ -8239,7 +8266,7 @@ class SecurityInterface:
         @rtype:		String
         @return:	the portage atom
         """
-	return str(self.op_mappings[vnode.getAttribute("range")] + pkgname + "-" + vnode.firstChild.data.strip())
+        return str(self.op_mappings[vnode.getAttribute("range")] + pkgname + "-" + vnode.firstChild.data.strip())
 
     def check_advisories_availability(self):
         if not os.path.lexists(etpConst['securitydir']):
@@ -8375,7 +8402,6 @@ class SecurityInterface:
         # remove temp stuff
         self.__cleanup_garbage()
 
-        # FIXME: this doesn't seem to work?
         if self.advisories_changed:
             advtext = darkgreen("Security Advisories: updated successfully")
         else:
@@ -8499,13 +8525,11 @@ class PortageInterface:
         # explode
         protect = []
         for x in config_protect:
-            if x.startswith("$"): #FIXME: small hack
-                x = commands.getoutput("echo "+x).split("\n")[0]
+            x = os.path.expandvars(x)
             protect.append(x)
         mask = []
         for x in config_protect_mask:
-            if x.startswith("$"): #FIXME: small hack
-                x = commands.getoutput("echo "+x).split("\n")[0]
+            x = os.path.expandvars(x)
             mask.append(x)
         return ' '.join(protect),' '.join(mask)
 
@@ -9345,6 +9369,7 @@ class SocketHostInterface:
         # settings
         self.timeout = etpConst['socket_service']['timeout']
         self.hostname = etpConst['socket_service']['hostname']
+        if self.hostname == "*": self.hostname = ''
         self.port = etpConst['socket_service']['port']
         self.threads = etpConst['socket_service']['threads']
         self.sessions = {}
@@ -9357,6 +9382,14 @@ class SocketHostInterface:
             'rc',
             'match'
         ]
+
+        # FIXME: move this into etpConst
+        self.answers = {
+            'ok': chr(0)+chr(0),
+            'er': chr(0)+chr(1),
+            'no': chr(0)+chr(2),
+            'cl': chr(0)+chr(3)
+        }
 
         self.running = False
         self.conn_active = False
@@ -9371,6 +9404,12 @@ class SocketHostInterface:
         self.lastoutput = ''
 
         self.SocketServer = self.socket.socket ( self.socket.AF_INET, self.socket.SOCK_STREAM )
+        if self.hostname:
+            try:
+                self.hostname = self.get_ip_address(self.hostname)
+            except IOError: # it isn't a device name
+                pass
+
         while 1:
             try:
                 self.SocketServer.bind ( ( self.hostname , self.port ) )
@@ -9383,6 +9422,11 @@ class SocketHostInterface:
                     continue
                 raise
         self.SocketServer.listen ( self.threads )
+
+    def get_ip_address(self, ifname):
+        import fcntl
+        import struct
+        return self.socket.inet_ntoa(fcntl.ioctl(self.SocketServer.fileno(), 0x8915, struct.pack('256s', ifname[:15]))[20:24])
 
     def set_timeout(self):
         self.socket.setdefaulttimeout(self.timeout)
@@ -9428,7 +9472,7 @@ class SocketHostInterface:
 
                     if data in ["quit","","close"]:
                         self.updateProgress('close: %s' % (details,))
-                        self.channel.send ( "CLO" )
+                        self.channel.send(self.answers['cl'])
                         self.channel.close()
                         self.running = False
                         self.channel = None
@@ -9440,7 +9484,7 @@ class SocketHostInterface:
                     # validate command
                     args = data.split()
                     session = args[0]
-                    if session in ["begin","rc"]:
+                    if session == "begin":
                         cmd = args[0]
                         session = None
                     else:
@@ -9449,7 +9493,7 @@ class SocketHostInterface:
 
                     # answer to invalid commands
                     if (cmd not in self.valid_commands) or (session not in self.sessions and (cmd != "begin")):
-                        self.channel.send ( "NOP" )
+                        self.channel.send ( self.answers['no'] )
                         self.channel.close()
                         break
 
@@ -9460,14 +9504,14 @@ class SocketHostInterface:
                         # FIXME: run this in parallel to avoid locks and check when done (sleep until done)
                         rc = self.run_task(cmd, myargs, session)
                     except Exception, e:
-                        self.channel.send ( "Exception: %s\n" % (str(Exception),) )
-                        self.channel.send ( "Error: %s\n" % (e,) )
-                        self.channel.send ( "ERR" )
+                        # store error
+                        self._store_rc((Exception,e),session)
+                        self.channel.send ( self.answers['er'] )
                         self.channel.close()
                         break
 
                     if cmd not in ["rc","begin","end"]:
-                        self.channel.send ( "SUC" )
+                        self.channel.send ( self.answers['ok'] )
                     self.updateProgress('close: %s' % (details,))
                     self.channel.close()
                     break
@@ -9526,8 +9570,8 @@ class SocketHostInterface:
 
     def docmd_end(self, session):
         rc = self.destroy_session(session)
-        cmd = "ERR"
-        if rc: cmd = "SUC"
+        cmd = self.answers['no']
+        if rc: cmd = self.answers['ok']
         self.channel.send ( cmd )
         return rc
 

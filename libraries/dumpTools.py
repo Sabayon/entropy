@@ -39,10 +39,14 @@ def dumpobj(name, object, completePath = False):
             dump_dir = os.path.dirname(dump_path)
             #dump_name = os.path.basename(dump_path)
             if not os.path.isdir(dump_dir):
-                os.makedirs(dump_dir)
+                os.makedirs(dump_dir,0775)
+                const_setup_perms(dump_dir,etpConst['entropygid'])
             dmpfile = dump_path+".dmp"
         f = open(dmpfile,"wb")
         pickle.dump(object,f)
+        os.chmod(dmpfile,0664)
+        if etpConst['entropygid'] != None:
+            os.chown(dmpfile,0,etpConst['entropygid'])
         f.flush()
         f.close()
         break

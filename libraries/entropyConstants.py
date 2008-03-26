@@ -622,6 +622,9 @@ def const_defaultSettings(rootdir):
         'errorstatus': ETP_CONF_DIR+"/code",
         'systemroot': rootdir, # default system root
         'uid': os.getuid(), # current running UID
+        'entropygid': None,
+        'defaultumask': 022,
+        'storeumask': 002,
         'treeupdatescalled': False, # to avoid running tree updates functions multiple times
         'spm': {
                     'exec': "/usr/bin/emerge", # source package manager executable
@@ -1005,6 +1008,23 @@ def const_setupEntropyPid():
             f.flush()
             f.close()
 
+def const_setup_perms(mydir, gid):
+    if gid == None:
+        return
+    for currentdir,subdirs,files in os.walk(mydir):
+        try:
+            os.chown(currentdir,0,gid)
+            os.chmod(currentdir,0775)
+        except OSError:
+            pass
+        for item in files:
+            item = os.path.join(currentdir,item)
+            try:
+                os.chown(item,0,gid)
+                os.chmod(item,0664)
+            except OSError:
+                pass
+
 def const_createWorkingDirectories():
 
     # handle pid file
@@ -1012,23 +1032,101 @@ def const_createWorkingDirectories():
     if not os.path.exists(piddir) and (etpConst['uid'] == 0):
         os.makedirs(piddir)
 
+    # create user if it doesn't exist
+    gid = None
+    try:
+        gid = const_get_entropy_gid()
+    except KeyError:
+        if etpConst['uid'] == 0:
+            # create group
+            # avoid checking cause it's not mandatory for entropy/equo itself
+            const_add_entropy_group()
+            try:
+                gid = const_get_entropy_gid()
+            except KeyError:
+                pass
+
     # Create paths
-    if etpConst['uid'] == 0:
-        for x in etpConst:
-            if (type(etpConst[x]) is basestring):
+    for x in etpConst:
+        if (type(etpConst[x]) is basestring):
 
-                if not etpConst[x] or \
-                    etpConst[x].endswith(".conf") or \
-                    not os.path.isabs(etpConst[x]) or \
-                    etpConst[x].endswith(".cfg") or \
-                    etpConst[x].endswith(".tmp") or \
-                    etpConst[x].find(".db") != -1 or \
-                    etpConst[x].find(".log") != -1 or \
-                    os.path.isdir(etpConst[x]) or \
-                    not x.endswith("dir"):
-                        continue
+            if not etpConst[x] or \
+                etpConst[x].endswith(".conf") or \
+                not os.path.isabs(etpConst[x]) or \
+                etpConst[x].endswith(".cfg") or \
+                etpConst[x].endswith(".tmp") or \
+                etpConst[x].find(".db") != -1 or \
+                etpConst[x].find(".log") != -1 or \
+                os.path.isdir(etpConst[x]) or \
+                not x.endswith("dir"):
+                    continue
 
-                os.makedirs(etpConst[x],0755)
+            # allow users to create dirs in custom paths,
+            # so don't fail here even if we don't have permissions
+            try:
+                os.makedirs(etpConst[x])
+            except OSError:
+                pass
+
+    if gid:
+        etpConst['entropygid'] = gid
+        '''
+        change permissions of:
+            /var/lib/entropy
+            /var/tmp/entropy
+        '''
+        w_gid = os.stat(etpConst['entropyworkdir'])[5]
+        if w_gid != gid:
+            const_setup_perms(etpConst['entropyworkdir'],gid)
+        w_gid = os.stat(etpConst['entropyunpackdir'])[5]
+        if w_gid != gid:
+            const_setup_perms(etpConst['entropyunpackdir'],gid)
+        # always setup /var/lib/entropy/client permissions
+        const_setup_perms(etpConst['etpdatabaseclientdir'],gid)
+
+def const_get_entropy_gid():
+    group_file = os.path.join(etpConst['systemroot'],'/etc/group')
+    if not os.path.isfile(group_file):
+        raise KeyError
+    f = open(group_file,"r")
+    for line in f.readlines():
+        if line.startswith('entropy:'):
+            try:
+                gid = int(line.split(":")[2])
+            except ValueError:
+                raise KeyError
+            return gid
+    raise KeyError
+
+def const_add_entropy_group():
+    group_file = os.path.join(etpConst['systemroot'],'/etc/group')
+    if not os.path.isfile(group_file):
+        raise KeyError
+    ids = set()
+    f = open(group_file,"r")
+    for line in f.readlines():
+        if line and line.split(":"):
+            try:
+                myid = int(line.split(":")[2])
+            except ValueError:
+                pass
+            ids.add(myid)
+    if ids:
+        # starting from 1000, get the first free
+        while 1:
+            new_id = 1000
+            if new_id not in ids:
+                break
+    else:
+        new_id = 10000
+    print new_id
+    f.close()
+    f = open(group_file,"aw")
+    f.seek(0,2)
+    app_line = "entropy:x:%s:\n" % (new_id,)
+    f.write(app_line)
+    f.flush()
+    f.close()
 
 # load config
 initConfig_entropyConstants(etpSys['rootdir'])
