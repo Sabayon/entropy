@@ -455,6 +455,7 @@ def initConfig_entropyConstants(rootdir):
     const_readRepositoriesSettings()
     const_readRemoteSettings()
     const_readSocketSettings()
+    const_configureLockPaths()
     initConfig_clientConstants()
 
 def initConfig_clientConstants():
@@ -702,7 +703,14 @@ def const_defaultSettings(rootdir):
             'port': 999,
             'timeout': 30,
             'threads': 5,
-        },
+            'answers': {
+                'ok': chr(0)+chr(0),
+                'er': chr(0)+chr(1),
+                'no': chr(0)+chr(2),
+                'cl': chr(0)+chr(3),
+                'eot': chr(0)+chr(4)+"\n"
+            },
+        }
 
     }
     etpConst.update(myConst)
@@ -1008,23 +1016,6 @@ def const_setupEntropyPid():
             f.flush()
             f.close()
 
-def const_setup_perms(mydir, gid):
-    if gid == None:
-        return
-    for currentdir,subdirs,files in os.walk(mydir):
-        try:
-            os.chown(currentdir,0,gid)
-            os.chmod(currentdir,0775)
-        except OSError:
-            pass
-        for item in files:
-            item = os.path.join(currentdir,item)
-            try:
-                os.chown(item,0,gid)
-                os.chmod(item,0664)
-            except OSError:
-                pass
-
 def const_createWorkingDirectories():
 
     # handle pid file
@@ -1083,6 +1074,30 @@ def const_createWorkingDirectories():
             const_setup_perms(etpConst['entropyunpackdir'],gid)
         # always setup /var/lib/entropy/client permissions
         const_setup_perms(etpConst['etpdatabaseclientdir'],gid)
+
+def const_configureLockPaths():
+    etpConst['locks'] = {
+        'reposync': os.path.join(etpConst['etpdatabaseclientdir'],'.lock_reposync'),
+        'securitysync': os.path.join(etpConst['securitydir'],'.lock_securitysync'),
+        'packagehandling': os.path.join(etpConst['etpdatabaseclientdir'],'.lock_packagehandling'),
+    }
+
+def const_setup_perms(mydir, gid):
+    if gid == None:
+        return
+    for currentdir,subdirs,files in os.walk(mydir):
+        try:
+            os.chown(currentdir,0,gid)
+            os.chmod(currentdir,0775)
+        except OSError:
+            pass
+        for item in files:
+            item = os.path.join(currentdir,item)
+            try:
+                os.chown(item,0,gid)
+                os.chmod(item,0664)
+            except OSError:
+                pass
 
 def const_get_entropy_gid():
     group_file = os.path.join(etpConst['systemroot'],'/etc/group')

@@ -139,6 +139,64 @@ class EquoInterface(TextInterface):
         if etpConst['entropygid'] != None:
             os.chown(filepath,0,etpConst['entropygid'])
 
+    def check_pid_file_lock(self, pidfile):
+        if not os.path.isfile(pidfile):
+            return False # not locked
+        f = open(pidfile)
+        s_pid = f.readline().strip()
+        f.close()
+        try:
+            s_pid = int(s_pid)
+        except ValueError:
+            return False # not locked
+        # is it our pid?
+        mypid = os.getpid()
+        if (s_pid != mypid) and os.path.isdir("%s/proc/%s" % (etpConst['systemroot'],s_pid,)):
+            # is it running
+            return True # locked
+        return False
+
+    def create_pid_file_lock(self, pidfile, mypid = None):
+        lockdir = os.path.dirname(pidfile)
+        if not os.path.isdir(lockdir):
+            os.makedirs(lockdir,0775)
+        const_setup_perms(lockdir,etpConst['entropygid'])
+        if mypid == None:
+            mypid = os.getpid()
+        f = open(pidfile,"w")
+        f.write(str(mypid))
+        f.flush()
+        f.close()
+
+    def sync_loop_check(self, check_function, lock_count, max_lock_count, sleep_seconds):
+        # check lock file
+        while 1:
+            locked = check_function()
+            if not locked:
+                if lock_count > 0:
+                    self.updateProgress(    blue("Synchronization unlocked, let's go!"),
+                                                    importance = 1,
+                                                    type = "info",
+                                                    header = darkred(" @@ ")
+                                        )
+                break
+            if lock_count >= max_lock_count:
+                self.updateProgress(    blue("Synchronization still locked after %s minutes, giving up!") % (max_lock_count*sleep_seconds/60,),
+                                                importance = 1,
+                                                type = "warning",
+                                                header = darkred(" @@ ")
+                                    )
+                return True # gave up
+            lock_count += 1
+            self.updateProgress(    blue("Synchronization locked, sleeping %s seconds, check #%s/%s") % (sleep_seconds,lock_count,max_lock_count,),
+                                            importance = 1,
+                                            type = "warning",
+                                            header = darkred(" @@ "),
+                                            back = True
+                                )
+            time.sleep(sleep_seconds)
+        return False # yay!
+
     def validate_repositories_cache(self):
         # is the list of repos changed?
         cached = self.dumpTools.loadobj(etpCache['repolist'])
@@ -4069,14 +4127,18 @@ class PackageInterface:
         del remdata
         return 0
 
+    def _run_create_lock(self):
+        self.Entropy.create_pid_file_lock(etpConst['locks']['packagehandling'])
 
-    '''
-        @description: execute the requested steps
-        @input xterm_header: purely optional
-    '''
-    def run(self, xterm_header = None):
-        self.error_on_not_prepared()
+    def _run_remove_lock(self):
+        if os.path.isfile(etpConst['locks']['packagehandling']):
+            os.remove(etpConst['locks']['packagehandling'])
 
+    def _run_check_lock(self):
+        rc = self.Entropy.check_pid_file_lock(etpConst['locks']['packagehandling'])
+        return rc
+
+    def run_stepper(self, xterm_header):
         if xterm_header == None:
             xterm_header = ""
 
@@ -4142,6 +4204,35 @@ class PackageInterface:
 
             if rc != 0:
                 break
+
+        return rc
+
+
+    '''
+        @description: execute the requested steps
+        @input xterm_header: purely optional
+    '''
+    def run(self, xterm_header = None):
+        self.error_on_not_prepared()
+
+        lock_count = 0
+        max_lock_count = 30
+        sleep_seconds = 10
+        gave_up = self.Entropy.sync_loop_check(self._run_check_lock, lock_count, max_lock_count, sleep_seconds)
+        if gave_up:
+            return 20
+
+        # lock
+        self._run_create_lock()
+
+        try:
+            rc = self.run_stepper(xterm_header)
+        except:
+            self._run_remove_lock()
+            raise
+
+        # remove lock
+        self._run_remove_lock()
 
         if rc != 0:
             self.Entropy.updateProgress(
@@ -4870,18 +4961,19 @@ class RepoInterface:
             return 1
         return 0
 
-    def sync(self):
 
-        # close them
-        self.Entropy.closeAllRepositoryDatabases()
+    def _sync_create_lock(self):
+        self.Entropy.create_pid_file_lock(etpConst['locks']['reposync'])
 
-        # let's dance!
-        self.Entropy.updateProgress(    darkgreen("Repositories syncronization..."),
-                                        importance = 2,
-                                        type = "info",
-                                        header = darkred(" @@ ")
-                            )
+    def _sync_remove_lock(self):
+        if os.path.isfile(etpConst['locks']['reposync']):
+            os.remove(etpConst['locks']['reposync'])
 
+    def _sync_check_lock(self):
+        rc = self.Entropy.check_pid_file_lock(etpConst['locks']['reposync'])
+        return rc
+
+    def run_sync(self):
         self.dbupdated = False
         repocount = 0
         repolength = len(self.reponames)
@@ -4995,7 +5087,7 @@ class RepoInterface:
                                             importance = 0,
                                             type = "info",
                                             header = "\t"
-                            )
+                                       )
             # unpack database
             self.__unpack_downloaded_database(repo, cmethod)
 
@@ -5139,6 +5231,7 @@ class RepoInterface:
                                             header = darkred(" @@ ")
                             )
             self.syncErrors = True
+            self._sync_remove_lock()
             return 128
 
         rc = False
@@ -5155,6 +5248,38 @@ class RepoInterface:
                                             type = "info",
                                             header = darkred(" !! ")
                             )
+        return 0
+
+    def sync(self):
+
+        # close them
+        self.Entropy.closeAllRepositoryDatabases()
+
+        # let's dance!
+        self.Entropy.updateProgress(    darkgreen("Repositories syncronization..."),
+                                        importance = 2,
+                                        type = "info",
+                                        header = darkred(" @@ ")
+                            )
+
+        lock_count = 0
+        max_lock_count = 30
+        sleep_seconds = 10
+        gave_up = self.Entropy.sync_loop_check(self._sync_check_lock, lock_count, max_lock_count, sleep_seconds)
+        if gave_up:
+            return 3
+
+        # lock
+        self._sync_create_lock()
+        try:
+            rc = self.run_sync()
+        except:
+            self._sync_remove_lock()
+            raise
+        if rc: return rc
+
+        # remove lock
+        self._sync_remove_lock()
 
         if (self.notAvailable >= len(self.reponames)):
             return 2
@@ -5852,13 +5977,15 @@ class rssFeed:
         for key in keys:
 
             # sanity check, you never know
-            try:
-                self.items[key]['title']
-                self.items[key]['link']
-                self.items[key]['guid']
-                self.items[key]['description']
-                self.items[key]['pubDate']
-            except KeyError:
+            if not self.items.has_key(key):
+                self.removeEntry(key)
+                continue
+            k_error = False
+            for item in ['title','link','guid','description','pubDate']:
+                if not self.items[key].has_key(item):
+                    k_error = True
+                    break
+            if k_error:
                 self.removeEntry(key)
                 continue
 
@@ -8277,6 +8404,17 @@ class SecurityInterface:
             return True
         return False
 
+    def _sync_create_lock(self):
+        self.Entropy.create_pid_file_lock(etpConst['locks']['securitysync'])
+
+    def _sync_remove_lock(self):
+        if os.path.isfile(etpConst['locks']['securitysync']):
+            os.remove(etpConst['locks']['securitysync'])
+
+    def _sync_check_lock(self):
+        rc = self.Entropy.check_pid_file_lock(etpConst['locks']['securitysync'])
+        return rc
+
     def fetch_advisories(self):
 
         self.Entropy.updateProgress(
@@ -8300,6 +8438,39 @@ class SecurityInterface:
                                 footer = red(" ...")
                             )
 
+        lock_count = 0
+        max_lock_count = 30
+        sleep_seconds = 10
+        gave_up = self.Entropy.sync_loop_check(self._sync_check_lock, lock_count, max_lock_count, sleep_seconds)
+        if gave_up:
+            return 7
+
+        # lock
+        self._sync_create_lock()
+        try:
+            rc = self.run_fetch()
+        except:
+            self._sync_remove_lock()
+            raise
+        if rc != 0: return rc
+
+        self._sync_remove_lock()
+
+        if self.advisories_changed:
+            advtext = darkgreen("Security Advisories: updated successfully")
+        else:
+            advtext = darkred("Security Advisories: already up to date")
+
+        self.Entropy.updateProgress(
+                                advtext,
+                                importance = 2,
+                                type = "info",
+                                header = red("@@ ")
+                            )
+
+        return 0
+
+    def run_fetch(self):
         # prepare directories
         self.__prepare_unpack()
 
@@ -8313,6 +8484,7 @@ class SecurityInterface:
                                     type = "error",
                                     header = red("   ## ")
                                 )
+            self._sync_remove_lock()
             return 1
 
         self.Entropy.updateProgress(
@@ -8333,6 +8505,7 @@ class SecurityInterface:
                                     type = "error",
                                     header = red("   ## ")
                                 )
+            self._sync_remove_lock()
             return 2
 
         # verify digest
@@ -8345,6 +8518,7 @@ class SecurityInterface:
                                     type = "error",
                                     header = red("   ## ")
                                 )
+            self._sync_remove_lock()
             return 3
         elif status == 2:
             self.Entropy.updateProgress(
@@ -8353,6 +8527,7 @@ class SecurityInterface:
                                     type = "error",
                                     header = red("   ## ")
                                 )
+            self._sync_remove_lock()
             return 4
         elif status == 3:
             self.Entropy.updateProgress(
@@ -8361,6 +8536,7 @@ class SecurityInterface:
                                     type = "error",
                                     header = red("   ## ")
                                 )
+            self._sync_remove_lock()
             return 5
         elif status == 0:
             self.Entropy.updateProgress(
@@ -8385,6 +8561,7 @@ class SecurityInterface:
                                     type = "error",
                                     header = red("   ## ")
                                 )
+            self._sync_remove_lock()
             return 6
 
         self.Entropy.updateProgress(
@@ -8401,19 +8578,6 @@ class SecurityInterface:
         self.__put_advisories_in_place()
         # remove temp stuff
         self.__cleanup_garbage()
-
-        if self.advisories_changed:
-            advtext = darkgreen("Security Advisories: updated successfully")
-        else:
-            advtext = darkred("Security Advisories: already up to date")
-
-        self.Entropy.updateProgress(
-                                advtext,
-                                importance = 2,
-                                type = "info",
-                                header = red("@@ ")
-                            )
-
         return 0
 
 class SpmInterface:
@@ -9346,98 +9510,303 @@ class LogFile:
 
 class SocketHostInterface:
 
-    class SocketUrlFetcher(urlFetcher):
-        """ hello my highness """
-
-        import entropyTools
-        # reimplementing updateProgress
-        def updateProgress(self):
-
-            kbprogress = " (%s/%s kB @ %s)" % (
-                                            str(round(float(self.downloadedsize)/1024,1)),
-                                            str(round(self.remotesize,1)),
-                                            str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
-                                        )
-            self.progress( "Fetching "+str((round(float(self.average),1)))+"%"+kbprogress, back = True )
-
     import socket
-    import dumpTools
-    def __init__(self, intf, *args, **kwds):
+    import SocketServer
+    from threading import Thread
 
-        self.socketLog = LogFile(level = 2,filename = etpConst['socketlogfile'], header = "[Socket]")
+    class HostServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
+        import SocketServer
+        # This means the main server will not do the equivalent of a
+        # pthread_join() on the new threads.  With this set, Ctrl-C will
+        # kill the server reliably.
+        daemon_threads = True
+
+        # By setting this we allow the server to re-bind to the address by
+        # setting SO_REUSEADDR, meaning you don't have to wait for
+        # timeouts when you kill the server and the sockets don't get
+        # closed down correctly.
+        allow_reuse_address = True
+
+        def __init__(self, server_address, RequestHandlerClass, processor):
+            self.SocketServer.TCPServer.__init__(self, server_address, RequestHandlerClass)
+            self.processor = processor
+            self.server_address = server_address
+
+
+    class RequestHandler(SocketServer.BaseRequestHandler):
+
+        import SocketServer
+        import select
+        import socket
+
+        def __init__(self, request, client_address, server):
+            self.SocketServer.BaseRequestHandler.__init__(self, request, client_address, server)
+
+        def handle(self):
+
+            ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], None)
+
+            while 1:
+
+                if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
+
+                    try:
+                        data = self.request.recv(8192)
+                    except self.socket.timeout, e:
+                        self.server.processor.HostInterface.updateProgress('interrupted: %s, reason: %s' % (self.server.server_address,e,))
+                        break
+
+                    if not data:
+                        break
+
+                    cmd = self.server.processor.process(data, self.request)
+                    if cmd == 'close':
+                        break
+
+            self.request.close()
+
+        def finish(self):
+            """Nothing"""
+            pass
+
+    class CommandProcessor:
+
+        import dumpTools
+
+        def __init__(self, HostInterface):
+            self.HostInterface = HostInterface
+            self.channel = None
+            self.lastoutput = None
+
+        def handle_termination_commands(self, data):
+            if data.strip() in ["quit","close"]:
+                self.HostInterface.updateProgress('close: %s' % (self.channel,))
+                self.channel.sendall(self.HostInterface.answers['cl'])
+                return "close"
+
+            if not data.strip():
+                return "ignore"
+
+        def handle_command_string(self, string):
+            # validate command
+            args = string.strip().split()
+            session = args[0]
+            if (session == "begin") or len(args) < 2:
+                cmd = args[0]
+                session = None
+            else:
+                cmd = args[1]
+                args = args[1:] # remove session
+
+            myargs = []
+            if len(args) > 1:
+                myargs = args[1:]
+
+            return cmd,myargs,session
+
+        def handle_end_answer(self, cmd, whoops, valid_cmd):
+            if not valid_cmd:
+                self.channel.sendall(self.HostInterface.answers['no'])
+            elif whoops:
+                self.channel.sendall(self.HostInterface.answers['er'])
+            elif cmd not in ["rc","begin","end","hello"]:
+                self.channel.sendall(self.HostInterface.answers['ok'])
+            self.channel.sendall(self.HostInterface.answers['eot'])
+
+        def validate_command(self, cmd, args, session):
+
+            # answer to invalid commands
+            if (cmd not in self.HostInterface.valid_commands):
+                return False
+
+            if session == None:
+                if cmd not in ["begin","hello"]:
+                    return False
+            elif session not in self.HostInterface.sessions:
+                return False
+
+            return True
+
+        def process(self, data, channel):
+
+            self.channel = channel
+
+            if data.strip():
+                self.HostInterface.updateProgress("  call: %s" % (repr(data.strip()),))
+
+            intf = self.HostInterface.EntropyInstantiation[0]
+            args = self.HostInterface.EntropyInstantiation[1]
+            kwds = self.HostInterface.EntropyInstantiation[2]
+            Entropy = intf(*args, **kwds)
+            Entropy.urlFetcher = SocketUrlFetcher
+            Entropy.updateProgress = self.remoteUpdateProgress
+            Entropy.progress = self.remoteUpdateProgress
+
+            term = self.handle_termination_commands(data)
+            if term:
+                return term
+
+            cmd, args, session = self.handle_command_string(data)
+            valid_cmd = self.validate_command(cmd, args, session)
+
+            self.HostInterface.updateProgress('command validation :: called %s: args: %s, session: %s, valid: %s' % (cmd,args,session,valid_cmd,))
+
+            whoops = False
+            if valid_cmd:
+                try:
+                    self.run_task(cmd, args, session, Entropy)
+                except Exception, e:
+                    # store error
+                    self.HostInterface.updateProgress('command error: %s, type: %s' % (e,type(e),))
+                    self.HostInterface.store_rc(str(e),session)
+                    whoops = True
+
+            self.handle_end_answer(cmd, whoops, valid_cmd)
+
+        def remoteUpdateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
+            if text != self.lastoutput:
+                text = chr(27)+"[2K\r"+text
+                if not back:
+                    text += "\n"
+                self.channel.sendall(text)
+            self.lastoutput = text
+
+        def run_task(self, cmd, args, session, Entropy):
+
+            self.HostInterface.updateProgress('run_task :: called %s: args: %s, session: %s' % (cmd,args,session,))
+
+            myargs = []
+            mykwargs = {}
+            for arg in args:
+                if (arg.find("=") != -1) and not arg.startswith("="):
+                    x = arg.split("=")
+                    a = x[0]
+                    b = ''.join(x[1:])
+                    mykwargs[a] = eval(b)
+                else:
+                    myargs.append(eval(arg))
+            return self.spawn_function(cmd, myargs, mykwargs, session, Entropy)
+
+        def spawn_function(self, cmd, myargs, mykwargs, session, Entropy):
+
+            self.HostInterface.updateProgress('called %s: args: %s, kwargs: %s' % (cmd,myargs,mykwargs,))
+
+            if cmd == "reposync":
+                return self.docmd_reposync(session, Entropy, *myargs, **mykwargs)
+            elif cmd == "match":
+                return self.docmd_match(session, Entropy, *myargs, **mykwargs)
+            elif cmd == "rc":
+                return self.docmd_rc(session)
+            elif cmd == "begin":
+                return self.docmd_begin()
+            elif cmd == "end":
+                return self.docmd_end(session)
+            elif cmd == "hello":
+                return self.docmd_hello(session)
+
+        def docmd_hello(self, session):
+            uname = os.uname()
+            kern_string = uname[2]
+            running_host = uname[1]
+            running_arch = uname[4]
+            load_stats = commands.getoutput('uptime').split("\n")[0]
+            text = "Entropy Server %s, running on: %s ~ host: %s ~ arch: %s, kernel: %s, stats: %s\n" % (
+                    etpConst['entropyversion'],
+                    etpConst['systemname'],
+                    running_host,
+                    running_arch,
+                    kern_string,
+                    load_stats
+                    )
+            self.channel.sendall(text)
+
+        def docmd_end(self, session):
+            rc = self.HostInterface.destroy_session(session)
+            cmd = self.HostInterface.answers['no']
+            if rc: cmd = self.HostInterface.answers['ok']
+            self.channel.sendall(cmd)
+            return rc
+
+        def docmd_begin(self):
+            session = self.HostInterface.get_new_session()
+            self.channel.sendall(session)
+            return session
+
+        def docmd_rc(self, session):
+            rc = self.HostInterface.get_rc(session)
+            try:
+                import cStringIO as stringio
+            except ImportError:
+                import StringIO as stringio
+            f = stringio.StringIO()
+            self.dumpTools.serialize(rc, f)
+            self.channel.sendall(f.getvalue())
+            f.close()
+            return rc
+
+        def docmd_match(self, session, Entropy, *myargs, **mykwargs):
+            rc = Entropy.atomMatch(*myargs, **mykwargs)
+            self.HostInterface.store_rc(rc, session)
+            return rc
+
+        def docmd_reposync(self, session, Entropy, *myargs, **mykwargs):
+            repoConn = Entropy.Repositories(*myargs, **mykwargs)
+            rc = repoConn.sync()
+            self.HostInterface.store_rc(rc, session)
+            return rc
+
+
+    def __init__(self, outputIntf, serviceIntf, *args, **kwds):
+
+        self.socketLog = LogFile(level = 2, filename = etpConst['socketlogfile'], header = "[Socket]")
+
+        # FIXME: add SSL/TLS support
         # settings
         self.timeout = etpConst['socket_service']['timeout']
         self.hostname = etpConst['socket_service']['hostname']
         if self.hostname == "*": self.hostname = ''
         self.port = etpConst['socket_service']['port']
-        self.threads = etpConst['socket_service']['threads']
+        self.threads = etpConst['socket_service']['threads'] # maximum number of allowed sessions
+        # FIXME: add self.sessions garbage collection
         self.sessions = {}
-
+        self.answers = etpConst['socket_service']['answers']
         # FIXME: add policy handling
         self.valid_commands = [
             'begin',
             'end',
             'reposync',
             'rc',
-            'match'
+            'match',
+            'hello'
         ]
 
-        # FIXME: move this into etpConst
-        self.answers = {
-            'ok': chr(0)+chr(0),
-            'er': chr(0)+chr(1),
-            'no': chr(0)+chr(2),
-            'cl': chr(0)+chr(3)
-        }
+        self.EntropyInstantiation = (serviceIntf, args, kwds)
+        self.__Entropy = outputIntf
+        self.Server = None
+        self.setup_hostname()
 
-        self.running = False
-        self.conn_active = False
-        self.channel = None
-        self.Entropy = intf
-        self.Entropy = intf(*args, **kwds)
-        self.Entropy_updateProgress = self.Entropy.updateProgress
-        self.updateProgress = self.localUpdateProgress
-        self.Entropy.updateProgress = self.remoteUpdateProgress
-        self.Entropy.progress = self.remoteUpdateProgress
-        self.Entropy.urlFetcher = self.SocketUrlFetcher
-        self.lastoutput = ''
 
-        self.SocketServer = self.socket.socket ( self.socket.AF_INET, self.socket.SOCK_STREAM )
+    def setup_hostname(self):
         if self.hostname:
             try:
                 self.hostname = self.get_ip_address(self.hostname)
             except IOError: # it isn't a device name
                 pass
 
-        while 1:
-            try:
-                self.SocketServer.bind ( ( self.hostname , self.port ) )
-                self.updateProgress("Entropy Socket Host Interface, listening on: %s, port: %s" % (self.hostname,self.port,) )
-                break
-            except self.socket.error, e:
-                if e[0] == 98:
-                    self.updateProgress("Address already in use, waiting 5 seconds...")
-                    time.sleep(5)
-                    continue
-                raise
-        self.SocketServer.listen ( self.threads )
-
     def get_ip_address(self, ifname):
         import fcntl
         import struct
-        return self.socket.inet_ntoa(fcntl.ioctl(self.SocketServer.fileno(), 0x8915, struct.pack('256s', ifname[:15]))[20:24])
-
-    def set_timeout(self):
-        self.socket.setdefaulttimeout(self.timeout)
-
-    def unset_timeout(self):
-        self.socket.setdefaulttimeout(0)
+        mysock = self.socket.socket ( self.socket.AF_INET, self.socket.SOCK_STREAM )
+        return self.socket.inet_ntoa(fcntl.ioctl(mysock.fileno(), 0x8915, struct.pack('256s', ifname[:15]))[20:24])
 
     def get_new_session(self):
-        rng = str(int(random.random()*100000))
+        if len(self.sessions) > self.threads:
+            # fuck!
+            return "0"
+        rng = str(int(random.random()*100000)+1)
         while rng in self.sessions:
-            rng = str(int(random.random()*100000))
+            rng = str(int(random.random()*100000)+1)
         self.sessions[rng] = {}
         return rng
 
@@ -9448,100 +9817,16 @@ class SocketHostInterface:
         return False
 
     def go(self):
-        try:
+        self.socket.setdefaulttimeout(self.timeout)
+        self.Server = self.HostServer(
+                                        (self.hostname, self.port),
+                                        self.RequestHandler,
+                                        self.CommandProcessor(self)
+                                     )
+        self.updateProgress('server connected, listening on: %s, port: %s' % (self.hostname,self.port,))
+        self.Server.serve_forever()
 
-            self.running = True
-            while self.running:
-
-                self.channel, details = self.SocketServer.accept()
-                self.updateProgress('open: %s' % (details,))
-                self.conn_active = True
-                while self.conn_active:
-
-                    self.set_timeout()
-
-                    try:
-                        data = self.channel.recv ( 1024 )
-                    except self.socket.error, e:
-                        self.conn_active = False
-                        self.updateProgress('connection aborted: %s' % (e,))
-                        self.unset_timeout()
-                        break
-
-                    self.updateProgress("  call: %s" % (data,))
-
-                    if data in ["quit","","close"]:
-                        self.updateProgress('close: %s' % (details,))
-                        self.channel.send(self.answers['cl'])
-                        self.channel.close()
-                        self.running = False
-                        self.channel = None
-                        self.unset_timeout()
-                        break
-
-                    self.unset_timeout()
-
-                    # validate command
-                    args = data.split()
-                    session = args[0]
-                    if session == "begin":
-                        cmd = args[0]
-                        session = None
-                    else:
-                        cmd = args[1]
-                        args = args[1:] # remove session
-
-                    # answer to invalid commands
-                    if (cmd not in self.valid_commands) or (session not in self.sessions and (cmd != "begin")):
-                        self.channel.send ( self.answers['no'] )
-                        self.channel.close()
-                        break
-
-                    try:
-                        myargs = []
-                        if len(args) > 1:
-                            myargs = args[1:]
-                        # FIXME: run this in parallel to avoid locks and check when done (sleep until done)
-                        rc = self.run_task(cmd, myargs, session)
-                    except Exception, e:
-                        # store error
-                        self._store_rc((Exception,e),session)
-                        self.channel.send ( self.answers['er'] )
-                        self.channel.close()
-                        break
-
-                    if cmd not in ["rc","begin","end"]:
-                        self.channel.send ( self.answers['ok'] )
-                    self.updateProgress('close: %s' % (details,))
-                    self.channel.close()
-                    break
-
-        except KeyboardInterrupt:
-            if self.conn_active:
-                self.conn_active = False
-                self.channel.close()
-        except self.socket.error, e:
-            if e[0] == 32: # broken pipe
-                if self.conn_active:
-                    self.conn_active = False
-                    self.channel.close()
-            else:
-                raise
-
-    def run_task(self, cmd, args, session):
-        myargs = []
-        mykwargs = {}
-        for arg in args:
-            if (arg.find("=") != -1) and not arg.startswith("="):
-                x = arg.split("=")
-                a = x[0]
-                b = ''.join(x[1:])
-                mykwargs[a] = eval(b)
-            else:
-                myargs.append(eval(arg))
-        return self.spawn_function(cmd, myargs, mykwargs, session)
-
-    def _store_rc(self, rc, session):
+    def store_rc(self, rc, session):
         if type(rc) in (list,tuple,):
             rc_item = rc[:]
         elif type(rc) in (set,frozenset,dict,):
@@ -9550,67 +9835,21 @@ class SocketHostInterface:
             rc_item = rc
         self.sessions[session]['rc'] = rc_item
 
-    def _get_rc(self, session):
+    def get_rc(self, session):
         return self.sessions[session]['rc']
 
-    def spawn_function(self, cmd, myargs, mykwargs, session):
-
-        self.updateProgress('called %s: args: %s, kwargs: %s' % (cmd,myargs,mykwargs,))
-
-        if cmd == "reposync":
-            return self.docmd_reposync(session, *myargs, **mykwargs)
-        elif cmd == "match":
-            return self.docmd_match(session, *myargs, **mykwargs)
-        elif cmd == "rc":
-            return self.docmd_rc(session)
-        elif cmd == "begin":
-            return self.docmd_begin()
-        elif cmd == "end":
-            return self.docmd_end(session)
-
-    def docmd_end(self, session):
-        rc = self.destroy_session(session)
-        cmd = self.answers['no']
-        if rc: cmd = self.answers['ok']
-        self.channel.send ( cmd )
-        return rc
-
-    def docmd_begin(self):
-        session = self.get_new_session()
-        self.channel.send(session)
-        return session
-
-    def docmd_rc(self, session):
-        rc = self._get_rc(session)
-        try:
-            import cStringIO as stringio
-        except ImportError:
-            import StringIO as stringio
-        f = stringio.StringIO()
-        self.dumpTools.serialize(rc, f)
-        self.channel.send(f.getvalue())
-        f.close()
-        return rc
-
-    def docmd_match(self, session, *myargs, **mykwargs):
-        rc = self.Entropy.atomMatch(*myargs, **mykwargs)
-        self._store_rc(rc, session)
-        return rc
-
-    def docmd_reposync(self, session, *myargs, **mykwargs):
-        repoConn = self.Entropy.Repositories(*myargs, **mykwargs)
-        rc = repoConn.sync()
-        self._store_rc(rc, session)
-        return rc
-
-    def remoteUpdateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
-        if self.conn_active and (text != self.lastoutput):
-            text = chr(27)+"[2K\r"+text
-            if not back:
-                text += "\n"
-            self.channel.send(text)
-        self.lastoutput = text
-
-    def localUpdateProgress(self, *args, **kwargs):
+    def updateProgress(self, *args, **kwargs):
         self.socketLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,str(args[0]))
-        self.Entropy_updateProgress(*args,**kwargs)
+        self.__Entropy.updateProgress(*args,**kwargs)
+
+class SocketUrlFetcher(urlFetcher):
+
+    import entropyTools
+    # reimplementing updateProgress
+    def updateProgress(self):
+        kbprogress = " (%s/%s kB @ %s)" % (
+                                        str(round(float(self.downloadedsize)/1024,1)),
+                                        str(round(self.remotesize,1)),
+                                        str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
+                                    )
+        self.progress( "Fetching "+str((round(float(self.average),1)))+"%"+kbprogress, back = True )

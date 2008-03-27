@@ -11,6 +11,10 @@ sys.path.insert(0,'../client')
 # disable pid management
 sys.argv.append("--no-pid-handling")
 from entropy import SocketHostInterface, EquoInterface
-srv = SocketHostInterface(EquoInterface)
-srv.go()
+Equo = EquoInterface()
+srv = SocketHostInterface(Equo,EquoInterface)
+try:
+    srv.go()
+except KeyboardInterrupt:
+    sys.exit(0)
 
