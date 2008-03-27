@@ -55,7 +55,9 @@ def spawn(cmd, silent = False, getobj = False):
 
         data += x
         eot = etpConst['socket_service']['answers']['eot']
-        if data.endswith(eot):
+        if data.endswith(eot*2):     # if we have two eot it means it's
+            data = data[:-len(eot)]  # been duplicated to avoid to be confused
+        elif data.endswith(eot):
             end_of_tmt = True
             data = data[:-len(eot)]
 
