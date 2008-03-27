@@ -132,7 +132,7 @@ class etpDatabase:
         self.xcache = xcache
         self.dbname = dbname
         self.indexing = indexing
-        if etpConst['uid'] > 0: # forcing since we won't have write access to db
+        if not entropyTools.is_user_in_entropy_group(): # forcing since we won't have write access to db
             self.indexing = False
         # live systems don't like wasting RAM
         if entropyTools.islive():
@@ -145,8 +145,9 @@ class etpDatabase:
         self.askQuestion = self.OutputInterface.askQuestion
 
         # no caching for non root and server connections
-        if (self.dbname == etpConst['serverdbid']) or (etpConst['uid'] != 0):
+        if (self.dbname == etpConst['serverdbid']) or (not entropyTools.is_user_in_entropy_group()):
             self.xcache = False
+        self.live_cache = {}
 
         # create connection
         self.connection = dbapi2.connect(dbFile,timeout=300.0)
@@ -545,7 +546,6 @@ class etpDatabase:
 
         # just run fixpackages if gentoo-compat is enabled
         if etpConst['gentoo-compat']:
-            ## FIXME: beautify
             self.updateProgress(
                                     bold("GENTOO: ")+red("Running fixpackages, could take a while."),
                                     importance = 1,
@@ -758,6 +758,7 @@ class etpDatabase:
     def addPackage(self, etpData, revision = -1):
 
         self.checkReadOnly()
+        self.live_cache.clear()
 
         if revision == -1:
             try:
@@ -1168,6 +1169,7 @@ class etpDatabase:
     def removePackage(self,idpackage):
 
         self.checkReadOnly()
+        self.live_cache.clear()
 
         ### RSS Atom support
         ### dictionary will be elaborated by activator
@@ -1943,6 +1945,7 @@ class etpDatabase:
         return set(item)
 
     def clearCache(self):
+        self.live_cache.clear()
         def do_clear(name):
             dump_path = os.path.join(etpConst['dumpstoragedir'],name)
             dump_dir = os.path.dirname(dump_path)
@@ -1957,6 +1960,7 @@ class etpDatabase:
 
     def fetchInfoCache(self, idpackage, function, extra_hash = 0):
         if self.xcache:
+
             c_hash = str(hash(function)) + str(extra_hash)
             c_match = str(idpackage)
             try:
@@ -2665,7 +2669,7 @@ class etpDatabase:
         return True
 
     def acceptLicense(self, license_name):
-        if self.readOnly or (etpConst['uid'] != 0):
+        if self.readOnly or (not entropyTools.is_user_in_entropy_group()):
             return
         if self.isLicenseAccepted(license_name):
             return
@@ -2847,26 +2851,21 @@ class etpDatabase:
 
     def searchProvide(self, keyword, slot = None, tag = None, branch = None):
 
-        self.cursor.execute('SELECT idpackage FROM provide WHERE atom = (?)', (keyword,))
-        idpackage = self.cursor.fetchone()
-        if not idpackage:
-            return ()
-
         slotstring = ''
-        searchkeywords = [idpackage[0]]
+        searchkeywords = [keyword]
         if slot:
             searchkeywords.append(slot)
-            slotstring = ' and slot = (?)'
+            slotstring = ' and baseinfo.slot = (?)'
         tagstring = ''
         if tag:
             searchkeywords.append(tag)
-            tagstring = ' and versiontag = (?)'
+            tagstring = ' and baseinfo.versiontag = (?)'
         branchstring = ''
         if branch:
             searchkeywords.append(branch)
-            branchstring = ' and branch = (?)'
+            branchstring = ' and baseinfo.branch = (?)'
 
-        self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE idpackage = (?)'+slotstring+tagstring+branchstring, searchkeywords)
+        self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,provide WHERE provide.atom = (?) and provide.idpackage = baseinfo.idpackage'+slotstring+tagstring+branchstring, searchkeywords)
 
         results = self.cursor.fetchall()
         return results
@@ -2914,32 +2913,23 @@ class etpDatabase:
 
     def searchPackagesByNameAndCategory(self, name, category, sensitive = False, branch = None):
 
-        # get category id
-        idcat = -1
-        self.cursor.execute('SELECT idcategory FROM categories WHERE category = (?)', (category,))
-        idcat = self.cursor.fetchone()
-        if not idcat:
-            return ()
-        else:
-            idcat = idcat[0]
+        namestring = 'baseinfo.name'
+        catstring = 'categories.category'
+        myname = name
+        mycat = category
+        if not sensitive:
+            namestring = 'LOWER(baseinfo.name)'
+            catstring = 'LOWER(categories.category)'
+            myname = name.lower()
+            mycat = category.lower()
 
-        searchkeywords = []
-        if sensitive:
-            searchkeywords.append(name)
-        else:
-            searchkeywords.append(name.lower())
-
-        searchkeywords.append(idcat)
-
+        searchkeywords = [myname,mycat]
         branchstring = ''
         if branch:
             searchkeywords.append(branch)
-            branchstring = ' and branch = (?)'
+            branchstring = ' and baseinfo.branch = (?)'
 
-        if (sensitive):
-            self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = (?) AND idcategory = (?) '+branchstring, searchkeywords)
-        else:
-            self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = (?) AND idcategory = (?) '+branchstring, searchkeywords)
+        self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE '+namestring+' = (?) AND '+catstring+' = (?) and baseinfo.idcategory = categories.idcategory'+branchstring, searchkeywords)
 
         results = self.cursor.fetchall()
         return results
@@ -3021,13 +3011,14 @@ class etpDatabase:
 
     def listAllBranches(self):
 
-        cache = self.fetchInfoCache(0,'listAllBranches')
-        if cache != None: return cache
+        cache = self.live_cache.get('listAllBranches')
+        if cache != None:
+            return cache
 
-        self.cursor.execute('SELECT branch FROM baseinfo')
+        self.cursor.execute('SELECT distinct branch FROM baseinfo')
         results = self.fetchall2set(self.cursor.fetchall())
 
-        self.storeInfoCache(0,'listAllBranches',results)
+        self.live_cache['listAllBranches'] = results.copy()
         return results
 
     def listIdPackagesInIdcategory(self,idcategory):
@@ -3162,6 +3153,70 @@ class etpDatabase:
         if not self.doesTableExist("installedtable") and (self.dbname == etpConst['clientdbid']):
             self.createInstalledTable()
 
+        # these are the tables moved to INTEGER PRIMARY KEY AUTOINCREMENT
+        autoincrement_tables = [
+            'treeupdatesactions',
+            'neededreference',
+            'eclassesreference',
+            'configprotectreference',
+            'flags',
+            'licenses',
+            'categories',
+            'keywordsreference',
+            'useflagsreference',
+            'sourcesreference',
+            'dependenciesreference',
+            'baseinfo'
+        ]
+        autoinc = False
+        for table in autoincrement_tables:
+            x = self.migrateTableToAutoincrement(table)
+            if x: autoinc = True
+        if autoinc:
+            self.updateProgress(
+                                            red("Entropy database: regenerating indexes after migration."),
+                                            importance = 1,
+                                            type = "warning",
+                                            header = blue(" !!! ")
+                            )
+            self.createAllIndexes()
+
+    def migrateTableToAutoincrement(self, table):
+
+        self.cursor.execute('select sql from sqlite_master where type = (?) and name = (?);', ("table",table))
+        schema = self.cursor.fetchone()
+        if not schema:
+            return False
+        schema = schema[0]
+        if schema.find("AUTOINCREMENT") != -1:
+            return False
+        schema = schema.replace('PRIMARY KEY','PRIMARY KEY AUTOINCREMENT')
+        new_schema = schema
+        totable = table+"_autoincrement"
+        schema = schema.replace('CREATE TABLE '+table,'CREATE TEMPORARY TABLE '+totable)
+        self.updateProgress(
+                                        red("Entropy database: migrating table ")+blue(table),
+                                        importance = 1,
+                                        type = "warning",
+                                        header = blue(" !!! ")
+                        )
+        # create table
+        self.cursor.execute('DROP TABLE IF EXISTS '+totable)
+        self.cursor.execute(schema)
+        columns = ','.join(self.getColumnsInTable(table))
+
+        temp_query = 'INSERT INTO '+totable+' SELECT '+columns+' FROM '+table
+        self.cursor.execute(temp_query)
+
+        self.cursor.execute('DROP TABLE '+table)
+        self.cursor.execute(new_schema)
+
+        temp_query = 'INSERT INTO '+table+' SELECT '+columns+' FROM '+totable
+        self.cursor.execute(temp_query)
+
+        self.cursor.execute('DROP TABLE '+totable)
+        self.commitChanges()
+        return True
 
     def validateDatabase(self):
         self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table","baseinfo"))
@@ -3261,6 +3316,15 @@ class etpDatabase:
                 found = True
                 break
         return found
+
+    # FIXME: this is only compatible with SQLITE
+    def getColumnsInTable(self, table):
+        self.cursor.execute('PRAGMA table_info( '+table+' )')
+        rslt = self.cursor.fetchall()
+        columns = []
+        for row in rslt:
+            columns.append(row[1])
+        return columns
 
     def tablesChecksum(self):
         # NOTE: if you will add dependstable to the validation
@@ -3400,17 +3464,18 @@ class etpDatabase:
 
     def createNeededIndex(self):
         if self.dbname != etpConst['serverdbid'] and self.indexing:
-            self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( idneeded,library )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( library )')
             self.commitChanges()
 
     def createUseflagsIndex(self):
         if self.dbname != etpConst['serverdbid'] and self.indexing:
-            self.cursor.execute('CREATE INDEX IF NOT EXISTS useflagsindex ON useflagsreference ( idflag,flagname )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS useflagsindex ON useflagsreference ( flagname )')
             self.commitChanges()
 
     def createContentIndex(self):
         if self.dbname != etpConst['serverdbid'] and self.indexing:
-            self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex ON content ( file )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex_couple ON content ( idpackage )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex_file ON content ( file )')
             self.commitChanges()
 
     def createConfigProtectReferenceIndex(self):
@@ -3420,7 +3485,9 @@ class etpDatabase:
 
     def createBaseinfoIndex(self):
         if self.dbname != etpConst['serverdbid'] and self.indexing:
-            self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex ON baseinfo ( idpackage, atom, name, version, versiontag, slot, branch, revision )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_atom ON baseinfo ( atom )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_branch_name ON baseinfo ( name,branch )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_branch_name_idcategory ON baseinfo ( name,idcategory,branch )')
             self.commitChanges()
 
     def createLicensedataIndex(self):
@@ -3437,19 +3504,18 @@ class etpDatabase:
 
     def createKeywordsIndex(self):
         if self.dbname != etpConst['serverdbid'] and self.indexing:
-            self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsindex ON keywords ( idpackage, idkeyword )')
-            self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsreferenceindex ON keywordsreference ( idkeyword, keywordname )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsreferenceindex ON keywordsreference ( keywordname )')
             self.commitChanges()
 
     def createDependenciesIndex(self):
         if self.dbname != etpConst['serverdbid'] and self.indexing:
-            self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex ON dependencies ( idpackage, iddependency )')
-            self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesreferenceindex ON dependenciesreference ( iddependency, dependency )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex_idpackage_iddependency ON dependencies ( idpackage, iddependency )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesreferenceindex_dependency ON dependenciesreference ( dependency )')
             self.commitChanges()
 
     def createExtrainfoIndex(self):
         if self.dbname != etpConst['serverdbid'] and self.indexing:
-            self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( idpackage, description, homepage, download, digest, datecreation, size )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( description )')
             self.commitChanges()
 
     def regenerateCountersTable(self, vdb_path, output = False):
@@ -3513,7 +3579,7 @@ class etpDatabase:
 
     def createTreeupdatesactionsTable(self):
         self.cursor.execute('DROP TABLE IF EXISTS treeupdatesactions;')
-        self.cursor.execute('CREATE TABLE treeupdatesactions ( idupdate INTEGER PRIMARY KEY, repository VARCHAR, command VARCHAR, branch VARCHAR );')
+        self.cursor.execute('CREATE TABLE treeupdatesactions ( idupdate INTEGER PRIMARY KEY AUTOINCREMENT, repository VARCHAR, command VARCHAR, branch VARCHAR );')
 
     def createSizesTable(self):
         self.cursor.execute('DROP TABLE IF EXISTS sizes;')
@@ -3561,11 +3627,11 @@ class etpDatabase:
         self.cursor.execute('DROP TABLE IF EXISTS eclasses;')
         self.cursor.execute('DROP TABLE IF EXISTS eclassesreference;')
         self.cursor.execute('CREATE TABLE eclasses ( idpackage INTEGER, idclass INTEGER );')
-        self.cursor.execute('CREATE TABLE eclassesreference ( idclass INTEGER PRIMARY KEY, classname VARCHAR );')
+        self.cursor.execute('CREATE TABLE eclassesreference ( idclass INTEGER PRIMARY KEY AUTOINCREMENT, classname VARCHAR );')
 
     def createNeededTable(self):
         self.cursor.execute('CREATE TABLE needed ( idpackage INTEGER, idneeded INTEGER );')
-        self.cursor.execute('CREATE TABLE neededreference ( idneeded INTEGER PRIMARY KEY, library VARCHAR );')
+        self.cursor.execute('CREATE TABLE neededreference ( idneeded INTEGER PRIMARY KEY AUTOINCREMENT, library VARCHAR );')
 
     def createSystemPackagesTable(self):
         self.cursor.execute('CREATE TABLE systempackages ( idpackage INTEGER PRIMARY KEY );')
@@ -3579,7 +3645,7 @@ class etpDatabase:
         self.cursor.execute('DROP TABLE IF EXISTS configprotectreference;')
         self.cursor.execute('CREATE TABLE configprotect ( idpackage INTEGER PRIMARY KEY, idprotect INTEGER );')
         self.cursor.execute('CREATE TABLE configprotectmask ( idpackage INTEGER PRIMARY KEY, idprotect INTEGER );')
-        self.cursor.execute('CREATE TABLE configprotectreference ( idprotect INTEGER PRIMARY KEY, protect VARCHAR );')
+        self.cursor.execute('CREATE TABLE configprotectreference ( idprotect INTEGER PRIMARY KEY AUTOINCREMENT, protect VARCHAR );')
 
     def createInstalledTable(self):
         self.cursor.execute('DROP TABLE IF EXISTS installedtable;')
@@ -3593,7 +3659,7 @@ class etpDatabase:
                         idpackage,
                         )
         )
-        if etpConst['uid'] == 0 and self.dbname == etpConst['serverdbid']: # force commit even if readonly, this will allow to automagically fix dependstable server side
+        if (entropyTools.is_user_in_entropy_group()) and (self.dbname == etpConst['serverdbid']): # force commit even if readonly, this will allow to automagically fix dependstable server side
             self.connection.commit()                        # we don't care much about syncing the database since it's quite trivial
 
     '''

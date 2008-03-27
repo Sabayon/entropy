@@ -46,8 +46,8 @@ def repositories(options):
 
     if (options[0] == "update"):
         # check if I am root
-        if not Equo.entropyTools.isRoot():
-            print_error(red("You must be ")+bold("root")+red("."))
+        if not Equo.entropyTools.is_user_in_entropy_group():
+            print_error(red("You must be either ")+bold("root")+red(" or in the ")+bold(etpConst['sysgroup'])+red(" group."))
             return 1
         rc = do_sync(reponames = repo_names, forceUpdate = equoRequestForceUpdate)
     elif (options[0] == "status"):

@@ -122,7 +122,7 @@ DROP TABLE IF EXISTS licenses_accepted;
 etpSQLInit = """
 
 CREATE TABLE baseinfo (
-    idpackage INTEGER PRIMARY KEY,
+    idpackage INTEGER PRIMARY KEY AUTOINCREMENT,
     atom VARCHAR,
     idcategory INTEGER,
     name VARCHAR,
@@ -164,7 +164,7 @@ CREATE TABLE dependencies (
 );
 
 CREATE TABLE dependenciesreference (
-    iddependency INTEGER PRIMARY KEY,
+    iddependency INTEGER PRIMARY KEY AUTOINCREMENT,
     dependency VARCHAR
 );
 
@@ -184,7 +184,7 @@ CREATE TABLE sources (
 );
 
 CREATE TABLE sourcesreference (
-    idsource INTEGER PRIMARY KEY,
+    idsource INTEGER PRIMARY KEY AUTOINCREMENT,
     source VARCHAR
 );
 
@@ -194,7 +194,7 @@ CREATE TABLE useflags (
 );
 
 CREATE TABLE useflagsreference (
-    idflag INTEGER PRIMARY KEY,
+    idflag INTEGER PRIMARY KEY AUTOINCREMENT,
     flagname VARCHAR
 );
 
@@ -204,22 +204,22 @@ CREATE TABLE keywords (
 );
 
 CREATE TABLE keywordsreference (
-    idkeyword INTEGER PRIMARY KEY,
+    idkeyword INTEGER PRIMARY KEY AUTOINCREMENT,
     keywordname VARCHAR
 );
 
 CREATE TABLE categories (
-    idcategory INTEGER PRIMARY KEY,
+    idcategory INTEGER PRIMARY KEY AUTOINCREMENT,
     category VARCHAR
 );
 
 CREATE TABLE licenses (
-    idlicense INTEGER PRIMARY KEY,
+    idlicense INTEGER PRIMARY KEY AUTOINCREMENT,
     license VARCHAR
 );
 
 CREATE TABLE flags (
-    idflags INTEGER PRIMARY KEY,
+    idflags INTEGER PRIMARY KEY AUTOINCREMENT,
     chost VARCHAR,
     cflags VARCHAR,
     cxxflags VARCHAR
@@ -236,7 +236,7 @@ CREATE TABLE configprotectmask (
 );
 
 CREATE TABLE configprotectreference (
-    idprotect INTEGER PRIMARY KEY,
+    idprotect INTEGER PRIMARY KEY AUTOINCREMENT,
     protect VARCHAR
 );
 
@@ -275,7 +275,7 @@ CREATE TABLE eclasses (
 );
 
 CREATE TABLE eclassesreference (
-    idclass INTEGER PRIMARY KEY,
+    idclass INTEGER PRIMARY KEY AUTOINCREMENT,
     classname VARCHAR
 );
 
@@ -285,7 +285,7 @@ CREATE TABLE needed (
 );
 
 CREATE TABLE neededreference (
-    idneeded INTEGER PRIMARY KEY,
+    idneeded INTEGER PRIMARY KEY AUTOINCREMENT,
     library VARCHAR
 );
 
@@ -295,7 +295,7 @@ CREATE TABLE treeupdates (
 );
 
 CREATE TABLE treeupdatesactions (
-    idupdate INTEGER PRIMARY KEY,
+    idupdate INTEGER PRIMARY KEY AUTOINCREMENT,
     repository VARCHAR,
     command VARCHAR,
     branch VARCHAR
@@ -624,6 +624,7 @@ def const_defaultSettings(rootdir):
         'systemroot': rootdir, # default system root
         'uid': os.getuid(), # current running UID
         'entropygid': None,
+        'sysgroup': "entropy",
         'defaultumask': 022,
         'storeumask': 002,
         'treeupdatescalled': False, # to avoid running tree updates functions multiple times
@@ -701,7 +702,7 @@ def const_defaultSettings(rootdir):
         'socket_service': {
             'hostname': "localhost",
             'port': 999,
-            'timeout': 30,
+            'timeout': 200,
             'threads': 5,
             'answers': {
                 'ok': chr(0)+chr(0),
@@ -1087,14 +1088,14 @@ def const_setup_perms(mydir, gid):
         return
     for currentdir,subdirs,files in os.walk(mydir):
         try:
-            os.chown(currentdir,0,gid)
+            os.chown(currentdir,-1,gid)
             os.chmod(currentdir,0775)
         except OSError:
             pass
         for item in files:
             item = os.path.join(currentdir,item)
             try:
-                os.chown(item,0,gid)
+                os.chown(item,-1,gid)
                 os.chmod(item,0664)
             except OSError:
                 pass
@@ -1105,7 +1106,7 @@ def const_get_entropy_gid():
         raise KeyError
     f = open(group_file,"r")
     for line in f.readlines():
-        if line.startswith('entropy:'):
+        if line.startswith('%s:' % (etpConst['sysgroup'],)):
             try:
                 gid = int(line.split(":")[2])
             except ValueError:

@@ -41,6 +41,21 @@ def isRoot():
         return True
     return False
 
+def is_user_in_entropy_group():
+    import grp
+    uid = os.getuid()
+    etp_gid = None
+    try:
+        etp_gid = grp.getgrnam(etpConst['sysgroup'])[2]
+    except KeyError:
+        pass
+    if etp_gid == None:
+        return False
+
+    if etp_gid in os.getgroups():
+        return True
+    return False
+
 class TimeScheduled(threading.Thread):
     def __init__(self, function, delay, dictData = {}):
         threading.Thread.__init__(self)

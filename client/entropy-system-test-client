@@ -4,7 +4,7 @@ serverPort = 999
 
 import sys, os
 import socket
-socket.setdefaulttimeout(80)
+socket.setdefaulttimeout(300)
 sys.path.insert(0,'/usr/lib/entropy/libraries')
 sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'../libraries')
@@ -39,7 +39,7 @@ def connect():
 def spawn(cmd, silent = False, getobj = False):
 
     # send command
-    s.send(cmd)
+    s.sendall(cmd)
 
     data = ''
     end_of_tmt = False
@@ -50,14 +50,14 @@ def spawn(cmd, silent = False, getobj = False):
             print 'interrupted, reason: %s' % (e,)
             sys.exit(3)
 
-        eot = etpConst['socket_service']['answers']['eot']
-        if x.endswith(eot):
-            end_of_tmt = True
-            x = x[:-len(eot)]
-
-        data += x
         if not x:
             break
+
+        data += x
+        eot = etpConst['socket_service']['answers']['eot']
+        if data.endswith(eot):
+            end_of_tmt = True
+            data = data[:-len(eot)]
 
         if not silent:
             sys.stdout.write(x)
@@ -66,7 +66,7 @@ def spawn(cmd, silent = False, getobj = False):
         if end_of_tmt:
             break
 
-    if getobj:
+    if getobj and data:
         f = stringio.StringIO(data)
         data = dumpTools.unserialize(f)
         f.close()
@@ -83,8 +83,8 @@ else:
     print "session is:",session
 
 # 2nd step, run the command
-spawn_result = spawn("%s match 'x11-libs/qt'" % (session,), silent = True)
-#spawn_result = spawn("%s reposync reponames=['sabayonlinux.org'] forceUpdate=True" % (session,))#, silent = True)
+#spawn_result = spawn("%s match 'x11-libs/qt'" % (session,), silent = True)
+spawn_result = spawn("%s reposync reponames=['sabayonlinux.org'] forceUpdate=True" % (session,))#, silent = True)
 #print "spawn result is:",repr(result)
 
 if spawn_result in [

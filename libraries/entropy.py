@@ -99,12 +99,12 @@ class EquoInterface(TextInterface):
         if self.entropyTools.islive():
             self.xcache = False
 
-        if etpConst['uid'] != 0 and not user_xcache:
+        if (not self.entropyTools.is_user_in_entropy_group()) and not user_xcache:
             self.xcache = False
         elif not user_xcache:
             self.validate_repositories_cache()
 
-        if not self.xcache and (etpConst['uid'] == 0):
+        if not self.xcache and (self.entropyTools.is_user_in_entropy_group()):
             try:
                 self.purge_cache(False)
             except:
@@ -137,7 +137,7 @@ class EquoInterface(TextInterface):
         # setup file permissions
         os.chmod(filepath,0664)
         if etpConst['entropygid'] != None:
-            os.chown(filepath,0,etpConst['entropygid'])
+            os.chown(filepath,-1,etpConst['entropygid'])
 
     def check_pid_file_lock(self, pidfile):
         if not os.path.isfile(pidfile):
@@ -354,7 +354,7 @@ class EquoInterface(TextInterface):
 
             etpRepositories[repositoryName]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotect']]
             etpRepositories[repositoryName]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotectmask']]
-        if not etpConst['treeupdatescalled'] and (etpConst['uid'] == 0) and (not repositoryName.endswith(".tbz2")):
+        if not etpConst['treeupdatescalled'] and (self.entropyTools.is_user_in_entropy_group()) and (not repositoryName.endswith(".tbz2")):
             conn.clientUpdatePackagesData()
         return conn
 
@@ -386,7 +386,7 @@ class EquoInterface(TextInterface):
     '''
     def purge_cache(self, showProgress = True, client_purge = True):
         const_resetCache()
-        if etpConst['uid'] == 0:
+        if self.entropyTools.is_user_in_entropy_group():
             skip = set()
             if not client_purge:
                 skip.add("/"+etpCache['dbInfo']+"/"+etpConst['clientdbid']) # it's ok this way
@@ -4913,6 +4913,12 @@ class RepoInterface:
         self.__validate_repository_id(repo)
         url, filepath = self.__construct_paths(item, repo, cmethod)
 
+        # to avoid having permissions issues
+        # it's better to remove the file before,
+        # otherwise new permissions won't be written
+        if os.path.isfile(filepath):
+            os.remove(filepath)
+
         fetchConn = self.Entropy.urlFetcher(url, filepath, resume = False)
         fetchConn.progress = self.Entropy.progress
 
@@ -7987,9 +7993,9 @@ class SecurityInterface:
                 os.remove(etpConst['securitydir'])
             if not os.path.isdir(etpConst['securitydir']):
                 os.makedirs(etpConst['securitydir'],0775)
-            const_setup_perms(etpConst['securitydir'],etpConst['entropygid'])
         except OSError:
             pass
+        const_setup_perms(etpConst['securitydir'],etpConst['entropygid'])
 
         if os.path.isfile(self.old_download_package_checksum):
             f = open(self.old_download_package_checksum)
@@ -8550,7 +8556,10 @@ class SecurityInterface:
 
         # save downloaded md5
         if os.path.isfile(self.download_package_checksum) and os.path.isdir(etpConst['dumpstoragedir']):
+            if os.path.isfile(self.old_download_package_checksum):
+                os.remove(self.old_download_package_checksum)
             shutil.copy2(self.download_package_checksum,self.old_download_package_checksum)
+            self.Entropy.setup_default_file_perms(self.old_download_package_checksum)
 
         # now unpack in place
         status = self.__unpack_advisories()
@@ -9582,7 +9591,7 @@ class SocketHostInterface:
         def handle_termination_commands(self, data):
             if data.strip() in ["quit","close"]:
                 self.HostInterface.updateProgress('close: %s' % (self.channel,))
-                self.channel.sendall(self.HostInterface.answers['cl'])
+                self.transmit(self.HostInterface.answers['cl'])
                 return "close"
 
             if not data.strip():
@@ -9607,11 +9616,11 @@ class SocketHostInterface:
 
         def handle_end_answer(self, cmd, whoops, valid_cmd):
             if not valid_cmd:
-                self.channel.sendall(self.HostInterface.answers['no'])
+                self.transmit(self.HostInterface.answers['no'])
             elif whoops:
-                self.channel.sendall(self.HostInterface.answers['er'])
+                self.transmit(self.HostInterface.answers['er'])
             elif cmd not in ["rc","begin","end","hello"]:
-                self.channel.sendall(self.HostInterface.answers['ok'])
+                self.transmit(self.HostInterface.answers['ok'])
             self.channel.sendall(self.HostInterface.answers['eot'])
 
         def validate_command(self, cmd, args, session):
@@ -9641,6 +9650,7 @@ class SocketHostInterface:
             Entropy = intf(*args, **kwds)
             Entropy.urlFetcher = SocketUrlFetcher
             Entropy.updateProgress = self.remoteUpdateProgress
+            Entropy.clientDbconn.updateProgress = self.remoteUpdateProgress
             Entropy.progress = self.remoteUpdateProgress
 
             term = self.handle_termination_commands(data)
@@ -9664,12 +9674,21 @@ class SocketHostInterface:
 
             self.handle_end_answer(cmd, whoops, valid_cmd)
 
+        def duplicate_termination_cmd(self, data):
+            if data.find(self.HostInterface.answers['eot']) != -1:
+                data = data.replace(self.HostInterface.answers['eot'],self.HostInterface.answers['eot']*2)
+            return data
+
+        def transmit(self, data):
+            data = self.duplicate_termination_cmd(data)
+            self.channel.sendall(data)
+
         def remoteUpdateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
             if text != self.lastoutput:
                 text = chr(27)+"[2K\r"+text
                 if not back:
                     text += "\n"
-                self.channel.sendall(text)
+                self.transmit(text)
             self.lastoutput = text
 
         def run_task(self, cmd, args, session, Entropy):
@@ -9719,18 +9738,18 @@ class SocketHostInterface:
                     kern_string,
                     load_stats
                     )
-            self.channel.sendall(text)
+            self.transmit(text)
 
         def docmd_end(self, session):
             rc = self.HostInterface.destroy_session(session)
             cmd = self.HostInterface.answers['no']
             if rc: cmd = self.HostInterface.answers['ok']
-            self.channel.sendall(cmd)
+            self.transmit(cmd)
             return rc
 
         def docmd_begin(self):
             session = self.HostInterface.get_new_session()
-            self.channel.sendall(session)
+            self.transmit(session)
             return session
 
         def docmd_rc(self, session):
@@ -9741,7 +9760,7 @@ class SocketHostInterface:
                 import StringIO as stringio
             f = stringio.StringIO()
             self.dumpTools.serialize(rc, f)
-            self.channel.sendall(f.getvalue())
+            self.transmit(f.getvalue())
             f.close()
             return rc
 

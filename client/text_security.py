@@ -42,6 +42,9 @@ def security(options):
             fetch = True
 
     if options[0] == "update":
+        if not Equo.entropyTools.is_user_in_entropy_group():
+            print_error(red("You must be either ")+bold("root")+red(" or in the ")+bold(etpConst['sysgroup'])+red(" group."))
+            return 1
         securityConn = Equo.Security()
         rc = securityConn.fetch_advisories()
     elif options[0] == "list":
