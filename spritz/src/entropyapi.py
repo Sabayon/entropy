@@ -53,13 +53,11 @@ class QueueExecutor:
     def run(self, install_queue, removal_queue, do_purge_cache = []):
         removalQueue = []
         runQueue = []
+        conflicts_queue = []
         if install_queue:
-            #import pdb; pdb.set_trace()
-            runQueue, removalQueue, status = self.Entropy.retrieveInstallQueue(install_queue,False,False)
-            removalQueue = [(x,True) for x in removalQueue]
-            # XXX handle status
+            runQueue, conflicts_queue, status = self.Entropy.retrieveInstallQueue(install_queue,False,False)
         if removal_queue:
-            removalQueue += [(x,False) for x in removal_queue if (x,True) not in removalQueue]
+            removalQueue += [(x,False) for x in removal_queue if x not in conflicts_queue]
 
         # XXX handle for eva too, move db configuration to LicenseDialog and forget
         rc, licenses = self.handle_licenses(runQueue)
@@ -90,7 +88,6 @@ class QueueExecutor:
                                             importance = 2,
                                             count = (fetchqueue,totalqueue)
                                         )
-            # XXX handle status
             rc = Package.run()
             if rc != 0:
                 return -1,rc
@@ -99,6 +96,7 @@ class QueueExecutor:
             self.Entropy.cycleDone()
 
         # then removalQueue
+        # NOT conflicts! :-)
         totalremovalqueue = len(removalQueue)
         currentremovalqueue = 0
         for rem_data in removalQueue:
@@ -118,7 +116,6 @@ class QueueExecutor:
                                             count = (currentremovalqueue,totalremovalqueue)
                                         )
 
-            # XXX handle status
             rc = Package.run()
             if rc != 0:
                 return -1,rc
@@ -128,7 +125,6 @@ class QueueExecutor:
             del metaopts
             del Package
 
-        # then runQueue
         totalqueue = len(runQueue)
         currentqueue = 0
         for packageInfo in runQueue:
@@ -145,7 +141,6 @@ class QueueExecutor:
                                             count = (currentqueue,totalqueue)
                                         )
 
-            # XXX handle status
             rc = Package.run()
             if rc != 0:
                 return -1,rc
@@ -202,7 +197,6 @@ class Equo(EquoInterface):
         self.progress.total.setup( range(total) )
 
 class GuiUrlFetcher(urlFetcher):
-    """ hello my highness """
 
     def connect_to_gui(self, progress):
         self.progress = progress

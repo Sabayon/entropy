@@ -580,7 +580,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         # store resume information
         if not tbz2: # .tbz2 install resume not supported
             resume_cache = {}
-            resume_cache['removalQueue'] = removalQueue[:]
+            #resume_cache['removalQueue'] = removalQueue[:]
             resume_cache['runQueue'] = runQueue[:]
             resume_cache['onlyfetch'] = onlyfetch
             resume_cache['emptydeps'] = emptydeps
@@ -599,7 +599,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         else:
 
             try:
-                removalQueue = resume_cache['removalQueue'][:]
+                #removalQueue = resume_cache['removalQueue'][:]
                 runQueue = resume_cache['runQueue'][:]
                 onlyfetch = resume_cache['onlyfetch']
                 emptydeps = resume_cache['emptydeps']
@@ -611,17 +611,18 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 return 128,-1
 
             if skipfirst and runQueue:
-                runQueue, removalQueue, status = Equo.retrieveInstallQueue(runQueue[1:], emptydeps, deepdeps)
+                runQueue, x, status = Equo.retrieveInstallQueue(runQueue[1:], emptydeps, deepdeps)
+                del x # was removalQueue
                 # save new queues
                 resume_cache['runQueue'] = runQueue[:]
-                resume_cache['removalQueue'] = removalQueue[:]
+                #resume_cache['removalQueue'] = removalQueue[:]
                 Equo.dumpTools.dumpobj(etpCache['install'],resume_cache)
 
     # running tasks
     totalqueue = str(len(runQueue))
-    totalremovalqueue = str(len(removalQueue))
+    #totalremovalqueue = str(len(removalQueue))
     currentqueue = 0
-    currentremovalqueue = 0
+    #currentremovalqueue = 0
 
     def read_lic_selection():
         print_info(darkred("    Please choose an action"))
@@ -702,6 +703,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         print_info(red(" @@ ")+blue("Fetch Complete."))
         return 0,0
 
+    # XXX packages are now removed through the install process
+    '''
     for idpackage in removalQueue:
         currentremovalqueue += 1
 
@@ -726,6 +729,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         Package.kill()
         del metaopts
         del Package
+    '''
 
     for packageInfo in runQueue:
         currentqueue += 1

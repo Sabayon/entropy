@@ -1,5 +1,4 @@
 TODO list
-  - remove conflicting packages right before the conflict (*)
   - Socket Interface, use SSL - http://docs.python.org/lib/socket-example.html (*)
     - http://www.shipyard.com.au/articles/webdevelopment/sslxmlrpc.py
   - migrate server code to ServerInterface

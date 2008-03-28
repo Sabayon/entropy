@@ -44,6 +44,8 @@ def isRoot():
 def is_user_in_entropy_group():
     import grp
     uid = os.getuid()
+    if uid == 0:
+        return True
     etp_gid = None
     try:
         etp_gid = grp.getgrnam(etpConst['sysgroup'])[2]

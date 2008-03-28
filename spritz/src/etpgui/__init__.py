@@ -55,13 +55,10 @@ class ProcessGtkEventsThread(Thread):
 
     def run(self):
         while self.__quit == False:
-            import time
             while not self.__active.isSet():
                 self.__active.wait()
-            time.sleep(0.1)
             while gtk.events_pending():      # process gtk events
                 gtk.main_iteration()
-            time.sleep(0.1)
 
     def doQuit(self):
         self.__quit = True

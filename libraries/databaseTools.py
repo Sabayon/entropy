@@ -2286,7 +2286,7 @@ class etpDatabase:
         deps = self.retrieveDependencies(idpackage)
         conflicts = self.retrieveConflicts(idpackage)
         for x in conflicts:
-            if x[0] != "!": # workaround for my mistake
+            if x[0] != "!":
                 x = "!"+x
             deps.add(x)
         del conflicts

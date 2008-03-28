@@ -1913,6 +1913,16 @@ class EquoInterface(TextInterface):
                 pass
         return update, remove, fine
 
+    def get_match_conflicts(self, match):
+        dbconn = self.openRepositoryDatabase(match[1])
+        conflicts = dbconn.retrieveConflicts(match[0])
+        found_conflicts = set()
+        for conflict in conflicts:
+            match = self.clientDbconn.atomMatch(conflict)
+            if match[0] != -1:
+                found_conflicts.add(match[0])
+        return found_conflicts
+
     def is_match_masked(self, match):
         dbconn = self.openRepositoryDatabase(match[1])
         idpackage, idreason = dbconn.idpackageValidator(match[0])
@@ -4131,6 +4141,20 @@ class PackageInterface:
         del remdata
         return 0
 
+    def removeconflict_step(self, idpackage):
+
+        for idpackage in self.infoDict['conflicts']:
+            if not self.Entropy.clientDbconn.isIDPackageAvailable(idpackage):
+                continue
+            Package = self.Entropy.Package()
+            Package.prepare((idpackage,),"remove", self.infoDict['remove_metaopts'])
+            rc = Package.run(xterm_header = self.xterm_title)
+            Package.kill()
+            if rc != 0:
+                return rc
+
+        return 0
+
     def _run_create_lock(self):
         self.Entropy.create_pid_file_lock(etpConst['locks']['packagehandling'])
 
@@ -4148,33 +4172,36 @@ class PackageInterface:
 
         rc = 0
         for step in self.infoDict['steps']:
-            self.xterm_title = xterm_header+' '
+            self.xterm_title = xterm_header
 
             if step == "fetch":
-                self.xterm_title += 'Fetching: '+os.path.basename(self.infoDict['download'])
+                self.xterm_title += ' Fetching: '+os.path.basename(self.infoDict['download'])
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.fetch_step()
 
             elif step == "checksum":
-                self.xterm_title += 'Verifying: '+os.path.basename(self.infoDict['download'])
+                self.xterm_title += ' Verifying: '+os.path.basename(self.infoDict['download'])
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.checksum_step()
 
             elif step == "unpack":
                 if not self.infoDict['merge_from']:
-                    self.xterm_title += 'Unpacking: '+os.path.basename(self.infoDict['download'])
+                    self.xterm_title += ' Unpacking: '+os.path.basename(self.infoDict['download'])
                 else:
-                    self.xterm_title += 'Merging: '+os.path.basename(self.infoDict['atom'])
+                    self.xterm_title += ' Merging: '+os.path.basename(self.infoDict['atom'])
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.unpack_step()
 
+            elif step == "remove_conflicts":
+                rc = self.removeconflict_step()
+
             elif step == "install":
-                self.xterm_title += 'Installing: '+self.infoDict['atom']
+                self.xterm_title += ' Installing: '+self.infoDict['atom']
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.install_step()
 
             elif step == "remove":
-                self.xterm_title += 'Removing: '+self.infoDict['removeatom']
+                self.xterm_title += ' Removing: '+self.infoDict['removeatom']
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.remove_step()
 
@@ -4182,27 +4209,27 @@ class PackageInterface:
                 rc = self.messages_step()
 
             elif step == "cleanup":
-                self.xterm_title += 'Cleaning: '+self.infoDict['atom']
+                self.xterm_title += ' Cleaning: '+self.infoDict['atom']
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.cleanup_step()
 
             elif step == "postinstall":
-                self.xterm_title += 'Postinstall: '+self.infoDict['atom']
+                self.xterm_title += ' Postinstall: '+self.infoDict['atom']
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.postinstall_step()
 
             elif step == "preinstall":
-                self.xterm_title += 'Preinstall: '+self.infoDict['atom']
+                self.xterm_title += ' Preinstall: '+self.infoDict['atom']
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.preinstall_step()
 
             elif step == "preremove":
-                self.xterm_title += 'Preremove: '+self.infoDict['removeatom']
+                self.xterm_title += ' Preremove: '+self.infoDict['removeatom']
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.preremove_step()
 
             elif step == "postremove":
-                self.xterm_title += 'Postremove: '+self.infoDict['removeatom']
+                self.xterm_title += ' Postremove: '+self.infoDict['removeatom']
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.postremove_step()
 
@@ -4325,16 +4352,26 @@ class PackageInterface:
         self.infoDict['messages'] = dbconn.retrieveMessages(idpackage)
         self.infoDict['checksum'] = dbconn.retrieveDigest(idpackage)
         self.infoDict['accept_license'] = dbconn.retrieveLicensedataKeys(idpackage)
+        self.infoDict['conflicts'] = self.Entropy.get_match_conflicts(self.matched_atom)
+
         # fill action queue
         self.infoDict['removeidpackage'] = -1
         removeConfig = False
         if self.metaopts.has_key('removeconfig'):
             removeConfig = self.metaopts.get('removeconfig')
+
+        self.infoDict['remove_metaopts'] = {
+            'removeconfig': True,
+        }
+        if self.metaopts.has_key('remove_metaopts'):
+            self.infoDict['remove_metaopts'] = self.metaopts.get('remove_metaopts')
+
         self.infoDict['merge_from'] = None
         mf = self.metaopts.get('merge_from')
         if mf != None:
             self.infoDict['merge_from'] = unicode(mf)
         self.infoDict['removeconfig'] = removeConfig
+
         self.infoDict['removeidpackage'] = self.Entropy.retrieveInstalledIdPackage(
                                                 self.Entropy.entropyTools.dep_getkey(self.infoDict['atom']),
                                                 self.infoDict['slot']
@@ -4401,6 +4438,8 @@ class PackageInterface:
 
         # set steps
         self.infoDict['steps'] = []
+        if self.infoDict['conflicts']:
+            self.infoDict['steps'].append("remove_conflicts")
         # install
         if (self.infoDict['removeidpackage'] != -1):
             self.infoDict['steps'].append("preremove")
@@ -9893,8 +9932,9 @@ class SocketHostInterface:
         return rng
 
     def update_session_time(self, session):
-        self.sessions[session]['t'] = time.time()
-        self.updateProgress('session time updated for %s' % (session,) )
+        if self.sessions.has_key(session):
+            self.sessions[session]['t'] = time.time()
+            self.updateProgress('session time updated for %s' % (session,) )
 
     def set_session_running(self, session):
         if self.sessions.has_key(session):
