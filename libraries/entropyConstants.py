@@ -704,12 +704,13 @@ def const_defaultSettings(rootdir):
             'port': 999,
             'timeout': 200,
             'threads': 5,
+            'session_ttl': 120,
             'answers': {
-                'ok': chr(0)+chr(0),
-                'er': chr(0)+chr(1),
-                'no': chr(0)+chr(2),
-                'cl': chr(0)+chr(3),
-                'eot': chr(0)+chr(4)+"\n"
+                'ok': chr(0)+"OK\n"+chr(0),
+                'er': chr(0)+"ER\n"+chr(1),
+                'no': chr(0)+"NO\n"+chr(2),
+                'cl': chr(0)+"CL\n"+chr(3),
+                'eot': chr(0)+"EOT\n"+chr(4)
             },
         }
 
@@ -856,6 +857,13 @@ def const_readSocketSettings():
                 try:
                     x = int(x)
                     etpConst['socket_service']['threads'] = x
+                except ValueError:
+                    pass
+            elif line.startswith("session-ttl|") and (len(line.split("|")) > 1):
+                x = line.split("|")[1].strip()
+                try:
+                    x = int(x)
+                    etpConst['socket_service']['session_ttl'] = x
                 except ValueError:
                     pass
 

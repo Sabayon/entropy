@@ -16,5 +16,6 @@ srv = SocketHostInterface(Equo,EquoInterface)
 try:
     srv.go()
 except KeyboardInterrupt:
+    srv.Gc.kill()
     sys.exit(0)
 
