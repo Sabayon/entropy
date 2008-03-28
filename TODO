@@ -1,5 +1,6 @@
 TODO list
-  - Socket Interface, use SSL - http://docs.python.org/lib/socket-example.html
+  - remove conflicting packages right before the conflict (*)
+  - Socket Interface, use SSL - http://docs.python.org/lib/socket-example.html (*)
     - http://www.shipyard.com.au/articles/webdevelopment/sslxmlrpc.py
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
@@ -11,7 +12,6 @@ TODO list
   - split RDEPEND and PDEPEND ( + && and || )
   - log messages from portage doebuild() calls
   - create a meta-packages list ... I hate Joost (*)
-  - remove conflicting packages right before the conflict (*)
   - implement configuration files snapshot tool
   - allow interactivity for games requiring CDs/DVDs
   - add changelog to packages

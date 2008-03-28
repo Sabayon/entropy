@@ -73,7 +73,7 @@ class Entropy(EquoInterface):
     def appletSetCoordinates(self):
         self.appletX,self.appletY = self.appletInterface.get_tray_coordinates()
         self.progress_tooltip_notification.set_hint("x", self.appletX+11)
-        self.progress_tooltip_notification.set_hint("y", self.appletY+5)
+        self.progress_tooltip_notification.set_hint("y", self.appletY+11)
 
     def appletCreateNotification(self):
         pynotify.init("XY")
@@ -103,6 +103,7 @@ class Entropy(EquoInterface):
         self.progress_tooltip_notification.update(self.progress_tooltip_message_title,message)
         self.progress_tooltip_notification.show()
         self.applet_last_message = message
+        #self.appletInterface.redraw()
 
 class GuiUrlFetcher(urlFetcher):
 
@@ -124,8 +125,10 @@ class rhnApplet:
         if not new_state in etp_applet_config.APPLET_STATES:
             raise "Error: invalid state %s" % new_state
 
-        if self.current_state and not new_state in etp_applet_config.APPLET_STATE_CHANGES[self.current_state]:
-            raise "Error: can't change from state %s to state %s" % (self.current_state, new_state)
+        if self.current_state and \
+            not new_state in etp_applet_config.APPLET_STATE_CHANGES[self.current_state] and \
+            (self.current_state != new_state):
+                raise "Error: can't change from state %s to state %s" % (self.current_state, new_state)
 
         if self.refresh_timeout_tag and new_state not in [ "OKAY", "CRITICAL" ]:
             raise "Error: can't switch to state %s while refresh timer is on" % new_state
@@ -265,19 +268,21 @@ class rhnApplet:
         self.gtkEventThread = ProcessGtkEventsThread()
         self.gtkEventThread.start()
 
+        hide_menu = False
+        message = ''
+        workdir_perms_issue = False
+        if os.path.isdir(etpConst['entropyworkdir']):
+            gid = os.stat(etpConst['entropyworkdir'])[5]
+            if gid != etpConst['entropygid']:
+                workdir_perms_issue = True
+
         permitted = entropyTools.is_user_in_entropy_group()
         if not permitted:
-
-            self.set_state("ERROR")
-            message = _("You must add yourself to the '%s' group.") % (etpConst['sysgroup'],) 
-            self.update_tooltip(message)
-            for key in self.menu_items:
-                if key in ['exit','web_site','about','web_panel','update_now']:
-                    continue
-                w = self.menu_items[key]
-                w.set_sensitive(False)
-                w.hide()
-
+            hide_menu = True
+            message = _("You must add yourself to the '%s' group.") % (etpConst['sysgroup'],)
+        elif workdir_perms_issue:
+            hide_menu = True
+            message = _("Please run Equo/Spritz as root to update %s permissions") % (etpConst['entropyworkdir'],)
         else:
             # first refresh should be 2 minutes after execution; this
             # should give the rest of the user's desktop environment time
@@ -290,6 +295,16 @@ class rhnApplet:
             # Entropy initialization
             self.Entropy = Entropy()
             self.Entropy.connect_progress_objects(self)
+
+        if hide_menu:
+            self.set_state("ERROR")
+            self.update_tooltip(message)
+            for key in self.menu_items:
+                if key in ['exit','web_site','about','web_panel','update_now']:
+                    continue
+                w = self.menu_items[key]
+                w.set_sensitive(False)
+                w.hide()
 
     def get_tray_coordinates(self):
         """
@@ -507,7 +522,7 @@ class rhnApplet:
 
         x,y = self.get_tray_coordinates()
         n.set_hint("x", x+11)
-        n.set_hint("y", y+5)
+        n.set_hint("y", y+11)
         self.last_alert = (title,text)
         n.show()
 

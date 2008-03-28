@@ -3747,7 +3747,11 @@ class PackageInterface:
                         os.remove(rootdir)
                     os.symlink(tolink,rootdir)
                 elif (not os.path.isdir(rootdir)) and (not os.access(rootdir,os.R_OK)):
-                    os.makedirs(rootdir)
+                    try:
+                        # we should really force a simple mkdir first of all
+                        os.mkdir(rootdir)
+                    except OSError:
+                        os.makedirs(rootdir)
 
                 if not os.path.islink(rootdir) and os.access(rootdir,os.W_OK):
                     # symlink don't need permissions, also until os.walk ends they might be broken
