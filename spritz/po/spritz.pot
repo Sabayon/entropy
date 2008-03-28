@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-12 13:17+0100\n"
+"POT-Creation-Date: 2008-03-28 12:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,12 +89,12 @@ msgid "Please confirm the actions above"
 msgstr ""
 
 #. self.create_text_column( _( "Package" ), 'name' , size=300)
-#: ../src/dialogs.py:93 ../src/dialogs.py:100 ../src/views.py:418
+#: ../src/dialogs.py:93 ../src/dialogs.py:100 ../src/views.py:419
 msgid "Package"
 msgstr ""
 
-#: ../src/dialogs.py:94 ../src/views.py:560 ../src/views.py:893
-#: ../src/spritz.glade.h:68
+#: ../src/dialogs.py:94 ../src/views.py:561 ../src/views.py:894
+#: ../src/spritz.glade.h:66
 msgid "Description"
 msgstr ""
 
@@ -161,7 +161,7 @@ msgid "Show Installed Packages"
 msgstr ""
 
 #. Setup Vertical Toolbar
-#: ../src/gui.py:278 ../src/views.py:555
+#: ../src/gui.py:278 ../src/views.py:556
 msgid "Packages"
 msgstr ""
 
@@ -225,181 +225,181 @@ msgstr ""
 msgid "Categories"
 msgstr ""
 
-#: ../src/views.py:419 ../src/views.py:651
+#: ../src/views.py:420 ../src/views.py:652
 msgid "Rev."
 msgstr ""
 
-#: ../src/views.py:420
+#: ../src/views.py:421
 msgid "Slot"
 msgstr ""
 
-#: ../src/views.py:421 ../src/views.py:832
+#: ../src/views.py:422 ../src/views.py:833
 msgid "Repository"
 msgstr ""
 
-#: ../src/views.py:596
+#: ../src/views.py:597
 msgid "<b>Packages To Reinstall</b>"
 msgstr ""
 
-#: ../src/views.py:600
+#: ../src/views.py:601
 msgid "<b>Packages To Update</b>"
 msgstr ""
 
-#: ../src/views.py:604
+#: ../src/views.py:605
 msgid "<b>Packages To Install</b>"
 msgstr ""
 
-#: ../src/views.py:608
+#: ../src/views.py:609
 msgid "<b>Packages To Remove</b>"
 msgstr ""
 
-#: ../src/views.py:637
+#: ../src/views.py:638
 msgid "Proposed"
 msgstr ""
 
-#: ../src/views.py:644
+#: ../src/views.py:645
 msgid "Destination"
 msgstr ""
 
-#: ../src/views.py:832
+#: ../src/views.py:833
 msgid "Filename"
 msgstr ""
 
-#: ../src/views.py:852 ../src/spritz.py:305
+#: ../src/views.py:853 ../src/spritz.py:304
 #, python-format
 msgid "You should press the %s button now"
 msgstr ""
 
-#: ../src/views.py:852 ../src/spritz.py:305 ../src/spritz.py:382
+#: ../src/views.py:853 ../src/spritz.py:304 ../src/spritz.py:381
 msgid "Regenerate Cache"
 msgstr ""
 
-#: ../src/views.py:871
+#: ../src/views.py:872
 msgid "Active"
 msgstr ""
 
-#: ../src/views.py:881 ../src/spritz.glade.h:102
+#: ../src/views.py:882 ../src/spritz.glade.h:100
 msgid "Update"
 msgstr ""
 
 #. Setup revision column
-#: ../src/views.py:889
+#: ../src/views.py:890
 msgid "Revision"
 msgstr ""
 
 #. Setup reponame & repofile column's
-#: ../src/views.py:892
+#: ../src/views.py:893
 msgid "Repository Identifier"
 msgstr ""
 
-#: ../src/spritz.py:83
+#: ../src/spritz.py:82
 msgid "Quiting, please wait !!!!!!"
 msgstr ""
 
-#: ../src/spritz.py:188
+#: ../src/spritz.py:187
 msgid "Branch switching"
 msgstr ""
 
-#: ../src/spritz.py:188
+#: ../src/spritz.py:187
 msgid "Enter a valid branch you want to switch to"
 msgstr ""
 
-#: ../src/spritz.py:191
+#: ../src/spritz.py:190
 msgid "The selected branch is not available."
 msgstr ""
 
-#: ../src/spritz.py:194
+#: ../src/spritz.py:193
 #, python-format
 msgid "New branch is %s. It is suggested to synchronize repositories."
 msgstr ""
 
-#: ../src/spritz.py:237 ../src/spritz.py:259
+#: ../src/spritz.py:236 ../src/spritz.py:258
 msgid "Insert URL"
 msgstr ""
 
-#: ../src/spritz.py:237 ../src/spritz.py:259
+#: ../src/spritz.py:236 ../src/spritz.py:258
 msgid "Enter a download mirror, HTTP or FTP"
 msgstr ""
 
-#: ../src/spritz.py:242
+#: ../src/spritz.py:241
 msgid "You must enter either a HTTP or a FTP url."
 msgstr ""
 
-#: ../src/spritz.py:294 ../src/spritz.py:341
+#: ../src/spritz.py:293 ../src/spritz.py:340
 #, python-format
 msgid "Wrong entries, errors: %s"
 msgstr ""
 
-#: ../src/spritz.py:310
+#: ../src/spritz.py:309
 msgid "No Repository Identifier"
 msgstr ""
 
-#: ../src/spritz.py:313
+#: ../src/spritz.py:312
 msgid "Duplicated Repository Identifier"
 msgstr ""
 
-#: ../src/spritz.py:317
+#: ../src/spritz.py:316
 msgid "No download mirrors"
 msgstr ""
 
-#: ../src/spritz.py:319
-msgid "Database URL must be HTTP or FTP"
+#: ../src/spritz.py:318
+msgid "Database URL must start either with http:// or ftp:// or file://"
 msgstr ""
 
-#: ../src/spritz.py:339
+#: ../src/spritz.py:338
 #, python-format
 msgid "You should now press the %s button now"
 msgstr ""
 
-#: ../src/spritz.py:339 ../src/spritz.py:382
+#: ../src/spritz.py:338 ../src/spritz.py:381
 msgid "Update Repositories"
 msgstr ""
 
-#: ../src/spritz.py:350
+#: ../src/spritz.py:349
 msgid "Insert Repository"
 msgstr ""
 
-#: ../src/spritz.py:350
+#: ../src/spritz.py:349
 msgid "Insert Repository identification string"
 msgstr ""
 
-#: ../src/spritz.py:368
+#: ../src/spritz.py:367
 msgid "This Repository identification string is malformed"
 msgstr ""
 
-#: ../src/spritz.py:378
+#: ../src/spritz.py:377
 msgid "You! Why do you want to remove the main repository ?"
 msgstr ""
 
-#: ../src/spritz.py:382
+#: ../src/spritz.py:381
 #, python-format
 msgid "You must now either press the %s or the %s button"
 msgstr ""
 
-#: ../src/spritz.py:447
+#: ../src/spritz.py:446
 msgid "Please select at least one repository"
 msgstr ""
 
 #. Check there are any packages in the queue
-#: ../src/spritz.py:482
+#: ../src/spritz.py:481
 msgid "No packages in queue"
 msgstr ""
 
-#: ../src/spritz.py:551
+#: ../src/spritz.py:550
 msgid "Queue is too old. Cannot load."
 msgstr ""
 
 #. from installed
-#: ../src/spritz.py:591
+#: ../src/spritz.py:590
 msgid "From your Operating System"
 msgstr ""
 
-#: ../src/spritz.py:823
+#: ../src/spritz.py:822
 msgid "Cleaning up all yum metadata"
 msgstr ""
 
 #. warn the user
-#: ../src/spritz.py:833
+#: ../src/spritz.py:832
 #, python-format
 msgid ""
 "<big><b>Sorry to tell you</b></big>\t\t\n"
@@ -407,178 +407,178 @@ msgid ""
 "u>: %s"
 msgstr ""
 
-#: ../src/spritz.py:849
+#: ../src/spritz.py:848
 msgid "Entropy Config Setup"
 msgstr ""
 
-#: ../src/spritz.py:860
+#: ../src/spritz.py:859
 msgid "GUI Setup Completed"
 msgstr ""
 
-#: ../src/spritz.py:876
+#: ../src/spritz.py:875
 msgid "License name"
 msgstr ""
 
-#: ../src/spritz.py:884
+#: ../src/spritz.py:883
 msgid "Sources"
 msgstr ""
 
-#: ../src/spritz.py:892
+#: ../src/spritz.py:891
 msgid "Mirrors"
 msgstr ""
 
-#: ../src/spritz.py:900
+#: ../src/spritz.py:899
 msgid "Keywords"
 msgstr ""
 
-#: ../src/spritz.py:908
+#: ../src/spritz.py:907
 msgid "Dependencies"
 msgstr ""
 
-#: ../src/spritz.py:916
+#: ../src/spritz.py:915
 msgid "Depends"
 msgstr ""
 
-#: ../src/spritz.py:924
+#: ../src/spritz.py:923
 msgid "Needed libraries"
 msgstr ""
 
-#: ../src/spritz.py:932
+#: ../src/spritz.py:931
 msgid "Protected item"
 msgstr ""
 
-#: ../src/spritz.py:935 ../src/spritz.py:947
+#: ../src/spritz.py:934 ../src/spritz.py:946
 msgid "Type"
 msgstr ""
 
-#: ../src/spritz.py:943
+#: ../src/spritz.py:942
 msgid "File"
 msgstr ""
 
-#: ../src/spritz.py:1008
+#: ../src/spritz.py:1007
 msgid "Generating metadata. Please wait."
 msgstr ""
 
-#: ../src/spritz.py:1012 ../src/spritz.py:1130
+#: ../src/spritz.py:1011 ../src/spritz.py:1129
 msgid "Ready"
 msgstr ""
 
-#: ../src/spritz.py:1052
+#: ../src/spritz.py:1051
 msgid "Initializing Repository module..."
 msgstr ""
 
-#: ../src/spritz.py:1058
+#: ../src/spritz.py:1057
 msgid "You must run this application as root"
 msgstr ""
 
-#: ../src/spritz.py:1061 ../src/applet/etp_applet.py:548
+#: ../src/spritz.py:1060 ../src/applet/etp_applet.py:584
 #, python-format
 msgid "No repositories specified in %s"
 msgstr ""
 
-#: ../src/spritz.py:1064
+#: ../src/spritz.py:1063
 msgid "You are not connected to the Internet. You should."
 msgstr ""
 
-#: ../src/spritz.py:1067 ../src/applet/etp_applet.py:556
+#: ../src/spritz.py:1066 ../src/applet/etp_applet.py:592
 #, python-format
 msgid "Unhandled exception: %s"
 msgstr ""
 
-#: ../src/spritz.py:1071
+#: ../src/spritz.py:1070
 msgid "Errors updating repositories."
 msgstr ""
 
-#: ../src/spritz.py:1072
+#: ../src/spritz.py:1071
 msgid "Please check logs below for more info"
 msgstr ""
 
-#: ../src/spritz.py:1075
+#: ../src/spritz.py:1074
 msgid "Repositories updated successfully"
 msgstr ""
 
-#: ../src/spritz.py:1078
+#: ../src/spritz.py:1077
 msgid "All the repositories were already up to date."
 msgstr ""
 
-#: ../src/spritz.py:1080
+#: ../src/spritz.py:1079
 #, python-format
 msgid "%s repositories were already up to date. Others have been updated."
 msgstr ""
 
-#: ../src/spritz.py:1082
+#: ../src/spritz.py:1081
 msgid "app-admin/equo needs to be updated as soon as possible."
 msgstr ""
 
-#: ../src/spritz.py:1087
+#: ../src/spritz.py:1086
 msgid "Nothing to do. I am idle."
 msgstr ""
 
-#: ../src/spritz.py:1088
+#: ../src/spritz.py:1087
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr ""
 
-#: ../src/spritz.py:1089
+#: ../src/spritz.py:1088
 msgid "I am still alive and kickin'"
 msgstr ""
 
 #. -> Get lists
-#: ../src/spritz.py:1122
+#: ../src/spritz.py:1121
 msgid "Generating Metadata, please wait."
 msgstr ""
 
-#: ../src/spritz.py:1123
+#: ../src/spritz.py:1122
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr ""
 
-#: ../src/spritz.py:1124
+#: ../src/spritz.py:1123
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr ""
 
-#: ../src/spritz.py:1126
+#: ../src/spritz.py:1125
 #, python-format
 msgid "Calculating %s"
 msgstr ""
 
-#: ../src/spritz.py:1156
+#: ../src/spritz.py:1155
 msgid "Package View Population"
 msgstr ""
 
-#: ../src/spritz.py:1164
+#: ../src/spritz.py:1163
 msgid "Package View Population Completed"
 msgstr ""
 
-#: ../src/spritz.py:1170
+#: ../src/spritz.py:1169
 msgid "Category View Population"
 msgstr ""
 
-#: ../src/spritz.py:1189
+#: ../src/spritz.py:1188
 msgid "Category View Population Completed"
 msgstr ""
 
-#: ../src/spritz.py:1206
+#: ../src/spritz.py:1205
 msgid "Running tasks"
 msgstr ""
 
-#: ../src/spritz.py:1213
+#: ../src/spritz.py:1212
 msgid "Processing Packages in queue"
 msgstr ""
 
-#: ../src/spritz.py:1223
+#: ../src/spritz.py:1222
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
 
-#: ../src/spritz.py:1248
+#: ../src/spritz.py:1247
 msgid "No packages selected"
 msgstr ""
 
-#: ../src/spritz.py:1328 ../src/spritz.glade.h:70
+#: ../src/spritz.py:1300 ../src/spritz.glade.h:68
 msgid "Error"
 msgstr ""
 
-#: ../src/spritz.py:1328
+#: ../src/spritz.py:1300
 msgid "Error in Spritz"
 msgstr ""
 
@@ -608,7 +608,7 @@ msgid "Erased"
 msgstr ""
 
 #: ../src/etpgui/callbacks.py:68 ../src/etpgui/callbacks.py:69
-#: ../src/etpgui/callbacks.py:71 ../src/spritz.glade.h:75
+#: ../src/etpgui/callbacks.py:71 ../src/spritz.glade.h:73
 msgid "Installed"
 msgstr ""
 
@@ -624,7 +624,7 @@ msgstr ""
 msgid "Version Installed"
 msgstr ""
 
-#: ../src/applet/etp_applet_dialogs.py:41 ../src/spritz.glade.h:62
+#: ../src/applet/etp_applet_dialogs.py:41 ../src/spritz.glade.h:60
 msgid "Available"
 msgstr ""
 
@@ -675,153 +675,163 @@ msgid ""
 "redhat.com.  Thank you."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:63
+#: ../src/applet/etp_applet.py:64
 msgid "Updates Notification"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:208
+#: ../src/applet/etp_applet.py:210
 msgid "_Check for updates"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:208
+#: ../src/applet/etp_applet.py:210
 msgid "Check for updates"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:209
+#: ../src/applet/etp_applet.py:211
 msgid "_Launch Package Manager"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:209
+#: ../src/applet/etp_applet.py:211
 msgid "Launch Package Manager"
 msgstr ""
 
 #. ("configure_applet", _("C_onfiguration"), _("Configuration"), self.run_first_time_druid),
-#: ../src/applet/etp_applet.py:211
+#: ../src/applet/etp_applet.py:213
 msgid "_Packages Website"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:211
+#: ../src/applet/etp_applet.py:213
 msgid "Use Packages web interface"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:212
+#: ../src/applet/etp_applet.py:214
 msgid "_Sabayon Linux Website"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:212
+#: ../src/applet/etp_applet.py:214
 msgid "Launch Sabayon Linux Website"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:214
+#: ../src/applet/etp_applet.py:216
 msgid "_About"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:214
+#: ../src/applet/etp_applet.py:216
 msgid "About..."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:215
+#: ../src/applet/etp_applet.py:217
 msgid "_Exit"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:215
+#: ../src/applet/etp_applet.py:217
 msgid "Exit"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:271
+#: ../src/applet/etp_applet.py:282
+#, python-format
+msgid "You must add yourself to the '%s' group."
+msgstr ""
+
+#: ../src/applet/etp_applet.py:285
+#, python-format
+msgid "Please run Equo/Spritz as root to update %s permissions"
+msgstr ""
+
+#: ../src/applet/etp_applet.py:292
 msgid "Waiting until first checkin..."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:464
+#: ../src/applet/etp_applet.py:507
 msgid "execv didn't execv?"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:531
+#: ../src/applet/etp_applet.py:567
 msgid "Checking for updates..."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:551
+#: ../src/applet/etp_applet.py:587
 msgid "Repository Network Error"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:566
+#: ../src/applet/etp_applet.py:602
 msgid "No repositories specified. Cannot check for package updates."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:567
+#: ../src/applet/etp_applet.py:603
 msgid "Updates: attention"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:571
+#: ../src/applet/etp_applet.py:607
 msgid ""
 "Cannot connect to the Updates Service, you're probably not connected to the "
 "world."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:572 ../src/applet/etp_applet.py:597
+#: ../src/applet/etp_applet.py:608 ../src/applet/etp_applet.py:633
 msgid "Updates: connection issues"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:576
+#: ../src/applet/etp_applet.py:612
 msgid "Not all the repositories have been fetched for checking"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:577 ../src/applet/etp_applet.py:582
+#: ../src/applet/etp_applet.py:613 ../src/applet/etp_applet.py:618
 msgid "Updates: repository issues"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:581
+#: ../src/applet/etp_applet.py:617
 msgid "No repositories found online"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:586
+#: ../src/applet/etp_applet.py:622
 msgid "Synchronization errors. Cannot update repositories. Check logs."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:587
+#: ../src/applet/etp_applet.py:623
 msgid "Updates: sync issues"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:591
+#: ../src/applet/etp_applet.py:627
 msgid "Updates: unhandled error"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:608
+#: ../src/applet/etp_applet.py:645
 #, python-format
 msgid "Updates: exception %s"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:615
+#: ../src/applet/etp_applet.py:652
 #, python-format
 msgid "Updates: issue: %s"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:630 ../src/applet/etp_applet.py:632
+#: ../src/applet/etp_applet.py:669 ../src/applet/etp_applet.py:671
 #, python-format
 msgid "There are %d updates available."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:631
+#: ../src/applet/etp_applet.py:670
 msgid "Updates available"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:640 ../src/applet/etp_applet.py:642
+#: ../src/applet/etp_applet.py:679 ../src/applet/etp_applet.py:681
 msgid "So far, so good. w00t!"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:641
+#: ../src/applet/etp_applet.py:680
 msgid "Everything up-to-date"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:734
+#: ../src/applet/etp_applet.py:775
 msgid "Waiting before checkin..."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:795
+#: ../src/applet/etp_applet.py:836
 msgid "Not installed"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:815
+#: ../src/applet/etp_applet.py:856
 #, python-format
 msgid ""
 "\n"
@@ -992,339 +1002,331 @@ msgid "<b>Website</b>"
 msgstr ""
 
 #: ../src/spritz.glade.h:38
-msgid "<big><b>media-libs/foo-1.2.3</b></big>"
-msgstr ""
-
-#: ../src/spritz.glade.h:39
 msgid "<small>0</small>"
 msgstr ""
 
-#: ../src/spritz.glade.h:40
+#: ../src/spritz.glade.h:39
 msgid "<small>1.0MB</small>"
 msgstr ""
 
-#: ../src/spritz.glade.h:41
+#: ../src/spritz.glade.h:40
 msgid "<small>1.2.3</small>"
 msgstr ""
 
-#: ../src/spritz.glade.h:42
+#: ../src/spritz.glade.h:41
 msgid "<small>123123123123123123123</small>"
 msgstr ""
 
-#: ../src/spritz.glade.h:43
+#: ../src/spritz.glade.h:42
 msgid "<small>2</small>"
 msgstr ""
 
-#: ../src/spritz.glade.h:44
+#: ../src/spritz.glade.h:43
 msgid "<small>3.5</small>"
 msgstr ""
 
-#: ../src/spritz.glade.h:45
+#: ../src/spritz.glade.h:44
 msgid "<small>3.5MB</small>"
 msgstr ""
 
-#: ../src/spritz.glade.h:46
+#: ../src/spritz.glade.h:45
 msgid "<small>None</small>"
 msgstr ""
 
-#: ../src/spritz.glade.h:47
+#: ../src/spritz.glade.h:46
 msgid "<small>Official Sabayon Linux Repository</small>"
 msgstr ""
 
-#: ../src/spritz.glade.h:48
-msgid "<small>This is a description placeholder</small>"
-msgstr ""
-
-#: ../src/spritz.glade.h:49
+#: ../src/spritz.glade.h:47
 msgid "<small>Today, yesterday, who knows</small>"
 msgstr ""
 
-#: ../src/spritz.glade.h:50
+#: ../src/spritz.glade.h:48
 msgid "<small>http://www.sabayonlinux.org</small>"
 msgstr ""
 
-#: ../src/spritz.glade.h:51
+#: ../src/spritz.glade.h:49
 msgid "<small>path/to/download/blah.tbz2</small>"
 msgstr ""
 
-#: ../src/spritz.glade.h:52
+#: ../src/spritz.glade.h:50
 msgid "<small>why?</small>"
 msgstr ""
 
-#: ../src/spritz.glade.h:53
+#: ../src/spritz.glade.h:51
 msgid "<small>you me they</small>"
 msgstr ""
 
-#: ../src/spritz.glade.h:54
+#: ../src/spritz.glade.h:52
 msgid "<span size=\"large\"><b>Action</b></span>\n"
 msgstr ""
 
-#: ../src/spritz.glade.h:56
+#: ../src/spritz.glade.h:54
 msgid "<span size=\"xx-large\" color=\"black\">Files Update</span>"
 msgstr ""
 
-#: ../src/spritz.glade.h:57
+#: ../src/spritz.glade.h:55
 msgid "<span size=\"xx-large\" color=\"black\">Package Categories</span>"
 msgstr ""
 
-#: ../src/spritz.glade.h:58
+#: ../src/spritz.glade.h:56
 msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
 msgstr ""
 
-#: ../src/spritz.glade.h:59
+#: ../src/spritz.glade.h:57
 msgid "<span size=\"xx-large\" color=\"black\">Repositories</span>"
 msgstr ""
 
-#: ../src/spritz.glade.h:60
+#: ../src/spritz.glade.h:58
 msgid "Add/Edit Repository"
 msgstr ""
 
-#: ../src/spritz.glade.h:61
+#: ../src/spritz.glade.h:59
 msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
 msgstr ""
 
-#: ../src/spritz.glade.h:63
+#: ../src/spritz.glade.h:61
 msgid "C_hanges"
 msgstr ""
 
-#: ../src/spritz.glade.h:64
+#: ../src/spritz.glade.h:62
 msgid "D_ependencies"
 msgstr ""
 
-#: ../src/spritz.glade.h:65
+#: ../src/spritz.glade.h:63
 msgid "Database URL"
 msgstr ""
 
-#: ../src/spritz.glade.h:66
+#: ../src/spritz.glade.h:64
 msgid "Database compression"
 msgstr ""
 
-#: ../src/spritz.glade.h:67
+#: ../src/spritz.glade.h:65
 msgid "Dele_te all"
 msgstr ""
 
-#: ../src/spritz.glade.h:69
+#: ../src/spritz.glade.h:67
 msgid "Download mirrors"
 msgstr ""
 
-#: ../src/spritz.glade.h:71
+#: ../src/spritz.glade.h:69
 msgid "Extra"
 msgstr ""
 
-#: ../src/spritz.glade.h:72
+#: ../src/spritz.glade.h:70
 msgid "Identifier"
 msgstr ""
 
-#: ../src/spritz.glade.h:73
+#: ../src/spritz.glade.h:71
 msgid "Install"
 msgstr ""
 
-#: ../src/spritz.glade.h:74
+#: ../src/spritz.glade.h:72
 msgid "Install the selected package"
 msgstr ""
 
-#: ../src/spritz.glade.h:76
+#: ../src/spritz.glade.h:74
 msgid "Load content"
 msgstr ""
 
-#: ../src/spritz.glade.h:77
+#: ../src/spritz.glade.h:75
 msgid "M_erge"
 msgstr ""
 
-#: ../src/spritz.glade.h:78
+#: ../src/spritz.glade.h:76
 msgid "Merge all"
 msgstr ""
 
-#: ../src/spritz.glade.h:79
+#: ../src/spritz.glade.h:77
 msgid "Package Info."
 msgstr ""
 
-#: ../src/spritz.glade.h:80
+#: ../src/spritz.glade.h:78
 msgid "Package Information"
 msgstr ""
 
-#: ../src/spritz.glade.h:81
+#: ../src/spritz.glade.h:79
 msgid "Please Confirm"
 msgstr ""
 
-#: ../src/spritz.glade.h:82
+#: ../src/spritz.glade.h:80
 msgid "Purge"
 msgstr ""
 
-#: ../src/spritz.glade.h:83
+#: ../src/spritz.glade.h:81
 msgid "R_egenerate Cache"
 msgstr ""
 
-#: ../src/spritz.glade.h:84
+#: ../src/spritz.glade.h:82
 msgid "Reinstall"
 msgstr ""
 
-#: ../src/spritz.glade.h:85
+#: ../src/spritz.glade.h:83
 msgid "Reinstall the selected package"
 msgstr ""
 
-#: ../src/spritz.glade.h:86
+#: ../src/spritz.glade.h:84
 msgid "Remove"
 msgstr ""
 
-#: ../src/spritz.glade.h:87
+#: ../src/spritz.glade.h:85
 msgid "Remove the selected package"
 msgstr ""
 
-#: ../src/spritz.glade.h:88
+#: ../src/spritz.glade.h:86
 msgid "Remove the selected package and its configuration"
 msgstr ""
 
-#: ../src/spritz.glade.h:89
+#: ../src/spritz.glade.h:87
 msgid "Repository information"
 msgstr ""
 
-#: ../src/spritz.glade.h:90
+#: ../src/spritz.glade.h:88
 msgid "Soon!"
 msgstr ""
 
-#: ../src/spritz.glade.h:91
+#: ../src/spritz.glade.h:89
 msgid "Spritz Package Manager"
 msgstr ""
 
-#: ../src/spritz.glade.h:92
+#: ../src/spritz.glade.h:90
 msgid "Undo Install"
 msgstr ""
 
-#: ../src/spritz.glade.h:93
+#: ../src/spritz.glade.h:91
 msgid "Undo Install action"
 msgstr ""
 
-#: ../src/spritz.glade.h:94
+#: ../src/spritz.glade.h:92
 msgid "Undo Purge"
 msgstr ""
 
-#: ../src/spritz.glade.h:95
+#: ../src/spritz.glade.h:93
 msgid "Undo Purge action"
 msgstr ""
 
-#: ../src/spritz.glade.h:96
+#: ../src/spritz.glade.h:94
 msgid "Undo Reinstall"
 msgstr ""
 
-#: ../src/spritz.glade.h:97
+#: ../src/spritz.glade.h:95
 msgid "Undo Reinstall action"
 msgstr ""
 
-#: ../src/spritz.glade.h:98
+#: ../src/spritz.glade.h:96
 msgid "Undo Remove"
 msgstr ""
 
-#: ../src/spritz.glade.h:99
+#: ../src/spritz.glade.h:97
 msgid "Undo Remove action"
 msgstr ""
 
-#: ../src/spritz.glade.h:100
+#: ../src/spritz.glade.h:98
 msgid "Undo Update"
 msgstr ""
 
-#: ../src/spritz.glade.h:101
+#: ../src/spritz.glade.h:99
 msgid "Undo Update action"
 msgstr ""
 
-#: ../src/spritz.glade.h:103
+#: ../src/spritz.glade.h:101
 msgid "Update the selected package"
 msgstr ""
 
-#: ../src/spritz.glade.h:104
+#: ../src/spritz.glade.h:102
 msgid "Updates"
 msgstr ""
 
-#: ../src/spritz.glade.h:105
+#: ../src/spritz.glade.h:103
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
 msgstr ""
 
-#: ../src/spritz.glade.h:107
+#: ../src/spritz.glade.h:105
 msgid "_Accept License"
 msgstr ""
 
-#: ../src/spritz.glade.h:108
+#: ../src/spritz.glade.h:106
 msgid "_Add All"
 msgstr ""
 
-#: ../src/spritz.glade.h:109
+#: ../src/spritz.glade.h:107
 msgid "_Branch ..."
 msgstr ""
 
-#: ../src/spritz.glade.h:110
+#: ../src/spritz.glade.h:108
 msgid "_Details"
 msgstr ""
 
-#: ../src/spritz.glade.h:111
+#: ../src/spritz.glade.h:109
 msgid "_File"
 msgstr ""
 
-#: ../src/spritz.glade.h:112
+#: ../src/spritz.glade.h:110
 msgid "_Force repositories update"
 msgstr ""
 
-#: ../src/spritz.glade.h:113
+#: ../src/spritz.glade.h:111
 msgid "_Help"
 msgstr ""
 
-#: ../src/spritz.glade.h:114
+#: ../src/spritz.glade.h:112
 msgid "_Insert String"
 msgstr ""
 
-#: ../src/spritz.glade.h:115
+#: ../src/spritz.glade.h:113
 msgid "_Other"
 msgstr ""
 
-#: ../src/spritz.glade.h:116
+#: ../src/spritz.glade.h:114
 msgid "_Overview"
 msgstr ""
 
-#: ../src/spritz.glade.h:117
+#: ../src/spritz.glade.h:115
 msgid "_Process Queue"
 msgstr ""
 
-#: ../src/spritz.glade.h:118
+#: ../src/spritz.glade.h:116
 msgid "_Read License"
 msgstr ""
 
-#: ../src/spritz.glade.h:119
+#: ../src/spritz.glade.h:117
 msgid "_References"
 msgstr ""
 
-#: ../src/spritz.glade.h:120
+#: ../src/spritz.glade.h:118
 msgid "_Remove All"
 msgstr ""
 
-#: ../src/spritz.glade.h:121
+#: ../src/spritz.glade.h:119
 msgid "_Skip"
 msgstr ""
 
-#: ../src/spritz.glade.h:122
+#: ../src/spritz.glade.h:120
 msgid "_Update Repositories"
 msgstr ""
 
-#: ../src/spritz.glade.h:123
+#: ../src/spritz.glade.h:121
 msgid "_Your Ego!"
 msgstr ""
 
-#: ../src/spritz.glade.h:124
+#: ../src/spritz.glade.h:122
 msgid "dialog1"
 msgstr ""
 
-#: ../src/spritz.glade.h:125
+#: ../src/spritz.glade.h:123
 msgid "gtk-close"
 msgstr ""
 
-#: ../src/spritz.glade.h:126
+#: ../src/spritz.glade.h:124
 msgid "gtk-ok"
 msgstr ""
 
-#: ../src/spritz.glade.h:127
+#: ../src/spritz.glade.h:125
 msgid "gtk-stop"
 msgstr ""
 
-#: ../src/spritz.glade.h:128
+#: ../src/spritz.glade.h:126
 msgid "please wait"
 msgstr ""
