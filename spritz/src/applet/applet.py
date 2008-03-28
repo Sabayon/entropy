@@ -15,19 +15,14 @@ sys.path.insert(0,'../../../client')
 sys.path.insert(0,'../../../libraries')
 sys.path.insert(0,'/usr/lib/entropy/spritz')
 sys.path.insert(0,'../')
-
+sys.argv.append("--no-pid-handling")
 
 try:
     os.nice(10)
 except:
     pass
 
-args = filter(lambda s: s != "-d", sys.argv)
-if args != sys.argv:
-    sys.argv = args
-
 import etp_applet
-
 def child_reaper(*args):
     try:
         while os.waitpid(-1, os.WNOHANG):
