@@ -3434,11 +3434,12 @@ class PackageInterface:
         self.__update_available_cache()
         try:
             self.__update_world_cache()
-        except:
+        except Exception,e:
+            print "WTFFFFFFFFFFFFFFFFFFFFF",e
             self.Entropy.clear_dump_cache(etpCache['world_update'])
 
     def __update_world_cache(self):
-        if self.Entropy.xcache and (self.action in ("install",)):
+        if self.Entropy.xcache and (self.action in ("install","remove",)):
             wc_dir = os.path.dirname(os.path.join(etpConst['dumpstoragedir'],etpCache['world_update']))
             wc_filename = os.path.basename(etpCache['world_update'])
             wc_cache_files = [os.path.join(wc_dir,x) for x in os.listdir(wc_dir) if x.startswith(wc_filename)]
@@ -3450,9 +3451,27 @@ class PackageInterface:
                     self.Entropy.clear_dump_cache(etpCache['world_update'])
                     return
 
-                if self.matched_atom in update:
-                    update.remove(self.matched_atom)
-                    self.Entropy.dumpTools.dumpobj(cache_file, (update, remove, fine), completePath = True)
+                if self.action == "install":
+                    if self.matched_atom in update:
+                        update.remove(self.matched_atom)
+                        self.Entropy.dumpTools.dumpobj(cache_file, (update, remove, fine), completePath = True)
+                else:
+                    key, slot = self.Entropy.clientDbconn.retrieveKeySlot(self.infoDict['removeidpackage'])
+                    matches = self.Entropy.atomMatch(key, matchSlot = slot, multiMatch = True, multiRepo = True)
+                    if matches[1] != 0:
+                        # hell why! better to rip all off
+                        self.Entropy.clear_dump_cache(etpCache['world_update'])
+                        return
+                    taint = False
+                    for match in matches[0]:
+                        if match in update:
+                            taint = True
+                            update.remove(match)
+                        if match in remove:
+                            taint = True
+                            remove.remove(match)
+                    if taint:
+                        self.Entropy.dumpTools.dumpobj(cache_file, (update, remove, fine), completePath = True)
 
         elif (not self.Entropy.xcache) or (self.action in ("install",)):
             self.Entropy.clear_dump_cache(etpCache['world_update'])
