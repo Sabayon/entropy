@@ -3435,7 +3435,6 @@ class PackageInterface:
         try:
             self.__update_world_cache()
         except Exception,e:
-            print "WTFFFFFFFFFFFFFFFFFFFFF",e
             self.Entropy.clear_dump_cache(etpCache['world_update'])
 
     def __update_world_cache(self):
