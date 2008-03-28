@@ -41,6 +41,7 @@ from etp_applet_dialogs import \
      rhnAppletExceptionDialog
 import etp_applet_config
 from i18n import _
+from etpgui import busyCursor,normalCursor,ProcessGtkEventsThread
 
 # Entropy imports
 from entropyConstants import *
@@ -156,6 +157,7 @@ class rhnApplet:
 
         # this must be done before !!
         self.destroyed = 0
+        self.isWorking = False
         self.tooltip_text = ""
         gnome.program_init("spritz-updater", etpConst['entropyversion'])
         self.tooltip = gtk.Tooltips()
@@ -260,6 +262,9 @@ class rhnApplet:
         self.available_packages = set()
         self.last_alert = None
 
+        self.gtkEventThread = ProcessGtkEventsThread()
+        self.gtkEventThread.start()
+
         permitted = entropyTools.is_user_in_entropy_group()
         if not permitted:
 
@@ -338,6 +343,16 @@ class rhnApplet:
 
     def refresh_callback(self):
         self.handle_gtk_events()
+
+    def start_working(self):
+        self.isWorking = True
+        busyCursor(self.applet_window)
+        self.gtkEventThread.startProcessing()
+
+    def end_working(self):
+        self.isWorking = False
+        normalCursor(self.applet_window)
+        self.gtkEventThread.endProcessing()
 
     def on_do_draw(self, *data):
         self.redraw()
@@ -526,6 +541,7 @@ class rhnApplet:
 
     def refresh(self, force=0):
 
+        self.start_working()
         old_tip = self.tooltip_text
         old_state = self.current_state
 
@@ -603,6 +619,7 @@ class rhnApplet:
             self.set_state("DISCONNECTED")
             self.disable_refresh_timer()
             self.enable_network_timer()
+            self.end_working()
             return False
 
 
@@ -619,6 +636,7 @@ class rhnApplet:
             self.disable_refresh_timer()
             self.update_tooltip(_("Updates: issue: %s") % (str(self.last_error),))
             self.set_state("ERROR")
+            self.end_working()
             return False
 
         if rc == 0:
@@ -627,6 +645,7 @@ class rhnApplet:
         # it is possible that the applet was destroyed during the time it
         # took to update the model.  If the applet is gone, bail now.
         if self.destroyed:
+            self.end_working()
             return False
 
         if update:
@@ -650,6 +669,7 @@ class rhnApplet:
 
         self.disable_refresh_timer()
         self.enable_refresh_timer()
+        self.end_working()
         return True
 
     #
@@ -707,7 +727,8 @@ class rhnApplet:
         gnome.help.goto ("file:///usr/share/doc/rhn-applet-@VERSION@/index.html")
 
 
-    def exit_applet(*args):
+    def exit_applet(self, *args):
+        self.gtkEventThread.doQuit()
         gtk.main_quit()
         return
 

@@ -35,7 +35,6 @@ from entropyapi import EquoConnection,QueueExecutor
 
 # GTK Imports
 import gtk,gobject
-from threading import Thread,Event
 import thread
 import exceptions
 from etpgui.widgets import UI, Controller
@@ -1266,33 +1265,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
         pkgs = self.etpbase.getPackagesByCategory(cat)
         self.catPackages.populate(pkgs,self.ui.tvCatPackages)
 
-
-class ProcessGtkEventsThread(Thread):
-    def __init__(self):
-        Thread.__init__(self)
-        self.__quit = False
-        self.__active = Event()
-        self.__active.clear()
-
-    def run(self):
-        while self.__quit == False:
-            import time
-            while not self.__active.isSet():
-                self.__active.wait()
-            time.sleep(0.1)
-            while gtk.events_pending():      # process gtk events
-                gtk.main_iteration()
-            time.sleep(0.1)
-
-    def doQuit(self):
-        self.__quit = True
-        self.__active.set()
-
-    def startProcessing(self):
-        self.__active.set()
-
-    def endProcessing(self):
-        self.__active.clear()
 
 if __name__ == "__main__":
     try:

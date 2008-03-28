@@ -22,7 +22,6 @@ TODO list
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - improve notification applet
     - interface bug reporting interface (ahah)
     - handle entropy exceptions
     - add masking menu

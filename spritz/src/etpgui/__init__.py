@@ -24,6 +24,8 @@ import pango
 import sys
 import time
 import logging
+from threading import Thread,Event
+import thread
 
 
 def busyCursor(mainwin,insensitive=False):
@@ -37,12 +39,39 @@ def normalCursor(mainwin):
     ''' Set Normal cursor in mainwin and make it sensitive '''
     if mainwin.window != None:
         mainwin.window.set_cursor(None)
-        mainwin.set_sensitive(True)        
+        mainwin.set_sensitive(True)
     doGtkEvents()
 
 def doGtkEvents():
     while gtk.events_pending():      # process gtk events
         gtk.main_iteration()
+
+class ProcessGtkEventsThread(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+        self.__quit = False
+        self.__active = Event()
+        self.__active.clear()
+
+    def run(self):
+        while self.__quit == False:
+            import time
+            while not self.__active.isSet():
+                self.__active.wait()
+            time.sleep(0.1)
+            while gtk.events_pending():      # process gtk events
+                gtk.main_iteration()
+            time.sleep(0.1)
+
+    def doQuit(self):
+        self.__quit = True
+        self.__active.set()
+
+    def startProcessing(self):
+        self.__active.set()
+
+    def endProcessing(self):
+        self.__active.clear()
 
 # from output.py (yum)
 def format_number(number, SI=0, space=' '):
@@ -84,5 +113,3 @@ def format_number(number, SI=0, space=' '):
         format = '%.0f%s%s'
 
     return(format % (number, space, symbols[depth]))
-    
-    
