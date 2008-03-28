@@ -44,8 +44,6 @@ home = os.getenv("HOME")
 if not home:
     home = "/tmp"
 SETTINGS_FILE = os.path.join(home, ".config/entropy/settings")
-REPOS_DIR = os.path.join(home, ".config/entropy/repos")
-CACHES_DIR = os.path.join(home, ".config/entropy/caches")
 
 def save_settings(settings):
     global SETTINGS_FILE
@@ -64,9 +62,7 @@ myconst = [
             ['REFRESH_INTERVAL',int],
             ['NETWORK_RETRY_INTERVAL',int],
             ['ERROR_THRESHOLD',int],
-            ['ANIMATION_TOTAL_TIME',float],
-            ['REPOS_DIR',basestring],
-            ['CACHES_DIR',basestring]
+            ['ANIMATION_TOTAL_TIME',float]
           ]
 
 for x in myconst:

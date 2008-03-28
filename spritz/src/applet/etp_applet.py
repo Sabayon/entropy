@@ -44,8 +44,8 @@ from i18n import _
 
 # Entropy imports
 from entropyConstants import *
-import exceptionTools
-from entropy import EquoInterface,RepoInterface,urlFetcher
+import exceptionTools, entropyTools
+from entropy import EquoInterface, RepoInterface, urlFetcher
 
 class Entropy(EquoInterface):
 
@@ -118,6 +118,7 @@ class GuiUrlFetcher(urlFetcher):
         self.progress(message)
 
 class rhnApplet:
+
     def set_state(self, new_state, use_busy_icon = 0):
         if not new_state in etp_applet_config.APPLET_STATES:
             raise "Error: invalid state %s" % new_state
@@ -154,10 +155,6 @@ class rhnApplet:
     def __init__(self):
 
         # this must be done before !!
-        self.Entropy = Entropy()
-        self.move_to_user_directory()
-        self.Entropy.validate_repositories_cache()
-
         self.destroyed = 0
         self.tooltip_text = ""
         gnome.program_init("spritz-updater", etpConst['entropyversion'])
@@ -263,15 +260,31 @@ class rhnApplet:
         self.available_packages = set()
         self.last_alert = None
 
-        # first refresh should be 2 minutes after execution; this
-        # should give the rest of the user's desktop environment time
-        # to load, etc, and avoid competing with nautilus or whatever
-        # else is loading.  subsequent intervals will be much larger.
-        self.set_state("OKAY")
-        self.update_tooltip(_("Waiting until first checkin..."))
-        self.enable_refresh_timer(50000)
+        permitted = entropyTools.is_user_in_entropy_group()
+        if not permitted:
 
-        self.Entropy.connect_progress_objects(self)
+            self.set_state("ERROR")
+            message = _("You must add yourself to the '%s' group.") % (etpConst['sysgroup'],) 
+            self.update_tooltip(message)
+            for key in self.menu_items:
+                if key in ['exit','web_site','about','web_panel','update_now']:
+                    continue
+                w = self.menu_items[key]
+                w.set_sensitive(False)
+                w.hide()
+
+        else:
+            # first refresh should be 2 minutes after execution; this
+            # should give the rest of the user's desktop environment time
+            # to load, etc, and avoid competing with nautilus or whatever
+            # else is loading.  subsequent intervals will be much larger.
+            self.set_state("OKAY")
+            self.update_tooltip(_("Waiting until first checkin..."))
+            self.enable_refresh_timer(50000)
+
+            # Entropy initialization
+            self.Entropy = Entropy()
+            self.Entropy.connect_progress_objects(self)
 
     def get_tray_coordinates(self):
         """
@@ -482,14 +495,6 @@ class rhnApplet:
         n.set_hint("y", y+5)
         self.last_alert = (title,text)
         n.show()
-
-    def move_to_user_directory(self):
-        etpConst['dumpstoragedir'] = etp_applet_config.settings['CACHES_DIR']
-        for repoid in etpRepositories:
-            etpRepositories[repoid]['dbpath'] = etp_applet_config.settings['REPOS_DIR'] + "/" + repoid+ "/" + etpConst['product'] + "/" + etpConst['currentarch']
-            if not os.path.isdir(etpRepositories[repoid]['dbpath']):
-                os.makedirs(etpRepositories[repoid]['dbpath'])
-            self.Entropy.update_repository_revision(repoid)
 
     def compare_repositories_status(self):
         repos = {}
@@ -816,7 +821,7 @@ class rhnApplet:
 Your system currently has sys-apps/entropy <b>%s</b> installed, but the latest
 available version is <b>%s</b>.  It is recommended that you <b>upgrade
 to the latest</b> before updating any other packages.
-""") % (entropy_data['installed'], names[atom]['avail']))
+""") % (entropy_data['installed'], entropy_data['avail']))
 
         if critical_text:
             if self.old_critical_text != critical_text:
