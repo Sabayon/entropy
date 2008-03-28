@@ -1805,7 +1805,7 @@ class EquoInterface(TextInterface):
     def get_world_update_cache(self, empty_deps, branch = etpConst['branch'], db_digest = None):
         if self.xcache:
             if db_digest == None:
-                db_digest = self.clientDbconn.tablesChecksum()
+                db_digest = self.all_repositories_checksum()
             c_hash = str(hash(db_digest)) + \
                      str(hash(empty_deps)) + \
                      str(hash(tuple(etpRepositories))) + \
@@ -1821,7 +1821,7 @@ class EquoInterface(TextInterface):
         # clear masking reasons
         maskingReasonsStorage.clear()
 
-        db_digest = self.clientDbconn.tablesChecksum()
+        db_digest = self.all_repositories_checksum()
         cached = self.get_world_update_cache(empty_deps = empty_deps, branch = branch, db_digest = db_digest)
         if cached != None:
             return cached
@@ -3426,11 +3426,38 @@ class PackageInterface:
         self.Entropy.clear_dump_cache(etpCache['depends_tree'])
         self.Entropy.clear_dump_cache(etpCache['check_package_update'])
         self.Entropy.clear_dump_cache(etpCache['dep_tree'])
-        self.Entropy.clear_dump_cache(etpCache['world_update'])
         self.Entropy.clear_dump_cache(etpCache['dbMatch']+etpConst['clientdbid']+"/")
         self.Entropy.clear_dump_cache(etpCache['dbSearch']+etpConst['clientdbid']+"/")
         if self.infoDict['removeidpackage'] != -1:
             self.Entropy.clear_dump_cache(etpCache['dbInfo']+"/"+etpConst['clientdbid']+"/"+str(self.infoDict['removeidpackage'])+"/")
+
+        self.__update_available_cache()
+        try:
+            self.__update_world_cache()
+        except:
+            self.Entropy.clear_dump_cache(etpCache['world_update'])
+
+    def __update_world_cache(self):
+        if self.Entropy.xcache and (self.action in ("install",)):
+            wc_dir = os.path.dirname(os.path.join(etpConst['dumpstoragedir'],etpCache['world_update']))
+            wc_filename = os.path.basename(etpCache['world_update'])
+            wc_cache_files = [os.path.join(wc_dir,x) for x in os.listdir(wc_dir) if x.startswith(wc_filename)]
+            for cache_file in wc_cache_files:
+
+                try:
+                    (update, remove, fine) = self.Entropy.dumpTools.loadobj(cache_file, completePath = True)
+                except:
+                    self.Entropy.clear_dump_cache(etpCache['world_update'])
+                    return
+
+                if self.matched_atom in update:
+                    update.remove(self.matched_atom)
+                    self.Entropy.dumpTools.dumpobj(cache_file, (update, remove, fine), completePath = True)
+
+        elif (not self.Entropy.xcache) or (self.action in ("install",)):
+            self.Entropy.clear_dump_cache(etpCache['world_update'])
+
+    def __update_available_cache(self):
 
         # update world available cache
         if self.Entropy.xcache and (self.action in ("remove","install")):
@@ -3459,6 +3486,9 @@ class PackageInterface:
                         self.Entropy.dumpTools.dumpobj(etpCache['world_available'],{})
                     except IOError:
                         pass
+        elif not self.Entropy.xcache:
+            self.Entropy.clear_dump_cache(etpCache['world_available'])
+
 
     '''
     @description: install unpacked files, update database and also update gentoo db if requested
