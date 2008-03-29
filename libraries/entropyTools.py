@@ -41,22 +41,33 @@ def isRoot():
         return True
     return False
 
-def is_user_in_entropy_group():
-    import grp
-    uid = os.getuid()
+def is_user_in_entropy_group(uid = None):
+
+    import grp,pwd
+
+    if uid == None:
+        uid = os.getuid()
     if uid == 0:
         return True
-    etp_gid = None
+
     try:
-        etp_gid = grp.getgrnam(etpConst['sysgroup'])[2]
+        username = pwd.getpwuid(uid)[0]
     except KeyError:
-        pass
-    if etp_gid == None:
         return False
 
-    if etp_gid in os.getgroups():
-        return True
-    return False
+    try:
+        data = grp.getgrnam(etpConst['sysgroup'])
+    except KeyError:
+        return False
+
+    etp_gid = data[2]
+    etp_group_users = data[3]
+
+    if not etp_group_users or \
+        username not in etp_group_users:
+            return False
+
+    return True
 
 class TimeScheduled(threading.Thread):
     def __init__(self, function, delay, dictData = {}):
@@ -1238,6 +1249,16 @@ def compat_uncompressTarBz2(filepath, extractPath = None):
     return 0
 
 def spawnFunction(f, *args, **kwds):
+
+    uid = None
+    gid = None
+    if kwds.has_key('spf_uid'):
+        uid = kwds['spf_uid']
+        kwds.pop('spf_uid')
+    if kwds.has_key('spf_gid'):
+        gid = kwds['spf_gid']
+        kwds.pop('spf_gid')
+
     try:
         import cPickle as pickle
     except ImportError:
@@ -1255,6 +1276,10 @@ def spawnFunction(f, *args, **kwds):
             raise result
     else:
         os.close(pread)
+        if gid != None:
+            os.setgid(gid)
+        if uid != None:
+            os.setuid(uid)
         try:
             result = f(*args, **kwds)
             status = 0

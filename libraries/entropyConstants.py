@@ -705,6 +705,7 @@ def const_defaultSettings(rootdir):
             'timeout': 200,
             'threads': 5,
             'session_ttl': 120,
+            'default_uid': 0,
             'answers': {
                 'ok': chr(0)+"OK\n"+chr(0),
                 'er': chr(0)+"ER\n"+chr(1),

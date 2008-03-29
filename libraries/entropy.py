@@ -9626,6 +9626,80 @@ class SocketHostInterface:
     import entropyTools
     from threading import Thread
 
+    class BasicPamAuthenticator:
+
+        import entropyTools
+
+        def __init__(self):
+            self.valid_auth_types = [ "plain","md5" ]
+
+        def docmd_login(self, arguments):
+
+            # filter n00bs
+            if not arguments or (len(arguments) != 3):
+                return False,None,None,'wrong arguments'
+
+            user = arguments[0]
+            auth_type = arguments[1]
+            auth_string = arguments[2]
+
+            # check auth type validity
+            if auth_type not in self.valid_auth_types:
+                return False,user,None,'invalid auth type'
+
+            import pwd
+            # check user validty
+            try:
+                udata = pwd.getpwnam(user)
+            except KeyError:
+                return False,user,None,'invalid user'
+
+            uid = udata[2]
+            # check if user is in the Entropy group
+            if not self.entropyTools.is_user_in_entropy_group(uid):
+                return False,user,uid,'user not in %s group' % (etpConst['sysgroup'],)
+
+            # now validate password
+            valid = self.__validate_auth(user,auth_type,auth_string)
+            if not valid:
+                return False,user,uid,'auth failed'
+
+            return True,user,uid,"ok"
+
+        def __validate_auth(self, user, auth_type, auth_string):
+            valid = False
+            if auth_type == "plain":
+                valid = self.__plain_auth(user, auth_string)
+            elif auth_type == "md5":
+                # FIXME: complete !!
+                valid = True
+            return valid
+
+        def __plain_auth(self, user, password):
+            import spwd,crypt
+            try:
+                enc_pass = spwd.getspnam(user)[1]
+            except KeyError, e:
+                return False
+            generated_pass = crypt.crypt(str(password), enc_pass)
+            if generated_pass == enc_pass:
+                return True
+            return False
+
+        def docmd_logout(self, user):
+
+            # filter n00bs
+            if not user or (type(user) is not basestring):
+                return False,None,None,"wrong user"
+
+            return True,user,"ok"
+
+        def set_exc_permissions(self, uid, gid):
+            if gid != None:
+                os.setgid(gid)
+            if uid != None:
+                os.setuid(uid)
+
     class HostServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
         import SocketServer
@@ -9666,13 +9740,13 @@ class SocketHostInterface:
                     try:
                         data = self.request.recv(8192)
                     except self.socket.timeout, e:
-                        self.server.processor.HostInterface.updateProgress('interrupted: %s, reason: %s' % (self.server.server_address,e,))
+                        self.server.processor.HostInterface.updateProgress('interrupted: %s, reason: %s - from client: %s' % (self.server.server_address,e,self.client_address,))
                         break
 
                     if not data:
                         break
 
-                    cmd = self.server.processor.process(data, self.request)
+                    cmd = self.server.processor.process(data, self.request, self.client_address)
                     if cmd == 'close':
                         break
 
@@ -9685,9 +9759,11 @@ class SocketHostInterface:
     class CommandProcessor:
 
         import dumpTools
+        import entropyTools
 
         def __init__(self, HostInterface):
             self.HostInterface = HostInterface
+            self.Authenticator = self.HostInterface.Authenticator
             self.channel = None
             self.lastoutput = None
 
@@ -9704,7 +9780,7 @@ class SocketHostInterface:
             # validate command
             args = string.strip().split()
             session = args[0]
-            if (session == "begin") or len(args) < 2:
+            if (session in self.HostInterface.initialization_commands) or len(args) < 2:
                 cmd = args[0]
                 session = None
             else:
@@ -9730,27 +9806,36 @@ class SocketHostInterface:
 
             # answer to invalid commands
             if (cmd not in self.HostInterface.valid_commands):
-                return False
+                return False,"not a valid command"
 
             if session == None:
                 if cmd not in self.HostInterface.no_session_commands:
-                    return False
+                    return False,"need a valid session"
             elif session not in self.HostInterface.sessions:
-                return False
+                return False,"session is not alive"
+
+            # check if command needs authentication
+            if session != None:
+                auth = self.HostInterface.valid_commands[cmd]['auth']
+                if auth:
+                    # are we?
+                    authed = self.HostInterface.sessions[session]['auth_uid']
+                    if authed == None:
+                        # nope
+                        return False,"not authenticated"
 
             # keep session alive
             if session != None:
                 self.HostInterface.set_session_running(session)
                 self.HostInterface.update_session_time(session)
 
-            return True
+            return True,"all good"
 
-        def process(self, data, channel):
+        def load_service_interface(self, session):
 
-            self.channel = channel
-
-            if data.strip():
-                self.HostInterface.updateProgress("  call: %s" % (repr(data.strip()),))
+            uid = None
+            if session != None:
+                uid = self.HostInterface.sessions[session]['auth_uid']
 
             intf = self.HostInterface.EntropyInstantiation[0]
             args = self.HostInterface.EntropyInstantiation[1]
@@ -9760,24 +9845,35 @@ class SocketHostInterface:
             Entropy.updateProgress = self.remoteUpdateProgress
             Entropy.clientDbconn.updateProgress = self.remoteUpdateProgress
             Entropy.progress = self.remoteUpdateProgress
+            return Entropy
+
+        def process(self, data, channel, client_address):
+
+            self.channel = channel
+            self.client_address = client_address
+
+            if data.strip():
+                self.HostInterface.updateProgress("[from: %s] call: %s" % (self.client_address,repr(data.strip()),))
 
             term = self.handle_termination_commands(data)
             if term:
                 return term
 
             cmd, args, session = self.handle_command_string(data)
-            valid_cmd = self.validate_command(cmd, args, session)
+            valid_cmd, reason = self.validate_command(cmd, args, session)
 
-            self.HostInterface.updateProgress('command validation :: called %s: args: %s, session: %s, valid: %s' % (cmd,args,session,valid_cmd,))
+            self.HostInterface.updateProgress('[from: %s] command validation :: called %s: args: %s, session: %s, valid: %s, reason: %s' % (self.client_address,cmd,args,session,valid_cmd,reason,))
 
             whoops = False
             if valid_cmd:
+                Entropy = self.load_service_interface(session)
                 try:
                     self.run_task(cmd, args, session, Entropy)
                 except Exception, e:
                     # store error
-                    self.HostInterface.updateProgress('command error: %s, type: %s' % (e,type(e),))
-                    self.HostInterface.store_rc(str(e),session)
+                    self.HostInterface.updateProgress('[from: %s] command error: %s, type: %s' % (self.client_address,e,type(e),))
+                    if session != None:
+                        self.HostInterface.store_rc(str(e),session)
                     whoops = True
 
             if session != None:
@@ -9804,7 +9900,7 @@ class SocketHostInterface:
 
         def run_task(self, cmd, args, session, Entropy):
 
-            self.HostInterface.updateProgress('run_task :: called %s: args: %s, session: %s' % (cmd,args,session,))
+            self.HostInterface.updateProgress('[from: %s] run_task :: called %s: args: %s, session: %s' % (self.client_address,cmd,args,session,))
 
             myargs = []
             mykwargs = {}
@@ -9815,17 +9911,27 @@ class SocketHostInterface:
                     b = ''.join(x[1:])
                     mykwargs[a] = eval(b)
                 else:
-                    myargs.append(eval(arg))
-            return self.spawn_function(cmd, myargs, mykwargs, session, Entropy)
+                    try:
+                        myargs.append(eval(arg))
+                    except NameError:
+                        myargs.append(str(arg))
+
+            rc = self.spawn_function(cmd, myargs, mykwargs, session, Entropy)
+            if session != None and self.HostInterface.sessions.has_key(session):
+                self.HostInterface.store_rc(rc, session)
+            return rc
 
         def spawn_function(self, cmd, myargs, mykwargs, session, Entropy):
 
-            self.HostInterface.updateProgress('called %s: args: %s, kwargs: %s' % (cmd,myargs,mykwargs,))
+            self.HostInterface.updateProgress('[from: %s] called %s: args: %s, kwargs: %s' % (self.client_address,cmd,myargs,mykwargs,))
+            return self.do_spawn(cmd, myargs, mykwargs, session, Entropy)
+
+        def do_spawn(self, cmd, myargs, mykwargs, session, Entropy):
 
             if cmd == "reposync":
-                return self.docmd_reposync(session, Entropy, *myargs, **mykwargs)
+                return self.fork_task(self.docmd_reposync, session, Entropy, *myargs, **mykwargs)
             elif cmd == "match":
-                return self.docmd_match(session, Entropy, *myargs, **mykwargs)
+                return self.fork_task(self.docmd_match, session, Entropy, *myargs, **mykwargs)
             elif cmd == "rc":
                 return self.docmd_rc(session)
             elif cmd == "begin":
@@ -9836,6 +9942,63 @@ class SocketHostInterface:
                 return self.docmd_hello()
             elif cmd == "alive":
                 return self.docmd_alive(session)
+            elif cmd == "login":
+                return self.docmd_login(session, myargs)
+            elif cmd == "logout":
+                return self.docmd_logout(session, myargs)
+
+        def fork_task(self, f, session, *args, **kwargs):
+            gid = None
+            uid = None
+            if session != None:
+                logged_in = self.HostInterface.sessions[session]['auth_uid']
+                if logged_in != None:
+                    uid = logged_in
+                    gid = etpConst['entropygid']
+            return self.entropyTools.spawnFunction(self._do_fork, f, uid, gid, *args, **kwargs)
+
+        def _do_fork(self, f, uid, gid, *args, **kwargs):
+            self.Authenticator.set_exc_permissions(uid,gid)
+            rc = f(*args,**kwargs)
+            return rc
+
+        def docmd_login(self, session, myargs):
+
+            # is already auth'd?
+            auth_uid = self.HostInterface.sessions[session]['auth_uid']
+            if auth_uid != None:
+                return False,"already authenticated"
+
+            status, user, uid, reason = self.Authenticator.docmd_login(myargs)
+            if status:
+                self.HostInterface.updateProgress('[from: %s] user %s logged in successfully, session: %s, args: %s ' % (self.client_address,user,session,myargs,))
+                self.HostInterface.sessions[session]['auth_uid'] = uid
+                self.transmit(self.HostInterface.answers['ok'])
+                return True,reason
+            elif user == None:
+                self.HostInterface.updateProgress('[from: %s] user -not specified- login failed, session: %s, args: %s, reason: %s' % (self.client_address,session,myargs,reason,))
+                self.transmit(self.HostInterface.answers['no'])
+                return False,reason
+            else:
+                self.HostInterface.updateProgress('[from: %s] user %s login failed, session: %s, args: %s, reason: %s' % (self.client_address,user,session,myargs,reason,))
+                self.transmit(self.HostInterface.answers['no'])
+                return False,reason
+
+        def docmd_logout(self, session, myargs):
+            status, user, reason = self.Authenticator.docmd_logout(myargs)
+            if status:
+                self.HostInterface.updateProgress('[from: %s] user %s logged out successfully, session: %s, args: %s ' % (self.client_address,user,session,myargs,))
+                self.HostInterface.sessions[session]['auth_uid'] = None
+                self.transmit(self.HostInterface.answers['ok'])
+                return True,reason
+            elif user == None:
+                self.HostInterface.updateProgress('[from: %s] user -not specified- logout failed, session: %s, args: %s, reason: %s' % (self.client_address,session,myargs,reason,))
+                self.transmit(self.HostInterface.answers['no'])
+                return False,reason
+            else:
+                self.HostInterface.updateProgress('[from: %s] user %s logout failed, session: %s, args: %s, reason: %s' % (self.client_address,user,session,myargs,reason,))
+                self.transmit(self.HostInterface.answers['no'])
+                return False,reason
 
         def docmd_alive(self, session):
             cmd = self.HostInterface.answers['no']
@@ -9883,19 +10046,15 @@ class SocketHostInterface:
             f.close()
             return rc
 
-        def docmd_match(self, session, Entropy, *myargs, **mykwargs):
-            rc = Entropy.atomMatch(*myargs, **mykwargs)
-            self.HostInterface.store_rc(rc, session)
-            return rc
+        def docmd_match(self, Entropy, *myargs, **mykwargs):
+            return Entropy.atomMatch(*myargs, **mykwargs)
 
-        def docmd_reposync(self, session, Entropy, *myargs, **mykwargs):
+        def docmd_reposync(self, Entropy, *myargs, **mykwargs):
             repoConn = Entropy.Repositories(*myargs, **mykwargs)
-            rc = repoConn.sync()
-            self.HostInterface.store_rc(rc, session)
-            return rc
+            return repoConn.sync()
 
 
-    def __init__(self, outputIntf, serviceIntf, *args, **kwds):
+    def __init__(self, outputIntf, authIntf, serviceIntf, *args, **kwds):
 
         self.socketLog = LogFile(level = 2, filename = etpConst['socketlogfile'], header = "[Socket]")
 
@@ -9909,26 +10068,51 @@ class SocketHostInterface:
         self.threads = etpConst['socket_service']['threads'] # maximum number of allowed sessions
         self.sessions = {}
         self.answers = etpConst['socket_service']['answers']
-        # FIXME: add policy handling
-        self.valid_commands = [
-            'begin',
-            'end',
-            'reposync',
-            'rc',
-            'match',
-            'hello',
-            'alive'
-        ]
+        # FIXME: add command policy infrastructure
+        self.valid_commands = {
+            'begin':    {
+                            'auth': True,
+                        },
+            'end':      {
+                            'auth': True,
+                        },
+            'reposync': {
+                            'auth': True,
+                        },
+            'rc':       {
+                            'auth': True,
+                        },
+            'match':    {
+                            'auth': False,
+                        },
+            'hello':    {
+                            'auth': False,
+                        },
+            'alive':    {
+                            'auth': True,
+                        },
+            'login':    {
+                            'auth': False,
+                        },
+            'logout':   {
+                            'auth': True,
+                        },
+        }
         self.no_acked_commands = [
             "rc",
             "begin",
             "end",
             "hello",
-            "alive"
+            "alive",
+            "login",
+            "logout"
         ]
         self.termination_commands = [
             "quit",
             "close"
+        ]
+        self.initialization_commands = [
+            "begin"
         ]
         self.no_session_commands = [
             "begin",
@@ -9937,11 +10121,22 @@ class SocketHostInterface:
         ]
 
         self.EntropyInstantiation = (serviceIntf, args, kwds)
+
+        auth_inst = (self.BasicPamAuthenticator, [], {}) # authentication class, args, keywords
+        # external authenticator
+        if type(authIntf) is tuple:
+            if len(authIntf) == 3:
+                auth_inst = authIntf[:]
+        # initialize authenticator
+        self.Authenticator = auth_inst[0](*auth_inst[1], **auth_inst[2])
+
         self.__Entropy = outputIntf
         self.Server = None
         self.setup_hostname()
         self.Gc = None
         self.start_session_garbage_collector()
+
+        self.last_print = ''
 
 
     def start_session_garbage_collector(self):
@@ -9956,7 +10151,10 @@ class SocketHostInterface:
         for session_id in self.sessions.keys():
             sess_time = self.sessions[session_id]['t']
             is_running = self.sessions[session_id]['running']
-            if is_running:
+            auth_uid = self.sessions[session_id]['auth_uid'] # is kept alive?
+            if (is_running) or (auth_uid == -1):
+                if auth_uid == -1:
+                    self.updateProgress('not killing session %s, since it is kept alive by auth_uid=-1' % (session_id,) )
                 continue
             cur_time = time.time()
             ttl = self.session_ttl
@@ -9987,6 +10185,7 @@ class SocketHostInterface:
             rng = str(int(random.random()*100000)+1)
         self.sessions[rng] = {}
         self.sessions[rng]['running'] = False
+        self.sessions[rng]['auth_uid'] = None
         self.sessions[rng]['t'] = time.time()
         return rng
 
@@ -10044,8 +10243,11 @@ class SocketHostInterface:
         return self.sessions[session]['rc']
 
     def updateProgress(self, *args, **kwargs):
-        self.socketLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,str(args[0]))
-        self.__Entropy.updateProgress(*args,**kwargs)
+        message = args[0]
+        if message != self.last_print:
+            self.socketLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,str(args[0]))
+            self.__Entropy.updateProgress(*args,**kwargs)
+            self.last_print = message
 
 class SocketUrlFetcher(urlFetcher):
 

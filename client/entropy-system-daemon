@@ -12,7 +12,7 @@ sys.path.insert(0,'../client')
 sys.argv.append("--no-pid-handling")
 from entropy import SocketHostInterface, EquoInterface
 Equo = EquoInterface()
-srv = SocketHostInterface(Equo,EquoInterface)
+srv = SocketHostInterface(Equo,None,EquoInterface)
 try:
     srv.go()
 except KeyboardInterrupt:
