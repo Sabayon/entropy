@@ -1814,7 +1814,10 @@ class EquoInterface(TextInterface):
             c_hash = str(hash(c_hash))
             disk_cache = self.dumpTools.loadobj(etpCache['world_update']+c_hash)
             if disk_cache != None:
-                return disk_cache
+                try:
+                    return disk_cache['r']
+                except (KeyError, TypeError):
+                    return None
 
     def calculate_world_updates(self, empty_deps = False, branch = etpConst['branch']):
 
@@ -1907,8 +1910,11 @@ class EquoInterface(TextInterface):
                      str(hash(tuple(etpRepositoriesOrder))) + \
                      str(hash(branch))
             c_hash = str(hash(c_hash))
+            data = {}
+            data['r'] = (update, remove, fine)
+            data['empty_deps'] = empty_deps
             try:
-                self.dumpTools.dumpobj(etpCache['world_update']+c_hash, (update, remove, fine))
+                self.dumpTools.dumpobj(etpCache['world_update']+c_hash, data)
             except IOError:
                 pass
         return update, remove, fine
@@ -3434,7 +3440,7 @@ class PackageInterface:
         self.__update_available_cache()
         try:
             self.__update_world_cache()
-        except Exception,e:
+        except:
             self.Entropy.clear_dump_cache(etpCache['world_update'])
 
     def __update_world_cache(self):
@@ -3445,15 +3451,20 @@ class PackageInterface:
             for cache_file in wc_cache_files:
 
                 try:
-                    (update, remove, fine) = self.Entropy.dumpTools.loadobj(cache_file, completePath = True)
+                    data = self.Entropy.dumpTools.loadobj(cache_file, completePath = True)
+                    (update, remove, fine) = data['r']
+                    empty_deps = data['empty_deps']
                 except:
                     self.Entropy.clear_dump_cache(etpCache['world_update'])
                     return
 
+                if empty_deps:
+                    continue
+
                 if self.action == "install":
                     if self.matched_atom in update:
                         update.remove(self.matched_atom)
-                        self.Entropy.dumpTools.dumpobj(cache_file, (update, remove, fine), completePath = True)
+                        self.Entropy.dumpTools.dumpobj(cache_file, {'r':(update, remove, fine),'empty_deps': empty_deps}, completePath = True)
                 else:
                     key, slot = self.Entropy.clientDbconn.retrieveKeySlot(self.infoDict['removeidpackage'])
                     matches = self.Entropy.atomMatch(key, matchSlot = slot, multiMatch = True, multiRepo = True)
@@ -3470,7 +3481,7 @@ class PackageInterface:
                             taint = True
                             remove.remove(match)
                     if taint:
-                        self.Entropy.dumpTools.dumpobj(cache_file, (update, remove, fine), completePath = True)
+                        self.Entropy.dumpTools.dumpobj(cache_file, {'r':(update, remove, fine),'empty_deps': empty_deps}, completePath = True)
 
         elif (not self.Entropy.xcache) or (self.action in ("install",)):
             self.Entropy.clear_dump_cache(etpCache['world_update'])
