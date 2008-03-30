@@ -1085,18 +1085,27 @@ def const_createWorkingDirectories():
             /var/lib/entropy
             /var/tmp/entropy
         '''
+        if not os.path.isdir(etpConst['entropyworkdir']):
+            try:
+                os.makedirs(etpConst['entropyworkdir'])
+            except OSError:
+                pass
         w_gid = os.stat(etpConst['entropyworkdir'])[5]
         if w_gid != gid:
             const_setup_perms(etpConst['entropyworkdir'],gid)
-        w_gid = os.stat(etpConst['entropyunpackdir'])[5]
-        if w_gid != gid:
-            if not os.path.isdir(etpConst['entropyunpackdir']):
-                try:
-                    os.makedirs(etpConst['entropyunpackdir'])
-                except OSError:
-                    pass
-            if os.path.isdir(etpConst['entropyunpackdir']):
-                const_setup_perms(etpConst['entropyunpackdir'],gid)
+
+        if not os.path.isdir(etpConst['entropyunpackdir']):
+            try:
+                os.makedirs(etpConst['entropyunpackdir'])
+            except OSError:
+                pass
+        try:
+            w_gid = os.stat(etpConst['entropyunpackdir'])[5]
+            if w_gid != gid:
+                if os.path.isdir(etpConst['entropyunpackdir']):
+                    const_setup_perms(etpConst['entropyunpackdir'],gid)
+        except OSError:
+            pass
         # always setup /var/lib/entropy/client permissions
         const_setup_perms(etpConst['etpdatabaseclientdir'],gid)
 
