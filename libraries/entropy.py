@@ -4200,7 +4200,7 @@ class PackageInterface:
         del remdata
         return 0
 
-    def removeconflict_step(self, idpackage):
+    def removeconflict_step(self):
 
         for idpackage in self.infoDict['conflicts']:
             if not self.Entropy.clientDbconn.isIDPackageAvailable(idpackage):
