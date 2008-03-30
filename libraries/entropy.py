@@ -9748,30 +9748,61 @@ class SocketHostInterface:
 
         def handle(self):
 
-            ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], None)
+            if self.valid_connection:
+                ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], None)
+                while 1:
+                    if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
+                        try:
+                            data = self.request.recv(8192)
+                        except self.socket.timeout, e:
+                            self.server.processor.HostInterface.updateProgress('interrupted: %s, reason: %s - from client: %s' % (self.server.server_address,e,self.client_address,))
+                            break
 
-            while 1:
+                        if not data:
+                            break
 
-                if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
-
-                    try:
-                        data = self.request.recv(8192)
-                    except self.socket.timeout, e:
-                        self.server.processor.HostInterface.updateProgress('interrupted: %s, reason: %s - from client: %s' % (self.server.server_address,e,self.client_address,))
-                        break
-
-                    if not data:
-                        break
-
-                    cmd = self.server.processor.process(data, self.request, self.client_address)
-                    if cmd == 'close':
-                        break
+                        cmd = self.server.processor.process(data, self.request, self.client_address)
+                        if cmd == 'close':
+                            break
 
             self.request.close()
 
+        def setup(self):
+
+            self.valid_connection = True
+            allowed = self.max_connections_check(   self.server.processor.HostInterface.connections,
+                                                    self.server.processor.HostInterface.max_connections
+                                                )
+            if allowed:
+                self.server.processor.HostInterface.connections += 1
+                self.server.processor.HostInterface.updateProgress('[from: %s] connection established (%s of %s max connections)' % (
+                                        self.client_address,
+                                        self.server.processor.HostInterface.connections,
+                                        self.server.processor.HostInterface.max_connections,
+                                )
+                )
+                return True
+
+            self.server.processor.HostInterface.updateProgress('[from: %s] connection refused (max connections reached: %s)' % (self.client_address, self.server.processor.HostInterface.max_connections,))
+            return False
+
         def finish(self):
-            """Nothing"""
-            pass
+            self.server.processor.HostInterface.updateProgress('[from: %s] connection closed (%s of %s max connections)' % (
+                    self.client_address,
+                    self.server.processor.HostInterface.connections,
+                    self.server.processor.HostInterface.max_connections,
+                )
+            )
+            if self.valid_connection:
+                self.server.processor.HostInterface.connections -= 1
+
+        def max_connections_check(self, current, maximum):
+            if current >= maximum:
+                self.request.sendall(self.server.processor.HostInterface.answers['mcr'])
+                self.valid_connection = False
+                return False
+            else:
+                return True
 
     class CommandProcessor:
 
@@ -10029,8 +10060,9 @@ class SocketHostInterface:
             running_host = uname[1]
             running_arch = uname[4]
             load_stats = commands.getoutput('uptime').split("\n")[0]
-            text = "Entropy Server %s, running on: %s ~ host: %s ~ arch: %s, kernel: %s, stats: %s\n" % (
+            text = "Entropy Server %s, connections: %s ~ running on: %s ~ host: %s ~ arch: %s, kernel: %s, stats: %s\n" % (
                     etpConst['entropyversion'],
+                    self.HostInterface.connections,
                     etpConst['systemname'],
                     running_host,
                     running_arch,
@@ -10083,6 +10115,8 @@ class SocketHostInterface:
         if self.hostname == "*": self.hostname = ''
         self.port = etpConst['socket_service']['port']
         self.threads = etpConst['socket_service']['threads'] # maximum number of allowed sessions
+        self.max_connections = etpConst['socket_service']['max_connections']
+        self.connections = 0
         self.sessions = {}
         self.answers = etpConst['socket_service']['answers']
         self.Server = None

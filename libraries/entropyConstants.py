@@ -706,12 +706,14 @@ def const_defaultSettings(rootdir):
             'threads': 5,
             'session_ttl': 120,
             'default_uid': 0,
+            'max_connections': 5,
             'answers': {
-                'ok': chr(0)+"OK\n"+chr(0),
-                'er': chr(0)+"ER\n"+chr(1),
-                'no': chr(0)+"NO\n"+chr(2),
-                'cl': chr(0)+"CL\n"+chr(3),
-                'eot': chr(0)+"EOT\n"+chr(4)
+                'ok': chr(0)+"OK\n"+chr(0), # command run
+                'er': chr(0)+"ER\n"+chr(1), # execution error
+                'no': chr(0)+"NO\n"+chr(2), # not allowed
+                'cl': chr(0)+"CL\n"+chr(3), # close connection
+                'eot': chr(0)+"EOT\n"+chr(4), # end of transmittion
+                'mcr': chr(0)+"MCR\n"+chr(4) # max connections reached
             },
         }
 
@@ -865,6 +867,13 @@ def const_readSocketSettings():
                 try:
                     x = int(x)
                     etpConst['socket_service']['session_ttl'] = x
+                except ValueError:
+                    pass
+            elif line.startswith("max-connections|") and (len(line.split("|")) > 1):
+                x = line.split("|")[1].strip()
+                try:
+                    x = int(x)
+                    etpConst['socket_service']['max_connections'] = x
                 except ValueError:
                     pass
 
