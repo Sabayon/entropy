@@ -4169,7 +4169,7 @@ class etpDatabase:
                 if not justname:
 
                     # remove revision (-r0 if none)
-                    if pkgversion.split("-")[-1] == "r0":
+                    if pkgversion.endswith("r0"):
                         # remove
                         entropyTools.remove_revision(pkgversion)
 
@@ -4186,6 +4186,23 @@ class etpDatabase:
                             tagcmp = cmp(matchTag,dbtag)
                         dbver = self.retrieveVersion(idpackage)
                         pkgcmp = entropyTools.compareVersions(pkgversion,dbver)
+                        if type(pkgcmp) is tuple:
+                            failed = pkgcmp[1]
+                            if failed == 0:
+                                failed = pkgversion
+                            else:
+                                failed = dbver
+                            # I am sorry, but either pkgversion or dbver are invalid
+                            self.updateProgress(
+                                                    bold("atomMatch: ")+red("comparison between %s and %s failed. Wrong syntax for: %s") % (pkgversion,dbver,failed,),
+                                                    importance = 1,
+                                                    type = "error",
+                                                    header = darkred(" !!! ")
+                                                )
+                            raise exceptionTools.InvalidVersionString(
+                                            "InvalidVersionString: from atom: %s, cmp: %s, failed: %s" % (
+                                                atom, pkgcmp, failed, )
+                                            )
                         if direction == ">":
                             if pkgcmp < 0:
                                 dbpkginfo.add((idpackage,dbver))

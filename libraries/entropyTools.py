@@ -919,9 +919,9 @@ def compareVersions(ver1, ver2):
 
     # checking that the versions are valid
     if not match1 or not match1.groups():
-        return None
+        return None,0
     if not match2 or not match2.groups():
-        return None
+        return None,1
 
     # building lists of the version parts before the suffix
     # first part is simple
