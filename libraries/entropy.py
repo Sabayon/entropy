@@ -9717,6 +9717,11 @@ class SocketHostInterface:
             if uid != None:
                 os.setuid(uid)
 
+        def hide_login_data(self, args):
+            myargs = args[:]
+            myargs[-1] = 'hidden'
+            return myargs
+
     class HostServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
         import SocketServer
@@ -9901,7 +9906,14 @@ class SocketHostInterface:
             self.client_address = client_address
 
             if data.strip():
-                self.HostInterface.updateProgress("[from: %s] call: %s" % (self.client_address,repr(data.strip()),))
+                mycommand = data.strip().split()
+                if mycommand[0] in self.HostInterface.login_pass_commands:
+                    mycommand = self.Authenticator.hide_login_data(mycommand)
+                self.HostInterface.updateProgress("[from: %s] call: %s" % (
+                                self.client_address,
+                                repr(' '.join(mycommand)),
+                            )
+                )
 
             term = self.handle_termination_commands(data)
             if term:
@@ -9910,7 +9922,10 @@ class SocketHostInterface:
             cmd, args, session = self.handle_command_string(data)
             valid_cmd, reason = self.validate_command(cmd, args, session)
 
-            self.HostInterface.updateProgress('[from: %s] command validation :: called %s: args: %s, session: %s, valid: %s, reason: %s' % (self.client_address,cmd,args,session,valid_cmd,reason,))
+            p_args = args
+            if cmd in self.HostInterface.login_pass_commands:
+                p_args = self.Authenticator.hide_login_data(p_args)
+            self.HostInterface.updateProgress('[from: %s] command validation :: called %s: args: %s, session: %s, valid: %s, reason: %s' % (self.client_address, cmd, p_args, session, valid_cmd, reason,))
 
             whoops = False
             if valid_cmd:
@@ -9948,7 +9963,10 @@ class SocketHostInterface:
 
         def run_task(self, cmd, args, session, Entropy):
 
-            self.HostInterface.updateProgress('[from: %s] run_task :: called %s: args: %s, session: %s' % (self.client_address,cmd,args,session,))
+            p_args = args
+            if cmd in self.HostInterface.login_pass_commands:
+                p_args = self.Authenticator.hide_login_data(p_args)
+            self.HostInterface.updateProgress('[from: %s] run_task :: called %s: args: %s, session: %s' % (self.client_address,cmd,p_args,session,))
 
             myargs = []
             mykwargs = {}
@@ -9971,7 +9989,10 @@ class SocketHostInterface:
 
         def spawn_function(self, cmd, myargs, mykwargs, session, Entropy):
 
-            self.HostInterface.updateProgress('[from: %s] called %s: args: %s, kwargs: %s' % (self.client_address,cmd,myargs,mykwargs,))
+            p_args = myargs
+            if cmd in self.HostInterface.login_pass_commands:
+                p_args = self.Authenticator.hide_login_data(p_args)
+            self.HostInterface.updateProgress('[from: %s] called %s: args: %s, kwargs: %s' % (self.client_address,cmd,p_args,mykwargs,))
             return self.do_spawn(cmd, myargs, mykwargs, session, Entropy)
 
         def do_spawn(self, cmd, myargs, mykwargs, session, Entropy):
@@ -10019,16 +10040,16 @@ class SocketHostInterface:
 
             status, user, uid, reason = self.Authenticator.docmd_login(myargs)
             if status:
-                self.HostInterface.updateProgress('[from: %s] user %s logged in successfully, session: %s, args: %s ' % (self.client_address,user,session,myargs,))
+                self.HostInterface.updateProgress('[from: %s] user %s logged in successfully, session: %s' % (self.client_address,user,session,))
                 self.HostInterface.sessions[session]['auth_uid'] = uid
                 self.transmit(self.HostInterface.answers['ok'])
                 return True,reason
             elif user == None:
-                self.HostInterface.updateProgress('[from: %s] user -not specified- login failed, session: %s, args: %s, reason: %s' % (self.client_address,session,myargs,reason,))
+                self.HostInterface.updateProgress('[from: %s] user -not specified- login failed, session: %s, reason: %s' % (self.client_address,session,reason,))
                 self.transmit(self.HostInterface.answers['no'])
                 return False,reason
             else:
-                self.HostInterface.updateProgress('[from: %s] user %s login failed, session: %s, args: %s, reason: %s' % (self.client_address,user,session,myargs,reason,))
+                self.HostInterface.updateProgress('[from: %s] user %s login failed, session: %s, reason: %s' % (self.client_address,user,session,reason,))
                 self.transmit(self.HostInterface.answers['no'])
                 return False,reason
 
@@ -10124,6 +10145,8 @@ class SocketHostInterface:
         self.__output = None
         self.last_print = ''
 
+        self.setup_builtin_commands()
+
         # FIXME: add command policy infrastructure
         self.valid_commands = {
             'begin':    {
@@ -10154,27 +10177,6 @@ class SocketHostInterface:
                             'auth': True,
                         },
         }
-        self.no_acked_commands = [
-            "rc",
-            "begin",
-            "end",
-            "hello",
-            "alive",
-            "login",
-            "logout"
-        ]
-        self.termination_commands = [
-            "quit",
-            "close"
-        ]
-        self.initialization_commands = [
-            "begin"
-        ]
-        self.no_session_commands = [
-            "begin",
-            "hello",
-            "alive"
-        ]
 
         self.args = args
         self.kwds = kwds
@@ -10184,6 +10186,13 @@ class SocketHostInterface:
         self.start_session_garbage_collector()
         self.EntropyInstantiation = (service_interface, self.args, self.kwds)
 
+
+    def setup_builtin_commands(self):
+        self.no_acked_commands = ["rc", "begin", "end", "hello", "alive", "login", "logout"]
+        self.termination_commands = ["quit","close"]
+        self.initialization_commands = ["begin"]
+        self.login_pass_commands = ["login"]
+        self.no_session_commands = ["begin","hello","alive"]
 
     def start_local_output_interface(self):
         if self.kwds.has_key('sock_output'):
@@ -10247,9 +10256,9 @@ class SocketHostInterface:
         if len(self.sessions) > self.threads:
             # fuck!
             return "0"
-        rng = str(int(random.random()*100000)+1)
+        rng = str(int(random.random()*10000000)+1)
         while rng in self.sessions:
-            rng = str(int(random.random()*100000)+1)
+            rng = str(int(random.random()*10000000)+1)
         self.sessions[rng] = {}
         self.sessions[rng]['running'] = False
         self.sessions[rng]['auth_uid'] = None
