@@ -9786,7 +9786,7 @@ class SocketHostInterface:
 
         def handle_termination_commands(self, data):
             if data.strip() in self.HostInterface.termination_commands:
-                self.HostInterface.updateProgress('close: %s' % (self.channel,))
+                self.HostInterface.updateProgress('close: %s' % (self.client_address,))
                 self.transmit(self.HostInterface.answers['cl'])
                 return "close"
 
@@ -10071,7 +10071,7 @@ class SocketHostInterface:
             return repoConn.sync()
 
 
-    def __init__(self, outputIntf, authIntf, serviceIntf, *args, **kwds):
+    def __init__(self, service_interface, *args, **kwds):
 
         self.socketLog = LogFile(level = 2, filename = etpConst['socketlogfile'], header = "[Socket]")
 
@@ -10085,6 +10085,11 @@ class SocketHostInterface:
         self.threads = etpConst['socket_service']['threads'] # maximum number of allowed sessions
         self.sessions = {}
         self.answers = etpConst['socket_service']['answers']
+        self.Server = None
+        self.Gc = None
+        self.__output = None
+        self.last_print = ''
+
         # FIXME: add command policy infrastructure
         self.valid_commands = {
             'begin':    {
@@ -10137,24 +10142,35 @@ class SocketHostInterface:
             "alive"
         ]
 
-        self.EntropyInstantiation = (serviceIntf, args, kwds)
+        self.args = args
+        self.kwds = kwds
+        self.start_local_output_interface()
+        self.start_authenticator()
+        self.setup_hostname()
+        self.start_session_garbage_collector()
+        self.EntropyInstantiation = (service_interface, self.args, self.kwds)
+
+
+    def start_local_output_interface(self):
+        if self.kwds.has_key('sock_output'):
+            outputIntf = self.kwds.pop('sock_output')
+            self.__output = outputIntf
+
+    def start_authenticator(self):
 
         auth_inst = (self.BasicPamAuthenticator, [], {}) # authentication class, args, keywords
         # external authenticator
-        if type(authIntf) is tuple:
-            if len(authIntf) == 3:
-                auth_inst = authIntf[:]
-        # initialize authenticator
+        if self.kwds.has_key('sock_auth'):
+            authIntf = self.kwds.pop('sock_auth')
+            if type(authIntf) is tuple:
+                if len(authIntf) == 3:
+                    auth_inst = authIntf[:]
+                else:
+                    raise exceptionTools.IncorrectParameter("IncorrectParameter: wront authentication interface specified")
+            else:
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: wront authentication interface specified")
+            # initialize authenticator
         self.Authenticator = auth_inst[0](*auth_inst[1], **auth_inst[2])
-
-        self.__Entropy = outputIntf
-        self.Server = None
-        self.setup_hostname()
-        self.Gc = None
-        self.start_session_garbage_collector()
-
-        self.last_print = ''
-
 
     def start_session_garbage_collector(self):
         # do it every 30 seconds
@@ -10263,7 +10279,8 @@ class SocketHostInterface:
         message = args[0]
         if message != self.last_print:
             self.socketLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,str(args[0]))
-            self.__Entropy.updateProgress(*args,**kwargs)
+            if self.__output != None:
+                self.__output.updateProgress(*args,**kwargs)
             self.last_print = message
 
 class SocketUrlFetcher(urlFetcher):
