@@ -5741,6 +5741,7 @@ class urlFetcher:
         import socket
         self.entropyTools = entropyTools
         self.socket = socket
+        self.progress = None
 
         # resume support
         if os.path.isfile(self.pathToSave) and os.access(self.pathToSave,os.R_OK) and self.resume:
@@ -9631,7 +9632,7 @@ class SocketHostInterface:
         import entropyTools
 
         def __init__(self):
-            self.valid_auth_types = [ "plain","md5" ]
+            self.valid_auth_types = [ "plain", "shadow", "md5" ]
 
         def docmd_login(self, arguments):
 
@@ -9669,19 +9670,35 @@ class SocketHostInterface:
         def __validate_auth(self, user, auth_type, auth_string):
             valid = False
             if auth_type == "plain":
-                valid = self.__plain_auth(user, auth_string)
+                valid = self.__do_auth(user, auth_string)
+            elif auth_type == "shadow":
+                valid = self.__do_auth(user, auth_string, auth_type = "shadow")
             elif auth_type == "md5":
-                # FIXME: complete !!
-                valid = True
+                valid = self.__do_auth(user, auth_string, auth_type = "md5")
             return valid
 
-        def __plain_auth(self, user, password):
-            import spwd,crypt
+        def __do_auth(self, user, password, auth_type = None):
+            import spwd
+
             try:
                 enc_pass = spwd.getspnam(user)[1]
-            except KeyError, e:
+            except KeyError:
                 return False
-            generated_pass = crypt.crypt(str(password), enc_pass)
+
+            if auth_type == None: # plain
+                import crypt
+                generated_pass = crypt.crypt(str(password), enc_pass)
+            elif auth_type == "shadow":
+                generated_pass = password
+            elif auth_type == "md5": # md5
+                import hashlib
+                m = hashlib.md5()
+                m.update(enc_pass)
+                enc_pass = m.hexdigest()
+                generated_pass = str(password)
+            else: # haha, fuck!
+                generated_pass = None
+
             if generated_pass == enc_pass:
                 return True
             return False
@@ -9913,7 +9930,7 @@ class SocketHostInterface:
                 else:
                     try:
                         myargs.append(eval(arg))
-                    except NameError:
+                    except (NameError, SyntaxError):
                         myargs.append(str(arg))
 
             rc = self.spawn_function(cmd, myargs, mykwargs, session, Entropy)
