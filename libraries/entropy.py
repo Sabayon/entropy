@@ -9815,10 +9815,7 @@ class SocketHostInterface:
                             pass
 
                         try:
-                            if ssl:
-                                data = self.request.read(8192)
-                            else:
-                                data = self.request.recv(8192)
+                            data = self.request.recv(8192)
                         except self.socket.timeout, e:
                             self.server.processor.HostInterface.updateProgress('interrupted: %s, reason: %s - from client: %s' % (self.server.server_address,e,self.client_address,))
                             break
@@ -9876,7 +9873,6 @@ class SocketHostInterface:
 
     class CommandProcessor:
 
-        import dumpTools
         import entropyTools
 
         def __init__(self, HostInterface):
@@ -10033,6 +10029,14 @@ class SocketHostInterface:
                 p_args = self.Authenticator.hide_login_data(p_args)
             self.HostInterface.updateProgress('[from: %s] run_task :: called %s: args: %s, session: %s' % (self.client_address,cmd,p_args,session,))
 
+            myargs, mykwargs = self._get_args_kwargs(args)
+
+            rc = self.spawn_function(cmd, myargs, mykwargs, session, Entropy)
+            if session != None and self.HostInterface.sessions.has_key(session):
+                self.HostInterface.store_rc(rc, session)
+            return rc
+
+        def _get_args_kwargs(self, args):
             myargs = []
             mykwargs = {}
             for arg in args:
@@ -10046,11 +10050,7 @@ class SocketHostInterface:
                         myargs.append(eval(arg))
                     except (NameError, SyntaxError):
                         myargs.append(str(arg))
-
-            rc = self.spawn_function(cmd, myargs, mykwargs, session, Entropy)
-            if session != None and self.HostInterface.sessions.has_key(session):
-                self.HostInterface.store_rc(rc, session)
-            return rc
+            return myargs, mykwargs
 
         def spawn_function(self, cmd, myargs, mykwargs, session, Entropy):
 
@@ -10062,24 +10062,22 @@ class SocketHostInterface:
 
         def do_spawn(self, cmd, myargs, mykwargs, session, Entropy):
 
-            if cmd == "reposync":
-                return self.fork_task(self.docmd_reposync, session, Entropy, *myargs, **mykwargs)
-            elif cmd == "match":
-                return self.fork_task(self.docmd_match, session, Entropy, *myargs, **mykwargs)
-            elif cmd == "rc":
-                return self.docmd_rc(session)
-            elif cmd == "begin":
-                return self.docmd_begin()
-            elif cmd == "end":
-                return self.docmd_end(session)
-            elif cmd == "hello":
-                return self.docmd_hello()
-            elif cmd == "alive":
-                return self.docmd_alive(session)
-            elif cmd == "login":
-                return self.docmd_login(session, myargs)
-            elif cmd == "logout":
-                return self.docmd_logout(session, myargs)
+            cmd_data = self.HostInterface.valid_commands.get(cmd)
+            do_fork = cmd_data['as_user']
+            f = cmd_data['cb']
+            func_args = []
+            for arg in cmd_data['args']:
+                try:
+                    func_args.append(eval(arg))
+                except (NameError, SyntaxError):
+                    func_args.append(str(arg))
+
+            if do_fork:
+                myfargs = func_args[:]
+                myfargs.extend(myargs)
+                return self.fork_task(f, session, *myfargs, **mykwargs)
+            else:
+                return f(*func_args)
 
         def fork_task(self, f, session, *args, **kwargs):
             gid = None
@@ -10096,7 +10094,102 @@ class SocketHostInterface:
             rc = f(*args,**kwargs)
             return rc
 
-        def docmd_login(self, session, myargs):
+    class BuiltInCommands:
+
+        import dumpTools
+
+        def __str__(self):
+            return self.inst_name
+
+        def __init__(self, HostInterface, Authenticator):
+
+            self.HostInterface = HostInterface
+            self.Authenticator = Authenticator
+            self.inst_name = "builtin"
+
+            self.valid_commands = {
+                'begin':    {
+                                'auth': True, # does it need authentication ?
+                                'built_in': True, # is it built-in ?
+                                'cb': self.docmd_begin, # function to call
+                                'args': ["self.transmit"], # arguments to be passed before *args and **kwards
+                                'as_user': False, # do I have to fork the process and run it as logged user?
+                                                  # needs auth = True
+                            },
+                'end':      {
+                                'auth': True,
+                                'built_in': True,
+                                'cb': self.docmd_end,
+                                'args': ["self.transmit", "session"],
+                                'as_user': False,
+                            },
+                'reposync': {
+                                'auth': True,
+                                'built_in': True,
+                                'cb': self.docmd_reposync,
+                                'args': ["Entropy"],
+                                'as_user': True,
+                            },
+                'rc':       {
+                                'auth': True,
+                                'built_in': True,
+                                'cb': self.docmd_rc,
+                                'args': ["self.transmit","session"],
+                                'as_user': False,
+                            },
+                'match':    {
+                                'auth': False,
+                                'built_in': True,
+                                'cb': self.docmd_match,
+                                'args': ["Entropy"],
+                                'as_user': True,
+                            },
+                'hello':    {
+                                'auth': False,
+                                'built_in': True,
+                                'cb': self.docmd_hello,
+                                'args': ["self.transmit"],
+                                'as_user': False,
+                            },
+                'alive':    {
+                                'auth': True,
+                                'built_in': True,
+                                'cb': self.docmd_alive,
+                                'args': ["self.transmit","session"],
+                                'as_user': False,
+                            },
+                'login':    {
+                                'auth': False,
+                                'built_in': True,
+                                'cb': self.docmd_login,
+                                'args': ["self.transmit", "session", "self.client_address", "myargs"],
+                                'as_user': False,
+                            },
+                'logout':   {
+                                'auth': True,
+                                'built_in': True,
+                                'cb': self.docmd_logout,
+                                'args': ["self.transmit","session", "myargs"],
+                                'as_user': False,
+                            },
+            }
+
+            self.no_acked_commands = ["rc", "begin", "end", "hello", "alive", "login", "logout"]
+            self.termination_commands = ["quit","close"]
+            self.initialization_commands = ["begin"]
+            self.login_pass_commands = ["login"]
+            self.no_session_commands = ["begin","hello","alive"]
+
+        def register(self, valid_commands, no_acked_commands, termination_commands, initialization_commands, login_pass_commads, no_session_commands):
+
+            valid_commands.update(self.valid_commands)
+            no_acked_commands.extend(self.no_acked_commands)
+            termination_commands.extend(self.termination_commands)
+            initialization_commands.extend(self.initialization_commands)
+            login_pass_commads.extend(self.login_pass_commands)
+            no_session_commands.extend(self.no_session_commands)
+
+        def docmd_login(self, transmitter, session, client_address, myargs):
 
             # is already auth'd?
             auth_uid = self.HostInterface.sessions[session]['auth_uid']
@@ -10105,42 +10198,42 @@ class SocketHostInterface:
 
             status, user, uid, reason = self.Authenticator.docmd_login(myargs)
             if status:
-                self.HostInterface.updateProgress('[from: %s] user %s logged in successfully, session: %s' % (self.client_address,user,session,))
+                self.HostInterface.updateProgress('[from: %s] user %s logged in successfully, session: %s' % (client_address,user,session,))
                 self.HostInterface.sessions[session]['auth_uid'] = uid
-                self.transmit(self.HostInterface.answers['ok'])
+                transmitter(self.HostInterface.answers['ok'])
                 return True,reason
             elif user == None:
-                self.HostInterface.updateProgress('[from: %s] user -not specified- login failed, session: %s, reason: %s' % (self.client_address,session,reason,))
-                self.transmit(self.HostInterface.answers['no'])
+                self.HostInterface.updateProgress('[from: %s] user -not specified- login failed, session: %s, reason: %s' % (client_address,session,reason,))
+                transmitter(self.HostInterface.answers['no'])
                 return False,reason
             else:
-                self.HostInterface.updateProgress('[from: %s] user %s login failed, session: %s, reason: %s' % (self.client_address,user,session,reason,))
-                self.transmit(self.HostInterface.answers['no'])
+                self.HostInterface.updateProgress('[from: %s] user %s login failed, session: %s, reason: %s' % (client_address,user,session,reason,))
+                transmitter(self.HostInterface.answers['no'])
                 return False,reason
 
-        def docmd_logout(self, session, myargs):
+        def docmd_logout(self, transmitter, session, myargs):
             status, user, reason = self.Authenticator.docmd_logout(myargs)
             if status:
                 self.HostInterface.updateProgress('[from: %s] user %s logged out successfully, session: %s, args: %s ' % (self.client_address,user,session,myargs,))
                 self.HostInterface.sessions[session]['auth_uid'] = None
-                self.transmit(self.HostInterface.answers['ok'])
+                transmitter(self.HostInterface.answers['ok'])
                 return True,reason
             elif user == None:
                 self.HostInterface.updateProgress('[from: %s] user -not specified- logout failed, session: %s, args: %s, reason: %s' % (self.client_address,session,myargs,reason,))
-                self.transmit(self.HostInterface.answers['no'])
+                transmitter(self.HostInterface.answers['no'])
                 return False,reason
             else:
                 self.HostInterface.updateProgress('[from: %s] user %s logout failed, session: %s, args: %s, reason: %s' % (self.client_address,user,session,myargs,reason,))
-                self.transmit(self.HostInterface.answers['no'])
+                transmitter(self.HostInterface.answers['no'])
                 return False,reason
 
-        def docmd_alive(self, session):
+        def docmd_alive(self, transmitter, session):
             cmd = self.HostInterface.answers['no']
             if session in self.HostInterface.sessions:
                 cmd = self.HostInterface.answers['ok']
-            self.transmit(cmd)
+            transmitter(cmd)
 
-        def docmd_hello(self):
+        def docmd_hello(self, transmitter):
             uname = os.uname()
             kern_string = uname[2]
             running_host = uname[1]
@@ -10155,21 +10248,21 @@ class SocketHostInterface:
                     kern_string,
                     load_stats
                     )
-            self.transmit(text)
+            transmitter(text)
 
-        def docmd_end(self, session):
+        def docmd_end(self, transmitter, session):
             rc = self.HostInterface.destroy_session(session)
             cmd = self.HostInterface.answers['no']
             if rc: cmd = self.HostInterface.answers['ok']
-            self.transmit(cmd)
+            transmitter(cmd)
             return rc
 
-        def docmd_begin(self):
+        def docmd_begin(self, transmitter):
             session = self.HostInterface.get_new_session()
-            self.transmit(session)
+            transmitter(session)
             return session
 
-        def docmd_rc(self, session):
+        def docmd_rc(self, transmitter, session):
             rc = self.HostInterface.get_rc(session)
             try:
                 import cStringIO as stringio
@@ -10177,7 +10270,7 @@ class SocketHostInterface:
                 import StringIO as stringio
             f = stringio.StringIO()
             self.dumpTools.serialize(rc, f)
-            self.transmit(f.getvalue())
+            transmitter(f.getvalue())
             f.close()
             return rc
 
@@ -10188,9 +10281,10 @@ class SocketHostInterface:
             repoConn = Entropy.Repositories(*myargs, **mykwargs)
             return repoConn.sync()
 
-
     def __init__(self, service_interface, *args, **kwds):
 
+        self.args = args
+        self.kwds = kwds
         self.socketLog = LogFile(level = 2, filename = etpConst['socketlogfile'], header = "[Socket]")
 
         # settings
@@ -10201,6 +10295,7 @@ class SocketHostInterface:
         self.port = etpConst['socket_service']['port']
         self.threads = etpConst['socket_service']['threads'] # maximum number of allowed sessions
         self.max_connections = etpConst['socket_service']['max_connections']
+        self.disabled_commands = etpConst['socket_service']['disabled_cmds']
         self.connections = 0
         self.sessions = {}
         self.answers = etpConst['socket_service']['answers']
@@ -10213,44 +10308,22 @@ class SocketHostInterface:
         self.SSL_exceptions['Error'] = []
         self.last_print = ''
 
-        self.setup_builtin_commands()
+        self.valid_commands = {}
+        self.no_acked_commands = []
+        self.termination_commands = []
+        self.initialization_commands = []
+        self.login_pass_commands = []
+        self.no_session_commands = []
+        self.command_classes = [self.BuiltInCommands]
+        self.command_instances = []
+        self.setup_external_command_classes()
 
-        # FIXME: add command policy infrastructure
-        self.valid_commands = {
-            'begin':    {
-                            'auth': True,
-                        },
-            'end':      {
-                            'auth': True,
-                        },
-            'reposync': {
-                            'auth': True,
-                        },
-            'rc':       {
-                            'auth': True,
-                        },
-            'match':    {
-                            'auth': False,
-                        },
-            'hello':    {
-                            'auth': False,
-                        },
-            'alive':    {
-                            'auth': True,
-                        },
-            'login':    {
-                            'auth': False,
-                        },
-            'logout':   {
-                            'auth': True,
-                        },
-        }
-
-        self.args = args
-        self.kwds = kwds
         self.start_local_output_interface()
         self.start_authenticator()
         self.setup_hostname()
+        self.setup_commands()
+        self.disable_commands()
+
         self.start_session_garbage_collector()
         self.setup_ssl()
         self.EntropyInstantiation = (service_interface, self.args, self.kwds)
@@ -10287,13 +10360,52 @@ class SocketHostInterface:
         os.chmod(self.SSL['cert'],0644)
         os.chown(self.SSL['cert'],0,0)
 
+    def setup_external_command_classes(self):
 
-    def setup_builtin_commands(self):
-        self.no_acked_commands = ["rc", "begin", "end", "hello", "alive", "login", "logout"]
-        self.termination_commands = ["quit","close"]
-        self.initialization_commands = ["begin"]
-        self.login_pass_commands = ["login"]
-        self.no_session_commands = ["begin","hello","alive"]
+        if self.kwds.has_key('external_cmd_classes'):
+            ext_commands = self.kwds.pop('external_cmd_classes')
+            if type(ext_commands) is not list:
+                raise exceptionTools.InvalidDataType("InvalidDataType: external_cmd_classes must be a list")
+            self.command_classes += ext_commands
+
+    def setup_commands(self):
+
+        identifiers = set()
+        for myclass in self.command_classes:
+            myinst = myclass(self,self.Authenticator)
+            if str(myinst) in identifiers:
+                raise exceptionTools.PermissionDenied("PermissionDenied: another command instance is owning this name")
+            identifiers.add(str(myinst))
+            self.command_instances.append(myinst)
+            # now register
+            myinst.register(    self.valid_commands,
+                                self.no_acked_commands,
+                                self.termination_commands,
+                                self.initialization_commands,
+                                self.login_pass_commands,
+                                self.no_session_commands
+                            )
+
+    def disable_commands(self):
+        for cmd in self.disabled_commands:
+
+            if cmd in self.valid_commands:
+                self.valid_commands.pop(cmd)
+
+            if cmd in self.no_acked_commands:
+                self.no_acked_commands.remove(cmd)
+
+            if cmd in self.termination_commands:
+                self.termination_commands.remove(cmd)
+
+            if cmd in self.initialization_commands:
+                self.initialization_commands.remove(cmd)
+
+            if cmd in self.login_pass_commands:
+                self.login_pass_commands.remove(cmd)
+
+            if cmd in self.no_session_commands:
+                self.no_session_commands.remove(cmd)
 
     def start_local_output_interface(self):
         if self.kwds.has_key('sock_output'):
