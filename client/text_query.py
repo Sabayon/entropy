@@ -449,6 +449,8 @@ def searchOrphans():
     # start to list all files on the system:
     dirs = etpConst['filesystemdirs']
     filepath = Equo.entropyTools.getRandomTempFile()
+    if os.path.isfile(filepath):
+        os.remove(filepath)
     tdbconn = Equo.openGenericDatabase(filepath)
     tdbconn.initializeDatabase()
     for xdir in dirs:
