@@ -707,13 +707,16 @@ def const_defaultSettings(rootdir):
             'session_ttl': 120,
             'default_uid': 0,
             'max_connections': 5,
+            'ssl_key': ETP_CONF_DIR+"/socket_server.key",
+            'ssl_cert': ETP_CONF_DIR+"/socket_server.crt",
+            'ssl_port': 998,
             'answers': {
-                'ok': chr(0)+"OK\n"+chr(0), # command run
-                'er': chr(0)+"ER\n"+chr(1), # execution error
-                'no': chr(0)+"NO\n"+chr(2), # not allowed
-                'cl': chr(0)+"CL\n"+chr(3), # close connection
-                'eot': chr(0)+"EOT\n"+chr(4), # end of transmittion
-                'mcr': chr(0)+"MCR\n"+chr(4) # max connections reached
+                'ok': chr(0)+"\nOK\n"+chr(0), # command run
+                'er': chr(0)+"\nER\n"+chr(1), # execution error
+                'no': chr(0)+"\nNO\n"+chr(2), # not allowed
+                'cl': chr(0)+"\nCL\n"+chr(3), # close connection
+                'eot': chr(0)+"\nEOT\n"+chr(4), # end of transmittion
+                'mcr': chr(0)+"\nMCR\n"+chr(4) # max connections reached
             },
         }
 
@@ -874,6 +877,13 @@ def const_readSocketSettings():
                 try:
                     x = int(x)
                     etpConst['socket_service']['max_connections'] = x
+                except ValueError:
+                    pass
+            elif line.startswith("ssl-port|") and (len(line.split("|")) > 1):
+                x = line.split("|")[1].strip()
+                try:
+                    x = int(x)
+                    etpConst['socket_service']['ssl_port'] = x
                 except ValueError:
                     pass
 

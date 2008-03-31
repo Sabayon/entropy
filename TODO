@@ -1,6 +1,4 @@
 TODO list
-  - Socket Interface, use SSL - http://docs.python.org/lib/socket-example.html (*)
-    - http://www.shipyard.com.au/articles/webdevelopment/sslxmlrpc.py
   - migrate server code to ServerInterface
      [] write a tool that helps keeping packages updated (also supporting injected ones)
      [] complete reagent spm interface

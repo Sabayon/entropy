@@ -7988,7 +7988,6 @@ class MultipartPostHandler(urllib2.BaseHandler):
 
     https_request = http_request
 
-
 class ErrorReportInterface:
 
     def __init__(self, post_url = etpHandlers['errorsend']):
@@ -9724,6 +9723,19 @@ class SocketHostInterface:
 
     class HostServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
+        class ConnWrapper:
+            '''
+            Base class for implementing the rest of the wrappers in this module.
+            Operates by taking a connection argument which is used when 'self' doesn't
+            provide the functionality being requested.
+            '''
+            def __init__(self, connection) :
+                self.connection = connection
+
+            def __getattr__(self, function) :
+                return getattr(self.connection, function)
+
+        import socket
         import SocketServer
         # This means the main server will not do the equivalent of a
         # pthread_join() on the new threads.  With this set, Ctrl-C will
@@ -9736,11 +9748,44 @@ class SocketHostInterface:
         # closed down correctly.
         allow_reuse_address = True
 
-        def __init__(self, server_address, RequestHandlerClass, processor):
-            self.SocketServer.TCPServer.__init__(self, server_address, RequestHandlerClass)
+        def __init__(self, server_address, RequestHandlerClass, processor, HostInterface):
+
             self.processor = processor
             self.server_address = server_address
+            self.HostInterface = HostInterface
+            self.SSL = self.HostInterface.SSL
+            self.real_sock = None
 
+            if self.SSL:
+                self.SocketServer.BaseServer.__init__(self, server_address, RequestHandlerClass)
+                self.load_ssl_context()
+                self.make_ssl_connection_alive()
+            else:
+                self.SocketServer.TCPServer.__init__(self, server_address, RequestHandlerClass)
+
+        def load_ssl_context(self):
+            # setup an SSL context.
+            self.context = self.SSL['m'].Context(self.SSL['m'].SSLv23_METHOD)
+            self.context.set_verify(self.SSL['m'].VERIFY_PEER, self.verify_ssl_cb)
+            # load up certificate stuff.
+            self.context.use_privatekey_file(self.SSL['key'])
+            self.context.use_certificate_file(self.SSL['cert'])
+            self.HostInterface.updateProgress('SSL context loaded, key: %s - cert: %s' % (
+                                        self.SSL['key'],
+                                        self.SSL['cert'],
+                                ))
+
+        def make_ssl_connection_alive(self):
+            self.real_sock = self.socket.socket(self.address_family, self.socket_type)
+            self.socket = self.ConnWrapper(self.SSL['m'].Connection(self.context, self.real_sock))
+
+            self.server_bind()
+            self.server_activate()
+
+        # this function should do the authentication checking to see that
+        # the client is who they say they are.
+        def verify_ssl_cb(self, conn, cert, errnum, depth, ok) :
+            return ok
 
     class RequestHandler(SocketServer.BaseRequestHandler):
 
@@ -9753,14 +9798,34 @@ class SocketHostInterface:
 
         def handle(self):
 
+            ssl = self.server.processor.HostInterface.SSL
+            ssl_exceptions = self.server.processor.HostInterface.SSL_exceptions
+
             if self.valid_connection:
-                ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], None)
+
                 while 1:
+
+                    ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], None)
+
                     if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
+
                         try:
-                            data = self.request.recv(8192)
+                            print self.request.read()
+                        except:
+                            pass
+
+                        try:
+                            if ssl:
+                                data = self.request.read(8192)
+                            else:
+                                data = self.request.recv(8192)
                         except self.socket.timeout, e:
                             self.server.processor.HostInterface.updateProgress('interrupted: %s, reason: %s - from client: %s' % (self.server.server_address,e,self.client_address,))
+                            break
+                        except ssl_exceptions['WantReadError']:
+                            continue
+                        except ssl_exceptions['Error'], e:
+                            self.server.processor.HostInterface.updateProgress('interrupted: SSL Error, reason: %s - from client: %s' % (e,self.client_address,))
                             break
 
                         if not data:
@@ -10128,7 +10193,6 @@ class SocketHostInterface:
 
         self.socketLog = LogFile(level = 2, filename = etpConst['socketlogfile'], header = "[Socket]")
 
-        # FIXME: add SSL/TLS support
         # settings
         self.timeout = etpConst['socket_service']['timeout']
         self.hostname = etpConst['socket_service']['hostname']
@@ -10143,6 +10207,10 @@ class SocketHostInterface:
         self.Server = None
         self.Gc = None
         self.__output = None
+        self.SSL = {}
+        self.SSL_exceptions = {}
+        self.SSL_exceptions['WantReadError'] = None
+        self.SSL_exceptions['Error'] = []
         self.last_print = ''
 
         self.setup_builtin_commands()
@@ -10184,7 +10252,40 @@ class SocketHostInterface:
         self.start_authenticator()
         self.setup_hostname()
         self.start_session_garbage_collector()
+        self.setup_ssl()
         self.EntropyInstantiation = (service_interface, self.args, self.kwds)
+
+
+    def setup_ssl(self):
+
+        do_ssl = False
+        if self.kwds.has_key('ssl'):
+            do_ssl = self.kwds.pop('ssl')
+
+        if not do_ssl:
+            return
+
+        try:
+            from OpenSSL import SSL
+        except ImportError, e:
+            self.updateProgress('Unable to load OpenSSL, error: %s' % (repr(e),))
+            return
+        self.SSL_exceptions['WantReadError'] = SSL.WantReadError
+        self.SSL_exceptions['Error'] = SSL.Error
+        self.SSL['m'] = SSL
+        self.SSL['key'] = etpConst['socket_service']['ssl_key'] # openssl genrsa -out filename.key 1024
+        self.SSL['cert'] = etpConst['socket_service']['ssl_cert'] # openssl req -new -days 365 -key filename.key -x509 -out filename.cert
+        # change port
+        self.port = etpConst['socket_service']['ssl_port']
+
+        if not os.path.isfile(self.SSL['key']):
+            raise exceptionTools.FileNotFound('FileNotFound: no %s found' % (self.SSL['key'],))
+        if not os.path.isfile(self.SSL['cert']):
+            raise exceptionTools.FileNotFound('FileNotFound: no %s found' % (self.SSL['cert'],))
+        os.chmod(self.SSL['key'],0600)
+        os.chown(self.SSL['key'],0,0)
+        os.chmod(self.SSL['cert'],0644)
+        os.chown(self.SSL['cert'],0,0)
 
 
     def setup_builtin_commands(self):
@@ -10291,7 +10392,8 @@ class SocketHostInterface:
                 self.Server = self.HostServer(
                                                 (self.hostname, self.port),
                                                 self.RequestHandler,
-                                                self.CommandProcessor(self)
+                                                self.CommandProcessor(self),
+                                                self
                                             )
                 break
             except self.socket.error, e:
