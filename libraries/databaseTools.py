@@ -330,13 +330,8 @@ class etpDatabase:
     # never use this unless you know what you're doing
     def initializeDatabase(self):
         self.checkReadOnly()
-        for sql in etpSQLInitDestroyAll.split(";"):
-            if sql:
-                self.cursor.execute(sql+";")
-        del sql
-        for sql in etpSQLInit.split(";"):
-            if sql:
-                self.cursor.execute(sql+";")
+        self.cursor.executescript(etpConst['sql_destroy'])
+        self.cursor.executescript(etpConst['sql_init'])
         self.databaseStructureUpdates()
         self.commitChanges()
 

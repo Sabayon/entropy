@@ -652,13 +652,8 @@ def database(options):
         print_info(green(" * ")+red("Initializing an empty database file with Entropy structure ..."),back = True)
         connection = Entropy.databaseTools.dbapi2.connect(mypath[0])
         cursor = connection.cursor()
-        for sql in etpSQLInitDestroyAll.split(";"):
-            if sql:
-                cursor.execute(sql+";")
-        del sql
-        for sql in etpSQLInit.split(";"):
-            if sql:
-                cursor.execute(sql+";")
+        cursor.executescript(etpConst['sql_destroy'])
+        cursor.executescript(etpConst['sql_init'])
         connection.commit()
         cursor.close()
         connection.close()

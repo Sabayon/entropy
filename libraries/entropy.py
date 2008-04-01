@@ -9792,12 +9792,14 @@ class SocketHostInterface:
         import SocketServer
         import select
         import socket
+        timed_out = False
 
         def __init__(self, request, client_address, server):
             self.SocketServer.BaseRequestHandler.__init__(self, request, client_address, server)
 
         def handle(self):
 
+            self.default_timeout = self.server.processor.HostInterface.timeout
             ssl = self.server.processor.HostInterface.SSL
             ssl_exceptions = self.server.processor.HostInterface.SSL_exceptions
 
@@ -9805,14 +9807,14 @@ class SocketHostInterface:
 
                 while 1:
 
-                    ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], None)
+                    if self.timed_out:
+                        break
+                    self.timed_out = True
+                    ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], self.default_timeout)
 
                     if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
 
-                        try:
-                            print self.request.read()
-                        except:
-                            pass
+                        self.timed_out = False
 
                         try:
                             data = self.request.recv(8192)
@@ -10115,6 +10117,9 @@ class SocketHostInterface:
                                 'args': ["self.transmit"], # arguments to be passed before *args and **kwards
                                 'as_user': False, # do I have to fork the process and run it as logged user?
                                                   # needs auth = True
+                                'desc': "instantiate a session", # description
+                                'syntax': "begin", # syntax
+                                'from': str(self), # from what class
                             },
                 'end':      {
                                 'auth': True,
@@ -10122,6 +10127,9 @@ class SocketHostInterface:
                                 'cb': self.docmd_end,
                                 'args': ["self.transmit", "session"],
                                 'as_user': False,
+                                'desc': "end a session",
+                                'syntax': "<SESSION_ID> end",
+                                'from': str(self),
                             },
                 'reposync': {
                                 'auth': True,
@@ -10129,6 +10137,9 @@ class SocketHostInterface:
                                 'cb': self.docmd_reposync,
                                 'args': ["Entropy"],
                                 'as_user': True,
+                                'desc': "update repositories",
+                                'syntax': "<SESSION_ID> reposync (optionals: reponames=['repoid1'] forceUpdate=Bool noEquoCheck=Bool fetchSecurity=Bool",
+                                'from': str(self),
                             },
                 'rc':       {
                                 'auth': True,
@@ -10136,6 +10147,9 @@ class SocketHostInterface:
                                 'cb': self.docmd_rc,
                                 'args': ["self.transmit","session"],
                                 'as_user': False,
+                                'desc': "get data returned by the last valid command (streamed python object)",
+                                'syntax': "<SESSION_ID> rc",
+                                'from': str(self),
                             },
                 'match':    {
                                 'auth': False,
@@ -10143,6 +10157,9 @@ class SocketHostInterface:
                                 'cb': self.docmd_match,
                                 'args': ["Entropy"],
                                 'as_user': True,
+                                'desc': "match an atom inside configured repositories",
+                                'syntax': "<SESSION_ID> match app-foo/foo",
+                                'from': str(self),
                             },
                 'hello':    {
                                 'auth': False,
@@ -10150,6 +10167,9 @@ class SocketHostInterface:
                                 'cb': self.docmd_hello,
                                 'args': ["self.transmit"],
                                 'as_user': False,
+                                'desc': "get server status",
+                                'syntax': "hello",
+                                'from': str(self),
                             },
                 'alive':    {
                                 'auth': True,
@@ -10157,6 +10177,9 @@ class SocketHostInterface:
                                 'cb': self.docmd_alive,
                                 'args': ["self.transmit","session"],
                                 'as_user': False,
+                                'desc': "check if a session is still alive",
+                                'syntax': "<SESSION_ID> alive",
+                                'from': str(self),
                             },
                 'login':    {
                                 'auth': False,
@@ -10164,6 +10187,9 @@ class SocketHostInterface:
                                 'cb': self.docmd_login,
                                 'args': ["self.transmit", "session", "self.client_address", "myargs"],
                                 'as_user': False,
+                                'desc': "login on the running server (allows running extra commands)",
+                                'syntax': "<SESSION_ID> login <USER> <AUTH_TYPE: plain,shadow,md5> <PASSWORD>",
+                                'from': str(self),
                             },
                 'logout':   {
                                 'auth': True,
@@ -10171,14 +10197,28 @@ class SocketHostInterface:
                                 'cb': self.docmd_logout,
                                 'args': ["self.transmit","session", "myargs"],
                                 'as_user': False,
+                                'desc': "logout on the running server",
+                                'syntax': "<SESSION_ID> logout <USER>",
+                                'from': str(self),
                             },
+                'help':   {
+                                'auth': False,
+                                'built_in': True,
+                                'cb': self.docmd_help,
+                                'args': ["self.transmit"],
+                                'as_user': False,
+                                'desc': "this output",
+                                'syntax': "help",
+                                'from': str(self),
+                            },
+
             }
 
-            self.no_acked_commands = ["rc", "begin", "end", "hello", "alive", "login", "logout"]
+            self.no_acked_commands = ["rc", "begin", "end", "hello", "alive", "login", "logout","help"]
             self.termination_commands = ["quit","close"]
             self.initialization_commands = ["begin"]
             self.login_pass_commands = ["login"]
-            self.no_session_commands = ["begin","hello","alive"]
+            self.no_session_commands = ["begin","hello","alive","help"]
 
         def register(self, valid_commands, no_acked_commands, termination_commands, initialization_commands, login_pass_commads, no_session_commands):
 
@@ -10250,6 +10290,28 @@ class SocketHostInterface:
                     )
             transmitter(text)
 
+        def docmd_help(self, transmitter):
+            text = '\nEntropy Socket Interface Help Menu\n' + \
+                   'Available Commands:\n\n'
+            valid_cmds = self.HostInterface.valid_commands.keys()
+            valid_cmds.sort()
+            for cmd in valid_cmds:
+                if self.HostInterface.valid_commands[cmd].has_key('desc'):
+                    desc = self.HostInterface.valid_commands[cmd]['desc']
+                else:
+                    desc = 'no description available'
+
+                if self.HostInterface.valid_commands[cmd].has_key('syntax'):
+                    syntax = self.HostInterface.valid_commands[cmd]['syntax']
+                else:
+                    syntax = 'no syntax available'
+                if self.HostInterface.valid_commands[cmd].has_key('from'):
+                    myfrom = self.HostInterface.valid_commands[cmd]['from']
+                else:
+                    myfrom = 'N/A'
+                text += "[%s] %s\n   %s: %s\n   %s: %s\n\n" % ( myfrom, blue(cmd), red("description"), desc, darkgreen("syntax"), syntax, )
+            transmitter(text)
+
         def docmd_end(self, transmitter, session):
             rc = self.HostInterface.destroy_session(session)
             cmd = self.HostInterface.answers['no']
@@ -10307,7 +10369,6 @@ class SocketHostInterface:
         self.SSL_exceptions['WantReadError'] = None
         self.SSL_exceptions['Error'] = []
         self.last_print = ''
-
         self.valid_commands = {}
         self.no_acked_commands = []
         self.termination_commands = []
@@ -10316,17 +10377,17 @@ class SocketHostInterface:
         self.no_session_commands = []
         self.command_classes = [self.BuiltInCommands]
         self.command_instances = []
-        self.setup_external_command_classes()
+        self.EntropyInstantiation = (service_interface, self.args, self.kwds)
 
+        self.setup_external_command_classes()
         self.start_local_output_interface()
         self.start_authenticator()
         self.setup_hostname()
         self.setup_commands()
         self.disable_commands()
-
         self.start_session_garbage_collector()
         self.setup_ssl()
-        self.EntropyInstantiation = (service_interface, self.args, self.kwds)
+
 
 
     def setup_ssl(self):
@@ -10437,6 +10498,7 @@ class SocketHostInterface:
     def gc_clean(self):
         if not self.sessions:
             return
+
         for session_id in self.sessions.keys():
             sess_time = self.sessions[session_id]['t']
             is_running = self.sessions[session_id]['running']
@@ -10469,9 +10531,9 @@ class SocketHostInterface:
         if len(self.sessions) > self.threads:
             # fuck!
             return "0"
-        rng = str(int(random.random()*10000000)+1)
+        rng = str(int(random.random()*100000000000)+1)
         while rng in self.sessions:
-            rng = str(int(random.random()*10000000)+1)
+            rng = str(int(random.random()*100000000000)+1)
         self.sessions[rng] = {}
         self.sessions[rng]['running'] = False
         self.sessions[rng]['auth_uid'] = None
@@ -10516,7 +10578,7 @@ class SocketHostInterface:
                     continue
                 else:
                     raise
-        self.updateProgress('server connected, listening on: %s, port: %s' % (self.hostname,self.port,))
+        self.updateProgress('server connected, listening on: %s, port: %s, timeout: %s' % (self.hostname,self.port,self.timeout,))
         self.Server.serve_forever()
         self.Gc.kill()
 
