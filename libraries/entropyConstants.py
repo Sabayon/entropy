@@ -490,6 +490,8 @@ def const_defaultSettings(rootdir):
 
     etpConst.clear()
     myConst = {
+        'sql_destroy': etpSQLInitDestroyAll,
+        'sql_init': etpSQLInit,
         'installdir': '/usr/lib/entropy', # entropy default installation directory
         'packagestmpdir': ETP_DIR+ETP_TMPDIR, # etpConst['packagestmpdir'] --> temp directory
         'packagestmpfile': ETP_DIR+ETP_TMPDIR+ETP_TMPFILE, # etpConst['packagestmpfile'] --> general purpose tmp file

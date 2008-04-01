@@ -9792,12 +9792,14 @@ class SocketHostInterface:
         import SocketServer
         import select
         import socket
+        timed_out = False
 
         def __init__(self, request, client_address, server):
             self.SocketServer.BaseRequestHandler.__init__(self, request, client_address, server)
 
         def handle(self):
 
+            self.default_timeout = self.server.processor.HostInterface.timeout
             ssl = self.server.processor.HostInterface.SSL
             ssl_exceptions = self.server.processor.HostInterface.SSL_exceptions
 
@@ -9805,14 +9807,14 @@ class SocketHostInterface:
 
                 while 1:
 
-                    ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], None)
+                    if self.timed_out:
+                        break
+                    self.timed_out = True
+                    ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], self.default_timeout)
 
                     if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
 
-                        try:
-                            print self.request.read()
-                        except:
-                            pass
+                        self.timed_out = False
 
                         try:
                             data = self.request.recv(8192)
@@ -10496,6 +10498,7 @@ class SocketHostInterface:
     def gc_clean(self):
         if not self.sessions:
             return
+
         for session_id in self.sessions.keys():
             sess_time = self.sessions[session_id]['t']
             is_running = self.sessions[session_id]['running']
@@ -10528,9 +10531,9 @@ class SocketHostInterface:
         if len(self.sessions) > self.threads:
             # fuck!
             return "0"
-        rng = str(int(random.random()*10000000)+1)
+        rng = str(int(random.random()*100000000000)+1)
         while rng in self.sessions:
-            rng = str(int(random.random()*10000000)+1)
+            rng = str(int(random.random()*100000000000)+1)
         self.sessions[rng] = {}
         self.sessions[rng]['running'] = False
         self.sessions[rng]['auth_uid'] = None
@@ -10575,7 +10578,7 @@ class SocketHostInterface:
                     continue
                 else:
                     raise
-        self.updateProgress('server connected, listening on: %s, port: %s' % (self.hostname,self.port,))
+        self.updateProgress('server connected, listening on: %s, port: %s, timeout: %s' % (self.hostname,self.port,self.timeout,))
         self.Server.serve_forever()
         self.Gc.kill()
 
