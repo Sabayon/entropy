@@ -745,7 +745,7 @@ class rhnApplet:
     def exit_applet(self, *args):
         self.gtkEventThread.doQuit()
         gtk.main_quit()
-        return
+	sys.exit(0)
 
     def save_yourself(self, *args):
         if self.session:

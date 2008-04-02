@@ -198,20 +198,25 @@ class Equo(EquoInterface):
 
 class GuiUrlFetcher(urlFetcher):
 
+    gui_last_avg = 0
+
     def connect_to_gui(self, progress):
         self.progress = progress
 
     # reimplementing updateProgress
     def updateProgress(self):
 
-        # use progress bar
-        self.progress.set_progress( round(float(self.average)/100,1), str(int(round(float(self.average),1)))+"%" )
-        self.progress.set_extraLabel("%s/%s kB @ %s" % (
-                                        str(round(float(self.downloadedsize)/1024,1)),
-                                        str(round(self.remotesize,1)),
-                                        str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
-                                    )
-        )
+        myavg = int(round(float(self.average),1))
+        if (myavg > self.gui_last_avg) or (myavg < 2) or (myavg > 97):
+
+            self.progress.set_progress( round(float(self.average)/100,1), str(myavg)+"%" )
+            self.progress.set_extraLabel("%s/%s kB @ %s" % (
+                                            str(round(float(self.downloadedsize)/1024,1)),
+                                            str(round(self.remotesize,1)),
+                                            str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
+                                        )
+            )
+            self.gui_last_avg = myavg
 
 
 EquoConnection = Equo()

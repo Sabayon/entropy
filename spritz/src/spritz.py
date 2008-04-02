@@ -1221,11 +1221,11 @@ class SpritzApplication(SpritzController,SpritzGUI):
                 if e != 0:
                     okDialog( self.ui.main, _("Attention. An error occured when processing the queue.\nPlease have a look in the processing terminal.") )
                 # XXX let it sleep a bit to allow all other threads to flush
+                self.endWorking()
                 while gtk.events_pending():
                     time.sleep(0.1)
-                self.endWorking()
                 self.etpbase.clearPackages()
-                time.sleep(10) # FIXME, still happens on a big queue
+                time.sleep(5)
             self.endWorking()
             self.progress.reset_progress()
             self.etpbase.clearPackages()

@@ -2062,24 +2062,24 @@ class etpDatabase:
 
     def retrieveDescription(self, idpackage):
 
-        #cache = self.fetchInfoCache(idpackage,'retrieveDescription')
-        #if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveDescription')
+        if cache != None: return cache
 
         self.cursor.execute('SELECT description FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         description = self.cursor.fetchone()[0]
 
-        #self.storeInfoCache(idpackage,'retrieveDescription',description)
+        self.storeInfoCache(idpackage,'retrieveDescription',description)
         return description
 
     def retrieveHomepage(self, idpackage):
 
-        #cache = self.fetchInfoCache(idpackage,'retrieveHomepage')
-        #if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveHomepage')
+        if cache != None: return cache
 
         self.cursor.execute('SELECT homepage FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         home = self.cursor.fetchone()[0]
 
-        #self.storeInfoCache(idpackage,'retrieveHomepage',home)
+        self.storeInfoCache(idpackage,'retrieveHomepage',home)
         return home
 
     def retrieveCounter(self, idpackage):
