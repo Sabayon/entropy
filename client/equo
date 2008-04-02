@@ -378,7 +378,7 @@ try:
     sys.exit(rc)
 except exceptionTools.SystemDatabaseError:
     reset_cache()
-    print_error(darkred(" * ")+red("Installed Packages Database not found or is corrupted. Please generate it using 'equo database' tools"))
+    print_error(darkred(" * ")+red("Installed Packages Database not found or corrupted. Please generate it using 'equo database' tools"))
     sys.exit(101)
 except exceptionTools.OnlineMirrorError, e:
     reset_cache()

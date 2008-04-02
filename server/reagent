@@ -96,7 +96,6 @@ def print_help():
 options = argv[1:]
 
 from entropyConstants import *
-from serverConstants import *
 
 # print version
 if (' '.join(options).find("--version") != -1) or (' '.join(options).find(" -V") != -1):

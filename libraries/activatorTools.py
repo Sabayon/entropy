@@ -23,7 +23,6 @@
 import time
 import shutil
 from entropyConstants import *
-from serverConstants import *
 from outputTools import *
 from entropy import FtpInterface, EquoInterface, rssFeed, LogFile
 import exceptionTools

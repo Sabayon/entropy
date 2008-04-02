@@ -223,6 +223,19 @@ class EquoInterface(TextInterface):
         except IOError:
             pass
 
+    def backup_setting(self, setting_name):
+        if etpConst.has_key(setting_name):
+            myinst = etpConst[setting_name]
+            if type(etpConst[setting_name]) in (list,tuple):
+                myinst = etpConst[setting_name][:]
+            elif type(etpConst[setting_name]) in (dict,set):
+                myinst = etpConst[setting_name].copy()
+            else:
+                myinst = etpConst[setting_name]
+            etpConst['backed_up'].update({setting_name: myinst})
+        else:
+            raise exceptionTools.InvalidData("InvalidData: nothing to backup in etpConst with %s key" % (setting_name,))
+
     def switchChroot(self, chroot = ""):
         # clean caches
         self.purge_cache()
@@ -267,8 +280,38 @@ class EquoInterface(TextInterface):
         etpConst['packagemasking'] = None
 
     def openClientDatabase(self):
-        self.clientDbconn = self.databaseTools.openClientDatabase(indexing = self.indexing, generate = self.noclientdb, xcache = self.xcache, OutputInterface = self)
+        self.clientDbconn = self.loadClientDatabase(indexing = self.indexing, generate = self.noclientdb, xcache = self.xcache)
         return self.clientDbconn # just for reference
+
+    def loadClientDatabase(self, xcache = True, generate = False, indexing = True):
+        if not os.path.isdir(os.path.dirname(etpConst['etpdatabaseclientfilepath'])):
+            os.makedirs(os.path.dirname(etpConst['etpdatabaseclientfilepath']))
+        if (not generate) and (not os.path.isfile(etpConst['etpdatabaseclientfilepath'])):
+            raise exceptionTools.SystemDatabaseError("SystemDatabaseError: system database not found. Either does not exist or corrupted.")
+        conn = self.databaseTools.etpDatabase(  readOnly = False,
+                                                dbFile = etpConst['etpdatabaseclientfilepath'],
+                                                clientDatabase = True,
+                                                dbname = etpConst['clientdbid'],
+                                                xcache = xcache,
+                                                indexing = indexing,
+                                                OutputInterface = self
+                                                )
+        # validate database
+        if not generate:
+            conn.validateDatabase()
+        if (not etpConst['dbconfigprotect']):
+            # config protect not prepared
+            if (not generate):
+
+                etpConst['dbconfigprotect'] = conn.listConfigProtectDirectories()
+                etpConst['dbconfigprotectmask'] = conn.listConfigProtectDirectories(mask = True)
+                etpConst['dbconfigprotect'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
+                etpConst['dbconfigprotectmask'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
+
+                etpConst['dbconfigprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpConst['dbconfigprotect']]
+                etpConst['dbconfigprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpConst['dbconfigprotectmask']]
+
+        return conn
 
     def clientDatabaseSanityCheck(self):
         self.updateProgress(darkred("Sanity Check: system database"), importance = 2, type = "warning")
@@ -355,7 +398,7 @@ class EquoInterface(TextInterface):
             etpRepositories[repositoryName]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotect']]
             etpRepositories[repositoryName]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotectmask']]
         if not etpConst['treeupdatescalled'] and (self.entropyTools.is_user_in_entropy_group()) and (not repositoryName.endswith(".tbz2")):
-            conn.clientUpdatePackagesData()
+            conn.clientUpdatePackagesData(self.clientDbconn)
         return conn
 
     def openGenericDatabase(self, dbfile, dbname = None, xcache = None, readOnly = False, indexing_override = None):
@@ -571,7 +614,7 @@ class EquoInterface(TextInterface):
             editor = "/bin/emacs"
         return editor
 
-    def libraries_test(self, dbconn = None, reagent = False):
+    def libraries_test(self, dbconn = None):
 
         if dbconn == None:
             dbconn = self.clientDbconn
@@ -597,7 +640,7 @@ class EquoInterface(TextInterface):
                                     type = "error",
                                     header = red(" @@ ")
                                 )
-            return (),(),-1
+            return set(),set(),-1
 
         ldpaths = self.entropyTools.collectLinkerPaths()
         ldpaths |= self.entropyTools.collectPaths()
@@ -685,7 +728,7 @@ class EquoInterface(TextInterface):
                                             count = (count,total),
                                             header = "  "
                                         )
-                    if reagent:
+                    if etpSys['serverside']:
                         plain_brokenexecs.add(etpConst['systemroot']+executable)
                 brokenlibs.update(mylibs)
                 brokenexecs[executable] = mylibs.copy()
@@ -693,7 +736,7 @@ class EquoInterface(TextInterface):
 
         packagesMatched = set()
 
-        if not reagent:
+        if not etpSys['serverside']:
 
             self.updateProgress(
                                     blue("Trying to match packages"),
@@ -710,7 +753,7 @@ class EquoInterface(TextInterface):
                                         type = "info",
                                         header = red(" @@ ")
                                     )
-                if reagent:
+                if etpSys['serverside']:
                     rdbconn = dbconn
                 else:
                     rdbconn = self.openRepositoryDatabase(repoid)
@@ -730,7 +773,7 @@ class EquoInterface(TextInterface):
                                 packagesMatched.add((idpackage,repoid,lib))
                 brokenlibs.difference_update(libsfound)
 
-        if reagent:
+        if etpSys['serverside']:
             return packagesMatched,plain_brokenexecs,0
         return packagesMatched,brokenlibs,0
 
@@ -2080,7 +2123,7 @@ class EquoInterface(TextInterface):
     # mainly used server side
     def get_remote_package_checksum(self, servername, filename, branch):
 
-        # etpHandlers['md5sum'] is the command
+        # etpConst['handlers']['md5sum'] is the command
         # create the request
         try:
             url = etpRemoteSupport[servername]
@@ -2092,8 +2135,7 @@ class EquoInterface(TextInterface):
         filename = filename.replace("#","%23")
         # "+"
         filename = filename.replace("+","%2b")
-
-        request = url+etpHandlers['md5sum']+filename+"&branch="+branch
+        request = url+etpConst['handlers']['md5sum']+filename+"&branch="+branch
 
         # now pray the server
         try:
@@ -2677,13 +2719,13 @@ class EquoInterface(TextInterface):
         if (kernelstuff):
             data['versiontag'] = kmodver
             if not kernelstuff_kernel:
-                data['slot'] = kmodver # if you change this behaviour, you must change "reagent update" and "equo database gentoosync" consequentially
+                data['slot'] = kmodver # if you change this behaviour,
+                                       # you must change "reagent update"
+                                       # and "equo database gentoosync" consequentially
             versiontag = "#"+data['versiontag']
         else:
             versiontag = ""
-        # remove etpConst['product'] from etpConst['binaryurirelativepath']
-        downloadrelative = etpConst['binaryurirelativepath'][len(etpConst['product'])+1:]
-        data['download'] = downloadrelative+data['branch']+"/"+data['category']+":"+data['name']+"-"+data['version']+versiontag+".tbz2"
+        data['download'] = etpConst['packagesrelativepath']+data['branch']+"/"+data['category']+":"+data['name']+"-"+data['version']+versiontag+".tbz2"
 
         if not silent:
             self.updateProgress(
@@ -4866,7 +4908,7 @@ class RepoInterface:
         if item == "db":
             if cmethod == None:
                 raise exceptionTools.InvalidData("InvalidData: for db, cmethod can't be None")
-            url = etpRepositories[repo]['database'] +   "/" + etpConst[cmethod[2]]
+            url = etpRepositories[repo]['database'] + "/" + etpConst[cmethod[2]]
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst[cmethod[2]]
         elif item == "dbdump":
             if cmethod == None:
@@ -7990,7 +8032,7 @@ class MultipartPostHandler(urllib2.BaseHandler):
 
 class ErrorReportInterface:
 
-    def __init__(self, post_url = etpHandlers['errorsend']):
+    def __init__(self, post_url = etpConst['handlers']['errorsend']):
         self.url = post_url
         self.opener = urllib2.build_opener(MultipartPostHandler)
         self.generated = False
@@ -8968,6 +9010,20 @@ class PortageInterface:
         if myatom.startswith("="):
             myatom = myatom[1:]
         return self.portage.portdb.aux_get(myatom,[setting])[0]
+
+    def query_belongs(self, filename):
+        mypath = etpConst['systemroot']+"/"
+        mytree = self._get_portage_vartree(mypath)
+        packages = mytree.dbapi.cpv_all()
+        matches = set()
+        for package in packages:
+            mysplit = package.split("/")
+            mycat = mysplit[0]
+            mycpv = mysplit[1]
+            content = self.portage.dblink(mysplit[0], mysplit[1], mypath, self.portage.settings).getcontents()
+            if filename in content:
+                matches.add(package)
+        return matches
 
     def calculate_dependencies(self, my_iuse, my_use, my_license, my_depend, my_rdepend, my_pdepend, my_provide, my_src_uri):
         metadata = {}
@@ -10613,3 +10669,244 @@ class SocketUrlFetcher(urlFetcher):
                                         str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
                                     )
         self.progress( "Fetching "+str((round(float(self.average),1)))+"%"+kbprogress, back = True )
+
+
+class ServerInterface(TextInterface):
+
+    def __init__(self, default_repository = None, save_repository = False):
+
+        if etpConst['uid'] != 0:
+            raise exceptionTools.PermissionDenied("PermissionDenied: Entropy ServerInterface must be run as root")
+
+        # settings
+        etpSys['serverside'] = True
+        self.indexing = False
+        self.xcache = False
+        self.serverDbCache = {}
+        self.settings_to_backup = []
+        self.do_save_repository = save_repository
+        if default_repository != None:
+            self.switch_default_repository(default_repository)
+        else:
+            self.default_repository = etpConst['officialrepositoryid']
+            self.setup_services()
+
+
+    def setup_services(self):
+        self.setup_entropy_settings()
+        self.backup_entropy_settings()
+        self.ClientService = EquoInterface(indexing = self.indexing, xcache = self.xcache)
+        self.databaseTools = self.ClientService.databaseTools
+        self.entropyTools = self.ClientService.entropyTools
+        self.SpmService = self.ClientService.Spm()
+
+    def setup_entropy_settings(self):
+        self.settings_to_backup.extend([
+            'etpdatabaseclientfilepath',
+            'clientdbid',
+            'officialrepositoryid',
+            'dbrepodir',
+            'activatoruploaduris',
+            'activatordownloaduris',
+            'binaryurirelativepath',
+            'etpurirelativepath',
+            'handlers'
+        ])
+        # setup client database
+        etpConst['etpdatabaseclientfilepath'] = etpConst['etpdatabasefilepath']
+        etpConst['clientdbid'] = etpConst['serverdbid']
+        const_createWorkingDirectories()
+
+
+    def switch_default_repository(self, repoid):
+        self.default_repository = repoid
+        for item in self.serverDbCache:
+            self.serverDbCache[item].closeDB()
+        self.serverDbCache.clear()
+
+        etpConst['officialrepositoryid'] = repoid
+        const_setupServerClientRepository()
+        self.setup_services()
+        if self.do_save_repository:
+            self.save_default_repository(repoid)
+
+
+    def save_default_repository(self, repoid):
+        if os.path.isfile(etpConst['repositoriesconf']):
+            f = open(etpConst['repositoriesconf'],"r")
+            content = f.readlines()
+            f.close()
+            content = [x.strip() for x in content]
+            found = False
+            new_content = []
+            for line in content:
+                if line.strip().startswith("officialrepositoryid|"):
+                    line = "officialrepositoryid|%s" % (repoid,)
+                    found = True
+                new_content.append(line)
+            if not found:
+                new_content.append("officialrepositoryid|%s" % (repoid,))
+            f = open(etpConst['repositoriesconf']+".save_default_repo_tmp","w")
+            for line in new_content:
+                f.write(line+"\n")
+            f.flush()
+            f.close()
+            shutil.move(etpConst['repositoriesconf']+".save_default_repo_tmp",etpConst['repositoriesconf'])
+        else:
+            # weird !
+            f = open(etpConst['repositoriesconf'],"w")
+            f.write("officialrepositoryid|%s\n" % (repoid,))
+            f.flush()
+            f.close()
+
+
+    def backup_entropy_settings(self):
+        for setting in self.settings_to_backup:
+            self.ClientService.backup_setting(setting)
+
+
+    def openServerDatabase(self, read_only = True, no_upload = True):
+
+        cached = self.serverDbCache.get((etpConst['systemroot'],read_only,no_upload,))
+        if cached != None:
+            return cached
+
+        if not os.path.isdir(os.path.dirname(etpConst['etpdatabasefilepath'])):
+            os.makedirs(os.path.dirname(etpConst['etpdatabasefilepath']))
+
+        conn = self.databaseTools.etpDatabase(readOnly = read_only, dbFile = etpConst['etpdatabasefilepath'], noUpload = no_upload, OutputInterface = self)
+        # verify if we need to update the database to sync with portage updates, we just ignore being readonly in the case
+        if not etpConst['treeupdatescalled']:
+            # sometimes, when filling a new server db, we need to avoid tree updates
+            valid = True
+            try:
+                conn.validateDatabase()
+            except exceptionTools.SystemDatabaseError:
+                valid = False
+            if valid:
+                conn.serverUpdatePackagesData()
+            else:
+                self.updateProgress(
+                                        red("Entropy database is probably empty. If you don't agree with what I'm saying, then it's probably corrupted! I won't stop you here btw..."),
+                                        importance = 1,
+                                        type = "info",
+                                        header = red(" * ")
+                                    )
+        self.serverDbCache[(etpConst['systemroot'],read_only,no_upload,)] = conn
+        return conn
+
+
+    def dependencies_test(self):
+
+        self.updateProgress(
+                                blue("Running dependencies test..."),
+                                importance = 2,
+                                type = "info",
+                                header = red(" @@ ")
+                            )
+        dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+        deps_not_matched = self.ClientService.dependencies_test(dbconn = dbconn)
+
+        if deps_not_matched:
+
+            crying_atoms = {}
+            for atom in deps_not_matched:
+                riddep = dbconn.searchDependency(atom)
+                if riddep != -1:
+                    ridpackages = dbconn.searchIdpackageFromIddependency(riddep)
+                    for i in ridpackages:
+                        iatom = dbconn.retrieveAtom(i)
+                        if not crying_atoms.has_key(atom):
+                            crying_atoms[atom] = set()
+                        crying_atoms[atom].add(iatom)
+
+            self.updateProgress(
+                                    blue("These are the dependencies not found:"),
+                                    importance = 1,
+                                    type = "info",
+                                    header = red(" @@ ")
+                                )
+            for atom in deps_not_matched:
+                print_info("   # "+red(atom))
+                if crying_atoms.has_key(atom):
+                    self.updateProgress(
+                                            red("Needed by:"),
+                                            importance = 0,
+                                            type = "info",
+                                            header = blue("      # ")
+                                        )
+                    for x in crying_atoms[atom]:
+                        self.updateProgress(
+                                                darkgreen(x),
+                                                importance = 0,
+                                                type = "info",
+                                                header = blue("      # ")
+                                            )
+
+        return deps_not_matched
+
+    def libraries_test(self, get_files = False):
+
+        # load db
+        dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+        packagesMatched, brokenexecs, status = self.ClientService.libraries_test(dbconn = dbconn)
+        if status != 0:
+            return 1,None
+
+        if get_files:
+            return 0,brokenexecs
+
+        if (not brokenexecs) and (not packagesMatched):
+            self.updateProgress(
+                                    blue("System is healthy."),
+                                    importance = 2,
+                                    type = "info",
+                                    header = red(" @@ ")
+                                )
+            return 0,None
+
+        atomsdata = set()
+
+        self.updateProgress(
+                                blue("Matching libraries with Spm:"),
+                                importance = 1,
+                                type = "info",
+                                header = red(" @@ ")
+                            )
+
+        packages = set()
+        for brokenexec in brokenexecs:
+            self.updateProgress(
+                                    red("Scanning: ")+darkgreen(brokenexec),
+                                    importance = 0,
+                                    type = "info",
+                                    header = red(" @@ "),
+                                    back = True
+                                )
+            packages |= self.SpmService.query_belongs(brokenexec)
+
+        if packages:
+            self.updateProgress(
+                                    red("These are the matched packages:"),
+                                    importance = 1,
+                                    type = "info",
+                                    header = red(" @@ ")
+                                )
+            for package in packages:
+                self.updateProgress(
+                                        blue(package),
+                                        importance = 0,
+                                        type = "info",
+                                        header = red("     # ")
+                                    )
+        else:
+            self.updateProgress(
+                                    red("No matched packages"),
+                                    importance = 1,
+                                    type = "info",
+                                    header = red(" @@ ")
+                                )
+
+        return 0,packages
+
+

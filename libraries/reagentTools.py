@@ -22,14 +22,10 @@
 import shutil
 import time
 from entropyConstants import *
-from serverConstants import *
 from outputTools import *
 import exceptionTools
-from entropy import EquoInterface, LogFile
-Entropy = EquoInterface(noclientdb = 2)
-
-# Logging initialization
-reagentLog = LogFile(level=etpConst['reagentloglevel'],filename = etpConst['reagentlogfile'], header = "[Reagent]")
+from entropy import EquoInterface, LogFile, ServerInterface, FtpInterface
+Entropy = ServerInterface()
 
 def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['branch'], inject = False):
 
@@ -39,10 +35,10 @@ def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['bran
     packagename = os.path.basename(package)
 
     print_info(brown(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
-    mydata = Entropy.extract_pkg_metadata(package, enzymeRequestBranch, inject = inject)
+    mydata = Entropy.ClientService.extract_pkg_metadata(package, enzymeRequestBranch, inject = inject)
 
     if dbconnection is None:
-        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+        dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
     else:
         dbconn = dbconnection
 
@@ -87,7 +83,7 @@ def inject(options):
     if not os.path.isdir(etpConst['packagessuploaddir']+"/"+requestedBranch):
         os.makedirs(etpConst['packagessuploaddir']+"/"+requestedBranch)
 
-    dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+    dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
     for tbz2 in mytbz2s:
         print_info(red("Working on: ")+blue(tbz2))
         tbz2Handler(tbz2, dbconn, requestedBranch, inject = True)
@@ -95,14 +91,12 @@ def inject(options):
     dbconn.commitChanges()
     dependsTableInitialize(dbconn, False)
     # checking dependencies and print issues
-    dependenciesTest()
+    Entropy.dependencies_test()
     dbconn.closeDB()
 
 
 
 def update(options):
-
-    reagentLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"update: called -> options: "+str(options))
 
     # differential checking
     # collect differences between the packages in the database and the ones on the system
@@ -126,15 +120,14 @@ def update(options):
                 continue
             _options.append(opt)
     options = _options
-    Spm = Entropy.Spm()
 
     if (not reagentRequestSeekStore):
 
-        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+        dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
 
         if not reagentRequestRepackage:
             print_info(brown(" * ")+red("Scanning database for differences..."))
-            installedPackages = Spm.get_installed_packages_counter()
+            installedPackages = Entropy.SpmService.get_installed_packages_counter()
             installedCounters = set()
             toBeAdded = set()
             toBeRemoved = set()
@@ -163,7 +156,7 @@ def update(options):
 
                         add = True
                         for pkgdata in toBeAdded:
-                            addslot = Spm.get_package_slot(pkgdata[0])
+                            addslot = Entropy.SpmService.get_package_slot(pkgdata[0])
                             addkey = Entropy.entropyTools.dep_getkey(pkgdata[0])
                             # workaround for ebuilds not having slot
                             if addslot == None:
@@ -204,7 +197,7 @@ def update(options):
                 else:
                     rc = "Yes"
                 if rc == "Yes":
-                    rwdbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+                    rwdbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
                     for x in toBeInjected:
                         atom = rwdbconn.retrieveAtom(x)
                         print_info(brown("   <> ")+blue("Transforming from database: ")+red(atom))
@@ -225,7 +218,7 @@ def update(options):
                 else:
                     rc = "Yes"
                 if rc == "Yes":
-                    rwdbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+                    rwdbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
                     for x in toBeRemoved:
                         atom = rwdbconn.retrieveAtom(x)
                         print_info(brown(" @@ ")+blue("Removing from database: ")+red(atom), back = True)
@@ -248,7 +241,7 @@ def update(options):
                 # then exit gracefully
                 return 0
 
-            appdb = Spm.get_vdb_path()
+            appdb = Entropy.SpmService.get_vdb_path()
             packages = []
             for item in repackageItems:
                 match = dbconn.atomMatch(item)
@@ -273,9 +266,8 @@ def update(options):
         print_info(brown(" @@ ")+blue("Compressing packages..."))
         for x in toBeAdded:
             print_info(brown("    # ")+red(x[0]+"..."))
-            rc = Spm.quickpkg(x[0],etpConst['packagesstoredir'])
+            rc = Entropy.SpmService.quickpkg(x[0],etpConst['packagesstoredir'])
             if (rc is None):
-                reagentLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"update: "+str(x)+" -> quickpkg error. Cannot continue.")
                 print_error(red("      *")+" quickpkg error for "+red(x))
                 print_error(red("  ***")+" Fatal error, cannot continue")
                 return 251
@@ -304,7 +296,7 @@ def update(options):
         return 0
 
     # open db connection
-    dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+    dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
 
     counter = 0
     etpCreated = 0
@@ -323,7 +315,7 @@ def update(options):
     dbconn.commitChanges()
 
     # checking dependencies and print issues
-    dependenciesTest()
+    Entropy.dependencies_test()
 
     dbconn.closeDB()
 
@@ -374,7 +366,7 @@ def tbz2Handler(tbz2path, dbconn, requested_branch, inject = False):
 def dependsTableInitialize(dbconn = None, runActivator = True):
     closedb = False
     if dbconn == None:
-        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+        dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
         closedb = True
     dbconn.regenerateDependsTable()
     # now taint
@@ -387,86 +379,9 @@ def dependsTableInitialize(dbconn = None, runActivator = True):
         activatorTools.database(['sync'])
     return 0
 
-def librariesTest(listfiles = False):
-
-    import commands
-
-    # load db
-    dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
-
-    packagesMatched, brokenexecs, status = Entropy.libraries_test(dbconn = dbconn, reagent = True)
-    if status != 0:
-        return 1
-
-    if listfiles:
-        for x in brokenexecs:
-            print x
-        return 0
-
-    if (not brokenexecs) and (not packagesMatched):
-        print_info(red(" @@ ")+blue("System is healthy."))
-        return 0
-
-    atomsdata = set()
-
-    print_info(red(" @@ ")+blue("Matching libraries with Spm:"))
-    qfile_exec = "/usr/bin/qfile"
-    qfile_opts = " -qCe "
-    packages = set()
-    if not os.access(qfile_exec,os.X_OK):
-        print_error(red(" * ")+blue("You need portage-utils installed !"))
-        return 1
-    for brokenexec in brokenexecs:
-        print_info(red("Scanning: ")+darkgreen(brokenexec), back = True)
-        output = commands.getoutput(qfile_exec+qfile_opts+" "+brokenexec)
-        output = output.split("\n")[0].strip()
-        if output:
-            packages.add(output)
-
-    if packages:
-        print_info(red(" * These are the matching packages: "))
-        for package in packages:
-            print package
-
-    return 0
-
-def dependenciesTest():
-
-    dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
-
-    print_info(red(" @@ ")+blue("Running dependency test..."))
-    depsNotMatched = Entropy.dependencies_test(dbconn = dbconn)
-
-    if depsNotMatched:
-
-        crying_atoms = {}
-        for atom in depsNotMatched:
-            riddep = dbconn.searchDependency(atom)
-            if riddep != -1:
-                ridpackages = dbconn.searchIdpackageFromIddependency(riddep)
-                for i in ridpackages:
-                    iatom = dbconn.retrieveAtom(i)
-                    if not crying_atoms.has_key(atom):
-                        crying_atoms[atom] = set()
-                    crying_atoms[atom].add(iatom)
-
-        print_info(red(" @@ ")+blue("These are the dependencies not found:"))
-        for atom in depsNotMatched:
-            print_info("   # "+red(atom))
-            if crying_atoms.has_key(atom):
-                print_info(blue("      # ")+red("Needed by:"))
-                for x in crying_atoms[atom]:
-                    print_info(blue("      # ")+darkgreen(x))
-
-    else:
-        print
-
-    return 0
-
 def database(options):
 
     import activatorTools
-    from entropy import FtpInterface
 
     databaseRequestNoAsk = False
     databaseRequestJustScan = False
@@ -499,7 +414,7 @@ def database(options):
         treeUpdatesActions = []
         injectedPackages = set()
         if os.path.isfile(etpConst['etpdatabasefilepath']):
-            dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+            dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
             idpackages = []
             try:
                 idpackages = dbconn.listAllIdpackages()
@@ -533,7 +448,7 @@ def database(options):
             os.remove(etpConst['etpdatabasefilepath'])
 
         # initialize the database
-        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+        dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
         dbconn.initializeDatabase()
 
         # dump revisions - as a backup
@@ -587,7 +502,7 @@ def database(options):
                 if os.path.join(etpConst['binaryurirelativepath'],mybranch+"/"+pkg) in injectedPackages:
                     doinject = True
 
-                mydata = Entropy.extract_pkg_metadata(etpConst['packagesbindir']+"/"+mybranch+"/"+pkg, mybranch, inject = doinject)
+                mydata = Entropy.ClientService.extract_pkg_metadata(etpConst['packagesbindir']+"/"+mybranch+"/"+pkg, mybranch, inject = doinject)
 
                 # get previous revision
                 revisionAvail = revisionsMatch.get(os.path.basename(mydata['download']))
@@ -625,7 +540,7 @@ def database(options):
         # search tool
         print_info(green(" * ")+red("Searching ..."))
         # open read only
-        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+        dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
 
         foundCounter = 0
         for mykeyword in mykeywords:
@@ -674,7 +589,7 @@ def database(options):
             print_error(brown(" * ")+red("Not enough parameters"))
             return 7
 
-        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+        dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
         # is world?
         if myatoms[0] == "world":
             pkglist = dbconn.listAllIdpackages()
@@ -782,7 +697,7 @@ def database(options):
             return 10
 
         pkglist = set()
-        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+        dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
 
         for atom in myopts:
             if (branch):
@@ -836,7 +751,7 @@ def database(options):
                 atoms.append(opt)
 
         pkglist = set()
-        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+        dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
         allidpackages = dbconn.listAllIdpackages()
 
         idpackages = set()
@@ -875,7 +790,7 @@ def database(options):
 
         dbconn.closeDB()
         del dbconn
-        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+        dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
 
         print_info(green(" * ")+red("Removing selected packages ..."))
 
@@ -895,7 +810,7 @@ def database(options):
         print_info(green(" * ")+red("Integrity verification of the selected packages:"))
 
         mypackages = options[1:]
-        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+        dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
 
         # statistic vars
         pkgMatch = 0
@@ -1030,7 +945,7 @@ def database(options):
         print_info(green(" * ")+red("Integrity verification of the selected packages:"))
 
         mypackages = options[1:]
-        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+        dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
         worldSelected = False
 
         if (len(mypackages) == 0):
@@ -1092,7 +1007,7 @@ def database(options):
 
                 print_info("  ("+red(str(currentcounter))+"/"+blue(totalcounter)+") "+red("Checking hash of ")+blue(pkgbranch+"/"+pkgfilename), back = True)
                 ckOk = False
-                ck = Entropy.get_remote_package_checksum(Entropy.entropyTools.extractFTPHostFromUri(uri),pkgfilename, pkgbranch)
+                ck = Entropy.ClientService.get_remote_package_checksum(Entropy.entropyTools.extractFTPHostFromUri(uri),pkgfilename, pkgbranch)
                 if ck == None:
                     print_warning("    "+red("   -> Digest verification of ")+green(pkgfilename)+bold(" not supported"))
                 elif len(ck) == 32:
@@ -1129,10 +1044,10 @@ def database(options):
         if not databaseRequestJustScan:
             print_info(green(" * ")+red("Remember to flush all the pending uploads. It's always better having a fully synchronized system."))
             time.sleep(5)
-            dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+            dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
             print_info(green(" * ")+red("Starting to regenerate package dependencies in repository"))
         else:
-            dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+            dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
             print_info(green(" * ")+red("Starting to scan and compare package dependencies in repository"))
         idpackages = dbconn.listAllIdpackages()
         maxcount = str(len(idpackages))
@@ -1171,7 +1086,7 @@ def database(options):
                     stats['bad_digest'] += 1
                     continue
             # rescan package
-            metadata = Entropy.extract_pkg_metadata(download, silent = True)
+            metadata = Entropy.ClientService.extract_pkg_metadata(download, silent = True)
             db_deps = dbconn.retrieveDependencies(idpackage)
             found_deps = set([unicode(x) for x in metadata['dependencies']])
             del metadata
@@ -1211,10 +1126,10 @@ def database(options):
         if not databaseRequestJustScan:
             print_info(green(" * ")+red("Remember to flush all the pending uploads. It's always better having a fully synchronized system."))
             time.sleep(5)
-            dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+            dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
             print_info(green(" * ")+red("Starting to regenerate package content metadata in repository"))
         else:
-            dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+            dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
             print_info(green(" * ")+red("Starting to scan and compare package content metadata in repository"))
         if not myatoms:
             idpackages = dbconn.listAllIdpackages()
@@ -1262,7 +1177,7 @@ def database(options):
                     stats['bad_digest'] += 1
                     continue
             # rescan package
-            metadata = Entropy.extract_pkg_metadata(download, silent = True)
+            metadata = Entropy.ClientService.extract_pkg_metadata(download, silent = True)
             db_content = set([x.encode('raw_unicode_escape') for x in dbconn.retrieveContent(idpackage)])
             found_content = metadata['content']
             test_content = set([x for x in metadata['content']])
@@ -1294,7 +1209,7 @@ def database(options):
     elif (options[0] == "bump"):
 
         print_info(green(" * ")+red("Bumping the database..."))
-        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = False, noUpload = True)
+        dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
         dbconn.taintDatabase()
         dbconn.closeDB()
         if databaseRequestSync:
@@ -1307,7 +1222,7 @@ def database(options):
         myopts = options[1:]
 
         rc = 0
-        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
+        dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
 
         if myopts[0] == "tags":
             if (len(myopts) > 1):
@@ -1344,7 +1259,6 @@ def spm(options):
 
     if len(options) < 2:
         return 0
-    Spm = Entropy.Spm()
     options = options[1:]
 
     opts = []
@@ -1364,7 +1278,7 @@ def spm(options):
             return 0
         categories = list(set(options[1:]))
         categories.sort()
-        packages = Spm.get_available_packages(categories)
+        packages = Entropy.SpmService.get_available_packages(categories)
         packages = list(packages)
         packages.sort()
         if do_list:

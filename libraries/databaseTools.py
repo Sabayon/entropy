@@ -40,63 +40,6 @@ import dumpTools
 # Functions and Classes
 #####################################################################################
 
-
-'''
-   @description: open the installed packages database
-   @output: database class instance
-   NOTE: if you are interested using it client side, please USE equoTools.Equo() class instead
-'''
-def openClientDatabase(xcache = True, generate = False, indexing = True, OutputInterface = Text):
-    # extra check for directory existance
-    if not os.path.isdir(os.path.dirname(etpConst['etpdatabaseclientfilepath'])):
-        os.makedirs(os.path.dirname(etpConst['etpdatabaseclientfilepath']))
-    if (not generate) and (not os.path.isfile(etpConst['etpdatabaseclientfilepath'])):
-        raise exceptionTools.SystemDatabaseError("SystemDatabaseError: system database not found. Either does not exist or corrupted.")
-    else:
-        conn = etpDatabase(readOnly = False, dbFile = etpConst['etpdatabaseclientfilepath'], clientDatabase = True, dbname = etpConst['clientdbid'], xcache = xcache, indexing = indexing, OutputInterface = OutputInterface)
-        # validate database
-        if not generate:
-            conn.validateDatabase()
-        if (not etpConst['dbconfigprotect']):
-            # config protect not prepared
-            if (not generate):
-
-                etpConst['dbconfigprotect'] = conn.listConfigProtectDirectories()
-                etpConst['dbconfigprotectmask'] = conn.listConfigProtectDirectories(mask = True)
-                etpConst['dbconfigprotect'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
-                etpConst['dbconfigprotectmask'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
-
-                etpConst['dbconfigprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpConst['dbconfigprotect']]
-                etpConst['dbconfigprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpConst['dbconfigprotectmask']]
-
-        return conn
-
-'''
-   @description: open the entropy server database and returns the pointer. This function must be used only by reagent or activator
-   @output: database class instance
-'''
-def openServerDatabase(readOnly = True, noUpload = True, OutputInterface = Text):
-    if not os.path.isdir(os.path.dirname(etpConst['etpdatabasefilepath'])):
-        try:
-            os.remove(os.path.dirname(etpConst['etpdatabasefilepath']))
-        except OSError:
-            pass
-        os.makedirs(os.path.dirname(etpConst['etpdatabasefilepath']))
-    conn = etpDatabase(readOnly = readOnly, dbFile = etpConst['etpdatabasefilepath'], noUpload = noUpload, OutputInterface = OutputInterface)
-    # verify if we need to update the database to sync with portage updates, we just ignore being readonly in the case
-    if not etpConst['treeupdatescalled']:
-        # sometimes, when filling a new server db, we need to avoid tree updates
-        valid = True
-        try:
-            conn.validateDatabase()
-        except exceptionTools.SystemDatabaseError:
-            valid = False
-        if valid:
-            conn.serverUpdatePackagesData()
-        else:
-            OutputInterface.updateProgress(red("Entropy database is probably empty. If you don't agree with what I'm saying, then it's probably corrupted! I won't stop you here btw..."), importance = 1, type = "info", header = red(" * "))
-    return conn
-
 '''
    @description: open a generic client database and returns the pointer.
    @output: database class instance
@@ -126,8 +69,6 @@ class etpDatabase:
 
         self.readOnly = readOnly
         self.noUpload = noUpload
-        self.packagesRemoved = False
-        self.packagesAdded = False
         self.clientDatabase = clientDatabase
         self.xcache = xcache
         self.dbname = dbname
@@ -251,15 +192,6 @@ class etpDatabase:
             self.cursor.close()
             self.connection.close()
             return
-
-        # Cleanups if at least one package has been removed
-        # Please NOTE: the client database does not need it
-        if (self.packagesRemoved):
-            self.cleanupUseflags()
-            self.cleanupSources()
-            self.cleanupEclasses()
-            self.cleanupNeeded()
-            self.cleanupDependencies()
 
         if (etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']) and (not etpDbStatus[etpConst['etpdatabasefilepath']]['bumped']):
             # bump revision, setting DatabaseBump causes the session to just bump once
@@ -443,7 +375,7 @@ class etpDatabase:
     # check for repository packages updates
     # this will read database treeupdates* tables and do
     # changes required if running as root.
-    def clientUpdatePackagesData(self):
+    def clientUpdatePackagesData(self, clientDbconn):
 
         etpConst['treeupdatescalled'] = True
 
@@ -458,11 +390,6 @@ class etpDatabase:
             repositoryUpdatesDigestCache_db[repository] = stored_digest
             if stored_digest == -1:
                 doRescan = True
-
-        try:
-            clientDbconn = openClientDatabase(xcache = False, indexing = False, OutputInterface = self)
-        except exceptionTools.SystemDatabaseError:
-            return # don't run anything for goodness' sake
 
         # check stored value in client database
         client_digest = "0"
@@ -499,10 +426,6 @@ class etpDatabase:
 
             # clear client cache
             clientDbconn.clearCache()
-
-        clientDbconn.closeDB()
-        del clientDbconn
-
 
     # this functions will filter either data from /usr/portage/profiles/updates/*
     # or repository database returning only the needed actions
@@ -1090,7 +1013,6 @@ class etpDatabase:
 
         self.clearCache()
 
-        self.packagesAdded = True
         self.commitChanges()
 
         ### RSS Atom support
@@ -1265,8 +1187,13 @@ class etpDatabase:
         self.removePackageFromInstalledTable(idpackage)
         # Remove from dependstable if exists
         self.removePackageFromDependsTable(idpackage)
-        # need a final cleanup
-        self.packagesRemoved = True
+
+        # Cleanups if at least one package has been removed
+        self.cleanupUseflags()
+        self.cleanupSources()
+        self.cleanupEclasses()
+        self.cleanupNeeded()
+        self.cleanupDependencies()
 
         # clear caches
         self.clearCache()
@@ -1462,6 +1389,7 @@ class etpDatabase:
         self.commitChanges()
 
     def insertDependencies(self, idpackage, deplist):
+
         for dep in deplist:
 
             iddep = self.isDependencyAvailable(dep)
@@ -1483,18 +1411,15 @@ class etpDatabase:
         self.commitChanges()
 
     def insertContent(self, idpackage, content):
-        for xfile in content:
-            contenttype = content[xfile]
-            if type(xfile) is unicode:
-                xfile = xfile.encode('raw_unicode_escape')
-            self.cursor.execute(
-                'INSERT into content VALUES '
-                '(?,?,?)'
-                , (	idpackage,
-                        xfile,
-                        contenttype,
-                        )
-            )
+
+        def myiter():
+            for xfile in content:
+                contenttype = content[xfile]
+                if type(xfile) is unicode:
+                    xfile = xfile.encode('raw_unicode_escape')
+                yield (idpackage,xfile,contenttype,)
+
+        self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',myiter())
 
     def insertCounter(self, idpackage, counter, branch = None):
         self.checkReadOnly()
@@ -1528,7 +1453,7 @@ class etpDatabase:
         # create a random table and fill
         randomtable = "cdiff"+str(entropyTools.getRandomNumber())
         self.cursor.execute('DROP TABLE IF EXISTS '+randomtable)
-        self.cursor.execute('CREATE TABLE '+randomtable+' ( file VARCHAR )')
+        self.cursor.execute('CREATE TEMPORARY TABLE '+randomtable+' ( file VARCHAR )')
 
         dbconn.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
         dbconn.cursor.execute('select file from content where idpackage = (?)', (dbconn_idpackage,))
@@ -1539,173 +1464,33 @@ class etpDatabase:
         # now compare
         self.cursor.execute('SELECT file FROM content WHERE content.idpackage = (?) AND content.file NOT IN (SELECT file from '+randomtable+') ', (idpackage,))
         diff = self.fetchall2set(self.cursor.fetchall())
-        self.cursor.execute('DROP TABLE IF EXISTS '+randomtable)
+        self.cursor.execute('DROP TABLE IF EXISTS'+randomtable)
         return diff
 
 
     def cleanupUseflags(self):
         self.checkReadOnly()
-        self.cursor.execute('SELECT idflag FROM useflagsreference')
-        idflags = self.fetchall2set(self.cursor.fetchall())
-        # now parse them into useflags table
-        orphanedFlags = idflags.copy()
-
-        foundflags = set()
-        query = 'WHERE idflag = '
-        counter = 0
-        run = False
-        for idflag in idflags:
-            run = True
-            counter += 1
-            query += str(idflag)+' OR idflag = '
-            if counter > 25:
-                counter = 0
-                query = query[:-13]
-                self.cursor.execute('SELECT idflag FROM useflags '+query)
-                foundflags.update(self.fetchall2set(self.cursor.fetchall()))
-                query = 'WHERE idflag = '
-                run = False
-
-        if (run):
-            query = query[:-13]
-            self.cursor.execute('SELECT idflag FROM useflags '+query)
-            foundflags.update(self.fetchall2set(self.cursor.fetchall()))
-        orphanedFlags.difference_update(foundflags)
-
-        for idflag in orphanedFlags:
-            self.cursor.execute('DELETE FROM useflagsreference WHERE idflag ='+str(idflag))
+        self.cursor.execute('delete from useflagsreference where idflag IN (select idflag from useflagsreference where idflag NOT in (select idflag from useflags))')
         self.commitChanges()
 
     def cleanupSources(self):
         self.checkReadOnly()
-        self.cursor.execute('SELECT idsource FROM sourcesreference')
-        idsources = self.fetchall2set(self.cursor.fetchall())
-        # now parse them into useflags table
-        orphanedSources = idsources.copy()
-
-        foundsources = set()
-        query = 'WHERE idsource = '
-        counter = 0
-        run = False
-        for idsource in idsources:
-            run = True
-            counter += 1
-            query += str(idsource)+' OR idsource = '
-            if counter > 25:
-                counter = 0
-                query = query[:-15]
-                self.cursor.execute('SELECT idsource FROM sources '+query)
-                foundsources.update(self.fetchall2set(self.cursor.fetchall()))
-                query = 'WHERE idsource = '
-                run = False
-
-        if (run):
-            query = query[:-15]
-            self.cursor.execute('SELECT idsource FROM sources '+query)
-            foundsources.update(self.fetchall2set(self.cursor.fetchall()))
-        orphanedSources.difference_update(foundsources)
-
-        for idsource in orphanedSources:
-            self.cursor.execute('DELETE FROM sourcesreference WHERE idsource = '+str(idsource))
+        self.cursor.execute('delete from sourcesreference where idsource IN (select idsource from sourcesreference where idsource NOT in (select idsource from sources))')
         self.commitChanges()
 
     def cleanupEclasses(self):
         self.checkReadOnly()
-        self.cursor.execute('SELECT idclass FROM eclassesreference')
-        idclasses = self.fetchall2set(self.cursor.fetchall())
-        # now parse them into useflags table
-        orphanedClasses = idclasses.copy()
-
-        foundclasses = set()
-        query = 'WHERE idclass = '
-        counter = 0
-        run = False
-        for idclass in idclasses:
-            run = True
-            counter += 1
-            query += str(idclass)+' OR idclass = '
-            if counter > 25:
-                counter = 0
-                query = query[:-14]
-                self.cursor.execute('SELECT idclass FROM eclasses '+query)
-                foundclasses.update(self.fetchall2set(self.cursor.fetchall()))
-                query = 'WHERE idclass = '
-                run = False
-
-        if (run):
-            query = query[:-14]
-            self.cursor.execute('SELECT idclass FROM eclasses '+query)
-            foundclasses.update(self.fetchall2set(self.cursor.fetchall()))
-        orphanedClasses.difference_update(foundclasses)
-
-        for idclass in orphanedClasses:
-            self.cursor.execute('DELETE FROM eclassesreference WHERE idclass = '+str(idclass))
+        self.cursor.execute('delete from eclassesreference where idclass IN (select idclass from eclassesreference where idclass NOT in (select idclass from eclasses))')
         self.commitChanges()
 
     def cleanupNeeded(self):
         self.checkReadOnly()
-        self.cursor.execute('SELECT idneeded FROM neededreference')
-        idneededs = self.fetchall2set(self.cursor.fetchall())
-        # now parse them into useflags table
-        orphanedNeededs = idneededs.copy()
-
-        foundneeded = set()
-        query = 'WHERE idneeded = '
-        counter = 0
-        run = False
-        for idneeded in idneededs:
-            run = True
-            counter += 1
-            query += str(idneeded)+' OR idneeded = '
-            if counter > 25:
-                counter = 0
-                query = query[:-15]
-                self.cursor.execute('SELECT idneeded FROM needed '+query)
-                foundneeded.update(self.fetchall2set(self.cursor.fetchall()))
-                query = 'WHERE idneeded = '
-                run = False
-
-        if (run):
-            query = query[:-15]
-            self.cursor.execute('SELECT idneeded FROM needed '+query)
-            foundneeded.update(self.fetchall2set(self.cursor.fetchall()))
-        orphanedNeededs.difference_update(foundneeded)
-
-        for idneeded in orphanedNeededs:
-            self.cursor.execute('DELETE FROM neededreference WHERE idneeded = '+str(idneeded))
+        self.cursor.execute('delete from neededreference where idneeded IN (select idneeded from neededreference where idneeded NOT in (select idneeded from needed))')
         self.commitChanges()
 
     def cleanupDependencies(self):
         self.checkReadOnly()
-        self.cursor.execute('SELECT iddependency FROM dependenciesreference')
-        iddeps = self.fetchall2set(self.cursor.fetchall())
-        # now parse them into useflags table
-        orphanedDeps = iddeps.copy()
-
-        founddeps = set()
-        query = 'WHERE iddependency = '
-        counter = 0
-        run = False
-        for iddep in iddeps:
-            run = True
-            counter += 1
-            query += str(iddep)+' OR iddependency = '
-            if counter > 25:
-                counter = 0
-                query = query[:-19]
-                self.cursor.execute('SELECT iddependency FROM dependencies '+query)
-                founddeps.update(self.fetchall2set(self.cursor.fetchall()))
-                query = 'WHERE iddependency = '
-                run = False
-
-        if (run):
-            query = query[:-19]
-            self.cursor.execute('SELECT iddependency FROM dependencies '+query)
-            founddeps.update(self.fetchall2set(self.cursor.fetchall()))
-        orphanedDeps.difference_update(founddeps)
-
-        for iddep in orphanedDeps:
-            self.cursor.execute('DELETE FROM dependenciesreference WHERE iddependency = '+str(iddep))
+        self.cursor.execute('delete from dependenciesreference where iddependency IN (select iddependency from dependenciesreference where iddependency NOT in (select iddependency from dependencies))')
         self.commitChanges()
 
     def getNewNegativeCounter(self):
@@ -1758,14 +1543,6 @@ class etpDatabase:
             idcat = int(row[0])
             break
         return idcat
-
-    def getIDPackageFromBinaryPackage(self,packageName):
-        self.cursor.execute('SELECT "IDPACKAGE" FROM baseinfo WHERE download = "'+etpConst['binaryurirelativepath']+packageName+'"')
-        idpackage = -1
-        for row in self.cursor:
-            idpackage = int(row[0])
-            break
-        return idpackage
 
     def getScopeData(self, idpackage):
 
