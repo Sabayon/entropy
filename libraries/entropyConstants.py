@@ -749,7 +749,6 @@ def const_defaultSettings(rootdir):
     }
     etpConst.update(myConst)
 
-
 def const_setupServerClientRepository():
 
     etpConst['packagesserverstoredir'] = etpConst['packagesserverstoredir'].replace(
@@ -958,12 +957,10 @@ def const_readEntropySettings():
                 loglevel = line.split("loglevel|")[1]
                 try:
                     loglevel = int(loglevel)
-                except:
-                    print "ERROR: invalid loglevel in: "+etpConst['entropyconf']
+                except ValueError:
+                    pass
                 if (loglevel > -1) and (loglevel < 3):
                     etpConst['entropyloglevel'] = loglevel
-                else:
-                    print "WARNING: invalid loglevel in: "+etpConst['entropyconf']
 
             elif line.startswith("ftp-proxy|") and (len(line.split("|")) == 2):
                 ftpproxy = line.split("|")[1].strip().split()
@@ -1181,9 +1178,7 @@ def const_createWorkingDirectories():
 
 def const_configureLockPaths():
     etpConst['locks'] = {
-        'reposync': os.path.join(etpConst['etpdatabaseclientdir'],'.lock_reposync'),
-        'securitysync': os.path.join(etpConst['securitydir'],'.lock_securitysync'),
-        'packagehandling': os.path.join(etpConst['etpdatabaseclientdir'],'.lock_packagehandling'),
+        'using_resources': os.path.join(etpConst['etpdatabaseclientdir'],'.using_resources'),
     }
 
 
@@ -1334,7 +1329,7 @@ def const_add_entropy_group():
                 break
     else:
         new_id = 10000
-    print new_id
+
     f.close()
     f = open(group_file,"aw")
     f.seek(0,2)

@@ -290,6 +290,20 @@ def unpackBzip2(bzip2filepath):
     item.close()
     return filepath
 
+def backupClientDatabase():
+    import shutil
+    if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
+        rnd = getRandomNumber()
+        source = etpConst['etpdatabaseclientfilepath']
+        dest = etpConst['etpdatabaseclientfilepath']+".backup."+str(rnd)
+        shutil.copy2(source,dest)
+        user = os.stat(source)[4]
+        group = os.stat(source)[5]
+        os.chown(dest,user,group)
+        shutil.copystat(source,dest)
+        return dest
+    return ""
+
 def extractXpak(tbz2file,tmpdir = None):
     # extract xpak content
     xpakpath = suckXpak(tbz2file, etpConst['packagestmpdir'])

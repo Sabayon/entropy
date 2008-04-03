@@ -103,7 +103,6 @@ class Entropy(EquoInterface):
         self.progress_tooltip_notification.update(self.progress_tooltip_message_title,message)
         self.progress_tooltip_notification.show()
         self.applet_last_message = message
-        #self.appletInterface.redraw()
 
 class GuiUrlFetcher(urlFetcher):
 
@@ -342,8 +341,8 @@ class rhnApplet:
         widget.set_image(img)
 
     def enable_refresh_timer(self, when = etp_applet_config.settings['REFRESH_INTERVAL'] * 1000, force = 0):
-        if self.current_state not in [ "OKAY", "CRITICAL" ]:
-            raise "Can't enable timer unless in OKAY or CRITICAL state"
+        #if self.current_state not in [ "OKAY", "CRITICAL" ]:
+        #    return
         if not self.refresh_timeout_tag:
             self.refresh_timeout_tag = gobject.timeout_add(when, self.refresh_handler, force)
 
@@ -745,7 +744,7 @@ class rhnApplet:
     def exit_applet(self, *args):
         self.gtkEventThread.doQuit()
         gtk.main_quit()
-        return
+        sys.exit(0)
 
     def save_yourself(self, *args):
         if self.session:

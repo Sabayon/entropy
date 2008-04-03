@@ -139,6 +139,17 @@ class EquoInterface(TextInterface):
         if etpConst['entropygid'] != None:
             os.chown(filepath,-1,etpConst['entropygid'])
 
+    def _resources_run_create_lock(self):
+        self.create_pid_file_lock(etpConst['locks']['using_resources'])
+
+    def _resources_run_remove_lock(self):
+        if os.path.isfile(etpConst['locks']['using_resources']):
+            os.remove(etpConst['locks']['using_resources'])
+
+    def _resources_run_check_lock(self):
+        rc = self.check_pid_file_lock(etpConst['locks']['using_resources'])
+        return rc
+
     def check_pid_file_lock(self, pidfile):
         if not os.path.isfile(pidfile):
             return False # not locked
@@ -168,7 +179,12 @@ class EquoInterface(TextInterface):
         f.flush()
         f.close()
 
-    def sync_loop_check(self, check_function, lock_count, max_lock_count, sleep_seconds):
+    def sync_loop_check(self, check_function):
+
+        lock_count = 0
+        max_lock_count = 30
+        sleep_seconds = 10
+
         # check lock file
         while 1:
             locked = check_function()
@@ -838,7 +854,7 @@ class EquoInterface(TextInterface):
         #match_string = ''.join(["(%s)?" % (x,) for x in search_term])
         match_string = ''
         for x in search_term:
-            if x not in ["-","*"]:
+            if x.isalpha():
                 x = "(%s{1,})?" % (x,)
                 match_string += x
         #print match_string
@@ -1818,7 +1834,7 @@ class EquoInterface(TextInterface):
             except exceptionTools.RepositoryError:
                 self.cycleDone()
                 continue
-            idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'])
+            idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=")
             count = 0
             maxlen = len(idpackages)
             for idpackage in idpackages:
@@ -4256,17 +4272,6 @@ class PackageInterface:
 
         return 0
 
-    def _run_create_lock(self):
-        self.Entropy.create_pid_file_lock(etpConst['locks']['packagehandling'])
-
-    def _run_remove_lock(self):
-        if os.path.isfile(etpConst['locks']['packagehandling']):
-            os.remove(etpConst['locks']['packagehandling'])
-
-    def _run_check_lock(self):
-        rc = self.Entropy.check_pid_file_lock(etpConst['locks']['packagehandling'])
-        return rc
-
     def run_stepper(self, xterm_header):
         if xterm_header == None:
             xterm_header = ""
@@ -4350,21 +4355,21 @@ class PackageInterface:
         lock_count = 0
         max_lock_count = 30
         sleep_seconds = 10
-        gave_up = self.Entropy.sync_loop_check(self._run_check_lock, lock_count, max_lock_count, sleep_seconds)
+        gave_up = self.Entropy.sync_loop_check(self.Entropy._resources_run_check_lock)
         if gave_up:
             return 20
 
         # lock
-        self._run_create_lock()
+        self.Entropy._resources_run_create_lock()
 
         try:
             rc = self.run_stepper(xterm_header)
         except:
-            self._run_remove_lock()
+            self.Entropy._resources_run_remove_lock()
             raise
 
         # remove lock
-        self._run_remove_lock()
+        self.Entropy._resources_run_remove_lock()
 
         if rc != 0:
             self.Entropy.updateProgress(
@@ -5112,17 +5117,6 @@ class RepoInterface:
         return 0
 
 
-    def _sync_create_lock(self):
-        self.Entropy.create_pid_file_lock(etpConst['locks']['reposync'])
-
-    def _sync_remove_lock(self):
-        if os.path.isfile(etpConst['locks']['reposync']):
-            os.remove(etpConst['locks']['reposync'])
-
-    def _sync_check_lock(self):
-        rc = self.Entropy.check_pid_file_lock(etpConst['locks']['reposync'])
-        return rc
-
     def run_sync(self):
         self.dbupdated = False
         repocount = 0
@@ -5346,6 +5340,8 @@ class RepoInterface:
                     dbconn = self.Entropy.openRepositoryDatabase(repo)
                     dbconn.createAllIndexes()
                     try: # client db can be absent
+                        # XXX: once indexes will get close to final, remove this
+                        self.Entropy.clientDbconn.dropAllIndexes()
                         self.Entropy.clientDbconn.createAllIndexes()
                     except:
                         pass
@@ -5415,21 +5411,21 @@ class RepoInterface:
         lock_count = 0
         max_lock_count = 30
         sleep_seconds = 10
-        gave_up = self.Entropy.sync_loop_check(self._sync_check_lock, lock_count, max_lock_count, sleep_seconds)
+        gave_up = self.Entropy.sync_loop_check(self.Entropy._resources_run_check_lock)
         if gave_up:
             return 3
 
         # lock
-        self._sync_create_lock()
+        self.Entropy._resources_run_create_lock()
         try:
             rc = self.run_sync()
         except:
-            self._sync_remove_lock()
+            self.Entropy._resources_run_remove_lock()
             raise
         if rc: return rc
 
         # remove lock
-        self._sync_remove_lock()
+        self.Entropy._resources_run_remove_lock()
 
         if (self.notAvailable >= len(self.reponames)):
             return 2
@@ -8554,17 +8550,6 @@ class SecurityInterface:
             return True
         return False
 
-    def _sync_create_lock(self):
-        self.Entropy.create_pid_file_lock(etpConst['locks']['securitysync'])
-
-    def _sync_remove_lock(self):
-        if os.path.isfile(etpConst['locks']['securitysync']):
-            os.remove(etpConst['locks']['securitysync'])
-
-    def _sync_check_lock(self):
-        rc = self.Entropy.check_pid_file_lock(etpConst['locks']['securitysync'])
-        return rc
-
     def fetch_advisories(self):
 
         self.Entropy.updateProgress(
@@ -8588,23 +8573,20 @@ class SecurityInterface:
                                 footer = red(" ...")
                             )
 
-        lock_count = 0
-        max_lock_count = 30
-        sleep_seconds = 10
-        gave_up = self.Entropy.sync_loop_check(self._sync_check_lock, lock_count, max_lock_count, sleep_seconds)
+        gave_up = self.Entropy.sync_loop_check(self.Entropy._resources_run_check_lock)
         if gave_up:
             return 7
 
         # lock
-        self._sync_create_lock()
+        self.Entropy._resources_run_create_lock()
         try:
             rc = self.run_fetch()
         except:
-            self._sync_remove_lock()
+            self.Entropy._resources_run_remove_lock()
             raise
         if rc != 0: return rc
 
-        self._sync_remove_lock()
+        self.Entropy._resources_run_remove_lock()
 
         if self.advisories_changed:
             advtext = darkgreen("Security Advisories: updated successfully")
@@ -10717,12 +10699,21 @@ class ServerInterface(TextInterface):
         etpConst['clientdbid'] = etpConst['serverdbid']
         const_createWorkingDirectories()
 
-
-    def switch_default_repository(self, repoid):
-        self.default_repository = repoid
+    def close_server_databases(self):
         for item in self.serverDbCache:
             self.serverDbCache[item].closeDB()
         self.serverDbCache.clear()
+
+    def close_server_database(self, dbinstance):
+        for item in self.serverDbCache:
+            if dbinstance == self.serverDbCache[item]:
+                sameinst = self.serverDbCache.pop(item)
+                sameinst.closeDB()
+                break
+
+    def switch_default_repository(self, repoid):
+        self.default_repository = repoid
+        self.close_server_databases()
 
         etpConst['officialrepositoryid'] = repoid
         const_setupServerClientRepository()
@@ -10753,7 +10744,6 @@ class ServerInterface(TextInterface):
             f.close()
             shutil.move(etpConst['repositoriesconf']+".save_default_repo_tmp",etpConst['repositoriesconf'])
         else:
-            # weird !
             f = open(etpConst['repositoriesconf'],"w")
             f.write("officialrepositoryid|%s\n" % (repoid,))
             f.flush()
@@ -10775,7 +10765,8 @@ class ServerInterface(TextInterface):
             os.makedirs(os.path.dirname(etpConst['etpdatabasefilepath']))
 
         conn = self.databaseTools.etpDatabase(readOnly = read_only, dbFile = etpConst['etpdatabasefilepath'], noUpload = no_upload, OutputInterface = self)
-        # verify if we need to update the database to sync with portage updates, we just ignore being readonly in the case
+        # verify if we need to update the database to sync 
+        # with portage updates, we just ignore being readonly in the case
         if not etpConst['treeupdatescalled']:
             # sometimes, when filling a new server db, we need to avoid tree updates
             valid = True
@@ -10909,4 +10900,51 @@ class ServerInterface(TextInterface):
 
         return 0,packages
 
+    def depends_table_initialize(dbconn = None):
 
+        closedb = False
+        if dbconn == None:
+            dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+            closedb = True
+
+        dbconn.regenerateDependsTable()
+        dbconn.taintDatabase()
+
+        if closedb:
+            self.close_server_database(dbconn)
+
+    def generator(self, package, dbconnection = None, enzymeRequestBranch = etpConst['branch'], inject = False):
+
+        # check if the provided package is valid
+        if not os.path.isfile(package) or not package.endswith(".tbz2"):
+            return False, -1
+        packagename = os.path.basename(package)
+
+        print_info(brown(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
+        mydata = Entropy.ClientService.extract_pkg_metadata(package, enzymeRequestBranch, inject = inject)
+
+        if dbconnection is None:
+            dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
+        else:
+            dbconn = dbconnection
+
+        idpk, revision, etpDataUpdated, accepted = dbconn.handlePackage(mydata)
+
+        # add package info to our official repository etpConst['officialrepositoryid']
+        if (accepted):
+            dbconn.removePackageFromInstalledTable(idpk)
+            dbconn.addPackageToInstalledTable(idpk,etpConst['officialrepositoryid'])
+
+        if dbconnection is None:
+            dbconn.commitChanges()
+            dbconn.closeDB()
+
+        if (accepted) and (revision != 0):
+            print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" entry has been updated. Revision: ")+bold(str(revision)))
+            return True, idpk
+        elif (accepted) and (revision == 0):
+            print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" entry newly created."))
+            return True, idpk
+        else:
+            print_error(red(" * Package ")+bold(packagename)+red(": something bad happened !!!"))
+            return False, idpk

@@ -146,15 +146,16 @@ class SpritzProgress:
         self.total.setProgress( now, total )
 
     def set_progress( self, frac, text=None ):
+
+        if frac == self.lastFrac:
+            return
+
         if self.parent.quitNow:
             self.parent.exitNow()
-        # Skip if fraction not have changed
+
         if frac > 1 or frac == 0.0:
             return
-        while gtk.events_pending():      # process gtk events
-           gtk.main_iteration()
 
-        self.lastFrac = frac + 0.01
         if frac >= 0 and frac <= 1:
             self.ui.progressBar.set_fraction( frac )
         else:
@@ -165,6 +166,11 @@ class SpritzProgress:
         if self.parent.skipMirrorNow:
             self.parent.skipMirrorNow = False
             self.parent.yumbase._interrupt_callback(None)
+
+        self.lastFrac = frac
+
+        while gtk.events_pending():
+           gtk.main_iteration()
 
     def set_text(self, text):
         self.ui.progressBar.set_text( text )

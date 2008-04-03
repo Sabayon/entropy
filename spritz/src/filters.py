@@ -27,7 +27,7 @@ class SpritzFiltering:
 
     def registerFilter(self,klass):
         if not klass in self.filters:
-            self.filters.append(klass) 
+            self.filters.append(klass)
 
     def processFilters(self,po):
         for flt in self.filters:

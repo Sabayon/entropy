@@ -34,12 +34,6 @@ except ImportError: # fallback to embedded pysqlite
         raise exceptionTools.SystemError("Entropy needs a working sqlite+pysqlite or Python compiled with sqlite support. Error: %s" % (str(e),))
 import dumpTools
 
-
-
-############
-# Functions and Classes
-#####################################################################################
-
 '''
    @description: open a generic client database and returns the pointer.
    @output: database class instance
@@ -48,20 +42,6 @@ def openGenericDatabase(dbfile, dbname = None, xcache = False, indexing = True, 
     if dbname == None: dbname = "generic"
     conn = etpDatabase(readOnly = readOnly, dbFile = dbfile, clientDatabase = True, dbname = dbname, xcache = xcache, indexing = indexing, OutputInterface = OutputInterface)
     return conn
-
-def backupClientDatabase():
-    import shutil
-    if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
-        rnd = entropyTools.getRandomNumber()
-        source = etpConst['etpdatabaseclientfilepath']
-        dest = etpConst['etpdatabaseclientfilepath']+".backup."+str(rnd)
-        shutil.copy2(source,dest)
-        user = os.stat(source)[4]
-        group = os.stat(source)[5]
-        os.chown(dest,user,group)
-        shutil.copystat(source,dest)
-        return dest
-    return ""
 
 class etpDatabase:
 
@@ -1464,7 +1444,7 @@ class etpDatabase:
         # now compare
         self.cursor.execute('SELECT file FROM content WHERE content.idpackage = (?) AND content.file NOT IN (SELECT file from '+randomtable+') ', (idpackage,))
         diff = self.fetchall2set(self.cursor.fetchall())
-        self.cursor.execute('DROP TABLE IF EXISTS'+randomtable)
+        self.cursor.execute('DROP TABLE IF EXISTS '+randomtable)
         return diff
 
 
@@ -1839,24 +1819,24 @@ class etpDatabase:
 
     def retrieveDescription(self, idpackage):
 
-        #cache = self.fetchInfoCache(idpackage,'retrieveDescription')
-        #if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveDescription')
+        if cache != None: return cache
 
         self.cursor.execute('SELECT description FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         description = self.cursor.fetchone()[0]
 
-        #self.storeInfoCache(idpackage,'retrieveDescription',description)
+        self.storeInfoCache(idpackage,'retrieveDescription',description)
         return description
 
     def retrieveHomepage(self, idpackage):
 
-        #cache = self.fetchInfoCache(idpackage,'retrieveHomepage')
-        #if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveHomepage')
+        if cache != None: return cache
 
         self.cursor.execute('SELECT homepage FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         home = self.cursor.fetchone()[0]
 
-        #self.storeInfoCache(idpackage,'retrieveHomepage',home)
+        self.storeInfoCache(idpackage,'retrieveHomepage',home)
         return home
 
     def retrieveCounter(self, idpackage):
@@ -3221,8 +3201,14 @@ class etpDatabase:
     def CreatePackedDataTable(self):
         self.cursor.execute('CREATE TABLE packed_data ( idpack INTEGER PRIMARY KEY, data BLOB );')
 
+    def dropAllIndexes(self):
+        self.cursor.execute('SELECT name FROM SQLITE_MASTER WHERE type = "index"')
+        indexes = self.fetchall2set(self.cursor.fetchall())
+        for index in indexes:
+            self.cursor.execute('DROP INDEX IF EXISTS %s' % (index,))
+
+
     def createAllIndexes(self):
-        #if not self.dbname.startswith(etpConst['dbnamerepoprefix']):
         self.createContentIndex()
         self.createBaseinfoIndex()
         self.createKeywordsIndex()
@@ -3235,58 +3221,59 @@ class etpDatabase:
         self.createConfigProtectReferenceIndex()
 
     def createNeededIndex(self):
-        if self.dbname != etpConst['serverdbid'] and self.indexing:
+        if (self.dbname != etpConst['serverdbid']) and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( library )')
             self.commitChanges()
 
     def createUseflagsIndex(self):
-        if self.dbname != etpConst['serverdbid'] and self.indexing:
+        if (self.dbname != etpConst['serverdbid']) and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS useflagsindex ON useflagsreference ( flagname )')
             self.commitChanges()
 
     def createContentIndex(self):
-        if self.dbname != etpConst['serverdbid'] and self.indexing:
+        if (self.dbname != etpConst['serverdbid']) and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex_couple ON content ( idpackage )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex_file ON content ( file )')
             self.commitChanges()
 
     def createConfigProtectReferenceIndex(self):
-        if self.dbname != etpConst['serverdbid'] and self.indexing:
+        if (self.dbname != etpConst['serverdbid']) and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS configprotectreferenceindex ON configprotectreference ( protect )')
             self.commitChanges()
 
     def createBaseinfoIndex(self):
-        if self.dbname != etpConst['serverdbid'] and self.indexing:
+        if (self.dbname != etpConst['serverdbid']) and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_atom ON baseinfo ( atom )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_branch_name ON baseinfo ( name,branch )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_branch_name_idcategory ON baseinfo ( name,idcategory,branch )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_idcategory ON baseinfo ( idcategory )')
             self.commitChanges()
 
     def createLicensedataIndex(self):
-        if self.dbname != etpConst['serverdbid'] and self.indexing:
+        if (self.dbname != etpConst['serverdbid']) and self.indexing:
             if not self.doesTableExist("licensedata"):
                 return
             self.cursor.execute('CREATE INDEX IF NOT EXISTS licensedataindex ON licensedata ( licensename )')
             self.commitChanges()
 
     def createLicensesIndex(self):
-        if self.dbname != etpConst['serverdbid'] and self.indexing:
+        if (self.dbname != etpConst['serverdbid']) and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS licensesindex ON licenses ( license )')
             self.commitChanges()
 
     def createKeywordsIndex(self):
-        if self.dbname != etpConst['serverdbid'] and self.indexing:
+        if (self.dbname != etpConst['serverdbid']) and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsreferenceindex ON keywordsreference ( keywordname )')
             self.commitChanges()
 
     def createDependenciesIndex(self):
-        if self.dbname != etpConst['serverdbid'] and self.indexing:
+        if (self.dbname != etpConst['serverdbid']) and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex_idpackage_iddependency ON dependencies ( idpackage, iddependency )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesreferenceindex_dependency ON dependenciesreference ( dependency )')
             self.commitChanges()
 
     def createExtrainfoIndex(self):
-        if self.dbname != etpConst['serverdbid'] and self.indexing:
+        if (self.dbname != etpConst['serverdbid']) and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( description )')
             self.commitChanges()
 

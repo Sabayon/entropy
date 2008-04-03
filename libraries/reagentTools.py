@@ -27,42 +27,6 @@ import exceptionTools
 from entropy import EquoInterface, LogFile, ServerInterface, FtpInterface
 Entropy = ServerInterface()
 
-def generator(package, dbconnection = None, enzymeRequestBranch = etpConst['branch'], inject = False):
-
-    # check if the provided package is valid
-    if not os.path.isfile(package) or not package.endswith(".tbz2"):
-        return False, -1
-    packagename = os.path.basename(package)
-
-    print_info(brown(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
-    mydata = Entropy.ClientService.extract_pkg_metadata(package, enzymeRequestBranch, inject = inject)
-
-    if dbconnection is None:
-        dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
-    else:
-        dbconn = dbconnection
-
-    idpk, revision, etpDataUpdated, accepted = dbconn.handlePackage(mydata)
-
-    # add package info to our official repository etpConst['officialrepositoryid']
-    if (accepted):
-        dbconn.removePackageFromInstalledTable(idpk)
-        dbconn.addPackageToInstalledTable(idpk,etpConst['officialrepositoryid'])
-
-    if dbconnection is None:
-        dbconn.commitChanges()
-        dbconn.closeDB()
-
-    if (accepted) and (revision != 0):
-        print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" entry has been updated. Revision: ")+bold(str(revision)))
-        return True, idpk
-    elif (accepted) and (revision == 0):
-        print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" entry newly created."))
-        return True, idpk
-    else:
-        print_error(red(" * Package ")+bold(packagename)+red(": something bad happened !!!"))
-        return False, idpk
-
 def inject(options):
 
     requestedBranch = etpConst['branch']
@@ -89,7 +53,7 @@ def inject(options):
         tbz2Handler(tbz2, dbconn, requestedBranch, inject = True)
 
     dbconn.commitChanges()
-    dependsTableInitialize(dbconn, False)
+    Entropy.depends_table_initialize(dbconn)
     # checking dependencies and print issues
     Entropy.dependencies_test()
     dbconn.closeDB()
@@ -311,7 +275,7 @@ def update(options):
 
     dbconn.commitChanges()
     # regen dependstable
-    dependsTableInitialize(dbconn, False)
+    Entropy.depends_table_initialize(dbconn)
     dbconn.commitChanges()
 
     # checking dependencies and print issues
@@ -362,22 +326,6 @@ def tbz2Handler(tbz2path, dbconn, requested_branch, inject = False):
         print_info(brown(" * ")+red("Database injection complete for ")+downloadfile)
     else:
         raise exceptionTools.CorruptionError("CorruptionError: something bad happened, tbz2 not generated.")
-
-def dependsTableInitialize(dbconn = None, runActivator = True):
-    closedb = False
-    if dbconn == None:
-        dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
-        closedb = True
-    dbconn.regenerateDependsTable()
-    # now taint
-    dbconn.taintDatabase()
-    if (closedb):
-        dbconn.closeDB()
-    # running activator
-    if (runActivator):
-        import activatorTools
-        activatorTools.database(['sync'])
-    return 0
 
 def database(options):
 
@@ -518,7 +466,7 @@ def database(options):
             dbconn.commitChanges()
 
         # regen dependstable
-        dependsTableInitialize(dbconn, False)
+        Entropy.depends_table_initialize(dbconn)
 
         dbconn.closeDB()
         print_info(green(" * ")+red("Entropy database has been reinitialized using binary packages available"))
@@ -1104,7 +1052,7 @@ def database(options):
 
         # done !
         if not databaseRequestJustScan:
-            dependsTableInitialize(dbconn, False)
+            Entropy.depends_table_initialize(dbconn)
 
         print_info(blue(" *  Statistics:"))
         print_info(brown("     Number of checked packages:\t\t")+maxcount)
@@ -1196,7 +1144,7 @@ def database(options):
 
         # done !
         if not databaseRequestJustScan:
-            dependsTableInitialize(dbconn, False)
+            Entropy.depends_table_initialize(dbconn)
 
         print_info(blue(" *  Statistics:"))
         print_info(brown("     Number of checked packages:\t\t")+maxcount)

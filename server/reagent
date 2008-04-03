@@ -23,20 +23,17 @@
 
 # Never do "import portage" here, please use entropyTools binding
 
-import os
-from sys import path, exit, argv
-path.insert(0,'../libraries')
-path.insert(1,'../client')
-path.insert(2,'/usr/lib/entropy/client')
-path.insert(3,'/usr/lib/entropy/libraries')
+import os, sys
+sys.path.insert(0,'../libraries')
+sys.path.insert(1,'../client')
+sys.path.insert(2,'/usr/lib/entropy/client')
+sys.path.insert(3,'/usr/lib/entropy/libraries')
 from outputTools import *
 
 # CONSTANTS
-APPNAME = "reagent"
-APPVERSION = "1.0"
 def print_help():
 
-    print_info("Sabayon Linux "+APPNAME+" (C - 2007)")
+    print_info("Sabayon Linux "+sys.argv[0]+" (C - 2007)")
     print_info("General Options:")
     print_info(" --help\t\tthis output")
     print_info(" --version\t\tprint version")
@@ -93,21 +90,21 @@ def print_help():
     print_info(" \t\t"+red("--quiet")+"\t\t\t\t just print the dependencies list")
     print_info(" \t"+green("cleanup")+brown("\t\t to clean temporary files"))
 
-options = argv[1:]
+options = sys.argv[1:]
 
 from entropyConstants import *
 
 # print version
 if (' '.join(options).find("--version") != -1) or (' '.join(options).find(" -V") != -1):
-    print_generic(APPNAME+": "+APPVERSION)
-    exit(0)
+    print_generic(sys.argv[0]+": "+etpConst['entropyversion'])
+    sys.exit(0)
 
 # print help
 if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(options).find(" -h") != -1:
     print_help()
     if len(options) < 1:
 	print_error("not enough parameters")
-    exit(1)
+    sys.exit(1)
 
 import entropyTools
 import reagentTools
@@ -133,42 +130,44 @@ for opt in options:
             _options.append(opt)
 options = _options
 
-if (not entropyTools.isRoot()):
-    print_error("you must be root in order to run "+APPNAME)
+if not entropyTools.isRoot():
+    print_error("you must be root in order to run "+sys.argv[0])
 
 elif (options[0] == "update"):
     rc = reagentTools.update(options[1:])
-    exit(rc)
+    sys.exit(rc)
 
 elif (options[0] == "inject"):
     rc = reagentTools.inject(options[1:])
-    exit(rc)
+    sys.exit(rc)
 
 # database tool
 elif (options[0] == "database"):
     reagentTools.database(options[1:])
-    exit(0)
+    sys.exit(0)
 
 # deptest tool
 elif (options[0] == "deptest"):
     rc = reagentTools.dependenciesTest()
-    exit(rc)
+    sys.exit(rc)
 
 elif (options[0] == "libtest"):
     rc = reagentTools.librariesTest()
-    exit(rc)
+    sys.exit(rc)
 
 # deptest tool
 elif (options[0] == "depends"):
-    rc = reagentTools.dependsTableInitialize(runActivator = False)
-    exit(rc)
+    from entropy import ServerInterface
+    Entropy = ServerInterface()
+    rc = Entropy.depends_table_initialize()
+    sys.exit(rc)
 
 # cleanup
 elif (options[0] == "cleanup"):
     rc = entropyTools.cleanup()
-    exit(rc)
+    sys.exit(rc)
 
 # deptest tool
 elif (options[0] == "spm"):
     rc = reagentTools.spm(options[1:])
-    exit(rc)
+    sys.exit(rc)

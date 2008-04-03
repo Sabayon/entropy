@@ -85,7 +85,7 @@ def database(options):
         # ok, he/she knows it... hopefully
         # if exist, copy old database
         print_info(red(" @@ ")+blue("Creating backup of the previous database, if exists.")+red(" @@"))
-        newfile = Equo.databaseTools.backupClientDatabase()
+        newfile = Equo.entropyTools.backupClientDatabase()
         if (newfile):
             print_info(red(" @@ ")+blue("Previous database copied to file ")+newfile+red(" @@"))
 
@@ -208,7 +208,7 @@ def database(options):
         # ok, he/she knows it... hopefully
         # if exist, copy old database
         print_info(red(" @@ ")+blue("Creating backup of the previous database, if exists.")+red(" @@"))
-        newfile = Equo.databaseTools.backupClientDatabase()
+        newfile = Equo.entropyTools.backupClientDatabase()
         if (newfile):
             print_info(red(" @@ ")+blue("Previous database copied to file ")+newfile+red(" @@"))
 

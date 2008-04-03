@@ -509,7 +509,7 @@ class LicenseDialog:
                     break
             # prepare textview
             mybuffer = gtk.TextBuffer()
-            mybuffer.set_text(license_text)
+            mybuffer.set_text(unicode(license_text,'raw_unicode_escape'))
             self.licenseView.set_buffer(mybuffer)
             self.read_dialog.set_title(license_identifier+" license text")
             self.read_dialog.show_all()
