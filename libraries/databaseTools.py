@@ -654,8 +654,8 @@ class etpDatabase:
 
         if revision == -1:
             try:
-                revision = etpData['revision']
-            except:
+                revision = int(etpData['revision'])
+            except (KeyError, ValueError):
                 etpData['revision'] = 0 # revision not specified
                 revision = 0
 
@@ -1007,7 +1007,7 @@ class etpDatabase:
             # save
             dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
 
-        return idpackage, revision, etpData, True
+        return idpackage, revision, etpData
 
     # Update already available atom in db
     # returns True,revision if the package has been updated

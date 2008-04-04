@@ -1,31 +1,33 @@
 TODO list
-  - migrate server code to ServerInterface
-     [] write a tool that helps keeping packages updated (also supporting injected ones)
-     [] complete reagent spm interface
-     [] write a tool that will rebuild kernel dependant packages
-     [] GLSA interface, interfaced between packages in repo and the portage tree
-  - implement notice board
-  - calculate extra deps from NEEDED, server side? - NEEDED + ldconfig -p ?
-  - split RDEPEND and PDEPEND ( + && and || )
+  - Server-side code refactoring:
+     1st:
+        [] calculate extra deps from NEEDED, server side? - NEEDED + ldconfig -p
+        [] write a tool that helps keeping packages updated (also supporting injected ones)
+        [] complete reagent spm interface
+        [] write a tool that will rebuild kernel dependant packages
+        [] GLSA interface, interfaced between packages in repo and the portage tree
+     2nd:
+        [] write a ncurses interface to manage entropy database
+  - split RDEPEND and PDEPEND ( + && and || ) (*)
+  - add i18n support (*)
+
   - log messages from portage doebuild() calls
-  - create a meta-packages list ... I hate Joost (*)
+  - Community repositories
+  - implement notice board
   - implement configuration files snapshot tool
+  - create a meta-packages list
   - allow interactivity for games requiring CDs/DVDs
   - add changelog to packages
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
-  - Community repositories
-  - write a ncurses interface to manage entropy database
-  - add i18n support
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - interface bug reporting interface (ahah)
-    - handle entropy exceptions
-    - add masking menu
-    - use availability bool to show masked packages and connect the masking menu
+    - handle entropy exceptions (*)
+    - apackage masking menu (*)
+    - bug reporting interface (*)
+    - GLSA interface (*)
     - Popularity feature / Your Ego service
     - Category <-> Image dictionary (for the properties menu)
-    - GLSA interface
     - Skip Mirror buttons
     - button to stop the queue
     - show the number of packages found in a list
