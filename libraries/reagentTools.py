@@ -19,21 +19,21 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
+
 import shutil
 import time
 from entropyConstants import *
 from outputTools import *
-import exceptionTools
-from entropy import EquoInterface, LogFile, ServerInterface, FtpInterface
+from entropy import ServerInterface, FtpInterface
 Entropy = ServerInterface()
 
 def inject(options):
 
-    requestedBranch = etpConst['branch']
+    branch = etpConst['branch']
     mytbz2s = []
     for opt in options:
         if opt.startswith("--branch=") and len(opt.split("=")) == 2:
-            requestedBranch = opt.split("=")[1]
+            branch = opt.split("=")[1]
         else:
             if not os.path.isfile(opt) or not opt.endswith(".tbz2"):
                 print_error(darkred(" * ")+bold(opt)+red(" is invalid."))
@@ -44,20 +44,14 @@ def inject(options):
         print_error(red("no .tbz2 specified."))
         return 2
 
-    if not os.path.isdir(etpConst['packagessuploaddir']+"/"+requestedBranch):
-        os.makedirs(etpConst['packagessuploaddir']+"/"+requestedBranch)
-
-    dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
     for tbz2 in mytbz2s:
         print_info(red("Working on: ")+blue(tbz2))
-        tbz2Handler(tbz2, dbconn, requestedBranch, inject = True)
+        Entropy.add_package_to_repository(tbz2, branch, inject = True)
 
-    dbconn.commitChanges()
-    Entropy.depends_table_initialize(dbconn)
+    Entropy.depends_table_initialize()
     # checking dependencies and print issues
     Entropy.dependencies_test()
-    dbconn.closeDB()
-
+    Entropy.close_server_databases()
 
 
 def update(options):
@@ -84,6 +78,8 @@ def update(options):
                 continue
             _options.append(opt)
     options = _options
+
+
 
     if (not reagentRequestSeekStore):
 
@@ -277,7 +273,6 @@ def update(options):
     # regen dependstable
     Entropy.depends_table_initialize(dbconn)
     dbconn.commitChanges()
-
     # checking dependencies and print issues
     Entropy.dependencies_test()
 
@@ -287,45 +282,7 @@ def update(options):
     return 0
 
 
-def tbz2Handler(tbz2path, dbconn, requested_branch, inject = False):
-    rc, idpk = generator(tbz2path, dbconn, requested_branch, inject)
-    if (rc): # still needed ?
-        # add revision to package file
-        downloadurl = dbconn.retrieveDownloadURL(idpk)
-        packagerev = dbconn.retrieveRevision(idpk)
-        downloaddir = os.path.dirname(downloadurl)
-        downloadfile = os.path.basename(downloadurl)
-        # remove tbz2 and add revision
-        downloadfile = downloadfile[:-5]+"~"+str(packagerev)+".tbz2"
-        downloadurl = downloaddir+"/"+downloadfile
-        # update url
-        dbconn.setDownloadURL(idpk,downloadurl)
 
-        shutil.move(tbz2path,etpConst['packagessuploaddir']+"/"+requested_branch+"/"+downloadfile)
-        print_info(brown(" * ")+red("Injecting database information into ")+bold(downloadfile)+red(", please wait..."), back = True)
-
-        dbpath = etpConst['packagestmpdir']+"/"+str(Entropy.entropyTools.getRandomNumber())
-        while os.path.isfile(dbpath):
-            dbpath = etpConst['packagestmpdir']+"/"+str(Entropy.entropyTools.getRandomNumber())
-        # create db
-        pkgDbconn = Entropy.databaseTools.openGenericDatabase(dbpath)
-        pkgDbconn.initializeDatabase()
-        data = dbconn.getPackageData(idpk)
-        rev = dbconn.retrieveRevision(idpk)
-        # inject
-        pkgDbconn.addPackage(data, revision = rev)
-        pkgDbconn.closeDB()
-        # append the database to the new file
-        Entropy.entropyTools.aggregateEdb(tbz2file = etpConst['packagessuploaddir']+"/"+requested_branch+"/"+downloadfile, dbfile = dbpath)
-
-        digest = Entropy.entropyTools.md5sum(etpConst['packagessuploaddir']+"/"+requested_branch+"/"+downloadfile)
-        dbconn.setDigest(idpk,digest)
-        Entropy.entropyTools.createHashFile(etpConst['packagessuploaddir']+"/"+requested_branch+"/"+downloadfile)
-        # remove garbage
-        os.remove(dbpath)
-        print_info(brown(" * ")+red("Database injection complete for ")+downloadfile)
-    else:
-        raise exceptionTools.CorruptionError("CorruptionError: something bad happened, tbz2 not generated.")
 
 def database(options):
 
@@ -459,7 +416,7 @@ def database(options):
                     if mybranch == revisionAvail[0]:
                         addRevision = revisionAvail[1]
                 # fill the db entry
-                idpk, revision, etpDataUpdated, accepted = dbconn.addPackage(mydata, revision = addRevision)
+                idpk, revision, etpDataUpdated = dbconn.addPackage(mydata, revision = addRevision)
 
                 print_info(darkgreen(" [")+red(mybranch)+darkgreen("] ")+green("(")+ blue(str(currCounter))+"/"+red(str(atomsnumber))+green(") ")+red("Analyzing ")+bold(pkg)+red(". Revision: ")+blue(str(addRevision)))
 

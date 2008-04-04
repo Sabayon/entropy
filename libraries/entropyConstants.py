@@ -517,8 +517,8 @@ def const_defaultSettings(rootdir):
         'smartappsdir': ETP_DIR+ETP_SMARTAPPSDIR, # etpConst['smartappsdir'] location where smart apps files are places
         'smartpackagesdir': ETP_DIR+ETP_SMARTPACKAGESDIR, # etpConst['smartpackagesdir'] location where smart packages files are places
         'triggersdir': ETP_DIR+ETP_TRIGGERSDIR, # etpConst['triggersdir'] location where external triggers are placed
-        'packagesserverstoredir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_STOREDIR, # etpConst['packagesstoredir'] --> directory where .tbz2 files are stored waiting for being processed by reagent
-        'packagesserveruploaddir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_UPLOADDIR, # etpConst['packagessuploaddir'] --> directory where .tbz2 files are stored waiting for being uploaded to our main mirror
+        'packagesserverstoredir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_STOREDIR,
+        'packagesserveruploaddir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_UPLOADDIR,
         'portagetreedir': ETP_PORTDIR, # directory where is stored our local portage tree
         'distfilesdir': ETP_PORTDIR+ETP_DISTFILESDIR, # directory where our sources are downloaded
         'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration

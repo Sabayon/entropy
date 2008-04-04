@@ -142,7 +142,7 @@ def database(options):
                 except:
                     pass
 
-            idpk, rev, xx, status = Equo.clientDbconn.addPackage(etpData = mydata, revision = mydata['revision'])
+            idpk, rev, xx = Equo.clientDbconn.addPackage(etpData = mydata, revision = mydata['revision'])
             Equo.clientDbconn.addPackageToInstalledTable(idpk,"gentoo-db")
             os.remove(temptbz2)
 
@@ -442,7 +442,7 @@ def database(options):
                 else:
                     mydata['revision'] = 9999 # can't do much more
 
-                idpk, rev, xx, status = Equo.clientDbconn.handlePackage(etpData = mydata, forcedRevision = mydata['revision'])
+                idpk, rev, xx = Equo.clientDbconn.handlePackage(etpData = mydata, forcedRevision = mydata['revision'])
                 Equo.clientDbconn.removePackageFromInstalledTable(idpk)
                 Equo.clientDbconn.addPackageToInstalledTable(idpk,"gentoo-db")
                 os.remove(temptbz2)

@@ -109,7 +109,7 @@ def QuickpkgHandler(mypackages, savedir = None):
     for pkg in packages:
         if not etpUi['quiet']: print_info(brown(" * ")+red("Compressing: ")+darkgreen(pkgInfo[pkg]['atom']))
         pkgdata = text_ui.Equo.clientDbconn.getPackageData(pkgInfo[pkg]['idpackage'])
-        resultfile = text_ui.Equo.entropyTools.quickpkg(pkgdata = pkgdata, dirpath = savedir)
+        resultfile = text_ui.Equo.quickpkg_handler(pkgdata = pkgdata, dirpath = savedir)
         if resultfile == None:
             if not etpUi['quiet']: print_error(darkred(" * ")+red("Error creating package for: ")+bold(pkgInfo[pkg])+darkred(". Cannot continue."))
             return 3

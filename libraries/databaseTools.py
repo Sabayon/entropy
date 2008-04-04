@@ -34,15 +34,6 @@ except ImportError: # fallback to embedded pysqlite
         raise exceptionTools.SystemError("Entropy needs a working sqlite+pysqlite or Python compiled with sqlite support. Error: %s" % (str(e),))
 import dumpTools
 
-'''
-   @description: open a generic client database and returns the pointer.
-   @output: database class instance
-'''
-def openGenericDatabase(dbfile, dbname = None, xcache = False, indexing = True, readOnly = False, OutputInterface = Text):
-    if dbname == None: dbname = "generic"
-    conn = etpDatabase(readOnly = readOnly, dbFile = dbfile, clientDatabase = True, dbname = dbname, xcache = xcache, indexing = indexing, OutputInterface = OutputInterface)
-    return conn
-
 class etpDatabase:
 
     def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = etpConst['serverdbid'], indexing = True, OutputInterface = Text):
@@ -86,6 +77,9 @@ class etpDatabase:
                     self.databaseStructureUpdates()
             else:
                 self.databaseStructureUpdates()
+
+    def __del__(self):
+        self.closeDB()
 
     def doServerDatabaseSyncLock(self, noUpload):
 
@@ -476,7 +470,8 @@ class etpDatabase:
     # 1) move package key to the new name: category + name + atom
     # 2) update all the dependencies in dependenciesreference to the new key
     # 3) run fixpackages which will update /var/db/pkg files
-    # 4) automatically run quickpkg() to build the new binary and tainted binaries owning tainted iddependency and taint database (LOL)
+    # 4) automatically run quickpkg() to build the new binary and
+    #    tainted binaries owning tainted iddependency and taint database
     def runTreeUpdatesMoveAction(self, move_command):
         key_from = move_command[0]
         key_to = move_command[1]
@@ -647,10 +642,9 @@ class etpDatabase:
 
         foundid = self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag)
         if (foundid < 0): # same atom doesn't exist in any branch
-            idpk, revision, etpDataUpdated, accepted = self.addPackage(etpData, revision = forcedRevision)
+            return self.addPackage(etpData, revision = forcedRevision)
         else:
-            idpk, revision, etpDataUpdated, accepted = self.updatePackage(etpData, forcedRevision) # only when the same atom exists
-        return idpk, revision, etpDataUpdated, accepted
+            return self.updatePackage(etpData, forcedRevision) # only when the same atom exists
 
 
     def addPackage(self, etpData, revision = -1):
@@ -992,7 +986,6 @@ class etpDatabase:
             )
 
         self.clearCache()
-
         self.commitChanges()
 
         ### RSS Atom support
@@ -1036,9 +1029,7 @@ class etpDatabase:
             if atomid > -1:
                 self.removePackage(atomid)
 
-            x,y,z,accepted = self.addPackage(etpData, revision = forcedRevision)
-            self.commitChanges()
-            return x,y,z,accepted
+            return self.addPackage(etpData, revision = forcedRevision)
 
         else:
             # update package in etpData['branch']
@@ -1058,9 +1049,7 @@ class etpDatabase:
                     curRevision += 1
 
             # add the new one
-            x,y,z,accepted = self.addPackage(etpData, revision = curRevision)
-            self.commitChanges()
-            return x,y,z,accepted
+            return self.addPackage(etpData, revision = curRevision)
 
 
     def removePackage(self,idpackage):
@@ -1441,6 +1430,7 @@ class etpDatabase:
         while xfile:
             self.cursor.execute('INSERT INTO '+randomtable+' VALUES (?)', (xfile[0],))
             xfile = dbconn.cursor.fetchone()
+
         # now compare
         self.cursor.execute('SELECT file FROM content WHERE content.idpackage = (?) AND content.file NOT IN (SELECT file from '+randomtable+') ', (idpackage,))
         diff = self.fetchall2set(self.cursor.fetchall())

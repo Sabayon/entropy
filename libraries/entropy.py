@@ -69,6 +69,7 @@ class EquoInterface(TextInterface):
         self.urlFetcher = urlFetcher # in this way, can be reimplemented (so you can override updateProgress)
         self.progress = None # supporting external updateProgress stuff, you can point self.progress to your progress bar
                              # and reimplement updateProgress
+        self.clientDbconn = None
         self.FtpInterface = FtpInterface # for convenience
         self.indexing = indexing
         self.noclientdb = False
@@ -109,6 +110,15 @@ class EquoInterface(TextInterface):
                 self.purge_cache(False)
             except:
                 pass
+
+    def __del__(self):
+        if self.clientDbconn != None:
+            del self.clientDbconn
+        del self.MaskingParser
+        del self.FileUpdates
+        self.closeAllRepositoryDatabases()
+        self.closeAllSecurity()
+
 
     def validate_repositories(self):
         # valid repositories
@@ -424,13 +434,16 @@ class EquoInterface(TextInterface):
             indexing = indexing_override
         else:
             indexing = self.indexing
-        dbconn = self.databaseTools.openGenericDatabase(dbfile, 
-                                                        dbname = dbname, 
-                                                        xcache = xcache, 
-                                                        indexing = indexing,
-                                                        readOnly = readOnly
-                                                    )
-        return dbconn
+        if dbname == None:
+            dbname = "generic"
+        return self.databaseTools.etpDatabase(  readOnly = readOnly,
+                                                dbFile = dbfile,
+                                                clientDatabase = True,
+                                                dbname = dbname,
+                                                xcache = xcache,
+                                                indexing = indexing,
+                                                OutputInterface = self
+                                             )
 
     def listAllAvailableBranches(self):
         branches = set()
@@ -2354,11 +2367,121 @@ class EquoInterface(TextInterface):
             return -1,None,None
         atom = self.clientDbconn.atomMatch(match[0])
         pkgdata = self.clientDbconn.getPackageData(match[0])
-        resultfile = self.entropyTools.quickpkg(pkgdata = pkgdata, dirpath = savedir)
+        resultfile = self.quickpkg_handler(pkgdata = pkgdata, dirpath = savedir)
         if resultfile == None:
             return -1,atom,None
         else:
             return 0,atom,resultfile
+
+    def quickpkg_handler(
+                                self,
+                                pkgdata,
+                                dirpath,
+                                edb = True,
+                                portdbPath = None,
+                                fake = False,
+                                compression = "bz2",
+                                shiftpath = ""
+                        ):
+
+        import stat
+        import tarfile
+
+        if compression not in ("bz2","","gz"):
+            compression = "bz2"
+
+        # getting package info
+        pkgtag = ''
+        pkgrev = "~"+str(pkgdata['revision'])
+        if pkgdata['versiontag']: pkgtag = "#"+pkgdata['versiontag']
+        pkgname = pkgdata['name']+"-"+pkgdata['version']+pkgrev+pkgtag # + version + tag
+        pkgcat = pkgdata['category']
+        #pkgfile = pkgname+".tbz2"
+        dirpath += "/"+pkgname+".tbz2"
+        if os.path.isfile(dirpath):
+            os.remove(dirpath)
+        tar = tarfile.open(dirpath,"w:"+compression)
+
+        if not fake:
+
+            contents = [x for x in pkgdata['content']]
+            id_strings = {}
+            contents.sort()
+
+            # collect files
+            for path in contents:
+                # convert back to filesystem str
+                encoded_path = path
+                path = path.encode('raw_unicode_escape')
+                path = shiftpath+path
+                try:
+                    exist = os.lstat(path)
+                except OSError, e:
+                    continue # skip file
+                arcname = path[len(shiftpath):] # remove shiftpath
+                if arcname.startswith("/"):
+                    arcname = arcname[1:] # remove trailing /
+                ftype = pkgdata['content'][encoded_path]
+                if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
+                if 'dir' == ftype and \
+                    not stat.S_ISDIR(exist.st_mode) and \
+                    os.path.isdir(path): # workaround for directory symlink issues
+                    path = os.path.realpath(path)
+
+                tarinfo = tar.gettarinfo(path, arcname)
+                tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
+                tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
+
+                if stat.S_ISREG(exist.st_mode):
+                    tarinfo.type = tarfile.REGTYPE
+                    f = open(path)
+                    try:
+                        tar.addfile(tarinfo, f)
+                    finally:
+                        f.close()
+                else:
+                    tar.addfile(tarinfo)
+
+        tar.close()
+
+        # appending xpak metadata
+        if etpConst['gentoo-compat']:
+            import etpXpak
+            Spm = self.Spm()
+
+            gentoo_name = self.entropyTools.remove_tag(pkgname)
+            gentoo_name = self.entropyTools.remove_entropy_revision(gentoo_name)
+            if portdbPath == None:
+                dbdir = Spm.get_vdb_path()+"/"+pkgcat+"/"+gentoo_name+"/"
+            else:
+                dbdir = portdbPath+"/"+pkgcat+"/"+gentoo_name+"/"
+            if os.path.isdir(dbdir):
+                tbz2 = etpXpak.tbz2(dirpath)
+                tbz2.recompose(dbdir)
+
+        if edb:
+            # appending entropy metadata
+            dbpath = self.inject_entropy_database_into_package(dirpath, pkgdata)
+
+        if os.path.isfile(dirpath):
+            return dirpath
+        return None
+
+    def inject_entropy_database_into_package(self, package_filename, data):
+        dbpath = self.get_tmp_dbpath()
+        dbconn = self.openGenericDatabase(dbpath)
+        dbconn.initializeDatabase()
+        dbconn.addPackage(data, revision = data['revision'])
+        dbconn.commitChanges()
+        dbconn.closeDB()
+        self.entropyTools.aggregateEdb(tbz2file = package_filename, dbfile = dbpath)
+        return dbpath
+
+    def get_tmp_dbpath(self):
+        dbpath = etpConst['packagestmpdir']+"/"+str(self.entropyTools.getRandomNumber())
+        while os.path.isfile(dbpath):
+            dbpath = etpConst['packagestmpdir']+"/"+str(self.entropyTools.getRandomNumber())
+        return dbpath
 
     def Package(self):
         conn = PackageInterface(EquoInstance = self)
@@ -3745,10 +3868,8 @@ class PackageInterface:
         data['injected'] = False
         data['counter'] = -1 # gentoo counter will be set in self._install_package_into_gentoo_database()
 
-        idpk, rev, x, status = self.Entropy.clientDbconn.handlePackage(etpData = data, forcedRevision = data['revision'])
-        del x
+        idpk, rev, x = self.Entropy.clientDbconn.handlePackage(etpData = data, forcedRevision = data['revision'])
         del data
-        del status # if operation isn't successful, an error will be surely raised
 
         # update datecreation
         ctime = self.Entropy.entropyTools.getCurrentUnixTime()
@@ -10673,6 +10794,8 @@ class ServerInterface(TextInterface):
             self.default_repository = etpConst['officialrepositoryid']
             self.setup_services()
 
+    def __del__(self):
+        self.close_server_databases()
 
     def setup_services(self):
         self.setup_entropy_settings()
@@ -10701,14 +10824,14 @@ class ServerInterface(TextInterface):
 
     def close_server_databases(self):
         for item in self.serverDbCache:
-            self.serverDbCache[item].closeDB()
+            del self.serverDbCache[item] # this will trigger closeDB()
         self.serverDbCache.clear()
 
     def close_server_database(self, dbinstance):
         for item in self.serverDbCache:
             if dbinstance == self.serverDbCache[item]:
                 sameinst = self.serverDbCache.pop(item)
-                sameinst.closeDB()
+                del sameinst
                 break
 
     def switch_default_repository(self, repoid):
@@ -10900,51 +11023,119 @@ class ServerInterface(TextInterface):
 
         return 0,packages
 
-    def depends_table_initialize(dbconn = None):
-
-        closedb = False
-        if dbconn == None:
-            dbconn = self.openServerDatabase(read_only = False, no_upload = True)
-            closedb = True
-
+    def depends_table_initialize():
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
         dbconn.regenerateDependsTable()
         dbconn.taintDatabase()
+        dbconn.commitChanges()
 
-        if closedb:
-            self.close_server_database(dbconn)
 
-    def generator(self, package, dbconnection = None, enzymeRequestBranch = etpConst['branch'], inject = False):
+    def package_injector(self, package_file, branch = etpConst['branch'], inject = False):
 
-        # check if the provided package is valid
-        if not os.path.isfile(package) or not package.endswith(".tbz2"):
-            return False, -1
-        packagename = os.path.basename(package)
+        dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
+        self.updateProgress(
+                                red("[repo: %s] adding package: %s" % (
+                                            darkgreen(etpConst['officialrepositoryid']),
+                                            bold(os.path.basename(package_file)),
+                                        )
+                                ),
+                                importance = 1,
+                                type = "info",
+                                header = brown(" * "),
+                                back = True
+                            )
+        mydata = self.ClientService.extract_pkg_metadata(package_file, etpBranch = branch, inject = inject)
+        idpackage, revision, x = dbconn.handlePackage(mydata)
+        del x
 
-        print_info(brown(" * ")+red("Processing: ")+bold(packagename)+red(", please wait..."))
-        mydata = Entropy.ClientService.extract_pkg_metadata(package, enzymeRequestBranch, inject = inject)
+        # add package info to our current server repository
+        dbconn.removePackageFromInstalledTable(idpackage)
+        dbconn.addPackageToInstalledTable(idpackage,etpConst['officialrepositoryid'])
+        dbconn.commitChanges()
+        atom = dbconn.retrieveAtom(idpackage)
 
-        if dbconnection is None:
-            dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
-        else:
-            dbconn = dbconnection
+        self.updateProgress(
 
-        idpk, revision, etpDataUpdated, accepted = dbconn.handlePackage(mydata)
+                                red("[repo: %s] added package: %s rev: %s" % (
+                                            darkgreen(etpConst['officialrepositoryid']),
+                                            bold(atom),
+                                            bold(str(revision)),
+                                        )
+                                ),
+                                importance = 1,
+                                type = "info",
+                                header = brown(" * ")
+                            )
 
-        # add package info to our official repository etpConst['officialrepositoryid']
-        if (accepted):
-            dbconn.removePackageFromInstalledTable(idpk)
-            dbconn.addPackageToInstalledTable(idpk,etpConst['officialrepositoryid'])
+        return idpackage
 
-        if dbconnection is None:
-            dbconn.commitChanges()
-            dbconn.closeDB()
+    # this function changes the final repository package filename
+    def _setup_repository_package_filename(self, idpackage):
 
-        if (accepted) and (revision != 0):
-            print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" entry has been updated. Revision: ")+bold(str(revision)))
-            return True, idpk
-        elif (accepted) and (revision == 0):
-            print_info(green(" * ")+red("Package ")+bold(os.path.basename(etpDataUpdated['download']))+red(" entry newly created."))
-            return True, idpk
-        else:
-            print_error(red(" * Package ")+bold(packagename)+red(": something bad happened !!!"))
-            return False, idpk
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+
+        downloadurl = dbconn.retrieveDownloadURL(idpackage)
+        packagerev = dbconn.retrieveRevision(idpackage)
+        downloaddir = os.path.dirname(downloadurl)
+        downloadfile = os.path.basename(downloadurl)
+        # add revision
+        downloadfile = downloadfile[:-5]+"~%s.tbz2" % (packagerev,)
+        downloadurl = os.path.join(downloaddir,downloadfile)
+
+        # update url
+        dbconn.setDownloadURL(idpackage,downloadurl)
+
+        return downloadurl
+
+    def add_package_to_repository(self, package_filename, requested_branch, inject = False):
+
+        upload_dir = os.path.join(etpConst['packagesserveruploaddir'],requested_branch)
+        if not os.path.isdir(upload_dir):
+            os.makedirs(upload_dir)
+
+        # inject into database
+        idpackage = self.package_injector(package_filename, branch = requested_branch, inject = inject)
+
+        download_url = self._setup_repository_package_filename(idpackage)
+        downloadfile = os.path.basename(download_url)
+        destination_path = os.path.join(upload_dir,downloadfile)
+        shutil.move(package_filename,destination_path)
+
+        self.updateProgress(
+                                red(
+                                    "[repo: %s] injecting entropy metadata: %s" % (
+                                            darkgreen(etpConst['officialrepositoryid']),
+                                            bold(downloadfile),
+                                        )
+                                    ),
+                                importance = 1,
+                                type = "info",
+                                header = brown(" * "),
+                                back = True
+                            )
+
+
+        data = dbconn.getPackageData(idpackage)
+        dbpath = self.ClientService.inject_entropy_database_into_package(destination_path, data)
+        digest = self.entropyTools.md5sum(destination_path)
+        # update digest
+        dbconn.setDigest(idpackage,digest)
+        self.entropyTools.createHashFile(destination_path)
+        # remove garbage
+        os.remove(dbpath)
+
+        self.updateProgress(
+                                red(
+                                    "[repo: %s] injection complete: %s" % (
+                                            darkgreen(etpConst['officialrepositoryid']),
+                                            bold(downloadfile),
+                                        )
+                                    ),
+                                importance = 1,
+                                type = "info",
+                                header = brown(" * ")
+                            )
+        dbconn.commitChanges()
+
+
+
