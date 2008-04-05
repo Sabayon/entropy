@@ -887,7 +887,7 @@ def searchDescription(descriptions, idreturn = False):
             print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 
         dbconn = Equo.openRepositoryDatabase(repo)
-        dataInfo, descdata = __searchDescriptions(descriptions, dbconn, idreturn)
+        dataInfo, descdata = searchDescriptions(descriptions, dbconn, idreturn)
         foundPackages[repo].update(descdata)
 
     if (idreturn):
@@ -897,7 +897,7 @@ def searchDescription(descriptions, idreturn = False):
 '''
    Internal functions
 '''
-def __searchDescriptions(descriptions, dbconn, idreturn = False, EquoConnection = None):
+def searchDescriptions(descriptions, dbconn, idreturn = False, EquoConnection = None):
     dataInfo = set() # when idreturn is True
     mydescdata = {}
 

@@ -330,7 +330,7 @@ def database(options):
 
         import shutil
         print_info(red(" Collecting Portage counters..."), back = True)
-        installedPackages = Spm.get_installed_packages_counter()
+        installed_packages = Spm.get_installed_packages_counter()
         print_info(red(" Collecting Entropy packages..."), back = True)
         installedCounters = set()
         toBeAdded = set()
@@ -338,7 +338,7 @@ def database(options):
 
         print_info(red(" Differential Scan..."), back = True)
         # packages to be added/updated (handle add/update later)
-        for x in installedPackages[0]:
+        for x in installed_packages:
             installedCounters.add(x[1])
             counter = Equo.clientDbconn.isCounterAvailable(x[1])
             if (not counter):

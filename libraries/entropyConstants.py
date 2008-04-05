@@ -751,6 +751,10 @@ def const_defaultSettings(rootdir):
 
 def const_setupServerClientRepository():
 
+    etpConst['packagesserverbindir'] = etpConst['packagesserverbindir'].replace(
+            etpConst['dbrepodir'],
+            etpConst['officialrepositoryid']
+    )
     etpConst['packagesserverstoredir'] = etpConst['packagesserverstoredir'].replace(
             etpConst['dbrepodir'],
             etpConst['officialrepositoryid']

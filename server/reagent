@@ -26,8 +26,10 @@
 import os, sys
 sys.path.insert(0,'../libraries')
 sys.path.insert(1,'../client')
-sys.path.insert(2,'/usr/lib/entropy/client')
-sys.path.insert(3,'/usr/lib/entropy/libraries')
+sys.path.insert(2,'../server')
+sys.path.insert(3,'/usr/lib/entropy/client')
+sys.path.insert(4,'/usr/lib/entropy/libraries')
+sys.path.insert(5,'/usr/lib/entropy/server')
 from outputTools import *
 
 # CONSTANTS
@@ -49,10 +51,8 @@ def print_help():
     print_info(" \t"+green("inject")+brown("\t\t Inject .tbz2s into database without removing others in the scope (multipackage)"))
     print_info(" \t\t"+red("--branch=<branch name>")+"\t\t Choose which branch assign to the packages")
 
-    print_info(" \t"+green("database")+brown("\t Entropy database tool manager"))
-    print_info(" \t\t"+red("--initialize")+"\t\t\t (Re)Initialize the Entropy packages database [DO NOT USE THIS]")
-    print_info(" \t\t"+green("search")+"\t\t\t\t Search a package inside the Entropy packages database")
-    print_info(" \t\t"+green("query")+"\t\t\t\t Database querying functions")
+    print_info(" \t"+green("query")+brown("\t Entropy Query manager"))
+    print_info(" \t\t"+green("search")+"\t\t Search a package inside the Entropy packages database")
     print_info(" \t\t\t"+red("needed")+"\t\t print runtime libraries needed for the provided atoms")
     print_info(" \t\t\t"+red("depends")+"\t\t search which packages depend on the provided atoms")
     print_info(" \t\t\t"+red("tags")+"\t\t search packages that have the specified tags")
@@ -62,6 +62,10 @@ def print_help():
     print_info(" \t\t\t"+red("eclass")+"\t\t search packages using the specified eclasses")
     print_info(" \t\t\t"+brown("--verbose")+"\t show more details")
     print_info(" \t\t\t"+brown("--quiet")+"\t\t print results in a scriptable way")
+
+
+    print_info(" \t"+green("database")+brown("\t Entropy database tool manager"))
+    print_info(" \t\t"+red("--initialize")+"\t\t\t (Re)Initialize the Entropy packages database [DO NOT USE THIS]")
     print_info(" \t\t"+green("bump")+"\t\t\t\t Do a revision bump on the database")
     print_info(" \t\t\t"+red("--sync")+"\t\t synchronize the database")
     print_info(" \t\t"+green("remove")+"\t\t\t\t Remove a package or a list of packages")
@@ -72,12 +76,6 @@ def print_help():
     print_info(" \t\t"+green("switchbranch")+"\t\t\t Switch to the specified branch, a package, a list of packages, world")
     print_info(" \t\t"+green("md5check")+"\t\t\t Check digest of a package, a list of packages, world")
     print_info(" \t\t"+green("md5remote")+"\t\t\t Compare digest of a package between database and mirrors")
-    print_info(" \t\t"+green("depsregen")+"\t\t\t Recalculate and update package dependencies in repository")
-    print_info(" \t\t\t"+red("--justscan")+"\t Just show differences between results")
-    print_info(" \t\t\t"+red("--nochecksum")+"\t Disable checksum verification")
-    print_info(" \t\t"+green("contentregen")+"\t\t\t Recalculate and update package content metadata in repository")
-    print_info(" \t\t\t"+red("--justscan")+"\t Just show differences between results")
-    print_info(" \t\t\t"+red("--nochecksum")+"\t Disable checksum verification")
 
     print_info(" \t"+green("spm")+brown("\t\t Source Package Manager tool manager"))
     print_info(" \t\t"+green("compile")+"\t\t\t Start SPM and compile something")
@@ -107,8 +105,6 @@ if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(option
     sys.exit(1)
 
 import entropyTools
-import reagentTools
-import databaseTools
 
 # preliminary options parsing
 _options = []
@@ -134,32 +130,47 @@ if not entropyTools.isRoot():
     print_error("you must be root in order to run "+sys.argv[0])
 
 elif (options[0] == "update"):
-    rc = reagentTools.update(options[1:])
+    import server_reagent
+    rc = server_reagent.update(options[1:])
+    server_reagent.Entropy.close_server_databases()
     sys.exit(rc)
 
 elif (options[0] == "inject"):
-    rc = reagentTools.inject(options[1:])
+    import server_reagent
+    rc = server_reagent.inject(options[1:])
+    server_reagent.Entropy.close_server_databases()
     sys.exit(rc)
 
 # database tool
 elif (options[0] == "database"):
-    reagentTools.database(options[1:])
+    import server_reagent
+    server_reagent.database(options[1:])
+    server_reagent.Entropy.close_server_databases()
     sys.exit(0)
+
+elif (options[0] == "query"):
+    import server_query
+    rc = server_query.query(options[1:])
+    sys.exit(rc)
 
 # deptest tool
 elif (options[0] == "deptest"):
-    rc = reagentTools.dependenciesTest()
+    import server_reagent
+    rc = server_reagent.Entropy.dependencies_test()
+    server_reagent.Entropy.close_server_databases()
     sys.exit(rc)
 
 elif (options[0] == "libtest"):
-    rc = reagentTools.librariesTest()
+    import server_reagent
+    rc = server_reagent.Entropy.libraries_test()
+    server_reagent.Entropy.close_server_databases()
     sys.exit(rc)
 
 # deptest tool
 elif (options[0] == "depends"):
-    from entropy import ServerInterface
-    Entropy = ServerInterface()
-    rc = Entropy.depends_table_initialize()
+    import server_reagent
+    rc = server_reagent.Entropy.depends_table_initialize()
+    server_reagent.Entropy.close_server_databases()
     sys.exit(rc)
 
 # cleanup
@@ -169,5 +180,7 @@ elif (options[0] == "cleanup"):
 
 # deptest tool
 elif (options[0] == "spm"):
-    rc = reagentTools.spm(options[1:])
+    import server_reagent
+    rc = server_reagent.spm(options[1:])
+    server_reagent.Entropy.close_server_databases()
     sys.exit(rc)

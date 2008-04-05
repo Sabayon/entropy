@@ -50,6 +50,7 @@ class etpDatabase:
         if entropyTools.islive():
             self.indexing = False
         self.dbFile = dbFile
+        self.dbclosed = False
 
         # setup output interface
         self.OutputInterface = OutputInterface
@@ -79,7 +80,8 @@ class etpDatabase:
                 self.databaseStructureUpdates()
 
     def __del__(self):
-        self.closeDB()
+        if not self.dbclosed:
+            self.closeDB()
 
     def doServerDatabaseSyncLock(self, noUpload):
 
@@ -154,35 +156,30 @@ class etpDatabase:
 
     def closeDB(self):
 
+        self.dbclosed = True
+
         # if the class is opened readOnly, close and forget
-        if (self.readOnly):
+        if self.readOnly:
             self.cursor.close()
             self.connection.close()
             return
 
-        # if it's equo that's calling the function, just save changes and quit
-        if (self.clientDatabase):
+        if self.clientDatabase:
             self.commitChanges()
             self.cursor.close()
             self.connection.close()
             return
 
-        if (etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']) and (not etpDbStatus[etpConst['etpdatabasefilepath']]['bumped']):
-            # bump revision, setting DatabaseBump causes the session to just bump once
-            etpDbStatus[etpConst['etpdatabasefilepath']]['bumped'] = True
-            self.revisionBump()
-
-        if (not etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']):
+        if not etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']:
             # we can unlock it, no changes were made
             import activatorTools
             activatorTools.lockDatabases(False)
         else:
             self.updateProgress(darkgreen("Mirrors have not been unlocked. Run activator."), importance = 1, type = "info", header = brown(" * "))
 
-        # run vacuum cleaner
-        self.vacuum()
+        # do some final tasks
         self.connection.commit()
-
+        self.vacuum()
         self.cursor.close()
         self.connection.close()
 
@@ -190,12 +187,19 @@ class etpDatabase:
         self.cursor.execute("vacuum")
 
     def commitChanges(self):
-        if (not self.readOnly):
+        if not self.readOnly:
             try:
                 self.connection.commit()
             except:
                 pass
             self.taintDatabase()
+
+        if not self.clientDatabase:
+            if (etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']) and \
+                (not etpDbStatus[etpConst['etpdatabasefilepath']]['bumped']):
+                    # bump revision, setting DatabaseBump causes the session to just bump once
+                    etpDbStatus[etpConst['etpdatabasefilepath']]['bumped'] = True
+                    self.revisionBump()
 
     def taintDatabase(self):
         if (self.clientDatabase): # if it's equo to open it, this should be avoided

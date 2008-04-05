@@ -48,14 +48,7 @@ class matchContainer:
 '''
 class EquoInterface(TextInterface):
 
-    '''
-        @input indexing(bool): enable/disable database tables indexing
-        @input noclientdb(int/bool): 0 (or False): normal operation, every check on the client db will be done
-                                1 (or True): openClientDatabase won't raise an exception if client database does not exist
-                                2: client database won't be opened at all
-        @input xcache(bool): enable/disable database caching
-    '''
-    def __init__(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False):
+    def __init__(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False, repo_validation = True):
 
         # Logging initialization
         self.equoLog = LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[Equo]")
@@ -72,6 +65,7 @@ class EquoInterface(TextInterface):
         self.clientDbconn = None
         self.FtpInterface = FtpInterface # for convenience
         self.indexing = indexing
+        self.repo_validation = repo_validation
         self.noclientdb = False
         self.openclientdb = True
         if noclientdb in (False,0):
@@ -93,7 +87,8 @@ class EquoInterface(TextInterface):
         self.MaskingParser = self.PackageMaskingParserInterfaceLoader()
 
         self.validRepositories = []
-        self.validate_repositories()
+        if self.repo_validation:
+            self.validate_repositories()
 
         # now if we are on live, we should disable it
         # are we running on a livecd? (/proc/cmdline has "cdroot")
@@ -4473,9 +4468,6 @@ class PackageInterface:
     def run(self, xterm_header = None):
         self.error_on_not_prepared()
 
-        lock_count = 0
-        max_lock_count = 30
-        sleep_seconds = 10
         gave_up = self.Entropy.sync_loop_check(self.Entropy._resources_run_check_lock)
         if gave_up:
             return 20
@@ -5498,7 +5490,7 @@ class RepoInterface:
                                             header = darkred(" @@ ")
                             )
             self.syncErrors = True
-            self._sync_remove_lock()
+            self._resources_run_remove_lock()
             return 128
 
         rc = False
@@ -5529,9 +5521,6 @@ class RepoInterface:
                                         header = darkred(" @@ ")
                             )
 
-        lock_count = 0
-        max_lock_count = 30
-        sleep_seconds = 10
         gave_up = self.Entropy.sync_loop_check(self.Entropy._resources_run_check_lock)
         if gave_up:
             return 3
@@ -8737,7 +8726,7 @@ class SecurityInterface:
                                     type = "error",
                                     header = red("   ## ")
                                 )
-            self._sync_remove_lock()
+            self.Entropy._resources_run_remove_lock()
             return 1
 
         self.Entropy.updateProgress(
@@ -8758,7 +8747,7 @@ class SecurityInterface:
                                     type = "error",
                                     header = red("   ## ")
                                 )
-            self._sync_remove_lock()
+            self.Entropy._resources_run_remove_lock()
             return 2
 
         # verify digest
@@ -8771,7 +8760,7 @@ class SecurityInterface:
                                     type = "error",
                                     header = red("   ## ")
                                 )
-            self._sync_remove_lock()
+            self.Entropy._resources_run_remove_lock()
             return 3
         elif status == 2:
             self.Entropy.updateProgress(
@@ -8780,7 +8769,7 @@ class SecurityInterface:
                                     type = "error",
                                     header = red("   ## ")
                                 )
-            self._sync_remove_lock()
+            self.Entropy._resources_run_remove_lock()
             return 4
         elif status == 3:
             self.Entropy.updateProgress(
@@ -8789,7 +8778,7 @@ class SecurityInterface:
                                     type = "error",
                                     header = red("   ## ")
                                 )
-            self._sync_remove_lock()
+            self.Entropy._resources_run_remove_lock()
             return 5
         elif status == 0:
             self.Entropy.updateProgress(
@@ -8817,7 +8806,7 @@ class SecurityInterface:
                                     type = "error",
                                     header = red("   ## ")
                                 )
-            self._sync_remove_lock()
+            self.Entropy._resources_run_remove_lock()
             return 6
 
         self.Entropy.updateProgress(
@@ -9097,7 +9086,7 @@ class PortageInterface:
         if os.path.isfile(dirpath):
             return dirpath
         else:
-            return False
+            raise exceptionTools.FileNotFound("FileNotFound: Spm:quickpkg error: %s not found" % (dirpath,))
 
     def get_useflags(self):
         return self.portage.settings['USE']
@@ -9121,8 +9110,6 @@ class PortageInterface:
         matches = set()
         for package in packages:
             mysplit = package.split("/")
-            mycat = mysplit[0]
-            mycpv = mysplit[1]
             content = self.portage.dblink(mysplit[0], mysplit[1], mypath, self.portage.settings).getcontents()
             if filename in content:
                 matches.add(package)
@@ -9562,7 +9549,7 @@ class PortageInterface:
                     except ValueError:
                         continue
                     installedAtoms.add((pkgatom,counter))
-        return installedAtoms, len(installedAtoms)
+        return installedAtoms
 
     def refill_counter(self, dbdir = None):
         if not dbdir:
@@ -10794,13 +10781,21 @@ class ServerInterface(TextInterface):
             self.default_repository = etpConst['officialrepositoryid']
             self.setup_services()
 
+        if default_repository == None:
+            self.updateProgress(
+                blue("Entropy Server Interface Instance on repository: %s" % (self.default_repository,) ),
+                importance = 2,
+                type = "info",
+                header = red(" @@ ")
+            )
+
     def __del__(self):
         self.close_server_databases()
 
     def setup_services(self):
         self.setup_entropy_settings()
         self.backup_entropy_settings()
-        self.ClientService = EquoInterface(indexing = self.indexing, xcache = self.xcache)
+        self.ClientService = EquoInterface(indexing = self.indexing, xcache = self.xcache, repo_validation = False)
         self.databaseTools = self.ClientService.databaseTools
         self.entropyTools = self.ClientService.entropyTools
         self.SpmService = self.ClientService.Spm()
@@ -10843,6 +10838,13 @@ class ServerInterface(TextInterface):
         self.setup_services()
         if self.do_save_repository:
             self.save_default_repository(repoid)
+
+        self.updateProgress(
+                                blue("Entropy Server Interface Instance on repository: %s" % (self.default_repository,) ),
+                                importance = 2,
+                                type = "info",
+                                header = red(" @@ ")
+                            )
 
 
     def save_default_repository(self, repoid):
@@ -10979,8 +10981,6 @@ class ServerInterface(TextInterface):
                                 )
             return 0,None
 
-        atomsdata = set()
-
         self.updateProgress(
                                 blue("Matching libraries with Spm:"),
                                 importance = 1,
@@ -11023,16 +11023,43 @@ class ServerInterface(TextInterface):
 
         return 0,packages
 
-    def depends_table_initialize():
+    def depends_table_initialize(self):
         dbconn = self.openServerDatabase(read_only = False, no_upload = True)
         dbconn.regenerateDependsTable()
         dbconn.taintDatabase()
         dbconn.commitChanges()
 
 
+    def create_empty_database(self, dbpath = None):
+        if dbpath == None:
+            dbpath = etpConst['etpdatabasefilepath']
+
+        dbdir = os.path.dirname(dbpath)
+        if not os.path.isdir(dbdir):
+            os.makedirs(dbdir)
+
+        self.updateProgress(
+                                red("Initializing an empty database file with Entropy structure ..."),
+                                importance = 1,
+                                type = "info",
+                                header = darkgreen(" * "),
+                                back = True
+                            )
+        dbconn = self.ClientService.openGenericDatabase(dbpath)
+        dbconn.initializeDatabase()
+        dbconn.commitChanges()
+        dbconn.closeDB()
+        self.updateProgress(
+                                red("Entropy database file ")+bold(dbpath)+red(" successfully initialized."),
+                                importance = 1,
+                                type = "info",
+                                header = darkgreen(" * ")
+                            )
+
+
     def package_injector(self, package_file, branch = etpConst['branch'], inject = False):
 
-        dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
         self.updateProgress(
                                 red("[repo: %s] adding package: %s" % (
                                             darkgreen(etpConst['officialrepositoryid']),
@@ -11114,7 +11141,7 @@ class ServerInterface(TextInterface):
                                 back = True
                             )
 
-
+        dbconn = self.openServerDatabase(read_only = True, no_upload = True)
         data = dbconn.getPackageData(idpackage)
         dbpath = self.ClientService.inject_entropy_database_into_package(destination_path, data)
         digest = self.entropyTools.md5sum(destination_path)
@@ -11138,4 +11165,658 @@ class ServerInterface(TextInterface):
         dbconn.commitChanges()
 
 
+    def quickpkg(self, atom,storedir):
+        return self.SpmService.quickpkg(atom,storedir)
 
+
+    def bump_database(self):
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+        dbconn.taintDatabase()
+        self.close_server_database(dbconn)
+
+
+    def scan_package_changes(self):
+
+        dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+
+        installed_packages = self.SpmService.get_installed_packages_counter()
+        installed_counters = set()
+        toBeAdded = set()
+        toBeRemoved = set()
+        toBeInjected = set()
+
+        # packages to be added
+        for x in installed_packages:
+            installed_counters.add(x[1])
+            counter = dbconn.isCounterAvailable(x[1], branch = etpConst['branch'], branch_operator = "<=")
+            if not counter:
+                toBeAdded.add(tuple(x))
+
+        # packages to be removed from the database
+        database_counters = dbconn.listAllCounters(branch = etpConst['branch'], branch_operator = "<=")
+        for x in database_counters:
+
+            if x[0] < 0:
+                continue # skip packages without valid counter
+
+            if x[0] not in installed_counters:
+
+                # check if the package is in toBeAdded
+                if toBeAdded:
+
+                    atom = dbconn.retrieveAtom(x[1])
+                    atomkey = self.entropyTools.dep_getkey(atom)
+                    atomtag = self.entropyTools.dep_gettag(atom)
+                    atomslot = dbconn.retrieveSlot(x[1])
+
+                    add = True
+                    for pkgdata in toBeAdded:
+                        addslot = self.SpmService.get_package_slot(pkgdata[0])
+                        addkey = self.entropyTools.dep_getkey(pkgdata[0])
+                        # workaround for ebuilds not having slot
+                        if addslot == None:
+                            addslot = '0'                                              # handle tagged packages correctly
+                        if (atomkey == addkey) and ((str(atomslot) == str(addslot)) or (atomtag != None)):
+                            # do not add to toBeRemoved
+                            add = False
+                            break
+                    if add:
+                        dbtag = dbconn.retrieveVersionTag(x[1])
+                        if dbtag != '':
+                            is_injected = dbconn.isInjected(x[1])
+                            if not is_injected:
+                                toBeInjected.add(x[1])
+                        else:
+                            toBeRemoved.add(x[1])
+
+                else:
+
+                    dbtag = dbconn.retrieveVersionTag(x[1])
+                    if dbtag != '':
+                        is_injected = dbconn.isInjected(x[1])
+                        if not is_injected:
+                            toBeInjected.add(x[1])
+                    else:
+                        toBeRemoved.add(x[1])
+
+        return toBeAdded, toBeRemoved, toBeInjected
+
+
+
+
+
+
+    def initialize_server_database(self):
+
+        self.close_server_databases()
+        revisions_match = {}
+        treeupdates_actions = []
+        injected_packages = set()
+        idpackages = set()
+
+        self.updateProgress(
+                red("Initializing Entropy database..."),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * "),
+                back = True
+            )
+
+        if os.path.isfile(etpConst['etpdatabasefilepath']):
+
+            dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+
+            if dbconn.doesTableExist("baseinfo") and dbconn.doesTableExist("extrainfo"):
+                idpackages = dbconn.listAllIdpackages()
+
+            if dbconn.doesTableExist("treeupdatesactions"):
+                treeupdates_actions = dbconn.listAllTreeUpdatesActions()
+
+            # save list of injected packages
+            if dbconn.doesTableExist("injected") and dbconn.doesTableExist("extrainfo"):
+                injected_packages = dbconn.listAllInjectedPackages(justFiles = True)
+                injected_packages = set([os.path.basename(x) for x in injected_packages])
+
+            for idpackage in idpackages:
+                package = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
+                branch = dbconn.retrieveBranch(idpackage)
+                revision = dbconn.retrieveRevision(idpackage)
+                revisions_match[package] = (branch,revision,)
+
+            self.close_server_database(dbconn)
+
+            self.updateProgress(
+                bold("WARNING")+red(": database file already exists. Overwriting."),
+                importance = 1,
+                type = "warning",
+                header = red(" * ")
+            )
+
+            rc = self.askQuestion("Do you want to continue ?")
+            if rc == "No":
+                return
+            os.remove(etpConst['etpdatabasefilepath'])
+
+
+        # initialize
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+        dbconn.initializeDatabase()
+
+        revisions_file = "/entropy-revisions-dump.txt"
+        # dump revisions - as a backup
+        if revisions_match:
+            self.updateProgress(
+                red("Dumping current revisions to file %s") % (bold(revisions_file),),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
+            f = open(revisions_file,"w")
+            f.write(str(revisions_match))
+            f.flush()
+            f.close()
+
+        # dump treeupdates - as a backup
+        treeupdates_file = "/entropy-treeupdates-dump.txt"
+        if treeupdates_actions:
+            self.updateProgress(
+                red("Dumping current tree updates actions to file %s") % (bold(treeupdates_file),),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
+            f = open(treeupdates_file,"w")
+            f.write(str(treeupdates_actions))
+            f.flush()
+            f.close()
+
+        rc = Entropy.askQuestion("Would you like to sync packages first (important if you don't have them synced) ?")
+        if rc == "Yes":
+            activatorTools.packages(["sync","--ask"])
+
+        # fill tree updates actions
+        if treeupdates_actions:
+            dbconn.addTreeUpdatesActions(treeupdates_actions)
+
+        # now fill the database
+        pkgbranches = os.listdir(etpConst['packagesserverbindir'])
+        pkgbranches = [x for x in pkgbranches if os.path.isdir(os.path.join(etpConst['packagesserverbindir'],x))]
+
+        for mybranch in pkgbranches:
+
+            pkglist = os.listdir(os.path.join(etpConst['packagesserverbindir'],mybranch))
+            # filter .md5 and .expired packages
+            pkglist = [x for x in pkglist if x[-5:] == ".tbz2" and not os.path.isfile(etpConst['packagesserverbindir']+"/"+mybranch+"/"+x+etpConst['packagesexpirationfileext'])]
+
+            if not pkglist:
+                continue
+
+            self.updateProgress(
+                red("Reinitializing Entropy database for branch %s using Packages in the repository..." % (bold(mybranch),)),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
+
+            counter = 0
+            maxcount = str(len(pkglist))
+            for pkg in pkglist:
+                counter += 1
+
+                self.updateProgress(
+                    red("[repo: %s] [%s:%s/%s] analyzing: %s" % (etpConst['officialrepositoryid'],brown(mybranch),darkgreen(counter),blue(maxcount),bold(pkg),) ),
+                    importance = 1,
+                    type = "info",
+                    header = " ",
+                    back = True
+                )
+
+                doinject = False
+                if pkg in injected_packages:
+                    doinject = True
+
+                mydata = self.ClientService.extract_pkg_metadata(etpConst['packagesserverbindir']+"/"+mybranch+"/"+pkg, mybranch, inject = doinject)
+
+                # get previous revision
+                revision_avail = revisions_match.get(pkg)
+                addRevision = 0
+                if (revision_avail != None):
+                    if mybranch == revision_avail[0]:
+                        addRevision = revision_avail[1]
+
+                idpk, revision, mydata_upd = dbconn.addPackage(mydata, revision = addRevision)
+
+                self.updateProgress(
+                    red("[repo: %s] [%s:%s/%s] added package: %s, revision: %s" % (etpConst['officialrepositoryid'],brown(mybranch),darkgreen(counter),blue(maxcount),bold(pkg),mydata_upd['revision'],) ),
+                    importance = 1,
+                    type = "info",
+                    header = " ",
+                    back = True
+                )
+
+        dbconn.commitChanges()
+        self.depends_table_initialize()
+        self.close_server_databases()
+        return 0
+
+    def match_packages(self, packages):
+
+        dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+        if "world" in packages:
+            return dbconn.listAllIdpackages(),True
+        else:
+            idpackages = set()
+            for package in packages:
+                matches = dbconn.atomMatch(package, multiMatch = True, matchBranches = etpConst['branches'])
+                if matches[1] == 0:
+                    idpackages |= matches[0]
+                else:
+                    self.updateProgress(
+                        red("Attention: cannot match: %s" % (bold(package),) ),
+                        importance = 1,
+                        type = "warning",
+                        header = darkred(" !!! ")
+                    )
+            return idpackages,False
+
+    def verify_remote_packages(self, packages, ask = True):
+
+        self.updateProgress(
+                red("[remote] Integrity verification of the selected packages:"),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+        )
+
+        idpackages, world = self.match_packages(packages)
+        dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+
+        if world:
+            self.updateProgress(
+                    red("All the packages in the Entropy Packages repository will be checked."),
+                    importance = 1,
+                    type = "info",
+                    header = "    "
+            )
+        else:
+            self.updateProgress(
+                    red("This is the list of the packages that would be checked:"),
+                    importance = 1,
+                    type = "info",
+                    header = "    "
+            )
+            for idpackage in idpackages:
+                pkgatom = dbconn.retrieveAtom(idpackage)
+                pkgbranch = dbconn.retrieveBranch(idpackage)
+                pkgfile = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
+                self.updateProgress(
+                        red(pkgatom)+" -> "+bold(os.path.join(pkgbranch,pkgfile)),
+                        importance = 1,
+                        type = "info",
+                        header = darkgreen("   - ")
+                )
+
+        if ask:
+            rc = self.askQuestion("Would you like to continue ?")
+            if rc == "No":
+                return set(),set(),{}
+
+        match = set()
+        not_match = set()
+        broken_packages = {}
+
+        for uri in etpConst['activatoruploaduris']:
+
+            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+            self.updateProgress(
+                red("[repo: %s] Working on mirror: %s" % (etpConst['officialrepositoryid'],brown(crippled_uri),) ),
+                importance = 1,
+                type = "info",
+                header = green(" * ")
+            )
+
+
+            totalcounter = str(len(idpackages))
+            currentcounter = 0
+
+            for idpackage in idpackages:
+
+                currentcounter += 1
+                pkgfile = dbconn.retrieveDownloadURL(idpackage)
+                pkgbranch = dbconn.retrieveBranch(idpackage)
+                pkgfilename = os.path.basename(pkgfile)
+
+                self.updateProgress(
+                    red("[repo: %s|mirror: %s] [%s/%s] checking hash: %s" % (
+                                    etpConst['officialrepositoryid'],
+                                    brown(crippled_uri),
+                                    currentcounter,
+                                    totalcounter,
+                                    blue(os.path.join(pkgbranch,pkgfilename)),
+                                )
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = green(" * "),
+                    back = True
+                )
+
+                ckOk = False
+                ck = self.ClientService.get_remote_package_checksum(crippled_uri, pkgfilename, pkgbranch)
+                if ck == None:
+                    self.updateProgress(
+                        red("digest verification of %s not supported" % (green(pkgfilename),)),
+                        importance = 1,
+                        type = "info",
+                        header = "       -> "
+                    )
+                elif len(ck) == 32:
+                    ckOk = True
+                else:
+                    self.updateProgress(
+                        red("digest verification of %s failed for unknown reasons" % (green(pkgfilename),)),
+                        importance = 1,
+                        type = "info",
+                        header = "       -> "
+                    )
+
+                if ckOk:
+                    match.add(idpackage)
+                else:
+                    not_match.add(idpackage)
+                    self.updateProgress(
+                        red("[repo: %s|mirror: %s] [%s/%s] package: %s NOT healthy" % (
+                                        etpConst['officialrepositoryid'],
+                                        brown(crippled_uri),
+                                        currentcounter,
+                                        totalcounter,
+                                        blue(os.path.join(pkgbranch,pkgfilename)),
+                                    )
+                        ),
+                        importance = 1,
+                        type = "warning",
+                        header = darkred(" * ")
+                    )
+                    if not broken_packages.has_key(crippled_uri):
+                        broken_packages[crippled_uri] = []
+                    broken_packages[crippled_uri].append(os.path.join(pkgbranch,pkgfilename))
+
+            if broken_packages:
+                self.updateProgress(
+                    blue("This is the list of broken packages:"),
+                    importance = 1,
+                    type = "info",
+                    header = red(" * ")
+                )
+                for mirror in broken_packages.keys():
+                    self.updateProgress(
+                        brown("Mirror: %s") % (bold(mirror),),
+                        importance = 1,
+                        type = "info",
+                        header = red("   <> ")
+                    )
+                    for bp in broken_packages[mirror]:
+                        self.updateProgress(
+                            blue(bp),
+                            importance = 1,
+                            type = "info",
+                            header = red("      - ")
+                        )
+
+            self.updateProgress(
+                red("[repo: %s|mirror: %s] Statistics:" % (
+                                etpConst['officialrepositoryid'],
+                                brown(crippled_uri),
+                            )
+                ),
+                importance = 1,
+                type = "info",
+                header = red(" * ")
+            )
+            self.updateProgress(
+                red("[repo: %s|mirror: %s] Number of checked packages: %s" % (
+                                etpConst['officialrepositoryid'],
+                                brown(crippled_uri),
+                                len(match)+len(not_match),
+                            )
+                ),
+                importance = 1,
+                type = "info",
+                header = red(" * ")
+            )
+            self.updateProgress(
+                red("[repo: %s|mirror: %s] Number of healthy packages: %s" % (
+                                etpConst['officialrepositoryid'],
+                                brown(crippled_uri),
+                                len(match),
+                            )
+                ),
+                importance = 1,
+                type = "info",
+                header = red(" * ")
+            )
+            self.updateProgress(
+                red("[repo: %s|mirror: %s] Number of broken packages: %s" % (
+                                etpConst['officialrepositoryid'],
+                                brown(crippled_uri),
+                                len(not_match),
+                            )
+                ),
+                importance = 1,
+                type = "info",
+                header = red(" * ")
+            )
+
+        return match,not_match,broken_packages
+
+
+    def verify_local_packages(self, packages, ask = True):
+
+        self.updateProgress(
+                red("[local] Integrity verification of the selected packages:"),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+        )
+
+        idpackages, world = self.match_packages(packages)
+        dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+
+        to_download = set()
+        available = set()
+        for idpackage in idpackages:
+
+            pkgatom = dbconn.retrieveAtom(idpackage)
+            pkgbranch = dbconn.retrieveBranch(idpackage)
+            pkgfile = dbconn.retrieveDownloadURL(idpackage)
+            pkgfile = os.path.basename(pkgfile)
+
+            bindir_path = os.path.join(etpConst['packagesserverbindir'],pkgbranch+"/"+pkgfile)
+            uploaddir_path = os.path.join(etpConst['packagesserveruploaddir'],pkgbranch+"/"+pkgfile)
+
+            if os.path.isfile(bindir_path) and not world:
+                self.updateProgress(
+                        red("[%s] %s :: %s" % (darkgreen("available"),pkgatom,pkgfile,)),
+                        importance = 0,
+                        type = "info",
+                        header = darkgreen("   # ")
+                )
+                available.add(idpackage)
+            elif os.path.isfile(uploaddir_path) and not world:
+                self.updateProgress(
+                        red("[%s] %s :: %s" % (darkred("upload/ignored"),pkgatom,pkgfile,)),
+                        importance = 0,
+                        type = "info",
+                        header = darkgreen("   # ")
+                )
+            else:
+                self.updateProgress(
+                        red("[%s] %s :: %s" % (brown("download"),pkgatom,pkgfile,)),
+                        importance = 0,
+                        type = "info",
+                        header = darkgreen("   # ")
+                )
+                to_download.add((idpackage,pkgfile,pkgbranch))
+
+        if ask:
+            rc = self.askQuestion("Would you like to continue ?")
+            if rc == "No":
+                return set(),set(),set(),set()
+
+
+        fine = set()
+        failed = set()
+        downloaded_fine = set()
+        downloaded_errors = set()
+
+        if to_download:
+
+            not_downloaded = set()
+            self.updateProgress(
+                    red("Starting to download missing files..."),
+                    importance = 1,
+                    type = "info",
+                    header = "   "
+            )
+            for uri in etpConst['activatoruploaduris']:
+
+                if not_downloaded:
+                    self.updateProgress(
+                            red("Trying to search missing or broken files on another mirror ..."),
+                            importance = 1,
+                            type = "info",
+                            header = "   "
+                    )
+                    to_download = not_downloaded.copy()
+                    not_downloaded = set()
+
+                for pkg in to_download:
+                    rc = activatorTools.downloadPackageFromMirror(uri,pkg[1],pkg[2])
+                    if rc == None:
+                        not_downloaded.add((pkg[1],pkg[2]))
+                    elif not rc:
+                        not_downloaded.add((pkg[1],pkg[2]))
+                    elif rc:
+                        downloaded_fine.add(pkg[0])
+                        available.add(pkg[0])
+
+                if not not_downloaded:
+                    self.updateProgress(
+                            red("All the binary packages have been downloaded successfully."),
+                            importance = 1,
+                            type = "info",
+                            header = "   "
+                    )
+                    break
+
+            if not_downloaded:
+                self.updateProgress(
+                        red("These are the packages that cannot be found online:"),
+                        importance = 1,
+                        type = "info",
+                        header = "   "
+                )
+                for i in not_downloaded:
+                    downloaded_errors.add(i[0])
+                    self.updateProgress(
+                            brown(i[0])+" in "+blue(i[1]),
+                            importance = 1,
+                            type = "warning",
+                            header = red("    * ")
+                    )
+                    downloaded_errors.add(i[0])
+                self.updateProgress(
+                        red("They won't be checked."),
+                        importance = 1,
+                        type = "warning",
+                        header = "   "
+                )
+
+        totalcounter = str(len(available))
+        currentcounter = 0
+        for idpackage in available:
+            currentcounter += 1
+            pkgfile = dbconn.retrieveDownloadURL(idpackage)
+            pkgbranch = dbconn.retrieveBranch(idpackage)
+            pkgfile = os.path.basename(pkgfile)
+
+            self.updateProgress(
+                    red("[branch:%s] checking hash of %s" % (pkgbranch,pkgfile,)),
+                    importance = 1,
+                    type = "info",
+                    header = "   ",
+                    back = True,
+                    count = (currentcounter,totalcounter,)
+            )
+
+            storedmd5 = dbconn.retrieveDigest(idpackage)
+            pkgpath = os.path.join(etpConst['packagesserverbindir'],pkgbranch+"/"+pkgfile)
+            result = self.entropyTools.compareMd5(pkgpath,storedmd5)
+            if result:
+                fine.add(idpackage)
+            else:
+                failed.add(idpackage)
+                self.updateProgress(
+                        red("[branch:%s] package %s is corrupted, stored checksum: %s" % (pkgbranch,pkgfile,brown(storedmd5),)),
+                        importance = 1,
+                        type = "info",
+                        header = "   ",
+                        count = (currentcounter,totalcounter,)
+                )
+
+        if failed:
+            self.updateProgress(
+                    blue("This is the list of the BROKEN packages:"),
+                    importance = 1,
+                    type = "warning",
+                    header =  darkred("  # ")
+            )
+            for idpackage in failed:
+                branch = dbconn.retrieveBranch(idpackage)
+                dp = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
+                self.updateProgress(
+                        blue("[branch:%s] %s" % (branch,dp,)),
+                        importance = 0,
+                        type = "warning",
+                        header =  brown("    # ")
+                )
+
+        # print stats
+        self.updateProgress(
+            red("Statistics:"),
+            importance = 1,
+            type = "info",
+            header = blue(" * ")
+        )
+        self.updateProgress(
+            blue("Number of checked packages: %s" % (len(fine)+len(failed),) ),
+            importance = 0,
+            type = "info",
+            header = brown("   # ")
+        )
+        self.updateProgress(
+            blue("Number of healthy packages: %s" % (len(fine),) ),
+            importance = 0,
+            type = "info",
+            header = brown("   # ")
+        )
+        self.updateProgress(
+            blue("Number of broken packages: %s" % (len(failed),) ),
+            importance = 0,
+            type = "info",
+            header = brown("   # ")
+        )
+        self.updateProgress(
+            blue("Number of downloaded packages: %s" % (len(downloaded_fine),) ),
+            importance = 0,
+            type = "info",
+            header = brown("   # ")
+        )
+        self.updateProgress(
+            blue("Number of failed downloads: %s" % (len(downloaded_errors),) ),
+            importance = 0,
+            type = "info",
+            header = brown("   # ")
+        )
+
+        return fine, failed, downloaded_fine, downloaded_errors
