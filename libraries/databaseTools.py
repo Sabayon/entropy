@@ -3072,16 +3072,10 @@ class etpDatabase:
             columns.append(row[1])
         return columns
 
-    def tablesChecksum(self):
-        # NOTE: if you will add dependstable to the validation
-        # please have a look at EquoInterface.__install_package_into_database world calculation cache stuff
-        self.cursor.execute('select * from baseinfo')
-        c_hash = 0
-        for row in self.cursor:
-            c_hash += hash(str(row))
-        self.cursor.execute('select * from dependenciesreference')
-        for row in self.cursor:
-            c_hash += hash(str(row))
+    def database_checksum(self):
+        # primary keys are now autoincrement
+        self.cursor.execute('select idpackage from baseinfo')
+        c_hash = hash(tuple(self.cursor.fetchall()))
         return str(c_hash)
 
 
@@ -3217,6 +3211,7 @@ class etpDatabase:
     def createNeededIndex(self):
         if (self.dbname != etpConst['serverdbid']) and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( library )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed ( idneeded )')
             self.commitChanges()
 
     def createUseflagsIndex(self):

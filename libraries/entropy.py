@@ -25,7 +25,7 @@ import commands
 import urllib2
 import time
 from entropyConstants import *
-from outputTools import *
+from outputTools import TextInterface, print_info, print_warning, print_error, red, brown, blue, green, darkgreen, darkred, bold
 import exceptionTools
 
 class matchContainer:
@@ -50,9 +50,7 @@ class EquoInterface(TextInterface):
 
     def __init__(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False, repo_validation = True):
 
-        # Logging initialization
-        self.equoLog = LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[Equo]")
-
+        self.clientLog = LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[client]")
         import dumpTools
         self.dumpTools = dumpTools
         import databaseTools
@@ -1323,7 +1321,8 @@ class EquoInterface(TextInterface):
         if self.xcache:
             c_data = list(dependencies)
             c_data.sort()
-            c_hash = str(hash(tuple(c_data)))+str(hash(deep_deps))
+            client_checksum = self.clientDbconn.database_checksum()
+            c_hash = str(hash(tuple(c_data)))+str(hash(deep_deps))+client_checksum
             c_hash = str(hash(c_hash))
             del c_data
             cached = self.dumpTools.loadobj(etpCache['filter_satisfied_deps']+c_hash)
@@ -1610,7 +1609,8 @@ class EquoInterface(TextInterface):
         if self.xcache:
             c_data = list(matched_atoms)
             c_data.sort()
-            c_hash = str(hash(tuple(c_data)))+str(hash(empty_deps))+str(hash(deep_deps))
+            client_checksum = self.clientDbconn.database_checksum()
+            c_hash = str(hash(tuple(c_data)))+str(hash(empty_deps))+str(hash(deep_deps))+client_checksum
             c_hash = str(hash(c_hash))
             del c_data
             cached = self.dumpTools.loadobj(etpCache['dep_tree']+c_hash)
@@ -1805,7 +1805,7 @@ class EquoInterface(TextInterface):
                 dbconn = self.openRepositoryDatabase(repo)
             except exceptionTools.RepositoryError:
                 continue # repo not available
-            sum_hashes += dbconn.tablesChecksum()
+            sum_hashes += dbconn.database_checksum()
         return sum_hashes
 
     def get_available_packages_chash(self, branch):
@@ -2114,6 +2114,9 @@ class EquoInterface(TextInterface):
         if install and removal:
             myremmatch = {}
             for x in removal:
+                # XXX check if stupid users removed idpackage while this whole instance is running
+                if not self.clientDbconn.isIDPackageAvailable(x):
+                    continue
                 myremmatch.update({(self.entropyTools.dep_getkey(self.clientDbconn.retrieveAtom(x)),self.clientDbconn.retrieveSlot(x)): x})
             for packageInfo in install:
                 dbconn = self.openRepositoryDatabase(packageInfo[1])
@@ -2411,7 +2414,7 @@ class EquoInterface(TextInterface):
                 path = shiftpath+path
                 try:
                     exist = os.lstat(path)
-                except OSError, e:
+                except OSError:
                     continue # skip file
                 arcname = path[len(shiftpath):] # remove shiftpath
                 if arcname.startswith("/"):
@@ -2455,8 +2458,7 @@ class EquoInterface(TextInterface):
                 tbz2.recompose(dbdir)
 
         if edb:
-            # appending entropy metadata
-            dbpath = self.inject_entropy_database_into_package(dirpath, pkgdata)
+            self.inject_entropy_database_into_package(dirpath, pkgdata)
 
         if os.path.isfile(dirpath):
             return dirpath
@@ -2510,7 +2512,7 @@ class EquoInterface(TextInterface):
                         red(info_package+"Getting package name/version..."),
                         importance = 0,
                         type = "info",
-                        header = yellow(" * "),
+                        header = brown(" * "),
                         back = True
                     )
         tbz2File = package
@@ -2546,7 +2548,7 @@ class EquoInterface(TextInterface):
                         red(info_package+"Getting package md5..."),
                         importance = 0,
                         type = "info",
-                        header = yellow(" * "),
+                        header = brown(" * "),
                         back = True
                     )
         # .tbz2 md5
@@ -2557,7 +2559,7 @@ class EquoInterface(TextInterface):
                         red(info_package+"Getting package mtime..."),
                         importance = 0,
                         type = "info",
-                        header = yellow(" * "),
+                        header = brown(" * "),
                         back = True
                     )
         # .tbz2 md5
@@ -2568,7 +2570,7 @@ class EquoInterface(TextInterface):
                         red(info_package+"Getting package size..."),
                         importance = 0,
                         type = "info",
-                        header = yellow(" * "),
+                        header = brown(" * "),
                         back = True
                     )
         # .tbz2 byte size
@@ -2579,7 +2581,7 @@ class EquoInterface(TextInterface):
                         red(info_package+"Unpacking package data..."),
                         importance = 0,
                         type = "info",
-                        header = yellow(" * "),
+                        header = brown(" * "),
                         back = True
                     )
         # unpack file
@@ -2595,7 +2597,7 @@ class EquoInterface(TextInterface):
                         red(info_package+"Getting package CHOST..."),
                         importance = 0,
                         type = "info",
-                        header = yellow(" * "),
+                        header = brown(" * "),
                         back = True
                     )
         # Fill chost
@@ -2608,7 +2610,7 @@ class EquoInterface(TextInterface):
                     red(info_package+"Setting package branch..."),
                     importance = 0,
                     type = "info",
-                    header = yellow(" * "),
+                    header = brown(" * "),
                     back = True
                 )
         data['branch'] = etpBranch
@@ -2618,7 +2620,7 @@ class EquoInterface(TextInterface):
                     red(info_package+"Getting package description..."),
                     importance = 0,
                     type = "info",
-                    header = yellow(" * "),
+                    header = brown(" * "),
                     back = True
                 )
         # Fill description
@@ -2635,7 +2637,7 @@ class EquoInterface(TextInterface):
                     red(info_package+"Getting package homepage..."),
                     importance = 0,
                     type = "info",
-                    header = yellow(" * "),
+                    header = brown(" * "),
                     back = True
                 )
         # Fill homepage
@@ -2652,7 +2654,7 @@ class EquoInterface(TextInterface):
                     red(info_package+"Getting package slot information..."),
                     importance = 0,
                     type = "info",
-                    header = yellow(" * "),
+                    header = brown(" * "),
                     back = True
                 )
         # fill slot, if it is
@@ -2669,7 +2671,7 @@ class EquoInterface(TextInterface):
                     red(info_package+"Getting package injection information..."),
                     importance = 0,
                     type = "info",
-                    header = yellow(" * "),
+                    header = brown(" * "),
                     back = True
                 )
         # fill slot, if it is
@@ -2683,7 +2685,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting package eclasses information..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         # fill eclasses list
@@ -2700,7 +2702,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting package needed libraries information..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         # fill needed list
@@ -2727,7 +2729,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting package content..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         data['content'] = {}
@@ -2833,7 +2835,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting package category..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         # Fill category
@@ -2846,7 +2848,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting package download URL..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         # Fill download relative URI
@@ -2866,7 +2868,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting package counter..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         # Fill counter
@@ -2883,7 +2885,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting package external trigger availability..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         if os.path.isfile(etpConst['triggersdir']+"/"+data['category']+"/"+data['name']+"/"+etpConst['triggername']):
@@ -2896,7 +2898,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting package CFLAGS..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         # Fill CFLAGS
@@ -2913,7 +2915,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting package CXXFLAGS..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         # Fill CXXFLAGS
@@ -2930,7 +2932,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting source package supported ARCHs..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         # fill KEYWORDS
@@ -2953,7 +2955,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting package dependencies..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
 
@@ -3007,7 +3009,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting package metadata information..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         portage_metadata = Spm.calculate_dependencies(iuse, use, lics, depend, rdepend, pdepend, provide, sources)
@@ -3052,7 +3054,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting package mirrors list..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         # manage data['sources'] to create data['mirrorlinks']
@@ -3070,7 +3072,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting System Packages List..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         # write only if it's a systempackage
@@ -3089,7 +3091,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting CONFIG_PROTECT/CONFIG_PROTECT_MASK List..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         # write only if it's a systempackage
@@ -3128,7 +3130,7 @@ class EquoInterface(TextInterface):
                     red(etpConst['logdir']+"/elog")+" not set, have you configured make.conf properly?",
                     importance = 1,
                     type = "warning",
-                    header = yellow(" * ")
+                    header = brown(" * ")
                 )
 
         if not silent:
@@ -3136,7 +3138,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Getting Entropy API version..."),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         # write API info
@@ -3155,7 +3157,7 @@ class EquoInterface(TextInterface):
                 red(info_package+"Done"),
                 importance = 0,
                 type = "info",
-                header = yellow(" * "),
+                header = brown(" * "),
                 back = True
             )
         return data
@@ -3911,8 +3913,7 @@ class PackageInterface:
 
             try:
                 exist = os.lstat(path)
-            except OSError, e:
-                #print e
+            except OSError:
                 continue # skip file
             ftype = package_content[encoded_path]
             if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
@@ -5490,7 +5491,7 @@ class RepoInterface:
                                             header = darkred(" @@ ")
                             )
             self.syncErrors = True
-            self._resources_run_remove_lock()
+            self.Entropy._resources_run_remove_lock()
             return 128
 
         rc = False
@@ -5552,7 +5553,7 @@ class FtpInterface:
     # this must be run before calling the other functions
     def __init__(self, ftpuri, EntropyInterface):
 
-        if not isinstance(EntropyInterface, (EquoInterface, TextInterface)):
+        if not isinstance(EntropyInterface, (EquoInterface, TextInterface, ServerInterface)):
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid TextInterface based instance is needed")
 
         self.Entropy = EntropyInterface
@@ -5745,7 +5746,7 @@ class FtpInterface:
             myUploadPercentage = str(myUploadPercentage)+"%"
 
             # create text
-            currentText = brown("    <-> Upload status: ")+green(str(myUploadSize))+"/"+red(str(self.myFileSize))+" kB "+yellow("[")+str(myUploadPercentage)+yellow("]")
+            currentText = brown("    <-> Upload status: ")+green(str(myUploadSize))+"/"+red(str(self.myFileSize))+" kB "+brown("[")+str(myUploadPercentage)+brown("]")
             # print !
             print_info(currentText, back = True)
             # XXX too slow, reimplement self.updateProgress and do whatever you want
@@ -5871,9 +5872,6 @@ class FtpInterface:
         self.ftpconn.quit()
 
 
-'''
-   Entropy FTP/HTTP download interface
-'''
 class urlFetcher:
 
     def __init__(self, url, pathToSave, checksum = True, showSpeed = True, resume = True):
@@ -6043,9 +6041,10 @@ class urlFetcher:
         curbarsize = 1
         if self.average > self.oldaverage+self.updatestep:
             averagesize = (self.average*barsize)/100
-            for y in range(averagesize):
+            while averagesize > 0:
                 curbarsize += 1
                 bartext += "="
+                averagesize -= 1
             bartext += ">"
             diffbarsize = barsize-curbarsize
             for y in range(diffbarsize):
@@ -6058,7 +6057,6 @@ class urlFetcher:
             if len(average) < 2:
                 average = " "+average
             currentText += " <->  "+average+"% "+bartext
-            # print !
             print_info(currentText,back = True)
 
 
@@ -6158,7 +6156,7 @@ class rssFeed:
                 self.items[mycounter]['guid'] = item.getElementsByTagName("guid")[0].firstChild.data.strip()
                 self.items[mycounter]['pubDate'] = item.getElementsByTagName("pubDate")[0].firstChild.data.strip()
 
-    def addItem(self, title, link = '', description = '', light = False):
+    def addItem(self, title, link = '', description = ''):
         self.itemscounter += 1
         self.items[self.itemscounter] = {}
         self.items[self.itemscounter]['title'] = title
@@ -6294,7 +6292,7 @@ class TriggerInterface:
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
 
         self.Entropy = EquoInstance
-        self.equoLog = self.Entropy.equoLog
+        self.clientLog = self.Entropy.equoLog
         self.validPhases = ("preinstall","postinstall","preremove","postremove")
         self.pkgdata = pkgdata
         self.prepared = False
@@ -6789,13 +6787,13 @@ class TriggerInterface:
             item = etpConst['systemroot']+item
             if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
                 # running?
-                running = os.path.isfile(etpConst['systemroot']+self.INITSERVICES_DIR+'/started/'+os.path.basename(item))
+                #running = os.path.isfile(etpConst['systemroot']+self.INITSERVICES_DIR+'/started/'+os.path.basename(item))
                 if not etpConst['systemroot']:
                     myroot = "/"
                 else:
                     myroot = etpConst['systemroot']+"/"
                 scheduled = not os.system('ROOT="'+myroot+'" rc-update show | grep '+os.path.basename(item)+'&> /dev/null')
-                self.trigger_initdeactivate(item, running, scheduled)
+                self.trigger_initdeactivate(item, scheduled)
 
     def trigger_initinform(self):
         for item in self.pkgdata['content']:
@@ -7604,7 +7602,7 @@ class TriggerInterface:
     @description: shuts down selected init script, and remove from runlevel
     @output: returns int() as exit status
     '''
-    def trigger_initdeactivate(self, item, running, scheduled):
+    def trigger_initdeactivate(self, item, scheduled):
         if not etpConst['systemroot']:
             myroot = "/"
             '''
@@ -7685,7 +7683,7 @@ timeout=10
                 kernel, initramfs = (unicode(kernel,'raw_unicode_escape'),unicode(initramfs,'raw_unicode_escape'))
             except TypeError:
                 pass
-            kernelname = os.path.basename(kernel)
+            #kernelname = os.path.basename(kernel)
             new_conf = []
             skip = False
             for line in content:
@@ -10768,10 +10766,13 @@ class ServerInterface(TextInterface):
         if etpConst['uid'] != 0:
             raise exceptionTools.PermissionDenied("PermissionDenied: Entropy ServerInterface must be run as root")
 
+        self.serverLog = LogFile(level = etpConst['entropyloglevel'],filename = etpConst['entropylogfile'], header = "[server]")
+
         # settings
         etpSys['serverside'] = True
         self.indexing = False
         self.xcache = False
+        self.FtpInterface = FtpInterface
         self.serverDbCache = {}
         self.settings_to_backup = []
         self.do_save_repository = save_repository
@@ -10796,6 +10797,7 @@ class ServerInterface(TextInterface):
         self.setup_entropy_settings()
         self.backup_entropy_settings()
         self.ClientService = EquoInterface(indexing = self.indexing, xcache = self.xcache, repo_validation = False)
+        self.ClientService.FtpInterface = self.FtpInterface
         self.databaseTools = self.ClientService.databaseTools
         self.entropyTools = self.ClientService.entropyTools
         self.SpmService = self.ClientService.Spm()
@@ -11169,6 +11171,12 @@ class ServerInterface(TextInterface):
         return self.SpmService.quickpkg(atom,storedir)
 
 
+    def remove_package(self, idpackage):
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+        dbconn.removePackage(idpackage)
+        self.close_server_database(dbconn)
+
+
     def bump_database(self):
         dbconn = self.openServerDatabase(read_only = False, no_upload = True)
         dbconn.taintDatabase()
@@ -11330,7 +11338,7 @@ class ServerInterface(TextInterface):
             f.flush()
             f.close()
 
-        rc = Entropy.askQuestion("Would you like to sync packages first (important if you don't have them synced) ?")
+        rc = self.askQuestion("Would you like to sync packages first (important if you don't have them synced) ?")
         if rc == "Yes":
             activatorTools.packages(["sync","--ask"])
 
@@ -11819,4 +11827,131 @@ class ServerInterface(TextInterface):
             header = brown("   # ")
         )
 
+        self.close_server_database(dbconn)
         return fine, failed, downloaded_fine, downloaded_errors
+
+
+    def switch_packages_branch(self, idpackages, to_branch):
+
+        self.updateProgress(
+            red("Switching selected packages..."),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+
+        already_switched = set()
+        not_found = set()
+        switched = set()
+        ignored = set()
+        no_checksum = set()
+
+        for idpackage in idpackages:
+
+            cur_branch = dbconn.retrieveBranch(idpackage)
+            atom = dbconn.retrieveAtom(idpackage)
+            if cur_branch == to_branch:
+                already_switched.add(idpackage)
+                self.updateProgress(
+                    red("Ignoring %s, already in branch %s" % (bold(atom),cur_branch,)),
+                    importance = 0,
+                    type = "info",
+                    header = darkgreen(" * ")
+                )
+                ignored.add(idpackage)
+                continue
+            old_filename = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
+            # check if file exists
+            frompath = os.path.join(etpConst['packagesserverbindir'],cur_branch+"/"+old_filename)
+            if not os.path.isfile(frompath):
+                self.updateProgress(
+                    red("[%s=>%s] %s, cannot switch, package not found!" % (cur_branch,to_branch,atom,)),
+                    importance = 0,
+                    type = "warning",
+                    header = darkred(" !!! ")
+                )
+                not_found.add(idpackage)
+                continue
+
+            self.updateProgress(
+                red("[%s=>%s] %s, configuring package information..." % (cur_branch,to_branch,atom,)),
+                importance = 0,
+                type = "info",
+                header = darkgreen(" * "),
+                back = True
+            )
+            dbconn.switchBranch(idpackage,to_branch)
+            dbconn.commitChanges()
+
+            # LOCAL
+            self.updateProgress(
+                red("[%s -> %s] %s, moving file locally..." % (cur_branch,to_branch,atom,)),
+                importance = 0,
+                type = "info",
+                header = darkgreen(" * "),
+                back = True
+            )
+            new_filename = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
+            topath = os.path.join(etpConst['packagesserverbindir'],to_branch)
+            if not os.path.isdir(topath):
+                os.makedirs(topath)
+
+            topath = os.path.join(topath,new_filename)
+            shutil.move(frompath,topath)
+            if os.path.isfile(frompath+etpConst['packageshashfileext']):
+                shutil.move(frompath+etpConst['packageshashfileext'],topath+etpConst['packageshashfileext'])
+            else:
+                self.updateProgress(
+                    red("[%s=>%s] %s, cannot find checksum to migrate!" % (cur_branch,to_branch,atom,)),
+                    importance = 0,
+                    type = "warning",
+                    header = darkred(" !!! ")
+                )
+                no_checksum.add(idpackage)
+
+            # REMOTE
+            self.updateProgress(
+                red("[%s=>%s] %s, moving file remotely..." % (cur_branch,to_branch,atom,)),
+                importance = 0,
+                type = "info",
+                header = darkgreen(" * "),
+                back = True
+            )
+
+            for uri in etpConst['activatoruploaduris']:
+
+                crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+                self.updateProgress(
+                    red("[%s=>%s] %s, moving file remotely on: %s" % (cur_branch,to_branch,atom,crippled_uri,)),
+                    importance = 0,
+                    type = "info",
+                    header = darkgreen(" * "),
+                    back = True
+                )
+
+                ftp = self.FtpInterface(uri, self)
+                ftp.setCWD(etpConst['binaryurirelativepath'])
+                # create directory if it doesn't exist
+                if not ftp.isFileAvailable(to_branch):
+                    ftp.mkdir(to_branch)
+
+                fromuri = os.path.join(cur_branch,old_filename)
+                touri = os.path.join(to_branch,new_filename)
+                ftp.renameFile(fromuri,touri)
+                ftp.renameFile(fromuri+etpConst['packageshashfileext'],touri+etpConst['packageshashfileext'])
+                ftp.closeConnection()
+
+            switched.add(idpackage)
+
+        dbconn.commitChanges()
+        self.close_server_database(dbconn)
+        self.updateProgress(
+            red("[%s=>%s] migration loop completed." % (cur_branch,to_branch,)),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+
+        return switched, already_switched, ignored, not_found, no_checksum
+

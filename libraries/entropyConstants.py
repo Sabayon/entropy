@@ -581,8 +581,6 @@ def const_defaultSettings(rootdir):
         'triggername': "trigger", # name of the trigger file that would be executed by equo inside triggerTools
         'proxy': {}, # proxy configuration information, used system wide
 
-        'reagentloglevel': 1 , # Reagent log level (default: 1 - see reagent.conf for more info)
-        'activatorloglevel': 1, # # Activator log level (default: 1 - see activator.conf for more info)
         'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
         'equologlevel': 1, # # Equo log level (default: 1 - see equo.conf for more info)
         'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their stuff
@@ -1209,15 +1207,6 @@ def const_readActivatorSettings():
                 format = line.split("database-format|")[1]
                 if format in etpConst['etpdatabasesupportedcformats']:
                     etpConst['etpdatabasefileformat'] = format
-            elif line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
-                loglevel = line.split("loglevel|")[1]
-                try:
-                    loglevel = int(loglevel)
-                except ValueError:
-                    pass
-
-                if (loglevel > -1) and (loglevel < 3):
-                    etpConst['activatorloglevel'] = loglevel
 
 def const_readReagentSettings():
 
@@ -1226,17 +1215,8 @@ def const_readReagentSettings():
         reagentconf = f.readlines()
         f.close()
         for line in reagentconf:
-            if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
-                loglevel = line.split("loglevel|")[1]
 
-                try:
-                    loglevel = int(loglevel)
-                except ValueError:
-                    pass
-                if (loglevel > -1) and (loglevel < 3):
-                    etpConst['reagentloglevel'] = loglevel
-
-            elif line.startswith("rss-feed|") and (len(line.split("rss-feed|")) == 2):
+            if line.startswith("rss-feed|") and (len(line.split("rss-feed|")) == 2):
                 feed = line.split("rss-feed|")[1]
                 if feed in ("enable","enabled","true","1"):
                     etpConst['rss-feed'] = True

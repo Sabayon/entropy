@@ -24,12 +24,11 @@ import time
 import shutil
 from entropyConstants import *
 from outputTools import *
-from entropy import FtpInterface, EquoInterface, rssFeed, LogFile
+from entropy import FtpInterface, EquoInterface, rssFeed
 import exceptionTools
 Entropy = EquoInterface(noclientdb = 2)
 
 # Logging initialization
-activatorLog = LogFile(level=etpConst['activatorloglevel'],filename = etpConst['activatorlogfile'], header = "[Activator]")
 
 def sync(options, justTidy = False):
 
@@ -42,7 +41,6 @@ def sync(options, justTidy = False):
             myopts.append(i)
     options = myopts
 
-    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: called with justTidy -> "+str(justTidy))
     print_info(green(" * ")+red("Starting to sync data across mirrors (packages/database) ..."))
 
     if (not justTidy):
@@ -105,7 +103,6 @@ def sync(options, justTidy = False):
                         # not expired.
 
         if (not removeList):
-            activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: no packages to remove from the lirrors.")
             print_info(green(" * ")+red("No packages to remove from the mirrors."))
             print_info(green(" * ")+red("Syncronization across mirrors completed."))
             continue
@@ -121,15 +118,12 @@ def sync(options, justTidy = False):
                 sys.exit(0)
 
         # remove them!
-        activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: starting to remove packages from mirrors.")
         for uri in etpConst['activatoruploaduris']:
-            activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"sync: connecting to mirror "+Entropy.entropyTools.extractFTPHostFromUri(uri))
             print_info(green(" * ")+red("Connecting to: ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
             ftp = FtpInterface(uri, Entropy)
             ftp.setCWD(etpConst['binaryurirelativepath']+"/"+mybranch)
             for xfile in removeList:
 
-                activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (remote) file "+xfile)
                 print_info(green(" * ")+red("Removing file: ")+bold(xfile), back = True)
                 # remove remotely
                 if (ftp.isFileAvailable(xfile)):
@@ -147,7 +141,6 @@ def sync(options, justTidy = False):
                         print_warning(brown(" * ")+red("ATTENTION: remote checksum file ")+bold(xfile)+red(" cannot be removed."))
                 # remove locally
                 if os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile):
-                    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+xfile)
                     print_info(green(" * ")+red("Package file: ")+bold(xfile)+red(" removed successfully from ")+bold(etpConst['packagesbindir']+"/"+mybranch))
                     os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile)
                     try:
@@ -156,7 +149,6 @@ def sync(options, justTidy = False):
                         pass
                 # checksum
                 if os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile+etpConst['packageshashfileext']):
-                    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"sync: removing (local) file "+xfile+etpConst['packageshashfileext'])
                     print_info(green(" * ")+red("Checksum file: ")+bold(xfile+etpConst['packageshashfileext'])+red(" removed successfully from ")+bold(etpConst['packagesbindir']+"/"+mybranch))
                     os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile+etpConst['packageshashfileext'])
             ftp.closeConnection()
@@ -165,8 +157,6 @@ def sync(options, justTidy = False):
 
 
 def packages(options):
-
-    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: called with options -> "+str(options))
 
     # Options available for all the packages submodules
     myopts = options[1:]
@@ -186,8 +176,6 @@ def packages(options):
         currentUri = 0
         totalSuccessfulUri = 0
         mirrorsTainted = False
-
-        activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: called sync.")
 
         for uri in etpConst['activatoruploaduris']:
 
@@ -213,7 +201,6 @@ def packages(options):
                             if tbz2.endswith(".tbz2"):
                                 uploadCounter += 1
 
-                    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: upload directory stats -> files: "+str(uploadCounter)+" | upload packages list: "+str(toBeUploaded))
 
                     print_info(green(" * ")+red("Upload directory:\t\t")+bold(str(uploadCounter))+red(" files ready."))
                     localPackagesRepository = set() # parse etpConst['packagesbindir']
@@ -225,7 +212,6 @@ def packages(options):
                             if tbz2.endswith(".tbz2"):
                                 packageCounter += 1
 
-                    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: packages directory stats -> files: "+str(packageCounter)+" | download packages list (including md5): "+str(localPackagesRepository))
 
                     print_info(green(" * ")+red("Packages directory:\t")+bold(str(packageCounter))+red(" files ready."))
 
@@ -270,7 +256,6 @@ def packages(options):
                     downloadQueue = set()
                     removalQueue = set()
 
-                    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"packages: starting packages calculation...")
 
                     finePackages = set()
                     # Fill uploadQueue and if something weird is found, add the packages to downloadQueue
@@ -645,8 +630,6 @@ def packages(options):
                 if (str(e) == "100"):
                     sys.exit(0)
 
-                activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: Exception caught: "+str(e)+" . Trying to continue if possible.")
-                activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: cannot properly syncronize "+Entropy.entropyTools.extractFTPHostFromUri(uri)+". Trying to continue if possible.")
 
                 # print warning cannot sync uri
                 print_warning(brown(" * ")+red("ATTENTION: cannot properly syncronize ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(". Continuing if possible..."))
@@ -654,7 +637,6 @@ def packages(options):
                 # decide what to do
                 if (totalSuccessfulUri > 0) or (etpUi['pretend']):
                     # we're safe
-                    activatorLog.log(ETP_LOGPRI_WARNING,ETP_LOGLEVEL_NORMAL,"packages: at least one mirror has been synced properly. I'm fine.")
                     print_info(green(" * ")+red("At least one mirror has been synced properly. I'm fine."))
                     continue
                 else:
@@ -664,7 +646,6 @@ def packages(options):
                     else:
                         # no mirrors were synced properly
                         # show error and return, do not move files from the upload dir
-                        activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"packages: no mirrors have been properly syncronized. Check network status and retry. Cannot continue.")
                         print_error(brown(" * ")+red("ERROR: no mirrors have been properly syncronized. Check network status and retry. Cannot continue."))
                         return False
 
@@ -673,7 +654,6 @@ def packages(options):
         if (totalSuccessfulUri > 0):
             if etpUi['pretend']:
                 return False
-            activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"packages: all done. Now it's time to move packages to "+etpConst['packagesbindir'])
             pkgbranches = os.listdir(etpConst['packagessuploaddir'])
             pkgbranches = [x for x in pkgbranches if os.path.isdir(etpConst['packagessuploaddir']+"/"+x)]
             for branch in pkgbranches:
@@ -701,17 +681,14 @@ def packages(options):
 
 def database(options):
 
-    activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: called with -> "+str(options))
 
     # lock tool
     if (options[0] == "lock"):
         print_info(green(" * ")+green("Starting to lock mirrors' databases..."))
         rc = lockDatabases(lock = True)
         if (rc):
-            activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (lock) A problem occured on at least one mirror !")
             print_info(green(" * ")+red("A problem occured on at least one mirror !"))
         else:
-            activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Databases lock complete.")
             print_info(green(" * ")+green("Databases lock complete"))
 
     # unlock tool
@@ -719,10 +696,8 @@ def database(options):
         print_info(green(" * ")+green("Starting to unlock mirrors' databases..."))
         rc = lockDatabases(lock = False)
         if (rc):
-            activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (unlock) A problem occured on at least one mirror !")
             print_info(green(" * ")+green("A problem occured on at least one mirror !"))
         else:
-            activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Databases lock complete.")
             print_info(green(" * ")+green("Databases unlock complete"))
 
     # download lock tool
@@ -730,10 +705,8 @@ def database(options):
         print_info(green(" * ")+green("Starting to lock download mirrors' databases..."))
         rc = downloadLockDatabases(lock = True)
         if (rc):
-            activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (download-lock) A problem occured on at least one mirror !")
             print_info(green(" * ")+green("A problem occured on at least one mirror !"))
         else:
-            activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Download mirrors lock complete.")
             print_info(green(" * ")+green("Download mirrors lock complete"))
 
     # download unlock tool
@@ -741,10 +714,8 @@ def database(options):
         print_info(green(" * ")+green("Starting to unlock download mirrors' databases..."))
         rc = downloadLockDatabases(lock = False)
         if (rc):
-            activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database: (download-unlock) A problem occured on at least one mirror !")
             print_info(green(" * ")+green("A problem occured on at least one mirror..."))
         else:
-            activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: Download mirrors unlock complete.")
             print_info(green(" * ")+green("Download mirrors unlock complete"))
 
     # lock status tool
@@ -765,7 +736,6 @@ def database(options):
     # database sync tool
     elif (options[0] == "sync"):
 
-        activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database: database sync called.")
 
         print_info(green(" * ")+red("Checking database status ..."), back = True)
 
@@ -813,15 +783,12 @@ def database(options):
                     os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
             else:
                 print
-                activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database (sync inside activatorTools): At the moment, mirrors are locked, someone is working on their databases, try again later...")
                 raise exceptionTools.OnlineMirrorError("OnlineMirrorError: At the moment, mirrors are locked, someone is working on their databases, try again later...")
 
         else:
             if (dbLockFile):
-                activatorLog.log(ETP_LOGPRI_ERROR,ETP_LOGLEVEL_NORMAL,"database (sync inside activatorTools): Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
                 raise exceptionTools.OnlineMirrorError("OnlineMirrorError: Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file "+etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
             else:
-                activatorLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"database (sync inside activatorTools): Mirrors are not locked. Fetching data...")
                 print_info(green(" * ")+red("Mirrors are not locked. Fetching data..."))
 
             syncRemoteDatabases()

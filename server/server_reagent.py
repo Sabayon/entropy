@@ -224,7 +224,7 @@ def database(options):
             _options.append(opt)
     options = _options
 
-    if len(options) == 0:
+    if not options:
         print_error(brown(" * ")+red("Not enough parameters"))
         return 1
 
@@ -240,7 +240,6 @@ def database(options):
         dbpath = None
         if myopts:
             dbpath = myopts[0]
-
         print_info(darkgreen(" * ")+red("Creating empty database to: ")+dbpath)
         if os.path.isfile(dbpath):
             print_error(darkgreen(" * ")+red("Cannot overwrite already existing file: ")+dbpath)
@@ -250,170 +249,101 @@ def database(options):
 
     elif (options[0] == "switchbranch"):
 
-        if (len(options) < 2):
+        if (len(options) < 3):
             print_error(brown(" * ")+red("Not enough parameters"))
-            return 6
+            return 1
 
         switchbranch = options[1]
-        print_info(green(" * ")+red("Collecting packages that would be marked '"+switchbranch+"' ..."), back = True)
+        print_info(darkgreen(" * ")+red("Switching branch, be sure to have your packages in sync."))
+        print_info(darkgreen(" * ")+red("Collecting packages that would be marked %s..." % (switchbranch,) ), back = True)
+        dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
 
+        pkglist = set()
         myatoms = options[2:]
-        if not myatoms:
-            print_error(brown(" * ")+red("Not enough parameters"))
-            return 7
-
-        dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
-        # is world?
-        if myatoms[0] == "world":
-            pkglist = dbconn.listAllIdpackages()
+        if "world" in myatoms:
+            pkglist |= dbconn.listAllIdpackages()
         else:
-            pkglist = set()
             for atom in myatoms:
-                # validate atom
                 match = dbconn.atomMatch(atom)
                 if match == -1:
                     print_warning(brown(" * ")+red("Cannot match: ")+bold(atom))
                 else:
                     pkglist.add(match[0])
 
-        # check if atoms were found
         if not pkglist:
-            print
             print_error(brown(" * ")+red("No packages found."))
-            return 8
+            return 3
 
-        # show what would be done
-        print_info(green(" * ")+red("These are the packages that would be marked '"+switchbranch+"':"))
+        print_info(darkgreen(" * ")+red("These are the packages that would be marked %s:" % (switchbranch,)))
+        for idpackage in pkglist:
+            atom = dbconn.retrieveAtom(idpackage)
+            print_info(red("   # ")+bold(atom))
 
-        for pkg in pkglist:
-            atom = dbconn.retrieveAtom(pkg)
-            print_info(red("  (*) ")+bold(atom))
-
-        rc = Entropy.askQuestion("     Would you like to continue ?")
+        rc = Entropy.askQuestion("Would you like to continue ?")
         if rc == "No":
-            return 9
+            return 4
 
-        # sync packages
-        import activatorTools
-        ask = etpUi['ask']
-        etpUi['ask'] = True
-        activatorTools.packages(["sync"])
-        etpUi['ask'] = ask
-
-        print_info(green(" * ")+red("Switching selected packages ..."))
-
-        for pkg in pkglist:
-            atom = dbconn.retrieveAtom(pkg)
-            currentbranch = dbconn.retrieveBranch(pkg)
-            currentdownload = dbconn.retrieveDownloadURL(pkg)
-
-            if currentbranch == switchbranch:
-                print_warning(green(" * ")+red("Ignoring ")+bold(atom)+red(" since it is already in the chosen branch"))
-                continue
-
-            print_info(green(" * ")+darkred(atom+": ")+red("Configuring package information..."), back = True)
-            # change branch and download URL
-            dbconn.switchBranch(pkg,switchbranch)
-
-            # rename locally
-            filename = os.path.basename(dbconn.retrieveDownloadURL(pkg))
-            topath = etpConst['packagesbindir']+"/"+switchbranch
-            if not os.path.isdir(topath):
-                os.makedirs(topath)
-            print_info(green(" * ")+darkred(atom+": ")+red("Moving file locally..."), back = True)
-            #print etpConst['entropyworkdir']+"/"+currentdownload+" --> "+topath+"/"+newdownload
-            os.rename(etpConst['entropyworkdir']+"/"+currentdownload,topath+"/"+filename)
-            # md5
-            os.rename(etpConst['entropyworkdir']+"/"+currentdownload+etpConst['packageshashfileext'],topath+"/"+filename+etpConst['packageshashfileext'])
-
-            # XXX: we can barely ignore branch info injected into .tbz2 since they'll be ignored too
-
-            # rename remotely
-            print_info(green(" * ")+darkred(atom+": ")+red("Moving file remotely..."), back = True)
-            # change filename remotely
-            for uri in etpConst['activatoruploaduris']:
-
-                print_info(green(" * ")+darkred(atom+": ")+red("Moving file remotely on: ")+Entropy.entropyTools.extractFTPHostFromUri(uri), back = True)
-
-                ftp = FtpInterface(uri, Entropy)
-                ftp.setCWD(etpConst['binaryurirelativepath'])
-                # create directory if it doesn't exist
-                if (not ftp.isFileAvailable(switchbranch)):
-                    ftp.mkdir(switchbranch)
-                # rename tbz2
-                ftp.renameFile(currentbranch+"/"+filename,switchbranch+"/"+filename)
-                # rename md5
-                ftp.renameFile(currentbranch+"/"+filename+etpConst['packageshashfileext'],switchbranch+"/"+filename+etpConst['packageshashfileext'])
-                ftp.closeConnection()
-
-        dbconn.closeDB()
-        print_info(green(" * ")+red("All the selected packages have been marked as requested. Remember to run activator."))
+        switched, already_switched, ignored, not_found, no_checksum = Entropy.switch_packages_branch(pkglist, to_branch = switchbranch)
+        if not_found or no_checksum:
+            return 1
         return 0
 
 
     elif (options[0] == "remove"):
 
-        print_info(green(" * ")+red("Scanning packages that would be removed ..."), back = True)
-
-        myopts = options[1:]
-        _myopts = []
+        print_info(darkgreen(" * ")+red("Matching packages to remove..."), back = True)
+        myopts = []
         branch = None
-        for opt in myopts:
+        for opt in options[1:]:
             if (opt.startswith("--branch=")) and (len(opt.split("=")) == 2):
                 branch = opt.split("=")[1]
             else:
-                _myopts.append(opt)
-        myopts = _myopts
+                myopts.append(opt)
 
-        if len(myopts) == 0:
+        if not myopts:
             print_error(brown(" * ")+red("Not enough parameters"))
-            return 10
+            return 1
 
+        dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
         pkglist = set()
-        dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
-
         for atom in myopts:
-            if (branch):
-                pkg = dbconn.atomMatch(atom, matchBranches = (branch,))
+            if branch:
+                pkg = dbconn.atomMatch(atom, matchBranches = (branch,), multiMatch = True)
             else:
-                pkg = dbconn.atomMatch(atom)
-            if pkg[0] != -1:
-                pkglist.add(pkg[0])
+                pkg = dbconn.atomMatch(atom, multiMatch = True)
+            if pkg[1] == 0:
+                for idpackage in pkg[0]:
+                    pkglist.add(idpackage)
 
-        # check if atoms were found
         if not pkglist:
-            print
-            dbconn.closeDB()
             print_error(brown(" * ")+red("No packages found."))
-            return 11
+            return 2
 
-        print_info(green(" * ")+red("These are the packages that would be removed from the database:"))
+        print_info(darkgreen(" * ")+red("These are the packages that would be removed from the database:"))
+        for idpackage in pkglist:
+            pkgatom = dbconn.retrieveAtom(idpackage)
+            branch = dbconn.retrieveBranch(idpackage)
+            print_info(red("   # ")+blue("[")+red(branch)+blue("] ")+bold(pkgatom))
 
-        for pkg in pkglist:
-            pkgatom = dbconn.retrieveAtom(pkg)
-            branch = dbconn.retrieveBranch(pkg)
-            print_info(red("\t (*) ")+bold(pkgatom)+blue(" [")+red(branch)+blue("]"))
 
-        # ask to continue
-        rc = Entropy.askQuestion("     Would you like to continue ?")
+        rc = Entropy.askQuestion("Would you like to continue ?")
         if rc == "No":
             return 0
 
-        # now mark them as stable
-        print_info(green(" * ")+red("Removing selected packages ..."))
+        print_info(darkgreen(" * ")+red("Removing selected packages..."))
+        for idpackage in pkglist:
+            pkgatom = dbconn.retrieveAtom(idpackage)
+            print_info(darkgreen(" * ")+red("Removing package: ")+bold(pkgatom)+red("..."), back = True)
+            Entropy.remove_package(idpackage)
 
-        # open db
-        for pkg in pkglist:
-            pkgatom = dbconn.retrieveAtom(pkg)
-            print_info(green(" * ")+red("Removing package: ")+bold(pkgatom)+red(" ..."), back = True)
-            dbconn.removePackage(pkg)
-        print_info(green(" * ")+red("All the selected packages have been removed as requested. To remove online binary packages, just run Activator."))
-        dbconn.closeDB()
+        Entropy.close_server_database(dbconn)
+        print_info(darkgreen(" * ")+red("Packages removed. To remove binary packages, run activator."))
+
         return 0
 
     elif (options[0] == "multiremove"):
 
-        print_info(green(" * ")+red("Scanning packages that would be removed ..."), back = True)
+        print_info(darkgreen(" * ")+red("Searching injected packages to remove..."), back = True)
 
         branch = etpConst['branch']
         atoms = []
@@ -423,58 +353,46 @@ def database(options):
             else:
                 atoms.append(opt)
 
-        pkglist = set()
         dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
-        allidpackages = dbconn.listAllIdpackages()
 
         idpackages = set()
         if not atoms:
-            # choose all
+            allidpackages = dbconn.listAllIdpackages()
             for idpackage in allidpackages:
                 if dbconn.isInjected(idpackage):
                     idpackages.add(idpackage)
         else:
             for atom in atoms:
-                match = dbconn.atomMatch(atom, matchBranches = (branch,), multiMatch = True, packagesFilter = False)
-                if match[1] != 0:
-                    print_warning(red("Attention, no match for: ")+bold(atom))
-                else:
+                match = dbconn.atomMatch(atom, matchBranches = (branch,), multiMatch = True)
+                if match[1] == 0:
                     for x in match[0]:
                         if dbconn.isInjected(x):
                             idpackages.add(x)
 
-        # check if atoms were found
         if not idpackages:
-            dbconn.closeDB()
             print_error(brown(" * ")+red("No packages found."))
-            return 11
+            return 1
 
-        print_info(green(" * ")+blue("These are the packages that would be removed from the database:"))
+        print_info(darkgreen(" * ")+blue("These are the injected packages pulled in for removal:"))
 
         for idpackage in idpackages:
             pkgatom = dbconn.retrieveAtom(idpackage)
             branch = dbconn.retrieveBranch(idpackage)
-            print_info(darkred("    (*) ")+blue("[")+red(branch)+blue("] ")+brown(pkgatom))
+            print_info(darkred("    # ")+blue("[")+red(branch)+blue("] ")+brown(pkgatom))
 
         # ask to continue
-        rc = Entropy.askQuestion("     Would you like to continue ?")
+        rc = Entropy.askQuestion("Would you like to continue ?")
         if rc == "No":
             return 0
 
-        dbconn.closeDB()
-        del dbconn
-        dbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
-
         print_info(green(" * ")+red("Removing selected packages ..."))
-
-        # open db
         for idpackage in idpackages:
             pkgatom = dbconn.retrieveAtom(idpackage)
-            print_info(green(" * ")+red("Removing package: ")+bold(pkgatom)+red(" ..."))
-            dbconn.removePackage(idpackage)
-        print_info(green(" * ")+red("All the selected packages have been removed as requested."))
-        dbconn.closeDB()
-        del dbconn
+            print_info(darkgreen(" * ")+red("Removing package: ")+bold(pkgatom)+red("..."), back = True)
+            Entropy.remove_package(idpackage)
+
+        Entropy.close_server_database(dbconn)
+        print_info(darkgreen(" * ")+red("Packages removed. To remove binary packages, run activator."))
         return 0
 
     # used by reagent
@@ -527,4 +445,3 @@ def spm(options):
             print ' '.join(["="+x for x in packages])
         else:
             os.system(etpConst['spm']['exec']+" "+etpConst['spm']['ask_cmd']+" "+etpConst['spm']['verbose_cmd']+" "+" ".join(["="+x for x in packages]))
-
