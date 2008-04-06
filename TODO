@@ -26,6 +26,8 @@ TODO list
     - apackage masking menu (*)
     - bug reporting interface (*)
     - GLSA interface (*)
+    - applet ignores masks
+    - applet from critical to up to date
     - Popularity feature / Your Ego service
     - Category <-> Image dictionary (for the properties menu)
     - Skip Mirror buttons

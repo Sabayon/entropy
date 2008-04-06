@@ -6,7 +6,7 @@
 
 # SLOT CHANGES, LINE CONSTRUCTION:
 # slotmove <atom> <from slot> <to slot>
-# move <from atom> <to slot>
+# move <from atom> <to atom>
 # See examples below
 
 # move dev-python/qscintilla x11-libs/qscintilla

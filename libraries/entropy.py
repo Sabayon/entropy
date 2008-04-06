@@ -50,6 +50,12 @@ class EquoInterface(TextInterface):
 
     def __init__(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False, repo_validation = True):
 
+        self.MaskingParser = None
+        self.FileUpdates = None
+        self.repoDbCache = {}
+        self.securityCache = {}
+        self.spmCache = {}
+
         self.clientLog = LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[client]")
         import dumpTools
         self.dumpTools = dumpTools
@@ -77,9 +83,6 @@ class EquoInterface(TextInterface):
         if self.openclientdb:
             self.openClientDatabase()
         self.FileUpdates = self.FileUpdatesInterfaceLoader()
-        self.repoDbCache = {}
-        self.securityCache = {}
-        self.spmCache = {}
 
         # masking parser
         self.MaskingParser = self.PackageMaskingParserInterfaceLoader()
@@ -299,28 +302,23 @@ class EquoInterface(TextInterface):
         etpConst['packagemasking'] = None
 
     def openClientDatabase(self):
-        self.clientDbconn = self.loadClientDatabase(indexing = self.indexing, generate = self.noclientdb, xcache = self.xcache)
-        return self.clientDbconn # just for reference
-
-    def loadClientDatabase(self, xcache = True, generate = False, indexing = True):
         if not os.path.isdir(os.path.dirname(etpConst['etpdatabaseclientfilepath'])):
             os.makedirs(os.path.dirname(etpConst['etpdatabaseclientfilepath']))
-        if (not generate) and (not os.path.isfile(etpConst['etpdatabaseclientfilepath'])):
-            raise exceptionTools.SystemDatabaseError("SystemDatabaseError: system database not found. Either does not exist or corrupted.")
+        if (not self.noclientdb) and (not os.path.isfile(etpConst['etpdatabaseclientfilepath'])):
+            raise exceptionTools.SystemDatabaseError("SystemDatabaseError: system database not found or corrupted: %s" % (etpConst['etpdatabaseclientfilepath'],) )
         conn = self.databaseTools.etpDatabase(  readOnly = False,
                                                 dbFile = etpConst['etpdatabaseclientfilepath'],
                                                 clientDatabase = True,
                                                 dbname = etpConst['clientdbid'],
-                                                xcache = xcache,
-                                                indexing = indexing,
+                                                xcache = self.xcache,
+                                                indexing = self.indexing,
                                                 OutputInterface = self
                                                 )
         # validate database
-        if not generate:
+        if not self.noclientdb:
             conn.validateDatabase()
-        if (not etpConst['dbconfigprotect']):
-            # config protect not prepared
-            if (not generate):
+        if not etpConst['dbconfigprotect']:
+            if not self.noclientdb:
 
                 etpConst['dbconfigprotect'] = conn.listConfigProtectDirectories()
                 etpConst['dbconfigprotectmask'] = conn.listConfigProtectDirectories(mask = True)
@@ -329,8 +327,8 @@ class EquoInterface(TextInterface):
 
                 etpConst['dbconfigprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpConst['dbconfigprotect']]
                 etpConst['dbconfigprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpConst['dbconfigprotectmask']]
-
-        return conn
+        self.clientDbconn = conn
+        return self.clientDbconn
 
     def clientDatabaseSanityCheck(self):
         self.updateProgress(darkred("Sanity Check: system database"), importance = 2, type = "warning")
@@ -3302,9 +3300,9 @@ class PackageInterface:
         self.error_on_not_prepared()
 
         if not self.infoDict['merge_from']:
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Unpacking package: "+str(self.infoDict['atom']))
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Unpacking package: "+str(self.infoDict['atom']))
         else:
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Merging package: "+str(self.infoDict['atom']))
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Merging package: "+str(self.infoDict['atom']))
 
         if os.path.isdir(self.infoDict['unpackdir']):
             shutil.rmtree(self.infoDict['unpackdir'].encode('raw_unicode_escape'))
@@ -3399,7 +3397,7 @@ class PackageInterface:
         # clear on-disk cache
         self.__clear_cache()
 
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package: "+str(self.infoDict['removeatom']))
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package: "+str(self.infoDict['removeatom']))
 
         # remove from database
         if self.infoDict['removeidpackage'] != -1:
@@ -3414,7 +3412,7 @@ class PackageInterface:
         # Handle gentoo database
         if (etpConst['gentoo-compat']):
             gentooAtom = self.Entropy.entropyTools.remove_tag(self.infoDict['removeatom'])
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing from Portage: "+str(gentooAtom))
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing from Portage: "+str(gentooAtom))
             self.__remove_package_from_gentoo_database(gentooAtom)
             del gentooAtom
 
@@ -3441,7 +3439,7 @@ class PackageInterface:
                                             type = "warning",
                                             header = red("   ## ")
                                         )
-                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove of "+etpConst['systemroot']+item+" - cannot overwrite")
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove of "+etpConst['systemroot']+item+" - cannot overwrite")
                     continue
 
             protected = False
@@ -3468,7 +3466,7 @@ class PackageInterface:
 
 
             if (protected):
-                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file: "+etpConst['systemroot']+item)
+                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file: "+etpConst['systemroot']+item)
                 self.Entropy.updateProgress(
                                         red("[remove] Protecting config file: ")+etpConst['systemroot']+item,
                                         importance = 1,
@@ -3706,7 +3704,7 @@ class PackageInterface:
         # clear on-disk cache
         self.__clear_cache()
 
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing package: "+str(self.infoDict['atom']))
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing package: "+str(self.infoDict['atom']))
 
         # copy files over - install
         rc = self.__move_image_to_system()
@@ -3726,15 +3724,15 @@ class PackageInterface:
         # remove old files and gentoo stuff
         if (self.infoDict['removeidpackage'] != -1):
             # doing a diff removal
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Remove old package: "+str(self.infoDict['removeatom']))
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Remove old package: "+str(self.infoDict['removeatom']))
             self.infoDict['removeidpackage'] = -1 # disabling database removal
 
             compatstring = ''
             if etpConst['gentoo-compat']:
-                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing Entropy and Gentoo database entry for "+str(self.infoDict['removeatom']))
+                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing Entropy and Gentoo database entry for "+str(self.infoDict['removeatom']))
                 compatstring = " ## w/Gentoo compatibility"
             else:
-                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing Entropy (only) database entry for "+str(self.infoDict['removeatom']))
+                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing Entropy (only) database entry for "+str(self.infoDict['removeatom']))
 
             self.Entropy.updateProgress(
                                     blue("Cleaning old package files...")+compatstring,
@@ -3746,7 +3744,7 @@ class PackageInterface:
 
         rc = 0
         if (etpConst['gentoo-compat']):
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing new Gentoo database entry: "+str(self.infoDict['atom']))
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing new Gentoo database entry: "+str(self.infoDict['atom']))
             rc = self._install_package_into_gentoo_database(newidpackage)
 
         return rc
@@ -3973,7 +3971,7 @@ class PackageInterface:
 
                 # if our directory is a file on the live system
                 elif os.path.isfile(rootdir): # really weird...!
-                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+rootdir+" is a file when it should be a directory !! Removing in 20 seconds...")
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+rootdir+" is a file when it should be a directory !! Removing in 20 seconds...")
                     self.Entropy.updateProgress(
                                             bold(rootdir)+red(" is a file when it should be a directory !! Removing in 20 seconds..."),
                                             importance = 1,
@@ -4030,7 +4028,7 @@ class PackageInterface:
                                                 type = "warning",
                                                 header = darkred("   ## ")
                                             )
-                        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! Collision found during install for "+tofile+" - cannot overwrite")
+                        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! Collision found during install for "+tofile+" - cannot overwrite")
                         continue
 
                 # -- CONFIGURATION FILE PROTECTION --
@@ -4069,7 +4067,7 @@ class PackageInterface:
                                 oldtofile = tofile
                                 if oldtofile.find("._cfg") != -1:
                                     oldtofile = os.path.dirname(oldtofile)+"/"+os.path.basename(oldtofile)[10:]
-                                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Protecting config file: "+oldtofile)
+                                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Protecting config file: "+oldtofile)
                                 self.Entropy.updateProgress(
                                                         red("Protecting config file: ")+oldtofile,
                                                         importance = 1,
@@ -4077,7 +4075,7 @@ class PackageInterface:
                                                         header = darkred("   ## ")
                                                     )
                         else:
-                            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Skipping config file installation, as stated in equo.conf: "+tofile)
+                            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Skipping config file installation, as stated in equo.conf: "+tofile)
                             self.Entropy.updateProgress(
                                                     red("Skipping file installation: ")+tofile,
                                                     importance = 1,
@@ -4119,7 +4117,7 @@ class PackageInterface:
 
                     # if our file is a dir on the live system
                     if os.path.isdir(tofile) and not os.path.islink(tofile): # really weird...!
-                        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+tofile+" is a directory when it should be a file !! Removing in 20 seconds...")
+                        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+tofile+" is a directory when it should be a file !! Removing in 20 seconds...")
                         self.Entropy.updateProgress(
                                                 bold(tofile)+red(" is a directory when it should be a file !! Removing in 20 seconds..."),
                                                 importance = 1,
@@ -4285,7 +4283,7 @@ class PackageInterface:
         self.error_on_not_prepared()
         # get messages
         if self.infoDict['messages']:
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Message from "+self.infoDict['atom']+" :")
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Message from "+self.infoDict['atom']+" :")
             self.Entropy.updateProgress(
                                                 darkgreen("Gentoo ebuild messages:"),
                                                 importance = 0,
@@ -4293,7 +4291,7 @@ class PackageInterface:
                                                 header = brown("   ## ")
                                         )
         for msg in self.infoDict['messages']:
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,msg)
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,msg)
             self.Entropy.updateProgress(
                                                 msg,
                                                 importance = 0,
@@ -4301,7 +4299,7 @@ class PackageInterface:
                                                 header = brown("   ## ")
                                         )
         if self.infoDict['messages']:
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"End message.")
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"End message.")
 
     def postinstall_step(self):
         self.error_on_not_prepared()
@@ -6292,7 +6290,7 @@ class TriggerInterface:
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
 
         self.Entropy = EquoInstance
-        self.clientLog = self.Entropy.equoLog
+        self.clientLog = self.Entropy.clientLog
         self.validPhases = ("preinstall","postinstall","preremove","postremove")
         self.pkgdata = pkgdata
         self.prepared = False
@@ -6629,7 +6627,7 @@ class TriggerInterface:
                     os.system('echo "'+cmd+'" | chroot '+etpConst['systemroot']+quietstring)
 
     def trigger_purgecache(self):
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Purging Equo cache...")
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Purging Equo cache...")
         self.Entropy.updateProgress(
                                 brown(" Remember: It is always better to leave Equo updates isolated."),
                                 importance = 0,
@@ -6654,7 +6652,7 @@ class TriggerInterface:
                         if os.path.isdir(xdir[:16]+"/"+origdir):
                             fontdirs.add(xdir[:16]+"/"+origdir)
         if (fontdirs):
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring fonts directory...")
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring fonts directory...")
             self.Entropy.updateProgress(
                                     brown(" Configuring fonts directory..."),
                                     importance = 0,
@@ -6666,7 +6664,7 @@ class TriggerInterface:
         del fontdirs
 
     def trigger_gccswitch(self):
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GCC Profile...")
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GCC Profile...")
         self.Entropy.updateProgress(
                                 brown(" Configuring GCC Profile..."),
                                 importance = 0,
@@ -6678,7 +6676,7 @@ class TriggerInterface:
         self.trigger_set_gcc_profile(profile)
 
     def trigger_iconscache(self):
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating icons cache...")
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating icons cache...")
         self.Entropy.updateProgress(
                                 brown(" Updating icons cache..."),
                                 importance = 0,
@@ -6691,7 +6689,7 @@ class TriggerInterface:
                 self.trigger_generate_icons_cache(cachedir)
 
     def trigger_mimeupdate(self):
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating shared mime info database...")
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating shared mime info database...")
         self.Entropy.updateProgress(
                                 brown(" Updating shared mime info database..."),
                                 importance = 0,
@@ -6700,7 +6698,7 @@ class TriggerInterface:
         self.trigger_update_mime_db()
 
     def trigger_mimedesktopupdate(self):
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating desktop mime database...")
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating desktop mime database...")
         self.Entropy.updateProgress(
                                 brown(" Updating desktop mime database..."),
                                 importance = 0,
@@ -6709,7 +6707,7 @@ class TriggerInterface:
         self.trigger_update_mime_desktop_db()
 
     def trigger_scrollkeeper(self):
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating scrollkeeper database...")
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating scrollkeeper database...")
         self.Entropy.updateProgress(
                                 brown(" Updating scrollkeeper database..."),
                                 importance = 0,
@@ -6718,7 +6716,7 @@ class TriggerInterface:
         self.trigger_update_scrollkeeper_db()
 
     def trigger_gconfreload(self):
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reloading GConf2 database...")
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reloading GConf2 database...")
         self.Entropy.updateProgress(
                                 brown(" Reloading GConf2 database..."),
                                 importance = 0,
@@ -6727,7 +6725,7 @@ class TriggerInterface:
         self.trigger_reload_gconf_db()
 
     def trigger_binutilsswitch(self):
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Binutils Profile...")
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Binutils Profile...")
         self.Entropy.updateProgress(
                                 brown(" Configuring Binutils Profile..."),
                                 importance = 0,
@@ -6740,7 +6738,7 @@ class TriggerInterface:
 
     def trigger_kernelmod(self):
         if self.pkgdata['category'] != "sys-kernel":
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating moduledb...")
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating moduledb...")
             self.Entropy.updateProgress(
                                     brown(" Updating moduledb..."),
                                     importance = 0,
@@ -6765,7 +6763,7 @@ class TriggerInterface:
             self.trigger_run_depmod(name)
 
     def trigger_pythoninst(self):
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Python...")
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Python...")
         self.Entropy.updateProgress(
                                 brown(" Configuring Python..."),
                                 importance = 0,
@@ -6774,7 +6772,7 @@ class TriggerInterface:
         self.trigger_python_update_symlink()
 
     def trigger_sqliteinst(self):
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring SQLite...")
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring SQLite...")
         self.Entropy.updateProgress(
                                 brown(" Configuring SQLite..."),
                                 importance = 0,
@@ -6799,7 +6797,7 @@ class TriggerInterface:
         for item in self.pkgdata['content']:
             item = etpConst['systemroot']+item
             if item.startswith(etpConst['systemroot']+"/etc/init.d/") and not os.path.isfile(etpConst['systemroot']+item):
-                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+item)
+                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+item)
                 self.Entropy.updateProgress(
                                         brown(" A new service will be installed: ")+item,
                                         importance = 0,
@@ -6810,7 +6808,7 @@ class TriggerInterface:
         for item in self.pkgdata['removecontent']:
             item = etpConst['systemroot']+item
             if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
-                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Removing boot service: "+os.path.basename(item))
+                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Removing boot service: "+os.path.basename(item))
                 self.Entropy.updateProgress(
                                         brown(" Removing boot service: ")+os.path.basename(item),
                                         importance = 0,
@@ -6834,7 +6832,7 @@ class TriggerInterface:
         # is there eselect ?
         eselect = os.system("eselect opengl &> /dev/null")
         if eselect == 0:
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to "+opengl+" ...")
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to "+opengl+" ...")
             self.Entropy.updateProgress(
                                     brown(" Reconfiguring OpenGL..."),
                                     importance = 0,
@@ -6847,7 +6845,7 @@ class TriggerInterface:
             else:
                 os.system('eselect opengl set --use-old '+opengl+quietstring)
         else:
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
             self.Entropy.updateProgress(
                                     brown(" Eselect NOT found, cannot run OpenGL trigger"),
                                     importance = 0,
@@ -6857,7 +6855,7 @@ class TriggerInterface:
     def trigger_openglsetup_xorg(self):
         eselect = os.system("eselect opengl &> /dev/null")
         if eselect == 0:
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to fallback xorg-x11 ...")
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to fallback xorg-x11 ...")
             self.Entropy.updateProgress(
                                     brown(" Reconfiguring OpenGL..."),
                                     importance = 0,
@@ -6870,7 +6868,7 @@ class TriggerInterface:
             else:
                 os.system('eselect opengl set xorg-x11'+quietstring)
         else:
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
             self.Entropy.updateProgress(
                                     brown(" Eselect NOT found, cannot run OpenGL trigger"),
                                     importance = 0,
@@ -6894,7 +6892,7 @@ class TriggerInterface:
                 initramfs = initramfs[len("/boot"):]
 
             # configure GRUB
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Adding the new kernel...")
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Adding the new kernel...")
             self.Entropy.updateProgress(
                                     brown(" Configuring GRUB bootloader. Adding the new kernel..."),
                                     importance = 0,
@@ -6911,7 +6909,7 @@ class TriggerInterface:
             if initramfs not in self.pkgdata['content']:
                 initramfs = ''
             # configure GRUB
-            self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Removing the selected kernel...")
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Removing the selected kernel...")
             self.Entropy.updateProgress(
                                     brown(" Configuring GRUB bootloader. Removing the selected kernel..."),
                                     importance = 0,
@@ -6936,14 +6934,14 @@ class TriggerInterface:
                             # trigger mount /boot
                             rc = os.system("mount /boot &> /dev/null")
                             if rc == 0:
-                                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Mounted /boot successfully")
+                                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Mounted /boot successfully")
                                 self.Entropy.updateProgress(
                                                         brown(" Mounted /boot successfully"),
                                                         importance = 0,
                                                         header = red("   ##")
                                                     )
                             elif rc != 8192: # already mounted
-                                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Cannot mount /boot automatically !!")
+                                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Cannot mount /boot automatically !!")
                                 self.Entropy.updateProgress(
                                                         brown(" Cannot mount /boot automatically !!"),
                                                         importance = 0,
@@ -6967,7 +6965,7 @@ class TriggerInterface:
                         os.makedirs("/usr/share/services")
                     os.chown("/usr/share/services",0,0)
                     os.chmod("/usr/share/services",0755)
-                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca to build global KDE database")
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca to build global KDE database")
                     self.Entropy.updateProgress(
                                             brown(" Running kbuildsycoca to build global KDE database"),
                                             importance = 0,
@@ -6991,7 +6989,7 @@ class TriggerInterface:
                         os.makedirs("/usr/share/services")
                     os.chown("/usr/share/services",0,0)
                     os.chmod("/usr/share/services",0755)
-                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca4 to build global KDE4 database")
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca4 to build global KDE4 database")
                     self.Entropy.updateProgress(
                                             brown(" Running kbuildsycoca to build global KDE database"),
                                             importance = 0,
@@ -7092,7 +7090,7 @@ class TriggerInterface:
                     continue
                 if os.path.isdir(etpConst['systemroot']+"/usr/src/"+todir):
                     # link to /usr/src/linux
-                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir)
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir)
                     self.Entropy.updateProgress(
                                             brown(" Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir),
                                             importance = 0,
@@ -7116,7 +7114,7 @@ class TriggerInterface:
             myroot = "/"
         else:
             myroot = etpConst['systemroot']+"/"
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running ldconfig")
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running ldconfig")
         self.Entropy.updateProgress(
                                 brown(" Regenerating /etc/ld.so.cache"),
                                 importance = 0,
@@ -7127,7 +7125,7 @@ class TriggerInterface:
     def trigger_env_update(self):
         # clear linker paths cache
         linkerPaths.clear()
-        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running env-update")
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running env-update")
         if os.access(etpConst['systemroot']+"/usr/sbin/env-update",os.X_OK):
             self.Entropy.updateProgress(
                                     brown(" Updating environment using env-update"),
@@ -7152,7 +7150,7 @@ class TriggerInterface:
             myvm = vms[0].split("/")[-1]
             if myvm:
                 if os.access(etpConst['systemroot']+"/usr/bin/java-config",os.X_OK):
-                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring JAVA using java-config with VM: "+myvm)
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring JAVA using java-config with VM: "+myvm)
                     # set
                     self.Entropy.updateProgress(
                                             brown(" Setting system VM to ")+bold(myvm)+brown("..."),
@@ -7164,7 +7162,7 @@ class TriggerInterface:
                     else:
                         os.system("echo 'java-config -S "+myvm+"' | chroot "+etpConst['systemroot']+" &> /dev/null")
                 else:
-                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION /usr/bin/java-config does not exist. I was about to set JAVA VM: "+myvm)
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION /usr/bin/java-config does not exist. I was about to set JAVA VM: "+myvm)
                     self.Entropy.updateProgress(
                                             bold(" Attention: ")+brown("/usr/bin/java-config does not exist. Cannot set JAVA VM."),
                                             importance = 0,
@@ -7193,14 +7191,14 @@ class TriggerInterface:
                     sys.stdout = stdfile
                     rc = self.Spm.spm_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
                     if rc == 1:
-                        self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
+                        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
                     sys.stdout = oldstdout
                 rc = self.Spm.spm_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
                 if rc == 1:
-                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_postinst()) trigger for "+str(portage_atom)+". Something bad happened.")
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_postinst()) trigger for "+str(portage_atom)+". Something bad happened.")
             except Exception, e:
                 sys.stdout = oldstdout
-                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
                 self.Entropy.updateProgress(
                                         bold(" QA Warning: ")+brown("Cannot run Gentoo postint trigger for ")+bold(portage_atom)+brown(". Please report."),
                                         importance = 0,
@@ -7230,14 +7228,14 @@ class TriggerInterface:
                 sys.stdout = stdfile
                 rc = self.Spm.spm_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license']) # create mysettings["T"]+"/environment"
                 if rc == 1:
-                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
                 sys.stdout = oldstdout
                 rc = self.Spm.spm_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
                 if rc == 1:
-                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_preinst()) trigger for "+str(portage_atom)+". Something bad happened.")
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_preinst()) trigger for "+str(portage_atom)+". Something bad happened.")
             except Exception, e:
                 sys.stdout = oldstdout
-                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
                 self.Entropy.updateProgress(
                                         bold(" QA Warning: ")+brown("Cannot run Gentoo preinst trigger for ")+bold(portage_atom)+brown(". Please report."),
                                         importance = 0,
@@ -7273,9 +7271,9 @@ class TriggerInterface:
             try:
                 rc = self.Spm.spm_doebuild(myebuild, mydo = "prerm", tree = "bintree", cpv = portage_atom, portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom)
                 if rc == 1:
-                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preremove trigger for "+str(portage_atom)+". Something bad happened.")
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preremove trigger for "+str(portage_atom)+". Something bad happened.")
             except Exception, e:
-                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo preremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo preremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
                 self.Entropy.updateProgress(
                                         bold(" QA Warning: ")+brown("Cannot run Gentoo preremove trigger for ")+bold(portage_atom)+brown(". Please report."),
                                         importance = 0,
@@ -7313,9 +7311,9 @@ class TriggerInterface:
             try:
                 rc = self.Spm.spm_doebuild(myebuild, mydo = "postrm", tree = "bintree", cpv = portage_atom, portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom)
                 if rc == 1:
-                    self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo postremove trigger for "+str(portage_atom)+". Something bad happened.")
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo postremove trigger for "+str(portage_atom)+". Something bad happened.")
             except Exception, e:
-                self.Entropy.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo postremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo postremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
                 self.Entropy.updateProgress(
                                         bold(" QA Warning: ")+brown("Cannot run Gentoo postremove trigger for ")+bold(portage_atom)+brown(". Please report."),
                                         importance = 0,
@@ -10795,8 +10793,8 @@ class ServerInterface(TextInterface):
 
     def setup_services(self):
         self.setup_entropy_settings()
+        self.ClientService = EquoInterface(indexing = self.indexing, xcache = self.xcache, repo_validation = False, noclientdb = 1)
         self.backup_entropy_settings()
-        self.ClientService = EquoInterface(indexing = self.indexing, xcache = self.xcache, repo_validation = False)
         self.ClientService.FtpInterface = self.FtpInterface
         self.databaseTools = self.ClientService.databaseTools
         self.entropyTools = self.ClientService.entropyTools
@@ -11182,6 +11180,30 @@ class ServerInterface(TextInterface):
         dbconn.taintDatabase()
         self.close_server_database(dbconn)
 
+    def get_local_database_revision(self):
+        dbrev_file = os.path.join(etpConst['etpdatabasedir'],etpConst['etpdatabaserevisionfile'])
+        if os.path.isfile(dbrev_file):
+            f = open(dbrev_file)
+            rev = f.readline().strip()
+            f.close()
+            try:
+                rev = int(rev)
+            except ValueError:
+                self.updateProgress(
+                    red(
+                        "[repo: %s] invalid database revision: %s - defaulting to 0" % (
+                                darkgreen(etpConst['officialrepositoryid']),
+                                bold(rev),
+                            )
+                        ),
+                    importance = 2,
+                    type = "error",
+                    header = darkred(" !!! ")
+                )
+                rev = 0
+            return rev
+        else:
+            return 0
 
     def scan_package_changes(self):
 
@@ -11248,10 +11270,6 @@ class ServerInterface(TextInterface):
                         toBeRemoved.add(x[1])
 
         return toBeAdded, toBeRemoved, toBeInjected
-
-
-
-
 
 
     def initialize_server_database(self):
@@ -11955,3 +11973,236 @@ class ServerInterface(TextInterface):
 
         return switched, already_switched, ignored, not_found, no_checksum
 
+
+class ServerMirrorsInterface:
+
+    def __init__(self,  ServerInstance,
+                        upload_mirrors = etpConst['activatoruploaduris'],
+                        download_mirrors = etpConst['activatordownloaduris']):
+
+        if not isinstance(ServerInstance,ServerInterface):
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid ServerInterface instance is needed")
+
+        self.Entropy = ServerInterface
+        self.upload_mirrors = upload_mirrors[:]
+        self.download_mirrors = download_mirrors[:]
+        self.FtpInterface = self.Entropy.FtpInterface
+        self.repository_directory = etpConst['etpdatabasedir']
+
+
+    def set_upload_mirrors(self, mirrors):
+        if type(mirrors) is not list:
+            raise exceptionTools.InvalidDataType("InvalidDataType: set_upload_mirrors needs a list type")
+        self.upload_mirrors = mirrors[:]
+
+    def set_download_mirrors(self, mirrors):
+        if type(mirrors) is not list:
+            raise exceptionTools.InvalidDataType("InvalidDataType: set_download_mirrors needs a list type")
+        self.download_mirrors = mirrors[:]
+
+    # was: lockDatabases
+    def lock_mirrors(self, lock = True, mirrors = []):
+
+        if not mirrors:
+            mirrors = self.upload_mirrors[:]
+
+        issues = False
+        for uri in mirrors:
+
+            crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+
+            lock_text = "unlocking"
+            if lock: lock_text = "locking"
+            self.Entropy.updateProgress(
+                red("[repo:%s|mirror:%s] %s mirror..." % (etpConst['officialrepositoryid'],crippled_uri,lock_text,)),
+                importance = 1,
+                type = "info",
+                header = brown(" * "),
+                back = True
+            )
+
+            ftp = self.FtpInterface(uri, self.Entropy)
+            ftp.setCWD(etpConst['etpurirelativepath'])
+
+            if lock and ftp.isFileAvailable(etpConst['etpdatabaselockfile']):
+                self.Entropy.updateProgress(
+                    red("[repo:%s|mirror:%s] mirror already locked" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                    importance = 1,
+                    type = "info",
+                    header = darkgreen(" * ")
+                )
+                ftp.closeConnection()
+                continue
+            elif not lock and not ftp.isFileAvailable(etpConst['etpdatabaselockfile']):
+                self.Entropy.updateProgress(
+                    red("[repo:%s|mirror:%s] mirror already unlocked" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                    importance = 1,
+                    type = "info",
+                    header = darkgreen(" * ")
+                )
+                ftp.closeConnection()
+                continue
+
+            if lock:
+                rc = self.do_mirror_lock(uri, ftp)
+            else:
+                rc = self.do_mirror_unlock(uri, ftp)
+            ftp.closeConnection()
+            if not rc: issues = True
+
+        return issues
+
+    # was downloadLockDatabases
+    # this functions makes entropy clients to not download anything from the chosen
+    # mirrors. it is used to avoid clients to download databases while we're uploading
+    # a new one.
+    def lock_mirrors_for_download(self, lock = True, mirrors = []):
+
+        if not mirrors:
+            mirrors = self.upload_mirrors[:]
+
+        issues = False
+        for uri in mirrors:
+
+            crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+
+            lock_text = "unlocking"
+            if lock: lock_text = "locking"
+            self.Entropy.updateProgress(
+                red("[repo:%s|mirror:%s] %s mirror for download..." % (etpConst['officialrepositoryid'],crippled_uri,lock_text,)),
+                importance = 1,
+                type = "info",
+                header = brown(" * "),
+                back = True
+            )
+
+            ftp = self.FtpInterface(uri, self.Entropy)
+            ftp.setCWD(etpConst['etpurirelativepath'])
+
+            if lock and ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile']):
+                self.Entropy.updateProgress(
+                    red("[repo:%s|mirror:%s] mirror already locked for download" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                    importance = 1,
+                    type = "info",
+                    header = darkgreen(" * ")
+                )
+                ftp.closeConnection()
+                continue
+            elif not lock and not ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile']):
+                self.Entropy.updateProgress(
+                    red("[repo:%s|mirror:%s] mirror already unlocked for download" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                    importance = 1,
+                    type = "info",
+                    header = darkgreen(" * ")
+                )
+                ftp.closeConnection()
+                continue
+
+            if lock:
+                rc = self.do_mirror_lock(uri, ftp, dblock = False)
+            else:
+                rc = self.do_mirror_unlock(uri, ftp, dblock = False)
+            ftp.closeConnection()
+            if not rc: issues = True
+
+        return issues
+
+    def do_mirror_lock(self, uri, ftp_connection = None, dblock = True):
+
+        if not ftp_connection:
+            ftp_connection = self.FtpInterface(uri, self.Entropy)
+
+        ftp_connection.setCWD(etpConst['etpurirelativepath'])
+        crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+        lock_string = ''
+        if dblock:
+            self.create_local_database_lockfile()
+            lock_file = self.get_database_lockfile()
+        else:
+            lock_string = 'for download'
+            self.create_local_database_download_lockfile()
+            lock_file = self.get_database_download_lockfile()
+
+        rc = ftp_connection.uploadFile(lock_file, ascii = True)
+        if rc:
+            self.Entropy.updateProgress(
+                red("[repo:%s|mirror:%s] mirror successfully locked %s" % (etpConst['officialrepositoryid'],crippled_uri,lock_string,)),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
+        else:
+            self.Entropy.updateProgress(
+                red("[repo:%s|mirror:%s] lock error: %s - mirror not locked %s" % (etpConst['officialrepositoryid'],crippled_uri,rc,lock_string,)),
+                importance = 1,
+                type = "error",
+                header = darkred(" * ")
+            )
+            self.remove_local_database_lockfile()
+
+        return rc
+
+
+    def do_mirror_unlock(self, uri, ftp_connection, dblock = True):
+
+        if not ftp_connection:
+            ftp_connection = self.FtpInterface(uri, self.Entropy)
+
+        ftp_connection.setCWD(etpConst['etpurirelativepath'])
+        crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+
+        if dblock:
+            dbfile = etpConst['etpdatabaselockfile']
+        else:
+            dbfile = etpConst['etpdatabasedownloadlockfile']
+        rc = ftp_connection.deleteFile(dbfile)
+        if rc:
+            self.Entropy.updateProgress(
+                red("[repo:%s|mirror:%s] mirror successfully unlocked" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
+            if dblock:
+                self.remove_local_database_lockfile()
+            else:
+                self.remove_local_database_download_lockfile()
+        else:
+            self.Entropy.updateProgress(
+                red("[repo:%s|mirror:%s] unlock error: %s - mirror not unlocked" % (etpConst['officialrepositoryid'],crippled_uri,rc,)),
+                importance = 1,
+                type = "error",
+                header = darkred(" * ")
+            )
+
+        return rc
+
+    def get_database_lockfile(self):
+        return os.path.join(self.repository_directory,etpConst['etpdatabaselockfile'])
+
+    def get_database_download_lockfile(self):
+        return os.path.join(self.repository_directory,etpConst['etpdatabasedownloadlockfile'])
+
+    def create_local_database_download_lockfile(self):
+        lock_file = self.get_database_download_lockfile()
+        f = open(lock_file,"w")
+        f.write("download locked")
+        f.flush()
+        f.close()
+
+    def create_local_database_lockfile(self):
+        lock_file = self.get_database_lockfile()
+        f = open(lock_file,"w")
+        f.write("database locked")
+        f.flush()
+        f.close()
+
+    def remove_local_database_lockfile(self):
+        lock_file = self.get_database_lockfile()
+        if os.path.isfile(lock_file):
+            os.remove(lock_file)
+
+    def remove_local_database_download_lockfile(self):
+        lock_file = self.get_database_download_lockfile()
+        if os.path.isfile(lock_file):
+            os.remove(lock_file)

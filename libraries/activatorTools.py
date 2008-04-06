@@ -24,9 +24,9 @@ import time
 import shutil
 from entropyConstants import *
 from outputTools import *
-from entropy import FtpInterface, EquoInterface, rssFeed
+from entropy import FtpInterface, ServerInterface, rssFeed
 import exceptionTools
-Entropy = EquoInterface(noclientdb = 2)
+Entropy = ServerInterface(noclientdb = 2)
 
 # Logging initialization
 
@@ -682,7 +682,6 @@ def packages(options):
 def database(options):
 
 
-    # lock tool
     if (options[0] == "lock"):
         print_info(green(" * ")+green("Starting to lock mirrors' databases..."))
         rc = lockDatabases(lock = True)
@@ -1303,111 +1302,3 @@ def downloadPackageFromMirror(uri,pkgfile,branch):
                 if os.path.isfile(etpConst['packagesbindir']+"/"+branch+"/"+pkgfile):
                     os.remove(etpConst['packagesbindir']+"/"+branch+"/"+pkgfile)
 
-def lockDatabases(lock = True, mirrorList = []):
-
-    outstat = False
-    if (mirrorList == []):
-        mirrorList = etpConst['activatoruploaduris']
-    for uri in mirrorList:
-
-        if (lock):
-            print_info(brown(" * ")+red("Locking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
-        else:
-            print_info(brown(" * ")+red("Unlocking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" mirror..."),back = True)
-        ftp = FtpInterface(uri, Entropy)
-        # upload the lock file to database/%ARCH% directory
-        ftp.setCWD(etpConst['etpurirelativepath'])
-        # check if the lock is already there
-        if (lock):
-            if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
-                print_info(green(" * ")+red("Mirror database at ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" already locked."))
-                ftp.closeConnection()
-                continue
-        else:
-            if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
-                print_info(green(" * ")+red("Mirror database at ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" already unlocked."))
-                ftp.closeConnection()
-                continue
-        if (lock):
-            f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'],"w")
-            f.write("database locked\n")
-            f.flush()
-            f.close()
-            rc = ftp.uploadFile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'],ascii= True)
-            if (rc == True):
-                print_info(green(" * ")+red("Succesfully locked ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" mirror."))
-            else:
-                outstat = True
-                print "\n"
-                print_warning(red(" * ")+red("A problem occured while locking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" mirror. Please have a look."))
-                if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
-                    os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
-        else:
-            rc = ftp.deleteFile(etpConst['etpdatabaselockfile'])
-            if (rc):
-                print_info(green(" * ")+red("Succesfully unlocked ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" mirror."))
-                if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
-                    os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])
-            else:
-                outstat = True
-                print "\n"
-                print_warning(red(" * ")+red("A problem occured while unlocking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" mirror. Please have a look."))
-        ftp.closeConnection()
-    return outstat
-
-def downloadLockDatabases(lock = True, mirrorList = []):
-
-    outstat = False
-    if (mirrorList == []):
-        mirrorList = etpConst['activatoruploaduris']
-    for uri in mirrorList:
-        if (lock):
-            print_info(brown(" * ")+red("Locking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
-        else:
-            print_info(brown(" * ")+red("Unlocking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" download mirror..."),back = True)
-        ftp = FtpInterface(uri, Entropy)
-        # upload the lock file to database/%ARCH% directory
-        ftp.setCWD(etpConst['etpurirelativepath'])
-        # check if the lock is already there
-        if (lock):
-            if (ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
-                print_info(green(" * ")+red("Download mirror at ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" already locked."))
-                ftp.closeConnection()
-                continue
-        else:
-            if (not ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile'])):
-                print_info(green(" * ")+red("Download mirror at ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" already unlocked."))
-                ftp.closeConnection()
-                continue
-        if (lock):
-            f = open(etpConst['packagestmpdir']+"/"+etpConst['etpdatabasedownloadlockfile'],"w")
-            f.write("database locked\n")
-            f.flush()
-            f.close()
-            rc = ftp.uploadFile(etpConst['packagestmpdir']+"/"+etpConst['etpdatabasedownloadlockfile'],ascii= True)
-            if (rc == True):
-                print_info(green(" * ")+red("Succesfully locked ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" download mirror."))
-            else:
-                outstat = True
-                print "\n"
-                print_warning(red(" * ")+red("A problem occured while locking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" download mirror. Please have a look."))
-        else:
-            rc = ftp.deleteFile(etpConst['etpdatabasedownloadlockfile'])
-            if (rc):
-                print_info(green(" * ")+red("Succesfully unlocked ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" download mirror."))
-            else:
-                outstat = True
-                print "\n"
-                print_warning(red(" * ")+red("A problem occured while unlocking ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri))+red(" download mirror. Please have a look."))
-        ftp.closeConnection()
-    return outstat
-
-def getLocalDatabaseRevision():
-    if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile']):
-        f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'])
-        rev = f.readline().strip()
-        f.close()
-        rev = int(rev)
-        return rev
-    else:
-        return 0

@@ -20,8 +20,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import shutil
-import time
 from entropyConstants import *
 from outputTools import *
 from entropy import ServerInterface, FtpInterface
@@ -111,7 +109,7 @@ def update(options):
         # normal scanning
         print_info(brown(" * ")+red("Scanning database for differences..."))
         myadded, toBeRemoved, toBeInjected = Entropy.scan_package_changes()
-        toBeAdded =| myadded
+        toBeAdded |= myadded
 
         if not (len(toBeRemoved)+len(toBeAdded)+len(toBeInjected)):
             print_info(brown(" * ")+red("Zarro thinggz totoo."))
@@ -207,17 +205,11 @@ def database(options):
     import activatorTools
 
     databaseRequestNoAsk = False
-    databaseRequestJustScan = False
-    databaseRequestNoChecksum = False
     databaseRequestSync = False
     _options = []
     for opt in options:
         if opt.startswith("--noask"):
             databaseRequestNoAsk = True
-        elif opt.startswith("--justscan"):
-            databaseRequestJustScan = True
-        elif opt.startswith("--nochecksum"):
-            databaseRequestNoChecksum = True
         elif opt.startswith("--sync"):
             databaseRequestSync = True
         else:
