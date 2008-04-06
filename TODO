@@ -1,14 +1,8 @@
 TODO list
   - Server-side code refactoring:
-     1st:
-        [] calculate extra deps from NEEDED, server side? - NEEDED + ldconfig -p
-        [] write a tool that helps keeping packages updated (also supporting injected ones)
-        [] complete reagent spm interface
-        [] write a tool that will rebuild kernel dependant packages
-        [] GLSA interface, interfaced between packages in repo and the portage tree
-     2nd:
-        [] write a ncurses interface to manage entropy database
-  - split RDEPEND and PDEPEND ( + && and || ) (*)
+        [] children repo management
+        [] write a ncurses interface to manage entropy database + spm interface + GLSA
+  - split RDEPEND and PDEPEND ( + && and || ??? ) (*)
   - add i18n support (*)
 
   - log messages from portage doebuild() calls
@@ -22,9 +16,8 @@ TODO list
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - handle entropy exceptions (*)
-    - apackage masking menu (*)
-    - bug reporting interface (*)
+    - handle entropy exceptions/bug reporting interface (*)
+    - package masking menu (*)
     - GLSA interface (*)
     - applet ignores masks
     - applet from critical to up to date
@@ -33,10 +26,3 @@ TODO list
     - Skip Mirror buttons
     - button to stop the queue
     - show the number of packages found in a list
-
-
-Project Status:
-- reagent: complete.
-- activator: complete.
-============
-- equo - beta stage: 60%

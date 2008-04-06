@@ -10770,6 +10770,7 @@ class ServerInterface(TextInterface):
         etpSys['serverside'] = True
         self.indexing = False
         self.xcache = False
+        self.MirrorsService = None
         self.FtpInterface = FtpInterface
         self.serverDbCache = {}
         self.settings_to_backup = []
@@ -10799,6 +10800,7 @@ class ServerInterface(TextInterface):
         self.databaseTools = self.ClientService.databaseTools
         self.entropyTools = self.ClientService.entropyTools
         self.SpmService = self.ClientService.Spm()
+        self.MirrorsService = ServerMirrorsInterface(self)
 
     def setup_entropy_settings(self):
         self.settings_to_backup.extend([
@@ -11717,7 +11719,7 @@ class ServerInterface(TextInterface):
                     not_downloaded = set()
 
                 for pkg in to_download:
-                    rc = activatorTools.downloadPackageFromMirror(uri,pkg[1],pkg[2])
+                    rc = self.MirrorsService.download_package(uri,pkg[1],pkg[2])
                     if rc == None:
                         not_downloaded.add((pkg[1],pkg[2]))
                     elif not rc:
@@ -12206,3 +12208,95 @@ class ServerMirrorsInterface:
         lock_file = self.get_database_download_lockfile()
         if os.path.isfile(lock_file):
             os.remove(lock_file)
+
+    # was downloadPackageFromMirror
+    def download_package(self, uri, pkgfile, branch):
+
+        crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+
+        tries = 0
+        while tries < 5:
+            tries += 1
+
+            self.Entropy.updateProgress(
+                red("[repo:%s|mirror:%s|#%s] connecting to download package: %s" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * "),
+                back = True
+            )
+
+            ftp = self.FtpInterface(uri, self.Entropy)
+            dirpath = os.path.join(etpConst['binaryurirelativepath'],branch)
+            ftp.setCWD(dirpath)
+
+            self.Entropy.updateProgress(
+                red("[repo:%s|mirror:%s|#%s] downloading package: %s" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
+
+            download_path = os.path.join(etpConst['packagesserverbindir'],branch)
+            rc = ftp.downloadFile(pkgfile,download_path)
+            if not rc:
+                self.Entropy.updateProgress(
+                    red("[repo:%s|mirror:%s|#%s] package: %s does not exist" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+                    importance = 1,
+                    type = "error",
+                    header = darkred(" !!! ")
+                )
+                ftp.closeConnection()
+                return rc
+
+            dbconn = self.Entropy.openServerDatabase(read_only = True, no_upload = True)
+            idpackage = dbconn.getIDPackageFromDownload(pkgfile,branch)
+            if idpackage == -1:
+                self.Entropy.updateProgress(
+                    red("[repo:%s|mirror:%s|#%s] package: %s is not listed in the current repository database!!" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+                    importance = 1,
+                    type = "error",
+                    header = darkred(" !!! ")
+                )
+                ftp.closeConnection()
+                return 0
+
+            storedmd5 = dbconn.retrieveDigest(idpackage)
+            self.Entropy.updateProgress(
+                red("[repo:%s|mirror:%s|#%s] verifying checksum of package: %s" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * "),
+                back = True
+            )
+
+            pkg_path = os.path.join(download_path,pkgfile)
+            md5check = self.Entropy.entropyTools.compareMd5(pkg_path,storedmd5)
+            if md5check:
+                self.Entropy.updateProgress(
+                    red("[repo:%s|mirror:%s|#%s] package: %s downloaded successfully" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+                    importance = 1,
+                    type = "info",
+                    header = darkgreen(" * ")
+                )
+                return True
+            else:
+                self.Entropy.updateProgress(
+                    red("[repo:%s|mirror:%s|#%s] package: %s checksum does not match. re-downloading..." % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" * ")
+                )
+                if os.path.isfile(pkg_path):
+                    os.remove(pkg_path)
+
+            continue
+
+        # if we get here it means the files hasn't been downloaded properly
+        self.Entropy.updateProgress(
+            red("[repo:%s|mirror:%s|#%s] package: %s seems broken. Consider to re-package it. Giving up!" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+            importance = 1,
+            type = "error",
+            header = darkred(" !!! ")
+        )
+        return False
