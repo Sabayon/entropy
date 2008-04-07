@@ -22,15 +22,14 @@
 
 # Never do "import portage" here, please use entropyTools binding
 
-import os
-from sys import path, exit, argv
-
-path.insert(0,'../libraries')
-path.insert(1,'../client')
+import os,sys
+sys.path.insert(0,'../libraries')
+sys.path.insert(1,'../client')
 from outputTools import *
+from entropyConstants import *
 
 # CONSTANTS
-APPNAME = "activator"
+APPNAME = sys.argv[0]
 APPVERSION = "1.0"
 def print_help():
     print_info("Sabayon Linux "+APPNAME+" (C - 2007)")
@@ -56,21 +55,19 @@ def print_help():
     print_info(" \t\t"+green("download-unlock")+red("\t\t to unlock the download mirror status"))
     print_info(" \t\t"+green("lock-status")+red("\t\t to show the current locks status of the mirrors"))
 
-options = argv[1:]
-
-from entropyConstants import *
+options = sys.argv[1:]
 
 # print version
 if (' '.join(options).find("--version") != -1) or (' '.join(options).find(" -V") != -1):
     print_generic(APPNAME+": "+APPVERSION)
-    exit(0)
+    sys.exit(0)
 
 # print help
 if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(options).find(" -h") != -1:
     print_help()
     if len(options) < 1:
 	print_error("not enough parameters")
-    exit(1)
+    sys.exit(1)
 
 import entropyTools
 import activatorTools
@@ -97,23 +94,23 @@ options = _options
 
 if (not entropyTools.isRoot()):
     print_error("you must be root in order to run "+APPNAME)
-    exit(2)
+    sys.exit(2)
 
 # sync mirrors tool
 elif (options[0] == "sync"):
     activatorTools.sync(options[1:])
-    exit(0)
+    sys.exit(0)
 # tidy tool
 elif (options[0] == "tidy"):
     activatorTools.sync(options[1:], justTidy = True)
-    exit(0)
+    sys.exit(0)
 
 # database tool
 elif (options[0] == "database"):
     activatorTools.database(options[1:])
-    exit(0)
+    sys.exit(0)
 
 # database tool
 elif (options[0] == "packages"):
     activatorTools.packages(options[1:])
-    exit(0)
+    sys.exit(0)

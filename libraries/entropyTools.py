@@ -478,7 +478,6 @@ def removeEdb(tbz2file, savedir):
     return savedir+"/"+os.path.basename(tbz2file)
 
 # This function creates the .md5 file related to the given package file
-# @returns the complete hash file path
 def createHashFile(tbz2filepath):
     md5hash = md5sum(tbz2filepath)
     hashfile = tbz2filepath+etpConst['packageshashfileext']
@@ -1420,7 +1419,7 @@ def getRandomTempFile():
     if not os.path.isdir(etpConst['packagestmpdir']):
         os.makedirs(etpConst['packagestmpdir'])
     path = os.path.join(etpConst['packagestmpdir'],"temp_"+str(getRandomNumber()))
-    while os.path.isfile(path):
+    while os.path.lexists(path):
         path = os.path.join(etpConst['packagestmpdir'],"temp_"+str(getRandomNumber()))
     return path
 

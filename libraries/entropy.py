@@ -5799,7 +5799,7 @@ class FtpInterface:
                     self.deleteFile(filename+".tmp")
                 pass
 
-    def downloadFile(self,filepath,downloaddir,ascii = False):
+    def downloadFile(self, filename, downloaddir, ascii = False):
 
         self.oldprogress = 0.0
 
@@ -5814,12 +5814,11 @@ class FtpInterface:
             # print !
             self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True, count = (cnt, self.myFileSize), percent = True )
 
-        item = filepath.split("/")[len(filepath.split("/"))-1]
         # look if the file exist
-        if self.isFileAvailable(item):
+        if self.isFileAvailable(filename):
             self.mykByteCount = 0
             # get the file size
-            self.myFileSize = self.getFileSizeCompat(item)
+            self.myFileSize = self.getFileSizeCompat(filename)
             if (self.myFileSize):
                 self.myFileSize = round(float(int(self.myFileSize))/1024,1)
                 if (self.myFileSize == 0):
@@ -5827,11 +5826,11 @@ class FtpInterface:
             else:
                 self.myFileSize = 0
             if (not ascii):
-                f = open(downloaddir+"/"+item,"wb")
-                rc = self.ftpconn.retrbinary('RETR '+item, downloadFileStoreAndUpdateProgress, 1024)
+                f = open(downloaddir+"/"+filename,"wb")
+                rc = self.ftpconn.retrbinary('RETR '+filename, downloadFileStoreAndUpdateProgress, 1024)
             else:
-                f = open(downloaddir+"/"+item,"w")
-                rc = self.ftpconn.retrlines('RETR '+item, f.write)
+                f = open(downloaddir+"/"+filename,"w")
+                rc = self.ftpconn.retrlines('RETR '+filename, f.write)
             f.flush()
             f.close()
             if rc.find("226") != -1: # upload complete
@@ -10772,6 +10771,7 @@ class ServerInterface(TextInterface):
         self.xcache = False
         self.MirrorsService = None
         self.FtpInterface = FtpInterface
+        self.rssFeed = rssFeed
         self.serverDbCache = {}
         self.settings_to_backup = []
         self.do_save_repository = save_repository
@@ -10799,6 +10799,7 @@ class ServerInterface(TextInterface):
         self.ClientService.FtpInterface = self.FtpInterface
         self.databaseTools = self.ClientService.databaseTools
         self.entropyTools = self.ClientService.entropyTools
+        self.dumpTools = self.ClientService.dumpTools
         self.SpmService = self.ClientService.Spm()
         self.MirrorsService = ServerMirrorsInterface(self)
 
@@ -10882,19 +10883,23 @@ class ServerInterface(TextInterface):
             self.ClientService.backup_setting(setting)
 
 
-    def openServerDatabase(self, read_only = True, no_upload = True):
+    def openServerDatabase(self, read_only = True, no_upload = True, just_reading = False):
 
-        cached = self.serverDbCache.get((etpConst['systemroot'],read_only,no_upload,))
+        if just_reading:
+            read_only = True
+            no_upload = True
+
+        cached = self.serverDbCache.get((etpConst['systemroot'],read_only,no_upload,just_reading,))
         if cached != None:
             return cached
 
         if not os.path.isdir(os.path.dirname(etpConst['etpdatabasefilepath'])):
             os.makedirs(os.path.dirname(etpConst['etpdatabasefilepath']))
 
-        conn = self.databaseTools.etpDatabase(readOnly = read_only, dbFile = etpConst['etpdatabasefilepath'], noUpload = no_upload, OutputInterface = self)
+        conn = self.databaseTools.etpDatabase(readOnly = read_only, dbFile = etpConst['etpdatabasefilepath'], noUpload = no_upload, OutputInterface = self, ServiceInterface = self)
         # verify if we need to update the database to sync 
         # with portage updates, we just ignore being readonly in the case
-        if not etpConst['treeupdatescalled']:
+        if not etpConst['treeupdatescalled'] and (not just_reading):
             # sometimes, when filling a new server db, we need to avoid tree updates
             valid = True
             try:
@@ -10910,7 +10915,7 @@ class ServerInterface(TextInterface):
                                         type = "info",
                                         header = red(" * ")
                                     )
-        self.serverDbCache[(etpConst['systemroot'],read_only,no_upload,)] = conn
+        self.serverDbCache[(etpConst['systemroot'],read_only,no_upload,just_reading,)] = conn
         return conn
 
 
@@ -11986,23 +11991,25 @@ class ServerMirrorsInterface:
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid ServerInterface instance is needed")
 
         self.Entropy = ServerInterface
+        self.entropyTools = self.Entropy.entropyTools
+        self.dumpTools = self.Entropy.dumpTools
         self.upload_mirrors = upload_mirrors[:]
         self.download_mirrors = download_mirrors[:]
         self.FtpInterface = self.Entropy.FtpInterface
+        self.rssFeed = self.Entropy.rssFeed
         self.repository_directory = etpConst['etpdatabasedir']
 
 
     def set_upload_mirrors(self, mirrors):
-        if type(mirrors) is not list:
+        if not isinstance(mirrors,list):
             raise exceptionTools.InvalidDataType("InvalidDataType: set_upload_mirrors needs a list type")
         self.upload_mirrors = mirrors[:]
 
     def set_download_mirrors(self, mirrors):
-        if type(mirrors) is not list:
+        if not isinstance(mirrors,list):
             raise exceptionTools.InvalidDataType("InvalidDataType: set_download_mirrors needs a list type")
         self.download_mirrors = mirrors[:]
 
-    # was: lockDatabases
     def lock_mirrors(self, lock = True, mirrors = []):
 
         if not mirrors:
@@ -12011,7 +12018,7 @@ class ServerMirrorsInterface:
         issues = False
         for uri in mirrors:
 
-            crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
             lock_text = "unlocking"
             if lock: lock_text = "locking"
@@ -12052,9 +12059,13 @@ class ServerMirrorsInterface:
             ftp.closeConnection()
             if not rc: issues = True
 
+        if not issues:
+            database_taint_file = os.path.join(etpConst['etpdatabasedir'],etpConst['etpdatabasetaintfile'])
+            if os.path.isfile(database_taint_file):
+                os.remove(database_taint_file)
+
         return issues
 
-    # was downloadLockDatabases
     # this functions makes entropy clients to not download anything from the chosen
     # mirrors. it is used to avoid clients to download databases while we're uploading
     # a new one.
@@ -12066,7 +12077,7 @@ class ServerMirrorsInterface:
         issues = False
         for uri in mirrors:
 
-            crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
             lock_text = "unlocking"
             if lock: lock_text = "locking"
@@ -12115,7 +12126,7 @@ class ServerMirrorsInterface:
             ftp_connection = self.FtpInterface(uri, self.Entropy)
 
         ftp_connection.setCWD(etpConst['etpurirelativepath'])
-        crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+        crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
         lock_string = ''
         if dblock:
             self.create_local_database_lockfile()
@@ -12151,7 +12162,7 @@ class ServerMirrorsInterface:
             ftp_connection = self.FtpInterface(uri, self.Entropy)
 
         ftp_connection.setCWD(etpConst['etpurirelativepath'])
-        crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+        crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
         if dblock:
             dbfile = etpConst['etpdatabaselockfile']
@@ -12209,10 +12220,9 @@ class ServerMirrorsInterface:
         if os.path.isfile(lock_file):
             os.remove(lock_file)
 
-    # was downloadPackageFromMirror
     def download_package(self, uri, pkgfile, branch):
 
-        crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+        crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
         tries = 0
         while tries < 5:
@@ -12271,7 +12281,7 @@ class ServerMirrorsInterface:
             )
 
             pkg_path = os.path.join(download_path,pkgfile)
-            md5check = self.Entropy.entropyTools.compareMd5(pkg_path,storedmd5)
+            md5check = self.entropyTools.compareMd5(pkg_path,storedmd5)
             if md5check:
                 self.Entropy.updateProgress(
                     red("[repo:%s|mirror:%s|#%s] package: %s downloaded successfully" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
@@ -12300,3 +12310,742 @@ class ServerMirrorsInterface:
             header = darkred(" !!! ")
         )
         return False
+
+
+    def get_remote_databases_status(self):
+
+        data = []
+        for uri in etpConst['activatoruploaduris']:
+
+            ftp = self.FtpInterface(uri, self.Entropy)
+            ftp.setCWD(etpConst['etpurirelativepath'])
+            cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
+            if cmethod == None:
+                raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
+            compressedfile = etpConst[cmethod[2]]
+
+            revision = 0
+            rc1 = ftp.isFileAvailable(compressedfile)
+            rc2 = ftp.isFileAvailable(etpConst['etpdatabaserevisionfile'])
+            if rc1 and rc2:
+                revision_localtmppath = os.path.join(etpConst['packagestmpdir'],etpConst['etpdatabaserevisionfile'])
+                ftp.downloadFile(etpConst['etpdatabaserevisionfile'],etpConst['packagestmpdir'],True)
+                f = open(revision_localtmppath,"r")
+                try:
+                    revision = int(f.readline().strip())
+                except ValueError:
+                    crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+                    self.Entropy.updateProgress(
+                        red("[repo:%s|mirror:%s] mirror doesn't have a valid database revision file: %s" % (etpConst['officialrepositoryid'],crippled_uri,revision,)),
+                        importance = 1,
+                        type = "error",
+                        header = darkred(" !!! ")
+                    )
+                    revision = 0
+                f.close()
+                if os.path.isfile(revision_localtmppath):
+                    os.remove(revision_localtmppath)
+
+            uripath = os.path.join(uri,etpConst['etpurirelativepath'],compressedfile)
+            info = (uripath,revision)
+            data.append(info)
+            ftp.closeConnection()
+
+        return data
+
+    def is_local_database_locked(self):
+        lock_file = self.get_database_lockfile()
+        return os.path.isfile(lock_file)
+
+    def get_mirrors_lock(self):
+
+        dbstatus = []
+        for uri in etpConst['activatoruploaduris']:
+            data = [uri,False,False]
+            ftp = FtpInterface(uri, self.Entropy)
+            ftp.setCWD(etpConst['etpurirelativepath'])
+            if ftp.isFileAvailable(etpConst['etpdatabaselockfile']):
+                # upload locked
+                data[1] = True
+            if ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile']):
+                # download locked
+                data[2] = True
+            ftp.closeConnection()
+            dbstatus.append(data)
+        return dbstatus
+
+    def update_rss_feed(self):
+
+        rss_path = etpConst['etpdatabasedir'] + "/" + etpConst['rss-name']
+        rss_light_path = etpConst['etpdatabasedir'] + "/" + etpConst['rss-light-name']
+        rss_dump_name = etpConst['rss-dump-name']
+        db_revision_path = etpConst['etpdatabasedir'] + "/" + etpConst['etpdatabaserevisionfile']
+
+        Rss = self.rssFeed(rss_path, maxentries = etpConst['rss-max-entries'])
+        # load dump
+        db_actions = self.dumpTools.loadobj(rss_dump_name)
+        if db_actions:
+            try:
+                f = open(db_revision_path)
+                revision = f.readline().strip()
+                f.close()
+            except (IOError, OSError):
+                revision = "N/A"
+            commitmessage = ''
+            if etpRSSMessages['commitmessage']:
+                commitmessage = ' :: '+etpRSSMessages['commitmessage']
+            title = ": "+etpConst['systemname']+" "+etpConst['product'][0].upper()+etpConst['product'][1:]+" "+etpConst['branch']+" :: Revision: "+revision+commitmessage
+            link = etpConst['rss-base-url']
+            # create description
+            added_items = db_actions.get("added")
+            if added_items:
+                for atom in added_items:
+                    mylink = link+"?search="+atom.split("~")[0]+"&arch="+etpConst['currentarch']+"&product="+etpConst['product']
+                    description = atom+": "+added_items[atom]['description']
+                    Rss.addItem(title = "Added/Updated"+title, link = mylink, description = description)
+            removed_items = db_actions.get("removed")
+            if removed_items:
+                for atom in removed_items:
+                    description = atom+": "+removed_items[atom]['description']
+                    Rss.addItem(title = "Removed"+title, link = link, description = description)
+            light_items = db_actions.get('light')
+            if light_items:
+                rssLight = self.rssFeed(rss_light_path, maxentries = etpConst['rss-light-max-entries'])
+                for atom in light_items:
+                    mylink = link+"?search="+atom.split("~")[0]+"&arch="+etpConst['currentarch']+"&product="+etpConst['product']
+                    description = light_items[atom]['description']
+                    rssLight.addItem(title = "["+revision+"] "+atom, link = mylink, description = description)
+                rssLight.writeChanges()
+
+        Rss.writeChanges()
+        etpRSSMessages.clear()
+        self.dumpTools.removeobj(rss_dump_name)
+
+
+    # f_out is a file instance
+    def dump_database_to_file(self, db_path, destination_path, opener ):
+        f_out = opener(destination_path, "wb")
+        dbconn = self.Entropy.openServerDatabase(db_path, just_reading = True)
+        dbconn.doDatabaseExport(f_out)
+        self.Entropy.close_server_database(dbconn)
+        f_out.close()
+
+    def create_file_checksum(self, file_path, checksum_path):
+        mydigest = self.entropyTools.md5sum(file_path)
+        f = open(checksum_path,"w")
+        mystring = "%s  %s\n" % (mydigest,os.path.basename(file_path),)
+        f.write(mystring)
+        f.flush()
+        f.close()
+
+    def compress_file(self, file_path, destination_path, opener):
+        f_out = opener(destination_path, "wb")
+        f_in = open(file_path,"rb")
+        data = f_in.read(8192)
+        while data:
+            f_out.write(data)
+            data = f_in.read(8192)
+        f_in.close()
+        try:
+            f_out.flush()
+        except:
+            pass
+        f_out.close()
+
+    def uncompress_file(self, file_path, destination_path, opener):
+        f_out = open(destination_path,"wb")
+        f_in = opener(file_path,"rb")
+        data = f_in.read(8192)
+        while data:
+            f_out.write(data)
+            data = f_in.read(8192)
+        f_out.flush()
+        f_out.close()
+        f_in.close()
+
+    def get_files_to_sync(self, cmethod, download = False):
+
+        critical = []
+        data = {}
+        data['database_revision_file'] = os.path.join(etpConst['etpdatabasedir'],etpConst['etpdatabaserevisionfile'])
+        critical.append(data['database_revision_file'])
+        database_package_mask_file = os.path.join(etpConst['etpdatabasedir'],etpConst['etpdatabasemaskfile'])
+        if os.path.isfile(database_package_mask_file) or download:
+            data['database_package_mask_file'] = os.path.join(etpConst['etpdatabasedir'],etpConst['etpdatabasemaskfile'])
+            critical.append(data['database_package_mask_file'])
+
+        database_license_whitelist_file = os.path.join(etpConst['etpdatabasedir'],etpConst['etpdatabaselicwhitelistfile'])
+        if os.path.isfile(database_license_whitelist_file) or download:
+            data['database_license_whitelist_file'] = database_license_whitelist_file
+            if not download:
+                critical.append(data['database_license_whitelist_file'])
+
+        database_rss_file = os.path.join(etpConst['etpdatabasedir'],etpConst['rss-name'])
+        if os.path.isfile(database_rss_file) or download:
+            data['database_rss_file'] = database_rss_file
+            if not download:
+                critical.append(data['database_rss_file'])
+        database_rss_light_file = os.path.join(etpConst['etpdatabasedir'],etpConst['rss-light-name'])
+        if os.path.isfile(database_rss_light_file) or download:
+            data['database_rss_light_file'] = database_rss_light_file
+            if not download:
+                critical.append(data['database_rss_light_file'])
+
+        # EAPI 2
+        if not download: # we don't need to get the dump
+            data['dump_path'] = os.path.join(etpConst['etpdatabasedir'],etpConst[cmethod[3]])
+            critical.append(data['dump_path'])
+            data['dump_path_digest'] = os.path.join(etpConst['etpdatabasedir'],etpConst[cmethod[4]])
+            critical.append(data['dump_path_digest'])
+
+        # EAPI 1
+        data['compressed_database_path'] = os.path.join(etpConst['etpdatabasedir'],etpConst[cmethod[2]])
+        critical.append(data['compressed_database_path'])
+        data['compressed_database_path_digest'] = os.path.join(etpConst['etpdatabasedir'],etpConst['etpdatabasehashfile'])
+        critical.append(data['compressed_database_path_digest'])
+
+        return data, critical
+
+    class FileTransmitter:
+
+        def __init__(   self,
+                        ftp_interface,
+                        entropy_interface,
+                        uris,
+                        files_to_upload,
+                        download = False,
+                        ftp_basedir = None,
+                        local_basedir = None,
+                        critical_files = []
+            ):
+
+            self.FtpInterface = ftp_interface
+            self.Entropy = entropy_interface
+            if not isinstance(uris,list):
+                raise exceptionTools.InvalidDataType("InvalidDataType: uris must be a list instance")
+            if not isinstance(files_to_upload,(list,dict)):
+                raise exceptionTools.InvalidDataType("InvalidDataType: files_to_upload must be a list or dict instance")
+            self.uris = uris
+            if isinstance(files_to_upload,list):
+                self.myfiles = files_to_upload[:]
+            else:
+                self.myfiles = [x for x in files_to_upload]
+                self.myfiles.sort()
+            self.download = download
+            if not ftp_basedir:
+                self.ftp_basedir = str(etpConst['etpurirelativepath']) # default to database directory
+            else:
+                self.ftp_basedir = str(ftp_basedir)
+            if not local_basedir:
+                self.local_basedir = os.path.dirname(etpConst['etpdatabasefilepath']) # default to database directory
+            else:
+                self.local_basedir = str(local_basedir)
+            self.critical_files = critical_files
+
+        def go(self):
+
+            broken_uris = set()
+            fine_uris = set()
+            errors = False
+            action = 'upload'
+            if self.download:
+                action = 'download'
+
+            for uri in self.uris:
+
+                crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+                self.Entropy.updateProgress(
+                    red("[repo:%s|mirror:%s|%s] connecting to mirror..." % (etpConst['officialrepositoryid'],crippled_uri,action,)),
+                    importance = 0,
+                    type = "info",
+                    header = darkgreen(" * "),
+                    back = True
+                )
+                ftp = self.FtpInterface(uri, self.Entropy)
+                self.Entropy.updateProgress(
+                    red("[repo:%s|mirror:%s|%s] changing directory to %s..." % (etpConst['officialrepositoryid'],crippled_uri,bold(etpConst['etpurirelativepath']),action,)),
+                    importance = 0,
+                    type = "info",
+                    header = darkgreen(" * "),
+                    back = True
+                )
+                ftp.setCWD(self.ftp_basedir)
+
+                syncer = ftp.uploadFile
+                myargs = [mypath]
+                if self.download:
+                    syncer = ftp.downloadFile
+                    myargs = [os.path.basename(mypath),self.local_basedir]
+
+                for mypath in self.myfiles:
+                    tries = 0
+                    done = False
+                    lastrc = None
+                    while tries < 5:
+                        tries += 1
+                        self.Entropy.updateProgress(
+                            red("[repo:%s|mirror:%s|%s|#%s] %sing: %s" % (etpConst['officialrepositoryid'],crippled_uri,action,tries,action,os.path.basename(mypath),)),
+                            importance = 0,
+                            type = "info",
+                            header = darkgreen(" * "),
+                            back = True
+                        )
+                        rc = syncer(*myargs)
+                        if rc:
+                            self.Entropy.updateProgress(
+                                red("[repo:%s|mirror:%s|%s|#%s] %s successfully: %s" % (etpConst['officialrepositoryid'],crippled_uri,action,tries,action,os.path.basename(mypath),)),
+                                importance = 0,
+                                type = "info",
+                                header = darkgreen(" * ")
+                            )
+                            done = True
+                            break
+                        else:
+                            self.Entropy.updateProgress(
+                                red("[repo:%s|mirror:%s|%s|#%s] %s failed, retrying: %s" % (etpConst['officialrepositoryid'],crippled_uri,action,tries,action,os.path.basename(mypath),)),
+                                importance = 0,
+                                type = "warning",
+                                header = brown(" * ")
+                            )
+                            lastrc = rc
+                            continue
+
+                    if not done:
+
+                        # abort upload
+                        self.Entropy.updateProgress(
+                            red("[repo:%s|mirror:%s|%s] %s failed, giving up: %s - error: %s" % (etpConst['officialrepositoryid'],crippled_uri,action,action,os.path.basename(mypath),lastrc,)),
+                            importance = 1,
+                            type = "error",
+                            header = darkred(" !!! ")
+                        )
+
+                        if mypath not in self.critical_files:
+                            self.Entropy.updateProgress(
+                                red("[repo:%s|mirror:%s|%s] not critical: %s, continuing..." % (etpConst['officialrepositoryid'],crippled_uri,action,os.path.basename(mypath),)),
+                                importance = 1,
+                                type = "warning",
+                                header = brown(" * ")
+                            )
+                            continue
+
+                        ftp.closeConnection()
+                        errors = True
+                        broken_uris.add((uri,lastrc))
+                        # next mirror
+                        break
+
+                # close connection
+                ftp.closeConnection()
+                fine_uris.add(uri)
+
+            return errors,fine_uris,broken_uris
+
+    def _show_eapi2_upload_messages(self, crippled_uri, database_path, upload_data, cmethod):
+
+        self.Entropy.updateProgress(
+            red("[repo:%s|mirror:%s|EAPI:2] creating compressed database dump + checksum" % (etpConst['officialrepositoryid'],crippled_uri,)),
+            importance = 0,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+        self.Entropy.updateProgress(
+            blue("database path: %s" % (database_path,)),
+            importance = 0,
+            type = "info",
+            header = brown("    # ")
+        )
+        self.Entropy.updateProgress(
+            blue("dump: %s" % (upload_data['dump_path'],)),
+            importance = 0,
+            type = "info",
+            header = brown("    # ")
+        )
+        self.Entropy.updateProgress(
+            blue("dump checksum: %s" % (upload_data['dump_path_digest'],)),
+            importance = 0,
+            type = "info",
+            header = brown("    # ")
+        )
+        self.Entropy.updateProgress(
+            blue("opener: %s" % (cmethod[0],)),
+            importance = 0,
+            type = "info",
+            header = brown("    # ")
+        )
+
+    def _show_eapi1_upload_messages(self, crippled_uri, database_path, upload_data, cmethod):
+
+        self.Entropy.updateProgress(
+            red("[repo:%s|mirror:%s|EAPI:1] compressing database + checksum" % (etpConst['officialrepositoryid'],crippled_uri,)),
+            importance = 0,
+            type = "info",
+            header = darkgreen(" * "),
+            back = True
+        )
+        self.Entropy.updateProgress(
+            blue("database path: %s" % (database_path,)),
+            importance = 0,
+            type = "info",
+            header = brown("    # ")
+        )
+        self.Entropy.updateProgress(
+            blue("compressed database path: %s" % (upload_data['compressed_database_path'],)),
+            importance = 0,
+            type = "info",
+            header = brown("    # ")
+        )
+        self.Entropy.updateProgress(
+            blue("compressed checksum: %s" % (upload_data['compressed_database_path_digest'],)),
+            importance = 0,
+            type = "info",
+            header = brown("    # ")
+        )
+        self.Entropy.updateProgress(
+            blue("opener: %s" % (cmethod[0],)),
+            importance = 0,
+            type = "info",
+            header = brown("    # ")
+        )
+
+    def create_mirror_directories(self, ftp_connection, path_to_create):
+        bdir = ""
+        for mydir in path_to_create.split("/"):
+            bdir += "/"+mydir
+            if not ftp_connection.isFileAvailable(bdir):
+                try:
+                    ftp_connection.mkdir(bdir)
+                except Exception, e:
+                    error = str(e)
+                    if (error.find("550") == -1) and (error.find("File exist") == -1):
+                        raise exceptionTools.OnlineMirrorError("OnlineMirrorError: cannot create mirror directory %s, error: %s" % (bdir,e,))
+
+    def mirror_lock_check(self, uri):
+
+        gave_up = False
+        crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+        ftp = self.FtpInterface(uri, self.Entropy)
+        try:
+            ftp.setCWD(etpConst['etpurirelativepath'])
+        except:
+            self.create_mirror_directories(ftp,etpConst['etpurirelativepath'])
+            ftp.closeConnection()
+            return gave_up # no errors, mirror is unlocked
+
+        lock_file = self.get_database_lockfile()
+        if not os.path.isfile(lock_file) and ftp.isFileAvailable(os.path.basename(lock_file)):
+            self.Entropy.updateProgress(
+                red("[repo:%s|mirror:%s|locking] mirror already locked, waiting up to 2 mins before giving up" % (
+                                etpConst['officialrepositoryid'],
+                                crippled_uri,
+                        )
+                ),
+                importance = 1,
+                type = "warning",
+                header = brown(" * "),
+                back = True
+            )
+            unlocked = False
+            count = 0
+            while count < 120:
+                count += 1
+                time.sleep(1)
+                if not ftp.isFileAvailable(os.path.basename(lock_file)):
+                    self.Entropy.updateProgress(
+                        red("[repo:%s|mirror:%s|locking] mirror unlocked !" % (
+                                etpConst['officialrepositoryid'],
+                                crippled_uri,
+                            )
+                        ),
+                        importance = 1,
+                        type = "info",
+                        header = darkgreen(" * ")
+                    )
+                    unlocked = True
+                    break
+            if not unlocked:
+                gave_up = True
+
+        ftp.closeConnection()
+        return gave_up
+
+    def upload_database(self, uris, lock_check = False, pretend = False):
+
+        import gzip
+        import bz2
+
+        if etpConst['rss-feed']:
+            self.update_rss_feed()
+
+        upload_errors = False
+        broken_uris = set()
+        fine_uris = set()
+
+        for uri in uris:
+
+            cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
+            if cmethod == None:
+                raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
+
+            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+            database_path = etpConst['etpdatabasefilepath']
+            upload_data, critical = self.get_files_to_sync(cmethod)
+
+            if lock_check:
+                given_up = self.mirror_lock_check(uri)
+                if given_up:
+                    upload_errors = True
+                    broken_uris.add(uri)
+                    continue
+
+            self.lock_mirrors_for_download(True,[uri])
+
+            self.Entropy.updateProgress(
+                red("[repo:%s|mirror:%s|upload] preparing to upload database to mirror" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
+
+            # EAPI 2
+            self._show_eapi2_upload_messages(crippled_uri, database_path, upload_data, cmethod)
+            # create compressed dump + checksum
+            self.dump_database_to_file(database_path, upload_data['dump_path'], eval(cmethod[0]))
+            self.create_file_checksum(upload_data['dump_path'], upload_data['dump_path_digest'])
+
+
+            # EAPI 1
+            self._show_eapi1_upload_messages(crippled_uri, database_path, upload_data, cmethod)
+            # compress the database
+            self.compress_file(database_path, upload_data['compressed_database_path'], eval(cmethod[0]))
+            self.create_file_checksum(database_path, upload_data['compressed_database_path_digest'])
+
+            if not pretend:
+                # upload
+                uploader = self.FileTransmitter(self.FtpInterface, self.Entropy, [uri], upload_data, critical_files = critical)
+                errors, m_fine_uris, m_broken_uris = uploader.go()
+                if errors:
+                    my_fine_uris = [self.entropyTools.extractFTPHostFromUri(x) for x in m_fine_uris]
+                    my_fine_uris.sort()
+                    my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
+                    my_broken_uris.sort()
+                    self.Entropy.updateProgress(
+                        red("[repo:%s|mirror:%s|errors] failed to upload to mirror, not unlocking and continuing" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                        importance = 0,
+                        type = "error",
+                        header = darkred(" !!! ")
+                    )
+                    # get reason
+                    reason = my_broken_uris[0][1]
+                    self.Entropy.updateProgress(
+                        blue("reason: %s" % (reason,)),
+                        importance = 0,
+                        type = "error",
+                        header = blue("    # ")
+                    )
+                    upload_errors = True
+                    broken_uris |= m_broken_uris
+                    continue
+
+            # unlock
+            self.lock_mirrors_for_download(False,[uri])
+            fine_uris |= m_fine_uris
+
+        if not fine_uris:
+            upload_errors = True
+        return upload_errors, broken_uris, fine_uris
+
+
+
+    def download_database(self, uris, lock_check = False, pretend = False):
+
+        import gzip
+        import bz2
+
+        download_errors = False
+        broken_uris = set()
+        fine_uris = set()
+
+        for uri in uris:
+
+            cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
+            if cmethod == None:
+                raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
+
+            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+            database_path = etpConst['etpdatabasefilepath']
+            database_dir_path = os.path.dirname(etpConst['etpdatabasefilepath'])
+            download_data, critical = self.get_files_to_sync(cmethod, download = True)
+            mytmpdir = self.Entropy.entropyTools.getRandomTempFile()
+            os.makedirs(mytmpdir)
+
+            self.Entropy.updateProgress(
+                red("[repo:%s|mirror:%s|download] preparing to download database from mirror" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
+            files_to_sync = download_data.keys()
+            files_to_sync.sort()
+            for myfile in files_to_sync:
+                self.Entropy.updateProgress(
+                    blue("download path: %s" % (myfile,)),
+                    importance = 0,
+                    type = "info",
+                    header = brown("    # ")
+                )
+
+            if lock_check:
+                given_up = self.mirror_lock_check(uri)
+                if given_up:
+                    download_errors = True
+                    broken_uris.add(uri)
+                    continue
+
+            # avoid having others messing while we're downloading
+            self.lock_mirrors(True,[uri])
+
+            if not pretend:
+                # download
+                downloader = self.FileTransmitter(self.FtpInterface, self.Entropy, [uri], download_data, download = True, local_basedir = mytmpdir, critical_files = critical)
+                errors, m_fine_uris, m_broken_uris = downloader.go()
+                if errors:
+                    my_fine_uris = [self.entropyTools.extractFTPHostFromUri(x) for x in m_fine_uris]
+                    my_fine_uris.sort()
+                    my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
+                    my_broken_uris.sort()
+                    self.Entropy.updateProgress(
+                        red("[repo:%s|mirror:%s|errors] failed to download from mirror" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                        importance = 0,
+                        type = "error",
+                        header = darkred(" !!! ")
+                    )
+                    # get reason
+                    reason = my_broken_uris[0][1]
+                    self.Entropy.updateProgress(
+                        blue("reason: %s" % (reason,)),
+                        importance = 0,
+                        type = "error",
+                        header = blue("    # ")
+                    )
+                    download_errors = True
+                    broken_uris |= m_broken_uris
+                    self.lock_mirrors(False,[uri])
+                    continue
+
+                # all fine then, we need to move data from mytmpdir to database_dir_path
+
+                # EAPI 1
+                # unpack database
+                compressed_db_filename = os.path.basename(download_data['compressed_database_path'])
+                uncompressed_db_filename = os.path.basename(database_path)
+                compressed_file = os.path.join(mytmpdir,compressed_db_filename)
+                uncompressed_file = os.path.join(mytmpdir,uncompressed_db_filename)
+                self.uncompress_file(compressed_file, uncompressed_file, eval(cmethod[0]))
+                # now move
+                for myfile in os.listdir(mytmpdir):
+                    fromfile = os.path.join(mytmpdir,myfile)
+                    tofile = os.path.join(database_dir_path,myfile)
+                    shutil.move(fromfile,tofile)
+                    self.Entropy.ClientService.setup_default_file_perms(tofile)
+
+            if os.path.isdir(mytmpdir):
+                shutil.rmtree(mytmpdir)
+            if os.path.isdir(mytmpdir):
+                os.rmdir(mytmpdir)
+
+
+            fine_uris.add(uri)
+            self.lock_mirrors(False,[uri])
+
+        return download_errors, fine_uris, broken_uris
+
+    def calculate_database_sync_queues(self):
+        remote_status =  self.get_remote_databases_status()
+        local_revision = self.Entropy.get_local_database_revision()
+        upload_queue = []
+        download_latest = ()
+
+        # all mirrors are empty ? I rule
+        if not [x for x in remote_status if x[1]]:
+            upload_queue = remote_status[:]
+        else:
+            highest_remote_revision = max([x[1] for x in remote_status])
+
+            if local_revision < highest_remote_revision:
+                for x in remote_status:
+                    if x[1] == highest_remote_revision:
+                        download_latest = x
+                        break
+
+            if download_latest:
+                upload_queue = [x for x in remote_status if (x[1] < highest_remote_revision)]
+            else:
+                upload_queue = [x for x in remote_status if (x[1] < local_revision)]
+
+        return download_latest, upload_queue
+
+    def sync_databases(self, no_upload = False, unlock_mirrors = False):
+
+        db_locked = False
+        if self.is_local_database_locked():
+            db_locked = True
+
+        lock_data = self.get_mirrors_lock()
+        mirrors_locked = [x for x in lock_data if x[1]]
+
+        if not mirrors_locked and db_locked:
+            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file %s" % (self.get_database_lockfile(),) )
+
+        if mirrors_locked and not db_locked:
+            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: At the moment, mirrors are locked, someone is working on their databases, try again later...")
+
+        download_latest, upload_queue = self.calculate_database_sync_queues()
+
+        if not download_latest and not upload_queue:
+            self.Entropy.updateProgress(
+                red("[repo:%s|sync] database already in sync" % (etpConst['officialrepositoryid'],)),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
+            return 0, set(), set()
+
+        if download_latest:
+            download_uri = download_latest[0]
+            download_errors, fine_uris, broken_uris = self.download_database(download_uri)
+            if download_errors:
+                self.Entropy.updateProgress(
+                    red("[repo:%s|sync] database sync failed: download issues" % (etpConst['officialrepositoryid'],)),
+                    importance = 1,
+                    type = "error",
+                    header = darkred(" !!! ")
+                )
+                return 1,fine_uris,broken_uris
+            # XXX: reload revision settings?
+
+        if upload_queue and not no_upload:
+
+            uris = [x[0] for x in upload_queue]
+            errors, fine_uris, broken_uris = self.upload_database(uris)
+            if errors:
+                self.Entropy.updateProgress(
+                    red("[repo:%s|sync] database sync failed: upload issues" % (etpConst['officialrepositoryid'],)),
+                    importance = 1,
+                    type = "error",
+                    header = darkred(" !!! ")
+                )
+                return 2,fine_uris,broken_uris
+
+
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync] database sync completed successfully" % (etpConst['officialrepositoryid'],)),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+
+        if unlock_mirrors:
+            self.lock_mirrors(False)
+        return 0, set(), set()
+

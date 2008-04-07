@@ -36,7 +36,7 @@ import dumpTools
 
 class etpDatabase:
 
-    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = etpConst['serverdbid'], indexing = True, OutputInterface = Text):
+    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = etpConst['serverdbid'], indexing = True, OutputInterface = Text, ServiceInterface = None):
 
         self.readOnly = readOnly
         self.noUpload = noUpload
@@ -56,6 +56,9 @@ class etpDatabase:
         self.OutputInterface = OutputInterface
         self.updateProgress = self.OutputInterface.updateProgress
         self.askQuestion = self.OutputInterface.askQuestion
+
+        # setup service interface
+        self.ServiceInterface = ServiceInterface
 
         # no caching for non root and server connections
         if (self.dbname == etpConst['serverdbid']) or (not entropyTools.is_user_in_entropy_group()):
@@ -86,49 +89,37 @@ class etpDatabase:
     def doServerDatabaseSyncLock(self, noUpload):
 
         from entropy import FtpInterface
-        import activatorTools
 
         # check if the database is locked locally
-        if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile']):
-            self.updateProgress(red("Entropy database is already locked by you :-)"), importance = 1, type = "info", header = red(" * "))
+        lock_file = self.ServiceInterface.MirrorsService.get_database_lockfile()
+        if os.path.isfile(lock_file):
+            self.updateProgress(
+                                    red("Entropy database is already locked by you :-)"),
+                                    importance = 1,
+                                    type = "info",
+                                    header = red(" * ")
+                                )
         else:
             # check if the database is locked REMOTELY
-            self.updateProgress(red("Locking and Syncing Entropy database..."), importance = 1, type = "info", header = red(" * "), back = True)
+            self.updateProgress(
+                                    red("Locking and Syncing Entropy database..."),
+                                    importance = 1,
+                                    type = "info",
+                                    header = red(" * "),
+                                    back = True
+                                )
             for uri in etpConst['activatoruploaduris']:
-                ftp = FtpInterface(uri, self.OutputInterface)
-                try:
-                    ftp.setCWD(etpConst['etpurirelativepath'])
-                except:
-                    bdir = ""
-                    for mydir in etpConst['etpurirelativepath'].split("/"):
-                        bdir += "/"+mydir
-                        if (not ftp.isFileAvailable(bdir)):
-                            try:
-                                ftp.mkdir(bdir)
-                            except Exception, e:
-                                error = str(e)
-                                if error.find("550") == -1 and error.find("File exist") == -1:
-                                    raise
-                    ftp.setCWD(etpConst['etpurirelativepath'])
-                if (ftp.isFileAvailable(etpConst['etpdatabaselockfile'])) and (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaselockfile'])):
-                    import time
-                    self.updateProgress(bold("WARNING")+red(": online database is already locked. Waiting up to 2 minutes..."), importance = 1, type = "info", header = red(" * "), back = True)
-                    unlocked = False
-                    count = 120
-                    while count:
-                        time.sleep(1)
-                        count -= 1
-                        if (not ftp.isFileAvailable(etpConst['etpdatabaselockfile'])):
-                            self.updateProgress(bold("HOORAY")+red(": online database has been unlocked. Locking back and syncing..."), importance = 1, type = "info", header = red(" * "))
-                            unlocked = True
-                            break
-                    if (unlocked):
-                        break
-
-                    self.updateProgress(darkgreen("Mirrors status table:"), importance = 1, type = "info", header = brown(" * "))
-                    dbstatus = activatorTools.getMirrorsLock()
+                given_up = self.ServiceInterface.MirrorsService.mirror_lock_check(uri)
+                if given_up:
+                    crippled_uri = entropyTools.extractFTPHostFromUri(uri)
+                    self.updateProgress(
+                                            darkgreen("Mirrors status table:"),
+                                            importance = 1,
+                                            type = "info",
+                                            header = brown(" * ")
+                                        )
+                    dbstatus = self.ServiceInterface.MirrorsService.get_mirrors_lock()
                     for db in dbstatus:
-
                         db[1] = green("Unlocked")
                         if (db[1]):
                             db[1] = red("Locked")
@@ -136,23 +127,19 @@ class etpDatabase:
                         if (db[2]):
                             db[2] = red("Locked")
 
-                        p_uri = entropyTools.extractFTPHostFromUri(db[0])
+                        crippled_uri = entropyTools.extractFTPHostFromUri(db[0])
                         self.updateProgress(
-                                                bold("%s: ")+red("[")+brown("DATABASE: %s")+red("] [")+brown("DOWNLOAD: %s")+red("]") % (p_uri,db[1],db[2],),
+                                                bold("%s: ")+red("[")+brown("DATABASE: %s")+red("] [")+brown("DOWNLOAD: %s")+red("]") % (crippled_uri,db[1],db[2],),
                                                 importance = 1,
                                                 type = "info",
                                                 header = "\t"
                                             )
-                        del p_uri
 
-                    ftp.closeConnection()
-                    raise exceptionTools.OnlineMirrorError("OnlineMirrorError: cannot lock mirror "+entropyTools.extractFTPHostFromUri(uri))
+                    raise exceptionTools.OnlineMirrorError("OnlineMirrorError: cannot lock mirror %s" % (crippled_uri,))
 
-            # if we arrive here, it is because all the mirrors are unlocked so... damn, LOCK!
-            activatorTools.lockDatabases(True)
-
-            # ok done... now sync the new db, if needed
-            activatorTools.syncRemoteDatabases(noUpload)
+            # if we arrive here, it is because all the mirrors are unlocked
+            self.ServiceInterface.MirrorsService.lock_mirrors(True)
+            self.ServiceInterface.MirrorsService.sync_databases(noUpload)
 
     def closeDB(self):
 
@@ -172,10 +159,14 @@ class etpDatabase:
 
         if not etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']:
             # we can unlock it, no changes were made
-            import activatorTools
-            activatorTools.lockDatabases(False)
+            self.ServiceInterface.MirrorsService.lock_mirrors(False)
         else:
-            self.updateProgress(darkgreen("Mirrors have not been unlocked. Run activator."), importance = 1, type = "info", header = brown(" * "))
+            self.updateProgress(
+                                    darkgreen("Mirrors have not been unlocked. Run activator."),
+                                    importance = 1,
+                                    type = "info",
+                                    header = brown(" * ")
+                                )
 
         # do some final tasks
         self.connection.commit()
