@@ -202,8 +202,6 @@ def update(options):
 
 def database(options):
 
-    import activatorTools
-
     databaseRequestNoAsk = False
     databaseRequestSync = False
     _options = []
@@ -405,7 +403,7 @@ def database(options):
         print_info(green(" * ")+red("Bumping the database..."))
         Entropy.bump_database()
         if databaseRequestSync:
-            activatorTools.database(["sync"])
+            Entropy.MirrorsService.sync_databases()
 
 def spm(options):
 
