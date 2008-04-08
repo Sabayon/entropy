@@ -182,7 +182,7 @@ def update(options):
         Entropy.add_package_to_repository(tbz2path, requested_branch)
 
     # regen dependstable
-    Entropy.depends_table_initialize(dbconn)
+    Entropy.depends_table_initialize()
     # checking dependencies and print issues
     Entropy.dependencies_test()
     Entropy.close_server_databases()
