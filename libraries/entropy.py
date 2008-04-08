@@ -864,7 +864,6 @@ class EquoInterface(TextInterface):
             if x.isalpha():
                 x = "(%s{1,})?" % (x,)
                 match_string += x
-        #print match_string
         match_exp = re.compile(match_string,re.IGNORECASE)
 
         matched = {}
@@ -887,7 +886,6 @@ class EquoInterface(TextInterface):
                         found_matches.append(calc)
                 if not found_matches:
                     continue
-                #print "found_matches",name,found_matches
                 maxpoint = max(found_matches)
                 if not matched.has_key(maxpoint):
                     matched[maxpoint] = set()
@@ -897,7 +895,6 @@ class EquoInterface(TextInterface):
             while len(mydata) < 5:
                 try:
                     most = max(matched.keys())
-                    #print "most",most
                 except ValueError:
                     break
                 popped = matched.pop(most)
@@ -5783,7 +5780,6 @@ class FtpInterface:
 
             # create text
             currentText = brown("    <-> Upload status: ")+green(str(myUploadSize))+"/"+red(str(self.myFileSize))+" kB "+brown("[")+str(myUploadPercentage)+brown("]")
-            # print !
             print_info(currentText, back = True)
             # XXX too slow, reimplement self.updateProgress and do whatever you want
             #self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True)
@@ -5849,7 +5845,6 @@ class FtpInterface:
             # create text
             cnt = round(self.mykByteCount,1)
             currentText = brown("    <-> Download status: ")+green(str(cnt))+"/"+red(str(self.myFileSize))+" kB"
-            # print !
             self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True, count = (cnt, self.myFileSize), percent = True )
 
         # look if the file exist
@@ -6144,7 +6139,6 @@ class rssFeed:
             try:
                 self.xmldoc = self.minidom.parse(self.file)
             except:
-                #print "DEBUG: RSS broken, recreating in 5 seconds."
                 #time.sleep(5)
                 broken = True
 
@@ -7400,7 +7394,6 @@ class TriggerInterface:
         # we need to fix ROOT= if it's set inside environment
         bz2envfile = os.path.join(ebuild_path,"environment.bz2")
         if os.path.isfile(bz2envfile) and os.path.isdir(myroot):
-            #print "found",bz2envfile,myroot
             import bz2
             envfile = self.Entropy.entropyTools.unpackBzip2(bz2envfile)
             bzf = bz2.BZ2File(bz2envfile,"w")
@@ -7408,9 +7401,7 @@ class TriggerInterface:
             line = f.readline()
             while line:
                 if line.startswith("ROOT="):
-                    #print "found ROOT ::: ",line
                     line = "ROOT=%s\n" % (myroot,)
-                    #print "CHANGED ROOT ::: ",line
                 bzf.write(line)
                 line = f.readline()
             f.close()
@@ -8133,9 +8124,11 @@ class MultipartPostHandler(urllib2.BaseHandler):
                 boundary, data = self.multipart_encode(v_vars, v_files)
 
                 contenttype = 'multipart/form-data; boundary=%s' % boundary
-                if(request.has_header('Content-Type')
+                '''
+                if (request.has_header('Content-Type')
                    and request.get_header('Content-Type').find('multipart/form-data') != 0):
                     print "Replacing %s with %s" % (request.get_header('content-type'), 'multipart/form-data')
+                '''
                 request.add_unredirected_header('Content-Type', contenttype)
             request.add_data(data)
         return request
@@ -8545,9 +8538,7 @@ class SecurityInterface:
         # now we need to filter packages in adv_dat
         for adv in adv_data:
             for key in adv_data[adv]['affected'].keys():
-                #print key
                 atoms = adv_data[adv]['affected'][key][0]['vul_atoms']
-                #print atoms
                 applicable = True
                 for atom in atoms:
                     if atom in self.affected_atoms:
@@ -12169,7 +12160,6 @@ class ServerMirrorsInterface:
             mirrors = self.Mirrors[:]
 
         issues = False
-        print mirrors
         for uri in mirrors:
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
@@ -12184,7 +12174,6 @@ class ServerMirrorsInterface:
                 back = True
             )
 
-            print uri
             ftp = self.FtpInterface(uri, self.Entropy)
             ftp.setCWD(etpConst['etpurirelativepath'])
 
@@ -12452,8 +12441,7 @@ class ServerMirrorsInterface:
                 if os.path.isfile(revision_localtmppath):
                     os.remove(revision_localtmppath)
 
-            uripath = os.path.join(uri,etpConst['etpurirelativepath'],compressedfile)
-            info = (uripath,revision)
+            info = [uri,revision]
             data.append(info)
             ftp.closeConnection()
 
@@ -13637,7 +13625,6 @@ class ServerMirrorsInterface:
                     remote_size = 0
                 if (local_size != remote_size) and (local_size != 0):
                     # size does not match, remove first
-                    #print "removal of "+localPackage+" because its size differ"
                     if remote_package not in uploadQueue: # do it only if the package has not been added to the uploadQueue
                         removalQueue.add(remote_package) # remotePackage == localPackage # just remove something that differs from the content of the mirror
                         # then add to the download queue
