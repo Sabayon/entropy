@@ -3204,8 +3204,8 @@ class PackageInterface:
 
     def __init__(self, EquoInstance):
 
-        if not isinstance(EquoInstance,EquoInterface):
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+        if not isinstance(EquoInstance,EquoInterface) and not issubclass(EquoInstance,EquoInterface):
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Equo instance or subclass is needed")
         self.Entropy = EquoInstance
         self.infoDict = {}
         self.prepared = False
@@ -4717,8 +4717,8 @@ class FileUpdatesInterface:
             import dumpTools
             self.Entropy.dumpTools = dumpTools
         else:
-            if not isinstance(EquoInstance,EquoInterface):
-                raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+            if not isinstance(EquoInstance,EquoInterface) and not issubclass(EquoInstance,EquoInterface):
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Equo instance or subclass is needed")
             self.Entropy = EquoInstance
 
         self.scandata = None
@@ -4949,8 +4949,8 @@ class RepoInterface:
 
     def __init__(self, EquoInstance, reponames = [], forceUpdate = False, noEquoCheck = False, fetchSecurity = True):
 
-        if not isinstance(EquoInstance,EquoInterface):
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+        if not isinstance(EquoInstance,EquoInterface) and not issubclass(EquoInstance,EquoInterface):
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Equo instance or subclass is needed")
 
         self.Entropy = EquoInstance
         self.reponames = reponames
@@ -5545,8 +5545,13 @@ class FtpInterface:
     # this must be run before calling the other functions
     def __init__(self, ftpuri, EntropyInterface):
 
-        if not isinstance(EntropyInterface, (EquoInterface, TextInterface, ServerInterface)):
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid TextInterface based instance is needed")
+        if not isinstance(EntropyInterface, (EquoInterface, TextInterface, ServerInterface)) and \
+            not issubclass(EntropyInterface, (EquoInterface, TextInterface, ServerInterface)):
+                raise exceptionTools.IncorrectParameter(
+                            "IncorrectParameter: a valid TextInterface based instance is needed, was: %s" % (
+                                    str(EntropyInterface),
+                                )
+                )
 
         self.Entropy = EntropyInterface
         import entropyTools
@@ -6280,7 +6285,7 @@ class TriggerInterface:
 
     def __init__(self, EquoInstance, phase, pkgdata):
 
-        if not isinstance(EquoInstance,EquoInterface):
+        if not isinstance(EquoInstance,EquoInterface) and not issubclass(EquoInstance,EquoInterface):
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
 
         self.Entropy = EquoInstance
@@ -7794,8 +7799,8 @@ class PackageMaskingParser:
 
     def __init__(self, EquoInstance):
 
-        if not isinstance(EquoInstance,EquoInterface):
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+        if not isinstance(EquoInstance,EquoInterface) and not issubclass(EquoInstance,EquoInterface):
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Equo instance or subclass is needed")
         self.Entropy = EquoInstance
 
     def parse(self):
@@ -8193,8 +8198,8 @@ class SecurityInterface:
 
     def __init__(self, EquoInstance):
 
-        if not isinstance(EquoInstance,EquoInterface):
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+        if not isinstance(EquoInstance,EquoInterface) and not issubclass(EquoInstance,EquoInterface):
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Equo instance or subclass is needed")
         self.Entropy = EquoInstance
         self.lastfetch = None
         self.previous_checksum = "0"
@@ -8818,11 +8823,14 @@ class SecurityInterface:
 class SpmInterface:
 
     def __init__(self, OutputInterface):
-        if not isinstance(OutputInterface, (EquoInterface, TextInterface)):
-            if OutputInterface == None:
-                OutputInterface = TextInterface()
-            else:
-                raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid TextInterface based instance is needed")
+        if not isinstance(OutputInterface, (EquoInterface, TextInterface, ServerInterface)) and \
+            not issubclass(OutputInterface, (EquoInterface, TextInterface, ServerInterface)):
+                if OutputInterface == None:
+                    OutputInterface = TextInterface()
+                else:
+                    raise exceptionTools.IncorrectParameter(
+                            "IncorrectParameter: a valid TextInterface based instance is needed"
+                    )
 
         self.spm_backend = etpConst['spm']['backend']
         self.valid_backends = etpConst['spm']['available_backends']
@@ -8879,8 +8887,9 @@ class PortageInterface:
             return dest
 
     def __init__(self, OutputInterface):
-        if not isinstance(OutputInterface, (EquoInterface, TextInterface)):
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid TextInterface based instance is needed")
+        if not isinstance(OutputInterface, (EquoInterface, TextInterface, ServerInterface)) and \
+            not issubclass(OutputInterface, (EquoInterface, TextInterface, ServerInterface)):
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid TextInterface based instance is needed")
 
         # interface only needed OutputInterface functions
         self.updateProgress = OutputInterface.updateProgress
@@ -12018,8 +12027,8 @@ class ServerMirrorsInterface:
     import entropyTools, dumpTools
     def __init__(self,  ServerInstance, mirrors = etpConst['activatoruploaduris']):
 
-        if not isinstance(ServerInstance,ServerInterface):
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid ServerInterface instance is needed")
+        if not isinstance(ServerInstance,ServerInterface) and not issubclass(ServerInstance,ServerInterface):
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid ServerInterface based instance is needed")
 
         self.Entropy = ServerInterface
         self.Mirrors = mirrors[:]
@@ -12034,7 +12043,7 @@ class ServerMirrorsInterface:
     def lock_mirrors(self, lock = True, mirrors = []):
 
         if not mirrors:
-            mirrors = self.upload_mirrors[:]
+            mirrors = self.Mirrors[:]
 
         issues = False
         for uri in mirrors:
@@ -12093,7 +12102,7 @@ class ServerMirrorsInterface:
     def lock_mirrors_for_download(self, lock = True, mirrors = []):
 
         if not mirrors:
-            mirrors = self.upload_mirrors[:]
+            mirrors = self.Mirrors[:]
 
         issues = False
         for uri in mirrors:
