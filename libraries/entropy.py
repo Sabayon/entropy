@@ -13463,16 +13463,16 @@ class ServerMirrorsInterface:
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
                         blue("Packages to be removed"),
-                        len(removal),
+                        darkred(len(removal)),
             ),
             importance = 0,
             type = "info",
             header = blue(" @@ ")
         )
         self.Entropy.updateProgress(
-            "%s:\t\t\t%s" % (
+            "%s:\t\t%s" % (
                         darkgreen("Packages to be moved locally"),
-                        len(copy),
+                        darkgreen(len(copy)),
             ),
             importance = 0,
             type = "info",
@@ -13481,7 +13481,7 @@ class ServerMirrorsInterface:
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
                         bold("Packages to be uploaded"),
-                        len(upload),
+                        blue(len(upload)),
             ),
             importance = 0,
             type = "info",
@@ -13490,8 +13490,8 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
-                        blue("Total removal size"),
-                        self.entropyTools.bytesIntoHuman(metainfo['removal']),
+                        darkred("Total removal size"),
+                        darkred(self.entropyTools.bytesIntoHuman(metainfo['removal'])),
             ),
             importance = 0,
             type = "info",
@@ -13500,8 +13500,8 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
-                        bold("Total upload size"),
-                        self.entropyTools.bytesIntoHuman(metainfo['upload']),
+                        blue("Total upload size"),
+                        blue(self.entropyTools.bytesIntoHuman(metainfo['upload'])),
             ),
             importance = 0,
             type = "info",
@@ -13509,8 +13509,8 @@ class ServerMirrorsInterface:
         )
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
-                        darkred("Total download size"),
-                        self.entropyTools.bytesIntoHuman(metainfo['download']),
+                        brown("Total download size"),
+                        brown(self.entropyTools.bytesIntoHuman(metainfo['download'])),
             ),
             importance = 0,
             type = "info",
