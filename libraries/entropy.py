@@ -10861,15 +10861,18 @@ class ServerInterface(TextInterface):
 
     def close_server_databases(self):
         for item in self.serverDbCache:
-            del self.serverDbCache[item] # this will trigger closeDB()
+            self.serverDbCache[item].closeDB()
         self.serverDbCache.clear()
 
     def close_server_database(self, dbinstance):
+        found = None
         for item in self.serverDbCache:
             if dbinstance == self.serverDbCache[item]:
-                sameinst = self.serverDbCache.pop(item)
-                del sameinst
+                found = item
                 break
+        if found:
+            instance = self.serverDbCache.pop(found)
+            instance.closeDB()
 
     def switch_default_repository(self, repoid):
         self.default_repository = repoid
