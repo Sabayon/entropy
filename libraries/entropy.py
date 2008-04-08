@@ -5546,7 +5546,7 @@ class RepoInterface:
 class FtpInterface:
 
     # this must be run before calling the other functions
-    def __init__(self, ftpuri, EntropyInterface):
+    def __init__(self, ftpuri, EntropyInterface, verbose = False):
 
         if not isinstance(EntropyInterface, (EquoInterface, TextInterface, ServerInterface)) and \
             not issubclass(EntropyInterface, (EquoInterface, TextInterface, ServerInterface)):
@@ -5563,6 +5563,7 @@ class FtpInterface:
         self.ftplib = ftplib
         import socket
         self.socket = socket
+        self.verbose = verbose
 
         self.oldprogress = 0.0
 
@@ -5614,19 +5615,21 @@ class FtpInterface:
                     raise
                 continue
 
-        self.Entropy.updateProgress(
-            "[ftp:%s] connecting with user: %s" % (darkgreen(self.ftphost),blue(self.ftpuser),),
-            importance = 1,
-            type = "info",
-            header = darkgreen(" * ")
-        )
+        if self.verbose:
+            self.Entropy.updateProgress(
+                "[ftp:%s] connecting with user: %s" % (darkgreen(self.ftphost),blue(self.ftpuser),),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
         self.ftpconn.login(self.ftpuser,self.ftppassword)
-        self.Entropy.updateProgress(
-            "[ftp:%s] switching to: %s" % (darkgreen(self.ftphost),blue(self.ftpdir),),
-            importance = 1,
-            type = "info",
-            header = darkgreen(" * ")
-        )
+        if self.verbose:
+            self.Entropy.updateProgress(
+                "[ftp:%s] switching to: %s" % (darkgreen(self.ftphost),blue(self.ftpdir),),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
         self.ftpconn.cwd(self.ftpdir)
         self.currentdir = self.ftpdir
 
@@ -5648,19 +5651,21 @@ class FtpInterface:
                 if not counter:
                     raise
                 continue
-        self.Entropy.updateProgress(
-            "[ftp:%s] reconnecting with user: %s" % (darkgreen(self.ftphost),blue(self.ftpuser),),
-            importance = 1,
-            type = "info",
-            header = darkgreen(" * ")
-        )
+        if self.verbose:
+            self.Entropy.updateProgress(
+                "[ftp:%s] reconnecting with user: %s" % (darkgreen(self.ftphost),blue(self.ftpuser),),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
         self.ftpconn.login(self.ftpuser,self.ftppassword)
-        self.Entropy.updateProgress(
-            "[ftp:%s] switching to: %s" % (darkgreen(self.ftphost),blue(self.ftpdir),),
-            importance = 1,
-            type = "info",
-            header = darkgreen(" * ")
-        )
+        if self.verbose:
+            self.Entropy.updateProgress(
+                "[ftp:%s] switching to: %s" % (darkgreen(self.ftphost),blue(self.ftpdir),),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
         self.setCWD(self.currentdir)
 
     def getHost(self):
@@ -5677,12 +5682,13 @@ class FtpInterface:
         return pwd
 
     def setCWD(self,mydir):
-        self.Entropy.updateProgress(
-            "[ftp:%s] switching to: %s" % (darkgreen(self.ftphost),blue(mydir),),
-            importance = 1,
-            type = "info",
-            header = darkgreen(" * ")
-        )
+        if self.verbose:
+            self.Entropy.updateProgress(
+                "[ftp:%s] switching to: %s" % (darkgreen(self.ftphost),blue(mydir),),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
         self.ftpconn.cwd(mydir)
         self.currentdir = self.getCWD()
 
@@ -5694,7 +5700,7 @@ class FtpInterface:
 
     def getFileMtime(self,path):
         rc = self.ftpconn.sendcmd("mdtm "+path)
-        return rc.split()[len(rc.split())-1]
+        return rc.split()[-1]
 
     def spawnCommand(self,cmd):
         return self.ftpconn.sendcmd(cmd)
@@ -13366,12 +13372,7 @@ class ServerMirrorsInterface:
 
     def _show_local_sync_stats(self, crippled_uri, branch, upload_files, local_files):
         self.Entropy.updateProgress(
-            "[repo:%s|%s|branch:%s] %s:" % (
-                    blue(etpConst['officialrepositoryid']),
-                    red("sync"),
-                    brown(branch),
-                    blue("local statistics"),
-            ),
+            "%s:" % ( blue("Local statistics"),),
             importance = 1,
             type = "info",
             header = red(" @@ ")
@@ -13406,97 +13407,81 @@ class ServerMirrorsInterface:
             package = darkgreen(os.path.basename(itemdata[0]))
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
-                red("[repo:%s|sync|branch:%s|%s] %s [%s]" % (
-                        etpConst['officialrepositoryid'],
-                        branch,bold("upload"),
-                        package,
+                "[branch:%s|%s] %s [%s]" % (
+                        brown(branch),
+                        blue("upload"),
+                        darkgreen(package),
                         size,
-                    )
-                ),
+                    ),
                 importance = 0,
                 type = "info",
-                header = bold("    # ")
+                header = red("    # ")
             )
         for itemdata in download:
             package = darkred(os.path.basename(itemdata[0]))
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
-                red("[repo:%s|sync|branch:%s|%s] %s [%s]" % (
-                        etpConst['officialrepositoryid'],
-                        branch,
-                        brown("download"),
-                        package,
+                "[branch:%s|%s] %s [%s]" % (
+                        brown(branch),
+                        darkred("download"),
+                        blue(package),
                         size,
-                    )
-                ),
+                    ),
                 importance = 0,
                 type = "info",
-                header = darkred("    # ")
+                header = red("    # ")
             )
         for itemdata in copy:
             package = darkblue(os.path.basename(itemdata[0]))
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
-                red("[repo:%s|sync|branch:%s|%s] %s [%s]" % (
-                        etpConst['officialrepositoryid'],
-                        branch,
+                "[branch:%s|%s] %s [%s]" % (
+                        brown(branch),
                         darkgreen("copy"),
-                        package,
+                        brown(package),
                         size,
-                    )
-                ),
+                    ),
                 importance = 0,
                 type = "info",
-                header = darkgreen("    # ")
+                header = red("    # ")
             )
         for itemdata in removal:
             package = brown(os.path.basename(itemdata[0]))
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
-                red("[repo:%s|sync|branch:%s|%s] %s [%s]" % (
-                        etpConst['officialrepositoryid'],
-                        branch,
-                        darkred("remove"),
-                        package,
+                "[branch:%s|%s] %s [%s]" % (
+                        brown(branch),
+                        red("remove"),
+                        red(package),
                         size,
-                    )
-                ),
+                    ),
                 importance = 0,
                 type = "info",
-                header = brown("    # ")
+                header = red("    # ")
             )
 
         self.Entropy.updateProgress(
-            red("[repo:%s|sync|branch:%s] %s: %s" % (
-                        etpConst['officialrepositoryid'],
-                        branch,
-                        blue("packages to be removed"),
+            "%s:\t\t\t%s" % (
+                        blue("Packages to be removed"),
                         len(removal),
-                )
             ),
             importance = 0,
             type = "info",
             header = blue(" @@ ")
         )
         self.Entropy.updateProgress(
-            red("[repo:%s|sync|branch:%s] %s: %s" % (
-                        etpConst['officialrepositoryid'],
-                        branch,
-                        darkgreen("packages to be moved locally"),
+            "%s:\t\t\t%s" % (
+                        darkgreen("Packages to be moved locally"),
                         len(copy),
-                )
             ),
             importance = 0,
             type = "info",
             header = blue(" @@ ")
         )
         self.Entropy.updateProgress(
-            red("[repo:%s|sync|branch:%s] %s: %s" % (
-                        etpConst['officialrepositoryid'],
-                        branch,
-                        bold("packages to be uploaded"),
+            "%s:\t\t\t%s" % (
+                        bold("Packages to be uploaded"),
                         len(upload),
-                )
             ),
             importance = 0,
             type = "info",
@@ -13504,12 +13489,9 @@ class ServerMirrorsInterface:
         )
 
         self.Entropy.updateProgress(
-            red("[repo:%s|sync|branch:%s] %s: %s" % (
-                        etpConst['officialrepositoryid'],
-                        branch,
-                        blue("total removal size"),
+            "%s:\t\t\t%s" % (
+                        blue("Total removal size"),
                         self.entropyTools.bytesIntoHuman(metainfo['removal']),
-                )
             ),
             importance = 0,
             type = "info",
@@ -13517,24 +13499,18 @@ class ServerMirrorsInterface:
         )
 
         self.Entropy.updateProgress(
-            red("[repo:%s|sync|branch:%s] %s: %s" % (
-                        etpConst['officialrepositoryid'],
-                        branch,
-                        bold("total upload size"),
+            "%s:\t\t\t%s" % (
+                        bold("Total upload size"),
                         self.entropyTools.bytesIntoHuman(metainfo['upload']),
-                )
             ),
             importance = 0,
             type = "info",
             header = blue(" @@ ")
         )
         self.Entropy.updateProgress(
-            red("[repo:%s|sync|branch:%s] %s: %s" % (
-                        etpConst['officialrepositoryid'],
-                        branch,
-                        darkred("total download size"),
+            "%s:\t\t\t%s" % (
+                        darkred("Total download size"),
                         self.entropyTools.bytesIntoHuman(metainfo['download']),
-                )
             ),
             importance = 0,
             type = "info",
@@ -13585,20 +13561,14 @@ class ServerMirrorsInterface:
         self._show_local_sync_stats(crippled_uri, branch, upload_files, local_files)
 
         self.Entropy.updateProgress(
-            "[repo:%s|%s|branch:%s] %s: %s" % (
-                    blue(etpConst['officialrepositoryid']),
-                    red("sync"),
-                    brown(branch),
-                    blue("remote statistics for"),
-                    red(crippled_uri),
-            ),
+            "%s: %s" % (blue("Remote statistics for"),red(crippled_uri),),
             importance = 1,
             type = "info",
             header = red(" @@ ")
         )
         remote_files, remote_packages, remote_packages_data = self.calculate_remote_package_files(uri, branch)
         self.Entropy.updateProgress(
-            "%s:\t\t%s %s" % (
+            "%s:\t\t\t%s %s" % (
                     blue("remote packages"),
                     bold(str(remote_files)),
                     red("files stored"),
@@ -14009,15 +13979,10 @@ class ServerMirrorsInterface:
                     continue
 
                 self.Entropy.updateProgress(
-                    "[repo:%s|%s|branch:%s] %s:" % (
-                        etpConst['officialrepositoryid'],
-                        red("sync"),
-                        mybranch,
-                        darkgreen("calculating queue metadata"),
-                    ),
+                    "%s:" % (blue("Calculating queue metadata"),),
                     importance = 1,
                     type = "info",
-                    header = darkgreen(" * ")
+                    header = red(" ** ")
                 )
 
                 upload, download, removal, copy, metainfo = self.expand_queues(
@@ -14037,12 +14002,12 @@ class ServerMirrorsInterface:
                             etpConst['officialrepositoryid'],
                             red("sync"),
                             mybranch,
-                            darkgreen("nothing to sync for"),
+                            blue("nothing to sync for"),
                             crippled_uri,
                         ),
                         importance = 1,
                         type = "info",
-                        header = darkgreen(" * ")
+                        header = red(" @@ ")
                     )
 
                     if pkgbranches[-1] == mybranch:
