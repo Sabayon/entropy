@@ -157,7 +157,7 @@ class etpDatabase:
             self.connection.close()
             return
 
-        if not etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']:
+        if not etpDbStatus[self.dbFile]['tainted']:
             # we can unlock it, no changes were made
             self.ServiceInterface.MirrorsService.lock_mirrors(False)
         else:
@@ -168,8 +168,7 @@ class etpDatabase:
                                     header = brown(" * ")
                                 )
 
-        # do some final tasks
-        self.connection.commit()
+        self.commitChanges()
         self.vacuum()
         self.cursor.close()
         self.connection.close()
@@ -178,34 +177,38 @@ class etpDatabase:
         self.cursor.execute("vacuum")
 
     def commitChanges(self):
-        if not self.readOnly:
-            try:
-                self.connection.commit()
-            except:
-                pass
-            self.taintDatabase()
+
+        if self.readOnly:
+            return
+
+        try:
+            self.connection.commit()
+        except:
+            pass
 
         if not self.clientDatabase:
-            if (etpDbStatus[etpConst['etpdatabasefilepath']]['tainted']) and \
-                (not etpDbStatus[etpConst['etpdatabasefilepath']]['bumped']):
+            self.taintDatabase()
+            if (etpDbStatus[self.dbFile]['tainted']) and \
+                (not etpDbStatus[self.dbFile]['bumped']):
                     # bump revision, setting DatabaseBump causes the session to just bump once
-                    etpDbStatus[etpConst['etpdatabasefilepath']]['bumped'] = True
+                    etpDbStatus[self.dbFile]['bumped'] = True
                     self.revisionBump()
 
     def taintDatabase(self):
-        if (self.clientDatabase): # if it's equo to open it, this should be avoided
+        # if it's equo to open it, this should be avoided
+        if self.clientDatabase:
             return
         # taint the database status
         f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'],"w")
         f.write(etpConst['currentarch']+" database tainted\n")
         f.flush()
         f.close()
-        etpDbStatus[etpConst['etpdatabasefilepath']]['tainted'] = True
+        etpDbStatus[self.dbFile]['tainted'] = True
 
     def untaintDatabase(self):
         if (self.clientDatabase): # if it's equo to open it, this should be avoided
             return
-        etpDbStatus[etpConst['etpdatabasefilepath']]['tainted'] = False
+        etpDbStatus[self.dbFile]['tainted'] = False
         # untaint the database status
         if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
             os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])

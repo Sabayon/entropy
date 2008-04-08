@@ -14184,11 +14184,10 @@ class ServerMirrorsInterface:
 
             if not removal:
                 self.Entropy.updateProgress(
-                    red("[branch:%s] %s" % (
+                    "[branch:%s] %s" % (
                                 brown(mybranch),
                                 blue("nothing to remove on this branch"),
-                        )
-                    ),
+                        ),
                     importance = 1,
                     type = "info",
                     header = darkgreen(" * ")
