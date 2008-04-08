@@ -531,7 +531,6 @@ def const_defaultSettings(rootdir):
         'equoconf': ETP_CONF_DIR+"/equo.conf", # equo.conf file
         'socketconf': ETP_CONF_DIR+"/socket.conf", # socket.conf file
         'activatoruploaduris': [], # list of URIs that activator can use to upload files (parsed from activator.conf)
-        'activatordownloaduris': [], # list of URIs that activator can use to fetch data
         'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
         'packagesrelativepath': "packages/"+ETP_ARCH_CONST+"/", # user by client interfaces
         'etpurirelativepath': "database/"+ETP_ARCH_CONST+"/", # database relative path
@@ -772,11 +771,6 @@ def const_setupServerClientRepository():
     )
     for x in range(len(etpConst['activatoruploaduris'])):
         etpConst['activatoruploaduris'][x] = etpConst['activatoruploaduris'][x].replace(
-            etpConst['dbrepodir'],
-            etpConst['officialrepositoryid']
-    )
-    for x in range(len(etpConst['activatordownloaduris'])):
-        etpConst['activatordownloaduris'][x] = etpConst['activatordownloaduris'][x].replace(
             etpConst['dbrepodir'],
             etpConst['officialrepositoryid']
     )
@@ -1199,11 +1193,6 @@ def const_readActivatorSettings():
                 if uri.endswith("/"):
                     uri = uri[:-1]
                 etpConst['activatoruploaduris'].append(uri+"/"+etpConst['dbrepodir'])
-            elif line.startswith("mirror-download|") and (len(line.split("mirror-download|")) == 2):
-                uri = line.split("mirror-download|")[1]
-                if uri.endswith("/"):
-                    uri = uri[:-1]
-                etpConst['activatordownloaduris'].append(uri+"/"+etpConst['dbrepodir'])
             elif line.startswith("database-format|") and (len(line.split("database-format|")) == 2):
                 format = line.split("database-format|")[1]
                 if format in etpConst['etpdatabasesupportedcformats']:

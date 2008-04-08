@@ -1,7 +1,7 @@
 #!/usr/bin/python
 '''
     # DESCRIPTION:
-    # generic tools for enzyme application
+    # activator textual interface
 
     Copyright (C) 2007-2008 Fabio Erculiani
 
@@ -20,143 +20,49 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import time
 from entropyConstants import *
 from outputTools import *
-from entropy import FtpInterface, ServerInterface
-Entropy = ServerInterface(noclientdb = 2)
+from entropy import ServerInterface
+Entropy = ServerInterface()
 
 def sync(options, justTidy = False):
 
-    activatorRequestNoAsk = False
+    do_noask = False
     myopts = []
-    for i in options:
-        if ( i == "--noask" ):
-            activatorRequestNoAsk = True
+    for opt in options:
+        if opt == "--noask":
+            do_noask = True
         else:
-            myopts.append(i)
+            myopts.append(opt)
     options = myopts
 
     print_info(green(" * ")+red("Starting to sync data across mirrors (packages/database) ..."))
 
-    if (not justTidy):
-        # firstly sync the packages
-        if (activatorRequestNoAsk):
-            rc = packages(["sync"])
-        else:
-            ask = etpUi['ask']
-            etpUi['ask'] = True
-            rc = packages(["sync"])
-            etpUi['ask'] = ask
-        # then sync the database, if the packages sync completed successfully
-        if rc:
-            if (not activatorRequestNoAsk) and etpConst['rss-feed']:
+    if not justTidy:
+
+        mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data = Entropy.MirrorsService.sync_packages(ask = not do_noask, pretend = etpUi['pretend'])
+        if not mirrors_errors:
+
+            if (not do_noask) and etpConst['rss-feed']:
                 etpRSSMessages['commitmessage'] = readtext(">> Please insert a commit message: ")
             elif etpConst['rss-feed']:
                 etpRSSMessages['commitmessage'] = "Autodriven Update"
-            # if packages are ok, we can sync the database
-            database(["sync"])
-            if not activatorRequestNoAsk:
-                # ask question
-                rc = Entropy.askQuestion("     Should I continue with the tidy procedure ?")
+            rc = database(["sync"])
+            if not rc and not do_noask:
+                rc = Entropy.askQuestion("Should I continue with the tidy procedure ?")
                 if rc == "No":
                     sys.exit(0)
+            elif rc:
+                print_error(darkred(" !!! ")+red("Aborting !"))
+                sys.exit(rc)
 
-    print_info(green(" * ")+red("Starting to collect packages that would be removed from the repository ..."))
-    for mybranch in etpConst['branches']:
-
-        print_info(red(" * ")+blue("Switching to branch: ")+bold(mybranch))
-
-        # now it's time to do some tidy
-        # collect all the binaries in the database
-        dbconn = Entropy.databaseTools.openServerDatabase(readOnly = True, noUpload = True)
-        dbBinaries = dbconn.listBranchPackagesTbz2(mybranch)
-        dbconn.closeDB()
-
-        # list packages in the packages directory
-        repoBinaries = os.listdir(etpConst['packagesbindir']+"/"+mybranch)
-
-        removeList = []
-        # select packages
-        for repoBin in repoBinaries:
-            if (repoBin.endswith(".tbz2")):
-                if repoBin not in dbBinaries:
-                    # check if it's expired
-                    filepath = etpConst['packagesbindir']+"/"+mybranch+"/"+repoBin
-                    if os.path.isfile(filepath+etpConst['packagesexpirationfileext']):
-                        # check mtime
-                        mtime = Entropy.entropyTools.getFileUnixMtime(filepath+etpConst['packagesexpirationfileext'])
-                        delta = int(etpConst['packagesexpirationdays'])*24*3600
-                        currmtime = time.time()
-                        if currmtime - mtime > delta: # if it's expired
-                            removeList.append(repoBin)
-                    else:
-                        # create expiration file
-                        f = open(filepath+etpConst['packagesexpirationfileext'],"w")
-                        f.write("\n")
-                        f.flush()
-                        f.close()
-                        # not expired.
-
-        if (not removeList):
-            print_info(green(" * ")+red("No packages to remove from the mirrors."))
-            print_info(green(" * ")+red("Syncronization across mirrors completed."))
-            continue
-
-        print_info(green(" * ")+red("This is the list of files that would be removed from the mirrors: "))
-        for xfile in removeList:
-            print_info(green("\t* ")+brown(xfile))
-
-        # ask question
-        if (not activatorRequestNoAsk):
-            rc = Entropy.askQuestion("     Would you like to continue ?")
-            if rc == "No":
-                sys.exit(0)
-
-        # remove them!
-        for uri in etpConst['activatoruploaduris']:
-            print_info(green(" * ")+red("Connecting to: ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
-            ftp = FtpInterface(uri, Entropy)
-            ftp.setCWD(etpConst['binaryurirelativepath']+"/"+mybranch)
-            for xfile in removeList:
-
-                print_info(green(" * ")+red("Removing file: ")+bold(xfile), back = True)
-                # remove remotely
-                if (ftp.isFileAvailable(xfile)):
-                    rc = ftp.deleteFile(xfile)
-                    if (rc):
-                        print_info(green(" * ")+red("Package file: ")+bold(xfile)+red(" removed successfully from ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
-                    else:
-                        print_warning(brown(" * ")+red("ATTENTION: remote file ")+bold(xfile)+red(" cannot be removed."))
-                # checksum
-                if (ftp.isFileAvailable(xfile+etpConst['packageshashfileext'])):
-                    rc = ftp.deleteFile(xfile+etpConst['packageshashfileext'])
-                    if (rc):
-                        print_info(green(" * ")+red("Checksum file: ")+bold(xfile+etpConst['packageshashfileext'])+red(" removed successfully from ")+bold(Entropy.entropyTools.extractFTPHostFromUri(uri)))
-                    else:
-                        print_warning(brown(" * ")+red("ATTENTION: remote checksum file ")+bold(xfile)+red(" cannot be removed."))
-                # remove locally
-                if os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile):
-                    print_info(green(" * ")+red("Package file: ")+bold(xfile)+red(" removed successfully from ")+bold(etpConst['packagesbindir']+"/"+mybranch))
-                    os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile)
-                    try:
-                        os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile+etpConst['packagesexpirationfileext'])
-                    except OSError:
-                        pass
-                # checksum
-                if os.path.isfile(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile+etpConst['packageshashfileext']):
-                    print_info(green(" * ")+red("Checksum file: ")+bold(xfile+etpConst['packageshashfileext'])+red(" removed successfully from ")+bold(etpConst['packagesbindir']+"/"+mybranch))
-                    os.remove(etpConst['packagesbindir']+"/"+mybranch+"/"+xfile+etpConst['packageshashfileext'])
-            ftp.closeConnection()
-
-    print_info(green(" * ")+red("Syncronization across mirrors completed."))
+    Entropy.MirrorsService.tidy_mirrors(ask = not do_noask, pretend = etpUi['pretend'])
 
 
 def packages(options):
 
-    myopts = options[1:]
     do_pkg_check = False
-    for opt in myopts:
+    for opt in options:
         if (opt == "--do-packages-check"):
             do_pkg_check = True
 
@@ -164,7 +70,10 @@ def packages(options):
         return
 
     if options[0] == "sync":
-        Entropy.MirrorsService.sync_packages(ask = etpUi['ask'], pretend = etpUi['pretend'], packages_check = do_pkg_check)
+        return Entropy.MirrorsService.sync_packages(    ask = etpUi['ask'],
+                                                        pretend = etpUi['pretend'],
+                                                        packages_check = do_pkg_check
+                                                   )
 
 
 def database(options):

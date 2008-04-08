@@ -2766,18 +2766,16 @@ class etpDatabase:
         self.cursor.execute('SELECT dependenciesreference.iddependency,dependenciesreference.dependency FROM dependenciesreference,dependencies WHERE dependencies.idpackage = (?) AND dependenciesreference.iddependency = dependencies.iddependency', (idpackage,))
         return set(self.cursor.fetchall())
 
-    def listBranchPackagesTbz2(self, branch):
-        result = set()
-        pkglist = self.listBranchPackages(branch)
-        for pkg in pkglist:
-            idpackage = pkg[1]
-            url = self.retrieveDownloadURL(idpackage)
-            if url:
-                result.add(os.path.basename(url))
-        if (result):
-            result = list(result)
-            result.sort()
-        return result
+    def listBranchPackagesTbz2(self, branch, do_sort = True):
+        self.cursor.execute('SELECT extrainfo.download FROM baseinfo,extrainfo WHERE baseinfo.branch = (?) AND baseinfo.idpackage = extrainfo.idpackage', (branch,))
+        result = self.fetchall2set(self.cursor.fetchall())
+        sorted_result = []
+        for package in result:
+            if package:
+                sorted_result.append(os.path.basename(package))
+        if do_sort:
+            sorted_result.sort()
+        return sorted_result
 
     def listBranchPackages(self, branch):
         self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE branch = (?)', (branch,))

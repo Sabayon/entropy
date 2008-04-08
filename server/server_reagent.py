@@ -22,7 +22,7 @@
 
 from entropyConstants import *
 from outputTools import *
-from entropy import ServerInterface, FtpInterface
+from entropy import ServerInterface
 Entropy = ServerInterface()
 
 def inject(options):
