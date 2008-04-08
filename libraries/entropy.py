@@ -13463,7 +13463,7 @@ class ServerMirrorsInterface:
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
                         blue("Packages to be removed"),
-                        darkred(len(removal)),
+                        darkred(str(len(removal))),
             ),
             importance = 0,
             type = "info",
@@ -13472,7 +13472,7 @@ class ServerMirrorsInterface:
         self.Entropy.updateProgress(
             "%s:\t\t%s" % (
                         darkgreen("Packages to be moved locally"),
-                        darkgreen(len(copy)),
+                        darkgreen(str(len(copy))),
             ),
             importance = 0,
             type = "info",
@@ -13481,7 +13481,7 @@ class ServerMirrorsInterface:
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
                         bold("Packages to be uploaded"),
-                        blue(len(upload)),
+                        blue(str(len(upload))),
             ),
             importance = 0,
             type = "info",
