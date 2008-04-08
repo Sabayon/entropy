@@ -810,7 +810,6 @@ def searchTaggedPackages(tags, datareturn = False, dbconn = None, EquoConnection
             results = dbconn.searchTaggedPackages(tag, atoms = True)
             for result in results:
                 foundPackages[repo][result[1]] = result[0]
-                # print info
                 if (not datareturn):
                     printPackageInfo(result[1],dbconn, EquoConnection = EquoConnection)
             if (not datareturn) and (not etpUi['quiet']):

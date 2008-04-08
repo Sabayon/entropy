@@ -58,25 +58,25 @@ def query(myopts):
         rc = 0
 
     elif cmd == "tags":
-        rc = text_query.searchTaggedPackages(myopts[1:], dbconn = dbconn, EquoConnection = Entropy)
+        rc = text_query.searchTaggedPackages(myopts, dbconn = dbconn, EquoConnection = Entropy)
 
     elif cmd == "files":
-        rc = text_query.searchFiles(myopts[1:], dbconn = dbconn, EquoConnection = Entropy)
+        rc = text_query.searchFiles(myopts, dbconn = dbconn, EquoConnection = Entropy)
 
     elif cmd == "belongs":
-        rc = text_query.searchBelongs(myopts[1:], dbconn = dbconn, EquoConnection = Entropy)
+        rc = text_query.searchBelongs(myopts, dbconn = dbconn, EquoConnection = Entropy)
 
     elif cmd == "description":
-        rc = text_query.searchDescriptions(myopts[1:], dbconn = dbconn, EquoConnection = Entropy)
+        rc = text_query.searchDescriptions(myopts, dbconn = dbconn, EquoConnection = Entropy)
 
     elif cmd == "needed":
-        rc = text_query.searchNeeded(myopts[1:], dbconn = dbconn, EquoConnection = Entropy)
+        rc = text_query.searchNeeded(myopts, dbconn = dbconn, EquoConnection = Entropy)
 
     elif myopts[0] == "depends":
-        rc = text_query.searchDepends(myopts[1:], dbconn = dbconn, EquoConnection = Entropy)
+        rc = text_query.searchDepends(myopts, dbconn = dbconn, EquoConnection = Entropy)
 
     elif myopts[0] == "eclass":
-        rc = text_query.searchEclass(myopts[1:], dbconn = dbconn, EquoConnection = Entropy)
+        rc = text_query.searchEclass(myopts, dbconn = dbconn, EquoConnection = Entropy)
 
     del Entropy
     return rc
