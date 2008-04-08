@@ -111,8 +111,6 @@ _options = []
 for opt in options:
     if (opt == "--nocolor"):
         nocolor()
-    elif (opt == "--debug"):
-        entropyTools.enableDebug()
     else:
         if (opt == "--quiet"):
             etpUi['quiet'] = True

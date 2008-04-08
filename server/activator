@@ -22,9 +22,13 @@
 
 # Never do "import portage" here, please use entropyTools binding
 
-import os,sys
+import os, sys
 sys.path.insert(0,'../libraries')
 sys.path.insert(1,'../client')
+sys.path.insert(2,'../server')
+sys.path.insert(3,'/usr/lib/entropy/client')
+sys.path.insert(4,'/usr/lib/entropy/libraries')
+sys.path.insert(5,'/usr/lib/entropy/server')
 from outputTools import *
 from entropyConstants import *
 
@@ -70,15 +74,12 @@ if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(option
     sys.exit(1)
 
 import entropyTools
-import activatorTools
 
 # preliminary options parsing
 _options = []
 for opt in options:
     if (opt == "--nocolor"):
 	nocolor()
-    elif (opt == "--debug"):
-	entropyTools.enableDebug()
     else:
         if (opt == "--quiet"):
             etpUi['quiet'] = True
@@ -92,25 +93,28 @@ for opt in options:
             _options.append(opt)
 options = _options
 
-if (not entropyTools.isRoot()):
+if not entropyTools.isRoot():
     print_error("you must be root in order to run "+APPNAME)
     sys.exit(2)
 
-# sync mirrors tool
 elif (options[0] == "sync"):
-    activatorTools.sync(options[1:])
+    import server_activator
+    server_activator.sync(options[1:])
     sys.exit(0)
-# tidy tool
+
 elif (options[0] == "tidy"):
-    activatorTools.sync(options[1:], justTidy = True)
+    import server_activator
+    server_activator.sync(options[1:], justTidy = True)
     sys.exit(0)
 
 # database tool
 elif (options[0] == "database"):
-    activatorTools.database(options[1:])
+    import server_activator
+    server_activator.database(options[1:])
     sys.exit(0)
 
 # database tool
 elif (options[0] == "packages"):
-    activatorTools.packages(options[1:])
+    import server_activator
+    server_activator.packages(options[1:])
     sys.exit(0)

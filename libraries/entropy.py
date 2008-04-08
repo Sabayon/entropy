@@ -25,7 +25,7 @@ import commands
 import urllib2
 import time
 from entropyConstants import *
-from outputTools import TextInterface, print_info, print_warning, print_error, red, brown, blue, green, darkgreen, darkred, bold
+from outputTools import TextInterface, print_info, print_warning, print_error, red, brown, blue, green, darkgreen, darkred, bold, darkblue
 import exceptionTools
 
 class matchContainer:
@@ -394,7 +394,7 @@ class EquoInterface(TextInterface):
             for x in etpConst['packagemasking']['keywords']['universal']:
                 etpConst['keywords'].add(x)
 
-        if repositoryName.endswith(".tbz2"):
+        if repositoryName.endswith(etpConst['packagesext']):
             xcache = False
         dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
         if not os.path.isfile(dbfile):
@@ -414,7 +414,7 @@ class EquoInterface(TextInterface):
 
             etpRepositories[repositoryName]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotect']]
             etpRepositories[repositoryName]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotectmask']]
-        if not etpConst['treeupdatescalled'] and (self.entropyTools.is_user_in_entropy_group()) and (not repositoryName.endswith(".tbz2")):
+        if not etpConst['treeupdatescalled'] and (self.entropyTools.is_user_in_entropy_group()) and (not repositoryName.endswith(etpConst['packagesext'])):
             conn.clientUpdatePackagesData(self.clientDbconn)
         return conn
 
@@ -1029,7 +1029,7 @@ class EquoInterface(TextInterface):
         for repo in valid_repos:
 
             # check if repo exists
-            if not repo.endswith(".tbz2"):
+            if not repo.endswith(etpConst['packagesext']):
                 fetch = self.fetch_repository_if_not_available(repo)
                 if fetch != 0:
                     continue # cannot fetch repo, excluding
@@ -1064,12 +1064,12 @@ class EquoInterface(TextInterface):
 
             # .tbz2 repos have always the precedence, so if we find them,
             # we should second what user wants, installing his tbz2
-            tbz2repos = [x for x in repoResults if x.endswith(".tbz2")]
+            tbz2repos = [x for x in repoResults if x.endswith(etpConst['packagesext'])]
             if tbz2repos:
                 del tbz2repos
                 newrepos = repoResults.copy()
                 for x in newrepos:
-                    if not x.endswith(".tbz2"):
+                    if not x.endswith(etpConst['packagesext']):
                         del repoResults[x]
 
             version_duplicates = set()
@@ -1213,7 +1213,7 @@ class EquoInterface(TextInterface):
         except KeyError:
             raise exceptionTools.InvalidData("InvalidData: repodata dictionary is corrupted")
 
-        if repodata['repoid'].endswith(".tbz2"): # dynamic repository
+        if repodata['repoid'].endswith(etpConst['packagesext']): # dynamic repository
             try:
                 etpRepositories[repodata['repoid']]['packages'] = repodata['packages'][:]
                 etpRepositories[repodata['repoid']]['smartpackage'] = repodata['smartpackage']
@@ -2392,8 +2392,8 @@ class EquoInterface(TextInterface):
         if pkgdata['versiontag']: pkgtag = "#"+pkgdata['versiontag']
         pkgname = pkgdata['name']+"-"+pkgdata['version']+pkgrev+pkgtag # + version + tag
         pkgcat = pkgdata['category']
-        #pkgfile = pkgname+".tbz2"
-        dirpath += "/"+pkgname+".tbz2"
+        #pkgfile = pkgname+etpConst['packagesext']
+        dirpath += "/"+pkgname+etpConst['packagesext']
         if os.path.isfile(dirpath):
             os.remove(dirpath)
         tar = tarfile.open(dirpath,"w:"+compression)
@@ -2514,7 +2514,7 @@ class EquoInterface(TextInterface):
                         back = True
                     )
         tbz2File = package
-        package = package.split(".tbz2")[0]
+        package = package.split(etpConst['packagesext'])[0]
         package = self.entropyTools.remove_entropy_revision(package)
         package = self.entropyTools.remove_tag(package)
         # remove category
@@ -2560,7 +2560,6 @@ class EquoInterface(TextInterface):
                         header = brown(" * "),
                         back = True
                     )
-        # .tbz2 md5
         data['datecreation'] = str(self.entropyTools.getFileUnixMtime(tbz2File))
 
         if not silent:
@@ -2859,7 +2858,7 @@ class EquoInterface(TextInterface):
             versiontag = "#"+data['versiontag']
         else:
             versiontag = ""
-        data['download'] = etpConst['packagesrelativepath']+data['branch']+"/"+data['category']+":"+data['name']+"-"+data['version']+versiontag+".tbz2"
+        data['download'] = etpConst['packagesrelativepath']+data['branch']+"/"+data['category']+":"+data['name']+"-"+data['version']+versiontag+etpConst['packagesext']
 
         if not silent:
             self.updateProgress(
@@ -4105,11 +4104,6 @@ class PackageInterface:
 
                     if os.path.realpath(fromfile) == os.path.realpath(tofile) and os.path.islink(tofile):
                         # there is a serious issue here, better removing tofile, happened to someone:
-                        '''
-                            File \"/usr/lib/python2.4/shutil.py\", line 42, in copyfile
-                            raise Error, \"`%s` and `%s` are the same file\" % (src, dst)
-                            Error: `/var/tmp/entropy/packages/x86/3.5/mozilla-firefox-2.0.0.8.tbz2/image/usr/lib/mozilla-firefox/include/nsIURI.h` and `/usr/lib/mozilla-firefox/include/nsIURI.h` are the same file
-                        '''
                         try: # try to cope...
                             os.remove(tofile)
                         except:
@@ -4601,7 +4595,7 @@ class PackageInterface:
         # smartpackage ?
         self.infoDict['smartpackage'] = False
         # set unpack dir and image dir
-        if self.infoDict['repository'].endswith(".tbz2"):
+        if self.infoDict['repository'].endswith(etpConst['packagesext']):
             # do arch check
             compiled_arch = dbconn.retrieveDownloadURL(idpackage)
             if compiled_arch.find("/"+etpSys['arch']+"/") == -1:
@@ -4697,7 +4691,7 @@ class PackageInterface:
         self.infoDict['download'] = dbconn.retrieveDownloadURL(idpackage)
         self.infoDict['verified'] = False
         self.infoDict['steps'] = []
-        if not repository.endswith(".tbz2"):
+        if not repository.endswith(etpConst['packagesext']):
             if self.Entropy.check_needed_package_download(self.infoDict['download'], None) < 0:
                 self.infoDict['steps'].append("fetch")
             if dochecksum:
@@ -6044,9 +6038,10 @@ class urlFetcher:
                 averagesize -= 1
             bartext += ">"
             diffbarsize = barsize-curbarsize
-            for y in range(diffbarsize):
+            while diffbarsize > 0:
                 bartext += " "
-            if (self.showSpeed):
+                diffbarsize -= 1
+            if self.showSpeed:
                 bartext += "] => "+str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec ~ ETA: "+str(self.time_remaining)
             else:
                 bartext += "]"
@@ -9027,7 +9022,7 @@ class PortageInterface:
         #pkgfile = pkgname+".tbz2"
         if not os.path.isdir(dirpath):
             os.makedirs(dirpath)
-        dirpath += "/"+pkgname+".tbz2"
+        dirpath += "/"+pkgname+etpConst['packagesext']
         dbdir = self.get_vdb_path()+"/"+pkgcat+"/"+pkgname+"/"
 
         import tarfile
@@ -10915,7 +10910,9 @@ class ServerInterface(TextInterface):
                                         type = "info",
                                         header = red(" * ")
                                     )
-        self.serverDbCache[(etpConst['systemroot'],read_only,no_upload,just_reading,)] = conn
+        # do not cache ultra-readonly dbs
+        if not just_reading:
+            self.serverDbCache[(etpConst['systemroot'],read_only,no_upload,just_reading,)] = conn
         return conn
 
 
@@ -11113,7 +11110,7 @@ class ServerInterface(TextInterface):
         downloaddir = os.path.dirname(downloadurl)
         downloadfile = os.path.basename(downloadurl)
         # add revision
-        downloadfile = downloadfile[:-5]+"~%s.tbz2" % (packagerev,)
+        downloadfile = downloadfile[:-5]+"~%s%s" % (packagerev,etpConst['packagesext'],)
         downloadurl = os.path.join(downloaddir,downloadfile)
 
         # update url
@@ -11176,10 +11173,25 @@ class ServerInterface(TextInterface):
         return self.SpmService.quickpkg(atom,storedir)
 
 
-    def remove_package(self, idpackage):
+    def remove_packages(self, idpackages):
         dbconn = self.openServerDatabase(read_only = False, no_upload = True)
-        dbconn.removePackage(idpackage)
+        for idpackage in idpackages:
+            atom = dbconn.retrieveAtom(idpackage)
+            self.updateProgress(
+                    red("[repo:%s] removing package: %s" % (darkgreen(etpConst['officialrepositoryid']),atom,)),
+                    importance = 1,
+                    type = "info",
+                    header = brown(" @@ "),
+                    back = True
+                )
+            dbconn.removePackage(idpackage)
         self.close_server_database(dbconn)
+        self.updateProgress(
+                red("[repo:%s] removal complete" % (darkgreen(etpConst['officialrepositoryid']),)),
+                importance = 1,
+                type = "info",
+                header = brown(" @@ ")
+            )
 
 
     def bump_database(self):
@@ -11279,6 +11291,12 @@ class ServerInterface(TextInterface):
         return toBeAdded, toBeRemoved, toBeInjected
 
 
+    def transform_package_into_injected(self, idpackage):
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+        counter = dbconn.getNewNegativeCounter()
+        dbconn.setCounter(idpackage,counter)
+        dbconn.setInjected(idpackage)
+
     def initialize_server_database(self):
 
         self.close_server_databases()
@@ -11365,21 +11383,20 @@ class ServerInterface(TextInterface):
 
         rc = self.askQuestion("Would you like to sync packages first (important if you don't have them synced) ?")
         if rc == "Yes":
-            activatorTools.packages(["sync","--ask"])
+            self.MirrorsService.sync_packages()
 
         # fill tree updates actions
         if treeupdates_actions:
             dbconn.addTreeUpdatesActions(treeupdates_actions)
 
         # now fill the database
-        pkgbranches = os.listdir(etpConst['packagesserverbindir'])
-        pkgbranches = [x for x in pkgbranches if os.path.isdir(os.path.join(etpConst['packagesserverbindir'],x))]
+        pkgbranches = list(self.list_all_branches())
 
         for mybranch in pkgbranches:
 
             pkglist = os.listdir(os.path.join(etpConst['packagesserverbindir'],mybranch))
             # filter .md5 and .expired packages
-            pkglist = [x for x in pkglist if x[-5:] == ".tbz2" and not os.path.isfile(etpConst['packagesserverbindir']+"/"+mybranch+"/"+x+etpConst['packagesexpirationfileext'])]
+            pkglist = [x for x in pkglist if x[-5:] == etpConst['packagesext'] and not os.path.isfile(etpConst['packagesserverbindir']+"/"+mybranch+"/"+x+etpConst['packagesexpirationfileext'])]
 
             if not pkglist:
                 continue
@@ -11854,6 +11871,18 @@ class ServerInterface(TextInterface):
 
         self.close_server_database(dbconn)
         return fine, failed, downloaded_fine, downloaded_errors
+
+
+    def list_all_branches(self):
+        dbconn = self.openServerDatabase(just_reading = True)
+        branches = dbconn.listAllBranches()
+        for branch in branches:
+            branch_path = os.path.join(etpConst['packagesserveruploaddir'],branch)
+            if not os.path.isdir(branch_path):
+                os.makedirs(branch_path)
+            branch_path = os.path.join(etpConst['packagesserverbindir'],branch)
+            if not os.path.isdir(branch_path):
+                os.makedirs(branch_path)
 
 
     def switch_packages_branch(self, idpackages, to_branch):
@@ -12516,7 +12545,9 @@ class ServerMirrorsInterface:
                         download = False,
                         ftp_basedir = None,
                         local_basedir = None,
-                        critical_files = []
+                        critical_files = [],
+                        use_handlers = False,
+                        handlers_data = {}
             ):
 
             self.FtpInterface = ftp_interface
@@ -12541,6 +12572,126 @@ class ServerMirrorsInterface:
             else:
                 self.local_basedir = str(local_basedir)
             self.critical_files = critical_files
+            self.use_handlers = use_handlers
+            self.handlers_data = handlers_data.copy()
+
+        def handler_verify_upload(self, local_filepath, uri, ftp_connection, counter, maxcount):
+
+            self.Entropy.updateProgress(
+                red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] verifyng upload (if supported): %s" % (
+                            etpConst['officialrepositoryid'],
+                            crippled_uri,
+                            action,
+                            tries,
+                            blue(str(counter)),
+                            bold(str(maxcount)),
+                            os.path.basename(local_filepath),
+                    )
+                ),
+                importance = 0,
+                type = "info",
+                header = darkgreen(" * "),
+                back = True
+            )
+
+            checksum = self.Entropy.ClientService.get_remote_package_checksum(
+                        self.Entropy.entropyTools.extractFTPHostFromUri(uri),
+                        os.path.basename(local_filepath),
+                        self.handlers_data['branch']
+            )
+            if checksum == None:
+                self.Entropy.updateProgress(
+                    red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] digest verification: %s: %s" % (
+                                etpConst['officialrepositoryid'],
+                                crippled_uri,
+                                action,
+                                tries,
+                                blue(str(counter)),
+                                bold(str(maxcount)),
+                                os.path.basename(local_filepath),
+                                bold("not supported"),
+                        )
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = darkgreen(" * ")
+                )
+                return True
+            elif checksum == False:
+                self.Entropy.updateProgress(
+                    red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] digest verification: %s: %s" % (
+                                etpConst['officialrepositoryid'],
+                                crippled_uri,
+                                action,
+                                tries,
+                                blue(str(counter)),
+                                bold(str(maxcount)),
+                                os.path.basename(local_filepath),
+                                bold("file not found"),
+                        )
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = darkgreen(" * ")
+                )
+                return False
+            elif len(checksum) == 32:
+                # valid? checking
+                ckres = self.Entropy.entropyTools.compareMd5(local_filepath,checksum)
+                if ckres:
+                    self.Entropy.updateProgress(
+                        red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] digest verification: %s: %s" % (
+                                    etpConst['officialrepositoryid'],
+                                    crippled_uri,
+                                    action,
+                                    tries,
+                                    blue(str(counter)),
+                                    bold(str(maxcount)),
+                                    os.path.basename(local_filepath),
+                                    darkgreen("so far, so good!"),
+                            )
+                        ),
+                        importance = 0,
+                        type = "info",
+                        header = darkgreen(" * ")
+                    )
+                    return True
+                else:
+                    self.Entropy.updateProgress(
+                        red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] digest verification: %s: %s" % (
+                                    etpConst['officialrepositoryid'],
+                                    crippled_uri,
+                                    action,
+                                    tries,
+                                    blue(str(counter)),
+                                    bold(str(maxcount)),
+                                    os.path.basename(local_filepath),
+                                    bold("invalid checksum"),
+                            )
+                        ),
+                        importance = 0,
+                        type = "info",
+                        header = darkgreen(" * ")
+                    )
+                    return False
+            else:
+                self.Entropy.updateProgress(
+                    red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] digest verification: %s: %s" % (
+                                etpConst['officialrepositoryid'],
+                                crippled_uri,
+                                action,
+                                tries,
+                                blue(str(counter)),
+                                bold(str(maxcount)),
+                                os.path.basename(local_filepath),
+                                bold("unknown data returned"),
+                        )
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = darkgreen(" * ")
+                )
+                return False
 
         def go(self):
 
@@ -12571,29 +12722,55 @@ class ServerMirrorsInterface:
                 )
                 ftp.setCWD(self.ftp_basedir)
 
-                syncer = ftp.uploadFile
-                myargs = [mypath]
-                if self.download:
-                    syncer = ftp.downloadFile
-                    myargs = [os.path.basename(mypath),self.local_basedir]
-
+                maxcount = len(self.myfiles)
+                counter = 0
                 for mypath in self.myfiles:
+
+                    syncer = ftp.uploadFile
+                    myargs = [mypath]
+                    if self.download:
+                        syncer = ftp.downloadFile
+                        myargs = [os.path.basename(mypath),self.local_basedir]
+
+                    counter += 1
                     tries = 0
                     done = False
                     lastrc = None
-                    while tries < 5:
+                    while tries < 8:
                         tries += 1
                         self.Entropy.updateProgress(
-                            red("[repo:%s|mirror:%s|%s|#%s] %sing: %s" % (etpConst['officialrepositoryid'],crippled_uri,action,tries,action,os.path.basename(mypath),)),
+                            red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] %sing: %s" % (
+                                        etpConst['officialrepositoryid'],
+                                        crippled_uri,
+                                        action,
+                                        tries,
+                                        blue(str(counter)),
+                                        bold(str(maxcount)),
+                                        action,
+                                        os.path.basename(mypath),
+                                )
+                            ),
                             importance = 0,
                             type = "info",
                             header = darkgreen(" * "),
                             back = True
                         )
                         rc = syncer(*myargs)
+                        if rc and self.use_handlers and not self.download:
+                            rc = self.handler_verify_upload(mypath, uri, ftp, counter, maxcount)
                         if rc:
                             self.Entropy.updateProgress(
-                                red("[repo:%s|mirror:%s|%s|#%s] %s successfully: %s" % (etpConst['officialrepositoryid'],crippled_uri,action,tries,action,os.path.basename(mypath),)),
+                                red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] %s successfully: %s" % (
+                                            etpConst['officialrepositoryid'],
+                                            crippled_uri,
+                                            action,
+                                            tries,
+                                            blue(str(counter)),
+                                            bold(str(maxcount)),
+                                            action,
+                                            os.path.basename(mypath),
+                                    )
+                                ),
                                 importance = 0,
                                 type = "info",
                                 header = darkgreen(" * ")
@@ -12602,7 +12779,17 @@ class ServerMirrorsInterface:
                             break
                         else:
                             self.Entropy.updateProgress(
-                                red("[repo:%s|mirror:%s|%s|#%s] %s failed, retrying: %s" % (etpConst['officialrepositoryid'],crippled_uri,action,tries,action,os.path.basename(mypath),)),
+                                red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] %s failed, retrying: %s" % (
+                                            etpConst['officialrepositoryid'],
+                                            crippled_uri,
+                                            action,
+                                            tries,
+                                            blue(str(counter)),
+                                            bold(str(maxcount)),
+                                            action,
+                                            os.path.basename(mypath),
+                                    )
+                                ),
                                 importance = 0,
                                 type = "warning",
                                 header = brown(" * ")
@@ -12614,7 +12801,17 @@ class ServerMirrorsInterface:
 
                         # abort upload
                         self.Entropy.updateProgress(
-                            red("[repo:%s|mirror:%s|%s] %s failed, giving up: %s - error: %s" % (etpConst['officialrepositoryid'],crippled_uri,action,action,os.path.basename(mypath),lastrc,)),
+                            red("[repo:%s|mirror:%s|%s|(%s/%s)] %s failed, giving up: %s - error: %s" % (
+                                        etpConst['officialrepositoryid'],
+                                        crippled_uri,
+                                        action,
+                                        blue(str(counter)),
+                                        bold(str(maxcount)),
+                                        action,
+                                        os.path.basename(mypath),
+                                        lastrc,
+                                )
+                            ),
                             importance = 1,
                             type = "error",
                             header = darkred(" !!! ")
@@ -12622,7 +12819,15 @@ class ServerMirrorsInterface:
 
                         if mypath not in self.critical_files:
                             self.Entropy.updateProgress(
-                                red("[repo:%s|mirror:%s|%s] not critical: %s, continuing..." % (etpConst['officialrepositoryid'],crippled_uri,action,os.path.basename(mypath),)),
+                                red("[repo:%s|mirror:%s|%s|(%s/%s)] not critical: %s, continuing..." % (
+                                            etpConst['officialrepositoryid'],
+                                            crippled_uri,
+                                            action,
+                                            blue(str(counter)),
+                                            bold(str(maxcount)),
+                                            os.path.basename(mypath),
+                                    )
+                                ),
                                 importance = 1,
                                 type = "warning",
                                 header = brown(" * ")
@@ -13048,4 +13253,790 @@ class ServerMirrorsInterface:
         if unlock_mirrors:
             self.lock_mirrors(False)
         return 0, set(), set()
+
+
+
+
+
+    def calculate_local_upload_files(self, branch):
+        upload_files = 0
+        upload_packages = set()
+        upload_dir = os.path.join(etpConst['packagesserveruploaddir'],branch)
+
+        for package in os.listdir(upload_dir):
+            if package.endswith(etpConst['packagesext']) or package.endswith(etpConst['packageshashfileext']):
+                upload_packages.add(package)
+                if package.endswith(etpConst['packagesext']):
+                    upload_files += 1
+
+        return upload_files, upload_packages
+
+    def calculate_local_package_files(self, branch):
+        local_files = 0
+        local_packages = set()
+        packages_dir = os.path.join(etpConst['packagesserverbindir'],branch)
+
+        for package in os.listdir(packages_dir):
+            if package.endswith(etpConst['packagesext']) or package.endswith(etpConst['packageshashfileext']):
+                local_packages.add(package)
+                if package.endswith(etpConst['packagesext']):
+                    local_files += 1
+
+        return local_files, local_packages
+
+
+    def _show_local_sync_stats(self, crippled_uri, branch, upload_files, local_files):
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s|mirror:%s] local statistics:" % (
+                    etpConst['officialrepositoryid'],
+                    branch,
+                    crippled_uri,
+                )
+            ),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s] upload directory: %s files ready" % (
+                    etpConst['officialrepositoryid'],
+                    branch,
+                    upload_files,
+                )
+            ),
+            importance = 0,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s] packages directory: %s files ready" % (
+                    etpConst['officialrepositoryid'],
+                    branch,
+                    local_files,
+                )
+            ),
+            importance = 0,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+
+    def _show_sync_queues(self, upload, download, removal, copy, metainfo, branch):
+
+        # show stats
+        for itemdata in upload:
+            package = darkgreen(os.path.basename(itemdata[0]))
+            size = blue(self.Entropy.entropyTools.bytesIntoHuman(itemdata[1]))
+            self.Entropy.updateProgress(
+                red("[repo:%s|sync|branch:%s|%s] %s [%s]" % (
+                        etpConst['officialrepositoryid'],
+                        branch,bold("upload"),
+                        package,
+                        size,
+                    )
+                ),
+                importance = 0,
+                type = "info",
+                header = bold("    # ")
+            )
+        for itemdata in download:
+            package = darkred(os.path.basename(itemdata[0]))
+            size = blue(self.Entropy.entropyTools.bytesIntoHuman(itemdata[1]))
+            self.Entropy.updateProgress(
+                red("[repo:%s|sync|branch:%s|%s] %s [%s]" % (
+                        etpConst['officialrepositoryid'],
+                        branch,
+                        brown("download"),
+                        package,
+                        size,
+                    )
+                ),
+                importance = 0,
+                type = "info",
+                header = darkred("    # ")
+            )
+        for itemdata in copy:
+            package = darkblue(os.path.basename(itemdata[0]))
+            size = blue(self.Entropy.entropyTools.bytesIntoHuman(itemdata[1]))
+            self.Entropy.updateProgress(
+                red("[repo:%s|sync|branch:%s|%s] %s [%s]" % (
+                        etpConst['officialrepositoryid'],
+                        branch,
+                        darkgreen("copy"),
+                        package,
+                        size,
+                    )
+                ),
+                importance = 0,
+                type = "info",
+                header = darkgreen("    # ")
+            )
+        for itemdata in removal:
+            package = brown(os.path.basename(itemdata[0]))
+            size = blue(self.Entropy.entropyTools.bytesIntoHuman(itemdata[1]))
+            self.Entropy.updateProgress(
+                red("[repo:%s|sync|branch:%s|%s] %s [%s]" % (
+                        etpConst['officialrepositoryid'],
+                        branch,
+                        darkred("remove"),
+                        package,
+                        size,
+                    )
+                ),
+                importance = 0,
+                type = "info",
+                header = brown("    # ")
+            )
+
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s] %s: %s" % (
+                        etpConst['officialrepositoryid'],
+                        branch,
+                        blue("packages to be removed"),
+                        len(removal),
+                )
+            ),
+            importance = 0,
+            type = "info",
+            header = blue(" @@ ")
+        )
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s] %s: %s" % (
+                        etpConst['officialrepositoryid'],
+                        branch,
+                        darkgreen("packages to be moved locally"),
+                        len(copy),
+                )
+            ),
+            importance = 0,
+            type = "info",
+            header = blue(" @@ ")
+        )
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s] %s: %s" % (
+                        etpConst['officialrepositoryid'],
+                        branch,
+                        bold("packages to be uploaded"),
+                        len(upload),
+                )
+            ),
+            importance = 0,
+            type = "info",
+            header = blue(" @@ ")
+        )
+
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s] %s: %s" % (
+                        etpConst['officialrepositoryid'],
+                        branch,
+                        blue("total removal size"),
+                        self.Entropy.entropyTools.bytesIntoHuman(metainfo['removal']),
+                )
+            ),
+            importance = 0,
+            type = "info",
+            header = blue(" @@ ")
+        )
+
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s] %s: %s" % (
+                        etpConst['officialrepositoryid'],
+                        branch,
+                        bold("total upload size"),
+                        self.Entropy.entropyTools.bytesIntoHuman(metainfo['upload']),
+                )
+            ),
+            importance = 0,
+            type = "info",
+            header = blue(" @@ ")
+        )
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s] %s: %s" % (
+                        etpConst['officialrepositoryid'],
+                        branch,
+                        darkred("total download size"),
+                        self.Entropy.entropyTools.bytesIntoHuman(metainfo['download']),
+                )
+            ),
+            importance = 0,
+            type = "info",
+            header = blue(" @@ ")
+        )
+
+
+    def calculate_remote_package_files(self, uri, branch, ftp_connection = None):
+
+        remote_files = 0
+        close_conn = False
+        remote_packages_data = {}
+
+        def do_cwd():
+            try:
+                ftp_connection.setCWD(etpConst['binaryurirelativepath'])
+            except:
+                self.create_mirror_directories(ftp_connection,etpConst['etpurirelativepath'])
+                ftp_connection.setCWD(etpConst['binaryurirelativepath'])
+            if not ftp_connection.isFileAvailable(branch):
+                ftp_connection.mkdir(branch)
+            ftp_connection.setCWD(branch)
+
+        if ftp_connection == None:
+            close_conn = True
+            ftp_connection = self.FtpInterface(uri, self.Entropy)
+        do_cwd()
+
+        remote_packages = ftp_connection.listDir()
+        remote_packages_info = ftp_connection.getRoughList()
+        if close_conn:
+            ftp_connection.closeConnection()
+
+        for tbz2 in remote_packages:
+            if tbz2.endswith(etpConst['packagesext']):
+                remote_files += 1
+
+        for remote_package in remote_packages_info:
+            remote_packages_data[remote_package.split()[8]] = int(remote_package.split()[4])
+
+        return remote_files, remote_packages, remote_packages_data
+
+    def calculate_packages_to_sync(self, uri, branch):
+
+        crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+        upload_files, upload_packages = self.calculate_local_upload_files(branch)
+        local_files, local_packages = self.calculate_local_package_files(branch)
+        self._show_local_sync_stats(crippled_uri, branch, upload_files, local_files)
+
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s|mirror:%s] remote statistics:" % (etpConst['officialrepositoryid'],branch,crippled_uri,)),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+        remote_files, remote_packages, remote_packages_data = self.calculate_remote_package_files(uri, branch)
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s|mirror:%s] remote packages: %s files stored" % (etpConst['officialrepositoryid'],branch,crippled_uri,remote_files,)),
+            importance = 0,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s|mirror:%s] calculating queues..." % (etpConst['officialrepositoryid'],branch,crippled_uri,)),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+
+        return self.calculate_sync_queues(
+                    upload_packages,
+                    local_packages,
+                    remote_packages,
+                    remote_packages_data,
+                    branch
+        ),remote_packages_data
+
+    def calculate_sync_queues(self, upload_packages, local_packages, remote_packages, remote_packages_data, branch):
+
+        uploadQueue = set()
+        downloadQueue = set()
+        removalQueue = set()
+        fineQueue = set()
+
+        for local_package in upload_packages:
+            if local_package in remote_packages:
+                local_filepath = os.path.join(etpConst['packagesserveruploaddir'],branch,local_package)
+                local_size = int(os.stat(local_filepath)[6])
+                remote_size = remote_packages_data.get(local_package)
+                if remote_size == None:
+                    remote_size = 0
+                if (local_size != remote_size):
+                    # size does not match, adding to the upload queue
+                    uploadQueue.add(local_package)
+                else:
+                    fineQueue.add(local_package) # just move from upload to packages
+            else:
+                # always force upload of packages in uploaddir
+                uploadQueue.add(local_package)
+
+        # if a package is in the packages directory but not online, we have to upload it
+        # we have local_packages and remotePackages
+        for local_package in local_packages:
+            if local_package in remote_packages:
+                local_filepath = os.path.join(etpConst['packagesserverbindir'],branch,local_package)
+                local_size = int(os.stat(local_filepath)[6])
+                remote_size = remote_packages_data.get(local_package)
+                if remote_size == None:
+                    remote_size = 0
+                if (local_size != remote_size) and (local_size != 0):
+                    # size does not match, adding to the upload queue
+                    if local_package not in fineQueue:
+                        uploadQueue.add(local_package)
+            else:
+                # this means that the local package does not exist
+                # so, we need to download it
+                uploadQueue.add(local_package)
+
+        # Fill downloadQueue and removalQueue
+        for remote_package in remote_packages:
+            if remote_package in local_packages:
+                local_filepath = os.path.join(etpConst['packagesserverbindir'],branch,remote_package)
+                local_size = int(os.stat(local_filepath)[6])
+                remote_size = remote_packages_data.get(remote_package)
+                if remote_size == None:
+                    remote_size = 0
+                if (local_size != remote_size) and (local_size != 0):
+                    # size does not match, remove first
+                    #print "removal of "+localPackage+" because its size differ"
+                    if remote_package not in uploadQueue: # do it only if the package has not been added to the uploadQueue
+                        removalQueue.add(remote_package) # remotePackage == localPackage # just remove something that differs from the content of the mirror
+                        # then add to the download queue
+                        downloadQueue.add(remote_package)
+            else:
+                # this means that the local package does not exist
+                # so, we need to download it
+                if not remote_package.endswith(".tmp"): # ignore .tmp files
+                    downloadQueue.add(remote_package)
+
+        # Collect packages that don't exist anymore in the database
+        # so we can filter them out from the download queue
+        dbconn = self.Entropy.openServerDatabase(just_reading = True)
+        db_files = dbconn.listBranchPackagesTbz2(branch)
+
+        exclude = set()
+        for myfile in downloadQueue:
+            if myfile.endswith(etpConst['packagesext']):
+                if myfile not in db_files:
+                    exclude.add(myfile)
+        downloadQueue -= exclude
+
+        exclude = set()
+        for myfile in uploadQueue:
+            if myfile.endswith(etpConst['packagesext']):
+                if myfile not in db_files:
+                    exclude.add(myfile)
+        uploadQueue -= exclude
+
+        exclude = set()
+        for myfile in downloadQueue:
+            if myfile in uploadQueue:
+                exclude.add(myfile)
+        downloadQueue -= exclude
+
+        return uploadQueue, downloadQueue, removalQueue, fineQueue
+
+
+    def expand_queues(self, uploadQueue, downloadQueue, removalQueue, remote_packages_data, branch):
+
+        metainfo = {
+            'removal': 0,
+            'download': 0,
+            'upload': 0,
+        }
+        removal = []
+        download = []
+        copy = []
+        upload = []
+
+        for item in removalQueue:
+            if not item.endswith(etpConst['packagesext']):
+                continue
+            local_filepath = os.path.join(etpConst['packagesserverbindir'],branch,item)
+            size = int(os.stat(local_filepath)[6])
+            metainfo['removal'] += size
+            removal.append((local_filepath,size))
+
+        for item in downloadQueue:
+            if not item.endswith(etpConst['packagesext']):
+                continue
+            local_filepath = os.path.join(etpConst['packagesserveruploaddir'],branch,item)
+            if not os.path.isfile(local_filepath):
+                size = remote_packages_data.get(item)
+                if size == None:
+                    size = 0
+                size = int(size)
+                metainfo['removal'] += size
+                download.append((local_filepath,size))
+            else:
+                size = int(os.stat(local_filepath)[6])
+                copy.append((local_filepath,size))
+
+        for item in uploadQueue:
+            if not item.endswith(etpConst['packagesext']):
+                continue
+            local_filepath = os.path.join(etpConst['packagesserveruploaddir'],branch,item)
+            local_filepath_pkgs = os.path.join(etpConst['packagesserverbindir'],branch,item)
+            if os.path.isfile(local_filepath):
+                size = int(os.stat(local_filepath)[6])
+                upload.append((local_filepath,size))
+            else:
+                size = int(os.stat(local_filepath_pkgs)[6])
+                upload.append((local_filepath_pkgs,size))
+            metainfo['upload'] += size
+
+
+        return upload, download, removal, copy, metainfo
+
+
+    def _sync_run_removal_queue(self, removal_queue, branch):
+
+        for itemdata in removal_queue:
+
+            remove_filename = itemdata[0]
+            remove_filepath = os.path.join(etpConst['packagesserverbindir'],branch,remove_filename)
+            remove_filepath_hash = remove_filepath+etpConst['packageshashfileext']
+            self.Entropy.updateProgress(
+                red("[repo:%s|sync|branch:%s] removing package+hash: %s [%s]" % (
+                        etpConst['officialrepositoryid'],
+                        branch,
+                        remove_filename,
+                        self.Entropy.entropyTools.bytesIntoHuman(itemdata[1]),
+                    )
+                ),
+                importance = 0,
+                type = "info",
+                header = darkred(" * ")
+            )
+
+            if os.path.isfile(remove_filepath):
+                os.remove(remove_filepath)
+            if os.path.isfile(remove_filepath_hash):
+                os.remove(remove_filepath_hash)
+
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s] removal complete" % (
+                    etpConst['officialrepositoryid'],
+                    branch,
+                )
+            ),
+            importance = 0,
+            type = "info",
+            header = darkred(" * ")
+        )
+
+
+    def _sync_run_copy_queue(self, copy_queue, branch):
+
+        for itemdata in copy_queue:
+
+            from_file = itemdata[0]
+            from_file_hash = from_file+etpConst['packageshashfileext']
+            to_file = os.path.join(etpConst['packagesserverbindir'],branch,os.path.basename(from_file))
+            to_file_hash = to_file+etpConst['packageshashfileext']
+            expiration_file = to_file+etpConst['packagesexpirationfileext']
+            self.Entropy.updateProgress(
+                red("[repo:%s|sync|branch:%s] copying file+hash to repository: %s" % (
+                        etpConst['officialrepositoryid'],
+                        branch,
+                        from_file,
+                    )
+                ),
+                importance = 0,
+                type = "info",
+                header = darkred(" * ")
+            )
+
+            if not os.path.isdir(os.path.dirname(to_file)):
+                os.makedirs(os.path.dirname(to_file))
+
+            shutil.copy2(from_file,to_file)
+            if not os.path.isfile(from_file_hash):
+                self.create_file_checksum(from_file, from_file_hash)
+            shutil.copy2(from_file_hash,to_file_hash)
+
+            # clear expiration file
+            if os.path.isfile(expiration_file):
+                os.remove(expiration_file)
+
+
+    def _sync_run_upload_queue(self, uri, upload_queue, branch):
+
+        crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+        myqueue = [x[0] for x in upload_queue]
+        for itemdata in upload_queue:
+            x = itemdata[0]
+            hash_file = x+etpConst['packageshashfileext']
+            if not os.path.isfile(hash_file):
+                self.Entropy.entropyTools.createHashFile(x)
+            myqueue.append(hash_file)
+            myqueue.append(x)
+
+        ftp_basedir = os.path.join(etpConst['binaryurirelativepath'],branch)
+        uploader = self.FileTransmitter(    self.FtpInterface,
+                                            self.Entropy,
+                                            [uri],
+                                            myqueue,
+                                            critical_files = myqueue,
+                                            use_handlers = True,
+                                            ftp_basedir = ftp_basedir,
+                                            handlers_data = {'branch': branch }
+                                        )
+        errors, m_fine_uris, m_broken_uris = uploader.go()
+        if errors:
+            my_broken_uris = [(self.Entropy.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
+            reason = my_broken_uris[0][1]
+            self.Entropy.updateProgress(
+                red("[repo:%s|sync|branch:%s] upload errors: %s, reason: %s" % (
+                            etpConst['officialrepositoryid'],
+                            branch,
+                            crippled_uri,
+                            reason,
+                    )
+                ),
+                importance = 1,
+                type = "error",
+                header = darkred(" !!! ")
+            )
+            return errors, m_fine_uris, m_broken_uris
+
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s] upload completed successfully: %s" % (
+                        etpConst['officialrepositoryid'],
+                        branch,
+                        crippled_uri,
+                )
+            ),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+        return errors, m_fine_uris, m_broken_uris
+
+
+    def _sync_run_download_queue(self, uri, download_queue, branch):
+
+        crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+        myqueue = [x[0] for x in download_queue]
+        for itemdata in download_queue:
+            x = itemdata[0]
+            hash_file = x+etpConst['packageshashfileext']
+            myqueue.append(x)
+            myqueue.append(hash_file)
+
+        ftp_basedir = os.path.join(etpConst['binaryurirelativepath'],branch)
+        local_basedir = os.path.join(etpConst['packagesserverbindir'],branch)
+        downloader = self.FileTransmitter(    self.FtpInterface,
+                                            self.Entropy,
+                                            [uri],
+                                            myqueue,
+                                            critical_files = myqueue,
+                                            use_handlers = True,
+                                            ftp_basedir = ftp_basedir,
+                                            local_basedir = local_basedir,
+                                            handlers_data = {'branch': branch },
+                                            download = True
+                                        )
+        errors, m_fine_uris, m_broken_uris = downloader.go()
+        if errors:
+            my_broken_uris = [(self.Entropy.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
+            reason = my_broken_uris[0][1]
+            self.Entropy.updateProgress(
+                red("[repo:%s|sync|branch:%s] download errors: %s, reason: %s" % (
+                            etpConst['officialrepositoryid'],
+                            branch,
+                            crippled_uri,
+                            reason,
+                    )
+                ),
+                importance = 1,
+                type = "error",
+                header = darkred(" !!! ")
+            )
+            return errors, m_fine_uris, m_broken_uris
+
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync|branch:%s] download completed successfully: %s" % (
+                        etpConst['officialrepositoryid'],
+                        branch,
+                        crippled_uri,
+                )
+            ),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+        return errors, m_fine_uris, m_broken_uris
+
+
+    def sync_packages(self, ask = True, pretend = False, packages_check = False):
+
+        self.Entropy.updateProgress(
+            red("[repo:%s|sync] starting packages sync" % (etpConst['officialrepositoryid'],)),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * "),
+            back = True
+        )
+
+        pkgbranches = list(self.Entropy.list_all_branches())
+        successfull_mirrors = set()
+        broken_mirrors = set()
+        check_data = ()
+        mirrors_tainted = False
+        mirror_errors = False
+        mirrors_errors = False
+
+        for uri in etpConst['activatoruploaduris']:
+
+            crippled_uri = self.Entropy.entropyTools.extractFTPHostFromUri(uri)
+            mirror_errors = False
+
+            for mybranch in pkgbranches:
+
+                self.Entropy.updateProgress(
+                    red("[repo:%s|sync|branch:%s] packages sync: %s" % (
+                            etpConst['officialrepositoryid'],
+                            mybranch,
+                            crippled_uri,
+                        )
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = darkgreen(" * ")
+                )
+
+                uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data = self.calculate_packages_to_sync(uri, mybranch)
+                del fineQueue
+
+                if (not uploadQueue) and (not downloadQueue) and (not removalQueue):
+                    self.Entropy.updateProgress(
+                        red("[repo:%s|sync|branch:%s] nothing to do on: %s" % (
+                                    etpConst['officialrepositoryid'],
+                                    mybranch,
+                                    crippled_uri,
+                            )
+                        ),
+                        importance = 1,
+                        type = "info",
+                        header = darkgreen(" * ")
+                    )
+                    if pkgbranches[-1] == mybranch:
+                        successfull_mirrors.add(uri)
+                    continue
+
+                self.Entropy.updateProgress(
+                    red("[repo:%s|sync|branch:%s] calculating queue metadata:" % (
+                                etpConst['officialrepositoryid'],
+                                mybranch,
+                        )
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = darkgreen(" * ")
+                )
+
+                upload, download, removal, copy, metainfo = self.expand_queues(
+                            uploadQueue,
+                            downloadQueue,
+                            removalQueue,
+                            remote_packages_data,
+                            mybranch
+                )
+                del uploadQueue, downloadQueue, removalQueue, remote_packages_data
+                self._show_sync_queues(upload, download, removal, copy, metainfo, mybranch)
+
+                if not len(upload)+len(download)+len(removal)+len(copy):
+
+                    self.Entropy.updateProgress(
+                        red("[repo:%s|sync|branch:%s] nothing to sync for %s" % (
+                                    etpConst['officialrepositoryid'],
+                                    mybranch,
+                                    crippled_uri,
+                            )
+                        ),
+                        importance = 1,
+                        type = "info",
+                        header = darkgreen(" * ")
+                    )
+
+                    if pkgbranches[-1] == mybranch:
+                        successfull_mirrors.add(uri)
+                    continue
+
+                if pretend:
+                    if pkgbranches[-1] == mybranch:
+                        successfull_mirrors.add(uri)
+                    continue
+
+                if ask:
+                    rc = self.Entropy.askQuestion("Would you like to run the steps above ?")
+                    if rc == "No":
+                        continue
+
+                try:
+
+                    if removal:
+                        self._sync_run_removal_queue(removal, mybranch)
+                    if copy:
+                        self._sync_run_copy_queue(copy, mybranch)
+                    if upload or download:
+                        mirrors_tainted = True
+                    if upload:
+                        d_errors, m_fine_uris, m_broken_uris = self._sync_run_upload_queue(uri, upload, mybranch)
+                        if d_errors: mirror_errors = True
+                    if download:
+                        d_errors, m_fine_uris, m_broken_uris = self._sync_run_download_queue(uri, download, mybranch)
+                        if d_errors: mirror_errors = True
+                    if (pkgbranches[-1] == mybranch) and not mirror_errors:
+                        successfull_mirrors.add(uri)
+                    if mirror_errors:
+                        mirrors_errors = True
+
+                except KeyboardInterrupt:
+                    self.Entropy.updateProgress(
+                        red("[repo:%s|sync|branch:%s] keyboard interrupt !" % (etpConst['officialrepositoryid'],mybranch,)),
+                        importance = 1,
+                        type = "info",
+                        header = darkgreen(" * ")
+                    )
+                    return mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data
+
+                except Exception, e:
+                    mirrors_errors = True
+                    broken_mirrors.add(uri)
+                    self.Entropy.updateProgress(
+                        red("[repo:%s|sync|branch:%s] exception caught: %s, error: %s" % (
+                                    etpConst['officialrepositoryid'],
+                                    mybranch,
+                                    Exception,
+                                    e,
+                            )
+                        ),
+                        importance = 1,
+                        type = "error",
+                        header = darkred(" !!! ")
+                    )
+                    if len(successfull_mirrors) > 0:
+                        self.Entropy.updateProgress(
+                            red("[repo:%s|sync|branch:%s] at least one mirror has been sync'd properly, hooray!" % (
+                                        etpConst['officialrepositoryid'],
+                                        mybranch,
+                                )
+                            ),
+                            importance = 1,
+                            type = "error",
+                            header = darkred(" !!! ")
+                        )
+                    continue
+
+        # if at least one server has been synced successfully, move files
+        if (len(successfull_mirrors) > 0) and not pretend:
+            for branch in pkgbranches:
+                branch_dir = os.path.join(etpConst['packagesserveruploaddir'],branch)
+                branchcontent = os.listdir(branch_dir)
+                for xfile in branchcontent:
+                    source = os.path.join(etpConst['packagesserveruploaddir'],branch,xfile)
+                    destdir = os.path.join(etpConst['packagesserverbindir'],branch)
+                    if not os.path.isdir(destdir):
+                        os.makedirs(destdir)
+                    dest = os.path.join(destdir,xfile)
+                    shutil.move(source,dest)
+                    # clear expiration file
+                    dest_expiration = dest+etpConst['packagesexpirationfileext']
+                    if os.path.isfile(dest_expiration):
+                        os.remove(dest_expiration)
+
+        if packages_check:
+            check_data = self.Entropy.verify_local_packages([], ask = ask)
+
+        return mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data
+
 

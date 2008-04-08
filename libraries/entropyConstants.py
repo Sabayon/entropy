@@ -575,6 +575,7 @@ def const_defaultSettings(rootdir):
         'rss-light-max-entries': 300, # max entries for the light version
         'rss-managing-editor': "lxnay@sabayonlinux.org", # updates submitter
 
+        'packagesext': ".tbz2",
         'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
         'packagesexpirationfileext': ".expired", # Extension of the file that "contains" expiration mtime
         'packagesexpirationdays': 15, # number of days after a package will be removed from mirrors

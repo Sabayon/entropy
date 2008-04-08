@@ -125,15 +125,11 @@ def update(options):
             else:
                 rc = "Yes"
             if rc == "Yes":
-                rwdbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
+                mydbconn = Entropy.openServerDatabase(just_reading = True)
                 for x in toBeInjected:
-                    atom = rwdbconn.retrieveAtom(x)
+                    atom = mydbconn.retrieveAtom(x)
                     print_info(brown("   <> ")+blue("Transforming from database: ")+red(atom))
-                    # get new counter
-                    counter = rwdbconn.getNewNegativeCounter()
-                    rwdbconn.setCounter(x,counter)
-                    rwdbconn.setInjected(x)
-                rwdbconn.closeDB()
+                    Entropy.transform_package_into_injected(x)
                 print_info(brown(" @@ ")+blue("Database transform complete."))
 
         if toBeRemoved:
@@ -146,13 +142,7 @@ def update(options):
             else:
                 rc = "Yes"
             if rc == "Yes":
-                rwdbconn = Entropy.openServerDatabase(read_only = False, no_upload = True)
-                for x in toBeRemoved:
-                    atom = rwdbconn.retrieveAtom(x)
-                    print_info(brown(" @@ ")+blue("Removing from database: ")+red(atom), back = True)
-                    rwdbconn.removePackage(x)
-                rwdbconn.closeDB()
-                print_info(brown(" @@ ")+blue("Database removal complete."))
+                Entropy.remove_packages(toBeRemoved)
 
         if toBeAdded:
             print_info(brown(" @@ ")+blue("These are the packages that would be added/updated to the add list:"))
@@ -195,7 +185,7 @@ def update(options):
     Entropy.depends_table_initialize(dbconn)
     # checking dependencies and print issues
     Entropy.dependencies_test()
-
+    Entropy.close_server_databases()
     print_info(green(" * ")+red("Statistics: ")+blue("Entries handled: ")+bold(str(counter)))
     return 0
 
