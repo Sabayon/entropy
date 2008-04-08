@@ -12668,7 +12668,7 @@ class ServerMirrorsInterface:
                             darkgreen(str(tries)),
                             blue(str(counter)),
                             bold(str(maxcount)),
-                            blue("verifyng upload (if supported)"),
+                            darkgreen("verifying upload (if supported)"),
                             blue(os.path.basename(local_filepath)),
                 ),
                 importance = 0,
@@ -13464,7 +13464,7 @@ class ServerMirrorsInterface:
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
                         bold("Packages to be uploaded"),
-                        blue(str(len(upload))),
+                        bold(str(len(upload))),
             ),
             importance = 0,
             type = "info",
