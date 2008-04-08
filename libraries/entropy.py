@@ -5597,7 +5597,7 @@ class FtpInterface:
         self.ftpdir = self.ftpdir.split(":")[0]
         if self.ftpdir.endswith("/"):
             self.ftpdir = self.ftpdir[:len(self.ftpdir)-1]
-        if self.ftpdir == "":
+        if not self.ftpdir:
             self.ftpdir = "/"
 
         count = 10
@@ -5626,6 +5626,10 @@ class FtpInterface:
         )
         self.ftpconn.cwd(self.ftpdir)
         self.currentdir = self.ftpdir
+
+    def setBasedir(self):
+        rc = self.setCWD(self.ftpdir)
+        return rc
 
     # this can be used in case of exceptions
     def reconnectHost(self):
@@ -12195,8 +12199,13 @@ class ServerMirrorsInterface:
 
         if not ftp_connection:
             ftp_connection = self.FtpInterface(uri, self.Entropy)
+            ftp_connection.setCWD(etpConst['etpurirelativepath'])
+        else:
+            mycwd = ftp_connection.getCWD()
+            if mycwd != etpConst['etpurirelativepath']:
+                ftp_connection.setBasedir()
+                ftp_connection.setCWD(etpConst['etpurirelativepath'])
 
-        ftp_connection.setCWD(etpConst['etpurirelativepath'])
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
         lock_string = ''
         if dblock:
@@ -12231,8 +12240,13 @@ class ServerMirrorsInterface:
 
         if not ftp_connection:
             ftp_connection = self.FtpInterface(uri, self.Entropy)
+            ftp_connection.setCWD(etpConst['etpurirelativepath'])
+        else:
+            mycwd = ftp_connection.getCWD()
+            if mycwd != etpConst['etpurirelativepath']:
+                ftp_connection.setBasedir()
+                ftp_connection.setCWD(etpConst['etpurirelativepath'])
 
-        ftp_connection.setCWD(etpConst['etpurirelativepath'])
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
         if dblock:
