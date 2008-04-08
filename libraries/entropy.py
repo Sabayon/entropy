@@ -12054,7 +12054,7 @@ class ServerMirrorsInterface:
         self.Mirrors = mirrors[:]
         self.repository_directory = etpConst['etpdatabasedir']
 
-        self.updateProgress(
+        self.Entropy.updateProgress(
             blue("Entropy Server Mirrors Interface loaded:"),
             importance = 2,
             type = "info",
@@ -12062,7 +12062,7 @@ class ServerMirrorsInterface:
         )
         for mirror in self.Mirrors:
             mirror = self.entropyTools.hideFTPpassword(mirror)
-            self.updateProgress(
+            self.Entropy.updateProgress(
                 blue("mirror: %s") % (darkgreen(mirror),),
                 importance = 0,
                 type = "info",
