@@ -39,9 +39,10 @@ def query(myopts):
 
     if cmd == "search":
 
+        dbconn = Entropy.openServerDatabase(just_reading = True)
         # open read only
         count = 0
-        for mykeyword in mykeywords:
+        for mykeyword in myopts:
             results = dbconn.searchPackages(mykeyword)
             for result in results:
                 count += 1

@@ -5612,14 +5612,14 @@ class FtpInterface:
                 continue
 
         self.Entropy.updateProgress(
-            "[ftp:%s] connecting with user: %s" % (bold(self.ftphost),blue(self.ftpuser),),
+            "[ftp:%s] connecting with user: %s" % (darkgreen(self.ftphost),blue(self.ftpuser),),
             importance = 1,
             type = "info",
             header = darkgreen(" * ")
         )
         self.ftpconn.login(self.ftpuser,self.ftppassword)
         self.Entropy.updateProgress(
-            "[ftp:%s] switching to: %s" % (bold(self.ftphost),blue(self.ftpdir),),
+            "[ftp:%s] switching to: %s" % (darkgreen(self.ftphost),blue(self.ftpdir),),
             importance = 1,
             type = "info",
             header = darkgreen(" * ")
@@ -5646,14 +5646,14 @@ class FtpInterface:
                     raise
                 continue
         self.Entropy.updateProgress(
-            "[ftp:%s] reconnecting with user: %s" % (bold(self.ftphost),blue(self.ftpuser),),
+            "[ftp:%s] reconnecting with user: %s" % (darkgreen(self.ftphost),blue(self.ftpuser),),
             importance = 1,
             type = "info",
             header = darkgreen(" * ")
         )
         self.ftpconn.login(self.ftpuser,self.ftppassword)
         self.Entropy.updateProgress(
-            "[ftp:%s] switching to: %s" % (bold(self.ftphost),blue(self.ftpdir),),
+            "[ftp:%s] switching to: %s" % (darkgreen(self.ftphost),blue(self.ftpdir),),
             importance = 1,
             type = "info",
             header = darkgreen(" * ")
@@ -5675,7 +5675,7 @@ class FtpInterface:
 
     def setCWD(self,mydir):
         self.Entropy.updateProgress(
-            "[ftp:%s] switching to: %s" % (bold(self.ftphost),blue(mydir),),
+            "[ftp:%s] switching to: %s" % (darkgreen(self.ftphost),blue(mydir),),
             importance = 1,
             type = "info",
             header = darkgreen(" * ")

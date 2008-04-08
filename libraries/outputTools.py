@@ -36,8 +36,10 @@ except:
 stuff['cleanline'] = ""
 def setcols():
     stuff['cleanline'] = ""
-    for x in range(stuff['cols']):
+    count = stuff['cols']
+    while count:
         stuff['cleanline'] += ' '
+        count -= 1
 setcols()
 stuff['cursor'] = False
 stuff['ESC'] = chr(27)
