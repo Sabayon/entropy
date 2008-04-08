@@ -67,9 +67,9 @@ def query(myopts):
         text_query.searchDescriptions(myopts, dbconn = dbconn, EquoConnection = Entropy)
     elif cmd == "needed":
         text_query.searchNeeded(myopts, dbconn = dbconn, EquoConnection = Entropy)
-    elif myopts[0] == "depends":
+    elif cmd == "depends":
         text_query.searchDepends(myopts, dbconn = dbconn, EquoConnection = Entropy)
-    elif myopts[0] == "eclass":
+    elif cmd == "eclass":
         text_query.searchEclass(myopts, dbconn = dbconn, EquoConnection = Entropy)
 
     del Entropy
