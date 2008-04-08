@@ -1383,6 +1383,7 @@ class EquoInterface(TextInterface):
                 # not the same version installed
                 depunsatisfied.add(dependency)
 
+            '''
             if depsatisfied:
                 # check if it's really satisfied by looking at needed
                 installedNeeded = self.clientDbconn.retrieveNeeded(clientMatch[0])
@@ -1390,6 +1391,7 @@ class EquoInterface(TextInterface):
                 if installedNeeded != repo_needed:
                     depunsatisfied.update(depsatisfied)
                     depsatisfied.clear()
+            '''
 
             unsatisfiedDeps.update(depunsatisfied)
             satisfiedDeps.update(depsatisfied)
