@@ -13607,13 +13607,14 @@ class ServerMirrorsInterface:
             header = darkgreen(" * ")
         )
 
-        return self.calculate_sync_queues(
-                    upload_packages,
-                    local_packages,
-                    remote_packages,
-                    remote_packages_data,
-                    branch
-        ),remote_packages_data
+        uploadQueue, downloadQueue, removalQueue, fineQueue = self.calculate_sync_queues(
+                upload_packages,
+                local_packages,
+                remote_packages,
+                remote_packages_data,
+                branch
+        )
+        return uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data
 
     def calculate_sync_queues(self, upload_packages, local_packages, remote_packages, remote_packages_data, branch):
 
@@ -13940,7 +13941,11 @@ class ServerMirrorsInterface:
     def sync_packages(self, ask = True, pretend = False, packages_check = False):
 
         self.Entropy.updateProgress(
-            red("[repo:%s|sync] starting packages sync" % (etpConst['officialrepositoryid'],)),
+            "[repo:%s|%s] %s" % (
+                        etpConst['officialrepositoryid'],
+                        red("sync"),
+                        darkgreen("starting packages sync"),
+                    ),
             importance = 1,
             type = "info",
             header = darkgreen(" * "),
@@ -13963,11 +13968,12 @@ class ServerMirrorsInterface:
             for mybranch in pkgbranches:
 
                 self.Entropy.updateProgress(
-                    red("[repo:%s|sync|branch:%s] packages sync: %s" % (
-                            etpConst['officialrepositoryid'],
-                            mybranch,
-                            crippled_uri,
-                        )
+                    "[repo:%s|%s|branch:%s] %s: %s" % (
+                        etpConst['officialrepositoryid'],
+                        red("sync"),
+                        mybranch,
+                        darkgreen("packages sync"),
+                        crippled_uri,
                     ),
                     importance = 1,
                     type = "info",
@@ -13979,11 +13985,12 @@ class ServerMirrorsInterface:
 
                 if (not uploadQueue) and (not downloadQueue) and (not removalQueue):
                     self.Entropy.updateProgress(
-                        red("[repo:%s|sync|branch:%s] nothing to do on: %s" % (
-                                    etpConst['officialrepositoryid'],
-                                    mybranch,
-                                    crippled_uri,
-                            )
+                        "[repo:%s|%s|branch:%s] %s: %s" % (
+                            etpConst['officialrepositoryid'],
+                            red("sync"),
+                            mybranch,
+                            darkgreen("nothing to do on"),
+                            crippled_uri,
                         ),
                         importance = 1,
                         type = "info",
@@ -13994,10 +14001,11 @@ class ServerMirrorsInterface:
                     continue
 
                 self.Entropy.updateProgress(
-                    red("[repo:%s|sync|branch:%s] calculating queue metadata:" % (
-                                etpConst['officialrepositoryid'],
-                                mybranch,
-                        )
+                    "[repo:%s|%s|branch:%s] %s:" % (
+                        etpConst['officialrepositoryid'],
+                        red("sync"),
+                        mybranch,
+                        darkgreen("calculating queue metadata"),
                     ),
                     importance = 1,
                     type = "info",
@@ -14017,11 +14025,12 @@ class ServerMirrorsInterface:
                 if not len(upload)+len(download)+len(removal)+len(copy):
 
                     self.Entropy.updateProgress(
-                        red("[repo:%s|sync|branch:%s] nothing to sync for %s" % (
-                                    etpConst['officialrepositoryid'],
-                                    mybranch,
-                                    crippled_uri,
-                            )
+                        "[repo:%s|%s|branch:%s] %s %s" % (
+                            etpConst['officialrepositoryid'],
+                            red("sync"),
+                            mybranch,
+                            darkgreen("nothing to sync for"),
+                            crippled_uri,
                         ),
                         importance = 1,
                         type = "info",
@@ -14063,7 +14072,12 @@ class ServerMirrorsInterface:
 
                 except KeyboardInterrupt:
                     self.Entropy.updateProgress(
-                        red("[repo:%s|sync|branch:%s] keyboard interrupt !" % (etpConst['officialrepositoryid'],mybranch,)),
+                        "[repo:%s|%s|branch:%s] %s" % (
+                            etpConst['officialrepositoryid'],
+                            red("sync"),
+                            mybranch,
+                            darkgreen("keyboard interrupt !"),
+                        ),
                         importance = 1,
                         type = "info",
                         header = darkgreen(" * ")
@@ -14074,12 +14088,13 @@ class ServerMirrorsInterface:
                     mirrors_errors = True
                     broken_mirrors.add(uri)
                     self.Entropy.updateProgress(
-                        red("[repo:%s|sync|branch:%s] exception caught: %s, error: %s" % (
-                                    etpConst['officialrepositoryid'],
-                                    mybranch,
-                                    Exception,
-                                    e,
-                            )
+                        "[repo:%s|%s|branch:%s] %s: %s, error: %s" % (
+                            etpConst['officialrepositoryid'],
+                            red("sync"),
+                            mybranch,
+                            darkred("exception caught"),
+                            Exception,
+                            e,
                         ),
                         importance = 1,
                         type = "error",
@@ -14087,10 +14102,11 @@ class ServerMirrorsInterface:
                     )
                     if len(successfull_mirrors) > 0:
                         self.Entropy.updateProgress(
-                            red("[repo:%s|sync|branch:%s] at least one mirror has been sync'd properly, hooray!" % (
-                                        etpConst['officialrepositoryid'],
-                                        mybranch,
-                                )
+                            "[repo:%s|%s|branch:%s] %s" % (
+                                etpConst['officialrepositoryid'],
+                                red("sync"),
+                                mybranch,
+                                darkred("at least one mirror has been sync'd properly, hooray!"),
                             ),
                             importance = 1,
                             type = "error",
