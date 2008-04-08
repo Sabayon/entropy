@@ -49,6 +49,8 @@ def sync(options, justTidy = False):
                     etpRSSMessages['commitmessage'] = "Autodriven Update"
             rc = database(["sync"])
             if not rc and not do_noask:
+                # unlock mirror
+                Entropy.MirrorsService.lock_mirrors(lock = False)
                 rc = Entropy.askQuestion("Should I continue with the tidy procedure ?")
                 if rc == "No":
                     sys.exit(0)
