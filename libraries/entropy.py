@@ -5612,14 +5612,14 @@ class FtpInterface:
                 continue
 
         self.Entropy.updateProgress(
-            red("[ftp:%s] connecting with user: %s" % (bold(self.ftphost),blue(self.ftpuser),)),
+            "[ftp:%s] connecting with user: %s" % (bold(self.ftphost),blue(self.ftpuser),),
             importance = 1,
             type = "info",
             header = darkgreen(" * ")
         )
         self.ftpconn.login(self.ftpuser,self.ftppassword)
         self.Entropy.updateProgress(
-            red("[ftp:%s] switching to: %s" % (bold(self.ftphost),blue(self.ftpdir),)),
+            "[ftp:%s] switching to: %s" % (bold(self.ftphost),blue(self.ftpdir),),
             importance = 1,
             type = "info",
             header = darkgreen(" * ")
@@ -5646,14 +5646,14 @@ class FtpInterface:
                     raise
                 continue
         self.Entropy.updateProgress(
-            red("[ftp:%s] reconnecting with user: %s" % (bold(self.ftphost),blue(self.ftpuser),)),
+            "[ftp:%s] reconnecting with user: %s" % (bold(self.ftphost),blue(self.ftpuser),),
             importance = 1,
             type = "info",
             header = darkgreen(" * ")
         )
         self.ftpconn.login(self.ftpuser,self.ftppassword)
         self.Entropy.updateProgress(
-            red("[ftp:%s] switching to: %s" % (bold(self.ftphost),blue(self.ftpdir),)),
+            "[ftp:%s] switching to: %s" % (bold(self.ftphost),blue(self.ftpdir),),
             importance = 1,
             type = "info",
             header = darkgreen(" * ")
@@ -5675,7 +5675,7 @@ class FtpInterface:
 
     def setCWD(self,mydir):
         self.Entropy.updateProgress(
-            red("[ftp:%s] switching to: %s" % (bold(self.ftphost),blue(mydir),)),
+            "[ftp:%s] switching to: %s" % (bold(self.ftphost),blue(mydir),),
             importance = 1,
             type = "info",
             header = darkgreen(" * ")
@@ -5704,7 +5704,7 @@ class FtpInterface:
             rc = self.ftpconn.nlst()
             _rc = []
             for i in rc:
-                _rc.append(i.split("/")[len(i.split("/"))-1])
+                _rc.append(i.split("/")[-1])
             rc = _rc
         except:
             return []
@@ -5718,7 +5718,7 @@ class FtpInterface:
             rc = self.ftpconn.nlst()
             _rc = []
             for i in rc:
-                _rc.append(i.split("/")[len(i.split("/"))-1])
+                _rc.append(i.split("/")[-1])
             rc = _rc
             for i in rc:
                 if i == filename:
