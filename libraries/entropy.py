@@ -10842,10 +10842,7 @@ class ServerInterface(TextInterface):
         self.dumpTools = self.ClientService.dumpTools
         self.backup_entropy_settings()
         self.SpmService = self.ClientService.Spm()
-
         self.MirrorsService = ServerMirrorsInterface(self)
-        self.MirrorsService.FtpInterface = self.FtpInterface
-        self.MirrorsService.rssFeed = self.rssFeed
 
     def setup_entropy_settings(self):
         self.settings_to_backup.extend([
@@ -12085,6 +12082,8 @@ class ServerMirrorsInterface:
         self.Entropy = ServerInstance
         self.Mirrors = mirrors[:]
         self.repository_directory = etpConst['etpdatabasedir']
+        self.FtpInterface = self.Entropy.FtpInterface
+        self.rssFeed = self.Entropy.rssFeed
 
         self.Entropy.updateProgress(
             blue("Entropy Server Mirrors Interface loaded:"),
@@ -12662,6 +12661,8 @@ class ServerMirrorsInterface:
             self.handlers_data = handlers_data.copy()
 
         def handler_verify_upload(self, local_filepath, uri, ftp_connection, counter, maxcount):
+
+            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
             self.Entropy.updateProgress(
                 red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] verifyng upload (if supported): %s" % (
