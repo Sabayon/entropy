@@ -213,6 +213,13 @@ def searchDepends(atoms, idreturn = False, dbconn = None, EquoConnection = None)
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Depends Search..."))
 
+    # XXX hack to get Equo.atomMatch to not raise AttributeError
+    match_repo = True
+    try:
+        x = Equo.atomMatch
+    except AttributeError:
+        match_repo = False
+
     if not dbconn:
         clientDbconn = Equo.clientDbconn
     else:
@@ -223,10 +230,10 @@ def searchDepends(atoms, idreturn = False, dbconn = None, EquoConnection = None)
         result = clientDbconn.atomMatch(atom)
         matchInRepo = False
         repoMasked = False
-        if (result[0] == -1):
+        if (result[0] == -1) and match_repo:
             matchInRepo = True
             result = Equo.atomMatch(atom)
-        if (result[0] == -1):
+        if (result[0] == -1) and match_repo:
             result = Equo.atomMatch(atom, packagesFilter = False)
             if result[0] != -1:
                 repoMasked = True
