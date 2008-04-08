@@ -5669,8 +5669,14 @@ class FtpInterface:
         pwd = self.ftpconn.pwd()
         return pwd
 
-    def setCWD(self,dir):
-        self.ftpconn.cwd(dir)
+    def setCWD(self,mydir):
+        self.Entropy.updateProgress(
+            red("[ftp:%s] switching to: %s" % (bold(self.ftphost),blue(mydir),)),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+        self.ftpconn.cwd(mydir)
         self.currentdir = self.getCWD()
 
     def setPASV(self,bool):
