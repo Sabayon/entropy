@@ -14159,11 +14159,10 @@ class ServerMirrorsInterface:
             branch_data[mybranch]['errors'] = False
 
             self.Entropy.updateProgress(
-                red("[repo:%s|tidy|branch:%s] collecting expired packages in the selected branches" % (
-                            etpConst['officialrepositoryid'],
-                            mybranch,
-                    )
-                ),
+                "[branch:%s] %s" % (
+                            brown(mybranch),
+                            blue("collecting expired packages in the selected branches"),
+                    ),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -14185,9 +14184,9 @@ class ServerMirrorsInterface:
 
             if not removal:
                 self.Entropy.updateProgress(
-                    red("[repo:%s|tidy|branch:%s] nothing to remove on this branch" % (
-                                etpConst['officialrepositoryid'],
-                                mybranch,
+                    red("[branch:%s] %s" % (
+                                brown(mybranch),
+                                blue("nothing to remove on this branch"),
                         )
                     ),
                     importance = 1,
@@ -14197,23 +14196,21 @@ class ServerMirrorsInterface:
                 continue
             else:
                 self.Entropy.updateProgress(
-                    red("[repo:%s|tidy|branch:%s] these are the expired packages:" % (
-                                etpConst['officialrepositoryid'],
-                                mybranch,
-                        )
-                    ),
+                    "[branch:%s] %s:" % (
+                                brown(mybranch),
+                                blue("these are the expired packages"),
+                        ),
                     importance = 1,
                     type = "info",
                     header = darkgreen(" * ")
                 )
                 for package in removal:
                     self.Entropy.updateProgress(
-                        red("[repo:%s|branch:%s] remove: %s" % (
-                                    etpConst['officialrepositoryid'],
-                                    mybranch,
-                                    package,
-                            )
-                        ),
+                        "[branch:%s] %s: %s" % (
+                                    brown(mybranch),
+                                    blue("remove"),
+                                    darkgreen(package),
+                            ),
                         importance = 1,
                         type = "info",
                         header = brown("    # ")
@@ -14235,11 +14232,10 @@ class ServerMirrorsInterface:
             for uri in self.Mirrors:
 
                 self.Entropy.updateProgress(
-                    red("[repo:%s|tidy|branch:%s] removing packages remotely..." % (
-                                etpConst['officialrepositoryid'],
-                                mybranch,
-                        )
-                    ),
+                    "[branch:%s] %s..." % (
+                                brown(mybranch),
+                                blue("removing packages remotely"),
+                        ),
                     importance = 1,
                     type = "info",
                     header = darkgreen(" * ")
@@ -14260,13 +14256,13 @@ class ServerMirrorsInterface:
                     my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
                     reason = my_broken_uris[0][1]
                     self.Entropy.updateProgress(
-                        red("[repo:%s|sync|branch:%s] remove errors: %s, reason: %s" % (
-                                    etpConst['officialrepositoryid'],
-                                    mybranch,
-                                    crippled_uri,
+                        "[branch:%s] %s: %s, %s: %s" % (
+                                    brown(mybranch),
+                                    blue("remove errors"),
+                                    red(crippled_uri),
+                                    blue("reason"),
                                     reason,
-                            )
-                        ),
+                            ),
                         importance = 1,
                         type = "warning",
                         header = brown(" !!! ")
@@ -14275,11 +14271,10 @@ class ServerMirrorsInterface:
                     errors = True
 
                 self.Entropy.updateProgress(
-                    red("[repo:%s|tidy|branch:%s] removing packages locally..." % (
-                                etpConst['officialrepositoryid'],
-                                mybranch,
-                        )
-                    ),
+                    "[branch:%s] %s..." % (
+                            brown(mybranch),
+                            blue("removing packages locally"),
+                        ),
                     importance = 1,
                     type = "info",
                     header = darkgreen(" * ")
@@ -14293,12 +14288,11 @@ class ServerMirrorsInterface:
                     for myfile in [package_path_hash,package_path,package_path_expired]:
                         if os.path.isfile(myfile):
                             self.Entropy.updateProgress(
-                                red("[repo:%s|branch:%s] removing: %s" % (
-                                            etpConst['officialrepositoryid'],
-                                            mybranch,
-                                            blue(myfile),
-                                    )
-                                ),
+                                "[branch:%s] %s: %s" % (
+                                            brown(mybranch),
+                                            blue("removing"),
+                                            darkgreen(myfile),
+                                    ),
                                 importance = 1,
                                 type = "info",
                                 header = brown(" @@ ")
