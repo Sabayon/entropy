@@ -36,10 +36,10 @@ def query(myopts):
 
     rc = 10
     Entropy = ServerInterface()
+    dbconn = Entropy.openServerDatabase(just_reading = True)
 
     if cmd == "search":
 
-        dbconn = Entropy.openServerDatabase(just_reading = True)
         # open read only
         count = 0
         for mykeyword in myopts:
