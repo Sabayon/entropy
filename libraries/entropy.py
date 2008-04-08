@@ -12172,10 +12172,15 @@ class ServerMirrorsInterface:
             lock_text = "unlocking"
             if lock: lock_text = "locking"
             self.Entropy.updateProgress(
-                red("[repo:%s|%s] %s mirror for download..." % (etpConst['officialrepositoryid'],crippled_uri,lock_text,)),
+                "[repo:%s|%s] %s %s..." % (
+                            blue(etpConst['officialrepositoryid']),
+                            red(crippled_uri),
+                            bold(lock_text),
+                            blue("mirror for download"),
+                    ),
                 importance = 1,
                 type = "info",
-                header = brown(" * "),
+                header = red(" @@ "),
                 back = True
             )
 
@@ -12184,19 +12189,27 @@ class ServerMirrorsInterface:
 
             if lock and ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile']):
                 self.Entropy.updateProgress(
-                    red("[repo:%s|%s] mirror already locked for download" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                    "[repo:%s|%s] %s" % (
+                            blue(etpConst['officialrepositoryid']),
+                            red(crippled_uri),
+                            blue("mirror already locked for download"),
+                        ),
                     importance = 1,
                     type = "info",
-                    header = darkgreen(" * ")
+                    header = red(" @@ ")
                 )
                 ftp.closeConnection()
                 continue
             elif not lock and not ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile']):
                 self.Entropy.updateProgress(
-                    red("[repo:%s|%s] mirror already unlocked for download" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                    "[repo:%s|%s] %s" % (
+                            blue(etpConst['officialrepositoryid']),
+                            red(crippled_uri),
+                            blue("mirror already unlocked for download"),
+                        ),
                     importance = 1,
                     type = "info",
-                    header = darkgreen(" * ")
+                    header = red(" @@ ")
                 )
                 ftp.closeConnection()
                 continue
@@ -12234,14 +12247,26 @@ class ServerMirrorsInterface:
         rc = ftp_connection.uploadFile(lock_file, ascii = True)
         if rc:
             self.Entropy.updateProgress(
-                red("[repo:%s|%s] mirror successfully locked %s" % (etpConst['officialrepositoryid'],crippled_uri,lock_string,)),
+                "[repo:%s|%s] %s %s" % (
+                            blue(etpConst['officialrepositoryid']),
+                            red(crippled_uri),
+                            blue("mirror successfully locked"),
+                            blue(lock_string),
+                    ),
                 importance = 1,
                 type = "info",
-                header = darkgreen(" * ")
+                header = red(" @@ ")
             )
         else:
             self.Entropy.updateProgress(
-                red("[repo:%s|%s] lock error: %s - mirror not locked %s" % (etpConst['officialrepositoryid'],crippled_uri,rc,lock_string,)),
+                "[repo:%s|%s] %s: %s - %s %s" % (
+                            blue(etpConst['officialrepositoryid']),
+                            red(crippled_uri),
+                            blue("lock error"),
+                            rc,
+                            blue("mirror not locked"),
+                            blue(lock_string),
+                    ),
                 importance = 1,
                 type = "error",
                 header = darkred(" * ")
@@ -12271,7 +12296,11 @@ class ServerMirrorsInterface:
         rc = ftp_connection.deleteFile(dbfile)
         if rc:
             self.Entropy.updateProgress(
-                red("[repo:%s|%s] mirror successfully unlocked" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                "[repo:%s|%s] %s" % (
+                            blue(etpConst['officialrepositoryid']),
+                            red(crippled_uri),
+                            blue("mirror successfully unlocked"),
+                    ),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -12282,7 +12311,13 @@ class ServerMirrorsInterface:
                 self.remove_local_database_download_lockfile()
         else:
             self.Entropy.updateProgress(
-                red("[repo:%s|%s] unlock error: %s - mirror not unlocked" % (etpConst['officialrepositoryid'],crippled_uri,rc,)),
+                "[repo:%s|%s] %s: %s - %s" % (
+                            blue(etpConst['officialrepositoryid']),
+                            red(crippled_uri),
+                            blue("unlock error"),
+                            rc,
+                            blue("mirror not unlocked"),
+                    ),
                 importance = 1,
                 type = "error",
                 header = darkred(" * ")
