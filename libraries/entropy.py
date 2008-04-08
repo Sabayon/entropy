@@ -12169,6 +12169,7 @@ class ServerMirrorsInterface:
             mirrors = self.Mirrors[:]
 
         issues = False
+        print mirrors
         for uri in mirrors:
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
@@ -12183,6 +12184,7 @@ class ServerMirrorsInterface:
                 back = True
             )
 
+            print uri
             ftp = self.FtpInterface(uri, self.Entropy)
             ftp.setCWD(etpConst['etpurirelativepath'])
 
