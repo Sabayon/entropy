@@ -12664,7 +12664,7 @@ class ServerMirrorsInterface:
 
             self.Entropy.updateProgress(
                 "[%s|#%s|(%s/%s)] %s: %s" % (
-                            red(crippled_uri),
+                            blue(crippled_uri),
                             darkgreen(str(tries)),
                             blue(str(counter)),
                             bold(str(maxcount)),
@@ -12685,7 +12685,7 @@ class ServerMirrorsInterface:
             if checksum == None:
                 self.Entropy.updateProgress(
                     "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                                red(crippled_uri),
+                                blue(crippled_uri),
                                 darkgreen(str(tries)),
                                 blue(str(counter)),
                                 bold(str(maxcount)),
@@ -12701,7 +12701,7 @@ class ServerMirrorsInterface:
             elif checksum == False:
                 self.Entropy.updateProgress(
                     "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                                red(crippled_uri),
+                                blue(crippled_uri),
                                 darkgreen(str(tries)),
                                 blue(str(counter)),
                                 bold(str(maxcount)),
@@ -12720,7 +12720,7 @@ class ServerMirrorsInterface:
                 if ckres:
                     self.Entropy.updateProgress(
                         "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                                    red(crippled_uri),
+                                    blue(crippled_uri),
                                     darkgreen(str(tries)),
                                     blue(str(counter)),
                                     bold(str(maxcount)),
@@ -12736,7 +12736,7 @@ class ServerMirrorsInterface:
                 else:
                     self.Entropy.updateProgress(
                         "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                                    red(crippled_uri),
+                                    blue(crippled_uri),
                                     darkgreen(str(tries)),
                                     blue(str(counter)),
                                     bold(str(maxcount)),
@@ -12752,7 +12752,7 @@ class ServerMirrorsInterface:
             else:
                 self.Entropy.updateProgress(
                     "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                                red(crippled_uri),
+                                blue(crippled_uri),
                                 darkgreen(str(tries)),
                                 blue(str(counter)),
                                 bold(str(maxcount)),
@@ -12782,25 +12782,25 @@ class ServerMirrorsInterface:
                 crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                 self.Entropy.updateProgress(
                     "[%s|%s] %s..." % (
-                            red(crippled_uri),
+                            blue(crippled_uri),
                             brown(action),
                             blue("connecting to mirror"),
                         ),
                     importance = 0,
                     type = "info",
-                    header = darkgreen(" * ")
+                    header = blue(" @@ ")
                 )
                 ftp = self.FtpInterface(uri, self.Entropy)
                 self.Entropy.updateProgress(
                     "[%s|%s] %s %s..." % (
-                                red(crippled_uri),
+                                blue(crippled_uri),
                                 brown(action),
                                 blue("changing directory to"),
                                 darkgreen(etpConst['etpurirelativepath']),
                     ),
                     importance = 0,
                     type = "info",
-                    header = darkgreen(" * ")
+                    header = blue(" @@ ")
                 )
                 ftp.setCWD(self.ftp_basedir)
 
@@ -12824,7 +12824,7 @@ class ServerMirrorsInterface:
                         tries += 1
                         self.Entropy.updateProgress(
                             "[%s|#%s|(%s/%s)] %s: %s" % (
-                                        red(crippled_uri),
+                                        blue(crippled_uri),
                                         darkgreen(str(tries)),
                                         blue(str(counter)),
                                         bold(str(maxcount)),
@@ -12840,8 +12840,8 @@ class ServerMirrorsInterface:
                             rc = self.handler_verify_upload(mypath, uri, ftp, counter, maxcount, action, tries)
                         if rc:
                             self.Entropy.updateProgress(
-                                "[%s|#%s|(%s/%s)] %s successfull: %s" % (
-                                            red(crippled_uri),
+                                "[%s|#%s|(%s/%s)] %s successful: %s" % (
+                                            blue(crippled_uri),
                                             darkgreen(str(tries)),
                                             blue(str(counter)),
                                             bold(str(maxcount)),
@@ -12857,7 +12857,7 @@ class ServerMirrorsInterface:
                         else:
                             self.Entropy.updateProgress(
                                 "[%s|#%s|(%s/%s)] %s %s: %s" % (
-                                            red(crippled_uri),
+                                            blue(crippled_uri),
                                             darkgreen(str(tries)),
                                             blue(str(counter)),
                                             bold(str(maxcount)),
@@ -12876,7 +12876,7 @@ class ServerMirrorsInterface:
 
                         self.Entropy.updateProgress(
                             "[%s|(%s/%s)] %s %s: %s - error: %s" % (
-                                    red(crippled_uri),
+                                    blue(crippled_uri),
                                     blue(str(counter)),
                                     bold(str(maxcount)),
                                     blue(action),
@@ -12891,10 +12891,8 @@ class ServerMirrorsInterface:
 
                         if mypath not in self.critical_files:
                             self.Entropy.updateProgress(
-                                red("[repo:%s|%s|%s|(%s/%s)] %s: %s, %s..." % (
-                                            etpConst['officialrepositoryid'],
-                                            crippled_uri,
-                                            action,
+                                red("[%s|(%s/%s)] %s: %s, %s..." % (
+                                            blue(crippled_uri),
                                             blue(str(counter)),
                                             bold(str(maxcount)),
                                             blue("not critical"),
@@ -13819,11 +13817,12 @@ class ServerMirrorsInterface:
             my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
             reason = my_broken_uris[0][1]
             self.Entropy.updateProgress(
-                red("[repo:%s|sync|branch:%s] upload errors: %s, reason: %s" % (
-                            etpConst['officialrepositoryid'],
-                            branch,
-                            crippled_uri,
-                            reason,
+                red("[branch:%s] %s: %s, %s: %s" % (
+                            brown(branch),
+                            blue("upload errors"),
+                            red(crippled_uri),
+                            blue("reason"),
+                            darkgreen(str(reason)),
                     )
                 ),
                 importance = 1,
@@ -13833,11 +13832,10 @@ class ServerMirrorsInterface:
             return errors, m_fine_uris, m_broken_uris
 
         self.Entropy.updateProgress(
-            red("[repo:%s|sync|branch:%s] upload completed successfully: %s" % (
-                        etpConst['officialrepositoryid'],
-                        branch,
-                        crippled_uri,
-                )
+            "[branch:%s] %s: %s" % (
+                        brown(branch),
+                        blue("upload completed successfully"),
+                        red(crippled_uri),
             ),
             importance = 1,
             type = "info",
