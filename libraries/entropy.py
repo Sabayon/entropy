@@ -14074,6 +14074,16 @@ class ServerMirrorsInterface:
                         type = "error",
                         header = darkred(" !!! ")
                     )
+
+                    exc_txt = self.Entropy.entropyTools.printException(returndata = True)
+                    for line in exc_txt:
+                        self.Entropy.updateProgress(
+                            line.strip(),
+                            importance = 1,
+                            type = "error",
+                            header = darkred(":  ")
+                        )
+
                     if len(successfull_mirrors) > 0:
                         self.Entropy.updateProgress(
                             "[repo:%s|%s|branch:%s] %s" % (
