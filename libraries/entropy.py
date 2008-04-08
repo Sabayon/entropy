@@ -12041,7 +12041,7 @@ class ServerMirrorsInterface:
         if not isinstance(ServerInstance,ServerInterface) and not issubclass(ServerInstance,ServerInterface):
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid ServerInterface based instance is needed")
 
-        self.Entropy = ServerInterface
+        self.Entropy = ServerInstance
         self.Mirrors = mirrors[:]
         self.repository_directory = etpConst['etpdatabasedir']
 
