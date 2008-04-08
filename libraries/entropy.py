@@ -12663,15 +12663,13 @@ class ServerMirrorsInterface:
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
             self.Entropy.updateProgress(
-                red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] verifyng upload (if supported): %s" % (
-                            etpConst['officialrepositoryid'],
-                            crippled_uri,
-                            action,
-                            tries,
+                "[mirror:%s|#%s|(%s/%s)] %s: %s" % (
+                            red(crippled_uri),
+                            darkgreen(str(tries)),
                             blue(str(counter)),
                             bold(str(maxcount)),
-                            os.path.basename(local_filepath),
-                    )
+                            blue("verifyng upload (if supported)"),
+                            blue(os.path.basename(mypath)),
                 ),
                 importance = 0,
                 type = "info",
@@ -12686,38 +12684,34 @@ class ServerMirrorsInterface:
             )
             if checksum == None:
                 self.Entropy.updateProgress(
-                    red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] digest verification: %s: %s" % (
-                                etpConst['officialrepositoryid'],
-                                crippled_uri,
-                                action,
-                                tries,
+                    "[mirror:%s|#%s|(%s/%s)] %s: %s: %s" % (
+                                red(crippled_uri),
+                                darkgreen(str(tries)),
                                 blue(str(counter)),
                                 bold(str(maxcount)),
+                                blue("digest verification"),
                                 os.path.basename(local_filepath),
-                                bold("not supported"),
-                        )
-                    ),
+                                darkred("not supported"),
+                        ),
                     importance = 0,
                     type = "info",
-                    header = darkgreen(" * ")
+                    header = red(" @@ ")
                 )
                 return True
             elif checksum == False:
                 self.Entropy.updateProgress(
-                    red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] digest verification: %s: %s" % (
-                                etpConst['officialrepositoryid'],
-                                crippled_uri,
-                                action,
-                                tries,
+                    "[mirror:%s|#%s|(%s/%s)] %s: %s: %s" % (
+                                red(crippled_uri),
+                                darkgreen(str(tries)),
                                 blue(str(counter)),
                                 bold(str(maxcount)),
+                                blue("digest verification"),
                                 os.path.basename(local_filepath),
                                 bold("file not found"),
-                        )
-                    ),
+                        ),
                     importance = 0,
-                    type = "info",
-                    header = darkgreen(" * ")
+                    type = "warning",
+                    header = brown(" @@ ")
                 )
                 return False
             elif len(checksum) == 32:
@@ -12725,56 +12719,50 @@ class ServerMirrorsInterface:
                 ckres = self.entropyTools.compareMd5(local_filepath,checksum)
                 if ckres:
                     self.Entropy.updateProgress(
-                        red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] digest verification: %s: %s" % (
-                                    etpConst['officialrepositoryid'],
-                                    crippled_uri,
-                                    action,
-                                    tries,
+                        "[mirror:%s|#%s|(%s/%s)] %s: %s: %s" % (
+                                    red(crippled_uri),
+                                    darkgreen(str(tries)),
                                     blue(str(counter)),
                                     bold(str(maxcount)),
+                                    blue("digest verification"),
                                     os.path.basename(local_filepath),
                                     darkgreen("so far, so good!"),
-                            )
-                        ),
+                            ),
                         importance = 0,
                         type = "info",
-                        header = darkgreen(" * ")
+                        header = red(" @@ ")
                     )
                     return True
                 else:
                     self.Entropy.updateProgress(
-                        red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] digest verification: %s: %s" % (
-                                    etpConst['officialrepositoryid'],
-                                    crippled_uri,
-                                    action,
-                                    tries,
+                        "[mirror:%s|#%s|(%s/%s)] %s: %s: %s" % (
+                                    red(crippled_uri),
+                                    darkgreen(str(tries)),
                                     blue(str(counter)),
                                     bold(str(maxcount)),
+                                    blue("digest verification"),
                                     os.path.basename(local_filepath),
-                                    bold("invalid checksum"),
-                            )
-                        ),
+                                    darkred("invalid checksum"),
+                            ),
                         importance = 0,
-                        type = "info",
-                        header = darkgreen(" * ")
+                        type = "warning",
+                        header = brown(" @@ ")
                     )
                     return False
             else:
                 self.Entropy.updateProgress(
-                    red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] digest verification: %s: %s" % (
-                                etpConst['officialrepositoryid'],
-                                crippled_uri,
-                                action,
-                                tries,
+                    "[mirror:%s|#%s|(%s/%s)] %s: %s: %s" % (
+                                red(crippled_uri),
+                                darkgreen(str(tries)),
                                 blue(str(counter)),
                                 bold(str(maxcount)),
+                                blue("digest verification"),
                                 os.path.basename(local_filepath),
-                                bold("unknown data returned"),
-                        )
-                    ),
+                                darkred("unknown data returned"),
+                        ),
                     importance = 0,
-                    type = "info",
-                    header = darkgreen(" * ")
+                    type = "warning",
+                    header = brown(" @@ ")
                 )
                 return False
 
@@ -12793,14 +12781,23 @@ class ServerMirrorsInterface:
 
                 crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                 self.Entropy.updateProgress(
-                    red("[repo:%s|mirror:%s|%s] connecting to mirror..." % (etpConst['officialrepositoryid'],crippled_uri,action,)),
+                    "[mirror:%s|%s] %s..." % (
+                            red(crippled_uri),
+                            brown(action),
+                            blue("connecting to mirror"),
+                        ),
                     importance = 0,
                     type = "info",
                     header = darkgreen(" * ")
                 )
                 ftp = self.FtpInterface(uri, self.Entropy)
                 self.Entropy.updateProgress(
-                    "[repo:%s|mirror:%s|%s] changing directory to %s..." % (etpConst['officialrepositoryid'],crippled_uri,bold(etpConst['etpurirelativepath']),action,),
+                    "[mirror:%s|%s] %s %s..." % (
+                                red(crippled_uri),
+                                brown(action),
+                                blue("changing directory to"),
+                                darkgreen(etpConst['etpurirelativepath']),
+                    ),
                     importance = 0,
                     type = "info",
                     header = darkgreen(" * ")
@@ -12826,10 +12823,8 @@ class ServerMirrorsInterface:
                     while tries < 8:
                         tries += 1
                         self.Entropy.updateProgress(
-                            "[repo:%s|mirror:%s|%s|#%s|(%s/%s)] %s: %s" % (
-                                        etpConst['officialrepositoryid'],
+                            "[mirror:%s|#%s|(%s/%s)] %s: %s" % (
                                         red(crippled_uri),
-                                        brown(action),
                                         darkgreen(str(tries)),
                                         blue(str(counter)),
                                         bold(str(maxcount)),
@@ -12845,10 +12840,8 @@ class ServerMirrorsInterface:
                             rc = self.handler_verify_upload(mypath, uri, ftp, counter, maxcount, action, tries)
                         if rc:
                             self.Entropy.updateProgress(
-                                "[repo:%s|mirror:%s|%s|#%s|(%s/%s)] %s successfully: %s" % (
-                                            etpConst['officialrepositoryid'],
+                                "[mirror:%s|#%s|(%s/%s)] %s successfully: %s" % (
                                             red(crippled_uri),
-                                            brown(action),
                                             darkgreen(str(tries)),
                                             blue(str(counter)),
                                             bold(str(maxcount)),
@@ -12863,38 +12856,31 @@ class ServerMirrorsInterface:
                             break
                         else:
                             self.Entropy.updateProgress(
-                                red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] %s failed, retrying: %s" % (
-                                            etpConst['officialrepositoryid'],
-                                            crippled_uri,
-                                            action,
-                                            tries,
+                                "[mirror:%s|#%s|(%s/%s)] %s failed, retrying: %s" % (
+                                            red(crippled_uri),
+                                            darkgreen(str(tries)),
                                             blue(str(counter)),
                                             bold(str(maxcount)),
-                                            action,
+                                            blue(action),
                                             os.path.basename(mypath),
-                                    )
-                                ),
+                                    ),
                                 importance = 0,
                                 type = "warning",
-                                header = brown(" * ")
+                                header = brown(" @@ ")
                             )
                             lastrc = rc
                             continue
 
                     if not done:
 
-                        # abort upload
                         self.Entropy.updateProgress(
-                            red("[repo:%s|mirror:%s|%s|(%s/%s)] %s failed, giving up: %s - error: %s" % (
-                                        etpConst['officialrepositoryid'],
-                                        crippled_uri,
-                                        action,
-                                        blue(str(counter)),
-                                        bold(str(maxcount)),
-                                        action,
-                                        os.path.basename(mypath),
-                                        lastrc,
-                                )
+                            "[mirror:%s|(%s/%s)] %s failed, giving up: %s - error: %s" % (
+                                    red(crippled_uri),
+                                    blue(str(counter)),
+                                    bold(str(maxcount)),
+                                    blue(action),
+                                    os.path.basename(mypath),
+                                    lastrc,
                             ),
                             importance = 1,
                             type = "error",
