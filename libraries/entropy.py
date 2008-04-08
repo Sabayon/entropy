@@ -377,6 +377,12 @@ class EquoInterface(TextInterface):
         else:
             return self.repoDbCache.get((repoid,etpConst['systemroot']))
 
+    def parse_masking_settings(self):
+        etpConst['packagemasking'] = self.MaskingParser.parse()
+        # merge universal keywords
+        for x in etpConst['packagemasking']['keywords']['universal']:
+            etpConst['keywords'].add(x)
+
     '''
     @description: open the repository database
     @input repositoryName: name of the client database
@@ -389,10 +395,7 @@ class EquoInterface(TextInterface):
 
         # load the masking parser
         if etpConst['packagemasking'] == None:
-            etpConst['packagemasking'] = self.MaskingParser.parse()
-            # merge universal keywords
-            for x in etpConst['packagemasking']['keywords']['universal']:
-                etpConst['keywords'].add(x)
+            self.parse_masking_settings()
 
         if repositoryName.endswith(etpConst['packagesext']):
             xcache = False
@@ -10924,6 +10927,9 @@ class ServerInterface(TextInterface):
         if just_reading:
             read_only = True
             no_upload = True
+
+        if etpConst['packagemasking'] == None:
+            self.ClientService.parse_masking_settings()
 
         cached = self.serverDbCache.get((etpConst['systemroot'],read_only,no_upload,just_reading,))
         if cached != None:
