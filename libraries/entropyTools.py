@@ -1397,15 +1397,15 @@ def bytesIntoHuman(bytes):
 
 # hide password from full ftp URI
 def hideFTPpassword(uri):
-    ftppassword = uri.split("@")[:len(uri.split("@"))-1]
+    ftppassword = uri.split("@")[:-1]
     if len(ftppassword) > 1:
         ftppassword = '@'.join(ftppassword)
-        ftppassword = ftppassword.split(":")[len(ftppassword.split(":"))-1]
+        ftppassword = ftppassword.split(":")[-1]
         if (ftppassword == ""):
             return uri
     else:
         ftppassword = ftppassword[0]
-        ftppassword = ftppassword.split(":")[len(ftppassword.split(":"))-1]
+        ftppassword = ftppassword.split(":")[-1]
         if (ftppassword == ""):
             return uri
 

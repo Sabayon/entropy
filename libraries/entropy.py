@@ -5569,31 +5569,31 @@ class FtpInterface:
         self.ftpuri = ftpuri
         self.ftphost = self.entropyTools.extractFTPHostFromUri(self.ftpuri)
 
-        self.ftpuser = ftpuri.split("ftp://")[len(ftpuri.split("ftp://"))-1].split(":")[0]
+        self.ftpuser = ftpuri.split("ftp://")[-1].split(":")[0]
         if (self.ftpuser == ""):
             self.ftpuser = "anonymous@"
             self.ftppassword = "anonymous"
         else:
-            self.ftppassword = ftpuri.split("@")[:len(ftpuri.split("@"))-1]
+            self.ftppassword = ftpuri.split("@")[:-1]
             if len(self.ftppassword) > 1:
                 self.ftppassword = '@'.join(self.ftppassword)
-                self.ftppassword = self.ftppassword.split(":")[len(self.ftppassword.split(":"))-1]
+                self.ftppassword = self.ftppassword.split(":")[-1]
                 if (self.ftppassword == ""):
                     self.ftppassword = "anonymous"
             else:
                 self.ftppassword = self.ftppassword[0]
-                self.ftppassword = self.ftppassword.split(":")[len(self.ftppassword.split(":"))-1]
+                self.ftppassword = self.ftppassword.split(":")[-1]
                 if (self.ftppassword == ""):
                     self.ftppassword = "anonymous"
 
-        self.ftpport = ftpuri.split(":")[len(ftpuri.split(":"))-1]
+        self.ftpport = ftpuri.split(":")[-1]
         try:
             self.ftpport = int(self.ftpport)
         except:
             self.ftpport = 21
 
-        self.ftpdir = ftpuri.split("ftp://")[len(ftpuri.split("ftp://"))-1]
-        self.ftpdir = self.ftpdir.split("/")[len(self.ftpdir.split("/"))-1]
+        self.ftpdir = ftpuri.split("ftp://")[-1]
+        self.ftpdir = self.ftpdir.split("/")[-1]
         self.ftpdir = self.ftpdir.split(":")[0]
         if self.ftpdir.endswith("/"):
             self.ftpdir = self.ftpdir[:len(self.ftpdir)-1]
@@ -5612,14 +5612,14 @@ class FtpInterface:
                 continue
 
         self.Entropy.updateProgress(
-            red("[ftp:%s] connecting with user: %s" % (self.ftphost,self.ftpuser,)),
+            red("[ftp:%s] connecting with user: %s" % (bold(self.ftphost),blue(self.ftpuser),)),
             importance = 1,
             type = "info",
             header = darkgreen(" * ")
         )
         self.ftpconn.login(self.ftpuser,self.ftppassword)
         self.Entropy.updateProgress(
-            red("[ftp:%s] switching to: %s" % (self.ftphost,self.ftpdir,)),
+            red("[ftp:%s] switching to: %s" % (bold(self.ftphost),blue(self.ftpdir),)),
             importance = 1,
             type = "info",
             header = darkgreen(" * ")
@@ -5641,10 +5641,19 @@ class FtpInterface:
                 if not counter:
                     raise
                 continue
+        self.Entropy.updateProgress(
+            red("[ftp:%s] reconnecting with user: %s" % (bold(self.ftphost),blue(self.ftpuser),)),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
+        )
         self.ftpconn.login(self.ftpuser,self.ftppassword)
-        # save curr dir
-        #cur = self.currentdir
-        #self.setCWD(self.ftpdir)
+        self.Entropy.updateProgress(
+            red("[ftp:%s] switching to: %s" % (bold(self.ftphost),blue(self.ftpdir),)),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
+        )
         self.setCWD(self.currentdir)
 
     def getHost(self):
@@ -12044,6 +12053,21 @@ class ServerMirrorsInterface:
         self.Entropy = ServerInstance
         self.Mirrors = mirrors[:]
         self.repository_directory = etpConst['etpdatabasedir']
+
+        self.updateProgress(
+            blue("Entropy Server Mirrors Interface loaded:"),
+            importance = 2,
+            type = "info",
+            header = red(" @@ ")
+        )
+        for mirror in self.Mirrors:
+            mirror = self.entropyTools.hideFTPpassword(mirror)
+            self.updateProgress(
+                blue("mirror: %s") % (darkgreen(mirror),),
+                importance = 0,
+                type = "info",
+                header = brown("   # ")
+            )
 
 
     def set_mirrors(self, mirrors):
