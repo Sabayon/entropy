@@ -12615,6 +12615,7 @@ class ServerMirrorsInterface:
 
     class FileTransceiver:
 
+        import entropyTools
         def __init__(   self,
                         ftp_interface,
                         entropy_interface,
