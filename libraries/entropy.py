@@ -13366,11 +13366,11 @@ class ServerMirrorsInterface:
 
     def _show_local_sync_stats(self, crippled_uri, branch, upload_files, local_files):
         self.Entropy.updateProgress(
-            "[repo:%s|%s|branch:%s] %s" % (
+            "[repo:%s|%s|branch:%s] %s:" % (
                     blue(etpConst['officialrepositoryid']),
                     red("sync"),
                     brown(branch),
-                    blue("local statistics:"),
+                    blue("local statistics"),
             ),
             importance = 1,
             type = "info",
@@ -13585,24 +13585,34 @@ class ServerMirrorsInterface:
         self._show_local_sync_stats(crippled_uri, branch, upload_files, local_files)
 
         self.Entropy.updateProgress(
-            red("[repo:%s|sync|branch:%s|mirror:%s] remote statistics:" % (etpConst['officialrepositoryid'],branch,crippled_uri,)),
+            "[repo:%s|%s|branch:%s] %s: %s" % (
+                    blue(etpConst['officialrepositoryid']),
+                    red("sync"),
+                    brown(branch),
+                    blue("remote statistics for"),
+                    red(crippled_uri),
+            ),
             importance = 1,
             type = "info",
-            header = darkgreen(" * ")
+            header = red(" @@ ")
         )
         remote_files, remote_packages, remote_packages_data = self.calculate_remote_package_files(uri, branch)
         self.Entropy.updateProgress(
-            red("[repo:%s|sync|branch:%s|mirror:%s] remote packages: %s files stored" % (etpConst['officialrepositoryid'],branch,crippled_uri,remote_files,)),
+            "%s:\t\t%s %s" % (
+                    blue("remote packages"),
+                    bold(str(remote_files)),
+                    red("files stored"),
+            ),
             importance = 0,
             type = "info",
-            header = darkgreen(" * ")
+            header = red(" @@ ")
         )
 
         self.Entropy.updateProgress(
-            red("[repo:%s|sync|branch:%s|mirror:%s] calculating queues..." % (etpConst['officialrepositoryid'],branch,crippled_uri,)),
+            blue("Calculating queues..."),
             importance = 1,
             type = "info",
-            header = darkgreen(" * ")
+            header = red(" @@ ")
         )
 
         uploadQueue, downloadQueue, removalQueue, fineQueue = self.calculate_sync_queues(
