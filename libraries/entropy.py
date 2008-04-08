@@ -13366,37 +13366,37 @@ class ServerMirrorsInterface:
 
     def _show_local_sync_stats(self, crippled_uri, branch, upload_files, local_files):
         self.Entropy.updateProgress(
-            "[repo:%s|sync|branch:%s|mirror:%s] %s" % (
+            "[repo:%s|%s|branch:%s] %s" % (
                     blue(etpConst['officialrepositoryid']),
+                    red("sync"),
                     brown(branch),
-                    bold(crippled_uri),
-                    bold("local statistics:"),
+                    blue("local statistics:"),
             ),
             importance = 1,
             type = "info",
-            header = darkgreen(" * ")
+            header = red(" @@ ")
         )
         self.Entropy.updateProgress(
-            red("%s: %s %s" % (
+            red("%s:\t\t%s %s" % (
                     blue("upload directory"),
-                    upload_files,
-                    blue("files ready"),
+                    bold(str(upload_files)),
+                    red("files ready"),
                 )
             ),
             importance = 0,
             type = "info",
-            header = darkgreen(" * ")
+            header = red(" @@ ")
         )
         self.Entropy.updateProgress(
-            red("%s: %s %s" % (
+            red("%s:\t\t%s %s" % (
                     blue("packages directory"),
-                    local_files,
-                    blue("files ready"),
+                    bold(str(local_files)),
+                    red("files ready"),
                 )
             ),
             importance = 0,
             type = "info",
-            header = darkgreen(" * ")
+            header = red(" @@ ")
         )
 
     def _show_sync_queues(self, upload, download, removal, copy, metainfo, branch):
@@ -13946,7 +13946,7 @@ class ServerMirrorsInterface:
                     ),
             importance = 1,
             type = "info",
-            header = darkgreen(" * "),
+            header = red(" @@ "),
             back = True
         )
 
@@ -13969,13 +13969,13 @@ class ServerMirrorsInterface:
                     "[repo:%s|%s|branch:%s] %s: %s" % (
                         etpConst['officialrepositoryid'],
                         red("sync"),
-                        mybranch,
-                        darkgreen("packages sync"),
-                        crippled_uri,
+                        brown(mybranch),
+                        blue("packages sync"),
+                        bold(crippled_uri),
                     ),
                     importance = 1,
                     type = "info",
-                    header = darkgreen(" * ")
+                    header = red(" @@ ")
                 )
 
                 uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data = self.calculate_packages_to_sync(uri, mybranch)
