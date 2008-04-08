@@ -12669,7 +12669,7 @@ class ServerMirrorsInterface:
                             blue(str(counter)),
                             bold(str(maxcount)),
                             blue("verifyng upload (if supported)"),
-                            blue(os.path.basename(mypath)),
+                            blue(os.path.basename(local_filepath)),
                 ),
                 importance = 0,
                 type = "info",
