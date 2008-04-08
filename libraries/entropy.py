@@ -5611,8 +5611,19 @@ class FtpInterface:
                     raise
                 continue
 
+        self.Entropy.updateProgress(
+            red("[ftp:%s] connecting with user: %s" % (self.ftphost,self.ftpuser,)),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
+        )
         self.ftpconn.login(self.ftpuser,self.ftppassword)
-        # change to our dir
+        self.Entropy.updateProgress(
+            red("[ftp:%s] switching to: %s" % (self.ftphost,self.ftpdir,)),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
+        )
         self.ftpconn.cwd(self.ftpdir)
         self.currentdir = self.ftpdir
 
