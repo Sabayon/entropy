@@ -42,11 +42,11 @@ def sync(options, justTidy = False):
 
         mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data = Entropy.MirrorsService.sync_packages(ask = not do_noask, pretend = etpUi['pretend'])
         if not mirrors_errors:
-
-            if (not do_noask) and etpConst['rss-feed']:
-                etpRSSMessages['commitmessage'] = readtext(">> Please insert a commit message: ")
-            elif etpConst['rss-feed']:
-                etpRSSMessages['commitmessage'] = "Autodriven Update"
+            if mirrors_tainted:
+                if (not do_noask) and etpConst['rss-feed']:
+                    etpRSSMessages['commitmessage'] = readtext(">> Please insert a commit message: ")
+                elif etpConst['rss-feed']:
+                    etpRSSMessages['commitmessage'] = "Autodriven Update"
             rc = database(["sync"])
             if not rc and not do_noask:
                 rc = Entropy.askQuestion("Should I continue with the tidy procedure ?")
@@ -54,7 +54,7 @@ def sync(options, justTidy = False):
                     sys.exit(0)
             elif rc:
                 print_error(darkred(" !!! ")+red("Aborting !"))
-                sys.exit(rc)
+                sys.exit(1)
 
     Entropy.MirrorsService.tidy_mirrors(ask = not do_noask, pretend = etpUi['pretend'])
 
