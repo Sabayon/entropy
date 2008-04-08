@@ -5546,7 +5546,7 @@ class RepoInterface:
 class FtpInterface:
 
     # this must be run before calling the other functions
-    def __init__(self, ftpuri, EntropyInterface, verbose = False):
+    def __init__(self, ftpuri, EntropyInterface, verbose = True):
 
         if not isinstance(EntropyInterface, (EquoInterface, TextInterface, ServerInterface)) and \
             not issubclass(EntropyInterface, (EquoInterface, TextInterface, ServerInterface)):
