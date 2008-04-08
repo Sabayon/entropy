@@ -773,7 +773,10 @@ def const_setupServerClientRepository():
         etpConst['activatoruploaduris'][x] = etpConst['activatoruploaduris'][x].replace(
             etpConst['dbrepodir'],
             etpConst['officialrepositoryid']
-    )
+        )
+        if etpConst['activatoruploaduris'][x].startswith("/"):
+            etpConst['activatoruploaduris'][x][1:]
+        etpConst['activatoruploaduris'][x] = os.path.join(etpConst['product'],etpConst['activatoruploaduris'][x])
 
     # align etpConst['binaryurirelativepath'] and etpConst['etpurirelativepath'] with etpConst['product']
     etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['officialrepositoryid']+"/"+etpConst['binaryurirelativepath']
