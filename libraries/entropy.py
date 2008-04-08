@@ -5772,7 +5772,10 @@ class FtpInterface:
         # get the buffer size
         self.mykByteCount += float(buf_len)/1024
         # create percentage
-        myUploadPercentage = round((round(self.mykByteCount,1)/self.myFileSize)*100,1)
+        if self.myFileSize < 1:
+            myUploadPercentage = 100.0
+        else:
+            myUploadPercentage = round((round(self.mykByteCount,1)/self.myFileSize)*100,1)
         currentprogress = myUploadPercentage
         myUploadSize = round(self.mykByteCount,1)
         if (currentprogress > self.oldprogress+0.5) and (myUploadPercentage < 100.1) and (myUploadSize <= self.myFileSize):
