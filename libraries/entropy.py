@@ -11488,7 +11488,16 @@ class ServerInterface(TextInterface):
                 idpk, revision, mydata_upd = dbconn.addPackage(mydata, revision = addRevision)
 
                 self.updateProgress(
-                    red("[repo: %s] [%s:%s/%s] added package: %s, revision: %s" % (etpConst['officialrepositoryid'],brown(mybranch),darkgreen(counter),blue(maxcount),bold(pkg),mydata_upd['revision'],) ),
+                    "[repo: %s] [%s:%s/%s] %s: %s, %s: %s" % (
+                                etpConst['officialrepositoryid'],
+                                brown(mybranch),
+                                darkgreen(counter),
+                                blue(maxcount),
+                                red("added package"),
+                                darkgreen(pkg),
+                                red("revision"),
+                                brown(mydata_upd['revision']),
+                        ),
                     importance = 1,
                     type = "info",
                     header = " ",
