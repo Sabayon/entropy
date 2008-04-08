@@ -11184,12 +11184,11 @@ class ServerInterface(TextInterface):
         shutil.move(package_filename,destination_path)
 
         self.updateProgress(
-                                red(
-                                    "[repo: %s] injecting entropy metadata: %s" % (
+                                "[repo:%s] %s: %s" % (
                                             darkgreen(etpConst['officialrepositoryid']),
-                                            bold(downloadfile),
-                                        )
-                                    ),
+                                            blue("injecting entropy metadata"),
+                                            darkgreen(downloadfile),
+                                        ),
                                 importance = 1,
                                 type = "info",
                                 header = brown(" * "),
@@ -11207,12 +11206,11 @@ class ServerInterface(TextInterface):
         os.remove(dbpath)
 
         self.updateProgress(
-                                red(
-                                    "[repo: %s] injection complete: %s" % (
+                                "[repo:%s] %s: %s" % (
                                             darkgreen(etpConst['officialrepositoryid']),
-                                            bold(downloadfile),
-                                        )
-                                    ),
+                                            blue("injection complete"),
+                                            darkgreen(downloadfile),
+                                        ),
                                 importance = 1,
                                 type = "info",
                                 header = brown(" * ")
@@ -12660,7 +12658,7 @@ class ServerMirrorsInterface:
             self.critical_files = critical_files
             self.handlers_data = handlers_data.copy()
 
-        def handler_verify_upload(self, local_filepath, uri, ftp_connection, counter, maxcount):
+        def handler_verify_upload(self, local_filepath, uri, ftp_connection, counter, maxcount, action):
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
@@ -12803,7 +12801,7 @@ class ServerMirrorsInterface:
                 )
                 ftp = self.FtpInterface(uri, self.Entropy)
                 self.Entropy.updateProgress(
-                    red("[repo:%s|mirror:%s|%s] changing directory to %s..." % (etpConst['officialrepositoryid'],crippled_uri,bold(etpConst['etpurirelativepath']),action,)),
+                    "[repo:%s|mirror:%s|%s] changing directory to %s..." % (etpConst['officialrepositoryid'],crippled_uri,bold(etpConst['etpurirelativepath']),action,),
                     importance = 0,
                     type = "info",
                     header = darkgreen(" * "),
@@ -12830,16 +12828,15 @@ class ServerMirrorsInterface:
                     while tries < 8:
                         tries += 1
                         self.Entropy.updateProgress(
-                            red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] %sing: %s" % (
+                            "[repo:%s|mirror:%s|%s|#%s|(%s/%s)] %s: %s" % (
                                         etpConst['officialrepositoryid'],
-                                        crippled_uri,
-                                        action,
-                                        tries,
+                                        red(crippled_uri),
+                                        brown(action),
+                                        darkgreen(str(tries)),
                                         blue(str(counter)),
                                         bold(str(maxcount)),
-                                        action,
-                                        os.path.basename(mypath),
-                                )
+                                        blue(action+"ing"),
+                                        blue(os.path.basename(mypath)),
                             ),
                             importance = 0,
                             type = "info",
@@ -12848,7 +12845,7 @@ class ServerMirrorsInterface:
                         )
                         rc = syncer(*myargs)
                         if rc and self.use_handlers and not self.download:
-                            rc = self.handler_verify_upload(mypath, uri, ftp, counter, maxcount)
+                            rc = self.handler_verify_upload(mypath, uri, ftp, counter, maxcount, action)
                         if rc:
                             self.Entropy.updateProgress(
                                 red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] %s successfully: %s" % (
@@ -14079,7 +14076,7 @@ class ServerMirrorsInterface:
                     exc_txt = self.Entropy.entropyTools.printException(returndata = True)
                     for line in exc_txt:
                         self.Entropy.updateProgress(
-                            line.strip(),
+                            str(line).strip(),
                             importance = 1,
                             type = "error",
                             header = darkred(":  ")
