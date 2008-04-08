@@ -13368,21 +13368,21 @@ class ServerMirrorsInterface:
 
     def _show_local_sync_stats(self, crippled_uri, branch, upload_files, local_files):
         self.Entropy.updateProgress(
-            red("[repo:%s|sync|branch:%s|mirror:%s] local statistics:" % (
-                    etpConst['officialrepositoryid'],
-                    branch,
-                    crippled_uri,
-                )
+            "[repo:%s|sync|branch:%s|mirror:%s] %s" % (
+                    blue(etpConst['officialrepositoryid']),
+                    brown(branch),
+                    bold(crippled_uri),
+                    bold("local statistics:"),
             ),
             importance = 1,
             type = "info",
             header = darkgreen(" * ")
         )
         self.Entropy.updateProgress(
-            red("[repo:%s|sync|branch:%s] upload directory: %s files ready" % (
-                    etpConst['officialrepositoryid'],
-                    branch,
+            red("%s: %s %s" % (
+                    blue("upload directory"),
                     upload_files,
+                    blue("files ready"),
                 )
             ),
             importance = 0,
@@ -13390,10 +13390,10 @@ class ServerMirrorsInterface:
             header = darkgreen(" * ")
         )
         self.Entropy.updateProgress(
-            red("[repo:%s|sync|branch:%s] packages directory: %s files ready" % (
-                    etpConst['officialrepositoryid'],
-                    branch,
+            red("%s: %s %s" % (
+                    blue("packages directory"),
                     local_files,
+                    blue("files ready"),
                 )
             ),
             importance = 0,
