@@ -13046,6 +13046,12 @@ class ServerMirrorsInterface:
         ftp.closeConnection()
         return gave_up
 
+    def vacuum_database_and_close(self):
+        dbconn = self.Entropy.openServerDatabase(read_only = False, no_upload = True)
+        dbconn.vacuum()
+        dbconn.commitChanges()
+        self.Entropy.close_server_database(dbconn)
+
     def upload_database(self, uris, lock_check = False, pretend = False):
 
         import gzip
@@ -13084,12 +13090,13 @@ class ServerMirrorsInterface:
                 header = darkgreen(" * ")
             )
 
+            self.vacuum_database_and_close()
+
             # EAPI 2
             self._show_eapi2_upload_messages(crippled_uri, database_path, upload_data, cmethod)
             # create compressed dump + checksum
             self.dump_database_to_file(database_path, upload_data['dump_path'], eval(cmethod[0]))
             self.create_file_checksum(upload_data['dump_path'], upload_data['dump_path_digest'])
-
 
             # EAPI 1
             self._show_eapi1_upload_messages(crippled_uri, database_path, upload_data, cmethod)

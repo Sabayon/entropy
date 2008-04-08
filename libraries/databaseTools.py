@@ -169,7 +169,7 @@ class etpDatabase:
                                 )
 
         self.commitChanges()
-        self.vacuum()
+        #self.vacuum()
         self.cursor.close()
         self.connection.close()
 
