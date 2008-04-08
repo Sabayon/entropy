@@ -11195,7 +11195,7 @@ class ServerInterface(TextInterface):
                                 back = True
                             )
 
-        dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
         data = dbconn.getPackageData(idpackage)
         dbpath = self.ClientService.inject_entropy_database_into_package(destination_path, data)
         digest = self.entropyTools.md5sum(destination_path)
