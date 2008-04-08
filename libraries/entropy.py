@@ -12658,7 +12658,7 @@ class ServerMirrorsInterface:
             self.critical_files = critical_files
             self.handlers_data = handlers_data.copy()
 
-        def handler_verify_upload(self, local_filepath, uri, ftp_connection, counter, maxcount, action):
+        def handler_verify_upload(self, local_filepath, uri, ftp_connection, counter, maxcount, action, tries):
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
@@ -12796,16 +12796,14 @@ class ServerMirrorsInterface:
                     red("[repo:%s|mirror:%s|%s] connecting to mirror..." % (etpConst['officialrepositoryid'],crippled_uri,action,)),
                     importance = 0,
                     type = "info",
-                    header = darkgreen(" * "),
-                    back = True
+                    header = darkgreen(" * ")
                 )
                 ftp = self.FtpInterface(uri, self.Entropy)
                 self.Entropy.updateProgress(
                     "[repo:%s|mirror:%s|%s] changing directory to %s..." % (etpConst['officialrepositoryid'],crippled_uri,bold(etpConst['etpurirelativepath']),action,),
                     importance = 0,
                     type = "info",
-                    header = darkgreen(" * "),
-                    back = True
+                    header = darkgreen(" * ")
                 )
                 ftp.setCWD(self.ftp_basedir)
 
@@ -12840,28 +12838,26 @@ class ServerMirrorsInterface:
                             ),
                             importance = 0,
                             type = "info",
-                            header = darkgreen(" * "),
-                            back = True
+                            header = red(" @@ ")
                         )
                         rc = syncer(*myargs)
                         if rc and self.use_handlers and not self.download:
-                            rc = self.handler_verify_upload(mypath, uri, ftp, counter, maxcount, action)
+                            rc = self.handler_verify_upload(mypath, uri, ftp, counter, maxcount, action, tries)
                         if rc:
                             self.Entropy.updateProgress(
-                                red("[repo:%s|mirror:%s|%s|#%s|(%s/%s)] %s successfully: %s" % (
+                                "[repo:%s|mirror:%s|%s|#%s|(%s/%s)] %s successfully: %s" % (
                                             etpConst['officialrepositoryid'],
-                                            crippled_uri,
-                                            action,
-                                            tries,
+                                            red(crippled_uri),
+                                            brown(action),
+                                            darkgreen(str(tries)),
                                             blue(str(counter)),
                                             bold(str(maxcount)),
-                                            action,
+                                            blue(action),
                                             os.path.basename(mypath),
-                                    )
                                 ),
                                 importance = 0,
                                 type = "info",
-                                header = darkgreen(" * ")
+                                header = red(" @@ ")
                             )
                             done = True
                             break
@@ -14076,7 +14072,7 @@ class ServerMirrorsInterface:
                     exc_txt = self.Entropy.entropyTools.printException(returndata = True)
                     for line in exc_txt:
                         self.Entropy.updateProgress(
-                            str(line).strip(),
+                            str(line),
                             importance = 1,
                             type = "error",
                             header = darkred(":  ")
