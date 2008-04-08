@@ -773,10 +773,7 @@ def const_setupServerClientRepository():
         etpConst['activatoruploaduris'][x] = etpConst['activatoruploaduris'][x].replace(
             etpConst['dbrepodir'],
             etpConst['officialrepositoryid']
-        )
-        if etpConst['activatoruploaduris'][x].startswith("/"):
-            etpConst['activatoruploaduris'][x][1:]
-        etpConst['activatoruploaduris'][x] = os.path.join(etpConst['product'],etpConst['activatoruploaduris'][x])
+        ) # +"/"etpConst['product']+"/"+etpConst['dbrepodir']
 
     # align etpConst['binaryurirelativepath'] and etpConst['etpurirelativepath'] with etpConst['product']
     etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['officialrepositoryid']+"/"+etpConst['binaryurirelativepath']
@@ -1195,7 +1192,7 @@ def const_readActivatorSettings():
                 uri = line.split("mirror-upload|")[1]
                 if uri.endswith("/"):
                     uri = uri[:-1]
-                etpConst['activatoruploaduris'].append(uri+"/"+etpConst['dbrepodir'])
+                etpConst['activatoruploaduris'].append(uri)
             elif line.startswith("database-format|") and (len(line.split("database-format|")) == 2):
                 format = line.split("database-format|")[1]
                 if format in etpConst['etpdatabasesupportedcformats']:
