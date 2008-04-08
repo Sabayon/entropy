@@ -13096,7 +13096,7 @@ class ServerMirrorsInterface:
 
             if not pretend:
                 # upload
-                uploader = self.FileTransceiver(self.FtpInterface, self.Entropy, [uri], upload_data, critical_files = critical)
+                uploader = self.FileTransceiver(self.FtpInterface, self.Entropy, [uri], [upload_data[x] for x in upload_data], critical_files = critical)
                 errors, m_fine_uris, m_broken_uris = uploader.go()
                 if errors:
                     my_fine_uris = [self.entropyTools.extractFTPHostFromUri(x) for x in m_fine_uris]
@@ -13180,7 +13180,7 @@ class ServerMirrorsInterface:
 
             if not pretend:
                 # download
-                downloader = self.FileTransceiver(self.FtpInterface, self.Entropy, [uri], download_data, download = True, local_basedir = mytmpdir, critical_files = critical)
+                downloader = self.FileTransceiver(self.FtpInterface, self.Entropy, [uri], [download_data[x] for x in download_data], download = True, local_basedir = mytmpdir, critical_files = critical)
                 errors, m_fine_uris, m_broken_uris = downloader.go()
                 if errors:
                     my_fine_uris = [self.entropyTools.extractFTPHostFromUri(x) for x in m_fine_uris]
