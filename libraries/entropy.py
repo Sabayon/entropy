@@ -11578,7 +11578,7 @@ class ServerInterface(TextInterface):
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
             self.updateProgress(
-                red("[repo: %s] Working on mirror: %s" % (etpConst['officialrepositoryid'],brown(crippled_uri),) ),
+                red("[repo:%s] Working on mirror: %s" % (etpConst['officialrepositoryid'],brown(crippled_uri),) ),
                 importance = 1,
                 type = "info",
                 header = green(" * ")
@@ -11596,7 +11596,7 @@ class ServerInterface(TextInterface):
                 pkgfilename = os.path.basename(pkgfile)
 
                 self.updateProgress(
-                    red("[repo: %s|mirror: %s] [%s/%s] checking hash: %s" % (
+                    red("[repo:%s|%s] [%s/%s] checking hash: %s" % (
                                     etpConst['officialrepositoryid'],
                                     brown(crippled_uri),
                                     currentcounter,
@@ -11634,7 +11634,7 @@ class ServerInterface(TextInterface):
                 else:
                     not_match.add(idpackage)
                     self.updateProgress(
-                        red("[repo: %s|mirror: %s] [%s/%s] package: %s NOT healthy" % (
+                        red("[repo:%s|%s] [%s/%s] package: %s NOT healthy" % (
                                         etpConst['officialrepositoryid'],
                                         brown(crippled_uri),
                                         currentcounter,
@@ -11673,7 +11673,7 @@ class ServerInterface(TextInterface):
                         )
 
             self.updateProgress(
-                red("[repo: %s|mirror: %s] Statistics:" % (
+                red("[repo:%s|%s] Statistics:" % (
                                 etpConst['officialrepositoryid'],
                                 brown(crippled_uri),
                             )
@@ -11683,7 +11683,7 @@ class ServerInterface(TextInterface):
                 header = red(" * ")
             )
             self.updateProgress(
-                red("[repo: %s|mirror: %s] Number of checked packages: %s" % (
+                red("[repo:%s|%s] Number of checked packages: %s" % (
                                 etpConst['officialrepositoryid'],
                                 brown(crippled_uri),
                                 len(match)+len(not_match),
@@ -11694,7 +11694,7 @@ class ServerInterface(TextInterface):
                 header = red(" * ")
             )
             self.updateProgress(
-                red("[repo: %s|mirror: %s] Number of healthy packages: %s" % (
+                red("[repo:%s|%s] Number of healthy packages: %s" % (
                                 etpConst['officialrepositoryid'],
                                 brown(crippled_uri),
                                 len(match),
@@ -11705,7 +11705,7 @@ class ServerInterface(TextInterface):
                 header = red(" * ")
             )
             self.updateProgress(
-                red("[repo: %s|mirror: %s] Number of broken packages: %s" % (
+                red("[repo:%s|%s] Number of broken packages: %s" % (
                                 etpConst['officialrepositoryid'],
                                 brown(crippled_uri),
                                 len(not_match),
@@ -12117,7 +12117,7 @@ class ServerMirrorsInterface:
             lock_text = "unlocking"
             if lock: lock_text = "locking"
             self.Entropy.updateProgress(
-                red("[repo:%s|mirror:%s] %s mirror..." % (etpConst['officialrepositoryid'],crippled_uri,lock_text,)),
+                red("[repo:%s|%s] %s mirror..." % (etpConst['officialrepositoryid'],crippled_uri,lock_text,)),
                 importance = 1,
                 type = "info",
                 header = brown(" * "),
@@ -12129,7 +12129,7 @@ class ServerMirrorsInterface:
 
             if lock and ftp.isFileAvailable(etpConst['etpdatabaselockfile']):
                 self.Entropy.updateProgress(
-                    red("[repo:%s|mirror:%s] mirror already locked" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                    red("[repo:%s|%s] mirror already locked" % (etpConst['officialrepositoryid'],crippled_uri,)),
                     importance = 1,
                     type = "info",
                     header = darkgreen(" * ")
@@ -12138,7 +12138,7 @@ class ServerMirrorsInterface:
                 continue
             elif not lock and not ftp.isFileAvailable(etpConst['etpdatabaselockfile']):
                 self.Entropy.updateProgress(
-                    red("[repo:%s|mirror:%s] mirror already unlocked" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                    red("[repo:%s|%s] mirror already unlocked" % (etpConst['officialrepositoryid'],crippled_uri,)),
                     importance = 1,
                     type = "info",
                     header = darkgreen(" * ")
@@ -12176,7 +12176,7 @@ class ServerMirrorsInterface:
             lock_text = "unlocking"
             if lock: lock_text = "locking"
             self.Entropy.updateProgress(
-                red("[repo:%s|mirror:%s] %s mirror for download..." % (etpConst['officialrepositoryid'],crippled_uri,lock_text,)),
+                red("[repo:%s|%s] %s mirror for download..." % (etpConst['officialrepositoryid'],crippled_uri,lock_text,)),
                 importance = 1,
                 type = "info",
                 header = brown(" * "),
@@ -12188,7 +12188,7 @@ class ServerMirrorsInterface:
 
             if lock and ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile']):
                 self.Entropy.updateProgress(
-                    red("[repo:%s|mirror:%s] mirror already locked for download" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                    red("[repo:%s|%s] mirror already locked for download" % (etpConst['officialrepositoryid'],crippled_uri,)),
                     importance = 1,
                     type = "info",
                     header = darkgreen(" * ")
@@ -12197,7 +12197,7 @@ class ServerMirrorsInterface:
                 continue
             elif not lock and not ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile']):
                 self.Entropy.updateProgress(
-                    red("[repo:%s|mirror:%s] mirror already unlocked for download" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                    red("[repo:%s|%s] mirror already unlocked for download" % (etpConst['officialrepositoryid'],crippled_uri,)),
                     importance = 1,
                     type = "info",
                     header = darkgreen(" * ")
@@ -12238,14 +12238,14 @@ class ServerMirrorsInterface:
         rc = ftp_connection.uploadFile(lock_file, ascii = True)
         if rc:
             self.Entropy.updateProgress(
-                red("[repo:%s|mirror:%s] mirror successfully locked %s" % (etpConst['officialrepositoryid'],crippled_uri,lock_string,)),
+                red("[repo:%s|%s] mirror successfully locked %s" % (etpConst['officialrepositoryid'],crippled_uri,lock_string,)),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
             )
         else:
             self.Entropy.updateProgress(
-                red("[repo:%s|mirror:%s] lock error: %s - mirror not locked %s" % (etpConst['officialrepositoryid'],crippled_uri,rc,lock_string,)),
+                red("[repo:%s|%s] lock error: %s - mirror not locked %s" % (etpConst['officialrepositoryid'],crippled_uri,rc,lock_string,)),
                 importance = 1,
                 type = "error",
                 header = darkred(" * ")
@@ -12275,7 +12275,7 @@ class ServerMirrorsInterface:
         rc = ftp_connection.deleteFile(dbfile)
         if rc:
             self.Entropy.updateProgress(
-                red("[repo:%s|mirror:%s] mirror successfully unlocked" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                red("[repo:%s|%s] mirror successfully unlocked" % (etpConst['officialrepositoryid'],crippled_uri,)),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -12286,7 +12286,7 @@ class ServerMirrorsInterface:
                 self.remove_local_database_download_lockfile()
         else:
             self.Entropy.updateProgress(
-                red("[repo:%s|mirror:%s] unlock error: %s - mirror not unlocked" % (etpConst['officialrepositoryid'],crippled_uri,rc,)),
+                red("[repo:%s|%s] unlock error: %s - mirror not unlocked" % (etpConst['officialrepositoryid'],crippled_uri,rc,)),
                 importance = 1,
                 type = "error",
                 header = darkred(" * ")
@@ -12333,7 +12333,7 @@ class ServerMirrorsInterface:
             tries += 1
 
             self.Entropy.updateProgress(
-                red("[repo:%s|mirror:%s|#%s] connecting to download package: %s" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+                red("[repo:%s|%s|#%s] connecting to download package: %s" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * "),
@@ -12345,7 +12345,7 @@ class ServerMirrorsInterface:
             ftp.setCWD(dirpath)
 
             self.Entropy.updateProgress(
-                red("[repo:%s|mirror:%s|#%s] downloading package: %s" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+                red("[repo:%s|%s|#%s] downloading package: %s" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -12355,7 +12355,7 @@ class ServerMirrorsInterface:
             rc = ftp.downloadFile(pkgfile,download_path)
             if not rc:
                 self.Entropy.updateProgress(
-                    red("[repo:%s|mirror:%s|#%s] package: %s does not exist" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+                    red("[repo:%s|%s|#%s] package: %s does not exist" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
                     importance = 1,
                     type = "error",
                     header = darkred(" !!! ")
@@ -12367,7 +12367,7 @@ class ServerMirrorsInterface:
             idpackage = dbconn.getIDPackageFromDownload(pkgfile,branch)
             if idpackage == -1:
                 self.Entropy.updateProgress(
-                    red("[repo:%s|mirror:%s|#%s] package: %s is not listed in the current repository database!!" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+                    red("[repo:%s|%s|#%s] package: %s is not listed in the current repository database!!" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
                     importance = 1,
                     type = "error",
                     header = darkred(" !!! ")
@@ -12377,7 +12377,7 @@ class ServerMirrorsInterface:
 
             storedmd5 = dbconn.retrieveDigest(idpackage)
             self.Entropy.updateProgress(
-                red("[repo:%s|mirror:%s|#%s] verifying checksum of package: %s" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+                red("[repo:%s|%s|#%s] verifying checksum of package: %s" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * "),
@@ -12388,7 +12388,7 @@ class ServerMirrorsInterface:
             md5check = self.entropyTools.compareMd5(pkg_path,storedmd5)
             if md5check:
                 self.Entropy.updateProgress(
-                    red("[repo:%s|mirror:%s|#%s] package: %s downloaded successfully" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+                    red("[repo:%s|%s|#%s] package: %s downloaded successfully" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
                     importance = 1,
                     type = "info",
                     header = darkgreen(" * ")
@@ -12396,7 +12396,7 @@ class ServerMirrorsInterface:
                 return True
             else:
                 self.Entropy.updateProgress(
-                    red("[repo:%s|mirror:%s|#%s] package: %s checksum does not match. re-downloading..." % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+                    red("[repo:%s|%s|#%s] package: %s checksum does not match. re-downloading..." % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
                     importance = 1,
                     type = "warning",
                     header = darkred(" * ")
@@ -12408,7 +12408,7 @@ class ServerMirrorsInterface:
 
         # if we get here it means the files hasn't been downloaded properly
         self.Entropy.updateProgress(
-            red("[repo:%s|mirror:%s|#%s] package: %s seems broken. Consider to re-package it. Giving up!" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
+            red("[repo:%s|%s|#%s] package: %s seems broken. Consider to re-package it. Giving up!" % (etpConst['officialrepositoryid'],crippled_uri,tries,pkgfile,)),
             importance = 1,
             type = "error",
             header = darkred(" !!! ")
@@ -12440,7 +12440,7 @@ class ServerMirrorsInterface:
                 except ValueError:
                     crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                     self.Entropy.updateProgress(
-                        red("[repo:%s|mirror:%s] mirror doesn't have a valid database revision file: %s" % (etpConst['officialrepositoryid'],crippled_uri,revision,)),
+                        red("[repo:%s|%s] mirror doesn't have a valid database revision file: %s" % (etpConst['officialrepositoryid'],crippled_uri,revision,)),
                         importance = 1,
                         type = "error",
                         header = darkred(" !!! ")
@@ -12663,7 +12663,7 @@ class ServerMirrorsInterface:
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
             self.Entropy.updateProgress(
-                "[mirror:%s|#%s|(%s/%s)] %s: %s" % (
+                "[%s|#%s|(%s/%s)] %s: %s" % (
                             red(crippled_uri),
                             darkgreen(str(tries)),
                             blue(str(counter)),
@@ -12684,7 +12684,7 @@ class ServerMirrorsInterface:
             )
             if checksum == None:
                 self.Entropy.updateProgress(
-                    "[mirror:%s|#%s|(%s/%s)] %s: %s: %s" % (
+                    "[%s|#%s|(%s/%s)] %s: %s: %s" % (
                                 red(crippled_uri),
                                 darkgreen(str(tries)),
                                 blue(str(counter)),
@@ -12700,7 +12700,7 @@ class ServerMirrorsInterface:
                 return True
             elif checksum == False:
                 self.Entropy.updateProgress(
-                    "[mirror:%s|#%s|(%s/%s)] %s: %s: %s" % (
+                    "[%s|#%s|(%s/%s)] %s: %s: %s" % (
                                 red(crippled_uri),
                                 darkgreen(str(tries)),
                                 blue(str(counter)),
@@ -12719,7 +12719,7 @@ class ServerMirrorsInterface:
                 ckres = self.entropyTools.compareMd5(local_filepath,checksum)
                 if ckres:
                     self.Entropy.updateProgress(
-                        "[mirror:%s|#%s|(%s/%s)] %s: %s: %s" % (
+                        "[%s|#%s|(%s/%s)] %s: %s: %s" % (
                                     red(crippled_uri),
                                     darkgreen(str(tries)),
                                     blue(str(counter)),
@@ -12735,7 +12735,7 @@ class ServerMirrorsInterface:
                     return True
                 else:
                     self.Entropy.updateProgress(
-                        "[mirror:%s|#%s|(%s/%s)] %s: %s: %s" % (
+                        "[%s|#%s|(%s/%s)] %s: %s: %s" % (
                                     red(crippled_uri),
                                     darkgreen(str(tries)),
                                     blue(str(counter)),
@@ -12751,7 +12751,7 @@ class ServerMirrorsInterface:
                     return False
             else:
                 self.Entropy.updateProgress(
-                    "[mirror:%s|#%s|(%s/%s)] %s: %s: %s" % (
+                    "[%s|#%s|(%s/%s)] %s: %s: %s" % (
                                 red(crippled_uri),
                                 darkgreen(str(tries)),
                                 blue(str(counter)),
@@ -12781,7 +12781,7 @@ class ServerMirrorsInterface:
 
                 crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                 self.Entropy.updateProgress(
-                    "[mirror:%s|%s] %s..." % (
+                    "[%s|%s] %s..." % (
                             red(crippled_uri),
                             brown(action),
                             blue("connecting to mirror"),
@@ -12792,7 +12792,7 @@ class ServerMirrorsInterface:
                 )
                 ftp = self.FtpInterface(uri, self.Entropy)
                 self.Entropy.updateProgress(
-                    "[mirror:%s|%s] %s %s..." % (
+                    "[%s|%s] %s %s..." % (
                                 red(crippled_uri),
                                 brown(action),
                                 blue("changing directory to"),
@@ -12823,13 +12823,13 @@ class ServerMirrorsInterface:
                     while tries < 8:
                         tries += 1
                         self.Entropy.updateProgress(
-                            "[mirror:%s|#%s|(%s/%s)] %s: %s" % (
+                            "[%s|#%s|(%s/%s)] %s: %s" % (
                                         red(crippled_uri),
                                         darkgreen(str(tries)),
                                         blue(str(counter)),
                                         bold(str(maxcount)),
                                         blue(action+"ing"),
-                                        blue(os.path.basename(mypath)),
+                                        red(os.path.basename(mypath)),
                             ),
                             importance = 0,
                             type = "info",
@@ -12840,13 +12840,13 @@ class ServerMirrorsInterface:
                             rc = self.handler_verify_upload(mypath, uri, ftp, counter, maxcount, action, tries)
                         if rc:
                             self.Entropy.updateProgress(
-                                "[mirror:%s|#%s|(%s/%s)] %s successfully: %s" % (
+                                "[%s|#%s|(%s/%s)] %s successfull: %s" % (
                                             red(crippled_uri),
                                             darkgreen(str(tries)),
                                             blue(str(counter)),
                                             bold(str(maxcount)),
                                             blue(action),
-                                            os.path.basename(mypath),
+                                            red(os.path.basename(mypath)),
                                 ),
                                 importance = 0,
                                 type = "info",
@@ -12856,13 +12856,14 @@ class ServerMirrorsInterface:
                             break
                         else:
                             self.Entropy.updateProgress(
-                                "[mirror:%s|#%s|(%s/%s)] %s failed, retrying: %s" % (
+                                "[%s|#%s|(%s/%s)] %s %s: %s" % (
                                             red(crippled_uri),
                                             darkgreen(str(tries)),
                                             blue(str(counter)),
                                             bold(str(maxcount)),
                                             blue(action),
-                                            os.path.basename(mypath),
+                                            brown("failed, retrying"),
+                                            red(os.path.basename(mypath)),
                                     ),
                                 importance = 0,
                                 type = "warning",
@@ -12874,12 +12875,13 @@ class ServerMirrorsInterface:
                     if not done:
 
                         self.Entropy.updateProgress(
-                            "[mirror:%s|(%s/%s)] %s failed, giving up: %s - error: %s" % (
+                            "[%s|(%s/%s)] %s %s: %s - error: %s" % (
                                     red(crippled_uri),
                                     blue(str(counter)),
                                     bold(str(maxcount)),
                                     blue(action),
-                                    os.path.basename(mypath),
+                                    darkred("failed, giving up"),
+                                    red(os.path.basename(mypath)),
                                     lastrc,
                             ),
                             importance = 1,
@@ -12889,18 +12891,20 @@ class ServerMirrorsInterface:
 
                         if mypath not in self.critical_files:
                             self.Entropy.updateProgress(
-                                red("[repo:%s|mirror:%s|%s|(%s/%s)] not critical: %s, continuing..." % (
+                                red("[repo:%s|%s|%s|(%s/%s)] %s: %s, %s..." % (
                                             etpConst['officialrepositoryid'],
                                             crippled_uri,
                                             action,
                                             blue(str(counter)),
                                             bold(str(maxcount)),
+                                            blue("not critical"),
                                             os.path.basename(mypath),
+                                            blue("continuing"),
                                     )
                                 ),
                                 importance = 1,
                                 type = "warning",
-                                header = brown(" * ")
+                                header = brown(" @@ ")
                             )
                             continue
 
@@ -12919,7 +12923,7 @@ class ServerMirrorsInterface:
     def _show_eapi2_upload_messages(self, crippled_uri, database_path, upload_data, cmethod):
 
         self.Entropy.updateProgress(
-            red("[repo:%s|mirror:%s|EAPI:2] creating compressed database dump + checksum" % (etpConst['officialrepositoryid'],crippled_uri,)),
+            red("[repo:%s|%s|EAPI:2] creating compressed database dump + checksum" % (etpConst['officialrepositoryid'],crippled_uri,)),
             importance = 0,
             type = "info",
             header = darkgreen(" * ")
@@ -12952,7 +12956,7 @@ class ServerMirrorsInterface:
     def _show_eapi1_upload_messages(self, crippled_uri, database_path, upload_data, cmethod):
 
         self.Entropy.updateProgress(
-            red("[repo:%s|mirror:%s|EAPI:1] compressing database + checksum" % (etpConst['officialrepositoryid'],crippled_uri,)),
+            red("[repo:%s|%s|EAPI:1] compressing database + checksum" % (etpConst['officialrepositoryid'],crippled_uri,)),
             importance = 0,
             type = "info",
             header = darkgreen(" * "),
@@ -13010,7 +13014,7 @@ class ServerMirrorsInterface:
         lock_file = self.get_database_lockfile()
         if not os.path.isfile(lock_file) and ftp.isFileAvailable(os.path.basename(lock_file)):
             self.Entropy.updateProgress(
-                red("[repo:%s|mirror:%s|locking] mirror already locked, waiting up to 2 mins before giving up" % (
+                red("[repo:%s|%s|locking] mirror already locked, waiting up to 2 mins before giving up" % (
                                 etpConst['officialrepositoryid'],
                                 crippled_uri,
                         )
@@ -13027,7 +13031,7 @@ class ServerMirrorsInterface:
                 time.sleep(1)
                 if not ftp.isFileAvailable(os.path.basename(lock_file)):
                     self.Entropy.updateProgress(
-                        red("[repo:%s|mirror:%s|locking] mirror unlocked !" % (
+                        red("[repo:%s|%s|locking] mirror unlocked !" % (
                                 etpConst['officialrepositoryid'],
                                 crippled_uri,
                             )
@@ -13076,7 +13080,7 @@ class ServerMirrorsInterface:
             self.lock_mirrors_for_download(True,[uri])
 
             self.Entropy.updateProgress(
-                red("[repo:%s|mirror:%s|upload] preparing to upload database to mirror" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                red("[repo:%s|%s|upload] preparing to upload database to mirror" % (etpConst['officialrepositoryid'],crippled_uri,)),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -13105,7 +13109,7 @@ class ServerMirrorsInterface:
                     my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
                     my_broken_uris.sort()
                     self.Entropy.updateProgress(
-                        red("[repo:%s|mirror:%s|errors] failed to upload to mirror, not unlocking and continuing" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                        red("[repo:%s|%s|errors] failed to upload to mirror, not unlocking and continuing" % (etpConst['officialrepositoryid'],crippled_uri,)),
                         importance = 0,
                         type = "error",
                         header = darkred(" !!! ")
@@ -13154,7 +13158,7 @@ class ServerMirrorsInterface:
             os.makedirs(mytmpdir)
 
             self.Entropy.updateProgress(
-                red("[repo:%s|mirror:%s|download] preparing to download database from mirror" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                red("[repo:%s|%s|download] preparing to download database from mirror" % (etpConst['officialrepositoryid'],crippled_uri,)),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -13189,7 +13193,7 @@ class ServerMirrorsInterface:
                     my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
                     my_broken_uris.sort()
                     self.Entropy.updateProgress(
-                        red("[repo:%s|mirror:%s|errors] failed to download from mirror" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                        red("[repo:%s|%s|errors] failed to download from mirror" % (etpConst['officialrepositoryid'],crippled_uri,)),
                         importance = 0,
                         type = "error",
                         header = darkred(" !!! ")
