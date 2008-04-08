@@ -12850,7 +12850,7 @@ class ServerMirrorsInterface:
                                 ),
                                 importance = 0,
                                 type = "info",
-                                header = red(" @@ ")
+                                header = darkgreen(" @@ ")
                             )
                             done = True
                             break
@@ -13839,7 +13839,7 @@ class ServerMirrorsInterface:
             ),
             importance = 1,
             type = "info",
-            header = darkgreen(" * ")
+            header = blue(" @@ ")
         )
         return errors, m_fine_uris, m_broken_uris
 
@@ -13990,7 +13990,7 @@ class ServerMirrorsInterface:
                         ),
                         importance = 1,
                         type = "info",
-                        header = red(" @@ ")
+                        header = darkgreen(" @@ ")
                     )
 
                     if pkgbranches[-1] == mybranch:
