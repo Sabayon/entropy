@@ -13849,7 +13849,7 @@ class ServerMirrorsInterface:
     def _sync_run_download_queue(self, uri, download_queue, branch):
 
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-        myqueue = [x[0] for x in download_queue]
+        myqueue = []
         for itemdata in download_queue:
             x = itemdata[0]
             hash_file = x+etpConst['packageshashfileext']
