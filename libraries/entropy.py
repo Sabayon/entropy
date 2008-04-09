@@ -11103,7 +11103,17 @@ class ServerInterface(TextInterface):
                     header = bold(" !!! ")
                 )
         if not read_only:
-            print conn.indexing
+            self.Entropy.updateProgress(
+                "[repo:%s|%s] %s" % (
+                            blue(etpConst['officialrepositoryid']),
+                            red("database"),
+                            blue("indexing database"),
+                    ),
+                importance = 1,
+                type = "info",
+                header = brown(" @@ "),
+                back = True
+            )
             conn.createAllIndexes()
         # do not cache ultra-readonly dbs
         if not just_reading:
