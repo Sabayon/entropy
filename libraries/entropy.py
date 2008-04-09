@@ -2501,7 +2501,7 @@ class EquoInterface(TextInterface):
         return conn.intf
 
     # This function extracts all the info from a .tbz2 file and returns them
-    def extract_pkg_metadata(self, package, etpBranch = etpConst['branch'], silent = False, inject = False, do_rdepend_check = False):
+    def extract_pkg_metadata(self, package, etpBranch = etpConst['branch'], silent = False, inject = False):
 
         data = {}
         info_package = bold(os.path.basename(package))+": "
@@ -3047,32 +3047,6 @@ class EquoInterface(TextInterface):
                         f = open(licfile)
                         data['licensedata'][mylicense] = f.read()
                         f.close()
-
-        if do_rdepend_check:
-            depslot_data = set()
-            for dependency in data['dependencies']:
-                try:
-                    myatom = Spm.get_installed_atom(dependency)
-                except KeyError:
-                    continue
-                if not myatom:
-                    continue
-                key = self.entropyTools.dep_getkey(myatom)
-                slot = Spm.get_package_slot(myatom)
-                depslot_data.add("%s:%s" % (key,slot,))
-            for library in data['needed']:
-                matches = Spm.query_belongs(library, like = True)
-                found = False
-                for match in matches:
-                    key = self.entropyTools.dep_getkey(match)
-                    slot = Spm.get_package_slot(myatom)
-                    if key+":"+slot in depslot_data:
-                        found = True
-                        break
-                    if found:
-                        break
-                if not found and matches:
-                    data['dependencies'].extend(matches)
 
         if not silent:
             self.updateProgress(
@@ -11159,7 +11133,7 @@ class ServerInterface(TextInterface):
                                 header = brown(" * "),
                                 back = True
                             )
-        mydata = self.ClientService.extract_pkg_metadata(package_file, etpBranch = branch, inject = inject, do_rdepend_check = True)
+        mydata = self.ClientService.extract_pkg_metadata(package_file, etpBranch = branch, inject = inject)
         idpackage, revision, x = dbconn.handlePackage(mydata)
         del x
 
@@ -11201,6 +11175,45 @@ class ServerInterface(TextInterface):
         dbconn.setDownloadURL(idpackage,downloadurl)
 
         return downloadurl
+
+    def add_missing_dependencies(self, idpackages):
+        for idpackage in idpackages:
+            missing = self.get_missing_rdepends(idpackage)
+
+    def get_missing_rdepends(self, idpackage):
+        rdepends = set()
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+        print "-"*40
+        print dbconn.retrieveAtom(idpackage)
+        neededs = dbconn.retrieveNeeded(idpackage)
+        deps_content = set()
+        dependencies = dbconn.retrieveDependencies(idpackage)
+        dependencies_cache = set()
+        for dependency in dependencies:
+            match = dbconn.atomMatch(dependency)
+            if match[0] != -1:
+                deps_content |= dbconn.retrieveContent(match[0])
+                key, slot = dbconn.retrieveKeySlot(match[0])
+                dependencies_cache.add((key,slot))
+        ldpaths = self.entropyTools.collectLinkerPaths()
+        deps_content = set([x for x in deps_content if os.path.dirname(x) in ldpaths])
+        print "neededs:",neededs
+        for needed in neededs:
+            data_solved = dbconn.resolveNeeded(needed)
+            print needed,"belonging to",data_solved
+            found = False
+            for data in data_solved:
+                if data[1] in deps_content:
+                    found = True
+                    break
+            if not found:
+                print "!! not found:",needed
+                for data in data_solved:
+                    key, slot = dbconn.retrieveKeySlot(data[0])
+                    if (key,slot) not in dependencies_cache:
+                        print "adding",key,":",slot
+                        rdepends.add(key+":"+slot)
+        return rdepends
 
     def add_package_to_repository(self, package_filename, requested_branch, inject = False):
 
@@ -11249,6 +11262,7 @@ class ServerInterface(TextInterface):
                                 header = brown(" * ")
                             )
         dbconn.commitChanges()
+        return idpackage
 
 
     def quickpkg(self, atom,storedir):

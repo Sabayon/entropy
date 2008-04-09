@@ -174,15 +174,23 @@ def update(options):
 
     counter = 0
     maxcount = str(len(tbz2files))
+    idpackages = set()
     for tbz2 in tbz2files:
         counter += 1
         tbz2name = tbz2.split("/")[-1]
         print_info(" ("+str(counter)+"/"+maxcount+") Processing "+tbz2name)
         tbz2path = os.path.join(etpConst['packagesserverstoredir'],tbz2)
-        Entropy.add_package_to_repository(tbz2path, requested_branch)
+        idpackage = Entropy.add_package_to_repository(tbz2path, requested_branch)
+        idpackages.add(idpackage)
 
     # regen dependstable
     Entropy.depends_table_initialize()
+
+    # now scan rdepend for injected packages
+    if idpackages:
+        Entropy.add_missing_dependencies(idpackages)
+
+
     # checking dependencies and print issues
     Entropy.dependencies_test()
     Entropy.close_server_databases()
