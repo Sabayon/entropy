@@ -3240,7 +3240,8 @@ class etpDatabase:
         self.cursor.execute('SELECT name FROM SQLITE_MASTER WHERE type = "index"')
         indexes = self.fetchall2set(self.cursor.fetchall())
         for index in indexes:
-            self.cursor.execute('DROP INDEX IF EXISTS %s' % (index,))
+            if not index.startswith("sqlite"):
+                self.cursor.execute('DROP INDEX IF EXISTS %s' % (index,))
 
 
     def createAllIndexes(self):
