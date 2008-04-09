@@ -2611,7 +2611,7 @@ class EquoInterface(TextInterface):
                         if rc == "Yes":
                             newmissing.add(dependency)
                     missing = newmissing
-            dbconn.insertDependencies(idpackage,dependencies)
+            dbconn.insertDependencies(idpackage,missing)
             dbconn.commitChanges()
             self.updateProgress(
                     "[repo:%s] %s: %s" % (
