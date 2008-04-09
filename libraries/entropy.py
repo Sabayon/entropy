@@ -11195,6 +11195,8 @@ class ServerInterface(TextInterface):
                 deps_content |= dbconn.retrieveContent(match[0])
                 key, slot = dbconn.retrieveKeySlot(match[0])
                 dependencies_cache.add((key,slot))
+        key, slot = dbconn.retrieveKeySlot(idpackage)
+        dependencies_cache.add((key,slot))
         ldpaths = self.entropyTools.collectLinkerPaths()
         deps_content = set([x for x in deps_content if os.path.dirname(x) in ldpaths])
         print "neededs:",neededs

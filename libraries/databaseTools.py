@@ -2372,7 +2372,8 @@ class etpDatabase:
         mydata = set()
         for data in results:
             pathfile = os.path.dirname(data[1])
-            if pathfile in ldpaths:
+            myfilename = os.path.basename(data[1])
+            if (needed == myfilename) and (pathfile in ldpaths):
                 mydata.add(data)
 
         self.storeSearchCache(needed,'resolveNeeded',mydata)
