@@ -11127,6 +11127,10 @@ class ServerInterface(TextInterface):
 
     def package_injector(self, package_file, branch = etpConst['branch'], inject = False):
 
+        upload_dir = os.path.join(etpConst['packagesserveruploaddir'],branch)
+        if not os.path.isdir(upload_dir):
+            os.makedirs(upload_dir)
+
         dbconn = self.openServerDatabase(read_only = False, no_upload = True)
         self.updateProgress(
                                 red("[repo: %s] adding package: %s" % (
@@ -11146,7 +11150,6 @@ class ServerInterface(TextInterface):
         # add package info to our current server repository
         dbconn.removePackageFromInstalledTable(idpackage)
         dbconn.addPackageToInstalledTable(idpackage,etpConst['officialrepositoryid'])
-        dbconn.commitChanges()
         atom = dbconn.retrieveAtom(idpackage)
 
         self.updateProgress(
@@ -11162,7 +11165,13 @@ class ServerInterface(TextInterface):
                                 header = brown(" * ")
                             )
 
-        return idpackage
+        download_url = self._setup_repository_package_filename(idpackage)
+        downloadfile = os.path.basename(download_url)
+        destination_path = os.path.join(upload_dir,downloadfile)
+        shutil.move(package_file,destination_path)
+
+        dbconn.commitChanges()
+        return idpackage,destination_path
 
     # this function changes the final repository package filename
     def _setup_repository_package_filename(self, idpackage):
@@ -11182,14 +11191,9 @@ class ServerInterface(TextInterface):
 
         return downloadurl
 
-    def add_missing_dependencies(self, idpackages):
-        for idpackage in idpackages:
-            missing = self.get_missing_rdepends(idpackage)
-
     def get_missing_rdepends(self, idpackage):
         rdepends = set()
         dbconn = self.openServerDatabase(read_only = False, no_upload = True)
-        print "-"*40
         neededs = dbconn.retrieveNeeded(idpackage, extended = True)
         deps_content = set()
         dependencies = dbconn.retrieveDependencies(idpackage)
@@ -11216,72 +11220,198 @@ class ServerInterface(TextInterface):
             data_solved = set([x for x in data_solved if x[0] not in idpackages_cache])
             if not data_solved or (data_size != len(data_solved)):
                 continue
-            print needed,"belonging to",data_solved
             found = False
             for data in data_solved:
                 if data[1] in deps_content:
                     found = True
                     break
             if not found:
-                print "!! not found:",needed
                 for data in data_solved:
                     key, slot = dbconn.retrieveKeySlot(data[0])
                     if (key,slot) not in dependencies_cache:
                         if not dbconn.isSystemPackage(data[0]):
-                            print "adding",key,":",slot
                             rdepends.add(key+":"+slot)
                         idpackages_cache.add(data[0])
         return rdepends
 
-    def add_package_to_repository(self, package_filename, requested_branch, inject = False):
+    def add_packages_to_repository(self, packages_data, ask = True):
 
-        upload_dir = os.path.join(etpConst['packagesserveruploaddir'],requested_branch)
-        if not os.path.isdir(upload_dir):
-            os.makedirs(upload_dir)
+        mycount = 0
+        maxcount = len(packages_data)
+        idpackages_added = set()
+        to_be_injected = set()
+        for packagedata in packages_data:
 
-        # inject into database
-        idpackage = self.package_injector(package_filename, branch = requested_branch, inject = inject)
+            mycount += 1
+            package_filepath = packagedata[0]
+            requested_branch = packagedata[1]
+            inject = packagedata[2]
+            self.updateProgress(
+                            "[repo:%s] %s: %s" % (
+                                        darkgreen(etpConst['officialrepositoryid']),
+                                        blue("adding package"),
+                                        darkgreen(os.path.basename(package_filepath)),
+                                    ),
+                            importance = 1,
+                            type = "info",
+                            header = blue(" @@ "),
+                            count = (mycount,maxcount,)
+            )
 
-        download_url = self._setup_repository_package_filename(idpackage)
-        downloadfile = os.path.basename(download_url)
-        destination_path = os.path.join(upload_dir,downloadfile)
-        shutil.move(package_filename,destination_path)
+            # add to database
+            idpackage, destination_path = self.package_injector(
+                                package_filepath,
+                                branch = requested_branch,
+                                inject = inject
+            )
+            idpackages_added.add(idpackage)
+            to_be_injected.add((idpackage,destination_path))
+
+        if idpackages_added:
+            self.scan_missing_dependencies(idpackages_added, ask = ask)
+
+        # reinit depends table
+        self.depends_table_initialize()
+        # inject database into packages
+        self.inject_database_into_packages(to_be_injected)
+
+        return idpackages_added
+
+
+    def scan_missing_dependencies(self, idpackages, ask = True):
 
         self.updateProgress(
-                                "[repo:%s] %s: %s" % (
-                                            darkgreen(etpConst['officialrepositoryid']),
-                                            blue("injecting entropy metadata"),
-                                            darkgreen(downloadfile),
-                                        ),
-                                importance = 1,
+                        "[repo:%s] %s..." % (
+                                    darkgreen(etpConst['officialrepositoryid']),
+                                    blue("Now searching for missing RDEPENDs"),
+                                ),
+                        importance = 1,
+                        type = "info",
+                        header = red(" @@ ")
+        )
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+        for idpackage in idpackages:
+            atom = dbconn.retrieveAtom(idpackage)
+            self.updateProgress(
+                            "[repo:%s] %s: %s" % (
+                                        darkgreen(etpConst['officialrepositoryid']),
+                                        blue("scanning for missing RDEPENDs"),
+                                        darkgreen(atom),
+                                    ),
+                            importance = 1,
+                            type = "info",
+                            header = blue(" @@ "),
+                            back = True
+            )
+            missing = self.get_missing_rdepends(idpackage)
+            if not missing:
+                continue
+            self.updateProgress(
+                            "[repo:%s] %s: %s %s:" % (
+                                        darkgreen(etpConst['officialrepositoryid']),
+                                        blue("package"),
+                                        darkgreen(atom),
+                                        blue("is missing the following dependencies"),
+                                    ),
+                            importance = 1,
+                            type = "info",
+                            header = red(" @@ ")
+            )
+            for dependency in missing:
+                self.updateProgress(
+                        "%s" % (darkred(dependency),),
+                        importance = 0,
+                        type = "info",
+                        header = blue("    # ")
+                )
+            if ask:
+                rc = self.askQuestion("Do you want to add them?")
+                if rc == "No":
+                    continue
+                rc = self.askQuestion("Selectively?")
+                if rc == "Yes":
+                    newmissing = set()
+                    for dependency in missing:
+                        self.updateProgress(
+                                "[repo:%s|%s] %s" % (
+                                        darkgreen(etpConst['officialrepositoryid']),
+                                        brown(atom),
+                                        blue(dependency),
+                                ),
+                                importance = 0,
                                 type = "info",
-                                header = brown(" * "),
-                                back = True
-                            )
+                                header = blue(" @@ ")
+                        )
+                        rc = self.askQuestion("Want to add?")
+                        if rc == "Yes":
+                            newmissing.add(dependency)
+                    missing = newmissing
+            self.add_dependencies_to_idpackage(idpackage, missing)
+            self.updateProgress(
+                    "[repo:%s] %s: %s" % (
+                                darkgreen(etpConst['officialrepositoryid']),
+                                darkgreen(atom),
+                                blue("missing dependencies added"),
+                            ),
+                    importance = 1,
+                    type = "info",
+                    header = red(" @@ ")
+            )
+
+
+    def inject_database_into_packages(self, injection_data):
+        # now inject metadata into tbz2 packages
+        self.updateProgress(
+                    "[repo:%s] %s:" % (
+                                darkgreen(etpConst['officialrepositoryid']),
+                                blue("Injecting entropy metadata into built packages"),
+                            ),
+                    importance = 1,
+                    type = "info",
+                    header = red(" @@ ")
+        )
 
         dbconn = self.openServerDatabase(read_only = False, no_upload = True)
-        data = dbconn.getPackageData(idpackage)
-        dbpath = self.ClientService.inject_entropy_database_into_package(destination_path, data)
-        digest = self.entropyTools.md5sum(destination_path)
-        # update digest
-        dbconn.setDigest(idpackage,digest)
-        self.entropyTools.createHashFile(destination_path)
-        # remove garbage
-        os.remove(dbpath)
+        for pkgdata in injection_data:
+            idpackage = pkgdata[0]
+            package_path = pkgdata[1]
+            self.updateProgress(
+                                    "[repo:%s|%s] %s: %s" % (
+                                                darkgreen(etpConst['officialrepositoryid']),
+                                                brown(str(idpackage)),
+                                                blue("injecting entropy metadata"),
+                                                darkgreen(os.path.basename(package_path)),
+                                            ),
+                                    importance = 1,
+                                    type = "info",
+                                    header = blue(" @@ "),
+                                    back = True
+                                )
+            data = dbconn.getPackageData(idpackage)
+            dbpath = self.ClientService.inject_entropy_database_into_package(package_path, data)
+            digest = self.entropyTools.md5sum(package_path)
+            # update digest
+            dbconn.setDigest(idpackage,digest)
+            self.entropyTools.createHashFile(package_path)
+            # remove garbage
+            os.remove(dbpath)
+            self.updateProgress(
+                        "[repo:%s|%s] %s: %s" % (
+                                    darkgreen(etpConst['officialrepositoryid']),
+                                    brown(str(idpackage)),
+                                    blue("injection completed"),
+                                    darkgreen(os.path.basename(package_path)),
+                                ),
+                        importance = 1,
+                        type = "info",
+                        header = red(" @@ ")
+            )
+            dbconn.commitChanges()
 
-        self.updateProgress(
-                                "[repo:%s] %s: %s" % (
-                                            darkgreen(etpConst['officialrepositoryid']),
-                                            blue("injection complete"),
-                                            darkgreen(downloadfile),
-                                        ),
-                                importance = 1,
-                                type = "info",
-                                header = brown(" * ")
-                            )
+    def add_dependencies_to_idpackage(self, idpackage, dependencies):
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+        dbconn.insertDependencies(idpackage,dependencies)
         dbconn.commitChanges()
-        return idpackage
-
 
     def quickpkg(self, atom,storedir):
         return self.SpmService.quickpkg(atom,storedir)
@@ -13462,7 +13592,7 @@ class ServerMirrorsInterface:
         return local_files, local_packages
 
 
-    def _show_local_sync_stats(self, crippled_uri, branch, upload_files, local_files):
+    def _show_local_sync_stats(self, upload_files, local_files):
         self.Entropy.updateProgress(
             "%s:" % ( blue("Local statistics"),),
             importance = 1,
@@ -13650,7 +13780,7 @@ class ServerMirrorsInterface:
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
         upload_files, upload_packages = self.calculate_local_upload_files(branch)
         local_files, local_packages = self.calculate_local_package_files(branch)
-        self._show_local_sync_stats(crippled_uri, branch, upload_files, local_files)
+        self._show_local_sync_stats(upload_files, local_files)
 
         self.Entropy.updateProgress(
             "%s: %s" % (blue("Remote statistics for"),red(crippled_uri),),
