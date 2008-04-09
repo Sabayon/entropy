@@ -11091,11 +11091,14 @@ class ServerInterface(TextInterface):
                 conn.serverUpdatePackagesData()
             else:
                 self.updateProgress(
-                                        red("Entropy database is probably empty. If you don't agree with what I'm saying, then it's probably corrupted! I won't stop you here btw..."),
-                                        importance = 1,
-                                        type = "info",
-                                        header = red(" * ")
-                                    )
+                    darkred("Entropy database is probably empty. If you don't agree with what I'm saying, " + \
+                    "then it's probably corrupted! I won't stop you here btw..."),
+                    importance = 1,
+                    type = "warning",
+                    header = bold(" !!! ")
+                )
+        if not read_only:
+            conn.createAllIndexes()
         # do not cache ultra-readonly dbs
         if not just_reading:
             self.serverDbCache[(etpConst['systemroot'],read_only,no_upload,just_reading,)] = conn
@@ -13277,8 +13280,9 @@ class ServerMirrorsInterface:
         ftp.closeConnection()
         return gave_up
 
-    def vacuum_database_and_close(self):
+    def shrink_database_and_close(self):
         dbconn = self.Entropy.openServerDatabase(read_only = False, no_upload = True)
+        dbconn.dropAllIndexes()
         dbconn.vacuum()
         dbconn.commitChanges()
         self.Entropy.close_server_database(dbconn)
@@ -13324,7 +13328,7 @@ class ServerMirrorsInterface:
                 header = darkgreen(" * ")
             )
 
-            self.vacuum_database_and_close()
+            self.shrink_database_and_close()
 
             # EAPI 2
             self._show_eapi2_upload_messages(crippled_uri, database_path, upload_data, cmethod)
