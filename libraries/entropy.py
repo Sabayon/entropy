@@ -11103,7 +11103,7 @@ class ServerInterface(TextInterface):
                     header = bold(" !!! ")
                 )
         if not read_only:
-            self.Entropy.updateProgress(
+            self.updateProgress(
                 "[repo:%s|%s] %s" % (
                             blue(etpConst['officialrepositoryid']),
                             red("database"),
