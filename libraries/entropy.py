@@ -1501,13 +1501,23 @@ class EquoInterface(TextInterface):
             matchcache.add(match)
             deptree.add((mydep[0],match)) # add match
 
-            # extra library breakages check
+            # extra hooks
             clientmatch = self.clientDbconn.atomMatch(matchkey, matchSlot = matchslot)
             if clientmatch[0] != -1:
                 broken_atoms = self._lookup_library_breakages(match, clientmatch, deep_deps = deep_deps)
+                inverse_deps = self._lookup_inverse_dependencies(match, clientmatch, deep_deps = deep_deps)
+                if inverse_deps:
+                    deptree.remove((mydep[0],match))
+                    for ikey,islot in inverse_deps:
+                        if (ikey,islot) not in keyslotcache:
+                            mybuffer.push((mydep[0],ikey+":"+islot))
+                            keyslotcache.add((ikey,islot))
+                    deptree.add((treedepth,match))
+                    treedepth += 1
                 for x in broken_atoms:
                     if x not in treecache:
                         mybuffer.push((treedepth,x))
+                        treecache.add(x)
 
             myundeps = matchdb.retrieveDependenciesList(match[0])
             if (not empty_deps):
@@ -1522,11 +1532,9 @@ class EquoInterface(TextInterface):
         for x in deptree:
             key = x[0]
             item = x[1]
-            try:
-                newdeptree[key].add(item)
-            except:
+            if not newdeptree.has_key(key):
                 newdeptree[key] = set()
-                newdeptree[key].add(item)
+            newdeptree[key].add(item)
         del deptree
 
         if (dependenciesNotFound):
@@ -1541,6 +1549,31 @@ class EquoInterface(TextInterface):
         matchcache.clear()
 
         return newdeptree,0 # note: newtree[0] contains possible conflicts
+
+    def _lookup_inverse_dependencies(self, match, clientmatch, deep_deps = False):
+
+        cmpstat = self.get_package_action(match)
+        if cmpstat == 0:
+            return set()
+
+        keyslots = set()
+        mydepends = self.clientDbconn.retrieveDepends(clientmatch[0])
+        for idpackage in mydepends:
+            key, slot = self.clientDbconn.retrieveKeySlot(idpackage)
+            if (key,slot) in keyslots:
+                continue
+            # grab its deps
+            mydeps = self.clientDbconn.retrieveDependencies(idpackage)
+            found = False
+            for mydep in mydeps:
+                mymatch = self.atomMatch(mydep)
+                if mymatch[0] == match[0]:
+                    found = True
+                    break
+            if not found:
+                keyslots.add((key,slot))
+
+        return keyslots
 
     def _lookup_library_breakages(self, match, clientmatch, deep_deps = False):
 
@@ -4002,18 +4035,7 @@ class PackageInterface:
         self.Entropy.clientDbconn.removePackageFromInstalledTable(idpk)
         self.Entropy.clientDbconn.addPackageToInstalledTable(idpk,self.infoDict['repository'])
         # update dependstable
-        try:
-            depends = self.Entropy.clientDbconn.listIdpackageDependencies(idpk)
-            for depend in depends:
-                atom = depend[1]
-                iddep = depend[0]
-                match = self.Entropy.clientDbconn.atomMatch(atom)
-                if (match[0] != -1):
-                    self.Entropy.clientDbconn.removeDependencyFromDependsTable(iddep)
-                    self.Entropy.clientDbconn.addDependRelationToDependsTable(iddep,match[0])
-            del depends
-        except:
-            self.Entropy.clientDbconn.regenerateDependsTable()
+        self.Entropy.clientDbconn.regenerateDependsTable(output = False)
 
         return idpk
 

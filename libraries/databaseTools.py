@@ -2305,18 +2305,21 @@ class etpDatabase:
         self.storeInfoCache(idpackage,'retrieveCompileFlags',flags)
         return flags
 
-    def retrieveDepends(self, idpackage, atoms = False):
+    def retrieveDepends(self, idpackage, atoms = False, key_slot = False):
 
         # sanity check on the table
-        sanity = self.isDependsTableSane()
-        if not sanity: # is empty, need generation
+        if not self.isDependsTableSane(): # is empty, need generation
             self.regenerateDependsTable(output = False)
 
         if atoms:
             self.cursor.execute('SELECT baseinfo.atom FROM dependstable,dependencies,baseinfo WHERE dependstable.idpackage = (?) and dependstable.iddependency = dependencies.iddependency and baseinfo.idpackage = dependencies.idpackage', (idpackage,))
+            result = self.fetchall2set(self.cursor.fetchall())
+        elif key_slot:
+            self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot FROM baseinfo,categories,dependstable,dependencies WHERE dependstable.idpackage = (?) and dependstable.iddependency = dependencies.iddependency and baseinfo.idpackage = dependencies.idpackage and categories.idcategory = baseinfo.idcategory', (idpackage,))
+            result = self.cursor.fetchall()
         else:
             self.cursor.execute('SELECT dependencies.idpackage FROM dependstable,dependencies WHERE dependstable.idpackage = (?) and dependstable.iddependency = dependencies.iddependency', (idpackage,))
-        result = self.fetchall2set(self.cursor.fetchall())
+            result = self.fetchall2set(self.cursor.fetchall())
 
         return result
 
