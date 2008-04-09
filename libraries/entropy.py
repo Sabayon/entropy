@@ -11190,7 +11190,7 @@ class ServerInterface(TextInterface):
         rdepends = set()
         dbconn = self.openServerDatabase(read_only = False, no_upload = True)
         print "-"*40
-        neededs = dbconn.retrieveNeeded(idpackage)
+        neededs = dbconn.retrieveNeeded(idpackage, extended = True)
         deps_content = set()
         dependencies = dbconn.retrieveDependencies(idpackage)
         dependencies_cache = set()
@@ -11208,8 +11208,10 @@ class ServerInterface(TextInterface):
         ldpaths = self.entropyTools.collectLinkerPaths()
         deps_content = set([x for x in deps_content if os.path.dirname(x) in ldpaths])
         idpackages_cache = set()
-        for needed in neededs:
-            data_solved = dbconn.resolveNeeded(needed)
+        for needed_data in neededs:
+            needed = needed_data[0]
+            elfclass = needed_data[1]
+            data_solved = dbconn.resolveNeeded(needed,elfclass)
             data_size = len(data_solved)
             data_solved = set([x for x in data_solved if x[0] not in idpackages_cache])
             if not data_solved or (data_size != len(data_solved)):
