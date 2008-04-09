@@ -21,7 +21,6 @@
 '''
 
 from entropyConstants import *
-import entropyTools
 from outputTools import *
 import exceptionTools
 Text = TextInterface()
@@ -36,6 +35,7 @@ import dumpTools
 
 class etpDatabase:
 
+    import entropyTools
     def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = etpConst['serverdbid'], indexing = True, OutputInterface = Text, ServiceInterface = None):
 
         self.readOnly = readOnly
@@ -44,10 +44,10 @@ class etpDatabase:
         self.xcache = xcache
         self.dbname = dbname
         self.indexing = indexing
-        if not entropyTools.is_user_in_entropy_group(): # forcing since we won't have write access to db
+        if not self.entropyTools.is_user_in_entropy_group(): # forcing since we won't have write access to db
             self.indexing = False
         # live systems don't like wasting RAM
-        if entropyTools.islive():
+        if self.entropyTools.islive():
             self.indexing = False
         self.dbFile = dbFile
         self.dbclosed = False
@@ -61,7 +61,7 @@ class etpDatabase:
         self.ServiceInterface = ServiceInterface
 
         # no caching for non root and server connections
-        if (self.dbname == etpConst['serverdbid']) or (not entropyTools.is_user_in_entropy_group()):
+        if (self.dbname == etpConst['serverdbid']) or (not self.entropyTools.is_user_in_entropy_group()):
             self.xcache = False
         self.live_cache = {}
 
@@ -75,7 +75,7 @@ class etpDatabase:
             self.doServerDatabaseSyncLock(self.noUpload)
 
         if os.access(self.dbFile,os.W_OK) and self.doesTableExist('baseinfo') and self.doesTableExist('extrainfo'):
-            if entropyTools.islive():
+            if self.entropyTools.islive():
                 # check where's the file
                 if etpConst['systemroot']:
                     self.databaseStructureUpdates()
@@ -87,8 +87,6 @@ class etpDatabase:
             self.closeDB()
 
     def doServerDatabaseSyncLock(self, noUpload):
-
-        from entropy import FtpInterface
 
         # check if the database is locked locally
         lock_file = self.ServiceInterface.MirrorsService.get_database_lockfile()
@@ -111,7 +109,7 @@ class etpDatabase:
             for uri in etpConst['activatoruploaduris']:
                 given_up = self.ServiceInterface.MirrorsService.mirror_lock_check(uri)
                 if given_up:
-                    crippled_uri = entropyTools.extractFTPHostFromUri(uri)
+                    crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                     self.updateProgress(
                                             darkgreen("Mirrors status table:"),
                                             importance = 1,
@@ -127,7 +125,7 @@ class etpDatabase:
                         if (db[2]):
                             db[2] = red("Locked")
 
-                        crippled_uri = entropyTools.extractFTPHostFromUri(db[0])
+                        crippled_uri = self.entropyTools.extractFTPHostFromUri(db[0])
                         self.updateProgress(
                                                 bold("%s: ")+red("[")+brown("DATABASE: %s")+red("] [")+brown("DOWNLOAD: %s")+red("]") % (crippled_uri,db[1],db[2],),
                                                 importance = 1,
@@ -274,7 +272,7 @@ class etpDatabase:
                 updates_dir = etpConst['systemroot']+Spm.get_spm_setting("PORTDIR")+"/profiles/updates"
                 if os.path.isdir(updates_dir):
                     # get checksum
-                    mdigest = entropyTools.md5sum_directory(updates_dir, get_obj = True)
+                    mdigest = self.entropyTools.md5sum_directory(updates_dir, get_obj = True)
                     # also checksum etpConst['etpdatabaseupdatefile']
                     if os.path.isfile(repo_updates_file):
                         f = open(repo_updates_file)
@@ -300,7 +298,7 @@ class etpDatabase:
             SpmIntf = SpmInterface(self.OutputInterface)
             Spm = SpmIntf.intf
             updates_dir = etpConst['systemroot']+Spm.get_spm_setting("PORTDIR")+"/profiles/updates"
-            update_files = entropyTools.sortUpdateFiles(os.listdir(updates_dir))
+            update_files = self.entropyTools.sortUpdateFiles(os.listdir(updates_dir))
             update_files = [os.path.join(updates_dir,x) for x in update_files]
             # now load actions from files
             update_actions = []
@@ -497,7 +495,7 @@ class etpDatabase:
             for iddep in iddeps:
                 # update string
                 mydep = self.retrieveDependencyFromIddependency(iddep)
-                mydep_key = entropyTools.dep_getkey(mydep)
+                mydep_key = self.entropyTools.dep_getkey(mydep)
                 if mydep_key != key_from: # avoid changing wrong atoms -> dev-python/qscintilla-python would
                     continue              # become x11-libs/qscintilla if we don't do this check
                 mydep = mydep.replace(key_from,key_to)
@@ -539,7 +537,7 @@ class etpDatabase:
     # 4) automatically run quickpkg() to build the new binary and tainted binaries owning tainted iddependency and taint database (LOL)
     def runTreeUpdatesSlotmoveAction(self, slotmove_command):
         atom = slotmove_command[0]
-        atomkey = entropyTools.dep_getkey(atom)
+        atomkey = self.entropyTools.dep_getkey(atom)
         slot_from = slotmove_command[1]
         slot_to = slotmove_command[2]
         matches = self.atomMatch(atom, multiMatch = True)
@@ -935,7 +933,7 @@ class etpDatabase:
         # sources, a list
         for source in etpData['sources']:
 
-            if (not source) or (source == "") or (not entropyTools.is_valid_string(source)):
+            if (not source) or (source == "") or (not self.entropyTools.is_valid_string(source)):
                 continue
 
             idsource = self.isSourceAvailable(source)
@@ -1266,7 +1264,7 @@ class etpDatabase:
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert a needed library but then, fetching it returned -1. There's something broken.")
 
     def addLicense(self,pkglicense):
-        if not entropyTools.is_valid_string(pkglicense):
+        if not self.entropyTools.is_valid_string(pkglicense):
             pkglicense = ' ' # workaround for broken license entries
         self.cursor.execute(
                 'INSERT into licenses VALUES '
@@ -1418,7 +1416,7 @@ class etpDatabase:
         self.checkReadOnly()
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
         # create a random table and fill
-        randomtable = "cdiff"+str(entropyTools.getRandomNumber())
+        randomtable = "cdiff"+str(self.entropyTools.getRandomNumber())
         self.cursor.execute('DROP TABLE IF EXISTS '+randomtable)
         self.cursor.execute('CREATE TEMPORARY TABLE '+randomtable+' ( file VARCHAR )')
 
@@ -1720,6 +1718,32 @@ class etpDatabase:
                 if not os.path.isdir(os.path.join(etpConst['dumpstoragedir'],etpCache['dbInfo']+"/"+self.dbname)):
                     sperms = True
                 dumpTools.dumpobj(etpCache['dbInfo']+"/"+self.dbname+"/"+c_match+"/"+c_hash,info_cache_data)
+                if sperms:
+                    const_setup_perms(etpConst['dumpstoragedir'],etpConst['entropygid'])
+            except IOError:
+                pass
+
+    def fetchSearchCache(self, key, function, extra_hash = 0):
+        if self.xcache:
+
+            c_hash = str(hash(function)) + str(extra_hash)
+            c_match = str(key)
+            try:
+                cached = dumpTools.loadobj(etpCache['dbSearch']+"/"+self.dbname+"/"+c_match+"/"+c_hash)
+                if cached != None:
+                    return cached
+            except EOFError:
+                pass
+
+    def storeSearchCache(self, key, function, search_cache_data, extra_hash = 0):
+        if self.xcache:
+            c_hash = str(hash(function)) + str(extra_hash)
+            c_match = str(key)
+            try:
+                sperms = False
+                if not os.path.isdir(os.path.join(etpConst['dumpstoragedir'],etpCache['dbSearch']+"/"+self.dbname)):
+                    sperms = True
+                dumpTools.dumpobj(etpCache['dbSearch']+"/"+self.dbname+"/"+c_match+"/"+c_hash,search_cache_data)
                 if sperms:
                     const_setup_perms(etpConst['dumpstoragedir'],etpConst['entropygid'])
             except IOError:
@@ -2197,7 +2221,7 @@ class etpDatabase:
         licdata = {}
         for licname in licenses:
             licname = licname.strip()
-            if not entropyTools.is_valid_string(licname):
+            if not self.entropyTools.is_valid_string(licname):
                 continue
 
             self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
@@ -2223,7 +2247,7 @@ class etpDatabase:
         licdata = set()
         for licname in licenses:
             licname = licname.strip()
-            if not entropyTools.is_valid_string(licname):
+            if not self.entropyTools.is_valid_string(licname):
                 continue
             self.cursor.execute('SELECT licensename FROM licensedata WHERE licensename = (?)', (licname,))
             licidentifier = self.cursor.fetchone()
@@ -2292,7 +2316,7 @@ class etpDatabase:
     # WARNING: this function does not support branches
     # NOTE: server side uses this regardless branch specification because it already handles it in updatePackage()
     def isPackageAvailable(self,pkgatom):
-        pkgatom = entropyTools.removePackageOperators(pkgatom)
+        pkgatom = self.entropyTools.removePackageOperators(pkgatom)
         self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?)', (pkgatom,))
         result = self.cursor.fetchone()
         if result:
@@ -2308,7 +2332,7 @@ class etpDatabase:
 
     # This version is more specific and supports branches
     def isSpecificPackageAvailable(self, pkgkey, branch, branch_operator = "="):
-        pkgkey = entropyTools.removePackageOperators(pkgkey)
+        pkgkey = self.entropyTools.removePackageOperators(pkgkey)
         self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?) AND branch '+branch_operator+' (?)', (pkgkey,branch,))
         result = self.cursor.fetchone()
         if not result:
@@ -2330,14 +2354,29 @@ class etpDatabase:
         return result[0]
 
     def isFileAvailable(self, myfile):
-
         self.cursor.execute('SELECT idpackage FROM content WHERE file = (?)', (myfile,))
         result = self.cursor.fetchone()
         rc = False
         if result:
             rc = True
-
         return rc
+
+    def resolveNeeded(self, needed):
+
+        cache = self.fetchSearchCache(needed,'resolveNeeded')
+        if cache != None: return cache
+
+        self.cursor.execute('SELECT idpackage,file FROM content WHERE file LIKE (?)', ("%"+needed,))
+        results = self.cursor.fetchall()
+        ldpaths = self.entropyTools.collectLinkerPaths()
+        mydata = set()
+        for data in results:
+            pathfile = os.path.dirname(data[1])
+            if pathfile in ldpaths:
+                mydata.add(data)
+
+        self.storeSearchCache(needed,'resolveNeeded',mydata)
+        return mydata
 
     def isSourceAvailable(self,source):
         self.cursor.execute('SELECT idsource FROM sourcesreference WHERE source = "'+source+'"')
@@ -2409,7 +2448,7 @@ class etpDatabase:
         return True
 
     def acceptLicense(self, license_name):
-        if self.readOnly or (not entropyTools.is_user_in_entropy_group()):
+        if self.readOnly or (not self.entropyTools.is_user_in_entropy_group()):
             return
         if self.isLicenseAccepted(license_name):
             return
@@ -2417,7 +2456,7 @@ class etpDatabase:
         self.commitChanges()
 
     def isLicenseAvailable(self,pkglicense):
-        if not entropyTools.is_valid_string(pkglicense):
+        if not self.entropyTools.is_valid_string(pkglicense):
             pkglicense = ' '
         self.cursor.execute('SELECT idlicense FROM licenses WHERE license = (?)', (pkglicense,))
         result = self.cursor.fetchone()
@@ -2494,7 +2533,7 @@ class etpDatabase:
 
     def searchLicenses(self, mylicense, caseSensitive = False, atoms = False):
 
-        if not entropyTools.is_valid_string(mylicense):
+        if not self.entropyTools.is_valid_string(mylicense):
             return []
 
         request = "baseinfo.idpackage"
@@ -2987,7 +3026,7 @@ class etpDatabase:
 
         dumpfile.write("BEGIN TRANSACTION;\n")
         self.cursor.execute("SELECT name, type, sql FROM sqlite_master WHERE sql NOT NULL AND type=='table'")
-        for name, type, sql in self.cursor.fetchall():
+        for name, x, sql in self.cursor.fetchall():
 
             self.updateProgress(
                                             red("Exporting database table ")+"["+blue(str(name))+"]",
@@ -3009,7 +3048,7 @@ class etpDatabase:
             self.cursor.execute("PRAGMA table_info('%s')" % name)
             cols = [str(r[1]) for r in self.cursor.fetchall()]
             q = "SELECT 'INSERT INTO \"%(tbl_name)s\" VALUES("
-            q += ", ".join(["'||quote(" + c + ")||'" for c in cols])
+            q += ", ".join(["'||quote(" + x + ")||'" for x in cols])
             q += ")' FROM '%(tbl_name)s'"
             self.cursor.execute(q % {'tbl_name': name})
             self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
@@ -3017,7 +3056,7 @@ class etpDatabase:
                 dumpfile.write("%s;\n" % str(row[0].encode('raw_unicode_escape')))
 
         self.cursor.execute("SELECT name, type, sql FROM sqlite_master WHERE sql NOT NULL AND type!='table' AND type!='meta'")
-        for name, type, sql in self.cursor.fetchall():
+        for name, x, sql in self.cursor.fetchall():
             dumpfile.write("%s;\n" % sql)
 
         dumpfile.write("COMMIT;\n")
@@ -3267,7 +3306,7 @@ class etpDatabase:
             # get atom
             myatom = self.retrieveAtom(myid)
             mybranch = self.retrieveBranch(myid)
-            myatom = entropyTools.remove_tag(myatom)
+            myatom = self.entropyTools.remove_tag(myatom)
             myatomcounterpath = vdb_path+myatom+"/"+etpConst['spm']['xpak_entries']['counter']
             if os.path.isfile(myatomcounterpath):
                 try:
@@ -3399,7 +3438,7 @@ class etpDatabase:
                         idpackage,
                         )
         )
-        if (entropyTools.is_user_in_entropy_group()) and (self.dbname == etpConst['serverdbid']): # force commit even if readonly, this will allow to automagically fix dependstable server side
+        if (self.entropyTools.is_user_in_entropy_group()) and (self.dbname == etpConst['serverdbid']): # force commit even if readonly, this will allow to automagically fix dependstable server side
             self.connection.commit()                        # we don't care much about syncing the database since it's quite trivial
 
     '''
@@ -3458,7 +3497,7 @@ class etpDatabase:
                 cached = dumpTools.loadobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash)
                 if cached != None:
                     return cached
-            except EOFError, IOError:
+            except (EOFError, IOError):
                 return None
 
     def atomMatchStoreCache(self, result, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision):
@@ -3705,42 +3744,42 @@ class etpDatabase:
         if cached != None:
             return cached
 
-        atomTag = entropyTools.dep_gettag(atom)
-        atomSlot = entropyTools.dep_getslot(atom)
-        atomRev = entropyTools.dep_get_entropy_revision(atom)
+        atomTag = self.entropyTools.dep_gettag(atom)
+        atomSlot = self.entropyTools.dep_getslot(atom)
+        atomRev = self.entropyTools.dep_get_entropy_revision(atom)
 
         # tag match
-        scan_atom = entropyTools.remove_tag(atom)
+        scan_atom = self.entropyTools.remove_tag(atom)
         if (matchTag == None) and (atomTag != None):
             matchTag = atomTag
 
         # slot match
-        scan_atom = entropyTools.remove_slot(scan_atom)
+        scan_atom = self.entropyTools.remove_slot(scan_atom)
         if (matchSlot == None) and (atomSlot != None):
             matchSlot = atomSlot
 
         # revision match
-        scan_atom = entropyTools.remove_entropy_revision(scan_atom)
+        scan_atom = self.entropyTools.remove_entropy_revision(scan_atom)
         if (matchRevision == None) and (atomRev != None):
             matchRevision = atomRev
 
         # check for direction
-        strippedAtom = entropyTools.dep_getcpv(scan_atom)
+        strippedAtom = self.entropyTools.dep_getcpv(scan_atom)
         if scan_atom[-1] == "*":
             strippedAtom += "*"
         direction = scan_atom[0:len(scan_atom)-len(strippedAtom)]
 
-        justname = entropyTools.isjustname(strippedAtom)
+        justname = self.entropyTools.isjustname(strippedAtom)
         pkgversion = ''
         if not justname:
 
             # get version
-            data = entropyTools.catpkgsplit(strippedAtom)
+            data = self.entropyTools.catpkgsplit(strippedAtom)
             if data == None:
                 return -1,1 # atom is badly formatted
             pkgversion = data[2]+"-"+data[3]
 
-        pkgkey = entropyTools.dep_getkey(strippedAtom)
+        pkgkey = self.entropyTools.dep_getkey(strippedAtom)
         splitkey = pkgkey.split("/")
         if (len(splitkey) == 2):
             pkgname = splitkey[1]
@@ -3826,7 +3865,7 @@ class etpDatabase:
 
                 # if mypkgcat is virtual, we can force
                 if (mypkgcat == "virtual") and (not virtual): # in case of virtual packages only (that they're not stored as provide)
-                    mypkgcat = entropyTools.dep_getkey(results[0][0]).split("/")[0]
+                    mypkgcat = self.entropyTools.dep_getkey(results[0][0]).split("/")[0]
 
                 # check if category matches
                 if mypkgcat != "null":
@@ -3877,18 +3916,18 @@ class etpDatabase:
                 # remove gentoo revision (-r0 if none)
                 if (direction == "="):
                     if (pkgversion.split("-")[-1] == "r0"):
-                        pkgversion = entropyTools.remove_revision(pkgversion)
+                        pkgversion = self.entropyTools.remove_revision(pkgversion)
                 if (direction == "~"):
-                    pkgrevision = entropyTools.dep_get_portage_revision(pkgversion)
-                    pkgversion = entropyTools.remove_revision(pkgversion)
+                    pkgrevision = self.entropyTools.dep_get_portage_revision(pkgversion)
+                    pkgversion = self.entropyTools.remove_revision(pkgversion)
 
                 for data in foundIDs:
 
                     idpackage = data[1]
                     dbver = self.retrieveVersion(idpackage)
                     if (direction == "~"):
-                        myrev = entropyTools.dep_get_portage_revision(dbver)
-                        myver = entropyTools.remove_revision(dbver)
+                        myrev = self.entropyTools.dep_get_portage_revision(dbver)
+                        myver = self.entropyTools.remove_revision(dbver)
                         if myver == pkgversion and pkgrevision <= myrev:
                             # found
                             dbpkginfo.add((idpackage,dbver))
@@ -3911,7 +3950,7 @@ class etpDatabase:
                     # remove revision (-r0 if none)
                     if pkgversion.endswith("r0"):
                         # remove
-                        entropyTools.remove_revision(pkgversion)
+                        self.entropyTools.remove_revision(pkgversion)
 
                     for data in foundIDs:
 
@@ -3925,8 +3964,8 @@ class etpDatabase:
                             dbtag = self.retrieveVersionTag(idpackage)
                             tagcmp = cmp(matchTag,dbtag)
                         dbver = self.retrieveVersion(idpackage)
-                        pkgcmp = entropyTools.compareVersions(pkgversion,dbver)
-                        if type(pkgcmp) is tuple:
+                        pkgcmp = self.entropyTools.compareVersions(pkgversion,dbver)
+                        if isinstance(pkgcmp,tuple):
                             failed = pkgcmp[1]
                             if failed == 0:
                                 failed = pkgversion
@@ -4013,7 +4052,7 @@ class etpDatabase:
             info_tuple = (x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0]))
             versions.add(info_tuple)
             pkgdata[info_tuple] = x[0]
-        newer = entropyTools.getEntropyNewerVersion(list(versions))[0]
+        newer = self.entropyTools.getEntropyNewerVersion(list(versions))[0]
         x = pkgdata[newer]
         self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
         return x,0

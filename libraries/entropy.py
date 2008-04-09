@@ -2501,7 +2501,7 @@ class EquoInterface(TextInterface):
         return conn.intf
 
     # This function extracts all the info from a .tbz2 file and returns them
-    def extract_pkg_metadata(self, package, etpBranch = etpConst['branch'], silent = False, inject = False):
+    def extract_pkg_metadata(self, package, etpBranch = etpConst['branch'], silent = False, inject = False, do_rdepend_check = False):
 
         data = {}
         info_package = bold(os.path.basename(package))+": "
@@ -3047,6 +3047,32 @@ class EquoInterface(TextInterface):
                         f = open(licfile)
                         data['licensedata'][mylicense] = f.read()
                         f.close()
+
+        if do_rdepend_check:
+            depslot_data = set()
+            for dependency in data['dependencies']:
+                try:
+                    myatom = Spm.get_installed_atom(dependency)
+                except KeyError:
+                    continue
+                if not myatom:
+                    continue
+                key = self.entropyTools.dep_getkey(myatom)
+                slot = Spm.get_package_slot(myatom)
+                depslot_data.add("%s:%s" % (key,slot,))
+            for library in data['needed']:
+                matches = Spm.query_belongs(library, like = True)
+                found = False
+                for match in matches:
+                    key = self.entropyTools.dep_getkey(match)
+                    slot = Spm.get_package_slot(myatom)
+                    if key+":"+slot in depslot_data:
+                        found = True
+                        break
+                    if found:
+                        break
+                if not found and matches:
+                    data['dependencies'].extend(matches)
 
         if not silent:
             self.updateProgress(
@@ -9135,7 +9161,13 @@ class PortageInterface:
             myatom = myatom[1:]
         return self.portage.portdb.aux_get(myatom,[setting])[0]
 
-    def query_belongs(self, filename):
+    def query_files(self, atom):
+        mypath = etpConst['systemroot']+"/"
+        mysplit = atom.split("/")
+        content = self.portage.dblink(mysplit[0], mysplit[1], mypath, self.portage.settings).getcontents()
+        return content.keys()
+
+    def query_belongs(self, filename, like = False):
         mypath = etpConst['systemroot']+"/"
         mytree = self._get_portage_vartree(mypath)
         packages = mytree.dbapi.cpv_all()
@@ -9143,8 +9175,13 @@ class PortageInterface:
         for package in packages:
             mysplit = package.split("/")
             content = self.portage.dblink(mysplit[0], mysplit[1], mypath, self.portage.settings).getcontents()
-            if filename in content:
-                matches.add(package)
+            if not like:
+                if filename in content:
+                    matches.add(package)
+            else:
+                for myfile in content:
+                    if myfile.find(filename) != -1:
+                        matches.add(package)
         return matches
 
     def calculate_dependencies(self, my_iuse, my_use, my_license, my_depend, my_rdepend, my_pdepend, my_provide, my_src_uri):
@@ -11122,7 +11159,7 @@ class ServerInterface(TextInterface):
                                 header = brown(" * "),
                                 back = True
                             )
-        mydata = self.ClientService.extract_pkg_metadata(package_file, etpBranch = branch, inject = inject)
+        mydata = self.ClientService.extract_pkg_metadata(package_file, etpBranch = branch, inject = inject, do_rdepend_check = True)
         idpackage, revision, x = dbconn.handlePackage(mydata)
         del x
 
@@ -12703,7 +12740,7 @@ class ServerMirrorsInterface:
                 ),
                 importance = 0,
                 type = "info",
-                header = darkgreen(" * "),
+                header = red(" @@ "),
                 back = True
             )
 
@@ -13114,7 +13151,10 @@ class ServerMirrorsInterface:
             self.lock_mirrors_for_download(True,[uri])
 
             self.Entropy.updateProgress(
-                red("[repo:%s|%s|upload] preparing to upload database to mirror" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                "[repo:%s|%s|upload] preparing to upload database to mirror" % (
+                            etpConst['officialrepositoryid'],
+                            crippled_uri,
+                    ),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
