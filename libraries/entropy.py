@@ -11144,13 +11144,13 @@ class ServerInterface(TextInterface):
         atom = dbconn.retrieveAtom(idpackage)
 
         self.updateProgress(
-
-                                red("[repo: %s] added package: %s rev: %s" % (
+                                "[repo:%s] %s: %s %s: %s" % (
                                             darkgreen(etpConst['officialrepositoryid']),
-                                            bold(atom),
+                                            blue("added package"),
+                                            darkgreen(atom),
+                                            blue("rev"),
                                             bold(str(revision)),
-                                        )
-                                ),
+                                    ),
                                 importance = 1,
                                 type = "info",
                                 header = brown(" * ")
@@ -11220,8 +11220,9 @@ class ServerInterface(TextInterface):
                 for data in data_solved:
                     key, slot = dbconn.retrieveKeySlot(data[0])
                     if (key,slot) not in dependencies_cache:
-                        print "adding",key,":",slot
-                        rdepends.add(key+":"+slot)
+                        if not dbconn.isSystemPackage(data[0]):
+                            print "adding",key,":",slot
+                            rdepends.add(key+":"+slot)
                         idpackages_cache.add(data[0])
         return rdepends
 
@@ -11544,7 +11545,7 @@ class ServerInterface(TextInterface):
                 idpk, revision, mydata_upd = dbconn.addPackage(mydata, revision = addRevision)
 
                 self.updateProgress(
-                    "[repo: %s] [%s:%s/%s] %s: %s, %s: %s" % (
+                    "[repo:%s] [%s:%s/%s] %s: %s, %s: %s" % (
                                 etpConst['officialrepositoryid'],
                                 brown(mybranch),
                                 darkgreen(counter),
