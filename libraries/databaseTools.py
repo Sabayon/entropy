@@ -3259,7 +3259,6 @@ class etpDatabase:
         if (self.dbname != etpConst['serverdbid']) and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( library )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed ( idneeded )')
-            self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_elfclass ON needed ( library,elfclass )')
             self.commitChanges()
 
     def createUseflagsIndex(self):
