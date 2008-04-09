@@ -1744,6 +1744,15 @@ def is_valid_string(string):
             return False
     return True
 
+def read_elf_class(elf_file):
+    import struct
+    f = open(elf_file,"rb")
+    f.seek(4)
+    elf_class = f.read(1)
+    f.close()
+    elf_class = struct.unpack('B',elf_class)[0]
+    return elf_class
+
 def collectLinkerPaths():
     if linkerPaths:
         return linkerPaths

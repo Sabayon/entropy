@@ -63,8 +63,8 @@ data = {
     'counter': u"", # aka. COUNTER file
     'messages': u"", # elog content from portage
     'eclasses': u"", # eclasses used by the ebuild
-    'needed': u"", # runtime libraries needed by the package
-    'trigger': u"", # this will become a bool, containing info about external trigger presence
+    'needed': set, # runtime libraries needed by the package
+    'trigger': bool, # this will become a bool, containing info about external trigger presence
     'injected': bool, # if the package has been injected manually, this will be true
     'licensedata': dict # dictionary that contains license text
 }
@@ -281,7 +281,8 @@ CREATE TABLE eclassesreference (
 
 CREATE TABLE needed (
     idpackage INTEGER,
-    idneeded INTEGER
+    idneeded INTEGER,
+    elfclass INTEGER
 );
 
 CREATE TABLE neededreference (

@@ -832,19 +832,22 @@ class etpDatabase:
             )
 
         # needed table
-        for var in etpData['needed']:
+        for mydata in etpData['needed']:
 
-            idneeded = self.isNeededAvailable(var)
+            needed = mydata[0]
+            elfclass = mydata[1]
+            idneeded = self.isNeededAvailable(needed)
 
             if (idneeded == -1):
                 # create eclass
-                idneeded = self.addNeeded(var)
+                idneeded = self.addNeeded(needed)
 
             self.cursor.execute(
                 'INSERT into needed VALUES '
-                '(?,?)'
+                '(?,?,?)'
                 , (	idpackage,
                         idneeded,
+                        elfclass,
                         )
             )
 
@@ -1630,7 +1633,7 @@ class etpDatabase:
         data['config_protect_mask'] = self.retrieveProtectMask(idpackage)
 
         data['eclasses'] = self.retrieveEclasses(idpackage)
-        data['needed'] = self.retrieveNeeded(idpackage)
+        data['needed'] = self.retrieveNeeded(idpackage, extended = True)
 
         mirrornames = set()
         for x in data['sources']:
@@ -2009,15 +2012,19 @@ class etpDatabase:
         self.storeInfoCache(idpackage,'retrieveEclasses',classes)
         return classes
 
-    def retrieveNeeded(self, idpackage):
+    def retrieveNeeded(self, idpackage, extended = False):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveNeeded')
-        if cache != None: return cache
+        #cache = self.fetchInfoCache(idpackage,'retrieveNeeded')
+        #if cache != None: return cache
 
-        self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
-        needed = self.fetchall2set(self.cursor.fetchall())
+        if extended:
+            self.cursor.execute('SELECT library,elfclass FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
+            needed = self.cursor.fetchall()
+        else:
+            self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
+            needed = self.fetchall2set(self.cursor.fetchall())
 
-        self.storeInfoCache(idpackage,'retrieveNeeded',needed)
+        #self.storeInfoCache(idpackage,'retrieveNeeded',needed)
         return needed
 
     def retrieveConflicts(self, idpackage):
@@ -2927,6 +2934,8 @@ class etpDatabase:
 
         if not self.doesTableExist("needed"):
             self.createNeededTable()
+        elif not self.doesColumnInTableExist("needed","elfclass"):
+            self.createNeededElfclassColumn()
 
         if not self.doesTableExist("installedtable") and (self.dbname == etpConst['clientdbid']):
             self.createInstalledTable()
@@ -2958,6 +2967,8 @@ class etpDatabase:
                                             header = blue(" !!! ")
                             )
             self.createAllIndexes()
+
+        self.connection.commit()
 
     def migrateTableToAutoincrement(self, table):
 
@@ -3244,6 +3255,7 @@ class etpDatabase:
         if (self.dbname != etpConst['serverdbid']) and self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( library )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed ( idneeded )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_elfclass ON needed ( library,elfclass )')
             self.commitChanges()
 
     def createUseflagsIndex(self):
@@ -3379,6 +3391,13 @@ class etpDatabase:
         except:
             pass
 
+    def createNeededElfclassColumn(self):
+        try: # if database disk image is malformed, won't raise exception here
+            self.cursor.execute('ALTER TABLE needed ADD COLUMN elfclass INTEGER;')
+            self.cursor.execute('UPDATE needed SET elfclass = (?)', (-1,))
+        except:
+            pass
+
     def createContentTypeColumn(self):
         try: # if database disk image is malformed, won't raise exception here
             self.cursor.execute('ALTER TABLE content ADD COLUMN type VARCHAR;')
@@ -3410,7 +3429,7 @@ class etpDatabase:
         self.cursor.execute('CREATE TABLE eclassesreference ( idclass INTEGER PRIMARY KEY AUTOINCREMENT, classname VARCHAR );')
 
     def createNeededTable(self):
-        self.cursor.execute('CREATE TABLE needed ( idpackage INTEGER, idneeded INTEGER );')
+        self.cursor.execute('CREATE TABLE needed ( idpackage INTEGER, idneeded INTEGER, elfclass INTEGER );')
         self.cursor.execute('CREATE TABLE neededreference ( idneeded INTEGER PRIMARY KEY AUTOINCREMENT, library VARCHAR );')
 
     def createSystemPackagesTable(self):
@@ -3439,8 +3458,9 @@ class etpDatabase:
                         idpackage,
                         )
         )
-        if (self.entropyTools.is_user_in_entropy_group()) and (self.dbname == etpConst['serverdbid']): # force commit even if readonly, this will allow to automagically fix dependstable server side
-            self.connection.commit()                        # we don't care much about syncing the database since it's quite trivial
+        if (self.entropyTools.is_user_in_entropy_group()) and (self.dbname == etpConst['serverdbid']): 
+            # force commit even if readonly, this will allow to automagically fix dependstable server side
+            self.connection.commit() # we don't care much about syncing the database since it's quite trivial
 
     '''
        @description: recreate dependstable table in the chosen database, it's used for caching searchDepends requests

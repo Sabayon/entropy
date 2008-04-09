@@ -1932,6 +1932,7 @@ class EquoInterface(TextInterface):
                     tainted = True
                 elif myscopedata[6] != arevision:
                     tainted = True
+                '''
                 elif (myscopedata[6] == arevision) and (arevision == 9999):
                     # check if "needed" are the same, otherwise, pull
                     # this will avoid having old packages installed just because user ran equo database generate (migrating from gentoo)
@@ -1940,7 +1941,7 @@ class EquoInterface(TextInterface):
                     needed = self.clientDbconn.retrieveNeeded(idpackage)
                     if needed != aneeded:
                         tainted = True
-                    #'''
+                    #
                     else:
                         # check use flags too
                         # it helps for the same reason above and when doing upgrades to different branches
@@ -1948,7 +1949,8 @@ class EquoInterface(TextInterface):
                         useflags = self.clientDbconn.retrieveUseflags(idpackage)
                         if auseflags != useflags:
                             tainted = True
-                    #'''
+                    #
+                '''
             if (tainted):
                 # Alice! use the key! ... and the slot
                 matchresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchSlot = myscopedata[4], matchBranches = (branch,))
@@ -2715,10 +2717,14 @@ class EquoInterface(TextInterface):
                 if line:
                     needed = line.split()
                     if len(needed) == 2:
+                        ownlib = needed[0]
+                        ownelf = -1
+                        if os.access(ownlib,os.R_OK):
+                            ownelf = self.entropyTools.read_elf_class(ownlib)
                         libs = needed[1].split(",")
                         for lib in libs:
                             if (lib.find(".so") != -1):
-                                data['needed'].add(lib)
+                                data['needed'].add((lib,ownelf))
         except IOError:
             pass
         data['needed'] = list(data['needed'])
@@ -11184,7 +11190,6 @@ class ServerInterface(TextInterface):
         rdepends = set()
         dbconn = self.openServerDatabase(read_only = False, no_upload = True)
         print "-"*40
-        print dbconn.retrieveAtom(idpackage)
         neededs = dbconn.retrieveNeeded(idpackage)
         deps_content = set()
         dependencies = dbconn.retrieveDependencies(idpackage)
