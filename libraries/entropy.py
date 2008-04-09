@@ -11640,7 +11640,7 @@ class ServerInterface(TextInterface):
         treeupdates_file = "/entropy-treeupdates-dump.txt"
         if treeupdates_actions:
             self.updateProgress(
-                "%s: %s") % (
+                "%s: %s" % (
                     red("Dumping current tree updates actions to file"),
                     bold(treeupdates_file),
                 ),
@@ -12375,7 +12375,7 @@ class ServerInterface(TextInterface):
         dbconn.commitChanges()
         self.close_server_database(dbconn)
         self.updateProgress(
-            "[%s=>%s] %s, %s" % (
+            "[%s=>%s] %s" % (
                     brown(cur_branch),
                     bold(to_branch),
                     blue("migration loop completed."),
