@@ -170,9 +170,6 @@ def update(options):
         # then exit gracefully
         return 0
 
-    counter = 0
-    maxcount = str(len(tbz2files))
-    idpackages = set()
     tbz2files = [(os.path.join(etpConst['packagesserverstoredir'],x),requested_branch,False) for x in tbz2files]
     idpackages = Entropy.add_packages_to_repository(tbz2files)
 
@@ -180,7 +177,7 @@ def update(options):
         # checking dependencies and print issues
         Entropy.dependencies_test()
     Entropy.close_server_databases()
-    print_info(green(" * ")+red("Statistics: ")+blue("Entries handled: ")+bold(str(counter)))
+    print_info(green(" * ")+red("Statistics: ")+blue("Entries handled: ")+bold(str(len(idpackages))))
     return 0
 
 

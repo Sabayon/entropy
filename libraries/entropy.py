@@ -2502,6 +2502,128 @@ class EquoInterface(TextInterface):
         self.spmCache[myroot] = conn.intf
         return conn.intf
 
+    def get_missing_rdepends(self, dbconn, idpackage):
+        rdepends = set()
+        neededs = dbconn.retrieveNeeded(idpackage, extended = True)
+        deps_content = set()
+        dependencies = dbconn.retrieveDependencies(idpackage)
+        dependencies_cache = set()
+        for dependency in dependencies:
+            match = dbconn.atomMatch(dependency)
+            if match[0] != -1:
+                deps_content |= dbconn.retrieveContent(match[0])
+                key, slot = dbconn.retrieveKeySlot(match[0])
+                dependencies_cache.add((key,slot))
+        key, slot = dbconn.retrieveKeySlot(idpackage)
+
+        deps_content |= dbconn.retrieveContent(idpackage)
+        dependencies_cache.add((key,slot))
+
+        ldpaths = self.entropyTools.collectLinkerPaths()
+        deps_content = set([x for x in deps_content if os.path.dirname(x) in ldpaths])
+        idpackages_cache = set()
+        for needed_data in neededs:
+            needed = needed_data[0]
+            elfclass = needed_data[1]
+            data_solved = dbconn.resolveNeeded(needed,elfclass)
+            data_size = len(data_solved)
+            data_solved = set([x for x in data_solved if x[0] not in idpackages_cache])
+            if not data_solved or (data_size != len(data_solved)):
+                continue
+            found = False
+            for data in data_solved:
+                if data[1] in deps_content:
+                    found = True
+                    break
+            if not found:
+                for data in data_solved:
+                    key, slot = dbconn.retrieveKeySlot(data[0])
+                    if (key,slot) not in dependencies_cache:
+                        if not dbconn.isSystemPackage(data[0]):
+                            rdepends.add(key+":"+slot)
+                        idpackages_cache.add(data[0])
+        return rdepends
+
+    def scan_missing_dependencies(self, idpackages, dbconn, ask = True):
+
+        self.updateProgress(
+                        "[repo:%s] %s..." % (
+                                    darkgreen(etpConst['officialrepositoryid']),
+                                    blue("Now searching for missing RDEPENDs"),
+                                ),
+                        importance = 1,
+                        type = "info",
+                        header = red(" @@ ")
+        )
+        for idpackage in idpackages:
+            atom = dbconn.retrieveAtom(idpackage)
+            self.updateProgress(
+                            "[repo:%s] %s: %s" % (
+                                        darkgreen(etpConst['officialrepositoryid']),
+                                        blue("scanning for missing RDEPENDs"),
+                                        darkgreen(atom),
+                                    ),
+                            importance = 1,
+                            type = "info",
+                            header = blue(" @@ "),
+                            back = True
+            )
+            missing = self.get_missing_rdepends(dbconn, idpackage)
+            if not missing:
+                continue
+            self.updateProgress(
+                            "[repo:%s] %s: %s %s:" % (
+                                        darkgreen(etpConst['officialrepositoryid']),
+                                        blue("package"),
+                                        darkgreen(atom),
+                                        blue("is missing the following dependencies"),
+                                    ),
+                            importance = 1,
+                            type = "info",
+                            header = red(" @@ ")
+            )
+            for dependency in missing:
+                self.updateProgress(
+                        "%s" % (darkred(dependency),),
+                        importance = 0,
+                        type = "info",
+                        header = blue("    # ")
+                )
+            if ask:
+                rc = self.askQuestion("Do you want to add them?")
+                if rc == "No":
+                    continue
+                rc = self.askQuestion("Selectively?")
+                if rc == "Yes":
+                    newmissing = set()
+                    for dependency in missing:
+                        self.updateProgress(
+                                "[repo:%s|%s] %s" % (
+                                        darkgreen(etpConst['officialrepositoryid']),
+                                        brown(atom),
+                                        blue(dependency),
+                                ),
+                                importance = 0,
+                                type = "info",
+                                header = blue(" @@ ")
+                        )
+                        rc = self.askQuestion("Want to add?")
+                        if rc == "Yes":
+                            newmissing.add(dependency)
+                    missing = newmissing
+            dbconn.insertDependencies(idpackage,dependencies)
+            dbconn.commitChanges()
+            self.updateProgress(
+                    "[repo:%s] %s: %s" % (
+                                darkgreen(etpConst['officialrepositoryid']),
+                                darkgreen(atom),
+                                blue("missing dependencies added"),
+                            ),
+                    importance = 1,
+                    type = "info",
+                    header = red(" @@ ")
+            )
+
     # This function extracts all the info from a .tbz2 file and returns them
     def extract_pkg_metadata(self, package, etpBranch = etpConst['branch'], silent = False, inject = False):
 
@@ -11162,7 +11284,7 @@ class ServerInterface(TextInterface):
                                     ),
                                 importance = 1,
                                 type = "info",
-                                header = brown(" * ")
+                                header = red(" @@ ")
                             )
 
         download_url = self._setup_repository_package_filename(idpackage)
@@ -11190,49 +11312,6 @@ class ServerInterface(TextInterface):
         dbconn.setDownloadURL(idpackage,downloadurl)
 
         return downloadurl
-
-    def get_missing_rdepends(self, idpackage):
-        rdepends = set()
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
-        neededs = dbconn.retrieveNeeded(idpackage, extended = True)
-        deps_content = set()
-        dependencies = dbconn.retrieveDependencies(idpackage)
-        dependencies_cache = set()
-        for dependency in dependencies:
-            match = dbconn.atomMatch(dependency)
-            if match[0] != -1:
-                deps_content |= dbconn.retrieveContent(match[0])
-                key, slot = dbconn.retrieveKeySlot(match[0])
-                dependencies_cache.add((key,slot))
-        key, slot = dbconn.retrieveKeySlot(idpackage)
-
-        deps_content |= dbconn.retrieveContent(idpackage)
-        dependencies_cache.add((key,slot))
-
-        ldpaths = self.entropyTools.collectLinkerPaths()
-        deps_content = set([x for x in deps_content if os.path.dirname(x) in ldpaths])
-        idpackages_cache = set()
-        for needed_data in neededs:
-            needed = needed_data[0]
-            elfclass = needed_data[1]
-            data_solved = dbconn.resolveNeeded(needed,elfclass)
-            data_size = len(data_solved)
-            data_solved = set([x for x in data_solved if x[0] not in idpackages_cache])
-            if not data_solved or (data_size != len(data_solved)):
-                continue
-            found = False
-            for data in data_solved:
-                if data[1] in deps_content:
-                    found = True
-                    break
-            if not found:
-                for data in data_solved:
-                    key, slot = dbconn.retrieveKeySlot(data[0])
-                    if (key,slot) not in dependencies_cache:
-                        if not dbconn.isSystemPackage(data[0]):
-                            rdepends.add(key+":"+slot)
-                        idpackages_cache.add(data[0])
-        return rdepends
 
     def add_packages_to_repository(self, packages_data, ask = True):
 
@@ -11268,7 +11347,8 @@ class ServerInterface(TextInterface):
             to_be_injected.add((idpackage,destination_path))
 
         if idpackages_added:
-            self.scan_missing_dependencies(idpackages_added, ask = ask)
+            dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+            self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = ask)
 
         # reinit depends table
         self.depends_table_initialize()
@@ -11276,87 +11356,6 @@ class ServerInterface(TextInterface):
         self.inject_database_into_packages(to_be_injected)
 
         return idpackages_added
-
-
-    def scan_missing_dependencies(self, idpackages, ask = True):
-
-        self.updateProgress(
-                        "[repo:%s] %s..." % (
-                                    darkgreen(etpConst['officialrepositoryid']),
-                                    blue("Now searching for missing RDEPENDs"),
-                                ),
-                        importance = 1,
-                        type = "info",
-                        header = red(" @@ ")
-        )
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
-        for idpackage in idpackages:
-            atom = dbconn.retrieveAtom(idpackage)
-            self.updateProgress(
-                            "[repo:%s] %s: %s" % (
-                                        darkgreen(etpConst['officialrepositoryid']),
-                                        blue("scanning for missing RDEPENDs"),
-                                        darkgreen(atom),
-                                    ),
-                            importance = 1,
-                            type = "info",
-                            header = blue(" @@ "),
-                            back = True
-            )
-            missing = self.get_missing_rdepends(idpackage)
-            if not missing:
-                continue
-            self.updateProgress(
-                            "[repo:%s] %s: %s %s:" % (
-                                        darkgreen(etpConst['officialrepositoryid']),
-                                        blue("package"),
-                                        darkgreen(atom),
-                                        blue("is missing the following dependencies"),
-                                    ),
-                            importance = 1,
-                            type = "info",
-                            header = red(" @@ ")
-            )
-            for dependency in missing:
-                self.updateProgress(
-                        "%s" % (darkred(dependency),),
-                        importance = 0,
-                        type = "info",
-                        header = blue("    # ")
-                )
-            if ask:
-                rc = self.askQuestion("Do you want to add them?")
-                if rc == "No":
-                    continue
-                rc = self.askQuestion("Selectively?")
-                if rc == "Yes":
-                    newmissing = set()
-                    for dependency in missing:
-                        self.updateProgress(
-                                "[repo:%s|%s] %s" % (
-                                        darkgreen(etpConst['officialrepositoryid']),
-                                        brown(atom),
-                                        blue(dependency),
-                                ),
-                                importance = 0,
-                                type = "info",
-                                header = blue(" @@ ")
-                        )
-                        rc = self.askQuestion("Want to add?")
-                        if rc == "Yes":
-                            newmissing.add(dependency)
-                    missing = newmissing
-            self.add_dependencies_to_idpackage(idpackage, missing)
-            self.updateProgress(
-                    "[repo:%s] %s: %s" % (
-                                darkgreen(etpConst['officialrepositoryid']),
-                                darkgreen(atom),
-                                blue("missing dependencies added"),
-                            ),
-                    importance = 1,
-                    type = "info",
-                    header = red(" @@ ")
-            )
 
 
     def inject_database_into_packages(self, injection_data):
@@ -11407,11 +11406,6 @@ class ServerInterface(TextInterface):
                         header = red(" @@ ")
             )
             dbconn.commitChanges()
-
-    def add_dependencies_to_idpackage(self, idpackage, dependencies):
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
-        dbconn.insertDependencies(idpackage,dependencies)
-        dbconn.commitChanges()
 
     def quickpkg(self, atom,storedir):
         return self.SpmService.quickpkg(atom,storedir)
@@ -11655,6 +11649,8 @@ class ServerInterface(TextInterface):
 
             counter = 0
             maxcount = str(len(pkglist))
+
+            idpackages_added = set()
             for pkg in pkglist:
                 counter += 1
 
@@ -11679,7 +11675,8 @@ class ServerInterface(TextInterface):
                     if mybranch == revision_avail[0]:
                         addRevision = revision_avail[1]
 
-                idpk, revision, mydata_upd = dbconn.addPackage(mydata, revision = addRevision)
+                idpackage, revision, mydata_upd = dbconn.addPackage(mydata, revision = addRevision)
+                idpackages_added.add(idpackage)
 
                 self.updateProgress(
                     "[repo:%s] [%s:%s/%s] %s: %s, %s: %s" % (
@@ -11698,8 +11695,13 @@ class ServerInterface(TextInterface):
                     back = True
                 )
 
-        dbconn.commitChanges()
         self.depends_table_initialize()
+
+        if idpackages_added:
+            dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+            self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = True)
+
+        dbconn.commitChanges()
         self.close_server_databases()
         return 0
 

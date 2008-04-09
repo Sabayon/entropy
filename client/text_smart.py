@@ -124,9 +124,9 @@ def CommonFlate(mytbz2s, action, savedir = None):
 
     # test if portage is available
     try:
-        Spm = Equo.Spm()
-    except:
-        print_error(darkred(" * ")+bold("Source Package Manager backend")+red(" is not available."))
+        Spm = text_ui.Equo.Spm()
+    except Exception, e:
+        print_error(darkred(" * ")+bold("Source Package Manager backend")+red(" is not available: ")+str(e))
         return 1
 
     if savedir:
@@ -178,7 +178,9 @@ def InflateHandler(mytbz2s, savedir):
         # create
         mydbconn = text_ui.Equo.openGenericDatabase(dbpath)
         mydbconn.initializeDatabase()
-        mydbconn.addPackage(mydata, revision = mydata['revision'])
+        idpackage, yyy, xxx = mydbconn.addPackage(mydata, revision = mydata['revision'])
+        del yyy, xxx
+        text_ui.Equo.scan_missing_dependencies([idpackage], mydbconn)
         mydbconn.closeDB()
         text_ui.Equo.entropyTools.aggregateEdb(tbz2file = etptbz2path, dbfile = dbpath)
         os.remove(dbpath)
