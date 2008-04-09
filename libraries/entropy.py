@@ -11077,10 +11077,15 @@ class ServerInterface(TextInterface):
         if not os.path.isdir(os.path.dirname(etpConst['etpdatabasefilepath'])):
             os.makedirs(os.path.dirname(etpConst['etpdatabasefilepath']))
 
-        conn = self.databaseTools.etpDatabase(readOnly = read_only, dbFile = etpConst['etpdatabasefilepath'], noUpload = no_upload, OutputInterface = self, ServiceInterface = self)
+        conn = self.databaseTools.etpDatabase(  readOnly = read_only,
+                                                dbFile = etpConst['etpdatabasefilepath'],
+                                                noUpload = no_upload,
+                                                OutputInterface = self,
+                                                ServiceInterface = self
+        )
         # verify if we need to update the database to sync 
         # with portage updates, we just ignore being readonly in the case
-        if not etpConst['treeupdatescalled'] and (not just_reading):
+        if not etpConst['treeupdatescalled'] and not just_reading:
             # sometimes, when filling a new server db, we need to avoid tree updates
             valid = True
             try:
@@ -11098,6 +11103,7 @@ class ServerInterface(TextInterface):
                     header = bold(" !!! ")
                 )
         if not read_only:
+            print conn.indexing
             conn.createAllIndexes()
         # do not cache ultra-readonly dbs
         if not just_reading:
