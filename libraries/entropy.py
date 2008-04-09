@@ -11199,9 +11199,13 @@ class ServerInterface(TextInterface):
         dependencies_cache.add((key,slot))
         ldpaths = self.entropyTools.collectLinkerPaths()
         deps_content = set([x for x in deps_content if os.path.dirname(x) in ldpaths])
+        idpackages_cache = set()
         print "neededs:",neededs
         for needed in neededs:
             data_solved = dbconn.resolveNeeded(needed)
+            data_solved = set([x for x in data_solved if x[0] not in idpackages_cache])
+            if not data_solved:
+                continue
             print needed,"belonging to",data_solved
             found = False
             for data in data_solved:
@@ -11215,6 +11219,7 @@ class ServerInterface(TextInterface):
                     if (key,slot) not in dependencies_cache:
                         print "adding",key,":",slot
                         rdepends.add(key+":"+slot)
+                        idpackages_cache.add(data[0])
         return rdepends
 
     def add_package_to_repository(self, package_filename, requested_branch, inject = False):
