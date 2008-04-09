@@ -183,13 +183,12 @@ def update(options):
         idpackage = Entropy.add_package_to_repository(tbz2path, requested_branch)
         idpackages.add(idpackage)
 
-    # regen dependstable
-    Entropy.depends_table_initialize()
-
     # now scan rdepend for injected packages
     if idpackages:
         Entropy.add_missing_dependencies(idpackages)
 
+    # regen dependstable
+    Entropy.depends_table_initialize()
 
     # checking dependencies and print issues
     Entropy.dependencies_test()
