@@ -225,7 +225,7 @@ class EquoInterface(TextInterface):
         if cached == None:
             # invalidate matching cache
             try:
-                self.repository_move_clear_cache()
+                self.repository_move_clear_cache(all = True)
             except IOError:
                 pass
         elif type(cached) is tuple:
@@ -237,7 +237,7 @@ class EquoInterface(TextInterface):
                 difflist = cached - myrepolist # before minus now
                 for repoid in difflist:
                     try:
-                        self.repository_move_clear_cache(repoid)
+                        self.repository_move_clear_cache(repoid, all = True)
                     except IOError:
                         pass
         try:
@@ -1190,7 +1190,7 @@ class EquoInterface(TextInterface):
         return dbpkginfo
 
 
-    def repository_move_clear_cache(self, repoid = None):
+    def repository_move_clear_cache(self, repoid = None, all = False):
         self.clear_dump_cache(etpCache['world_available'])
         self.clear_dump_cache(etpCache['world_update'])
         self.clear_dump_cache(etpCache['check_package_update'])
@@ -1199,7 +1199,8 @@ class EquoInterface(TextInterface):
         self.clear_dump_cache(etpCache['dep_tree'])
         if repoid != None:
             self.clear_dump_cache(etpCache['dbMatch']+"/"+repoid+"/")
-            self.clear_dump_cache(etpCache['dbInfo']+"/"+repoid+"/") # it also contains package masking information
+            if all:
+                self.clear_dump_cache(etpCache['dbInfo']+"/"+repoid+"/")
             self.clear_dump_cache(etpCache['dbSearch']+"/"+repoid+"/")
 
 
@@ -1259,7 +1260,7 @@ class EquoInterface(TextInterface):
             if repoid in etpRepositoriesOrder:
                 etpRepositoriesOrder.remove(repoid)
 
-            self.repository_move_clear_cache(repoid)
+            self.repository_move_clear_cache(repoid, all = True)
             # save new etpRepositories to file
             repodata = {}
             repodata['repoid'] = repoid
@@ -1278,7 +1279,7 @@ class EquoInterface(TextInterface):
         self.repository_move_clear_cache(repoid)
 
     def enableRepository(self, repoid):
-        self.repository_move_clear_cache(repoid)
+        self.repository_move_clear_cache(repoid, all = True)
         # save new etpRepositories to file
         repodata = {}
         repodata['repoid'] = repoid
@@ -3739,8 +3740,6 @@ class PackageInterface:
         self.Entropy.clear_dump_cache(etpCache['dep_tree'])
         self.Entropy.clear_dump_cache(etpCache['dbMatch']+etpConst['clientdbid']+"/")
         self.Entropy.clear_dump_cache(etpCache['dbSearch']+etpConst['clientdbid']+"/")
-        if self.infoDict['removeidpackage'] != -1:
-            self.Entropy.clear_dump_cache(etpCache['dbInfo']+"/"+etpConst['clientdbid']+"/"+str(self.infoDict['removeidpackage'])+"/")
 
         self.__update_available_cache()
         try:
@@ -5288,7 +5287,10 @@ class RepoInterface:
 
     def clear_repository_cache(self, repo):
         self.__validate_repository_id(repo)
-        self.Entropy.clear_dump_cache(etpCache['dbInfo']+"/"+repo+"/")
+        # there is no need to remove dbInfo because
+        # idpackages are PRIMARY KEY AUTOINCREMENT, so
+        # an idpackage won't be used more than once
+        #self.Entropy.clear_dump_cache(etpCache['dbInfo']+"/"+repo+"/")
         self.Entropy.clear_dump_cache(etpCache['dbMatch']+repo+"/")
         self.Entropy.clear_dump_cache(etpCache['dbSearch']+repo+"/")
 
@@ -8167,10 +8169,10 @@ class PackageMaskingParser:
     def __removeRepoCache(self, repoid = None):
         if os.path.isdir(etpConst['dumpstoragedir']):
             if repoid:
-                self.Entropy.repository_move_clear_cache(repoid)
+                self.Entropy.repository_move_clear_cache(repoid, all = True)
             else:
                 for repoid in etpRepositoriesOrder:
-                    self.Entropy.repository_move_clear_cache(repoid)
+                    self.Entropy.repository_move_clear_cache(repoid, all = True)
         else:
             os.makedirs(etpConst['dumpstoragedir'])
 

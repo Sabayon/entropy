@@ -395,7 +395,7 @@ class etpDatabase:
             clientDbconn.setRepositoryUpdatesDigest(repository, stored_digest)
 
             # clear client cache
-            clientDbconn.clearCache()
+            clientDbconn.clearCache(all = True)
 
     # this functions will filter either data from /usr/portage/profiles/updates/*
     # or repository database returning only the needed actions
@@ -459,7 +459,7 @@ class etpDatabase:
                 self.runTreeUpdatesSlotmoveAction(command[1:])
 
         # discard cache
-        self.clearCache()
+        self.clearCache(all = True)
 
 
     # -- move action:
@@ -1685,7 +1685,7 @@ class etpDatabase:
     def fetchone2set(self, item):
         return set(item)
 
-    def clearCache(self):
+    def clearCache(self, all = False):
         self.live_cache.clear()
         def do_clear(name):
             dump_path = os.path.join(etpConst['dumpstoragedir'],name)
@@ -1695,7 +1695,8 @@ class etpDatabase:
                     item = os.path.join(dump_dir,item)
                     if os.path.isfile(item):
                         os.remove(item)
-        do_clear(etpCache['dbInfo']+"/"+self.dbname+"/")
+        if all:
+            do_clear(etpCache['dbInfo']+"/"+self.dbname+"/")
         do_clear(etpCache['dbMatch']+"/"+self.dbname+"/")
         do_clear(etpCache['dbSearch']+"/"+self.dbname+"/")
 
