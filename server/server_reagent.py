@@ -98,7 +98,7 @@ def update(options):
                     name = dbconn.retrieveName(match[0])
                     version = dbconn.retrieveVersion(match[0])
                     if os.path.isdir(appdb+"/"+cat+"/"+name+"-"+version):
-                        packages.append([cat+"/"+name+"-"+version,0])
+                        packages.append((cat+"/"+name+"-"+version,0))
 
             if packages:
                 toBeAdded |= set(packages)
