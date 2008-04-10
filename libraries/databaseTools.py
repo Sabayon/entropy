@@ -2408,19 +2408,19 @@ class etpDatabase:
         if cache != None: return cache
 
         ldpaths = self.entropyTools.collectLinkerPaths()
-        mypaths = list([os.path.join(x,needed) for x in ldpaths])
+        mypaths = [os.path.join(x,needed) for x in ldpaths]
+        print mypaths
 
         query = """
         SELECT
                 idpackage,file
         FROM
                 content
-        WHERE 
+        WHERE
                 content.file IN (%s)
         """ % (
-                    ','.join(["?" for x in mypaths]),
+                    ('?,'*len(mypaths))[:-1],
         )
-        #mypaths.extend([needed,needed])
         self.cursor.execute(query,mypaths)
         results = self.cursor.fetchall()
 
