@@ -1246,13 +1246,13 @@ def const_configureServerRepoPaths():
                         )
         etpConst['server_repositories'][repoid]['packages_relative_path'] = \
             os.path.join(   etpConst['product'],
-                            etpConst['officialrepositoryid'],
+                            repoid,
                             "packages",
                             etpSys['arch']
                         )+"/"
         etpConst['server_repositories'][repoid]['database_relative_path'] = \
             os.path.join(   etpConst['product'],
-                            etpConst['officialrepositoryid'],
+                            repoid,
                             "database",
                             etpSys['arch']
                         )+"/"
