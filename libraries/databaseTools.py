@@ -457,7 +457,7 @@ class etpDatabase:
             if command[0] == "move":
                 quickpkg_atoms |= self.runTreeUpdatesMoveAction(command[1:], quickpkg_atoms)
             elif command[0] == "slotmove":
-                self.runTreeUpdatesSlotmoveAction(command[1:])
+                quickpkg_atoms |= self.runTreeUpdatesSlotmoveAction(command[1:])
 
         if quickpkg_atoms and not self.clientDatabase:
             # quickpkg package and packages owning it as a dependency
@@ -549,11 +549,15 @@ class etpDatabase:
     # 3) run fixpackages which will update /var/db/pkg files
     # 4) automatically run quickpkg() to build the new binary and tainted binaries owning tainted iddependency and taint database
     def runTreeUpdatesSlotmoveAction(self, slotmove_command):
+
         atom = slotmove_command[0]
         atomkey = self.entropyTools.dep_getkey(atom)
         slot_from = slotmove_command[1]
         slot_to = slotmove_command[2]
         matches = self.atomMatch(atom, multiMatch = True)
+        iddependencies_idpackages = set()
+        quickpkg_queue = set()
+
         for idpackage in matches[0]:
 
             ### UPDATE DATABASE
@@ -576,13 +580,8 @@ class etpDatabase:
                 # dependstable on server is always re-generated
                 self.setDependency(iddep, mydep)
 
-                if self.clientDatabase:
-                    continue # ignore quickpkg stuff
-
                 # we have to repackage also package owning this iddep
-                iddep_owners = self.searchIdpackageFromIddependency(iddep)
-                for idpackage_owner in iddep_owners:
-                    quickpkg_queue.append(self.retrieveAtom(idpackage_owner))
+                iddependencies_idpackages |= self.searchIdpackageFromIddependency(iddep)
 
             if not self.clientDatabase:
 
@@ -596,11 +595,11 @@ class etpDatabase:
                                             header = darkred(" * ")
                                         )
 
-                # quickpkg package and packages owning it as a dependency
-                self.runTreeUpdatesQuickpkgAction(quickpkg_queue)
-
         self.commitChanges()
-
+        for idpackage_owner in iddependencies_idpackages:
+            myatom = self.retrieveAtom(idpackage_owner)
+            quickpkg_queue.add(myatom)
+        return quickpkg_queue
 
     def runTreeUpdatesQuickpkgAction(self, atoms):
 
@@ -635,7 +634,7 @@ class etpDatabase:
             myatom = self.retrieveAtom(mymatch[0])
             runatoms.add(myatom)
 
-        for myatom in atoms:
+        for myatom in runatoms:
             self.updateProgress(
                 red("repackaging: ")+blue(myatom),
                 importance = 1,
