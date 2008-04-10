@@ -2427,6 +2427,7 @@ class etpDatabase:
         if elfclass == -1:
             mydata = set(results)
         else:
+            mydata = set()
             for data in results:
                 if not os.access(data[1],os.R_OK):
                     continue
