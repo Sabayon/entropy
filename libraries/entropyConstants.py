@@ -424,7 +424,6 @@ etpRepositoriesExcluded = {}
 etpRepositoriesOrder = []
 
 # remote section
-etpRemoteSupport = {}
 etpRemoteFailures = {}  # dict of excluded mirrors due to failures, 
                         # it contains mirror name and failure count | > 5 == ignore mirror
 
@@ -456,7 +455,6 @@ def initConfig_entropyConstants(rootdir):
         const_setupEntropyPid()
     const_readEntropySettings()
     const_readRepositoriesSettings()
-    const_readRemoteSettings()
     const_readSocketSettings()
     const_configureLockPaths()
     initConfig_clientConstants()
@@ -520,7 +518,6 @@ def const_defaultSettings(rootdir):
         'activatorconf': ETP_CONF_DIR+"/activator.conf", # activator.conf file
         'serverconf': ETP_CONF_DIR+"/server.conf", # server.conf file (generic server side settings)
         'reagentconf': ETP_CONF_DIR+"/reagent.conf", # reagent.conf file
-        'remoteconf': ETP_CONF_DIR+"/remote.conf", # remote.conf file
         'equoconf': ETP_CONF_DIR+"/equo.conf", # equo.conf file
         'socketconf': ETP_CONF_DIR+"/socket.conf", # socket.conf file
         'packagesrelativepath': "packages/"+ETP_ARCH_CONST+"/", # user by client interfaces
@@ -699,7 +696,7 @@ def const_defaultSettings(rootdir):
         },
 
         'clientdbid': "client",
-        'serverdbid': "etpdb",
+        'serverdbid': "etpdb:",
         'systemreleasefile': "/etc/sabayon-release",
 
         'socket_service': {
@@ -819,6 +816,9 @@ def const_readRepositoriesSettings():
             elif (line.find("officialrepositoryid|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 officialreponame = line.split("|")[1]
                 etpConst['officialrepositoryid'] = officialreponame
+                shell_repoid = os.getenv('ETP_REPO')
+                if shell_repoid:
+                    etpConst['officialrepositoryid'] = shell_repoid
 
             elif (line.find("conntestlink|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 conntestlink = line.split("|")[1]
@@ -920,22 +920,6 @@ def const_readEntropySettings():
                     etpConst['proxy']['http'] = httpproxy[-1]
             elif line.startswith("system-name|") and (len(line.split("|")) == 2):
                 etpConst['systemname'] = line.split("|")[1].strip()
-
-def const_readRemoteSettings():
-    etpRemoteSupport.clear()
-    etpRemoteFailures.clear()
-    if (os.path.isfile(etpConst['remoteconf'])):
-        f = open(etpConst['remoteconf'],"r")
-        remoteconf = f.readlines()
-        f.close()
-        for line in remoteconf:
-            if line.startswith("handler|") and (len(line.split("|")) > 2):
-                servername = line.split("|")[1].strip()
-                url = line.split("|")[2].strip()
-                if not url.endswith("/"):
-                    url = url+"/"
-                url += etpConst['product']+"/handlers/"
-                etpRemoteSupport[servername] = url
 
 def const_readEntropyRelease():
     # handle Entropy Version
@@ -1187,11 +1171,12 @@ def const_readServerSettings():
             if etpConst['branch'] not in etpConst['branches']:
                 etpConst['branches'].append(etpConst['branch'])
 
-        elif (line.find("repository|") != -1) and (len(line.split("|")) == 4):
+        elif (line.find("repository|") != -1) and (len(line.split("|")) == 5):
 
             repoid = line.split("|")[1].strip()
             repodesc = line.split("|")[2].strip()
             repouris = line.split("|")[3].strip()
+            repohandlers = line.split("|")[4].strip()
 
             if repouris.startswith("ftp://"):
 
@@ -1199,6 +1184,9 @@ def const_readServerSettings():
                     etpConst['server_repositories'][repoid] = {}
                     etpConst['server_repositories'][repoid]['description'] = repodesc
                     etpConst['server_repositories'][repoid]['mirrors'] = []
+                    if repohandlers:
+                        repohandlers = os.path.join(repohandlers,etpConst['product'],repoid,"handlers")
+                        etpConst['server_repositories'][repoid]['handler'] = repohandlers
 
                 uris = repouris.split()
                 for uri in uris:

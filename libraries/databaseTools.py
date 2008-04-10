@@ -60,12 +60,14 @@ class etpDatabase:
             self.indexing = False
         self.dbFile = dbFile
         self.dbclosed = False
+        self.server_repo = None
 
         if not self.clientDatabase:
+            self.server_repo = self.dbname[len(etpConst['serverdbid']):]
             self.create_dbstatus_data()
 
         # no caching for non root and server connections
-        if (self.dbname == etpConst['serverdbid']) or (not self.entropyTools.is_user_in_entropy_group()):
+        if (self.dbname.startswith(etpConst['serverdbid'])) or (not self.entropyTools.is_user_in_entropy_group()):
             self.xcache = False
         self.live_cache = {}
 
@@ -91,7 +93,7 @@ class etpDatabase:
             self.closeDB()
 
     def create_dbstatus_data(self):
-        taint_file = self.ServiceInterface.get_local_database_taint_file()
+        taint_file = self.ServiceInterface.get_local_database_taint_file(self.server_repo)
         if not etpDbStatus.has_key(self.dbFile):
             etpDbStatus[self.dbFile] = {}
             etpDbStatus[self.dbFile]['tainted'] = False
@@ -103,7 +105,8 @@ class etpDatabase:
     def doServerDatabaseSyncLock(self, noUpload):
 
         # check if the database is locked locally
-        lock_file = self.ServiceInterface.MirrorsService.get_database_lockfile()
+        # self.server_repo
+        lock_file = self.ServiceInterface.MirrorsService.get_database_lockfile(self.server_repo)
         if os.path.isfile(lock_file):
             self.updateProgress(
                                     red("Entropy database is already locked by you :-)"),
@@ -120,8 +123,8 @@ class etpDatabase:
                                     header = red(" * "),
                                     back = True
                                 )
-            for uri in self.ServiceInterface.get_remote_mirrors():
-                given_up = self.ServiceInterface.MirrorsService.mirror_lock_check(uri)
+            for uri in self.ServiceInterface.get_remote_mirrors(self.server_repo):
+                given_up = self.ServiceInterface.MirrorsService.mirror_lock_check(uri, repo = self.server_repo)
                 if given_up:
                     crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                     self.updateProgress(
@@ -130,7 +133,7 @@ class etpDatabase:
                                             type = "info",
                                             header = brown(" * ")
                                         )
-                    dbstatus = self.ServiceInterface.MirrorsService.get_mirrors_lock()
+                    dbstatus = self.ServiceInterface.MirrorsService.get_mirrors_lock(repo = self.server_repo)
                     for db in dbstatus:
                         db[1] = green("Unlocked")
                         if (db[1]):
@@ -150,8 +153,8 @@ class etpDatabase:
                     raise exceptionTools.OnlineMirrorError("OnlineMirrorError: cannot lock mirror %s" % (crippled_uri,))
 
             # if we arrive here, it is because all the mirrors are unlocked
-            self.ServiceInterface.MirrorsService.lock_mirrors(True)
-            self.ServiceInterface.MirrorsService.sync_databases(noUpload)
+            self.ServiceInterface.MirrorsService.lock_mirrors(True, repo = self.server_repo)
+            self.ServiceInterface.MirrorsService.sync_databases(noUpload, repo = repo)
 
     def closeDB(self):
 
@@ -171,7 +174,7 @@ class etpDatabase:
 
         if not etpDbStatus[self.dbFile]['tainted']:
             # we can unlock it, no changes were made
-            self.ServiceInterface.MirrorsService.lock_mirrors(False)
+            self.ServiceInterface.MirrorsService.lock_mirrors(False, repo = self.server_repo)
         else:
             self.updateProgress(
                                     darkgreen("Mirrors have not been unlocked. Run activator."),
@@ -211,7 +214,7 @@ class etpDatabase:
         if self.clientDatabase:
             return
         # taint the database status
-        taint_file = self.ServiceInterface.get_local_database_taint_file()
+        taint_file = self.ServiceInterface.get_local_database_taint_file(repo = self.server_repo)
         f = open(taint_file,"w")
         f.write(etpConst['currentarch']+" database tainted\n")
         f.flush()
@@ -223,12 +226,12 @@ class etpDatabase:
             return
         etpDbStatus[self.dbFile]['tainted'] = False
         # untaint the database status
-        taint_file = self.ServiceInterface.get_local_database_taint_file()
+        taint_file = self.ServiceInterface.get_local_database_taint_file(repo = self.server_repo)
         if os.path.isfile(taint_file):
             os.remove(taint_file)
 
     def revisionBump(self):
-        revision_file = self.ServiceInterface.get_local_database_revision_file()
+        revision_file = self.ServiceInterface.get_local_database_revision_file(repo = self.server_repo)
         if not os.path.isfile(revision_file):
             revision = 0
         else:
@@ -242,7 +245,7 @@ class etpDatabase:
         f.close()
 
     def isDatabaseTainted(self):
-        taint_file = self.ServiceInterface.get_local_database_taint_file()
+        taint_file = self.ServiceInterface.get_local_database_taint_file(repo = self.server_repo)
         if os.path.isfile(taint_file):
             return True
         return False
@@ -263,17 +266,17 @@ class etpDatabase:
     def serverUpdatePackagesData(self):
 
         etpConst['treeupdatescalled'] = True
-        repository = etpConst['officialrepositoryid']
-        
-        repo_updates_file = self.ServiceInterface.get_local_database_treeupdates_file()
+        repository = self.server_repo
+
+        repo_updates_file = self.ServiceInterface.get_local_database_treeupdates_file(self.server_repo)
         doRescan = False
 
-        if repositoryUpdatesDigestCache_db.has_key(repository):
-            stored_digest = repositoryUpdatesDigestCache_db.get(repository)
+        if repositoryUpdatesDigestCache_db.has_key(self.server_repo):
+            stored_digest = repositoryUpdatesDigestCache_db.get(self.server_repo)
         else:
             # check database digest
-            stored_digest = self.retrieveRepositoryUpdatesDigest(repository)
-            repositoryUpdatesDigestCache_db[repository] = stored_digest
+            stored_digest = self.retrieveRepositoryUpdatesDigest(self.server_repo)
+            repositoryUpdatesDigestCache_db[self.server_repo] = stored_digest
             if stored_digest == -1:
                 doRescan = True
 
@@ -281,8 +284,8 @@ class etpDatabase:
         portage_dirs_digest = "0"
         if not doRescan:
 
-            if repositoryUpdatesDigestCache_disk.has_key(repository):
-                portage_dirs_digest = repositoryUpdatesDigestCache_disk.get(repository)
+            if repositoryUpdatesDigestCache_disk.has_key(self.server_repo):
+                portage_dirs_digest = repositoryUpdatesDigestCache_disk.get(self.server_repo)
             else:
                 from entropy import SpmInterface
                 SpmIntf = SpmInterface(self.OutputInterface)
@@ -301,7 +304,7 @@ class etpDatabase:
                             block = f.read(1024)
                         f.close()
                     portage_dirs_digest = mdigest.hexdigest()
-                    repositoryUpdatesDigestCache_disk[repository] = portage_dirs_digest
+                    repositoryUpdatesDigestCache_disk[self.server_repo] = portage_dirs_digest
                 del updates_dir
 
         if doRescan or (str(stored_digest) != str(portage_dirs_digest)):
@@ -311,7 +314,7 @@ class etpDatabase:
             self.noUpload = True
 
             # reset database tables
-            self.clearTreeupdatesEntries(repository)
+            self.clearTreeupdatesEntries(self.server_repo)
 
             from entropy import SpmInterface
             SpmIntf = SpmInterface(self.OutputInterface)
@@ -351,10 +354,10 @@ class etpDatabase:
                 self.runTreeUpdatesActions(update_actions)
 
                 # store new actions
-                self.addRepositoryUpdatesActions(repository,update_actions)
+                self.addRepositoryUpdatesActions(self.server_repo,update_actions)
 
             # store new digest into database
-            self.setRepositoryUpdatesDigest(repository, portage_dirs_digest)
+            self.setRepositoryUpdatesDigest(self.server_repo, portage_dirs_digest)
 
     # client side, no portage dependency
     # lxnay: it is indeed very similar to serverUpdatePackagesData() but I prefer keeping both separate
@@ -638,7 +641,7 @@ class etpDatabase:
                     )
                     continue
                 # ask to confirm
-                rc = self.askQuestion("     Confirm %s ?" % (branch,))
+                rc = self.askQuestion("Confirm %s ?" % (branch,))
                 if rc == "Yes":
                     break
 
@@ -660,10 +663,10 @@ class etpDatabase:
                 type = "warning",
                 header = blue("  # ")
             )
-            mypath = self.ServiceInterface.quickpkg(myatom,self.ServiceInterface.get_local_store_directory())
+            mypath = self.ServiceInterface.quickpkg(myatom,self.ServiceInterface.get_local_store_directory(self.server_repo))
             package_paths.add(mypath)
         packages_data = [(x,branch,False) for x in package_paths]
-        idpackages = self.ServiceInterface.add_packages_to_repository(packages_data)
+        idpackages = self.ServiceInterface.add_packages_to_repository(packages_data, repo = self.server_repo)
 
         if not idpackages:
             self.updateProgress(
@@ -844,7 +847,7 @@ class etpDatabase:
                         etpData['branch'],
                         )
                     )
-                elif self.dbname == etpConst['serverdbid']:
+                elif self.dbname.startswith(etpConst['serverdbid']):
                     raise
 
         # on disk size
@@ -1172,7 +1175,7 @@ class etpDatabase:
             # counter
             self.cursor.execute('DELETE FROM counters WHERE idpackage = '+idpackage)
         except:
-            if self.dbname in [etpConst['clientdbid'],etpConst['serverdbid']]:
+            if (self.dbname == etpConst['clientdbid']) or self.dbname.startswith(etpConst['serverdbid']):
                 raise
         try:
             # on disk sizes
@@ -3527,9 +3530,10 @@ class etpDatabase:
                         idpackage,
                         )
         )
-        if (self.entropyTools.is_user_in_entropy_group()) and (self.dbname == etpConst['serverdbid']): 
-            # force commit even if readonly, this will allow to automagically fix dependstable server side
-            self.connection.commit() # we don't care much about syncing the database since it's quite trivial
+        if (self.entropyTools.is_user_in_entropy_group()) and \
+            (self.dbname.startswith(etpConst['serverdbid'])):
+                # force commit even if readonly, this will allow to automagically fix dependstable server side
+                self.connection.commit() # we don't care much about syncing the database since it's quite trivial
 
     '''
        @description: recreate dependstable table in the chosen database, it's used for caching searchDepends requests

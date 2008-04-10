@@ -2179,41 +2179,6 @@ class EquoInterface(TextInterface):
         Package interface :: begin
     '''
 
-    # Get checksum of a package by running md5sum remotely (using php helpers)
-    # @returns hex: if the file exists
-    # @returns None: if the server does not support HTTP handlers
-    # @returns None: if the file is not found
-    # mainly used server side
-    def get_remote_package_checksum(self, servername, filename, branch):
-
-        # etpConst['handlers']['md5sum'] is the command
-        # create the request
-        try:
-            url = etpRemoteSupport[servername]
-        except:
-            # not found, does not support HTTP handlers
-            return None
-
-        # does the package has "#" (== tag) ? hackish thing that works
-        filename = filename.replace("#","%23")
-        # "+"
-        filename = filename.replace("+","%2b")
-        request = url+etpConst['handlers']['md5sum']+filename+"&branch="+branch
-
-        # now pray the server
-        try:
-            if etpConst['proxy']:
-                proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
-                opener = urllib2.build_opener(proxy_support)
-                urllib2.install_opener(opener)
-            item = urllib2.urlopen(request)
-            result = item.readline().strip()
-            item.close()
-            del item
-            return result
-        except: # no HTTP support?
-            return None
-
     '''
     @description: check if Equo has to download the given package
     @input package: filename to check inside the packages directory -> file, checksum of the package -> checksum
@@ -6079,7 +6044,6 @@ class FtpInterface:
         rc = self.ftpconn.rename(fromfile,tofile)
         return rc
 
-    # not supported by dreamhost.com
     def getFileSize(self,file):
         return self.ftpconn.size(file)
 
@@ -6087,7 +6051,6 @@ class FtpInterface:
         data = self.getRoughList()
         for item in data:
             if item.find(file) != -1:
-                # extact the size
                 return item.split()[4]
         return ""
 
@@ -11042,10 +11005,9 @@ class ServerInterface(TextInterface):
         self.dumpTools = self.ClientService.dumpTools
         self.backup_entropy_settings()
         self.SpmService = self.ClientService.Spm()
-        mirrors = self.get_remote_mirrors()
-        self.MirrorsService = ServerMirrorsInterface(self, mirrors = mirrors)
+        self.MirrorsService = ServerMirrorsInterface(self)
 
-    def setup_entropy_settings(self):
+    def setup_entropy_settings(self, repo = None):
         backup_list = [
             'etpdatabaseclientfilepath',
             'clientdbid',
@@ -11055,7 +11017,7 @@ class ServerInterface(TextInterface):
             if setting not in self.settings_to_backup:
                 self.settings_to_backup.append(setting)
         # setup client database
-        etpConst['etpdatabaseclientfilepath'] = self.get_local_database_file()
+        etpConst['etpdatabaseclientfilepath'] = self.get_local_database_file(repo)
         etpConst['clientdbid'] = etpConst['serverdbid']
         const_createWorkingDirectories()
 
@@ -11126,7 +11088,10 @@ class ServerInterface(TextInterface):
             self.ClientService.backup_setting(setting)
 
 
-    def openServerDatabase(self, read_only = True, no_upload = True, just_reading = False):
+    def openServerDatabase(self, read_only = True, no_upload = True, just_reading = False, repo = None):
+
+        if repo == None:
+            repo = self.default_repository
 
         if just_reading:
             read_only = True
@@ -11135,13 +11100,14 @@ class ServerInterface(TextInterface):
         if etpConst['packagemasking'] == None:
             self.ClientService.parse_masking_settings()
 
-        local_dbfile = self.get_local_database_file()
+        local_dbfile = self.get_local_database_file(repo)
         cached = self.serverDbCache.get(
                         (   etpConst['systemroot'],
                             local_dbfile,
                             read_only,
                             no_upload,
                             just_reading,
+                            repo,
                         )
         )
         if cached != None:
@@ -11154,7 +11120,8 @@ class ServerInterface(TextInterface):
                                                 dbFile = local_dbfile,
                                                 noUpload = no_upload,
                                                 OutputInterface = self,
-                                                ServiceInterface = self
+                                                ServiceInterface = self,
+                                                dbname = etpConst['serverdbid']+repo
         )
 
         valid = True
@@ -11180,7 +11147,7 @@ class ServerInterface(TextInterface):
         if not read_only and valid:
             self.updateProgress(
                 "[repo:%s|%s] %s" % (
-                            blue(self.default_repository),
+                            blue(repo),
                             red("database"),
                             blue("indexing database"),
                     ),
@@ -11198,11 +11165,12 @@ class ServerInterface(TextInterface):
                                     read_only,
                                     no_upload,
                                     just_reading,
+                                    repo,
                                 )] = conn
         return conn
 
 
-    def dependencies_test(self):
+    def dependencies_test(self, repo = None):
 
         self.updateProgress(
                                 blue("Running dependencies test..."),
@@ -11210,7 +11178,7 @@ class ServerInterface(TextInterface):
                                 type = "info",
                                 header = red(" @@ ")
                             )
-        dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+        dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
         deps_not_matched = self.ClientService.dependencies_test(dbconn = dbconn)
 
         if deps_not_matched:
@@ -11251,10 +11219,10 @@ class ServerInterface(TextInterface):
 
         return deps_not_matched
 
-    def libraries_test(self, get_files = False):
+    def libraries_test(self, get_files = False, repo = None):
 
         # load db
-        dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+        dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
         packagesMatched, brokenexecs, status = self.ClientService.libraries_test(dbconn = dbconn)
         if status != 0:
             return 1,None
@@ -11313,16 +11281,16 @@ class ServerInterface(TextInterface):
 
         return 0,packages
 
-    def depends_table_initialize(self):
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+    def depends_table_initialize(self, repo = None):
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
         dbconn.regenerateDependsTable()
         dbconn.taintDatabase()
         dbconn.commitChanges()
 
 
-    def create_empty_database(self, dbpath = None):
+    def create_empty_database(self, dbpath = None, repo = None):
         if dbpath == None:
-            dbpath = self.get_local_database_file()
+            dbpath = self.get_local_database_file(repo)
 
         dbdir = os.path.dirname(dbpath)
         if not os.path.isdir(dbdir):
@@ -11347,16 +11315,19 @@ class ServerInterface(TextInterface):
                             )
 
 
-    def package_injector(self, package_file, branch = etpConst['branch'], inject = False):
+    def package_injector(self, package_file, branch = etpConst['branch'], inject = False, repo = None):
 
-        upload_dir = os.path.join(self.get_local_upload_directory(),branch)
+        if repo == None:
+            repo = self.default_repository
+
+        upload_dir = os.path.join(self.get_local_upload_directory(repo),branch)
         if not os.path.isdir(upload_dir):
             os.makedirs(upload_dir)
 
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
         self.updateProgress(
                                 red("[repo: %s] adding package: %s" % (
-                                            darkgreen(self.default_repository),
+                                            darkgreen(repo),
                                             bold(os.path.basename(package_file)),
                                         )
                                 ),
@@ -11371,12 +11342,12 @@ class ServerInterface(TextInterface):
 
         # add package info to our current server repository
         dbconn.removePackageFromInstalledTable(idpackage)
-        dbconn.addPackageToInstalledTable(idpackage,self.default_repository)
+        dbconn.addPackageToInstalledTable(idpackage,repo)
         atom = dbconn.retrieveAtom(idpackage)
 
         self.updateProgress(
                                 "[repo:%s] %s: %s %s: %s" % (
-                                            darkgreen(self.default_repository),
+                                            darkgreen(repo),
                                             blue("added package"),
                                             darkgreen(atom),
                                             blue("rev"),
@@ -11387,7 +11358,7 @@ class ServerInterface(TextInterface):
                                 header = red(" @@ ")
                             )
 
-        download_url = self._setup_repository_package_filename(idpackage)
+        download_url = self._setup_repository_package_filename(idpackage, repo = repo)
         downloadfile = os.path.basename(download_url)
         destination_path = os.path.join(upload_dir,downloadfile)
         shutil.move(package_file,destination_path)
@@ -11396,9 +11367,9 @@ class ServerInterface(TextInterface):
         return idpackage,destination_path
 
     # this function changes the final repository package filename
-    def _setup_repository_package_filename(self, idpackage):
+    def _setup_repository_package_filename(self, idpackage, repo = None):
 
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
 
         downloadurl = dbconn.retrieveDownloadURL(idpackage)
         packagerev = dbconn.retrieveRevision(idpackage)
@@ -11413,7 +11384,10 @@ class ServerInterface(TextInterface):
 
         return downloadurl
 
-    def add_packages_to_repository(self, packages_data, ask = True):
+    def add_packages_to_repository(self, packages_data, ask = True, repo = None):
+
+        if repo == None:
+            repo = self.default_repository
 
         mycount = 0
         maxcount = len(packages_data)
@@ -11427,7 +11401,7 @@ class ServerInterface(TextInterface):
             inject = packagedata[2]
             self.updateProgress(
                             "[repo:%s] %s: %s" % (
-                                        darkgreen(self.default_repository),
+                                        darkgreen(repo),
                                         blue("adding package"),
                                         darkgreen(os.path.basename(package_filepath)),
                                     ),
@@ -11449,7 +11423,7 @@ class ServerInterface(TextInterface):
             except Exception, e:
                 self.updateProgress(
                                 "[repo:%s] %s: %s" % (
-                                            darkgreen(self.default_repository),
+                                            darkgreen(repo),
                                             darkred("Exception caught, running injection and RDEPEND check before raising"),
                                             darkgreen(str(e)),
                                         ),
@@ -11459,30 +11433,34 @@ class ServerInterface(TextInterface):
                                 count = (mycount,maxcount,)
                 )
                 if idpackages_added:
-                    dbconn = self.openServerDatabase(read_only = False, no_upload = True)
-                    self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = ask, repo = self.default_repository)
+                    dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+                    self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = ask, repo = repo)
                 if to_be_injected:
-                    self.inject_database_into_packages(to_be_injected)
+                    self.inject_database_into_packages(to_be_injected, repo = repo)
                 self.close_server_databases()
                 raise
 
         if idpackages_added:
-            dbconn = self.openServerDatabase(read_only = False, no_upload = True)
-            self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = ask, repo = self.default_repository)
+            dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+            self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = ask, repo = repo)
 
         # reinit depends table
-        self.depends_table_initialize()
+        self.depends_table_initialize(repo)
         # inject database into packages
-        self.inject_database_into_packages(to_be_injected)
+        self.inject_database_into_packages(to_be_injected, repo = repo)
 
         return idpackages_added
 
 
-    def inject_database_into_packages(self, injection_data):
+    def inject_database_into_packages(self, injection_data, repo = None):
+
+        if repo == None:
+            repo = self.default_repository
+
         # now inject metadata into tbz2 packages
         self.updateProgress(
                     "[repo:%s] %s:" % (
-                                darkgreen(self.default_repository),
+                                darkgreen(repo),
                                 blue("Injecting entropy metadata into built packages"),
                             ),
                     importance = 1,
@@ -11490,13 +11468,13 @@ class ServerInterface(TextInterface):
                     header = red(" @@ ")
         )
 
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
         for pkgdata in injection_data:
             idpackage = pkgdata[0]
             package_path = pkgdata[1]
             self.updateProgress(
                                     "[repo:%s|%s] %s: %s" % (
-                                                darkgreen(self.default_repository),
+                                                darkgreen(repo),
                                                 brown(str(idpackage)),
                                                 blue("injecting entropy metadata"),
                                                 darkgreen(os.path.basename(package_path)),
@@ -11516,7 +11494,7 @@ class ServerInterface(TextInterface):
             os.remove(dbpath)
             self.updateProgress(
                         "[repo:%s|%s] %s: %s" % (
-                                    darkgreen(self.default_repository),
+                                    darkgreen(repo),
                                     brown(str(idpackage)),
                                     blue("injection completed"),
                                     darkgreen(os.path.basename(package_path)),
@@ -11531,13 +11509,17 @@ class ServerInterface(TextInterface):
         return self.SpmService.quickpkg(atom,storedir)
 
 
-    def remove_packages(self, idpackages):
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+    def remove_packages(self, idpackages, repo = None):
+
+        if repo == None:
+            repo = self.default_repository
+
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
         for idpackage in idpackages:
             atom = dbconn.retrieveAtom(idpackage)
             self.updateProgress(
                     "[repo:%s] %s: %s" % (
-                            darkgreen(self.default_repository),
+                            darkgreen(repo),
                             blue("removing package"),
                             darkgreen(atom),
                     ),
@@ -11550,7 +11532,7 @@ class ServerInterface(TextInterface):
         self.close_server_database(dbconn)
         self.updateProgress(
                 "[repo:%s] %s" % (
-                            darkgreen(self.default_repository),
+                            darkgreen(repo),
                             blue("removal complete"),
                     ),
                 importance = 1,
@@ -11559,67 +11541,93 @@ class ServerInterface(TextInterface):
             )
 
 
-    def bump_database(self):
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+    def bump_database(self, repo = None):
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
         dbconn.taintDatabase()
         self.close_server_database(dbconn)
 
-    def get_remote_mirrors(self):
-        x = self.default_repository
-        return etpConst['server_repositories'][x]['mirrors']
+    def get_remote_mirrors(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return etpConst['server_repositories'][repo]['mirrors']
 
-    def get_remote_packages_relative_path(self):
-        x = self.default_repository
-        return etpConst['server_repositories'][x]['packages_relative_path']
+    def get_remote_packages_relative_path(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return etpConst['server_repositories'][repo]['packages_relative_path']
 
-    def get_remote_database_relative_path(self):
-        x = self.default_repository
-        return etpConst['server_repositories'][x]['database_relative_path']
+    def get_remote_database_relative_path(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return etpConst['server_repositories'][repo]['database_relative_path']
 
-    def get_local_database_file(self):
-        x = self.default_repository
-        path = os.path.join(etpConst['server_repositories'][x]['database_dir'],etpConst['etpdatabasefile'])
+    def get_local_database_file(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        path = os.path.join(etpConst['server_repositories'][repo]['database_dir'],etpConst['etpdatabasefile'])
         return path
 
-    def get_local_store_directory(self):
-        x = self.default_repository
-        return etpConst['server_repositories'][x]['store_dir']
+    def get_local_store_directory(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return etpConst['server_repositories'][repo]['store_dir']
 
-    def get_local_upload_directory(self):
-        x = self.default_repository
-        return etpConst['server_repositories'][x]['upload_dir']
+    def get_local_upload_directory(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return etpConst['server_repositories'][repo]['upload_dir']
 
-    def get_local_packages_directory(self):
-        x = self.default_repository
-        return etpConst['server_repositories'][x]['packages_dir']
+    def get_local_packages_directory(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return etpConst['server_repositories'][repo]['packages_dir']
 
-    def get_local_database_taint_file(self):
-        return os.path.join(self.get_local_database_dir(),etpConst['etpdatabasetaintfile'])
+    def get_local_database_taint_file(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabasetaintfile'])
 
-    def get_local_database_revision_file(self):
-        return os.path.join(self.get_local_database_dir(),etpConst['etpdatabaserevisionfile'])
+    def get_local_database_revision_file(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabaserevisionfile'])
 
-    def get_local_database_mask_file(self):
-        return os.path.join(self.get_local_database_dir(),etpConst['etpdatabasemaskfile'])
+    def get_local_database_mask_file(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabasemaskfile'])
 
-    def get_local_database_licensewhitelist_file(self):
-        return os.path.join(self.get_local_database_dir(),etpConst['etpdatabaselicwhitelistfile'])
+    def get_local_database_licensewhitelist_file(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabaselicwhitelistfile'])
 
-    def get_local_database_rss_file(self):
-        return os.path.join(self.get_local_database_dir(),etpConst['rss-name'])
+    def get_local_database_rss_file(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo),etpConst['rss-name'])
 
-    def get_local_database_rsslight_file(self):
-        return os.path.join(self.get_local_database_dir(),etpConst['rss-light-name'])
+    def get_local_database_rsslight_file(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo),etpConst['rss-light-name'])
 
-    def get_local_database_treeupdates_file(self):
-        return os.path.join(self.get_local_database_dir(),etpConst['etpdatabaseupdatefile'])
+    def get_local_database_treeupdates_file(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabaseupdatefile'])
 
-    def get_local_database_dir(self):
-        x = self.default_repository
-        return etpConst['server_repositories'][x]['database_dir']
+    def get_local_database_dir(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return etpConst['server_repositories'][repo]['database_dir']
 
-    def get_local_database_revision(self):
-        dbrev_file = self.get_local_database_revision_file()
+    def get_local_database_revision(self, repo = None):
+
+        if repo == None:
+            repo = self.default_repository
+
+        dbrev_file = self.get_local_database_revision_file(repo)
         if os.path.isfile(dbrev_file):
             f = open(dbrev_file)
             rev = f.readline().strip()
@@ -11629,7 +11637,7 @@ class ServerInterface(TextInterface):
             except ValueError:
                 self.updateProgress(
                     "[repo:%s] %s: %s - %s" % (
-                            darkgreen(self.default_repository),
+                            darkgreen(repo),
                             blue("invalid database revision"),
                             bold(rev),
                             blue("defaulting to 0"),
@@ -11643,9 +11651,9 @@ class ServerInterface(TextInterface):
         else:
             return 0
 
-    def scan_package_changes(self):
+    def scan_package_changes(self, repo = None):
 
-        dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+        dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
 
         installed_packages = self.SpmService.get_installed_packages_counter()
         installed_counters = set()
@@ -11710,20 +11718,16 @@ class ServerInterface(TextInterface):
         return toBeAdded, toBeRemoved, toBeInjected
 
 
-    def transform_package_into_injected(self, idpackage):
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+    def transform_package_into_injected(self, idpackage, repo = None):
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
         counter = dbconn.getNewNegativeCounter()
         dbconn.setCounter(idpackage,counter)
         dbconn.setInjected(idpackage)
 
     def initialize_server_database(self, empty = True, repo = None):
 
-        doswitch = None
         if repo == None:
             repo = self.default_repository
-        else:
-            doswitch = self.default_repository
-            self.switch_default_repository(repo)
 
         self.close_server_databases()
         revisions_match = {}
@@ -11740,9 +11744,9 @@ class ServerInterface(TextInterface):
                 back = True
             )
 
-        if os.path.isfile(self.get_local_database_file()):
+        if os.path.isfile(self.get_local_database_file(repo)):
 
-            dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
 
             if dbconn.doesTableExist("baseinfo") and dbconn.doesTableExist("extrainfo"):
                 idpackages = dbconn.listAllIdpackages()
@@ -11765,7 +11769,7 @@ class ServerInterface(TextInterface):
 
             self.updateProgress(
                 bold("WARNING")+red(": database %s already exists.") % (
-                    self.get_local_database_file(),
+                    self.get_local_database_file(repo),
                 ),
                 importance = 1,
                 type = "warning",
@@ -11775,11 +11779,11 @@ class ServerInterface(TextInterface):
             rc = self.askQuestion("Do you want to continue ?")
             if rc == "No":
                 return
-            os.remove(self.get_local_database_file())
+            os.remove(self.get_local_database_file(repo))
 
 
         # initialize
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
         dbconn.initializeDatabase()
 
         if not empty:
@@ -11819,7 +11823,7 @@ class ServerInterface(TextInterface):
 
             rc = self.askQuestion("Would you like to sync packages first (important if you don't have them synced) ?")
             if rc == "Yes":
-                self.MirrorsService.sync_packages()
+                self.MirrorsService.sync_packages(repo = repo)
 
             # fill tree updates actions
             if treeupdates_actions:
@@ -11830,7 +11834,7 @@ class ServerInterface(TextInterface):
 
             for mybranch in pkgbranches:
 
-                pkg_branch_dir = os.path.join(self.get_local_packages_directory(),mybranch)
+                pkg_branch_dir = os.path.join(self.get_local_packages_directory(repo),mybranch)
                 pkglist = os.listdir(pkg_branch_dir)
                 # filter .md5 and .expired packages
                 pkglist = [x for x in pkglist if x[-5:] == etpConst['packagesext'] and not os.path.isfile(os.path.join(pkg_branch_dir,x+etpConst['packagesexpirationfileext']))]
@@ -11856,7 +11860,7 @@ class ServerInterface(TextInterface):
 
                     self.updateProgress(
                         "[repo:%s|%s] %s: %s" % (
-                                darkgreen(self.default_repository),
+                                darkgreen(repo),
                                 brown(mybranch),
                                 blue("analyzing"),
                                 bold(pkg),
@@ -11872,7 +11876,7 @@ class ServerInterface(TextInterface):
                     if pkg in injected_packages:
                         doinject = True
 
-                    pkg_path = os.path.join(self.get_local_packages_directory(),mybranch,pkg)
+                    pkg_path = os.path.join(self.get_local_packages_directory(repo),mybranch,pkg)
                     mydata = self.ClientService.extract_pkg_metadata(pkg_path, mybranch, inject = doinject)
 
                     # get previous revision
@@ -11887,7 +11891,7 @@ class ServerInterface(TextInterface):
 
                     self.updateProgress(
                         "[repo:%s] [%s:%s/%s] %s: %s, %s: %s" % (
-                                    self.default_repository,
+                                    repo,
                                     brown(mybranch),
                                     darkgreen(counter),
                                     blue(maxcount),
@@ -11902,23 +11906,20 @@ class ServerInterface(TextInterface):
                         back = True
                     )
 
-            self.depends_table_initialize()
+            self.depends_table_initialize(repo)
 
         if idpackages_added:
-            dbconn = self.openServerDatabase(read_only = False, no_upload = True)
-            self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = True, repo = self.default_repository)
+            dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+            self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = True, repo = repo)
 
         dbconn.commitChanges()
         self.close_server_databases()
 
-        if doswitch:
-            self.switch_default_repository(doswitch)
-
         return 0
 
-    def match_packages(self, packages):
+    def match_packages(self, packages, repo = None):
 
-        dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+        dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
         if "world" in packages:
             return dbconn.listAllIdpackages(),True
         else:
@@ -11936,7 +11937,37 @@ class ServerInterface(TextInterface):
                     )
             return idpackages,False
 
-    def verify_remote_packages(self, packages, ask = True):
+    def get_remote_package_checksum(self, repo, filename, branch):
+
+        if not etpConst['server_repositories'][repo].has_key('handler'):
+            return None
+        url = etpConst['server_repositories'][repo]['handler']
+
+        # does the package has "#" (== tag) ? hackish thing that works
+        filename = filename.replace("#","%23")
+        # "+"
+        filename = filename.replace("+","%2b")
+        request = os.path.join(url,etpConst['handlers']['md5sum'])
+        request += filename+"&branch="+branch
+
+        # now pray the server
+        try:
+            if etpConst['proxy']:
+                proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+                opener = urllib2.build_opener(proxy_support)
+                urllib2.install_opener(opener)
+            item = urllib2.urlopen(request)
+            result = item.readline().strip()
+            item.close()
+            del item
+            return result
+        except: # no HTTP support?
+            return None
+
+    def verify_remote_packages(self, packages, ask = True, repo = None):
+
+        if repo == None:
+            repo = self.default_repository
 
         self.updateProgress(
                 "[%s] %s:" % (
@@ -11949,7 +11980,7 @@ class ServerInterface(TextInterface):
         )
 
         idpackages, world = self.match_packages(packages)
-        dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+        dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
 
         if world:
             self.updateProgress(
@@ -11985,12 +12016,12 @@ class ServerInterface(TextInterface):
         not_match = set()
         broken_packages = {}
 
-        for uri in self.get_remote_mirrors():
+        for uri in self.get_remote_mirrors(repo):
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
             self.updateProgress(
                 "[repo:%s] %s: %s" % (
-                        darkgreen(self.default_repository),
+                        darkgreen(repo),
                         blue("Working on mirror"),
                         brown(crippled_uri),
                     ),
@@ -12011,7 +12042,7 @@ class ServerInterface(TextInterface):
 
                 self.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
-                            self.default_repository,
+                            repo,
                             brown(crippled_uri),
                             blue("checking hash"),
                             darkgreen(os.path.join(pkgbranch,pkgfilename)),
@@ -12024,11 +12055,11 @@ class ServerInterface(TextInterface):
                 )
 
                 ckOk = False
-                ck = self.ClientService.get_remote_package_checksum(crippled_uri, pkgfilename, pkgbranch)
+                ck = self.get_remote_package_checksum(repo, pkgfilename, pkgbranch)
                 if ck == None:
                     self.updateProgress(
                         "[repo:%s|%s] %s: %s %s" % (
-                                        darkgreen(self.default_repository),
+                                        darkgreen(repo),
                                         brown(crippled_uri),
                                         blue("digest verification of"),
                                         bold(pkgfilename),
@@ -12044,7 +12075,7 @@ class ServerInterface(TextInterface):
                 else:
                     self.updateProgress(
                         "[repo:%s|%s] %s: %s %s" % (
-                                        darkgreen(self.default_repository),
+                                        darkgreen(repo),
                                         brown(crippled_uri),
                                         blue("digest verification of"),
                                         bold(pkgfilename),
@@ -12062,7 +12093,7 @@ class ServerInterface(TextInterface):
                     not_match.add(idpackage)
                     self.updateProgress(
                         "[repo:%s|%s] %s: %s %s" % (
-                                        darkgreen(self.default_repository),
+                                        darkgreen(repo),
                                         brown(crippled_uri),
                                         blue("package"),
                                         bold(pkgfilename),
@@ -12101,7 +12132,7 @@ class ServerInterface(TextInterface):
 
             self.updateProgress(
                 "[repo:%s|%s] %s:" % (
-                        darkgreen(self.default_repository),
+                        darkgreen(repo),
                         brown(crippled_uri),
                         blue("Statistics"),
                 ),
@@ -12111,7 +12142,7 @@ class ServerInterface(TextInterface):
             )
             self.updateProgress(
                 "[repo:%s|%s] %s: %s" % (
-                        darkgreen(self.default_repository),
+                        darkgreen(repo),
                         brown(crippled_uri),
                         blue("Number of checked packages"),
                         len(match)+len(not_match),
@@ -12122,7 +12153,7 @@ class ServerInterface(TextInterface):
             )
             self.updateProgress(
                 "[repo:%s|%s] %s: %s" % (
-                        darkgreen(self.default_repository),
+                        darkgreen(repo),
                         brown(crippled_uri),
                         blue("Number of healthy packages"),
                         len(match),
@@ -12133,7 +12164,7 @@ class ServerInterface(TextInterface):
             )
             self.updateProgress(
                 "[repo:%s|%s] %s: %s" % (
-                        darkgreen(self.default_repository),
+                        darkgreen(repo),
                         brown(crippled_uri),
                         blue("Number of broken packages"),
                         len(not_match),
@@ -12146,7 +12177,10 @@ class ServerInterface(TextInterface):
         return match,not_match,broken_packages
 
 
-    def verify_local_packages(self, packages, ask = True):
+    def verify_local_packages(self, packages, ask = True, repo = None):
+
+        if repo == None:
+            repo = self.default_repository
 
         self.updateProgress(
                 "[%s] %s:" % (
@@ -12159,7 +12193,7 @@ class ServerInterface(TextInterface):
         )
 
         idpackages, world = self.match_packages(packages)
-        dbconn = self.openServerDatabase(read_only = True, no_upload = True)
+        dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
 
         to_download = set()
         available = set()
@@ -12170,8 +12204,8 @@ class ServerInterface(TextInterface):
             pkgfile = dbconn.retrieveDownloadURL(idpackage)
             pkgfile = os.path.basename(pkgfile)
 
-            bindir_path = os.path.join(self.get_local_packages_directory(),pkgbranch,pkgfile)
-            uploaddir_path = os.path.join(self.get_local_upload_directory(),pkgbranch,pkgfile)
+            bindir_path = os.path.join(self.get_local_packages_directory(repo),pkgbranch,pkgfile)
+            uploaddir_path = os.path.join(self.get_local_upload_directory(repo),pkgbranch,pkgfile)
 
             if os.path.isfile(bindir_path) and not world:
                 self.updateProgress(
@@ -12229,7 +12263,7 @@ class ServerInterface(TextInterface):
                     type = "info",
                     header = "   "
             )
-            for uri in self.get_remote_mirrors():
+            for uri in self.get_remote_mirrors(repo):
 
                 if not_downloaded:
                     self.updateProgress(
@@ -12242,7 +12276,7 @@ class ServerInterface(TextInterface):
                     not_downloaded = set()
 
                 for pkg in to_download:
-                    rc = self.MirrorsService.download_package(uri,pkg[1],pkg[2])
+                    rc = self.MirrorsService.download_package(uri,pkg[1],pkg[2], repo = repo)
                     if rc == None:
                         not_downloaded.add((pkg[1],pkg[2]))
                     elif not rc:
@@ -12305,7 +12339,7 @@ class ServerInterface(TextInterface):
             )
 
             storedmd5 = dbconn.retrieveDigest(idpackage)
-            pkgpath = os.path.join(self.get_local_packages_directory(),pkgbranch,pkgfile)
+            pkgpath = os.path.join(self.get_local_packages_directory(repo),pkgbranch,pkgfile)
             result = self.entropyTools.compareMd5(pkgpath,storedmd5)
             if result:
                 fine.add(idpackage)
@@ -12384,18 +12418,21 @@ class ServerInterface(TextInterface):
         return fine, failed, downloaded_fine, downloaded_errors
 
 
-    def list_all_branches(self):
-        dbconn = self.openServerDatabase(just_reading = True)
+    def list_all_branches(self, repo = None):
+        dbconn = self.openServerDatabase(just_reading = True, repo = repo)
         branches = dbconn.listAllBranches()
         for branch in branches:
-            branch_path = os.path.join(self.get_local_upload_directory(),branch)
+            branch_path = os.path.join(self.get_local_upload_directory(repo),branch)
             if not os.path.isdir(branch_path):
                 os.makedirs(branch_path)
-            branch_path = os.path.join(self.get_local_packages_directory(),branch)
+            branch_path = os.path.join(self.get_local_packages_directory(repo),branch)
             if not os.path.isdir(branch_path):
                 os.makedirs(branch_path)
 
-    def switch_packages_branch(self, idpackages, to_branch):
+    def switch_packages_branch(self, idpackages, to_branch, repo = None):
+
+        if repo == None:
+            repo = self.default_repository
 
         self.updateProgress(
             red("Switching selected packages..."),
@@ -12403,7 +12440,7 @@ class ServerInterface(TextInterface):
             type = "info",
             header = darkgreen(" * ")
         )
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
 
         already_switched = set()
         not_found = set()
@@ -12427,7 +12464,7 @@ class ServerInterface(TextInterface):
                 continue
             old_filename = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
             # check if file exists
-            frompath = os.path.join(self.get_local_packages_directory(),cur_branch,old_filename)
+            frompath = os.path.join(self.get_local_packages_directory(repo),cur_branch,old_filename)
             if not os.path.isfile(frompath):
                 self.updateProgress(
                     "[%s=>%s] %s, %s" % (
@@ -12472,7 +12509,7 @@ class ServerInterface(TextInterface):
                 back = True
             )
             new_filename = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
-            topath = os.path.join(self.get_local_packages_directory(),to_branch)
+            topath = os.path.join(self.get_local_packages_directory(repo),to_branch)
             if not os.path.isdir(topath):
                 os.makedirs(topath)
 
@@ -12508,7 +12545,7 @@ class ServerInterface(TextInterface):
                 back = True
             )
 
-            for uri in self.get_remote_mirrors():
+            for uri in self.get_remote_mirrors(repo):
 
                 crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                 self.updateProgress(
@@ -12526,7 +12563,7 @@ class ServerInterface(TextInterface):
                 )
 
                 ftp = self.FtpInterface(uri, self)
-                ftp.setCWD(self.get_remote_packages_relative_path())
+                ftp.setCWD(self.get_remote_packages_relative_path(repo))
                 # create directory if it doesn't exist
                 if not ftp.isFileAvailable(to_branch):
                     ftp.mkdir(to_branch)
@@ -12558,14 +12595,12 @@ class ServerInterface(TextInterface):
 class ServerMirrorsInterface:
 
     import entropyTools, dumpTools
-    def __init__(self,  ServerInstance, mirrors):
+    def __init__(self,  ServerInstance):
 
         if not isinstance(ServerInstance,ServerInterface):
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid ServerInterface based instance is needed")
 
         self.Entropy = ServerInstance
-        self.Mirrors = mirrors[:]
-        self.repository_directory = self.Entropy.get_local_database_dir()
         self.FtpInterface = self.Entropy.FtpInterface
         self.rssFeed = self.Entropy.rssFeed
 
@@ -12575,7 +12610,7 @@ class ServerMirrorsInterface:
             type = "info",
             header = red(" @@ ")
         )
-        for mirror in self.Mirrors:
+        for mirror in self.Entropy.get_remote_mirrors():
             mirror = self.entropyTools.hideFTPpassword(mirror)
             self.Entropy.updateProgress(
                 blue("mirror: %s") % (darkgreen(mirror),),
@@ -12585,15 +12620,13 @@ class ServerMirrorsInterface:
             )
 
 
-    def set_mirrors(self, mirrors):
-        if not isinstance(mirrors,list):
-            raise exceptionTools.InvalidDataType("InvalidDataType: set_upload_mirrors needs a list type")
-        self.Mirrors = mirrors[:]
+    def lock_mirrors(self, lock = True, mirrors = [], repo = None):
 
-    def lock_mirrors(self, lock = True, mirrors = []):
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         if not mirrors:
-            mirrors = self.Mirrors[:]
+            mirrors = self.Entropy.get_remote_mirrors(repo)
 
         issues = False
         for uri in mirrors:
@@ -12604,7 +12637,7 @@ class ServerMirrorsInterface:
             if lock: lock_text = "locking"
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s %s" % (
-                        brown(self.Entropy.default_repository),
+                        brown(repo),
                         darkgreen(crippled_uri),
                         bold(lock_text),
                         blue("mirror..."),
@@ -12616,12 +12649,12 @@ class ServerMirrorsInterface:
             )
 
             ftp = self.FtpInterface(uri, self.Entropy)
-            ftp.setCWD(self.Entropy.get_remote_database_relative_path())
+            ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
 
             if lock and ftp.isFileAvailable(etpConst['etpdatabaselockfile']):
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s" % (
-                            brown(self.Entropy.default_repository),
+                            brown(repo),
                             darkgreen(crippled_uri),
                             blue("mirror already locked"),
                     ),
@@ -12634,7 +12667,7 @@ class ServerMirrorsInterface:
             elif not lock and not ftp.isFileAvailable(etpConst['etpdatabaselockfile']):
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s" % (
-                            brown(self.Entropy.default_repository),
+                            brown(repo),
                             darkgreen(crippled_uri),
                             blue("mirror already unlocked"),
                     ),
@@ -12646,14 +12679,14 @@ class ServerMirrorsInterface:
                 continue
 
             if lock:
-                rc = self.do_mirror_lock(uri, ftp)
+                rc = self.do_mirror_lock(uri, ftp, repo = repo)
             else:
-                rc = self.do_mirror_unlock(uri, ftp)
+                rc = self.do_mirror_unlock(uri, ftp, repo = repo)
             ftp.closeConnection()
             if not rc: issues = True
 
         if not issues:
-            database_taint_file = self.Entropy.get_local_database_taint_file()
+            database_taint_file = self.Entropy.get_local_database_taint_file(repo)
             if os.path.isfile(database_taint_file):
                 os.remove(database_taint_file)
 
@@ -12662,10 +12695,13 @@ class ServerMirrorsInterface:
     # this functions makes entropy clients to not download anything from the chosen
     # mirrors. it is used to avoid clients to download databases while we're uploading
     # a new one.
-    def lock_mirrors_for_download(self, lock = True, mirrors = []):
+    def lock_mirrors_for_download(self, lock = True, mirrors = [], repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         if not mirrors:
-            mirrors = self.Mirrors[:]
+            mirrors = self.Entropy.get_remote_mirrors(repo)
 
         issues = False
         for uri in mirrors:
@@ -12676,7 +12712,7 @@ class ServerMirrorsInterface:
             if lock: lock_text = "locking"
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s %s..." % (
-                            blue(self.Entropy.default_repository),
+                            blue(repo),
                             red(crippled_uri),
                             bold(lock_text),
                             blue("mirror for download"),
@@ -12688,12 +12724,12 @@ class ServerMirrorsInterface:
             )
 
             ftp = self.FtpInterface(uri, self.Entropy)
-            ftp.setCWD(self.Entropy.get_remote_database_relative_path())
+            ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
 
             if lock and ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile']):
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s" % (
-                            blue(self.Entropy.default_repository),
+                            blue(repo),
                             red(crippled_uri),
                             blue("mirror already locked for download"),
                         ),
@@ -12706,7 +12742,7 @@ class ServerMirrorsInterface:
             elif not lock and not ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile']):
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s" % (
-                            blue(self.Entropy.default_repository),
+                            blue(repo),
                             red(crippled_uri),
                             blue("mirror already unlocked for download"),
                         ),
@@ -12718,40 +12754,43 @@ class ServerMirrorsInterface:
                 continue
 
             if lock:
-                rc = self.do_mirror_lock(uri, ftp, dblock = False)
+                rc = self.do_mirror_lock(uri, ftp, dblock = False, repo = repo)
             else:
-                rc = self.do_mirror_unlock(uri, ftp, dblock = False)
+                rc = self.do_mirror_unlock(uri, ftp, dblock = False, repo = repo)
             ftp.closeConnection()
             if not rc: issues = True
 
         return issues
 
-    def do_mirror_lock(self, uri, ftp_connection = None, dblock = True):
+    def do_mirror_lock(self, uri, ftp_connection = None, dblock = True, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         if not ftp_connection:
             ftp_connection = self.FtpInterface(uri, self.Entropy)
-            ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path())
+            ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path(repo))
         else:
             mycwd = ftp_connection.getCWD()
-            if mycwd != self.Entropy.get_remote_database_relative_path():
+            if mycwd != self.Entropy.get_remote_database_relative_path(repo):
                 ftp_connection.setBasedir()
-                ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path())
+                ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path(repo))
 
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
         lock_string = ''
         if dblock:
-            self.create_local_database_lockfile()
-            lock_file = self.get_database_lockfile()
+            self.create_local_database_lockfile(repo)
+            lock_file = self.get_database_lockfile(repo)
         else:
             lock_string = 'for download'
-            self.create_local_database_download_lockfile()
-            lock_file = self.get_database_download_lockfile()
+            self.create_local_database_download_lockfile(repo)
+            lock_file = self.get_database_download_lockfile(repo)
 
         rc = ftp_connection.uploadFile(lock_file, ascii = True)
         if rc:
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s %s" % (
-                            blue(self.Entropy.default_repository),
+                            blue(repo),
                             red(crippled_uri),
                             blue("mirror successfully locked"),
                             blue(lock_string),
@@ -12763,7 +12802,7 @@ class ServerMirrorsInterface:
         else:
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s: %s - %s %s" % (
-                            blue(self.Entropy.default_repository),
+                            blue(repo),
                             red(crippled_uri),
                             blue("lock error"),
                             rc,
@@ -12774,21 +12813,24 @@ class ServerMirrorsInterface:
                 type = "error",
                 header = darkred(" * ")
             )
-            self.remove_local_database_lockfile()
+            self.remove_local_database_lockfile(repo)
 
         return rc
 
 
-    def do_mirror_unlock(self, uri, ftp_connection, dblock = True):
+    def do_mirror_unlock(self, uri, ftp_connection, dblock = True, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         if not ftp_connection:
             ftp_connection = self.FtpInterface(uri, self.Entropy)
-            ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path())
+            ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path(repo))
         else:
             mycwd = ftp_connection.getCWD()
-            if mycwd != self.Entropy.get_remote_database_relative_path():
+            if mycwd != self.Entropy.get_remote_database_relative_path(repo):
                 ftp_connection.setBasedir()
-                ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path())
+                ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path(repo))
 
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
@@ -12800,7 +12842,7 @@ class ServerMirrorsInterface:
         if rc:
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s" % (
-                            blue(self.Entropy.default_repository),
+                            blue(repo),
                             red(crippled_uri),
                             blue("mirror successfully unlocked"),
                     ),
@@ -12809,13 +12851,13 @@ class ServerMirrorsInterface:
                 header = darkgreen(" * ")
             )
             if dblock:
-                self.remove_local_database_lockfile()
+                self.remove_local_database_lockfile(repo)
             else:
-                self.remove_local_database_download_lockfile()
+                self.remove_local_database_download_lockfile(repo)
         else:
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s: %s - %s" % (
-                            blue(self.Entropy.default_repository),
+                            blue(repo),
                             red(crippled_uri),
                             blue("unlock error"),
                             rc,
@@ -12828,37 +12870,52 @@ class ServerMirrorsInterface:
 
         return rc
 
-    def get_database_lockfile(self):
-        return os.path.join(self.repository_directory,etpConst['etpdatabaselockfile'])
+    def get_database_lockfile(self, repo = None):
+        if repo == None:
+            repo = self.Entropy.default_repository
+        return os.path.join(self.Entropy.get_local_database_dir(repo),etpConst['etpdatabaselockfile'])
 
-    def get_database_download_lockfile(self):
-        return os.path.join(self.repository_directory,etpConst['etpdatabasedownloadlockfile'])
+    def get_database_download_lockfile(self, repo = None):
+        if repo == None:
+            repo = self.Entropy.default_repository
+        return os.path.join(self.Entropy.get_local_database_dir(repo),etpConst['etpdatabasedownloadlockfile'])
 
-    def create_local_database_download_lockfile(self):
-        lock_file = self.get_database_download_lockfile()
+    def create_local_database_download_lockfile(self, repo = None):
+        if repo == None:
+            repo = self.Entropy.default_repository
+        lock_file = self.get_database_download_lockfile(repo)
         f = open(lock_file,"w")
         f.write("download locked")
         f.flush()
         f.close()
 
-    def create_local_database_lockfile(self):
-        lock_file = self.get_database_lockfile()
+    def create_local_database_lockfile(self, repo = None):
+        if repo == None:
+            repo = self.Entropy.default_repository
+        lock_file = self.get_database_lockfile(repo)
         f = open(lock_file,"w")
         f.write("database locked")
         f.flush()
         f.close()
 
-    def remove_local_database_lockfile(self):
-        lock_file = self.get_database_lockfile()
+    def remove_local_database_lockfile(self, repo = None):
+        if repo == None:
+            repo = self.Entropy.default_repository
+        lock_file = self.get_database_lockfile(repo)
         if os.path.isfile(lock_file):
             os.remove(lock_file)
 
-    def remove_local_database_download_lockfile(self):
-        lock_file = self.get_database_download_lockfile()
+    def remove_local_database_download_lockfile(self, repo = None):
+        if repo == None:
+            repo = self.Entropy.default_repository
+        lock_file = self.get_database_download_lockfile(repo)
         if os.path.isfile(lock_file):
             os.remove(lock_file)
 
-    def download_package(self, uri, pkgfile, branch):
+    def download_package(self, uri, pkgfile, branch, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
@@ -12868,7 +12925,7 @@ class ServerMirrorsInterface:
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|#%s] %s: %s" % (
-                        brown(self.Entropy.default_repository),
+                        brown(repo),
                         darkgreen(crippled_uri),
                         brown(tries),
                         blue("connecting to download package"),
@@ -12881,12 +12938,12 @@ class ServerMirrorsInterface:
             )
 
             ftp = self.FtpInterface(uri, self.Entropy)
-            dirpath = os.path.join(self.Entropy.get_remote_packages_relative_path(),branch)
+            dirpath = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
             ftp.setCWD(dirpath)
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|#%s] %s: %s" % (
-                        brown(self.Entropy.default_repository),
+                        brown(repo),
                         darkgreen(crippled_uri),
                         brown(tries),
                         blue("downloading package"),
@@ -12897,12 +12954,12 @@ class ServerMirrorsInterface:
                 header = darkgreen(" * ")
             )
 
-            download_path = os.path.join(self.Entropy.get_local_packages_directory(),branch)
+            download_path = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
             rc = ftp.downloadFile(pkgfile,download_path)
             if not rc:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|#%s] %s: %s %s" % (
-                            brown(self.Entropy.default_repository),
+                            brown(repo),
                             darkgreen(crippled_uri),
                             brown(tries),
                             blue("package"),
@@ -12916,12 +12973,12 @@ class ServerMirrorsInterface:
                 ftp.closeConnection()
                 return rc
 
-            dbconn = self.Entropy.openServerDatabase(read_only = True, no_upload = True)
+            dbconn = self.Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repo)
             idpackage = dbconn.getIDPackageFromDownload(pkgfile,branch)
             if idpackage == -1:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|#%s] %s: %s %s" % (
-                            brown(self.Entropy.default_repository),
+                            brown(repo),
                             darkgreen(crippled_uri),
                             brown(tries),
                             blue("package"),
@@ -12938,7 +12995,7 @@ class ServerMirrorsInterface:
             storedmd5 = dbconn.retrieveDigest(idpackage)
             self.Entropy.updateProgress(
                 "[repo:%s|%s|#%s] %s: %s" % (
-                        brown(self.Entropy.default_repository),
+                        brown(repo),
                         darkgreen(crippled_uri),
                         brown(tries),
                         blue("verifying checksum of package"),
@@ -12955,7 +13012,7 @@ class ServerMirrorsInterface:
             if md5check:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|#%s] %s: %s %s" % (
-                            brown(self.Entropy.default_repository),
+                            brown(repo),
                             darkgreen(crippled_uri),
                             brown(tries),
                             blue("package"),
@@ -12970,7 +13027,7 @@ class ServerMirrorsInterface:
             else:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|#%s] %s: %s %s" % (
-                            brown(self.Entropy.default_repository),
+                            brown(repo),
                             darkgreen(crippled_uri),
                             brown(tries),
                             blue("package"),
@@ -12989,7 +13046,7 @@ class ServerMirrorsInterface:
         # if we get here it means the files hasn't been downloaded properly
         self.Entropy.updateProgress(
             "[repo:%s|%s|#%s] %s: %s %s" % (
-                    brown(self.Entropy.default_repository),
+                    brown(repo),
                     darkgreen(crippled_uri),
                     brown(tries),
                     blue("package"),
@@ -13003,13 +13060,16 @@ class ServerMirrorsInterface:
         return False
 
 
-    def get_remote_databases_status(self):
+    def get_remote_databases_status(self, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         data = []
-        for uri in self.Mirrors:
+        for uri in self.Entropy.get_remote_mirrors(repo):
 
             ftp = self.FtpInterface(uri, self.Entropy)
-            ftp.setCWD(self.Entropy.get_remote_database_relative_path())
+            ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
             cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
             if cmethod == None:
                 raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
@@ -13017,7 +13077,7 @@ class ServerMirrorsInterface:
 
             revision = 0
             rc1 = ftp.isFileAvailable(compressedfile)
-            revfilename = os.path.basename(self.Entropy.get_local_database_revision_file())
+            revfilename = os.path.basename(self.Entropy.get_local_database_revision_file(repo))
             rc2 = ftp.isFileAvailable(revfilename)
             if rc1 and rc2:
                 revision_localtmppath = os.path.join(etpConst['packagestmpdir'],revfilename)
@@ -13029,7 +13089,7 @@ class ServerMirrorsInterface:
                     crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                     self.Entropy.updateProgress(
                         "[repo:%s|%s] %s: %s" % (
-                                brown(self.Entropy.default_repository),
+                                brown(repo),
                                 darkgreen(crippled_uri),
                                 blue("mirror doesn't have a valid database revision file"),
                                 bold(revision),
@@ -13049,17 +13109,20 @@ class ServerMirrorsInterface:
 
         return data
 
-    def is_local_database_locked(self):
-        lock_file = self.get_database_lockfile()
+    def is_local_database_locked(self, repo = None):
+        x = repo
+        if x == None:
+            x = self.Entropy.default_repository
+        lock_file = self.get_database_lockfile(x)
         return os.path.isfile(lock_file)
 
-    def get_mirrors_lock(self):
+    def get_mirrors_lock(self, repo = None):
 
         dbstatus = []
-        for uri in self.Mirrors:
+        for uri in self.Entropy.get_remote_mirrors(repo):
             data = [uri,False,False]
             ftp = FtpInterface(uri, self.Entropy)
-            ftp.setCWD(self.Entropy.get_remote_database_relative_path())
+            ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
             if ftp.isFileAvailable(etpConst['etpdatabaselockfile']):
                 # upload locked
                 data[1] = True
@@ -13070,13 +13133,13 @@ class ServerMirrorsInterface:
             dbstatus.append(data)
         return dbstatus
 
-    def update_rss_feed(self):
+    def update_rss_feed(self, repo = None):
 
-        db_dir = self.Entropy.get_local_database_dir()
-        rss_path = self.Entropy.get_local_database_rss_file()
-        rss_light_path = self.Entropy.get_local_database_rsslight_file()
+        db_dir = self.Entropy.get_local_database_dir(repo)
+        rss_path = self.Entropy.get_local_database_rss_file(repo)
+        rss_light_path = self.Entropy.get_local_database_rsslight_file(repo)
         rss_dump_name = etpConst['rss-dump-name']
-        db_revision_path = self.Entropy.get_local_database_revision_file()
+        db_revision_path = self.Entropy.get_local_database_revision_file(repo)
 
         Rss = self.rssFeed(rss_path, maxentries = etpConst['rss-max-entries'])
         # load dump
@@ -13120,9 +13183,9 @@ class ServerMirrorsInterface:
 
 
     # f_out is a file instance
-    def dump_database_to_file(self, db_path, destination_path, opener ):
+    def dump_database_to_file(self, db_path, destination_path, opener, repo = None):
         f_out = opener(destination_path, "wb")
-        dbconn = self.Entropy.openServerDatabase(db_path, just_reading = True)
+        dbconn = self.Entropy.openServerDatabase(db_path, just_reading = True, repo = repo)
         dbconn.doDatabaseExport(f_out)
         self.Entropy.close_server_database(dbconn)
         f_out.close()
@@ -13160,29 +13223,29 @@ class ServerMirrorsInterface:
         f_out.close()
         f_in.close()
 
-    def get_files_to_sync(self, cmethod, download = False):
+    def get_files_to_sync(self, cmethod, download = False, repo = None):
 
         critical = []
         data = {}
-        data['database_revision_file'] = self.Entropy.get_local_database_revision_file()
+        data['database_revision_file'] = self.Entropy.get_local_database_revision_file(repo)
         critical.append(data['database_revision_file'])
-        database_package_mask_file = self.Entropy.get_local_database_mask_file()
+        database_package_mask_file = self.Entropy.get_local_database_mask_file(repo)
         if os.path.isfile(database_package_mask_file) or download:
             data['database_package_mask_file'] = database_package_mask_file
             critical.append(data['database_package_mask_file'])
 
-        database_license_whitelist_file = self.Entropy.get_local_database_licensewhitelist_file()
+        database_license_whitelist_file = self.Entropy.get_local_database_licensewhitelist_file(repo)
         if os.path.isfile(database_license_whitelist_file) or download:
             data['database_license_whitelist_file'] = database_license_whitelist_file
             if not download:
                 critical.append(data['database_license_whitelist_file'])
 
-        database_rss_file = self.Entropy.get_local_database_rss_file()
+        database_rss_file = self.Entropy.get_local_database_rss_file(repo)
         if os.path.isfile(database_rss_file) or download:
             data['database_rss_file'] = database_rss_file
             if not download:
                 critical.append(data['database_rss_file'])
-        database_rss_light_file = self.Entropy.get_local_database_rsslight_file()
+        database_rss_light_file = self.Entropy.get_local_database_rsslight_file(repo)
         if os.path.isfile(database_rss_light_file) or download:
             data['database_rss_light_file'] = database_rss_light_file
             if not download:
@@ -13190,15 +13253,15 @@ class ServerMirrorsInterface:
 
         # EAPI 2
         if not download: # we don't need to get the dump
-            data['dump_path'] = os.path.join(self.Entropy.get_local_database_dir(),etpConst[cmethod[3]])
+            data['dump_path'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[3]])
             critical.append(data['dump_path'])
-            data['dump_path_digest'] = os.path.join(self.Entropy.get_local_database_dir(),etpConst[cmethod[4]])
+            data['dump_path_digest'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[4]])
             critical.append(data['dump_path_digest'])
 
         # EAPI 1
-        data['compressed_database_path'] = os.path.join(self.Entropy.get_local_database_dir(),etpConst[cmethod[2]])
+        data['compressed_database_path'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[2]])
         critical.append(data['compressed_database_path'])
-        data['compressed_database_path_digest'] = os.path.join(self.Entropy.get_local_database_dir(),etpConst['etpdatabasehashfile'])
+        data['compressed_database_path_digest'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst['etpdatabasehashfile'])
         critical.append(data['compressed_database_path_digest'])
 
         return data, critical
@@ -13217,7 +13280,8 @@ class ServerMirrorsInterface:
                         local_basedir = None,
                         critical_files = [],
                         use_handlers = False,
-                        handlers_data = {}
+                        handlers_data = {},
+                        repo = None
             ):
 
             self.FtpInterface = ftp_interface
@@ -13234,18 +13298,21 @@ class ServerMirrorsInterface:
                 self.myfiles.sort()
             self.download = download
             self.remove = remove
+            self.repo = repo
+            if self.repo == None:
+                self.repo = self.Entropy.default_repository
             self.use_handlers = use_handlers
             if self.remove:
                 self.download = False
                 self.use_handlers = False
             if not ftp_basedir:
                 # default to database directory
-                self.ftp_basedir = str(self.Entropy.get_remote_database_relative_path())
+                self.ftp_basedir = str(self.Entropy.get_remote_database_relative_path(self.repo))
             else:
                 self.ftp_basedir = str(ftp_basedir)
             if not local_basedir:
                 # default to database directory
-                self.local_basedir = os.path.dirname(self.Entropy.get_local_database_file())
+                self.local_basedir = os.path.dirname(self.Entropy.get_local_database_file(self.repo))
             else:
                 self.local_basedir = str(local_basedir)
             self.critical_files = critical_files
@@ -13270,8 +13337,8 @@ class ServerMirrorsInterface:
                 back = True
             )
 
-            checksum = self.Entropy.ClientService.get_remote_package_checksum(
-                        self.entropyTools.extractFTPHostFromUri(uri),
+            checksum = self.Entropy.get_remote_package_checksum(
+                        self.repo,
                         os.path.basename(local_filepath),
                         self.handlers_data['branch']
             )
@@ -13389,7 +13456,7 @@ class ServerMirrorsInterface:
                                 blue(crippled_uri),
                                 brown(action),
                                 blue("changing directory to"),
-                                darkgreen(self.Entropy.get_remote_database_relative_path()),
+                                darkgreen(self.Entropy.get_remote_database_relative_path(self.repo)),
                     ),
                     importance = 0,
                     type = "info",
@@ -13510,11 +13577,14 @@ class ServerMirrorsInterface:
 
             return errors,fine_uris,broken_uris
 
-    def _show_eapi2_upload_messages(self, crippled_uri, database_path, upload_data, cmethod):
+    def _show_eapi2_upload_messages(self, crippled_uri, database_path, upload_data, cmethod, repo):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         self.Entropy.updateProgress(
             "[repo:%s|%s|%s:%s] %s" % (
-                        brown(self.Entropy.default_repository),
+                        brown(repo),
                         darkgreen(crippled_uri),
                         red("EAPI"),
                         bold("2"),
@@ -13549,11 +13619,11 @@ class ServerMirrorsInterface:
             header = brown("    # ")
         )
 
-    def _show_eapi1_upload_messages(self, crippled_uri, database_path, upload_data, cmethod):
+    def _show_eapi1_upload_messages(self, crippled_uri, database_path, upload_data, cmethod, repo):
 
         self.Entropy.updateProgress(
             "[repo:%s|%s|%s:%s] %s" % (
-                        brown(self.Entropy.default_repository),
+                        brown(repo),
                         darkgreen(crippled_uri),
                         red("EAPI"),
                         bold("1"),
@@ -13601,23 +13671,26 @@ class ServerMirrorsInterface:
                     if (error.find("550") == -1) and (error.find("File exist") == -1):
                         raise exceptionTools.OnlineMirrorError("OnlineMirrorError: cannot create mirror directory %s, error: %s" % (bdir,e,))
 
-    def mirror_lock_check(self, uri):
+    def mirror_lock_check(self, uri, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         gave_up = False
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
         ftp = self.FtpInterface(uri, self.Entropy)
         try:
-            ftp.setCWD(self.Entropy.get_remote_database_relative_path())
+            ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
         except:
-            self.create_mirror_directories(ftp,self.Entropy.get_remote_database_relative_path())
+            self.create_mirror_directories(ftp,self.Entropy.get_remote_database_relative_path(repo))
             ftp.closeConnection()
             return gave_up # no errors, mirror is unlocked
 
-        lock_file = self.get_database_lockfile()
+        lock_file = self.get_database_lockfile(repo)
         if not os.path.isfile(lock_file) and ftp.isFileAvailable(os.path.basename(lock_file)):
             self.Entropy.updateProgress(
                 red("[repo:%s|%s|locking] mirror already locked, waiting up to 2 mins before giving up" % (
-                                self.Entropy.default_repository,
+                                repo,
                                 crippled_uri,
                         )
                 ),
@@ -13634,7 +13707,7 @@ class ServerMirrorsInterface:
                 if not ftp.isFileAvailable(os.path.basename(lock_file)):
                     self.Entropy.updateProgress(
                         red("[repo:%s|%s|locking] mirror unlocked !" % (
-                                self.Entropy.default_repository,
+                                repo,
                                 crippled_uri,
                             )
                         ),
@@ -13650,20 +13723,23 @@ class ServerMirrorsInterface:
         ftp.closeConnection()
         return gave_up
 
-    def shrink_database_and_close(self):
-        dbconn = self.Entropy.openServerDatabase(read_only = False, no_upload = True)
+    def shrink_database_and_close(self, repo = None):
+        dbconn = self.Entropy.openServerDatabase(read_only = False, no_upload = True, repo = repo)
         dbconn.dropAllIndexes()
         dbconn.vacuum()
         dbconn.commitChanges()
         self.Entropy.close_server_database(dbconn)
 
-    def upload_database(self, uris, lock_check = False, pretend = False):
+    def upload_database(self, uris, lock_check = False, pretend = False, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         import gzip
         import bz2
 
         if etpConst['rss-feed']:
-            self.update_rss_feed()
+            self.update_rss_feed(repo = repo)
 
         upload_errors = False
         broken_uris = set()
@@ -13676,21 +13752,21 @@ class ServerMirrorsInterface:
                 raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-            database_path = self.Entropy.get_local_database_file()
-            upload_data, critical = self.get_files_to_sync(cmethod)
+            database_path = self.Entropy.get_local_database_file(repo)
+            upload_data, critical = self.get_files_to_sync(cmethod, repo = repo)
 
             if lock_check:
-                given_up = self.mirror_lock_check(uri)
+                given_up = self.mirror_lock_check(uri, repo = repo)
                 if given_up:
                     upload_errors = True
                     broken_uris.add(uri)
                     continue
 
-            self.lock_mirrors_for_download(True,[uri])
+            self.lock_mirrors_for_download(True,[uri], repo = repo)
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|upload] preparing to upload database to mirror" % (
-                            self.Entropy.default_repository,
+                            repo,
                             crippled_uri,
                     ),
                 importance = 1,
@@ -13698,23 +13774,23 @@ class ServerMirrorsInterface:
                 header = darkgreen(" * ")
             )
 
-            self.shrink_database_and_close()
+            self.shrink_database_and_close(repo)
 
             # EAPI 2
-            self._show_eapi2_upload_messages(crippled_uri, database_path, upload_data, cmethod)
+            self._show_eapi2_upload_messages(crippled_uri, database_path, upload_data, cmethod, repo)
             # create compressed dump + checksum
-            self.dump_database_to_file(database_path, upload_data['dump_path'], eval(cmethod[0]))
+            self.dump_database_to_file(database_path, upload_data['dump_path'], eval(cmethod[0]), repo = repo)
             self.create_file_checksum(upload_data['dump_path'], upload_data['dump_path_digest'])
 
             # EAPI 1
-            self._show_eapi1_upload_messages(crippled_uri, database_path, upload_data, cmethod)
+            self._show_eapi1_upload_messages(crippled_uri, database_path, upload_data, cmethod, repo)
             # compress the database
             self.compress_file(database_path, upload_data['compressed_database_path'], eval(cmethod[0]))
             self.create_file_checksum(database_path, upload_data['compressed_database_path_digest'])
 
             if not pretend:
                 # upload
-                uploader = self.FileTransceiver(self.FtpInterface, self.Entropy, [uri], [upload_data[x] for x in upload_data], critical_files = critical)
+                uploader = self.FileTransceiver(self.FtpInterface, self.Entropy, [uri], [upload_data[x] for x in upload_data], critical_files = critical, repo = repo)
                 errors, m_fine_uris, m_broken_uris = uploader.go()
                 if errors:
                     my_fine_uris = [self.entropyTools.extractFTPHostFromUri(x) for x in m_fine_uris]
@@ -13722,7 +13798,10 @@ class ServerMirrorsInterface:
                     my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
                     my_broken_uris.sort()
                     self.Entropy.updateProgress(
-                        red("[repo:%s|%s|errors] failed to upload to mirror, not unlocking and continuing" % (self.Entropy.default_repository,crippled_uri,)),
+                        "[repo:%s|%s|errors] failed to upload to mirror, not unlocking and continuing" % (
+                                repo,
+                                crippled_uri,
+                        ),
                         importance = 0,
                         type = "error",
                         header = darkred(" !!! ")
@@ -13740,7 +13819,7 @@ class ServerMirrorsInterface:
                     continue
 
             # unlock
-            self.lock_mirrors_for_download(False,[uri])
+            self.lock_mirrors_for_download(False,[uri], repo = repo)
             fine_uris |= m_fine_uris
 
         if not fine_uris:
@@ -13748,7 +13827,10 @@ class ServerMirrorsInterface:
         return upload_errors, broken_uris, fine_uris
 
 
-    def download_database(self, uris, lock_check = False, pretend = False):
+    def download_database(self, uris, lock_check = False, pretend = False, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         import gzip
         import bz2
@@ -13764,15 +13846,15 @@ class ServerMirrorsInterface:
                 raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-            database_path = self.Entropy.get_local_database_file()
-            database_dir_path = os.path.dirname(self.Entropy.get_local_database_file())
-            download_data, critical = self.get_files_to_sync(cmethod, download = True)
+            database_path = self.Entropy.get_local_database_file(repo)
+            database_dir_path = os.path.dirname(self.Entropy.get_local_database_file(repo))
+            download_data, critical = self.get_files_to_sync(cmethod, download = True, repo = repo)
             mytmpdir = self.entropyTools.getRandomTempFile()
             os.makedirs(mytmpdir)
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s" % (
-                        brown(self.Entropy.default_repository),
+                        brown(repo),
                         darkgreen(crippled_uri),
                         red("download"),
                         blue("preparing to download database from mirror"),
@@ -13792,18 +13874,18 @@ class ServerMirrorsInterface:
                 )
 
             if lock_check:
-                given_up = self.mirror_lock_check(uri)
+                given_up = self.mirror_lock_check(uri, repo = repo)
                 if given_up:
                     download_errors = True
                     broken_uris.add(uri)
                     continue
 
             # avoid having others messing while we're downloading
-            self.lock_mirrors(True,[uri])
+            self.lock_mirrors(True,[uri], repo = repo)
 
             if not pretend:
                 # download
-                downloader = self.FileTransceiver(self.FtpInterface, self.Entropy, [uri], [download_data[x] for x in download_data], download = True, local_basedir = mytmpdir, critical_files = critical)
+                downloader = self.FileTransceiver(self.FtpInterface, self.Entropy, [uri], [download_data[x] for x in download_data], download = True, local_basedir = mytmpdir, critical_files = critical, repo = repo)
                 errors, m_fine_uris, m_broken_uris = downloader.go()
                 if errors:
                     my_fine_uris = [self.entropyTools.extractFTPHostFromUri(x) for x in m_fine_uris]
@@ -13812,7 +13894,7 @@ class ServerMirrorsInterface:
                     my_broken_uris.sort()
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|%s] %s" % (
-                                brown(self.Entropy.default_repository),
+                                brown(repo),
                                 darkgreen(crippled_uri),
                                 red("errors"),
                                 blue("failed to download from mirror"),
@@ -13831,7 +13913,7 @@ class ServerMirrorsInterface:
                     )
                     download_errors = True
                     broken_uris |= m_broken_uris
-                    self.lock_mirrors(False,[uri])
+                    self.lock_mirrors(False,[uri], repo = repo)
                     continue
 
                 # all fine then, we need to move data from mytmpdir to database_dir_path
@@ -13857,13 +13939,17 @@ class ServerMirrorsInterface:
 
 
             fine_uris.add(uri)
-            self.lock_mirrors(False,[uri])
+            self.lock_mirrors(False,[uri], repo = repo)
 
         return download_errors, fine_uris, broken_uris
 
-    def calculate_database_sync_queues(self):
-        remote_status =  self.get_remote_databases_status()
-        local_revision = self.Entropy.get_local_database_revision()
+    def calculate_database_sync_queues(self, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
+
+        remote_status =  self.get_remote_databases_status(repo)
+        local_revision = self.Entropy.get_local_database_revision(repo)
         upload_queue = []
         download_latest = ()
 
@@ -13886,26 +13972,29 @@ class ServerMirrorsInterface:
 
         return download_latest, upload_queue
 
-    def sync_databases(self, no_upload = False, unlock_mirrors = False):
+    def sync_databases(self, no_upload = False, unlock_mirrors = False, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         db_locked = False
-        if self.is_local_database_locked():
+        if self.is_local_database_locked(repo):
             db_locked = True
 
-        lock_data = self.get_mirrors_lock()
+        lock_data = self.get_mirrors_lock(repo)
         mirrors_locked = [x for x in lock_data if x[1]]
 
         if not mirrors_locked and db_locked:
-            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file %s" % (self.get_database_lockfile(),) )
+            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file %s" % (self.get_database_lockfile(repo),) )
 
         if mirrors_locked and not db_locked:
             raise exceptionTools.OnlineMirrorError("OnlineMirrorError: At the moment, mirrors are locked, someone is working on their databases, try again later...")
 
-        download_latest, upload_queue = self.calculate_database_sync_queues()
+        download_latest, upload_queue = self.calculate_database_sync_queues(repo)
 
         if not download_latest and not upload_queue:
             self.Entropy.updateProgress(
-                red("[repo:%s|sync] database already in sync" % (self.Entropy.default_repository,)),
+                red("[repo:%s|sync] database already in sync" % (repo,)),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -13914,11 +14003,11 @@ class ServerMirrorsInterface:
 
         if download_latest:
             download_uri = download_latest[0]
-            download_errors, fine_uris, broken_uris = self.download_database(download_uri)
+            download_errors, fine_uris, broken_uris = self.download_database(download_uri, repo = repo)
             if download_errors:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
-                            brown(self.Entropy.default_repository),
+                            brown(repo),
                             red("sync"),
                             blue("database sync failed"),
                             red("download issues"),
@@ -13933,11 +14022,11 @@ class ServerMirrorsInterface:
         if upload_queue and not no_upload:
 
             uris = [x[0] for x in upload_queue]
-            errors, fine_uris, broken_uris = self.upload_database(uris)
+            errors, fine_uris, broken_uris = self.upload_database(uris, repo = repo)
             if errors:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
-                            brown(self.Entropy.default_repository),
+                            brown(repo),
                             red("sync"),
                             blue("database sync failed"),
                             red("upload issues"),
@@ -13951,7 +14040,7 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[repo:%s|%s] %s" % (
-                    brown(self.Entropy.default_repository),
+                    brown(repo),
                     red("sync"),
                     blue("database sync completed successfully"),
             ),
@@ -13961,14 +14050,14 @@ class ServerMirrorsInterface:
         )
 
         if unlock_mirrors:
-            self.lock_mirrors(False)
+            self.lock_mirrors(False, repo = repo)
         return 0, set(), set()
 
 
-    def calculate_local_upload_files(self, branch):
+    def calculate_local_upload_files(self, branch, repo = None):
         upload_files = 0
         upload_packages = set()
-        upload_dir = os.path.join(self.Entropy.get_local_upload_directory(),branch)
+        upload_dir = os.path.join(self.Entropy.get_local_upload_directory(repo),branch)
 
         for package in os.listdir(upload_dir):
             if package.endswith(etpConst['packagesext']) or package.endswith(etpConst['packageshashfileext']):
@@ -13978,10 +14067,10 @@ class ServerMirrorsInterface:
 
         return upload_files, upload_packages
 
-    def calculate_local_package_files(self, branch):
+    def calculate_local_package_files(self, branch, repo = None):
         local_files = 0
         local_packages = set()
-        packages_dir = os.path.join(self.Entropy.get_local_packages_directory(),branch)
+        packages_dir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
 
         for package in os.listdir(packages_dir):
             if package.endswith(etpConst['packagesext']) or package.endswith(etpConst['packageshashfileext']):
@@ -14140,7 +14229,7 @@ class ServerMirrorsInterface:
         )
 
 
-    def calculate_remote_package_files(self, uri, branch, ftp_connection = None):
+    def calculate_remote_package_files(self, uri, branch, ftp_connection = None, repo = None):
 
         remote_files = 0
         close_conn = False
@@ -14148,10 +14237,10 @@ class ServerMirrorsInterface:
 
         def do_cwd():
             try:
-                ftp_connection.setCWD(self.Entropy.get_remote_packages_relative_path())
+                ftp_connection.setCWD(self.Entropy.get_remote_packages_relative_path(repo))
             except:
-                self.create_mirror_directories(ftp_connection,self.Entropy.get_remote_database_relative_path())
-                ftp_connection.setCWD(self.Entropy.get_remote_packages_relative_path())
+                self.create_mirror_directories(ftp_connection,self.Entropy.get_remote_database_relative_path(repo))
+                ftp_connection.setCWD(self.Entropy.get_remote_packages_relative_path(repo))
             if not ftp_connection.isFileAvailable(branch):
                 ftp_connection.mkdir(branch)
             ftp_connection.setCWD(branch)
@@ -14175,11 +14264,14 @@ class ServerMirrorsInterface:
 
         return remote_files, remote_packages, remote_packages_data
 
-    def calculate_packages_to_sync(self, uri, branch):
+    def calculate_packages_to_sync(self, uri, branch, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-        upload_files, upload_packages = self.calculate_local_upload_files(branch)
-        local_files, local_packages = self.calculate_local_package_files(branch)
+        upload_files, upload_packages = self.calculate_local_upload_files(branch, repo)
+        local_files, local_packages = self.calculate_local_package_files(branch, repo)
         self._show_local_sync_stats(upload_files, local_files)
 
         self.Entropy.updateProgress(
@@ -14188,7 +14280,7 @@ class ServerMirrorsInterface:
             type = "info",
             header = red(" @@ ")
         )
-        remote_files, remote_packages, remote_packages_data = self.calculate_remote_package_files(uri, branch)
+        remote_files, remote_packages, remote_packages_data = self.calculate_remote_package_files(uri, branch, repo)
         self.Entropy.updateProgress(
             "%s:\t\t\t%s %s" % (
                     blue("remote packages"),
@@ -14212,11 +14304,12 @@ class ServerMirrorsInterface:
                 local_packages,
                 remote_packages,
                 remote_packages_data,
-                branch
+                branch,
+                repo
         )
         return uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data
 
-    def calculate_sync_queues(self, upload_packages, local_packages, remote_packages, remote_packages_data, branch):
+    def calculate_sync_queues(self, upload_packages, local_packages, remote_packages, remote_packages_data, branch, repo = None):
 
         uploadQueue = set()
         downloadQueue = set()
@@ -14225,7 +14318,7 @@ class ServerMirrorsInterface:
 
         for local_package in upload_packages:
             if local_package in remote_packages:
-                local_filepath = os.path.join(self.Entropy.get_local_upload_directory(),branch,local_package)
+                local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),branch,local_package)
                 local_size = int(os.stat(local_filepath)[6])
                 remote_size = remote_packages_data.get(local_package)
                 if remote_size == None:
@@ -14243,7 +14336,7 @@ class ServerMirrorsInterface:
         # we have local_packages and remotePackages
         for local_package in local_packages:
             if local_package in remote_packages:
-                local_filepath = os.path.join(self.Entropy.get_local_packages_directory(),branch,local_package)
+                local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,local_package)
                 local_size = int(os.stat(local_filepath)[6])
                 remote_size = remote_packages_data.get(local_package)
                 if remote_size == None:
@@ -14260,7 +14353,7 @@ class ServerMirrorsInterface:
         # Fill downloadQueue and removalQueue
         for remote_package in remote_packages:
             if remote_package in local_packages:
-                local_filepath = os.path.join(self.Entropy.get_local_packages_directory(),branch,remote_package)
+                local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,remote_package)
                 local_size = int(os.stat(local_filepath)[6])
                 remote_size = remote_packages_data.get(remote_package)
                 if remote_size == None:
@@ -14279,7 +14372,7 @@ class ServerMirrorsInterface:
 
         # Collect packages that don't exist anymore in the database
         # so we can filter them out from the download queue
-        dbconn = self.Entropy.openServerDatabase(just_reading = True)
+        dbconn = self.Entropy.openServerDatabase(just_reading = True, repo = repo)
         db_files = dbconn.listBranchPackagesTbz2(branch)
 
         exclude = set()
@@ -14305,7 +14398,7 @@ class ServerMirrorsInterface:
         return uploadQueue, downloadQueue, removalQueue, fineQueue
 
 
-    def expand_queues(self, uploadQueue, downloadQueue, removalQueue, remote_packages_data, branch):
+    def expand_queues(self, uploadQueue, downloadQueue, removalQueue, remote_packages_data, branch, repo):
 
         metainfo = {
             'removal': 0,
@@ -14320,7 +14413,7 @@ class ServerMirrorsInterface:
         for item in removalQueue:
             if not item.endswith(etpConst['packagesext']):
                 continue
-            local_filepath = os.path.join(self.Entropy.get_local_packages_directory(),branch,item)
+            local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,item)
             size = int(os.stat(local_filepath)[6])
             metainfo['removal'] += size
             removal.append((local_filepath,size))
@@ -14328,7 +14421,7 @@ class ServerMirrorsInterface:
         for item in downloadQueue:
             if not item.endswith(etpConst['packagesext']):
                 continue
-            local_filepath = os.path.join(self.Entropy.get_local_upload_directory(),branch,item)
+            local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),branch,item)
             if not os.path.isfile(local_filepath):
                 size = remote_packages_data.get(item)
                 if size == None:
@@ -14343,8 +14436,8 @@ class ServerMirrorsInterface:
         for item in uploadQueue:
             if not item.endswith(etpConst['packagesext']):
                 continue
-            local_filepath = os.path.join(self.Entropy.get_local_upload_directory(),branch,item)
-            local_filepath_pkgs = os.path.join(self.Entropy.get_local_packages_directory(),branch,item)
+            local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),branch,item)
+            local_filepath_pkgs = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,item)
             if os.path.isfile(local_filepath):
                 size = int(os.stat(local_filepath)[6])
                 upload.append((local_filepath,size))
@@ -14357,16 +14450,19 @@ class ServerMirrorsInterface:
         return upload, download, removal, copy, metainfo
 
 
-    def _sync_run_removal_queue(self, removal_queue, branch):
+    def _sync_run_removal_queue(self, removal_queue, branch, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         for itemdata in removal_queue:
 
             remove_filename = itemdata[0]
-            remove_filepath = os.path.join(self.Entropy.get_local_packages_directory(),branch,remove_filename)
+            remove_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,remove_filename)
             remove_filepath_hash = remove_filepath+etpConst['packageshashfileext']
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s [%s]" % (
-                        brown(self.Entropy.default_repository),
+                        brown(repo),
                         red("sync"),
                         brown(branch),
                         blue("removing package+hash"),
@@ -14385,7 +14481,7 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[repo:%s|%s|%s] %s" % (
-                    brown(self.Entropy.default_repository),
+                    brown(repo),
                     red("sync"),
                     brown(branch),
                     blue("removal complete"),
@@ -14396,18 +14492,21 @@ class ServerMirrorsInterface:
         )
 
 
-    def _sync_run_copy_queue(self, copy_queue, branch):
+    def _sync_run_copy_queue(self, copy_queue, branch, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         for itemdata in copy_queue:
 
             from_file = itemdata[0]
             from_file_hash = from_file+etpConst['packageshashfileext']
-            to_file = os.path.join(self.Entropy.get_local_packages_directory(),branch,os.path.basename(from_file))
+            to_file = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,os.path.basename(from_file))
             to_file_hash = to_file+etpConst['packageshashfileext']
             expiration_file = to_file+etpConst['packagesexpirationfileext']
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s" % (
-                        brown(self.Entropy.default_repository),
+                        brown(repo),
                         red("sync"),
                         brown(branch),
                         blue("copying file+hash to repository"),
@@ -14431,7 +14530,10 @@ class ServerMirrorsInterface:
                 os.remove(expiration_file)
 
 
-    def _sync_run_upload_queue(self, uri, upload_queue, branch):
+    def _sync_run_upload_queue(self, uri, upload_queue, branch, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
         myqueue = []
@@ -14443,7 +14545,7 @@ class ServerMirrorsInterface:
             myqueue.append(hash_file)
             myqueue.append(x)
 
-        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(),branch)
+        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
         uploader = self.FileTransceiver(    self.FtpInterface,
                                             self.Entropy,
                                             [uri],
@@ -14451,7 +14553,8 @@ class ServerMirrorsInterface:
                                             critical_files = myqueue,
                                             use_handlers = True,
                                             ftp_basedir = ftp_basedir,
-                                            handlers_data = {'branch': branch }
+                                            handlers_data = {'branch': branch },
+                                            repo = repo
                                         )
         errors, m_fine_uris, m_broken_uris = uploader.go()
         if errors:
@@ -14484,7 +14587,10 @@ class ServerMirrorsInterface:
         return errors, m_fine_uris, m_broken_uris
 
 
-    def _sync_run_download_queue(self, uri, download_queue, branch):
+    def _sync_run_download_queue(self, uri, download_queue, branch, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
         myqueue = []
@@ -14494,9 +14600,10 @@ class ServerMirrorsInterface:
             myqueue.append(x)
             myqueue.append(hash_file)
 
-        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(),branch)
-        local_basedir = os.path.join(self.Entropy.get_local_packages_directory(),branch)
-        downloader = self.FileTransceiver(    self.FtpInterface,
+        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
+        local_basedir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
+        downloader = self.FileTransceiver(
+                                            self.FtpInterface,
                                             self.Entropy,
                                             [uri],
                                             myqueue,
@@ -14505,7 +14612,8 @@ class ServerMirrorsInterface:
                                             ftp_basedir = ftp_basedir,
                                             local_basedir = local_basedir,
                                             handlers_data = {'branch': branch },
-                                            download = True
+                                            download = True,
+                                            repo = repo
                                         )
         errors, m_fine_uris, m_broken_uris = downloader.go()
         if errors:
@@ -14513,7 +14621,7 @@ class ServerMirrorsInterface:
             reason = my_broken_uris[0][1]
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s, %s: %s" % (
-                        brown(self.Entropy.default_repository),
+                        brown(repo),
                         red("sync"),
                         brown(branch),
                         blue("download errors"),
@@ -14529,7 +14637,7 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[repo:%s|%s|%s] %s: %s" % (
-                    brown(self.Entropy.default_repository),
+                    brown(repo),
                     red("sync"),
                     brown(branch),
                     blue("download completed successfully"),
@@ -14542,11 +14650,14 @@ class ServerMirrorsInterface:
         return errors, m_fine_uris, m_broken_uris
 
 
-    def sync_packages(self, ask = True, pretend = False, packages_check = False):
+    def sync_packages(self, ask = True, pretend = False, packages_check = False, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         self.Entropy.updateProgress(
             "[repo:%s|%s] %s" % (
-                        self.Entropy.default_repository,
+                        repo,
                         red("sync"),
                         darkgreen("starting packages sync"),
                     ),
@@ -14564,7 +14675,7 @@ class ServerMirrorsInterface:
         mirror_errors = False
         mirrors_errors = False
 
-        for uri in self.Mirrors:
+        for uri in self.Entropy.get_remote_mirrors(repo):
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
             mirror_errors = False
@@ -14573,7 +14684,7 @@ class ServerMirrorsInterface:
 
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|branch:%s] %s: %s" % (
-                        self.Entropy.default_repository,
+                        repo,
                         red("sync"),
                         brown(mybranch),
                         blue("packages sync"),
@@ -14584,13 +14695,13 @@ class ServerMirrorsInterface:
                     header = red(" @@ ")
                 )
 
-                uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data = self.calculate_packages_to_sync(uri, mybranch)
+                uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data = self.calculate_packages_to_sync(uri, mybranch, repo)
                 del fineQueue
 
                 if (not uploadQueue) and (not downloadQueue) and (not removalQueue):
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|branch:%s] %s: %s" % (
-                            self.Entropy.default_repository,
+                            repo,
                             red("sync"),
                             mybranch,
                             darkgreen("nothing to do on"),
@@ -14616,7 +14727,8 @@ class ServerMirrorsInterface:
                             downloadQueue,
                             removalQueue,
                             remote_packages_data,
-                            mybranch
+                            mybranch,
+                            repo
                 )
                 del uploadQueue, downloadQueue, removalQueue, remote_packages_data
                 self._show_sync_queues(upload, download, removal, copy, metainfo, mybranch)
@@ -14653,16 +14765,16 @@ class ServerMirrorsInterface:
                 try:
 
                     if removal:
-                        self._sync_run_removal_queue(removal, mybranch)
+                        self._sync_run_removal_queue(removal, mybranch, repo)
                     if copy:
-                        self._sync_run_copy_queue(copy, mybranch)
+                        self._sync_run_copy_queue(copy, mybranch, repo)
                     if upload or download:
                         mirrors_tainted = True
                     if upload:
-                        d_errors, m_fine_uris, m_broken_uris = self._sync_run_upload_queue(uri, upload, mybranch)
+                        d_errors, m_fine_uris, m_broken_uris = self._sync_run_upload_queue(uri, upload, mybranch, repo)
                         if d_errors: mirror_errors = True
                     if download:
-                        d_errors, m_fine_uris, m_broken_uris = self._sync_run_download_queue(uri, download, mybranch)
+                        d_errors, m_fine_uris, m_broken_uris = self._sync_run_download_queue(uri, download, mybranch, repo)
                         if d_errors: mirror_errors = True
                     if (pkgbranches[-1] == mybranch) and not mirror_errors:
                         successfull_mirrors.add(uri)
@@ -14672,7 +14784,7 @@ class ServerMirrorsInterface:
                 except KeyboardInterrupt:
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|branch:%s] %s" % (
-                            self.Entropy.default_repository,
+                            repo,
                             red("sync"),
                             mybranch,
                             darkgreen("keyboard interrupt !"),
@@ -14688,7 +14800,7 @@ class ServerMirrorsInterface:
                     broken_mirrors.add(uri)
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|branch:%s] %s: %s, error: %s" % (
-                            self.Entropy.default_repository,
+                            repo,
                             red("sync"),
                             mybranch,
                             darkred("exception caught"),
@@ -14712,7 +14824,7 @@ class ServerMirrorsInterface:
                     if len(successfull_mirrors) > 0:
                         self.Entropy.updateProgress(
                             "[repo:%s|%s|branch:%s] %s" % (
-                                self.Entropy.default_repository,
+                                repo,
                                 red("sync"),
                                 mybranch,
                                 darkred("at least one mirror has been sync'd properly, hooray!"),
@@ -14726,11 +14838,11 @@ class ServerMirrorsInterface:
         # if at least one server has been synced successfully, move files
         if (len(successfull_mirrors) > 0) and not pretend:
             for branch in pkgbranches:
-                branch_dir = os.path.join(self.Entropy.get_local_upload_directory(),branch)
+                branch_dir = os.path.join(self.Entropy.get_local_upload_directory(repo),branch)
                 branchcontent = os.listdir(branch_dir)
                 for xfile in branchcontent:
-                    source = os.path.join(self.Entropy.get_local_upload_directory(),branch,xfile)
-                    destdir = os.path.join(self.Entropy.get_local_packages_directory(),branch)
+                    source = os.path.join(self.Entropy.get_local_upload_directory(repo),branch,xfile)
+                    destdir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
                     if not os.path.isdir(destdir):
                         os.makedirs(destdir)
                     dest = os.path.join(destdir,xfile)
@@ -14741,13 +14853,13 @@ class ServerMirrorsInterface:
                         os.remove(dest_expiration)
 
         if packages_check:
-            check_data = self.Entropy.verify_local_packages([], ask = ask)
+            check_data = self.Entropy.verify_local_packages([], ask = ask, repo = repo)
 
         return mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data
 
 
-    def is_package_expired(self, package_file, branch):
-        pkg_path = os.path.join(self.Entropy.get_local_packages_directory(),branch,package_file)
+    def is_package_expired(self, package_file, branch, repo = None):
+        pkg_path = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,package_file)
         pkg_path += etpConst['packagesexpirationfileext']
         if not os.path.isfile(pkg_path):
             return False
@@ -14758,18 +14870,18 @@ class ServerMirrorsInterface:
             return True
         return False
 
-    def create_expiration_file(self, package_file, branch):
-        pkg_path = os.path.join(self.Entropy.get_local_packages_directory(),branch,package_file)
+    def create_expiration_file(self, package_file, branch, repo = None):
+        pkg_path = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,package_file)
         pkg_path += etpConst['packagesexpirationfileext']
         f = open(pkg_path,"w")
         f.flush()
         f.close()
 
 
-    def collect_expiring_packages(self, branch):
-        dbconn = self.Entropy.openServerDatabase(just_reading = True)
+    def collect_expiring_packages(self, branch, repo = None):
+        dbconn = self.Entropy.openServerDatabase(just_reading = True, repo = repo)
         database_bins = set(dbconn.listBranchPackagesTbz2(branch, do_sort = False))
-        bins_dir = os.path.join(self.Entropy.get_local_packages_directory(),branch)
+        bins_dir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
         repo_bins = []
         if os.path.isdir(bins_dir):
             repo_bins = os.listdir(bins_dir)
@@ -14779,12 +14891,15 @@ class ServerMirrorsInterface:
 
 
 
-    def tidy_mirrors(self, ask = True, pretend = False):
+    def tidy_mirrors(self, ask = True, pretend = False, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
 
         pkgbranches = etpConst['branches']
         self.Entropy.updateProgress(
             "[repo:%s|%s|branches:%s] %s" % (
-                        brown(self.Entropy.default_repository),
+                        brown(repo),
                         red("tidy"),
                         blue(str(','.join(pkgbranches))),
                         blue("collecting expired packages"),
@@ -14813,15 +14928,15 @@ class ServerMirrorsInterface:
             )
 
             # collect removed packages
-            expiring_packages = self.collect_expiring_packages(mybranch)
+            expiring_packages = self.collect_expiring_packages(mybranch, repo)
 
             removal = []
             for package in expiring_packages:
-                expired = self.is_package_expired(package, mybranch)
+                expired = self.is_package_expired(package, mybranch, repo)
                 if expired:
                     removal.append(package)
                 else:
-                    self.create_expiration_file(package, mybranch)
+                    self.create_expiration_file(package, mybranch, repo)
 
             # fill returning data
             branch_data[mybranch]['removal'] = removal[:]
@@ -14871,8 +14986,8 @@ class ServerMirrorsInterface:
             for package in removal:
                 myqueue.append(package+etpConst['packageshashfileext'])
                 myqueue.append(package)
-            ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(),mybranch)
-            for uri in self.Mirrors:
+            ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),mybranch)
+            for uri in self.Entropy.get_remote_mirrors(repo):
 
                 self.Entropy.updateProgress(
                     "[branch:%s] %s..." % (
@@ -14892,7 +15007,8 @@ class ServerMirrorsInterface:
                                                     myqueue,
                                                     critical_files = [],
                                                     ftp_basedir = ftp_basedir,
-                                                    remove = True
+                                                    remove = True,
+                                                    repo = repo
                                                 )
                 errors, m_fine_uris, m_broken_uris = destroyer.go()
                 if errors:
@@ -14925,7 +15041,7 @@ class ServerMirrorsInterface:
 
                 branch_data[mybranch]['removed'] = set()
                 for package in removal:
-                    package_path = os.path.join(self.Entropy.get_local_packages_directory(),mybranch,package)
+                    package_path = os.path.join(self.Entropy.get_local_packages_directory(repo),mybranch,package)
                     package_path_hash = package_path+etpConst['packageshashfileext']
                     package_path_expired = package_path+etpConst['packagesexpirationfileext']
                     for myfile in [package_path_hash,package_path,package_path_expired]:

@@ -18,9 +18,9 @@ branches|3.5 2008
 #
 #    repository: server-side repositories configuration
 #    note: default repository setting is in repositories.conf (officialrepositoryid)
-#|   repository|repository_id|repository description|<ftp upload URI 1> <ftp upload URI 2> <ftp upload URI 3> ...
+#|   repository|repository_id|repository description|<ftp upload URI 1> <2>|<http handlers uri>
 #
 #    example:
-#|       repository|sabayonlinux.org|Sabayon Linux Official Repository|ftp://user:pass@111.111.111.111/ ... ...
+#|       repository|sabayonlinux.org|Sabayon Linux Official Repository|ftp://user:pass@111.111.111.111/|http://svn.sabayonlinux.org/entropy
 #
 # repository|
