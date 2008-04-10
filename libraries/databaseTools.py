@@ -474,6 +474,8 @@ class etpDatabase:
         cat_to = key_to.split("/")[0]
         name_to = key_to.split("/")[1]
         matches = self.atomMatch(key_from, multiMatch = True)
+        quickpkg_queue = set()
+
         for idpackage in matches[0]:
 
             slot = self.retrieveSlot(idpackage)
@@ -490,7 +492,7 @@ class etpDatabase:
 
             # look for packages we need to quickpkg again
             # note: quickpkg_queue is simply ignored if self.clientDatabase
-            quickpkg_queue = [key_to+":"+str(slot)]
+            quickpkg_queue.add(key_to+":"+str(slot))
             iddeps = self.searchDependency(key_from, like = True, multi = True)
             for iddep in iddeps:
                 # update string
@@ -510,19 +512,22 @@ class etpDatabase:
                 # we have to repackage also package owning this iddep
                 iddep_owners = self.searchIdpackageFromIddependency(iddep)
                 for idpackage_owner in iddep_owners:
-                    quickpkg_queue.append(self.retrieveAtom(idpackage_owner))
+                    quickpkg_queue.add(self.retrieveAtom(idpackage_owner))
 
-            if not self.clientDatabase:
+
+        if not self.clientDatabase:
+
+            for idpackage in matches[0]:
 
                 # check for injection and warn the developer
                 injected = self.isInjected(idpackage)
                 if injected:
                     self.updateProgress(
-                                            bold("INJECT: ")+red("Package %s has been injected. You need to quickpkg it manually to update embedded database !!! Repository database will be updated anyway.") % (blue(new_atom),),
-                                            importance = 1,
-                                            type = "warning",
-                                            header = darkred(" * ")
-                                        )
+                        bold("INJECT: ")+red("Package %s has been injected. You need to quickpkg it manually to update embedded database !!! Repository database will be updated anyway.") % (blue(new_atom),),
+                        importance = 1,
+                        type = "warning",
+                        header = darkred(" * ")
+                    )
 
                 # quickpkg package and packages owning it as a dependency
                 self.runTreeUpdatesQuickpkgAction(quickpkg_queue)
@@ -611,6 +616,7 @@ class etpDatabase:
                 if rc == "Yes":
                     break
 
+        self.commitChanges()
         package_paths = set()
         print atoms
         for myatom in atoms:
