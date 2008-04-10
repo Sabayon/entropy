@@ -11825,16 +11825,16 @@ class ServerInterface(TextInterface):
                 if not pkglist:
                     continue
 
-             self.updateProgress(
-                    "%s '%s' %s" % (
-                        red("Reinitializing Entropy database for branch"),
-                        bold(mybranch),
-                        red("using Packages in the repository..."),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = darkgreen(" * ")
-                )
+                self.updateProgress(
+                        "%s '%s' %s" % (
+                            red("Reinitializing Entropy database for branch"),
+                            bold(mybranch),
+                            red("using Packages in the repository..."),
+                        ),
+                        importance = 1,
+                        type = "info",
+                        header = darkgreen(" * ")
+                    )
 
                 counter = 0
                 maxcount = len(pkglist)

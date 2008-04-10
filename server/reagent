@@ -66,8 +66,8 @@ def print_help():
 
     print_info(" \t"+green("database")+brown("\t Entropy database tool manager"))
     print_info(" \t\t"+red("--initialize")+"\t\t\t Initialize the Entropy packages database")
-    print_info(" \t\t\t"+red("--empty")+"\t\t do not fill database with packages")
-    print_info(" \t\t\t"+red("--repo=<repoid>")+"\t create database for the specified repo id")
+    print_info(" \t\t\t"+red("--empty")+"\t\t\t do not fill database with packages")
+    print_info(" \t\t\t"+red("--repo=<repoid>")+"\t\t create database for the specified repo id")
     print_info(" \t\t"+green("bump")+"\t\t\t\t Do a revision bump on the database")
     print_info(" \t\t\t"+red("--sync")+"\t\t\t synchronize the database")
     print_info(" \t\t"+green("remove")+"\t\t\t\t Remove a package or a list of packages")
