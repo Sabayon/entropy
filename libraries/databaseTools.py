@@ -500,8 +500,10 @@ class etpDatabase:
                 mydep = self.retrieveDependencyFromIddependency(iddep)
                 mydep_key = self.entropyTools.dep_getkey(mydep)
                 if mydep_key != key_from: # avoid changing wrong atoms -> dev-python/qscintilla-python would
+                    print "error",mydep_key,key_from
                     continue              # become x11-libs/qscintilla if we don't do this check
                 mydep = mydep.replace(key_from,key_to)
+                print "replaced",mydep,"from",key_from,"to",key_to
 
                 # now update
                 # dependstable on server is always re-generated
