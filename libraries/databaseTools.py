@@ -502,6 +502,7 @@ class etpDatabase:
                 mydep_key = self.entropyTools.dep_getkey(mydep)
                 if mydep_key != key_from: # avoid changing wrong atoms -> dev-python/qscintilla-python would
                     continue              # become x11-libs/qscintilla if we don't do this check
+                print "replacing",mydep,"from",key_from,"to",key_to
                 mydep = mydep.replace(key_from,key_to)
 
                 # now update
@@ -527,15 +528,17 @@ class etpDatabase:
                         header = darkred(" * ")
                     )
 
+        self.commitChanges()
         for idpackage_owner in iddependencies_idpackages:
             myatom = self.retrieveAtom(idpackage_owner)
             myatom = myatom.replace(key_from,key_to)
+            print "replacing",myatom,"from",key_from,"to",key_to
             quickpkg_queue.add(myatom)
+        print "queue",quickpkg_queue
         # quickpkg package and packages owning it as a dependency
         self.runTreeUpdatesQuickpkgAction(quickpkg_queue)
-
-
         self.commitChanges()
+
 
     # -- slotmove action:
     # 1) move package slot
