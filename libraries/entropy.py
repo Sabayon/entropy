@@ -11730,6 +11730,7 @@ class ServerInterface(TextInterface):
         treeupdates_actions = []
         injected_packages = set()
         idpackages = set()
+        idpackages_added = set()
 
         self.updateProgress(
                 red("Initializing Entropy database..."),
@@ -11850,7 +11851,6 @@ class ServerInterface(TextInterface):
 
                 counter = 0
                 maxcount = len(pkglist)
-                idpackages_added = set()
                 for pkg in pkglist:
                     counter += 1
 
