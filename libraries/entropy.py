@@ -11046,11 +11046,14 @@ class ServerInterface(TextInterface):
         self.MirrorsService = ServerMirrorsInterface(self, mirrors = mirrors)
 
     def setup_entropy_settings(self):
-        self.settings_to_backup.extend([
+        backup_list = [
             'etpdatabaseclientfilepath',
             'clientdbid',
             'officialrepositoryid'
-        ])
+        ]
+        for setting in backup_list:
+            if setting not in self.settings_to_backup:
+                self.settings_to_backup.append(setting)
         # setup client database
         etpConst['etpdatabaseclientfilepath'] = self.get_local_database_file()
         etpConst['clientdbid'] = etpConst['serverdbid']
@@ -11153,15 +11156,17 @@ class ServerInterface(TextInterface):
                                                 OutputInterface = self,
                                                 ServiceInterface = self
         )
-        # verify if we need to update the database to sync 
+
+        valid = True
+        try:
+            conn.validateDatabase()
+        except exceptionTools.SystemDatabaseError:
+            valid = False
+
+        # verify if we need to update the database to sync
         # with portage updates, we just ignore being readonly in the case
         if not etpConst['treeupdatescalled'] and not just_reading:
             # sometimes, when filling a new server db, we need to avoid tree updates
-            valid = True
-            try:
-                conn.validateDatabase()
-            except exceptionTools.SystemDatabaseError:
-                valid = False
             if valid:
                 conn.serverUpdatePackagesData()
             else:
@@ -11172,7 +11177,7 @@ class ServerInterface(TextInterface):
                     type = "warning",
                     header = bold(" !!! ")
                 )
-        if not read_only:
+        if not read_only and valid:
             self.updateProgress(
                 "[repo:%s|%s] %s" % (
                             blue(self.default_repository),
