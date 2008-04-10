@@ -590,33 +590,35 @@ class etpDatabase:
 
 
     def runTreeUpdatesQuickpkgAction(self, atoms):
-        import reagentTools
-        reagent_cmds = ["--repackage"]
-        reagent_cmds += atoms
 
+        branch = etpConst['branch']
         # ask branch question
-        rc = self.askQuestion("     Would you like to continue with the default branch \"%s\" ?" % (etpConst['branch'],))
+        rc = self.askQuestion("     Would you like to continue with the default branch \"%s\" ?" % (branch,))
         if rc == "No":
             # ask which
-            mybranch = etpConst['branch']
             while 1:
-                mybranch = readtext("Type your branch: ")
-                if mybranch not in self.listAllBranches():
+                branch = readtext("Type your branch: ")
+                if branch not in self.listAllBranches():
                     self.updateProgress(
-                                            bold("ATTENTION: ")+red("Specified branch %s does not exist.") % (blue(mybranch),),
-                                            importance = 1,
-                                            type = "warning",
-                                            header = darkred(" * ")
-                                        )
+                            bold("ATTENTION: ")+red("Specified branch %s does not exist.") % (blue(branch),),
+                            importance = 1,
+                            type = "warning",
+                            header = darkred(" * ")
+                    )
                     continue
                 # ask to confirm
-                rc = self.askQuestion("     Confirm %s ?" % (mybranch,))
+                rc = self.askQuestion("     Confirm %s ?" % (branch,))
                 if rc == "Yes":
                     break
-            reagent_cmds.append("--branch=%s" % (mybranch,))
 
-        rc = reagentTools.update(reagent_cmds)
-        if rc != 0:
+        package_paths = set()
+        for myatom in atoms:
+            mypath = self.ServiceInterface.quickpkg(myatom,etpConst['packagesserverstoredir'])
+            package_paths.add(mypath)
+        packages_data = [(x,branch,False) for x in package_paths]
+        idpackages = self.ServiceInterface.add_packages_to_repository(packages_data)
+
+        if not idpackages:
             self.updateProgress(
                                     bold("ATTENTION: ")+red("reagent update did not run properly. Please update packages manually"),
                                     importance = 1,
