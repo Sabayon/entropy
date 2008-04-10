@@ -534,13 +534,11 @@ class etpDatabase:
         for x in range(len(quickpkg_queue)):
             myatom = quickpkg_queue[x]
             myatom = myatom.replace(key_from,key_to)
-            print "replacing",myatom,"from",key_from,"to",key_to
             quickpkg_queue[x] = myatom
         quickpkg_queue = set(quickpkg_queue)
         for idpackage_owner in iddependencies_idpackages:
             myatom = self.retrieveAtom(idpackage_owner)
             myatom = myatom.replace(key_from,key_to)
-            print "replacing",myatom,"from",key_from,"to",key_to
             quickpkg_queue.add(myatom)
         return quickpkg_queue
 
@@ -608,7 +606,7 @@ class etpDatabase:
 
         branch = etpConst['branch']
         # ask branch question
-        rc = self.askQuestion("     Would you like to continue with the default branch \"%s\" ?" % (branch,))
+        rc = self.askQuestion("Would you like to continue with the default branch \"%s\" ?" % (branch,))
         if rc == "No":
             # ask which
             while 1:
@@ -627,14 +625,23 @@ class etpDatabase:
                     break
 
         self.commitChanges()
+
         package_paths = set()
-        print atoms
+        runatoms = set()
         for myatom in atoms:
             mymatch = self.atomMatch(myatom)
             if mymatch[0] == -1:
                 continue
             myatom = self.retrieveAtom(mymatch[0])
-            print myatom
+            runatoms.add(myatom)
+
+        for myatom in atoms:
+            self.updateProgress(
+                red("repackaging: ")+blue(myatom),
+                importance = 1,
+                type = "warning",
+                header = blue("  # ")
+            )
             mypath = self.ServiceInterface.quickpkg(myatom,etpConst['packagesserverstoredir'])
             package_paths.add(mypath)
         packages_data = [(x,branch,False) for x in package_paths]
