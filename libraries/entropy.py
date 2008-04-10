@@ -1505,7 +1505,7 @@ class EquoInterface(TextInterface):
             clientmatch = self.clientDbconn.atomMatch(matchkey, matchSlot = matchslot)
             if clientmatch[0] != -1:
                 broken_atoms = self._lookup_library_breakages(match, clientmatch, deep_deps = deep_deps)
-                inverse_deps = self._lookup_inverse_dependencies(match, clientmatch, deep_deps = deep_deps)
+                inverse_deps = self._lookup_inverse_dependencies(match, clientmatch)
                 if inverse_deps:
                     deptree.remove((mydep[0],match))
                     for ikey,islot in inverse_deps:
@@ -1550,7 +1550,7 @@ class EquoInterface(TextInterface):
 
         return newdeptree,0 # note: newtree[0] contains possible conflicts
 
-    def _lookup_inverse_dependencies(self, match, clientmatch, deep_deps = False):
+    def _lookup_inverse_dependencies(self, match, clientmatch):
 
         cmpstat = self.get_package_action(match)
         if cmpstat == 0:
@@ -2580,8 +2580,8 @@ class EquoInterface(TextInterface):
         dependencies = self.get_deep_dependency_list(dbconn, idpackage, atoms = True)
         dependencies_cache = set()
 
-        def update_depscontent(mycontent):
-            deps_content |= set( \
+        def update_depscontent(mycontent, dbconn, ldpaths):
+            return set( \
                     [   x for x in mycontent if os.path.dirname(x) in ldpaths \
                         and (dbconn.isNeededAvailable(os.path.basename(x)) > 0) ] \
                     )
@@ -2590,12 +2590,12 @@ class EquoInterface(TextInterface):
             match = dbconn.atomMatch(dependency)
             if match[0] != -1:
                 mycontent = dbconn.retrieveContent(match[0])
-                update_depscontent(mycontent)
+                deps_content |= update_depscontent(mycontent, dbconn, ldpaths)
                 key, slot = dbconn.retrieveKeySlot(match[0])
                 dependencies_cache.add((key,slot))
         key, slot = dbconn.retrieveKeySlot(idpackage)
 
-        update_depscontent(mycontent)
+        deps_content |= update_depscontent(mycontent, dbconn, ldpaths)
         dependencies_cache.add((key,slot))
 
         idpackages_cache = set()
