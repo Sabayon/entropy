@@ -2409,7 +2409,6 @@ class etpDatabase:
 
         ldpaths = self.entropyTools.collectLinkerPaths()
         mypaths = [os.path.join(x,needed) for x in ldpaths]
-        print mypaths
 
         query = """
         SELECT
@@ -2418,9 +2417,8 @@ class etpDatabase:
                 content
         WHERE
                 content.file IN (%s)
-        """ % (
-                    ('?,'*len(mypaths))[:-1],
-        )
+        """ % ( ('?,'*len(mypaths))[:-1], )
+
         self.cursor.execute(query,mypaths)
         results = self.cursor.fetchall()
 
