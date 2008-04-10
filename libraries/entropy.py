@@ -11754,7 +11754,9 @@ class ServerInterface(TextInterface):
             self.close_server_database(dbconn)
 
             self.updateProgress(
-                bold("WARNING")+red(": database file already exists. Overwriting."),
+                bold("WARNING")+red(": database %s already exists.") % (
+                    self.get_local_database_file(),
+                ),
                 importance = 1,
                 type = "warning",
                 header = red(" * ")
