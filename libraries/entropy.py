@@ -11074,6 +11074,7 @@ class ServerInterface(TextInterface):
     def switch_default_repository(self, repoid):
         self.close_server_databases()
         etpConst['officialrepositoryid'] = repoid
+        self.default_repository = repoid
         self.setup_services()
         if self.do_save_repository:
             self.save_default_repository(repoid)
