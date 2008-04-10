@@ -2575,22 +2575,29 @@ class EquoInterface(TextInterface):
     def get_missing_rdepends(self, dbconn, idpackage):
         rdepends = set()
         neededs = dbconn.retrieveNeeded(idpackage, extended = True)
+        ldpaths = self.entropyTools.collectLinkerPaths()
         deps_content = set()
         dependencies = self.get_deep_dependency_list(dbconn, idpackage, atoms = True)
         dependencies_cache = set()
+
+        def update_depscontent(mycontent):
+            deps_content |= set( \
+                    [   x for x in mycontent if os.path.dirname(x) in ldpaths \
+                        and (dbconn.isNeededAvailable(os.path.basename(x)) > 0) ] \
+                    )
+
         for dependency in dependencies:
             match = dbconn.atomMatch(dependency)
             if match[0] != -1:
-                deps_content |= dbconn.retrieveContent(match[0])
+                mycontent = dbconn.retrieveContent(match[0])
+                update_depscontent(mycontent)
                 key, slot = dbconn.retrieveKeySlot(match[0])
                 dependencies_cache.add((key,slot))
         key, slot = dbconn.retrieveKeySlot(idpackage)
 
-        deps_content |= dbconn.retrieveContent(idpackage)
+        update_depscontent(mycontent)
         dependencies_cache.add((key,slot))
 
-        ldpaths = self.entropyTools.collectLinkerPaths()
-        deps_content = set([x for x in deps_content if os.path.dirname(x) in ldpaths])
         idpackages_cache = set()
         for needed_data in neededs:
             needed = needed_data[0]
@@ -13402,31 +13409,37 @@ class ServerMirrorsInterface:
     def _show_eapi2_upload_messages(self, crippled_uri, database_path, upload_data, cmethod):
 
         self.Entropy.updateProgress(
-            red("[repo:%s|%s|EAPI:2] creating compressed database dump + checksum" % (etpConst['officialrepositoryid'],crippled_uri,)),
+            "[repo:%s|%s|%s:%s] %s" % (
+                        brown(etpConst['officialrepositoryid']),
+                        darkgreen(crippled_uri),
+                        red("EAPI"),
+                        bold("2"),
+                        blue("creating compressed database dump + checksum"),
+            ),
             importance = 0,
             type = "info",
             header = darkgreen(" * ")
         )
         self.Entropy.updateProgress(
-            blue("database path: %s" % (database_path,)),
+            "database path: %s" % (blue(database_path),),
             importance = 0,
             type = "info",
             header = brown("    # ")
         )
         self.Entropy.updateProgress(
-            blue("dump: %s" % (upload_data['dump_path'],)),
+            "dump: %s" % (blue(upload_data['dump_path']),),
             importance = 0,
             type = "info",
             header = brown("    # ")
         )
         self.Entropy.updateProgress(
-            blue("dump checksum: %s" % (upload_data['dump_path_digest'],)),
+            "dump checksum: %s" % (blue(upload_data['dump_path_digest']),),
             importance = 0,
             type = "info",
             header = brown("    # ")
         )
         self.Entropy.updateProgress(
-            blue("opener: %s" % (cmethod[0],)),
+            "opener: %s" % (blue(cmethod[0]),),
             importance = 0,
             type = "info",
             header = brown("    # ")
@@ -13435,32 +13448,38 @@ class ServerMirrorsInterface:
     def _show_eapi1_upload_messages(self, crippled_uri, database_path, upload_data, cmethod):
 
         self.Entropy.updateProgress(
-            red("[repo:%s|%s|EAPI:1] compressing database + checksum" % (etpConst['officialrepositoryid'],crippled_uri,)),
+            "[repo:%s|%s|%s:%s] %s" % (
+                        brown(etpConst['officialrepositoryid']),
+                        darkgreen(crippled_uri),
+                        red("EAPI"),
+                        bold("1"),
+                        blue("compressing database + checksum"),
+            ),
             importance = 0,
             type = "info",
             header = darkgreen(" * "),
             back = True
         )
         self.Entropy.updateProgress(
-            blue("database path: %s" % (database_path,)),
+            "database path: %s" % (blue(database_path),),
             importance = 0,
             type = "info",
             header = brown("    # ")
         )
         self.Entropy.updateProgress(
-            blue("compressed database path: %s" % (upload_data['compressed_database_path'],)),
+            "compressed database path: %s" % (blue(upload_data['compressed_database_path']),),
             importance = 0,
             type = "info",
             header = brown("    # ")
         )
         self.Entropy.updateProgress(
-            blue("compressed checksum: %s" % (upload_data['compressed_database_path_digest'],)),
+            "compressed checksum: %s" % (blue(upload_data['compressed_database_path_digest']),),
             importance = 0,
             type = "info",
             header = brown("    # ")
         )
         self.Entropy.updateProgress(
-            blue("opener: %s" % (cmethod[0],)),
+            "opener: %s" % (blue(cmethod[0]),),
             importance = 0,
             type = "info",
             header = brown("    # ")
