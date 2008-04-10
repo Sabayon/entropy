@@ -2536,11 +2536,47 @@ class EquoInterface(TextInterface):
         self.spmCache[myroot] = conn.intf
         return conn.intf
 
+    def get_deep_dependency_list(self, dbconn, idpackage, atoms = False):
+
+        mybuffer = self.entropyTools.lifobuffer()
+        matchcache = set()
+        depcache = set()
+        mydeps = dbconn.retrieveDependencies(idpackage)
+        for mydep in mydeps:
+            mybuffer.push(mydep)
+        mydep = mybuffer.pop()
+
+        while mydep != None:
+
+            if mydep in depcache:
+                mydep = mybuffer.pop()
+                continue
+
+            mymatch = dbconn.atomMatch(mydep)
+            if atoms:
+                matchcache.add(mydep)
+            else:
+                matchcache.add(mymatch[0])
+
+            if mymatch[0] != -1:
+                owndeps = dbconn.retrieveDependencies(mymatch[0])
+                for owndep in owndeps:
+                    mybuffer.push(owndep)
+
+            depcache.add(mydep)
+            mydep = mybuffer.pop()
+
+        if atoms and -1 in matchcache:
+            matchcache.remove(-1)
+
+        return matchcache
+
+
     def get_missing_rdepends(self, dbconn, idpackage):
         rdepends = set()
         neededs = dbconn.retrieveNeeded(idpackage, extended = True)
         deps_content = set()
-        dependencies = dbconn.retrieveDependencies(idpackage)
+        dependencies = self.get_deep_dependency_list(dbconn, idpackage, atoms = True)
         dependencies_cache = set()
         for dependency in dependencies:
             match = dbconn.atomMatch(dependency)
