@@ -2411,20 +2411,25 @@ class etpDatabase:
         mypaths = list([os.path.join(x,needed) for x in ldpaths])
 
         query = """
-        SELECT idpackage,file FROM content WHERE content.file IN (%s) and (?) in (select library from neededreference where library = (?))
+        SELECT
+                idpackage,file
+        FROM
+                content
+        WHERE 
+                content.file IN (%s)
         """ % (
                     ','.join(["?" for x in mypaths]),
         )
-        print query
-        mypaths.extend([needed,needed])
+        #mypaths.extend([needed,needed])
         self.cursor.execute(query,mypaths)
         results = self.cursor.fetchall()
 
-        mydata = set()
-        for data in results:
-            if elfclass == -1:
-                mydata.add(data)
-            elif elfclass >= 0 and os.access(data[1],os.R_OK):
+        if elfclass == -1:
+            mydata = set(results)
+        else:
+            for data in results:
+                if not os.access(data[1],os.R_OK):
+                    continue
                 myclass = self.entropyTools.read_elf_class(data[1])
                 if myclass == elfclass:
                     mydata.add(data)
