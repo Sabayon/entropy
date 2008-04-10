@@ -93,6 +93,7 @@ class etpDatabase:
     def create_dbstatus_data(self):
         taint_file = self.ServiceInterface.get_local_database_taint_file()
         if not etpDbStatus.has_key(self.dbFile):
+            etpDbStatus[self.dbFile] = {}
             etpDbStatus[self.dbFile]['tainted'] = False
             etpDbStatus[self.dbFile]['bumped'] = False
         if os.path.isfile(taint_file):
