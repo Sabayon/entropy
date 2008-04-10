@@ -11424,14 +11424,34 @@ class ServerInterface(TextInterface):
                             count = (mycount,maxcount,)
             )
 
-            # add to database
-            idpackage, destination_path = self.package_injector(
-                                package_filepath,
-                                branch = requested_branch,
-                                inject = inject
-            )
-            idpackages_added.add(idpackage)
-            to_be_injected.add((idpackage,destination_path))
+            try:
+                # add to database
+                idpackage, destination_path = self.package_injector(
+                                    package_filepath,
+                                    branch = requested_branch,
+                                    inject = inject
+                )
+                idpackages_added.add(idpackage)
+                to_be_injected.add((idpackage,destination_path))
+            except Exception, e:
+                self.updateProgress(
+                                "[repo:%s] %s: %s" % (
+                                            darkgreen(etpConst['officialrepositoryid']),
+                                            darkred("Exception caught, running injection and RDEPEND check before raising"),
+                                            darkgreen(str(e)),
+                                        ),
+                                importance = 1,
+                                type = "error",
+                                header = bold(" !!! "),
+                                count = (mycount,maxcount,)
+                )
+                if idpackages_added:
+                    dbconn = self.openServerDatabase(read_only = False, no_upload = True)
+                    self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = ask)
+                if to_be_injected:
+                    self.inject_database_into_packages(to_be_injected)
+                self.close_server_databases()
+                raise
 
         if idpackages_added:
             dbconn = self.openServerDatabase(read_only = False, no_upload = True)

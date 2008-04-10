@@ -1,6 +1,5 @@
 TODO list
   - Server-side code refactoring:
-        - if an extract_pkg_metadata fails, no injection will be done
         [] write a ncurses interface to manage entropy database + spm interface + GLSA
   - split RDEPEND and PDEPEND ( + && and || ??? ) (*)
   - add i18n support (*)
