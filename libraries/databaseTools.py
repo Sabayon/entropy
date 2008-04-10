@@ -612,8 +612,9 @@ class etpDatabase:
                     break
 
         package_paths = set()
+        print atoms
         for myatom in atoms:
-            print myatom
+            myatom = self.atomMatch(myatom)
             mypath = self.ServiceInterface.quickpkg(myatom,etpConst['packagesserverstoredir'])
             package_paths.add(mypath)
         packages_data = [(x,branch,False) for x in package_paths]
