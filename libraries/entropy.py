@@ -12595,7 +12595,7 @@ class ServerInterface(TextInterface):
 class ServerMirrorsInterface:
 
     import entropyTools, dumpTools
-    def __init__(self,  ServerInstance):
+    def __init__(self,  ServerInstance, repo = None):
 
         if not isinstance(ServerInstance,ServerInterface):
             raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid ServerInterface based instance is needed")
@@ -12610,7 +12610,7 @@ class ServerMirrorsInterface:
             type = "info",
             header = red(" @@ ")
         )
-        for mirror in self.Entropy.get_remote_mirrors():
+        for mirror in self.Entropy.get_remote_mirrors(repo):
             mirror = self.entropyTools.hideFTPpassword(mirror)
             self.Entropy.updateProgress(
                 blue("mirror: %s") % (darkgreen(mirror),),

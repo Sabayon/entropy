@@ -154,7 +154,7 @@ class etpDatabase:
 
             # if we arrive here, it is because all the mirrors are unlocked
             self.ServiceInterface.MirrorsService.lock_mirrors(True, repo = self.server_repo)
-            self.ServiceInterface.MirrorsService.sync_databases(noUpload, repo = repo)
+            self.ServiceInterface.MirrorsService.sync_databases(noUpload, repo = self.server_repo)
 
     def closeDB(self):
 
@@ -266,7 +266,6 @@ class etpDatabase:
     def serverUpdatePackagesData(self):
 
         etpConst['treeupdatescalled'] = True
-        repository = self.server_repo
 
         repo_updates_file = self.ServiceInterface.get_local_database_treeupdates_file(self.server_repo)
         doRescan = False
