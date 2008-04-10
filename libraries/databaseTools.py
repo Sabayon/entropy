@@ -613,6 +613,7 @@ class etpDatabase:
 
         package_paths = set()
         for myatom in atoms:
+            print myatom
             mypath = self.ServiceInterface.quickpkg(myatom,etpConst['packagesserverstoredir'])
             package_paths.add(mypath)
         packages_data = [(x,branch,False) for x in package_paths]
