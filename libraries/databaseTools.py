@@ -2407,19 +2407,20 @@ class etpDatabase:
         cache = self.fetchSearchCache(needed,'resolveNeeded')
         if cache != None: return cache
 
-        self.cursor.execute('SELECT idpackage,file FROM content WHERE content.file LIKE (?) and (?) in (select library from neededreference where library = (?));', ("%"+needed,needed,needed,))
-        results = self.cursor.fetchall()
         ldpaths = self.entropyTools.collectLinkerPaths()
+        mypaths = [os.path.join(x,needed) for x in ldpaths]
+
+        self.cursor.execute('SELECT idpackage,file FROM content WHERE content.file IN (?) and (?) in (select library from neededreference where library = (?));', (mypaths,needed,needed,))
+        results = self.cursor.fetchall()
+
         mydata = set()
         for data in results:
-            pathfile = os.path.dirname(data[1])
-            if pathfile in ldpaths:
-                if elfclass == -1:
+            if elfclass == -1:
+                mydata.add(data)
+            elif elfclass >= 0 and os.access(data[1],os.R_OK):
+                myclass = self.entropyTools.read_elf_class(data[1])
+                if myclass == elfclass:
                     mydata.add(data)
-                elif elfclass >= 0 and os.access(data[1],os.R_OK):
-                    myclass = self.entropyTools.read_elf_class(data[1])
-                    if myclass == elfclass:
-                        mydata.add(data)
 
         self.storeSearchCache(needed,'resolveNeeded',mydata)
         return mydata

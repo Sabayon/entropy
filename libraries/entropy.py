@@ -2573,6 +2573,7 @@ class EquoInterface(TextInterface):
 
 
     def get_missing_rdepends(self, dbconn, idpackage):
+
         rdepends = set()
         neededs = dbconn.retrieveNeeded(idpackage, extended = True)
         ldpaths = self.entropyTools.collectLinkerPaths()
@@ -2593,8 +2594,8 @@ class EquoInterface(TextInterface):
                 deps_content |= update_depscontent(mycontent, dbconn, ldpaths)
                 key, slot = dbconn.retrieveKeySlot(match[0])
                 dependencies_cache.add((key,slot))
-        key, slot = dbconn.retrieveKeySlot(idpackage)
 
+        key, slot = dbconn.retrieveKeySlot(idpackage)
         deps_content |= update_depscontent(mycontent, dbconn, ldpaths)
         dependencies_cache.add((key,slot))
 
