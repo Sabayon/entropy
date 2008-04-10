@@ -155,7 +155,7 @@ def update(options):
         print_info(brown(" @@ ")+blue("Compressing packages..."))
         for x in toBeAdded:
             print_info(brown("    # ")+red(x[0]+"..."))
-            Entropy.quickpkg(x[0],etpConst['packagesserverstoredir'])
+            Entropy.quickpkg(x[0],Entropy.get_local_store_directory())
 
     requested_branch = etpConst['branch']
     for i in options:
@@ -164,13 +164,13 @@ def update(options):
             if (mybranch):
                 requested_branch = mybranch
 
-    tbz2files = os.listdir(etpConst['packagesserverstoredir'])
+    tbz2files = os.listdir(Entropy.get_local_store_directory())
     if not tbz2files:
         print_info(brown(" * ")+red("Nothing to do, check later."))
         # then exit gracefully
         return 0
 
-    tbz2files = [(os.path.join(etpConst['packagesserverstoredir'],x),requested_branch,False) for x in tbz2files]
+    tbz2files = [(os.path.join(Entropy.get_local_store_directory(),x),requested_branch,False) for x in tbz2files]
     idpackages = Entropy.add_packages_to_repository(tbz2files)
 
     if idpackages:

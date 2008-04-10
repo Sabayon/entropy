@@ -464,8 +464,6 @@ def initConfig_entropyConstants(rootdir):
     const_readReagentSettings()
     const_readServerSettings()
     const_readActivatorSettings()
-    const_setupServerClientRepository()
-    const_defaultServerDbStatus()
 
     # reflow back settings
     etpConst.update(backed_up_settings)
@@ -485,12 +483,9 @@ def const_defaultSettings(rootdir):
     ETP_PORTDIR = rootdir+"/usr/portage"
     ETP_DISTFILESDIR = "/distfiles"
     ETP_DBDIR = "/database/"+ETP_ARCH_CONST
-    ETP_DBREPODIR = "__repository__"
     ETP_DBFILE = "packages.db"
     ETP_DBCLIENTFILE = "equo.db"
     ETP_CLIENT_REPO_DIR = "/client"
-    ETP_UPLOADDIR = "/upload/"+ETP_ARCH_CONST
-    ETP_STOREDIR = "/store/"+ETP_ARCH_CONST
     ETP_TRIGGERSDIR = "/triggers/"+ETP_ARCH_CONST
     ETP_SMARTAPPSDIR = "/smartapps/"+ETP_ARCH_CONST
     ETP_SMARTPACKAGESDIR = "/smartpackages/"+ETP_ARCH_CONST
@@ -504,22 +499,19 @@ def const_defaultSettings(rootdir):
 
     etpConst.clear()
     myConst = {
+        'server_repositories': {},
         'backed_up': {},
         'sql_destroy': etpSQLInitDestroyAll,
         'sql_init': etpSQLInit,
         'installdir': '/usr/lib/entropy', # entropy default installation directory
-        'dbrepodir': ETP_DBREPODIR,
         'packagestmpdir': ETP_DIR+ETP_TMPDIR, # etpConst['packagestmpdir'] --> temp directory
         'packagestmpfile': ETP_DIR+ETP_TMPDIR+ETP_TMPFILE, # etpConst['packagestmpfile'] --> general purpose tmp file
         'packagesbindir': ETP_DIR+ETP_REPODIR, # etpConst['packagesbindir'] --> repository where the packages will be stored
                             # by the clients: to query if a package has been already downloaded
                             # by the servers or rsync mirrors: to store already uploaded packages to the main rsync server
-        'packagesserverbindir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_REPODIR,
         'smartappsdir': ETP_DIR+ETP_SMARTAPPSDIR, # etpConst['smartappsdir'] location where smart apps files are places
         'smartpackagesdir': ETP_DIR+ETP_SMARTPACKAGESDIR, # etpConst['smartpackagesdir'] location where smart packages files are places
         'triggersdir': ETP_DIR+ETP_TRIGGERSDIR, # etpConst['triggersdir'] location where external triggers are placed
-        'packagesserverstoredir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_STOREDIR,
-        'packagesserveruploaddir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_UPLOADDIR,
         'portagetreedir': ETP_PORTDIR, # directory where is stored our local portage tree
         'distfilesdir': ETP_PORTDIR+ETP_DISTFILESDIR, # directory where our sources are downloaded
         'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
@@ -531,10 +523,7 @@ def const_defaultSettings(rootdir):
         'remoteconf': ETP_CONF_DIR+"/remote.conf", # remote.conf file
         'equoconf': ETP_CONF_DIR+"/equo.conf", # equo.conf file
         'socketconf': ETP_CONF_DIR+"/socket.conf", # socket.conf file
-        'activatoruploaduris': [], # list of URIs that activator can use to upload files (parsed from activator.conf)
-        'binaryurirelativepath': "packages/"+ETP_ARCH_CONST+"/", # Relative remote path for the binary repository.
         'packagesrelativepath': "packages/"+ETP_ARCH_CONST+"/", # user by client interfaces
-        'etpurirelativepath': "database/"+ETP_ARCH_CONST+"/", # database relative path
 
         'entropyworkdir': ETP_DIR, # Entropy workdir
         'entropyunpackdir': ETP_VAR_DIR, # Entropy unpack directory
@@ -587,14 +576,10 @@ def const_defaultSettings(rootdir):
         'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their stuff
 
         'syslogdir': ETP_SYSLOG_DIR, # Entropy system tools log directory
-        'reagentlogfile': ETP_SYSLOG_DIR+"reagent.log", # Reagent operations log file
-        'activatorlogfile': ETP_SYSLOG_DIR+"activator.log", # Activator operations log file
         'entropylogfile': ETP_SYSLOG_DIR+"entropy.log", # Activator operations log file
         'equologfile': ETP_SYSLOG_DIR+"equo.log", # Activator operations log file
         'socketlogfile': ETP_SYSLOG_DIR+"socket.log", # Activator operations log file
 
-        'etpdatabasedir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_DBDIR,
-        'etpdatabasefilepath': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_DBDIR+"/"+ETP_DBFILE,
         'etpdatabaseclientdir': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR,
         'etpdatabaseclientfilepath': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR+"/"+ETP_DBCLIENTFILE, # path to equo.db - client side database file
         'dbnamerepoprefix': "repo_", # prefix of the name of self.dbname in etpDatabase class for the repositories
@@ -741,49 +726,14 @@ def const_defaultSettings(rootdir):
 
         # handler settings
         'handlers': {
-            'md5sum': None,
-            'errorsend': None,
+            'md5sum': "md5sum.php?arch="+etpSys['arch']+"&package=", # md5sum handler,
+            # XXX: hardcoded?
+            'errorsend': "http://svn.sabayonlinux.org/entropy/standard/sabayonlinux.org/handlers/http_error_report.php",
         },
 
     }
     etpConst.update(myConst)
 
-def const_setupServerClientRepository():
-
-    etpConst['packagesserverbindir'] = etpConst['packagesserverbindir'].replace(
-            etpConst['dbrepodir'],
-            etpConst['officialrepositoryid']
-    )
-    etpConst['packagesserverstoredir'] = etpConst['packagesserverstoredir'].replace(
-            etpConst['dbrepodir'],
-            etpConst['officialrepositoryid']
-    )
-    etpConst['packagesserveruploaddir'] = etpConst['packagesserveruploaddir'].replace(
-            etpConst['dbrepodir'],
-            etpConst['officialrepositoryid']
-    )
-    etpConst['etpdatabasedir'] = etpConst['etpdatabasedir'].replace(
-            etpConst['dbrepodir'],
-            etpConst['officialrepositoryid']
-    )
-    etpConst['etpdatabasefilepath'] = etpConst['etpdatabasefilepath'].replace(
-            etpConst['dbrepodir'],
-            etpConst['officialrepositoryid']
-    )
-    for x in range(len(etpConst['activatoruploaduris'])):
-        etpConst['activatoruploaduris'][x] = etpConst['activatoruploaduris'][x].replace(
-            etpConst['dbrepodir'],
-            etpConst['officialrepositoryid']
-        ) # +"/"etpConst['product']+"/"+etpConst['dbrepodir']
-
-    # align etpConst['binaryurirelativepath'] and etpConst['etpurirelativepath'] with etpConst['product']
-    etpConst['binaryurirelativepath'] = etpConst['product']+"/"+etpConst['officialrepositoryid']+"/"+etpConst['binaryurirelativepath']
-    etpConst['etpurirelativepath'] = etpConst['product']+"/"+etpConst['officialrepositoryid']+"/"+etpConst['etpurirelativepath']
-
-    etpConst['handlers']['md5sum'] = "md5sum.php?arch="+etpConst['currentarch']+"&package=" # md5sum handler
-    etpConst['handlers']['errorsend'] = "http://svn.sabayonlinux.org/entropy/%s/%s/handlers/http_error_report.php" % (etpConst['product'],etpConst['officialrepositoryid'],)
-
-    etpConst['dbrepodir'] = etpConst['officialrepositoryid']
 
 def const_readRepositoriesSettings():
 
@@ -987,20 +937,6 @@ def const_readRemoteSettings():
                 url += etpConst['product']+"/handlers/"
                 etpRemoteSupport[servername] = url
 
-def const_defaultServerDbStatus():
-    # load server database status
-    myDatabase = {
-        etpConst['etpdatabasefilepath']: {
-            'bumped': False,
-            'tainted': False
-        }
-    }
-    if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
-        myDatabase[etpConst['etpdatabasefilepath']]['tainted'] = True
-        myDatabase[etpConst['etpdatabasefilepath']]['bumped'] = True
-    etpDbStatus.update(myDatabase)
-    del myDatabase
-
 def const_readEntropyRelease():
     # handle Entropy Version
     ETP_REVISION_FILE = "../libraries/revision"
@@ -1189,12 +1125,7 @@ def const_readActivatorSettings():
         f.close()
         for line in actconffile:
             line = line.strip()
-            if line.startswith("mirror-upload|") and (len(line.split("mirror-upload|")) == 2):
-                uri = line.split("mirror-upload|")[1]
-                if uri.endswith("/"):
-                    uri = uri[:-1]
-                etpConst['activatoruploaduris'].append(uri)
-            elif line.startswith("database-format|") and (len(line.split("database-format|")) == 2):
+            if line.startswith("database-format|") and (len(line.split("database-format|")) == 2):
                 format = line.split("database-format|")[1]
                 if format in etpConst['etpdatabasesupportedcformats']:
                     etpConst['etpdatabasefileformat'] = format
@@ -1239,18 +1170,93 @@ def const_readReagentSettings():
 
 def const_readServerSettings():
 
-    if (os.path.isfile(etpConst['serverconf'])):
-        f = open(etpConst['serverconf'],"r")
-        serverconf = f.readlines()
-        f.close()
-        for line in serverconf:
-            if line.startswith("branches|") and (len(line.split("branches|")) == 2):
-                branches = line.split("branches|")[1]
-                etpConst['branches'] = []
-                for branch in branches.split():
-                    etpConst['branches'].append(branch)
-                if etpConst['branch'] not in etpConst['branches']:
-                    etpConst['branches'].append(etpConst['branch'])
+    if not os.access(etpConst['serverconf'],os.R_OK):
+        return
+
+    f = open(etpConst['serverconf'],"r")
+    serverconf = f.readlines()
+    f.close()
+
+    for line in serverconf:
+
+        if line.startswith("branches|") and (len(line.split("branches|")) == 2):
+            branches = line.split("branches|")[1]
+            etpConst['branches'] = []
+            for branch in branches.split():
+                etpConst['branches'].append(branch)
+            if etpConst['branch'] not in etpConst['branches']:
+                etpConst['branches'].append(etpConst['branch'])
+
+        elif (line.find("repository|") != -1) and (len(line.split("|")) == 4):
+
+            repoid = line.split("|")[1].strip()
+            repodesc = line.split("|")[2].strip()
+            repouris = line.split("|")[3].strip()
+
+            if repouris.startswith("ftp://"):
+
+                if not etpConst['server_repositories'].has_key(repoid):
+                    etpConst['server_repositories'][repoid] = {}
+                    etpConst['server_repositories'][repoid]['description'] = repodesc
+                    etpConst['server_repositories'][repoid]['mirrors'] = []
+
+                uris = repouris.split()
+                for uri in uris:
+                    etpConst['server_repositories'][repoid]['mirrors'].append(uri)
+
+    const_configureServerRepoPaths()
+
+def const_configureServerRepoPaths():
+
+    #'packagesserverstoredir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_STOREDIR,
+    #'packagesserveruploaddir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_UPLOADDIR,
+    #'packagesserverbindir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_REPODIR,
+    #'etpdatabasedir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_DBDIR,
+    #'etpdatabasefilepath': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_DBDIR+"/"+ETP_DBFILE,
+    # etpConst['server_repositories']
+
+    for repoid in etpConst['server_repositories']:
+        etpConst['server_repositories'][repoid]['packages_dir'] = \
+            os.path.join(   etpConst['entropyworkdir'],
+                            "server",
+                            repoid,
+                            "packages",
+                            etpSys['arch']
+                        )
+        etpConst['server_repositories'][repoid]['store_dir'] = \
+            os.path.join(   etpConst['entropyworkdir'],
+                            "server",
+                            repoid,
+                            "store",
+                            etpSys['arch']
+                        )
+        etpConst['server_repositories'][repoid]['upload_dir'] = \
+            os.path.join(   etpConst['entropyworkdir'],
+                            "server",
+                            repoid,
+                            "upload",
+                            etpSys['arch']
+                        )
+        etpConst['server_repositories'][repoid]['database_dir'] = \
+            os.path.join(   etpConst['entropyworkdir'],
+                            "server",
+                            repoid,
+                            "database",
+                            etpSys['arch']
+                        )
+        etpConst['server_repositories'][repoid]['packages_relative_path'] = \
+            os.path.join(   etpConst['product'],
+                            etpConst['officialrepositoryid'],
+                            "packages",
+                            etpSys['arch']
+                        )+"/"
+        etpConst['server_repositories'][repoid]['database_relative_path'] = \
+            os.path.join(   etpConst['product'],
+                            etpConst['officialrepositoryid'],
+                            "database",
+                            etpSys['arch']
+                        )+"/"
+
 
 def const_setup_perms(mydir, gid):
     if gid == None:

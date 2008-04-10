@@ -36,8 +36,17 @@ import dumpTools
 class etpDatabase:
 
     import entropyTools
-    def __init__(self, readOnly = False, noUpload = False, dbFile = etpConst['etpdatabasefilepath'], clientDatabase = False, xcache = False, dbname = etpConst['serverdbid'], indexing = True, OutputInterface = Text, ServiceInterface = None):
+    def __init__(self, readOnly = False, noUpload = False, dbFile = None, clientDatabase = False, xcache = False, dbname = etpConst['serverdbid'], indexing = True, OutputInterface = Text, ServiceInterface = None):
 
+        if dbFile == None:
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: valid database path needed")
+
+        # setup output interface
+        self.OutputInterface = OutputInterface
+        self.updateProgress = self.OutputInterface.updateProgress
+        self.askQuestion = self.OutputInterface.askQuestion
+        # setup service interface
+        self.ServiceInterface = ServiceInterface
         self.readOnly = readOnly
         self.noUpload = noUpload
         self.clientDatabase = clientDatabase
@@ -52,13 +61,8 @@ class etpDatabase:
         self.dbFile = dbFile
         self.dbclosed = False
 
-        # setup output interface
-        self.OutputInterface = OutputInterface
-        self.updateProgress = self.OutputInterface.updateProgress
-        self.askQuestion = self.OutputInterface.askQuestion
-
-        # setup service interface
-        self.ServiceInterface = ServiceInterface
+        if not self.clientDatabase:
+            self.create_dbstatus_data()
 
         # no caching for non root and server connections
         if (self.dbname == etpConst['serverdbid']) or (not self.entropyTools.is_user_in_entropy_group()):
@@ -85,6 +89,15 @@ class etpDatabase:
     def __del__(self):
         if not self.dbclosed:
             self.closeDB()
+
+    def create_dbstatus_data(self):
+        taint_file = self.ServiceInterface.get_local_database_taint_file()
+        if not etpDbStatus.has_key(self.dbFile):
+            etpDbStatus[self.dbFile]['tainted'] = False
+            etpDbStatus[self.dbFile]['bumped'] = False
+        if os.path.isfile(taint_file):
+            etpDbStatus[self.dbFile]['tainted'] = True
+            etpDbStatus[self.dbFile]['bumped'] = True
 
     def doServerDatabaseSyncLock(self, noUpload):
 
@@ -197,7 +210,8 @@ class etpDatabase:
         if self.clientDatabase:
             return
         # taint the database status
-        f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'],"w")
+        taint_file = self.ServiceInterface.get_local_database_taint_file()
+        f = open(taint_file,"w")
         f.write(etpConst['currentarch']+" database tainted\n")
         f.flush()
         f.close()
@@ -208,24 +222,27 @@ class etpDatabase:
             return
         etpDbStatus[self.dbFile]['tainted'] = False
         # untaint the database status
-        if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
-            os.remove(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile'])
+        taint_file = self.ServiceInterface.get_local_database_taint_file()
+        if os.path.isfile(taint_file):
+            os.remove(taint_file)
 
     def revisionBump(self):
-        if (not os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'])):
+        revision_file = self.ServiceInterface.get_local_database_revision_file()
+        if not os.path.isfile(revision_file):
             revision = 0
         else:
-            f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'],"r")
+            f = open(revision_file,"r")
             revision = int(f.readline().strip())
             revision += 1
             f.close()
-        f = open(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabaserevisionfile'],"w")
+        f = open(revision_file,"w")
         f.write(str(revision)+"\n")
         f.flush()
         f.close()
 
     def isDatabaseTainted(self):
-        if os.path.isfile(etpConst['etpdatabasedir']+"/"+etpConst['etpdatabasetaintfile']):
+        taint_file = self.ServiceInterface.get_local_database_taint_file()
+        if os.path.isfile(taint_file):
             return True
         return False
 
@@ -246,7 +263,8 @@ class etpDatabase:
 
         etpConst['treeupdatescalled'] = True
         repository = etpConst['officialrepositoryid']
-        repo_updates_file = os.path.join(etpConst['etpdatabasedir'],etpConst['etpdatabaseupdatefile'])
+        
+        repo_updates_file = self.ServiceInterface.get_local_database_treeupdates_file()
         doRescan = False
 
         if repositoryUpdatesDigestCache_db.has_key(repository):
@@ -641,7 +659,7 @@ class etpDatabase:
                 type = "warning",
                 header = blue("  # ")
             )
-            mypath = self.ServiceInterface.quickpkg(myatom,etpConst['packagesserverstoredir'])
+            mypath = self.ServiceInterface.quickpkg(myatom,self.ServiceInterface.get_local_store_directory())
             package_paths.add(mypath)
         packages_data = [(x,branch,False) for x in package_paths]
         idpackages = self.ServiceInterface.add_packages_to_repository(packages_data)
