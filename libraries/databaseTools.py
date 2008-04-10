@@ -120,7 +120,7 @@ class etpDatabase:
                                     header = red(" * "),
                                     back = True
                                 )
-            for uri in etpConst['activatoruploaduris']:
+            for uri in self.ServiceInterface.get_remote_mirrors():
                 given_up = self.ServiceInterface.MirrorsService.mirror_lock_check(uri)
                 if given_up:
                     crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)

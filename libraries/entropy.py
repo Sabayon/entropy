@@ -11042,7 +11042,7 @@ class ServerInterface(TextInterface):
         self.dumpTools = self.ClientService.dumpTools
         self.backup_entropy_settings()
         self.SpmService = self.ClientService.Spm()
-        mirrors = etpConst['server_repositories'][self.default_repository]['mirrors']
+        mirrors = self.get_remote_mirrors()
         self.MirrorsService = ServerMirrorsInterface(self, mirrors = mirrors)
 
     def setup_entropy_settings(self):
@@ -11559,6 +11559,10 @@ class ServerInterface(TextInterface):
         dbconn.taintDatabase()
         self.close_server_database(dbconn)
 
+    def get_remote_mirrors(self):
+        x = self.default_repository
+        return etpConst['server_repositories'][x]['mirrors']
+
     def get_remote_packages_relative_path(self):
         x = self.default_repository
         return etpConst['server_repositories'][x]['packages_relative_path']
@@ -11976,7 +11980,7 @@ class ServerInterface(TextInterface):
         not_match = set()
         broken_packages = {}
 
-        for uri in etpConst['activatoruploaduris']:
+        for uri in self.get_remote_mirrors():
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
             self.updateProgress(
@@ -12220,7 +12224,7 @@ class ServerInterface(TextInterface):
                     type = "info",
                     header = "   "
             )
-            for uri in etpConst['activatoruploaduris']:
+            for uri in self.get_remote_mirrors():
 
                 if not_downloaded:
                     self.updateProgress(
@@ -12499,7 +12503,7 @@ class ServerInterface(TextInterface):
                 back = True
             )
 
-            for uri in etpConst['activatoruploaduris']:
+            for uri in self.get_remote_mirrors():
 
                 crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                 self.updateProgress(
