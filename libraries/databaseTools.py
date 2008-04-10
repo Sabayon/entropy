@@ -469,6 +469,7 @@ class etpDatabase:
     # 4) automatically run quickpkg() to build the new binary and
     #    tainted binaries owning tainted iddependency and taint database
     def runTreeUpdatesMoveAction(self, move_command):
+
         key_from = move_command[0]
         key_to = move_command[1]
         cat_to = key_to.split("/")[0]
@@ -528,8 +529,7 @@ class etpDatabase:
 
         for idpackage_owner in iddependencies_idpackages:
             myatom = self.retrieveAtom(idpackage_owner)
-            myatom = mydep.replace(key_from,key_to)
-            print "replaced",myatom,"from",key_from,"to",key_to
+            myatom = myatom.replace(key_from,key_to)
             quickpkg_queue.add(myatom)
         # quickpkg package and packages owning it as a dependency
         self.runTreeUpdatesQuickpkgAction(quickpkg_queue)
