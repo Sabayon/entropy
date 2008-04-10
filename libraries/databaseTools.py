@@ -445,6 +445,7 @@ class etpDatabase:
             else:
                 os.system("fixpackages")
 
+        quickpkg_atoms = set()
         for action in actions:
             command = action.split()
             self.updateProgress(
@@ -454,9 +455,14 @@ class etpDatabase:
                                     header = darkred(" * ")
                                 )
             if command[0] == "move":
-                self.runTreeUpdatesMoveAction(command[1:])
+                quickpkg_atoms |= self.runTreeUpdatesMoveAction(command[1:], quickpkg_atoms)
             elif command[0] == "slotmove":
                 self.runTreeUpdatesSlotmoveAction(command[1:])
+
+        if quickpkg_atoms and not self.clientDatabase:
+            # quickpkg package and packages owning it as a dependency
+            self.runTreeUpdatesQuickpkgAction(quickpkg_atoms)
+            self.commitChanges()
 
         # discard cache
         self.clearCache(all = True)
@@ -468,14 +474,13 @@ class etpDatabase:
     # 3) run fixpackages which will update /var/db/pkg files
     # 4) automatically run quickpkg() to build the new binary and
     #    tainted binaries owning tainted iddependency and taint database
-    def runTreeUpdatesMoveAction(self, move_command):
+    def runTreeUpdatesMoveAction(self, move_command, quickpkg_queue):
 
         key_from = move_command[0]
         key_to = move_command[1]
         cat_to = key_to.split("/")[0]
         name_to = key_to.split("/")[1]
         matches = self.atomMatch(key_from, multiMatch = True)
-        quickpkg_queue = set()
         iddependencies_idpackages = set()
 
         for idpackage in matches[0]:
@@ -502,15 +507,11 @@ class etpDatabase:
                 mydep_key = self.entropyTools.dep_getkey(mydep)
                 if mydep_key != key_from: # avoid changing wrong atoms -> dev-python/qscintilla-python would
                     continue              # become x11-libs/qscintilla if we don't do this check
-                print "replacing",mydep,"from",key_from,"to",key_to
                 mydep = mydep.replace(key_from,key_to)
 
                 # now update
                 # dependstable on server is always re-generated
                 self.setDependency(iddep, mydep)
-
-                if self.clientDatabase:
-                    continue # ignore quickpkg stuff
 
                 # we have to repackage also package owning this iddep
                 iddependencies_idpackages |= self.searchIdpackageFromIddependency(iddep)
@@ -529,15 +530,19 @@ class etpDatabase:
                     )
 
         self.commitChanges()
+        quickpkg_queue = list(quickpkg_queue)
+        for x in range(len(quickpkg_queue)):
+            myatom = quickpkg_queue[x]
+            myatom = myatom.replace(key_from,key_to)
+            print "replacing",myatom,"from",key_from,"to",key_to
+            quickpkg_queue[x] = myatom
+        quickpkg_queue = set(quickpkg_queue)
         for idpackage_owner in iddependencies_idpackages:
             myatom = self.retrieveAtom(idpackage_owner)
             myatom = myatom.replace(key_from,key_to)
             print "replacing",myatom,"from",key_from,"to",key_to
             quickpkg_queue.add(myatom)
-        print "queue",quickpkg_queue
-        # quickpkg package and packages owning it as a dependency
-        self.runTreeUpdatesQuickpkgAction(quickpkg_queue)
-        self.commitChanges()
+        return quickpkg_queue
 
 
     # -- slotmove action:
