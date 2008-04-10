@@ -2622,11 +2622,11 @@ class EquoInterface(TextInterface):
                         idpackages_cache.add(data[0])
         return rdepends
 
-    def scan_missing_dependencies(self, idpackages, dbconn, ask = True):
+    def scan_missing_dependencies(self, idpackages, dbconn, ask = True, repo = etpConst['officialrepositoryid']):
 
         self.updateProgress(
                         "[repo:%s] %s..." % (
-                                    darkgreen(etpConst['officialrepositoryid']),
+                                    darkgreen(repo),
                                     blue("Now searching for missing RDEPENDs"),
                                 ),
                         importance = 1,
@@ -2637,7 +2637,7 @@ class EquoInterface(TextInterface):
             atom = dbconn.retrieveAtom(idpackage)
             self.updateProgress(
                             "[repo:%s] %s: %s" % (
-                                        darkgreen(etpConst['officialrepositoryid']),
+                                        darkgreen(repo),
                                         blue("scanning for missing RDEPENDs"),
                                         darkgreen(atom),
                                     ),
@@ -2651,7 +2651,7 @@ class EquoInterface(TextInterface):
                 continue
             self.updateProgress(
                             "[repo:%s] %s: %s %s:" % (
-                                        darkgreen(etpConst['officialrepositoryid']),
+                                        darkgreen(repo),
                                         blue("package"),
                                         darkgreen(atom),
                                         blue("is missing the following dependencies"),
@@ -2677,7 +2677,7 @@ class EquoInterface(TextInterface):
                     for dependency in missing:
                         self.updateProgress(
                                 "[repo:%s|%s] %s" % (
-                                        darkgreen(etpConst['officialrepositoryid']),
+                                        darkgreen(repo),
                                         brown(atom),
                                         blue(dependency),
                                 ),
@@ -2693,7 +2693,7 @@ class EquoInterface(TextInterface):
             dbconn.commitChanges()
             self.updateProgress(
                     "[repo:%s] %s: %s" % (
-                                darkgreen(etpConst['officialrepositoryid']),
+                                darkgreen(repo),
                                 darkgreen(atom),
                                 blue("missing dependencies added"),
                             ),
@@ -11009,6 +11009,7 @@ class ServerInterface(TextInterface):
 
         self.serverLog = LogFile(level = etpConst['entropyloglevel'],filename = etpConst['entropylogfile'], header = "[server]")
 
+
         # settings
         etpSys['serverside'] = True
         self.indexing = False
@@ -11019,19 +11020,15 @@ class ServerInterface(TextInterface):
         self.serverDbCache = {}
         self.settings_to_backup = []
         self.do_save_repository = save_repository
-        if default_repository != None:
-            self.switch_default_repository(default_repository)
-        else:
-            self.default_repository = etpConst['officialrepositoryid']
-            self.setup_services()
-
+        self.default_repository = default_repository
         if default_repository == None:
-            self.updateProgress(
-                blue("Entropy Server Interface Instance on repository: %s" % (red(self.default_repository),) ),
-                importance = 2,
-                type = "info",
-                header = red(" @@ ")
-            )
+            self.default_repository = etpConst['officialrepositoryid']
+
+        if self.default_repository not in etpConst['server_repositories']:
+            raise exceptionTools.PermissionDenied("PermissionDenied: %s repository not configured" % (default_repository,))
+
+        self.switch_default_repository(self.default_repository)
+
 
     def __del__(self):
         self.close_server_databases()
@@ -11075,7 +11072,6 @@ class ServerInterface(TextInterface):
             instance.closeDB()
 
     def switch_default_repository(self, repoid):
-        self.default_repository = repoid
         self.close_server_databases()
         etpConst['officialrepositoryid'] = repoid
         self.setup_services()
@@ -11083,11 +11079,14 @@ class ServerInterface(TextInterface):
             self.save_default_repository(repoid)
 
         self.updateProgress(
-                                blue("Entropy Server Interface Instance on repository: %s" % (self.default_repository,) ),
-                                importance = 2,
-                                type = "info",
-                                header = red(" @@ ")
-                            )
+                blue("Entropy Server Interface Instance on repository: %s" % (
+                        red(self.default_repository),
+                    )
+                ),
+                importance = 2,
+                type = "info",
+                header = red(" @@ ")
+        )
 
 
     def save_default_repository(self, repoid):
@@ -11175,7 +11174,7 @@ class ServerInterface(TextInterface):
         if not read_only:
             self.updateProgress(
                 "[repo:%s|%s] %s" % (
-                            blue(etpConst['officialrepositoryid']),
+                            blue(self.default_repository),
                             red("database"),
                             blue("indexing database"),
                     ),
@@ -11351,7 +11350,7 @@ class ServerInterface(TextInterface):
         dbconn = self.openServerDatabase(read_only = False, no_upload = True)
         self.updateProgress(
                                 red("[repo: %s] adding package: %s" % (
-                                            darkgreen(etpConst['officialrepositoryid']),
+                                            darkgreen(self.default_repository),
                                             bold(os.path.basename(package_file)),
                                         )
                                 ),
@@ -11366,12 +11365,12 @@ class ServerInterface(TextInterface):
 
         # add package info to our current server repository
         dbconn.removePackageFromInstalledTable(idpackage)
-        dbconn.addPackageToInstalledTable(idpackage,etpConst['officialrepositoryid'])
+        dbconn.addPackageToInstalledTable(idpackage,self.default_repository)
         atom = dbconn.retrieveAtom(idpackage)
 
         self.updateProgress(
                                 "[repo:%s] %s: %s %s: %s" % (
-                                            darkgreen(etpConst['officialrepositoryid']),
+                                            darkgreen(self.default_repository),
                                             blue("added package"),
                                             darkgreen(atom),
                                             blue("rev"),
@@ -11422,7 +11421,7 @@ class ServerInterface(TextInterface):
             inject = packagedata[2]
             self.updateProgress(
                             "[repo:%s] %s: %s" % (
-                                        darkgreen(etpConst['officialrepositoryid']),
+                                        darkgreen(self.default_repository),
                                         blue("adding package"),
                                         darkgreen(os.path.basename(package_filepath)),
                                     ),
@@ -11444,7 +11443,7 @@ class ServerInterface(TextInterface):
             except Exception, e:
                 self.updateProgress(
                                 "[repo:%s] %s: %s" % (
-                                            darkgreen(etpConst['officialrepositoryid']),
+                                            darkgreen(self.default_repository),
                                             darkred("Exception caught, running injection and RDEPEND check before raising"),
                                             darkgreen(str(e)),
                                         ),
@@ -11455,7 +11454,7 @@ class ServerInterface(TextInterface):
                 )
                 if idpackages_added:
                     dbconn = self.openServerDatabase(read_only = False, no_upload = True)
-                    self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = ask)
+                    self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = ask, repo = self.default_repository)
                 if to_be_injected:
                     self.inject_database_into_packages(to_be_injected)
                 self.close_server_databases()
@@ -11463,7 +11462,7 @@ class ServerInterface(TextInterface):
 
         if idpackages_added:
             dbconn = self.openServerDatabase(read_only = False, no_upload = True)
-            self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = ask)
+            self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = ask, repo = self.default_repository)
 
         # reinit depends table
         self.depends_table_initialize()
@@ -11477,7 +11476,7 @@ class ServerInterface(TextInterface):
         # now inject metadata into tbz2 packages
         self.updateProgress(
                     "[repo:%s] %s:" % (
-                                darkgreen(etpConst['officialrepositoryid']),
+                                darkgreen(self.default_repository),
                                 blue("Injecting entropy metadata into built packages"),
                             ),
                     importance = 1,
@@ -11491,7 +11490,7 @@ class ServerInterface(TextInterface):
             package_path = pkgdata[1]
             self.updateProgress(
                                     "[repo:%s|%s] %s: %s" % (
-                                                darkgreen(etpConst['officialrepositoryid']),
+                                                darkgreen(self.default_repository),
                                                 brown(str(idpackage)),
                                                 blue("injecting entropy metadata"),
                                                 darkgreen(os.path.basename(package_path)),
@@ -11511,7 +11510,7 @@ class ServerInterface(TextInterface):
             os.remove(dbpath)
             self.updateProgress(
                         "[repo:%s|%s] %s: %s" % (
-                                    darkgreen(etpConst['officialrepositoryid']),
+                                    darkgreen(self.default_repository),
                                     brown(str(idpackage)),
                                     blue("injection completed"),
                                     darkgreen(os.path.basename(package_path)),
@@ -11532,7 +11531,7 @@ class ServerInterface(TextInterface):
             atom = dbconn.retrieveAtom(idpackage)
             self.updateProgress(
                     "[repo:%s] %s: %s" % (
-                            darkgreen(etpConst['officialrepositoryid']),
+                            darkgreen(self.default_repository),
                             blue("removing package"),
                             darkgreen(atom),
                     ),
@@ -11545,7 +11544,7 @@ class ServerInterface(TextInterface):
         self.close_server_database(dbconn)
         self.updateProgress(
                 "[repo:%s] %s" % (
-                            darkgreen(etpConst['officialrepositoryid']),
+                            darkgreen(self.default_repository),
                             blue("removal complete"),
                     ),
                 importance = 1,
@@ -11620,7 +11619,7 @@ class ServerInterface(TextInterface):
             except ValueError:
                 self.updateProgress(
                     "[repo:%s] %s: %s - %s" % (
-                            darkgreen(etpConst['officialrepositoryid']),
+                            darkgreen(self.default_repository),
                             blue("invalid database revision"),
                             bold(rev),
                             blue("defaulting to 0"),
@@ -11707,7 +11706,14 @@ class ServerInterface(TextInterface):
         dbconn.setCounter(idpackage,counter)
         dbconn.setInjected(idpackage)
 
-    def initialize_server_database(self):
+    def initialize_server_database(self, empty = True, repo = None):
+
+        doswitch = None
+        if repo == None:
+            repo = self.default_repository
+        else:
+            doswitch = self.default_repository
+            self.switch_default_repository(repo)
 
         self.close_server_databases()
         revisions_match = {}
@@ -11763,134 +11769,139 @@ class ServerInterface(TextInterface):
         dbconn = self.openServerDatabase(read_only = False, no_upload = True)
         dbconn.initializeDatabase()
 
-        revisions_file = "/entropy-revisions-dump.txt"
-        # dump revisions - as a backup
-        if revisions_match:
-            self.updateProgress(
-                "%s: %s" % (
-                    red("Dumping current revisions to file"),
-                    darkgreen(revisions_file),
-                ),
-                importance = 1,
-                type = "info",
-                header = darkgreen(" * ")
-            )
-            f = open(revisions_file,"w")
-            f.write(str(revisions_match))
-            f.flush()
-            f.close()
-
-        # dump treeupdates - as a backup
-        treeupdates_file = "/entropy-treeupdates-dump.txt"
-        if treeupdates_actions:
-            self.updateProgress(
-                "%s: %s" % (
-                    red("Dumping current tree updates actions to file"),
-                    bold(treeupdates_file),
-                ),
-                importance = 1,
-                type = "info",
-                header = darkgreen(" * ")
-            )
-            f = open(treeupdates_file,"w")
-            f.write(str(treeupdates_actions))
-            f.flush()
-            f.close()
-
-        rc = self.askQuestion("Would you like to sync packages first (important if you don't have them synced) ?")
-        if rc == "Yes":
-            self.MirrorsService.sync_packages()
-
-        # fill tree updates actions
-        if treeupdates_actions:
-            dbconn.addTreeUpdatesActions(treeupdates_actions)
-
-        # now fill the database
-        pkgbranches = etpConst['branches']
-
-        for mybranch in pkgbranches:
-
-            pkg_branch_dir = os.path.join(self.get_local_packages_directory(),mybranch)
-            pkglist = os.listdir(pkg_branch_dir)
-            # filter .md5 and .expired packages
-            pkglist = [x for x in pkglist if x[-5:] == etpConst['packagesext'] and not os.path.isfile(os.path.join(pkg_branch_dir,x+etpConst['packagesexpirationfileext']))]
-
-            if not pkglist:
-                continue
-
-            self.updateProgress(
-                "%s '%s' %s" % (
-                    red("Reinitializing Entropy database for branch"),
-                    bold(mybranch),
-                    red("using Packages in the repository..."),
-                ),
-                importance = 1,
-                type = "info",
-                header = darkgreen(" * ")
-            )
-
-            counter = 0
-            maxcount = len(pkglist)
-            idpackages_added = set()
-            for pkg in pkglist:
-                counter += 1
-
+        if not empty:
+            revisions_file = "/entropy-revisions-dump.txt"
+            # dump revisions - as a backup
+            if revisions_match:
                 self.updateProgress(
-                    "[repo:%s|%s] %s: %s" % (
-                            darkgreen(etpConst['officialrepositoryid']),
-                            brown(mybranch),
-                            blue("analyzing"),
-                            bold(pkg),
-                        ),
+                    "%s: %s" % (
+                        red("Dumping current revisions to file"),
+                        darkgreen(revisions_file),
+                    ),
                     importance = 1,
                     type = "info",
-                    header = " ",
-                    back = True,
-                    count = (counter,maxcount,)
+                    header = darkgreen(" * ")
+                )
+                f = open(revisions_file,"w")
+                f.write(str(revisions_match))
+                f.flush()
+                f.close()
+
+            # dump treeupdates - as a backup
+            treeupdates_file = "/entropy-treeupdates-dump.txt"
+            if treeupdates_actions:
+                self.updateProgress(
+                    "%s: %s" % (
+                        red("Dumping current tree updates actions to file"),
+                        bold(treeupdates_file),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = darkgreen(" * ")
+                )
+                f = open(treeupdates_file,"w")
+                f.write(str(treeupdates_actions))
+                f.flush()
+                f.close()
+
+            rc = self.askQuestion("Would you like to sync packages first (important if you don't have them synced) ?")
+            if rc == "Yes":
+                self.MirrorsService.sync_packages()
+
+            # fill tree updates actions
+            if treeupdates_actions:
+                dbconn.addTreeUpdatesActions(treeupdates_actions)
+
+            # now fill the database
+            pkgbranches = etpConst['branches']
+
+            for mybranch in pkgbranches:
+
+                pkg_branch_dir = os.path.join(self.get_local_packages_directory(),mybranch)
+                pkglist = os.listdir(pkg_branch_dir)
+                # filter .md5 and .expired packages
+                pkglist = [x for x in pkglist if x[-5:] == etpConst['packagesext'] and not os.path.isfile(os.path.join(pkg_branch_dir,x+etpConst['packagesexpirationfileext']))]
+
+                if not pkglist:
+                    continue
+
+             self.updateProgress(
+                    "%s '%s' %s" % (
+                        red("Reinitializing Entropy database for branch"),
+                        bold(mybranch),
+                        red("using Packages in the repository..."),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = darkgreen(" * ")
                 )
 
-                doinject = False
-                if pkg in injected_packages:
-                    doinject = True
+                counter = 0
+                maxcount = len(pkglist)
+                idpackages_added = set()
+                for pkg in pkglist:
+                    counter += 1
 
-                pkg_path = os.path.join(self.get_local_packages_directory(),mybranch,pkg)
-                mydata = self.ClientService.extract_pkg_metadata(pkg_path, mybranch, inject = doinject)
-
-                # get previous revision
-                revision_avail = revisions_match.get(pkg)
-                addRevision = 0
-                if (revision_avail != None):
-                    if mybranch == revision_avail[0]:
-                        addRevision = revision_avail[1]
-
-                idpackage, revision, mydata_upd = dbconn.addPackage(mydata, revision = addRevision)
-                idpackages_added.add(idpackage)
-
-                self.updateProgress(
-                    "[repo:%s] [%s:%s/%s] %s: %s, %s: %s" % (
-                                etpConst['officialrepositoryid'],
+                    self.updateProgress(
+                        "[repo:%s|%s] %s: %s" % (
+                                darkgreen(self.default_repository),
                                 brown(mybranch),
-                                darkgreen(counter),
-                                blue(maxcount),
-                                red("added package"),
-                                darkgreen(pkg),
-                                red("revision"),
-                                brown(mydata_upd['revision']),
-                        ),
-                    importance = 1,
-                    type = "info",
-                    header = " ",
-                    back = True
-                )
+                                blue("analyzing"),
+                                bold(pkg),
+                            ),
+                        importance = 1,
+                        type = "info",
+                        header = " ",
+                        back = True,
+                        count = (counter,maxcount,)
+                    )
 
-        self.depends_table_initialize()
+                    doinject = False
+                    if pkg in injected_packages:
+                        doinject = True
+
+                    pkg_path = os.path.join(self.get_local_packages_directory(),mybranch,pkg)
+                    mydata = self.ClientService.extract_pkg_metadata(pkg_path, mybranch, inject = doinject)
+
+                    # get previous revision
+                    revision_avail = revisions_match.get(pkg)
+                    addRevision = 0
+                    if (revision_avail != None):
+                        if mybranch == revision_avail[0]:
+                            addRevision = revision_avail[1]
+
+                    idpackage, revision, mydata_upd = dbconn.addPackage(mydata, revision = addRevision)
+                    idpackages_added.add(idpackage)
+
+                    self.updateProgress(
+                        "[repo:%s] [%s:%s/%s] %s: %s, %s: %s" % (
+                                    self.default_repository,
+                                    brown(mybranch),
+                                    darkgreen(counter),
+                                    blue(maxcount),
+                                    red("added package"),
+                                    darkgreen(pkg),
+                                    red("revision"),
+                                    brown(mydata_upd['revision']),
+                            ),
+                        importance = 1,
+                        type = "info",
+                        header = " ",
+                        back = True
+                    )
+
+            self.depends_table_initialize()
 
         if idpackages_added:
             dbconn = self.openServerDatabase(read_only = False, no_upload = True)
-            self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = True)
+            self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = True, repo = self.default_repository)
 
         dbconn.commitChanges()
         self.close_server_databases()
+
+        if doswitch:
+            self.switch_default_repository(doswitch)
+
         return 0
 
     def match_packages(self, packages):
@@ -11967,7 +11978,7 @@ class ServerInterface(TextInterface):
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
             self.updateProgress(
                 "[repo:%s] %s: %s" % (
-                        darkgreen(etpConst['officialrepositoryid']),
+                        darkgreen(self.default_repository),
                         blue("Working on mirror"),
                         brown(crippled_uri),
                     ),
@@ -11988,7 +11999,7 @@ class ServerInterface(TextInterface):
 
                 self.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
-                            etpConst['officialrepositoryid'],
+                            self.default_repository,
                             brown(crippled_uri),
                             blue("checking hash"),
                             darkgreen(os.path.join(pkgbranch,pkgfilename)),
@@ -12005,7 +12016,7 @@ class ServerInterface(TextInterface):
                 if ck == None:
                     self.updateProgress(
                         "[repo:%s|%s] %s: %s %s" % (
-                                        darkgreen(etpConst['officialrepositoryid']),
+                                        darkgreen(self.default_repository),
                                         brown(crippled_uri),
                                         blue("digest verification of"),
                                         bold(pkgfilename),
@@ -12021,7 +12032,7 @@ class ServerInterface(TextInterface):
                 else:
                     self.updateProgress(
                         "[repo:%s|%s] %s: %s %s" % (
-                                        darkgreen(etpConst['officialrepositoryid']),
+                                        darkgreen(self.default_repository),
                                         brown(crippled_uri),
                                         blue("digest verification of"),
                                         bold(pkgfilename),
@@ -12039,7 +12050,7 @@ class ServerInterface(TextInterface):
                     not_match.add(idpackage)
                     self.updateProgress(
                         "[repo:%s|%s] %s: %s %s" % (
-                                        darkgreen(etpConst['officialrepositoryid']),
+                                        darkgreen(self.default_repository),
                                         brown(crippled_uri),
                                         blue("package"),
                                         bold(pkgfilename),
@@ -12078,7 +12089,7 @@ class ServerInterface(TextInterface):
 
             self.updateProgress(
                 "[repo:%s|%s] %s:" % (
-                        darkgreen(etpConst['officialrepositoryid']),
+                        darkgreen(self.default_repository),
                         brown(crippled_uri),
                         blue("Statistics"),
                 ),
@@ -12088,7 +12099,7 @@ class ServerInterface(TextInterface):
             )
             self.updateProgress(
                 "[repo:%s|%s] %s: %s" % (
-                        darkgreen(etpConst['officialrepositoryid']),
+                        darkgreen(self.default_repository),
                         brown(crippled_uri),
                         blue("Number of checked packages"),
                         len(match)+len(not_match),
@@ -12099,7 +12110,7 @@ class ServerInterface(TextInterface):
             )
             self.updateProgress(
                 "[repo:%s|%s] %s: %s" % (
-                        darkgreen(etpConst['officialrepositoryid']),
+                        darkgreen(self.default_repository),
                         brown(crippled_uri),
                         blue("Number of healthy packages"),
                         len(match),
@@ -12110,7 +12121,7 @@ class ServerInterface(TextInterface):
             )
             self.updateProgress(
                 "[repo:%s|%s] %s: %s" % (
-                        darkgreen(etpConst['officialrepositoryid']),
+                        darkgreen(self.default_repository),
                         brown(crippled_uri),
                         blue("Number of broken packages"),
                         len(not_match),
@@ -12581,7 +12592,7 @@ class ServerMirrorsInterface:
             if lock: lock_text = "locking"
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s %s" % (
-                        brown(etpConst['officialrepositoryid']),
+                        brown(self.Entropy.default_repository),
                         darkgreen(crippled_uri),
                         bold(lock_text),
                         blue("mirror..."),
@@ -12598,7 +12609,7 @@ class ServerMirrorsInterface:
             if lock and ftp.isFileAvailable(etpConst['etpdatabaselockfile']):
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s" % (
-                            brown(etpConst['officialrepositoryid']),
+                            brown(self.Entropy.default_repository),
                             darkgreen(crippled_uri),
                             blue("mirror already locked"),
                     ),
@@ -12611,7 +12622,7 @@ class ServerMirrorsInterface:
             elif not lock and not ftp.isFileAvailable(etpConst['etpdatabaselockfile']):
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s" % (
-                            brown(etpConst['officialrepositoryid']),
+                            brown(self.Entropy.default_repository),
                             darkgreen(crippled_uri),
                             blue("mirror already unlocked"),
                     ),
@@ -12653,7 +12664,7 @@ class ServerMirrorsInterface:
             if lock: lock_text = "locking"
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s %s..." % (
-                            blue(etpConst['officialrepositoryid']),
+                            blue(self.Entropy.default_repository),
                             red(crippled_uri),
                             bold(lock_text),
                             blue("mirror for download"),
@@ -12670,7 +12681,7 @@ class ServerMirrorsInterface:
             if lock and ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile']):
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s" % (
-                            blue(etpConst['officialrepositoryid']),
+                            blue(self.Entropy.default_repository),
                             red(crippled_uri),
                             blue("mirror already locked for download"),
                         ),
@@ -12683,7 +12694,7 @@ class ServerMirrorsInterface:
             elif not lock and not ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile']):
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s" % (
-                            blue(etpConst['officialrepositoryid']),
+                            blue(self.Entropy.default_repository),
                             red(crippled_uri),
                             blue("mirror already unlocked for download"),
                         ),
@@ -12728,7 +12739,7 @@ class ServerMirrorsInterface:
         if rc:
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s %s" % (
-                            blue(etpConst['officialrepositoryid']),
+                            blue(self.Entropy.default_repository),
                             red(crippled_uri),
                             blue("mirror successfully locked"),
                             blue(lock_string),
@@ -12740,7 +12751,7 @@ class ServerMirrorsInterface:
         else:
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s: %s - %s %s" % (
-                            blue(etpConst['officialrepositoryid']),
+                            blue(self.Entropy.default_repository),
                             red(crippled_uri),
                             blue("lock error"),
                             rc,
@@ -12777,7 +12788,7 @@ class ServerMirrorsInterface:
         if rc:
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s" % (
-                            blue(etpConst['officialrepositoryid']),
+                            blue(self.Entropy.default_repository),
                             red(crippled_uri),
                             blue("mirror successfully unlocked"),
                     ),
@@ -12792,7 +12803,7 @@ class ServerMirrorsInterface:
         else:
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s: %s - %s" % (
-                            blue(etpConst['officialrepositoryid']),
+                            blue(self.Entropy.default_repository),
                             red(crippled_uri),
                             blue("unlock error"),
                             rc,
@@ -12845,7 +12856,7 @@ class ServerMirrorsInterface:
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|#%s] %s: %s" % (
-                        brown(etpConst['officialrepositoryid']),
+                        brown(self.Entropy.default_repository),
                         darkgreen(crippled_uri),
                         brown(tries),
                         blue("connecting to download package"),
@@ -12863,7 +12874,7 @@ class ServerMirrorsInterface:
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|#%s] %s: %s" % (
-                        brown(etpConst['officialrepositoryid']),
+                        brown(self.Entropy.default_repository),
                         darkgreen(crippled_uri),
                         brown(tries),
                         blue("downloading package"),
@@ -12879,7 +12890,7 @@ class ServerMirrorsInterface:
             if not rc:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|#%s] %s: %s %s" % (
-                            brown(etpConst['officialrepositoryid']),
+                            brown(self.Entropy.default_repository),
                             darkgreen(crippled_uri),
                             brown(tries),
                             blue("package"),
@@ -12898,7 +12909,7 @@ class ServerMirrorsInterface:
             if idpackage == -1:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|#%s] %s: %s %s" % (
-                            brown(etpConst['officialrepositoryid']),
+                            brown(self.Entropy.default_repository),
                             darkgreen(crippled_uri),
                             brown(tries),
                             blue("package"),
@@ -12915,7 +12926,7 @@ class ServerMirrorsInterface:
             storedmd5 = dbconn.retrieveDigest(idpackage)
             self.Entropy.updateProgress(
                 "[repo:%s|%s|#%s] %s: %s" % (
-                        brown(etpConst['officialrepositoryid']),
+                        brown(self.Entropy.default_repository),
                         darkgreen(crippled_uri),
                         brown(tries),
                         blue("verifying checksum of package"),
@@ -12932,7 +12943,7 @@ class ServerMirrorsInterface:
             if md5check:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|#%s] %s: %s %s" % (
-                            brown(etpConst['officialrepositoryid']),
+                            brown(self.Entropy.default_repository),
                             darkgreen(crippled_uri),
                             brown(tries),
                             blue("package"),
@@ -12947,7 +12958,7 @@ class ServerMirrorsInterface:
             else:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|#%s] %s: %s %s" % (
-                            brown(etpConst['officialrepositoryid']),
+                            brown(self.Entropy.default_repository),
                             darkgreen(crippled_uri),
                             brown(tries),
                             blue("package"),
@@ -12966,7 +12977,7 @@ class ServerMirrorsInterface:
         # if we get here it means the files hasn't been downloaded properly
         self.Entropy.updateProgress(
             "[repo:%s|%s|#%s] %s: %s %s" % (
-                    brown(etpConst['officialrepositoryid']),
+                    brown(self.Entropy.default_repository),
                     darkgreen(crippled_uri),
                     brown(tries),
                     blue("package"),
@@ -13006,7 +13017,7 @@ class ServerMirrorsInterface:
                     crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                     self.Entropy.updateProgress(
                         "[repo:%s|%s] %s: %s" % (
-                                brown(etpConst['officialrepositoryid']),
+                                brown(self.Entropy.default_repository),
                                 darkgreen(crippled_uri),
                                 blue("mirror doesn't have a valid database revision file"),
                                 bold(revision),
@@ -13491,7 +13502,7 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[repo:%s|%s|%s:%s] %s" % (
-                        brown(etpConst['officialrepositoryid']),
+                        brown(self.Entropy.default_repository),
                         darkgreen(crippled_uri),
                         red("EAPI"),
                         bold("2"),
@@ -13530,7 +13541,7 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[repo:%s|%s|%s:%s] %s" % (
-                        brown(etpConst['officialrepositoryid']),
+                        brown(self.Entropy.default_repository),
                         darkgreen(crippled_uri),
                         red("EAPI"),
                         bold("1"),
@@ -13594,7 +13605,7 @@ class ServerMirrorsInterface:
         if not os.path.isfile(lock_file) and ftp.isFileAvailable(os.path.basename(lock_file)):
             self.Entropy.updateProgress(
                 red("[repo:%s|%s|locking] mirror already locked, waiting up to 2 mins before giving up" % (
-                                etpConst['officialrepositoryid'],
+                                self.Entropy.default_repository,
                                 crippled_uri,
                         )
                 ),
@@ -13611,7 +13622,7 @@ class ServerMirrorsInterface:
                 if not ftp.isFileAvailable(os.path.basename(lock_file)):
                     self.Entropy.updateProgress(
                         red("[repo:%s|%s|locking] mirror unlocked !" % (
-                                etpConst['officialrepositoryid'],
+                                self.Entropy.default_repository,
                                 crippled_uri,
                             )
                         ),
@@ -13667,7 +13678,7 @@ class ServerMirrorsInterface:
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|upload] preparing to upload database to mirror" % (
-                            etpConst['officialrepositoryid'],
+                            self.Entropy.default_repository,
                             crippled_uri,
                     ),
                 importance = 1,
@@ -13699,7 +13710,7 @@ class ServerMirrorsInterface:
                     my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
                     my_broken_uris.sort()
                     self.Entropy.updateProgress(
-                        red("[repo:%s|%s|errors] failed to upload to mirror, not unlocking and continuing" % (etpConst['officialrepositoryid'],crippled_uri,)),
+                        red("[repo:%s|%s|errors] failed to upload to mirror, not unlocking and continuing" % (self.Entropy.default_repository,crippled_uri,)),
                         importance = 0,
                         type = "error",
                         header = darkred(" !!! ")
@@ -13749,7 +13760,7 @@ class ServerMirrorsInterface:
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s" % (
-                        brown(etpConst['officialrepositoryid']),
+                        brown(self.Entropy.default_repository),
                         darkgreen(crippled_uri),
                         red("download"),
                         blue("preparing to download database from mirror"),
@@ -13789,7 +13800,7 @@ class ServerMirrorsInterface:
                     my_broken_uris.sort()
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|%s] %s" % (
-                                brown(etpConst['officialrepositoryid']),
+                                brown(self.Entropy.default_repository),
                                 darkgreen(crippled_uri),
                                 red("errors"),
                                 blue("failed to download from mirror"),
@@ -13882,7 +13893,7 @@ class ServerMirrorsInterface:
 
         if not download_latest and not upload_queue:
             self.Entropy.updateProgress(
-                red("[repo:%s|sync] database already in sync" % (etpConst['officialrepositoryid'],)),
+                red("[repo:%s|sync] database already in sync" % (self.Entropy.default_repository,)),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -13895,7 +13906,7 @@ class ServerMirrorsInterface:
             if download_errors:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
-                            brown(etpConst['officialrepositoryid']),
+                            brown(self.Entropy.default_repository),
                             red("sync"),
                             blue("database sync failed"),
                             red("download issues"),
@@ -13914,7 +13925,7 @@ class ServerMirrorsInterface:
             if errors:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
-                            brown(etpConst['officialrepositoryid']),
+                            brown(self.Entropy.default_repository),
                             red("sync"),
                             blue("database sync failed"),
                             red("upload issues"),
@@ -13928,7 +13939,7 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[repo:%s|%s] %s" % (
-                    brown(etpConst['officialrepositoryid']),
+                    brown(self.Entropy.default_repository),
                     red("sync"),
                     blue("database sync completed successfully"),
             ),
@@ -14343,7 +14354,7 @@ class ServerMirrorsInterface:
             remove_filepath_hash = remove_filepath+etpConst['packageshashfileext']
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s [%s]" % (
-                        brown(etpConst['officialrepositoryid']),
+                        brown(self.Entropy.default_repository),
                         red("sync"),
                         brown(branch),
                         blue("removing package+hash"),
@@ -14362,7 +14373,7 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[repo:%s|%s|%s] %s" % (
-                    brown(etpConst['officialrepositoryid']),
+                    brown(self.Entropy.default_repository),
                     red("sync"),
                     brown(branch),
                     blue("removal complete"),
@@ -14384,7 +14395,7 @@ class ServerMirrorsInterface:
             expiration_file = to_file+etpConst['packagesexpirationfileext']
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s" % (
-                        brown(etpConst['officialrepositoryid']),
+                        brown(self.Entropy.default_repository),
                         red("sync"),
                         brown(branch),
                         blue("copying file+hash to repository"),
@@ -14490,7 +14501,7 @@ class ServerMirrorsInterface:
             reason = my_broken_uris[0][1]
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s, %s: %s" % (
-                        brown(etpConst['officialrepositoryid']),
+                        brown(self.Entropy.default_repository),
                         red("sync"),
                         brown(branch),
                         blue("download errors"),
@@ -14506,7 +14517,7 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[repo:%s|%s|%s] %s: %s" % (
-                    brown(etpConst['officialrepositoryid']),
+                    brown(self.Entropy.default_repository),
                     red("sync"),
                     brown(branch),
                     blue("download completed successfully"),
@@ -14523,7 +14534,7 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[repo:%s|%s] %s" % (
-                        etpConst['officialrepositoryid'],
+                        self.Entropy.default_repository,
                         red("sync"),
                         darkgreen("starting packages sync"),
                     ),
@@ -14550,7 +14561,7 @@ class ServerMirrorsInterface:
 
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|branch:%s] %s: %s" % (
-                        etpConst['officialrepositoryid'],
+                        self.Entropy.default_repository,
                         red("sync"),
                         brown(mybranch),
                         blue("packages sync"),
@@ -14567,7 +14578,7 @@ class ServerMirrorsInterface:
                 if (not uploadQueue) and (not downloadQueue) and (not removalQueue):
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|branch:%s] %s: %s" % (
-                            etpConst['officialrepositoryid'],
+                            self.Entropy.default_repository,
                             red("sync"),
                             mybranch,
                             darkgreen("nothing to do on"),
@@ -14602,7 +14613,7 @@ class ServerMirrorsInterface:
 
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|branch:%s] %s %s" % (
-                            etpConst['officialrepositoryid'],
+                            self.Entropy.default_repository,
                             red("sync"),
                             mybranch,
                             blue("nothing to sync for"),
@@ -14649,7 +14660,7 @@ class ServerMirrorsInterface:
                 except KeyboardInterrupt:
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|branch:%s] %s" % (
-                            etpConst['officialrepositoryid'],
+                            self.Entropy.default_repository,
                             red("sync"),
                             mybranch,
                             darkgreen("keyboard interrupt !"),
@@ -14665,7 +14676,7 @@ class ServerMirrorsInterface:
                     broken_mirrors.add(uri)
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|branch:%s] %s: %s, error: %s" % (
-                            etpConst['officialrepositoryid'],
+                            self.Entropy.default_repository,
                             red("sync"),
                             mybranch,
                             darkred("exception caught"),
@@ -14689,7 +14700,7 @@ class ServerMirrorsInterface:
                     if len(successfull_mirrors) > 0:
                         self.Entropy.updateProgress(
                             "[repo:%s|%s|branch:%s] %s" % (
-                                etpConst['officialrepositoryid'],
+                                self.Entropy.default_repository,
                                 red("sync"),
                                 mybranch,
                                 darkred("at least one mirror has been sync'd properly, hooray!"),
@@ -14761,7 +14772,7 @@ class ServerMirrorsInterface:
         pkgbranches = etpConst['branches']
         self.Entropy.updateProgress(
             "[repo:%s|%s|branches:%s] %s" % (
-                        brown(etpConst['officialrepositoryid']),
+                        brown(self.Entropy.default_repository),
                         red("tidy"),
                         blue(str(','.join(pkgbranches))),
                         blue("collecting expired packages"),
