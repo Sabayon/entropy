@@ -475,6 +475,7 @@ class etpDatabase:
         name_to = key_to.split("/")[1]
         matches = self.atomMatch(key_from, multiMatch = True)
         quickpkg_queue = set()
+        iddependencies = set()
 
         for idpackage in matches[0]:
 
@@ -510,14 +511,10 @@ class etpDatabase:
                     continue # ignore quickpkg stuff
 
                 # we have to repackage also package owning this iddep
-                iddep_owners = self.searchIdpackageFromIddependency(iddep)
-                for idpackage_owner in iddep_owners:
-                    quickpkg_queue.add(self.retrieveAtom(idpackage_owner))
+                iddependencies |= self.searchIdpackageFromIddependency(iddep)
 
 
-        if not self.clientDatabase:
-
-            for idpackage in matches[0]:
+            if not self.clientDatabase:
 
                 # check for injection and warn the developer
                 injected = self.isInjected(idpackage)
@@ -529,8 +526,10 @@ class etpDatabase:
                         header = darkred(" * ")
                     )
 
-                # quickpkg package and packages owning it as a dependency
-                self.runTreeUpdatesQuickpkgAction(quickpkg_queue)
+        for idpackage_owner in iddependencies:
+            quickpkg_queue.add(self.retrieveAtom(idpackage_owner))
+        # quickpkg package and packages owning it as a dependency
+        self.runTreeUpdatesQuickpkgAction(quickpkg_queue)
 
 
         self.commitChanges()
@@ -539,7 +538,7 @@ class etpDatabase:
     # 1) move package slot
     # 2) update all the dependencies in dependenciesreference owning same matched atom + slot
     # 3) run fixpackages which will update /var/db/pkg files
-    # 4) automatically run quickpkg() to build the new binary and tainted binaries owning tainted iddependency and taint database (LOL)
+    # 4) automatically run quickpkg() to build the new binary and tainted binaries owning tainted iddependency and taint database
     def runTreeUpdatesSlotmoveAction(self, slotmove_command):
         atom = slotmove_command[0]
         atomkey = self.entropyTools.dep_getkey(atom)
@@ -2633,8 +2632,8 @@ class etpDatabase:
 
     ''' search iddependency inside dependencies table and retrieve idpackages '''
     def searchIdpackageFromIddependency(self, iddep):
-	self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = (?)', (iddep,))
-	return self.fetchall2set(self.cursor.fetchall())
+        self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = (?)', (iddep,))
+        return self.fetchall2set(self.cursor.fetchall())
 
     def searchPackages(self, keyword, sensitive = False, slot = None, tag = None, branch = None):
 	
