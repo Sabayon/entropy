@@ -475,7 +475,7 @@ class etpDatabase:
         name_to = key_to.split("/")[1]
         matches = self.atomMatch(key_from, multiMatch = True)
         quickpkg_queue = set()
-        iddependencies = set()
+        iddependencies_idpackages = set()
 
         for idpackage in matches[0]:
 
@@ -500,10 +500,8 @@ class etpDatabase:
                 mydep = self.retrieveDependencyFromIddependency(iddep)
                 mydep_key = self.entropyTools.dep_getkey(mydep)
                 if mydep_key != key_from: # avoid changing wrong atoms -> dev-python/qscintilla-python would
-                    print "error",mydep_key,key_from
                     continue              # become x11-libs/qscintilla if we don't do this check
                 mydep = mydep.replace(key_from,key_to)
-                print "replaced",mydep,"from",key_from,"to",key_to
 
                 # now update
                 # dependstable on server is always re-generated
@@ -513,7 +511,7 @@ class etpDatabase:
                     continue # ignore quickpkg stuff
 
                 # we have to repackage also package owning this iddep
-                iddependencies |= self.searchIdpackageFromIddependency(iddep)
+                iddependencies_idpackages |= self.searchIdpackageFromIddependency(iddep)
 
 
             if not self.clientDatabase:
@@ -528,8 +526,11 @@ class etpDatabase:
                         header = darkred(" * ")
                     )
 
-        for idpackage_owner in iddependencies:
-            quickpkg_queue.add(self.retrieveAtom(idpackage_owner))
+        for idpackage_owner in iddependencies_idpackages:
+            myatom = self.retrieveAtom(idpackage_owner)
+            myatom = mydep.replace(key_from,key_to)
+            print "replaced",myatom,"from",key_from,"to",key_to
+            quickpkg_queue.add(myatom)
         # quickpkg package and packages owning it as a dependency
         self.runTreeUpdatesQuickpkgAction(quickpkg_queue)
 
