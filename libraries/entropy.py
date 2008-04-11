@@ -2586,6 +2586,7 @@ class EquoInterface(TextInterface):
                 dependencies_cache.add((key,slot))
 
         key, slot = dbconn.retrieveKeySlot(idpackage)
+        mycontent = dbconn.retrieveContent(idpackage)
         deps_content |= update_depscontent(mycontent, dbconn, ldpaths)
         dependencies_cache.add((key,slot))
 
