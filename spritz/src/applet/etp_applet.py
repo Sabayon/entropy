@@ -206,9 +206,10 @@ class rhnApplet:
         self.applet_size = 22
 
         menu_items = (
+            ("disable_applet", _("_Disable Notification Applet"), _("Disable Notification Applet"), self.disable_applet),
+            ("enable_applet", _("_Enable Notification Applet"), _("Enable Notification Applet"), self.enable_applet),
             ("check_now", _("_Check for updates"), _("Check for updates"), self.update_from_server),
             ("update_now", _("_Launch Package Manager"), _("Launch Package Manager"), self.launch_package_manager),
-            #("configure_applet", _("C_onfiguration"), _("Configuration"), self.run_first_time_druid),
             ("web_panel", _("_Packages Website"), _("Use Packages web interface"), self.load_packages_url),
             ("web_site", _("_Sabayon Linux Website"), _("Launch Sabayon Linux Website"), self.load_website),
             None,
@@ -288,12 +289,16 @@ class rhnApplet:
             # to load, etc, and avoid competing with nautilus or whatever
             # else is loading.  subsequent intervals will be much larger.
             self.set_state("OKAY")
-            self.update_tooltip(_("Waiting until first checkin..."))
             self.enable_refresh_timer(50000)
 
             # Entropy initialization
             self.Entropy = Entropy()
             self.Entropy.connect_progress_objects(self)
+
+        if etp_applet_config.settings['APPLET_ENABLED']:
+            self.enable_applet()
+        else:
+            self.disable_applet()
 
         if hide_menu:
             self.set_state("ERROR")
@@ -334,6 +339,10 @@ class rhnApplet:
             pix = self.icons.best_match("web",22)
         elif name == "configure_applet":
             pix = self.icons.best_match("configuration",22)
+        elif name == "disable_applet":
+            pix = self.icons.best_match("disconnect",22)
+        elif name == "enable_applet":
+            pix = self.icons.best_match("okay",22)
         else:
             pix = self.icons.best_match("busy",22)
 
@@ -497,6 +506,27 @@ class rhnApplet:
         if browser:
             subprocess.call([browser,url])
 
+    def disable_applet(self, *data):
+        self.update_tooltip(_("Updates Notification Applet Disabled"))
+        self.disable_refresh_timer()
+        self.set_state("DISCONNECTED")
+        etp_applet_config.settings['APPLET_ENABLED'] = 0
+        etp_applet_config.save_settings(etp_applet_config.settings)
+        self.menu_items['disable_applet'].hide()
+        self.menu_items['enable_applet'].show()
+
+
+
+    def enable_applet(self, *data):
+        self.update_tooltip(_("Updates Notification Applet Enabled"))
+        self.enable_refresh_timer()
+        self.set_state("OKAY")
+        etp_applet_config.settings['APPLET_ENABLED'] = 1
+        etp_applet_config.save_settings(etp_applet_config.settings)
+        self.menu_items['disable_applet'].show()
+        self.menu_items['enable_applet'].hide()
+
+
     def launch_package_manager(self, *data):
         pid = os.fork()
         if not pid:
@@ -554,6 +584,9 @@ class rhnApplet:
         self.refresh(force)
 
     def refresh(self, force=0):
+
+        if not etp_applet_config.settings['APPLET_ENABLED']:
+            return
 
         self.start_working()
         old_tip = self.tooltip_text
@@ -728,6 +761,7 @@ class rhnApplet:
         self.tooltip.set_tip(self.applet_window, tip)
 
     def update_from_server(self, widget=None):
+        self.enable_applet()
         self.refresh(force = 1)
 
     def user_consented(self):

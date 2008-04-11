@@ -37,6 +37,7 @@ APPLET_SENSITIVE_MENU = {
 REFRESH_INTERVAL = 60 # seconds
 NETWORK_RETRY_INTERVAL = 180
 ERROR_THRESHOLD = 3
+APPLET_ENABLED = 1
 
 ANIMATION_TOTAL_TIME = 0.75
 
@@ -62,7 +63,8 @@ myconst = [
             ['REFRESH_INTERVAL',int],
             ['NETWORK_RETRY_INTERVAL',int],
             ['ERROR_THRESHOLD',int],
-            ['ANIMATION_TOTAL_TIME',float]
+            ['ANIMATION_TOTAL_TIME',float],
+            ['APPLET_ENABLED',int],
           ]
 
 for x in myconst:
