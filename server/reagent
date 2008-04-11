@@ -156,9 +156,9 @@ elif (options[0] == "query"):
 # deptest tool
 elif (options[0] == "deptest"):
     import server_reagent
-    rc = server_reagent.Entropy.dependencies_test()
+    server_reagent.Entropy.dependencies_test()
     server_reagent.Entropy.close_server_databases()
-    sys.exit(rc)
+    sys.exit(0)
 
 elif (options[0] == "libtest"):
     import server_reagent
