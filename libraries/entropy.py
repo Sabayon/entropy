@@ -14167,6 +14167,9 @@ class ServerMirrorsInterface:
         local_packages = set()
         packages_dir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
 
+        if not os.path.isdir(packages_dir):
+            os.makedirs(packages_dir)
+
         for package in os.listdir(packages_dir):
             if package.endswith(etpConst['packagesext']) or package.endswith(etpConst['packageshashfileext']):
                 local_packages.add(package)
