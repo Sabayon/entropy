@@ -11247,7 +11247,7 @@ class ServerInterface(TextInterface):
             crying_atoms = {}
             for atom in deps_not_matched:
                 for repo in server_repos:
-                    dbconn = self.openServerDatabase(just_reading = True)
+                    dbconn = self.openServerDatabase(just_reading = True, repo = repo)
                     riddep = dbconn.searchDependency(atom)
                     if riddep == -1:
                         continue

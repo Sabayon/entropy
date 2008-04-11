@@ -23,7 +23,6 @@
 from entropyConstants import *
 from outputTools import *
 from entropy import EquoInterface
-Equo = None
 
 ########################################################
 ####
@@ -36,9 +35,6 @@ def query(options):
 
     if len(options) < 1:
         return -10
-
-    global Equo
-    Equo = EquoInterface()
 
     equoRequestDeep = False
     myopts = []
@@ -217,6 +213,7 @@ def searchDepends(atoms, idreturn = False, dbconn = None, EquoConnection = None)
     match_repo = True
     try:
         x = Equo.atomMatch
+        del x
     except AttributeError:
         match_repo = False
 
@@ -405,6 +402,15 @@ def searchEclass(eclasses, idreturn = False, dbconn = None, EquoConnection = Non
 
 def searchFiles(atoms, idreturn = False, dbconn = None, EquoConnection = None):
 
+    if EquoConnection != None:
+        Equo = EquoConnection
+    else:
+        try:
+            if Equo == None:
+                Equo = EquoInterface()
+        except NameError:
+            Equo = EquoInterface()
+
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Files Search..."))
 
@@ -442,11 +448,16 @@ def searchFiles(atoms, idreturn = False, dbconn = None, EquoConnection = None):
 
 
 
-def searchOrphans():
+def searchOrphans(EquoConnection = None):
 
-    global Equo
-    if Equo == None:
-        Equo = EquoInterface()
+    if EquoConnection != None:
+        Equo = EquoConnection
+    else:
+        try:
+            if Equo == None:
+                Equo = EquoInterface()
+        except NameError:
+            Equo = EquoInterface()
 
     if (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Orphans Search..."))
@@ -558,11 +569,16 @@ def searchOrphans():
     return 0
 
 
-def searchRemoval(atoms, idreturn = False, deep = False):
+def searchRemoval(atoms, idreturn = False, deep = False, EquoConnection = None):
 
-    global Equo
-    if Equo == None:
-        Equo = EquoInterface()
+    if EquoConnection != None:
+        Equo = EquoConnection
+    else:
+        try:
+            if Equo == None:
+                Equo = EquoInterface()
+        except NameError:
+            Equo = EquoInterface()
 
     clientDbconn = Equo.clientDbconn
 
@@ -610,17 +626,22 @@ def searchRemoval(atoms, idreturn = False, deep = False):
             else:
                 print rematom
 
-    if (idreturn):
+    if idreturn:
         return treeview
     return 0
 
 
 
-def searchInstalled(idreturn = False):
+def searchInstalled(idreturn = False, EquoConnection = None):
 
-    global Equo
-    if Equo == None:
-        Equo = EquoInterface()
+    if EquoConnection != None:
+        Equo = EquoConnection
+    else:
+        try:
+            if Equo == None:
+                Equo = EquoInterface()
+        except NameError:
+            Equo = EquoInterface()
 
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Installed Search..."))
@@ -652,11 +673,16 @@ def searchInstalled(idreturn = False):
         return list(idpackages)
 
 
-def searchPackage(packages, idreturn = False):
+def searchPackage(packages, idreturn = False, EquoConnection = None):
 
-    global Equo
-    if Equo == None:
-        Equo = EquoInterface()
+    if EquoConnection != None:
+        Equo = EquoConnection
+    else:
+        try:
+            if Equo == None:
+                Equo = EquoInterface()
+        except NameError:
+            Equo = EquoInterface()
 
     foundPackages = {}
     dataInfo = set() # when idreturn is True
@@ -701,11 +727,16 @@ def searchPackage(packages, idreturn = False):
         return dataInfo
     return 0
 
-def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = False, showRepo = False, showDesc = False):
+def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = False, showRepo = False, showDesc = False, EquoConnection = None):
 
-    global Equo
-    if Equo == None:
-        Equo = EquoInterface()
+    if EquoConnection != None:
+        Equo = EquoConnection
+    else:
+        try:
+            if Equo == None:
+                Equo = EquoInterface()
+        except NameError:
+            Equo = EquoInterface()
 
     dataInfo = set() # when idreturn is True
 
@@ -745,11 +776,16 @@ def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = Fal
         return dataInfo
     return 0
 
-def searchSlottedPackages(slots, datareturn = False, dbconn = None):
+def searchSlottedPackages(slots, datareturn = False, dbconn = None, EquoConnection = None):
 
-    global Equo
-    if Equo == None:
-        Equo = EquoInterface()
+    if EquoConnection != None:
+        Equo = EquoConnection
+    else:
+        try:
+            if Equo == None:
+                Equo = EquoInterface()
+        except NameError:
+            Equo = EquoInterface()
 
     foundPackages = {}
     dbclose = True
@@ -873,11 +909,16 @@ def searchLicenses(licenses, datareturn = False, dbconn = None, EquoConnection =
         return foundPackages
     return 0
 
-def searchDescription(descriptions, idreturn = False):
+def searchDescription(descriptions, idreturn = False, EquoConnection = None):
 
-    global Equo
-    if Equo == None:
-        Equo = EquoInterface()
+    if EquoConnection != None:
+        Equo = EquoConnection
+    else:
+        try:
+            if Equo == None:
+                Equo = EquoInterface()
+        except NameError:
+            Equo = EquoInterface()
 
     foundPackages = {}
 

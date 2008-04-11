@@ -60,7 +60,7 @@ def is_user_in_entropy_group(uid = None):
     except KeyError:
         return False
 
-    etp_gid = data[2]
+    #etp_gid = data[2]
     etp_group_users = data[3]
 
     if not etp_group_users or \
@@ -191,8 +191,10 @@ def check_required_space(mountpoint, bytes_required):
     return True
 
 def ebeep(count = 5):
-    for x in range(count):
+    mycount = count
+    while mycount > 0:
         os.system("sleep 0.35; echo -ne \"\a\"; sleep 0.35")
+        mycount -= 1
 
 def applicationLockCheck(option = None, gentle = False):
     if (etpConst['applicationlock']):
@@ -218,14 +220,6 @@ def countdown(secs=5,what="Counting...", back = False):
             sys.stdout.write(red(str(i+1)+" "))
             sys.stdout.flush()
             time.sleep(1)
-
-def spinner(rotations, interval, message=''):
-    for x in xrange(rotations):
-        writechar(message + '|/-\\'[x%4] + '\r')
-        time.sleep(interval)
-    writechar(' ')
-    for i in xrange(len(message)): print ' ',
-    writechar('\r')
 
 def md5sum(filepath):
     import md5
@@ -851,7 +845,7 @@ def remove_entropy_revision(mydep):
     return mydep
 
 def dep_get_entropy_revision(mydep):
-    dep = removePackageOperators(mydep)
+    #dep = removePackageOperators(mydep)
     colon = mydep.rfind("~")
     if colon != -1:
         myrev = mydep[colon+1:]
@@ -905,8 +899,7 @@ def dep_gettag(dep):
 
 def removePackageOperators(atom):
 
-    original = atom
-    if atom[0] == ">" or atom[0] == "<":
+    if atom[0] in [">","<"]:
         atom = atom[1:]
     if atom[0] == "=":
         atom = atom[1:]
@@ -1371,7 +1364,7 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
             tar.chown(tarinfo, epath)
             tar.utime(tarinfo, epath)
             tar.chmod(tarinfo, epath)
-        except tarfile.ExtractError, e:
+        except tarfile.ExtractError:
             if tar.errorlevel > 1:
                 raise
     #'''
@@ -1441,8 +1434,8 @@ def convertUnixTimeToMtime(unixtime):
     humantime = str(datetime.fromtimestamp(unixtime))
     outputtime = ""
     for char in humantime:
-	if char != "-" and char != " " and char != ":":
-	    outputtime += char
+        if char != "-" and char != " " and char != ":":
+            outputtime += char
     return outputtime
 
 def convertUnixTimeToHumanTime(unixtime):
@@ -1600,7 +1593,7 @@ def getRepositorySettings(repoid):
     return repodata
 
 def writeOrderedRepositoriesEntries():
-    repoOrder = [x for x in etpRepositoriesOrder if not x.endswith(".tbz2")]
+    #repoOrder = [x for x in etpRepositoriesOrder if not x.endswith(".tbz2")]
     content = read_repositories_conf()
     content = [x.strip() for x in content]
     repolines = [x for x in content if x.startswith("repository|") and (len(x.split("|")) == 5)]
@@ -1657,11 +1650,11 @@ def saveRepositorySettings(repodata, remove = False, disable = False, enable = F
 
             # seek in repolines_data for a disabled entry and remove
             to_remove = set()
-            for c in repolines_data:
-                if repolines_data[c]['line'].startswith("#") and \
-                    (repolines_data[c]['line'].find("repository|"+repodata['repoid']) != -1):
+            for cc in repolines_data:
+                if repolines_data[cc]['line'].startswith("#") and \
+                    (repolines_data[cc]['line'].find("repository|"+repodata['repoid']) != -1):
                     # then remove
-                    to_remove.add(c)
+                    to_remove.add(cc)
             for x in to_remove:
                 del repolines_data[x]
 
@@ -1673,7 +1666,7 @@ def saveRepositorySettings(repodata, remove = False, disable = False, enable = F
         keys = repolines_data.keys()
         keys.sort()
         for cc in keys:
-            repoid = repolines_data[cc]['repoid']
+            #repoid = repolines_data[cc]['repoid']
             # write the first
             line = repolines_data[cc]['line']
             content.append(line)
