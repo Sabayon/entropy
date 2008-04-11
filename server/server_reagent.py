@@ -118,7 +118,7 @@ def update(options):
             for idpackage,repoid in toBeInjected:
                 dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
                 atom = dbconn.retrieveAtom(idpackage)
-                print_info(brown("    # ")+red(atom))
+                print_info(brown("    # ")+"["+blue(repoid)+"] "+red(atom))
             if reagentRequestAsk:
                 rc = Entropy.askQuestion(">>   Would you like to transform them now ?")
             else:
@@ -136,7 +136,7 @@ def update(options):
             for idpackage,repoid in toBeRemoved:
                 dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
                 atom = dbconn.retrieveAtom(idpackage)
-                print_info(brown("    # ")+red(atom))
+                print_info(brown("    # ")+"["+blue(repoid)+"] "+red(atom))
             if reagentRequestAsk:
                 rc = Entropy.askQuestion(">>   Would you like to remove them now ?")
             else:
