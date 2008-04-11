@@ -1,8 +1,8 @@
 TODO list
+  - split RDEPEND and PDEPEND ( + && and || ??? ) (*)
   - Server-side code refactoring:
         [] write a ncurses interface to manage entropy database + spm interface + GLSA
-  - split RDEPEND and PDEPEND ( + && and || ??? ) (*)
-  - add i18n support (*)
+  - add i18n support
   - log messages from portage doebuild() calls
   - Community repositories
   - implement notice board

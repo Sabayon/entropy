@@ -12015,7 +12015,7 @@ class ServerInterface(TextInterface):
     def match_packages(self, packages, repo = None):
 
         dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
-        if "world" in packages:
+        if ("world" in packages) or not packages:
             return dbconn.listAllIdpackages(),True
         else:
             idpackages = set()
