@@ -188,7 +188,7 @@ class EntropyPackages:
         global color_install,color_update,color_obsolete
         #print "mask:",mask
         if mask == 'installed':
-            for idpackage in self.Entropy.clientDbconn.listAllIdpackages():
+            for idpackage in self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom'):
                 yp = self.getPackageItem((idpackage,0),True)
                 #if str(yp).find("gnome-system-tools") != -1:
                 #    print str(yp),yp.queued,yp.action,"installed"
@@ -215,7 +215,7 @@ class EntropyPackages:
                 yp.color = color_update
                 yield yp
         elif mask == "reinstallable":
-            for idpackage in self.Entropy.clientDbconn.listAllIdpackages():
+            for idpackage in self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom'):
                 atom = self.Entropy.clientDbconn.retrieveAtom(idpackage)
                 upd, matched = self.Entropy.check_package_update(atom)
                 if (not upd) and matched:

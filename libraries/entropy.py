@@ -1893,7 +1893,7 @@ class EquoInterface(TextInterface):
                 except KeyError:
                     pass
 
-        available = set()
+        available = []
         self.setTotalCycles(len(etpRepositoriesOrder))
         for repo in etpRepositoriesOrder:
             try:
@@ -1901,7 +1901,7 @@ class EquoInterface(TextInterface):
             except exceptionTools.RepositoryError:
                 self.cycleDone()
                 continue
-            idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=")
+            idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=", order_by = 'atom')
             count = 0
             maxlen = len(idpackages)
             for idpackage in idpackages:
@@ -1915,14 +1915,14 @@ class EquoInterface(TextInterface):
                 key, slot = dbconn.retrieveKeySlot(idpackage)
                 matches = self.clientDbconn.searchKeySlot(key, slot)
                 if not matches:
-                    available.add((idpackage,repo))
+                    available.append((idpackage,repo))
             self.cycleDone()
 
         if self.xcache:
             try:
                 data = {}
                 data['chash'] = c_hash
-                data['available'] = available
+                data['available'] = tuple(available)
                 self.dumpTools.dumpobj(etpCache['world_available'],data)
             except IOError:
                 pass
@@ -1955,12 +1955,12 @@ class EquoInterface(TextInterface):
         if cached != None:
             return cached
 
-        update = set()
-        remove = set()
-        fine = set()
+        update = []
+        remove = []
+        fine = []
 
         # get all the installed packages
-        idpackages = self.clientDbconn.listAllIdpackages()
+        idpackages = self.clientDbconn.listAllIdpackages(order_by = 'atom')
         maxlen = len(idpackages)
         count = 0
         for idpackage in idpackages:
@@ -2015,19 +2015,19 @@ class EquoInterface(TextInterface):
                 matchresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchSlot = myscopedata[4], matchBranches = (branch,))
                 if matchresults[0] != -1:
                     #mdbconn = self.openRepositoryDatabase(matchresults[1])
-                    update.add(matchresults)
+                    update.append(matchresults)
                 else:
                     # don't take action if it's just masked
                     maskedresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchSlot = myscopedata[4], matchBranches = (branch,), packagesFilter = False)
                     if maskedresults[0] == -1:
-                        remove.add(idpackage)
+                        remove.append(idpackage)
                         # look for packages that would match key with any slot (for eg, gcc updates)
                         matchresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchBranches = (branch,))
                         if matchresults[0] != -1:
-                            update.add(matchresults)
+                            update.append(matchresults)
 
             else:
-                fine.add(myscopedata[0])
+                fine.append(myscopedata[0])
 
         del idpackages
 
@@ -2039,7 +2039,7 @@ class EquoInterface(TextInterface):
                      str(hash(branch))
             c_hash = str(hash(c_hash))
             data = {}
-            data['r'] = (update, remove, fine)
+            data['r'] = (tuple(update), tuple(remove), tuple(fine))
             data['empty_deps'] = empty_deps
             try:
                 self.dumpTools.dumpobj(etpCache['world_update']+c_hash, data)

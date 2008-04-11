@@ -1124,21 +1124,12 @@ class SpritzApplication(SpritzController,SpritzGUI):
         for flt in masks:
             msg = _('Calculating %s' ) % flt
             self.setStatus(msg)
-            pkgs = self.etpbase.getPackages(flt)
-            allpkgs.extend(pkgs)
+            allpkgs += self.etpbase.getPackages(flt)
             self.setStatus(_("Ready"))
         if self.doProgress: self.progress.total.next() # -> Sort Lists
 
-        # to let the first package iteration be fast
-        self.etpbase.getAllPackages()
-
         if bootstrap:
             self.endWorking()
-
-        try:
-            allpkgs = sorted(allpkgs)
-        except: # python 2.4 support
-            allpkgs.sort()
 
         self.pkgView.populate(allpkgs)
         self.progress.total.show()
