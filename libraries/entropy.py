@@ -12136,8 +12136,7 @@ class ServerInterface(TextInterface):
                 pkgfilename = os.path.basename(pkgfile)
 
                 self.updateProgress(
-                    "[repo:%s|%s] %s: %s" % (
-                            repo,
+                    "[%s] %s: %s" % (
                             brown(crippled_uri),
                             blue("checking hash"),
                             darkgreen(os.path.join(pkgbranch,pkgfilename)),
@@ -12153,8 +12152,7 @@ class ServerInterface(TextInterface):
                 ck = self.get_remote_package_checksum(repo, pkgfilename, pkgbranch)
                 if ck == None:
                     self.updateProgress(
-                        "[repo:%s|%s] %s: %s %s" % (
-                                        darkgreen(repo),
+                        "[%s] %s: %s %s" % (
                                         brown(crippled_uri),
                                         blue("digest verification of"),
                                         bold(pkgfilename),
@@ -12169,8 +12167,7 @@ class ServerInterface(TextInterface):
                     ckOk = True
                 else:
                     self.updateProgress(
-                        "[repo:%s|%s] %s: %s %s" % (
-                                        darkgreen(repo),
+                        "[%s] %s: %s %s" % (
                                         brown(crippled_uri),
                                         blue("digest verification of"),
                                         bold(pkgfilename),
@@ -12187,8 +12184,7 @@ class ServerInterface(TextInterface):
                 else:
                     not_match.add(idpackage)
                     self.updateProgress(
-                        "[repo:%s|%s] %s: %s %s" % (
-                                        darkgreen(repo),
+                        "[%s] %s: %s %s" % (
                                         brown(crippled_uri),
                                         blue("package"),
                                         bold(pkgfilename),
@@ -12226,47 +12222,43 @@ class ServerInterface(TextInterface):
                         )
 
             self.updateProgress(
-                "[repo:%s|%s] %s:" % (
-                        darkgreen(repo),
+                "[%s] %s:" % (
                         brown(crippled_uri),
                         blue("Statistics"),
                 ),
                 importance = 1,
                 type = "info",
-                header = red(" * ")
+                header = red(" @@ ")
             )
             self.updateProgress(
-                "[repo:%s|%s] %s: %s" % (
-                        darkgreen(repo),
+                "[%s] %s:\t\t%s" % (
                         brown(crippled_uri),
-                        blue("Number of checked packages"),
-                        len(match)+len(not_match),
+                        brown("Number of checked packages"),
+                        brown(str(len(match)+len(not_match))),
                 ),
                 importance = 1,
                 type = "info",
-                header = red(" * ")
+               header = brown("   # ")
             )
             self.updateProgress(
-                "[repo:%s|%s] %s: %s" % (
-                        darkgreen(repo),
+                "[%s] %s:\t\t%s" % (
                         brown(crippled_uri),
-                        blue("Number of healthy packages"),
-                        len(match),
+                        darkgreen("Number of healthy packages"),
+                        darkgreen(str(len(match))),
                 ),
                 importance = 1,
                 type = "info",
-                header = red(" * ")
+               header = brown("   # ")
             )
             self.updateProgress(
-                "[repo:%s|%s] %s: %s" % (
-                        darkgreen(repo),
+                "[%s] %s:\t\t%s" % (
                         brown(crippled_uri),
-                        blue("Number of broken packages"),
-                        len(not_match),
+                        darkred("Number of broken packages"),
+                        darkred(str(len(not_match))),
                 ),
                 importance = 1,
                 type = "info",
-                header = red(" * ")
+                header = brown("   # ")
             )
 
         return match,not_match,broken_packages
@@ -12507,13 +12499,13 @@ class ServerInterface(TextInterface):
             header = brown("   # ")
         )
         self.updateProgress(
-            blue("Number of downloaded packages: %s" % (len(downloaded_fine),) ),
+            blue("Number of downloaded packages:\t\t%s" % (len(downloaded_fine),) ),
             importance = 0,
             type = "info",
             header = brown("   # ")
         )
         self.updateProgress(
-            bold("Number of failed downloads: %s" % (len(downloaded_errors),) ),
+            bold("Number of failed downloads:\t\t%s" % (len(downloaded_errors),) ),
             importance = 0,
             type = "info",
             header = brown("   # ")
