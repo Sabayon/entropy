@@ -1176,7 +1176,7 @@ def const_readServerSettings():
             if etpConst['branch'] not in etpConst['branches']:
                 etpConst['branches'].append(etpConst['branch'])
 
-        elif (line.find("repository|") != -1) and (len(line.split("|")) == 5):
+        elif line.startswith("repository|") and (len(line.split("|")) == 5):
 
             repoid = line.split("|")[1].strip()
             repodesc = line.split("|")[2].strip()
