@@ -14337,7 +14337,7 @@ class ServerMirrorsInterface:
             try:
                 ftp_connection.setCWD(self.Entropy.get_remote_packages_relative_path(repo))
             except:
-                self.create_mirror_directories(ftp_connection,self.Entropy.get_remote_database_relative_path(repo))
+                self.create_mirror_directories(ftp_connection,self.Entropy.get_remote_packages_relative_path(repo))
                 ftp_connection.setCWD(self.Entropy.get_remote_packages_relative_path(repo))
             if not ftp_connection.isFileAvailable(branch):
                 ftp_connection.mkdir(branch)
