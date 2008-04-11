@@ -11128,7 +11128,7 @@ class ServerInterface(TextInterface):
             self.ClientService.backup_setting(setting)
 
 
-    def openServerDatabase(self, read_only = True, no_upload = True, just_reading = False, repo = None):
+    def openServerDatabase(self, read_only = True, no_upload = True, just_reading = False, repo = None, indexing = True):
 
         if repo == None:
             repo = self.default_repository
@@ -11184,7 +11184,7 @@ class ServerInterface(TextInterface):
                     type = "warning",
                     header = bold(" !!! ")
                 )
-        if not read_only and valid:
+        if not read_only and valid and indexing:
             self.updateProgress(
                 "[repo:%s|%s] %s" % (
                             blue(repo),
