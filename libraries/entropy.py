@@ -12222,8 +12222,7 @@ class ServerInterface(TextInterface):
                         )
 
             self.updateProgress(
-                "[%s] %s:" % (
-                        brown(crippled_uri),
+                "%s:" % (
                         blue("Statistics"),
                 ),
                 importance = 1,
@@ -12231,8 +12230,8 @@ class ServerInterface(TextInterface):
                 header = red(" @@ ")
             )
             self.updateProgress(
-                "[%s] %s:\t\t%s" % (
-                        brown(crippled_uri),
+                "[%s] %s:\t%s" % (
+                        red(crippled_uri),
                         brown("Number of checked packages"),
                         brown(str(len(match)+len(not_match))),
                 ),
@@ -12241,8 +12240,8 @@ class ServerInterface(TextInterface):
                header = brown("   # ")
             )
             self.updateProgress(
-                "[%s] %s:\t\t%s" % (
-                        brown(crippled_uri),
+                "[%s] %s:\t%s" % (
+                        red(crippled_uri),
                         darkgreen("Number of healthy packages"),
                         darkgreen(str(len(match))),
                 ),
@@ -12251,8 +12250,8 @@ class ServerInterface(TextInterface):
                header = brown("   # ")
             )
             self.updateProgress(
-                "[%s] %s:\t\t%s" % (
-                        brown(crippled_uri),
+                "[%s] %s:\t%s" % (
+                        red(crippled_uri),
                         darkred("Number of broken packages"),
                         darkred(str(len(not_match))),
                 ),
