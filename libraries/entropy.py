@@ -12290,6 +12290,14 @@ class ServerInterface(TextInterface):
         idpackages, world = self.match_packages(packages)
         dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
 
+        if world:
+            self.updateProgress(
+                    blue("All the packages in the Entropy Packages repository will be checked."),
+                    importance = 1,
+                    type = "info",
+                    header = "    "
+            )
+
         to_download = set()
         available = set()
         for idpackage in idpackages:
