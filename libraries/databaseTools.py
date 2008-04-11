@@ -1132,6 +1132,10 @@ class etpDatabase:
             # save
             dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
 
+        if not self.clientDatabase:
+            trashed_counter = self.retrieveCounter(idpackage)
+            self.setTrashedCounter(trashed_counter)
+
         idpackage = str(idpackage)
         # baseinfo
         self.cursor.execute('DELETE FROM baseinfo WHERE idpackage = '+idpackage)
@@ -1446,6 +1450,12 @@ class etpDatabase:
             branch = etpConst['branch']
         self.cursor.execute('DELETE FROM counters WHERE counter = (?) OR idpackage = (?)', (counter,idpackage,))
         self.cursor.execute('INSERT INTO counters VALUES (?,?,?)', (counter,idpackage,branch,))
+        self.commitChanges()
+
+    def setTrashedCounter(self, counter):
+        self.checkReadOnly()
+        self.cursor.execute('DELETE FROM trashedcounters WHERE counter = (?)', (counter,))
+        self.cursor.execute('INSERT INTO trashedcounters VALUES (?)', (counter,))
         self.commitChanges()
 
     def setCounter(self, idpackage, counter, branch = None):
@@ -2499,7 +2509,7 @@ class etpDatabase:
             return -1
         return result[0]
 
-    def isCounterAvailable(self,counter, branch = None, branch_operator = "="):
+    def isCounterAvailable(self, counter, branch = None, branch_operator = "="):
         result = False
         if not branch:
             branch = etpConst['branch']
@@ -2507,8 +2517,23 @@ class etpDatabase:
         result = self.cursor.fetchone()
         if result:
             result = True
-
         return result
+
+    def isCounterTrashed(self, counter):
+        self.cursor.execute('SELECT counter FROM trashedcounters WHERE counter = (?)', (counter,))
+        result = self.cursor.fetchone()
+        if result:
+            return True
+        return False
+
+    def getIDPackageFromCounter(self, counter, branch = None, branch_operator = "="):
+        if not branch:
+            branch = etpConst['branch']
+        self.cursor.execute('SELECT idpackage FROM counters WHERE counter = (?) and branch '+branch_operator+' (?)', (counter,branch,))
+        result = self.cursor.fetchone()
+        if not result:
+            return 0
+        return result[0]
 
     def isLicensedataKeyAvailable(self, license_name):
         if not self.doesTableExist("licensedata"):
@@ -2974,6 +2999,9 @@ class etpDatabase:
             self.createCountersTable()
         elif not self.doesColumnInTableExist("counters","branch"):
             self.createCountersBranchColumn()
+
+        if not self.doesTableExist("trashedcounters"):
+            self.createTrashedcountersTable()
 
         if not self.doesTableExist("sizes"):
             self.createSizesTable()
@@ -3485,6 +3513,9 @@ class etpDatabase:
 
     def createLicensesAcceptedTable(self):
         self.cursor.execute('CREATE TABLE licenses_accepted ( licensename VARCHAR UNIQUE );')
+
+    def createTrashedcountersTable(self):
+        self.cursor.execute('CREATE TABLE trashedcounters ( counter INTEGER );')
 
     def createTriggerTable(self):
         self.cursor.execute('CREATE TABLE triggers ( idpackage INTEGER PRIMARY KEY, data BLOB );')

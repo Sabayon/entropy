@@ -11802,8 +11802,8 @@ class ServerInterface(TextInterface):
                         if not is_injected:
                             toBeInjected.add((x[1],xrepo))
                     else:
-                        counter_repo = self.is_counter_available(x[0])
-                        if not counter_repo:
+                        trashed = self.is_counter_trashed(x[0])
+                        if not trashed:
                             toBeRemoved.add((x[1],xrepo))
 
             else:
@@ -11814,19 +11814,19 @@ class ServerInterface(TextInterface):
                     if not is_injected:
                         toBeInjected.add((x[1],xrepo))
                 else:
-                    counter_repo = self.is_counter_available(x[0])
-                    if not counter_repo:
+                    trashed = self.is_counter_trashed(x[0])
+                    if not trashed:
                         toBeRemoved.add((x[1],xrepo))
 
         return toBeAdded, toBeRemoved, toBeInjected
 
-    def is_counter_available(self, counter, branch = etpConst['branch'], branch_operator = "<="):
+    def is_counter_trashed(self, counter):
         server_repos = etpConst['server_repositories'].keys()
         for repo in server_repos:
             dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
-            if dbconn.isCounterAvailable(counter, branch, branch_operator):
-                return repo
-        return None
+            if dbconn.isCounterTrashed(counter):
+                return True
+        return False
 
     def transform_package_into_injected(self, idpackage, repo = None):
         dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)

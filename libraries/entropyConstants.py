@@ -117,6 +117,7 @@ DROP TABLE IF EXISTS treeupdatesactions;
 DROP TABLE IF EXISTS library_breakages;
 DROP TABLE IF EXISTS licensedata;
 DROP TABLE IF EXISTS licenses_accepted;
+DROP TABLE IF EXISTS trashedcounters;
 """
 
 etpSQLInit = """
@@ -267,6 +268,10 @@ CREATE TABLE counters (
     counter INTEGER,
     idpackage INTEGER PRIMARY KEY,
     branch VARCHAR
+);
+
+CREATE TABLE trashedcounters (
+    counter INTEGER
 );
 
 CREATE TABLE eclasses (
