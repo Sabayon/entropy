@@ -11079,6 +11079,20 @@ class ServerInterface(TextInterface):
                 type = "info",
                 header = red(" @@ ")
         )
+        repos = etpConst['server_repositories'].keys()
+        self.updateProgress(
+                blue("Currently configured repositories:"),
+                importance = 1,
+                type = "info",
+                header = red(" @@ ")
+        )
+        for repo in repos:
+            self.updateProgress(
+                darkgreen(repo),
+                importance = 0,
+                type = "info",
+                header = brown("   # ")
+            )
 
 
     def save_default_repository(self, repoid):
@@ -11266,7 +11280,12 @@ class ServerInterface(TextInterface):
                                     header = red(" @@ ")
                                 )
             for atom in deps_not_matched:
-                print_info("   # "+red(atom))
+                self.updateProgress(
+                                        red(atom),
+                                        importance = 1,
+                                        type = "info",
+                                        header = blue("   # ")
+                                    )
                 if crying_atoms.has_key(atom):
                     self.updateProgress(
                                             red("Needed by:"),
