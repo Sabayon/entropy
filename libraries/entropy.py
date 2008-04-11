@@ -14378,7 +14378,7 @@ class ServerMirrorsInterface:
             type = "info",
             header = red(" @@ ")
         )
-        remote_files, remote_packages, remote_packages_data = self.calculate_remote_package_files(uri, branch, repo)
+        remote_files, remote_packages, remote_packages_data = self.calculate_remote_package_files(uri, branch, repo = repo)
         self.Entropy.updateProgress(
             "%s:\t\t\t%s %s" % (
                     blue("remote packages"),
