@@ -2131,29 +2131,29 @@ class etpDatabase:
 
     def retrieveIdDependencies(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveIdDependencies')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveIdDependencies')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT iddependency FROM dependencies WHERE idpackage = (?)', (idpackage,))
-	iddeps = self.fetchall2set(self.cursor.fetchall())
+        self.cursor.execute('SELECT iddependency FROM dependencies WHERE idpackage = (?)', (idpackage,))
+        iddeps = self.fetchall2set(self.cursor.fetchall())
 
-	self.storeInfoCache(idpackage,'retrieveIdDependencies',iddeps)
-	return iddeps
+        self.storeInfoCache(idpackage,'retrieveIdDependencies',iddeps)
+        return iddeps
 
     def retrieveDependencyFromIddependency(self, iddependency):
-	self.cursor.execute('SELECT dependency FROM dependenciesreference WHERE iddependency = (?)', (iddependency,))
+        self.cursor.execute('SELECT dependency FROM dependenciesreference WHERE iddependency = (?)', (iddependency,))
         return self.cursor.fetchone()[0]
 
     def retrieveKeywords(self, idpackage):
 
-	cache = self.fetchInfoCache(idpackage,'retrieveKeywords')
-	if cache != None: return cache
+        cache = self.fetchInfoCache(idpackage,'retrieveKeywords')
+        if cache != None: return cache
 
-	self.cursor.execute('SELECT keywordname FROM keywords,keywordsreference WHERE keywords.idpackage = (?) and keywords.idkeyword = keywordsreference.idkeyword', (idpackage,))
-	kw = self.fetchall2set(self.cursor.fetchall())
+        self.cursor.execute('SELECT keywordname FROM keywords,keywordsreference WHERE keywords.idpackage = (?) and keywords.idkeyword = keywordsreference.idkeyword', (idpackage,))
+        kw = self.fetchall2set(self.cursor.fetchall())
 
-	self.storeInfoCache(idpackage,'retrieveKeywords',kw)
-	return kw
+        self.storeInfoCache(idpackage,'retrieveKeywords',kw)
+        return kw
 
     def retrieveProtect(self, idpackage):
 
@@ -2863,9 +2863,13 @@ class etpDatabase:
         #self.storeInfoCache(hash(branch),'listAllIdpackages',results)
         return results
 
-    def listAllDependencies(self):
-        self.cursor.execute('SELECT * FROM dependenciesreference')
-        return self.cursor.fetchall()
+    def listAllDependencies(self, only_deps = False):
+        if only_deps:
+            self.cursor.execute('SELECT dependency FROM dependenciesreference')
+            return self.fetchall2set(self.cursor.fetchall())
+        else:
+            self.cursor.execute('SELECT * FROM dependenciesreference')
+            return self.cursor.fetchall()
 
     def listAllBranches(self):
 

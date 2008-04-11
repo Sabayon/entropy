@@ -115,39 +115,47 @@ def update(options):
 
         if toBeInjected:
             print_info(brown(" @@ ")+blue("These are the packages that would be changed to injected status:"))
-            for x in toBeInjected:
-                atom = dbconn.retrieveAtom(x)
+            for idpackage,repoid in toBeInjected:
+                dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
+                atom = dbconn.retrieveAtom(idpackage)
                 print_info(brown("    # ")+red(atom))
             if reagentRequestAsk:
                 rc = Entropy.askQuestion(">>   Would you like to transform them now ?")
             else:
                 rc = "Yes"
             if rc == "Yes":
-                mydbconn = Entropy.openServerDatabase(just_reading = True)
-                for x in toBeInjected:
-                    atom = mydbconn.retrieveAtom(x)
+                for idpackage,repoid in toBeInjected:
+                    dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
+                    atom = mydbconn.retrieveAtom(idpackage)
                     print_info(brown("   <> ")+blue("Transforming from database: ")+red(atom))
-                    Entropy.transform_package_into_injected(x)
+                    Entropy.transform_package_into_injected(idpackage, repo = repoid)
                 print_info(brown(" @@ ")+blue("Database transform complete."))
 
         if toBeRemoved:
             print_info(brown(" @@ ")+blue("These are the packages that would be removed from the database:"))
-            for x in toBeRemoved:
-                atom = dbconn.retrieveAtom(x)
+            for idpackage,repoid in toBeRemoved:
+                dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
+                atom = dbconn.retrieveAtom(idpackage)
                 print_info(brown("    # ")+red(atom))
             if reagentRequestAsk:
                 rc = Entropy.askQuestion(">>   Would you like to remove them now ?")
             else:
                 rc = "Yes"
             if rc == "Yes":
-                Entropy.remove_packages(toBeRemoved)
+                remdata = {}
+                for idpackage,repoid in toBeRemoved:
+                    if not remdata.has_key(repoid):
+                        remdata[repoid] = set()
+                    remdata[repoid].add(idpackage)
+                for repoid in remdata:
+                    Entropy.remove_packages(remdata[repoid], repo = repoid)
 
         if toBeAdded:
             print_info(brown(" @@ ")+blue("These are the packages that would be added/updated to the add list:"))
             for x in toBeAdded:
                 print_info(brown("    # ")+red(x[0]))
             if reagentRequestAsk:
-                rc = Entropy.askQuestion(">>   Would you like to package them now ?")
+                rc = Entropy.askQuestion(">>   Would you like to package them now (inside %s) ?" % (Entropy.default_repository,) )
                 if rc == "No":
                     return 0
 

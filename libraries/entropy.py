@@ -524,7 +524,7 @@ class EquoInterface(TextInterface):
         # get all the installed packages
         installedPackages = dbconn.listAllIdpackages()
 
-        depsNotSatisfied = {}
+        deps_not_matched = set()
         # now look
         length = str((len(installedPackages)))
         count = 0
@@ -540,29 +540,16 @@ class EquoInterface(TextInterface):
                                     header = darkred(" @@ ")
                                 )
 
-            xdeps = dbconn.retrieveDependenciesList(xidpackage)
+            xdeps = dbconn.retrieveDependencies(xidpackage)
             needed_deps = set()
             for xdep in xdeps:
-                if xdep[0] == "!": # filter conflicts
-                    continue
                 xmatch = dbconn.atomMatch(xdep)
                 if xmatch[0] == -1:
                     needed_deps.add(xdep)
 
-            if needed_deps:
-                depsNotSatisfied[xidpackage] = set()
-                depsNotSatisfied[xidpackage].update(needed_deps)
+            deps_not_matched |= needed_deps
 
-        depsNotMatched = set()
-        if (depsNotSatisfied):
-            for xidpackage in depsNotSatisfied:
-                for dep in depsNotSatisfied[xidpackage]:
-                    match = dbconn.atomMatch(dep)
-                    if match[0] == -1: # ????
-                        depsNotMatched.add(dep)
-                        continue
-
-        return depsNotMatched
+        return deps_not_matched
 
     def find_belonging_dependency(self, matched_atoms):
         crying_atoms = set()
@@ -991,13 +978,26 @@ class EquoInterface(TextInterface):
         fetch_repository_if_not_available_cache[reponame] = rc
         return rc
 
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, matchBranches = (), packagesFilter = True, multiMatch = False, multiRepo = False, matchRevision = None, matchRepo = None):
+    def atomMatch(          self,
+                            atom,
+                            caseSensitive = True,
+                            matchSlot = None,
+                            matchBranches = (),
+                            packagesFilter = True,
+                            multiMatch = False,
+                            multiRepo = False,
+                            matchRevision = None,
+                            matchRepo = None,
+                            server_repos = [],
+                            serverInstance = None
+                                                        ):
 
-        # support match in repository from shell
-        # atom@repo1,repo2,repo3
-        atom, repos = self.entropyTools.dep_get_match_in_repos(atom)
-        if (matchRepo == None) and (repos != None):
-            matchRepo = repos
+        if not server_repos:
+            # support match in repository from shell
+            # atom@repo1,repo2,repo3
+            atom, repos = self.entropyTools.dep_get_match_in_repos(atom)
+            if (matchRepo == None) and (repos != None):
+                matchRepo = repos
 
         if self.xcache:
 
@@ -1021,21 +1021,33 @@ class EquoInterface(TextInterface):
             if cached != None:
                 return cached
 
-        valid_repos = self.validRepositories
-        if matchRepo and (type(matchRepo) in (list,tuple,set)):
-            valid_repos = list(matchRepo)
+        if server_repos:
+            if not serverInstance:
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: server_repos needs serverInstance")
+            valid_repos = server_repos[:]
+        else:
+            valid_repos = self.validRepositories
+            if matchRepo and (type(matchRepo) in (list,tuple,set)):
+                valid_repos = list(matchRepo)
+
+        def open_db(repoid):
+            if server_repos:
+                dbconn = serverInstance.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
+            else:
+                dbconn = self.openRepositoryDatabase(repo)
+            return dbconn
 
         repoResults = {}
         for repo in valid_repos:
 
             # check if repo exists
-            if not repo.endswith(etpConst['packagesext']):
+            if not repo.endswith(etpConst['packagesext']) and not server_repos:
                 fetch = self.fetch_repository_if_not_available(repo)
                 if fetch != 0:
                     continue # cannot fetch repo, excluding
 
             # search
-            dbconn = self.openRepositoryDatabase(repo)
+            dbconn = open_db(repo)
             query = dbconn.atomMatch(atom, caseSensitive = caseSensitive, matchSlot = matchSlot, matchBranches = matchBranches, packagesFilter = packagesFilter, matchRevision = matchRevision)
             if query[1] == 0:
                 # package found, add to our dictionary
@@ -1075,7 +1087,7 @@ class EquoInterface(TextInterface):
             version_duplicates = set()
             versions = []
             for repo in repoResults:
-                dbconn = self.openRepositoryDatabase(repo)
+                dbconn = open_db(repo)
                 packageInformation[repo] = {}
                 version = dbconn.retrieveVersion(repoResults[repo])
                 packageInformation[repo]['version'] = version
@@ -1171,14 +1183,27 @@ class EquoInterface(TextInterface):
                 if multiRepo:
                     data = set()
                     for match in dbpkginfo[0]:
-                        dbconn = self.openRepositoryDatabase(match[1])
-                        matches = dbconn.atomMatch(atom, caseSensitive = caseSensitive, matchSlot = matchSlot, matchBranches = matchBranches, packagesFilter = packagesFilter, multiMatch = True)
+                        dbconn = open_db(match[1])
+                        matches = dbconn.atomMatch( atom,
+                                                    caseSensitive = caseSensitive,
+                                                    matchSlot = matchSlot,
+                                                    matchBranches = matchBranches,
+                                                    packagesFilter = packagesFilter,
+                                                    multiMatch = True
+                                                   )
                         for repoidpackage in matches[0]:
                             data.add((repoidpackage,match[1]))
                     dbpkginfo = (data,0)
                 else:
-                    dbconn = self.openRepositoryDatabase(dbpkginfo[1])
-                    matches = dbconn.atomMatch(atom, caseSensitive = caseSensitive, matchSlot = matchSlot, matchBranches = matchBranches, packagesFilter = packagesFilter, multiMatch = True)
+                    dbconn = open_db(dbpkginfo[1])
+                    matches = dbconn.atomMatch(
+                                                atom,
+                                                caseSensitive = caseSensitive,
+                                                matchSlot = matchSlot,
+                                                matchBranches = matchBranches,
+                                                packagesFilter = packagesFilter,
+                                                multiMatch = True
+                                               )
                     dbpkginfo = (set([(x,dbpkginfo[1]) for x in matches[0]]),0)
 
         if self.xcache:
@@ -11169,8 +11194,42 @@ class ServerInterface(TextInterface):
                                 )] = conn
         return conn
 
+    def deps_tester(self):
 
-    def dependencies_test(self, repo = None):
+        server_repos = etpConst['server_repositories'].keys()
+        installed_packages = set()
+        for repo in server_repos:
+            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+            installed_packages |= set([(x,repo) for x in dbconn.listAllIdpackages()])
+
+
+        deps_not_satisfied = set()
+        length = str((len(installed_packages)))
+        count = 0
+        for pkgdata in installed_packages:
+            count += 1
+            idpackage = pkgdata[0]
+            repo = pkgdata[1]
+            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+            atom = dbconn.retrieveAtom(idpackage)
+            self.updateProgress(
+                                    darkgreen(" Checking ")+bold(atom),
+                                    importance = 0,
+                                    type = "info",
+                                    back = True,
+                                    count = (count,length),
+                                    header = darkred(" @@ ")
+                                )
+
+            xdeps = dbconn.retrieveDependencies(idpackage)
+            for xdep in xdeps:
+                xmatch = self.atomMatch(xdep)
+                if xmatch[0] == -1:
+                    deps_not_satisfied.add(xdep)
+
+        return deps_not_satisfied
+
+    def dependencies_test(self):
 
         self.updateProgress(
                                 blue("Running dependencies test..."),
@@ -11178,21 +11237,26 @@ class ServerInterface(TextInterface):
                                 type = "info",
                                 header = red(" @@ ")
                             )
-        dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
-        deps_not_matched = self.ClientService.dependencies_test(dbconn = dbconn)
+
+        server_repos = etpConst['server_repositories'].keys()
+        deps_not_matched = self.deps_tester()
 
         if deps_not_matched:
 
             crying_atoms = {}
             for atom in deps_not_matched:
-                riddep = dbconn.searchDependency(atom)
-                if riddep != -1:
-                    ridpackages = dbconn.searchIdpackageFromIddependency(riddep)
-                    for i in ridpackages:
-                        iatom = dbconn.retrieveAtom(i)
-                        if not crying_atoms.has_key(atom):
-                            crying_atoms[atom] = set()
-                        crying_atoms[atom].add(iatom)
+                for repo in server_repos:
+                    dbconn = self.openServerDatabase(just_reading = True)
+                    riddep = dbconn.searchDependency(atom)
+                    if riddep == -1:
+                        continue
+                    if riddep != -1:
+                        ridpackages = dbconn.searchIdpackageFromIddependency(riddep)
+                        for i in ridpackages:
+                            iatom = dbconn.retrieveAtom(i)
+                            if not crying_atoms.has_key(atom):
+                                crying_atoms[atom] = set()
+                            crying_atoms[atom].add(iatom)
 
             self.updateProgress(
                                     blue("These are the dependencies not found:"),
@@ -11651,9 +11715,15 @@ class ServerInterface(TextInterface):
         else:
             return 0
 
-    def scan_package_changes(self, repo = None):
+    def atomMatch(self, *args, **kwargs):
+        repos = etpConst['server_repositories'].keys()
+        kwargs['server_repos'] = repos
+        kwargs['serverInstance'] = self
+        return self.ClientService.atomMatch(*args,**kwargs)
 
-        dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+    def scan_package_changes(self):
+
+        #dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
 
         installed_packages = self.SpmService.get_installed_packages_counter()
         installed_counters = set()
@@ -11661,59 +11731,83 @@ class ServerInterface(TextInterface):
         toBeRemoved = set()
         toBeInjected = set()
 
+        server_repos = etpConst['server_repositories'].keys()
+
         # packages to be added
         for x in installed_packages:
-            installed_counters.add(x[1])
-            counter = dbconn.isCounterAvailable(x[1], branch = etpConst['branch'], branch_operator = "<=")
-            if not counter:
+            found = False
+            for server_repo in server_repos:
+                installed_counters.add(x[1])
+                server_dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = server_repo)
+                counter = server_dbconn.isCounterAvailable(x[1], branch = etpConst['branch'], branch_operator = "<=")
+                if counter:
+                    found = True
+                    break
+            if not found:
                 toBeAdded.add(tuple(x))
 
         # packages to be removed from the database
-        database_counters = dbconn.listAllCounters(branch = etpConst['branch'], branch_operator = "<=")
+        database_counters = {}
+        for server_repo in server_repos:
+            server_dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = server_repo)
+            database_counters[server_repo] = server_dbconn.listAllCounters(branch = etpConst['branch'], branch_operator = "<=")
+
+        ordered_counters = set()
+        for server_repo in database_counters:
+            for data in database_counters[server_repo]:
+                ordered_counters.add((data,server_repo))
+        database_counters = ordered_counters
+
         for x in database_counters:
+
+            xrepo = x[1]
+            x = x[0]
 
             if x[0] < 0:
                 continue # skip packages without valid counter
 
-            if x[0] not in installed_counters:
+            if x[0] in installed_counters:
+                continue
 
-                # check if the package is in toBeAdded
-                if toBeAdded:
+            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = xrepo)
 
-                    atom = dbconn.retrieveAtom(x[1])
-                    atomkey = self.entropyTools.dep_getkey(atom)
-                    atomtag = self.entropyTools.dep_gettag(atom)
-                    atomslot = dbconn.retrieveSlot(x[1])
+            # check if the package is in toBeAdded
+            if toBeAdded:
 
-                    add = True
-                    for pkgdata in toBeAdded:
-                        addslot = self.SpmService.get_package_slot(pkgdata[0])
-                        addkey = self.entropyTools.dep_getkey(pkgdata[0])
-                        # workaround for ebuilds not having slot
-                        if addslot == None:
-                            addslot = '0'                                              # handle tagged packages correctly
-                        if (atomkey == addkey) and ((str(atomslot) == str(addslot)) or (atomtag != None)):
-                            # do not add to toBeRemoved
-                            add = False
-                            break
-                    if add:
-                        dbtag = dbconn.retrieveVersionTag(x[1])
-                        if dbtag != '':
-                            is_injected = dbconn.isInjected(x[1])
-                            if not is_injected:
-                                toBeInjected.add(x[1])
-                        else:
-                            toBeRemoved.add(x[1])
+                atom = dbconn.retrieveAtom(x[1])
+                atomkey = self.entropyTools.dep_getkey(atom)
+                atomtag = self.entropyTools.dep_gettag(atom)
+                atomslot = dbconn.retrieveSlot(x[1])
 
-                else:
-
+                add = True
+                for pkgdata in toBeAdded:
+                    addslot = self.SpmService.get_package_slot(pkgdata[0])
+                    addkey = self.entropyTools.dep_getkey(pkgdata[0])
+                    # workaround for ebuilds not having slot
+                    if addslot == None:
+                        addslot = '0'                                              # handle tagged packages correctly
+                    if (atomkey == addkey) and ((str(atomslot) == str(addslot)) or (atomtag != None)):
+                        # do not add to toBeRemoved
+                        add = False
+                        break
+                if add:
                     dbtag = dbconn.retrieveVersionTag(x[1])
                     if dbtag != '':
                         is_injected = dbconn.isInjected(x[1])
                         if not is_injected:
-                            toBeInjected.add(x[1])
+                            toBeInjected.add((x[1],xrepo))
                     else:
-                        toBeRemoved.add(x[1])
+                        toBeRemoved.add((x[1],xrepo))
+
+            else:
+
+                dbtag = dbconn.retrieveVersionTag(x[1])
+                if dbtag != '':
+                    is_injected = dbconn.isInjected(x[1])
+                    if not is_injected:
+                        toBeInjected.add((x[1],xrepo))
+                else:
+                    toBeRemoved.add((x[1],xrepo))
 
         return toBeAdded, toBeRemoved, toBeInjected
 
@@ -13135,7 +13229,7 @@ class ServerMirrorsInterface:
 
     def update_rss_feed(self, repo = None):
 
-        db_dir = self.Entropy.get_local_database_dir(repo)
+        #db_dir = self.Entropy.get_local_database_dir(repo)
         rss_path = self.Entropy.get_local_database_rss_file(repo)
         rss_light_path = self.Entropy.get_local_database_rsslight_file(repo)
         rss_dump_name = etpConst['rss-dump-name']
