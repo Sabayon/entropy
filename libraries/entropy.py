@@ -12489,19 +12489,19 @@ class ServerInterface(TextInterface):
             header = blue(" * ")
         )
         self.updateProgress(
-            blue("Number of checked packages: %s" % (len(fine)+len(failed),) ),
+            brown("Number of checked packages:\t\t%s" % (len(fine)+len(failed),) ),
             importance = 0,
             type = "info",
             header = brown("   # ")
         )
         self.updateProgress(
-            blue("Number of healthy packages: %s" % (len(fine),) ),
+            darkgreen("Number of healthy packages:\t\t%s" % (len(fine),) ),
             importance = 0,
             type = "info",
             header = brown("   # ")
         )
         self.updateProgress(
-            blue("Number of broken packages: %s" % (len(failed),) ),
+            darkred("Number of broken packages:\t\t%s" % (len(failed),) ),
             importance = 0,
             type = "info",
             header = brown("   # ")
@@ -12513,7 +12513,7 @@ class ServerInterface(TextInterface):
             header = brown("   # ")
         )
         self.updateProgress(
-            blue("Number of failed downloads: %s" % (len(downloaded_errors),) ),
+            bold("Number of failed downloads: %s" % (len(downloaded_errors),) ),
             importance = 0,
             type = "info",
             header = brown("   # ")
