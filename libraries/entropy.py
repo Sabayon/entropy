@@ -6110,6 +6110,8 @@ class urlFetcher:
         self.entropyTools = entropyTools
         self.socket = socket
         self.progress = None
+        self.user_agent = "Entropy/1.0 (compatible; Entropy; Linux)"
+        self.extra_header_data = {}
 
         # resume support
         if os.path.isfile(self.pathToSave) and os.access(self.pathToSave,os.R_OK) and self.resume:
@@ -6162,9 +6164,16 @@ class urlFetcher:
         # set timeout
         self.socket.setdefaulttimeout(20)
 
+
+        if self.url.startswith("http://"):
+            headers = { 'User-Agent' : self.user_agent }
+            req = urllib2.Request(self.url, self.extra_header_data, headers)
+        else:
+            req = self.url
+
         # get file size if available
         try:
-            self.remotefile = urllib2.urlopen(self.url)
+            self.remotefile = urllib2.urlopen(req)
         except KeyboardInterrupt:
             self.close()
             raise
@@ -11012,11 +11021,14 @@ class ServerInterface(TextInterface):
         self.settings_to_backup = []
         self.do_save_repository = save_repository
         self.default_repository = default_repository
-        if default_repository == None:
+        if self.default_repository == None:
             self.default_repository = etpConst['officialrepositoryid']
 
         if self.default_repository not in etpConst['server_repositories']:
-            raise exceptionTools.PermissionDenied("PermissionDenied: %s repository not configured" % (default_repository,))
+            raise exceptionTools.PermissionDenied("PermissionDenied: %s repository not configured" % (
+                        self.default_repository,
+                    )
+            )
 
         self.switch_default_repository(self.default_repository)
 
