@@ -6110,7 +6110,13 @@ class urlFetcher:
         self.entropyTools = entropyTools
         self.socket = socket
         self.progress = None
-        self.user_agent = "Entropy/1.0 (compatible; Entropy; Linux)"
+        self.user_agent = "Entropy/%s (compatible; %s; %s %s %s)" % (
+                                        etpConst['entropyversion'],
+                                        os.path.basename(self.url),
+                                        os.uname()[0],
+                                        os.uname()[4],
+                                        os.uname()[2],
+        )
         self.extra_header_data = {}
 
         # resume support
