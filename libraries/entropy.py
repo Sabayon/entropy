@@ -12302,29 +12302,31 @@ class ServerInterface(TextInterface):
             bindir_path = os.path.join(self.get_local_packages_directory(repo),pkgbranch,pkgfile)
             uploaddir_path = os.path.join(self.get_local_upload_directory(repo),pkgbranch,pkgfile)
 
-            if os.path.isfile(bindir_path) and not world:
-                self.updateProgress(
-                        "[%s] %s :: %s" % (
-                                darkgreen("available"),
-                                blue(pkgatom),
-                                darkgreen(pkgfile),
-                        ),
-                        importance = 0,
-                        type = "info",
-                        header = darkgreen("   # ")
-                )
+            if os.path.isfile(bindir_path):
+                if not world:
+                    self.updateProgress(
+                            "[%s] %s :: %s" % (
+                                    darkgreen("available"),
+                                    blue(pkgatom),
+                                    darkgreen(pkgfile),
+                            ),
+                            importance = 0,
+                            type = "info",
+                            header = darkgreen("   # ")
+                    )
                 available.add(idpackage)
-            elif os.path.isfile(uploaddir_path) and not world:
-                self.updateProgress(
-                        "[%s] %s :: %s" % (
-                                darkred("upload/ignored"),
-                                blue(pkgatom),
-                                darkgreen(pkgfile),
-                        ),
-                        importance = 0,
-                        type = "info",
-                        header = darkgreen("   # ")
-                )
+            elif os.path.isfile(uploaddir_path):
+                if not world:
+                    self.updateProgress(
+                            "[%s] %s :: %s" % (
+                                    darkred("upload/ignored"),
+                                    blue(pkgatom),
+                                    darkgreen(pkgfile),
+                            ),
+                            importance = 0,
+                            type = "info",
+                            header = darkgreen("   # ")
+                    )
             else:
                 self.updateProgress(
                         "[%s] %s :: %s" % (
