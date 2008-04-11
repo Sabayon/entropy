@@ -11776,9 +11776,11 @@ class ServerInterface(TextInterface):
 
             dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = xrepo)
 
+            dorm = True
             # check if the package is in toBeAdded
             if toBeAdded:
 
+                dorm = False
                 atom = dbconn.retrieveAtom(x[1])
                 atomkey = self.entropyTools.dep_getkey(atom)
                 atomtag = self.entropyTools.dep_gettag(atom)
@@ -11795,27 +11797,20 @@ class ServerInterface(TextInterface):
                         # do not add to toBeRemoved
                         add = False
                         break
-                if add:
+
+                if not add:
+                    continue
+                dorm = True
+
+            if dorm:
+                trashed = self.is_counter_trashed(x[0])
+                if not trashed:
                     dbtag = dbconn.retrieveVersionTag(x[1])
                     if dbtag != '':
                         is_injected = dbconn.isInjected(x[1])
                         if not is_injected:
                             toBeInjected.add((x[1],xrepo))
                     else:
-                        trashed = self.is_counter_trashed(x[0])
-                        if not trashed:
-                            toBeRemoved.add((x[1],xrepo))
-
-            else:
-
-                dbtag = dbconn.retrieveVersionTag(x[1])
-                if dbtag != '':
-                    is_injected = dbconn.isInjected(x[1])
-                    if not is_injected:
-                        toBeInjected.add((x[1],xrepo))
-                else:
-                    trashed = self.is_counter_trashed(x[0])
-                    if not trashed:
                         toBeRemoved.add((x[1],xrepo))
 
         return toBeAdded, toBeRemoved, toBeInjected
