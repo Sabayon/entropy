@@ -11751,7 +11751,11 @@ class ServerInterface(TextInterface):
         database_counters = {}
         for server_repo in server_repos:
             server_dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = server_repo)
-            database_counters[server_repo] = server_dbconn.listAllCounters(branch = etpConst['branch'], branch_operator = "<=")
+            database_counters[server_repo] = \
+                    server_dbconn.listAllCounters(
+                                                    branch = etpConst['branch'],
+                                                    branch_operator = "<="
+                                                 )
 
         ordered_counters = set()
         for server_repo in database_counters:
@@ -11798,7 +11802,9 @@ class ServerInterface(TextInterface):
                         if not is_injected:
                             toBeInjected.add((x[1],xrepo))
                     else:
-                        toBeRemoved.add((x[1],xrepo))
+                        counter_repo = self.is_counter_available(x[0])
+                        if not counter_repo:
+                            toBeRemoved.add((x[1],xrepo))
 
             else:
 
@@ -11808,10 +11814,19 @@ class ServerInterface(TextInterface):
                     if not is_injected:
                         toBeInjected.add((x[1],xrepo))
                 else:
-                    toBeRemoved.add((x[1],xrepo))
+                    counter_repo = self.is_counter_available(x[0])
+                    if not counter_repo:
+                        toBeRemoved.add((x[1],xrepo))
 
         return toBeAdded, toBeRemoved, toBeInjected
 
+    def is_counter_available(self, counter, branch = etpConst['branch'], branch_operator = "<="):
+        server_repos = etpConst['server_repositories'].keys()
+        for repo in server_repos:
+            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+            if dbconn.isCounterAvailable(counter, branch, branch_operator):
+                return repo
+        return None
 
     def transform_package_into_injected(self, idpackage, repo = None):
         dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
