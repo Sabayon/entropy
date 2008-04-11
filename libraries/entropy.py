@@ -488,6 +488,8 @@ class EquoInterface(TextInterface):
             del fine, remove
             self.retrieveInstallQueue(update, False, False)
             self.calculate_available_packages()
+            # otherwise world cache will be trashed at the next initialization
+            self.dumpTools.dumpobj(etpCache['repolist'],tuple(etpRepositoriesOrder))
         except:
             pass
 
@@ -13849,7 +13851,7 @@ class ServerMirrorsInterface:
         return gave_up
 
     def shrink_database_and_close(self, repo = None):
-        dbconn = self.Entropy.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.Entropy.openServerDatabase(read_only = False, no_upload = True, repo = repo, indexing = False)
         dbconn.dropAllIndexes()
         dbconn.vacuum()
         dbconn.commitChanges()

@@ -317,12 +317,7 @@ def database(options):
             return 0
 
         print_info(darkgreen(" * ")+red("Removing selected packages..."))
-        for idpackage in pkglist:
-            pkgatom = dbconn.retrieveAtom(idpackage)
-            print_info(darkgreen(" * ")+red("Removing package: ")+bold(pkgatom)+red("..."), back = True)
-            Entropy.remove_package(idpackage)
-
-        Entropy.close_server_database(dbconn)
+        Entropy.remove_packages(pkglist)
         print_info(darkgreen(" * ")+red("Packages removed. To remove binary packages, run activator."))
 
         return 0
@@ -372,10 +367,7 @@ def database(options):
             return 0
 
         print_info(green(" * ")+red("Removing selected packages ..."))
-        for idpackage in idpackages:
-            pkgatom = dbconn.retrieveAtom(idpackage)
-            print_info(darkgreen(" * ")+red("Removing package: ")+bold(pkgatom)+red("..."), back = True)
-            Entropy.remove_package(idpackage)
+        Entropy.remove_packages(idpackages)
 
         Entropy.close_server_database(dbconn)
         print_info(darkgreen(" * ")+red("Packages removed. To remove binary packages, run activator."))
