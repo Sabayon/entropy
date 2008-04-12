@@ -65,10 +65,15 @@ def repositories(options):
                 repoid_dest = opt
             else:
                 myopts.append(opt)
+        elif cmd == "default":
+            if repoid == None:
+                repoid = opt
+            else:
+                myopts.append(opt)
         else:
             myopts.append(opt)
 
-    if cmd in ["enable","disable","move"] and not repoid:
+    if cmd in ["enable","disable","move","default"] and not repoid:
         print_error(darkred(" !!! ")+red("No valid repositories specified."))
         return 2
 
@@ -96,6 +101,8 @@ def repositories(options):
         else:
             print_info(brown(" @@ ")+red("Configuration file ")+bold(etpConst['serverconf'])+red(" not found."))
             return 127
+    elif cmd == "default":
+        Entropy.switch_default_repository(repoid, save = True)
     elif cmd == "status":
         return 0
     elif cmd == "move":

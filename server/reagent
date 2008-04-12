@@ -84,6 +84,7 @@ def print_help():
     print_info(" \t\t"+red("disable <repo_id>")+"\t\t disable the specified repository")
     print_info(" \t\t"+red("status")+"\t\t\t\t show current Server Interface status")
     print_info(" \t\t"+red("move <from> <to> [atoms]")+"\t move packages from a repository to another")
+    print_info(" \t\t"+red("default <repo_id>")+"\t\t set the default repository")
 
     print_info(" \t"+green("spm")+brown("\t\t Source Package Manager tool manager"))
     print_info(" \t\t"+green("compile")+"\t\t\t Start SPM and compile something")

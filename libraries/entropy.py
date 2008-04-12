@@ -11081,12 +11081,19 @@ class ServerInterface(TextInterface):
             instance = self.serverDbCache.pop(found)
             instance.closeDB()
 
-    def switch_default_repository(self, repoid):
+    def switch_default_repository(self, repoid, save = None):
+        if save == None:
+            save = self.do_save_repository
+        if repoid not in etpConst['server_repositories']:
+            raise exceptionTools.PermissionDenied("PermissionDenied: %s repository not configured" % (
+                        repoid,
+                    )
+            )
         self.close_server_databases()
         etpConst['officialrepositoryid'] = repoid
         self.default_repository = repoid
         self.setup_services()
-        if self.do_save_repository:
+        if save:
             self.save_default_repository(repoid)
 
         self.show_interface_status()
