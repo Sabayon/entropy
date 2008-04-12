@@ -52,13 +52,21 @@ def inject(options):
 def repositories(options):
 
     repoid = None
+    repoid_dest = None
     cmd = options[0]
     myopts = []
     for opt in options:
         if cmd in ["enable","disable"]:
             repoid = opt
+        elif cmd == "move":
+            if repoid == None:
+                repoid = opt
+            elif repoid_dest == None:
+                repoid_dest == opt
+        else:
+            myopts.append(opt)
 
-    if cmd in ["enable","disable"] and not repoid:
+    if cmd in ["enable","disable","move"] and not repoid:
         print_error(darkred(" !!! ")+red("No valid repositories specified."))
         return 2
 
@@ -88,6 +96,29 @@ def repositories(options):
             return 127
     elif cmd == "status":
         return 0
+    elif cmd == "move":
+        # from repo: repoid
+        # to repo: repoid_dest
+        # atoms: myopts
+        if "world" in myopts:
+            matches = []
+        else:
+            # match
+            for package in myopts:
+                match = Entropy.atomMatch(package)
+                if (match[1] == from_repo):
+                    matches.append(match)
+                else:
+                    print_warning(  brown(" * ") + \
+                                    red("Cannot match: ")+bold(package) + \
+                                    red(" in ")+bold(from_repo)+red(" repository")
+                                 )
+            if not matches:
+                return 1
+        rc = Entropy.move_packages(matches, repoid_dest, from_repo)
+        if rc:
+            return 0
+        return 1
 
     return 1
 
