@@ -11499,7 +11499,7 @@ class ServerInterface(TextInterface):
         if ask:
             rc = self.askQuestion("Would you like to continue ?")
             if rc == "No":
-                return set()
+                return switched
 
         for match in matches:
             idpackage = match[0]

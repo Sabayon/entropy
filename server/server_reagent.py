@@ -97,12 +97,11 @@ def repositories(options):
     elif cmd == "status":
         return 0
     elif cmd == "move":
+        matches = []
         # from repo: repoid
         # to repo: repoid_dest
         # atoms: myopts
-        if "world" in myopts:
-            matches = []
-        else:
+        if "world" not in myopts:
             # match
             for package in myopts:
                 match = Entropy.atomMatch(package)
