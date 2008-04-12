@@ -1924,7 +1924,7 @@ class EquoInterface(TextInterface):
             try:
                 data = {}
                 data['chash'] = c_hash
-                data['available'] = tuple(available)
+                data['available'] = available
                 self.dumpTools.dumpobj(etpCache['world_available'],data)
             except IOError:
                 pass
@@ -2041,7 +2041,7 @@ class EquoInterface(TextInterface):
                      str(hash(branch))
             c_hash = str(hash(c_hash))
             data = {}
-            data['r'] = (tuple(update), tuple(remove), tuple(fine))
+            data['r'] = (update, remove, fine,)
             data['empty_deps'] = empty_deps
             try:
                 self.dumpTools.dumpobj(etpCache['world_update']+c_hash, data)
@@ -11545,13 +11545,13 @@ class ServerInterface(TextInterface):
             if not os.path.isdir(os.path.dirname(to_file)):
                 os.makedirs(os.path.dirname(to_file))
 
-            move_data = [
+            copy_data = [
                             (from_file,to_file,),
                             (from_file+etpConst['packageshashfileext'],to_file+etpConst['packageshashfileext'],),
                             (from_file+etpConst['packagesexpirationfileext'],to_file+etpConst['packagesexpirationfileext'],)
                         ]
 
-            for from_item,to_item in move_data:
+            for from_item,to_item in copy_data:
                 self.updateProgress(
                         "[%s=>%s|%s] %s: %s" % (
                                 darkgreen(repo),
@@ -11566,7 +11566,7 @@ class ServerInterface(TextInterface):
                         back = True
                 )
                 if os.path.isfile(from_item):
-                    shutil.move(from_item,to_item)
+                    shutil.copy2(from_item,to_item)
 
             self.updateProgress(
                     "[%s=>%s|%s] %s: %s" % (
