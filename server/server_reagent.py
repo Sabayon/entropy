@@ -55,14 +55,16 @@ def repositories(options):
     repoid_dest = None
     cmd = options[0]
     myopts = []
-    for opt in options:
+    for opt in options[1:]:
         if cmd in ["enable","disable"]:
             repoid = opt
         elif cmd == "move":
             if repoid == None:
                 repoid = opt
             elif repoid_dest == None:
-                repoid_dest == opt
+                repoid_dest = opt
+            else:
+                myopts.append(opt)
         else:
             myopts.append(opt)
 
@@ -105,16 +107,16 @@ def repositories(options):
             # match
             for package in myopts:
                 match = Entropy.atomMatch(package)
-                if (match[1] == from_repo):
+                if (match[1] == repoid):
                     matches.append(match)
                 else:
                     print_warning(  brown(" * ") + \
                                     red("Cannot match: ")+bold(package) + \
-                                    red(" in ")+bold(from_repo)+red(" repository")
+                                    red(" in ")+bold(repoid)+red(" repository")
                                  )
             if not matches:
                 return 1
-        rc = Entropy.move_packages(matches, repoid_dest, from_repo)
+        rc = Entropy.move_packages(matches, repoid_dest, repoid)
         if rc:
             return 0
         return 1
