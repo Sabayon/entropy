@@ -1102,7 +1102,7 @@ class etpDatabase:
             return self.addPackage(etpData, revision = curRevision)
 
 
-    def removePackage(self,idpackage):
+    def removePackage(self,idpackage, trash_counter = True):
 
         self.checkReadOnly()
         self.live_cache.clear()
@@ -1132,7 +1132,7 @@ class etpDatabase:
             # save
             dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
 
-        if not self.clientDatabase:
+        if not self.clientDatabase and trash_counter:
             trashed_counter = self.retrieveCounter(idpackage)
             self.setTrashedCounter(trashed_counter)
 

@@ -11423,7 +11423,6 @@ class ServerInterface(TextInterface):
         dbconn.taintDatabase()
         dbconn.commitChanges()
 
-
     def create_empty_database(self, dbpath = None, repo = None):
         if dbpath == None:
             dbpath = self.get_local_database_file(repo)
@@ -11449,6 +11448,193 @@ class ServerInterface(TextInterface):
                                 type = "info",
                                 header = darkgreen(" * ")
                             )
+
+    def move_packages(self, matches, to_repo, from_repo = None, branch = etpConst['branch'], ask = True):
+
+        switched = set()
+
+        if not matches and from_repo:
+            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = from_repo)
+            matches = set( \
+                [(x,from_repo) for x in \
+                    dbconn.listAllIdpackages(branch = branch, branch_operator = "<=")]
+            )
+
+        self.updateProgress(
+                "%s %s:" % (
+                        blue("Preparing to move selected packages to"),
+                        red(to_repo),
+                ),
+                importance = 2,
+                type = "info",
+                header = red(" @@ ")
+        )
+        self.updateProgress(
+                "%s: %s" % (
+                        bold("Note"),
+                        red("all the old packages with conflicting scope will"
+                        " be removed from the destination repo unless injected"),
+                ),
+                importance = 1,
+                type = "info",
+                header = red(" @@ ")
+        )
+
+        for match in matches:
+            repo = match[1]
+            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+            self.updateProgress(
+                    "[%s=>%s|%s] %s" % (
+                            darkgreen(repo),
+                            darkred(to_repo),
+                            brown(branch),
+                            blue(dbconn.retrieveAtom(match[0])),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = brown("    # ")
+            )
+
+
+        if ask:
+            rc = self.askQuestion("Would you like to continue ?")
+            if rc == "No":
+                return set()
+
+        for match in matches:
+            idpackage = match[0]
+            repo = match[1]
+            dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+            match_branch = dbconn.retrieveBranch(idpackage)
+            match_atom = dbconn.retrieveAtom(idpackage)
+            package_filename = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
+            self.updateProgress(
+                    "[%s=>%s|%s] %s: %s" % (
+                            darkgreen(repo),
+                            darkred(to_repo),
+                            brown(branch),
+                            blue("switching"),
+                            darkgreen(match_atom),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = red(" @@ "),
+                    back = True
+            )
+            # move binary file
+            from_file = os.path.join(self.get_local_packages_directory(repo),match_branch,package_filename)
+            if not os.path.isfile(from_file):
+                from_file = os.path.join(self.get_local_upload_directory(repo),match_branch,package_filename)
+            if not os.path.isfile(from_file):
+                self.updateProgress(
+                        "[%s=>%s|%s] %s: %s -> %s" % (
+                                darkgreen(repo),
+                                darkred(to_repo),
+                                brown(branch),
+                                bold("cannot switch package not found, skipping"),
+                                darkgreen(),
+                                red(from_file),
+                        ),
+                        importance = 1,
+                        type = "warning",
+                        header = darkred(" !!! ")
+                )
+                continue
+
+            to_file = os.path.join(self.get_local_upload_directory(to_repo),match_branch,package_filename)
+            if not os.path.isdir(os.path.dirname(to_file)):
+                os.makedirs(os.path.dirname(to_file))
+
+            move_data = [
+                            (from_file,to_file,),
+                            (from_file+etpConst['packageshashfileext'],to_file+etpConst['packageshashfileext'],),
+                            (from_file+etpConst['packagesexpirationfileext'],to_file+etpConst['packagesexpirationfileext'],)
+                        ]
+
+            for from_item,to_item in move_data:
+                self.updateProgress(
+                        "[%s=>%s|%s] %s: %s" % (
+                                darkgreen(repo),
+                                darkred(to_repo),
+                                brown(branch),
+                                blue("moving file"),
+                                darkgreen(os.path.basename(from_item)),
+                        ),
+                        importance = 0,
+                        type = "info",
+                        header = red(" @@ "),
+                        back = True
+                )
+                if os.path.isfile(from_item):
+                    shutil.move(from_item,to_item)
+
+            self.updateProgress(
+                    "[%s=>%s|%s] %s: %s" % (
+                            darkgreen(repo),
+                            darkred(to_repo),
+                            brown(branch),
+                            blue("loading data from source database"),
+                            darkgreen(repo),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = red(" @@ "),
+                    back = True
+            )
+            # install package into destination db
+            data = dbconn.getPackageData(idpackage)
+            todbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = to_repo)
+
+            self.updateProgress(
+                    "[%s=>%s|%s] %s: %s" % (
+                            darkgreen(repo),
+                            darkred(to_repo),
+                            brown(branch),
+                            blue("injecting data to destination database"),
+                            darkgreen(to_repo),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = red(" @@ "),
+                    back = True
+            )
+            new_idpackage, new_revision, new_data = todbconn.handlePackage(data)
+            del data
+            todbconn.commitChanges()
+
+            self.updateProgress(
+                    "[%s=>%s|%s] %s: %s" % (
+                            darkgreen(repo),
+                            darkred(to_repo),
+                            brown(branch),
+                            blue("removing entry from source database"),
+                            darkgreen(repo),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = red(" @@ "),
+                    back = True
+            )
+
+            # remove package from old db
+            dbconn.removePackage(idpackage, trash_counter = False)
+            dbconn.commitChanges()
+
+            self.updateProgress(
+                    "[%s=>%s|%s] %s: %s" % (
+                            darkgreen(repo),
+                            darkred(to_repo),
+                            brown(branch),
+                            blue("successfully moved atom"),
+                            darkgreen(match_atom),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = blue(" @@ ")
+            )
+            switched.add(match)
+
+        return switched
 
 
     def package_injector(self, package_file, branch = etpConst['branch'], inject = False, repo = None):

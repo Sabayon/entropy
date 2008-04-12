@@ -60,6 +60,7 @@ def repositories(options):
 
     if cmd in ["enable","disable"] and not repoid:
         print_error(darkred(" !!! ")+red("No valid repositories specified."))
+        return 2
 
     if cmd == "enable":
         print_info(brown(" @@ ")+red("Enabling ")+bold(str(repoid))+red(" repository..."), back = True)
