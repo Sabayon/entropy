@@ -6110,8 +6110,9 @@ class urlFetcher:
         self.entropyTools = entropyTools
         self.socket = socket
         self.progress = None
-        self.user_agent = "Entropy/%s (compatible; %s; %s %s %s)" % (
+        self.user_agent = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
                                         etpConst['entropyversion'],
+                                        "Entropy",
                                         os.path.basename(self.url),
                                         os.uname()[0],
                                         os.uname()[4],
