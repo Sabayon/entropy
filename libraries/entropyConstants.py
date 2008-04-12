@@ -1162,6 +1162,8 @@ def const_readServerSettings():
     if not os.access(etpConst['serverconf'],os.R_OK):
         return
 
+    etpConst['server_repositories'].clear()
+
     f = open(etpConst['serverconf'],"r")
     serverconf = f.readlines()
     f.close()

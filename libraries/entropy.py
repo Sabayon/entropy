@@ -11164,6 +11164,10 @@ class ServerInterface(TextInterface):
         f.flush()
         f.close()
         shutil.move(tmpfile,etpConst['serverconf'])
+        if status:
+            self.close_server_databases()
+            const_readServerSettings()
+            self.setup_services()
         return status
 
     def backup_entropy_settings(self):
