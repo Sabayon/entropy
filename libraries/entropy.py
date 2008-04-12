@@ -6096,6 +6096,8 @@ class FtpInterface:
 
 class urlFetcher:
 
+    import entropyTools
+    import socket
     def __init__(self, url, pathToSave, checksum = True, showSpeed = True, resume = True):
 
         self.url = url
@@ -6105,10 +6107,6 @@ class urlFetcher:
         self.checksum = checksum
         self.showSpeed = showSpeed
         self.initVars()
-        import entropyTools
-        import socket
-        self.entropyTools = entropyTools
-        self.socket = socket
         self.progress = None
         self.user_agent = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
                                         etpConst['entropyversion'],
@@ -11143,6 +11141,30 @@ class ServerInterface(TextInterface):
             f.flush()
             f.close()
 
+    def toggle_repository(self, repoid, enable = True):
+        if not os.path.isfile(etpConst['serverconf']):
+            return None
+        f = open(etpConst['serverconf'])
+        tmpfile = etpConst['serverconf']+".switch"
+        mycontent = [x.strip() for x in f.readlines()]
+        f.close()
+        f = open(tmpfile,"w")
+        st = "repository|%s" % (repoid,)
+        status = False
+        for line in mycontent:
+            if enable:
+                if (line.find(st) != -1) and line.startswith("#"):
+                    line = line[1:]
+                    status = True
+            else:
+                if (line.find(st) != -1) and not line.startswith("#"):
+                    line = "#"+line
+                    status = True
+            f.write(line+"\n")
+        f.flush()
+        f.close()
+        shutil.move(tmpfile,etpConst['serverconf'])
+        return status
 
     def backup_entropy_settings(self):
         for setting in self.settings_to_backup:
