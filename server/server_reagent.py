@@ -49,6 +49,46 @@ def inject(options):
         Entropy.dependencies_test()
     Entropy.close_server_databases()
 
+def repositories(options):
+
+    repoid = None
+    cmd = options[0]
+    myopts = []
+    for opt in options:
+        if cmd in ["enable","disable"]:
+            repoid = opt
+
+    if cmd in ["enable","disable"] and (repoid not in etpConst['server_repositories']):
+        print_error(darkred(" !!! ")+red("No valid repositories specified."))
+
+    if cmd == "enable":
+        print_info(brown(" @@ ")+red("Enabling ")+bold(str(repoid))+red(" repository..."), back = True)
+        rc = Entropy.toggle_repository(repoid, enable = True)
+        if rc:
+            print_info(brown(" @@ ")+red("Enabled ")+bold(str(repoid))+red(" repository."))
+            return 0
+        elif rc == False:
+            print_info(brown(" @@ ")+red("Repository ")+bold(str(repoid))+red(" already enabled."))
+            return 1
+        else:
+            print_info(brown(" @@ ")+red("Configuration file ")+bold(etpConst['serverconf'])+red(" not found."))
+            return 127
+    elif cmd == "disable":
+        print_info(brown(" @@ ")+red("Disabling ")+bold(str(repoid))+red(" repository..."), back = True)
+        rc = Entropy.toggle_repository(repoid, enable = False)
+        if rc:
+            print_info(brown(" @@ ")+red("Disabled ")+bold(str(repoid))+red(" repository."))
+            return 0
+        elif rc == False:
+            print_info(brown(" @@ ")+red("Repository ")+bold(str(repoid))+red(" already disabled."))
+            return 1
+        else:
+            print_info(brown(" @@ ")+red("Configuration file ")+bold(etpConst['serverconf'])+red(" not found."))
+            return 127
+    elif cmd == "status":
+        return 0
+
+    return 1
 
 def update(options):
 

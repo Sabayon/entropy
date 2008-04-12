@@ -11089,6 +11089,10 @@ class ServerInterface(TextInterface):
         if self.do_save_repository:
             self.save_default_repository(repoid)
 
+        self.show_interface_status()
+
+
+    def show_interface_status(self):
         self.updateProgress(
                 blue("Entropy Server Interface Instance on repository: %s" % (
                         red(self.default_repository),
@@ -11153,11 +11157,11 @@ class ServerInterface(TextInterface):
         status = False
         for line in mycontent:
             if enable:
-                if (line.find(st) != -1) and line.startswith("#"):
+                if (line.find(st) != -1) and line.startswith("#") and (len(line.split("|")) == 5):
                     line = line[1:]
                     status = True
             else:
-                if (line.find(st) != -1) and not line.startswith("#"):
+                if (line.find(st) != -1) and not line.startswith("#") and (len(line.split("|")) == 5):
                     line = "#"+line
                     status = True
             f.write(line+"\n")
@@ -11168,6 +11172,7 @@ class ServerInterface(TextInterface):
             self.close_server_databases()
             const_readServerSettings()
             self.setup_services()
+            self.show_interface_status()
         return status
 
     def backup_entropy_settings(self):

@@ -79,6 +79,11 @@ def print_help():
     print_info(" \t\t"+green("md5check")+"\t\t\t Check digest of a package, a list of packages, world")
     print_info(" \t\t"+green("md5remote")+"\t\t\t Compare digest of a package between database and mirrors")
 
+    print_info(" \t"+green("repo")+brown("\t\t Repositories Manager"))
+    print_info(" \t\t"+red("enable <repo_id>")+"\t\t enable the specified repository")
+    print_info(" \t\t"+red("disable <repo_id>")+"\t\t disable the specified repository")
+    print_info(" \t\t"+red("status")+"\t\t\t\t show current Server Interface status")
+
     print_info(" \t"+green("spm")+brown("\t\t Source Package Manager tool manager"))
     print_info(" \t\t"+green("compile")+"\t\t\t Start SPM and compile something")
     print_info(" \t\t\t"+red("categories")+"\t compile provided categories")
@@ -153,7 +158,11 @@ elif (options[0] == "query"):
     rc = server_query.query(options[1:])
     sys.exit(rc)
 
-# deptest tool
+elif (options[0] == "repo"):
+    import server_reagent
+    rc = server_reagent.repositories(options[1:])
+    sys.exit(rc)
+
 elif (options[0] == "deptest"):
     import server_reagent
     server_reagent.Entropy.dependencies_test()
