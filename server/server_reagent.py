@@ -58,7 +58,7 @@ def repositories(options):
         if cmd in ["enable","disable"]:
             repoid = opt
 
-    if cmd in ["enable","disable"] and (repoid not in etpConst['server_repositories']):
+    if cmd in ["enable","disable"] and not repoid:
         print_error(darkred(" !!! ")+red("No valid repositories specified."))
 
     if cmd == "enable":
