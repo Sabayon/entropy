@@ -3381,12 +3381,17 @@ class etpDatabase:
         self.createLicensedataIndex()
         self.createLicensesIndex()
         self.createConfigProtectReferenceIndex()
+        self.createMessagesIndex()
 
     def createNeededIndex(self):
         if self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( library )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed ( idneeded )')
             self.commitChanges()
+
+    def createMessagesIndex(self):
+        if self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS messagesindex ON messages ( idpackage )')
 
     def createUseflagsIndex(self):
         if self.indexing:
@@ -3554,7 +3559,7 @@ class etpDatabase:
         self.cursor.execute('UPDATE baseinfo SET trigger = 0')
 
     def createMessagesTable(self):
-        self.cursor.execute("CREATE TABLE messages ( idpackage INTEGER, message VARCHAR);")
+        self.cursor.execute("CREATE TABLE messages ( idpackage INTEGER, message VARCHAR );")
 
     def createEclassesTable(self):
         self.cursor.execute('DROP TABLE IF EXISTS eclasses;')

@@ -55,10 +55,6 @@ class EquoInterface(TextInterface):
         self.repoDbCache = {}
         self.securityCache = {}
         self.spmCache = {}
-        #self.stdout = fakeoutfile(sys.stdout.fileno())
-        #self.stderr = fakeoutfile(sys.stderr.fileno())
-        #self.stdout.connect_progress(self.updateProgress)
-        #self.stderr.connect_progress(self.updateProgress)
 
         self.clientLog = LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[client]")
         import dumpTools
@@ -4478,6 +4474,11 @@ class PackageInterface:
         # we don't care if cleanupPackage fails since it's not critical
         return 0
 
+    def logmessages_step(self):
+        for msg in self.infoDict['messages']:
+            self.Entropy.clientLog.write(">>>  "+msg)
+        return 0
+
     def messages_step(self):
         self.error_on_not_prepared()
         # get messages
@@ -4627,6 +4628,9 @@ class PackageInterface:
 
             elif step == "showmessages":
                 rc = self.messages_step()
+
+            elif step == "logmessages":
+                rc = self.logmessages_step()
 
             elif step == "cleanup":
                 self.xterm_title += ' Cleaning: '+self.infoDict['atom']
@@ -4868,6 +4872,8 @@ class PackageInterface:
         self.infoDict['steps'].append("postinstall")
         if not etpConst['gentoo-compat']: # otherwise gentoo triggers will show that
             self.infoDict['steps'].append("showmessages")
+        else:
+            self.infoDict['steps'].append("logmessages")
         self.infoDict['steps'].append("cleanup")
 
         self.infoDict['triggers']['install'] = dbconn.getTriggerInfo(idpackage)
@@ -8333,105 +8339,6 @@ class PackageMaskingParser:
                 self.__removeRepoCache(repoid = repoid)
                 self.__saveFileMtime(maskfile,mtimefile)
 
-class fakeoutfile:
-    """
-    A general purpose fake output file object.
-    """
-
-    def __init__(self, fn):
-        self.fn = fn
-        self.updateProgress = None
-        self.text_written = []
-
-    def close(self):
-        pass
-
-    def flush(self):
-        self.close()
-
-    def fileno(self):
-        return self.fn
-
-    def isatty(self):
-        return False
-
-    def read(self, a):
-        return ''
-
-    def readline(self):
-        return ''
-
-    def readlines(self):
-        return []
-
-    def connect_progress(self, f):
-        self.updateProgress = f
-
-    def write(self, s):
-        os.write(self.fn,s)
-        self.text_written.append(s)
-        # cut at 1024 entries
-        if len(self.text_written) > 1024:
-            self.text_written = self.text_written[-1024:]
-        if self.updateProgress:
-            self.updateProgress(s)
-
-    def write_line(self, s):
-        self.write(s)
-
-    def writelines(self, l):
-        for s in l:
-            self.write(s)
-
-    def seek(self, a):
-        raise IOError, (29, 'Illegal seek')
-
-    def tell(self):
-        raise IOError, (29, 'Illegal seek')
-
-    def truncate(self):
-        self.tell()
-
-class fakeinfile:
-    """
-    A general purpose fake input file object.
-    """
-    def __init__(self, fn):
-        self.fn = fn
-
-    def close(self):
-        pass
-
-    flush = close
-
-    def fileno(self):
-        return self.fn
-
-    def isatty(self):
-        return False
-
-    def read(self, a):
-        return self.readline()
-
-    def readline(self):
-        return os.read(self.fn,2048)
-
-    def readlines(self): return []
-
-    def write(self, s):
-        return None
-
-    def writelines(self, l):
-        return None
-
-    def seek(self, a):
-        raise IOError, (29, 'Illegal seek')
-
-    def tell(self):
-        raise IOError, (29, 'Illegal seek')
-
-    truncate = tell
-
 class Callable:
     def __init__(self, anycallable):
         self.__call__ = anycallable
@@ -10100,6 +10007,33 @@ class LogFile:
         except:
             pass
 
+    def flush(self):
+        self.logFile.flush()
+
+    def fileno(self):
+        return self.getFile()
+
+    def isatty(self):
+        return False
+
+    def read(self, a):
+        return ''
+
+    def readline(self):
+        return ''
+
+    def readlines(self):
+        return []
+
+    def seek(self, a):
+        return self.logFile.seek(a)
+
+    def tell(self):
+        return self.logFile.tell()
+
+    def truncate(self):
+        return self.logFile.truncate()
+
     def open (self, file = None):
         if type(file) == type("hello"):
             try:
@@ -10112,7 +10046,7 @@ class LogFile:
             self.logFile = sys.stderr
 
     def getFile (self):
-        return self.logFile.fileno ()
+        return self.logFile.fileno()
 
     def __call__(self, format, *args):
         self.handler (format % args)
@@ -10127,6 +10061,13 @@ class LogFile:
     def log(self, messagetype, level, message):
         if self.level >= level and not etpUi['nolog']:
             self.handler(self.getTimeDateHeader()+messagetype+' '+self.header+' '+message)
+
+    def write(self, s):
+        self.handler(s)
+
+    def writelines(self, lst):
+        for s in lst:
+            self.write(s)
 
     def getTimeDateHeader(self):
         return time.strftime('[%X %x %Z] ')
