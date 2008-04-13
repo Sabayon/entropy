@@ -55,6 +55,10 @@ class EquoInterface(TextInterface):
         self.repoDbCache = {}
         self.securityCache = {}
         self.spmCache = {}
+        #self.stdout = fakeoutfile(sys.stdout.fileno())
+        #self.stderr = fakeoutfile(sys.stderr.fileno())
+        #self.stdout.connect_progress(self.updateProgress)
+        #self.stderr.connect_progress(self.updateProgress)
 
         self.clientLog = LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[client]")
         import dumpTools
@@ -991,7 +995,8 @@ class EquoInterface(TextInterface):
                             matchRevision = None,
                             matchRepo = None,
                             server_repos = [],
-                            serverInstance = None
+                            serverInstance = None,
+                            extendedResults = False
                                                         ):
 
         if not server_repos:
@@ -1017,6 +1022,7 @@ class EquoInterface(TextInterface):
                         str(hash(multiRepo)) + \
                         str(hash(caseSensitive)) + \
                         str(hash(matchRevision)) + \
+                        str(hash(extendedResults))+ \
                         str(u_hash)
             c_hash = str(hash(c_hash))
             cached = self.dumpTools.loadobj(etpCache['atomMatch']+c_hash)
@@ -1036,7 +1042,7 @@ class EquoInterface(TextInterface):
             if server_repos:
                 dbconn = serverInstance.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
             else:
-                dbconn = self.openRepositoryDatabase(repo)
+                dbconn = self.openRepositoryDatabase(repoid)
             return dbconn
 
         repoResults = {}
@@ -1050,19 +1056,29 @@ class EquoInterface(TextInterface):
 
             # search
             dbconn = open_db(repo)
-            query = dbconn.atomMatch(atom, caseSensitive = caseSensitive, matchSlot = matchSlot, matchBranches = matchBranches, packagesFilter = packagesFilter, matchRevision = matchRevision)
+            query = dbconn.atomMatch(   atom,
+                                        caseSensitive = caseSensitive,
+                                        matchSlot = matchSlot,
+                                        matchBranches = matchBranches,
+                                        packagesFilter = packagesFilter,
+                                        matchRevision = matchRevision,
+                                        extendedResults = extendedResults
+            )
             if query[1] == 0:
                 # package found, add to our dictionary
-                repoResults[repo] = query[0]
+                if extendedResults:
+                    repoResults[repo] = (query[0][0],query[0][2],query[0][3],query[0][4])
+                else:
+                    repoResults[repo] = query[0]
 
-        dbpkginfo = (-1,1)
-
-        packageInformation = {}
-        # nothing found
-        if not repoResults:
+        if extendedResults:
+            dbpkginfo = ((-1,None,None,None),1)
+        else:
             dbpkginfo = (-1,1)
 
-        elif multiRepo:
+        packageInformation = {}
+
+        if multiRepo and repoResults:
             data = set()
             for repoid in repoResults:
                 data.add((repoResults[repoid],repoid))
@@ -1089,15 +1105,22 @@ class EquoInterface(TextInterface):
             version_duplicates = set()
             versions = []
             for repo in repoResults:
-                dbconn = open_db(repo)
                 packageInformation[repo] = {}
-                version = dbconn.retrieveVersion(repoResults[repo])
+                if extendedResults:
+                    version = repoResults[repo][1]
+                    packageInformation[repo]['versiontag'] = repoResults[repo][2]
+                    packageInformation[repo]['revision'] = repoResults[repo][3]
+                    packageInformation[repo]['version'] = version
+                else:
+                    dbconn = open_db(repo)
+                    packageInformation[repo]['versiontag'] = dbconn.retrieveVersionTag(repoResults[repo])
+                    packageInformation[repo]['revision'] = dbconn.retrieveRevision(repoResults[repo])
+                    version = dbconn.retrieveVersion(repoResults[repo])
                 packageInformation[repo]['version'] = version
                 if version in versions:
                     version_duplicates.add(version)
                 versions.append(version)
-                packageInformation[repo]['versiontag'] = dbconn.retrieveVersionTag(repoResults[repo])
-                packageInformation[repo]['revision'] = dbconn.retrieveRevision(repoResults[repo])
+
 
             newerVersion = self.entropyTools.getNewerVersion(versions)[0]
             # if no duplicates are found, we're done
@@ -1191,10 +1214,15 @@ class EquoInterface(TextInterface):
                                                     matchSlot = matchSlot,
                                                     matchBranches = matchBranches,
                                                     packagesFilter = packagesFilter,
-                                                    multiMatch = True
+                                                    multiMatch = True,
+                                                    extendedResults = extendedResults
                                                    )
-                        for repoidpackage in matches[0]:
-                            data.add((repoidpackage,match[1]))
+                        if extendedResults:
+                            for item in matches[0]:
+                                data.add(((item[0],item[2],item[3],item[4]),match[1]))
+                        else:
+                            for repoidpackage in matches[0]:
+                                data.add((repoidpackage,match[1]))
                     dbpkginfo = (data,0)
                 else:
                     dbconn = open_db(dbpkginfo[1])
@@ -1204,9 +1232,13 @@ class EquoInterface(TextInterface):
                                                 matchSlot = matchSlot,
                                                 matchBranches = matchBranches,
                                                 packagesFilter = packagesFilter,
-                                                multiMatch = True
+                                                multiMatch = True,
+                                                extendedResults = extendedResults
                                                )
-                    dbpkginfo = (set([(x,dbpkginfo[1]) for x in matches[0]]),0)
+                    if extendedResults:
+                        dbpkginfo = (set([((x[0],x[2],x[3],x[4]),dbpkginfo[1]) for x in matches[0]]),0)
+                    else:
+                        dbpkginfo = (set([(x,dbpkginfo[1]) for x in matches[0]]),0)
 
         if self.xcache:
             try:
@@ -1966,72 +1998,56 @@ class EquoInterface(TextInterface):
         maxlen = len(idpackages)
         count = 0
         for idpackage in idpackages:
+
             count += 1
             if (count%10 == 0) or (count == maxlen) or (count == 1):
                 self.updateProgress("Calculating world packages", importance = 0, type = "info", back = True, header = ":: ", count = (count,maxlen), percent = True, footer = " ::")
-            tainted = False
-            myscopedata = self.clientDbconn.getScopeData(idpackage)
-            # check against broken entry
-            if myscopedata == None:
+
+            mystrictdata = self.clientDbconn.getStrictData(idpackage)
+            # check against broken entries
+            if mystrictdata == None:
                 continue
-            #atom = myscopedata[0]
-            #category = myscopedata[1]
-            #name = myscopedata[2]
-            #slot = myscopedata[4]
-            #revision = myscopedata[6]
-            #atomkey = myscopedata[1]+"/"+myscopedata[2]
-            # search in the packages
-            match = self.atomMatch(myscopedata[0])
-            if match[0] == -1: # atom has been changed, or removed?
-                tainted = True
-            else: # not changed, is the revision changed?
-                adbconn = self.openRepositoryDatabase(match[1])
-                arevision = adbconn.retrieveRevision(match[0])
-                # if revision is 9999, then any revision is fine
-                if myscopedata[6] == 9999: arevision = 9999
+            match = self.atomMatch(     mystrictdata[0],
+                                        matchSlot = mystrictdata[1],
+                                        matchBranches = (branch,),
+                                        extendedResults = True
+                                  )
+            # now compare
+            # version: mystrictdata[2]
+            # tag: mystrictdata[3]
+            # revision: mystrictdata[4]
+            if (match[0][0] != -1):
+                # version: match[0][1]
+                # tag: match[0][2]
+                # revision: match[0][3]
                 if empty_deps:
-                    tainted = True
-                elif myscopedata[6] != arevision:
-                    tainted = True
-                '''
-                elif (myscopedata[6] == arevision) and (arevision == 9999):
-                    # check if "needed" are the same, otherwise, pull
-                    # this will avoid having old packages installed just because user ran equo database generate (migrating from gentoo)
-                    # also this helps in environments with multiple repositories, to avoid messing with libraries
-                    aneeded = adbconn.retrieveNeeded(match[0])
-                    needed = self.clientDbconn.retrieveNeeded(idpackage)
-                    if needed != aneeded:
-                        tainted = True
-                    #
-                    else:
-                        # check use flags too
-                        # it helps for the same reason above and when doing upgrades to different branches
-                        auseflags = adbconn.retrieveUseflags(match[0])
-                        useflags = self.clientDbconn.retrieveUseflags(idpackage)
-                        if auseflags != useflags:
-                            tainted = True
-                    #
-                '''
-            if (tainted):
-                # Alice! use the key! ... and the slot
-                matchresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchSlot = myscopedata[4], matchBranches = (branch,))
-                if matchresults[0] != -1:
-                    #mdbconn = self.openRepositoryDatabase(matchresults[1])
-                    update.append(matchresults)
+                    update.append((match[0][0],match[1]))
+                    continue
+                elif (mystrictdata[2] != match[0][1]):
+                    # different versions
+                    update.append((match[0][0],match[1]))
+                    continue
+                elif (mystrictdata[3] != match[0][2]):
+                    # different tags
+                    update.append((match[0][0],match[1]))
+                    continue
+                elif (mystrictdata[4] != 9999) and (mystrictdata[4] != match[0][3]):
+                    # different revision
+                    update.append((match[0][0],match[1]))
+                    continue
                 else:
-                    # don't take action if it's just masked
-                    maskedresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchSlot = myscopedata[4], matchBranches = (branch,), packagesFilter = False)
-                    if maskedresults[0] == -1:
-                        remove.append(idpackage)
-                        # look for packages that would match key with any slot (for eg, gcc updates)
-                        matchresults = self.atomMatch(myscopedata[1]+"/"+myscopedata[2], matchBranches = (branch,))
-                        if matchresults[0] != -1:
-                            update.append(matchresults)
+                    # no difference
+                    fine.append(mystrictdata[5])
+                    continue
 
-            else:
-                fine.append(myscopedata[0])
-
-        del idpackages
+            # don't take action if it's just masked
+            maskedresults = self.atomMatch(mystrictdata[0], matchSlot = mystrictdata[1], matchBranches = (branch,), packagesFilter = False)
+            if maskedresults[0] == -1:
+                remove.append(idpackage)
+                # look for packages that would match key with any slot (for eg, gcc updates)
+                matchresults = self.atomMatch(mystrictdata[0], matchBranches = (branch,))
+                if matchresults[0] != -1:
+                    update.append(matchresults)
 
         if self.xcache:
             c_hash = str(hash(db_digest)) + \
@@ -3876,7 +3892,8 @@ class PackageInterface:
                             slot = self.infoDict['slot']
                             matches = self.Entropy.atomMatch(key, matchSlot = slot, multiRepo = True, multiMatch = True)
                             if matches[1] == 0:
-                                disk_cache['available'].update(matches[0])
+                                if matches[0] not in disk_cache['available']:
+                                    disk_cache['available'].append(matches[0])
 
                         # install, doing here because matches[0] could contain self.matched_atoms
                         if self.matched_atom in disk_cache['available']:
@@ -7424,16 +7441,35 @@ class TriggerInterface:
                                     header = red("   ##")
                                 )
             try:
+
                 if not os.path.isfile(self.pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"):
                     # if environment is not yet created, we need to run pkg_setup()
                     sys.stdout = stdfile
-                    rc = self.Spm.spm_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
+                    rc = self.Spm.spm_doebuild( myebuild,
+                                                mydo = "setup",
+                                                tree = "bintree",
+                                                cpv = portage_atom,
+                                                portage_tmpdir = self.pkgdata['unpackdir'],
+                                                licenses = self.pkgdata['accept_license']
+                                              )
                     if rc == 1:
-                        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
+                        self.Entropy.clientLog.log( ETP_LOGPRI_INFO,
+                                                    ETP_LOGLEVEL_NORMAL,
+                                                    "[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_setup())"
+                                                    " trigger for "+str(portage_atom)+". Something bad happened."
+                                                  )
                     sys.stdout = oldstdout
-                rc = self.Spm.spm_doebuild(myebuild, mydo = "postinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
+
+                rc = self.Spm.spm_doebuild( myebuild,
+                                            mydo = "postinst",
+                                            tree = "bintree",
+                                            cpv = portage_atom,
+                                            portage_tmpdir = self.pkgdata['unpackdir'],
+                                            licenses = self.pkgdata['accept_license']
+                                           )
                 if rc == 1:
                     self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_postinst()) trigger for "+str(portage_atom)+". Something bad happened.")
+
             except Exception, e:
                 sys.stdout = oldstdout
                 self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
@@ -8297,6 +8333,104 @@ class PackageMaskingParser:
                 self.__removeRepoCache(repoid = repoid)
                 self.__saveFileMtime(maskfile,mtimefile)
 
+class fakeoutfile:
+    """
+    A general purpose fake output file object.
+    """
+
+    def __init__(self, fn):
+        self.fn = fn
+        self.updateProgress = None
+        self.text_written = []
+
+    def close(self):
+        pass
+
+    def flush(self):
+        self.close()
+
+    def fileno(self):
+        return self.fn
+
+    def isatty(self):
+        return False
+
+    def read(self, a):
+        return ''
+
+    def readline(self):
+        return ''
+
+    def readlines(self):
+        return []
+
+    def connect_progress(self, f):
+        self.updateProgress = f
+
+    def write(self, s):
+        os.write(self.fn,s)
+        self.text_written.append(s)
+        # cut at 1024 entries
+        if len(self.text_written) > 1024:
+            self.text_written = self.text_written[-1024:]
+        if self.updateProgress:
+            self.updateProgress(s)
+
+    def write_line(self, s):
+        self.write(s)
+
+    def writelines(self, l):
+        for s in l:
+            self.write(s)
+
+    def seek(self, a):
+        raise IOError, (29, 'Illegal seek')
+
+    def tell(self):
+        raise IOError, (29, 'Illegal seek')
+
+    def truncate(self):
+        self.tell()
+
+class fakeinfile:
+    """
+    A general purpose fake input file object.
+    """
+    def __init__(self, fn):
+        self.fn = fn
+
+    def close(self):
+        pass
+
+    flush = close
+
+    def fileno(self):
+        return self.fn
+
+    def isatty(self):
+        return False
+
+    def read(self, a):
+        return self.readline()
+
+    def readline(self):
+        return os.read(self.fn,2048)
+
+    def readlines(self): return []
+
+    def write(self, s):
+        return None
+
+    def writelines(self, l):
+        return None
+
+    def seek(self, a):
+        raise IOError, (29, 'Illegal seek')
+
+    def tell(self):
+        raise IOError, (29, 'Illegal seek')
+
+    truncate = tell
 
 class Callable:
     def __init__(self, anycallable):

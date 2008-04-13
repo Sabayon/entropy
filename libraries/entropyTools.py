@@ -899,6 +899,9 @@ def dep_gettag(dep):
 
 def removePackageOperators(atom):
 
+    if not atom:
+        return atom
+
     if atom[0] in [">","<"]:
         atom = atom[1:]
     if atom[0] == "=":

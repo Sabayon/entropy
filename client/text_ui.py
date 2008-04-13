@@ -157,7 +157,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
                 resume_cache['ask'] = etpUi['ask']
                 resume_cache['verbose'] = etpUi['verbose']
                 resume_cache['onlyfetch'] = onlyfetch
-                resume_cache['remove'] = remove.copy()
+                resume_cache['remove'] = remove
                 Equo.dumpTools.dumpobj(etpCache['world'],resume_cache)
 
     else: # if resume, load cache if possible
@@ -170,12 +170,12 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
         else:
             try:
                 update = []
-                remove = resume_cache['removed'].copy()
+                remove = resume_cache['remove']
                 etpUi['ask'] = resume_cache['ask']
                 etpUi['verbose'] = resume_cache['verbose']
                 onlyfetch = resume_cache['onlyfetch']
                 Equo.dumpTools.dumpobj(etpCache['remove'],list(remove))
-            except:
+            except (IOError,KeyError):
                 print_error(red("Resume cache corrupted."))
                 Equo.dumpTools.dumpobj(etpCache['world'],{})
                 Equo.dumpTools.dumpobj(etpCache['install'],{})

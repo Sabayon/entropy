@@ -1574,8 +1574,11 @@ class etpDatabase:
             break
         return idcat
 
-    def getScopeData(self, idpackage):
+    def getStrictData(self, idpackage):
+        self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot,baseinfo.version,baseinfo.versiontag,baseinfo.revision,baseinfo.atom FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
+        return self.cursor.fetchone()
 
+    def getScopeData(self, idpackage):
         self.cursor.execute("""
                 SELECT 
                         baseinfo.atom,
@@ -1590,8 +1593,8 @@ class etpDatabase:
                         baseinfo,
                         categories
                 WHERE 
-                        baseinfo.idpackage = (?) 
-                        and baseinfo.idcategory = categories.idcategory 
+                        baseinfo.idpackage = (?)
+                        and baseinfo.idcategory = categories.idcategory
         """, (idpackage,))
         return self.cursor.fetchone()
 
@@ -2261,8 +2264,7 @@ class etpDatabase:
         return vtag
 
     def retrieveMirrorInfo(self, mirrorname):
-
-        self.cursor.execute('SELECT "mirrorlink" FROM mirrorlinks WHERE mirrorname = (?)', (mirrorname,))
+        self.cursor.execute('SELECT mirrorlink FROM mirrorlinks WHERE mirrorname = (?)', (mirrorname,))
         mirrorlist = self.fetchall2set(self.cursor.fetchall())
         return mirrorlist
 
@@ -2732,7 +2734,7 @@ class etpDatabase:
 	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE LOWER(atom) LIKE (?)'+slotstring+tagstring+branchstring, searchkeywords)
 	return self.cursor.fetchall()
 
-    def searchProvide(self, keyword, slot = None, tag = None, branch = None):
+    def searchProvide(self, keyword, slot = None, tag = None, branch = None, justid = False):
 
         slotstring = ''
         searchkeywords = [keyword]
@@ -2747,33 +2749,45 @@ class etpDatabase:
         if branch:
             searchkeywords.append(branch)
             branchstring = ' and baseinfo.branch = (?)'
+        atomstring = ''
+        if not justid:
+            atomstring = 'baseinfo.atom,'
 
-        self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,provide WHERE provide.atom = (?) and provide.idpackage = baseinfo.idpackage'+slotstring+tagstring+branchstring, searchkeywords)
+        self.cursor.execute('SELECT '+atomstring+'baseinfo.idpackage FROM baseinfo,provide WHERE provide.atom = (?) and provide.idpackage = baseinfo.idpackage'+slotstring+tagstring+branchstring, searchkeywords)
 
-        results = self.cursor.fetchall()
+        if justid:
+            results = self.fetchall2list(self.cursor.fetchall())
+        else:
+            results = self.cursor.fetchall()
         return results
 
     def searchPackagesByDescription(self, keyword):
         self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM extrainfo,baseinfo WHERE LOWER(extrainfo.description) LIKE (?) and baseinfo.idpackage = extrainfo.idpackage', ("%"+keyword.lower()+"%",))
         return self.cursor.fetchall()
 
-    def searchPackagesByName(self, keyword, sensitive = False, branch = None):
+    def searchPackagesByName(self, keyword, sensitive = False, branch = None, justid = False):
 
         if sensitive:
             searchkeywords = [keyword]
         else:
             searchkeywords = [keyword.lower()]
         branchstring = ''
+        atomstring = ''
+        if not justid:
+            atomstring = 'atom,'
         if branch:
             searchkeywords.append(branch)
             branchstring = ' and branch = (?)'
 
         if sensitive:
-            self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE name = (?)'+branchstring, searchkeywords)
+            self.cursor.execute('SELECT '+atomstring+'idpackage FROM baseinfo WHERE name = (?)'+branchstring, searchkeywords)
         else:
-            self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE LOWER(name) = (?)'+branchstring, searchkeywords)
+            self.cursor.execute('SELECT '+atomstring+'idpackage FROM baseinfo WHERE LOWER(name) = (?)'+branchstring, searchkeywords)
 
-        results = self.cursor.fetchall()
+        if justid:
+            results = self.fetchall2list(self.cursor.fetchall())
+        else:
+            results = self.cursor.fetchall()
         return results
 
 
@@ -2794,15 +2808,11 @@ class etpDatabase:
 
 	return results
 
-    def searchPackagesByNameAndCategory(self, name, category, sensitive = False, branch = None):
+    def searchPackagesByNameAndCategory(self, name, category, sensitive = False, branch = None, justid = False):
 
-        namestring = 'baseinfo.name'
-        catstring = 'categories.category'
         myname = name
         mycat = category
         if not sensitive:
-            namestring = 'LOWER(baseinfo.name)'
-            catstring = 'LOWER(categories.category)'
             myname = name.lower()
             mycat = category.lower()
 
@@ -2810,11 +2820,21 @@ class etpDatabase:
         branchstring = ''
         if branch:
             searchkeywords.append(branch)
-            branchstring = ' and baseinfo.branch = (?)'
+            branchstring = ' and branch = (?)'
+        atomstring = ''
+        if not justid:
+            atomstring = 'atom,'
 
-        self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE '+namestring+' = (?) AND '+catstring+' = (?) and baseinfo.idcategory = categories.idcategory'+branchstring, searchkeywords)
+        if sensitive:
+            self.cursor.execute('SELECT '+atomstring+'idpackage FROM baseinfo WHERE name = (?) AND idcategory IN (SELECT idcategory FROM categories WHERE category = (?))'+branchstring, searchkeywords)
+        else:
+            self.cursor.execute('SELECT '+atomstring+'idpackage FROM baseinfo WHERE LOWER(name) = (?) AND idcategory IN (SELECT idcategory FROM categories WHERE LOWER(category) = (?))'+branchstring, searchkeywords)
+            ''
 
-        results = self.cursor.fetchall()
+        if justid:
+            results = self.fetchall2list(self.cursor.fetchall())
+        else:
+            results = self.cursor.fetchall()
         return results
 
     def searchPackagesKeyVersion(self, key, version, branch = None, sensitive = False):
@@ -3407,6 +3427,7 @@ class etpDatabase:
     def createKeywordsIndex(self):
         if self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsreferenceindex ON keywordsreference ( keywordname )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsindex_idpackage ON keywords ( idpackage )')
             self.commitChanges()
 
     def createDependenciesIndex(self):
@@ -3611,7 +3632,7 @@ class etpDatabase:
 ##   Dependency handling functions
 #
 
-    def __get_match_hash(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision):
+    def __get_match_hash(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults):
         c_hash = str(hash(atom)) + \
                  str(hash(matchSlot)) + \
                  str(hash(matchTag)) + \
@@ -3620,14 +3641,15 @@ class etpDatabase:
                  str(hash(caseSensitive)) + \
                  str(hash(multiMatch)) + \
                  str(hash(packagesFilter)) + \
-                 str(hash(matchRevision))
+                 str(hash(matchRevision)) + \
+                 str(hash(extendedResults))
         #c_hash = str(hash(c_hash))
         return c_hash
 
 
-    def atomMatchFetchCache(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision):
+    def atomMatchFetchCache(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults):
         if self.xcache:
-            c_hash = self.__get_match_hash(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
+            c_hash = self.__get_match_hash(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
             try:
                 cached = dumpTools.loadobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash)
                 if cached != None:
@@ -3635,9 +3657,9 @@ class etpDatabase:
             except (EOFError, IOError):
                 return None
 
-    def atomMatchStoreCache(self, result, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision):
+    def atomMatchStoreCache(self, result, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults):
         if self.xcache:
-            c_hash = self.__get_match_hash(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
+            c_hash = self.__get_match_hash(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
             try:
                 sperms = False
                 if not os.path.isdir(os.path.join(etpConst['dumpstoragedir'],etpCache['dbMatch']+"/"+self.dbname)):
@@ -3655,7 +3677,8 @@ class etpDatabase:
         reponame = self.dbname[5:]
 
         cached = idpackageValidatorCache.get((idpackage,reponame))
-        if cached != None: return cached
+        if cached != None:
+            return cached
 
         # check if user package.mask needs it masked
         user_package_mask_ids = etpConst['packagemasking'].get(reponame+'mask_ids')
@@ -3665,7 +3688,7 @@ class etpDatabase:
                 matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
                 if matches[1] != 0:
                     continue
-                etpConst['packagemasking'][reponame+'mask_ids'] |= matches[0]
+                etpConst['packagemasking'][reponame+'mask_ids'] |= set(matches[0])
             user_package_mask_ids = etpConst['packagemasking'][reponame+'mask_ids']
         if idpackage in user_package_mask_ids:
             # sorry, masked
@@ -3680,7 +3703,7 @@ class etpDatabase:
                 matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
                 if matches[1] != 0:
                     continue
-                etpConst['packagemasking'][reponame+'unmask_ids'] |= matches[0]
+                etpConst['packagemasking'][reponame+'unmask_ids'] |= set(matches[0])
             user_package_unmask_ids = etpConst['packagemasking'][reponame+'unmask_ids']
         if idpackage in user_package_unmask_ids:
             idpackageValidatorCache[(idpackage,reponame)] = idpackage,3
@@ -3699,7 +3722,7 @@ class etpDatabase:
                         matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
                         if matches[1] != 0:
                             continue
-                        etpConst['packagemasking']['repos_mask'][reponame]['*_ids'] |= matches[0]
+                        etpConst['packagemasking']['repos_mask'][reponame]['*_ids'] |= set(matches[0])
                     all_branches_mask_ids = etpConst['packagemasking']['repos_mask'][reponame]['*_ids']
                 if idpackage in all_branches_mask_ids:
                     idpackageValidatorCache[(idpackage,reponame)] = -1,8
@@ -3715,7 +3738,7 @@ class etpDatabase:
                             matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
                             if matches[1] != 0:
                                 continue
-                            etpConst['packagemasking']['repos_mask'][reponame]['branch'][branch+"_ids"] |= matches[0]
+                            etpConst['packagemasking']['repos_mask'][reponame]['branch'][branch+"_ids"] |= set(matches[0])
                         branch_mask_ids = etpConst['packagemasking']['repos_mask'][reponame]['branch'][branch+"_ids"]
                     if idpackage in branch_mask_ids:
                         if  self.retrieveBranch(idpackage) == branch:
@@ -3793,24 +3816,25 @@ class etpDatabase:
         return -1,7
 
     # packages filter used by atomMatch, input must me foundIDs, a list like this:
-    # [(u'x11-libs/qt-4.3.2', 608), (u'x11-libs/qt-3.3.8-r4', 1867)]
-    def packagesFilter(self,results, atom):
-        # keywordsFilter ONLY FILTERS results if self.dbname.startswith(etpConst['dbnamerepoprefix']), repository database is open
+    # [608,1867]
+    def packagesFilter(self, results, atom):
+        # keywordsFilter ONLY FILTERS results if
+        # self.dbname.startswith(etpConst['dbnamerepoprefix']) => repository database is open
         if not self.dbname.startswith(etpConst['dbnamerepoprefix']):
             return results
 
         newresults = set()
-        for item in results:
-            rc = self.idpackageValidator(item[1])
+        for idpackage in results:
+            rc = self.idpackageValidator(idpackage)
             if rc[0] != -1:
-                newresults.add(item)
+                newresults.add(idpackage)
             else:
                 idreason = rc[1]
                 if not maskingReasonsStorage.has_key(atom):
                     maskingReasonsStorage[atom] = {}
                 if not maskingReasonsStorage[atom].has_key(idreason):
                     maskingReasonsStorage[atom][idreason] = set()
-                maskingReasonsStorage[atom][idreason].add((item[1],self.dbname[5:]))
+                maskingReasonsStorage[atom][idreason].add((idpackage,self.dbname[5:]))
         return newresults
 
     def __filterSlot(self, idpackage, slot):
@@ -3844,8 +3868,7 @@ class etpDatabase:
     def __filterSlotTag(self, foundIDs, slot, tag, operators):
 
         newlist = set()
-        for data in foundIDs:
-            idpackage = data[1]
+        for idpackage in foundIDs:
 
             idpackage = self.__filterSlot(idpackage, slot)
             if not idpackage:
@@ -3855,7 +3878,7 @@ class etpDatabase:
             if not idpackage:
                 continue
 
-            newlist.add(data)
+            newlist.add(idpackage)
 
         return newlist
 
@@ -3870,12 +3893,12 @@ class etpDatabase:
        @input packagesFilter: enable/disable package.mask/.keywords/.unmask filter
        @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = error
     '''
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = (), matchTag = None, packagesFilter = True, matchRevision = None):
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = (), matchTag = None, packagesFilter = True, matchRevision = None, extendedResults = False):
 
         if not atom:
             return -1,1
 
-        cached = self.atomMatchFetchCache(atom,caseSensitive,matchSlot,multiMatch,matchBranches,matchTag,packagesFilter, matchRevision)
+        cached = self.atomMatchFetchCache(atom,caseSensitive,matchSlot,multiMatch,matchBranches,matchTag,packagesFilter, matchRevision,extendedResults)
         if cached != None:
             return cached
 
@@ -3923,13 +3946,15 @@ class etpDatabase:
             pkgname = splitkey[0]
             pkgcat = "null"
 
-        if (matchBranches):
-            myBranchIndex = tuple(matchBranches) # force to tuple for security
+        if matchBranches:
+            # force to tuple for security
+            myBranchIndex = tuple(matchBranches)
         else:
-            if (self.dbname == etpConst['clientdbid']):
+            if self.dbname == etpConst['clientdbid']:
                 # collect all available branches
                 myBranchIndex = tuple(self.listAllBranches())
-            elif self.dbname.startswith(etpConst['dbnamerepoprefix']): # repositories should match to any branch <= than the current if none specified
+            elif self.dbname.startswith(etpConst['dbnamerepoprefix']):
+                # repositories should match to any branch <= than the current if none specified
                 allbranches = set([x for x in self.listAllBranches() if x <= etpConst['branch']])
                 allbranches = list(allbranches)
                 allbranches.reverse()
@@ -3943,42 +3968,57 @@ class etpDatabase:
         foundIDs = set()
 
         for idx in myBranchIndex:
-            results = self.searchPackagesByName(pkgname, sensitive = caseSensitive, branch = idx)
+
+            if pkgcat == "null":
+                results = self.searchPackagesByName(
+                                    pkgname,
+                                    sensitive = caseSensitive,
+                                    branch = idx,
+                                    justid = True
+                )
+            else:
+                results = self.searchPackagesByNameAndCategory(
+                                    name = pkgname,
+                                    category = pkgcat,
+                                    branch = idx,
+                                    sensitive = caseSensitive,
+                                    justid = True
+                )
 
             mypkgcat = pkgcat
             mypkgname = pkgname
-
             virtual = False
             # if it's a PROVIDE, search with searchProvide
             # there's no package with that name
             if (not results) and (mypkgcat == "virtual"):
-                virtuals = self.searchProvide(pkgkey, branch = idx)
-                if (virtuals):
+                virtuals = self.searchProvide(pkgkey, branch = idx, justid = True)
+                if virtuals:
                     virtual = True
-                    mypkgname = self.retrieveName(virtuals[0][1])
-                    mypkgcat = self.retrieveCategory(virtuals[0][1])
+                    mypkgname = self.retrieveName(virtuals[0])
+                    mypkgcat = self.retrieveCategory(virtuals[0])
                     results = virtuals
 
             # now validate
-            if (not results):
+            if not results:
                 continue # search into a stabler branch
 
             elif (len(results) > 1):
 
                 # if it's because category differs, it's a problem
-                foundCat = ""
+                foundCat = None
                 cats = set()
-                for result in results:
-                    idpackage = result[1]
+                for idpackage in results:
                     cat = self.retrieveCategory(idpackage)
                     cats.add(cat)
-                    if (cat == mypkgcat) or ((not virtual) and (mypkgcat == "virtual") and (cat == mypkgcat)): # in case of virtual packages only (that they're not stored as provide)
+                    if (cat == mypkgcat) or ((not virtual) and (mypkgcat == "virtual") and (cat == mypkgcat)):
+                        # in case of virtual packages only (that they're not stored as provide)
                         foundCat = cat
 
                 # if we found something at least...
                 if (not foundCat) and (len(cats) == 1) and (mypkgcat in ("virtual","null")):
                     foundCat = list(cats)[0]
-                if (not foundCat):
+
+                if not foundCat:
                     # got the issue
                     continue
 
@@ -3986,10 +4026,18 @@ class etpDatabase:
                 mypkgcat = foundCat
 
                 # we need to search using the category
-                if (not multiMatch):
-                    results = self.searchPackagesByNameAndCategory(name = mypkgname, category = mypkgcat, branch = idx, sensitive = caseSensitive)
+                if (not multiMatch) and pkgcat == "null":
+                    # we searched by name, we need to search using category
+                    results = self.searchPackagesByNameAndCategory(
+                                        name = mypkgname,
+                                        category = mypkgcat,
+                                        branch = idx,
+                                        sensitive = caseSensitive,
+                                        justid = True
+                    )
+
                 # validate again
-                if (not results):
+                if not results:
                     continue  # search into another branch
 
                 # if we get here, we have found the needed IDs
@@ -3998,19 +4046,21 @@ class etpDatabase:
 
             else:
 
+                idpackage = results[0]
                 # if mypkgcat is virtual, we can force
-                if (mypkgcat == "virtual") and (not virtual): # in case of virtual packages only (that they're not stored as provide)
-                    mypkgcat = self.entropyTools.dep_getkey(results[0][0]).split("/")[0]
+                if (mypkgcat == "virtual") and (not virtual):
+                    # in case of virtual packages only (that they're not stored as provide)
+                    mypkgcat = self.retrieveCategory(idpackage)
 
                 # check if category matches
                 if mypkgcat != "null":
-                    foundCat = self.retrieveCategory(results[0][1])
+                    foundCat = self.retrieveCategory(idpackage)
                     if mypkgcat == foundCat:
-                        foundIDs.add(results[0])
+                        foundIDs.add(idpackage)
                     else:
                         continue
                 else:
-                    foundIDs.add(results[0])
+                    foundIDs.add(idpackage)
                     break
 
         ### FILTERING
@@ -4029,7 +4079,7 @@ class etpDatabase:
 
         if not foundIDs:
             # package not found
-            self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
+            self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
             return -1,1
 
         ### FILLING dbpkginfo
@@ -4056,9 +4106,8 @@ class etpDatabase:
                     pkgrevision = self.entropyTools.dep_get_portage_revision(pkgversion)
                     pkgversion = self.entropyTools.remove_revision(pkgversion)
 
-                for data in foundIDs:
+                for idpackage in foundIDs:
 
-                    idpackage = data[1]
                     dbver = self.retrieveVersion(idpackage)
                     if (direction == "~"):
                         myrev = self.entropyTools.dep_get_portage_revision(dbver)
@@ -4087,9 +4136,8 @@ class etpDatabase:
                         # remove
                         self.entropyTools.remove_revision(pkgversion)
 
-                    for data in foundIDs:
+                    for idpackage in foundIDs:
 
-                        idpackage = data[1]
                         revcmp = 0
                         tagcmp = 0
                         if matchRevision != None:
@@ -4160,25 +4208,40 @@ class etpDatabase:
 
         else: # just the key
 
-            dbpkginfo = set([((x[1]),self.retrieveVersion(x[1])) for x in foundIDs])
+            dbpkginfo = set([(x,self.retrieveVersion(x)) for x in foundIDs])
 
         ### END FILLING dbpkginfo
         ### END FILLING dbpkginfo
         ### END FILLING dbpkginfo
 
         if not dbpkginfo:
-            self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
-            return -1,1
+            if extendedResults:
+                x = (-1,1,None,None,None)
+                self.atomMatchStoreCache(x, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                return x
+            else:
+                self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                return -1,1
 
         if multiMatch:
-            x = set([x[0] for x in dbpkginfo])
-            self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
-            return x,0
+            if extendedResults:
+                x = set([(x[0],0,x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0])) for x in dbpkginfo]),0
+                self.atomMatchStoreCache(x, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                return x
+            else:
+                x = set([x[0] for x in dbpkginfo])
+                self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                return x,0
 
         if len(dbpkginfo) == 1:
             x = dbpkginfo.pop()
-            self.atomMatchStoreCache((x[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
-            return x[0],0
+            if extendedResults:
+                x = (x[0],0,x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0])),0
+                self.atomMatchStoreCache(x, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                return x
+            else:
+                self.atomMatchStoreCache((x[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                return x[0],0
 
         dbpkginfo = list(dbpkginfo)
         pkgdata = {}
@@ -4189,5 +4252,10 @@ class etpDatabase:
             pkgdata[info_tuple] = x[0]
         newer = self.entropyTools.getEntropyNewerVersion(list(versions))[0]
         x = pkgdata[newer]
-        self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision)
-        return x,0
+        if extendedResults:
+            x = (x,0,newer[0],newer[1],newer[2]),0
+            self.atomMatchStoreCache(x, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+            return x
+        else:
+            self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+            return x,0

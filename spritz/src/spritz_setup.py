@@ -143,10 +143,19 @@ def cleanMarkupSting(msg):
     #msg = msg.replace('>',']')
     return msg
 
+from htmlentitydefs import codepoint2name
+def unicode2htmlentities(u):
+   htmlentities = list()
+   for c in u:
+      if ord(c) < 128:
+         htmlentities.append(c)
+      else:
+         htmlentities.append('&%s;' % codepoint2name[ord(c)])
+   return ''.join(htmlentities)
+
 class fakeoutfile:
     """
-    A fake output file object.  It sends output to a GTK TextView widget,
-    and if asked for a file number, returns one set on instance creation
+    A general purpose fake output file object.
     """
 
     def __init__(self, fn):
@@ -180,7 +189,6 @@ class fakeoutfile:
         # cut at 1024 entries
         if len(self.text_written) > 1024:
             self.text_written = self.text_written[-1024:]
-        #sys.stdout.write(s+"\n")
 
     def write_line(self, s):
         self.write(s)
@@ -200,32 +208,40 @@ class fakeoutfile:
 
 class fakeinfile:
     """
-    A fake input file object.  It receives input from a GTK TextView widget,
-    and if asked for a file number, returns one set on instance creation
+    A general purpose fake input file object.
     """
-
     def __init__(self, fn):
         self.fn = fn
-    def close(self): pass
-    flush = close
-    def fileno(self):    return self.fn
-    def isatty(self):    return False
-    def read(self, a):   return self.readline()
-    def readline(self): ## just a fake
-        return os.read(self.fn,2048)
-    def readlines(self): return []
-    def write(self, s):  return None
-    def writelines(self, l): return None
-    def seek(self, a):   raise IOError, (29, 'Illegal seek')
-    def tell(self):      raise IOError, (29, 'Illegal seek')
-    truncate = tell
 
-from htmlentitydefs import codepoint2name
-def unicode2htmlentities(u):
-   htmlentities = list()
-   for c in u:
-      if ord(c) < 128:
-         htmlentities.append(c)
-      else:
-         htmlentities.append('&%s;' % codepoint2name[ord(c)])
-   return ''.join(htmlentities)
+    def close(self):
+        pass
+
+    flush = close
+
+    def fileno(self):
+        return self.fn
+
+    def isatty(self):
+        return False
+
+    def read(self, a):
+        return self.readline()
+
+    def readline(self):
+        return os.read(self.fn,2048)
+
+    def readlines(self): return []
+
+    def write(self, s):
+        return None
+
+    def writelines(self, l):
+        return None
+
+    def seek(self, a):
+        raise IOError, (29, 'Illegal seek')
+
+    def tell(self):
+        raise IOError, (29, 'Illegal seek')
+
+    truncate = tell

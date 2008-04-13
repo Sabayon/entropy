@@ -39,13 +39,13 @@ import thread
 import exceptions
 from etpgui.widgets import UI, Controller
 from etpgui import *
+from spritz_setup import fakeoutfile, fakeinfile
 
 
 # spritz imports
 import filters
 from gui import SpritzGUI
 from dialogs import *
-from spritz_setup import const, fakeoutfile, fakeinfile
 from i18n import _
 import time
 
