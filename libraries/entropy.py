@@ -12093,8 +12093,6 @@ class ServerInterface(TextInterface):
 
     def scan_package_changes(self):
 
-        #dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
-
         installed_packages = self.SpmService.get_installed_packages_counter()
         installed_counters = set()
         toBeAdded = set()
@@ -12173,6 +12171,10 @@ class ServerInterface(TextInterface):
 
             if dorm:
                 trashed = self.is_counter_trashed(x[0])
+                if trashed:
+                    # search into portage then
+                    key, slot = dbconn.retrieveKeySlot(x[1])
+                    trashed = self.SpmService.get_installed_atom(key+":"+slot)
                 if not trashed:
                     dbtag = dbconn.retrieveVersionTag(x[1])
                     if dbtag != '':
