@@ -25,7 +25,11 @@ import commands
 import urllib2
 import time
 from entropyConstants import *
-from outputTools import TextInterface, print_info, print_warning, print_error, red, brown, blue, green, darkgreen, darkred, bold, darkblue
+from outputTools import TextInterface, \
+    print_info, print_warning, print_error, \
+    red, brown, blue, green, darkgreen, \
+    darkred, bold, darkblue
+from entropy_i18n import _
 import exceptionTools
 
 class matchContainer:

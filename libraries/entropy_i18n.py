@@ -13,30 +13,21 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-"""i18n abstraction
-
-License: GPL
-Author: Vladimir Bormotov <bor@vb.dn.ua>
-
 """
-# This file is a copy of the yum i18n.py file, modified to use
-# yumex as translation domain.
+License: GPL
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+"""
 
 try:
     import gettext
     import sys
     if sys.version_info[0] == 2:
-        t = gettext.translation('spritz')
+        t = gettext.translation('entropy')
         _ = t.gettext
     else:
-        gettext.bindtextdomain('spritz', '/usr/share/locale')
-        gettext.textdomain('spritz')
+        gettext.bindtextdomain('entropy', '/usr/share/locale')
+        gettext.textdomain('entropy')
         _ = gettext.gettext
-
 except:
-    def _(str):
-        """pass given string as-is"""
-        return str
-
-if __name__ == '__main__':
-    pass
+    def _(s):
+        return s
