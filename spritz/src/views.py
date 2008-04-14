@@ -466,7 +466,6 @@ class EntropyPackageView:
         obj = model.get_value( iter, 0 )
         if obj:
             cell.set_property('markup',getattr( obj, property ))
-            #cell.set_property( 'text', getattr( obj, property ) )
             cell.set_property('foreground',obj.color)
 
     def selectAll(self):
@@ -594,19 +593,19 @@ class EntropyQueueView:
     def refresh ( self ):
         """ Populate view with data from queue """
         self.model.clear()
-        label = _( "<b>Packages To Reinstall</b>" )
+        label = "<b>%s</b>" % (_( "Packages To Reinstall" ),)
         list = self.queue.packages['rr']
         if len( list ) > 0:
             self.populate_list( label, list )
-        label = _( "<b>Packages To Update</b>" )
+        label = "<b>%s</b>" % (_( "Packages To Update" ),)
         list = self.queue.packages['u']
         if len( list ) > 0:
             self.populate_list( label, list )
-        label = _( "<b>Packages To Install</b>" )
+        label = "<b>%s</b>" % (_( "Packages To Install" ),)
         list = self.queue.packages['i']
         if len( list ) > 0:
             self.populate_list( label, list )
-        label = _( "<b>Packages To Remove</b>" )
+        label = "<b>%s</b>" % (_( "Packages To Remove" ),)
         list = self.queue.packages['r']
         if len( list ) > 0:
             self.populate_list( label, list )
@@ -850,7 +849,8 @@ class EntropyRepoView:
             else:
                 self.Equo.enableRepository(repoid)
                 initConfig_entropyConstants(etpSys['rootdir'])
-            self.okDialog(self.ui.main,_("You should press the %s button now") % (_("Regenerate Cache")))
+            msg = "%s '%s' %s" % (_("You should press the button"),_("Regenerate Cache"),_("now"))
+            self.okDialog(self.ui.main,msg)
             self.store.set_value(iter,0, not state)
 
     def on_update_toggled( self, widget, path):

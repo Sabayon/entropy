@@ -189,7 +189,7 @@ class rhnAppletAboutWindow:
 class rhnAppletFirstTimeDruid(rhnGladeWindow):
     def __init__(self, parent, proxy_url, proxy_username, proxy_password):
         rhnGladeWindow.__init__(self, "etp_applet.glade", "first_time_druid")
-        
+
         self.parent = parent
         self.window.connect('delete_event', self.close_dialog)
         self.xml.signal_autoconnect (
@@ -215,20 +215,9 @@ class rhnAppletFirstTimeDruid(rhnGladeWindow):
         self.tos_document.connect('link_clicked', self.on_link_clicked)
         self.tos_document.open_stream("text/html")
 
-        # messy wordwrapping; helps i18n people though
-        self.tos_document.write_stream(
-            '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' + 
-            _("""Red Hat Network provides an intelligent, proactive management service for your Red Hat Linux-based system.  Red Hat Network has the latest Red Hat information, updates, and services to make your systems more secure and reliable.  This application is designed to inform you when updates are available for your system, but does not save any personally identifiable information about you or your system to the Red Hat Network unless you choose to subscribe to Red Hat Network. Use of this applet by itself does not imply any agreement with Red Hat Network.""") + "<br><br>" +
-            _("""Use of the up2date service, or use of this applet in conjunction with the up2date service, is governed by the Red Hat Network Services Use and Subscription Agreement, which may be reviewed at """) +
-            """<a href="https://rhn.redhat.com/help/terms.pxt">https://rhn.redhat.com/help/terms.pxt</a>.<br><br>""" +
-            _("""Red Hat Network's privacy policy may be reviewed at """) +
-            """<a href="https://rhn.redhat.com/help/security.pxt">https://rhn.redhat.com/help/security.pxt</a>.<br><br>""" +
-            _("""If you do not wish to have this application appear on your panel, click the 'Remove From Panel' button below.  Once removed, you can return it to your panel at any time by clicking on the Red Fedora in the bottom left of the desktop, choosing 'System Tools' and then choosing 'Red Hat Network Alert Icon.'
-            """))
         self.tos_document.close_stream()
         self.tos_view.set_document(self.tos_document)
-                    
-        
+
         self.enable_proxy = self.get_widget("enable_proxy_check")
         self.enable_proxy.connect("toggled", self.on_enable_proxy_toggle)
 

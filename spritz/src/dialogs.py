@@ -306,7 +306,7 @@ class AboutDialog(gtk.Window):
         self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG)
         self.set_position(gtk.WIN_POS_CENTER)
         self.set_resizable(False)
-        self.set_title(_("About %s") % title)
+        self.set_title("%s %s" % (_("About"),title,))
         self.connect("button-press-event", self.__on_close)
         self.connect("key-press-event", self.__on_close)
         self.connect("delete-event", self.__on_close)

@@ -191,7 +191,8 @@ class SpritzController(Controller):
             okDialog( self.ui.main, _("The selected branch is not available.") )
         else:
             self.Equo.move_to_branch(branch)
-            okDialog( self.ui.main, _("New branch is %s. It is suggested to synchronize repositories.") % (etpConst['branch'],) )
+            msg = "%s %s. %s." % (_("New branch is"),etpConst['branch'],_("It is suggested to synchronize repositories"),)
+            okDialog( self.ui.main, msg )
 
     def on_shiftUp_clicked( self, widget ):
         idx, repoid, iterdata = self.__getSelectedRepoIndex()
@@ -291,7 +292,8 @@ class SpritzController(Controller):
         repodata = self.__getRepodata()
         errors = self.__validateRepoSubmit(repodata, edit = True)
         if errors:
-            okDialog( self.addrepo_ui.addRepoWin, _("Wrong entries, errors: %s") % (', '.join(errors),) )
+            msg = "%s: %s" % (_("Wrong entries, errors"),', '.join(errors),)
+            okDialog( self.addrepo_ui.addRepoWin, msg )
             return True
         else:
             disable = False
@@ -302,7 +304,8 @@ class SpritzController(Controller):
                 self.Equo.addRepository(repodata)
             self.setupRepoView()
             self.addrepo_ui.addRepoWin.hide()
-            okDialog( self.ui.main, _("You should press the %s button now") % (_("Regenerate Cache")) )
+            msg = "%s '%s' %s" % (_("You should press the button"),_("Regenerate Cache"),_("now"))
+            okDialog( self.ui.main, msg )
 
     def __validateRepoSubmit(self, repodata, edit = False):
         errors = []
@@ -336,9 +339,11 @@ class SpritzController(Controller):
             self.Equo.addRepository(repodata)
             self.setupRepoView()
             self.addrepo_ui.addRepoWin.hide()
-            okDialog( self.ui.main, _("You should now press the %s button now") % (_("Update Repositories"),) )
+            msg = "%s '%s' %s" % (_("You should press the button"),_("Update Repositories"),_("now"))
+            okDialog( self.ui.main, msg )
         else:
-            okDialog( self.addrepo_ui.addRepoWin, _("Wrong entries, errors: %s") % (', '.join(errors),) )
+            msg = "%s: %s" % (_("Wrong entries, errors"),', '.join(errors),)
+            okDialog( self.addrepo_ui.addRepoWin, msg )
 
     def on_addRepoWin_delete_event(self, widget, path):
         return True
@@ -379,7 +384,8 @@ class SpritzController(Controller):
                 return True
             self.Equo.removeRepository(repoid)
             self.setupRepoView()
-            okDialog( self.ui.main, _("You must now either press the %s or the %s button") % (_("Regenerate Cache"),_("Update Repositories")) )
+            msg = "%s '%s' %s '%s' %s" % (_("You must now either press the"),_("Update Repositories"),_("or the"),_("Regenerate Cache"),_("now"))
+            okDialog( self.ui.main, msg )
 
     def on_repoEdit_clicked( self, widget ):
         self.addrepo_ui.repoSubmit.hide()
@@ -570,6 +576,33 @@ class SpritzController(Controller):
         self.pkgProperties_selected = pkg
         self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (pkg.name,))
         self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (pkg.description,))
+
+        bold_items = [  self.pkginfo_ui.locationLabel,
+                        self.pkginfo_ui.homepageLabel,
+                        self.pkginfo_ui.versionLabel,
+                        self.pkginfo_ui.slotLabel,
+                        self.pkginfo_ui.tagLabel,
+                        self.pkginfo_ui.revisionLabel,
+                        self.pkginfo_ui.branchLabel,
+                        self.pkginfo_ui.eapiLabel,
+                        self.pkginfo_ui.downloadLabel,
+                        self.pkginfo_ui.checksumLabel,
+                        self.pkginfo_ui.downSizeLabel,
+                        self.pkginfo_ui.installSizeLabel,
+                        self.pkginfo_ui.creationDateLabel,
+                        self.pkginfo_ui.useFlagsLabel,
+                        self.pkginfo_ui.chostLabel,
+                        self.pkginfo_ui.cflagsLabel,
+                        self.pkginfo_ui.cxxflagsLabel,
+                        self.pkginfo_ui.eclassesLabel,
+                        self.pkginfo_ui.maskedLabel,
+                        self.pkginfo_ui.messagesLabel,
+                        self.pkginfo_ui.triggerLabel,
+                        self.pkginfo_ui.configProtectLabel
+        ]
+        for item in bold_items:
+            t = item.get_text()
+            item.set_markup("<b>%s</b>" % (t,))
 
         dbconn = self.Entropy.clientDbconn
         repo = pkg.matched_atom[1]
@@ -812,7 +845,14 @@ class SpritzApplication(SpritzController,SpritzGUI):
         cr = EquoConnection.entropyTools.applicationLockCheck("Spritz Loader", gentle = True)
         if cr:
             # warn the user
-            okDialog( None, _("<big><b>Sorry to tell you</b></big>\t\t\nAnother instance of Entropy <b>is running</b>. <u>Close</u> it or <u>remove</u>: %s") % (etpConst['pidfile'],) )
+            msg = "<big><b>%s</b></big>\t\t\n%s <b>%s</b>. %s: <b>%s</b>" % (
+                    _("Sorry to tell you"),
+                    _("Another instance of Entropy"),
+                    _("is running"),
+                    _("Close it or remove"),
+                    etpConst['pidfile'],
+            )
+            okDialog( None, msg )
             sys.exit()
 
         SpritzController.__init__( self )
@@ -1040,13 +1080,15 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.progressLog(_('You must run this application as root'), extra = "repositories")
             return 1
         except exceptionTools.MissingParameter:
-            self.progressLog(_('No repositories specified in %s') % (etpConst['repositoriesconf'],), extra = "repositories")
+            msg = "%s: %s" % (_('No repositories specified in'),etpConst['repositoriesconf'],)
+            self.progressLog( msg, extra = "repositories")
             return 127
         except exceptionTools.OnlineMirrorError:
             self.progressLog(_('You are not connected to the Internet. You should.'), extra = "repositories")
             return 126
         except Exception, e:
-            self.progressLog(_('Unhandled exception: %s') % (str(e),), extra = "repositories")
+            msg = "%s: %s" % (_('Unhandled exception'),e,)
+            self.progressLog(msg, extra = "repositories")
             return 2
         rc = repoConn.sync()
         if repoConn.syncErrors:
@@ -1059,9 +1101,10 @@ class SpritzApplication(SpritzController,SpritzGUI):
                 if len(repos) == repoConn.alreadyUpdated:
                     self.progress.set_mainLabel(_('All the repositories were already up to date.'))
                 else:
-                    self.progress.set_mainLabel(_('%s repositories were already up to date. Others have been updated.' % (str(repoConn.alreadyUpdated),)))
+                    msg = "%s %s" % (repoConn.alreadyUpdated,_("repositories were already up to date. Others have been updated."),)
+                    self.progress.set_mainLabel(msg)
             if repoConn.newEquo:
-                self.progress.set_extraLabel(_('app-admin/equo needs to be updated as soon as possible.'))
+                self.progress.set_extraLabel(_('sys-apps/entropy needs to be updated as soon as possible.'))
 
         initConfig_entropyConstants(etpSys['rootdir'])
 
@@ -1108,7 +1151,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.progress.set_subLabel(_('Entropy is indexing the repositories. It will take a few seconds'))
         self.progress.set_extraLabel(_('While you are waiting, take a break and look outside. Is it rainy?'))
         for flt in masks:
-            msg = _('Calculating %s' ) % flt
+            msg = "%s: %s" % (_('Calculating'),flt,)
             self.setStatus(msg)
             allpkgs += self.etpbase.getPackages(flt)
             self.setStatus(_("Ready"))

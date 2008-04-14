@@ -289,12 +289,6 @@ class SpritzGUI:
         self.createButton( _( "Output" ), "button-output.png", 'output' )
         style = self.ui.leftEvent.get_style()
 
-        # Setup Page Icons
-        self.ui.pageImage0.set_from_file ( const.PIXMAPS_PATH + '/button-repo.png' )
-        self.ui.pageImage3.set_from_file ( const.PIXMAPS_PATH + '/button-group.png' )
-        self.ui.pageImage4.set_from_file ( const.PIXMAPS_PATH + '/button-queue.png' )
-        self.ui.pageImage5.set_from_file ( const.PIXMAPS_PATH + '/button-conf.png' )
-
     def createButton( self, text, icon, page,first = None ):
           if first:
               button = gtk.RadioButton( None )

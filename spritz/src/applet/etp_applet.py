@@ -279,10 +279,10 @@ class rhnApplet:
         permitted = entropyTools.is_user_in_entropy_group()
         if not permitted:
             hide_menu = True
-            message = _("You must add yourself to the '%s' group.") % (etpConst['sysgroup'],)
+            message = "%s: %s" % (_("You must add yourself to this group"),etpConst['sysgroup'],)
         elif workdir_perms_issue:
             hide_menu = True
-            message = _("Please run Equo/Spritz as root to update %s permissions") % (etpConst['entropyworkdir'],)
+            message = _("Please run Equo/Spritz as root to update Entropy permissions")
         else:
             # first refresh should be 2 minutes after execution; this
             # should give the rest of the user's desktop environment time
@@ -613,7 +613,7 @@ class rhnApplet:
             try:
                 repoConn = self.Entropy.Repositories(repos, fetchSecurity = False, noEquoCheck = True)
             except exceptionTools.MissingParameter:
-                self.last_error = _("No repositories specified in %s") % (etpConst['repositoriesconf'],)
+                self.last_error = "%s: %s" % (_("No repositories specified in"),etpConst['repositoriesconf'],)
                 self.error_threshold += 1
             except exceptionTools.OnlineMirrorError:
                 self.last_error = _("Repository Network Error")
@@ -621,7 +621,7 @@ class rhnApplet:
             except Exception, e:
                 self.error_threshold += 1
                 self.last_error_is_exception = 1
-                self.last_error = _("Unhandled exception: %s" % (str(e),))
+                self.last_error = "%s: %s" % (_('Unhandled exception'),e,)
             else:
                 # -128: sync error, something bad happened
                 # -2: repositories not available (all)
@@ -674,14 +674,16 @@ class rhnApplet:
             update, remove, fine = self.Entropy.calculate_world_updates()
             del fine, remove
         except Exception, e:
-            self.show_alert( _("Updates: exception %s") % (str(Exception),), str(e) )
+            msg = "%s: %s" % (_("Updates: error"),e,)
+            self.show_alert(msg)
             self.error_threshold += 1
             self.last_error_is_exception = 1
             self.last_error = str(e)
 
         if self.last_error:
             self.disable_refresh_timer()
-            self.update_tooltip(_("Updates: issue: %s") % (str(self.last_error),))
+            msg = "%s: %s" % (_("Updates issue:"),self.last_error,)
+            self.update_tooltip(msg)
             self.set_state("ERROR")
             self.end_working()
             return False
@@ -698,9 +700,10 @@ class rhnApplet:
         if update:
             self.available_packages = update.copy()
             self.set_state("CRITICAL")
-            self.update_tooltip(_("There are %d updates available.") % (len(update),))
+            msg = "%s %d %s" % (_("There are"),len(update),_("updates available."),)
+            self.update_tooltip(msg)
             self.show_alert(    _("Updates available"),
-                                _("There are %d updates available.") % (len(update),),
+                                msg,
                                 urgency = 'critical'
                            )
             if self.notice_window:
@@ -886,11 +889,15 @@ class rhnApplet:
 
         critical_text = []
         if entropy_data.has_key("avail"):
-            critical_text.append(_("""
-Your system currently has sys-apps/entropy <b>%s</b> installed, but the latest
-available version is <b>%s</b>.  It is recommended that you <b>upgrade
-to the latest</b> before updating any other packages.
-""") % (entropy_data['installed'], entropy_data['avail']))
+            msg = "%s sys-apps/entropy <b>%s</b> %s, %s <b>%s</b>. %s." % (
+                    _("Your system currently has"),
+                    entropy_data['installed'],
+                    _("installed"),
+                    _("but the latest available version is"),
+                    entropy_data['avail'],
+                    _("It is recommended that you upgrade to the latest before updating any other packages")
+            )
+            critical_text.append(msg)
 
         if critical_text:
             if self.old_critical_text != critical_text:
