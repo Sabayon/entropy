@@ -195,7 +195,13 @@ class ErrorDialog:
         self.dialog.set_title( title )
         self.text = self.xml.get_widget( "errText" )
         self.longtext = self.xml.get_widget( "errTextView" )
-        self.style_err = gtk.TextTag( "error" ) 
+        self.nameInput = self.xml.get_widget( "nameEntry" )
+        self.mailInput = self.xml.get_widget( "mailEntry" )
+        self.reportLabel = self.xml.get_widget( "reportLabel" )
+        self.errorButton = self.xml.get_widget( "errorButton" )
+        self.actionInput = self.xml.get_widget( "actionEntry" )
+        self.reportTable = self.xml.get_widget( "reportTable" )
+        self.style_err = gtk.TextTag( "error" )
         self.style_err.set_property( "style", pango.STYLE_ITALIC )
         self.style_err.set_property( "foreground", "red" )
         self.style_err.set_property( "family", "Monospace" )
@@ -217,12 +223,25 @@ class ErrorDialog:
         start, end = buffer.get_bounds()
         buffer.insert_with_tags( end, longtext, self.style_err )
 
-    def run( self ):
+    def run( self, showreport = False ):
         self.dialog.show_all()
+        if not showreport:
+            self.hide_report_widgets()
         return self.dialog.run()
 
+    def hide_report_widgets(self):
+        self.reportTable.hide_all()
+        self.errorButton.hide()
+        self.reportLabel.hide()
+
+    def get_entries( self ):
+        mail = self.mailInput.get_text()
+        name = self.nameInput.get_text()
+        desc = self.actionInput.get_text()
+        return name,mail,desc
+
     def destroy( self ):
-        return self.dialog.destroy()  
+        return self.dialog.destroy()
 
 class infoDialog:
     def __init__( self, parent, title, text ):
@@ -369,10 +388,12 @@ def inputBox( parent, title, text, input_text = None):
     dlg.destroy()
     return rc
 
-def errorMessage( parent, title, text, longtext=None, modal= True ):
+def errorMessage( parent, title, text, longtext=None, modal= True, showreport = False ):
      dlg = ErrorDialog( parent, title, text, longtext, modal )
-     dlg.run()
+     rc = dlg.run(showreport)
+     entries = dlg.get_entries()
      dlg.destroy()
+     return rc, entries
 
 def infoMessage( parent, title, text ):
     dlg = infoDialog( parent, title, text )
@@ -393,12 +414,14 @@ def questionDialog(parent, msg, message_format = _("Hey!")):
     else:
         return False
 
-def okDialog(parent, msg):
+def okDialog(parent, msg, title = None):
     dlg = gtk.MessageDialog(parent=parent,
                             type=gtk.MESSAGE_INFO,
                             buttons=gtk.BUTTONS_OK)
     dlg.set_markup(msg)
-    dlg.set_title( _("Attention") )
+    if not title:
+        title = _("Attention")
+    dlg.set_title( title )
     rc = dlg.run()
     dlg.destroy()
 

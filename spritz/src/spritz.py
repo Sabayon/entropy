@@ -31,7 +31,8 @@ sys.path.insert(3,"/usr/lib/entropy/client")
 from entropyConstants import *
 import exceptionTools
 from packages import EntropyPackages
-from entropyapi import EquoConnection,QueueExecutor
+from entropyapi import EquoConnection, QueueExecutor
+from entropy import ErrorReportInterface
 
 # GTK Imports
 import gtk,gobject
@@ -483,11 +484,8 @@ class SpritzController(Controller):
 
         rc = self.processPackageQueue(self.queue.packages)
         if rc:
-            if rc == 'QUIT':
-                self.quit()
-            else:
-                self.queue.clear()       # Clear package queue
-                self.queueView.refresh() # Refresh Package Queue
+            self.queue.clear()       # Clear package queue
+            self.queueView.refresh() # Refresh Package Queue
 
     def on_queueSave_clicked( self, widget ):
         dialog = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_SAVE,
@@ -1155,48 +1153,11 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.setStatus(msg)
         self.unsetBusy()
 
-
-    def addCategories(self, fn, para, sortkeys,splitkeys ):
-        msg = _('Category View Population')
-        self.setStatus(msg)
-        self.setBusy()
-        getterfn = getattr( self.etpbase, fn )
-        if para != '':
-            lst, keys = getterfn( self.lastPkgPB, para )
-        else:
-            lst, keys = getterfn( self.lastPkgPB )
-        fkeys = [ key for key in keys if lst.has_key(key)]
-        if sortkeys:
-            fkeys.sort()
-        if not splitkeys:
-            self.catView.populate(fkeys)
-        else:
-            keydict = self.splitCategoryKeys(fkeys)
-            self.catView.populate(keydict,True)
-        self.etpbase.setCategoryPackages(lst)
-        self.catView.view.set_cursor((0,))
-        self.unsetBusy()
-        msg = _('Category View Population Completed')
-        self.setStatus(msg)
-
-    def splitCategoryKeys(self,keys,sep='/'):
-        tree = RPMGroupTree()
-        for k in keys:
-            lst = k.split(sep)
-            tree.add(lst)
-        return tree
-
-    def getRecentTime(self,recentdays = 14):
-        recentdays = float( recentdays )
-        now = time.time()
-        return now-( recentdays*const.DAY_IN_SECONDS )
-
     def processPackageQueue( self, pkgs, doAll=False):
         """ Workflow for processing package queue """
         self.setStatus( _( "Running tasks" ) )
         total = len( pkgs['i'] )+len( pkgs['u'] )+len( pkgs['r'] ) +len( pkgs['rr'] )
         state = True
-        quit = False
         if total > 0:
             self.startWorking()
             self.progress.show()
@@ -1210,7 +1171,10 @@ class SpritzApplication(SpritzController,SpritzGUI):
                 controller = QueueExecutor(self)
                 e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache)
                 if e != 0:
-                    okDialog( self.ui.main, _("Attention. An error occured when processing the queue.\nPlease have a look in the processing terminal.") )
+                    okDialog(   self.ui.main,
+                                _("Attention. An error occured when processing the queue."
+                                    "\nPlease have a look in the processing terminal.")
+                    )
                 # XXX let it sleep a bit to allow all other threads to flush
                 self.endWorking()
                 while gtk.events_pending():
@@ -1231,8 +1195,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
                 if len(self.Equo.FileUpdates.scandata) > 0:
                     self.setPage('filesconf')
             #self.progress.hide()
-            if quit:
-                return "QUIT"
             return state
         else:
             self.setStatus( _( "No packages selected" ) )
@@ -1240,7 +1202,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
     def get_confimation( self, task ):
         self.progress.hide( False )
-        dlg = ConfirmationDialog(self.ui.main, [], size )
+        dlg = ConfirmationDialog(self.ui.main, [], 0 )
         rc = dlg.run()
         dlg.destroy()
         self.progress.show()
@@ -1288,6 +1250,21 @@ if __name__ == "__main__":
             errmsg += '  File : %s , line %s, in %s\n' % (f,str(l),m)
             logger.error('    %s ' % c)
             errmsg += '    %s \n' % c
-        errorMessage(None, _( "Error" ), _( "Error in Spritz" ), errmsg )
+        import entropyTools
+        conntest = entropyTools.get_remote_data(etpConst['conntestlink'])
+        rc, (name,mail,description) = errorMessage( None,
+                                                    _( "Exception caught" ),
+                                                    _( "Spritz crashed! An unexpected error occured." ),
+                                                    errmsg,
+                                                    showreport = conntest
+        )
+        if rc == -1:
+            error = ErrorReportInterface()
+            error.prepare(errmsg, name, mail, description = description)
+            result = error.submit()
+            if result:
+                okDialog(None,_("Your report has been submitted successfully! Thanks a lot."))
+            else:
+                okDialog(None,_("Cannot submit your report. Not connected to Internet?"))
         gtkEventThread.doQuit()
         sys.exit(1)

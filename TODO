@@ -12,7 +12,6 @@ TODO list
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - handle entropy exceptions/bug reporting interface (*)
     - package masking menu (*)
     - GLSA interface (*)
     - applet ignores masks
