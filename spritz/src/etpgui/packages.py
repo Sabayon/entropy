@@ -24,19 +24,17 @@ import types
 class PackageWrapper:
     def __init__(self, matched_atom, avail):
 
+        self.from_installed = False
         if matched_atom[1] == 0:
-            self.dbconn = EquoConnection.clientDbconn
             self.from_installed = True
-        else:
-            self.dbconn = EquoConnection.openRepositoryDatabase(matched_atom[1])
-            self.from_installed = False
         self.matched_atom = matched_atom
         self.installed_match = None
         self.available = avail
         self.do_purge = False
 
     def __str__(self):
-        return str(self.dbconn.retrieveAtom(self.matched_atom[0])+"~"+str(self.dbconn.retrieveRevision(self.matched_atom[0])))
+        dbc = self.get_dbconn()
+        return str(dbc.retrieveAtom(self.matched_atom[0])+"~"+str(dbc.retrieveRevision(self.matched_atom[0])))
 
     def __cmp__(self, pkg):
         n1 = str(self)
@@ -48,14 +46,22 @@ class PackageWrapper:
         else:
             return -1
 
+    def get_dbconn(self):
+        if self.from_installed:
+            return EquoConnection.clientDbconn
+        else:
+            return EquoConnection.openRepositoryDatabase(self.matched_atom[1])
+
     def getPkg(self):
         return self.matched_atom
 
     def getTag(self):
-        return self.dbconn.retrieveVersionTag(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveVersionTag(self.matched_atom[0])
 
     def getName(self):
-        return self.dbconn.retrieveAtom(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveAtom(self.matched_atom[0])
 
     def getNameDesc(self):
         t = self.getName()
@@ -66,17 +72,29 @@ class PackageWrapper:
         return t
 
     def getOnlyName(self):
-        return self.dbconn.retrieveName(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveName(self.matched_atom[0])
 
     def getTup(self):
-        return (self.getName(),self.getRepoId(),self.dbconn.retrieveVersion(self.matched_atom[0]),self.dbconn.retrieveVersionTag(self.matched_atom[0]),self.dbconn.retrieveRevision(self.matched_atom[0]))
+        dbc = self.get_dbconn()
+        return (    self.getName(),
+                    self.getRepoId(),
+                    dbc.retrieveVersion(self.matched_atom[0]),
+                    dbc.retrieveVersionTag(self.matched_atom[0]),
+                    dbc.retrieveRevision(self.matched_atom[0]),
+        )
 
     def versionData(self):
-        return (self.dbconn.retrieveVersion(self.matched_atom[0]),self.dbconn.retrieveVersionTag(self.matched_atom[0]),self.dbconn.retrieveRevision(self.matched_atom[0]))
+        dbc = self.get_dbconn()
+        return (    dbc.retrieveVersion(self.matched_atom[0]),
+                    dbc.retrieveVersionTag(self.matched_atom[0]),
+                    dbc.retrieveRevision(self.matched_atom[0]),
+        )
 
     def getRepoId(self):
         if self.matched_atom[1] == 0:
-            return self.dbconn.retrievePackageFromInstalledTable(self.matched_atom[0])
+            dbc = self.get_dbconn()
+            return dbc.retrievePackageFromInstalledTable(self.matched_atom[0])
         else:
             return self.matched_atom[1]
 
@@ -84,7 +102,8 @@ class PackageWrapper:
         return self.matched_atom[0]
 
     def getRevision(self):
-        return self.dbconn.retrieveRevision(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveRevision(self.matched_atom[0])
 
     def getSysPkg(self):
         if not self.from_installed:
@@ -100,7 +119,8 @@ class PackageWrapper:
     def getInstallStatus(self):
         if self.from_installed:
             return 0
-        key, slot = self.dbconn.retrieveKeySlot(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        key, slot = dbc.retrieveKeySlot(self.matched_atom[0])
         matches = EquoConnection.clientDbconn.searchKeySlot(key,slot)
         if not matches: # not installed, new!
             return 1
@@ -112,87 +132,113 @@ class PackageWrapper:
                 return 3
 
     def getVer(self):
+        dbc = self.get_dbconn()
         tag = ""
-        vtag = self.dbconn.retrieveVersionTag(self.matched_atom[0])
+        vtag = dbc.retrieveVersionTag(self.matched_atom[0])
         if vtag:
             tag = "#"+vtag
-        tag += "~"+str(self.dbconn.retrieveRevision(self.matched_atom[0]))
-        return self.dbconn.retrieveVersion(self.matched_atom[0])+tag
+        tag += "~"+str(dbc.retrieveRevision(self.matched_atom[0]))
+        return dbc.retrieveVersion(self.matched_atom[0])+tag
 
     def getOnlyVer(self):
-        return self.dbconn.retrieveVersion(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveVersion(self.matched_atom[0])
 
     def getDownloadURL(self):
-        return self.dbconn.retrieveDownloadURL(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveDownloadURL(self.matched_atom[0])
 
     def getSlot(self):
-        return self.dbconn.retrieveSlot(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveSlot(self.matched_atom[0])
 
     def getDependencies(self):
-        return self.dbconn.retrieveDependencies(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveDependencies(self.matched_atom[0])
 
     def getDependsFmt(self):
-        return self.dbconn.retrieveDepends(self.matched_atom[0], atoms = True)
+        dbc = self.get_dbconn()
+        return dbc.retrieveDepends(self.matched_atom[0], atoms = True)
 
     def getConflicts(self):
-        return self.dbconn.retrieveConflicts(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveConflicts(self.matched_atom[0])
 
     def getLicense(self):
-        return self.dbconn.retrieveLicense(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveLicense(self.matched_atom[0])
 
     def getDigest(self):
-        return self.dbconn.retrieveDigest(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveDigest(self.matched_atom[0])
 
     def getCategory(self):
-        return self.dbconn.retrieveCategory(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveCategory(self.matched_atom[0])
 
     def getApi(self):
-        return self.dbconn.retrieveApi(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveApi(self.matched_atom[0])
 
     def getUseflags(self):
-        return self.dbconn.retrieveUseflags(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveUseflags(self.matched_atom[0])
 
     def getTrigger(self):
-        return self.dbconn.retrieveTrigger(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveTrigger(self.matched_atom[0])
 
     def getConfigProtect(self):
-        return self.dbconn.retrieveProtect(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveProtect(self.matched_atom[0])
 
     def getConfigProtectMask(self):
-        return self.dbconn.retrieveProtectMask(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveProtectMask(self.matched_atom[0])
 
     def getKeywords(self):
-        return self.dbconn.retrieveKeywords(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveKeywords(self.matched_atom[0])
 
     def getNeeded(self):
-        return self.dbconn.retrieveNeeded(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveNeeded(self.matched_atom[0])
 
     def getCompileFlags(self):
-        return self.dbconn.retrieveCompileFlags(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveCompileFlags(self.matched_atom[0])
 
     def getSources(self):
-        return self.dbconn.retrieveSources(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveSources(self.matched_atom[0])
 
     def getEclasses(self):
-        return self.dbconn.retrieveEclasses(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveEclasses(self.matched_atom[0])
 
     def getHomepage(self):
-        return self.dbconn.retrieveHomepage(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveHomepage(self.matched_atom[0])
 
     def getMessages(self):
-        return self.dbconn.retrieveMessages(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveMessages(self.matched_atom[0])
 
     def getKeySlot(self):
-        return self.dbconn.retrieveKeySlot(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveKeySlot(self.matched_atom[0])
 
     def getDescription(self):
-        return self.dbconn.retrieveDescription(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveDescription(self.matched_atom[0])
 
     def getDownSize(self):
-        return self.dbconn.retrieveSize(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveSize(self.matched_atom[0])
 
     def getDiskSize(self):
-        return self.dbconn.retrieveOnDiskSize(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveOnDiskSize(self.matched_atom[0])
 
     def getIntelligentSize(self):
         if self.from_installed:
@@ -201,68 +247,80 @@ class PackageWrapper:
             return self.getDownSizeFmt()
 
     def getDownSizeFmt(self):
-        return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveSize(self.matched_atom[0]))
+        dbc = self.get_dbconn()
+        return EquoConnection.entropyTools.bytesIntoHuman(dbc.retrieveSize(self.matched_atom[0]))
 
     def getDiskSizeFmt(self):
-        return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveOnDiskSize(self.matched_atom[0]))
+        dbc = self.get_dbconn()
+        return EquoConnection.entropyTools.bytesIntoHuman(dbc.retrieveOnDiskSize(self.matched_atom[0]))
 
     def getArch(self):
         return etpConst['currentarch']
 
     def getEpoch(self):
-        return self.dbconn.retrieveDateCreation(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveDateCreation(self.matched_atom[0])
 
     def getEpochFmt(self):
-        return EquoConnection.entropyTools.convertUnixTimeToHumanTime(float(self.dbconn.retrieveDateCreation(self.matched_atom[0])))
+        dbc = self.get_dbconn()
+        return EquoConnection.entropyTools.convertUnixTimeToHumanTime(
+                                        float(dbc.retrieveDateCreation(self.matched_atom[0]))
+        )
 
     def getRel(self):
-        return self.dbconn.retrieveBranch(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveBranch(self.matched_atom[0])
 
     def getAttr(self,attr):
+        dbc = self.get_dbconn()
         if attr == "description":
-            return self.dbconn.retrieveDescription(self.matched_atom[0])
+            return dbc.retrieveDescription(self.matched_atom[0])
         elif attr == "category":
-            return self.dbconn.retrieveCategory(self.matched_atom[0])
+            return dbc.retrieveCategory(self.matched_atom[0])
         elif attr == "license":
-            return self.dbconn.retrieveLicense(self.matched_atom[0])
+            return dbc.retrieveLicense(self.matched_atom[0])
         elif attr == "creationdate":
-            return self.dbconn.retrieveDateCreation(self.matched_atom[0])
+            return dbc.retrieveDateCreation(self.matched_atom[0])
         elif attr == "version":
-            return self.dbconn.retrieveVersion(self.matched_atom[0])
+            return dbc.retrieveVersion(self.matched_atom[0])
         elif attr == "revision":
-            return self.dbconn.retrieveRevision(self.matched_atom[0])
+            return dbc.retrieveRevision(self.matched_atom[0])
         elif attr == "versiontag":
-            t = self.dbconn.retrieveVersionTag(self.matched_atom[0])
+            t = dbc.retrieveVersionTag(self.matched_atom[0])
             if not t: return "None"
             return t
         elif attr == "branch":
-            return self.dbconn.retrieveBranch(self.matched_atom[0])
+            return dbc.retrieveBranch(self.matched_atom[0])
         elif attr == "name":
-            return self.dbconn.retrieveName(self.matched_atom[0])
+            return dbc.retrieveName(self.matched_atom[0])
         elif attr == "namedesc":
             return self.getNameDesc()
         elif attr == "slot":
-            return self.dbconn.retrieveSlot(self.matched_atom[0])
+            return dbc.retrieveSlot(self.matched_atom[0])
 
     def _get_time( self ):
-        return self.dbconn.retrieveDateCreation(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveDateCreation(self.matched_atom[0])
 
     def get_changelog( self ):
         return "No ChangeLog"
 
     def get_filelist( self ):
-        c = list(self.dbconn.retrieveContent(self.matched_atom[0]))
-        c.sort()
-        return c
+        dbc = self.get_dbconn()
+        m = list(dbc.retrieveContent(self.matched_atom[0]))
+        m.sort()
+        return m
 
     def get_filelist_ext( self ):
-        c = self.dbconn.retrieveContent(self.matched_atom[0], extended = True)
-        data = list(c)
-        data.sort()
-        return data
+        dbc = self.get_dbconn()
+        m = dbc.retrieveContent(self.matched_atom[0], extended = True)
+        m = list(m)
+        m.sort()
+        return m
 
     def get_fullname( self ):
-        return self.dbconn.retrieveAtom(self.matched_atom[0])
+        dbc = self.get_dbconn()
+        return dbc.retrieveAtom(self.matched_atom[0])
 
     pkg =  property(fget=getPkg)
     name =  property(fget=getName)

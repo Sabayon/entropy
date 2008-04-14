@@ -1087,6 +1087,9 @@ class SpritzApplication(SpritzController,SpritzGUI):
         else:
             masks = [action]
 
+        if action == "updates":
+            masks.append("available")
+
         self.setBusy()
         bootstrap = False
         if (self.Equo.get_world_update_cache(empty_deps = False) == None):

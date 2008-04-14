@@ -36,20 +36,14 @@ class EntropyPackage( PackageWrapper ):
     """ This class contains a yumPackage and some extra features used by
     yumex """
 
-    def __init__( self, matched_atom, recentlimit, avail=True ):
+    def __init__( self, matched_atom, avail=True ):
         global color_normal
         PackageWrapper.__init__( self, matched_atom, avail )
         self.visible = True
         self.queued = None
         self.action = None
         self.obsolete = False
-        self.obsolete_tup = None
         self.color = color_normal
-        self.time = self._get_time()
-        if float(self.time) > float(recentlimit):
-            self.recent = True
-        else:
-            self.recent = False
 
 class EntropyPackages:
     def __init__(self, EquoInstance):
@@ -62,7 +56,6 @@ class EntropyPackages:
         self._categoryPackages = {}
         self.categories = set()
         self.selected_treeview_item = None
-        self.recent = self.Entropy.entropyTools.getCurrentUnixTime()
         self.pkgInCats = PkgInCategoryList()
 
     def clearPackages(self):
@@ -100,11 +93,6 @@ class EntropyPackages:
             yp = self.getPackageItem(pkgdata,True)
             install_status = yp.install_status
             ok = False
-            # FIXME: handle obsoletes in install_status == 3 whose are never install_status == 0
-            #if install_status == 0: # becomes from installed packages
-            #    yp.action = 'r'
-            #    yp.color = color_install
-            #    ok = True
             if install_status == 1:
                 yp.action = 'i'
                 ok = True
@@ -180,7 +168,7 @@ class EntropyPackages:
         if self.pkgCache.has_key((pkgdata,avail)):
             yp = self.pkgCache[(pkgdata,avail)]
         else:
-            yp = EntropyPackage(pkgdata, self.recent, avail)
+            yp = EntropyPackage(pkgdata, avail)
             self.pkgCache[(pkgdata,avail)] = yp
         return yp
 
@@ -190,8 +178,6 @@ class EntropyPackages:
         if mask == 'installed':
             for idpackage in self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom'):
                 yp = self.getPackageItem((idpackage,0),True)
-                #if str(yp).find("gnome-system-tools") != -1:
-                #    print str(yp),yp.queued,yp.action,"installed"
                 yp.action = 'r'
                 yp.color = color_install
                 yield yp
@@ -200,8 +186,6 @@ class EntropyPackages:
             available = self.Entropy.calculate_available_packages()
             for pkgdata in available:
                 yp = self.getPackageItem(pkgdata,True)
-                #if str(yp).find("gnome-system-tools") != -1:
-                #    print str(yp),yp.queued,yp.action,"available"
                 yp.action = 'i'
                 yield yp
         elif mask == 'updates':
@@ -209,8 +193,6 @@ class EntropyPackages:
             del remove, fine
             for pkgdata in updates:
                 yp = self.getPackageItem(pkgdata,True)
-                #if str(yp).find("gnome-system-tools") != -1:
-                #    print str(yp),yp.queued,yp.action,"updates"
                 yp.action = 'u'
                 yp.color = color_update
                 yield yp
@@ -222,12 +204,9 @@ class EntropyPackages:
                     if matched[0] != -1:
                         yp = self.getPackageItem(matched,True)
                         yp.installed_match = (idpackage,0)
-                        #if str(yp).find("gnome-system-tools") != -1:
-                        #    print str(yp),yp.queued,yp.action,"reinstallable"
                         yp.action = 'rr'
                         yp.color = color_install
                         yield yp
-        #print "endmask:",mask
 
     def getByProperty( self, type, category ):
         list = self.getPackages(type)
