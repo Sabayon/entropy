@@ -1,5 +1,6 @@
 TODO list
   - server-side: write a ncurses interface to manage entropy database + spm interface + GLSA
+  - server-side: check rdepend function with pandodl
   - implement pdepend support in dependencies sorting
   - add i18n support
   - Community repositories
@@ -12,9 +13,6 @@ TODO list
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - install button required time
-    - gettext cleanups
-
     - package masking menu
     - GLSA interface
     - applet ignores masks
