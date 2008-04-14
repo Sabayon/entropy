@@ -697,7 +697,7 @@ class etpDatabase:
         removelist = set()
 
         # we need to find other packages with the same key and slot, and remove them
-        if (self.clientDatabase): # client database can't care about branch
+        if self.clientDatabase: # client database can't care about branch
             searchsimilar = self.searchPackagesByNameAndCategory(
                 name = name,
                 category = category,
@@ -706,7 +706,7 @@ class etpDatabase:
         else: # server supports multiple branches inside a db
             searchsimilar = self.searchPackagesByNameAndCategory(
                 name = name,
-                category = name,
+                category = category,
                 sensitive = True,
                 branch = branch
             )
