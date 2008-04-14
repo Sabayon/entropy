@@ -11712,7 +11712,7 @@ class ServerInterface(TextInterface):
             )
 
             # remove package from old db
-            dbconn.removePackage(idpackage, trash_counter = False)
+            dbconn.removePackage(idpackage)
             dbconn.commitChanges()
 
             self.updateProgress(
@@ -11754,8 +11754,25 @@ class ServerInterface(TextInterface):
                                 back = True
                             )
         mydata = self.ClientService.extract_pkg_metadata(package_file, etpBranch = branch, inject = inject)
-        idpackage, revision, x = dbconn.handlePackage(mydata)
-        del x
+        idpackage, revision, mydata = dbconn.handlePackage(mydata)
+
+        # set trashed counters
+        trashing_counters = set()
+        myserver_repos = etpConst['server_repositories'].keys()
+        for myrepo in myserver_repos:
+            mydbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = myrepo)
+            mylist = mydbconn.retrieve_packages_to_remove(
+                    mydata['name'],
+                    mydata['category'],
+                    mydata['slot'],
+                    branch,
+                    mydata['injected']
+            )
+            for myitem in mylist:
+                trashing_counters.add(mydbconn.retrieveCounter(myitem))
+
+        for mycounter in trashing_counters:
+            dbconn.setTrashedCounter(mycounter)
 
         # add package info to our current server repository
         dbconn.removePackageFromInstalledTable(idpackage)

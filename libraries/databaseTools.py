@@ -693,6 +693,41 @@ class etpDatabase:
         else:
             return self.updatePackage(etpData, forcedRevision) # only when the same atom exists
 
+    def retrieve_packages_to_remove(self, name, category, slot, branch, injected):
+        removelist = set()
+
+        # we need to find other packages with the same key and slot, and remove them
+        if (self.clientDatabase): # client database can't care about branch
+            searchsimilar = self.searchPackagesByNameAndCategory(
+                name = name,
+                category = category,
+                sensitive = True
+            )
+        else: # server supports multiple branches inside a db
+            searchsimilar = self.searchPackagesByNameAndCategory(
+                name = name,
+                category = name,
+                sensitive = True,
+                branch = branch
+            )
+
+        if not injected:
+            # read: if package has been injected, we'll skip
+            # the removal of packages in the same slot, usually used server side btw
+            for oldpkg in searchsimilar:
+                # get the package slot
+                idpackage = oldpkg[1]
+                myslot = self.retrieveSlot(idpackage)
+                isinjected = self.isInjected(idpackage)
+                if isinjected:
+                    continue
+                    # we merely ignore packages with
+                    # negative counters, since they're the injected ones
+                if slot == myslot:
+                    # remove!
+                    removelist.add(idpackage)
+
+        return removelist
 
     def addPackage(self, etpData, revision = -1):
 
@@ -706,25 +741,13 @@ class etpDatabase:
                 etpData['revision'] = 0 # revision not specified
                 revision = 0
 
-        # we need to find other packages with the same key and slot, and remove them
-        if (self.clientDatabase): # client database can't care about branch
-            searchsimilar = self.searchPackagesByNameAndCategory(name = etpData['name'], category = etpData['category'], sensitive = True)
-        else: # server supports multiple branches inside a db
-            searchsimilar = self.searchPackagesByNameAndCategory(name = etpData['name'], category = etpData['category'], sensitive = True, branch = etpData['branch'])
-
-        removelist = set()
-        if not etpData['injected']: # read: if package has been injected, we'll skip the removal of packages in the same slot, usually used server side btw
-            for oldpkg in searchsimilar:
-                # get the package slot
-                idpackage = oldpkg[1]
-                slot = self.retrieveSlot(idpackage)
-                isinjected = self.isInjected(idpackage)
-                if isinjected:
-                    continue # we merely ignore packages with negative counters, since they're the injected ones
-                if (etpData['slot'] == slot):
-                    # remove!
-                    removelist.add(idpackage)
-
+        removelist = self.retrieve_packages_to_remove(
+                        etpData['name'],
+                        etpData['category'],
+                        etpData['slot'],
+                        etpConst['branch'],
+                        etpData['injected']
+        )
         for pkg in removelist:
             self.removePackage(pkg)
 
@@ -1102,7 +1125,7 @@ class etpDatabase:
             return self.addPackage(etpData, revision = curRevision)
 
 
-    def removePackage(self,idpackage, trash_counter = True):
+    def removePackage(self,idpackage):
 
         self.checkReadOnly()
         self.live_cache.clear()
@@ -1131,10 +1154,6 @@ class etpDatabase:
                 etpRSSMessages['removed'][rssAtom]['homepage'] = ""
             # save
             dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
-
-        if not self.clientDatabase and trash_counter:
-            trashed_counter = self.retrieveCounter(idpackage)
-            self.setTrashedCounter(trashed_counter)
 
         idpackage = str(idpackage)
         # baseinfo
