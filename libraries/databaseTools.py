@@ -4081,7 +4081,7 @@ class etpDatabase:
                 mypkgcat = foundCat
 
                 # we need to search using the category
-                if (not multiMatch) and pkgcat == "null":
+                if (not multiMatch) and (pkgcat == "null" or virtual):
                     # we searched by name, we need to search using category
                     results = self.searchPackagesByNameAndCategory(
                                         name = mypkgname,
