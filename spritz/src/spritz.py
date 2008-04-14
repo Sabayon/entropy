@@ -40,7 +40,7 @@ import thread
 import exceptions
 from etpgui.widgets import UI, Controller
 from etpgui import *
-from spritz_setup import fakeoutfile, fakeinfile
+from spritz_setup import fakeoutfile, fakeinfile,cleanMarkupSting
 
 
 # spritz imports
@@ -410,8 +410,6 @@ class SpritzController(Controller):
         self.clipboard.set_text(''.join(self.output.text_written))
 
     def on_PageButton_pressed( self, widget, page ):
-        #if page == "filesconf":
-        #    self.populateFilesUpdate()
         pass
 
     def on_PageButton_changed( self, widget, page ):
@@ -419,6 +417,8 @@ class SpritzController(Controller):
         # do not put here actions for 'packages' and 'output' but use on_PageButton_pressed
         if page == "filesconf":
             self.populateFilesUpdate()
+        elif page == "glsa":
+            self.populateAdvisories()
         self.setNotebookPage(const.PAGES[page])
 
     def on_pkgFilter_toggled(self,rb,action):
@@ -451,6 +451,7 @@ class SpritzController(Controller):
         self.etpbase.clearCache()
         self.setupRepoView()
         self.setupSpritz()
+        self.setupAdvisories()
         self.setPage('repos')
 
     def on_cacheButton_clicked(self,widget):
@@ -575,7 +576,7 @@ class SpritzController(Controller):
 
         self.pkgProperties_selected = pkg
         self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (pkg.name,))
-        self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (pkg.description,))
+        self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (cleanMarkupSting(pkg.description),))
 
         bold_items = [  self.pkginfo_ui.locationLabel,
                         self.pkginfo_ui.homepageLabel,
@@ -889,6 +890,10 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.console.set_pty(self.pty[0])
         self.resetProgressText()
         self.setupPkgPropertiesView()
+        self.setupAdvisories()
+
+    def setupAdvisories(self):
+        self.Advisories = self.Equo.Security()
 
     def setupPkgPropertiesView(self):
         # license view
@@ -1044,6 +1049,21 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.setupSpritz()
         if alone:
             self.progress.total.show()
+
+    def populateAdvisories(self, show = 'affected'):
+        cached = None
+        try:
+            cached = self.Advisories.get_advisories_cache()
+        except (IOError, EOFError):
+            pass
+        if cached == None:
+            self.setBusy()
+            self.setPage('output')
+            cached = self.Advisories.get_advisories_metadata()
+            self.setPage('glsa')
+            self.unsetBusy()
+        if cached:
+            self.advisoriesView.populate(self.Advisories, cached, show)
 
     def populateFilesUpdate(self):
         # load filesUpdate interface and fill self.filesView

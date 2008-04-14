@@ -55,13 +55,15 @@ class const:
     PAGE_GROUP = 3
     PAGE_QUEUE = 4
     PAGE_FILESCONF = 5
+    PAGE_GLSA = 6
     PAGES = {
        'packages'  : PAGE_PKG,
        'repos'     : PAGE_REPOS,
        'output'    : PAGE_OUTPUT,
        'queue'     : PAGE_QUEUE,
        'group'     : PAGE_GROUP,
-       'filesconf' : PAGE_FILESCONF
+       'filesconf' : PAGE_FILESCONF,
+       'glsa'      : PAGE_GLSA
     }
 
     PACKAGE_PROGRESS_STEPS = ( 0.1, # Depsolve

@@ -200,6 +200,7 @@ class SpritzGUI:
         self.queueView = EntropyQueueView(self.ui.queueView,self.queue)
         self.pkgView = EntropyPackageView(self.ui.viewPkg,self.queueView, self.ui, self.etpbase)
         self.filesView = EntropyFilesView(self.ui.filesView)
+        self.advisoriesView = EntropyAdvisoriesView(self.ui.advisoriesView)
         self.queue.connect_objects(self.Entropy, self.etpbase, self.pkgView, self.ui)
         #self.catView = SpritzCategoryView(self.ui.tvCategory)
         self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
@@ -286,6 +287,7 @@ class SpritzGUI:
         self.createButton( _( "Package Queue" ), "button-queue.png", 'queue' )
         self.createButton( _( "Repository Selection" ), "button-repo.png", 'repos' )
         self.createButton( _( "Configuration Files" ), "button-conf.png", 'filesconf' )
+        self.createButton( _( "Security Advisories" ), "button-glsa.png", 'glsa' )
         self.createButton( _( "Output" ), "button-output.png", 'output' )
         style = self.ui.leftEvent.get_style()
 

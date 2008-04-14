@@ -22,7 +22,7 @@ import gobject
 import logging
 import glob
 import ConfigParser
-from spritz_setup import const
+from spritz_setup import const,cleanMarkupSting
 from etpgui.widgets import UI
 from etpgui import *
 from entropyConstants import *
@@ -516,8 +516,6 @@ class EntropyPackageView:
         """
         pkg = model.get_value( iter, 0 )
         if pkg:
-            #if str(pkg).find("gnome-system-tools") != -1:
-            #    print str(pkg),pkg.queued,pkg.action
             if not pkg.queued:
                 if pkg.action in ["r","rr"]:
                     self.set_pixbuf_to_cell(cell, self.pkg_install_ok)
@@ -611,9 +609,9 @@ class EntropyQueueView:
             self.populate_list( label, list )
         self.view.expand_all()
 
-    def populate_list( self, label, list ):
+    def populate_list( self, label, mylist ):
         parent = self.model.append( None, [label, ""] )
-        for pkg in list:
+        for pkg in mylist:
             self.model.append( parent, [str( pkg ), pkg.description] )
 
 class EntropyFilesView:
@@ -669,6 +667,116 @@ class EntropyFilesView:
                                         scandata[key]['revision']
                                     ]
             )
+
+class EntropyAdvisoriesView:
+    """ Queue View Class"""
+    def __init__( self, widget ):
+        self.view = widget
+        self.adv_metadata = {}
+        self.model = self.setup_view()
+
+    def setup_view( self ):
+        model = gtk.TreeStore(
+                                gobject.TYPE_STRING,
+                                gobject.TYPE_STRING,
+                                gobject.TYPE_STRING,
+                                gobject.TYPE_STRING
+        )
+        self.view.set_model( model )
+
+        cell0 = gtk.CellRendererText()
+        column0 = gtk.TreeViewColumn( _("Status"), cell0, markup = 0 )
+        column0.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column0.set_fixed_width( 50 )
+        column0.set_cell_data_func( cell0, self.get_data_text )
+        self.view.append_column( column0 )
+
+        cell1 = gtk.CellRendererText()
+        column1 = gtk.TreeViewColumn( _("GLSA id."), cell1, markup = 1 )
+        column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column1.set_fixed_width( 85 )
+        column1.set_resizable( True )
+        column1.set_cell_data_func( cell1, self.get_data_text )
+        self.view.append_column( column1 )
+
+        cell2 = gtk.CellRendererText()
+        column2 = gtk.TreeViewColumn( _( "Package" ), cell2, markup = 2 )
+        column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column2.set_fixed_width( 220 )
+        column2.set_resizable( True )
+        column2.set_cell_data_func( cell2, self.get_data_text )
+        self.view.append_column( column2 )
+
+        cell3 = gtk.CellRendererText()
+        column3 = gtk.TreeViewColumn( _( "Overview" ), cell3, markup = 3 )
+        column3.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column3.set_fixed_width( 170 )
+        column3.set_resizable( True )
+        column3.set_cell_data_func( cell3, self.get_data_text )
+        self.view.append_column( column3 )
+
+        self.view.get_selection().set_mode( gtk.SELECTION_SINGLE )
+        return model
+
+    def get_data_text( self, column, cell, model, iter ):
+        obj = model.get_value( iter, 1 )
+        cached = self.adv_metadata.get(obj)
+        if cached == None:
+            return
+        if cached['impacttype'] == "normal":
+            cell.set_property('background',"#E2FFC1")
+
+
+    def populate( self, securityConn, adv_metadata, show ):
+
+        self.model.clear()
+        self.adv_metadata = adv_metadata
+
+        only_affected = False
+        only_unaffected = False
+        all = False
+        if show == "affected":
+            only_affected = True
+        elif show == "unaffected":
+            only_unaffected = True
+        else:
+            all = True
+
+        adv_keys = adv_metadata.keys()
+        adv_keys.sort()
+        identifiers = []
+        for key in adv_keys:
+            affected = securityConn.is_affected(key)
+            if all:
+                identifiers.append(key)
+            elif only_affected and not affected:
+                continue
+            elif only_unaffected and affected:
+                continue
+            identifiers.append(key)
+
+        for key in identifiers:
+            if not adv_metadata[key]['affected']:
+                continue
+            affected_data = adv_metadata[key]['affected'].keys()
+            if not affected_data:
+                continue
+            for a_key in affected_data:
+                mydata = adv_metadata[key]
+                parent = self.model.append( None,
+                    [
+                        "AFF",
+                        key,
+                        "<b>%s</b>" % (a_key,),
+                        "<small>%s</small>" % (mydata['title'],)
+                    ]
+                )
+                vulnerables = mydata['affected'][a_key][0]['vul_vers']
+                if not vulnerables:
+                    vulnerables = ['any']
+                for version in vulnerables:
+                    self.model.append(parent,["XX",None,cleanMarkupSting(version),mydata['access']])
+
 
 class CategoriesView:
     def __init__( self, treeview,qview):
