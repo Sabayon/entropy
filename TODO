@@ -12,8 +12,11 @@ TODO list
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - package masking menu (*)
-    - GLSA interface (*)
+    - install button required time
+    - gettext cleanups
+
+    - package masking menu
+    - GLSA interface
     - applet ignores masks
     - applet from critical to up to date
     - Popularity feature / Your Ego service

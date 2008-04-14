@@ -415,16 +415,6 @@ class SpritzController(Controller):
             self.populateFilesUpdate()
         self.setNotebookPage(const.PAGES[page])
 
-    def on_category_selected(self,widget):
-        ''' Category Change Handler '''
-        ( model, iterator ) = widget.get_selection().get_selected()
-        if model != None and iterator != None:
-            category = model.get_value( iterator, 1 )
-            if category != '':
-                self.addCategoryPackages(category)
-            else:
-                self.pkgView.clear()
-
     def on_pkgFilter_toggled(self,rb,action):
         ''' Package Type Selection Handler'''
         if rb.get_active(): # Only act on select, not deselect.
@@ -807,17 +797,12 @@ class SpritzController(Controller):
                 self.populateCategoryPackages(id)
         self.unsetBusy()
 
-# Menu Handlers
-
     def on_FileQuit( self, widget ):
         self.quit()
 
     def on_HelpAbout( self, widget ):
         about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,self.settings.branding_title)
         about.show()
-
-    def on_ToolsRepoCache( self, widget ):
-        self.logger.info(_('Cleaning up all yum metadata'))
 
 class SpritzApplication(SpritzController,SpritzGUI):
 
@@ -826,7 +811,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         # check if another instance is running
         cr = EquoConnection.entropyTools.applicationLockCheck("Spritz Loader", gentle = True)
         if cr:
-            # warn the user 
+            # warn the user
             okDialog( None, _("<big><b>Sorry to tell you</b></big>\t\t\nAnother instance of Entropy <b>is running</b>. <u>Close</u> it or <u>remove</u>: %s") % (etpConst['pidfile'],) )
             sys.exit()
 
@@ -1139,19 +1124,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.unsetBusy()
         # reset labels
         self.resetProgressText()
-
-    def addCategoryPackages(self,cat = None):
-        msg = _('Package View Population')
-        self.setStatus(msg)
-        self.setBusy()
-        self.pkgView.store.clear()
-        pkgs = self.yumbase.getPackagesByCategory(cat)
-        if pkgs:
-            pkgs.sort()
-            self.pkgView.populate(pkgs)
-            msg = _('Package View Population Completed')
-            self.setStatus(msg)
-        self.unsetBusy()
 
     def processPackageQueue( self, pkgs, doAll=False):
         """ Workflow for processing package queue """

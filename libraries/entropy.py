@@ -3900,8 +3900,9 @@ class PackageInterface:
                             slot = self.infoDict['slot']
                             matches = self.Entropy.atomMatch(key, matchSlot = slot, multiRepo = True, multiMatch = True)
                             if matches[1] == 0:
-                                if matches[0] not in disk_cache['available']:
-                                    disk_cache['available'].append(matches[0])
+                                for mymatch in matches[0]:
+                                    if mymatch not in disk_cache['available']:
+                                        disk_cache['available'].append(mymatch)
 
                         # install, doing here because matches[0] could contain self.matched_atoms
                         if self.matched_atom in disk_cache['available']:
