@@ -45,11 +45,13 @@ def print_help():
     print_info(blue("Tools available: "))
     print_info(" \t"+green(bold("sync"))+brown("\t\t to sync packages, database and also do some tidy"))
     print_info(" \t\t"+red("--noask")+"\t\t\t do not make any question")
+    print_info(" \t\t"+red("--syncall")+"\t\t sync all the configured repositories")
     print_info(" \t"+green(bold("tidy"))+brown("\t\t to just remove binary packages that are not in database and are expired"))
     print_info(" \t"+green(bold("packages"))+brown("\t to manage binary packages"))
     print_info(" \t\t"+green("sync")+red("\t\t\t to sync the binary packages across primary mirrors"))
     print_info(" \t\t\t"+red("--ask")+"\t\t\t ask before making any changes")
     print_info(" \t\t\t"+red("--pretend")+"\t\t just show what would be done")
+    print_info(" \t\t\t"+red("--syncall")+"\t\t sync all the configured repositories")
     print_info(" \t\t\t"+red("--do-packages-check")+"\t after the syncronization, also check packages checksum")
     print_info(" \t"+green(bold("database"))+brown("\t to manage database status and settings [")+bold("database content won't be touched")+brown("]"))
     print_info(" \t\t"+green("sync")+red("\t\t\t to sync the database across primary mirrors"))
@@ -58,6 +60,7 @@ def print_help():
     print_info(" \t\t"+green("download-lock")+red("\t\t to lock the download mirror status"))
     print_info(" \t\t"+green("download-unlock")+red("\t\t to unlock the download mirror status"))
     print_info(" \t\t"+green("lock-status")+red("\t\t to show the current locks status of the mirrors"))
+    print_info(" \t\t\t"+red("--syncall")+"\t\t sync all the configured repositories")
 
 options = sys.argv[1:]
 

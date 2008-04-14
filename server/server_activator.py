@@ -28,59 +28,100 @@ Entropy = ServerInterface()
 def sync(options, justTidy = False):
 
     do_noask = False
+    sync_all = False
     myopts = []
     for opt in options:
         if opt == "--noask":
             do_noask = True
+        elif opt == "--syncall":
+            sync_all = True
         else:
             myopts.append(opt)
     options = myopts
 
     print_info(green(" * ")+red("Starting to sync data across mirrors (packages/database) ..."))
 
-    if not justTidy:
+    repos = [Entropy.default_repository]
+    if sync_all:
+        repos = etpConst['server_repositories'].keys()
+        repos.sort()
+    old_default = Entropy.default_repository
 
-        mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data = Entropy.MirrorsService.sync_packages(ask = not do_noask, pretend = etpUi['pretend'])
-        if not mirrors_errors:
-            if mirrors_tainted:
-                if (not do_noask) and etpConst['rss-feed']:
-                    etpRSSMessages['commitmessage'] = readtext(">> Please insert a commit message: ")
-                elif etpConst['rss-feed']:
-                    etpRSSMessages['commitmessage'] = "Autodriven Update"
-            rc = database(["sync"])
-            if not rc:
-                Entropy.MirrorsService.lock_mirrors(lock = False)
-            if not rc and not do_noask:
-                rc = Entropy.askQuestion("Should I continue with the tidy procedure ?")
-                if rc == "No":
-                    sys.exit(0)
-            elif rc:
-                print_error(darkred(" !!! ")+red("Aborting !"))
-                sys.exit(1)
+    for repo in repos:
 
-    Entropy.MirrorsService.tidy_mirrors(ask = not do_noask, pretend = etpUi['pretend'])
+        if repo != Entropy.default_repository:
+            Entropy.switch_default_repository(repo)
+
+        errors = False
+        if not justTidy:
+            mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data = Entropy.MirrorsService.sync_packages(ask = not do_noask, pretend = etpUi['pretend'])
+            if not mirrors_errors:
+                if mirrors_tainted:
+                    if (not do_noask) and etpConst['rss-feed']:
+                        etpRSSMessages['commitmessage'] = readtext(">> Please insert a commit message: ")
+                    elif etpConst['rss-feed']:
+                        etpRSSMessages['commitmessage'] = "Autodriven Update"
+                errors, fine, broken = sync_remote_databases()
+                if not errors:
+                    Entropy.MirrorsService.lock_mirrors(lock = False)
+                if not errors and not do_noask:
+                    rc = Entropy.askQuestion("Should I continue with the tidy procedure ?")
+                    if rc == "No":
+                        continue
+                elif errors:
+                    print_error(darkred(" !!! ")+red("Aborting !"))
+                    continue
+
+        if not errors:
+            Entropy.MirrorsService.tidy_mirrors(ask = not do_noask, pretend = etpUi['pretend'])
+
+    if old_default != Entropy.default_repository:
+        Entropy.switch_default_repository(old_default)
 
 
 def packages(options):
 
+    sync_all = False
     do_pkg_check = False
     for opt in options:
-        if (opt == "--do-packages-check"):
+        if opt == "--do-packages-check":
             do_pkg_check = True
+        elif opt == "--syncall":
+            sync_all = True
 
     if not options:
         return
 
     if options[0] == "sync":
-        return Entropy.MirrorsService.sync_packages(    ask = etpUi['ask'],
-                                                        pretend = etpUi['pretend'],
-                                                        packages_check = do_pkg_check
-                                                   )
+
+        repos = [Entropy.default_repository]
+        if sync_all:
+            repos = etpConst['server_repositories'].keys()
+            repos.sort()
+        old_default = Entropy.default_repository
+
+        for repo in repos:
+
+            if repo != Entropy.default_repository:
+                Entropy.switch_default_repository(repo)
+
+            Entropy.MirrorsService.sync_packages(    ask = etpUi['ask'],
+                                                            pretend = etpUi['pretend'],
+                                                            packages_check = do_pkg_check
+                                                    )
+        if old_default != Entropy.default_repository:
+            Entropy.switch_default_repository(old_default)
+
+    return 0
 
 
 def database(options):
 
     cmd = options[0]
+    sync_all = False
+    for opt in options:
+        if opt == "--syncall":
+            sync_all = True
 
     if cmd == "lock":
 
@@ -140,12 +181,28 @@ def database(options):
 
     elif cmd == "sync":
 
-        print_info(green(" * ")+red("Syncing databases ..."))
-        errors, fine, broken = sync_remote_databases()
-        if errors:
-            print_error(darkred(" !!! ")+green("Database sync errors, cannot continue."))
-            return 1
-        return 0
+        repos = [Entropy.default_repository]
+        if sync_all:
+            repos = etpConst['server_repositories'].keys()
+            repos.sort()
+        old_default = Entropy.default_repository
+
+        problems = 0
+        for repo in repos:
+
+            if repo != Entropy.default_repository:
+                Entropy.switch_default_repository(repo)
+
+            print_info(green(" * ")+red("Syncing databases ..."))
+            errors, fine, broken = sync_remote_databases()
+            if errors:
+                print_error(darkred(" !!! ")+green("Database sync errors, cannot continue."))
+                problems = 1
+
+        if old_default != Entropy.default_repository:
+            Entropy.switch_default_repository(old_default)
+
+        return problems
 
 
 def sync_remote_databases(noUpload = False, justStats = False):
