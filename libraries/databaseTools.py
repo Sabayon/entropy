@@ -1411,20 +1411,26 @@ class etpDatabase:
         self.cursor.execute("DELETE FROM dependencies WHERE idpackage = (?)", (idpackage,))
         self.commitChanges()
 
-    def insertDependencies(self, idpackage, deplist):
+    def insertDependencies(self, idpackage, depdata):
 
-        for dep in deplist:
+        for dep in depdata:
 
             iddep = self.isDependencyAvailable(dep)
             if (iddep == -1):
                 # create category
                 iddep = self.addDependency(dep)
 
+            if type(depdata) is dict:
+                deptype = depdata[dep]
+            else:
+                deptype = 0
+
             self.cursor.execute(
                 'INSERT into dependencies VALUES '
-                '(?,?)'
+                '(?,?,?)'
                 , (	idpackage,
                         iddep,
+                        deptype,
                         )
             )
 
@@ -1692,7 +1698,6 @@ class etpDatabase:
         else:
             data['systempackage'] = ''
 
-        # FIXME: this will be removed when 1.0 will be out
         data['config_protect'] = self.retrieveProtect(idpackage)
         data['config_protect_mask'] = self.retrieveProtectMask(idpackage)
 
@@ -1714,10 +1719,13 @@ class etpDatabase:
         data['content'] = {}
         if get_content:
             mycontent = self.retrieveContent(idpackage, extended = True)
-            for cdata in mycontent:
-                data['content'][cdata[0]] = cdata[1]
+            for xfile,filetype in mycontent:
+                data['content'][xfile] = filetype
 
-        data['dependencies'] = self.retrieveDependencies(idpackage)
+        data['dependencies'] = {}
+        depdata = self.retrieveDependencies(idpackage, extended = True)
+        for dep,deptype in depdata:
+            data['dependencies'][dep] = deptype
         data['provide'] = self.retrieveProvide(idpackage)
         data['conflicts'] = self.retrieveConflicts(idpackage)
 
@@ -1725,7 +1733,8 @@ class etpDatabase:
         data['datecreation'] = mydata[16]
         data['size'] = mydata[17]
         data['revision'] = mydata[18]
-        data['disksize'] = self.retrieveOnDiskSize(idpackage) # cannot do this too, for backward compat
+        # cannot do this too, for backward compat
+        data['disksize'] = self.retrieveOnDiskSize(idpackage)
 
         data['licensedata'] = self.retrieveLicensedata(idpackage)
 
@@ -2130,14 +2139,28 @@ class etpDatabase:
         self.storeInfoCache(idpackage,'retrieveDependenciesList',deps)
         return deps
 
-    def retrieveDependencies(self, idpackage):
+    def retrieveDependencies(self, idpackage, extended = False, deptype = None):
 
-        cache = self.fetchInfoCache(idpackage,'retrieveDependencies')
+        cache = self.fetchInfoCache(
+                        idpackage,
+                        'retrieveDependencies',
+                        extra_hash = hash(str(hash(extended))+str(hash(deptype)))
+        )
         if cache != None: return cache
 
-        self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE dependencies.idpackage = (?) and dependencies.iddependency = dependenciesreference.iddependency', (idpackage,))
+        searchdata = [idpackage]
 
-        deps = self.fetchall2set(self.cursor.fetchall())
+        depstring = ''
+        if deptype != None:
+            depstring = ' and dependencies.type = (?)'
+            searchdata.append(deptype)
+
+        if extended:
+            self.cursor.execute('SELECT dependenciesreference.dependency,dependencies.type FROM dependencies,dependenciesreference WHERE dependencies.idpackage = (?) and dependencies.iddependency = dependenciesreference.iddependency'+depstring, searchdata)
+            deps = self.cursor.fetchall()
+        else:
+            self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE dependencies.idpackage = (?) and dependencies.iddependency = dependenciesreference.iddependency'+depstring, searchdata)
+            deps = self.fetchall2set(self.cursor.fetchall())
 
         self.storeInfoCache(idpackage,'retrieveDependencies',deps)
         return deps
@@ -3070,6 +3093,9 @@ class etpDatabase:
         if not self.doesTableExist("installedtable") and (self.dbname == etpConst['clientdbid']):
             self.createInstalledTable()
 
+        if not self.doesColumnInTableExist("dependencies","type"):
+            self.createDependenciesTypeColumn()
+
         # these are the tables moved to INTEGER PRIMARY KEY AUTOINCREMENT
         autoincrement_tables = [
             'treeupdatesactions',
@@ -3437,7 +3463,8 @@ class etpDatabase:
 
     def createDependenciesIndex(self):
         if self.indexing:
-            self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex_idpackage_iddependency ON dependencies ( idpackage, iddependency )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex_idpackage ON dependencies ( idpackage )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex_iddependency ON dependencies ( iddependency )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesreferenceindex_dependency ON dependenciesreference ( dependency )')
             self.commitChanges()
 
@@ -3512,6 +3539,10 @@ class etpDatabase:
     def createSizesTable(self):
         self.cursor.execute('DROP TABLE IF EXISTS sizes;')
         self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
+
+    def createDependenciesTypeColumn(self):
+        self.cursor.execute('ALTER TABLE dependencies ADD COLUMN type INTEGER;')
+        self.cursor.execute('UPDATE dependencies SET type = (?)', (0,))
 
     def createCountersBranchColumn(self):
         self.cursor.execute('ALTER TABLE counters ADD COLUMN branch VARCHAR;')

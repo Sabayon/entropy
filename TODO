@@ -1,6 +1,6 @@
 TODO list
   - server-side: write a ncurses interface to manage entropy database + spm interface + GLSA
-  - split RDEPEND and PDEPEND (*)
+  - implement pdepend support in dependencies sorting
   - add i18n support
   - Community repositories
   - implement notice board

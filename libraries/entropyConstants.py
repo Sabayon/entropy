@@ -78,8 +78,6 @@ DROP TABLE IF EXISTS content;
 DROP TABLE IF EXISTS contentreference;
 DROP TABLE IF EXISTS contenttypes;
 DROP TABLE IF EXISTS dependencies;
-DROP TABLE IF EXISTS rundependencies;
-DROP TABLE IF EXISTS rundependenciesxt;
 DROP TABLE IF EXISTS dependenciesreference;
 DROP TABLE IF EXISTS provide;
 DROP TABLE IF EXISTS conflicts;
@@ -161,7 +159,8 @@ CREATE TABLE provide (
 
 CREATE TABLE dependencies (
     idpackage INTEGER,
-    iddependency INTEGER
+    iddependency INTEGER,
+    type INTEGER
 );
 
 CREATE TABLE dependenciesreference (

@@ -3233,12 +3233,20 @@ class EquoInterface(TextInterface):
             else:
                 data['useflags'].append("-"+x)
         data['sources'] = portage_metadata['SRC_URI'].split()
-        data['dependencies'] = [x for x in portage_metadata['RDEPEND'].split()+portage_metadata['PDEPEND'].split() if not x.startswith("!") and not x in ("(","||",")","")]
+        data['dependencies'] = {}
+        for x in portage_metadata['RDEPEND'].split():
+            if x.startswith("!") or (x in ("(","||",")","")):
+                continue
+            data['dependencies'][x] = 0
+        for x in portage_metadata['PDEPEND'].split():
+            if x.startswith("!") or (x in ("(","||",")","")):
+                continue
+            data['dependencies'][x] = 1
         data['conflicts'] = [x[1:] for x in portage_metadata['RDEPEND'].split()+portage_metadata['PDEPEND'].split() if x.startswith("!") and not x in ("(","||",")","")]
 
         if (kernelstuff) and (not kernelstuff_kernel):
             # add kname to the dependency
-            data['dependencies'].append("=sys-kernel/linux-"+kname+"-"+kver)
+            data['dependencies']["=sys-kernel/linux-"+kname+"-"+kver] = 0
             key = data['category']+"/"+data['name']
             if etpConst['conflicting_tagged_packages'].has_key(key):
                 myconflicts = etpConst['conflicting_tagged_packages'][key]
