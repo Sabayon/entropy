@@ -1130,8 +1130,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
         else:
             masks = [action]
 
-        if action == "updates":
-            masks.append("available")
 
         self.setBusy()
         bootstrap = False
@@ -1156,6 +1154,12 @@ class SpritzApplication(SpritzController,SpritzGUI):
             allpkgs += self.etpbase.getPackages(flt)
             self.setStatus(_("Ready"))
         if self.doProgress: self.progress.total.next() # -> Sort Lists
+
+        if action == "updates":
+            msg = "%s: available" % (_('Calculating'),)
+            self.setStatus(msg)
+            self.etpbase.getPackages("available")
+            self.setStatus(_("Ready"))
 
         if bootstrap:
             self.endWorking()
