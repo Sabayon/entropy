@@ -1,14 +1,14 @@
 <?php
 
-function insert_attachment($data,$boundary,$filename) {
+function insert_attachment($data,$boundary,$filename,$id) {
 
     $mymessage = "\n\n--".$boundary."\n";
     $mymessage .= "Content-Type: application/octet-stream; name=\"".$filename."\"\n";
     $mymessage .= "Content-Transfer-Encoding: base64\n";
+    $mymessage .= "X-Attachment-Id: ".$id."\n";
     $mymessage .= "Content-Disposition: attachment; filename=\"".$filename."\"\n\n";
     $mymessage .= chunk_split(base64_encode($data));
     $mymessage .= "\n\n";
-    $mymessage .= "--".$boundary."--\n";
     return $mymessage;
 
 }
@@ -50,10 +50,10 @@ $message .= 'System Version: ' . $system_version . "\n";
 $message .= 'IP: ' . $ip . "\n";
 $message .= 'Date: ' . date("G:i d/F/Y") . "\n";
 
-$message .= insert_attachment($_POST['errordata'],$boundary,'errordata.txt');
-$message .= insert_attachment($_POST['processes'],$boundary,'processes.txt');
-$message .= insert_attachment($_POST['lspci'],$boundary,'lspci.txt');
-$message .= insert_attachment($_POST['dmesg'],$boundary,'dmesg.txt');
+$message .= insert_attachment($_POST['errordata'],$boundary,'errordata.txt',0.1);
+$message .= insert_attachment($_POST['processes'],$boundary,'processes.txt',0.2);
+$message .= insert_attachment($_POST['lspci'],$boundary,'lspci.txt',0.3);
+$message .= insert_attachment($_POST['dmesg'],$boundary,'dmesg.txt',0.4);
 
 $message .= "--".$boundary."--\n";
 
