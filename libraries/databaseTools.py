@@ -1067,9 +1067,15 @@ class etpDatabase:
             rssAtom = pkgatom+"~"+str(revision)
             # store addPackage action
             rssObj = dumpTools.loadobj(etpConst['rss-dump-name'])
+            global etpRSSMessages
             if rssObj:
-                global etpRSSMessages
                 etpRSSMessages = rssObj.copy()
+            if not isinstance(etpRSSMessages,dict):
+                etpRSSMessages = {}
+            if not etpRSSMessages.has_key('added'):
+                etpRSSMessages['added'] = {}
+            if not etpRSSMessages.has_key('removed'):
+                etpRSSMessages['removed'] = {}
             if rssAtom in etpRSSMessages['removed']:
                 del etpRSSMessages['removed'][rssAtom]
             etpRSSMessages['added'][rssAtom] = {}
@@ -1135,12 +1141,18 @@ class etpDatabase:
         if etpConst['rss-feed'] and not self.clientDatabase:
             # store addPackage action
             rssObj = dumpTools.loadobj(etpConst['rss-dump-name'])
+            global etpRSSMessages
             if rssObj:
-                global etpRSSMessages
                 etpRSSMessages = rssObj.copy()
             rssAtom = self.retrieveAtom(idpackage)
             rssRevision = self.retrieveRevision(idpackage)
             rssAtom += "~"+str(rssRevision)
+            if not isinstance(etpRSSMessages,dict):
+                etpRSSMessages = {}
+            if not etpRSSMessages.has_key('added'):
+                etpRSSMessages['added'] = {}
+            if not etpRSSMessages.has_key('removed'):
+                etpRSSMessages['removed'] = {}
             if rssAtom in etpRSSMessages['added']:
                 del etpRSSMessages['added'][rssAtom]
             etpRSSMessages['removed'][rssAtom] = {}
