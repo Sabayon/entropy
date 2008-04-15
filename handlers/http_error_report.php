@@ -19,7 +19,7 @@ $system_version = $_POST['system_version'];
 $name = $_POST['name'];
 $email = $_POST['email'];
 $description = $_POST['description'];
-$mail = "fabio.erculiani@gmail.com";
+$mail = "lxnay@sabayonlinux.org";
 $subject = "Entropy Error Reporting Handler";
 $random_hash = md5(date('r', time()));
 
