@@ -1,13 +1,14 @@
 <?php
 
-function insert_attachment($data,$mime,$filename,$hash) {
+function insert_attachment($data,$boundary,$filename) {
 
-    $mymessage = "--PHP-mixed-".$hash."\n";
-    $mymessage .= "Content-Type: ".$mime."; name=\"".$filename."\"\n";
+    $mymessage = "--".$boundary."\n";
+    $mymessage .= "Content-Type: application/octet-stream; name=\"".$filename."\"\n";
     $mymessage .= "Content-Transfer-Encoding: base64\n";
-    $mymessage .= "Content-Disposition: attachment\n";
+    //$mymessage .= "Content-Disposition: attachment\n";
     $mymessage .= chunk_split(base64_encode($data));
-    $mymessage .= "--PHP-mixed-".$hash."--\n";
+    $mymessage .= "\n\n";
+    $mymessage .= "--".$boundary."--\n";
     return $mymessage;
 
 }
@@ -24,18 +25,18 @@ $subject = "Entropy Error Reporting Handler";
 $random_hash = md5(date('r', time()));
 
 $headers = "MIME-Version: 1.0\n";
-$headers .= "Content-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"\n";
+$boundary = "PHP-mixed-".$random_hash;
+$headers .= "Content-Type: multipart/mixed; boundary=\"".$boundary."\"\n";
 if ($email) {
-    $headers .= "From: ".$email."\nReply-To: ".$email;
+    $headers .= "From: ".$email."\nReply-To: ".$email."\n\n";
 } else {
-    $headers .= "From: www-data@sabayonlinux.org\nReply-To: www-data@sabayonlinux.org";
+    $headers .= "From: www-data@sabayonlinux.org\nReply-To: www-data@sabayonlinux.org\n\n";
 }
 
-$message = "--PHP-mixed-".$random_hash."\n";
-$message .= "Content-Type: multipart/alternative; boundary=\"PHP-alt-".$random_hash."\"\n";
-$message .= "--PHP-alt-".$random_hash."\n";
+$message = "--".$boundary."\n";
 $message .= "Content-Type: text/plain; charset=\"iso-8859-1\"\n";
 $message .= "Content-Transfer-Encoding: 7bit\n";
+
 $message .= "Hello, this is an Entropy error report.\n";
 $message .= $_POST['stacktrace'];
 $message .= "\n\n";
@@ -49,11 +50,12 @@ $message .= 'Version: ' . $version . "\n";
 $message .= 'System Version: ' . $system_version . "\n";
 $message .= 'IP: ' . $ip . "\n";
 $message .= 'Date: ' . date("G:i d/F/Y") . "\n";
-$message .= "--PHP-alt-".$random_hash."--\n";
-$message .= insert_attachment($_POST['errordata'],'application/xml','errordata.txt',$random_hash);
-$message .= insert_attachment($_POST['processes'],'application/xml','processes.txt',$random_hash);
-$message .= insert_attachment($_POST['lspci'],'application/xml','lspci.txt',$random_hash);
-$message .= insert_attachment($_POST['dmesg'],'application/xml','dmesg.txt',$random_hash);
+$message .= "--\n";
+
+$message .= insert_attachment($_POST['errordata'],$boundary,'errordata.txt');
+$message .= insert_attachment($_POST['processes'],$boundary,'processes.txt');
+$message .= insert_attachment($_POST['lspci'],$boundary,'lspci.txt');
+$message .= insert_attachment($_POST['dmesg'],$boundary,'dmesg.txt');
 
 
 if ($_POST['stacktrace'] && $_POST['arch'] && $ip) {
