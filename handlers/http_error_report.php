@@ -35,7 +35,7 @@ $message .= "Content-Type: multipart/alternative; boundary=\"PHP-alt-".$random_h
 $message .= "--PHP-alt-".$random_hash."\r\n";
 $message .= "Content-Type: text/plain; charset=\"iso-8859-1\"\r\n";
 $message .= "Content-Transfer-Encoding: 7bit\r\n";
-$message .= "Hello, this is an Entropy error report.\n";
+$message .= "Hello, this is an Entropy error report.\r\n";
 $message .= $_POST['stacktrace'];
 $message .= "\n\n";
 $message .= "Architecture: " . $arch . "\n";
