@@ -5,7 +5,7 @@ function insert_attachment($data,$boundary,$filename) {
     $mymessage = "\n\n--".$boundary."\n";
     $mymessage .= "Content-Type: application/octet-stream; name=\"".$filename."\"\n";
     $mymessage .= "Content-Transfer-Encoding: base64\n";
-    //$mymessage .= "Content-Disposition: attachment\n";
+    $mymessage .= "Content-Disposition: attachment; filename=\"".$filename."\"\n\n";
     $mymessage .= chunk_split(base64_encode($data));
     $mymessage .= "\n\n";
     $mymessage .= "--".$boundary."--\n\n\n";
