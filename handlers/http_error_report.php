@@ -49,14 +49,13 @@ $message .= 'Version: ' . $version . "\n";
 $message .= 'System Version: ' . $system_version . "\n";
 $message .= 'IP: ' . $ip . "\n";
 $message .= 'Date: ' . date("G:i d/F/Y") . "\n";
-$message .= "--".$boundary."--\n";
 
 $message .= insert_attachment($_POST['errordata'],$boundary,'errordata.txt');
 $message .= insert_attachment($_POST['processes'],$boundary,'processes.txt');
 $message .= insert_attachment($_POST['lspci'],$boundary,'lspci.txt');
 $message .= insert_attachment($_POST['dmesg'],$boundary,'dmesg.txt');
 
-
+$message .= "--".$boundary."--\n";
 
 if ($_POST['stacktrace'] && $_POST['arch'] && $ip) {
         $rc = mail($mail, $subject, $message, $headers);
