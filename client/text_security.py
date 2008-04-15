@@ -76,8 +76,7 @@ def show_advisories_info(advisories):
 def print_advisory_information(advisory_data, key):
 
     # print advisory code
-    glsa_url = "http://www.gentoo.org/security/en/glsa/%s" % (advisory_data['filename'],)
-    print_info(blue(" @@ ")+red("GLSA Identifier ")+bold(key)+red(" | ")+blue(glsa_url))
+    print_info(blue(" @@ ")+red("GLSA Identifier ")+bold(key)+red(" | ")+blue(advisory_data['url']))
 
     # title
     print_info("\t"+darkgreen("Title:\t\t")+darkred(advisory_data['title']))
@@ -88,6 +87,21 @@ def print_advisory_information(advisory_data, key):
     for x in description:
         print_info(desc_text+x.strip())
         desc_text = "\t\t\t"
+
+    for item in advisory_data['description_items']:
+        desc_text = "\t\t\t %s " % (darkred("(*)"),)
+        count = 8
+        mystr = []
+        for word in item.split():
+            count -= 1
+            mystr.append(word)
+            if count < 1:
+                print_info(desc_text+' '.join(mystr))
+                desc_text = "\t\t\t   "
+                mystr = []
+                count = 8
+        if count < 8:
+            print_info(desc_text+' '.join(mystr))
 
     # background
     if advisory_data['background']:
@@ -138,7 +152,6 @@ def print_advisory_information(advisory_data, key):
     if advisory_data['bugs']:
         print_info("\t"+darkgreen("Gentoo bugs:"))
         for bug in advisory_data['bugs']:
-            bug = "https://bugs.gentoo.org/show_bug.cgi?id=%s" % (bug,)
             print_info("\t\t\t"+darkblue(bug))
 
     # affected
@@ -167,7 +180,6 @@ def print_advisory_information(advisory_data, key):
             for x in resolution.split("\n"):
                 print_info(res_text+x.strip())
                 res_text = "\t\t\t"
-
 
 def list_advisories(only_affected = False, only_unaffected = False):
     securityConn = Equo.Security()

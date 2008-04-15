@@ -718,6 +718,7 @@ class EntropyAdvisoriesView:
 
         self.view.connect("button-release-event", self.set_advisory_id)
         self.view.get_selection().set_mode( gtk.SELECTION_SINGLE )
+        model.set_sort_column_id( 1, gtk.SORT_ASCENDING )
         return model
 
     def set_advisory_id(self, widget, event):
@@ -725,16 +726,17 @@ class EntropyAdvisoriesView:
         model, myiter = widget.get_selection().get_selected()
         if myiter:
             key, affected, data = model.get_value( myiter, 0 )
-            self.enable_properties_menu(key)
-        else:
-            self.enable_properties_menu(None)
+            if key != None:
+                self.enable_properties_menu((key,affected,data))
+                return
+        self.enable_properties_menu(None)
 
-    def enable_properties_menu(self, key):
-        self.etpbase.selected_treeview_item = None
+    def enable_properties_menu(self, data):
+        self.etpbase.selected_advisory_item = None
         do = False
-        if key:
+        if data:
             do = True
-            self.etpbase.selected_treeview_item = key
+            self.etpbase.selected_advisory_item = data
         self.ui.advInfoButton.set_sensitive(do)
 
     def set_icon_to_cell(self, cell, icon):
@@ -742,6 +744,8 @@ class EntropyAdvisoriesView:
 
     def new_icon( self, column, cell, model, iter ):
         key, affected, data = model.get_value( iter, 0 )
+        if key == None:
+            affected = False
         if affected:
             self.set_icon_to_cell(cell, 'gtk-cancel')
         else:
@@ -749,6 +753,8 @@ class EntropyAdvisoriesView:
 
     def get_data_text( self, column, cell, model, iter ):
         key, affected, data = model.get_value( iter, 0 )
+        if key == None:
+            affected = False
         if affected:
             cell.set_property('background',"#A71B1B")
             cell.set_property('foreground',"#FFFFFF")
@@ -773,9 +779,7 @@ class EntropyAdvisoriesView:
             all = True
 
         identifiers = {}
-        adv_keys = adv_metadata.keys()
-        adv_keys.sort()
-        for key in adv_keys:
+        for key in adv_metadata:
             affected = securityConn.is_affected(key)
             if all:
                 identifiers[key] = affected
@@ -784,6 +788,16 @@ class EntropyAdvisoriesView:
             elif only_unaffected and affected:
                 continue
             identifiers[key] = affected
+
+        if not identifiers:
+            self.model.append(
+                [
+                    (None,None,None),
+                    "---------",
+                    "<b>%s</b>" % (_("No advisories"),),
+                    "<small>%s</small>" % (_("There are no items to show"),)
+                ]
+            )
 
         for key in identifiers:
             if not adv_metadata[key]['affected']:

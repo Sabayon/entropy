@@ -8838,11 +8838,12 @@ class SecurityInterface:
         glsa_revised = glsa_tree.getElementsByTagName("revised")[0].firstChild.data
 
         xml_data['filename'] = xmlfilename
+        xml_data['url'] = "http://www.gentoo.org/security/en/glsa/%s" % (xmlfilename,)
         xml_data['title'] = glsa_title.strip()
         xml_data['synopsis'] = glsa_synopsis.strip()
         xml_data['announced'] = glsa_announced.strip()
         xml_data['revised'] = glsa_revised.strip()
-        xml_data['bugs'] = [x.firstChild.data.strip() for x in glsa_tree.getElementsByTagName("bug")]
+        xml_data['bugs'] = ["https://bugs.gentoo.org/show_bug.cgi?id="+x.firstChild.data.strip() for x in glsa_tree.getElementsByTagName("bug")]
         xml_data['access'] = ""
         try:
             xml_data['access'] = glsa_tree.getElementsByTagName("access")[0].firstChild.data.strip()
@@ -8854,10 +8855,18 @@ class SecurityInterface:
         xml_data['references'] = [x.getAttribute("link").strip() for x in references.getElementsByTagName("uri")]
 
         try:
-            description = glsa_tree.getElementsByTagName("description")[0]
-            xml_data['description'] = description.getElementsByTagName("p")[0].firstChild.data.strip()
+            xml_data['description'] = ""
+            xml_data['description_items'] = []
+            desc = glsa_tree.getElementsByTagName("description")[0].getElementsByTagName("p")[0].firstChild.data.strip()
+            xml_data['description'] = desc
+            items = glsa_tree.getElementsByTagName("description")[0].getElementsByTagName("ul")
+            for item in items:
+                li_items = item.getElementsByTagName("li")
+                for li_item in li_items:
+                    xml_data['description_items'].append(' '.join([x.strip() for x in li_item.firstChild.data.strip().split("\n")]))
         except IndexError:
             xml_data['description'] = ""
+            xml_data['description_items'] = []
         try:
             workaround = glsa_tree.getElementsByTagName("workaround")[0]
             xml_data['workaround'] = workaround.getElementsByTagName("p")[0].firstChild.data.strip()

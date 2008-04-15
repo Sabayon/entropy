@@ -405,7 +405,7 @@ except KeyboardInterrupt:
     sys.exit(0)
 #except Timeout:
 #    pass
-except Exception:
+except:
     reset_cache()
 
     Text = TextInterface()
