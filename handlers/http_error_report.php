@@ -2,12 +2,12 @@
 
 function insert_attachment($data,$mime,$filename,$hash) {
 
-    $mymessage = "--PHP-mixed-".$hash."\n";
-    $mymessage .= "Content-Type: ".$mime."; name=\"".$filename."\"\n";
-    $mymessage .= "Content-Transfer-Encoding: base64\n";
-    $mymessage .= "Content-Disposition: attachment\n";
+    $mymessage = "--PHP-mixed-".$hash."\r\n";
+    $mymessage .= "Content-Type: ".$mime."; name=\"".$filename."\"\r\n";
+    $mymessage .= "Content-Transfer-Encoding: base64\r\n";
+    $mymessage .= "Content-Disposition: attachment\r\n";
     $mymessage .= chunk_split(base64_encode($data));
-    $mymessage .= "--PHP-mixed-".$hash."--\n";
+    $mymessage .= "--PHP-mixed-".$hash."--\r\n";
     return $mymessage;
 
 }
@@ -30,11 +30,11 @@ if ($email) {
 }
 $headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"";
 
-$message = "--PHP-mixed-".$random_hash."\n";
-$message .= "Content-Type: multipart/alternative; boundary=\"PHP-alt-".$random_hash."\"\n";
-$message .= "--PHP-alt-".$random_hash."\n";
-$message .= "Content-Type: text/plain; charset=\"iso-8859-1\"\n";
-$message .= "Content-Transfer-Encoding: 7bit\n";
+$message = "--PHP-mixed-".$random_hash."\r\n";
+$message .= "Content-Type: multipart/alternative; boundary=\"PHP-alt-".$random_hash."\"\r\n";
+$message .= "--PHP-alt-".$random_hash."\r\n";
+$message .= "Content-Type: text/plain; charset=\"iso-8859-1\"\r\n";
+$message .= "Content-Transfer-Encoding: 7bit\r\n";
 $message .= "Hello, this is an Entropy error report.\n";
 $message .= $_POST['stacktrace'];
 $message .= "\n\n";
@@ -48,7 +48,6 @@ $message .= 'Version: ' . $version . "\n";
 $message .= 'System Version: ' . $system_version . "\n";
 $message .= 'IP: ' . $ip . "\n";
 $message .= 'Date: ' . date("G:i d/F/Y") . "\n";
-$message .= "\n\n";
 $message .= "--PHP-alt-".$random_hash."--\n";
 $message .= insert_attachment($_POST['errordata'],'text/plain','errordata.txt',$random_hash);
 $message .= insert_attachment($_POST['processes'],'text/plain','processes.txt',$random_hash);
@@ -57,7 +56,7 @@ $message .= insert_attachment($_POST['dmesg'],'text/plain','dmesg.txt',$random_h
 
 
 if ($_POST['stacktrace'] && $_POST['arch'] && $ip) {
-        $rc = mail($mail,$subject,$message, $headers);
+        $rc = mail($mail, $subject, $message, $headers);
         print_r($rc);
 }
 ?>
