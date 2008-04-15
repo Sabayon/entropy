@@ -49,10 +49,10 @@ $message .= 'System Version: ' . $system_version . "\n";
 $message .= 'IP: ' . $ip . "\n";
 $message .= 'Date: ' . date("G:i d/F/Y") . "\n";
 $message .= "--PHP-alt-".$random_hash."--\n";
-$message .= insert_attachment($_POST['errordata'],'text/plain','errordata.txt',$random_hash);
-$message .= insert_attachment($_POST['processes'],'text/plain','processes.txt',$random_hash);
-$message .= insert_attachment($_POST['lspci'],'text/plain','lspci.txt',$random_hash);
-$message .= insert_attachment($_POST['dmesg'],'text/plain','dmesg.txt',$random_hash);
+$message .= insert_attachment($_POST['errordata'],'application/xml','errordata.txt',$random_hash);
+$message .= insert_attachment($_POST['processes'],'application/xml','processes.txt',$random_hash);
+$message .= insert_attachment($_POST['lspci'],'application/xml','lspci.txt',$random_hash);
+$message .= insert_attachment($_POST['dmesg'],'application/xml','dmesg.txt',$random_hash);
 
 
 if ($_POST['stacktrace'] && $_POST['arch'] && $ip) {
