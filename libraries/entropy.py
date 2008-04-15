@@ -8624,7 +8624,7 @@ class SecurityInterface:
         if xcache:
             self.Entropy.clear_dump_cache(etpCache['advisories'])
 
-    def __get_advisories_cache(self):
+    def get_advisories_cache(self):
 
         if self.adv_metadata != None:
             return self.adv_metadata
@@ -8662,7 +8662,7 @@ class SecurityInterface:
 
     def get_advisories_metadata(self):
 
-        cached = self.__get_advisories_cache()
+        cached = self.get_advisories_cache()
         if cached != None:
             return cached
 
@@ -14471,10 +14471,14 @@ class ServerMirrorsInterface:
 
         if not download_latest and not upload_queue:
             self.Entropy.updateProgress(
-                red("[repo:%s|sync] database already in sync" % (repo,)),
+                "[repo:%s|%s] %s" % (
+                        brown(repo),
+                        red("sync"),
+                        blue("database already in sync"),
+                ),
                 importance = 1,
                 type = "info",
-                header = darkgreen(" * ")
+                header = blue(" @@ ")
             )
             return 0, set(), set()
 
