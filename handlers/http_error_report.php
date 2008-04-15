@@ -35,11 +35,10 @@ if ($email) {
 
 $message = "--".$boundary."\n";
 $message .= "Content-Type: text/plain; charset=\"iso-8859-1\"\n";
-$message .= "Content-Transfer-Encoding: 7bit\n";
+$message .= "Content-Transfer-Encoding: 7bit\n\n";
 
 $message .= "Hello, this is an Entropy error report.\n";
 $message .= $_POST['stacktrace'];
-$message .= "\n\n";
 $message .= "Architecture: " . $arch . "\n";
 $message .= "Arguments: " . $_POST['arguments'] . "\n";
 $message .= "UID: " . $_POST['uid'] . "\n";
@@ -50,7 +49,6 @@ $message .= 'Version: ' . $version . "\n";
 $message .= 'System Version: ' . $system_version . "\n";
 $message .= 'IP: ' . $ip . "\n";
 $message .= 'Date: ' . date("G:i d/F/Y") . "\n";
-$message .= "--\n";
 
 $message .= insert_attachment($_POST['errordata'],$boundary,'errordata.txt');
 $message .= insert_attachment($_POST['processes'],$boundary,'processes.txt');
