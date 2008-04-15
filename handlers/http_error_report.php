@@ -8,7 +8,7 @@ function insert_attachment($data,$boundary,$filename) {
     $mymessage .= "Content-Disposition: attachment; filename=\"".$filename."\"\n\n";
     $mymessage .= chunk_split(base64_encode($data));
     $mymessage .= "\n\n";
-    $mymessage .= "--".$boundary."--\n\n\n";
+    $mymessage .= "--".$boundary."--\n";
     return $mymessage;
 
 }
