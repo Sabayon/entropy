@@ -122,7 +122,7 @@ def database(options):
             try:
                 mydata = Equo.extract_pkg_metadata(temptbz2, silent = True)
             except Exception, e:
-                Equo.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Database generation: Exception caught: %s: %s" % (str(Exception),str(e),))
+                Equo.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Database generation: Exception caught: %s: %s" % (str(Exception),str(e),))
                 print_warning(red("!!! An error occured while analyzing: ")+blue(portagePackage))
                 print_warning("Exception: %s: %s" % (str(Exception),str(e),))
                 continue
@@ -159,7 +159,7 @@ def database(options):
             try:
                 Equo.clientDbconn.atomMatch(atom)
             except Exception, e:
-                Equo.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Database dependency atoms check: Exception caught: %s: %s" % (str(Exception),str(e),))
+                Equo.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Database dependency atoms check: Exception caught: %s: %s" % (str(Exception),str(e),))
                 print_warning(red("!!! An error occured while analyzing: ")+blue(atom)+" - "+red("can be invalid!"))
                 print_warning("Exception: %s: %s" % (str(Exception),str(e),))
                 found_idpackages = Equo.clientDbconn.searchIdpackageFromIddependency(iddependency)
@@ -425,7 +425,7 @@ def database(options):
                 try:
                     mydata = Equo.extract_pkg_metadata(temptbz2, silent = True)
                 except Exception, e:
-                    Equo.equoLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Database gentoosync: Exception caught: %s: %s" % (str(Exception),str(e),))
+                    Equo.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Database gentoosync: Exception caught: %s: %s" % (str(Exception),str(e),))
                     print_warning(red("!!! An error occured while analyzing: ")+blue(atom))
                     print_warning("Exception: %s: %s" % (str(Exception),str(e),))
                     continue

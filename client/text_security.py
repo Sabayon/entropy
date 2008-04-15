@@ -168,8 +168,6 @@ def print_advisory_information(advisory_data, key):
                 print_info(res_text+x.strip())
                 res_text = "\t\t\t"
 
-{'background': u''}
-
 
 def list_advisories(only_affected = False, only_unaffected = False):
     securityConn = Equo.Security()
