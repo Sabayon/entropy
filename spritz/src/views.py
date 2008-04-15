@@ -232,8 +232,6 @@ class EntropyPackageView:
     def reposition_menu(self, menu):
         # devo tradurre x=0,y=20 in posizioni assolute
         abs_x, abs_y = self.loaded_event.get_root_coords()
-        #print abs_x,abs_y
-        #print self.loaded_event.x,self.loaded_event.y
         abs_x -= self.loaded_event.x
         event_y = self.loaded_event.y
         # FIXME: find a better way to properly position menu
@@ -670,31 +668,34 @@ class EntropyFilesView:
 
 class EntropyAdvisoriesView:
     """ Queue View Class"""
-    def __init__( self, widget ):
+    def __init__( self, widget, ui, etpbase ):
         self.view = widget
-        self.adv_metadata = {}
         self.model = self.setup_view()
+        self.etpbase = etpbase
+        self.ui = ui
 
     def setup_view( self ):
         model = gtk.ListStore(
-                                gobject.TYPE_STRING,
+                                gobject.TYPE_PYOBJECT,
                                 gobject.TYPE_STRING,
                                 gobject.TYPE_STRING,
                                 gobject.TYPE_STRING
         )
         self.view.set_model( model )
 
-        cell0 = gtk.CellRendererText()
-        column0 = gtk.TreeViewColumn( _("Status"), cell0, markup = 0 )
+        # Setup resent column
+        cell0 = gtk.CellRendererPixbuf()
+        self.set_icon_to_cell(cell0, 'gtk-apply' )
+        column0 = gtk.TreeViewColumn( _("Status"), cell0 )
+        column0.set_cell_data_func( cell0, self.new_icon )
         column0.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column0.set_fixed_width( 50 )
-        column0.set_cell_data_func( cell0, self.get_data_text )
         self.view.append_column( column0 )
 
         cell1 = gtk.CellRendererText()
         column1 = gtk.TreeViewColumn( _("GLSA id."), cell1, markup = 1 )
         column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column1.set_fixed_width( 85 )
+        column1.set_fixed_width( 80 )
         column1.set_resizable( True )
         column1.set_cell_data_func( cell1, self.get_data_text )
         self.view.append_column( column1 )
@@ -702,7 +703,7 @@ class EntropyAdvisoriesView:
         cell2 = gtk.CellRendererText()
         column2 = gtk.TreeViewColumn( _( "Package key" ), cell2, markup = 2 )
         column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column2.set_fixed_width( 220 )
+        column2.set_fixed_width( 210 )
         column2.set_resizable( True )
         column2.set_cell_data_func( cell2, self.get_data_text )
         self.view.append_column( column2 )
@@ -710,20 +711,48 @@ class EntropyAdvisoriesView:
         cell3 = gtk.CellRendererText()
         column3 = gtk.TreeViewColumn( _( "Description" ), cell3, markup = 3 )
         column3.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column3.set_fixed_width( 170 )
+        column3.set_fixed_width( 190 )
         column3.set_resizable( True )
         column3.set_cell_data_func( cell3, self.get_data_text )
         self.view.append_column( column3 )
 
-        self.view.get_selection().set_mode( gtk.SELECTION_MULTIPLE )
+        self.view.connect("button-release-event", self.set_advisory_id)
+        self.view.get_selection().set_mode( gtk.SELECTION_SINGLE )
         return model
 
+    def set_advisory_id(self, widget, event):
+
+        model, myiter = widget.get_selection().get_selected()
+        if myiter:
+            key, affected, data = model.get_value( myiter, 0 )
+            self.enable_properties_menu(key)
+        else:
+            self.enable_properties_menu(None)
+
+    def enable_properties_menu(self, key):
+        self.etpbase.selected_treeview_item = None
+        do = False
+        if key:
+            do = True
+            self.etpbase.selected_treeview_item = key
+        self.ui.advInfoButton.set_sensitive(do)
+
+    def set_icon_to_cell(self, cell, icon):
+        cell.set_property( 'icon-name', icon )
+
+    def new_icon( self, column, cell, model, iter ):
+        key, affected, data = model.get_value( iter, 0 )
+        if affected:
+            self.set_icon_to_cell(cell, 'gtk-cancel')
+        else:
+            self.set_icon_to_cell(cell, 'gtk-apply')
+
     def get_data_text( self, column, cell, model, iter ):
-        obj = model.get_value( iter, 0 )
-        if obj == "AFF":
+        key, affected, data = model.get_value( iter, 0 )
+        if affected:
             cell.set_property('background',"#A71B1B")
             cell.set_property('foreground',"#FFFFFF")
-        elif obj == "UN":
+        else:
             cell.set_property('background',"darkgreen")
             cell.set_property('foreground',"#FFFFFF")
 
@@ -731,30 +760,30 @@ class EntropyAdvisoriesView:
     def populate( self, securityConn, adv_metadata, show ):
 
         self.model.clear()
-        self.adv_metadata = adv_metadata
+        self.enable_properties_menu(None)
 
         only_affected = False
         only_unaffected = False
         all = False
         if show == "affected":
             only_affected = True
-        elif show == "unaffected":
+        elif show == "applied":
             only_unaffected = True
         else:
             all = True
 
+        identifiers = {}
         adv_keys = adv_metadata.keys()
         adv_keys.sort()
-        identifiers = []
         for key in adv_keys:
             affected = securityConn.is_affected(key)
             if all:
-                identifiers.append(key)
+                identifiers[key] = affected
             elif only_affected and not affected:
                 continue
             elif only_unaffected and affected:
                 continue
-            identifiers.append(key)
+            identifiers[key] = affected
 
         for key in identifiers:
             if not adv_metadata[key]['affected']:
@@ -766,7 +795,7 @@ class EntropyAdvisoriesView:
                 mydata = adv_metadata[key]
                 self.model.append(
                     [
-                        "AFF",
+                        (key,identifiers[key],adv_metadata[key].copy(),),
                         key,
                         "<b>%s</b>" % (a_key,),
                         "<small>%s</small>" % (mydata['title'],)

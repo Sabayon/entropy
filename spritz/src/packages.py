@@ -56,15 +56,18 @@ class EntropyPackages:
         self._categoryPackages = {}
         self.categories = set()
         self.selected_treeview_item = None
+        self.selected_advisory_item = None
         self.pkgInCats = PkgInCategoryList()
 
     def clearPackages(self):
         self._packages.clear()
         self.selected_treeview_item = None
+        self.selected_advisory_item = None
 
     def clearCache(self):
         self.pkgCache.clear()
         self.selected_treeview_item = None
+        self.selected_advisory_item = None
 
     def populatePackages(self,masks):
         for flt in masks:

@@ -132,6 +132,11 @@ class SpritzController(Controller):
             return identifier, source, destination
         return 0,None,None
 
+    def on_advInfoButton_clicked( self, widget ):
+        if self.etpbase.selected_advisory_item:
+            print "load",self.etpbase.selected_advisory_item
+            #self.loadAdvInfoMenu(self.etpbase.selected_advisory_item)
+
     def on_pkgInfoButton_clicked( self, widget ):
         if self.etpbase.selected_treeview_item:
             self.loadPkgInfoMenu(self.etpbase.selected_treeview_item)
@@ -1051,19 +1056,19 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.progress.total.show()
 
     def populateAdvisories(self, widget, show):
+        self.setBusy()
         cached = None
         try:
             cached = self.Advisories.get_advisories_cache()
         except (IOError, EOFError):
             pass
         if cached == None:
-            self.setBusy()
             self.setPage('output')
             cached = self.Advisories.get_advisories_metadata()
             self.setPage('glsa')
-            self.unsetBusy()
         if cached:
             self.advisoriesView.populate(self.Advisories, cached, show)
+        self.unsetBusy()
 
     def populateFilesUpdate(self):
         # load filesUpdate interface and fill self.filesView
