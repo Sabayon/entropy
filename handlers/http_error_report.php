@@ -2,13 +2,13 @@
 
 function insert_attachment($data,$boundary,$filename) {
 
-    $mymessage = "--".$boundary."\n";
+    $mymessage = "\n\n--".$boundary."\n";
     $mymessage .= "Content-Type: application/octet-stream; name=\"".$filename."\"\n";
     $mymessage .= "Content-Transfer-Encoding: base64\n";
     //$mymessage .= "Content-Disposition: attachment\n";
     $mymessage .= chunk_split(base64_encode($data));
     $mymessage .= "\n\n";
-    $mymessage .= "--".$boundary."--\n";
+    $mymessage .= "--".$boundary."--\n\n\n";
     return $mymessage;
 
 }
@@ -37,7 +37,7 @@ $message = "--".$boundary."\n";
 $message .= "Content-Type: text/plain; charset=\"iso-8859-1\"\n";
 $message .= "Content-Transfer-Encoding: 7bit\n\n";
 
-$message .= "Hello, this is an Entropy error report.\n";
+$message .= "Hello, this is an Entropy error report.\n\n";
 $message .= $_POST['stacktrace'];
 $message .= "Architecture: " . $arch . "\n";
 $message .= "Arguments: " . $_POST['arguments'] . "\n";
