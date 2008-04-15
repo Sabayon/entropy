@@ -676,7 +676,7 @@ class EntropyAdvisoriesView:
         self.model = self.setup_view()
 
     def setup_view( self ):
-        model = gtk.TreeStore(
+        model = gtk.ListStore(
                                 gobject.TYPE_STRING,
                                 gobject.TYPE_STRING,
                                 gobject.TYPE_STRING,
@@ -700,7 +700,7 @@ class EntropyAdvisoriesView:
         self.view.append_column( column1 )
 
         cell2 = gtk.CellRendererText()
-        column2 = gtk.TreeViewColumn( _( "Package" ), cell2, markup = 2 )
+        column2 = gtk.TreeViewColumn( _( "Package key" ), cell2, markup = 2 )
         column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column2.set_fixed_width( 220 )
         column2.set_resizable( True )
@@ -708,23 +708,24 @@ class EntropyAdvisoriesView:
         self.view.append_column( column2 )
 
         cell3 = gtk.CellRendererText()
-        column3 = gtk.TreeViewColumn( _( "Overview" ), cell3, markup = 3 )
+        column3 = gtk.TreeViewColumn( _( "Description" ), cell3, markup = 3 )
         column3.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column3.set_fixed_width( 170 )
         column3.set_resizable( True )
         column3.set_cell_data_func( cell3, self.get_data_text )
         self.view.append_column( column3 )
 
-        self.view.get_selection().set_mode( gtk.SELECTION_SINGLE )
+        self.view.get_selection().set_mode( gtk.SELECTION_MULTIPLE )
         return model
 
     def get_data_text( self, column, cell, model, iter ):
-        obj = model.get_value( iter, 1 )
-        cached = self.adv_metadata.get(obj)
-        if cached == None:
-            return
-        if cached['impacttype'] == "normal":
-            cell.set_property('background',"#E2FFC1")
+        obj = model.get_value( iter, 0 )
+        if obj == "AFF":
+            cell.set_property('background',"#A71B1B")
+            cell.set_property('foreground',"#FFFFFF")
+        elif obj == "UN":
+            cell.set_property('background',"darkgreen")
+            cell.set_property('foreground',"#FFFFFF")
 
 
     def populate( self, securityConn, adv_metadata, show ):
@@ -763,7 +764,7 @@ class EntropyAdvisoriesView:
                 continue
             for a_key in affected_data:
                 mydata = adv_metadata[key]
-                parent = self.model.append( None,
+                self.model.append(
                     [
                         "AFF",
                         key,
@@ -771,11 +772,6 @@ class EntropyAdvisoriesView:
                         "<small>%s</small>" % (mydata['title'],)
                     ]
                 )
-                vulnerables = mydata['affected'][a_key][0]['vul_vers']
-                if not vulnerables:
-                    vulnerables = ['any']
-                for version in vulnerables:
-                    self.model.append(parent,["XX",None,cleanMarkupSting(version),mydata['access']])
 
 
 class CategoriesView:

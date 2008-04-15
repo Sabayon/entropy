@@ -418,7 +418,7 @@ class SpritzController(Controller):
         if page == "filesconf":
             self.populateFilesUpdate()
         elif page == "glsa":
-            self.populateAdvisories()
+            self.populateAdvisories(None,'affected')
         self.setNotebookPage(const.PAGES[page])
 
     def on_pkgFilter_toggled(self,rb,action):
@@ -1050,7 +1050,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         if alone:
             self.progress.total.show()
 
-    def populateAdvisories(self, show = 'affected'):
+    def populateAdvisories(self, widget, show):
         cached = None
         try:
             cached = self.Advisories.get_advisories_cache()

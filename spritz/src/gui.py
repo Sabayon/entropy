@@ -242,9 +242,8 @@ class SpritzGUI:
         self.ui.vteBox.pack_start(self.console, True, True)
         self.ui.termScrollBox.pack_start(termScroll, False)
         self.ui.termHBox.show_all()
-
-        # hide All Packages radio button, useless
         self.setupPkgFilter()
+        self.setupAdvisoriesFilter()
 
     def on_console_click(self, widget, event):
         self.console_menu.popup( None, None, None, event.button, event.time )
@@ -256,6 +255,18 @@ class SpritzGUI:
             logger.setLevel(loglvl)
         logger.addHandler(self.logHandler)
         return logger
+
+    def setupAdvisoriesFilter(self):
+        self.advisoryRB = {}
+        widgets = [
+                    (self.ui.rbAdvisories,'affected'),
+                    (self.ui.rbAdvisoriesApplied,'applied'),
+                    (self.ui.rbAdvisoriesAll,'all')
+        ]
+        for w,tag in widgets:
+            w.connect('toggled',self.populateAdvisories,tag)
+            w.set_mode(False)
+            self.advisoryRB[tag] = w
 
     def setupPkgFilter(self):
         ''' set callbacks for package radio buttons (all,updates, ...)'''
