@@ -84,6 +84,10 @@ class EquoInterface(TextInterface):
             self.noclientdb = True
             self.openclientdb = False
         self.xcache = xcache
+        shell_xcache = os.getenv("ETP_NOCACHE")
+        if shell_xcache:
+            self.xcache = False
+
         if self.openclientdb:
             self.openClientDatabase()
         self.FileUpdates = self.FileUpdatesInterfaceLoader()
@@ -1576,7 +1580,7 @@ class EquoInterface(TextInterface):
                 for x in broken_atoms:
                     if x not in treecache:
                         mybuffer.push((treedepth,x))
-                        treecache.add(x)
+                        #treecache.add(x) DO NOT DO THIS
 
             myundeps = matchdb.retrieveDependenciesList(match[0])
             if (not empty_deps):
@@ -1639,60 +1643,101 @@ class EquoInterface(TextInterface):
         # there is no need to update this cache when "match" will be installed, because at that point
         # clientmatch[0] will differ.
         if self.xcache:
-            c_hash = str(hash(tuple(match)))+str(hash(clientmatch[0]))+str(hash(deep_deps))
+            c_hash = str(hash(tuple(match)))+str(hash(deep_deps)+str(hash(clientmatch[0])))
             c_hash = str(hash(c_hash))
             cached = self.dumpTools.loadobj(etpCache['library_breakage']+c_hash)
             if cached != None:
                 return cached
 
+        # these should be pulled in before
+        repo_atoms = set()
+        # these can be pulled in after
+        client_atoms = set()
+
         matchdb = self.openRepositoryDatabase(match[1])
-        reponeeded = matchdb.retrieveNeeded(match[0])
-        clientneeded = self.clientDbconn.retrieveNeeded(clientmatch[0])
-        neededdiff = clientneeded - reponeeded
-        #neededdiff |= reponeeded - clientneeded
-        broken_atoms = set()
-        if neededdiff:
-            # test content
-            repocontent = matchdb.retrieveContent(match[0])
-            repocontent = set([x for x in repocontent if (x.find(".so") != -1)])
-            repocontent = set([x for x in repocontent if (matchdb.isNeededAvailable(os.path.basename(x)) > 0)])
-            clientcontent = self.clientDbconn.retrieveContent(clientmatch[0])
-            clientcontent = set([x for x in clientcontent if (x.find(".so") != -1)])
-            clientcontent = set([x for x in clientcontent if (self.clientDbconn.isNeededAvailable(os.path.basename(x)) > 0)])
-            clientcontent -= repocontent
-            del repocontent
-            search_libs = set()
-            linker_paths = self.entropyTools.collectLinkerPaths()
-            for cfile in clientcontent:
-                cpath = os.path.dirname(cfile)
-                if cpath in linker_paths:
-                    # there's a breakage
-                    cfile = os.path.basename(cfile)
-                    # search cfile
-                    search_libs.add(cfile)
-            #search_libs |= neededdiff
-            del clientcontent
-            search_matches = set()
-            for x in search_libs:
-                y = self.clientDbconn.searchNeeded(x)
-                search_matches |= y
-            del search_libs
-            found_search_atoms = set()
-            for x in search_matches:
-                search_key, search_slot = self.clientDbconn.retrieveKeySlot(x)
-                search_repo_match = self.atomMatch(search_key, matchSlot = search_slot)
-                if search_repo_match[0] != -1:
-                    found_search_atoms.add("%s:%s" % (search_key,str(search_slot),))
-            if found_search_atoms:
-                search_unsat, xxx = self.filterSatisfiedDependencies(found_search_atoms, deep_deps = deep_deps)
-                broken_atoms |= search_unsat
+        reponeeded = matchdb.retrieveNeeded(match[0], extended = True, format = True) # use extended = True in future
+        clientneeded = self.clientDbconn.retrieveNeeded(clientmatch[0], extended = True, format = True) # use extended = True in future
+        repo_split = [x.split(".so")[0] for x in reponeeded]
+        client_split = [x.split(".so")[0] for x in clientneeded]
+        client_side = [x for x in clientneeded if (x not in reponeeded) and (x.split(".so")[0] in repo_split)]
+        repo_side = [x for x in reponeeded if (x not in clientneeded) and (x.split(".so")[0] in client_split)]
+        del clientneeded,client_split,repo_split
+
+        # all the packages in client_side should be pulled in and updated
+        client_idpackages = set()
+        for needed in client_side:
+            client_idpackages |= self.clientDbconn.searchNeeded(needed)
+
+        client_keyslots = set()
+        for idpackage in client_idpackages:
+            if idpackage == clientmatch[0]:
+                continue
+            key, slot = self.clientDbconn.retrieveKeySlot(idpackage)
+            client_keyslots.add((key,slot))
+
+        # all the packages in repo_side should be pulled in too
+        repodata = {}
+        for needed in repo_side:
+            repodata[needed] = reponeeded[needed]
+        del repo_side,reponeeded
+
+        repo_dependencies = matchdb.retrieveDependencies(match[0])
+        matched_deps = set()
+        matched_repos = set()
+        for dependency in repo_dependencies:
+            depmatch = self.atomMatch(dependency)
+            if depmatch[0] == -1:
+                continue
+            matched_repos.add(depmatch[1])
+            matched_deps.add(depmatch)
+
+        matched_repos = [x for x in etpRepositoriesOrder if x in matched_repos]
+        found_matches = set()
+        for needed in repodata:
+            for myrepo in matched_repos:
+                mydbc = self.openRepositoryDatabase(myrepo)
+                solved_needed = mydbc.resolveNeeded(needed, elfclass = repodata[needed])
+                found = False
+                for idpackage,myfile in solved_needed:
+                    x = (idpackage,myrepo)
+                    if x in matched_deps:
+                        found_matches.add(x)
+                        found = True
+                        break
+                if found:
+                    break
+
+        myatoms = set()
+        for idpackage,repo in found_matches:
+            mydbc = self.openRepositoryDatabase(repo)
+            myatoms.add(mydbc.retrieveAtom(idpackage))
+
+        if myatoms:
+            unsatisfied, xxx = self.filterSatisfiedDependencies(myatoms, deep_deps = deep_deps)
+            repo_atoms |= unsatisfied
+
+        myatoms = set()
+        for key, slot in client_keyslots:
+            idpackage, repo = self.atomMatch(key, matchSlot = slot)
+            if idpackage == -1:
+                continue
+            mydbc = self.openRepositoryDatabase(repo)
+            myatoms.add(mydbc.retrieveAtom(idpackage))
+
+        if myatoms:
+            unsatisfied, xxx = self.filterSatisfiedDependencies(myatoms, deep_deps = deep_deps)
+            client_atoms |= unsatisfied
+
+        client_atoms |= repo_atoms
 
         if self.xcache:
             try:
-                self.dumpTools.dumpobj(etpCache['library_breakage']+c_hash,broken_atoms)
+                self.dumpTools.dumpobj(etpCache['library_breakage']+c_hash,client_atoms)
             except IOError:
                 pass
-        return broken_atoms
+
+        return client_atoms
+
 
     def get_required_packages(self, matched_atoms, empty_deps = False, deep_deps = False):
 

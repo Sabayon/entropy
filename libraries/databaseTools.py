@@ -2117,7 +2117,7 @@ class etpDatabase:
         self.storeInfoCache(idpackage,'retrieveEclasses',classes)
         return classes
 
-    def retrieveNeeded(self, idpackage, extended = False):
+    def retrieveNeeded(self, idpackage, extended = False, format = False):
 
         #cache = self.fetchInfoCache(idpackage,'retrieveNeeded')
         #if cache != None: return cache
@@ -2128,6 +2128,12 @@ class etpDatabase:
         else:
             self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
             needed = self.fetchall2set(self.cursor.fetchall())
+
+        if extended and format:
+            data = {}
+            for lib,elfclass in needed:
+                data[lib] = elfclass
+            needed = data
 
         #self.storeInfoCache(idpackage,'retrieveNeeded',needed)
         return needed
@@ -3444,6 +3450,8 @@ class etpDatabase:
         if self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( library )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed ( idneeded )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_idpackage ON needed ( idpackage )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_elfclass ON needed ( elfclass )')
             self.commitChanges()
 
     def createMessagesIndex(self):
