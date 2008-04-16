@@ -326,18 +326,18 @@ class etpDatabase:
             update_actions = []
             for update_file in update_files:
                 f = open(update_file,"r")
-                lines = [x.strip() for x in f.readlines() if x.strip()]
-                for line in lines:
-                    update_actions.append(line)
+                mycontent = f.readlines()
                 f.close()
+                lines = [x.strip() for x in mycontent if x.strip()]
+                update_actions.extend(lines)
                 del lines
             # add entropy packages.db.repo_updates content
             if os.path.isfile(repo_updates_file):
                 f = open(repo_updates_file,"r")
-                lines = [x.strip() for x in f.readlines() if x.strip() and not x.strip().startswith("#")]
-                for line in lines:
-                    update_actions.append(line)
+                mycontent = f.readlines()
                 f.close()
+                lines = [x.strip() for x in mycontent if x.strip() and not x.strip().startswith("#")]
+                update_actions.extend(lines)
             # now filter the required actions
             update_actions = self.filterTreeUpdatesActions(update_actions, server_side = True)
             if update_actions:

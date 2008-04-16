@@ -224,11 +224,12 @@ def countdown(secs=5,what="Counting...", back = False):
 def md5sum(filepath):
     import md5
     m = md5.new()
-    readfile = file(filepath)
+    readfile = open(filepath)
     block = readfile.read(1024)
     while block:
         m.update(block)
         block = readfile.read(1024)
+    readfile.close()
     return m.hexdigest()
 
 def md5sum_directory(directory, get_obj = False):
