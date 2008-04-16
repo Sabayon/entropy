@@ -338,7 +338,7 @@ class etpDatabase:
                     update_actions.append(line)
                 f.close()
             # now filter the required actions
-            update_actions = self.filterTreeUpdatesActions(update_actions)
+            update_actions = self.filterTreeUpdatesActions(update_actions, server_side = True)
             if update_actions:
 
                 self.updateProgress(
@@ -420,7 +420,7 @@ class etpDatabase:
 
     # this functions will filter either data from /usr/portage/profiles/updates/*
     # or repository database returning only the needed actions
-    def filterTreeUpdatesActions(self, actions):
+    def filterTreeUpdatesActions(self, actions, server_side = False):
         new_actions = []
         for action in actions:
             doaction = action.split()
@@ -430,24 +430,47 @@ class etpDatabase:
                 from_slot = doaction[2]
                 to_slot = doaction[3]
                 category = atom.split("/")[0]
-                matches = self.atomMatch(atom, multiMatch = True)
+                if server_side:
+                    matches = self.ServiceInterface.atomMatch(atom, multiMatch = True, multiRepo = True)
+                else:
+                    matches = self.atomMatch(atom, multiMatch = True)
                 if matches[1] == 0:
-                    # found atom, check slot and category
-                    for idpackage in matches[0]:
-                        myslot = str(self.retrieveSlot(idpackage))
-                        mycategory = self.retrieveCategory(idpackage)
-                        if mycategory == category:
-                            if (myslot == from_slot) and (myslot != to_slot):
-                                new_actions.append(action)
+                    if server_side:
+                        # found atom, check slot and category
+                        for idpackage,repo in matches[0]:
+                            mydbc = self.ServiceInterface.openServerDatabase(just_reading = True, repo = repo)
+                            myslot = str(mydbc.retrieveSlot(idpackage))
+                            mycategory = mydbc.retrieveCategory(idpackage)
+                            if mycategory == category:
+                                if (myslot == from_slot) and (myslot != to_slot) and (action not in new_actions):
+                                    new_actions.append(action)
+                    else:
+                        # found atom, check slot and category
+                        for idpackage in matches[0]:
+                            myslot = str(self.retrieveSlot(idpackage))
+                            mycategory = self.retrieveCategory(idpackage)
+                            if mycategory == category:
+                                if (myslot == from_slot) and (myslot != to_slot) and (action not in new_actions):
+                                    new_actions.append(action)
             elif doaction[0] == "move":
                 atom = doaction[1]
                 category = atom.split("/")[0]
-                matches = self.atomMatch(atom, multiMatch = True)
+                if server_side:
+                    matches = self.ServiceInterface.atomMatch(atom, multiMatch = True, multiRepo = True)
+                else:
+                    matches = self.atomMatch(atom, multiMatch = True)
                 if matches[1] == 0:
-                    for idpackage in matches[0]:
-                        mycategory = self.retrieveCategory(idpackage)
-                        if mycategory == category:
-                            new_actions.append(action)
+                    if server_side:
+                        for idpackage,repo in matches[0]:
+                            mydbc = self.ServiceInterface.openServerDatabase(just_reading = True, repo = repo)
+                            mycategory = mydbc.retrieveCategory(idpackage)
+                            if (mycategory == category) and (action not in new_actions):
+                                new_actions.append(action)
+                    else:
+                        for idpackage in matches[0]:
+                            mycategory = self.retrieveCategory(idpackage)
+                            if (mycategory == category) and (action not in new_actions):
+                                new_actions.append(action)
         return new_actions
 
     # this is the place to add extra actions support

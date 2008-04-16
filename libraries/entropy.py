@@ -1044,7 +1044,7 @@ class EquoInterface(TextInterface):
 
         def open_db(repoid):
             if server_repos:
-                dbconn = serverInstance.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
+                dbconn = serverInstance.openServerDatabase(just_reading = True, repo = repoid)
             else:
                 dbconn = self.openRepositoryDatabase(repoid)
             return dbconn
