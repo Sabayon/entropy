@@ -1435,7 +1435,10 @@ class EquoInterface(TextInterface):
                     repo_pkgrev = 9999
 
                 if (deep_deps):
-                    vcmp = self.entropyTools.entropyCompareVersions((repo_pkgver,repo_pkgtag,repo_pkgrev),(installedVer,installedTag,installedRev))
+                    vcmp = self.entropyTools.entropyCompareVersions(
+                                (repo_pkgver,repo_pkgtag,repo_pkgrev),
+                                (installedVer,installedTag,installedRev)
+                    )
                     if vcmp != 0:
                         depunsatisfied.add(dependency)
                     else:
@@ -1457,8 +1460,8 @@ class EquoInterface(TextInterface):
                     depsatisfied.clear()
             '''
 
-            unsatisfiedDeps.update(depunsatisfied)
-            satisfiedDeps.update(depsatisfied)
+            unsatisfiedDeps |= depunsatisfied
+            satisfiedDeps |= depsatisfied
 
         if self.xcache:
             try:
@@ -11373,7 +11376,7 @@ class ServerInterface(TextInterface):
 
         # verify if we need to update the database to sync
         # with portage updates, we just ignore being readonly in the case
-        if not etpConst['treeupdatescalled'] and not just_reading:
+        if (repo not in etpConst['server_treeupdatescalled']) and (not just_reading):
             # sometimes, when filling a new server db, we need to avoid tree updates
             if valid:
                 conn.serverUpdatePackagesData()

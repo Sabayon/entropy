@@ -632,6 +632,7 @@ def const_defaultSettings(rootdir):
         'defaultumask': 022,
         'storeumask': 002,
         'treeupdatescalled': False, # to avoid running tree updates functions multiple times
+        'server_treeupdatescalled': set(),
         'spm': {
                     'exec': "/usr/bin/emerge", # source package manager executable
                     'ask_cmd': "--ask",

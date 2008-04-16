@@ -265,7 +265,7 @@ class etpDatabase:
     # check for /usr/portage/profiles/updates changes
     def serverUpdatePackagesData(self):
 
-        etpConst['treeupdatescalled'] = True
+        etpConst['server_treeupdatescalled'].add(self.server_repo)
 
         repo_updates_file = self.ServiceInterface.get_local_database_treeupdates_file(self.server_repo)
         doRescan = False
