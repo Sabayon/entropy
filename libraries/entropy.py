@@ -11379,6 +11379,7 @@ class ServerInterface(TextInterface):
         if (repo not in etpConst['server_treeupdatescalled']) and (not just_reading):
             # sometimes, when filling a new server db, we need to avoid tree updates
             if valid:
+                import pdb; pdb.set_trace()
                 conn.serverUpdatePackagesData()
             else:
                 self.updateProgress(
