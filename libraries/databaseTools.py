@@ -265,6 +265,7 @@ class etpDatabase:
     # check for /usr/portage/profiles/updates changes
     def serverUpdatePackagesData(self):
 
+        import pdb; pdb.set_trace()
         etpConst['server_treeupdatescalled'].add(self.server_repo)
 
         repo_updates_file = self.ServiceInterface.get_local_database_treeupdates_file(self.server_repo)
@@ -338,7 +339,6 @@ class etpDatabase:
                     update_actions.append(line)
                 f.close()
             # now filter the required actions
-            import pdb; pdb.set_trace()
             update_actions = self.filterTreeUpdatesActions(update_actions, server_side = True)
             if update_actions:
 
