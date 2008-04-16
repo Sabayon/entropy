@@ -12362,7 +12362,7 @@ class ServerInterface(TextInterface):
 
             # fill tree updates actions
             if treeupdates_actions:
-                dbconn.addTreeUpdatesActions(treeupdates_actions)
+                dbconn.bumpTreeUpdatesActions(treeupdates_actions)
 
             # now fill the database
             pkgbranches = etpConst['branches']
@@ -14266,6 +14266,34 @@ class ServerMirrorsInterface:
         dbconn.commitChanges()
         self.Entropy.close_server_database(dbconn)
 
+    def sync_database_treeupdates(self, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
+        dbconn = self.Entropy.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        # grab treeupdates from other databases and inject
+        server_repos = etpConst['server_repositories'].keys()
+        all_actions = set()
+        for myrepo in server_repos:
+            mydbc = self.Entropy.openServerDatabase(just_reading = True, repo = myrepo)
+            actions = mydbc.listAllTreeUpdatesActions(no_ids_repos = True)
+            for data in actions:
+                all_actions.add(data)
+            if not actions:
+                continue
+        backed_up_entries = dbconn.listAllTreeUpdatesActions()
+        try:
+            # clear first
+            dbconn.removeTreeUpdatesActions(repo)
+            dbconn.insertTreeUpdatesActions(all_actions,repo)
+        except Exception, e:
+            print "!!!!!!!!! TROUBLES WITH treeupdates:",e,"bumping old data back"
+            # restore previous data
+            dbconn.bumpTreeUpdatesActions(backed_up_entries)
+
+        dbconn.commitChanges()
+        self.Entropy.close_server_database(dbconn)
+
     def upload_database(self, uris, lock_check = False, pretend = False, repo = None):
 
         if repo == None:
@@ -14309,6 +14337,8 @@ class ServerMirrorsInterface:
                 type = "info",
                 header = darkgreen(" * ")
             )
+
+            self.sync_database_treeupdates(repo)
 
             self.shrink_database_and_close(repo)
 

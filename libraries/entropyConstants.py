@@ -303,7 +303,8 @@ CREATE TABLE treeupdatesactions (
     idupdate INTEGER PRIMARY KEY AUTOINCREMENT,
     repository VARCHAR,
     command VARCHAR,
-    branch VARCHAR
+    branch VARCHAR,
+    date VARCHAR
 );
 
 CREATE TABLE binkeywords (

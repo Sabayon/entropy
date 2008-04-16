@@ -338,8 +338,7 @@ class etpDatabase:
                 lines = [x.strip() for x in mycontent if x.strip() and not x.strip().startswith("#")]
                 update_actions.extend(lines)
             # now filter the required actions
-            import pdb; pdb.set_trace()
-            update_actions = self.filterTreeUpdatesActions(update_actions, server_side = True)
+            update_actions = self.filterTreeUpdatesActions(update_actions)
             if update_actions:
 
                 self.updateProgress(
@@ -421,7 +420,7 @@ class etpDatabase:
 
     # this functions will filter either data from /usr/portage/profiles/updates/*
     # or repository database returning only the needed actions
-    def filterTreeUpdatesActions(self, actions, server_side = False):
+    def filterTreeUpdatesActions(self, actions):
         new_actions = []
         for action in actions:
             doaction = action.split()
@@ -431,47 +430,24 @@ class etpDatabase:
                 from_slot = doaction[2]
                 to_slot = doaction[3]
                 category = atom.split("/")[0]
-                if server_side:
-                    matches = self.ServiceInterface.atomMatch(atom, multiMatch = True, multiRepo = True)
-                else:
-                    matches = self.atomMatch(atom, multiMatch = True)
+                matches = self.atomMatch(atom, multiMatch = True)
                 if matches[1] == 0:
-                    if server_side:
-                        # found atom, check slot and category
-                        for idpackage,repo in matches[0]:
-                            mydbc = self.ServiceInterface.openServerDatabase(just_reading = True, repo = repo)
-                            myslot = str(mydbc.retrieveSlot(idpackage))
-                            mycategory = mydbc.retrieveCategory(idpackage)
-                            if mycategory == category:
-                                if (myslot == from_slot) and (myslot != to_slot) and (action not in new_actions):
-                                    new_actions.append(action)
-                    else:
-                        # found atom, check slot and category
-                        for idpackage in matches[0]:
-                            myslot = str(self.retrieveSlot(idpackage))
-                            mycategory = self.retrieveCategory(idpackage)
-                            if mycategory == category:
-                                if (myslot == from_slot) and (myslot != to_slot) and (action not in new_actions):
-                                    new_actions.append(action)
+                    # found atom, check slot and category
+                    for idpackage in matches[0]:
+                        myslot = str(self.retrieveSlot(idpackage))
+                        mycategory = self.retrieveCategory(idpackage)
+                        if mycategory == category:
+                            if (myslot == from_slot) and (myslot != to_slot) and (action not in new_actions):
+                                new_actions.append(action)
             elif doaction[0] == "move":
                 atom = doaction[1]
                 category = atom.split("/")[0]
-                if server_side:
-                    matches = self.ServiceInterface.atomMatch(atom, multiMatch = True, multiRepo = True)
-                else:
-                    matches = self.atomMatch(atom, multiMatch = True)
+                matches = self.atomMatch(atom, multiMatch = True)
                 if matches[1] == 0:
-                    if server_side:
-                        for idpackage,repo in matches[0]:
-                            mydbc = self.ServiceInterface.openServerDatabase(just_reading = True, repo = repo)
-                            mycategory = mydbc.retrieveCategory(idpackage)
-                            if (mycategory == category) and (action not in new_actions):
-                                new_actions.append(action)
-                    else:
-                        for idpackage in matches[0]:
-                            mycategory = self.retrieveCategory(idpackage)
-                            if (mycategory == category) and (action not in new_actions):
-                                new_actions.append(action)
+                    for idpackage in matches[0]:
+                        mycategory = self.retrieveCategory(idpackage)
+                        if (mycategory == category) and (action not in new_actions):
+                            new_actions.append(action)
         return new_actions
 
     # this is the place to add extra actions support
@@ -1889,33 +1865,51 @@ class etpDatabase:
         else:
             return -1
 
-    def listAllTreeUpdatesActions(self):
-        self.cursor.execute('SELECT * FROM treeupdatesactions')
+    def listAllTreeUpdatesActions(self, no_ids_repos = False):
+        if no_ids_repos:
+            self.cursor.execute('SELECT command,branch,date FROM treeupdatesactions')
+        else:
+            self.cursor.execute('SELECT * FROM treeupdatesactions')
         return self.cursor.fetchall()
 
     def retrieveTreeUpdatesActions(self, repository, forbranch = etpConst['branch']):
         if not self.doesTableExist("treeupdatesactions"):
             return set()
-        self.cursor.execute('SELECT command FROM treeupdatesactions where repository = (?) and branch = (?)', (repository,forbranch))
-        return self.fetchall2set(self.cursor.fetchall())
+        self.cursor.execute('SELECT command FROM treeupdatesactions where repository = (?) and branch = (?) order by date', (repository,forbranch))
+        return self.fetchall2list(self.cursor.fetchall())
 
     # mainly used to restore a previous table, used by reagent in --initialize
-    def addTreeUpdatesActions(self, updates):
+    def bumpTreeUpdatesActions(self, updates):
+        self.checkReadOnly()
         for update in updates:
-            idupdate = update[0]
-            repository = update[1]
-            command = update[2]
-            branch = etpConst['branch']
-            self.cursor.execute('INSERT INTO treeupdatesactions VALUES (?,?,?,?)', (idupdate,repository,command,branch,))
+            self.cursor.execute('INSERT INTO treeupdatesactions VALUES (?,?,?,?,?)', update)
+        self.commitChanges()
+
+    def removeTreeUpdatesActions(self, repository):
+        self.checkReadOnly()
+        self.cursor.execute('DELETE FROM treeupdatesactions WHERE repository = (?)', (repository,))
+        self.commitChanges()
+
+    def insertTreeUpdatesActions(self, updates, repository):
+        self.checkReadOnly()
+        for update in updates:
+            update = list(update)
+            update.insert(0,repository)
+            self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', update)
+        self.commitChanges()
 
     def setRepositoryUpdatesDigest(self, repository, digest):
+        self.checkReadOnly()
         self.cursor.execute('DELETE FROM treeupdates where repository = (?)', (repository,)) # doing it for safety
         self.cursor.execute('INSERT INTO treeupdates VALUES (?,?)', (repository,digest,))
         self.commitChanges()
 
     def addRepositoryUpdatesActions(self, repository, actions, forbranch = etpConst['branch']):
+        self.checkReadOnly()
+        mytime = str(self.entropyTools.getCurrentUnixTime())
         for command in actions:
-            self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?)', (repository,command,forbranch,))
+            self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', (repository,command,forbranch,mytime,))
+        self.commitChanges()
 
     def retrieveAtom(self, idpackage):
 
@@ -3145,6 +3139,8 @@ class etpDatabase:
             self.createTreeupdatesactionsTable()
         elif not self.doesColumnInTableExist("treeupdatesactions","branch"):
             self.createTreeupdatesactionsBranchColumn()
+        elif not self.doesColumnInTableExist("treeupdatesactions","date"):
+            self.createTreeupdatesactionsDateColumn()
 
         if not self.doesTableExist("needed"):
             self.createNeededTable()
@@ -3570,10 +3566,12 @@ class etpDatabase:
         self.checkReadOnly()
         # treeupdates
         self.cursor.execute("DELETE FROM treeupdates WHERE repository = (?)", (repository,))
+        self.commitChanges()
 
     def resetTreeupdatesDigests(self):
         self.checkReadOnly()
         self.cursor.execute('UPDATE treeupdates SET digest = "-1"')
+        self.commitChanges()
 
     #
     # FIXME: remove these when 1.0 will be out
@@ -3592,15 +3590,12 @@ class etpDatabase:
         self.commitChanges()
 
     def createTreeupdatesTable(self):
-        self.cursor.execute('DROP TABLE IF EXISTS treeupdates;')
         self.cursor.execute('CREATE TABLE treeupdates ( repository VARCHAR PRIMARY KEY, digest VARCHAR );')
 
     def createTreeupdatesactionsTable(self):
-        self.cursor.execute('DROP TABLE IF EXISTS treeupdatesactions;')
-        self.cursor.execute('CREATE TABLE treeupdatesactions ( idupdate INTEGER PRIMARY KEY AUTOINCREMENT, repository VARCHAR, command VARCHAR, branch VARCHAR );')
+        self.cursor.execute('CREATE TABLE treeupdatesactions ( idupdate INTEGER PRIMARY KEY AUTOINCREMENT, repository VARCHAR, command VARCHAR, branch VARCHAR, date VARCHAR );')
 
     def createSizesTable(self):
-        self.cursor.execute('DROP TABLE IF EXISTS sizes;')
         self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
 
     def createDependenciesTypeColumn(self):
@@ -3613,6 +3608,14 @@ class etpDatabase:
         for idpackage in idpackages:
             branch = self.retrieveBranch(idpackage)
             self.cursor.execute('UPDATE counters SET branch = (?) WHERE idpackage = (?)', (branch,idpackage,))
+
+    def createTreeupdatesactionsDateColumn(self):
+        try: # if database disk image is malformed, won't raise exception here
+            self.cursor.execute('ALTER TABLE treeupdatesactions ADD COLUMN date VARCHAR;')
+            mytime = str(self.entropyTools.getCurrentUnixTime())
+            self.cursor.execute('UPDATE treeupdatesactions SET date = (?)', (mytime,))
+        except:
+            pass
 
     def createTreeupdatesactionsBranchColumn(self):
         try: # if database disk image is malformed, won't raise exception here
