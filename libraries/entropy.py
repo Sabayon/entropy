@@ -8388,6 +8388,7 @@ class PackageMaskingParser:
             try:
                 f = open(mtimefile,"r")
                 mtime = float(f.readline().strip())
+                f.close()
                 # compare with current mtime
                 try:
                     currmtime = os.path.getmtime(maskfile)

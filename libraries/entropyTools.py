@@ -1287,6 +1287,7 @@ def spawnFunction(f, *args, **kwds):
         f = os.fdopen(pread, 'rb')
         status, result = pickle.load(f)
         os.waitpid(pid, 0)
+        f.close()
         if status == 0:
             return result
         else:
