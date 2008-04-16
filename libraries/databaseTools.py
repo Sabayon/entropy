@@ -3452,6 +3452,18 @@ class etpDatabase:
             if not index.startswith("sqlite"):
                 self.cursor.execute('DROP INDEX IF EXISTS %s' % (index,))
 
+    def listAllIndexes(self, only_entropy = True):
+        self.cursor.execute('SELECT name FROM SQLITE_MASTER WHERE type = "index"')
+        indexes = self.fetchall2set(self.cursor.fetchall())
+        if not only_entropy:
+            return indexes
+        myindexes = set()
+        for index in indexes:
+            if index.startswith("sqlite"):
+                continue
+            myindexes.add(index)
+        return myindexes
+
 
     def createAllIndexes(self):
         self.createContentIndex()

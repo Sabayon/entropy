@@ -5720,10 +5720,13 @@ class RepoInterface:
                                     )
                     dbconn = self.Entropy.openRepositoryDatabase(repo)
                     dbconn.createAllIndexes()
+                    # get list of indexes
+                    repo_indexes = dbconn.listAllIndexes()
                     try: # client db can be absent
-                        # XXX: once indexes will get close to final, remove this
-                        self.Entropy.clientDbconn.dropAllIndexes()
-                        self.Entropy.clientDbconn.createAllIndexes()
+                        client_indexes = self.Entropy.clientDbconn.listAllIndexes()
+                        if repo_indexes != client_indexes:
+                            self.Entropy.clientDbconn.dropAllIndexes()
+                            self.Entropy.clientDbconn.createAllIndexes()
                     except:
                         pass
                 # update revision in etpRepositories
