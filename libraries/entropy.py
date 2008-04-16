@@ -425,7 +425,7 @@ class EquoInterface(TextInterface):
 
             etpRepositories[repositoryName]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotect']]
             etpRepositories[repositoryName]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotectmask']]
-        if not etpConst['treeupdatescalled'] and (self.entropyTools.is_user_in_entropy_group()) and (not repositoryName.endswith(etpConst['packagesext'])):
+        if (repositoryName not in etpConst['client_treeupdatescalled']) and (self.entropyTools.is_user_in_entropy_group()) and (not repositoryName.endswith(etpConst['packagesext'])):
             conn.clientUpdatePackagesData(self.clientDbconn)
         return conn
 

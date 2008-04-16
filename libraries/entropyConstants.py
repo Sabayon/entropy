@@ -408,7 +408,6 @@ idpackageValidatorCache = {}
 maskingReasonsStorage = {}
 linkerPaths = set()
 # repository atoms updates digest cache
-repositoryUpdatesDigestCache_db = {}
 repositoryUpdatesDigestCache_disk = {}
 fetch_repository_if_not_available_cache = {}
 repo_error_messages_cache = set()
@@ -417,7 +416,6 @@ repo_error_messages_cache = set()
 def const_resetCache():
     idpackageValidatorCache.clear()
     linkerPaths.clear()
-    repositoryUpdatesDigestCache_db.clear()
     repositoryUpdatesDigestCache_disk.clear()
     fetch_repository_if_not_available_cache.clear()
     repo_error_messages_cache.clear()
@@ -632,8 +630,8 @@ def const_defaultSettings(rootdir):
         'sysgroup': "entropy",
         'defaultumask': 022,
         'storeumask': 002,
-        'treeupdatescalled': False, # to avoid running tree updates functions multiple times
         'server_treeupdatescalled': set(),
+        'client_treeupdatescalled': set(),
         'spm': {
                     'exec': "/usr/bin/emerge", # source package manager executable
                     'ask_cmd': "--ask",

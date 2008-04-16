@@ -270,14 +270,9 @@ class etpDatabase:
         repo_updates_file = self.ServiceInterface.get_local_database_treeupdates_file(self.server_repo)
         doRescan = False
 
-        if repositoryUpdatesDigestCache_db.has_key(self.server_repo):
-            stored_digest = repositoryUpdatesDigestCache_db.get(self.server_repo)
-        else:
-            # check database digest
-            stored_digest = self.retrieveRepositoryUpdatesDigest(self.server_repo)
-            repositoryUpdatesDigestCache_db[self.server_repo] = stored_digest
-            if stored_digest == -1:
-                doRescan = True
+        stored_digest = self.retrieveRepositoryUpdatesDigest(self.server_repo)
+        if stored_digest == -1:
+            doRescan = True
 
         # check portage files for changes if doRescan is still false
         portage_dirs_digest = "0"
@@ -361,35 +356,28 @@ class etpDatabase:
     # client side, no portage dependency
     # lxnay: it is indeed very similar to serverUpdatePackagesData() but I prefer keeping both separate
     # also, we reuse the same caching dictionaries of the server function
-    # repositoryUpdatesDigestCache_db -> repository cache
     # repositoryUpdatesDigestCache_disk -> client database cache
     # check for repository packages updates
     # this will read database treeupdates* tables and do
     # changes required if running as root.
     def clientUpdatePackagesData(self, clientDbconn):
 
-        etpConst['treeupdatescalled'] = True
-
         repository = self.dbname[len(etpConst['dbnamerepoprefix']):]
-        doRescan = False
+        etpConst['client_treeupdatescalled'].add(repository)
 
-        if repositoryUpdatesDigestCache_db.has_key(repository):
-            stored_digest = repositoryUpdatesDigestCache_db.get(repository)
-        else:
-            # check database digest
-            stored_digest = self.retrieveRepositoryUpdatesDigest(repository)
-            repositoryUpdatesDigestCache_db[repository] = stored_digest
-            if stored_digest == -1:
-                doRescan = True
+        doRescan = False
+        shell_rescan = os.getenv("ETP_TREEUPDATES_RESCAN")
+        if shell_rescan: doRescan = True
+
+        # check database digest
+        stored_digest = self.retrieveRepositoryUpdatesDigest(repository)
+        if stored_digest == -1:
+            doRescan = True
 
         # check stored value in client database
         client_digest = "0"
         if not doRescan:
-
-            if repositoryUpdatesDigestCache_disk.has_key(etpConst['systemroot']):
-                client_digest = repositoryUpdatesDigestCache_disk.get(etpConst['systemroot'])
-            else:
-                client_digest = clientDbconn.retrieveRepositoryUpdatesDigest(repository)
+            client_digest = clientDbconn.retrieveRepositoryUpdatesDigest(repository)
 
         if doRescan or (str(stored_digest) != str(client_digest)):
 
@@ -404,11 +392,14 @@ class etpDatabase:
             if update_actions:
 
                 self.updateProgress(
-                                        bold("ATTENTION: ")+red("forcing packages metadata update. Updating system database using repository id: %s") % (blue(repository),),
-                                        importance = 1,
-                                        type = "info",
-                                        header = darkred(" * ")
-                                    )
+                    bold("ATTENTION: ") + \
+                    red("forcing packages metadata update. Updating system database using repository id: %s") % (
+                            blue(repository),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = darkred(" * ")
+                    )
                 # run stuff
                 clientDbconn.runTreeUpdatesActions(update_actions)
 
@@ -3489,6 +3480,7 @@ class etpDatabase:
     def createMessagesIndex(self):
         if self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS messagesindex ON messages ( idpackage )')
+            self.commitChanges()
 
     def createUseflagsIndex(self):
         if self.indexing:
