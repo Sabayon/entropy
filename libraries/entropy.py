@@ -11402,16 +11402,15 @@ class ServerInterface(TextInterface):
                 back = True
             )
             conn.createAllIndexes()
-        # do not cache ultra-readonly dbs
-        if not just_reading:
-            self.serverDbCache[(
-                                    etpConst['systemroot'],
-                                    local_dbfile,
-                                    read_only,
-                                    no_upload,
-                                    just_reading,
-                                    repo,
-                                )] = conn
+
+        self.serverDbCache[(
+                                etpConst['systemroot'],
+                                local_dbfile,
+                                read_only,
+                                no_upload,
+                                just_reading,
+                                repo,
+                            )] = conn
         return conn
 
     def deps_tester(self):
