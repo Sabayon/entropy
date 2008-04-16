@@ -265,7 +265,6 @@ class etpDatabase:
     # check for /usr/portage/profiles/updates changes
     def serverUpdatePackagesData(self):
 
-        import pdb; pdb.set_trace()
         etpConst['server_treeupdatescalled'].add(self.server_repo)
 
         repo_updates_file = self.ServiceInterface.get_local_database_treeupdates_file(self.server_repo)
@@ -294,7 +293,11 @@ class etpDatabase:
                 updates_dir = etpConst['systemroot']+Spm.get_spm_setting("PORTDIR")+"/profiles/updates"
                 if os.path.isdir(updates_dir):
                     # get checksum
-                    mdigest = self.entropyTools.md5sum_directory(updates_dir, get_obj = True)
+                    mdigest = self.entropyTools.spawnFunction(  self.entropyTools.md5sum_directory,
+                                                                updates_dir,
+                                                                get_obj = True
+                    )
+                    #mdigest = self.entropyTools.md5sum_directory(updates_dir, get_obj = True)
                     # also checksum etpConst['etpdatabaseupdatefile']
                     if os.path.isfile(repo_updates_file):
                         f = open(repo_updates_file)
@@ -323,14 +326,21 @@ class etpDatabase:
             update_files = self.entropyTools.sortUpdateFiles(os.listdir(updates_dir))
             update_files = [os.path.join(updates_dir,x) for x in update_files]
             # now load actions from files
-            update_actions = []
-            for update_file in update_files:
-                f = open(update_file,"r")
-                mycontent = f.readlines()
-                f.close()
-                lines = [x.strip() for x in mycontent if x.strip()]
-                update_actions.extend(lines)
-                del lines
+
+            def read_update_files_content(update_files):
+                data = []
+                for update_file in update_files:
+                    f = open(update_file,"r")
+                    mycontent = f.readlines()
+                    f.close()
+                    lines = [x.strip() for x in mycontent if x.strip()]
+                    data.extend(lines)
+                return data
+
+            update_actions = self.entropyTools.spawnFunction(read_update_files_content, update_files)
+            #update_actions = read_update_files_content()
+            import pdb; pdb.set_trace()
+
             # add entropy packages.db.repo_updates content
             if os.path.isfile(repo_updates_file):
                 f = open(repo_updates_file,"r")
