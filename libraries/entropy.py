@@ -11403,6 +11403,8 @@ class ServerInterface(TextInterface):
             )
             conn.createAllIndexes()
 
+        # !!! also cache just_reading otherwise there will be
+        # real issues if the connection is opened several times
         self.serverDbCache[(
                                 etpConst['systemroot'],
                                 local_dbfile,
