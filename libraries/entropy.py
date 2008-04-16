@@ -1643,7 +1643,7 @@ class EquoInterface(TextInterface):
         # there is no need to update this cache when "match" will be installed, because at that point
         # clientmatch[0] will differ.
         if self.xcache:
-            c_hash = str(hash(tuple(match)))+str(hash(deep_deps)+str(hash(clientmatch[0])))
+            c_hash = str(hash(tuple(match)))+str(hash(deep_deps))+str(hash(clientmatch[0]))
             c_hash = str(hash(c_hash))
             cached = self.dumpTools.loadobj(etpCache['library_breakage']+c_hash)
             if cached != None:
