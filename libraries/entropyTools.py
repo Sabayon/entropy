@@ -246,11 +246,12 @@ def md5sum_directory(directory, get_obj = False):
     for currentdir,subdirs,files in os.walk(directory):
         for myfile in files:
             myfile = os.path.join(currentdir,myfile)
-            readfile = file(myfile)
+            readfile = open(myfile)
             block = readfile.read(1024)
             while block:
                 m.update(block)
                 block = readfile.read(1024)
+            readfile.close()
     if get_obj:
         return m
     else:
