@@ -301,6 +301,7 @@ class rhnApplet:
             self.disable_applet()
 
         if hide_menu:
+            self.disable_refresh_timer()
             self.set_state("ERROR")
             self.update_tooltip(message)
             for key in self.menu_items:
