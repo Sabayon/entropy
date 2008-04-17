@@ -271,9 +271,7 @@ class SpritzQueue:
 
     def remove(self, pkgs):
 
-        one = False
         if type(pkgs) is not list:
-            one = True
             pkgs = [pkgs]
 
         action = [pkgs[0].action]
@@ -322,16 +320,16 @@ class SpritzQueue:
             return 0,1
 
     def addGroup( self, grp, action):
-        list = self.groups[action]
-        if not grp in list:
-            list.append( grp )
-        self.groups[action] = list
+        mylist = self.groups[action]
+        if not grp in mylist:
+            mylist.append( grp )
+        self.groups[action] = mylist
 
     def removeGroup( self, grp, action):
-        list = self.groups[action]
-        if grp in list:
-            list.remove( grp )
-        self.groups[action] = list
+        mylist = self.groups[action]
+        if grp in mylist:
+            mylist.remove( grp )
+        self.groups[action] = mylist
 
     def hasGroup(self,grp):
         for action in ['i','r']:
