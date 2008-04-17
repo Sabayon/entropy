@@ -19,7 +19,6 @@
 
 from etpgui.packages import PackageWrapper
 import logging
-import time
 
 #import yum.misc as misc
 #import yum.Errors as Errors
@@ -57,7 +56,6 @@ class EntropyPackages:
         self.categories = set()
         self.selected_treeview_item = None
         self.selected_advisory_item = None
-        self.pkgInCats = PkgInCategoryList()
 
     def clearPackages(self):
         self._packages.clear()
@@ -143,17 +141,6 @@ class EntropyPackages:
             return True
         return False
 
-    def findPackages(self,userlist,typ):
-        pkgs = self.getRawPackages(typ)
-        foundlst = []
-        for arg in userlist:
-            print "Looking for : %s  in %s packages " % (arg,typ)
-            exactmatch, matched, unmatched = parsePackages(pkgs, [arg], 
-                                                           casematch=1)
-            foundlst.extend(exactmatch)
-            foundlst.extend(matched)
-        return foundlst
-
     def findPackagesByTuples(self,typ,tuplist):
         pkgs = self.getRawPackages(typ)
         foundlst = []
@@ -211,150 +198,9 @@ class EntropyPackages:
                         yp.color = color_install
                         yield yp
 
-    def getByProperty( self, type, category ):
-        list = self.getPackages(type)
-        dict = {}
-        for pkg in list:
-            val = getattr( pkg, category )
-            # Strip newline in keys
-            if val:
-                val = val.strip( '\n' )
-            if dict.has_key( val ):
-                dict[val].append( pkg )
-            else:
-                dict[val] = [pkg]
-        return dict, dict.keys()
- 
-    def getByAttr( self, type, attr ):
-        list = self.getPackages(type)
-        dict = {}
-        for pkg in list:
-            val = pkg.getAttr( attr )
-            # Strip newline in keys
-            if val:
-                val = val.strip( '\n' )
-            if dict.has_key( val ):
-                dict[val].append( pkg )
-            else:
-                dict[val] = [pkg]
-        return dict, dict.keys()
-
-    def getBySizes( self, type):
-        list = self.getPackages(type)
-        keys = [
-            '0 KB - 100 KB', 
-            '100 KB - 1 MB', 
-            '1 MB - 10 MB' , 
-            '10 MB - 50 MB', 
-            '50+ MB']
-
-        dict = {}
-        for pkg in list:
-            val = self._getSizeKey( pkg.size )
-            if dict.has_key( val ):
-                dict[val].append( pkg )
-            else:
-                dict[val] = [pkg]
-        return dict , keys
-
-    def _getSizeKey( self, size ):
-        kb = 1024
-        mb = 1024*1024
-        if size < 100*kb:
-            return '0 KB - 100 KB'
-        elif size < mb:
-            return '100 KB - 1 MB'
-        elif size < 10*mb:
-            return '1 MB - 10 MB' 
-        elif size < 50*mb:
-            return '10 MB - 50 MB'
-        else:
-            return '50+ MB'
-
-    def getByAge( self, typ):
-        list = self.getPackages(typ)
-        keys = [
-            '0 - 7 Days', 
-            '7 - 14 Days', 
-            '14 - 21 Days', 
-            '21  - 30 days', 
-            '30 - 90 days', 
-            '90+ days']
-        dict = {}
-        for pkg in list:
-            val = self._getAgeKey( pkg._get_time() )
-            if dict.has_key( val ):
-                dict[val].append( pkg )
-            else:
-                dict[val] = [pkg]
-        return dict , keys
-
-    def _getAgeKey( self, date ):
-        now = time.time()
-        days = 86400 # Seconds
-        if date > now-7*days:
-            return '0 - 7 Days'
-        elif date > now-14*days:
-            return '7 - 14 Days'
-        elif date > now-21*days:
-            return '14 - 21 Days'
-        elif date > now-30*days:
-            return '21  - 30 days'
-        elif date > now-90*days:
-            return '30 - 90 days'
-        else:
-            return '90+ days'
-
     def getCategories(self):
         catlist = []
         for cat in self.categories:
             catlist.append(cat)
         catlist.sort()
         return catlist
-
-    def buildCategoryPackages(self,cat):
-        for pkg in self.getPackagesByCategory(cat):
-            self.pkgInCats.add(pkg,cat)
-
-class PkgInCategory:
-    def __init__(self, pkg, cat):
-        self.name = pkg
-        self.category = cat
-
-    def __str__(self):
-        return self.name
-
-class PkgInCategoryList:
-    def __init__(self):
-        self._pkgDict = {}
-
-    def add(self, pkg, cat):
-        gpkg = PkgInGroup(pkg,cat)
-        if self._pkgDict.has_key(pkg):
-            self._pkgDict[pkg].append(gpkg)
-        else:
-            self._pkgDict[pkg] = [gpkg]
-
-    def get(self,pkg):
-        if self._pkgDict.has_key(pkg):
-            return self._pkgDict[pkg]
-        else:
-            return None
-
-    def getAll(self):
-        lst = []
-        for key in self._pkgDict.keys():
-            lst.extend(self._pkgDict[key])
-        return lst
-
-    def getFullCategory(self,po):
-        pkg = self.get(po.name)
-        if pkg:
-            return "%s/%s" % (pkg[0].category.name,pkg[0].group.name)
-        else:
-            return "No Category"
-
-
-    def dump(self):
-        for pkg in self.getAll():
-            print "%-40s %s -> %s/%s" % (pkg.name,pkg.typ,pkg.category.name,pkg.group.name)
