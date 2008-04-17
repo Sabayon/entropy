@@ -534,7 +534,7 @@ class rhnApplet:
             pid2 = os.fork()
             if not pid2:
                 os.execv('/usr/bin/spritz', ['spritz'])
-                os.perror(_("execv didn't execv?"))
+                os.perror(_("Cannot load Spritz"))
             else:
                 os._exit(-1)
 
