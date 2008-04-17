@@ -54,7 +54,7 @@ class ProcessGtkEventsThread(Thread):
         self.__active.clear()
 
     def run(self):
-        while self.__quit == False:
+        while not self.__quit:
             while not self.__active.isSet():
                 self.__active.wait()
             self.dosleep()

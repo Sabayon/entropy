@@ -22,6 +22,7 @@ import sys, os, pty
 import logging
 import traceback
 import commands
+import time
 
 # Entropy Imports
 sys.path.insert(0,"../../libraries")
@@ -48,7 +49,6 @@ import filters
 from gui import SpritzGUI
 from dialogs import *
 from i18n import _
-import time
 
 
 class SpritzController(Controller):
@@ -1495,8 +1495,8 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
 
 if __name__ == "__main__":
+    gtkEventThread = ProcessGtkEventsThread()
     try:
-        gtkEventThread = ProcessGtkEventsThread()
         gtkEventThread.start()
         gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/spritz-icon.png")
         mainApp = SpritzApplication()
@@ -1543,3 +1543,5 @@ if __name__ == "__main__":
                 okDialog(None,_("Cannot submit your report. Not connected to Internet?"))
         gtkEventThread.doQuit()
         sys.exit(1)
+
+    gtkEventThread.doQuit()
