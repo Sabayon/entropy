@@ -19,9 +19,6 @@
 
 import gtk
 import gobject
-import logging
-import glob
-import ConfigParser
 from spritz_setup import const,cleanMarkupSting
 from etpgui.widgets import UI
 from etpgui import *
@@ -241,7 +238,6 @@ class EntropyPackageView:
         return int(abs_x),int(abs_y),True
 
     def run_install_menu_stuff(self, obj):
-        do_show = True
         self.reset_install_menu()
         if obj.queued:
             self.hide_install_menu()
@@ -985,12 +981,12 @@ class EntropyRepoView:
 
     def on_active_toggled( self, widget, path):
         """ Repo select/unselect handler """
-        iter = self.store.get_iter( path )
-        state = self.store.get_value(iter,0)
-        repoid = self.store.get_value(iter,3)
+        myiter = self.store.get_iter( path )
+        state = self.store.get_value(myiter,0)
+        repoid = self.store.get_value(myiter,3)
         if repoid != etpConst['officialrepositoryid']:
             if state:
-                self.store.set_value(iter,1, not state)
+                self.store.set_value(myiter,1, not state)
                 self.Equo.disableRepository(repoid)
                 initConfig_entropyConstants(etpSys['rootdir'])
             else:
@@ -998,15 +994,15 @@ class EntropyRepoView:
                 initConfig_entropyConstants(etpSys['rootdir'])
             msg = "%s '%s' %s" % (_("You should press the button"),_("Regenerate Cache"),_("now"))
             self.okDialog(self.ui.main,msg)
-            self.store.set_value(iter,0, not state)
+            self.store.set_value(myiter,0, not state)
 
     def on_update_toggled( self, widget, path):
         """ Repo select/unselect handler """
-        iter = self.store.get_iter( path )
-        state = self.store.get_value(iter,1)
-        active = self.store.get_value(iter,0)
+        myiter = self.store.get_iter( path )
+        state = self.store.get_value(myiter,1)
+        active = self.store.get_value(myiter,0)
         if active:
-            self.store.set_value(iter,1, not state)
+            self.store.set_value(myiter,1, not state)
 
     def setup_view( self ):
         """ Create models and columns for the Repo TextView  """
@@ -1052,19 +1048,16 @@ class EntropyRepoView:
     def populate(self):
         self.store.clear()
         """ Populate a repo liststore with data """
-        first = 0
         for repo in etpRepositoriesOrder:
             repodata = etpRepositories[repo]
             self.store.append([1,1,repodata['dbrevision'],repo,repodata['description']])
-            first = 1
         # excluded ones
         for repo in etpRepositoriesExcluded:
             repodata = etpRepositoriesExcluded[repo]
             self.store.append([0,0,repodata['dbrevision'],repo,repodata['description']])
-            first = 1
 
-    def new_pixbuf( self, column, cell, model, iter ):
-        gpg = model.get_value( iter, 3 )
+    def new_pixbuf( self, column, cell, model, myiter ):
+        gpg = model.get_value( myiter, 3 )
         if gpg:
             cell.set_property( 'visible', True )
         else:
@@ -1102,8 +1095,8 @@ class EntropyRepoView:
             iterator = self.store.iter_next( iterator )
 
     def get_repoid(self, iterdata):
-        model, iter = iterdata
-        return model.get_value( iter, 3 )
+        model, myiter = iterdata
+        return model.get_value( myiter, 3 )
 
     def select_by_keys( self, keys):
         iterator = self.store.get_iter_first()
@@ -1156,8 +1149,7 @@ class EntropyRepositoryMirrorsView:
         return selected
 
     def get_all( self ):
-        all = [x[0] for x in self.store]
-        return all
+        return [x[0] for x in self.store]
 
     def add(self, url):
         self.store.append([str(url)])
@@ -1167,9 +1159,9 @@ class EntropyRepositoryMirrorsView:
         self.remove(urls)
 
     def get_text(self, urldata):
-        model, iter = urldata
-        return model.get_value( iter, 0 )
+        model, myiter = urldata
+        return model.get_value( myiter, 0 )
 
     def remove(self, urldata):
-        model, iter = urldata
-        self.store.remove(iter)
+        model, myiter = urldata
+        self.store.remove(myiter)
