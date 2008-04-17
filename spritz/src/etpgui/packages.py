@@ -219,30 +219,31 @@ class PackageWrapper:
         return self.dbconn.retrieveBranch(self.matched_atom[0])
 
     def getAttr(self,attr):
+        x = None
         if attr == "description":
-            return self.dbconn.retrieveDescription(self.matched_atom[0])
+            x = self.dbconn.retrieveDescription(self.matched_atom[0])
         elif attr == "category":
-            return self.dbconn.retrieveCategory(self.matched_atom[0])
+            x = self.dbconn.retrieveCategory(self.matched_atom[0])
         elif attr == "license":
-            return self.dbconn.retrieveLicense(self.matched_atom[0])
+            x = self.dbconn.retrieveLicense(self.matched_atom[0])
         elif attr == "creationdate":
-            return self.dbconn.retrieveDateCreation(self.matched_atom[0])
+            x = self.dbconn.retrieveDateCreation(self.matched_atom[0])
         elif attr == "version":
-            return self.dbconn.retrieveVersion(self.matched_atom[0])
+            x = self.dbconn.retrieveVersion(self.matched_atom[0])
         elif attr == "revision":
-            return self.dbconn.retrieveRevision(self.matched_atom[0])
+            x = self.dbconn.retrieveRevision(self.matched_atom[0])
         elif attr == "versiontag":
-            t = self.dbconn.retrieveVersionTag(self.matched_atom[0])
-            if not t: return "None"
-            return t
+            x = self.dbconn.retrieveVersionTag(self.matched_atom[0])
+            if not x: x = "None"
         elif attr == "branch":
-            return self.dbconn.retrieveBranch(self.matched_atom[0])
+            x = self.dbconn.retrieveBranch(self.matched_atom[0])
         elif attr == "name":
-            return self.dbconn.retrieveName(self.matched_atom[0])
+            x = self.dbconn.retrieveName(self.matched_atom[0])
         elif attr == "namedesc":
-            return self.getNameDesc()
+            x = self.getNameDesc()
         elif attr == "slot":
-            return self.dbconn.retrieveSlot(self.matched_atom[0])
+            x = self.dbconn.retrieveSlot(self.matched_atom[0])
+        return x
 
     def _get_time( self ):
         return self.dbconn.retrieveDateCreation(self.matched_atom[0])
