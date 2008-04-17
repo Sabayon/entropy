@@ -196,29 +196,29 @@ class EquoInterface(TextInterface):
     def sync_loop_check(self, check_function):
 
         lock_count = 0
-        max_lock_count = 30
-        sleep_seconds = 10
+        max_lock_count = 600
+        sleep_seconds = 0.5
 
         # check lock file
         while 1:
             locked = check_function()
             if not locked:
                 if lock_count > 0:
-                    self.updateProgress(    blue("Synchronization unlocked, let's go!"),
+                    self.updateProgress(    blue("Resources unlocked, let's go!"),
                                                     importance = 1,
                                                     type = "info",
                                                     header = darkred(" @@ ")
                                         )
                 break
             if lock_count >= max_lock_count:
-                self.updateProgress(    blue("Synchronization still locked after %s minutes, giving up!") % (max_lock_count*sleep_seconds/60,),
+                self.updateProgress(    blue("Resources still locked after %s minutes, giving up!") % (max_lock_count*sleep_seconds/60,),
                                                 importance = 1,
                                                 type = "warning",
                                                 header = darkred(" @@ ")
                                     )
                 return True # gave up
             lock_count += 1
-            self.updateProgress(    blue("Synchronization locked, sleeping %s seconds, check #%s/%s") % (sleep_seconds,lock_count,max_lock_count,),
+            self.updateProgress(    blue("Resources locked, sleeping %s seconds, check #%s/%s") % (sleep_seconds,lock_count,max_lock_count,),
                                             importance = 1,
                                             type = "warning",
                                             header = darkred(" @@ "),
@@ -2052,7 +2052,7 @@ class EquoInterface(TextInterface):
                 self.updateProgress("Calculating world packages", importance = 0, type = "info", back = True, header = ":: ", count = (count,maxlen), percent = True, footer = " ::")
 
             mystrictdata = self.clientDbconn.getStrictData(idpackage)
-            # check against broken entries
+            # check against broken entries, or removed during iteration
             if mystrictdata == None:
                 continue
             match = self.atomMatch(     mystrictdata[0],
@@ -4440,6 +4440,15 @@ class PackageInterface:
             return rc
         return 0
 
+    def vanished_step(self):
+        self.Entropy.updateProgress(
+            blue("Installed package in queue vanished, skipping."),
+            importance = 1,
+            type = "info",
+            header = red("   ## ")
+        )
+        return 0
+
     def checksum_step(self):
         self.error_on_not_prepared()
         rc = self.match_checksum()
@@ -4652,6 +4661,12 @@ class PackageInterface:
         if xterm_header == None:
             xterm_header = ""
 
+        if self.infoDict.has_key('remove_installed_vanished'):
+            self.xterm_title += ' Installed package vanished'
+            self.Entropy.setTitle(self.xterm_title)
+            rc = self.vanished_step()
+            return rc
+
         rc = 0
         for step in self.infoDict['steps']:
             self.xterm_title = xterm_header
@@ -4793,8 +4808,14 @@ class PackageInterface:
         self.prepared = True
 
     def __generate_remove_metadata(self):
-        idpackage = self.matched_atom[0]
+
         self.infoDict.clear()
+        idpackage = self.matched_atom[0]
+
+        if not self.Entropy.clientDbconn.isIDPackageAvailable(idpackage):
+            self.infoDict['remove_installed_vanished'] = True
+            return 0
+
         self.infoDict['triggers'] = {}
         self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(idpackage)
         self.infoDict['slot'] = self.Entropy.clientDbconn.retrieveSlot(idpackage)
@@ -4811,6 +4832,7 @@ class PackageInterface:
         self.infoDict['steps'].append("preremove")
         self.infoDict['steps'].append("remove")
         self.infoDict['steps'].append("postremove")
+
         return 0
 
     def __generate_install_metadata(self):
@@ -4860,7 +4882,11 @@ class PackageInterface:
                                             )
 
         if self.infoDict['removeidpackage'] != -1:
-            self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(self.infoDict['removeidpackage'])
+            avail = self.Entropy.clientDbconn.isIDPackageAvailable(self.infoDict['removeidpackage'])
+            if avail:
+                self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(self.infoDict['removeidpackage'])
+            else:
+                self.infoDict['removeidpackage'] = -1
 
         # smartpackage ?
         self.infoDict['smartpackage'] = False
@@ -4904,19 +4930,19 @@ class PackageInterface:
                                                     )
             if pkgcmp == 0:
                 self.infoDict['removeidpackage'] = -1
-            del pkgcmp
-
-        # differential remove list
-        if self.infoDict['removeidpackage'] != -1:
-            # is it still available?
-            if self.Entropy.clientDbconn.isIDPackageAvailable(self.infoDict['removeidpackage']):
+            else:
+                # differential remove list
                 self.infoDict['diffremoval'] = True
                 self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(self.infoDict['removeidpackage'])
-                self.infoDict['removecontent'] = self.Entropy.clientDbconn.contentDiff(self.infoDict['removeidpackage'], dbconn, idpackage)
-                self.infoDict['triggers']['remove'] = self.Entropy.clientDbconn.getTriggerInfo(self.infoDict['removeidpackage'])
+                self.infoDict['removecontent'] = self.Entropy.clientDbconn.contentDiff(
+                        self.infoDict['removeidpackage'],
+                        dbconn,
+                        idpackage
+                )
+                self.infoDict['triggers']['remove'] = self.Entropy.clientDbconn.getTriggerInfo(
+                        self.infoDict['removeidpackage']
+                )
                 self.infoDict['triggers']['remove']['removecontent'] = self.infoDict['removecontent']
-            else:
-                self.infoDict['removeidpackage'] = -1
 
         # set steps
         self.infoDict['steps'] = []

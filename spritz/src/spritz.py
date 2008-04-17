@@ -764,6 +764,15 @@ class SpritzController(Controller):
 
     def loadPkgInfoMenu( self, pkg ):
 
+        match = pkg.matched_atom
+        if match[1] == 0:
+            dbc = self.Equo.clientDbconn
+        else:
+            dbc = self.Equo.openRepositoryDatabase(match[1])
+        avail = dbc.isIDPackageAvailable(match[0])
+        if not avail:
+            return
+
         # set package image
         pkg_pixmap = const.PIXMAPS_PATH+'/package-x-generic.png'
         heart_pixmap = const.PIXMAPS_PATH+'/heart.png'
@@ -1046,20 +1055,6 @@ class SpritzController(Controller):
 class SpritzApplication(SpritzController,SpritzGUI):
 
     def __init__(self):
-
-        # check if another instance is running
-        cr = EquoConnection.entropyTools.applicationLockCheck("Spritz Loader", gentle = True)
-        if cr:
-            # warn the user
-            msg = "<big><b>%s</b></big>\t\t\n%s <b>%s</b>. %s: <b>%s</b>" % (
-                    _("Sorry to tell you"),
-                    _("Another instance of Entropy"),
-                    _("is running"),
-                    _("Close it or remove"),
-                    etpConst['pidfile'],
-            )
-            okDialog( None, msg )
-            sys.exit()
 
         SpritzController.__init__( self )
         self.Equo = EquoConnection

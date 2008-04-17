@@ -256,32 +256,13 @@ try:
     rc = 0
     # sync mirrors tool
     if (options[0] == "update") or (options[0] == "repoinfo") or (options[0] == "status"):
-        if options[0] == "update":
-            entropyTools.applicationLockCheck("update")
         import text_repositories
         rc = text_repositories.repositories(options)
 
     elif options[0] in ["install","remove","world","deptest","libtest"]:
         import text_ui
-        if options[0] == "install":
-            cr = entropyTools.applicationLockCheck("install", gentle = True)
-            if (cr):
-                print_warning(red("Running with ")+bold("--pretend")+red("..."))
-                etpUi['pretend'] = True
-        elif options[0] == "remove":
-            cr = entropyTools.applicationLockCheck("remove", gentle = True)
-            if (cr):
-                print_warning(red("Running with ")+bold("--pretend")+red("..."))
-                etpUi['pretend'] = True
-        elif options[0] == "world":
-            cr = entropyTools.applicationLockCheck("world", gentle = True)
-            if (cr):
-                print_warning(red("Running with ")+bold("--pretend")+red("..."))
-                etpUi['pretend'] = True
-        elif options[0] in ["deptest","libtest"]:
-            entropyTools.applicationLockCheck(options[0], gentle = False)
         rc = text_ui.package(options)
-        load_conf_cache()
+        #load_conf_cache()
 
     elif options[0] == "security":
         import text_security
@@ -345,17 +326,14 @@ try:
             rc = -10
 
     elif (options[0] == "database"):
-        entropyTools.applicationLockCheck("database")
         import text_rescue
         rc = text_rescue.database(options[1:])
 
     elif (options[0] == "packages"):
-        entropyTools.applicationLockCheck("packages")
         import text_rescue
         rc = text_rescue.updater(options[1:])
 
     elif (options[0] == "cleanup"):
-        entropyTools.applicationLockCheck("cleanup")
         entropyTools.cleanup([ etpConst['packagestmpdir'], etpConst['logdir'], etpConst['entropyunpackdir'], etpConst['packagesbindir'] ])
         rc = 0
     else:

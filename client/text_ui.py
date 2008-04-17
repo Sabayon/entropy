@@ -1012,7 +1012,6 @@ def dependenciesTest():
             import time
             time.sleep(10)
 
-        Equo.entropyTools.applicationLockCheck("install")
         installPackages(depsNotMatched)
 
     return 0,0
@@ -1082,7 +1081,6 @@ def librariesTest(listfiles = False):
             import time
             time.sleep(10)
 
-        Equo.entropyTools.applicationLockCheck("install")
         rc = installPackages(atomsdata = list(atomsdata))
         if rc[0] == 0:
             restore_qstats()

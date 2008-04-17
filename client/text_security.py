@@ -221,12 +221,7 @@ def list_advisories(only_affected = False, only_unaffected = False):
 
 def install_packages(fetch = False):
 
-    cr = Equo.entropyTools.applicationLockCheck("install", gentle = True)
-    if (cr):
-        print_warning(red("Running with ")+bold("--pretend")+red("..."))
-        etpUi['pretend'] = True
     import text_ui
-
     securityConn = Equo.Security()
     print_info(red(" @@ ")+blue("Calculating security updates..."))
     affected_atoms = securityConn.get_affected_atoms()
