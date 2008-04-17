@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-17 09:37+0200\n"
+"POT-Creation-Date: 2008-04-17 12:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,67 +16,67 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/dialogs.py:56
+#: ../src/dialogs.py:52
 msgid "Please confirm the actions above"
 msgstr ""
 
 #. self.create_text_column( _( "Package" ), 'name' , size=300)
-#: ../src/dialogs.py:93 ../src/dialogs.py:100 ../src/views.py:417
-#: ../src/spritz.py:1110
+#: ../src/dialogs.py:89 ../src/dialogs.py:96 ../src/views.py:413
+#: ../src/spritz.py:1096
 msgid "Package"
 msgstr ""
 
-#: ../src/dialogs.py:94 ../src/views.py:556 ../src/views.py:712
-#: ../src/views.py:1041 ../src/spritz.glade.h:23
+#: ../src/dialogs.py:90 ../src/views.py:552 ../src/views.py:708
+#: ../src/views.py:1037 ../src/spritz.glade.h:23
 msgid "Description"
 msgstr ""
 
-#: ../src/dialogs.py:117 ../src/dialogs.py:158
+#: ../src/dialogs.py:113 ../src/dialogs.py:154
 msgid "To be reinstalled"
 msgstr ""
 
-#: ../src/dialogs.py:123 ../src/dialogs.py:163
+#: ../src/dialogs.py:119 ../src/dialogs.py:159
 msgid "To be installed"
 msgstr ""
 
-#: ../src/dialogs.py:129 ../src/dialogs.py:171
+#: ../src/dialogs.py:125 ../src/dialogs.py:167
 msgid "To be updated"
 msgstr ""
 
-#: ../src/dialogs.py:135
+#: ../src/dialogs.py:131
 msgid "To be downgraded"
 msgstr ""
 
-#: ../src/dialogs.py:141 ../src/dialogs.py:176
+#: ../src/dialogs.py:137 ../src/dialogs.py:172
 msgid "To be removed"
 msgstr ""
 
-#: ../src/dialogs.py:168
+#: ../src/dialogs.py:164
 msgid "No description"
 msgstr ""
 
-#: ../src/dialogs.py:309
+#: ../src/dialogs.py:305
 msgid "About"
 msgstr ""
 
-#: ../src/dialogs.py:404
+#: ../src/dialogs.py:400
 msgid "Hey!"
 msgstr ""
 
-#: ../src/dialogs.py:408
+#: ../src/dialogs.py:404
 msgid "Spritz Question"
 msgstr ""
 
-#: ../src/dialogs.py:423 ../src/misc.py:89 ../src/misc.py:144
+#: ../src/dialogs.py:419 ../src/misc.py:89 ../src/misc.py:144
 msgid "Attention"
 msgstr ""
 
-#: ../src/dialogs.py:477
+#: ../src/dialogs.py:473
 msgid "License"
 msgstr ""
 
 #. new
-#: ../src/dialogs.py:480
+#: ../src/dialogs.py:476
 msgid "Accepted"
 msgstr ""
 
@@ -93,7 +93,7 @@ msgid "Show Installed Packages"
 msgstr ""
 
 #. Setup Vertical Toolbar
-#: ../src/gui.py:296 ../src/views.py:551
+#: ../src/gui.py:296 ../src/views.py:547
 msgid "Packages"
 msgstr ""
 
@@ -157,98 +157,98 @@ msgstr ""
 msgid "These are the packages that would be removed"
 msgstr ""
 
-#: ../src/views.py:44
+#: ../src/views.py:41
 msgid "Categories"
 msgstr ""
 
-#: ../src/views.py:418 ../src/views.py:647
+#: ../src/views.py:414 ../src/views.py:643
 msgid "Rev."
 msgstr ""
 
-#: ../src/views.py:419 ../src/spritz.glade.h:67
+#: ../src/views.py:415 ../src/spritz.glade.h:67
 msgid "Slot"
 msgstr ""
 
-#: ../src/views.py:420 ../src/views.py:979
+#: ../src/views.py:416 ../src/views.py:975
 msgid "Repository"
 msgstr ""
 
-#: ../src/views.py:592
+#: ../src/views.py:588
 msgid "Packages To Reinstall"
 msgstr ""
 
-#: ../src/views.py:596
+#: ../src/views.py:592
 msgid "Packages To Update"
 msgstr ""
 
-#: ../src/views.py:600
+#: ../src/views.py:596
 msgid "Packages To Install"
 msgstr ""
 
-#: ../src/views.py:604
+#: ../src/views.py:600
 msgid "Packages To Remove"
 msgstr ""
 
-#: ../src/views.py:633
+#: ../src/views.py:629
 msgid "Proposed"
 msgstr ""
 
-#: ../src/views.py:640
+#: ../src/views.py:636
 msgid "Destination"
 msgstr ""
 
-#: ../src/views.py:689
+#: ../src/views.py:685
 msgid "Status"
 msgstr ""
 
-#: ../src/views.py:696
+#: ../src/views.py:692
 msgid "GLSA id."
 msgstr ""
 
-#: ../src/views.py:704
+#: ../src/views.py:700
 msgid "Package key"
 msgstr ""
 
-#: ../src/views.py:797
+#: ../src/views.py:793
 msgid "No advisories"
 msgstr ""
 
-#: ../src/views.py:798
+#: ../src/views.py:794
 msgid "There are no items to show"
 msgstr ""
 
-#: ../src/views.py:979
+#: ../src/views.py:975
 msgid "Filename"
 msgstr ""
 
-#: ../src/views.py:999 ../src/spritz.py:383 ../src/spritz.py:418
+#: ../src/views.py:995 ../src/spritz.py:383 ../src/spritz.py:418
 msgid "You should press the button"
 msgstr ""
 
-#: ../src/views.py:999 ../src/spritz.py:383 ../src/spritz.py:463
+#: ../src/views.py:995 ../src/spritz.py:383 ../src/spritz.py:463
 msgid "Regenerate Cache"
 msgstr ""
 
-#: ../src/views.py:999 ../src/spritz.py:383 ../src/spritz.py:418
+#: ../src/views.py:995 ../src/spritz.py:383 ../src/spritz.py:418
 #: ../src/spritz.py:463
 msgid "now"
 msgstr ""
 
-#: ../src/views.py:1019
+#: ../src/views.py:1015
 msgid "Active"
 msgstr ""
 
-#: ../src/views.py:1029 ../src/spritz.glade.h:82
+#: ../src/views.py:1025 ../src/spritz.glade.h:82
 msgid "Update"
 msgstr ""
 
 #. Setup revision column
-#: ../src/views.py:1037 ../src/spritz.glade.h:62
+#: ../src/views.py:1033 ../src/spritz.glade.h:62
 msgid "Revision"
 msgstr ""
 
 #. Setup reponame & repofile column's
-#: ../src/views.py:1040
+#: ../src/views.py:1036
 msgid "Repository Identifier"
 msgstr ""
 
@@ -386,194 +386,178 @@ msgstr ""
 msgid "From your Operating System"
 msgstr ""
 
-#: ../src/spritz.py:1055
-msgid "Sorry to tell you"
-msgstr ""
-
-#: ../src/spritz.py:1056
-msgid "Another instance of Entropy"
-msgstr ""
-
-#: ../src/spritz.py:1057
-msgid "is running"
-msgstr ""
-
-#: ../src/spritz.py:1058
-msgid "Close it or remove"
-msgstr ""
-
-#: ../src/spritz.py:1077
+#: ../src/spritz.py:1063
 msgid "Entropy Config Setup"
 msgstr ""
 
-#: ../src/spritz.py:1089
+#: ../src/spritz.py:1075
 msgid "GUI Setup Completed"
 msgstr ""
 
-#: ../src/spritz.py:1118
+#: ../src/spritz.py:1104
 msgid "Bug"
 msgstr ""
 
-#: ../src/spritz.py:1126
+#: ../src/spritz.py:1112
 msgid "Reference"
 msgstr ""
 
-#: ../src/spritz.py:1136
+#: ../src/spritz.py:1122
 msgid "License name"
 msgstr ""
 
-#: ../src/spritz.py:1144
+#: ../src/spritz.py:1130
 msgid "Sources"
 msgstr ""
 
-#: ../src/spritz.py:1152
+#: ../src/spritz.py:1138
 msgid "Mirrors"
 msgstr ""
 
-#: ../src/spritz.py:1160
+#: ../src/spritz.py:1146
 msgid "Keywords"
 msgstr ""
 
-#: ../src/spritz.py:1168
+#: ../src/spritz.py:1154
 msgid "Dependencies"
 msgstr ""
 
-#: ../src/spritz.py:1176
+#: ../src/spritz.py:1162
 msgid "Depends"
 msgstr ""
 
-#: ../src/spritz.py:1184
+#: ../src/spritz.py:1170
 msgid "Needed libraries"
 msgstr ""
 
-#: ../src/spritz.py:1192
+#: ../src/spritz.py:1178
 msgid "Protected item"
 msgstr ""
 
-#: ../src/spritz.py:1195 ../src/spritz.py:1207
+#: ../src/spritz.py:1181 ../src/spritz.py:1193
 msgid "Type"
 msgstr ""
 
-#: ../src/spritz.py:1203
+#: ../src/spritz.py:1189
 msgid "File"
 msgstr ""
 
-#: ../src/spritz.py:1268
+#: ../src/spritz.py:1254
 msgid "Generating metadata. Please wait."
 msgstr ""
 
-#: ../src/spritz.py:1272 ../src/spritz.py:1413 ../src/spritz.py:1420
+#: ../src/spritz.py:1258 ../src/spritz.py:1399 ../src/spritz.py:1406
 msgid "Ready"
 msgstr ""
 
-#: ../src/spritz.py:1300
+#: ../src/spritz.py:1286
 msgid "Error loading advisories"
 msgstr ""
 
-#: ../src/spritz.py:1332
+#: ../src/spritz.py:1318
 msgid "Initializing Repository module..."
 msgstr ""
 
-#: ../src/spritz.py:1338
+#: ../src/spritz.py:1324
 msgid "You must run this application as root"
 msgstr ""
 
-#: ../src/spritz.py:1341 ../src/applet/etp_applet.py:617
+#: ../src/spritz.py:1327 ../src/applet/etp_applet.py:617
 msgid "No repositories specified in"
 msgstr ""
 
-#: ../src/spritz.py:1345
+#: ../src/spritz.py:1331
 msgid "You are not connected to the Internet. You should."
 msgstr ""
 
-#: ../src/spritz.py:1348 ../src/applet/etp_applet.py:625
+#: ../src/spritz.py:1334 ../src/applet/etp_applet.py:625
 msgid "Unhandled exception"
 msgstr ""
 
-#: ../src/spritz.py:1353
+#: ../src/spritz.py:1339
 msgid "Errors updating repositories."
 msgstr ""
 
-#: ../src/spritz.py:1354
+#: ../src/spritz.py:1340
 msgid "Please check logs below for more info"
 msgstr ""
 
-#: ../src/spritz.py:1357
+#: ../src/spritz.py:1343
 msgid "Repositories updated successfully"
 msgstr ""
 
-#: ../src/spritz.py:1360
+#: ../src/spritz.py:1346
 msgid "All the repositories were already up to date."
 msgstr ""
 
-#: ../src/spritz.py:1362
+#: ../src/spritz.py:1348
 msgid "repositories were already up to date. Others have been updated."
 msgstr ""
 
-#: ../src/spritz.py:1365
+#: ../src/spritz.py:1351
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr ""
 
-#: ../src/spritz.py:1370
+#: ../src/spritz.py:1356
 msgid "Nothing to do. I am idle."
 msgstr ""
 
-#: ../src/spritz.py:1371
+#: ../src/spritz.py:1357
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr ""
 
-#: ../src/spritz.py:1372
+#: ../src/spritz.py:1358
 msgid "I am still alive and kickin'"
 msgstr ""
 
 #. -> Get lists
-#: ../src/spritz.py:1406
+#: ../src/spritz.py:1392
 msgid "Generating Metadata, please wait."
 msgstr ""
 
-#: ../src/spritz.py:1407
+#: ../src/spritz.py:1393
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr ""
 
-#: ../src/spritz.py:1408
+#: ../src/spritz.py:1394
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr ""
 
-#: ../src/spritz.py:1410 ../src/spritz.py:1417
+#: ../src/spritz.py:1396 ../src/spritz.py:1403
 msgid "Calculating"
 msgstr ""
 
-#: ../src/spritz.py:1438
+#: ../src/spritz.py:1424
 msgid "Running tasks"
 msgstr ""
 
-#: ../src/spritz.py:1444
+#: ../src/spritz.py:1430
 msgid "Processing Packages in queue"
 msgstr ""
 
-#: ../src/spritz.py:1455
+#: ../src/spritz.py:1441
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
 
-#: ../src/spritz.py:1480
+#: ../src/spritz.py:1466
 msgid "No packages selected"
 msgstr ""
 
-#: ../src/spritz.py:1536
+#: ../src/spritz.py:1522
 msgid "Exception caught"
 msgstr ""
 
-#: ../src/spritz.py:1537
+#: ../src/spritz.py:1523
 msgid "Spritz crashed! An unexpected error occured."
 msgstr ""
 
-#: ../src/spritz.py:1546
+#: ../src/spritz.py:1532
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr ""
 
-#: ../src/spritz.py:1548
+#: ../src/spritz.py:1534
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr ""
 
@@ -599,8 +583,8 @@ msgstr ""
 #: ../src/applet/etp_applet_dialogs.py:395
 msgid ""
 "An unhandled exception has occured.  This is most likely a bug.  Please copy "
-"the full text of this exception into an email and send it to applet@rhn."
-"redhat.com.  Thank you."
+"the full text of this exception into an email and send it to "
+"sabayon@sabayonlinux.org.  Thank you."
 msgstr ""
 
 #: ../src/applet/etp_applet.py:64
@@ -688,7 +672,7 @@ msgid "Updates Notification Applet Enabled"
 msgstr ""
 
 #: ../src/applet/etp_applet.py:537
-msgid "execv didn't execv?"
+msgid "Cannot load Spritz"
 msgstr ""
 
 #: ../src/applet/etp_applet.py:600
