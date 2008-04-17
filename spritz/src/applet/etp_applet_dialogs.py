@@ -58,7 +58,7 @@ class rhnAppletNoticeWindow(rhnGladeWindow):
 
     def on_spritz(self, button):
         self.parent.launch_package_manager()
-        
+
     def on_close(self, close_button):
         self.close_window()
 
@@ -395,7 +395,7 @@ class rhnAppletExceptionDialog:
         info = WrappingLabel(_("An unhandled exception has occured.  This "
                                "is most likely a bug.  Please copy the "
                                "full text of this exception into an email "
-                               "and send it to applet@rhn.redhat.com.  Thank you."))
+                               "and send it to sabayon@sabayonlinux.org.  Thank you."))
         info.set_size_request (400, -1)
 
         hbox.pack_start (sw, gtk.TRUE)
