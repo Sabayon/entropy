@@ -65,7 +65,7 @@ class ProcessGtkEventsThread(Thread):
     def dosleep(self):
         try:
             time.sleep(0.5)
-        except AttributeError:
+        except:
             pass
 
     def doQuit(self):
