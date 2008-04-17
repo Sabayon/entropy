@@ -632,7 +632,7 @@ def searchRemoval(atoms, idreturn = False, deep = False, EquoConnection = None):
 
 
 
-def searchInstalled(idreturn = False, EquoConnection = None):
+def searchInstalled(idreturn = False, EquoConnection = None, dbconn = None):
 
     if EquoConnection != None:
         Equo = EquoConnection
@@ -646,7 +646,10 @@ def searchInstalled(idreturn = False, EquoConnection = None):
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Installed Search..."))
 
-    clientDbconn = Equo.clientDbconn
+    if dbconn:
+        clientDbconn = dbconn
+    else:
+        clientDbconn = Equo.clientDbconn
 
     installedPackages = clientDbconn.listAllPackages()
     installedPackages.sort()

@@ -71,6 +71,8 @@ def query(myopts):
         text_query.searchDepends(myopts, dbconn = dbconn, EquoConnection = Entropy)
     elif cmd == "eclass":
         text_query.searchEclass(myopts, dbconn = dbconn, EquoConnection = Entropy)
+    elif cmd == "list":
+        text_query.searchInstalled(dbconn = dbconn, EquoConnection = Entropy)
 
     del Entropy
     return rc

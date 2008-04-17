@@ -60,6 +60,7 @@ def print_help():
     print_info(" \t\t"+red("belongs")+"\t\t search from what package a file belongs [*filename* allowed]")
     print_info(" \t\t"+red("description")+"\t search packages by description")
     print_info(" \t\t"+red("eclass")+"\t\t search packages using the specified eclasses")
+    print_info(" \t\t"+red("list")+"\t\t list all the packages in the default repository")
     print_info(" \t\t"+brown("--verbose")+"\t show more details")
     print_info(" \t\t"+brown("--quiet")+"\t\t print results in a scriptable way")
 
