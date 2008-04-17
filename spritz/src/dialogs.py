@@ -20,14 +20,10 @@
 import gtk
 import gobject
 import pango
-
-# Use iniparse if it exist, else use Python ConfigParser
 try:
     from iniparse.compat import ConfigParser,SafeConfigParser
-except:
+except ImportError:
     from ConfigParser import ConfigParser,SafeConfigParser
-
-
 from spritz_setup import const,cleanMarkupSting,SpritzConf,unicode2htmlentities
 from i18n import _
 
@@ -219,9 +215,9 @@ class ErrorDialog:
         self.text.set_markup( text )
 
     def set_long_text( self, longtext ):
-        buffer = self.longtext.get_buffer()
-        start, end = buffer.get_bounds()
-        buffer.insert_with_tags( end, longtext, self.style_err )
+        mybuffer = self.longtext.get_buffer()
+        start, end = mybuffer.get_bounds()
+        mybuffer.insert_with_tags( end, longtext, self.style_err )
 
     def run( self, showreport = False ):
         self.dialog.show_all()
@@ -332,15 +328,15 @@ class AboutDialog(gtk.Window):
             text += "\n\n\n\n"
         text = "<big>" + text.strip() + "</big>"
 
-        credits = gtk.Label(text)
-        credits.set_use_markup(True)
-        credits.set_justify(gtk.JUSTIFY_CENTER)
+        mycredits = gtk.Label(text)
+        mycredits.set_use_markup(True)
+        mycredits.set_justify(gtk.JUSTIFY_CENTER)
 
-        lbl_width, lbl_height = credits.size_request()
-        scroller.put(credits, (width - lbl_width) / 2, height)
+        lbl_width, lbl_height = mycredits.size_request()
+        scroller.put(mycredits, (width - lbl_width) / 2, height)
 
         self.__scroller = scroller
-        self.__credits = credits
+        self.__credits = mycredits
 
         self.__scroller_values = (height - 32, -lbl_height,
                                   (width - lbl_width) / 2)
@@ -422,14 +418,14 @@ def okDialog(parent, msg, title = None):
     if not title:
         title = _("Attention")
     dlg.set_title( title )
-    rc = dlg.run()
+    dlg.run()
     dlg.destroy()
 
 
 class LicenseDialog:
-    def __init__( self, parent, licenses, EquoConnection ):
+    def __init__( self, parent, licenses, entropy ):
 
-        self.Entropy = EquoConnection
+        self.Entropy = entropy
         self.xml = gtk.glade.XML( const.GLADE_FILE, 'licenseWindow',domain="spritz" )
         self.xml_licread = gtk.glade.XML( const.GLADE_FILE, 'licenseReadWindow',domain="spritz" )
         self.dialog = self.xml.get_widget( "licenseWindow" )
