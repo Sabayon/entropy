@@ -17,7 +17,6 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-import gtk, gobject
 import os, sys
 from i18n import _
 from entropyConstants import *
@@ -138,6 +137,7 @@ class SpritzConf:
     branding_title = 'Spritz Package Manager'
 
 def cleanMarkupSting(msg):
+    import gobject
     msg = str(msg) # make sure it is a string
     msg = gobject.markup_escape_text(msg)
     #msg = msg.replace('@',' AT ')
@@ -227,10 +227,10 @@ class fakeinfile:
         return False
 
     def read(self, a):
-        return self.readline()
+        return self.readline(count = a)
 
-    def readline(self):
-        return os.read(self.fn,2048)
+    def readline(self, count = 2048):
+        return os.read(self.fn,count)
 
     def readlines(self): return []
 
