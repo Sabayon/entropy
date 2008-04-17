@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-17 12:07+0200\n"
+"POT-Creation-Date: 2008-04-17 18:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #. self.create_text_column( _( "Package" ), 'name' , size=300)
 #: ../src/dialogs.py:89 ../src/dialogs.py:96 ../src/views.py:413
-#: ../src/spritz.py:1096
+#: ../src/spritz.py:1105
 msgid "Package"
 msgstr ""
 
@@ -382,182 +382,182 @@ msgid "Unaffected"
 msgstr ""
 
 #. from installed
-#: ../src/spritz.py:813
+#: ../src/spritz.py:822
 msgid "From your Operating System"
 msgstr ""
 
-#: ../src/spritz.py:1063
+#: ../src/spritz.py:1072
 msgid "Entropy Config Setup"
 msgstr ""
 
-#: ../src/spritz.py:1075
+#: ../src/spritz.py:1084
 msgid "GUI Setup Completed"
 msgstr ""
 
-#: ../src/spritz.py:1104
+#: ../src/spritz.py:1113
 msgid "Bug"
 msgstr ""
 
-#: ../src/spritz.py:1112
+#: ../src/spritz.py:1121
 msgid "Reference"
 msgstr ""
 
-#: ../src/spritz.py:1122
+#: ../src/spritz.py:1131
 msgid "License name"
 msgstr ""
 
-#: ../src/spritz.py:1130
+#: ../src/spritz.py:1139
 msgid "Sources"
 msgstr ""
 
-#: ../src/spritz.py:1138
+#: ../src/spritz.py:1147
 msgid "Mirrors"
 msgstr ""
 
-#: ../src/spritz.py:1146
+#: ../src/spritz.py:1155
 msgid "Keywords"
 msgstr ""
 
-#: ../src/spritz.py:1154
+#: ../src/spritz.py:1163
 msgid "Dependencies"
 msgstr ""
 
-#: ../src/spritz.py:1162
+#: ../src/spritz.py:1171
 msgid "Depends"
 msgstr ""
 
-#: ../src/spritz.py:1170
+#: ../src/spritz.py:1179
 msgid "Needed libraries"
 msgstr ""
 
-#: ../src/spritz.py:1178
+#: ../src/spritz.py:1187
 msgid "Protected item"
 msgstr ""
 
-#: ../src/spritz.py:1181 ../src/spritz.py:1193
+#: ../src/spritz.py:1190 ../src/spritz.py:1202
 msgid "Type"
 msgstr ""
 
-#: ../src/spritz.py:1189
+#: ../src/spritz.py:1198
 msgid "File"
 msgstr ""
 
-#: ../src/spritz.py:1254
+#: ../src/spritz.py:1263
 msgid "Generating metadata. Please wait."
 msgstr ""
 
-#: ../src/spritz.py:1258 ../src/spritz.py:1399 ../src/spritz.py:1406
+#: ../src/spritz.py:1267 ../src/spritz.py:1408 ../src/spritz.py:1415
 msgid "Ready"
 msgstr ""
 
-#: ../src/spritz.py:1286
+#: ../src/spritz.py:1295
 msgid "Error loading advisories"
 msgstr ""
 
-#: ../src/spritz.py:1318
+#: ../src/spritz.py:1327
 msgid "Initializing Repository module..."
 msgstr ""
 
-#: ../src/spritz.py:1324
+#: ../src/spritz.py:1333
 msgid "You must run this application as root"
 msgstr ""
 
-#: ../src/spritz.py:1327 ../src/applet/etp_applet.py:617
+#: ../src/spritz.py:1336 ../src/applet/etp_applet.py:617
 msgid "No repositories specified in"
 msgstr ""
 
-#: ../src/spritz.py:1331
+#: ../src/spritz.py:1340
 msgid "You are not connected to the Internet. You should."
 msgstr ""
 
-#: ../src/spritz.py:1334 ../src/applet/etp_applet.py:625
+#: ../src/spritz.py:1343 ../src/applet/etp_applet.py:625
 msgid "Unhandled exception"
 msgstr ""
 
-#: ../src/spritz.py:1339
+#: ../src/spritz.py:1348
 msgid "Errors updating repositories."
 msgstr ""
 
-#: ../src/spritz.py:1340
+#: ../src/spritz.py:1349
 msgid "Please check logs below for more info"
 msgstr ""
 
-#: ../src/spritz.py:1343
+#: ../src/spritz.py:1352
 msgid "Repositories updated successfully"
 msgstr ""
 
-#: ../src/spritz.py:1346
+#: ../src/spritz.py:1355
 msgid "All the repositories were already up to date."
 msgstr ""
 
-#: ../src/spritz.py:1348
+#: ../src/spritz.py:1357
 msgid "repositories were already up to date. Others have been updated."
 msgstr ""
 
-#: ../src/spritz.py:1351
+#: ../src/spritz.py:1360
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr ""
 
-#: ../src/spritz.py:1356
+#: ../src/spritz.py:1365
 msgid "Nothing to do. I am idle."
 msgstr ""
 
-#: ../src/spritz.py:1357
+#: ../src/spritz.py:1366
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr ""
 
-#: ../src/spritz.py:1358
+#: ../src/spritz.py:1367
 msgid "I am still alive and kickin'"
 msgstr ""
 
 #. -> Get lists
-#: ../src/spritz.py:1392
+#: ../src/spritz.py:1401
 msgid "Generating Metadata, please wait."
 msgstr ""
 
-#: ../src/spritz.py:1393
+#: ../src/spritz.py:1402
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr ""
 
-#: ../src/spritz.py:1394
+#: ../src/spritz.py:1403
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr ""
 
-#: ../src/spritz.py:1396 ../src/spritz.py:1403
+#: ../src/spritz.py:1405 ../src/spritz.py:1412
 msgid "Calculating"
 msgstr ""
 
-#: ../src/spritz.py:1424
+#: ../src/spritz.py:1433
 msgid "Running tasks"
 msgstr ""
 
-#: ../src/spritz.py:1430
+#: ../src/spritz.py:1439
 msgid "Processing Packages in queue"
 msgstr ""
 
-#: ../src/spritz.py:1441
+#: ../src/spritz.py:1450
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
 
-#: ../src/spritz.py:1466
+#: ../src/spritz.py:1475
 msgid "No packages selected"
 msgstr ""
 
-#: ../src/spritz.py:1522
+#: ../src/spritz.py:1531
 msgid "Exception caught"
 msgstr ""
 
-#: ../src/spritz.py:1523
+#: ../src/spritz.py:1532
 msgid "Spritz crashed! An unexpected error occured."
 msgstr ""
 
-#: ../src/spritz.py:1532
+#: ../src/spritz.py:1541
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr ""
 
-#: ../src/spritz.py:1534
+#: ../src/spritz.py:1543
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr ""
 
