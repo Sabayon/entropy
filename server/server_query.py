@@ -31,7 +31,7 @@ def query(myopts):
         return 10
     cmd = myopts[0]
     myopts = myopts[1:]
-    if not myopts:
+    if not myopts and cmd not in ["list"]:
         return 10
 
     rc = 0

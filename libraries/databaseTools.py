@@ -1819,7 +1819,7 @@ class etpDatabase:
                 dumpTools.dumpobj(etpCache['dbInfo']+"/"+self.dbname+"/"+c_match+"/"+c_hash,info_cache_data)
                 if sperms:
                     const_setup_perms(etpConst['dumpstoragedir'],etpConst['entropygid'])
-            except IOError:
+            except (IOError, OSError):
                 pass
 
     def fetchSearchCache(self, key, function, extra_hash = 0):
