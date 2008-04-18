@@ -469,7 +469,7 @@ class etpDatabase:
             if command[0] == "move":
                 quickpkg_atoms |= self.runTreeUpdatesMoveAction(command[1:], quickpkg_atoms)
             elif command[0] == "slotmove":
-                quickpkg_atoms |= self.runTreeUpdatesSlotmoveAction(command[1:])
+                quickpkg_atoms |= self.runTreeUpdatesSlotmoveAction(command[1:], quickpkg_atoms)
 
         if quickpkg_atoms and not self.clientDatabase:
             # quickpkg package and packages owning it as a dependency
@@ -560,7 +560,7 @@ class etpDatabase:
     # 2) update all the dependencies in dependenciesreference owning same matched atom + slot
     # 3) run fixpackages which will update /var/db/pkg files
     # 4) automatically run quickpkg() to build the new binary and tainted binaries owning tainted iddependency and taint database
-    def runTreeUpdatesSlotmoveAction(self, slotmove_command):
+    def runTreeUpdatesSlotmoveAction(self, slotmove_command, quickpkg_queue):
 
         atom = slotmove_command[0]
         atomkey = self.entropyTools.dep_getkey(atom)
@@ -568,7 +568,6 @@ class etpDatabase:
         slot_to = slotmove_command[2]
         matches = self.atomMatch(atom, multiMatch = True)
         iddependencies_idpackages = set()
-        quickpkg_queue = set()
 
         for idpackage in matches[0]:
 
@@ -578,7 +577,7 @@ class etpDatabase:
 
             # look for packages we need to quickpkg again
             # note: quickpkg_queue is simply ignored if self.clientDatabase
-            quickpkg_queue = [atom+":"+str(slot_to)]
+            quickpkg_queue.add(atom+":"+str(slot_to))
             iddeps = self.searchDependency(atomkey, like = True, multi = True)
             for iddep in iddeps:
                 # update string
@@ -1554,12 +1553,17 @@ class etpDatabase:
     def getNewNegativeCounter(self):
         counter = -2
         try:
-            mycounters = list(self.listAllCounters(onlycounters = True))
-            mycounter = min(mycounters)
+            self.cursor.execute('SELECT min(counter) FROM counters')
+            dbcounter = self.cursor.fetchone()
+            mycounter = 0
+            if dbcounter:
+                mycounter = dbcounter[0]
+
             if mycounter >= -1:
                 counter = -2
             else:
                 counter = mycounter-1
+
         except:
             pass
         return counter
@@ -2539,7 +2543,7 @@ class etpDatabase:
         return mydata
 
     def isSourceAvailable(self,source):
-        self.cursor.execute('SELECT idsource FROM sourcesreference WHERE source = "'+source+'"')
+        self.cursor.execute('SELECT idsource FROM sourcesreference WHERE source = (?)', (source,))
         result = self.cursor.fetchone()
         if not result:
             return -1
@@ -3384,6 +3388,8 @@ class etpDatabase:
                         -1,
                         )
         )
+        if self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS dependsindex_idpackage ON dependstable ( idpackage )')
         self.commitChanges()
 
     def sanitizeDependsTable(self):
@@ -3461,6 +3467,8 @@ class etpDatabase:
         self.createBaseinfoIndex()
         self.createKeywordsIndex()
         self.createDependenciesIndex()
+        self.createProvideIndex()
+        self.createConflictsIndex()
         self.createExtrainfoIndex()
         self.createNeededIndex()
         self.createUseflagsIndex()
@@ -3468,6 +3476,11 @@ class etpDatabase:
         self.createLicensesIndex()
         self.createConfigProtectReferenceIndex()
         self.createMessagesIndex()
+        self.createSourcesIndex()
+        self.createCountersIndex()
+        self.createEclassesIndex()
+        self.createCategoriesIndex()
+        self.createCompileFlagsIndex()
 
     def createNeededIndex(self):
         if self.indexing:
@@ -3482,8 +3495,15 @@ class etpDatabase:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS messagesindex ON messages ( idpackage )')
             self.commitChanges()
 
+    def createCompileFlagsIndex(self):
+        if self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS flagsindex ON flags ( chost,cflags,cxxflags )')
+            self.commitChanges()
+
     def createUseflagsIndex(self):
         if self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idpackage ON useflags ( idpackage )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idflag ON useflags ( idflag )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS useflagsindex ON useflagsreference ( flagname )')
             self.commitChanges()
 
@@ -3518,10 +3538,16 @@ class etpDatabase:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS licensesindex ON licenses ( license )')
             self.commitChanges()
 
+    def createCategoriesIndex(self):
+        if self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS categoriesindex_category ON categories ( category )')
+            self.commitChanges()
+
     def createKeywordsIndex(self):
         if self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsreferenceindex ON keywordsreference ( keywordname )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsindex_idpackage ON keywords ( idpackage )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsindex_idkeyword ON keywords ( idkeyword )')
             self.commitChanges()
 
     def createDependenciesIndex(self):
@@ -3531,9 +3557,40 @@ class etpDatabase:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesreferenceindex_dependency ON dependenciesreference ( dependency )')
             self.commitChanges()
 
+    def createCountersIndex(self):
+        if self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS countersindex_counter ON counters ( counter )')
+            self.commitChanges()
+
+    def createSourcesIndex(self):
+        if self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS sourcesindex_idpackage ON sources ( idpackage )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS sourcesindex_idsource ON sources ( idsource )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS sourcesreferenceindex_source ON sourcesreference ( source )')
+            self.commitChanges()
+
+    def createProvideIndex(self):
+        if self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS provideindex_idpackage ON provide ( idpackage )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS provideindex_atom ON provide ( atom )')
+            self.commitChanges()
+
+    def createConflictsIndex(self):
+        if self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS conflictsindex_idpackage ON conflicts ( idpackage )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS conflictsindex_atom ON conflicts ( conflict )')
+            self.commitChanges()
+
     def createExtrainfoIndex(self):
         if self.indexing:
             self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( description )')
+            self.commitChanges()
+
+    def createEclassesIndex(self):
+        if self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS eclassesindex_idpackage ON eclasses ( idpackage )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS eclassesindex_idclass ON eclasses ( idclass )')
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS eclassesreferenceindex_classname ON eclassesreference ( classname )')
             self.commitChanges()
 
     def regenerateCountersTable(self, vdb_path, output = False):

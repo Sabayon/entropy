@@ -322,6 +322,11 @@ CREATE TABLE licenses_accepted (
     licensename VARCHAR UNIQUE
 );
 
+CREATE TABLE triggers (
+    idpackage INTEGER PRIMARY KEY,
+    data BLOB
+);
+
 """
 
 # ETP_ARCH_CONST setup

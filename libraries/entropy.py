@@ -3944,6 +3944,7 @@ class PackageInterface:
 
                         # remove and old install
                         if self.infoDict['removeidpackage'] != -1:
+                            taint = False
                             key = self.Entropy.entropyTools.dep_getkey(self.infoDict['removeatom'])
                             slot = self.infoDict['slot']
                             matches = self.Entropy.atomMatch(key, matchSlot = slot, multiRepo = True, multiMatch = True)
@@ -3951,6 +3952,18 @@ class PackageInterface:
                                 for mymatch in matches[0]:
                                     if mymatch not in disk_cache['available']:
                                         disk_cache['available'].append(mymatch)
+                                        taint = True
+                            if taint:
+                                mydata = {}
+                                mylist = []
+                                for myidpackage,myrepo in disk_cache['available']:
+                                    mydbc = self.Entropy.openRepositoryDatabase(myrepo)
+                                    mydata[mydbc.retrieveAtom(myidpackage)] = (myidpackage,myrepo)
+                                mykeys = mydata.keys()
+                                mykeys.sort()
+                                for mykey in mykeys:
+                                    mylist.append(mydata[mykey])
+                                disk_cache['available'] = mylist
 
                         # install, doing here because matches[0] could contain self.matched_atoms
                         if self.matched_atom in disk_cache['available']:
@@ -6704,7 +6717,7 @@ class TriggerInterface:
             functions.add('call_ext_postinstall')
 
         # equo purge cache
-        if self.pkgdata['category']+"/"+self.pkgdata['name'] == "app-admin/equo":
+        if self.pkgdata['category']+"/"+self.pkgdata['name'] == "sys-apps/entropy":
             functions.add("purgecache")
 
         # binutils configuration
@@ -6978,14 +6991,14 @@ class TriggerInterface:
                     os.system('echo "'+cmd+'" | chroot '+etpConst['systemroot']+quietstring)
 
     def trigger_purgecache(self):
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Purging Equo cache...")
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Purging Entropy cache...")
         self.Entropy.updateProgress(
-                                brown(" Remember: It is always better to leave Equo updates isolated."),
+                                brown(" Remember: It is always better to leave Entropy updates isolated."),
                                 importance = 0,
                                 header = red("   ##")
                             )
         self.Entropy.updateProgress(
-                                brown(" Purging Equo cache..."),
+                                brown(" Purging Entropy cache..."),
                                 importance = 0,
                                 header = red("   ##")
                             )
