@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-17 18:50+0200\n"
+"POT-Creation-Date: 2008-04-18 14:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -462,7 +462,7 @@ msgstr ""
 msgid "You must run this application as root"
 msgstr ""
 
-#: ../src/spritz.py:1336 ../src/applet/etp_applet.py:617
+#: ../src/spritz.py:1336 ../src/applet/etp_applet.py:612
 msgid "No repositories specified in"
 msgstr ""
 
@@ -470,7 +470,7 @@ msgstr ""
 msgid "You are not connected to the Internet. You should."
 msgstr ""
 
-#: ../src/spritz.py:1343 ../src/applet/etp_applet.py:625
+#: ../src/spritz.py:1343 ../src/applet/etp_applet.py:620
 msgid "Unhandled exception"
 msgstr ""
 
@@ -591,189 +591,189 @@ msgstr ""
 msgid "Updates Notification"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:209
+#: ../src/applet/etp_applet.py:204
 msgid "_Disable Notification Applet"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:209
+#: ../src/applet/etp_applet.py:204
 msgid "Disable Notification Applet"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:210
+#: ../src/applet/etp_applet.py:205
 msgid "_Enable Notification Applet"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:210
+#: ../src/applet/etp_applet.py:205
 msgid "Enable Notification Applet"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:211
+#: ../src/applet/etp_applet.py:206
 msgid "_Check for updates"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:211
+#: ../src/applet/etp_applet.py:206
 msgid "Check for updates"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:212
+#: ../src/applet/etp_applet.py:207
 msgid "_Launch Package Manager"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:212
+#: ../src/applet/etp_applet.py:207
 msgid "Launch Package Manager"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:213
+#: ../src/applet/etp_applet.py:208
 msgid "_Packages Website"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:213
+#: ../src/applet/etp_applet.py:208
 msgid "Use Packages web interface"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:214
+#: ../src/applet/etp_applet.py:209
 msgid "_Sabayon Linux Website"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:214
+#: ../src/applet/etp_applet.py:209
 msgid "Launch Sabayon Linux Website"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:216
+#: ../src/applet/etp_applet.py:211
 msgid "_About"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:216
+#: ../src/applet/etp_applet.py:211
 msgid "About..."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:217
+#: ../src/applet/etp_applet.py:212
 msgid "_Exit"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:217
+#: ../src/applet/etp_applet.py:212
 msgid "Exit"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:282
+#: ../src/applet/etp_applet.py:277
 msgid "You must add yourself to this group"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:285
+#: ../src/applet/etp_applet.py:280
 msgid "Please run Equo/Spritz as root to update Entropy permissions"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:511
+#: ../src/applet/etp_applet.py:506
 msgid "Updates Notification Applet Disabled"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:522
+#: ../src/applet/etp_applet.py:517
 msgid "Updates Notification Applet Enabled"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:537
+#: ../src/applet/etp_applet.py:532
 msgid "Cannot load Spritz"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:600
+#: ../src/applet/etp_applet.py:595
 msgid "Checking for updates..."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:620
+#: ../src/applet/etp_applet.py:615
 msgid "Repository Network Error"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:635
+#: ../src/applet/etp_applet.py:630
 msgid "No repositories specified. Cannot check for package updates."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:636
+#: ../src/applet/etp_applet.py:631
 msgid "Updates: attention"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:640
+#: ../src/applet/etp_applet.py:635
 msgid ""
 "Cannot connect to the Updates Service, you're probably not connected to the "
 "world."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:641 ../src/applet/etp_applet.py:666
+#: ../src/applet/etp_applet.py:636 ../src/applet/etp_applet.py:661
 msgid "Updates: connection issues"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:645
+#: ../src/applet/etp_applet.py:640
 msgid "Not all the repositories have been fetched for checking"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:646 ../src/applet/etp_applet.py:651
+#: ../src/applet/etp_applet.py:641 ../src/applet/etp_applet.py:646
 msgid "Updates: repository issues"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:650
+#: ../src/applet/etp_applet.py:645
 msgid "No repositories found online"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:655
+#: ../src/applet/etp_applet.py:650
 msgid "Synchronization errors. Cannot update repositories. Check logs."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:656
+#: ../src/applet/etp_applet.py:651
 msgid "Updates: sync issues"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:660
+#: ../src/applet/etp_applet.py:655
 msgid "Updates: unhandled error"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:678
+#: ../src/applet/etp_applet.py:673
 msgid "Updates: error"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:686
+#: ../src/applet/etp_applet.py:681
 msgid "Updates issue:"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:704
+#: ../src/applet/etp_applet.py:699
 msgid "There are"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:704
+#: ../src/applet/etp_applet.py:699
 msgid "updates available."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:706
+#: ../src/applet/etp_applet.py:701
 msgid "Updates available"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:715 ../src/applet/etp_applet.py:717
+#: ../src/applet/etp_applet.py:710 ../src/applet/etp_applet.py:712
 msgid "So far, so good. w00t!"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:716
+#: ../src/applet/etp_applet.py:711
 msgid "Everything up-to-date"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:812
+#: ../src/applet/etp_applet.py:807
 msgid "Waiting before checkin..."
 msgstr ""
 
-#: ../src/applet/etp_applet.py:873
+#: ../src/applet/etp_applet.py:868
 msgid "Not installed"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:894
+#: ../src/applet/etp_applet.py:889
 msgid "Your system currently has"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:896
+#: ../src/applet/etp_applet.py:891
 msgid "installed"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:897
+#: ../src/applet/etp_applet.py:892
 msgid "but the latest available version is"
 msgstr ""
 
-#: ../src/applet/etp_applet.py:899
+#: ../src/applet/etp_applet.py:894
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
