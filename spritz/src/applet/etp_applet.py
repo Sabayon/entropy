@@ -124,11 +124,6 @@ class rhnApplet:
         if not new_state in etp_applet_config.APPLET_STATES:
             raise exceptionTools.IncorrectParameter("Error: invalid state %s" % new_state)
 
-        if self.current_state and \
-            not new_state in etp_applet_config.APPLET_STATE_CHANGES[self.current_state] and \
-            (self.current_state != new_state):
-                raise exceptionTools.IncorrectParameter("Error: can't change from state %s to state %s" % (self.current_state, new_state))
-
         if self.refresh_timeout_tag and new_state not in [ "OKAY", "CRITICAL" ]:
             raise exceptionTools.IncorrectParameter("Error: can't switch to state %s while refresh timer is on" % new_state)
 

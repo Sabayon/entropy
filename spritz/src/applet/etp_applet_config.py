@@ -9,18 +9,6 @@ import os
 import dumpTools
 
 APPLET_STATES = [ "STARTUP", "NOCONSENT", "CONFIGURING", "OKAY", "CRITICAL", "BUSY", "ERROR", "DISCONNECTED" ]
-
-APPLET_STATE_CHANGES = {
-    "STARTUP"     : [ "OKAY", "NOCONSENT" ],
-    "NOCONSENT"   : [ "CONFIGURING" ],
-    "CONFIGURING" : [ "NOCONSENT", "BUSY", "OKAY", "DISCONNECTED" ],
-    "OKAY"        : [ "BUSY", "CONFIGURING", "CRITICAL", "DISCONNECTED", "ERROR" ],
-    "CRITICAL"    : [ "OKAY", "BUSY", "CRITICAL", "CONFIGURING", "DISCONNECTED" ],
-    "BUSY"        : [ "OKAY", "CRITICAL", "ERROR", "DISCONNECTED" ],
-    "ERROR"       : [ "OKAY", "BUSY" ],
-    "DISCONNECTED": [ "OKAY", "BUSY", "CONFIGURING", "CRITICAL", "ERROR"], 
-    }
-
 APPLET_MENUS = [ "about", "update_now", "web_panel", "web_site", "configure_applet", "check_now" ]
 
 APPLET_SENSITIVE_MENU = {
