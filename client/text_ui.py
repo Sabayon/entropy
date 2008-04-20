@@ -460,7 +460,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         pass
 
                 # get installed package data
-                installedVer = '0'
+                installedVer = '-1'
                 installedTag = ''
                 installedRev = 0
                 installedRepo = 'Not available'
@@ -491,7 +491,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     flags += red("R")
                     action = 1
                 elif (pkgcmp > 0):
-                    if (installedVer == "0"):
+                    if (installedVer == "-1"):
                         pkgsToInstall += 1
                         flags += darkgreen("N")
                     else:
@@ -702,34 +702,6 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     if onlyfetch:
         print_info(red(" @@ ")+blue("Fetch Complete."))
         return 0,0
-
-    # XXX packages are now removed through the install process
-    '''
-    for idpackage in removalQueue:
-        currentremovalqueue += 1
-
-        metaopts = {}
-        metaopts['removeconfig'] = True
-        Package = Equo.Package()
-        Package.prepare((idpackage,),"remove", metaopts)
-
-        xterm_header = "Equo (remove) :: "+str(currentremovalqueue)+" of "+totalremovalqueue+" ::"
-        print_info(red(" -- ")+bold("(")+blue(str(currentremovalqueue))+"/"+red(totalremovalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['removeatom']))
-
-        rc = Package.run(xterm_header = xterm_header)
-        if rc != 0:
-            dirscleanup()
-            return -1,rc
-
-        # update resume cache
-        if not tbz2: # tbz2 caching not supported
-            resume_cache['removalQueue'].remove(Package.infoDict['removeidpackage'])
-            Equo.dumpTools.dumpobj(etpCache['install'],resume_cache)
-
-        Package.kill()
-        del metaopts
-        del Package
-    '''
 
     for packageInfo in runQueue:
         currentqueue += 1
