@@ -449,7 +449,7 @@ class EquoInterface(TextInterface):
 
     def listAllAvailableBranches(self):
         branches = set()
-        for repo in etpRepositories:
+        for repo in self.validRepositories:
             dbconn = self.openRepositoryDatabase(repo)
             branches.update(dbconn.listAllBranches())
         return branches
@@ -564,7 +564,7 @@ class EquoInterface(TextInterface):
     def find_belonging_dependency(self, matched_atoms):
         crying_atoms = set()
         for atom in matched_atoms:
-            for repo in etpRepositories:
+            for repo in self.validRepositories:
                 rdbconn = self.openRepositoryDatabase(repo)
                 riddep = rdbconn.searchDependency(atom)
                 if riddep != -1:
@@ -766,7 +766,7 @@ class EquoInterface(TextInterface):
                                 )
 
             # match libraries
-            for repoid in etpRepositoriesOrder:
+            for repoid in self.validRepositories:
                 self.updateProgress(
                                         blue("Repository id: ")+darkgreen(repoid),
                                         importance = 1,
@@ -864,7 +864,7 @@ class EquoInterface(TextInterface):
         match_exp = re.compile(match_string,re.IGNORECASE)
 
         matched = {}
-        for repo in etpRepositories:
+        for repo in self.validRepositories:
             dbconn = self.openRepositoryDatabase(repo)
             # get names
             idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=")
@@ -1306,6 +1306,7 @@ class EquoInterface(TextInterface):
             # save new etpRepositories to file
             self.entropyTools.saveRepositorySettings(repodata)
             initConfig_entropyConstants(etpSys['rootdir'])
+        self.validate_repositories()
 
     def removeRepository(self, repoid, disable = False):
 
@@ -1333,6 +1334,8 @@ class EquoInterface(TextInterface):
                 self.entropyTools.saveRepositorySettings(repodata, remove = True)
             initConfig_entropyConstants(etpSys['rootdir'])
 
+        self.validate_repositories()
+
     def shiftRepository(self, repoid, toidx):
         # update etpRepositoriesOrder
         etpRepositoriesOrder.remove(repoid)
@@ -1340,6 +1343,7 @@ class EquoInterface(TextInterface):
         self.entropyTools.writeOrderedRepositoriesEntries()
         initConfig_entropyConstants(etpSys['rootdir'])
         self.repository_move_clear_cache(repoid)
+        self.validate_repositories()
 
     def enableRepository(self, repoid):
         self.repository_move_clear_cache(repoid, all = True)
@@ -1348,6 +1352,7 @@ class EquoInterface(TextInterface):
         repodata['repoid'] = repoid
         self.entropyTools.saveRepositorySettings(repodata, enable = True)
         initConfig_entropyConstants(etpSys['rootdir'])
+        self.validate_repositories()
 
     def disableRepository(self, repoid):
         # update etpRepositories
@@ -1371,6 +1376,7 @@ class EquoInterface(TextInterface):
             repodata['repoid'] = repoid
             self.entropyTools.saveRepositorySettings(repodata, disable = True)
             initConfig_entropyConstants(etpSys['rootdir'])
+        self.validate_repositories()
 
 
     '''
@@ -1921,7 +1927,7 @@ class EquoInterface(TextInterface):
 
     def list_repo_categories(self):
         categories = set()
-        for repo in etpRepositories:
+        for repo in self.validRepositories:
             dbconn = self.openRepositoryDatabase(repo)
             catsdata = dbconn.listAllCategories()
             categories.update(set([x[1] for x in catsdata]))
@@ -1929,7 +1935,7 @@ class EquoInterface(TextInterface):
 
     def list_repo_packages_in_category(self, category):
         pkg_matches = set()
-        for repo in etpRepositories:
+        for repo in self.validRepositories:
             dbconn = self.openRepositoryDatabase(repo)
             catsdata = dbconn.searchPackagesByCategory(category, branch = etpConst['branch'])
             pkg_matches.update(set([(x[1],repo) for x in catsdata]))
@@ -1941,7 +1947,7 @@ class EquoInterface(TextInterface):
 
     def all_repositories_checksum(self):
         sum_hashes = ''
-        for repo in etpRepositories:
+        for repo in self.validRepositories:
             try:
                 dbconn = self.openRepositoryDatabase(repo)
             except exceptionTools.RepositoryError:
@@ -1954,7 +1960,7 @@ class EquoInterface(TextInterface):
         # client digest not needed, cache is kept updated
         c_hash = str(hash(repo_digest)) + \
                  str(hash(branch)) + \
-                 str(hash(tuple(etpRepositories))) + \
+                 str(hash(tuple(self.validRepositories))) + \
                  str(hash(tuple(etpRepositoriesOrder)))
         c_hash = str(hash(c_hash))
         return c_hash
@@ -2014,18 +2020,21 @@ class EquoInterface(TextInterface):
         if self.xcache:
             if db_digest == None:
                 db_digest = self.all_repositories_checksum()
-            c_hash = str(hash(db_digest)) + \
-                     str(hash(empty_deps)) + \
-                     str(hash(tuple(etpRepositories))) + \
-                     str(hash(tuple(etpRepositoriesOrder))) + \
-                     str(hash(branch))
-            c_hash = str(hash(c_hash))
+            c_hash = self.get_world_update_cache_hash(db_digest, empty_deps, branch)
             disk_cache = self.dumpTools.loadobj(etpCache['world_update']+c_hash)
             if disk_cache != None:
                 try:
                     return disk_cache['r']
                 except (KeyError, TypeError):
                     return None
+
+    def get_world_update_cache_hash(self, db_digest, empty_deps, branch):
+        c_hash = str(hash(db_digest)) + \
+                    str(hash(empty_deps)) + \
+                    str(hash(tuple(self.validRepositories))) + \
+                    str(hash(tuple(etpRepositoriesOrder))) + \
+                    str(hash(branch))
+        return str(hash(c_hash))
 
     def calculate_world_updates(self, empty_deps = False, branch = etpConst['branch']):
 
@@ -2098,12 +2107,7 @@ class EquoInterface(TextInterface):
                     update.append(matchresults)
 
         if self.xcache:
-            c_hash = str(hash(db_digest)) + \
-                     str(hash(empty_deps)) + \
-                     str(hash(tuple(etpRepositories))) + \
-                     str(hash(tuple(etpRepositoriesOrder))) + \
-                     str(hash(branch))
-            c_hash = str(hash(c_hash))
+            c_hash = self.get_world_update_cache_hash(db_digest, empty_deps, branch)
             data = {}
             data['r'] = (update, remove, fine,)
             data['empty_deps'] = empty_deps
