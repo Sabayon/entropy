@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ca\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-15 22:10+0200\n"
-"PO-Revision-Date: 2008-04-16 16:54-0000\n"
+"POT-Creation-Date: 2008-04-18 14:29+0200\n"
+"PO-Revision-Date: 2008-04-20 11:33-0000\n"
 "Last-Translator: Roger Calvó <rcalvoi@yahoo.com>\n"
 "Language-Team: Català\n"
 "MIME-Version: 1.0\n"
@@ -16,78 +16,78 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: ../src/dialogs.py:56
+#: ../src/dialogs.py:52
 msgid "Please confirm the actions above"
 msgstr "Si us plau confirmeu les accions de sobre"
 
 #. self.create_text_column( _( "Package" ), 'name' , size=300)
-#: ../src/dialogs.py:93
-#: ../src/dialogs.py:100
-#: ../src/views.py:417
-#: ../src/spritz.py:1110
+#: ../src/dialogs.py:89
+#: ../src/dialogs.py:96
+#: ../src/views.py:413
+#: ../src/spritz.py:1105
 msgid "Package"
 msgstr "Paquet"
 
-#: ../src/dialogs.py:94
-#: ../src/views.py:556
-#: ../src/views.py:712
-#: ../src/views.py:1041
+#: ../src/dialogs.py:90
+#: ../src/views.py:552
+#: ../src/views.py:708
+#: ../src/views.py:1037
 #: ../src/spritz.glade.h:23
 msgid "Description"
 msgstr "Descripció"
 
-#: ../src/dialogs.py:117
-#: ../src/dialogs.py:158
+#: ../src/dialogs.py:113
+#: ../src/dialogs.py:154
 msgid "To be reinstalled"
 msgstr "S'instal·laran de nou"
 
-#: ../src/dialogs.py:123
-#: ../src/dialogs.py:163
+#: ../src/dialogs.py:119
+#: ../src/dialogs.py:159
 msgid "To be installed"
 msgstr "S'instal·laran"
 
-#: ../src/dialogs.py:129
-#: ../src/dialogs.py:171
+#: ../src/dialogs.py:125
+#: ../src/dialogs.py:167
 msgid "To be updated"
 msgstr "S'actualitzaran"
 
-#: ../src/dialogs.py:135
+#: ../src/dialogs.py:131
 msgid "To be downgraded"
 msgstr "Es degradaran"
 
-#: ../src/dialogs.py:141
-#: ../src/dialogs.py:176
+#: ../src/dialogs.py:137
+#: ../src/dialogs.py:172
 msgid "To be removed"
 msgstr "S'esborraran"
 
-#: ../src/dialogs.py:168
+#: ../src/dialogs.py:164
 msgid "No description"
 msgstr "Cap descripció"
 
-#: ../src/dialogs.py:309
+#: ../src/dialogs.py:305
 msgid "About"
 msgstr "Quant a"
 
-#: ../src/dialogs.py:404
+#: ../src/dialogs.py:400
 msgid "Hey!"
 msgstr "Ei!"
 
-#: ../src/dialogs.py:408
+#: ../src/dialogs.py:404
 msgid "Spritz Question"
 msgstr "Pregunta de Spritz"
 
-#: ../src/dialogs.py:423
+#: ../src/dialogs.py:419
 #: ../src/misc.py:89
 #: ../src/misc.py:144
 msgid "Attention"
 msgstr "Atenció"
 
-#: ../src/dialogs.py:477
+#: ../src/dialogs.py:473
 msgid "License"
 msgstr "Llicència"
 
 #. new
-#: ../src/dialogs.py:480
+#: ../src/dialogs.py:476
 msgid "Accepted"
 msgstr "Acceptat"
 
@@ -105,7 +105,7 @@ msgstr "Mostra els paquets instal·lats"
 
 #. Setup Vertical Toolbar
 #: ../src/gui.py:296
-#: ../src/views.py:551
+#: ../src/views.py:547
 msgid "Packages"
 msgstr "Paquets"
 
@@ -165,109 +165,109 @@ msgstr "Espai necessari"
 msgid "These are the packages that would be removed"
 msgstr "Aquests paquets es suprimiran"
 
-#: ../src/views.py:44
+#: ../src/views.py:41
 msgid "Categories"
 msgstr "Categories"
 
-#: ../src/views.py:418
-#: ../src/views.py:647
+#: ../src/views.py:414
+#: ../src/views.py:643
 msgid "Rev."
 msgstr "Rev."
 
-#: ../src/views.py:419
+#: ../src/views.py:415
 #: ../src/spritz.glade.h:67
 msgid "Slot"
 msgstr "Slot"
 
-#: ../src/views.py:420
-#: ../src/views.py:979
+#: ../src/views.py:416
+#: ../src/views.py:975
 msgid "Repository"
 msgstr "Repositori"
 
-#: ../src/views.py:592
+#: ../src/views.py:588
 msgid "Packages To Reinstall"
 msgstr "Paquets a instal·lar de nou"
 
-#: ../src/views.py:596
+#: ../src/views.py:592
 msgid "Packages To Update"
 msgstr "Paquets a actualitzar"
 
-#: ../src/views.py:600
+#: ../src/views.py:596
 msgid "Packages To Install"
 msgstr "Paquets a instal·lar"
 
-#: ../src/views.py:604
+#: ../src/views.py:600
 msgid "Packages To Remove"
 msgstr "Paquets a eliminar"
 
-#: ../src/views.py:633
+#: ../src/views.py:629
 msgid "Proposed"
 msgstr "Proposats"
 
-#: ../src/views.py:640
+#: ../src/views.py:636
 msgid "Destination"
 msgstr "Destí"
 
-#: ../src/views.py:689
+#: ../src/views.py:685
 msgid "Status"
 msgstr "Estat"
 
-#: ../src/views.py:696
+#: ../src/views.py:692
 msgid "GLSA id."
 msgstr "id. de GLSA"
 
-#: ../src/views.py:704
+#: ../src/views.py:700
 msgid "Package key"
 msgstr "Nom del paquet"
 
-#: ../src/views.py:797
+#: ../src/views.py:793
 msgid "No advisories"
 msgstr "No hi ha avisos"
 
-#: ../src/views.py:798
+#: ../src/views.py:794
 msgid "There are no items to show"
 msgstr "No hi ha res a mostrar"
 
-#: ../src/views.py:979
+#: ../src/views.py:975
 msgid "Filename"
 msgstr "Nom de fitxer"
 
-#: ../src/views.py:999
+#: ../src/views.py:995
 #: ../src/spritz.py:383
 #: ../src/spritz.py:418
 msgid "You should press the button"
 msgstr "És recomanable que premeu el botó"
 
-#: ../src/views.py:999
+#: ../src/views.py:995
 #: ../src/spritz.py:383
 #: ../src/spritz.py:463
 msgid "Regenerate Cache"
 msgstr "Regenera la memòria de cau"
 
-#: ../src/views.py:999
+#: ../src/views.py:995
 #: ../src/spritz.py:383
 #: ../src/spritz.py:418
 #: ../src/spritz.py:463
 msgid "now"
 msgstr "ara"
 
-#: ../src/views.py:1019
+#: ../src/views.py:1015
 msgid "Active"
 msgstr "Actiu"
 
-#: ../src/views.py:1029
+#: ../src/views.py:1025
 #: ../src/spritz.glade.h:82
 msgid "Update"
 msgstr "Actualitza"
 
 #. Setup revision column
-#: ../src/views.py:1037
+#: ../src/views.py:1033
 #: ../src/spritz.glade.h:62
 msgid "Revision"
 msgstr "Revisió"
 
 #. Setup reponame & repofile column's
-#: ../src/views.py:1040
+#: ../src/views.py:1036
 msgid "Repository Identifier"
 msgstr "Identificador del repositori"
 
@@ -405,182 +405,166 @@ msgid "Unaffected"
 msgstr "No afectats"
 
 #. from installed
-#: ../src/spritz.py:813
+#: ../src/spritz.py:822
 msgid "From your Operating System"
 msgstr "Del vostre sistema operatiu"
 
-#: ../src/spritz.py:1055
-msgid "Sorry to tell you"
-msgstr "Sentim dir-vos"
-
-#: ../src/spritz.py:1056
-msgid "Another instance of Entropy"
-msgstr "Una altra instància d'Entropy"
-
-#: ../src/spritz.py:1057
-msgid "is running"
-msgstr "s'està executant"
-
-#: ../src/spritz.py:1058
-msgid "Close it or remove"
-msgstr "Tanqueu-la o esborreu"
-
-#: ../src/spritz.py:1077
+#: ../src/spritz.py:1072
 msgid "Entropy Config Setup"
 msgstr "Configura Entropy"
 
-#: ../src/spritz.py:1089
+#: ../src/spritz.py:1084
 msgid "GUI Setup Completed"
 msgstr "S'ha acabat la instal·lació GUI"
 
-#: ../src/spritz.py:1118
+#: ../src/spritz.py:1113
 msgid "Bug"
 msgstr "Error"
 
-#: ../src/spritz.py:1126
+#: ../src/spritz.py:1121
 msgid "Reference"
 msgstr "Referència"
 
-#: ../src/spritz.py:1136
+#: ../src/spritz.py:1131
 msgid "License name"
 msgstr "Nom de la llicència"
 
-#: ../src/spritz.py:1144
+#: ../src/spritz.py:1139
 msgid "Sources"
 msgstr "Codis font"
 
-#: ../src/spritz.py:1152
+#: ../src/spritz.py:1147
 msgid "Mirrors"
 msgstr "Rèpliques"
 
-#: ../src/spritz.py:1160
+#: ../src/spritz.py:1155
 msgid "Keywords"
 msgstr "Paraules clau"
 
-#: ../src/spritz.py:1168
+#: ../src/spritz.py:1163
 msgid "Dependencies"
 msgstr "Dependències"
 
-#: ../src/spritz.py:1176
+#: ../src/spritz.py:1171
 msgid "Depends"
 msgstr "Depèn de"
 
-#: ../src/spritz.py:1184
+#: ../src/spritz.py:1179
 msgid "Needed libraries"
 msgstr "Llibreries necessàries"
 
-#: ../src/spritz.py:1192
+#: ../src/spritz.py:1187
 msgid "Protected item"
 msgstr "Element protegit"
 
-#: ../src/spritz.py:1195
-#: ../src/spritz.py:1207
+#: ../src/spritz.py:1190
+#: ../src/spritz.py:1202
 msgid "Type"
 msgstr "Tipus"
 
-#: ../src/spritz.py:1203
+#: ../src/spritz.py:1198
 msgid "File"
 msgstr "Fitxer"
 
-#: ../src/spritz.py:1268
+#: ../src/spritz.py:1263
 msgid "Generating metadata. Please wait."
 msgstr "S'estan generant metadades. Espereu si us plau."
 
-#: ../src/spritz.py:1272
-#: ../src/spritz.py:1413
-#: ../src/spritz.py:1420
+#: ../src/spritz.py:1267
+#: ../src/spritz.py:1408
+#: ../src/spritz.py:1415
 msgid "Ready"
 msgstr "Preparat"
 
-#: ../src/spritz.py:1300
+#: ../src/spritz.py:1295
 msgid "Error loading advisories"
 msgstr "S'ha produït un error durant la càrrega de les advertències"
 
-#: ../src/spritz.py:1332
+#: ../src/spritz.py:1327
 msgid "Initializing Repository module..."
 msgstr "S'està inicialitzant el mòdul del repositori..."
 
-#: ../src/spritz.py:1338
+#: ../src/spritz.py:1333
 msgid "You must run this application as root"
 msgstr "Heu d'iniciar aquesta aplicació com a usuari root"
 
-#: ../src/spritz.py:1341
-#: ../src/applet/etp_applet.py:616
+#: ../src/spritz.py:1336
+#: ../src/applet/etp_applet.py:612
 msgid "No repositories specified in"
 msgstr "No hi ha repositoris especificats a"
 
-#: ../src/spritz.py:1345
+#: ../src/spritz.py:1340
 msgid "You are not connected to the Internet. You should."
 msgstr "No esteu connectat a internet i ho hauríeu d'estar."
 
-#: ../src/spritz.py:1348
-#: ../src/applet/etp_applet.py:624
+#: ../src/spritz.py:1343
+#: ../src/applet/etp_applet.py:620
 msgid "Unhandled exception"
 msgstr "Excepció no suportada"
 
-#: ../src/spritz.py:1353
+#: ../src/spritz.py:1348
 msgid "Errors updating repositories."
 msgstr "S'han produït errors durant l'actualització de repositoris."
 
-#: ../src/spritz.py:1354
+#: ../src/spritz.py:1349
 msgid "Please check logs below for more info"
 msgstr "Si us plau, reviseu els registres de baix per a més informació"
 
-#: ../src/spritz.py:1357
+#: ../src/spritz.py:1352
 msgid "Repositories updated successfully"
 msgstr "Els reporitoris s'han actualitzat correctament"
 
-#: ../src/spritz.py:1360
+#: ../src/spritz.py:1355
 msgid "All the repositories were already up to date."
 msgstr "Els repositoris ja estaven actualitzats."
 
-#: ../src/spritz.py:1362
+#: ../src/spritz.py:1357
 msgid "repositories were already up to date. Others have been updated."
 msgstr "els repositoris ja estaven actualitzats. La resta s'han actualitzat."
 
-#: ../src/spritz.py:1365
+#: ../src/spritz.py:1360
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr "hauríeu d'actualitzar sys-apps/entropy el més aviat possible."
 
-#: ../src/spritz.py:1370
+#: ../src/spritz.py:1365
 msgid "Nothing to do. I am idle."
 msgstr "No s'està processant cap paquet. Aquí es mostra idle."
 
-#: ../src/spritz.py:1371
+#: ../src/spritz.py:1366
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr "No perdeu el temps aquí. Això només és un quadre de text variable"
 
-#: ../src/spritz.py:1372
+#: ../src/spritz.py:1367
 msgid "I am still alive and kickin'"
 msgstr "El programa respon correctament"
 
 #. -> Get lists
-#: ../src/spritz.py:1406
+#: ../src/spritz.py:1401
 msgid "Generating Metadata, please wait."
 msgstr "S'estan generant metadades, espereu si us plau."
 
-#: ../src/spritz.py:1407
+#: ../src/spritz.py:1402
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr "Entropy està indexant els repositoris. Això trigarà uns segons"
 
-#: ../src/spritz.py:1408
+#: ../src/spritz.py:1403
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr "Mentre espereu, descanseu i mireu a fora. Potser està emplujat?"
 
-#: ../src/spritz.py:1410
-#: ../src/spritz.py:1417
+#: ../src/spritz.py:1405
+#: ../src/spritz.py:1412
 msgid "Calculating"
 msgstr "S'està calculant"
 
-#: ../src/spritz.py:1438
+#: ../src/spritz.py:1433
 msgid "Running tasks"
 msgstr "S'estan executant tasques"
 
-#: ../src/spritz.py:1444
+#: ../src/spritz.py:1439
 msgid "Processing Packages in queue"
 msgstr "S'estan processant els paquets de la cua"
 
-#: ../src/spritz.py:1455
+#: ../src/spritz.py:1450
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
@@ -588,23 +572,23 @@ msgstr ""
 "Atenció. S'ha produït un error mentre es processava la cua.\n"
 "Si us plau, mireu la terminal de processos."
 
-#: ../src/spritz.py:1480
+#: ../src/spritz.py:1475
 msgid "No packages selected"
 msgstr "No hi ha paquets seleccionats"
 
-#: ../src/spritz.py:1536
+#: ../src/spritz.py:1531
 msgid "Exception caught"
 msgstr "S'ha produït una excepció"
 
-#: ../src/spritz.py:1537
+#: ../src/spritz.py:1532
 msgid "Spritz crashed! An unexpected error occured."
 msgstr "L'Spritz ha petat! S'ha produït un error inesperat."
 
-#: ../src/spritz.py:1546
+#: ../src/spritz.py:1541
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr "El vostre informe s'ha enviat correctament! Moltes gràcies."
 
-#: ../src/spritz.py:1548
+#: ../src/spritz.py:1543
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr "No es pot enviar l'informe. Potser no esteu connectats a internet?"
 
@@ -629,197 +613,197 @@ msgstr "Informació crítica"
 #. #         if file:
 #. #             hbox.pack_start (GnomePixmap (file), gtk.FALSE)
 #: ../src/applet/etp_applet_dialogs.py:395
-msgid "An unhandled exception has occured.  This is most likely a bug.  Please copy the full text of this exception into an email and send it to applet@rhn.redhat.com.  Thank you."
-msgstr "S'ha produït una excepció no suportada. Això sembla ser un error de programació. Copieu el text sencer d'aquesta excepció en un email i envieu-lo a applet@rhn.redhat.com, si us plau. Gràcies."
+msgid "An unhandled exception has occured.  This is most likely a bug.  Please copy the full text of this exception into an email and send it to sabayon@sabayonlinux.org.  Thank you."
+msgstr "S'ha produït una excepció no suportada. Això sembla ser un error de programació. Copieu el text sencer d'aquesta excepció en un email i envieu-lo a sabayon@sabayonlinux.org. Gràcies."
 
 #: ../src/applet/etp_applet.py:64
 msgid "Updates Notification"
 msgstr "Notificació d'actualitzacions"
 
-#: ../src/applet/etp_applet.py:209
+#: ../src/applet/etp_applet.py:204
 msgid "_Disable Notification Applet"
 msgstr "_Desactiva l'aplicació de notificacions"
 
-#: ../src/applet/etp_applet.py:209
+#: ../src/applet/etp_applet.py:204
 msgid "Disable Notification Applet"
 msgstr "Desactiva l'aplicació de notificacions"
 
-#: ../src/applet/etp_applet.py:210
+#: ../src/applet/etp_applet.py:205
 msgid "_Enable Notification Applet"
 msgstr "_Habilita l'aplicació de notificacions"
 
-#: ../src/applet/etp_applet.py:210
+#: ../src/applet/etp_applet.py:205
 msgid "Enable Notification Applet"
 msgstr "Habilita l'aplicació de notificacions"
 
-#: ../src/applet/etp_applet.py:211
+#: ../src/applet/etp_applet.py:206
 msgid "_Check for updates"
 msgstr "_Cerca actualitzacions"
 
-#: ../src/applet/etp_applet.py:211
+#: ../src/applet/etp_applet.py:206
 msgid "Check for updates"
 msgstr "Cerca actualitzacions"
 
-#: ../src/applet/etp_applet.py:212
+#: ../src/applet/etp_applet.py:207
 msgid "_Launch Package Manager"
 msgstr "Executa e_l gestor de paquets"
 
-#: ../src/applet/etp_applet.py:212
+#: ../src/applet/etp_applet.py:207
 msgid "Launch Package Manager"
 msgstr "Executa el gestor de paquets"
 
-#: ../src/applet/etp_applet.py:213
+#: ../src/applet/etp_applet.py:208
 msgid "_Packages Website"
 msgstr "Web de _paquets"
 
-#: ../src/applet/etp_applet.py:213
+#: ../src/applet/etp_applet.py:208
 msgid "Use Packages web interface"
 msgstr "Usa la interfície web de paquets"
 
-#: ../src/applet/etp_applet.py:214
+#: ../src/applet/etp_applet.py:209
 msgid "_Sabayon Linux Website"
 msgstr "_Web de Sabayon Linux"
 
-#: ../src/applet/etp_applet.py:214
+#: ../src/applet/etp_applet.py:209
 msgid "Launch Sabayon Linux Website"
 msgstr "Executa la pàgina _web de Sabayon Linux"
 
-#: ../src/applet/etp_applet.py:216
+#: ../src/applet/etp_applet.py:211
 msgid "_About"
 msgstr "_Quant a"
 
-#: ../src/applet/etp_applet.py:216
+#: ../src/applet/etp_applet.py:211
 msgid "About..."
 msgstr "Quant a..."
 
-#: ../src/applet/etp_applet.py:217
+#: ../src/applet/etp_applet.py:212
 msgid "_Exit"
 msgstr "_Sortir"
 
-#: ../src/applet/etp_applet.py:217
+#: ../src/applet/etp_applet.py:212
 msgid "Exit"
 msgstr "Sortir"
 
-#: ../src/applet/etp_applet.py:282
+#: ../src/applet/etp_applet.py:277
 msgid "You must add yourself to this group"
 msgstr "Heu d'afegir-vos en aquest grup"
 
-#: ../src/applet/etp_applet.py:285
+#: ../src/applet/etp_applet.py:280
 msgid "Please run Equo/Spritz as root to update Entropy permissions"
 msgstr "Si us plau, executeu Equo/Spritz com a root per actualitzar els permisos d'Entropy"
 
-#: ../src/applet/etp_applet.py:510
+#: ../src/applet/etp_applet.py:506
 msgid "Updates Notification Applet Disabled"
 msgstr "Aplicació de notificació d'actualitzacions desactivada"
 
-#: ../src/applet/etp_applet.py:521
+#: ../src/applet/etp_applet.py:517
 msgid "Updates Notification Applet Enabled"
 msgstr "Aplicació de notificació d'actualitzacions activada"
 
-#: ../src/applet/etp_applet.py:536
-msgid "execv didn't execv?"
-msgstr "execv didn't execv?"
+#: ../src/applet/etp_applet.py:532
+msgid "Cannot load Spritz"
+msgstr "No s'ha pogut iniciar l'Spritz"
 
-#: ../src/applet/etp_applet.py:599
+#: ../src/applet/etp_applet.py:595
 msgid "Checking for updates..."
 msgstr "S'estan cercant actualitzacions..."
 
-#: ../src/applet/etp_applet.py:619
+#: ../src/applet/etp_applet.py:615
 msgid "Repository Network Error"
 msgstr "Error a la xarxa de repositoris"
 
-#: ../src/applet/etp_applet.py:634
+#: ../src/applet/etp_applet.py:630
 msgid "No repositories specified. Cannot check for package updates."
 msgstr "No s'han especificat repositoris. No es poden buscar actualitzacions de paquets."
 
-#: ../src/applet/etp_applet.py:635
+#: ../src/applet/etp_applet.py:631
 msgid "Updates: attention"
 msgstr "Actualitzacions: atenció"
 
-#: ../src/applet/etp_applet.py:639
+#: ../src/applet/etp_applet.py:635
 msgid "Cannot connect to the Updates Service, you're probably not connected to the world."
 msgstr "No s'ha pogut connectar amb el servei d'actualitzacions, probablement no esteu connectat a la xarxa."
 
-#: ../src/applet/etp_applet.py:640
-#: ../src/applet/etp_applet.py:665
+#: ../src/applet/etp_applet.py:636
+#: ../src/applet/etp_applet.py:661
 msgid "Updates: connection issues"
 msgstr "Actualitzacions: problema de connexió"
 
-#: ../src/applet/etp_applet.py:644
+#: ../src/applet/etp_applet.py:640
 msgid "Not all the repositories have been fetched for checking"
 msgstr "No s'han pogut recollir tots els repositoris per comprovar"
 
-#: ../src/applet/etp_applet.py:645
-#: ../src/applet/etp_applet.py:650
+#: ../src/applet/etp_applet.py:641
+#: ../src/applet/etp_applet.py:646
 msgid "Updates: repository issues"
 msgstr "Actualitzacions: problemes als repositoris"
 
-#: ../src/applet/etp_applet.py:649
+#: ../src/applet/etp_applet.py:645
 msgid "No repositories found online"
 msgstr "No s'han trobat repositoris en línia"
 
-#: ../src/applet/etp_applet.py:654
+#: ../src/applet/etp_applet.py:650
 msgid "Synchronization errors. Cannot update repositories. Check logs."
 msgstr "Error de sincronització. No s'han pogut actualitzar els repositoris. Comproveu els registres."
 
-#: ../src/applet/etp_applet.py:655
+#: ../src/applet/etp_applet.py:651
 msgid "Updates: sync issues"
 msgstr "Actualitzacions: problemes de sincronització"
 
-#: ../src/applet/etp_applet.py:659
+#: ../src/applet/etp_applet.py:655
 msgid "Updates: unhandled error"
 msgstr "Actualitzacions: error no suportat"
 
-#: ../src/applet/etp_applet.py:677
+#: ../src/applet/etp_applet.py:673
 msgid "Updates: error"
 msgstr "Actualitzacions: error"
 
-#: ../src/applet/etp_applet.py:685
+#: ../src/applet/etp_applet.py:681
 msgid "Updates issue:"
 msgstr "Problema d'actualització:"
 
-#: ../src/applet/etp_applet.py:703
+#: ../src/applet/etp_applet.py:699
 msgid "There are"
 msgstr "Hi ha"
 
-#: ../src/applet/etp_applet.py:703
+#: ../src/applet/etp_applet.py:699
 msgid "updates available."
 msgstr "actualitzacions disponibles."
 
-#: ../src/applet/etp_applet.py:705
+#: ../src/applet/etp_applet.py:701
 msgid "Updates available"
 msgstr "Actualitzacions disponibles"
 
-#: ../src/applet/etp_applet.py:714
-#: ../src/applet/etp_applet.py:716
+#: ../src/applet/etp_applet.py:710
+#: ../src/applet/etp_applet.py:712
 msgid "So far, so good. w00t!"
 msgstr "Tot és correcte :-)"
 
-#: ../src/applet/etp_applet.py:715
+#: ../src/applet/etp_applet.py:711
 msgid "Everything up-to-date"
 msgstr "El sistema està actualitzat"
 
-#: ../src/applet/etp_applet.py:811
+#: ../src/applet/etp_applet.py:807
 msgid "Waiting before checkin..."
 msgstr "Esperant abans de fer comprovacions..."
 
-#: ../src/applet/etp_applet.py:872
+#: ../src/applet/etp_applet.py:868
 msgid "Not installed"
 msgstr "No instal·lat"
 
-#: ../src/applet/etp_applet.py:893
+#: ../src/applet/etp_applet.py:889
 msgid "Your system currently has"
 msgstr "El vostre sistema té actualment"
 
-#: ../src/applet/etp_applet.py:895
+#: ../src/applet/etp_applet.py:891
 msgid "installed"
 msgstr "instal·lat"
 
-#: ../src/applet/etp_applet.py:896
+#: ../src/applet/etp_applet.py:892
 msgid "but the latest available version is"
 msgstr "però l'última versió disponible és"
 
-#: ../src/applet/etp_applet.py:898
+#: ../src/applet/etp_applet.py:894
 msgid "It is recommended that you upgrade to the latest before updating any other packages"
 msgstr "És recomanable que actualitzeu a l'última versió abans d'actualitzar cap altre paquet"
 
@@ -1262,4 +1246,5 @@ msgstr "El _vostre Ego!"
 #: ../src/spritz.glade.h:112
 msgid "please wait"
 msgstr "espereu si us plau"
+
 
