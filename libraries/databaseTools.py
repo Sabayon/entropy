@@ -1853,6 +1853,8 @@ class etpDatabase:
                 pass
 
     def retrieveRepositoryUpdatesDigest(self, repository):
+        if not self.doesTableExist("treeupdates"):
+            return -1
         self.cursor.execute('SELECT digest FROM treeupdates WHERE repository = (?)', (repository,))
         mydigest = self.cursor.fetchone()
         if mydigest:
@@ -3625,6 +3627,8 @@ class etpDatabase:
 
     def clearTreeupdatesEntries(self, repository):
         self.checkReadOnly()
+        if not self.doesTableExist("treeupdates"):
+            self.createTreeupdatesTable()
         # treeupdates
         self.cursor.execute("DELETE FROM treeupdates WHERE repository = (?)", (repository,))
         self.commitChanges()

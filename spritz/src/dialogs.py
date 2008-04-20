@@ -84,10 +84,9 @@ class ConfirmationDialog:
         return self.dialog.run()
 
     def setup_view( self, view ):
-        model = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_STRING )
+        model = gtk.TreeStore( gobject.TYPE_STRING )
         view.set_model( model )
         self.create_text_column( _( "Package" ), view, 0 )
-        self.create_text_column( _( "Description" ), view, 1 )
         return model
 
     def setup_simple_view(self, view ):
@@ -146,33 +145,55 @@ class ConfirmationDialog:
 
     def show_data( self, model, pkgs ):
         model.clear()
+        desc_len = 80
         install = [x for x in pkgs if x.action == "i"]
         update = [x for x in pkgs if x.action == "u"]
         remove = [x for x in pkgs if x.action == "r"]
         reinstall = [x for x in pkgs if x.action == "rr"]
         if reinstall:
             label = "<b>%s</b>" % _("To be reinstalled")
-            level1 = model.append( None, [label, " "] )
+            level1 = model.append( None, [label] )
             for pkg in reinstall:
-                level2 = model.append( level1, [str(pkg), pkg.description] )
-        if install:
-            label = "<b>%s</b>" % _("To be installed")
-            level1 = model.append( None, [label, " "] )
-            for pkg in install:
-                desc = pkg.description
+                desc = pkg.description[:desc_len].rstrip()+"..."
+                desc = cleanMarkupSting(desc)
                 if not desc.strip():
                     desc = _("No description")
-                level2 = model.append( level1, [str(pkg), desc ] )
+                mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
+                mypkg = "<span foreground='#FF0000'>%s</span>" % (str(pkg),)
+                level2 = model.append( level1, [mypkg+mydesc] )
+        if install:
+            label = "<b>%s</b>" % _("To be installed")
+            level1 = model.append( None, [label] )
+            for pkg in install:
+                desc = pkg.description[:desc_len].rstrip()+"..."
+                desc = cleanMarkupSting(desc)
+                if not desc.strip():
+                    desc = _("No description")
+                mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
+                mypkg = "<span foreground='#FF0000'>%s</span>" % (str(pkg),)
+                level2 = model.append( level1, [mypkg+mydesc] )
         if update:
             label = "<b>%s</b>" % _("To be updated")
-            level1 = model.append( None, [label, " "] )
+            level1 = model.append( None, [label] )
             for pkg in update:
-                level2 = model.append( level1, [str(pkg), pkg.description] )
+                desc = pkg.description[:desc_len].rstrip()+"..."
+                desc = cleanMarkupSting(desc)
+                if not desc.strip():
+                    desc = _("No description")
+                mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
+                mypkg = "<span foreground='#FF0000'>%s</span>" % (str(pkg),)
+                level2 = model.append( level1, [mypkg+mydesc] )
         if remove:
             label = "<b>%s</b>" % _("To be removed")
-            level1 = model.append( None, [label, " "] )
+            level1 = model.append( None, [label] )
             for pkg in remove:
-                level2 = model.append( level1, [str(pkg), pkg.description] )
+                desc = pkg.description[:desc_len].rstrip()+"..."
+                desc = cleanMarkupSting(desc)
+                if not desc.strip():
+                    desc = _("No description")
+                mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
+                mypkg = "<span foreground='#FF0000'>%s</span>" % (str(pkg),)
+                level2 = model.append( level1, [mypkg+mydesc] )
 
     def destroy( self ):
         return self.dialog.destroy()

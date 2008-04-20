@@ -287,6 +287,9 @@ class SpritzQueue:
             del self.packages['i'][:]
             del self.packages['rr'][:]
 
+            mybefore = set([x.keyslot for x in self.before])
+            self.keyslotFilter -= mybefore
+
             if xlist:
 
                 status = self.elaborateInstall(xlist,action,False)

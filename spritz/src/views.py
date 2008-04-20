@@ -497,8 +497,6 @@ class EntropyPackageView:
         for obj in xlist:
             obj.queued = None
         self.queue.remove(xlist)
-        for obj in xlist:
-            obj.set_select( False )
         self.clearUpdates()
         self.queueView.refresh()
         self.view.queue_draw()
