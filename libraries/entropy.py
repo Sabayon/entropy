@@ -1521,7 +1521,11 @@ class EquoInterface(TextInterface):
             if mydep[1][0] == "!":
                 xmatch = self.clientDbconn.atomMatch(mydep[1][1:])
                 if xmatch[0] != -1:
-                    conflicts.add(xmatch[0])
+                    myreplacement = self._lookup_conflict_replacement(mydep[1][1:], xmatch[0], deep_deps = deep_deps)
+                    if myreplacement != None:
+                        mybuffer.push((mydep[0]+1,myreplacement))
+                    else:
+                        conflicts.add(xmatch[0])
                 mydep = mybuffer.pop()
                 continue
 
@@ -1621,6 +1625,19 @@ class EquoInterface(TextInterface):
         matchcache.clear()
 
         return newdeptree,0 # note: newtree[0] contains possible conflicts
+
+    def _lookup_conflict_replacement(self, conflict_atom, client_idpackage, deep_deps):
+        if self.entropyTools.isjustname(conflict_atom):
+            return None
+        conflict_match = self.atomMatch(conflict_atom)
+        mykey, myslot = self.clientDbconn.retrieveKeySlot(client_idpackage)
+        new_match = self.atomMatch(mykey, matchSlot = myslot)
+        if (conflict_match == new_match) or (new_match[1] == 1):
+            return None
+        action = self.get_package_action(new_match)
+        if (action == 0) and (not deep_deps):
+            return None
+        return "%s:%s" % (mykey,myslot,)
 
     def _lookup_inverse_dependencies(self, match, clientmatch):
 
