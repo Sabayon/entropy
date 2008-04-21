@@ -2502,13 +2502,14 @@ class etpDatabase:
             return -1
         return result[0]
 
-    def isFileAvailable(self, myfile):
+    def isFileAvailable(self, myfile, get_id = False):
         self.cursor.execute('SELECT idpackage FROM content WHERE file = (?)', (myfile,))
-        result = self.cursor.fetchone()
-        rc = False
-        if result:
-            rc = True
-        return rc
+        result = self.cursor.fetchall()
+        if get_id:
+            return self.fetchall2set(result)
+        elif result:
+            return True
+        return False
 
     def resolveNeeded(self, needed, elfclass = -1):
 

@@ -4316,7 +4316,9 @@ class PackageInterface:
 
                 if etpConst['collisionprotect'] > 1:
                     todbfile = fromfile[len(imageDir):]
-                    if self.Entropy.clientDbconn.isFileAvailable(todbfile):
+                    # self.infoDict['removeidpackage']
+                    avail = self.Entropy.clientDbconn.isFileAvailable(todbfile, get_id = True)
+                    if (self.infoDict['removeidpackage'] not in avail) and avail:
                         self.Entropy.updateProgress(
                                                 red("Collision found during install for ")+tofile+" - cannot overwrite",
                                                 importance = 1,
@@ -4331,17 +4333,19 @@ class PackageInterface:
                 tofile_before_protect = tofile
 
                 try:
+
                     for x in protect:
                         x = x.encode('raw_unicode_escape')
                         if tofile.startswith(x):
                             protected = True
                             break
-                    if (protected): # check if perhaps, file is masked, so unprotected
-                        for x in mask:
-                            x = x.encode('raw_unicode_escape')
-                            if tofile.startswith(x):
-                                protected = False
-                                break
+
+                    if protected: # check if perhaps, file is masked, so unprotected
+                        newmask = [x.encode('raw_unicode_escape') for x in mask]
+                        if tofile in newmask:
+                            protected = False
+                        elif os.path.dirname(tofile) in newmask:
+                            protected = False
 
                     if not os.path.lexists(tofile):
                         protected = False # file doesn't exist
@@ -4353,7 +4357,7 @@ class PackageInterface:
                         protected = False # it's not a file
 
                     # request new tofile then
-                    if (protected):
+                    if protected:
                         if tofile not in etpConst['configprotectskip']:
                             tofile, prot_status = self.Entropy.entropyTools.allocateMaskedFile(tofile, fromfile)
                             if not prot_status:
