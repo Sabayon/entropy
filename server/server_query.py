@@ -90,7 +90,7 @@ def searchTaggedPackages(tags, dbconn, entropy):
             if etpUi['quiet']:
                 print dbconn.retrieveAtom(result[1])
             else:
-                printPackageInfo(result[1], dbconn, EquoConnection = entropy)
+                text_query.printPackageInfo(result[1], dbconn, EquoConnection = entropy)
         if not etpUi['quiet']:
             print_info(blue(" Keyword: ")+bold("\t"+tag))
             print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
