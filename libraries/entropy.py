@@ -2121,7 +2121,7 @@ class EquoInterface(TextInterface):
             maskedresults = self.atomMatch(mystrictdata[0], matchSlot = mystrictdata[1], matchBranches = (branch,), packagesFilter = False)
             if maskedresults[0] == -1:
                 remove.append(idpackage)
-                # look for packages that would match key with any slot (for eg, gcc updates)
+                # look for packages that would match key with any slot (for eg: gcc, kernel updates)
                 matchresults = self.atomMatch(mystrictdata[0], matchBranches = (branch,))
                 if matchresults[0] != -1:
                     update.append(matchresults)
