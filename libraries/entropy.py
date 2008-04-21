@@ -5210,8 +5210,6 @@ class FileUpdatesInterface:
                             taint = True
                         name_cache.add(mysource)
 
-                    print name_cache
-
                     if taint:
                         raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
                     return sd

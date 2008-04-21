@@ -345,7 +345,12 @@ class etpDatabase:
                 # lock database
                 self.doServerDatabaseSyncLock(self.noUpload)
                 # now run queue
-                self.runTreeUpdatesActions(update_actions)
+                try:
+                    self.runTreeUpdatesActions(update_actions)
+                except:
+                    # destroy digest
+                    self.setRepositoryUpdatesDigest(self.server_repo, "-1")
+                    raise
 
                 # store new actions
                 self.addRepositoryUpdatesActions(self.server_repo,update_actions)
@@ -473,7 +478,17 @@ class etpDatabase:
 
         if quickpkg_atoms and not self.clientDatabase:
             # quickpkg package and packages owning it as a dependency
-            self.runTreeUpdatesQuickpkgAction(quickpkg_atoms)
+            try:
+                self.runTreeUpdatesQuickpkgAction(quickpkg_atoms)
+            except:
+                import traceback
+                traceback.print_exc()
+                self.updateProgress(
+                    bold("WARNING: ")+red("Cannot complete quickpkg for atoms: ")+blue(str(list(quickpkg_atoms)))+red(", do it manually."),
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" * ")
+                )
             self.commitChanges()
 
         # discard cache
@@ -652,7 +667,23 @@ class etpDatabase:
                 type = "warning",
                 header = blue("  # ")
             )
-            mypath = self.ServiceInterface.quickpkg(myatom,self.ServiceInterface.get_local_store_directory(self.server_repo))
+            mydest = self.ServiceInterface.get_local_store_directory(self.server_repo)
+            try:
+                mypath = self.ServiceInterface.quickpkg(myatom,mydest)
+            except:
+                # remove broken bin before raising
+                mypath = os.path.join(mydest,myatom+etpConst['packagesext'])
+                if os.path.isfile(mypath):
+                    os.remove(mypath)
+                import traceback
+                traceback.print_exc()
+                self.updateProgress(
+                    bold("WARNING: ")+red("Cannot complete quickpkg for atom: ")+blue(myatom)+red(", do it manually."),
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" * ")
+                )
+                continue
             package_paths.add(mypath)
         packages_data = [(x,branch,False) for x in package_paths]
         idpackages = self.ServiceInterface.add_packages_to_repository(packages_data, repo = self.server_repo)

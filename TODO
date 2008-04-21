@@ -1,9 +1,10 @@
 TODO list
+  - add i18n support
   - server-side: write a ncurses interface to manage entropy database + spm interface + GLSA
   - server-side: check rdepend function with pandodl
   - server-side: move officialrepositoryid settings away from repositories.conf
   - implement pdepend support in dependencies sorting
-  - add i18n support
+  - implement package sets
   - Community repositories
   - implement notice board
   - implement configuration files snapshot tool
