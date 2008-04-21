@@ -52,6 +52,9 @@ class matchContainer:
 '''
 class EquoInterface(TextInterface):
 
+    import dumpTools
+    import databaseTools
+    import entropyTools
     def __init__(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False, repo_validation = True):
 
         self.MaskingParser = None
@@ -61,12 +64,7 @@ class EquoInterface(TextInterface):
         self.spmCache = {}
 
         self.clientLog = LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[client]")
-        import dumpTools
-        self.dumpTools = dumpTools
-        import databaseTools
-        self.databaseTools = databaseTools
-        import entropyTools
-        self.entropyTools = entropyTools
+
         self.urlFetcher = urlFetcher # in this way, can be reimplemented (so you can override updateProgress)
         self.progress = None # supporting external updateProgress stuff, you can point self.progress to your progress bar
                              # and reimplement updateProgress
@@ -5105,14 +5103,15 @@ class FileUpdatesInterface:
             try:
                 z = self.load_cache()
                 if z != None:
-                    self.scandata = z.copy()
-                    return z
+                    self.scandata = z
+                    return self.scandata
             except:
                 pass
 
         # open client database to fill etpConst['dbconfigprotect']
         scandata = {}
         counter = 0
+        name_cache = set()
         for path in etpConst['dbconfigprotect']:
             # it's a file?
             scanfile = False
@@ -5124,7 +5123,7 @@ class FileUpdatesInterface:
             for currentdir,subdirs,files in os.walk(path):
                 for item in files:
 
-                    if (scanfile):
+                    if scanfile:
                         if path != item:
                             continue
 
@@ -5135,27 +5134,37 @@ class FileUpdatesInterface:
                         number = item[5:9]
                         try:
                             int(number)
-                        except:
+                        except ValueError:
                             continue # not a valid etc-update file
                         if item[9] != "_": # no valid format provided
                             continue
 
+                        if item in name_cache:
+                            continue # skip, already done
+                        name_cache.add(item)
+
                         mydict = self.generate_dict(filepath)
                         if mydict['automerge']:
                             self.Entropy.updateProgress(
-                                                    darkred("Automerging file: %s") % ( darkgreen(etpConst['systemroot']+mydict['source']) ),
-                                                    importance = 0,
-                                                    type = "info"
-                                                )
+                                darkred("Automerging file: %s") % (
+                                    darkgreen(etpConst['systemroot'] + mydict['source']),
+                                ),
+                                importance = 0,
+                                type = "info"
+                            )
                             if os.path.isfile(etpConst['systemroot']+mydict['source']):
                                 try:
-                                    shutil.move(etpConst['systemroot']+mydict['source'],etpConst['systemroot']+mydict['destination'])
+                                    shutil.move(    etpConst['systemroot']+mydict['source'],
+                                                    etpConst['systemroot']+mydict['destination']
+                                    )
                                 except IOError:
                                     self.Entropy.updateProgress(
-                                                    darkred("I/O Error :: Cannot automerge file: %s") % ( darkgreen(etpConst['systemroot']+mydict['source']) ),
-                                                    importance = 1,
-                                                    type = "warning"
-                                                )
+                                        darkred("I/O Error :: Cannot automerge file: %s") % (
+                                            darkgreen(etpConst['systemroot'] + mydict['source']),
+                                        ),
+                                        importance = 1,
+                                        type = "warning"
+                                    )
                             continue
                         else:
                             counter += 1
@@ -5163,10 +5172,11 @@ class FileUpdatesInterface:
 
                         try:
                             self.Entropy.updateProgress(
-                                            "("+blue(str(counter))+") "+red(" file: ")+os.path.dirname(filepath)+"/"+os.path.basename(filepath)[10:],
-                                            importance = 1,
-                                            type = "info"
-                                        )
+                                "("+blue(str(counter))+") " + red(" file: ") + \
+                                os.path.dirname(filepath) + "/" + os.path.basename(filepath)[10:],
+                                importance = 1,
+                                type = "info"
+                            )
                         except:
                             pass # possible encoding issues
         # store data
@@ -5184,16 +5194,29 @@ class FileUpdatesInterface:
             if isinstance(sd, dict):
                 # quick test if data is reliable
                 try:
+
                     taint = False
+                    name_cache = set()
+                    # scan data
                     for x in sd:
-                        if not os.path.isfile(etpConst['systemroot']+sd[x]['source']):
+                        mysource = sd[x]['source']
+
+                        # filter dupies
+                        if mysource in name_cache:
+                            sd.pop(x)
+                            continue
+
+                        if not os.path.isfile(etpConst['systemroot']+mysource):
                             taint = True
-                            break
-                    if (not taint):
-                        return sd
-                    else:
+                        name_cache.add(mysource)
+
+                    print name_cache
+
+                    if taint:
                         raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
-                except:
+                    return sd
+
+                except (KeyError,EOFError):
                     raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
             else:
                 raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")

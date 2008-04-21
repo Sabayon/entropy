@@ -475,6 +475,10 @@ def initConfig_entropyConstants(rootdir):
     etpConst.update(backed_up_settings)
     etpConst['backed_up'] = backed_up_settings.copy()
 
+    shell_repoid = os.getenv('ETP_REPO')
+    if shell_repoid:
+        etpConst['officialrepositoryid'] = shell_repoid
+
 def initConfig_clientConstants():
     const_readEquoSettings()
 
@@ -825,9 +829,6 @@ def const_readRepositoriesSettings():
             elif (line.find("officialrepositoryid|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 officialreponame = line.split("|")[1]
                 etpConst['officialrepositoryid'] = officialreponame
-                shell_repoid = os.getenv('ETP_REPO')
-                if shell_repoid:
-                    etpConst['officialrepositoryid'] = shell_repoid
 
             elif (line.find("conntestlink|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 conntestlink = line.split("|")[1]
