@@ -58,7 +58,7 @@ def query(myopts):
         rc = 0
 
     elif cmd == "tags":
-        text_query.searchTaggedPackages(myopts, dbconn = dbconn, EquoConnection = Entropy)
+        searchTaggedPackages(myopts, dbconn, Entropy)
     elif cmd == "files":
         text_query.searchFiles(myopts, dbconn = dbconn, EquoConnection = Entropy)
     elif cmd == "belongs":
@@ -76,3 +76,23 @@ def query(myopts):
 
     del Entropy
     return rc
+
+
+def searchTaggedPackages(tags, dbconn, entropy):
+
+    if not etpUi['quiet']:
+        print_info(darkred(" @@ ")+darkgreen("Tag Search..."))
+        print_info(blue("  # ")+bold(entropy.default_repository))
+
+    for tag in tags:
+        results = dbconn.searchTaggedPackages(tag, atoms = True)
+        for result in results:
+            if etpUi['quiet']:
+                print dbconn.retrieveAtom(result[1])
+            else:
+                printPackageInfo(result[1], dbconn, EquoConnection = entropy)
+        if not etpUi['quiet']:
+            print_info(blue(" Keyword: ")+bold("\t"+tag))
+            print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
+
+    return 0
