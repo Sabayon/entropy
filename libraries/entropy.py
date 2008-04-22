@@ -9984,26 +9984,27 @@ class PortageInterface:
             appDbDir = self.get_vdb_path()
         else:
             appDbDir = dbdir
-        dbDirs = os.listdir(appDbDir)
         installedAtoms = set()
-        for pkgsdir in dbDirs:
-            if not os.path.isdir(appDbDir+pkgsdir):
-                continue
-            pkgdir = os.listdir(appDbDir+pkgsdir)
-            for pdir in pkgdir:
-                pkgcat = pkgsdir.split("/")[len(pkgsdir.split("/"))-1]
-                pkgatom = pkgcat+"/"+pdir
-                if pkgatom.find("-MERGING-") == -1:
-                    # get counter
-                    try:
-                        f = open(appDbDir+pkgsdir+"/"+pdir+"/"+etpConst['spm']['xpak_entries']['counter'],"r")
-                        counter = int(f.readline().strip())
-                        f.close()
-                    except IOError:
-                        continue
-                    except ValueError:
-                        continue
-                    installedAtoms.add((pkgatom,counter))
+
+        for current_dirpath, subdirs, files in os.walk(appDbDir):
+            pvs = os.listdir(current_dirpath)
+            for mypv in pvs:
+                if mypv.startswith("-MERGING-"):
+                    continue
+                mypvpath = os.path.join(current_dirpath,mypv)
+                if not os.path.isdir(mypvpath):
+                    continue
+                mycounter_file = os.path.join(mypvpath,etpConst['spm']['xpak_entries']['counter'])
+                if not os.access(mycounter_file,os.R_OK):
+                    continue
+                f = open(mycounter_file)
+                try:
+                    counter = int(f.readline().strip())
+                except (IOError, ValueError):
+                    f.close()
+                    continue
+                installedAtoms.add((os.path.join(os.path.basename(current_dirpath),mypv),counter))
+        print installedAtoms
         return installedAtoms
 
     def refill_counter(self, dbdir = None):
