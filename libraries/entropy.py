@@ -416,8 +416,15 @@ class EquoInterface(TextInterface):
         if (etpRepositories[repositoryName]['configprotect'] == None) or \
             (etpRepositories[repositoryName]['configprotectmask'] == None):
 
-            etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
-            etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectDirectories(mask = True)
+            try:
+                etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
+            except self.databaseTools.dbapi2.OperationalError:
+                etpRepositories[repositoryName]['configprotect'] = []
+            try:
+                etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectDirectories(mask = True)
+            except self.databaseTools.dbapi2.OperationalError:
+                etpRepositories[repositoryName]['configprotectmask'] = []
+
             etpRepositories[repositoryName]['configprotect'] = [etpConst['systemroot']+x for x in etpRepositories[repositoryName]['configprotect']]
             etpRepositories[repositoryName]['configprotectmask'] = [etpConst['systemroot']+x for x in etpRepositories[repositoryName]['configprotectmask']]
 
