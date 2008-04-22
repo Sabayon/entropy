@@ -20,12 +20,318 @@
 import gtk
 import gobject
 import pango
+from etpgui.widgets import UI
 try:
     from iniparse.compat import ConfigParser,SafeConfigParser
 except ImportError:
     from ConfigParser import ConfigParser,SafeConfigParser
-from spritz_setup import const,cleanMarkupSting,SpritzConf,unicode2htmlentities
+from spritz_setup import const, cleanMarkupSting, SpritzConf, unicode2htmlentities
 from i18n import _
+
+class PkgInfoMenu:
+
+    import entropyConstants
+    def __init__(self, Entropy, pkg, window):
+        self.pkg = pkg
+        self.window = window
+        self.Entropy = Entropy
+        self.pkginfo_ui = UI( const.GLADE_FILE , 'pkgInfo', 'spritz' )
+        self.pkginfo_ui.signal_autoconnect(self._getAllMethods())
+        self.pkginfo_ui.pkgInfo.set_transient_for(self.window)
+        self.setupPkgPropertiesView()
+
+    def _getAllMethods(self):
+        result = {}
+        allAttrNames = self.__dict__.keys() + self._getAllClassAttributes()
+        for name in allAttrNames:
+            value = getattr(self, name)
+            if callable(value):
+                result[name] = value
+        return result
+
+    def _getAllClassAttributes(self):
+        nameSet = {}
+        for currClass in self._getAllClasses():
+            nameSet.update(currClass.__dict__)
+        result = nameSet.keys()
+        return result
+
+    def _getAllClasses(self):
+        result = [self.__class__]
+        i = 0
+        while i < len(result):
+            currClass = result[i]
+            result.extend(list(currClass.__bases__))
+            i = i + 1
+        return result
+
+    def on_showContentButton_clicked( self, widget ):
+        content = self.pkg.contentExt
+        for x in content:
+            self.contentModel.append(None,[x[0],x[1]])
+
+    def on_closeInfo_clicked( self, widget ):
+        self.pkginfo_ui.pkgInfo.hide()
+
+    def on_pkgInfo_delete_event(self, widget, path):
+        self.pkginfo_ui.pkgInfo.hide()
+        return True
+
+    def setupPkgPropertiesView(self):
+
+        # license view
+        self.licenseView = self.pkginfo_ui.licenseView
+        self.licenseModel = gtk.TreeStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "License name" ), cell, markup = 0 )
+        self.licenseView.append_column( column )
+        self.licenseView.set_model( self.licenseModel )
+
+        # sources view
+        self.sourcesView = self.pkginfo_ui.sourcesView
+        self.sourcesModel = gtk.TreeStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Sources" ), cell, markup = 0 )
+        self.sourcesView.append_column( column )
+        self.sourcesView.set_model( self.sourcesModel )
+
+        # mirrors view
+        self.mirrorsReferenceView = self.pkginfo_ui.mirrorsReferenceView
+        self.mirrorsReferenceModel = gtk.TreeStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Mirrors" ), cell, markup = 0 )
+        self.mirrorsReferenceView.append_column( column )
+        self.mirrorsReferenceView.set_model( self.mirrorsReferenceModel )
+
+        # keywords view
+        self.keywordsView = self.pkginfo_ui.keywordsView
+        self.keywordsModel = gtk.TreeStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Keywords" ), cell, markup = 0 )
+        self.keywordsView.append_column( column )
+        self.keywordsView.set_model( self.keywordsModel )
+
+        # dependencies view
+        self.dependenciesView = self.pkginfo_ui.dependenciesView
+        self.dependenciesModel = gtk.TreeStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Dependencies" ), cell, markup = 0 )
+        self.dependenciesView.append_column( column )
+        self.dependenciesView.set_model( self.dependenciesModel )
+
+        # depends view
+        self.dependsView = self.pkginfo_ui.dependsView
+        self.dependsModel = gtk.TreeStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Depends" ), cell, markup = 0 )
+        self.dependsView.append_column( column )
+        self.dependsView.set_model( self.dependsModel )
+
+        # needed view
+        self.neededView = self.pkginfo_ui.neededView
+        self.neededModel = gtk.TreeStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Needed libraries" ), cell, markup = 0 )
+        self.neededView.append_column( column )
+        self.neededView.set_model( self.neededModel )
+
+        # protect view
+        self.configProtectView = self.pkginfo_ui.configProtectView
+        self.configProtectModel = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Protected item" ), cell, markup = 0 )
+        self.configProtectView.append_column( column )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Type" ), cell, markup = 1 )
+        self.configProtectView.append_column( column )
+        self.configProtectView.set_model( self.configProtectModel )
+
+        # content view
+        self.contentView = self.pkginfo_ui.contentView
+        self.contentModel = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "File" ), cell, markup = 0 )
+        column.set_resizable( True )
+        self.contentView.append_column( column )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Type" ), cell, markup = 1 )
+        column.set_resizable( True )
+        self.contentView.append_column( column )
+        self.contentView.set_model( self.contentModel )
+
+
+    def load(self):
+
+        pkg = self.pkg
+        dbconn = self.pkg.dbconn
+        avail = dbconn.isIDPackageAvailable(pkg.matched_atom[0])
+        if not avail:
+            return
+        if type(pkg.matched_atom[1]) is not int and pkg.matched_atom[1] not in self.Entropy.validRepositories:
+            return
+
+        # set package image
+        pkg_pixmap = const.PIXMAPS_PATH+'/package-x-generic.png'
+        heart_pixmap = const.PIXMAPS_PATH+'/heart.png'
+
+        self.pkginfo_ui.pkgImage.set_from_file(pkg_pixmap)
+        self.pkginfo_ui.vote1.set_from_file(heart_pixmap)
+        self.pkginfo_ui.vote2.set_from_file(heart_pixmap)
+        self.pkginfo_ui.vote3.set_from_file(heart_pixmap)
+        self.pkginfo_ui.vote4.set_from_file(heart_pixmap)
+        self.pkginfo_ui.vote5.set_from_file(heart_pixmap)
+
+        self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (pkg.name,))
+        self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (cleanMarkupSting(pkg.description),))
+
+        bold_items = [  self.pkginfo_ui.locationLabel,
+                        self.pkginfo_ui.homepageLabel,
+                        self.pkginfo_ui.versionLabel,
+                        self.pkginfo_ui.slotLabel,
+                        self.pkginfo_ui.tagLabel,
+                        self.pkginfo_ui.revisionLabel,
+                        self.pkginfo_ui.branchLabel,
+                        self.pkginfo_ui.eapiLabel,
+                        self.pkginfo_ui.downloadLabel,
+                        self.pkginfo_ui.checksumLabel,
+                        self.pkginfo_ui.downSizeLabel,
+                        self.pkginfo_ui.installSizeLabel,
+                        self.pkginfo_ui.creationDateLabel,
+                        self.pkginfo_ui.useFlagsLabel,
+                        self.pkginfo_ui.chostLabel,
+                        self.pkginfo_ui.cflagsLabel,
+                        self.pkginfo_ui.cxxflagsLabel,
+                        self.pkginfo_ui.eclassesLabel,
+                        self.pkginfo_ui.maskedLabel,
+                        self.pkginfo_ui.messagesLabel,
+                        self.pkginfo_ui.triggerLabel,
+                        self.pkginfo_ui.configProtectLabel
+        ]
+        for item in bold_items:
+            t = item.get_text()
+            item.set_markup("<b>%s</b>" % (t,))
+
+        repo = pkg.matched_atom[1]
+        if repo == 0:
+            self.pkginfo_ui.location.set_markup("%s" % (_("From your Operating System"),))
+        else:
+            self.pkginfo_ui.location.set_markup("%s" % (self.entropyConstants.etpRepositories[repo]['description'],))
+
+        self.pkginfo_ui.version.set_markup( "%s" % (pkg.onlyver,) )
+        tag = pkg.tag
+        if not tag: tag = "None"
+        self.pkginfo_ui.tag.set_markup( "%s" % (tag,) )
+        self.pkginfo_ui.slot.set_markup( "%s" % (pkg.slot,) )
+        self.pkginfo_ui.revision.set_markup( "%s" % (pkg.revision,) )
+        self.pkginfo_ui.branch.set_markup( "%s" % (pkg.release,) )
+        self.pkginfo_ui.eapi.set_markup( "%s" % (pkg.api,) )
+        self.pkginfo_ui.homepage.set_markup( "%s" % (pkg.homepage,) )
+
+        # license view
+        self.licenseModel.clear()
+        self.licenseView.set_model( self.licenseModel )
+        licenses = pkg.lic
+        licenses = licenses.split()
+        for x in licenses:
+            self.licenseModel.append(None,[x])
+
+        self.pkginfo_ui.download.set_markup( "%s" % (pkg.binurl,) )
+        self.pkginfo_ui.checksum.set_markup( "%s" % (pkg.digest,) )
+        self.pkginfo_ui.pkgsize.set_markup( "%s" % (pkg.sizeFmt,) )
+        self.pkginfo_ui.instsize.set_markup( "%s" % (pkg.disksizeFmt,) )
+        self.pkginfo_ui.creationdate.set_markup( "%s" % (pkg.epochFmt,) )
+        self.pkginfo_ui.useflags.set_markup( "%s" % (' '.join(pkg.useflags),) )
+        # compile flags
+        chost, cflags, cxxflags = pkg.compileflags
+        self.pkginfo_ui.cflags.set_markup( "%s" % (cflags,) )
+        self.pkginfo_ui.cxxflags.set_markup( "%s" % (cxxflags,) )
+        self.pkginfo_ui.chost.set_markup( "%s" % (chost,) )
+        # messages
+        messages = pkg.messages
+        mbuffer = gtk.TextBuffer()
+        mbuffer.set_text('\n'.join(messages))
+        self.pkginfo_ui.messagesTextView.set_buffer(mbuffer)
+        # eclasses
+        eclasses = ' '.join(pkg.eclasses)
+        self.pkginfo_ui.eclasses.set_markup( "%s" % (eclasses,) )
+        # masked ?
+        masked = 'False'
+        idpackage_masked, idmasking_reason = dbconn.idpackageValidator(pkg.matched_atom[0])
+        if idpackage_masked == -1:
+            masked = 'True, %s' % (etpConst['packagemaskingreasons'][idmasking_reason],)
+        self.pkginfo_ui.masked.set_markup( "%s" % (masked,) )
+
+        # sources view
+        self.sourcesModel.clear()
+        self.sourcesView.set_model( self.sourcesModel )
+        mirrors = set()
+        sources = pkg.sources
+        for x in sources:
+            if x.startswith("mirror://"):
+                mirrors.add(x.split("/")[2])
+            self.sourcesModel.append(None,[x])
+
+        # mirrors view
+        self.mirrorsReferenceModel.clear()
+        self.mirrorsReferenceView.set_model(self.mirrorsReferenceModel)
+        for mirror in mirrors:
+            mirrorinfo = dbconn.retrieveMirrorInfo(mirror)
+            if mirrorinfo:
+                # add parent
+                parent = self.mirrorsReferenceModel.append(None,[mirror])
+                for info in mirrorinfo:
+                    self.mirrorsReferenceModel.append(parent,[info])
+
+        # keywords view
+        self.keywordsModel.clear()
+        self.keywordsView.set_model( self.keywordsModel )
+        keywords = pkg.keywords
+        for x in keywords:
+            self.keywordsModel.append(None,[x])
+
+        # dependencies view
+        self.dependenciesModel.clear()
+        self.dependenciesView.set_model( self.dependenciesModel )
+        deps = pkg.dependencies
+        conflicts = pkg.conflicts
+        for x in deps:
+            self.dependenciesModel.append(None,[x])
+        for x in conflicts:
+            self.dependenciesModel.append(None,[x])
+
+        # depends view
+        self.dependsModel.clear()
+        self.dependsView.set_model( self.dependsModel )
+        depends = pkg.dependsFmt
+        for x in depends:
+            self.dependsModel.append(None,[x])
+
+        # needed view
+        self.neededModel.clear()
+        self.neededView.set_model( self.neededModel )
+        neededs = pkg.needed
+        for x in neededs:
+            self.neededModel.append(None,[x])
+
+        # content view
+        self.contentModel.clear()
+        self.contentView.set_model( self.contentModel )
+
+        # trigger
+        trigger = pkg.trigger
+        mtrigger = gtk.TextBuffer()
+        mtrigger.set_text(trigger)
+        self.pkginfo_ui.triggerTextView.set_buffer(mtrigger)
+
+        # CONFIG_PROTECT Stuff
+        protect = pkg.protect
+        protect_mask = pkg.protect_mask
+        for item in protect.split():
+            self.configProtectModel.append(None,[item,'protect'])
+        for item in protect_mask.split():
+            self.configProtectModel.append(None,[item,'mask'])
+
+        self.pkginfo_ui.pkgInfo.show()
 
 class ConfirmationDialog:
     def __init__( self, parent, pkgs, top_text = None, bottom_text = None, bottom_data = None, sub_text = None, cancel = True, simpleList = False, simpleDict = False ):
