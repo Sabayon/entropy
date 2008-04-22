@@ -9991,10 +9991,10 @@ class PortageInterface:
             for mypv in pvs:
                 if mypv.startswith("-MERGING-"):
                     continue
-                mypvpath = os.path.join(current_dirpath,mypv)
+                mypvpath = current_dirpath+"/"+mypv
                 if not os.path.isdir(mypvpath):
                     continue
-                mycounter_file = os.path.join(mypvpath,etpConst['spm']['xpak_entries']['counter'])
+                mycounter_file = mypvpath+"/"+etpConst['spm']['xpak_entries']['counter']
                 if not os.access(mycounter_file,os.R_OK):
                     continue
                 f = open(mycounter_file)
@@ -10003,7 +10003,7 @@ class PortageInterface:
                 except (IOError, ValueError):
                     f.close()
                     continue
-                installedAtoms.add((os.path.join(os.path.basename(current_dirpath),mypv),counter))
+                installedAtoms.add((os.path.basename(current_dirpath)+"/"+mypv,counter))
         return installedAtoms
 
     def refill_counter(self, dbdir = None):
