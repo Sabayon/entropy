@@ -636,6 +636,13 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 
     ### Before even starting the fetch, make sure that the user accepts their licenses
     licenses = Equo.get_licenses_to_accept(runQueue)
+    # is there ACCEPT_LICENSE in ENV?
+    myaccept_license = os.getenv("ACCEPT_LICENSE")
+    if myaccept_license:
+        myaccept_license = myaccept_license.split()
+        for mylic in myaccept_license:
+            if mylic in licenses:
+                licenses.pop(mylic)
     if licenses:
         print_info(red(" @@ ")+blue("You need to accept the licenses below:"))
         keys = licenses.keys()

@@ -672,7 +672,7 @@ class etpDatabase:
                 mypath = self.ServiceInterface.quickpkg(myatom,mydest)
             except:
                 # remove broken bin before raising
-                mypath = os.path.join(mydest,myatom+etpConst['packagesext'])
+                mypath = os.path.join(mydest,os.path.basename(myatom)+etpConst['packagesext'])
                 if os.path.isfile(mypath):
                     os.remove(mypath)
                 import traceback
