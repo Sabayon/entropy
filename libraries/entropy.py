@@ -10004,7 +10004,6 @@ class PortageInterface:
                     f.close()
                     continue
                 installedAtoms.add((os.path.join(os.path.basename(current_dirpath),mypv),counter))
-        print installedAtoms
         return installedAtoms
 
     def refill_counter(self, dbdir = None):
