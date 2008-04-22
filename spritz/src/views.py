@@ -56,12 +56,13 @@ class SpritzCategoryView:
                 self.model.append(None,[el,el])
 
 class EntropyPackageView:
-    def __init__( self, treeview, qview, ui, etpbase ):
+    def __init__( self, treeview, qview, ui, etpbase, main_window ):
 
         self.selection_width = 20
         self.loaded_widget = None
         self.loaded_reinstallable = None
         self.loaded_event = None
+        self.main_window = main_window
         self.event_click_pos = 0,0
         # default for installed packages
         self.pkg_install_ok = "package-installed-updated.png"
@@ -190,7 +191,10 @@ class EntropyPackageView:
         if pkg:
             do = True
             self.etpbase.selected_treeview_item = pkg
-        self.ui.pkgInfoButton.set_sensitive(do)
+        try:
+            self.ui.pkgInfoButton.set_sensitive(do)
+        except AttributeError:
+            pass
 
     def load_menu(self, widget, event):
         self.loaded_widget = widget
@@ -291,7 +295,7 @@ class EntropyPackageView:
                 break
 
     def on_remove_activate(self, widget, do_purge = False):
-        busyCursor(self.ui.main)
+        busyCursor(self.main_window)
         model, iter = self.loaded_widget.get_selection().get_selected()
         obj = self.store.get_value( iter, 0 )
         oldqueued = obj.queued
@@ -304,10 +308,10 @@ class EntropyPackageView:
             obj.queued = oldqueued
             obj.do_purge = oldpurge
         self.queueView.refresh()
-        normalCursor(self.ui.main)
+        normalCursor(self.main_window)
 
     def on_reinstall_activate(self, widget):
-        busyCursor(self.ui.main)
+        busyCursor(self.main_window)
         model, iter = self.loaded_widget.get_selection().get_selected()
         obj = self.store.get_value( iter, 0 )
         oldqueued = obj.queued
@@ -319,25 +323,25 @@ class EntropyPackageView:
             obj.queued = oldqueued
             self.loaded_reinstallable.queued = oldqueued_reinstallable
         self.queueView.refresh()
-        normalCursor(self.ui.main)
+        normalCursor(self.main_window)
 
     def on_undoreinstall_activate(self, widget):
-        busyCursor(self.ui.main)
+        busyCursor(self.main_window)
         model, iter = self.loaded_widget.get_selection().get_selected()
         obj = self.store.get_value( iter, 0 )
         obj.queued = None
         self.remove_queued(self.loaded_reinstallable)
         self.queueView.refresh()
-        normalCursor(self.ui.main)
+        normalCursor(self.main_window)
 
     def on_undoremove_activate(self, widget):
-        busyCursor(self.ui.main)
+        busyCursor(self.main_window)
         model, iter = self.loaded_widget.get_selection().get_selected()
         obj = self.store.get_value( iter, 0 )
         self.remove_queued(obj)
         obj.do_purge = False
         self.queueView.refresh()
-        normalCursor(self.ui.main)
+        normalCursor(self.main_window)
 
     def remove_queued(self, obj):
         oldqueued = obj.queued
@@ -373,7 +377,7 @@ class EntropyPackageView:
         self.view.queue_draw()
 
     def on_install_update_activate(self, widget, action):
-        busyCursor(self.ui.main)
+        busyCursor(self.main_window)
         model, iter = self.loaded_widget.get_selection().get_selected()
         obj = self.store.get_value( iter, 0 )
         oldqueued = obj.queued
@@ -382,16 +386,16 @@ class EntropyPackageView:
         if status != 0:
             obj.queued = oldqueued
         self.queueView.refresh()
-        normalCursor(self.ui.main)
+        normalCursor(self.main_window)
         self.view.queue_draw()
 
     def on_undoinstall_undoupdate_activate(self, widget):
-        busyCursor(self.ui.main)
+        busyCursor(self.main_window)
         model, iter = self.loaded_widget.get_selection().get_selected()
         obj = self.store.get_value( iter, 0 )
         self.remove_queued(obj)
         self.queueView.refresh()
-        normalCursor(self.ui.main)
+        normalCursor(self.main_window)
         self.view.queue_draw()
 
     def setupView( self ):
