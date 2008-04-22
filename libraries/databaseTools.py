@@ -3873,8 +3873,10 @@ class etpDatabase:
     # idpackageValidatorCache = {} >> function cache
     def idpackageValidator(self,idpackage):
 
-        reponame = self.dbname[5:]
+        if self.dbname == etpConst['clientdbid']:
+            return idpackage,0
 
+        reponame = self.dbname[5:]
         cached = idpackageValidatorCache.get((idpackage,reponame))
         if cached != None:
             return cached

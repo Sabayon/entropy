@@ -8187,7 +8187,15 @@ timeout=10
                                     )
                 return "(hd0,0)"
             match = re.subn("[a-z/]","",gboot)
-            gpartnum = str(int(match[0])-1)
+            try:
+                gpartnum = str(int(match[0])-1)
+            except ValueError:
+                self.Entropy.updateProgress(
+                                        bold(" QA Warning: ") + brown("Grub translation of %s not supported. Cannot properly configure grub.conf. Defaulting to (hd0,0)") % (gboot,),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
+                return "(hd0,0)"
             # now match with grub
             device_map = etpConst['packagestmpdir']+"/grub.map"
             if os.path.isfile(device_map):

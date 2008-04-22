@@ -36,7 +36,7 @@ from entropyapi import EquoConnection, QueueExecutor
 from entropy import ErrorReportInterface
 
 # GTK Imports
-import gtk,gobject
+import gtk, gobject
 import thread
 import exceptions
 from etpgui.widgets import UI, Controller
@@ -1498,7 +1498,10 @@ if __name__ == "__main__":
     gtkEventThread = ProcessGtkEventsThread()
     try:
         gtkEventThread.start()
-        gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/spritz-icon.png")
+        try:
+            gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/spritz-icon.png")
+        except gobject.GError:
+            pass
         mainApp = SpritzApplication()
         gtk.main()
     except SystemExit, e:

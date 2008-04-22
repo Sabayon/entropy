@@ -690,6 +690,7 @@ def const_defaultSettings(rootdir):
         # packages keywords/mask/unmask settings
         'packagemasking': None, # package masking information dictionary filled by the masking parser
         'packagemaskingreasons': {
+            0: 'reason not available',
             1: 'user package.mask',
             2: 'system keywords',
             3: 'user package.unmask',
