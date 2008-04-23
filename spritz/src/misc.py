@@ -155,22 +155,28 @@ class SpritzQueue:
             remove_todo = []
             install_todo = []
             if runQueue:
-                #print "runQueue",runQueue
-                for dep_pkg in self.etpbase.getRawPackages('updates') + \
-                    self.etpbase.getRawPackages('available') + \
-                    self.etpbase.getRawPackages('reinstallable'):
-                        for matched_atom in runQueue:
-                            if (dep_pkg.matched_atom == matched_atom) and \
-                                (dep_pkg not in self.packages[actions[0]]+self.packages[actions[1]]+self.packages[actions[2]]) and \
-                                (dep_pkg not in install_todo):
-                                    install_todo.append(dep_pkg)
+                self.etpbase.getRawPackages('updates')
+                self.etpbase.getRawPackages('available')
+                self.etpbase.getRawPackages('reinstallable')
+                for matched_atom in runQueue:
+                    dep_pkg = self.etpbase.getPackageItem(matched_atom,True)
+                    if not dep_pkg:
+                        continue
+                    if (dep_pkg not in self.packages[actions[0]] + \
+                            self.packages[actions[1]] + \
+                            self.packages[actions[2]]) and \
+                            (dep_pkg not in install_todo):
+                                install_todo.append(dep_pkg)
 
-            # removalQueue
             if removalQueue:
-                for rem_pkg in self.etpbase.getRawPackages('installed'):
-                    for matched_atom in removalQueue:
-                        if rem_pkg.matched_atom == (matched_atom,0) and (rem_pkg not in remove_todo):
-                            remove_todo.append(rem_pkg)
+                self.etpbase.getRawPackages('installed')
+                for idpackage in removalQueue:
+                    mymatch = (idpackage,0)
+                    rem_pkg = self.etpbase.getPackageItem(mymatch,True)
+                    if not rem_pkg:
+                        continue
+                    if rem_pkg not in remove_todo:
+                        remove_todo.append(rem_pkg)
 
             if install_todo or remove_todo:
                 ok = True
