@@ -420,7 +420,6 @@ class EntropyPackageView:
         self.view.append_column( column1 )
         column1.set_clickable( False )
 
-        #self.create_text_column( _( "Package" ), 'name' , size=300)
         self.create_text_column( _( "Package" ), 'namedesc' , size=300, expand = True)
         self.create_text_column( _( "Repository" ), 'repoid', size = 130 )
 

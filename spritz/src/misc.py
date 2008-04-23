@@ -111,10 +111,11 @@ class SpritzQueue:
         atoms = []
         newdepends = set()
         # get depends tree
-        depends_tree, status = self.Entropy.generate_depends_tree(new_proposed_idpackages_queue)
-        if status == 0:
-            for key in depends_tree:
-                newdepends |= depends_tree[key]
+        if new_proposed_idpackages_queue:
+            depends_tree, status = self.Entropy.generate_depends_tree(new_proposed_idpackages_queue)
+            if status == 0:
+                for key in depends_tree:
+                    newdepends |= depends_tree[key]
 
         for idpackage in to_be_reinserted:
             if idpackage not in newdepends:
