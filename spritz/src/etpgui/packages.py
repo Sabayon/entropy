@@ -19,7 +19,7 @@
 
 from entropyConstants import *
 from entropyapi import EquoConnection
-import types
+from spritz_setup import cleanMarkupSting
 
 class PackageWrapper:
     def __init__(self, matched_atom, avail):
@@ -221,7 +221,7 @@ class PackageWrapper:
     def getAttr(self,attr):
         x = None
         if attr == "description":
-            x = self.dbconn.retrieveDescription(self.matched_atom[0])
+            x = cleanMarkupSting(self.dbconn.retrieveDescription(self.matched_atom[0]))
         elif attr == "category":
             x = self.dbconn.retrieveCategory(self.matched_atom[0])
         elif attr == "license":

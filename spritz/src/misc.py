@@ -18,8 +18,10 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from i18n import _
+from spritz_setup import cleanMarkupSting
 
 class SpritzQueue:
+
     def __init__(self):
         self.packages = {}
         self.groups = {}
@@ -94,6 +96,116 @@ class SpritzQueue:
         confirmDialog.run()
         confirmDialog.destroy()
 
+    def checkSystemPackage(self, pkg):
+        # check if it's a system package
+        valid = self.Entropy.validatePackageRemoval(pkg.matched_atom[0])
+        if not valid:
+            pkg.queued = None
+        return valid
+
+    def elaborateReinsert(self, to_be_reinserted, idpackages_queued, accept_reinsert):
+
+        new_proposed_idpackages_queue = [x for x in idpackages_queued if x not in to_be_reinserted]
+
+        # atoms
+        atoms = []
+        newdepends = set()
+        # get depends tree
+        depends_tree, status = self.Entropy.generate_depends_tree(new_proposed_idpackages_queue)
+        if status == 0:
+            for key in depends_tree:
+                newdepends |= depends_tree[key]
+
+        for idpackage in to_be_reinserted:
+            if idpackage not in newdepends:
+                mystring = "<span foreground='#FF0000'>%s</span>\n<small><span foreground='#418C0F'>%s</span></small>" % (
+                    self.Entropy.clientDbconn.retrieveAtom(idpackage),
+                    cleanMarkupSting(self.Entropy.clientDbconn.retrieveDescription(idpackage)),
+                )
+                atoms.append(mystring)
+        atoms.sort()
+
+
+        ok = True
+        if not accept_reinsert and atoms:
+            ok = False
+            confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
+                atoms,
+                top_text = _("These are the needed packages"),
+                sub_text = _("These packages must be removed from the removal queue because they depend on your last selection. Do you agree?"),
+                bottom_text = '',
+                bottom_data = '',
+                simpleList = True
+            )
+            result = confirmDialog.run()
+            if result == -5: # ok
+                ok = True
+            confirmDialog.destroy()
+
+        if ok:
+            return new_proposed_idpackages_queue
+        return idpackages_queued
+
+    def remove(self, pkgs, accept = False, accept_reinsert = False):
+
+        if type(pkgs) is not list:
+            pkgs = [pkgs]
+
+        action = [pkgs[0].action]
+        if action[0] in ("u","i","rr"): # update/install
+
+            action = ["u","i","rr"]
+
+            xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr'] if x not in pkgs]
+            self.before = self.packages['u'][:]+self.packages['i'][:]+self.packages['rr'][:]
+            for pkg in self.before:
+                pkg.queued = None
+            del self.packages['u'][:]
+            del self.packages['i'][:]
+            del self.packages['rr'][:]
+
+            mybefore = set([x.keyslot for x in self.before])
+            self.keyslotFilter -= mybefore
+
+            if xlist:
+                status = self.elaborateInstall(xlist,action,False,accept)
+                del self.before[:]
+                return status,0
+
+            del self.before[:]
+            return 0,0
+
+        else:
+
+            xlist = [x.matched_atom[0] for x in self.packages[action[0]] if x not in pkgs]
+            toberemoved_idpackages = [x.matched_atom[0] for x in pkgs]
+            mydepends = set()
+            for pkg in pkgs:
+                mydepends |= self.Entropy.clientDbconn.retrieveDepends(pkg.matched_atom[0])
+            # what are in queue?
+            mylist = set(xlist)
+            mylist -= mydepends
+            if mylist:
+                xlist = self.elaborateReinsert(mylist, xlist, accept_reinsert)
+
+            self.before = self.packages[action[0]][:]
+            # clean, will be refilled
+            for pkg in self.before:
+                pkg.queued = None
+            del self.packages[action[0]][:]
+
+            if xlist:
+
+                status = self.elaborateRemoval(xlist,False,accept)
+                if status == -10:
+                    del self.packages[action[0]][:]
+                    self.packages[action[0]] = self.before[:]
+
+                del self.before[:]
+                return status,1
+
+            del self.before[:]
+            return 0,1
 
     def add(self, pkgs, accept = False):
 
@@ -145,7 +257,7 @@ class SpritzQueue:
                         sub_text = _("Some dependencies couldn't be found. It can either be because they are masked or because they aren't in any active repository."),
                         bottom_text = "",
                         cancel = False,
-                        simpleList = True 
+                        simpleList = True
             )
             confirmDialog.run()
             confirmDialog.destroy()
@@ -197,11 +309,11 @@ class SpritzQueue:
                         bottom_text = _("Freed disk space")
                     size = self.Entropy.entropyTools.bytesIntoHuman(size)
                     confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
-                                                                    install_todo+remove_todo,
-                                                                    top_text = _("These are the packages that would be installed/updated"),
-                                                                    bottom_text = bottom_text,
-                                                                    bottom_data = size
-                                                                  )
+                        install_todo+remove_todo,
+                        top_text = _("These are the packages that would be installed/updated"),
+                        bottom_text = bottom_text,
+                        bottom_data = size
+                    )
                     result = confirmDialog.run()
                     if result == -5: # ok
                         ok = True
@@ -271,82 +383,3 @@ class SpritzQueue:
                     return -10
 
         return 0
-
-
-    def checkSystemPackage(self, pkg):
-        # check if it's a system package
-        valid = self.Entropy.validatePackageRemoval(pkg.matched_atom[0])
-        if not valid:
-            pkg.queued = None
-        return valid
-
-    def remove(self, pkgs, accept = False):
-
-        if type(pkgs) is not list:
-            pkgs = [pkgs]
-
-        action = [pkgs[0].action]
-        if action[0] in ("u","i","rr"): # update/install
-
-            action = ["u","i","rr"]
-
-            xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr'] if x not in pkgs]
-            self.before = self.packages['u'][:]+self.packages['i'][:]+self.packages['rr'][:]
-            for pkg in self.before:
-                pkg.queued = None
-            del self.packages['u'][:]
-            del self.packages['i'][:]
-            del self.packages['rr'][:]
-
-            mybefore = set([x.keyslot for x in self.before])
-            self.keyslotFilter -= mybefore
-
-            if xlist:
-
-                status = self.elaborateInstall(xlist,action,False,accept)
-
-                del self.before[:]
-                return status,0
-
-            del self.before[:]
-            return 0,0
-
-        else:
-
-            xlist = [x.matched_atom[0] for x in self.packages[action[0]] if x not in pkgs]
-            self.before = self.packages[action[0]][:]
-            # clean, will be refilled
-            for pkg in self.before:
-                pkg.queued = None
-            del self.packages[action[0]][:]
-
-            if xlist:
-
-                status = self.elaborateRemoval(xlist,False,accept)
-                if status == -10:
-                    del self.packages[action[0]][:]
-                    self.packages[action[0]] = self.before[:]
-
-                del self.before[:]
-                return status,1
-
-            del self.before[:]
-            return 0,1
-
-    def addGroup( self, grp, action):
-        mylist = self.groups[action]
-        if not grp in mylist:
-            mylist.append( grp )
-        self.groups[action] = mylist
-
-    def removeGroup( self, grp, action):
-        mylist = self.groups[action]
-        if grp in mylist:
-            mylist.remove( grp )
-        self.groups[action] = mylist
-
-    def hasGroup(self,grp):
-        for action in ['i','r']:
-            if grp in self.groups[action]:
-                return action
-        return None

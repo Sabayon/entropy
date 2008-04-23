@@ -852,10 +852,8 @@ class SpritzController(Controller):
         """ Handle selection of row in Comps Category  view  """
         ( model, iterator ) = widget.get_selection().get_selected()
         if model != None and iterator != None:
-            id = model.get_value( iterator, 2 )
-            isCategory = model.get_value( iterator, 4 )
-            if isCategory:
-                self.populateCategoryPackages(id)
+            id = model.get_value( iterator, 0 )
+            self.populateCategoryPackages(id)
         self.unsetBusy()
 
     def on_FileQuit( self, widget ):
