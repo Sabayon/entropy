@@ -353,7 +353,7 @@ class SpritzController(Controller):
         self.addrepo_ui.repoidEntry.set_text(repodata['repoid'])
         self.addrepo_ui.repoDescEntry.set_text(repodata['description'])
         self.repoMirrorsView.store.clear()
-        for x in repodata['packages']:
+        for x in repodata['plain_packages']:
             self.repoMirrorsView.add(x)
         idx = 0
         # XXX hackish way fix it
@@ -362,7 +362,7 @@ class SpritzController(Controller):
             if repodata['dbcformat'] == self.addrepo_ui.repodbcformatEntry.get_active_text():
                 break
             idx += 1
-        self.addrepo_ui.repodbEntry.set_text(repodata['database'])
+        self.addrepo_ui.repodbEntry.set_text(repodata['plain_database'])
 
     def on_repoSubmitEdit_clicked( self, widget ):
         repodata = self.__getRepodata()
@@ -392,9 +392,9 @@ class SpritzController(Controller):
                 errors.append(_('Duplicated Repository Identifier'))
         if not repodata['description']:
             repodata['description'] = "No description"
-        if not repodata['packages']:
+        if not repodata['plain_packages']:
             errors.append(_("No download mirrors"))
-        if not repodata['database'] or not (repodata['database'].startswith("http://") or repodata['database'].startswith("ftp://") or repodata['database'].startswith("file://")):
+        if not repodata['plain_database'] or not (repodata['plain_database'].startswith("http://") or repodata['plain_database'].startswith("ftp://") or repodata['plain_database'].startswith("file://")):
             errors.append(_("Database URL must start either with http:// or ftp:// or file://"))
         return errors
 
@@ -402,9 +402,9 @@ class SpritzController(Controller):
         repodata = {}
         repodata['repoid'] = self.addrepo_ui.repoidEntry.get_text()
         repodata['description'] = self.addrepo_ui.repoDescEntry.get_text()
-        repodata['packages'] = self.repoMirrorsView.get_all()
+        repodata['plain_packages'] = self.repoMirrorsView.get_all()
         repodata['dbcformat'] = self.addrepo_ui.repodbcformatEntry.get_active_text()
-        repodata['database'] = self.addrepo_ui.repodbEntry.get_text()
+        repodata['plain_database'] = self.addrepo_ui.repodbEntry.get_text()
         return repodata
 
     def on_repoSubmit_clicked( self, widget ):

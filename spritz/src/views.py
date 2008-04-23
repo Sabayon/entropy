@@ -421,10 +421,8 @@ class EntropyPackageView:
         column1.set_clickable( False )
 
         #self.create_text_column( _( "Package" ), 'name' , size=300)
-        self.create_text_column( _( "Package" ), 'namedesc' , size=300)
-        self.create_text_column( _( "Rev." ), 'revision' , size=40 )
-        self.create_text_column( _( "Slot" ), 'slot' , size = 40 )
-        self.create_text_column( _( "Repository" ), 'repoid', size = 100 )
+        self.create_text_column( _( "Package" ), 'namedesc' , size=300, expand = True)
+        self.create_text_column( _( "Repository" ), 'repoid', size = 130 )
 
         return store
 
@@ -457,7 +455,7 @@ class EntropyPackageView:
     def set_pixbuf_to_image(self, img, filename):
         img.set_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
 
-    def create_text_column( self, hdr, property, size, sortcol = None):
+    def create_text_column( self, hdr, property, size, sortcol = None, expand = False):
         """
         Create a TreeViewColumn with text and set
         the sorting properties and add it to the view
@@ -468,6 +466,7 @@ class EntropyPackageView:
         column.set_cell_data_func( cell, self.get_data_text, property )
         column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column.set_fixed_width( size )
+        column.set_expand(expand)
         column.set_sort_column_id( -1 )
         self.view.append_column( column )
         return column

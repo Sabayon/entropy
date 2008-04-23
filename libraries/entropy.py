@@ -1287,6 +1287,7 @@ class EquoInterface(TextInterface):
 
         if repodata['repoid'].endswith(etpConst['packagesext']): # dynamic repository
             try:
+                # no need # etpRepositories[repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
                 etpRepositories[repodata['repoid']]['packages'] = repodata['packages'][:]
                 etpRepositories[repodata['repoid']]['smartpackage'] = repodata['smartpackage']
                 etpRepositories[repodata['repoid']]['dbpath'] = repodata['dbpath']
@@ -1297,8 +1298,10 @@ class EquoInterface(TextInterface):
             etpRepositoriesOrder.insert(0,repodata['repoid'])
         else:
             # XXX it's boring to keep this in sync with entropyConstants stuff, solutions?
-            etpRepositories[repodata['repoid']]['packages'] = [x+"/"+etpConst['product'] for x in repodata['packages']]
-            etpRepositories[repodata['repoid']]['database'] = repodata['database'] + "/" + etpConst['product'] + "/database/" + etpConst['currentarch']
+            etpRepositories[repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
+            etpRepositories[repodata['repoid']]['packages'] = [x+"/"+etpConst['product'] for x in repodata['plain_packages']]
+            etpRepositories[repodata['repoid']]['plain_database'] = repodata['plain_database']
+            etpRepositories[repodata['repoid']]['database'] = repodata['plain_database'] + "/" + etpConst['product'] + "/database/" + etpConst['currentarch']
             etpRepositories[repodata['repoid']]['dbcformat'] = repodata['dbcformat']
             etpRepositories[repodata['repoid']]['dbpath'] = etpConst['etpdatabaseclientdir'] + "/" + repodata['repoid'] + "/" + etpConst['product'] + "/" + etpConst['currentarch']
             # set dbrevision

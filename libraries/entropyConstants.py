@@ -797,8 +797,10 @@ def const_readRepositoriesSettings():
                         myRepodata[reponame] = {}
                         myRepodata[reponame]['description'] = repodesc
                         myRepodata[reponame]['packages'] = []
+                        myRepodata[reponame]['plain_packages'] = []
                         myRepodata[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['product']+"/"+etpConst['currentarch']
                         myRepodata[reponame]['dbcformat'] = dbformat
+                        myRepodata[reponame]['plain_database'] = repodatabase
                         myRepodata[reponame]['database'] = repodatabase+"/"+etpConst['product']+"/"+reponame+"/database/"+etpConst['currentarch']
 
                         myRepodata[reponame]['dbrevision'] = "0"
@@ -817,6 +819,7 @@ def const_readRepositoriesSettings():
                             etpRepositoriesOrder.append(reponame)
 
                     for x in repopackages.split():
+                        myRepodata[reponame]['plain_packages'].append(x)
                         myRepodata[reponame]['packages'].append(x+"/"+etpConst['product']+"/"+reponame)
 
             elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):

@@ -1649,8 +1649,8 @@ def saveRepositorySettings(repodata, remove = False, disable = False, enable = F
 
             line = "repository|%s|%s|%s|%s#%s" % (   repodata['repoid'],
                                                     repodata['description'],
-                                                    ' '.join(repodata['packages']),
-                                                    repodata['database'],
+                                                    ' '.join(repodata['plain_packages']),
+                                                    repodata['plain_database'],
                                                     repodata['dbcformat'],
                                                 )
 
