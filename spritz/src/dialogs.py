@@ -35,7 +35,7 @@ class PkgInfoMenu:
         self.pkg = pkg
         self.window = window
         self.Entropy = Entropy
-        self.pkginfo_ui = UI( const.GLADE_FILE , 'pkgInfo', 'spritz' )
+        self.pkginfo_ui = UI( const.GLADE_FILE, 'pkgInfo', 'spritz' )
         self.pkginfo_ui.signal_autoconnect(self._getAllMethods())
         self.pkginfo_ui.pkgInfo.set_transient_for(self.window)
         self.setupPkgPropertiesView()

@@ -198,7 +198,7 @@ class SpritzGUI:
         self.etpbase = etpbase
         self.queue = SpritzQueue()
         self.queueView = EntropyQueueView(self.ui.queueView,self.queue)
-        self.pkgView = EntropyPackageView(self.ui.viewPkg,self.queueView, self.ui, self.etpbase, self.ui.main)
+        self.pkgView = EntropyPackageView(self.ui.viewPkg, self.queueView, self.ui, self.etpbase, self.ui.main)
         self.filesView = EntropyFilesView(self.ui.filesView)
         self.advisoriesView = EntropyAdvisoriesView(self.ui.advisoriesView, self.ui, self.etpbase)
         self.queue.connect_objects(self.Entropy, self.etpbase, self.pkgView, self.ui)

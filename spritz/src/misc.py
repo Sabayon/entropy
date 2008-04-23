@@ -95,7 +95,7 @@ class SpritzQueue:
         confirmDialog.destroy()
 
 
-    def add(self, pkgs):
+    def add(self, pkgs, accept = False):
 
         if type(pkgs) is not list:
             pkgs = [pkgs]
@@ -114,7 +114,7 @@ class SpritzQueue:
             tmpqueue = [x for x in pkgs if x not in self.packages['u']+self.packages['i']+self.packages['rr']]
             xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr']+tmpqueue]
             xlist = list(set(xlist))
-            status = self.elaborateInstall(xlist,action,False)
+            status = self.elaborateInstall(xlist,action,False,accept)
             if status == 0:
                 self.keyslotFilter |= self._keyslotFilter
             return status,0
@@ -133,10 +133,10 @@ class SpritzQueue:
 
             tmpqueue = [x for x in pkgs if x not in self.packages['r']]
             xlist = [x.matched_atom[0] for x in self.packages['r']+tmpqueue]
-            status = self.elaborateRemoval(xlist,False)
+            status = self.elaborateRemoval(xlist,False, accept)
             return status,1
 
-    def elaborateInstall(self, xlist, actions, deep_deps):
+    def elaborateInstall(self, xlist, actions, deep_deps, accept):
         (runQueue, removalQueue, status) = self.Entropy.retrieveInstallQueue(xlist,False,deep_deps)
         if status == -2: # dependencies not found
             confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
@@ -177,7 +177,7 @@ class SpritzQueue:
 
                 items_before = [x for x in install_todo+remove_todo if x not in self.before]
 
-                if len(items_before) > 1:
+                if (len(items_before) > 1) and not accept:
                     ok = False
                     size = 0
                     for x in install_todo:
@@ -215,7 +215,7 @@ class SpritzQueue:
 
         return status
 
-    def elaborateRemoval(self, list, nodeps):
+    def elaborateRemoval(self, list, nodeps, accept):
         if nodeps:
             return 0
         removalQueue = self.Entropy.retrieveRemovalQueue(list)
@@ -229,7 +229,7 @@ class SpritzQueue:
             if todo:
                 ok = True
                 items_before = [x for x in todo if x not in self.before]
-                if len(items_before) > 1:
+                if (len(items_before) > 1) and not accept:
                     ok = False
                     size = 0
                     for x in todo:
@@ -269,7 +269,7 @@ class SpritzQueue:
             pkg.queued = None
         return valid
 
-    def remove(self, pkgs):
+    def remove(self, pkgs, accept = False):
 
         if type(pkgs) is not list:
             pkgs = [pkgs]
@@ -292,7 +292,7 @@ class SpritzQueue:
 
             if xlist:
 
-                status = self.elaborateInstall(xlist,action,False)
+                status = self.elaborateInstall(xlist,action,False,accept)
 
                 del self.before[:]
                 return status,0
@@ -311,7 +311,7 @@ class SpritzQueue:
 
             if xlist:
 
-                status = self.elaborateRemoval(xlist,False)
+                status = self.elaborateRemoval(xlist,False,accept)
                 if status == -10:
                     del self.packages[action[0]][:]
                     self.packages[action[0]] = self.before[:]
