@@ -60,6 +60,7 @@ class EntropyPackageView:
 
         self.selection_width = 20
         self.show_reinstall = True
+        self.show_purge = True
         self.loaded_widget = None
         self.loaded_reinstallable = None
         self.loaded_event = None
@@ -178,7 +179,9 @@ class EntropyPackageView:
         self.installed_reinstall.hide()
         if self.show_reinstall:
             self.installed_reinstall.show()
-        self.installed_purge.show()
+        self.installed_purge.hide()
+        if self.show_purge:
+            self.installed_purge.show()
 
     def hide_installed_packages_menu(self):
         self.installed_undoremove.hide()
