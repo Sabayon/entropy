@@ -215,17 +215,21 @@ class SpritzQueue:
 
         return status
 
-    def elaborateRemoval(self, list, nodeps, accept):
+    def elaborateRemoval(self, mylist, nodeps, accept):
         if nodeps:
             return 0
-        removalQueue = self.Entropy.retrieveRemovalQueue(list)
+        removalQueue = self.Entropy.retrieveRemovalQueue(mylist)
         if removalQueue:
             todo = []
-            for rem_pkg in self.etpbase.getRawPackages('installed'):
-                for matched_atom in removalQueue:
-                    if rem_pkg.matched_atom == (matched_atom,0):
-                        if rem_pkg not in self.packages[rem_pkg.action] and (rem_pkg not in todo):
-                            todo.append(rem_pkg)
+            self.etpbase.getRawPackages('installed')
+            for idpackage in removalQueue:
+                mymatch = (idpackage,0)
+                rem_pkg = self.etpbase.getPackageItem(mymatch,True)
+                if not rem_pkg:
+                    continue
+                if rem_pkg not in self.packages[rem_pkg.action] and (rem_pkg not in todo):
+                    todo.append(rem_pkg)
+
             if todo:
                 ok = True
                 items_before = [x for x in todo if x not in self.before]
@@ -240,12 +244,13 @@ class SpritzQueue:
                         size = abs(size)
                         bottom_text = _("Needed space")
                     size = self.Entropy.entropyTools.bytesIntoHuman(size)
-                    confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
-                                                                    todo,
-                                                                    top_text = _("These are the packages that would be removed"),
-                                                                    bottom_text = bottom_text,
-                                                                    bottom_data = size
-                                                                  )
+                    confirmDialog = self.dialogs.ConfirmationDialog( 
+                        self.ui.main,
+                        todo,
+                        top_text = _("These are the packages that would be removed"),
+                        bottom_text = bottom_text,
+                        bottom_data = size
+                    )
                     result = confirmDialog.run()
                     if result == -5: # ok
                         ok = True
