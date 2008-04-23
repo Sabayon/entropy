@@ -106,16 +106,15 @@ class SpritzQueue:
     def elaborateReinsert(self, to_be_reinserted, idpackages_queued, accept_reinsert):
 
         new_proposed_idpackages_queue = [x for x in idpackages_queued if x not in to_be_reinserted]
+        if not new_proposed_idpackages_queue:
+            return idpackages_queued
 
         # atoms
         atoms = []
         newdepends = set()
         # get depends tree
         if new_proposed_idpackages_queue:
-            depends_tree, status = self.Entropy.generate_depends_tree(new_proposed_idpackages_queue)
-            if status == 0:
-                for key in depends_tree:
-                    newdepends |= depends_tree[key]
+            newdepends = self.Entropy.retrieveRemovalQueue(new_proposed_idpackages_queue)
 
         for idpackage in to_be_reinserted:
             if idpackage not in newdepends:

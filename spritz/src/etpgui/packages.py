@@ -60,8 +60,8 @@ class PackageWrapper:
     def getNameDesc(self):
         t = self.getName()
         desc = self.getDescription()
-        if len(desc) > 60:
-            desc = desc[:60]+"..."
+        if len(desc) > 58:
+            desc = desc[:58]+"..."
         t += "\n<small><span foreground='#FF0000'>%s</span></small>" % (desc,)
         return t
 
