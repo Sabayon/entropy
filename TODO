@@ -1,4 +1,5 @@
 TODO list
+  - client: check lock file on repo sync
   - add i18n support
   - server-side: improve RDEPEND check output
   - server-side: add libtest to reagent

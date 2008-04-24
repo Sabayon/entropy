@@ -1816,7 +1816,7 @@ class etpDatabase:
     def fetchone2set(self, item):
         return set(item)
 
-    def clearCache(self, all = False):
+    def clearCache(self, all = False, depends = False):
         self.live_cache.clear()
         def do_clear(name):
             dump_path = os.path.join(etpConst['dumpstoragedir'],name)
@@ -1830,6 +1830,10 @@ class etpDatabase:
             do_clear(etpCache['dbInfo']+"/"+self.dbname+"/")
         do_clear(etpCache['dbMatch']+"/"+self.dbname+"/")
         do_clear(etpCache['dbSearch']+"/"+self.dbname+"/")
+        if depends:
+            do_clear(etpCache['depends_tree'])
+            do_clear(etpCache['dep_tree'])
+            do_clear(etpCache['filter_satisfied_deps'])
 
     def fetchInfoCache(self, idpackage, function, extra_hash = 0):
         if self.xcache:
@@ -3180,6 +3184,9 @@ class etpDatabase:
         if not self.doesTableExist("installedtable") and (self.dbname == etpConst['clientdbid']):
             self.createInstalledTable()
 
+        if not self.doesTableExist("entropy_misc_counters"):
+            self.createEntropyMiscCountersTable()
+
         if not self.doesColumnInTableExist("dependencies","type"):
             self.createDependenciesTypeColumn()
 
@@ -3210,6 +3217,13 @@ class etpDatabase:
                                             header = blue(" !!! ")
                             )
             self.createAllIndexes()
+
+        # do manual atoms update
+        if os.access(self.dbFile,os.W_OK):
+            old_readonly = self.readOnly
+            self.readOnly = False
+            self.fixKdeDepStrings()
+            self.readOnly = old_readonly
 
         self.connection.commit()
 
@@ -3249,6 +3263,74 @@ class etpDatabase:
         self.cursor.execute('DROP TABLE '+totable)
         self.commitChanges()
         return True
+
+    def fixKdeDepStrings(self):
+
+        # check if we need to do it
+        cur_id = self.getForcedAtomsUpdateId()
+        if cur_id >= etpConst['misc_counters']['forced_atoms_update_ids']['kde']:
+            return
+
+        self.updateProgress(
+            red("Entropy database: fixing KDE dep strings on %s. Please wait..." % (self.dbname,)),
+            importance = 1,
+            type = "warning",
+            header = blue(" !!! ")
+        )
+
+        # uhu, let's roooock
+        search_deps = {
+            ">=kde-base/kdelibs-3.0": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.1": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.2": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.3": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.4": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.5": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.0": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.0.0": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.0.5": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.1": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.1.0": 'kde-base/kdelibs:3.5',
+
+        }
+        self.cursor.execute('select iddependency,dependency from dependenciesreference')
+        depdata = self.cursor.fetchall()
+        for iddepedency, depstring in depdata:
+            if depstring in search_deps:
+                self.setDependency(iddepedency, search_deps[depstring])
+
+        # regenerate depends
+        while 1: # avoid users interruption
+            self.regenerateDependsTable()
+            break
+
+        self.setForcedAtomsUpdateId(etpConst['misc_counters']['forced_atoms_update_ids']['kde'])
+        self.commitChanges()
+        # drop all cache
+        self.clearCache(all = True, depends = True)
+
+
+    def getForcedAtomsUpdateId(self):
+        self.cursor.execute(
+            'SELECT counter FROM entropy_misc_counters WHERE idtype = (?)',
+            (etpConst['misc_counters']['forced_atoms_update_ids']['__idtype__'],)
+        )
+        myid = self.cursor.fetchone()
+        if not myid:
+            return self.setForcedAtomsUpdateId(0)
+        return myid[0]
+
+    def setForcedAtomsUpdateId(self, myid):
+        self.cursor.execute(
+            'DELETE FROM entropy_misc_counters WHERE idtype = (?)',
+            (etpConst['misc_counters']['forced_atoms_update_ids']['__idtype__'],)
+        )
+        self.cursor.execute(
+            'INSERT INTO entropy_misc_counters VALUES (?,?)',
+            (etpConst['misc_counters']['forced_atoms_update_ids']['__idtype__'],myid)
+        )
+        return myid
 
     def validateDatabase(self):
         self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table","baseinfo"))
@@ -3695,6 +3777,9 @@ class etpDatabase:
 
     def createSizesTable(self):
         self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
+
+    def createEntropyMiscCountersTable(self):
+        self.cursor.execute('CREATE TABLE entropy_misc_counters ( idtype INTEGER PRIMARY KEY, counter INTEGER );')
 
     def createDependenciesTypeColumn(self):
         self.cursor.execute('ALTER TABLE dependencies ADD COLUMN type INTEGER;')

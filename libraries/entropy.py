@@ -1682,9 +1682,12 @@ class EquoInterface(TextInterface):
         if self.xcache:
             c_hash = str(hash(tuple(match)))+str(hash(deep_deps))+str(hash(clientmatch[0]))
             c_hash = str(hash(c_hash))
-            cached = self.dumpTools.loadobj(etpCache['library_breakage']+c_hash)
-            if cached != None:
-                return cached
+            try:
+                cached = self.dumpTools.loadobj(etpCache['library_breakage']+c_hash)
+                if cached != None:
+                    return cached
+            except (IOError,OSError):
+                pass
 
         # these should be pulled in before
         repo_atoms = set()
@@ -1770,7 +1773,7 @@ class EquoInterface(TextInterface):
         if self.xcache:
             try:
                 self.dumpTools.dumpobj(etpCache['library_breakage']+c_hash,client_atoms)
-            except IOError:
+            except (OSError,IOError):
                 pass
 
         return client_atoms
@@ -1893,13 +1896,11 @@ class EquoInterface(TextInterface):
                 # obtain its depends
                 depends = self.clientDbconn.retrieveDepends(idpackage)
                 # filter already satisfied ones
-                depends = [x for x in depends if x not in monotree and not self.clientDbconn.isSystemPackage(x)]
+                depends = set([x for x in depends if x not in monotree and not self.clientDbconn.isSystemPackage(x)])
                 if depends: # something depends on idpackage
-                    for x in depends:
-                        if x not in tree[treedepth]:
-                            tree[treedepth].add(x)
-                            monotree.add(x)
-                            treeview.add(x)
+                    tree[treedepth] |= depends
+                    monotree |= depends
+                    treeview |= depends
                 elif deep: # if deep, grab its dependencies and check
 
                     mydeps = set()

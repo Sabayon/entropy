@@ -116,6 +116,7 @@ DROP TABLE IF EXISTS library_breakages;
 DROP TABLE IF EXISTS licensedata;
 DROP TABLE IF EXISTS licenses_accepted;
 DROP TABLE IF EXISTS trashedcounters;
+DROP TABLE IF EXISTS entropy_misc_counters;
 """
 
 etpSQLInit = """
@@ -325,6 +326,11 @@ CREATE TABLE licenses_accepted (
 CREATE TABLE triggers (
     idpackage INTEGER PRIMARY KEY,
     data BLOB
+);
+
+CREATE TABLE entropy_misc_counters (
+    idtype INTEGER PRIMARY KEY,
+    counter INTEGER
 );
 
 """
@@ -701,6 +707,13 @@ def const_defaultSettings(rootdir):
             8: 'repository general packages.db.mask',
             9: 'repository in branch packages.db.mask',
             10: 'user license.mask'
+        },
+
+        'misc_counters': {
+            'forced_atoms_update_ids': {
+                '__idtype__': 1,
+                'kde': 1,
+            },
         },
 
         # packages whose need their other installs (different tag), to be removed
