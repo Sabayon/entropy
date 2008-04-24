@@ -148,17 +148,20 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
 
         # clear old resume information
         if etpConst['uid'] == 0:
-            Equo.dumpTools.dumpobj(etpCache['world'],{})
-            Equo.dumpTools.dumpobj(etpCache['install'],{})
-            Equo.dumpTools.dumpobj(etpCache['remove'],[])
-            if (not etpUi['pretend']):
-                # store resume information
-                resume_cache = {}
-                resume_cache['ask'] = etpUi['ask']
-                resume_cache['verbose'] = etpUi['verbose']
-                resume_cache['onlyfetch'] = onlyfetch
-                resume_cache['remove'] = remove
-                Equo.dumpTools.dumpobj(etpCache['world'],resume_cache)
+            try:
+                Equo.dumpTools.dumpobj(etpCache['world'],{})
+                Equo.dumpTools.dumpobj(etpCache['install'],{})
+                Equo.dumpTools.dumpobj(etpCache['remove'],[])
+                if (not etpUi['pretend']):
+                    # store resume information
+                    resume_cache = {}
+                    resume_cache['ask'] = etpUi['ask']
+                    resume_cache['verbose'] = etpUi['verbose']
+                    resume_cache['onlyfetch'] = onlyfetch
+                    resume_cache['remove'] = remove
+                    Equo.dumpTools.dumpobj(etpCache['world'],resume_cache)
+            except (OSError,IOError):
+                pass
 
     else: # if resume, load cache if possible
 
@@ -175,11 +178,14 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
                 etpUi['verbose'] = resume_cache['verbose']
                 onlyfetch = resume_cache['onlyfetch']
                 Equo.dumpTools.dumpobj(etpCache['remove'],list(remove))
-            except (IOError,KeyError):
+            except (OSError,IOError,KeyError):
                 print_error(red("Resume cache corrupted."))
-                Equo.dumpTools.dumpobj(etpCache['world'],{})
-                Equo.dumpTools.dumpobj(etpCache['install'],{})
-                Equo.dumpTools.dumpobj(etpCache['remove'],[])
+                try:
+                    Equo.dumpTools.dumpobj(etpCache['world'],{})
+                    Equo.dumpTools.dumpobj(etpCache['install'],{})
+                    Equo.dumpTools.dumpobj(etpCache['remove'],[])
+                except (OSError,IOError):
+                    pass
                 return 128,-1
 
     # disable collisions protection, better
@@ -575,17 +581,20 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             dirscleanup()
             return 0,0
 
-        # clear old resume information
-        Equo.dumpTools.dumpobj(etpCache['install'],{})
-        # store resume information
-        if not tbz2: # .tbz2 install resume not supported
-            resume_cache = {}
-            #resume_cache['removalQueue'] = removalQueue[:]
-            resume_cache['runQueue'] = runQueue[:]
-            resume_cache['onlyfetch'] = onlyfetch
-            resume_cache['emptydeps'] = emptydeps
-            resume_cache['deepdeps'] = deepdeps
-            Equo.dumpTools.dumpobj(etpCache['install'],resume_cache)
+        try:
+            # clear old resume information
+            Equo.dumpTools.dumpobj(etpCache['install'],{})
+            # store resume information
+            if not tbz2: # .tbz2 install resume not supported
+                resume_cache = {}
+                #resume_cache['removalQueue'] = removalQueue[:]
+                resume_cache['runQueue'] = runQueue[:]
+                resume_cache['onlyfetch'] = onlyfetch
+                resume_cache['emptydeps'] = emptydeps
+                resume_cache['deepdeps'] = deepdeps
+                Equo.dumpTools.dumpobj(etpCache['install'],resume_cache)
+        except (IOError,OSError):
+            pass
 
     else: # if resume, load cache if possible
 
@@ -607,7 +616,10 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 print_warning(red("Resuming previous operations..."))
             except:
                 print_error(red("Resume cache corrupted."))
-                Equo.dumpTools.dumpobj(etpCache['install'],{})
+                try:
+                    Equo.dumpTools.dumpobj(etpCache['install'],{})
+                except (IOError,OSError):
+                    pass
                 return 128,-1
 
             if skipfirst and runQueue:
@@ -616,7 +628,10 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 # save new queues
                 resume_cache['runQueue'] = runQueue[:]
                 #resume_cache['removalQueue'] = removalQueue[:]
-                Equo.dumpTools.dumpobj(etpCache['install'],resume_cache)
+                try:
+                    Equo.dumpTools.dumpobj(etpCache['install'],resume_cache)
+                except (IOError,OSError):
+                    pass
 
     # running tasks
     totalqueue = str(len(runQueue))
@@ -736,7 +751,10 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         # update resume cache
         if not tbz2: # tbz2 caching not supported
             resume_cache['runQueue'].remove(packageInfo)
-            Equo.dumpTools.dumpobj(etpCache['install'],resume_cache)
+            try:
+                Equo.dumpTools.dumpobj(etpCache['install'],resume_cache)
+            except (IOError,OSError):
+                pass
 
         Package.kill()
         del metaopts
@@ -744,8 +762,11 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 
 
     print_info(red(" @@ ")+blue("Install Complete."))
-    # clear resume information
-    Equo.dumpTools.dumpobj(etpCache['install'],{})
+    try:
+        # clear resume information
+        Equo.dumpTools.dumpobj(etpCache['install'],{})
+    except (IOError,OSError):
+        pass
     dirscleanup()
     return 0,0
 
@@ -875,12 +896,15 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                 removalQueue.append(idpackage)
 
         # clear old resume information
-        Equo.dumpTools.dumpobj(etpCache['remove'],{})
-        # store resume information
-        resume_cache = {}
-        resume_cache['doSelectiveRemoval'] = doSelectiveRemoval
-        resume_cache['removalQueue'] = removalQueue[:]
-        Equo.dumpTools.dumpobj(etpCache['remove'],resume_cache)
+        try:
+            Equo.dumpTools.dumpobj(etpCache['remove'],{})
+            # store resume information
+            resume_cache = {}
+            resume_cache['doSelectiveRemoval'] = doSelectiveRemoval
+            resume_cache['removalQueue'] = removalQueue[:]
+            Equo.dumpTools.dumpobj(etpCache['remove'],resume_cache)
+        except (OSError, IOError):
+            pass
 
     else: # if resume, load cache if possible
 
@@ -896,7 +920,10 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                 print_warning(red("Resuming previous operations..."))
             except:
                 print_error(red("Resume cache corrupted."))
-                Equo.dumpTools.dumpobj(etpCache['remove'],{})
+                try:
+                    Equo.dumpTools.dumpobj(etpCache['remove'],{})
+                except (OSError, IOError):
+                    pass
                 return 128,-1
 
     # validate removalQueue
@@ -944,7 +971,10 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 
         # update resume cache
         resume_cache['removalQueue'].remove(Package.infoDict['removeidpackage'])
-        Equo.dumpTools.dumpobj(etpCache['remove'],resume_cache)
+        try:
+            Equo.dumpTools.dumpobj(etpCache['remove'],resume_cache)
+        except (OSError,IOError):
+            pass
 
         Package.kill()
         del metaopts

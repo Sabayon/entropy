@@ -428,7 +428,7 @@ class EntropyPackageView:
     def clear(self):
         self.store.clear()
 
-    def populate(self, pkgs, widget = None):
+    def populate(self, pkgs, widget = None, empty = False):
         self.clear()
         search_col = 0
         if widget == None:
@@ -437,9 +437,16 @@ class EntropyPackageView:
         widget.set_model(None)
         for po in pkgs:
             self.store.append( None, (po,) ) # str(po)) )
+
         widget.set_model(self.store)
-        widget.set_search_column( search_col )
-        widget.set_search_equal_func(self.atom_search)
+        if not empty:
+            widget.set_search_column( search_col )
+            widget.set_search_equal_func(self.atom_search)
+            widget.set_property('headers-visible',True)
+            widget.set_property('enable-search',True)
+        else:
+            widget.set_property('headers-visible',False)
+            widget.set_property('enable-search',False)
 
     def atom_search(self, model, column, key, iterator):
         obj = model.get_value( iterator, 0 )
@@ -474,7 +481,8 @@ class EntropyPackageView:
         obj = model.get_value( iter, 0 )
         if obj:
             cell.set_property('markup',getattr( obj, property ))
-            cell.set_property('foreground',obj.color)
+            if obj.color:
+                cell.set_property('foreground',obj.color)
 
     def selectAll(self):
         list = [x[0] for x in self.store if not x[0].queued == x[0].action]
@@ -522,6 +530,11 @@ class EntropyPackageView:
         """
         pkg = model.get_value( iter, 0 )
         if pkg:
+
+            if not pkg.dbconn:
+                cell.set_property( 'stock-id', 'gtk-apply' )
+                return
+
             if not pkg.queued:
                 if pkg.action in ["r","rr"]:
                     self.set_pixbuf_to_cell(cell, self.pkg_install_ok)

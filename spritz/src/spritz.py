@@ -1143,7 +1143,12 @@ class SpritzApplication(SpritzController,SpritzGUI):
         if bootstrap:
             self.endWorking()
 
-        self.pkgView.populate(allpkgs)
+        empty = False
+        if not allpkgs and action == "updates":
+            allpkgs = self.etpbase.getPackages('fake_updates')
+            empty = True
+
+        self.pkgView.populate(allpkgs, empty = empty)
         self.progress.total.show()
 
         if self.doProgress: self.progress.hide() #Hide Progress

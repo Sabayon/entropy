@@ -164,7 +164,9 @@ class PkgInfoMenu:
 
         pkg = self.pkg
         dbconn = self.pkg.dbconn
-        avail = dbconn.isIDPackageAvailable(pkg.matched_atom[0])
+        avail = False
+        if dbconn:
+            avail = dbconn.isIDPackageAvailable(pkg.matched_atom[0])
         if not avail:
             return
         if type(pkg.matched_atom[1]) is not int and pkg.matched_atom[1] not in self.Entropy.validRepositories:

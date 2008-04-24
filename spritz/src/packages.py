@@ -197,6 +197,26 @@ class EntropyPackages:
                         yp.action = 'rr'
                         yp.color = color_install
                         yield yp
+        elif mask == "fake_updates":
+            # load a pixmap inside the treeview
+            class emptyobj:
+                def __init__(self):
+                    self.matched_atom = (0,0)
+                    self.namedesc = "<big><b><span foreground='#FF0000'>%s</span></b></big>\n<span foreground='darkblue'>%s.\n%s</span>" % (
+                        _('No updates available'),
+                        _("It seems that your system is already up-to-date. Good!"),
+                        _("Try clicking the %s button in the %s page") % (
+                            _("Update Repositories"),
+                            _("Repository Selection"),
+                        ),
+                    )
+                    self.queued = None
+                    self.repoid = ''
+                    self.color = None
+                    self.action = None
+                    self.dbconn = None
+            myobj = emptyobj()
+            yield myobj
 
     def getCategories(self):
         catlist = []
