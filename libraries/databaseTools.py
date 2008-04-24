@@ -3219,11 +3219,12 @@ class etpDatabase:
             self.createAllIndexes()
 
         # do manual atoms update
-        if os.access(self.dbFile,os.W_OK):
-            old_readonly = self.readOnly
-            self.readOnly = False
-            self.fixKdeDepStrings()
-            self.readOnly = old_readonly
+        if os.access(self.dbFile,os.W_OK) and \
+            (self.dbname != etpConst['genericdbid']):
+                old_readonly = self.readOnly
+                self.readOnly = False
+                self.fixKdeDepStrings()
+                self.readOnly = old_readonly
 
         self.connection.commit()
 

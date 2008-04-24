@@ -445,7 +445,7 @@ class EquoInterface(TextInterface):
         else:
             indexing = self.indexing
         if dbname == None:
-            dbname = "generic"
+            dbname = etpConst['genericdbid']
         return self.databaseTools.etpDatabase(  readOnly = readOnly,
                                                 dbFile = dbfile,
                                                 clientDatabase = True,

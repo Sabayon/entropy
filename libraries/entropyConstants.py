@@ -724,6 +724,7 @@ def const_defaultSettings(rootdir):
 
         'clientdbid': "client",
         'serverdbid': "etpdb:",
+        'genericdbid': "generic",
         'systemreleasefile': "/etc/sabayon-release",
 
         'socket_service': {
