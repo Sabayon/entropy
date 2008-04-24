@@ -475,6 +475,10 @@ def initConfig_entropyConstants(rootdir):
     etpConst.update(backed_up_settings)
     etpConst['backed_up'] = backed_up_settings.copy()
 
+    shell_repoid = os.getenv('ETP_REPO')
+    if shell_repoid:
+        etpConst['officialrepositoryid'] = shell_repoid
+
 def initConfig_clientConstants():
     const_readEquoSettings()
 
@@ -686,6 +690,7 @@ def const_defaultSettings(rootdir):
         # packages keywords/mask/unmask settings
         'packagemasking': None, # package masking information dictionary filled by the masking parser
         'packagemaskingreasons': {
+            0: 'reason not available',
             1: 'user package.mask',
             2: 'system keywords',
             3: 'user package.unmask',
@@ -792,8 +797,10 @@ def const_readRepositoriesSettings():
                         myRepodata[reponame] = {}
                         myRepodata[reponame]['description'] = repodesc
                         myRepodata[reponame]['packages'] = []
+                        myRepodata[reponame]['plain_packages'] = []
                         myRepodata[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['product']+"/"+etpConst['currentarch']
                         myRepodata[reponame]['dbcformat'] = dbformat
+                        myRepodata[reponame]['plain_database'] = repodatabase
                         myRepodata[reponame]['database'] = repodatabase+"/"+etpConst['product']+"/"+reponame+"/database/"+etpConst['currentarch']
 
                         myRepodata[reponame]['dbrevision'] = "0"
@@ -812,6 +819,7 @@ def const_readRepositoriesSettings():
                             etpRepositoriesOrder.append(reponame)
 
                     for x in repopackages.split():
+                        myRepodata[reponame]['plain_packages'].append(x)
                         myRepodata[reponame]['packages'].append(x+"/"+etpConst['product']+"/"+reponame)
 
             elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
@@ -825,9 +833,6 @@ def const_readRepositoriesSettings():
             elif (line.find("officialrepositoryid|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 officialreponame = line.split("|")[1]
                 etpConst['officialrepositoryid'] = officialreponame
-                shell_repoid = os.getenv('ETP_REPO')
-                if shell_repoid:
-                    etpConst['officialrepositoryid'] = shell_repoid
 
             elif (line.find("conntestlink|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 conntestlink = line.split("|")[1]
@@ -1084,7 +1089,7 @@ def const_createWorkingDirectories():
                 os.makedirs(etpConst['entropyworkdir'])
             except OSError:
                 pass
-        w_gid = os.stat(etpConst['entropyworkdir'])[5]
+        w_gid = os.stat(etpConst['entropyworkdir'])[stat.ST_GID]
         if w_gid != gid:
             const_setup_perms(etpConst['entropyworkdir'],gid)
 
@@ -1094,14 +1099,16 @@ def const_createWorkingDirectories():
             except OSError:
                 pass
         try:
-            w_gid = os.stat(etpConst['entropyunpackdir'])[5]
+            w_gid = os.stat(etpConst['entropyunpackdir'])[stat.ST_GID]
             if w_gid != gid:
                 if os.path.isdir(etpConst['entropyunpackdir']):
                     const_setup_perms(etpConst['entropyunpackdir'],gid)
         except OSError:
             pass
         # always setup /var/lib/entropy/client permissions
-        const_setup_perms(etpConst['etpdatabaseclientdir'],gid)
+        if not const_islive():
+            # aufs/unionfs will start to leak otherwise
+            const_setup_perms(etpConst['etpdatabaseclientdir'],gid)
 
 def const_configureLockPaths():
     etpConst['locks'] = {
@@ -1262,17 +1269,30 @@ def const_setup_perms(mydir, gid):
         return
     for currentdir,subdirs,files in os.walk(mydir):
         try:
-            os.chown(currentdir,-1,gid)
-            os.chmod(currentdir,0775)
+            cur_gid = os.stat(currentdir)[stat.ST_GID]
+            if cur_gid != gid:
+                os.chown(currentdir,-1,gid)
+            cur_mod = const_get_chmod(mydir)
+            if cur_mod != oct(0775):
+                os.chmod(currentdir,0775)
         except OSError:
             pass
         for item in files:
             item = os.path.join(currentdir,item)
             try:
-                os.chown(item,-1,gid)
-                os.chmod(item,0664)
+                cur_gid = os.stat(item)[stat.ST_GID]
+                if cur_gid != gid:
+                    os.chown(item,-1,gid)
+                cur_mod = const_get_chmod(item)
+                if cur_mod != oct(0664):
+                    os.chmod(item,0664)
             except OSError:
                 pass
+
+# you need to convert to int
+def const_get_chmod(item):
+    st = os.stat(item)[stat.ST_MODE]
+    return oct(st & 0777)
 
 def const_get_entropy_gid():
     group_file = os.path.join(etpConst['systemroot'],'/etc/group')
@@ -1317,6 +1337,16 @@ def const_add_entropy_group():
     f.write(app_line)
     f.flush()
     f.close()
+
+def const_islive():
+    if not os.path.isfile("/proc/cmdline"):
+        return False
+    f = open("/proc/cmdline")
+    cmdline = f.readline().strip().split()
+    f.close()
+    if "cdroot" in cmdline:
+        return True
+    return False
 
 # load config
 initConfig_entropyConstants(etpSys['rootdir'])

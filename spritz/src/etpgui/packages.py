@@ -19,7 +19,7 @@
 
 from entropyConstants import *
 from entropyapi import EquoConnection
-import types
+from spritz_setup import cleanMarkupSting
 
 class PackageWrapper:
     def __init__(self, matched_atom, avail):
@@ -60,9 +60,9 @@ class PackageWrapper:
     def getNameDesc(self):
         t = self.getName()
         desc = self.getDescription()
-        if len(desc) > 43:
-            desc = desc[:43]+"..."
-        t += "\n<small>%s</small>" % (desc,)
+        if len(desc) > 58:
+            desc = desc[:58]+"..."
+        t += "\n<small><span foreground='#FF0000'>%s</span></small>" % (desc,)
         return t
 
     def getOnlyName(self):
@@ -221,7 +221,7 @@ class PackageWrapper:
     def getAttr(self,attr):
         x = None
         if attr == "description":
-            x = self.dbconn.retrieveDescription(self.matched_atom[0])
+            x = cleanMarkupSting(self.dbconn.retrieveDescription(self.matched_atom[0]))
         elif attr == "category":
             x = self.dbconn.retrieveCategory(self.matched_atom[0])
         elif attr == "license":

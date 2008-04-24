@@ -169,14 +169,7 @@ def get_remote_data(url):
         return False
 
 def islive():
-    if not os.path.isfile("/proc/cmdline"):
-        return False
-    f = open("/proc/cmdline")
-    cmdline = f.readline().strip().split()
-    f.close()
-    if "cdroot" in cmdline:
-        return True
-    return False
+    return const_islive()
 
 
 def check_required_space(mountpoint, bytes_required):
@@ -1450,7 +1443,6 @@ def convertUnixTimeToHumanTime(unixtime):
     return humantime
 
 def getCurrentUnixTime():
-    import time
     return time.time()
 
 def convertSecondsToFancyOutput(seconds):
@@ -1649,8 +1641,8 @@ def saveRepositorySettings(repodata, remove = False, disable = False, enable = F
 
             line = "repository|%s|%s|%s|%s#%s" % (   repodata['repoid'],
                                                     repodata['description'],
-                                                    ' '.join(repodata['packages']),
-                                                    repodata['database'],
+                                                    ' '.join(repodata['plain_packages']),
+                                                    repodata['plain_database'],
                                                     repodata['dbcformat'],
                                                 )
 

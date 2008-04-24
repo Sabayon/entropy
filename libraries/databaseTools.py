@@ -53,7 +53,8 @@ class etpDatabase:
         self.xcache = xcache
         self.dbname = dbname
         self.indexing = indexing
-        if not self.entropyTools.is_user_in_entropy_group(): # forcing since we won't have write access to db
+        if not self.entropyTools.is_user_in_entropy_group():
+            # forcing since we won't have write access to db
             self.indexing = False
         # live systems don't like wasting RAM
         if self.entropyTools.islive():
@@ -345,7 +346,12 @@ class etpDatabase:
                 # lock database
                 self.doServerDatabaseSyncLock(self.noUpload)
                 # now run queue
-                self.runTreeUpdatesActions(update_actions)
+                try:
+                    self.runTreeUpdatesActions(update_actions)
+                except:
+                    # destroy digest
+                    self.setRepositoryUpdatesDigest(self.server_repo, "-1")
+                    raise
 
                 # store new actions
                 self.addRepositoryUpdatesActions(self.server_repo,update_actions)
@@ -473,7 +479,17 @@ class etpDatabase:
 
         if quickpkg_atoms and not self.clientDatabase:
             # quickpkg package and packages owning it as a dependency
-            self.runTreeUpdatesQuickpkgAction(quickpkg_atoms)
+            try:
+                self.runTreeUpdatesQuickpkgAction(quickpkg_atoms)
+            except:
+                import traceback
+                traceback.print_exc()
+                self.updateProgress(
+                    bold("WARNING: ")+red("Cannot complete quickpkg for atoms: ")+blue(str(list(quickpkg_atoms)))+red(", do it manually."),
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" * ")
+                )
             self.commitChanges()
 
         # discard cache
@@ -652,7 +668,23 @@ class etpDatabase:
                 type = "warning",
                 header = blue("  # ")
             )
-            mypath = self.ServiceInterface.quickpkg(myatom,self.ServiceInterface.get_local_store_directory(self.server_repo))
+            mydest = self.ServiceInterface.get_local_store_directory(self.server_repo)
+            try:
+                mypath = self.ServiceInterface.quickpkg(myatom,mydest)
+            except:
+                # remove broken bin before raising
+                mypath = os.path.join(mydest,os.path.basename(myatom)+etpConst['packagesext'])
+                if os.path.isfile(mypath):
+                    os.remove(mypath)
+                import traceback
+                traceback.print_exc()
+                self.updateProgress(
+                    bold("WARNING: ")+red("Cannot complete quickpkg for atom: ")+blue(myatom)+red(", do it manually."),
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" * ")
+                )
+                continue
             package_paths.add(mypath)
         packages_data = [(x,branch,False) for x in package_paths]
         idpackages = self.ServiceInterface.add_packages_to_repository(packages_data, repo = self.server_repo)
@@ -2502,13 +2534,14 @@ class etpDatabase:
             return -1
         return result[0]
 
-    def isFileAvailable(self, myfile):
+    def isFileAvailable(self, myfile, get_id = False):
         self.cursor.execute('SELECT idpackage FROM content WHERE file = (?)', (myfile,))
-        result = self.cursor.fetchone()
-        rc = False
-        if result:
-            rc = True
-        return rc
+        result = self.cursor.fetchall()
+        if get_id:
+            return self.fetchall2set(result)
+        elif result:
+            return True
+        return False
 
     def resolveNeeded(self, needed, elfclass = -1):
 
@@ -3841,8 +3874,10 @@ class etpDatabase:
     # idpackageValidatorCache = {} >> function cache
     def idpackageValidator(self,idpackage):
 
-        reponame = self.dbname[5:]
+        if self.dbname == etpConst['clientdbid']:
+            return idpackage,0
 
+        reponame = self.dbname[5:]
         cached = idpackageValidatorCache.get((idpackage,reponame))
         if cached != None:
             return cached
