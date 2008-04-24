@@ -86,17 +86,6 @@ class EquoInterface(TextInterface):
         if shell_xcache:
             self.xcache = False
 
-        if self.openclientdb:
-            self.openClientDatabase()
-        self.FileUpdates = self.FileUpdatesInterfaceLoader()
-
-        # masking parser
-        self.MaskingParser = self.PackageMaskingParserInterfaceLoader()
-
-        self.validRepositories = []
-        if self.repo_validation:
-            self.validate_repositories()
-
         # now if we are on live, we should disable it
         # are we running on a livecd? (/proc/cmdline has "cdroot")
         if self.entropyTools.islive():
@@ -111,6 +100,18 @@ class EquoInterface(TextInterface):
                 self.purge_cache(False)
             except:
                 pass
+
+        if self.openclientdb:
+            self.openClientDatabase()
+        self.FileUpdates = self.FileUpdatesInterfaceLoader()
+
+        # masking parser
+        self.MaskingParser = self.PackageMaskingParserInterfaceLoader()
+
+        self.validRepositories = []
+        if self.repo_validation:
+            self.validate_repositories()
+
 
     def __del__(self):
         if self.clientDbconn != None:
