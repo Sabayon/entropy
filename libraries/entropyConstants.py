@@ -1106,7 +1106,9 @@ def const_createWorkingDirectories():
         except OSError:
             pass
         # always setup /var/lib/entropy/client permissions
-        const_setup_perms(etpConst['etpdatabaseclientdir'],gid)
+        if not const_islive():
+            # aufs/unionfs will start to leak otherwise
+            const_setup_perms(etpConst['etpdatabaseclientdir'],gid)
 
 def const_configureLockPaths():
     etpConst['locks'] = {
