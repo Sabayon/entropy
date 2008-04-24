@@ -1443,7 +1443,6 @@ def convertUnixTimeToHumanTime(unixtime):
     return humantime
 
 def getCurrentUnixTime():
-    import time
     return time.time()
 
 def convertSecondsToFancyOutput(seconds):
