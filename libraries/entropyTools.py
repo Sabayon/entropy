@@ -169,14 +169,7 @@ def get_remote_data(url):
         return False
 
 def islive():
-    if not os.path.isfile("/proc/cmdline"):
-        return False
-    f = open("/proc/cmdline")
-    cmdline = f.readline().strip().split()
-    f.close()
-    if "cdroot" in cmdline:
-        return True
-    return False
+    return const_islive()
 
 
 def check_required_space(mountpoint, bytes_required):

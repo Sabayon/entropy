@@ -1089,7 +1089,7 @@ def const_createWorkingDirectories():
                 os.makedirs(etpConst['entropyworkdir'])
             except OSError:
                 pass
-        w_gid = os.stat(etpConst['entropyworkdir'])[5]
+        w_gid = os.stat(etpConst['entropyworkdir'])[stat.ST_GID]
         if w_gid != gid:
             const_setup_perms(etpConst['entropyworkdir'],gid)
 
@@ -1099,7 +1099,7 @@ def const_createWorkingDirectories():
             except OSError:
                 pass
         try:
-            w_gid = os.stat(etpConst['entropyunpackdir'])[5]
+            w_gid = os.stat(etpConst['entropyunpackdir'])[stat.ST_GID]
             if w_gid != gid:
                 if os.path.isdir(etpConst['entropyunpackdir']):
                     const_setup_perms(etpConst['entropyunpackdir'],gid)
@@ -1267,17 +1267,30 @@ def const_setup_perms(mydir, gid):
         return
     for currentdir,subdirs,files in os.walk(mydir):
         try:
-            os.chown(currentdir,-1,gid)
-            os.chmod(currentdir,0775)
+            cur_gid = os.stat(currentdir)[stat.ST_GID]
+            if cur_gid != gid:
+                os.chown(currentdir,-1,gid)
+            cur_mod = const_get_chmod(item)
+            if cur_mod != oct(0775):
+                os.chmod(currentdir,0775)
         except OSError:
             pass
         for item in files:
             item = os.path.join(currentdir,item)
             try:
-                os.chown(item,-1,gid)
-                os.chmod(item,0664)
+                cur_gid = os.stat(item)[stat.ST_GID]
+                if cur_gid != gid:
+                    os.chown(item,-1,gid)
+                cur_mod = const_get_chmod(item)
+                if cur_mod != oct(0644):
+                    os.chmod(item,0664)
             except OSError:
                 pass
+
+# you need to convert to int
+def const_get_chmod(item):
+    st = os.stat(item)[stat.ST_MODE]
+    return oct(st & 0777)
 
 def const_get_entropy_gid():
     group_file = os.path.join(etpConst['systemroot'],'/etc/group')
@@ -1322,6 +1335,16 @@ def const_add_entropy_group():
     f.write(app_line)
     f.flush()
     f.close()
+
+def const_islive():
+    if not os.path.isfile("/proc/cmdline"):
+        return False
+    f = open("/proc/cmdline")
+    cmdline = f.readline().strip().split()
+    f.close()
+    if "cdroot" in cmdline:
+        return True
+    return False
 
 # load config
 initConfig_entropyConstants(etpSys['rootdir'])

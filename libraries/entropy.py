@@ -4247,8 +4247,8 @@ class PackageInterface:
                 copystat = True
 
             if copystat:
-                user = os.stat(path)[4]
-                group = os.stat(path)[5]
+                user = os.stat(path)[stat.ST_UID]
+                group = os.stat(path)[stat.ST_GID]
                 os.chown(topath,user,group)
                 shutil.copystat(path,topath)
 
@@ -4308,8 +4308,8 @@ class PackageInterface:
                     # symlink don't need permissions, also until os.walk ends they might be broken
                     # XXX also, added os.access() check because there might be directories/files unwriteable
                     # what to do otherwise?
-                    user = os.stat(imagepathDir)[4]
-                    group = os.stat(imagepathDir)[5]
+                    user = os.stat(imagepathDir)[stat.ST_UID]
+                    group = os.stat(imagepathDir)[stat.ST_GID]
                     os.chown(rootdir,user,group)
                     shutil.copystat(imagepathDir,rootdir)
 

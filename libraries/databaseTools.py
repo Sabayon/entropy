@@ -53,7 +53,8 @@ class etpDatabase:
         self.xcache = xcache
         self.dbname = dbname
         self.indexing = indexing
-        if not self.entropyTools.is_user_in_entropy_group(): # forcing since we won't have write access to db
+        if not self.entropyTools.is_user_in_entropy_group():
+            # forcing since we won't have write access to db
             self.indexing = False
         # live systems don't like wasting RAM
         if self.entropyTools.islive():
