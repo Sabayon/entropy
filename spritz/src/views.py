@@ -482,7 +482,20 @@ class EntropyPackageView:
         if obj:
             cell.set_property('markup',getattr( obj, property ))
             if obj.color:
+                self.set_line_status(obj, cell)
                 cell.set_property('foreground',obj.color)
+
+    def set_line_status(self, obj, cell, stype = "cell-background"):
+        if obj.queued == "r":
+            cell.set_property(stype,'#FFE2A3')
+        elif obj.queued == "u":
+            cell.set_property(stype,'#B7BEFF')
+        elif obj.queued == "i":
+            cell.set_property(stype,'#D895FF')
+        elif obj.queued == "rr":
+            cell.set_property(stype,'#B7BEFF')
+        elif not obj.queued:
+            cell.set_property(stype,None)
 
     def selectAll(self):
         list = [x[0] for x in self.store if not x[0].queued == x[0].action]
@@ -530,6 +543,8 @@ class EntropyPackageView:
         """
         pkg = model.get_value( iter, 0 )
         if pkg:
+
+            self.set_line_status(pkg, cell)
 
             if not pkg.dbconn:
                 cell.set_property( 'stock-id', 'gtk-apply' )

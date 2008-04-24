@@ -58,8 +58,8 @@ class PackageWrapper:
         return self.dbconn.retrieveAtom(self.matched_atom[0])
 
     def getNameDesc(self):
-        t = self.getName()
-        desc = self.getDescription()
+        t = cleanMarkupSting(self.getName())
+        desc = cleanMarkupSting(self.getDescription())
         if len(desc) > 58:
             desc = desc[:58]+"..."
         t += "\n<small><span foreground='#FF0000'>%s</span></small>" % (desc,)
