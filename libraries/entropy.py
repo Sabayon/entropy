@@ -101,8 +101,7 @@ class EquoInterface(TextInterface):
         # are we running on a livecd? (/proc/cmdline has "cdroot")
         if self.entropyTools.islive():
             self.xcache = False
-
-        if (not self.entropyTools.is_user_in_entropy_group()) and not user_xcache:
+        elif (not self.entropyTools.is_user_in_entropy_group()) and not user_xcache:
             self.xcache = False
         elif not user_xcache:
             self.validate_repositories_cache()
@@ -2241,10 +2240,13 @@ class EquoInterface(TextInterface):
 
     def retrieveRemovalQueue(self, idpackages, deep = False):
         queue = []
-        treeview = self.generate_depends_tree(idpackages, deep = deep)
-        for x in range(len(treeview[0]))[::-1]:
-            for y in treeview[0][x]:
-                queue.append(y)
+        if not idpackages:
+            return queue
+        treeview, status = self.generate_depends_tree(idpackages, deep = deep)
+        if status == 0:
+            for x in range(len(treeview))[::-1]:
+                for y in treeview[x]:
+                    queue.append(y)
         return queue
 
     def retrieveInstallQueue(self, matched_atoms, empty_deps, deep_deps):

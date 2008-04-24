@@ -1,5 +1,8 @@
 TODO list
   - add i18n support
+  - server-side: improve RDEPEND check output
+  - server-side: add libtest to reagent
+  - server-side: make reagent deptest a blocker to db commits
   - server-side: write a ncurses interface to manage entropy database + spm interface + GLSA
   - server-side: check rdepend function with pandodl
   - server-side: move officialrepositoryid settings away from repositories.conf
