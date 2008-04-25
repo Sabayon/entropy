@@ -1848,6 +1848,23 @@ class EquoInterface(TextInterface):
                 pass
         return deptree,0
 
+    def _filter_depends_multimatched_atoms(self, idpackage, depends, monotree):
+        remove_depends = set()
+        for d_idpackage in depends:
+            mydeps = self.clientDbconn.retrieveDependencies(d_idpackage)
+            for mydep in mydeps:
+                matches, rslt = self.clientDbconn.atomMatch(mydep, multiMatch = True)
+                if rslt == 1:
+                    continue
+                if idpackage in matches and len(matches) > 1:
+                    # are all in depends?
+                    for mymatch in matches:
+                        if mymatch not in depends and mymatch not in monotree:
+                            remove_depends.add(d_idpackage)
+                            break
+        depends -= remove_depends
+        return depends
+
     '''
     @description: generates a depends tree using provided idpackages (from client database)
                     !!! you can see it as the function that generates the removal tree
@@ -1896,7 +1913,10 @@ class EquoInterface(TextInterface):
                 # obtain its depends
                 depends = self.clientDbconn.retrieveDepends(idpackage)
                 # filter already satisfied ones
-                depends = set([x for x in depends if x not in monotree and not self.clientDbconn.isSystemPackage(x)])
+                depends = set([x for x in depends if x not in monotree])
+                depends = set([x for x in depends if not self.clientDbconn.isSystemPackage(x)])
+                if depends:
+                    depends = self._filter_depends_multimatched_atoms(idpackage, depends, monotree)
                 if depends: # something depends on idpackage
                     tree[treedepth] |= depends
                     monotree |= depends
@@ -1913,7 +1933,7 @@ class EquoInterface(TextInterface):
                     mydeps = [x for x in mydeps if x not in monotree and (not self.clientDbconn.isSystemPackage(x))]
                     for x in mydeps:
                         mydepends = self.clientDbconn.retrieveDepends(x)
-                        mydepends = set([y for y in mydepends if y not in monotree])
+                        mydepends -= set([y for y in mydepends if y not in monotree])
                         if not mydepends:
                             tree[treedepth].add(x)
                             monotree.add(x)
@@ -1979,9 +1999,12 @@ class EquoInterface(TextInterface):
         for repo in self.validRepositories:
             try:
                 dbconn = self.openRepositoryDatabase(repo)
-            except exceptionTools.RepositoryError:
+            except (exceptionTools.RepositoryError):
                 continue # repo not available
-            sum_hashes += dbconn.database_checksum()
+            try:
+                sum_hashes += dbconn.database_checksum()
+            except (self.databaseTools.dbapi2.OperationalError):
+                pass
         return sum_hashes
 
     def get_available_packages_chash(self, branch):
@@ -2093,11 +2116,15 @@ class EquoInterface(TextInterface):
             # check against broken entries, or removed during iteration
             if mystrictdata == None:
                 continue
-            match = self.atomMatch(     mystrictdata[0],
-                                        matchSlot = mystrictdata[1],
-                                        matchBranches = (branch,),
-                                        extendedResults = True
-                                  )
+            try:
+                match = self.atomMatch(     mystrictdata[0],
+                                            matchSlot = mystrictdata[1],
+                                            matchBranches = (branch,),
+                                            extendedResults = True
+                                    )
+            except (self.databaseTools.dbapi2.OperationalError):
+                # ouch, but don't crash here
+                continue
             # now compare
             # version: mystrictdata[2]
             # tag: mystrictdata[3]
