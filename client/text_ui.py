@@ -886,9 +886,15 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             if human:
                 question = "     Would you like to proceed with a selective removal ?"
             rc = Equo.askQuestion(question)
-            if rc == "Yes":
+            if rc == "No" and not human:
+                return 0,0
+            elif rc == "Yes" and human:
                 doSelectiveRemoval = True
-        elif (deps):
+            elif rc == "No" and human:
+                rc = Equo.askQuestion("     Would you like to skip this step then ?")
+                if rc == "Yes":
+                    return 0,0
+        elif deps:
             Equo.entropyTools.countdown(what = red(" @@ ")+blue("Starting removal in "),back = True)
 
         for idpackage in plainRemovalQueue: # append at the end requested packages if not in queue
