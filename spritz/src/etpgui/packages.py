@@ -19,10 +19,40 @@
 
 from entropyConstants import *
 from entropyapi import EquoConnection
-from spritz_setup import cleanMarkupSting
+from spritz_setup import cleanMarkupSting, SpritzConf
 
-class PackageWrapper:
+class DummyEntropyPackage:
+
+    def __init__(self, namedesc = None, dummy_type = -1):
+        self.matched_atom = (0,0)
+        self.namedesc = namedesc
+        if self.namedesc == None:
+            self.namedesc = "<big><b><span foreground='#FF0000'>%s</span></b></big>" + \
+            "\n<span foreground='darkblue'>%s.\n%s</span>" % (
+                _('No updates available'),
+                _("It seems that your system is already up-to-date. Good!"),
+                _("Try clicking the %s button in the %s page") % (
+                    _("Update Repositories"),
+                    _("Repository Selection"),
+                ),
+            )
+        self.queued = None
+        self.repoid = ''
+        self.color = None
+        self.action = None
+        self.dbconn = None
+        self.dummy_type = dummy_type
+
+class EntropyPackage:
+
     def __init__(self, matched_atom, avail):
+
+        self.queued = None
+        self.action = None
+        self.dummy_type = None
+        self.available = avail
+        self.do_purge = False
+        self.color = SpritzConf.color_normal
 
         if matched_atom[1] == 0:
             self.dbconn = EquoConnection.clientDbconn
@@ -30,10 +60,9 @@ class PackageWrapper:
         else:
             self.dbconn = EquoConnection.openRepositoryDatabase(matched_atom[1])
             self.from_installed = False
+
         self.matched_atom = matched_atom
         self.installed_match = None
-        self.available = avail
-        self.do_purge = False
 
     def __str__(self):
         return str(self.dbconn.retrieveAtom(self.matched_atom[0])+"~"+str(self.dbconn.retrieveRevision(self.matched_atom[0])))
@@ -60,8 +89,8 @@ class PackageWrapper:
     def getNameDesc(self):
         t = cleanMarkupSting(self.getName())
         desc = cleanMarkupSting(self.getDescription())
-        if len(desc) > 58:
-            desc = desc[:58]+"..."
+        if len(desc) > 56:
+            desc = desc[:56].rstrip()+"..."
         t += "\n<small><span foreground='#FF0000'>%s</span></small>" % (desc,)
         return t
 

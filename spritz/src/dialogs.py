@@ -836,7 +836,7 @@ class LicenseDialog:
         if size != None:
             column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
             column.set_fixed_width( size )
-        column.set_resizable( False ) 
+        column.set_resizable( False )
         self.view.append_column( column )
 
     def read_selected_license(self, widget):

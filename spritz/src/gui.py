@@ -300,7 +300,6 @@ class SpritzGUI:
         self.createButton( _( "Configuration Files" ), "button-conf.png", 'filesconf' )
         self.createButton( _( "Security Advisories" ), "button-glsa.png", 'glsa' )
         self.createButton( _( "Output" ), "button-output.png", 'output' )
-        style = self.ui.leftEvent.get_style()
 
     def createButton( self, text, icon, page,first = None ):
           if first:

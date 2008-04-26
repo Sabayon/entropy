@@ -19,10 +19,12 @@
 
 import gtk
 import gobject
-from spritz_setup import const,cleanMarkupSting
+from spritz_setup import const, cleanMarkupSting, SpritzConf
 from etpgui.widgets import UI
+from packages import DummyEntropyPackage
 from etpgui import *
 from entropyConstants import *
+
 
 from i18n import _
 
@@ -58,7 +60,7 @@ class SpritzCategoryView:
 class EntropyPackageView:
     def __init__( self, treeview, qview, ui, etpbase, main_window ):
 
-        self.selection_width = 20
+        self.selection_width = 34
         self.show_reinstall = True
         self.show_purge = True
         self.loaded_widget = None
@@ -409,19 +411,21 @@ class EntropyPackageView:
         store = gtk.TreeStore( gobject.TYPE_PYOBJECT )
         self.view.set_model( store )
 
+        myheight = 35
         # Setup resent column
         cell1 = gtk.CellRendererPixbuf()
+        cell1.set_property('height', myheight)
         self.set_pixbuf_to_cell(cell1, self.pkg_install_ok )
         column1 = gtk.TreeViewColumn( "   S", cell1 )
         column1.set_cell_data_func( cell1, self.new_pixbuf )
         column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column1.set_fixed_width( self.selection_width+20 )
+        column1.set_fixed_width( self.selection_width+40 )
         column1.set_sort_column_id( -1 )
         self.view.append_column( column1 )
         column1.set_clickable( False )
 
-        self.create_text_column( _( "Package" ), 'namedesc' , size=300, expand = True)
-        self.create_text_column( _( "Repository" ), 'repoid', size = 130 )
+        self.create_text_column( _( "Package" ), 'namedesc' , size=300, expand = True, set_height = myheight)
+        self.create_text_column( _( "Repository" ), 'repoid', size = 130, set_height = myheight)
 
         return store
 
@@ -435,18 +439,46 @@ class EntropyPackageView:
             widget = self.ui.viewPkg
 
         widget.set_model(None)
-        for po in pkgs:
-            self.store.append( None, (po,) ) # str(po)) )
-
         widget.set_model(self.store)
-        if not empty:
+
+        if empty:
+
+            for po in pkgs:
+                self.store.append( None, (po,) )
+            widget.set_property('headers-visible',False)
+            widget.set_property('enable-search',False)
+
+        else:
+
+            categories = {}
+            for po in pkgs:
+                mycat = po.cat
+                if not categories.has_key(mycat):
+                    categories[mycat] = []
+                categories[mycat].append(po)
+
+            cats = categories.keys()
+            cats.sort()
+            for category in cats:
+                cat_text = "<b><big>%s</big></b>" % (category,)
+                mydummy = DummyEntropyPackage(
+                        namedesc = cat_text,
+                        dummy_type = SpritzConf.dummy_category
+                )
+                mydummy.color = '#9C7234'
+                parent = self.store.append( None, (mydummy,) )
+                for po in categories[category]:
+                    self.store.append( parent, (po,) )
+
             widget.set_search_column( search_col )
             widget.set_search_equal_func(self.atom_search)
             widget.set_property('headers-visible',True)
             widget.set_property('enable-search',True)
-        else:
-            widget.set_property('headers-visible',False)
-            widget.set_property('enable-search',False)
+
+        self.view.expand_all()
+
+
+
 
     def atom_search(self, model, column, key, iterator):
         obj = model.get_value( iterator, 0 )
@@ -461,12 +493,14 @@ class EntropyPackageView:
     def set_pixbuf_to_image(self, img, filename):
         img.set_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
 
-    def create_text_column( self, hdr, property, size, sortcol = None, expand = False):
+    def create_text_column( self, hdr, property, size, sortcol = None, expand = False, set_height = 0):
         """
         Create a TreeViewColumn with text and set
         the sorting properties and add it to the view
         """
         cell = gtk.CellRendererText()    # Size Column
+        if set_height:
+            cell.set_property('height', set_height)
         column = gtk.TreeViewColumn( hdr, cell )
         column.set_resizable( True )
         column.set_cell_data_func( cell, self.get_data_text, property )
@@ -484,6 +518,46 @@ class EntropyPackageView:
             if obj.color:
                 self.set_line_status(obj, cell)
                 cell.set_property('foreground',obj.color)
+
+    def new_pixbuf( self, column, cell, model, iter ):
+        """ 
+        Cell Data function for recent Column, shows pixmap
+        if recent Value is True.
+        """
+        pkg = model.get_value( iter, 0 )
+        if pkg:
+
+            self.set_line_status(pkg, cell)
+
+            if pkg.dummy_type == SpritzConf.dummy_empty:
+                cell.set_property( 'stock-id', 'gtk-apply' )
+                return
+
+            if pkg.dummy_type == SpritzConf.dummy_category:
+                cell.set_property( 'icon-name', 'package-x-generic' )
+                return
+
+            if not pkg.queued:
+                if pkg.action in ["r","rr"]:
+                    self.set_pixbuf_to_cell(cell, self.pkg_install_ok)
+                elif pkg.action == "i":
+                    self.set_pixbuf_to_cell(cell, self.pkg_install_new)
+                else:
+                    self.set_pixbuf_to_cell(cell, self.pkg_install_updatable)
+            else:
+                if pkg.queued == "r" and not pkg.do_purge:
+                    self.set_pixbuf_to_cell(cell, self.pkg_remove)
+                if pkg.queued == "r" and pkg.do_purge:
+                    self.set_pixbuf_to_cell(cell, self.pkg_purge)
+                elif pkg.queued == "rr":
+                    self.set_pixbuf_to_cell(cell, self.pkg_reinstall)
+                elif pkg.queued == "i":
+                    self.set_pixbuf_to_cell(cell, self.pkg_install)
+                elif pkg.queued == "u":
+                    self.set_pixbuf_to_cell(cell, self.pkg_update)
+
+        else:
+            cell.set_property( 'visible', False )
 
     def set_line_status(self, obj, cell, stype = "cell-background"):
         if obj.queued == "r":
@@ -535,42 +609,6 @@ class EntropyPackageView:
         self.clearUpdates()
         self.queueView.refresh()
         self.view.queue_draw()
-
-    def new_pixbuf( self, column, cell, model, iter ):
-        """ 
-        Cell Data function for recent Column, shows pixmap
-        if recent Value is True.
-        """
-        pkg = model.get_value( iter, 0 )
-        if pkg:
-
-            self.set_line_status(pkg, cell)
-
-            if not pkg.dbconn:
-                cell.set_property( 'stock-id', 'gtk-apply' )
-                return
-
-            if not pkg.queued:
-                if pkg.action in ["r","rr"]:
-                    self.set_pixbuf_to_cell(cell, self.pkg_install_ok)
-                elif pkg.action == "i":
-                    self.set_pixbuf_to_cell(cell, self.pkg_install_new)
-                else:
-                    self.set_pixbuf_to_cell(cell, self.pkg_install_updatable)
-            else:
-                if pkg.queued == "r" and not pkg.do_purge:
-                    self.set_pixbuf_to_cell(cell, self.pkg_remove)
-                if pkg.queued == "r" and pkg.do_purge:
-                    self.set_pixbuf_to_cell(cell, self.pkg_purge)
-                elif pkg.queued == "rr":
-                    self.set_pixbuf_to_cell(cell, self.pkg_reinstall)
-                elif pkg.queued == "i":
-                    self.set_pixbuf_to_cell(cell, self.pkg_install)
-                elif pkg.queued == "u":
-                    self.set_pixbuf_to_cell(cell, self.pkg_update)
-
-        else:
-            cell.set_property( 'visible', False )
 
 class EntropyQueueView:
     """ Queue View Class"""
