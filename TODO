@@ -1,4 +1,5 @@
 TODO list
+  - categories description
   - client: check lock file on repo sync
   - add i18n support
   - server-side: improve RDEPEND check output

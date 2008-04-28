@@ -60,6 +60,7 @@ class SpritzCategoryView:
 class EntropyPackageView:
     def __init__( self, treeview, qview, ui, etpbase, main_window ):
 
+        self.pkgcolumn_text = _("Selection")
         self.selection_width = 34
         self.show_reinstall = True
         self.show_purge = True
@@ -227,7 +228,7 @@ class EntropyPackageView:
             return
 
         self.event_click_pos = x,y
-        if column.get_title() != "   S":
+        if column.get_title() != self.pkgcolumn_text:
             return
 
         if obj:
@@ -245,7 +246,7 @@ class EntropyPackageView:
         event_y = self.loaded_event.y
         # FIXME: find a better way to properly position menu
         while event_y > self.selection_width+5:
-            event_y -= self.selection_width+4
+            event_y -= self.selection_width+5
         abs_y += (self.selection_width-event_y)
         return int(abs_x),int(abs_y),True
 
@@ -416,7 +417,7 @@ class EntropyPackageView:
         cell1 = gtk.CellRendererPixbuf()
         cell1.set_property('height', myheight)
         self.set_pixbuf_to_cell(cell1, self.pkg_install_ok )
-        column1 = gtk.TreeViewColumn( "   S", cell1 )
+        column1 = gtk.TreeViewColumn( self.pkgcolumn_text, cell1 )
         column1.set_cell_data_func( cell1, self.new_pixbuf )
         column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column1.set_fixed_width( self.selection_width+40 )

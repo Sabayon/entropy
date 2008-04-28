@@ -87,7 +87,7 @@ class EntropyPackage:
         return self.dbconn.retrieveAtom(self.matched_atom[0])
 
     def getNameDesc(self):
-        t = cleanMarkupSting(self.getName())
+        t = cleanMarkupSting('/'.join(self.getName().split("/")[1:]))
         desc = cleanMarkupSting(self.getDescription())
         if len(desc) > 56:
             desc = desc[:56].rstrip()+"..."

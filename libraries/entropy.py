@@ -3898,7 +3898,7 @@ class PackageInterface:
         key = self.Entropy.entropyTools.dep_getkey(atom)
         othersInstalled = Spm.get_installed_atoms(key) #FIXME: really slow
         if othersInstalled == None:
-            world_file = os.path.join(etpConst['systemroot'],'var/lib/portage/world')
+            world_file = os.path.join(etpConst['systemroot'],'/var/lib/portage/world')
             world_file_tmp = world_file+".entropy.tmp"
             if os.access(world_file,os.W_OK):
                 new = open(world_file_tmp,"w")

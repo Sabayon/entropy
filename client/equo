@@ -262,8 +262,7 @@ try:
     elif options[0] in ["install","remove","world","deptest","libtest"]:
         import text_ui
         rc = text_ui.package(options)
-        if options[0] in ["install","remove","world"]:
-            load_conf_cache()
+        load_conf_cache()
 
     elif options[0] == "security":
         import text_security
