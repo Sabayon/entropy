@@ -335,7 +335,8 @@ CREATE TABLE entropy_misc_counters (
 );
 
 CREATE TABLE categoriesdescription (
-    category VARCHAR PRIMARY KEY,
+    category VARCHAR,
+    locale VARCHAR,
     description VARCHAR
 );
 
@@ -556,7 +557,6 @@ def const_defaultSettings(rootdir):
         'etpdatabasemaskfile': ETP_DBFILE+".mask", # the local/remote database revision file
         'etpdatabaseupdatefile': ETP_DBFILE+".repo_updates", # the local/remote database revision file
         'etpdatabaselicwhitelistfile': ETP_DBFILE+".lic_whitelist", # the local/remote database revision file
-        'etpdatabasecategoriesfile': ETP_DBFILE+".categories_description", # the categories description file
         'etpdatabaserevisionfile': ETP_DBFILE+".revision", # the local/remote database revision file
         'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum
         'etpdatabasedumphashfilebz2': ETP_DBFILE+".dump.bz2.md5",

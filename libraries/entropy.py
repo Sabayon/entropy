@@ -3891,22 +3891,31 @@ class PackageInterface:
 
         portDbDir = Spm.get_vdb_path()
         removePath = portDbDir+atom
-        try:
-            shutil.rmtree(removePath,True)
-        except:
-            pass
         key = self.Entropy.entropyTools.dep_getkey(atom)
-        othersInstalled = Spm.get_installed_atoms(key) #FIXME: really slow
-        if othersInstalled == None:
+        others_installed = Spm.search_keys(key)
+        slot = self.infoDict['slot']
+        tag = self.infoDict['versiontag'] # FIXME: kernel tag, hopefully to 0
+        if tag: slot = "0"
+        if os.path.isdir(removePath):
+            shutil.rmtree(removePath,True)
+        elif others_installed:
+            for myatom in others_installed:
+                myslot = Spm.get_package_slot(myatom)
+                if myslot != slot:
+                    continue
+                shutil.rmtree(portDbDir+myatom,True)
+
+        if not others_installed:
             world_file = os.path.join(etpConst['systemroot'],'/var/lib/portage/world')
             world_file_tmp = world_file+".entropy.tmp"
-            if os.access(world_file,os.W_OK):
+            if os.access(world_file,os.W_OK) and os.path.isfile(world_file):
                 new = open(world_file_tmp,"w")
                 old = open(world_file,"r")
                 line = old.readline()
                 while line:
-                    if line.find(key) == -1:
-                        new.write(line)
+                    if line.find(key) != -1:
+                        continue
+                    new.write(line)
                     line = old.readline()
                 new.flush()
                 new.close()
@@ -9411,6 +9420,19 @@ class PortageInterface:
         sysoutput.extend(etpConst['spm']['system_packages']) # add our packages
         return sysoutput
 
+    def get_category_description_data(self, category):
+        data = {}
+        portdir = self.portage.settings['PORTDIR']
+        myfile = os.path.join(portdir,category,"metadata.xml")
+        if os.access(myfile,os.R_OK) and os.path.isfile(myfile):
+            from xml.dom import minidom
+            doc = minidom.parse(myfile)
+            catmetadata = doc.getElementsByTagName("catmetadata")[0]
+            longdescs = doc.getElementsByTagName("longdescription")
+            for longdesc in longdescs:
+                data[longdesc.getAttribute("lang").strip()] = ' '.join([x.strip() for x in longdesc.firstChild.data.strip().split("\n")])
+        return data
+
     def get_config_protect_and_mask(self):
         config_protect = self.portage.settings['CONFIG_PROTECT']
         config_protect = config_protect.split()
@@ -9507,6 +9529,18 @@ class PortageInterface:
         if rc:
             return rc
         return None
+
+    def search_keys(self, key):
+        key_split = key.split("/")
+        cat = key_split[0]
+        name = key_split[1]
+        cat_dir = os.path.join(self.get_vdb_path(),cat)
+        if not os.path.isdir(cat_dir):
+            return None
+        dir_content = [os.path.join(cat,x) for x in os.listdir(cat_dir) if x.startswith(name)]
+        if not dir_content:
+            return None
+        return dir_content
 
     # create a .tbz2 file in the specified path
     def quickpkg(self, atom, dirpath):
@@ -12198,11 +12232,6 @@ class ServerInterface(TextInterface):
         if repo == None:
             repo = self.default_repository
         return os.path.join(etpConst['server_repositories'][repo]['database_dir'],etpConst['etpdatabasefile'])
-
-    def get_local_database_categories_description_file(self, repo = None):
-        if repo == None:
-            repo = self.default_repository
-        return os.path.join(etpConst['server_repositories'][repo]['database_dir'],etpConst['etpdatabasecategoriesfile'])
 
     def get_local_store_directory(self, repo = None):
         if repo == None:

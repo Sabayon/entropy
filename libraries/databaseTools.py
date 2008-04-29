@@ -1112,13 +1112,13 @@ class etpDatabase:
         # Update category description
         if not self.clientDatabase:
             mycategory = etpData['category']
-            desc = None
+            descdata = {}
             try:
-                desc = self.get_category_description_from_disk(mycategory)
+                descdata = self.get_category_description_from_disk(mycategory)
             except (IOError,OSError,EOFError):
                 pass
-            if desc != None:
-                self.setCategoryDescription(mycategory,desc)
+            if descdata:
+                self.setCategoryDescription(mycategory,descdata)
 
         return idpackage, revision, etpData
 
@@ -1446,16 +1446,15 @@ class etpDatabase:
         self.cursor.execute('UPDATE baseinfo SET idcategory = (?) WHERE idpackage = (?)', (catid,idpackage,))
         self.commitChanges()
 
-    def setCategoryDescription(self, category, description):
+    def setCategoryDescription(self, category, description_data):
         self.checkReadOnly()
-        curdesc = self.retrieveCategoryDescription(category)
-        if curdesc:
-            self.cursor.execute('UPDATE categoriesdescription SET description = (?) WHERE category = (?)', (description,category,))
-        else:
-            self.cursor.execute('INSERT INTO categoriesdescription VALUES (?,?)', (category,description,))
+        self.cursor.execute('DELETE FROM categoriesdescription WHERE category = (?)', (category,))
+        for locale in description_data:
+            mydesc = description_data[locale]
+            #if type(mydesc) is unicode:
+            #    mydesc = mydesc.encode('raw_unicode_escape')
+            self.cursor.execute('INSERT INTO categoriesdescription VALUES (?,?,?)', (category,locale,description,))
         self.commitChanges()
-
-
 
     def setName(self, idpackage, name):
         self.checkReadOnly()
@@ -1633,21 +1632,8 @@ class etpDatabase:
 
     def get_category_description_from_disk(self, category):
         if not self.ServiceInterface:
-            return None
-        myfile = self.ServiceInterface.get_local_database_categories_description_file(self.server_repo)
-        mydesc = None
-        if os.access(myfile,os.R_OK):
-            f = open(myfile,"r")
-            line = f.readline()
-            while line:
-                line = line.strip()
-                if line.startswith("#"):
-                    continue
-                elif line.startswith(category+" ") and len(line.split()) > 1:
-                    mydesc = ' '.join(line.split()[1:])
-                    break
-            f.close()
-        return mydesc
+            return {}
+        return Self.ServiceInterface.Spm.get_category_description_data(category)
 
     def getIDPackage(self, atom, branch = etpConst['branch']):
         self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = "'+atom+'" AND branch = "'+branch+'"')
@@ -2436,12 +2422,15 @@ class etpDatabase:
         return cat
 
     def retrieveCategoryDescription(self, category):
+        data = {}
         if not self.doesTableExist("categoriesdescription"):
-            return None
-        self.cursor.execute('SELECT description FROM categoriesdescription WHERE category = (?)', (category,))
-        desc = self.cursor.fetchone()
-        if desc:
-            return desc[0]
+            return data
+        #self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+        self.cursor.execute('SELECT description,locale FROM categoriesdescription WHERE category = (?)', (category,))
+        description_data = self.cursor.fetchall()
+        for description,locale in description_data:
+            data[locale] = description
+        return data
 
     def retrieveLicensedata(self, idpackage):
 
@@ -3827,7 +3816,7 @@ class etpDatabase:
         self.commitChanges()
 
     def createCategoriesdescriptionTable(self):
-        self.cursor.execute('CREATE TABLE categoriesdescription ( category VARCHAR PRIMARY KEY, description VARCHAR );')
+        self.cursor.execute('CREATE TABLE categoriesdescription ( category VARCHAR, locale VARCHAR, description VARCHAR );')
 
     def createTreeupdatesTable(self):
         self.cursor.execute('CREATE TABLE treeupdates ( repository VARCHAR PRIMARY KEY, digest VARCHAR );')
