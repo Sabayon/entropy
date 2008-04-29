@@ -779,6 +779,7 @@ class etpDatabase:
             # create category
             catid = self.addCategory(etpData['category'])
 
+
         # create new license if it doesn't exist
         licid = self.isLicenseAvailable(etpData['license'])
         if (licid == -1):
@@ -1108,6 +1109,17 @@ class etpDatabase:
             # save
             dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
 
+        # Update category description
+        if not self.clientDatabase:
+            mycategory = etpData['category']
+            desc = None
+            try:
+                desc = self.get_category_description_from_disk(mycategory)
+            except (IOError,OSError,EOFError):
+                pass
+            if desc != None:
+                self.setCategoryDescription(mycategory,desc)
+
         return idpackage, revision, etpData
 
     # Update already available atom in db
@@ -1434,6 +1446,17 @@ class etpDatabase:
         self.cursor.execute('UPDATE baseinfo SET idcategory = (?) WHERE idpackage = (?)', (catid,idpackage,))
         self.commitChanges()
 
+    def setCategoryDescription(self, category, description):
+        self.checkReadOnly()
+        curdesc = self.retrieveCategoryDescription(category)
+        if curdesc:
+            self.cursor.execute('UPDATE categoriesdescription SET description = (?) WHERE category = (?)', (description,category,))
+        else:
+            self.cursor.execute('INSERT INTO categoriesdescription VALUES (?,?)', (category,description,))
+        self.commitChanges()
+
+
+
     def setName(self, idpackage, name):
         self.checkReadOnly()
         self.cursor.execute('UPDATE baseinfo SET name = (?) WHERE idpackage = (?)', (name,idpackage,))
@@ -1603,6 +1626,28 @@ class etpDatabase:
     def getApi(self):
         self.cursor.execute('SELECT max(etpapi) FROM baseinfo')
         return self.cursor.fetchone()[0]
+
+    def getCategory(self, idcategory):
+        self.cursor.execute('SELECT category from categories WHERE idcategory = (?)', (idcategory,))
+        return self.cursor.fetchone()[0]
+
+    def get_category_description_from_disk(self, category):
+        if not self.ServiceInterface:
+            return None
+        myfile = self.ServiceInterface.get_local_database_categories_description_file(self.server_repo)
+        mydesc = None
+        if os.access(myfile,os.R_OK):
+            f = open(myfile,"r")
+            line = f.readline()
+            while line:
+                line = line.strip()
+                if line.startswith("#"):
+                    continue
+                elif line.startswith(category+" ") and len(line.split()) > 1:
+                    mydesc = ' '.join(line.split()[1:])
+                    break
+            f.close()
+        return mydesc
 
     def getIDPackage(self, atom, branch = etpConst['branch']):
         self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = "'+atom+'" AND branch = "'+branch+'"')
@@ -2389,6 +2434,14 @@ class etpDatabase:
 
         self.storeInfoCache(idpackage,'retrieveCategory',cat)
         return cat
+
+    def retrieveCategoryDescription(self, category):
+        if not self.doesTableExist("categoriesdescription"):
+            return None
+        self.cursor.execute('SELECT description FROM categoriesdescription WHERE category = (?)', (category,))
+        desc = self.cursor.fetchone()
+        if desc:
+            return desc[0]
 
     def retrieveLicensedata(self, idpackage):
 
@@ -3190,6 +3243,9 @@ class etpDatabase:
         if not self.doesColumnInTableExist("dependencies","type"):
             self.createDependenciesTypeColumn()
 
+        if not self.doesTableExist("categoriesdescription"):
+            self.createCategoriesdescriptionTable()
+
         # these are the tables moved to INTEGER PRIMARY KEY AUTOINCREMENT
         autoincrement_tables = [
             'treeupdatesactions',
@@ -3769,6 +3825,9 @@ class etpDatabase:
         self.cursor.execute('DROP TABLE counters')
         self.cursor.execute('ALTER TABLE counterstemp RENAME TO counters')
         self.commitChanges()
+
+    def createCategoriesdescriptionTable(self):
+        self.cursor.execute('CREATE TABLE categoriesdescription ( category VARCHAR PRIMARY KEY, description VARCHAR );')
 
     def createTreeupdatesTable(self):
         self.cursor.execute('CREATE TABLE treeupdates ( repository VARCHAR PRIMARY KEY, digest VARCHAR );')

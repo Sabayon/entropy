@@ -1,7 +1,7 @@
 TODO list
-  - categories description
-  - client: check lock file on repo sync
   - add i18n support
+  - client: check lock file on repo sync
+  - server-side: EAPI-2 don't remove indexes but copy a db over and work on it
   - server-side: improve RDEPEND check output
   - server-side: add libtest to reagent
   - server-side: make reagent deptest a blocker to db commits
@@ -9,11 +9,10 @@ TODO list
   - server-side: check rdepend function with pandodl
   - server-side: move officialrepositoryid settings away from repositories.conf
   - implement pdepend support in dependencies sorting
-  - implement package sets
+  - implement package sets (meta packages list)
   - Community repositories
   - implement notice board
   - implement configuration files snapshot tool
-  - create a meta-packages list
   - allow interactivity for games requiring CDs/DVDs
   - add changelog to packages
   - documentation + man page
@@ -21,6 +20,7 @@ TODO list
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
+    - configuration menu (equo.conf + others interface)
     - package masking menu
     - install tbz2
     - Popularity feature / Your Ego service

@@ -1,0 +1,7 @@
+# Server side packages.db.categories_description file
+# this is the place where packages category description should be placed
+# See examples below
+
+# category this is a category description
+# dev-python Python development tools
+# x11-libs X server libraries

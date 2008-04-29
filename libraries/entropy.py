@@ -12197,8 +12197,12 @@ class ServerInterface(TextInterface):
     def get_local_database_file(self, repo = None):
         if repo == None:
             repo = self.default_repository
-        path = os.path.join(etpConst['server_repositories'][repo]['database_dir'],etpConst['etpdatabasefile'])
-        return path
+        return os.path.join(etpConst['server_repositories'][repo]['database_dir'],etpConst['etpdatabasefile'])
+
+    def get_local_database_categories_description_file(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(etpConst['server_repositories'][repo]['database_dir'],etpConst['etpdatabasecategoriesfile'])
 
     def get_local_store_directory(self, repo = None):
         if repo == None:
