@@ -1633,7 +1633,7 @@ class etpDatabase:
     def get_category_description_from_disk(self, category):
         if not self.ServiceInterface:
             return {}
-        return self.ServiceInterface.Spm.get_category_description_data(category)
+        return self.ServiceInterface.SpmService.get_category_description_data(category)
 
     def getIDPackage(self, atom, branch = etpConst['branch']):
         self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = "'+atom+'" AND branch = "'+branch+'"')
