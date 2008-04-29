@@ -22,6 +22,7 @@ import gobject
 from spritz_setup import const, cleanMarkupSting, SpritzConf
 from etpgui.widgets import UI
 from packages import DummyEntropyPackage
+from entropyapi import EquoConnection
 from etpgui import *
 from entropyConstants import *
 
@@ -60,6 +61,7 @@ class SpritzCategoryView:
 class EntropyPackageView:
     def __init__( self, treeview, qview, ui, etpbase, main_window ):
 
+        self.Equo = EquoConnection
         self.pkgcolumn_text = _("Selection")
         self.selection_width = 34
         self.show_reinstall = True
@@ -255,7 +257,8 @@ class EntropyPackageView:
         if obj.queued:
             self.hide_install_menu()
             self.install_undoinstall.show()
-        self.install_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time )
+        #self.install_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time )
+        self.install_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time )
 
     def run_updates_menu_stuff(self, obj):
         do_show = True
@@ -263,7 +266,8 @@ class EntropyPackageView:
         if obj.queued:
             self.hide_updates_menu()
             self.updates_undoupdate.show()
-        self.updates_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time)
+        #self.updates_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time)
+        self.updates_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time)
 
     def run_installed_menu_stuff(self, obj):
         do_show = True
@@ -293,7 +297,9 @@ class EntropyPackageView:
                 self.set_loaded_reinstallable(obj)
                 if not self.loaded_reinstallable:
                     self.installed_reinstall.hide()
-        if do_show: self.installed_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time )
+        if do_show:
+            #self.installed_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time )
+            self.installed_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time )
 
     def set_loaded_reinstallable(self, obj):
         reinstallables = self.etpbase.getPackages("reinstallable")
@@ -461,10 +467,17 @@ class EntropyPackageView:
             cats = categories.keys()
             cats.sort()
             for category in cats:
-                cat_text = "<b><big>%s</big></b>" % (category,)
+                cat_desc = _("No description")
+                cat_desc_data = self.Equo.get_category_description_data(category)
+                # XXX: temp support only EN
+                if cat_desc_data.has_key('en'):
+                    cat_desc = cat_desc_data['en']
+                cat_desc = cat_desc[:70].strip()+"..."
+                cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupSting(cat_desc),)
                 mydummy = DummyEntropyPackage(
                         namedesc = cat_text,
-                        dummy_type = SpritzConf.dummy_category
+                        dummy_type = SpritzConf.dummy_category,
+                        onlyname = category
                 )
                 mydummy.color = '#9C7234'
                 parent = self.store.append( None, (mydummy,) )
@@ -928,7 +941,7 @@ class EntropyRepoView:
     """ 
     This class controls the repo TreeView
     """
-    def __init__( self, widget, EquoConnection, ui):
+    def __init__( self, widget, ui):
         self.view = widget
         self.headers = [_('Repository'),_('Filename')]
         self.store = self.setup_view()

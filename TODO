@@ -1,4 +1,5 @@
 TODO list
+  - server-side: expired packages check
   - add i18n support
   - client: check lock file on repo sync
   - server-side: EAPI-2 don't remove indexes but copy a db over and work on it
@@ -20,6 +21,7 @@ TODO list
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
+    - i18n support for category descs
     - configuration menu (equo.conf + others interface)
     - package masking menu
     - install tbz2

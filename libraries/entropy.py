@@ -1990,6 +1990,17 @@ class EquoInterface(TextInterface):
             pkg_matches.update(set([(x[1],repo) for x in catsdata]))
         return pkg_matches
 
+    def get_category_description_data(self, category, repo = etpConst['officialrepositoryid']):
+        dbconn = self.openRepositoryDatabase(repo)
+        data = dbconn.retrieveCategoryDescription(category)
+        if not data:
+            for repo in self.validRepositories:
+                dbconn = self.openRepositoryDatabase(repo)
+                data = dbconn.retrieveCategoryDescription(category)
+                if data:
+                    break
+        return data
+
     def list_installed_packages_in_category(self, category):
         pkg_matches = set([x[1] for x in self.clientDbconn.searchPackagesByCategory(category)])
         return pkg_matches

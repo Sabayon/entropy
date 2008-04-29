@@ -23,25 +23,16 @@ from spritz_setup import cleanMarkupSting, SpritzConf
 
 class DummyEntropyPackage:
 
-    def __init__(self, namedesc = None, dummy_type = -1):
+    def __init__(self, namedesc = None, dummy_type = -1, onlyname = ''):
         self.matched_atom = (0,0)
         self.namedesc = namedesc
-        if self.namedesc == None:
-            self.namedesc = "<big><b><span foreground='#FF0000'>%s</span></b></big>" + \
-            "\n<span foreground='darkblue'>%s.\n%s</span>" % (
-                _('No updates available'),
-                _("It seems that your system is already up-to-date. Good!"),
-                _("Try clicking the %s button in the %s page") % (
-                    _("Update Repositories"),
-                    _("Repository Selection"),
-                ),
-            )
         self.queued = None
         self.repoid = ''
         self.color = None
         self.action = None
         self.dbconn = None
         self.dummy_type = dummy_type
+        self.onlyname = onlyname
 
 class EntropyPackage:
 
