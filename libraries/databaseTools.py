@@ -1453,7 +1453,7 @@ class etpDatabase:
             mydesc = description_data[locale]
             #if type(mydesc) is unicode:
             #    mydesc = mydesc.encode('raw_unicode_escape')
-            self.cursor.execute('INSERT INTO categoriesdescription VALUES (?,?,?)', (category,locale,description,))
+            self.cursor.execute('INSERT INTO categoriesdescription VALUES (?,?,?)', (category,locale,mydesc,))
         self.commitChanges()
 
     def setName(self, idpackage, name):
