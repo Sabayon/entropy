@@ -4925,6 +4925,7 @@ class PackageInterface:
         self.infoDict['triggers'] = {}
         self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(idpackage)
         self.infoDict['slot'] = self.Entropy.clientDbconn.retrieveSlot(idpackage)
+        self.infoDict['versiontag'] = self.Entropy.clientDbconn.retrieveVersionTag(idpackage)
         self.infoDict['removeidpackage'] = idpackage
         self.infoDict['diffremoval'] = False
         removeConfig = False
