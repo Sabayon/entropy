@@ -9438,13 +9438,12 @@ class PortageInterface:
         return sysoutput
 
     def get_category_description_data(self, category):
+        from xml.dom import minidom
         data = {}
         portdir = self.portage.settings['PORTDIR']
         myfile = os.path.join(portdir,category,"metadata.xml")
         if os.access(myfile,os.R_OK) and os.path.isfile(myfile):
-            from xml.dom import minidom
             doc = minidom.parse(myfile)
-            catmetadata = doc.getElementsByTagName("catmetadata")[0]
             longdescs = doc.getElementsByTagName("longdescription")
             for longdesc in longdescs:
                 data[longdesc.getAttribute("lang").strip()] = ' '.join([x.strip() for x in longdesc.firstChild.data.strip().split("\n")])
