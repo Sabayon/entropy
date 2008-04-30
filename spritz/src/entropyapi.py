@@ -172,8 +172,8 @@ class Equo(EquoInterface):
 
     def updateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
 
+        count_str = ""
         if self.progress:
-            count_str = ""
             if count:
                 count_str = "(%s/%s) " % (str(count[0]),str(count[1]),)
                 if importance == 0:
